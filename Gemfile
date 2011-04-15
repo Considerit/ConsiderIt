@@ -19,6 +19,10 @@ gem 'mysql'
 
 # Bundle the extra gems:
 
+gem 'devise'
+gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git'
+
+
 gem "haml"
 
 # https://github.com/ludicast/yaml_db
@@ -33,8 +37,9 @@ gem 'authlogic'
 # https://github.com/intridea/oauth2
 gem 'oauth2'
 
+gem 'rmagick'
 # https://github.com/thoughtbot/paperclip
-gem 'paperclip', :require => 'rmagick'
+gem 'paperclip'
 
 # https://github.com/mislav/will_paginate
 gem 'will_paginate'

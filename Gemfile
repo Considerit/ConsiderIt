@@ -5,7 +5,7 @@ gem 'rails', '3.0.6'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'sqlite3'
+gem 'mysql'
 
 # Use unicorn as the web server
 # gem 'unicorn'
@@ -18,6 +18,33 @@ gem 'sqlite3'
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 # Bundle the extra gems:
+
+gem "haml"
+
+# https://github.com/ludicast/yaml_db
+gem 'yaml_db'
+
+# https://github.com/elight/acts_as_commentable_with_threading
+gem 'acts_as_commentable_with_threading'
+
+# https://github.com/binarylogic/authlogic
+gem 'authlogic'
+
+# https://github.com/intridea/oauth2
+gem 'oauth2'
+
+# https://github.com/thoughtbot/paperclip
+gem 'paperclip', :require => 'rmagick'
+
+# https://github.com/mislav/will_paginate
+gem 'will_paginate'
+
+# https://github.com/javan/whenever
+gem 'whenever'
+
+# https://github.com/markbates/yamler
+gem 'yamler'
+
 # gem 'bj'
 # gem 'nokogiri'
 # gem 'sqlite3-ruby', :require => 'sqlite3'

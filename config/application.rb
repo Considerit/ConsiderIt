@@ -40,3 +40,5 @@ module ConsiderIt
     config.filter_parameters += [:password]
   end
 end
+
+APPNAME = '_base'

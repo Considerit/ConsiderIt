@@ -9,6 +9,10 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
+    POpen4 (0.1.4)
+      Platform (>= 0.4.0)
+      open4
+    Platform (0.4.0)
     aaronh-chronic (0.3.9)
     abstract (1.0.0)
     actionmailer (3.0.6)
@@ -45,6 +49,7 @@ GEM
     arel (2.0.9)
     bcrypt-ruby (2.1.4)
     builder (2.1.2)
+    closure-compiler (1.1.1)
     devise (1.2.1)
       bcrypt-ruby (~> 2.1.2)
       orm_adapter (~> 0.0.3)
@@ -57,6 +62,12 @@ GEM
       rack (< 2, >= 1.1.0)
     haml (3.0.25)
     i18n (0.5.0)
+    jammit (0.6.0)
+      closure-compiler (>= 0.1.0)
+      yui-compressor (>= 0.9.1)
+    jquery-rails (0.2.7)
+      rails (~> 3.0)
+      thor (~> 0.14.4)
     mail (2.2.15)
       activesupport (>= 2.3.6)
       i18n (>= 0.4.0)
@@ -82,6 +93,7 @@ GEM
     oauth2 (0.3.0)
       faraday (~> 0.6.0)
       multi_json (~> 0.0.4)
+    open4 (1.0.1)
     orm_adapter (0.0.4)
     paperclip (2.3.11)
       activerecord (>= 2.3.0)
@@ -119,6 +131,8 @@ GEM
     will_paginate (2.3.15)
     yaml_db (0.2.0)
     yamler (0.1.0)
+    yui-compressor (0.9.6)
+      POpen4 (>= 0.1.4)
 
 PLATFORMS
   ruby
@@ -127,6 +141,8 @@ DEPENDENCIES
   acts_as_commentable_with_threading
   devise
   haml
+  jammit
+  jquery-rails
   mysql
   oa-oauth
   paperclip

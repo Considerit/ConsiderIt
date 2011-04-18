@@ -47,11 +47,11 @@ gem 'yaml_db'
 # https://github.com/elight/acts_as_commentable_with_threading
 gem 'acts_as_commentable_with_threading'
 
+# https://github.com/documentcloud/jammit/
+gem 'jammit'
 
-# gem 'bj'
-# gem 'nokogiri'
-# gem 'sqlite3-ruby', :require => 'sqlite3'
-# gem 'aws-s3', :require => 'aws/s3'
+# https://github.com/indirect/jquery-rails
+gem 'jquery-rails'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

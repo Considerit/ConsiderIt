@@ -1,0 +1,50 @@
+= @user.email
+= link_to "logout", destroy_user_session_path
+= link_to "edit profile", edit_user_registration_path
+
+/
+  .logged_in_name
+    %a.settings
+      -# = h current_user.username
+  .avatar
+    -# = image_tag current_user.avatar.url(:thumb), :class => "nav_avatar", :alt => "Your profile picture"
+
+  -# if current_user.is_moderator?      
+    .middle
+      -# = link_to 'Moderator', admin_root_path, :class => 'admin'
+  
+  .last
+    -# = link_to 'Log Out', logout_path, :class => 'logout'
+  
+    -# - if false && current_user_is_facebook?
+      :javascript
+        $j(".logout").click(function(){
+          FB.Connect.logout(function(){
+            document.location = '/logout';
+          });
+          return false;
+        });
+  .clear
+  
+  #settings_dialog
+  
+  -# :javascript
+    $j(document).ready(function() {
+      $j("#settings_dialog").dialog({
+        bgiframe: true, 
+        autoOpen: false, 
+        modal: true,
+        width: 'auto',
+        draggable: false,
+        resizable: false,
+        position: [500, 50]
+      });
+    
+      $j('a.settings')
+        .click(function(){
+          var dialog = $j('#settings_dialog');
+          dialog.load("#{settings_ajax_path}");
+          dialog.dialog('open');
+        });
+      
+    });

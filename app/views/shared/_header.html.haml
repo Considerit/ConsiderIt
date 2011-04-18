@@ -1,0 +1,40 @@
+#masthead.header
+  #header_wrapper
+    #offset_header
+        
+      .beta
+        / 
+          Please report problems to bugs@livingvotersguide.org.
+        Please share with family and friends!
+      .logo_cell
+        %h1#logo
+          %a.logo_home{ :href => root_path, :title => ""}
+            = image_tag "#{APP_CONFIG['app_name']['short']}/logo.png"
+            
+      #nav-user
+        - if user_signed_in?
+          = render :partial => "shared/logged_in_head"
+          
+        - else
+          = render :partial => "shared/logged_out_head"
+            
+      #nav-primary
+        %ul.nav.primary
+          %li.first= link_to "Home", root_path, :class => "home", :title => "#{APP_CONFIG['app_name']['long']}"        
+          %li.drops.middle
+            %a
+              #{APP_CONFIG['decisions']['name']['short']}s
+            &nbsp;
+            /
+              %ul.dropdown
+                -# get_initiatives.each do |initiative|
+                  %li{ :class => "#{has_stance(current_user, initiative)}"}
+                    %a.primary_nav_item{ :href => initiative_path(initiative), :title => "#{APP_CONFIG['decisions']['name']['full']} #{initiative.designation} #{initiative.number}" } 
+                      = initiative.number
+                      \-
+                      = initiative.short_name               
+          
+          -#  %li.middle= link_to 'Community Rules', home_path('rules'), :class => 'rules', :title => "Guidelines for participation"
+          
+          -#  %li.last= link_to 'About Us', home_path('about_us'), :class => 'about', :title => "Who created the Living Voters Guide?"
+        .clear

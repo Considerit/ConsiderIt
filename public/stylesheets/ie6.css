@@ -1,0 +1,189 @@
+.nav.site li a {
+  float: left;
+  line-height: 36px; }
+.nav.site li.first a {
+  background-image: url(../images/nav-site-first.gif); }
+.nav.site li.last a {
+  background-image: url(../images/nav-site-last.gif); }
+.nav.site.alt li.first a {
+  background-image: url(../images/nav-site-first-alt.gif) !important; }
+.nav.site.alt.title-ideas {
+  background-image: url(../images/nav-site-title-ideas.gif); }
+.nav.user li.first a, .nav.user li.first form {
+  background-image: url(../images/nav-user-first.gif); }
+.nav.user li.search input {
+  margin-top: 2px; }
+
+body.home .nav li.first a.home,
+body.admin-home .nav li.first a.admin-home {
+  background-image: url(../images/nav-site-first-alt-active.gif); }
+
+body.comments-page .nav li.first a.comments {
+  background-image: url(../images/nav-site-first-active.gif); }
+
+body.nearby .nav li.last a.nearby,
+body.tags-page .nav li.last a.tags,
+body.life-cycles .nav li.last a.life-cycles {
+  background-image: url(../images/nav-site-last-active.gif); }
+
+.form-group.inline label {
+  float: none;
+  position: absolute;
+  left: 0; }
+
+#share .input-text, #share .input-textarea {
+  width: 437px; }
+#share .footer .tab span.dn {
+  background-image: url(../images/icn/14-arrow-dn.gif); }
+#share .footer .tab span.up {
+  background-image: url(../images/icn/14-arrow-up.gif); }
+#share .footer .tab:hover span.dn {
+  background-image: url(../images/icn/14-arrow-dn-hover.gif); }
+#share .footer .tab:hover span.up {
+  background-image: url(../images/icn/14-arrow-up-hover.gif); }
+#share .footer .tab:active span.dn {
+  background-image: url(../images/icn/14-arrow-dn-active.gif); }
+#share .footer .tab:active span.up {
+  background-image: url(../images/icn/14-arrow-up-active.gif); }
+
+.panel .header h2 {
+  width: 450px; }
+
+.ideas-group {
+  margin-right: 11px; }
+
+.actions li {
+  background-image: url(../images/header-meta-left.gif); }
+  .actions li a {
+    float: left;
+    background-image: url(../images/header-meta-right.gif); }
+.actions .input-custom {
+  background-image: url(../images/header-meta-textbox-sm.gif); }
+  .actions .input-custom.long {
+    background-image: url(../images/header-meta-textbox-lg.gif); }
+
+.idea .entry-meta li {
+  margin-right: 20px; }
+.idea .vote-count {
+  background-image: url(../images/idea-vote-teaser-bg.gif); }
+.idea.teaser .entry-meta li.tags {
+  width: 220px; }
+.idea.teaser .vote-for-it a, .idea.teaser .vote-for-it span {
+  background-image: url(../images/idea-vote-teaser-button.gif); }
+.idea.mini .entry-title {
+  width: 238px; }
+.idea.mini .vote-for-it a, .idea.mini .vote-for-it span {
+  background-image: url(../images/idea-vote-mini-button.gif); }
+
+.main .vote {
+  right: 25px;
+  top: 20px; }
+.main .vote-for-it span {
+  margin: 0;
+  margin-left: 2px;
+  background-image: url(../images/idea-vote-button.gif);
+  background-position: left -78px;
+  height: 26px;
+  width: 106px; }
+
+.teaser .vote {
+  left: 9px;
+  top: 8px; }
+.teaser .vote-for-it span {
+  margin-left: 3px;
+  background-image: url(../images/idea-vote-teaser-button.gif);
+  background-position: left -75px;
+  height: 25px;
+  width: 104px; }
+
+.mini .vote {
+  left: 5px;
+  top: 5px; }
+.mini .vote-count {
+  margin-bottom: 1px;
+  padding-top: 0;
+  background: url(../images/idea-vote-mini-bg.gif) left top no-repeat;
+  font-size: 18px;
+  height: 37px;
+  line-height: 37px;
+  width: 40px; }
+  .mini .vote-count .points {
+    display: none !important; }
+.mini .vote-for-it span {
+  margin-left: 2px;
+  background-image: url(../images/idea-vote-mini-button.gif);
+  background-position: left -33px;
+  height: 11px;
+  width: 36px; }
+
+.input-text {
+  height: 19px; }
+
+input.big {
+  height: 23px; }
+
+a.admin {
+  background-image: url(../images/icn/16-admin.gif); }
+
+h1#logo a {
+  background-image: url(../images/bby-ideax-logo.gif); }
+
+#intro {
+  background-image: url(../images/intro.gif); }
+  #intro .header h3 a {
+    background-image: url(../images/intro-signup.gif); }
+  #intro #idea-title-group {
+    background-image: url(../images/intro-form-icon-bulb.gif); }
+  #intro #idea-description-group {
+    background-image: url(../images/intro-form-icon-pencil.gif); }
+  #intro #idea-tags-group {
+    background-image: url(../images/intro-form-icon-tag.gif); }
+  #intro .input-submit {
+    background-image: url(../images/form-submit-share-my-idea.gif); }
+  #intro p.note {
+    background-image: url(../images/intro-form-note.gif); }
+
+.instruction.one h3 {
+  background-image: url(../images/instruction-1-share.gif); }
+.instruction.two h3 {
+  background-image: url(../images/instruction-2-vote.gif); }
+.instruction.three h3 {
+  background-image: url(../images/instruction-3-discuss.gif); }
+.instruction.four h3 {
+  background-image: url(../images/instruction-4-read.gif); }
+
+h2.icon.comments {
+  background-image: url(../images/icn/24-comment.gif); }
+h2.icon.nearby {
+  background-image: url(../images/icn/24-pin.gif); }
+h2.icon.top-rated {
+  background-image: url(../images/icn/24-heart.gif); }
+h2.icon.recent {
+  background-image: url(../images/icn/24-clock.gif); }
+h2.icon.tag {
+  background-image: url(../images/icn/24-tag.gif); }
+h2.icon.user {
+  background-image: url(../images/icn/24-user.gif); }
+  h2.icon.user.admin {
+    background-image: url(../images/icn/24-user-admin.gif); }
+h2.icon.user-edit {
+  background-image: url(../images/icn/24-user-edit.gif); }
+
+h3.icon.nearby, a.icon.nearby {
+  background-image: url(../images/icn/16-pin.gif); }
+h3.icon.popular, a.icon.popular {
+  background-image: url(../images/icn/16-heart.gif); }
+h3.icon.recent, a.icon.recent {
+  background-image: url(../images/icn/16-clock.gif); }
+h3.icon.user, a.icon.user {
+  background-image: url(../images/icn/16-user.gif); }
+
+.panel.summary .header .actions li {
+  background: none; }
+  .panel.summary .header .actions li a {
+    background: none; }
+
+.inset {
+  background-image: url(../images/inset-top.gif); }
+  .inset > div {
+    background-image: url(../images/inset-bottom.gif); }

@@ -1,21 +1,116 @@
 !!! Strict
 %html(xmlns="http://www.w3.org/1999/xhtml")
   %head{ :profile => "http://gmpg.org/xfn/1" }
-    %title
-      ConsiderIt
+    - if @title
+      %title
+        = "#{APP_CONFIG['meta']['title']} :: #{@title}"
+    - else
+      %title
+        ConsiderIt
+    
+    %link{ :href => "/favicon.ico", :rel => "icon", :type => "image/vnd.microsoft.icon" }
+    %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
+    
+    - if @keywords       
+      %meta{ :name => 'keywords', :content => "#{@keywords}"}
+    -else
+      %meta{ :name => 'keywords', :content => ""}
+
+    - if @description       
+      %meta{ :name => 'description', :content => "#{@description}"}
+    -else
+      %meta{ :name => 'description', :content => ""}
+      
     = stylesheet_link_tag :all
     = javascript_include_tag :defaults
     = csrf_meta_tag
+    
+    - if Rails.env.production? || Rails.env.test?
+      = stylesheet_link_tag 'considerit.min'
+    - else
+      = stylesheet_link_tag 'reset-min.css'
+      = stylesheet_link_tag 'jquery_ui/jquery-ui-1.8.4.custom.css'
+      = stylesheet_link_tag 'compiled/considerit'
+
+    - if @reflectable 
+      - if Rails.env.production? || Rails.env.test?
+        = stylesheet_link_tag '/reflect/css/reflect.min.css'
+      - else
+        = stylesheet_link_tag '/reflect/css/reflect.css'
+        = stylesheet_link_tag '/reflect/css/reflect.considerit.css'
+        = stylesheet_link_tag '/reflect/css/jquery.ui.css'
+    
+    /[if IE]
+      = javascript_include_tag "svg", :"data-path" => "/javascripts/"
+      %meta{ :content => "true", :name => "svg.render.forceflash"}
+      = stylesheet_link_tag 'ie'
+    /[if lt IE 8]
+      = stylesheet_link_tag 'ie7'
+    /[if lt IE 7]
+      = stylesheet_link_tag 'ie6'
+      = javascript_include_tag 'IE7'
+    
+    - if Rails.env.production? || Rails.env.test?
+      = javascript_include_tag 'considerit.min'          
+    - else
+      = javascript_include_tag 'example_text'
+      = javascript_include_tag 'jquery.corner'
+      = javascript_include_tag 'jquery.noblecount.min'
+      = javascript_include_tag 'jquery.qtip-1.0.0-rc3'
+      = javascript_include_tag 'considerit'
+
+    - if @protovis
+      = javascript_include_tag "protovis-r3.3"
+
+    - if @reflectable
+      - if Rails.env.production? || Rails.env.test?
+        = javascript_include_tag '/reflect/js/reflect_dependencies.min.js'
+      - else
+        = javascript_include_tag '/reflect/js/third_party/inheritance.js'      
+        = javascript_include_tag '/reflect/js/third_party/jquery.color.js'      
+        = javascript_include_tag '/reflect/js/third_party/jquery.highlight.js'      
+        = javascript_include_tag '/reflect/js/third_party/jquery.pulse.js'      
+        = javascript_include_tag '/reflect/js/third_party/jquery.jqote2.min.js'      
+        = javascript_include_tag '/reflect/js/third_party/json2.js'      
+        = javascript_include_tag '/reflect/js/reflect.js'
+        = javascript_include_tag '/reflect/js/reflect.considerit.js'    
+
+    :javascript
+      $j = jQuery.noConflict();
+
+    /
+      :javascript
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', '#{GOOGLE_ANALYTICS}']);
+        _gaq.push(['_trackPageview']);
+    
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+  
   
   %body
-    - if user_signed_in?
-      = @user.email
-      = link_to "logout", destroy_user_session_path
-      = link_to "edit profile", edit_user_registration_path
-    - else
-      = link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook)   
-      = link_to "login", new_user_session_path
-      = link_to "register", new_user_registration_path
-         
+  
+    #wrap
+      = render :partial => "shared/header"
+      #content
+        -# = render :partial => "shared/flash_messages"
+        = yield
 
-= yield
+      -# = render :partial => "shared/footer"         
+
+    :javascript
+      $j(document).ready(function(){
+        add_tips();      
+      })     
+
+      $j('#header_wrapper').corner('round top 5px');
+      $j('#nav-user').corner('bottom bl 5px');  
+
+      $j('a.smooth_anchor').click(function(){
+        $j('html, body').animate({
+          scrollTop: $j($j(this).attr('href')).offset().top}, 1000);
+          return false;
+      });

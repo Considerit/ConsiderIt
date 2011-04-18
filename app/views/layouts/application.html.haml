@@ -9,8 +9,13 @@
   
   %body
     - if user_signed_in?
-      user signed in via facebook
+      = @user.email
+      = link_to "logout", destroy_user_session_path
+      = link_to "edit profile", edit_user_registration_path
     - else
-      = link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook)      
+      = link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook)   
+      = link_to "login", new_user_session_path
+      = link_to "register", new_user_registration_path
+         
 
 = yield

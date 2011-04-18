@@ -19,16 +19,14 @@ gem 'mysql'
 
 # Bundle the extra gems:
 
-gem 'devise'
-gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git'
-
-
 gem "haml"
 
 # https://github.com/plataformatec/devise
-gem "devise"
+gem 'devise'
 # https://github.com/plataformatec/devise/wiki/OmniAuth:-Overview
 gem "oa-oauth", :require => "omniauth/oauth"
+# https://github.com/sferik/rails_admin/
+gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git'
 
 # https://github.com/thoughtbot/paperclip
 gem 'rmagick'

@@ -53,6 +53,10 @@ gem 'jammit'
 # https://github.com/indirect/jquery-rails
 gem 'jquery-rails'
 
+# http://ward.vandewege.net/blog/2011/04/acts_as_paranoid-and-acts_as_versioned-on-rails-3/
+gem 'rails3_acts_as_paranoid'
+gem 'acts_as_versioned'
+
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:

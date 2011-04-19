@@ -1,90 +1,42 @@
-#initiative.show
-            
-  %ol#step_through
+#initiative.guide
+
+  = render :partial => "options/blocks/strip"
+
+  
+  %ol#step_through    
+    %li.head
+      = render :partial => "options/description/abridged"
+      = render :partial => "options/sidebar"
+      .clear
     
-    %li.step#welcome
+    -# = render :partial => "initiatives/view_breakdown", :locals => { :number => false }
+    
 
-      = render :partial => "options/description/succinct"
-      
-   
-      .thanks
-        %h3.banner
-          You 
-          %strong
-            -# = render :partial => "stances/current_stance", :locals => {}   
-          #{@option.designator}. Thanks for taking a stand!
+    %li.clear
+     
 
-          %span.update
-         
-          
-        
-        %h3.whatsnext
-          What next?
+  - if @position
+    .take_stand
+      %a.update_stance2.add_qtip{ :href => update_option_position_path(@option, @position), :title => "Click here to change your stance and update your pro/con list."}
+        = image_tag "update_position.png", :alt => "Click to update your stance on #{@options.reference}"
+    .take_stand
+      %a.join_discussion2.add_qtip{ :href => "#discussion_threads", :title => "Join or start a discussion about #{@option.reference}."}
+        = image_tag "participate_in_discussion.png", :alt => "Click to join or start a discussion about #{@option.reference}"
   
-          
+  - else
+    .take_stand
+      .button
+        %a.take_stand3.add_qtip{ :href => new_option_position_path(@option, @position), :title => "Click to use the Living Voters Guide to collect your thoughts and make your voice heard on #{@option.designator}"}
+          = image_tag "take_stand_large.png", :alt => "Help write the Living Voters Guide by taking a stance and writing a pro/con list on #{@option.designator}"
+
+ 
+:javascript
+  $j('.initiative_item').each(function(){
+    var initiative_id = $j(this).attr('id').substring(16);
+    
+    if (initiative_id == #{@option.id}){
+      $j(this).addClass('active');
+      $j(this).children('a').addClass('active');
+    }
+  });
   
-    %li.step#print_summary    
-      .head
-        %span.ol_number
-          1.      
-        %h3.banner
-          %a.show_print.add_qtip{ :href => "/users/#{@user.id}/stances/#{@option.id}?print=true", :title => "Click for a printer-friendly summary of your position, including your stance and the pro/con list your wrote.", :target => "_blank"} 
-            Print a summary
-          of your position. And share it 
-          %span.facebook.share
-            %a.fb_share{ :name => "fb_share", :type => "button", :class => "share facebook", :share_url => "#{root_url}users/#{@user.id}/stances/#{@option.id}", :href => "http://www.facebook.com/sharer.php", :target => "_blank"}
-              Facebook
-          %span.twitter.share
-            -# %a.twitter_share{ :href => "http://twitter.com/share?url=#{root_url}users/#{@user.id}/stances/#{@option.id}&text=#{render :partial => "stances/tweet"}", :class => "share twitter twitter-share-button", :"data-count" => "none" }
-              Tweet
-            
-  
-    -# = render :partial => "initiatives/view_breakdown", :locals => { :number => true }
-
-    %li.step.discuss
-      .head
-        %span.ol_number
-          3.      
-        %h3.banner
-          Discuss #{@option.designator}.
-          
-        .extra
-      .discussion
-        -# = render :partial => "comments/discussion_threads"
-        
-    %li.step.more_measures.update
-      .head
-        %span.ol_number
-          4.      
-        %h3.banner
-          -# = link_to "Update your stance on #{@option.designator}.", {:controller => "position", :action => "update", :id => @initiative}, :class => "add_qtip", :title => "Click here to change your stance and update your pro/con list."
-          
-        .extra
-          Go back anytime to update your pro/con list or change your stance
-            
-    %li.step.more_measures
-      .head
-        %span.ol_number
-          5.      
-        %h3.banner
-          Take a stand on other measures.
-          
-        .extra
-      .initiatives
-        #initiatives{ :name => "initiatives" }              
-          %ul.initiative_list
-            - get_initiatives.each do |option|
-              = render :partial => "options/block/medium", :locals => { :option => @option, :show_full_text => false }
-          
-            %li.clear  
-    %li.clear   
-    %li.full_discussion  
-      -# = render :partial => "comments/discussion"
-      
--# :javascript
-  set_comment_reply_toggle_events();   
-
-= javascript_include_tag "http://static.ak.fbcdn.net/connect.php/js/FB.Share"              
-= javascript_include_tag "http://platform.twitter.com/widgets.js"
-
-      

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110418231948) do
+ActiveRecord::Schema.define(:version => 20110419062534) do
 
   create_table "options", :force => true do |t|
     t.string   "designator"
@@ -23,6 +23,34 @@ ActiveRecord::Schema.define(:version => 20110418231948) do
     t.string   "url"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "point_versions", :force => true do |t|
+    t.integer  "point_id"
+    t.integer  "version"
+    t.integer  "option_id"
+    t.integer  "user_id"
+    t.integer  "session_id"
+    t.text     "nutshell"
+    t.text     "text"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "point_versions", ["point_id"], :name => "index_point_versions_on_point_id"
+
+  create_table "points", :force => true do |t|
+    t.integer  "option_id"
+    t.integer  "user_id"
+    t.integer  "session_id"
+    t.text     "nutshell"
+    t.text     "text"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "version"
+    t.datetime "deleted_at"
   end
 
   create_table "rails_admin_histories", :force => true do |t|

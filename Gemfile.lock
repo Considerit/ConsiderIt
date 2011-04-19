@@ -45,6 +45,8 @@ GEM
       activerecord (~> 3.0)
       activesupport (~> 3.0)
       moretea-awesome_nested_set
+    acts_as_versioned (0.6.0)
+      activerecord (~> 3.0.0.beta4)
     addressable (2.2.5)
     arel (2.0.9)
     bcrypt-ruby (2.1.4)
@@ -112,6 +114,8 @@ GEM
       activesupport (= 3.0.6)
       bundler (~> 1.0)
       railties (= 3.0.6)
+    rails3_acts_as_paranoid (0.0.5)
+      activerecord (>= 3.0)
     railties (3.0.6)
       actionpack (= 3.0.6)
       activesupport (= 3.0.6)
@@ -139,6 +143,7 @@ PLATFORMS
 
 DEPENDENCIES
   acts_as_commentable_with_threading
+  acts_as_versioned
   devise
   haml
   jammit
@@ -147,6 +152,7 @@ DEPENDENCIES
   oa-oauth
   paperclip
   rails (= 3.0.6)
+  rails3_acts_as_paranoid
   rails_admin!
   rmagick
   whenever

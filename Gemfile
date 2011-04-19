@@ -33,7 +33,7 @@ gem 'rmagick'
 gem 'paperclip'
 
 # https://github.com/mislav/will_paginate
-gem 'will_paginate'
+gem 'will_paginate', '3.0.pre'
 
 # https://github.com/javan/whenever
 gem 'whenever'

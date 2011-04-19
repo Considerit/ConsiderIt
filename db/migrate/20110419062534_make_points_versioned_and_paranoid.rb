@@ -1,7 +1,7 @@
-class MadePointsVersionedAndParanoid < ActiveRecord::Migration
+class MakePointsVersionedAndParanoid < ActiveRecord::Migration
   def self.up
-    Point.create_versioned_table
     add_column :points, :deleted_at, :timestamp
+    Point.create_versioned_table
   end
 
   def self.down

@@ -10,7 +10,36 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110419062534) do
+ActiveRecord::Schema.define(:version => 20110419161341) do
+
+  create_table "inclusion_versions", :force => true do |t|
+    t.integer  "inclusion_id"
+    t.integer  "version"
+    t.integer  "option_id"
+    t.integer  "position_id"
+    t.integer  "point_id"
+    t.integer  "user_id"
+    t.integer  "session_id"
+    t.boolean  "included_as_pro"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
+  end
+
+  add_index "inclusion_versions", ["inclusion_id"], :name => "index_inclusion_versions_on_inclusion_id"
+
+  create_table "inclusions", :force => true do |t|
+    t.integer  "option_id"
+    t.integer  "position_id"
+    t.integer  "point_id"
+    t.integer  "user_id"
+    t.integer  "session_id"
+    t.boolean  "included_as_pro"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
+    t.integer  "version"
+  end
 
   create_table "options", :force => true do |t|
     t.string   "designator"
@@ -18,7 +47,6 @@ ActiveRecord::Schema.define(:version => 20110419062534) do
     t.string   "name"
     t.string   "short_name"
     t.text     "description"
-    t.text     "short_description"
     t.string   "image"
     t.string   "url"
     t.datetime "created_at"
@@ -29,28 +57,60 @@ ActiveRecord::Schema.define(:version => 20110419062534) do
     t.integer  "point_id"
     t.integer  "version"
     t.integer  "option_id"
+    t.integer  "position_id"
     t.integer  "user_id"
     t.integer  "session_id"
     t.text     "nutshell"
     t.text     "text"
-    t.integer  "position"
+    t.boolean  "is_pro"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
   end
 
   add_index "point_versions", ["point_id"], :name => "index_point_versions_on_point_id"
 
   create_table "points", :force => true do |t|
     t.integer  "option_id"
+    t.integer  "position_id"
     t.integer  "user_id"
     t.integer  "session_id"
     t.text     "nutshell"
     t.text     "text"
-    t.integer  "position"
+    t.boolean  "is_pro"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "version"
     t.datetime "deleted_at"
+    t.integer  "version"
+  end
+
+  create_table "position_versions", :force => true do |t|
+    t.integer  "position_id"
+    t.integer  "version"
+    t.integer  "option_id"
+    t.integer  "user_id"
+    t.integer  "session_id"
+    t.text     "explanation"
+    t.float    "stance"
+    t.integer  "stance_bucket"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
+  end
+
+  add_index "position_versions", ["position_id"], :name => "index_position_versions_on_position_id"
+
+  create_table "positions", :force => true do |t|
+    t.integer  "option_id"
+    t.integer  "user_id"
+    t.integer  "session_id"
+    t.text     "explanation"
+    t.float    "stance"
+    t.integer  "stance_bucket"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
+    t.integer  "version"
   end
 
   create_table "rails_admin_histories", :force => true do |t|

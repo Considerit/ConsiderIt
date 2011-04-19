@@ -132,7 +132,7 @@ GEM
     whenever (0.6.7)
       aaronh-chronic (>= 0.3.9)
       activesupport (>= 2.3.4)
-    will_paginate (2.3.15)
+    will_paginate (3.0.pre)
     yaml_db (0.2.0)
     yamler (0.1.0)
     yui-compressor (0.9.6)
@@ -156,6 +156,6 @@ DEPENDENCIES
   rails_admin!
   rmagick
   whenever
-  will_paginate
+  will_paginate (= 3.0.pre)
   yaml_db
   yamler

@@ -1,0 +1,23 @@
+%ul.point_list 
+  - if points
+    - points.each do |point|
+      = render :partial => "options/points/show_on_board", :locals => { :point => point } 
+
+= render :partial => "options/board/pagination", :locals => { :points => points, :is_pro => is_pro }
+
+:javascript
+  $j('li.ranked.point_in_list.#{{true=>'pro',false=>'con'}[is_pro]} a.new_discussion').click( function() {
+    var point_id = $j(this).parents('.point_in_list:first').attr('id').substring(13);
+    var form = $j(this).parents('.discuss').siblings('.discussion');
+    $j(this).hide();
+    form.slideDown();
+  });
+
+  $j('li.ranked.point_in_list.#{{true=>'pro',false=>'con'}[is_pro]} .discussion .cancel').click( function() {
+    var point_id = $j(this).parents('.point_in_list:first').attr('id').substring(13);
+    var form = $j(this).parents('.discussion');
+    form.slideUp();
+    
+    $j(this).parents('.discussion').parent().find('a.new_discussion').show();
+    
+  });  

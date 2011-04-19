@@ -31,8 +31,8 @@ development:
   
   decisions:
     name: 
-      short: state measure
-      full: Washington State 2010 Ballot 
+      short: option
+      full: Option
   
   header: 
     logo: 

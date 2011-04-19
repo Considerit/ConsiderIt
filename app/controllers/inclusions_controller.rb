@@ -1,0 +1,2 @@
+class InclusionsController < ApplicationController
+end

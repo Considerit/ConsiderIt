@@ -1,0 +1,15 @@
+#description
+  %table
+    %tr
+      %td.init_graphic
+        -# = image_tag "placeholder-tax.png", :alt => 'Generic image for Washington State Ballot #{@initiative.designation} #{@initiative.number}'
+      %td.init_text
+        %h1.initiative_name
+          #{@option.name}
+          
+        %ul
+          - for i in @option.format_description
+            %li.initiative_desc_point= h i
+        
+        #full_desc_block
+          =link_to "Read full text of Ballot #{@option.reference} (PDF)", @option.url, :title => "Read full description of #{@option.reference}"

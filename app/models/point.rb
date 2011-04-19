@@ -5,5 +5,8 @@ class Point < ActiveRecord::Base
   has_many :inclusions
   
   acts_as_paranoid_versioned
+  
+  cattr_reader :per_page
+  @@per_page = 4  
 
 end

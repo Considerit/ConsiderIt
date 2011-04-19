@@ -7,7 +7,7 @@ class CreatePoints < ActiveRecord::Migration
       t.integer :session_id
       t.text :nutshell
       t.text :text
-      t.integer :position
+      t.boolean :is_pro
 
       t.timestamps
       

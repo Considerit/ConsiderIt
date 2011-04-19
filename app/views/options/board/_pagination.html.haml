@@ -1,0 +1,18 @@
+- if points && points.length > 0 && points.respond_to?(:previous_page)
+  .paginate
+  
+    %table
+      %td.arrow
+        - if points.previous_page
+          %a.prev.paginate_ranked{ :onclick => "paginate_ranked_list(false, #{is_pro}, #{@page}, '#{@bucket}', #{@option.id})"}
+            = image_tag "arrow-prev.png", :alt => "Get previous key points"  
+      %td.text
+        = points.offset + 1
+        \- 
+        = [points.offset + points.per_page, points.total_entries].min
+        of     
+        = points.total_entries
+      %td.arrow
+        - if points.next_page
+          %a.next.paginate_ranked{ :onclick => "paginate_ranked_list(true, #{is_pro}, #{@page}, '#{@bucket}', #{@option.id})"}
+            = image_tag "arrow-next.png", :alt => "Get next key points"

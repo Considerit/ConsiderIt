@@ -1,7 +1,7 @@
 class MakePositionsVersionedAndParanoid < ActiveRecord::Migration
   def self.up
-    Position.create_versioned_table
     add_column :positions, :deleted_at, :timestamp
+    Position.create_versioned_table
     
   end
 

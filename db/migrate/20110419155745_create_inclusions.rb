@@ -6,6 +6,7 @@ class CreateInclusions < ActiveRecord::Migration
       t.integer :point_id
       t.integer :user_id
       t.integer :session_id
+      t.boolean :included_as_pro
 
       t.timestamps
     end

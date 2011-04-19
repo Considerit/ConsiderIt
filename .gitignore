@@ -4,3 +4,7 @@ log/*.log
 tmp/
 config/database.yml
 config/environment_custom.rb
+*~
+*.lock
+.project
+.svn

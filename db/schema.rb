@@ -10,7 +10,20 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110418051201) do
+ActiveRecord::Schema.define(:version => 20110418231948) do
+
+  create_table "options", :force => true do |t|
+    t.string   "designator"
+    t.string   "category"
+    t.string   "name"
+    t.string   "short_name"
+    t.text     "description"
+    t.text     "short_description"
+    t.string   "image"
+    t.string   "url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "rails_admin_histories", :force => true do |t|
     t.string   "message"

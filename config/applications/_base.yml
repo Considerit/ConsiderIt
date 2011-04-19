@@ -1,6 +1,6 @@
 development: 
   app_name: 
-    short: lvg
+    short: _base
     long: Living Voters Guide
   
   meta:

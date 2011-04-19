@@ -1,7 +1,7 @@
 class MakeInclusionsVersionedAndParanoid < ActiveRecord::Migration
   def self.up
-    Inclusion.create_versioned_table
     add_column :inclusions, :deleted_at, :timestamp
+    Inclusion.create_versioned_table
     
   end
 

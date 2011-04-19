@@ -1,0 +1,66 @@
+- if group_name == 'everyone'
+  %h3  
+    Key overall points for #{@option.designator}
+  .extra  
+    Points that are popular and were included in the positions of voters who took different stances.
+
+  .filters
+    %a#show_self.show_group
+      show
+      %span.italic
+        your
+      pros and cons
+
+- elsif group_name == 'self'
+  %h3  
+    Important points for you on #{@option.designator}. 
+  .extra  
+    Click the "Update your stance" button to add to or remove points from your list.
+
+  .filters
+    %a#show_popular.show_group
+      show overall key points
+
+
+- else
+  %h3
+    Key points for those who 
+        
+    %span.group
+      = group_name
+      
+    #{@option.designator}      
+    
+  .filters
+    %a#show_popular.show_group
+      show overall key points
+
+    %a#show_self.show_group
+      show
+      %span.italic
+        your
+      pros and cons
+
+        
+  .extra
+    Points often included in the positions of those who #{group_name} #{@option.reference}.    
+
+.position_container
+   
+
+  .points_self#points_self_pro
+    .points_list_header
+    .inner
+      = render :partial => "options/board/column", :locals => { :points => @pro_points, :is_pro => true }
+  .points_self#points_self_con 
+    .points_list_header
+    .inner
+      = render :partial => "options/board/column", :locals => { :points => @con_points, :is_pro => false }
+      
+
+  .clear 
+
+:javascript
+  $j('a#show_popular').click(function() {stance_group_clicked('all', #{@option.id});});
+  $j('a#show_self').click(function() {stance_group_clicked('self', #{@option.id});});
+

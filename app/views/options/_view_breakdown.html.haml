@@ -1,0 +1,56 @@
+:javascript
+  initiative_stance_data = #{stance_fractions(@option)};
+  initiative_id = #{@option.id};
+  //for IE7 compatability
+  protovis_stance_has_been_rendered = false;
+  
+%li.step.breakdown
+  .head
+    - if number
+      %span.ol_number
+        2.     
+      %h3.banner
+        Discuss the pros and cons of #{@option.designator}.
+      .extra
+        Click the discuss link to join or start a discussion about a point.        
+    - else
+      %h3.banner
+        Explore what other voters think about #{@option.designator}.
+
+      .extra
+        %strong
+          Click on a bar 
+        to see some of the key points that the group believes in.
+  
+  - if @position
+    .you_slider
+      = image_tag "slider_you.png", :class => "add_qtip", :title => "This is where you stand on #{@option.number}. Click 'Update your Position' below if you change your mind."
+    :javascript
+      var slider_you = $j('.you_slider');   
+      slider_you.css('left', 589 + (6 - #{@position.stance_bucket}) * 43 + 'px');
+  - else
+    .you_slider.call
+      %a.add_qtip.take_stand2{ :href => new_option_position_path(@option), :title => "Click to use the Living Voters Guide to collect your thoughts and make your voice heard on #{@option.designator}"}
+        = image_tag "take_stand_small.png", :alt => "Help write the Living Voters Guide by taking a stance and writing a pro/con list on #{@option.designator}"
+  
+  %table.bars
+    %tr
+      %td
+      %td.viz
+        = render :partial => "options/slider_and_viz/stance_histogram"
+      %td
+            
+    %tr.vizbase
+      %td.first
+        .inner
+          Support
+      %td.middle
+        .pedestal
+      %td.last
+        .inner
+          Oppose
+  
+  .explore#ranked_points   
+    = render :partial => "options/board/container", :locals => { :group_name => 'everyone', :group_id => 'all' }
+
+

@@ -9,7 +9,7 @@
       .logo_cell
         %h1#logo
           %a.logo_home{ :href => root_path, :title => ""}
-            = image_tag "#{APP_CONFIG['app_name']['short']}/logo.png"
+            = image_tag "apps/#{APP_CONFIG['app_name']['short']}/logo.png"
             
       #nav-user
         - if user_signed_in?
@@ -25,14 +25,12 @@
             %a
               #{APP_CONFIG['decisions']['name']['short']}s
             &nbsp;
-            /
-              %ul.dropdown
-                -# get_initiatives.each do |initiative|
-                  %li{ :class => "#{has_stance(current_user, initiative)}"}
-                    %a.primary_nav_item{ :href => initiative_path(initiative), :title => "#{APP_CONFIG['decisions']['name']['full']} #{initiative.designation} #{initiative.number}" } 
-                      = initiative.number
-                      \-
-                      = initiative.short_name               
+            %ul.dropdown
+              - get_initiatives.each do |option|
+                %li{ :class => "#{has_stance(current_user, option)}"}
+                  %a.primary_nav_item{ :href => option_path(option), :title => "#{APP_CONFIG['decisions']['name']['full']} #{option.category} #{option.designator}" } 
+                    = option.category
+                    = option.short_name               
           
           -#  %li.middle= link_to 'Community Rules', home_path('rules'), :class => 'rules', :title => "Guidelines for participation"
           

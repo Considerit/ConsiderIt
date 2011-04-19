@@ -7,4 +7,8 @@ class Option < ActiveRecord::Base
     return self.description.split('\n')
   end
   
+  def reference
+    return "#{category} #{designator}"
+  end
+  
 end

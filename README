@@ -1,32 +1,41 @@
-== Welcome to Rails
+== ConsiderIt
 
-Rails is a web-application framework that includes everything needed to create
-database-backed web applications according to the Model-View-Control pattern.
+(this document is only partly fleshed out)
 
-This pattern splits the view (also called the presentation) into "dumb"
-templates that are primarily responsible for inserting pre-built data in between
-HTML tags. The model contains the "smart" domain objects (such as Account,
-Product, Person, Post) that holds all the business logic and knows how to
-persist themselves to a database. The controller handles the incoming requests
-(such as Save New Account, Update Product, Show Post) by manipulating the model
-and directing data to the view.
+ConsiderIt is an open source deliberation platform that allows people to
+collaboratively create pro/con lists of the key points around any complex issue. 
 
-In Rails, the model is handled by what's called an object-relational mapping
-layer entitled Active Record. This layer allows you to present the data from
-database rows as objects and embellish these data objects with business logic
-methods. You can read more about Active Record in
-link:files/vendor/rails/activerecord/README.html.
+ConsiderIt works by drawing on the wisdom of crowds to generate a set of key
+considerations for decision-making: helping organizations identify the pro and con 
+points that matter most to their users, readers or constituents. 
 
-The controller and view are handled by the Action Pack, which handles both
-layers by its two parts: Action View and Action Controller. These two layers
-are bundled in a single package due to their heavy interdependence. This is
-unlike the relationship between the Active Record and Action Pack that is much
-more separate. Each of these packages can be used independently outside of
-Rails. You can read more about Action Pack in
-link:files/vendor/rails/actionpack/README.html.
+ConsiderIt helps individuals make sense of complex issues by letting them create 
+pro/con lists of the key points that matter to them. ConsiderIt makes it easy to 
+endorse points made by others who share your views, or to add new points of your 
+own. 
+
+ConsiderIt also helps create common ground among people with different views. 
+ConsiderIt prioritizes the pro and con points that are endorsed by people from 
+across the decision spectrum, decreasing polarization and helping decision-makers 
+move towards solutions with broad appeal.
+
+ConsiderIt is open source, a Ruby on Rails project. It is licensed under the AGPL.
 
 
 == Getting Started
+
+manage ruby / rails installs with RVM: https://rvm.beginrescueend.com/gemsets/
+  - good mac install directions at http://www.cowboycoded.com/2010/12/04/setting-up-rails-3-on-mac-osx-snow-leopard-10-6-4/
+
+repository / deployment
+- when creating app on heroku, specify 1.9.2 stack: http://devcenter.heroku.com/articles/stack
+- you can have multiple remote sites for git, such as github and heroku: http://devcenter.heroku.com/articles/git
+
+for installing mysql gem:
+  - sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/usr/local/mysql/bin/mysql_config
+  - OR with MAMP: sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/Applications/MAMP/Library/bin/mysql_config
+
+accessing MAMP mysql via terminal: mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
 
 1. At the command prompt, create a new Rails application:
        <tt>rails new myapp</tt> (where <tt>myapp</tt> is the application name)
@@ -43,113 +52,6 @@ the following resources handy:
 * The Getting Started Guide: http://guides.rubyonrails.org/getting_started.html
 * Ruby on Rails Tutorial Book: http://www.railstutorial.org/
 
-
-== Debugging Rails
-
-Sometimes your application goes wrong. Fortunately there are a lot of tools that
-will help you debug it and get it back on the rails.
-
-First area to check is the application log files. Have "tail -f" commands
-running on the server.log and development.log. Rails will automatically display
-debugging and runtime information to these files. Debugging info will also be
-shown in the browser on requests from 127.0.0.1.
-
-You can also log your own messages directly into the log file from your code
-using the Ruby logger class from inside your controllers. Example:
-
-  class WeblogController < ActionController::Base
-    def destroy
-      @weblog = Weblog.find(params[:id])
-      @weblog.destroy
-      logger.info("#{Time.now} Destroyed Weblog ID ##{@weblog.id}!")
-    end
-  end
-
-The result will be a message in your log file along the lines of:
-
-  Mon Oct 08 14:22:29 +1000 2007 Destroyed Weblog ID #1!
-
-More information on how to use the logger is at http://www.ruby-doc.org/core/
-
-Also, Ruby documentation can be found at http://www.ruby-lang.org/. There are
-several books available online as well:
-
-* Programming Ruby: http://www.ruby-doc.org/docs/ProgrammingRuby/ (Pickaxe)
-* Learn to Program: http://pine.fm/LearnToProgram/ (a beginners guide)
-
-These two books will bring you up to speed on the Ruby language and also on
-programming in general.
-
-
-== Debugger
-
-Debugger support is available through the debugger command when you start your
-Mongrel or WEBrick server with --debugger. This means that you can break out of
-execution at any point in the code, investigate and change the model, and then,
-resume execution! You need to install ruby-debug to run the server in debugging
-mode. With gems, use <tt>sudo gem install ruby-debug</tt>. Example:
-
-  class WeblogController < ActionController::Base
-    def index
-      @posts = Post.find(:all)
-      debugger
-    end
-  end
-
-So the controller will accept the action, run the first line, then present you
-with a IRB prompt in the server window. Here you can do things like:
-
-  >> @posts.inspect
-  => "[#<Post:0x14a6be8
-          @attributes={"title"=>nil, "body"=>nil, "id"=>"1"}>,
-       #<Post:0x14a6620
-          @attributes={"title"=>"Rails", "body"=>"Only ten..", "id"=>"2"}>]"
-  >> @posts.first.title = "hello from a debugger"
-  => "hello from a debugger"
-
-...and even better, you can examine how your runtime objects actually work:
-
-  >> f = @posts.first
-  => #<Post:0x13630c4 @attributes={"title"=>nil, "body"=>nil, "id"=>"1"}>
-  >> f.
-  Display all 152 possibilities? (y or n)
-
-Finally, when you're ready to resume execution, you can enter "cont".
-
-
-== Console
-
-The console is a Ruby shell, which allows you to interact with your
-application's domain model. Here you'll have all parts of the application
-configured, just like it is when the application is running. You can inspect
-domain models, change values, and save to the database. Starting the script
-without arguments will launch it in the development environment.
-
-To start the console, run <tt>rails console</tt> from the application
-directory.
-
-Options:
-
-* Passing the <tt>-s, --sandbox</tt> argument will rollback any modifications
-  made to the database.
-* Passing an environment name as an argument will load the corresponding
-  environment. Example: <tt>rails console production</tt>.
-
-To reload your controllers and models after launching the console run
-<tt>reload!</tt>
-
-More information about irb can be found at:
-link:http://www.rubycentral.com/pickaxe/irb.html
-
-
-== dbconsole
-
-You can go to the command line of your database directly through <tt>rails
-dbconsole</tt>. You would be connected to the database with the credentials
-defined in database.yml. Starting the script without arguments will connect you
-to the development database. Passing an argument will connect you to a different
-database, like <tt>rails dbconsole production</tt>. Currently works for MySQL,
-PostgreSQL and SQLite 3.
 
 == Description of Contents
 

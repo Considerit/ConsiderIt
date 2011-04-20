@@ -460,11 +460,11 @@ function add_tips(sel){
   }
 }
 
-function stance_group_clicked(bucket, initiative_id) {
+function stance_group_clicked(bucket, option_id) {
   if ( bucket == 'all' ) group_name = 'everyone';
   else group_name = stance_name(bucket);
 
-  $j.get("/points", { initiative_id: initiative_id, bucket: bucket },
+  $j.get("/points", { option_id: option_id, bucket: bucket },
     function(data){
       $j('#ranked_points').html(data);
       add_tips('#ranked_points');

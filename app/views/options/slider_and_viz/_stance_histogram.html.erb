@@ -7,7 +7,7 @@
   }
   
   function get_scaler(){
-    return Math.max(1, Math.max.apply( Math, initiative_stance_data ));
+    return Math.max(1, Math.max.apply( Math, option_stance_data ));
   }
   
   function get_bar_width(){
@@ -15,7 +15,7 @@
   }
     
 	// protovis_stance_has_been_rendered is for IE hack
-  if ( initiative_stance_data && ( typeof(protovis_stance_has_been_rendered) == "undefined" || protovis_stance_has_been_rendered == false) ) {
+  if ( option_stance_data && ( typeof(protovis_stance_has_been_rendered) == "undefined" || protovis_stance_has_been_rendered == false) ) {
     //var colors = pv.colors("#AAA", "#999", "#777", 
     //      "#555", "#777", "#999", "#AAA").range();
     var colors = pv.colors("#6e577a", "#685977", "#5f5c73", 
@@ -29,7 +29,7 @@
 		
     var bar = vis
 		  .add(pv.Bar)
-        .data(initiative_stance_data) //counts
+        .data(option_stance_data) //counts
         .def("i", -1)
         .width( function() get_bar_width() - 5)
         .left( function() (6 - this.index) * get_bar_width() + 10)
@@ -39,7 +39,7 @@
         .event("mouseover", function() this.i(this.index))
         .event("mouseout", function() this.i(-1))
         .event("click", function(){
-          stance_group_clicked(this.index, initiative_id);
+          stance_group_clicked(this.index, option_id);
           try{log_general(this.parent.$canvas[0], 'click', 'view breakdown ' + this.index, true);}
           catch(err){}
         });

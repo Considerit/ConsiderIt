@@ -5,12 +5,13 @@ class InclusionsController < ApplicationController
     @option = Option.find(params[:option_id])
     @point = Point.find(params[:point_id])
     @user = current_user 
-    
-    params[:inclusion][:user_id] = @user.id
-    params[:inclusion][:point_id] = @point.id
-    params[:inclusion][:option_id] = @option.id       
-    @inclusion = Inclusion.create!( params[:inclusion] )
 
+    #TODO: deal with session id, position id    
+    params[:inclusion].update({ 
+      :user_id => @user.id
+    })
+    
+    @inclusion = Inclusion.create!( params[:inclusion] )
     #@point.inclusions -= 1
     
     #TODO: fetch next point & return it!        

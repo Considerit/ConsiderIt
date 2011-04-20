@@ -17,8 +17,8 @@
 
   - if @position
     .take_stand
-      %a.update_stance2.add_qtip{ :href => update_option_position_path(@option, @position), :title => "Click here to change your stance and update your pro/con list."}
-        = image_tag "update_position.png", :alt => "Click to update your stance on #{@options.reference}"
+      %a.update_stance2.add_qtip{ :href => edit_option_position_path(@option, @position), :title => "Click here to change your stance and update your pro/con list."}
+        = image_tag "update_position.png", :alt => "Click to update your stance on #{@option.reference}"
     .take_stand
       %a.join_discussion2.add_qtip{ :href => "#discussion_threads", :title => "Join or start a discussion about #{@option.reference}."}
         = image_tag "participate_in_discussion.png", :alt => "Click to join or start a discussion about #{@option.reference}"

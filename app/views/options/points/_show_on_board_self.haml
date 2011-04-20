@@ -1,0 +1,45 @@
+%li.point_in_list_self.point_in_list{ :id => "point_in_list_self-#{point.id}", :class => { false => 'con', true => 'pro'}[point.is_pro] }
+  %table
+    %tr
+
+      - if point.is_pro && !static
+        %td.dismiss_point.left
+          .dismiss.left
+            -# = render :partial => "judgements/render_judgement", :locals => { :point => point, :judgement => 0, :is_from_other_list => 0 }
+
+      %td.body      
+        .username
+          by
+          = h point.user.username
+                      
+        .point_text.nutshell 
+          - if point.nutshell.length > 0
+            = h point.nutshell
+          - else
+            = h point.text[0,137]
+            - if point.text.length > 137
+              \...
+
+        .point_text.full
+          = h point.text
+          
+        - if point.text and point.text.length > 0
+          .read_more
+            %a.toggle.more.point_text_toggle
+              read more
+            %a.toggle.less.hide.point_text_toggle
+              hide rest
+  
+          :javascript
+            set_more_less_text_toggle("#point_in_list_self-#{point.id}", #{point.id}, #{@option.id});
+
+      - if !point.is_pro && !static
+        %td.dismiss_point.right
+          .dismiss.right
+            -# = render :partial => "judgements/render_judgement", :locals => { :point => point, :judgement => 0, :is_from_other_list => 0 }
+  
+  :javascript
+    $j("#point_in_list_self-#{point.id}").hover( 
+      function(){ $j(this).find('td.dismiss_point .judge_point').fadeIn();},
+      function(){ $j(this).find('td.dismiss_point .judge_point').fadeOut();}
+    );

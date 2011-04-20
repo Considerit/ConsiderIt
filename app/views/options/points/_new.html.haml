@@ -8,8 +8,8 @@
           
   .newpointform{ :id => "newpointform-#{is_pro}"}
     -# = render :partial => "shared/model_errors", :locals => { :obj => :point }
-    - form_for Point.new(:option => @option), :url => option_points_path(@option), :remote => true, :update => 'submit-point',  :has_example_text => true, :success => "considerit.add_new(request, '#{sel}')" do |f|
-      =f.hidden_field :position, :id => "point-current-is_pro", :value=>is_pro
+    - form_for Point.new(:option => @option), :url => option_points_path(@option), :remote => true do |f|
+      =f.hidden_field :is_pro, :id => "point-current-is_pro", :value=>is_pro
       =f.hidden_field :option_id, :id => "point-current-initiative", :value=>@option.id
       =f.hidden_field :user_id, :id => "point-current-user", :value=>@user.id
       
@@ -34,7 +34,10 @@
           cancel
       .clear
         
-  :javascript
-    var form_sel = '#newpointform-#{is_pro}';
-    set_noble_count_for_new_point(form_sel);
+:javascript
+  var form_sel = '#newpointform-#{is_pro}';
+  set_noble_count_for_new_point(form_sel);
+  $j(form_sel).bind('ajax:success', function(data, status, xhr){
+    considerit.add_new(status, '#{sel}');
+  });
     

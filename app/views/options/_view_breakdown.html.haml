@@ -1,6 +1,6 @@
 :javascript
-  initiative_stance_data = #{stance_fractions(@option)};
-  initiative_id = #{@option.id};
+  option_stance_data = #{stance_fractions(@option)};
+  option_id = #{@option.id};
   //for IE7 compatability
   protovis_stance_has_been_rendered = false;
   
@@ -24,7 +24,7 @@
   
   - if @position
     .you_slider
-      = image_tag "slider_you.png", :class => "add_qtip", :title => "This is where you stand on #{@option.number}. Click 'Update your Position' below if you change your mind."
+      = image_tag "slider_you.png", :class => "add_qtip", :title => "This is where you stand on #{@option.designator}. Click 'Update your Position' below if you change your mind."
     :javascript
       var slider_you = $j('.you_slider');   
       slider_you.css('left', 589 + (6 - #{@position.stance_bucket}) * 43 + 'px');

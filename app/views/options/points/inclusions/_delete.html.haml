@@ -1,0 +1,10 @@
+- if @user
+  .judgepointform{ :id => "judgepointform_#{point.id}" }
+    - form_for :inclusion, :remote => true, :url => option_point_inclusion_path(@option, point, @inclusion), :html => { :method => :delete } do |f|      
+        %input{:class => 'judge_point dismiss no_qtip', :type => 'submit', :value => '', :name => "judge", :title => 'Click to remove this point from your list'}
+          
+:javascript
+  $j("#judgepointform_#{point.id}").bind('ajax:success', function(data, status, xhr){
+    callback_judge_point_success(status, #{point.id}, 0, #{is_from_other_list})
+  });
+  

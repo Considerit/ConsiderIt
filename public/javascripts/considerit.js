@@ -2,9 +2,9 @@
 
 $j = jQuery.noConflict();
 
-function callback_refresh_points_in_list(request, list_sel, is_next) {
+function callback_refresh_points_in_list(response_text, list_sel, is_next) {
   var parent = $j(list_sel + ' .point_list'),
-      jsoned = request.responseText.evalJSON(),
+      jsoned = $j.parseJSON(response_text),
       new_block = $j(jsoned['html']);
 			
   new_block.each(function(){
@@ -22,11 +22,11 @@ function callback_refresh_points_in_list(request, list_sel, is_next) {
   update_list_counts(parent, 0, jsoned['pagination'] );
 }
 
-function callback_judge_point_success(request, point_id, judgement, is_from_other_list) {
+function callback_judge_point_success(response_text, point_id, judgement, is_from_other_list) {
 
     if ( is_from_other_list == 1 ) {
       var old_point = $j('#point_in_list_other-' + point_id),
-          jsoned = request.responseText.evalJSON(),
+          jsoned = $j.parseJSON(response_text),
           new_point = jsoned['new_point'];
 
       if ( old_point.hasClass('pro') ) {
@@ -57,7 +57,7 @@ function callback_judge_point_success(request, point_id, judgement, is_from_othe
     }
     else {
       var old_point = $j('#point_in_list_self-' + point_id),
-          jsoned = request.responseText.evalJSON(),
+          jsoned = $j.parseJSON(response_text),
           new_point = jsoned['new_point'];    
             
       if ( old_point.hasClass('pro') ) {
@@ -274,8 +274,8 @@ function set_noble_count_for_comment(form_sel){
 
 
 considerit = {
-  add_new : function( request, sel ) {
-    $j(sel + ' .point_list').append(request.responseText);
+  add_new : function( response_text, sel ) {
+    $j(sel + ' .point_list').append(response_text);
 		$j(sel + ' .newpointform textarea').val('');
 		$j(sel + ' .newpointform .point-title-group .count').html(140);
     $j(sel + ' .newpointform .point-description-group .count').html(500);
@@ -400,8 +400,8 @@ function stance_name(d) {
   }
 }
 
-function callback_add_comment_success(request, parent_id, grounded_in_point){
-  var response = request.responseText.evalJSON();
+function callback_add_comment_success(response_text, parent_id, grounded_in_point){
+  var response = $j.parseJSON(response_text);
 	
   var new_point = response['new_point']; 
 	

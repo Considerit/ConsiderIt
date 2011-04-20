@@ -1,0 +1,47 @@
+
+/
+  %h3.other
+    - if is_pro
+      Pros
+    - else
+      Cons
+    %span.subheader
+      by others
+
+
+%ul.point_list_footer
+
+  %li.refresh.prev
+    .next
+      -# if !complete_list_showing( @option, position )
+        -# if is_pro
+          -# =link_to_remote image_tag('arrow-up.png'), :class => "add_qtip", :url => { :action => "refreshpointlist", :id => @initiative.id, :position => position, :next => 0 }, :success => "callback_refresh_points_in_list(request, \"#points_other_pro\", 0)", :method => :post, :title => 'Load previous pros'
+          
+        -# else
+          -# =link_to_remote image_tag('arrow-up.png'), :class => "add_qtip", :url => { :action => "refreshpointlist", :id => @initiative.id, :position => position, :next => 0 }, :success => "callback_refresh_points_in_list(request, \"#points_other_con\", 0)", :method => :post, :title => 'Load previous cons'
+    .total
+      = total_count(@option, is_pro)
+  
+%ul.point_list
+
+  - if is_pro
+    - @pro_points.each do |point|
+      = render :partial => "options/points/show_in_margin", :locals => { :point => point }  
+  - else
+    - @con_points.each do |point|
+      = render :partial => "options/points/show_in_margin", :locals => { :point => point }
+  
+%ul.point_list_footer
+
+  %li.refresh.next
+    .total
+      = total_count(@option, is_pro)
+    .arrow
+      -# if !complete_list_showing( @initiative, position )        
+        -# if is_pro
+          -# =link_to_remote image_tag('arrow-down.png'), :class => "add_qtip", :url => { :action => "refreshpointlist", :id => @initiative.id, :position => position, :next => 1 }, :success => "callback_refresh_points_in_list(request, \"#points_other_pro\", 1)", :method => :post, :title => 'Load next pros'
+        -# else
+          -# =link_to_remote image_tag('arrow-down.png'), :class => "add_qtip", :url => { :action => "refreshpointlist", :id => @initiative.id, :position => position, :next => 1 }, :success => "callback_refresh_points_in_list(request, \"#points_other_con\", 1)", :method => :post, :title => 'Load next cons'
+
+
+  %li.clear

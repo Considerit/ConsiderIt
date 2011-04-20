@@ -1,0 +1,139 @@
+:javascript
+  $j(document).ready(function(){
+    initialize_sliders(#{-1 * @position.stance}, '#{@option.short_name}', #{@option.id});
+  });
+
+#initiative.edit
+  = render :partial => "options/description/full"
+  
+  %ol#step_through
+    %li.gut.step.slide
+      .head
+        %span.ol_number
+          1.      
+        %h3.banner
+          What's your current opinion of #{@option.reference}?
+        .extra
+          Click and drag the slider to indicate whether you support or oppose this measure
+      
+      .rest.position
+        = render :partial => "options/slider_and_viz/slider", :locals => { :id => 1, :viz_stance => false }
+      
+    %li#stance.step   
+      .head
+        %span.ol_number
+          2.   
+        %h3.banner
+          Collect your thoughts on&nbsp; 
+          %span>= @option.designator
+          \, one point at a time.
+        .extra
+          Add your own points, optionally including points by other voters by 
+          %strong
+            clicking the arrows.
+        
+      .rest         
+        %table#points 
+          %tr
+
+            %td.points_other#points_other_pro
+              = render :partial => "options/board/margin", :locals => { :is_pro => true }
+            
+            %td.user_position
+              .position_container
+                - if user_signed_in?
+                  
+                  .points_self#points_self_pro
+                    .points_list_header
+                    = render :partial => "options/board/column_self", :locals => { :position => 1, :points => @user.supporting_points(@option), :static => false }
+                    = render :partial => "options/points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_self_pro' }
+
+                  .points_self#points_self_con 
+                    .points_list_header
+                    = render :partial => "options/board/column_self", :locals => { :position => 0, :points => @user.opposing_points(@option), :static => false }
+                    = render :partial => "options/points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_self_pro' }
+                                        
+                  .clear
+                - else
+
+                  .points_self#points_self_pro
+                    .points_list_header
+                
+                  .points_self#points_self_con 
+                    .points_list_header
+                  
+                  .clear
+                    
+                  .must_be_logged_in 
+                    .contribute
+                      to contribute
+                    .login_or_create
+                      .login
+                        %a
+                      .create
+                        \...or
+                        %a
+                          create an account
+                    .fb_login
+                      -# = render :partial => "users/facebook_registration"
+                    .clear
+                      
+                    .why.hide
+                      %a
+                        Why should I?
+                      %ul.hide
+                        %li
+                          %strong 
+                            Share 
+                          your opinion with others.
+                        %li
+                          %strong
+                            Explore 
+                          the stances that other voters have taken.
+                        %li
+                          %strong
+                            Discuss 
+                          the initiative with others.
+                        %li 
+                          Be more 
+                          %strong
+                            informed 
+                          when you vote.
+                                                    
+
+
+            %td.points_other#points_other_con
+              = render :partial => "options/board/margin", :locals => { :is_pro => false }
+  
+    %li.stance.update_stance.step.slide
+      .head
+        %span.ol_number
+          3.     
+
+        %h3.banner
+          Update your stance, if it has changed.
+        .extra
+          Click and drag the slider to update your stance on this initiative
+    
+      .rest.position
+        = render :partial => "options/slider_and_viz/slider", :locals => { :id => 2, :viz_stance => false }
+      
+    %li#submitstance.step
+      .rest
+                
+        - if @user
+          
+          .stanceform
+
+            -# = render :partial => "stances/new", :locals => { :stance => nil }
+            .stance_status              
+              Don't worry, you can change your list and stance later. 
+              
+        - else
+          %span 
+            .stanceform
+              .stance_status
+                %strong
+                  You must be logged in to take your stance!    
+            
+    

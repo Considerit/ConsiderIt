@@ -51,7 +51,7 @@
                   .points_self#points_self_con 
                     .points_list_header
                     = render :partial => "options/board/column_self", :locals => { :position => 0, :points => @user.opposing_points(@option), :static => false }
-                    = render :partial => "options/points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_self_pro' }
+                    = render :partial => "options/points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_self_con' }
                                         
                   .clear
                 - else

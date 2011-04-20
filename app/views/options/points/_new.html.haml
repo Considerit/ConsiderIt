@@ -1,0 +1,40 @@
+.newpoint
+  .newpointbutton
+  
+    - if is_pro
+      %button.pro.write_new{ :onclick => "considerit.newpointbuttonclicked('#{sel}')", :title => "Click to write your own pro point." }
+    - else
+      %button.con.write_new{ :onclick => "considerit.newpointbuttonclicked('#{sel}')", :title => "Click to write your own con point." }
+          
+  .newpointform{ :id => "newpointform-#{is_pro}"}
+    -# = render :partial => "shared/model_errors", :locals => { :obj => :point }
+    - form_for Point.new(:option => @option), :url => option_points_path(@option), :remote => true, :update => 'submit-point',  :has_example_text => true, :success => "considerit.add_new(request, '#{sel}')" do |f|
+      =f.hidden_field :position, :id => "point-current-is_pro", :value=>is_pro
+      =f.hidden_field :option_id, :id => "point-current-initiative", :value=>@option.id
+      =f.hidden_field :user_id, :id => "point-current-user", :value=>@user.id
+      
+      .point-title-group.form-group.inline.text_group
+        = f.text_area :nutshell, :example => '(required) Your point in 140 characters or less...', :class => "input-text point-title"
+        .count
+          140
+      
+      .point-description-group.form-group.inline.text_group
+        = f.text_area :text, :example => "(optional) A fuller description of the point in 500 characters or less...", :class => "input-textarea point-description", :rows => "7"
+        .count
+          500
+      
+      %p.note>
+        %strong.alert<>
+          Please keep it constructive!
+      .point-submit
+        = submit_tag 'Add point', :class => "submit_new_point #{{true => 'pro', false => 'con'}[is_pro]}"
+        
+      .point-cancel
+        %a.new_point_cancel{ :onclick => "considerit.cancelnewpointbuttonclicked('#{sel}')" }
+          cancel
+      .clear
+        
+  :javascript
+    var form_sel = '#newpointform-#{is_pro}';
+    set_noble_count_for_new_point(form_sel);
+    

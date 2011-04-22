@@ -7,8 +7,8 @@ class PositionsController < ApplicationController
     @position = Position.new( :stance => 0.0)
 
     #TODO: exclude points already included by users...    
-    @pro_points = Point.where(:is_pro => true, :option_id => @option.id)
-    @con_points = Point.where(:is_pro => false, :option_id => @option.id)
+    @pro_points = Point.where(:is_pro => true, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
+    @con_points = Point.where(:is_pro => false, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
 
     @user = current_user
   end
@@ -43,8 +43,8 @@ class PositionsController < ApplicationController
     @position = Position.find( params[:id] )
 
     #TODO: exclude points already included by users...    
-    @pro_points = Point.where(:is_pro => true, :option_id => @option.id)
-    @con_points = Point.where(:is_pro => false, :option_id => @option.id)
+    @pro_points = Point.where(:is_pro => true, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
+    @con_points = Point.where(:is_pro => false, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
 
     @user = current_user    
   end

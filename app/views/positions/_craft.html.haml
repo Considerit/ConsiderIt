@@ -37,7 +37,7 @@
           %tr
 
             %td.points_other#points_other_pro
-              = render :partial => "points/column/margin", :locals => { :is_pro => true }
+              = render :partial => "points/column/margin", :locals => { :is_pro => true, :points => @pro_points }
             
             %td.user_position
               .position_container
@@ -45,12 +45,12 @@
                   
                   .points_self#points_self_pro
                     .points_list_header
-                    = render :partial => "points/column/self", :locals => { :position => 1, :points => @user.supporting_points(@option), :static => false }
+                    = render :partial => "points/column/user", :locals => { :position => 1, :points => @user.supporting_points(@option), :static => false }
                     = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_self_pro' }
 
                   .points_self#points_self_con 
                     .points_list_header
-                    = render :partial => "points/column/self", :locals => { :position => 0, :points => @user.opposing_points(@option), :static => false }
+                    = render :partial => "points/column/user", :locals => { :position => 0, :points => @user.opposing_points(@option), :static => false }
                     = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_self_con' }
                                         
                   .clear
@@ -103,7 +103,7 @@
 
 
             %td.points_other#points_other_con
-              = render :partial => "points/column/margin", :locals => { :is_pro => false }
+              = render :partial => "points/column/margin", :locals => { :is_pro => false, :points => @con_points }
   
     %li.stance.update_stance.step.slide
       .head

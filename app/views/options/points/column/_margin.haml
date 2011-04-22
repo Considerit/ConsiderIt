@@ -26,11 +26,11 @@
 
   - if is_pro
     - @pro_points.each do |point|
-      = render :partial => "options/points/show_in_margin", :locals => { :point => point }  
+      = render :partial => "points/show_in_margin", :locals => { :point => point }  
   - else
     - @con_points.each do |point|
-      = render :partial => "options/points/show_in_margin", :locals => { :point => point }
-  
+      = render :partial => "points/show_in_margin", :locals => { :point => point }
+ 
 %ul.point_list_footer
 
   %li.refresh.next

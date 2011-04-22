@@ -464,19 +464,19 @@ function stance_group_clicked(bucket, option_id) {
   if ( bucket == 'all' ) group_name = 'everyone';
   else group_name = stance_name(bucket);
 
-  $j.get("/points", { option_id: option_id, bucket: bucket },
+  $j.get("/options/" + option_id + "/points", { bucket: bucket },
     function(data){
       $j('#ranked_points').html(data);
       add_tips('#ranked_points');
   } );        
 }  
 
-function paginate_ranked_list(next, is_pro, page, bucket, initiative_id) {
+function paginate_ranked_list(next, is_pro, page, bucket, option_id) {
   
   if (!bucket){
     bucket = 'all';
   }
-  var options = { initiative_id: initiative_id, bucket: bucket  };
+  var options = { bucket: bucket  };
   
   if ( is_pro ) {
     options['pros_only'] = true;
@@ -492,7 +492,7 @@ function paginate_ranked_list(next, is_pro, page, bucket, initiative_id) {
     options['page'] = page - 1;
   }
   
-  $j.get("/points", options, function(data){
+  $j.get("/options/" + option_id + "/points", options, function(data){
     $j(sel).html(data);
     add_tips(sel);  
   });        

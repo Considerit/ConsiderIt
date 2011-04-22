@@ -8,5 +8,8 @@ class Point < ActiveRecord::Base
   
   cattr_reader :per_page
   @@per_page = 4  
+  
+  scope :pros, where( :is_pro => true )
+  scope :cons, where( :is_pro => false )
 
 end

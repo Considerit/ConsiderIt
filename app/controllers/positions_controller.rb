@@ -9,6 +9,8 @@ class PositionsController < ApplicationController
     #TODO: exclude points already included by users...    
     @pro_points = Point.where(:is_pro => true, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
     @con_points = Point.where(:is_pro => false, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
+    
+    @page = 1
 
     @user = current_user
   end
@@ -45,7 +47,8 @@ class PositionsController < ApplicationController
     #TODO: exclude points already included by users...    
     @pro_points = Point.where(:is_pro => true, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
     @con_points = Point.where(:is_pro => false, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
-
+    
+    @page = 1
     @user = current_user    
   end
   

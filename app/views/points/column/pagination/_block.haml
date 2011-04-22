@@ -1,0 +1,21 @@
+- if points && points.length > 0 && points.respond_to?(:previous_page)
+  .paginate
+  
+    %table
+      %td.arrow
+        - if points.previous_page
+          = render :partial => "points/column/pagination/link", :locals => { :column_selector => column_selector, :is_pro => is_pro, :target_page => page - 1, :bucket => bucket, :mode => mode, :is_next => false}
+          
+      %td.text
+        = points.offset + 1
+        \- 
+        = [points.offset + points.per_page, points.total_entries].min
+        of     
+        = points.total_entries
+      %td.arrow
+        - if points.next_page
+          = render :partial => "points/column/pagination/link", :locals => { :column_selector => column_selector, :is_pro => is_pro, :target_page => page + 1, :bucket => bucket, :mode => mode, :is_next => true}
+
+
+  
+  

@@ -2,25 +2,6 @@
 
 $j = jQuery.noConflict();
 
-function callback_refresh_points_in_list(response_text, list_sel, is_next) {
-  var parent = $j(list_sel + ' .point_list'),
-      jsoned = $j.parseJSON(response_text),
-      new_block = $j(jsoned['html']);
-			
-  new_block.each(function(){
-		if ($j(this).hasClass('point_in_list')){
-			$j(this).hide();
-		}
-	});
-
-  parent.children('.point_in_list').fadeOut(function(){
-		parent.html(new_block);
-		parent.children('.point_in_list').fadeIn();
-    add_tips(list_sel + ' .point_list');                            		
-	});
-		
-  update_list_counts(parent, 0, jsoned['pagination'] );
-}
 
 function callback_judge_point_success(response_text, point_id, judgement, is_from_other_list) {
 
@@ -498,3 +479,28 @@ function paginate_ranked_list(next, is_pro, page, bucket, option_id) {
     add_tips(sel);  
   });        
 }   
+
+function paginate_point_list_callback(html, column_selector) {
+	$j(column_selector).html(html);
+	add_tips(column_selector);
+}
+
+function callback_refresh_points_in_list(response_text, list_sel, is_next) {
+  var parent = $j(list_sel + ' .point_list'),
+      jsoned = $j.parseJSON(response_text),
+      new_block = $j(jsoned['html']);
+			
+  new_block.each(function(){
+		if ($j(this).hasClass('point_in_list')){
+			$j(this).hide();
+		}
+	});
+
+  parent.children('.point_in_list').fadeOut(function(){
+		parent.html(new_block);
+		parent.children('.point_in_list').fadeIn();
+    add_tips(list_sel + ' .point_list');                            		
+	});
+		
+  update_list_counts(parent, 0, jsoned['pagination'] );
+}

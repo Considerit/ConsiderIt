@@ -79,6 +79,10 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    meta_where (1.0.4)
+      activerecord (~> 3.0.0)
+      activesupport (~> 3.0.0)
+      arel (~> 2.0.7)
     mime-types (1.16)
     moretea-awesome_nested_set (1.4.3.1)
       activerecord (~> 3.0.0)
@@ -164,6 +168,7 @@ DEPENDENCIES
   haml
   jammit
   jquery-rails
+  meta_where
   mysql
   oa-oauth
   paperclip

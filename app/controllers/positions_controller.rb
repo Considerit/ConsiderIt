@@ -6,13 +6,30 @@ class PositionsController < ApplicationController
     
     @position = Position.new( :stance => 0.0)
 
-    #TODO: exclude points already included by users...    
-    @pro_points = Point.where(:is_pro => true, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
-    @con_points = Point.where(:is_pro => false, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
+    @pro_points = @option.points.pros.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
+    @con_points = @option.points.cons.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
+    
+    @included_pros = @option.points.pros.included_by(current_user)
+    @included_cons = @option.points.cons.included_by(current_user)
     
     @page = 1
 
     @user = current_user
+  end
+
+  def edit
+    @option = Option.find(params[:option_id])
+    
+    @position = Position.find( params[:id] )
+
+    @pro_points = @option.points.pros.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
+    @con_points = @option.points.cons.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
+
+    @included_pros = @option.points.pros.included_by(current_user)
+    @included_cons = @option.points.cons.included_by(current_user)
+
+    @page = 1
+    @user = current_user    
   end
   
   def create
@@ -37,19 +54,6 @@ class PositionsController < ApplicationController
       format.html { redirect_to(@option) }
     end   
     
-  end
-  
-  def edit
-    @option = Option.find(params[:option_id])
-    
-    @position = Position.find( params[:id] )
-
-    #TODO: exclude points already included by users...    
-    @pro_points = Point.where(:is_pro => true, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
-    @con_points = Point.where(:is_pro => false, :option_id => @option.id).paginate(:page => 1, :per_page => 4)
-    
-    @page = 1
-    @user = current_user    
   end
   
   def update

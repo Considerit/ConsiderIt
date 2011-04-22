@@ -452,55 +452,8 @@ function stance_group_clicked(bucket, option_id) {
   } );        
 }  
 
-//TODO: replace this with unobtrusive javascript remote call
-function paginate_ranked_list(next, is_pro, page, bucket, option_id) {
-  
-  if (!bucket){
-    bucket = 'all';
-  }
-  var options = { bucket: bucket  };
-  
-  if ( is_pro ) {
-    options['pros_only'] = true;
-    var sel = '#points_self_pro .inner';
-  } else {
-    options['cons_only'] = true;
-    var sel = '#points_self_con .inner';
-  }
-  
-  if ( next ) {
-    options['page'] = page + 1;
-  } else {
-    options['page'] = page - 1;
-  }
-  
-  $j.get("/options/" + option_id + "/points", options, function(data){
-    $j(sel).html(data);
-    add_tips(sel);  
-  });        
-}   
 
 function paginate_point_list_callback(html, column_selector) {
 	$j(column_selector).html(html);
 	add_tips(column_selector);
-}
-
-function callback_refresh_points_in_list(response_text, list_sel, is_next) {
-  var parent = $j(list_sel + ' .point_list'),
-      jsoned = $j.parseJSON(response_text),
-      new_block = $j(jsoned['html']);
-			
-  new_block.each(function(){
-		if ($j(this).hasClass('point_in_list')){
-			$j(this).hide();
-		}
-	});
-
-  parent.children('.point_in_list').fadeOut(function(){
-		parent.html(new_block);
-		parent.children('.point_in_list').fadeIn();
-    add_tips(list_sel + ' .point_list');                            		
-	});
-		
-  update_list_counts(parent, 0, jsoned['pagination'] );
 }

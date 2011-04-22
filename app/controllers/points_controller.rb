@@ -15,9 +15,7 @@ class PointsController < ApplicationController
   def index
     @option = Option.find(params[:option_id])
     @user = current_user
-    
-    #TODO: use scopes on Point; http://edgerails.info/articles/what-s-new-in-edge-rails/2010/02/23/the-skinny-on-scopes-formerly-named-scope/index.html
-    
+        
     qry = @option.points
     pros_and_cons = false
     if ( params.key?(:cons_only) )
@@ -56,6 +54,7 @@ class PointsController < ApplicationController
     end
         
     respond_to do |format|
+      #TODO: refactor to make the logic behind these calls easier to follow
       format.js  {
         if pros_and_cons
           render :partial => "options/pro_con_board", :locals => { :group_id => @bucket, :group_name => group_name}    

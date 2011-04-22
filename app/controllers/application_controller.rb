@@ -19,4 +19,24 @@ class ApplicationController < ActionController::Base
       return 2
     end   
   end  
+
+  def stance_name(d)
+    case d
+      when 0
+        return "strongly oppose"
+      when 1
+        return "oppose"
+      when 2
+        return "moderately oppose"
+      when 3
+        return "are undecided on"
+      when 4
+        return "moderately support"
+      when 5
+        return "support"
+      when 6
+        return "strongly support"
+    end   
+  end  
+  
 end

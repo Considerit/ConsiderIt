@@ -55,13 +55,3 @@
         - get_initiatives.each do |option|
           = render :partial => "options/block/small", :locals => { :option => option, :show_full_text => false }
     .clear
-
-
--# :javascript
-  //this is a total nasty hack, agg
-  $j('.initiative_item').each(function(){
-    var option_id = $j(this).attr('id').substring(16);
-    $j(this).children('a')
-      .attr('href', '/options?option_id='+option_id);
-    
-  });

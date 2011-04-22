@@ -1,9 +1,9 @@
 class CreatePoints < ActiveRecord::Migration
   def self.up
     create_table :points do |t|
-      t.integer :option_id
-      t.integer :position_id
-      t.integer :user_id
+      t.references :option
+      t.references :position
+      t.references :user
       t.integer :session_id
       t.text :nutshell
       t.text :text

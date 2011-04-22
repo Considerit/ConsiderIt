@@ -1,0 +1,3 @@
+%ul.point_list
+  - points.each do |point|
+    = render :partial => "points/show_on_board_self", :locals => { :point => point, :static => static }

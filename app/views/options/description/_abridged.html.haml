@@ -2,7 +2,7 @@
   %table
     %tr
       %td.init_graphic
-        -# = image_tag "placeholder-tax.png", :alt => 'Generic image for Washington State Ballot #{@initiative.designation} #{@initiative.number}'
+        = image_tag @option.image, :alt => 'Image for #{@option.reference}'
       %td.init_text
         %h1.initiative_name
           #{@option.name}

@@ -60,7 +60,11 @@ class PointsController < ApplicationController
         if pros_and_cons
           render :partial => "options/pro_con_board", :locals => { :group_id => @bucket, :group_name => group_name}    
         else
-          render :partial => "points/column/all", :locals => {:points => points, :is_pro => params.key?(:pros_only)}
+          if (params[:mode] == 'other')
+            render :partial => "points/column/margin", :locals => {:points => points, :is_pro => params.key?(:pros_only)}   
+          else
+            render :partial => "points/column/all", :locals => {:points => points, :is_pro => params.key?(:pros_only)}          
+          end
         end
       }
     end    

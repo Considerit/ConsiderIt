@@ -57,6 +57,9 @@ gem 'jquery-rails'
 gem 'rails3_acts_as_paranoid'
 gem 'acts_as_versioned'
 
+# https://github.com/ernie/meta_where
+gem "meta_where"
+
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:

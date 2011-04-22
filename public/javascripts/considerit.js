@@ -471,6 +471,7 @@ function stance_group_clicked(bucket, option_id) {
   } );        
 }  
 
+//TODO: replace this with unobtrusive javascript remote call
 function paginate_ranked_list(next, is_pro, page, bucket, option_id) {
   
   if (!bucket){

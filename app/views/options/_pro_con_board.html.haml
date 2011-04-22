@@ -51,11 +51,11 @@
   .points_self#points_self_pro
     .points_list_header
     .inner
-      = render :partial => "options/board/column", :locals => { :points => @pro_points, :is_pro => true }
+      = render :partial => "points/column/all", :locals => { :points => @pro_points, :is_pro => true }
   .points_self#points_self_con 
     .points_list_header
     .inner
-      = render :partial => "options/board/column", :locals => { :points => @con_points, :is_pro => false }
+      = render :partial => "points/column/all", :locals => { :points => @con_points, :is_pro => false }
       
 
   .clear 

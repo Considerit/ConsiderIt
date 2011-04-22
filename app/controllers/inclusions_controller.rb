@@ -19,7 +19,7 @@ class InclusionsController < ApplicationController
     new_point = nil
     pagination = nil
     
-    approved_point = render_to_string :partial => "options/points/show_on_board_self", :locals => { :static => false, :point => @point, :user => @user }    
+    approved_point = render_to_string :partial => "points/show_on_board_self", :locals => { :static => false, :point => @point, :user => @user }    
     response = { :new_point => new_point, :pagination => pagination, :approved_point => approved_point }        
         
     respond_with(@option, @point, @inclusion) do |format|

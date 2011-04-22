@@ -8,7 +8,7 @@
           
   .newpointform{ :id => "newpointform-#{is_pro}"}
     -# = render :partial => "shared/model_errors", :locals => { :obj => :point }
-    - form_for Point.new(:option => @option), :url => option_points_path(@option), :remote => true do |f|
+    = form_for Point.new(:option => @option), :url => option_points_path(@option), :remote => true do |f|
       =f.hidden_field :is_pro, :id => "point-current-is_pro", :value=>is_pro
       =f.hidden_field :option_id, :id => "point-current-initiative", :value=>@option.id
       =f.hidden_field :user_id, :id => "point-current-user", :value=>@user.id

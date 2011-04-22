@@ -45,12 +45,12 @@
                   
                   .points_self#points_self_pro
                     .points_list_header
-                    = render :partial => "points/column/user", :locals => { :position => 1, :points => @user.supporting_points(@option), :static => false }
+                    = render :partial => "points/column/user", :locals => { :position => 1, :points => @included_pros, :static => false }
                     = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_self_pro' }
 
                   .points_self#points_self_con 
                     .points_list_header
-                    = render :partial => "points/column/user", :locals => { :position => 0, :points => @user.opposing_points(@option), :static => false }
+                    = render :partial => "points/column/user", :locals => { :position => 0, :points => @included_cons, :static => false }
                     = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_self_con' }
                                         
                   .clear
@@ -126,11 +126,11 @@
           .stanceform
 
             - if action == 'edit'
-              - form_for @position, :url => option_position_path(@option, @position), do |f|
+              = form_for @position, :url => option_position_path(@option, @position), do |f|
                 = render :partial => "positions/form", :locals => { :f => f, :action => action }
                             
             - elsif action == 'new'
-              - form_for @position, :url => option_positions_path(@option), do |f|
+              = form_for @position, :url => option_positions_path(@option), do |f|
                 = render :partial => "positions/form", :locals => { :f => f, :action => action }
 
             .stance_status              

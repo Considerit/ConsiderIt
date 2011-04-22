@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
   has_many :points
+  has_many :positions
   has_many :inclusions
   
   # Include default devise modules. Others available are:

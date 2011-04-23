@@ -35,34 +35,48 @@ class PositionsController < ApplicationController
   def create
     @option = Option.find(params[:option_id])
 
-    stance = -1 * Float(params[:position][:stance])
-    if stance > 1
-      stance = 1
-    elsif stance < -1
-      stance = -1
-    end
+    (stance, bucket) = get_stance_val_from_params(params)
         
     params[:position].update({
       :user_id => current_user.id,
       :stance => stance,
-      :stance_bucket => get_bucket(stance)
+      :stance_bucket => bucket
     })
     
     @position = Position.create!(params[:position])
     
-    respond_with(@option, @position) do |format|
-      format.html { redirect_to(@option) }
-    end   
-    
+    redirect_to(@option)       
   end
   
   def update
-    #TODO: actually update the position...
     @option = Option.find(params[:option_id])
+    @position = current_user.positions.find(params[:id])
+    
+    (stance, bucket) = get_stance_val_from_params(params)
+    
+    @position.stance = stance
+    @position.stance_bucket = bucket
+    @position.save
+    
     redirect_to(@option)
   end
   
   def show
     
   end
+  
+protected
+  
+  def get_stance_val_from_params( params )
+    stance = -1 * Float(params[:position][:stance])
+    if stance > 1
+      stance = 1
+    elsif stance < -1
+      stance = -1
+    end
+    bucket = get_bucket(stance)
+    
+    return stance, bucket
+  end
+      
 end

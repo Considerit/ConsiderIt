@@ -4,7 +4,7 @@
       - if !point.is_pro
         %td.include_point.left
           .include.left
-            = render :partial => "inclusions/new", :locals => { :point => point, :is_from_other_list => 1 }
+            = render :partial => "inclusions/new", :locals => { :point => point }
       
       %td.body      
         .username
@@ -32,7 +32,7 @@
       - if point.is_pro
         %td.include_point.right
           .include.right
-            = render :partial => "inclusions/new", :locals => { :point => point, :is_from_other_list => 1 }
+            = render :partial => "inclusions/new", :locals => { :point => point }
 
 :javascript
   set_more_less_text_toggle("#point_in_list_other-#{point.id}", #{point.id}, #{@option.id});

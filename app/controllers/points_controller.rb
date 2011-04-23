@@ -15,7 +15,9 @@ class PointsController < ApplicationController
   def index
     @option = Option.find(params[:option_id])
     @user = current_user
-        
+    @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
+    mode = params[:mode]
+    
     qry = @option.points
     pros_and_cons = false
     if ( params.key?(:cons_only) )
@@ -46,11 +48,34 @@ class PointsController < ApplicationController
       @page = 1
     end
 
-    if ( pros_and_cons )
+    if pros_and_cons
       @con_points = qry.cons.paginate( :page => @page, :per_page => 4 )
       @pro_points = qry.pros.paginate( :page => @page, :per_page => 4 )
+      points = @con_points + @pro_points
     else
       points = qry.paginate( :page => @page, :per_page => 4 )
+    end
+    
+    if group_name == 'self'
+      context = nil # looking through their own included points
+    elsif pros_and_cons
+      context = 5  # initial load of voter segment on options page
+    elsif mode == 'other'
+      context = 2 # pagination requested on position page
+    else
+      context = 6 # pagination requested on options page
+    end
+        
+    if context
+      points.each do |pnt|
+        PointListing.create!(
+          :option => @option,
+          :position => @position,
+          :point => pnt,
+          :user => @user,
+          :context => context
+        )
+      end          
     end
         
     respond_to do |format|
@@ -59,7 +84,7 @@ class PointsController < ApplicationController
         if pros_and_cons
           render :partial => "options/pro_con_board", :locals => { :group_id => @bucket, :group_name => group_name}    
         else
-          if (params[:mode] == 'other')
+          if mode == 'other'
             render :partial => "points/column/margin", :locals => {:points => points, :is_pro => params.key?(:pros_only)}   
           else
             render :partial => "points/column/all", :locals => {:points => points, :is_pro => params.key?(:pros_only)}          

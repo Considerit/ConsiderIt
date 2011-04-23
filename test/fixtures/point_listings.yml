@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  option: 
+  position: 
+  point: 
+  user: 
+  inclusion: 
+  session_id: 1
+
+two:
+  option: 
+  position: 
+  point: 
+  user: 
+  inclusion: 
+  session_id: 1

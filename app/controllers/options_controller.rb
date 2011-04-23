@@ -3,12 +3,20 @@ class OptionsController < ApplicationController
     @user = current_user
     @option = Option.find(params[:id])
     
-    if ( current_user )
-      @position = current_user.positions.where(:option_id => @option.id).first
-    end
+    @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
     
     @pro_points = @option.points.pros.paginate(:page => 1, :per_page => 4)#.order "score DESC" \
     @con_points = @option.points.cons.paginate(:page => 1, :per_page => 4)#.order "score DESC" \
+    
+    (@pro_points + @con_points).each do |pnt|
+      PointListing.create!(
+        :option => @option,
+        :position => @position,
+        :point => pnt,
+        :user => @user,
+        :context => 4
+      )
+    end
     
     @page = 1
     @bucket = 'all'

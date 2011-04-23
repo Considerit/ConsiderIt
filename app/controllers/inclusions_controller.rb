@@ -14,9 +14,17 @@ class InclusionsController < ApplicationController
     @inclusion = Inclusion.create!( params[:inclusion] )
     #@point.inclusions -= 1
     
-    #TODO: fetch next point & return it!        
-    #new_point, pagination = fetch_next_point_in_list( @judgement )
-    new_point = nil
+    new_point = @option.points        
+    if ( @point.is_pro )
+      new_point = new_point.pros
+    else
+      new_point = new_point.cons
+    end
+    
+    new_point = render_to_string :partial => "points/show_in_margin", :locals => { :point => new_point.not_included_by(current_user).first, :user => @user }
+    #TODO: also filter by LEAST LISTED point
+
+    #TODO: return pagination    
     pagination = nil
     
     approved_point = render_to_string :partial => "points/show_on_board_self", :locals => { :static => false, :point => @point, :user => @user }    

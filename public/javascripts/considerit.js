@@ -3,11 +3,10 @@
 $j = jQuery.noConflict();
 
 
-function include_point_callback(response_text, point_id, is_from_other_list) {
+function include_point_callback(response, point_id) {
 
   var included_point = $j('#point_in_list_other-' + point_id),
-  jsoned = $j.parseJSON(response_text),
-  replacement_point = jsoned['new_point'];
+  replacement_point = response['new_point'];
 
   if ( included_point.hasClass('pro') ) {
     var user_point_list = $j('#points_self_pro .point_list');
@@ -25,67 +24,32 @@ function include_point_callback(response_text, point_id, is_from_other_list) {
       included_point.remove();
     }
 
-    user_point_list.append(jsoned['approved_point']);
+    user_point_list.append(response['approved_point']);
     add_tips(user_point_list.attr('id') + '.point_in_list:last');
-    //update_list_counts(other_point_list, judgement, jsoned['pagination']);
+    //update_list_counts(other_point_list, judgement, response['pagination']);
 
   });
 }
 
-function callback_judge_point_success(response_text, point_id, judgement, is_from_other_list) {
-
-    if ( is_from_other_list == 1 ) {
-      var replacement_point = $j('#point_in_list_other-' + point_id),
-          jsoned = $j.parseJSON(response_text),
-          new_point = jsoned['new_point'];
-
-      if ( old_point.hasClass('pro') ) {
-        var new_point_list = $j('#points_self_pro .point_list');
-				var other_point_list = $j('#points_other_pro .point_list');
-      } else {
-        var new_point_list = $j('#points_self_con .point_list');
-        var other_point_list = $j('#points_other_con .point_list');
-      }
-      
-      old_point.fadeOut('slow', function(){
-        if ( new_point && (judgement == 1 && other_point_list.find('#' + $j($j(new_point)[0]).attr('id')).length == 0)) {
-          var sel = old_point.attr('id');
-					old_point.replaceWith(new_point);     
-          add_tips(sel);
-        } else {
-          old_point.remove();
-        }
+function delete_include_point_callback(point_in_margin, point_id) {
+    
+  var old_point = $j('#point_in_list_self-' + point_id);
         
-        if ( judgement == 1 ) {
-          new_point_list
-            .append(jsoned['approved_point']);
-          add_tips(new_point_list.attr('id') + '.point_in_list:last');	
-        }
-        update_list_counts(other_point_list, judgement, jsoned['pagination']);
+  if ( old_point.hasClass('pro') ) {
+    var other_point_list = $j('#points_other_pro .point_list');
+  } else {
+    var other_point_list = $j('#points_other_con .point_list');
+  }
+  
+  old_point.fadeOut('slow', function(){
+    old_point.remove(); 
+    other_point_list.append(point_in_margin);
+    add_tips(other_point_list.attr('id') + '.point_in_list:last');                            
+    //update_list_counts(new_point_list, judgement, jsoned['pagination']); 
+  });        
         
-      });  
-    }
-    else {
-      var old_point = $j('#point_in_list_self-' + point_id),
-          jsoned = $j.parseJSON(response_text),
-          new_point = jsoned['new_point'];    
-            
-      if ( old_point.hasClass('pro') ) {
-        var new_point_list = $j('#points_other_pro .point_list');
-      } else {
-        var new_point_list = $j('#points_other_con .point_list');
-      }
-      
-      old_point.fadeOut('slow', function(){
-        old_point.remove(); 
-        new_point_list
-          .append(jsoned['approved_point']);
-        add_tips(new_point_list.attr('id') + '.point_in_list:last');                            
-        update_list_counts(new_point_list, judgement, jsoned['pagination']); 
-      });        
-      
-    }
 }
+
 
 function update_list_counts(point_list, judgement, pagination) {
   var footer = point_list.parent().find('.point_list_footer'),

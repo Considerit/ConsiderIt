@@ -5,7 +5,7 @@
       - if point.is_pro && !static
         %td.dismiss_point.left
           .dismiss.left
-            -# = render :partial => "judgements/render_judgement", :locals => { :point => point, :judgement => 0, :is_from_other_list => 0 }
+            = render :partial => "inclusions/delete", :locals => { :point => point }
 
       %td.body      
         .username
@@ -36,7 +36,7 @@
       - if !point.is_pro && !static
         %td.dismiss_point.right
           .dismiss.right
-            -# = render :partial => "judgements/render_judgement", :locals => { :point => point, :judgement => 0, :is_from_other_list => 0 }
+            = render :partial => "inclusions/delete", :locals => { :point => point }
   
   :javascript
     $j("#point_in_list_self-#{point.id}").hover( 

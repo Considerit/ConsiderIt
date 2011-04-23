@@ -5,18 +5,16 @@ class InclusionsController < ApplicationController
     @option = Option.find(params[:option_id])
     @point = Point.find(params[:point_id])
     @user = current_user 
-    @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
-
-    #TODO: deal with session id, position id    
-    params[:inclusion].update({ 
-      :user_id => @user.id
-    })
     
     @inclusion = current_user.inclusions.where( :point_id => @point.id ).first
     if !@inclusion
-      if @position
-        params[:inclusion][:position_id] = @position.id
-      end
+      @position = current_user ? current_user.positions.unscoped.where(:option_id => @option.id).first : nil      
+      #TODO: deal with session id, position id    
+      params[:inclusion].update({ 
+        :user_id => @user.id,
+        :position_id => @position.id
+      })
+
       @inclusion = Inclusion.create!( params[:inclusion] )
       #@point.inclusions -= 1
       

@@ -4,12 +4,11 @@ class PositionsController < ApplicationController
   def new     
     @option = Option.find(params[:option_id])
     @user = current_user
-    @position = Position.unscoped.new( 
+    @position = Position.unscoped.create!( 
       :stance => 0.0, 
       :option_id => @option.id, 
       :user_id => @user ? @user.id : nil
     )
-    @position.save
 
     @pro_points = @option.points.pros.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
     @con_points = @option.points.cons.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
@@ -17,7 +16,7 @@ class PositionsController < ApplicationController
     (@pro_points + @con_points).each do |pnt|
       PointListing.create!(
         :option => @option,
-        :position_id => @position.id,
+        :position => @position,
         :point => pnt,
         :user => @user,
         :context => 1

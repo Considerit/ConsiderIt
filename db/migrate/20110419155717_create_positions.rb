@@ -7,6 +7,8 @@ class CreatePositions < ActiveRecord::Migration
       t.text :explanation
       t.float :stance
       t.integer :stance_bucket
+      
+      t.boolean :published, :default => false
 
       t.timestamps
     end

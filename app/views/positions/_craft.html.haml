@@ -126,11 +126,11 @@
           .stanceform
 
             - if action == 'edit'
-              = form_for @position, :url => option_position_path(@option, @position), do |f|
+              = form_for [@option, @position] do |f|
                 = render :partial => "positions/form", :locals => { :f => f, :action => action }
                             
             - elsif action == 'new'
-              = form_for @position, :url => option_positions_path(@option), do |f|
+              = form_for :position, :url => option_positions_path(@option), do |f|
                 = render :partial => "positions/form", :locals => { :f => f, :action => action }
 
             .stance_status              

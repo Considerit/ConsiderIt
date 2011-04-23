@@ -333,7 +333,7 @@ function initialize_sliders(starting_value, initiative_name, initiative_id){
         }
       };
       
-      $j.post('/study/slider_move', data);
+      //$j.post('/study/slider_move', data);
             
     }
     };

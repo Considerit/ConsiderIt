@@ -3,6 +3,7 @@ class Point < ActiveRecord::Base
   belongs_to :option
   belongs_to :position
   has_many :inclusions
+  has_many :point_listings
   
   acts_as_paranoid_versioned
   

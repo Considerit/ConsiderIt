@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110419161341) do
+ActiveRecord::Schema.define(:version => 20110423160224) do
 
   create_table "inclusion_versions", :force => true do |t|
     t.integer  "inclusion_id"
@@ -49,6 +49,18 @@ ActiveRecord::Schema.define(:version => 20110419161341) do
     t.text     "description"
     t.string   "image"
     t.string   "url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "point_listings", :force => true do |t|
+    t.integer  "option_id"
+    t.integer  "position_id"
+    t.integer  "point_id"
+    t.integer  "user_id"
+    t.integer  "inclusion_id"
+    t.integer  "session_id"
+    t.integer  "context"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -93,6 +105,7 @@ ActiveRecord::Schema.define(:version => 20110419161341) do
     t.text     "explanation"
     t.float    "stance"
     t.integer  "stance_bucket"
+    t.boolean  "published",     :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
@@ -107,6 +120,7 @@ ActiveRecord::Schema.define(:version => 20110419161341) do
     t.text     "explanation"
     t.float    "stance"
     t.integer  "stance_bucket"
+    t.boolean  "published",     :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"

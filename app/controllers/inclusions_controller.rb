@@ -5,6 +5,7 @@ class InclusionsController < ApplicationController
     @option = Option.find(params[:option_id])
     @point = Point.find(params[:point_id])
     @user = current_user 
+    @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
 
     #TODO: deal with session id, position id    
     params[:inclusion].update({ 
@@ -12,19 +13,32 @@ class InclusionsController < ApplicationController
     })
     
     @inclusion = current_user.inclusions.where( :point_id => @point.id ).first
-    if ( !@inclusion )
-    
+    if !@inclusion
+      if @position
+        params[:inclusion][:position_id] = @position.id
+      end
       @inclusion = Inclusion.create!( params[:inclusion] )
       #@point.inclusions -= 1
       
       new_point = @option.points        
-      if ( @point.is_pro )
+      if @point.is_pro
         new_point = new_point.pros
       else
         new_point = new_point.cons
       end
       
       next_point = new_point.not_included_by(current_user).first
+      
+      if next_point
+        PointListing.create!(
+          :option => @option,
+          :position => @position,
+          :point => next_point,
+          :user => @user,
+          :context => 3 #replaced included point
+        )
+      end
+            
       new_point = next_point ? render_to_string( :partial => "points/show_in_margin", :locals => { :point => next_point, :user => @user }) : nil
             
       #TODO: also filter by LEAST LISTED point

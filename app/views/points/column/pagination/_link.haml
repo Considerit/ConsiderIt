@@ -6,5 +6,5 @@
 
 :javascript
   $j('#paginate_points-#{mode}-#{target_page}').bind('ajax:success', function(data, status, xhr){
-    paginate_point_list_callback(status, "#{column_selector}");  
+    ConsiderIt.points.lists.paginate_callback(status, "#{column_selector}");  
   });

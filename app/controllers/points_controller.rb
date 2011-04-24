@@ -121,15 +121,14 @@ class PointsController < ApplicationController
       #:session_id => ...
       #:position_id => params[:point][:position_id], #TODO: deal with positions not being saved at this time
     )
-
-    #TODO: handle point listings
-    #point_listing = PointListing.create!(
-    #  :initiative_id => params[:point][:initiative_id],
-    #  :user_id => current_user.id,
-    #  :point_id => @point.id,
-    #  :judgement_id => judgement.id
-    #)
-
+    
+    PointListing.create!(
+      :option => @option,
+      :position => @position,
+      :point => pnt,
+      :user => @user,
+      :context => 7 # own point has been seen
+    )
 
     #@point.update_score
     

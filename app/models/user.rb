@@ -23,30 +23,5 @@ class User < ActiveRecord::Base
     end
   end
   
-  
-  #TODO: should these methods be here?
-  def supporting_points ( option, limit = nil, page = nil )
-    return get_points( option, true, limit, page)
-  end
-  
-  def opposing_points ( option, limit = nil, page = nil )
-    return get_points( option, false, limit, page)
-  end  
-
-protected
-
-  def get_points( option, is_pro, limit, page )
-    #TODO: obey pagination
-    if limit
-      #jdgs = Judgement.paginate :page => page, :per_page => limit, :conditions => {:user_id => self.id, :judgement => 1, :initiative_id => initiative.id, :active => 1}
-      #return jdgs #.collect { |jdg| jdg.point }.select { |pnt| pnt.position == position}
-      return self.inclusions.where(:option_id => option.id).collect { |inc| inc.point }.select { |pnt| pnt.is_pro == is_pro}
-      
-    else
-      return self.inclusions.where(:option_id => option.id).collect { |inc| inc.point }.select { |pnt| pnt.is_pro == is_pro}
-    end
-    
-  end
-  
       
 end

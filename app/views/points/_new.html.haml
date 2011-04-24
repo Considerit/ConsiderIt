@@ -2,9 +2,9 @@
   .newpointbutton
   
     - if is_pro
-      %button.pro.write_new{ :onclick => "considerit.newpointbuttonclicked('#{sel}')", :title => "Click to write your own pro point." }
+      %button.pro.write_new{ :onclick => "ConsiderIt.points.create.new_button_clicked('#{sel}')", :title => "Click to write your own pro point." }
     - else
-      %button.con.write_new{ :onclick => "considerit.newpointbuttonclicked('#{sel}')", :title => "Click to write your own con point." }
+      %button.con.write_new{ :onclick => "ConsiderIt.points.create.new_button_clicked('#{sel}')", :title => "Click to write your own con point." }
           
   .newpointform{ :id => "newpointform-#{is_pro}"}
     -# = render :partial => "shared/model_errors", :locals => { :obj => :point }
@@ -30,14 +30,14 @@
         = submit_tag 'Add point', :class => "submit_new_point #{{true => 'pro', false => 'con'}[is_pro]}"
         
       .point-cancel
-        %a.new_point_cancel{ :onclick => "considerit.cancelnewpointbuttonclicked('#{sel}')" }
+        %a.new_point_cancel{ :onclick => "ConsiderIt.points.create.cancel_button_clicked('#{sel}')" }
           cancel
       .clear
         
 :javascript
   var form_sel = '#newpointform-#{is_pro}';
-  set_noble_count_for_new_point(form_sel);
+  ConsiderIt.points.create.initialize_counters(form_sel);
   $j(form_sel).bind('ajax:success', function(data, status, xhr){
-    considerit.add_new(status, '#{sel}');
+    ConsiderIt.points.create.post_callback(status, '#{sel}');
   });
     

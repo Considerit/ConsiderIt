@@ -2,10 +2,10 @@ ConsiderIt::Application.routes.draw do
   root :to => "home#index"
   
   resources :options, :only => [:show] do
-    resources :positions
+    resources :positions, :only => [:new, :edit, :create, :update, :show]
     
-    resources :points do 
-      resources :inclusions 
+    resources :points, :only => [:index, :create] do 
+      resources :inclusions, :only => [:create, :destroy] 
     end
   end
   

@@ -35,5 +35,5 @@
             = render :partial => "inclusions/new", :locals => { :point => point }
 
 :javascript
-  set_more_less_text_toggle("#point_in_list_other-#{point.id}", #{point.id}, #{@option.id});
+  ConsiderIt.points.set_more_less_text_toggle("#point_in_list_other-#{point.id}", #{point.id}, #{@option.id});
   $j('#point_in_list_other-#{point.id}').corner('all 5px');

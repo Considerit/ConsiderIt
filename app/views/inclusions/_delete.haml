@@ -5,6 +5,6 @@
           
 :javascript
   $j("#judgepointform_#{point.id}").bind('ajax:success', function(data, status, xhr){
-    delete_include_point_callback(status, #{point.id})
+    ConsiderIt.inclusions.delete_callback(status, #{point.id})
   });
   

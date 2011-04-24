@@ -1,7 +1,4 @@
-// TODO: clean this up, namespace it...
-
-
-var considerit; //global namespace for ConsiderIt js methods
+var ConsiderIt; //global namespace for ConsiderIt js methods
 
 (function($) {
 
@@ -212,7 +209,7 @@ ConsiderIt = {
     
     stance_group_clicked : function(bucket, option_id) {
       if ( bucket == 'all' ) group_name = 'everyone';
-      else group_name = stance_name(bucket);
+      else group_name = ConsiderIt.positions.stance_name(bucket);
     
       $j.get("/options/" + option_id + "/points", { bucket: bucket },
         function(data){
@@ -223,7 +220,7 @@ ConsiderIt = {
     
     set_stance : function(bucket, dontadjust) {
       if (dontadjust) bucket = parseInt(bucket)
-      $j('.stance_name').text(stance_name(bucket));
+      $j('.stance_name').text(ConsiderIt.positions.stance_name(bucket));
     },
     
     stance_name : function(d) {

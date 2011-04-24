@@ -94,14 +94,6 @@ class PointsController < ApplicationController
     end    
   end
   
-  def show
-    
-  end
-  
-  def new
-    
-  end
-  
   def create
     
     #TODO: handle point scores
@@ -111,15 +103,16 @@ class PointsController < ApplicationController
     
     @user = current_user
     @option = Option.find(params[:option_id])
+    @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
     
     #TODO: save session ids properly
     inclusion = Inclusion.create!(
       :option_id => @option.id,
       :user_id => @user.id,
       :point_id => @point.id,
-      :included_as_pro => @point.is_pro #TODO: update to allow user to switch polarity
+      :included_as_pro => @point.is_pro, #TODO: update to allow user to switch polarity
       #:session_id => ...
-      #:position_id => params[:point][:position_id], #TODO: deal with positions not being saved at this time
+      :position_id => @position ? @position.id : nil
     )
     
     PointListing.create!(
@@ -137,12 +130,26 @@ class PointsController < ApplicationController
     end
   end
   
-  def update
-    
-  end
-  
-  def destroy
-    
-  end
+protected 
+
+  def stance_name(d)
+    case d
+      when 0
+        return "strongly oppose"
+      when 1
+        return "oppose"
+      when 2
+        return "moderately oppose"
+      when 3
+        return "are undecided on"
+      when 4
+        return "moderately support"
+      when 5
+        return "support"
+      when 6
+        return "strongly support"
+    end   
+  end  
+
   
 end

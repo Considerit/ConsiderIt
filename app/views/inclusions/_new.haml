@@ -7,6 +7,6 @@
           
 :javascript
   $j("#judgepointform_#{point.id}").bind('ajax:success', function(data, status, xhr){
-    include_point_callback(status, #{point.id})
+    ConsiderIt.inclusions.new_callback(status, #{point.id})
   });
   

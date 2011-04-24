@@ -39,7 +39,7 @@
         .event("mouseover", function() this.i(this.index))
         .event("mouseout", function() this.i(-1))
         .event("click", function(){
-          stance_group_clicked(this.index, option_id);
+          ConsiderIt.positions.stance_group_clicked(this.index, option_id);
           //try{log_general(this.parent.$canvas[0], 'click', 'view breakdown ' + this.index, true);}
           //catch(err){}
         });
@@ -56,7 +56,7 @@
 								
 		try{
       // does not work in IE
-		  bar.title(function(d) "Click to see the most compelling reasons for people who " + stance_name(this.index) + " this measure.");
+		  bar.title(function(d) "Click to see the most compelling reasons for people who " + ConsiderIt.positions.stance_name(this.index) + " this measure.");
 			ie = false;  
 		} catch(err){
 		  ie = true;

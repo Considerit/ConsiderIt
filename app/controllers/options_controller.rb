@@ -23,6 +23,12 @@ class OptionsController < ApplicationController
     
     @protovis = true
     
+    #TODO: replace this with chron job
+    @option.points.each do |pnt|
+      pnt.update_absolute_score
+      pnt.save
+    end
+    
   end
 
 end

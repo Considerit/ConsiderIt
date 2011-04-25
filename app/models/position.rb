@@ -8,5 +8,8 @@ class Position < ActiveRecord::Base
   acts_as_paranoid_versioned
   
   default_scope where( :published => true )
-  
+  scope :published, where( :published => true )
 end
+
+
+

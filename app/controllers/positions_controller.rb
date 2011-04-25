@@ -4,12 +4,17 @@ class PositionsController < ApplicationController
   def new     
     @option = Option.find(params[:option_id])
     @user = current_user
-    @position = Position.unscoped.create!( 
-      :stance => 0.0, 
-      :option_id => @option.id, 
-      :user_id => @user ? @user.id : nil
-    )
+    @position = current_user ? Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first : nil
 
+    if @position.nil?
+      pp @position
+      @position = Position.unscoped.create!( 
+        :stance => 0.0, 
+        :option_id => @option.id, 
+        :user_id => @user ? @user.id : nil
+      )
+    end
+    
     @pro_points = @option.points.pros.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
     @con_points = @option.points.cons.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
 

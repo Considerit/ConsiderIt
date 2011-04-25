@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110423160224) do
+ActiveRecord::Schema.define(:version => 20110425051547) do
 
   create_table "inclusion_versions", :force => true do |t|
     t.integer  "inclusion_id"
@@ -77,6 +77,19 @@ ActiveRecord::Schema.define(:version => 20110423160224) do
     t.boolean  "is_pro"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "num_inclusions"
+    t.integer  "unique_listings"
+    t.float    "score"
+    t.float    "attention"
+    t.float    "persuasiveness"
+    t.float    "appeal"
+    t.float    "score_stance_group-0"
+    t.float    "score_stance_group-1"
+    t.float    "score_stance_group-2"
+    t.float    "score_stance_group-3"
+    t.float    "score_stance_group-4"
+    t.float    "score_stance_group-5"
+    t.float    "score_stance_group-6"
     t.datetime "deleted_at"
   end
 
@@ -92,6 +105,19 @@ ActiveRecord::Schema.define(:version => 20110423160224) do
     t.boolean  "is_pro"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "num_inclusions"
+    t.integer  "unique_listings"
+    t.float    "score"
+    t.float    "attention"
+    t.float    "persuasiveness"
+    t.float    "appeal"
+    t.float    "score_stance_group-0"
+    t.float    "score_stance_group-1"
+    t.float    "score_stance_group-2"
+    t.float    "score_stance_group-3"
+    t.float    "score_stance_group-4"
+    t.float    "score_stance_group-5"
+    t.float    "score_stance_group-6"
     t.datetime "deleted_at"
     t.integer  "version"
   end

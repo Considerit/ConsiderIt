@@ -78,6 +78,8 @@ class PointsController < ApplicationController
       end          
     end
         
+
+    
     respond_to do |format|
       #TODO: refactor to make the logic behind these calls easier to follow
       format.js  {
@@ -96,21 +98,18 @@ class PointsController < ApplicationController
   
   def create
     
-    #TODO: handle point scores
-    #params[:point][:listings] = 1
-    #params[:point][:inclusions] = 1
     @point = Point.create!(params[:point])
     
     @user = current_user
     @option = Option.find(params[:option_id])
-    @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
+    @position = current_user ? Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first : nil
     
     #TODO: save session ids properly
     inclusion = Inclusion.create!(
       :option_id => @option.id,
       :user_id => @user.id,
       :point_id => @point.id,
-      :included_as_pro => @point.is_pro, #TODO: update to allow user to switch polarity
+      :included_as_pro => @point.is_pro, #TODO: allow user to switch polarity
       #:session_id => ...
       :position_id => @position ? @position.id : nil
     )
@@ -118,12 +117,13 @@ class PointsController < ApplicationController
     PointListing.create!(
       :option => @option,
       :position => @position,
-      :point => pnt,
+      :point => @point,
       :user => @user,
       :context => 7 # own point has been seen
     )
 
-    #@point.update_score
+    @point.update_absolute_score
+    @point.save
     
     respond_with(@option, @point) do |format|
       format.js {render :partial => "points/show_on_board_self", :locals => { :point => @point, :static => false }}

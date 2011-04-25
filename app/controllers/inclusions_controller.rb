@@ -8,7 +8,7 @@ class InclusionsController < ApplicationController
     
     @inclusion = current_user.inclusions.where( :point_id => @point.id ).first
     if !@inclusion
-      @position = current_user ? current_user.positions.unscoped.where(:option_id => @option.id).first : nil      
+      @position = current_user ? Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first : nil
       #TODO: deal with session id, position id    
       params[:inclusion].update({ 
         :user_id => @user.id,
@@ -16,7 +16,6 @@ class InclusionsController < ApplicationController
       })
 
       @inclusion = Inclusion.create!( params[:inclusion] )
-      #@point.inclusions -= 1
       
       new_point = @option.points        
       if @point.is_pro

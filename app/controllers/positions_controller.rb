@@ -17,16 +17,19 @@ class PositionsController < ApplicationController
     @pro_points = @option.points.pros.not_included_by(current_user).ranked_persuasiveness.paginate(:page => 1, :per_page => 4)
     @con_points = @option.points.cons.not_included_by(current_user).ranked_persuasiveness.paginate(:page => 1, :per_page => 4)
 
-    (@pro_points + @con_points).each do |pnt|
-      PointListing.create!(
-        :option => @option,
-        :position => @position,
-        :point => pnt,
-        :user => @user,
-        :context => 1
-      )
-    end
+    PointListing.transaction do
 
+      (@pro_points + @con_points).each do |pnt|
+        PointListing.create!(
+          :option => @option,
+          :position => @position,
+          :point => pnt,
+          :user => @user,
+          :context => 1
+        )
+      end
+    end
+    
     @included_pros = @option.points.pros.included_by(current_user)
     @included_cons = @option.points.cons.included_by(current_user)
     
@@ -42,16 +45,19 @@ class PositionsController < ApplicationController
     @pro_points = @option.points.pros.not_included_by(current_user).ranked_persuasiveness.paginate(:page => 1, :per_page => 4)
     @con_points = @option.points.cons.not_included_by(current_user).ranked_persuasiveness.paginate(:page => 1, :per_page => 4)
 
-    (@pro_points + @con_points).each do |pnt|
-      PointListing.create!(
-        :option => @option,
-        :position => @position,
-        :point => pnt,
-        :user => @user,
-        :context => 1
-      )
+    PointListing.transaction do
+
+      (@pro_points + @con_points).each do |pnt|
+        PointListing.create!(
+          :option => @option,
+          :position => @position,
+          :point => pnt,
+          :user => @user,
+          :context => 1
+        )
+      end
     end
-    
+        
     @included_pros = @option.points.pros.included_by(current_user)
     @included_cons = @option.points.cons.included_by(current_user)
 

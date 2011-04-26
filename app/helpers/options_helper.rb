@@ -2,14 +2,13 @@ module OptionsHelper
   
   def stance_fractions( option )
     
-    arr = discrete_stances().collect { |bucket| option.positions.where( :stance_bucket => bucket).count }
-    total = Float(arr.inject( nil ) { |sum,x| sum ? sum+x : x })
-    arr.collect! { |stance_count| sprintf "%.1f", (100 * stance_count / total) }
-    return '[' + arr.join(',') + ']'
+    distribution = Array.new(7,0)
+    option.positions.select('count(*) cnt, stance_bucket').group(:stance_bucket).each do |row|
+      distribution[row.stance_bucket.to_i] = row.cnt.to_i
+    end      
+    total = distribution.inject(:+).to_f    
+    distribution.collect! { |stance_count| sprintf "%.1f", (100 * stance_count / total) }
+    return '[' + distribution.join(',') + ']'
   end  
-  
-  def discrete_stances( )
-    return (0..6).step(1)
-  end
   
 end

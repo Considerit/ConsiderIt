@@ -266,12 +266,10 @@ li.point_in_list {
     clear: both; }
     #initiative.guide .initiatives > div ul.initiative_list {
       width: auto;
-      left: 50%;
       position: relative;
       float: left; }
       #initiative.guide .initiatives > div ul.initiative_list li {
-        position: relative;
-        right: 50%; }
+        position: relative; }
 #initiative.guide ol#step_through li.step {
   margin-bottom: 15px;
   padding-bottom: 15px;

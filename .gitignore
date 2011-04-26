@@ -9,3 +9,5 @@ config/environment_custom.rb
 .project
 .svn
 public/images/old
+*.DS_STORE
+.sass-cache/

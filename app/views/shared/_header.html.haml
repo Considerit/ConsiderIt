@@ -29,7 +29,7 @@
               - get_initiatives.each do |option|
                 %li{ :class => "#{has_stance(current_user, option)}"}
                   %a.primary_nav_item{ :href => option_path(option), :title => "#{APP_CONFIG['decisions']['name']['full']} #{option.category} #{option.designator}" } 
-                    = option.category
+                    = option.designator
                     = option.short_name               
           
           -#  %li.middle= link_to 'Community Rules', home_path('rules'), :class => 'rules', :title => "Guidelines for participation"

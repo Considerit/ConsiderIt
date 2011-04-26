@@ -6,10 +6,12 @@ class InclusionsController < ApplicationController
     @point = Point.find(params[:point_id])
     @user = current_user 
     
+    current_page = params[:page]
+    
     @inclusion = current_user.inclusions.where( :point_id => @point.id ).first
     if !@inclusion
-      @position = current_user ? Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first : nil
-      #TODO: deal with session id, position id    
+      @position = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first
+      #TODO: deal with session id
       params[:inclusion].update({ 
         :user_id => @user.id,
         :position_id => @position.id
@@ -24,7 +26,7 @@ class InclusionsController < ApplicationController
         new_point = new_point.cons
       end
       
-      next_point = new_point.not_included_by(current_user).first
+      next_point = new_point.not_included_by(current_user).ranked_persuasiveness.paginate( :page => current_page, :per_page => 4 ).last
       
       if next_point
         PointListing.create!(
@@ -38,8 +40,6 @@ class InclusionsController < ApplicationController
             
       new_point = next_point ? render_to_string( :partial => "points/show_in_margin", :locals => { :point => next_point, :user => @user }) : nil
             
-      #TODO: also filter by LEAST LISTED point
-  
       #TODO: return pagination    
       pagination = nil
       
@@ -60,6 +60,8 @@ class InclusionsController < ApplicationController
     @inc = current_user.inclusions.where(:point_id => @point.id).first
     @inc.destroy
     
-    render :partial => "points/show_in_margin", :locals => { :static => false, :point => @point, :user => @user }    
+    render :json => { 
+       :deleted_point => render_to_string(:partial => "points/show_in_margin", :locals => { :static => false, :point => @point, :user => @user })   
+    }.to_json
   end
 end

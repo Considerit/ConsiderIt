@@ -1,10 +1,10 @@
 - if is_next
-  = link_to image_tag("arrow-next.png", :alt => "Get next points"), option_points_path(@option, :pros_only => is_pro, :page => target_page, :bucket => bucket, :mode => mode), :remote => true, :id => "paginate_points-#{mode}-#{target_page}", :class => 'next paginate'
+  = link_to image_tag("arrow-next.png", :alt => "Get next points"), option_points_path(@option, :pros_only => is_pro, :cons_only => !is_pro, :page => target_page, :bucket => bucket, :mode => mode), :remote => true, :id => "paginate_points-#{mode}-#{target_page}-#{is_pro}", :class => 'next paginate'
 - else
-  = link_to image_tag("arrow-prev.png", :alt => "Get previous points"), option_points_path(@option, :pros_only => is_pro, :page => target_page, :bucket => bucket, :mode => mode), :remote => true, :id => "paginate_points-#{mode}-#{target_page}", :class => 'prev paginate'
+  = link_to image_tag("arrow-prev.png", :alt => "Get previous points"), option_points_path(@option, :pros_only => is_pro, :cons_only => !is_pro, :page => target_page, :bucket => bucket, :mode => mode), :remote => true, :id => "paginate_points-#{mode}-#{target_page}-#{is_pro}", :class => 'prev paginate'
 
 
 :javascript
-  $j('#paginate_points-#{mode}-#{target_page}').bind('ajax:success', function(data, status, xhr){
+  $j('#paginate_points-#{mode}-#{target_page}-#{is_pro}').bind('ajax:success', function(data, status, xhr){
     ConsiderIt.points.lists.paginate_callback(status, "#{column_selector}");  
   });

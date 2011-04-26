@@ -40,8 +40,8 @@ class PointsController < ApplicationController
       qry = qry.not_included_by(current_user).ranked_persuasiveness  
     else
       ## specific voter segment...
-      group_name = stance_name(@bucket)
       @bucket = @bucket.to_i
+      group_name = self.stance_name(@bucket)
       qry = qry.ranked_for_stance_segment(@bucket) #.where("importance_#{@bucket} > 0").order("importance_#{@bucket} DESC")
     end
     
@@ -85,20 +85,19 @@ class PointsController < ApplicationController
         
 
     
-    respond_to do |format|
-      #TODO: refactor to make the logic behind these calls easier to follow & explicit
-      format.js  {
-        if pros_and_cons
-          render :partial => "options/pro_con_board", :locals => { :group_id => @bucket, :group_name => group_name}    
-        else
-          if mode == 'other'
-            render :partial => "points/column/margin", :locals => {:points => points, :is_pro => params.key?(:pros_only)}   
-          else
-            render :partial => "points/column/all", :locals => {:points => points, :is_pro => params.key?(:pros_only)}          
-          end
-        end
-      }
-    end    
+    #TODO: refactor to make the logic behind these calls easier to follow & explicit
+
+    if pros_and_cons
+      resp = render_to_string :partial => "options/pro_con_board", :locals => { :group_id => @bucket, :group_name => group_name}    
+    else
+      if mode == 'other'
+        resp = render_to_string :partial => "points/column/margin", :locals => {:points => points, :is_pro => params.key?(:pros_only)}   
+      else
+        resp = render_to_string :partial => "points/column/all", :locals => {:points => points, :is_pro => params.key?(:pros_only)}          
+      end
+    end
+    
+    render :json => { :points => resp }.to_json
   end
   
   def create

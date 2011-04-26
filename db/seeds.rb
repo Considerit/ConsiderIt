@@ -6,6 +6,8 @@
 #   cities = City.create!([{ :name => 'Chicago' }, { :name => 'Copenhagen' }])
 #   Mayor.create!(:name => 'Daley', :city => cities.first)
 
+
+
 #TODO: replace these values with settings
 admin = User.create!(
   :username => 'ConsiderIt Admin',

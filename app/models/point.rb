@@ -24,7 +24,7 @@ class Point < ActiveRecord::Base
     end }
   
   scope :ranked_overall, 
-    where( "points.score > 0" )
+    where( "points.score > 0" ).
     order( "points.score DESC" )
   
   scope :ranked_persuasiveness, 

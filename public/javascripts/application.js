@@ -17,8 +17,8 @@ ConsiderIt = {
         footer.find('.total').html(pagination);  
       },
 
-      paginate_callback : function( html, column_selector ) {
-        $j(column_selector).html(html);
+      paginate_callback : function( response, column_selector ) {
+        $j(column_selector).html(response['points']);
         ConsiderIt.misc.add_tips(column_selector);
       }
       
@@ -133,8 +133,8 @@ ConsiderIt = {
       });
     },
     
-    delete_callback : function(point_in_margin, point_id) {
-        
+    delete_callback : function(response, point_id) {
+      var point_in_margin = response['deleted_point'];
       var old_point = $j('#point_in_list_self-' + point_id);
             
       if ( old_point.hasClass('pro') ) {
@@ -168,7 +168,7 @@ ConsiderIt = {
         $j( '.slider_table .left').css('font-size', 100 - 1.5 * size + '%');
       }
       
-      $j('#stance-value').val( new_value);  
+      $j('#stance-value').val( new_value );  
     },
     
     
@@ -208,12 +208,12 @@ ConsiderIt = {
     },
     
     stance_group_clicked : function(bucket, option_id) {
-      if ( bucket == 'all' ) group_name = 'everyone';
-      else group_name = ConsiderIt.positions.stance_name(bucket);
+      //if ( bucket == 'all' ) group_name = 'everyone';
+      //else group_name = ConsiderIt.positions.stance_name(bucket);
     
       $j.get("/options/" + option_id + "/points", { bucket: bucket },
         function(data){
-          $j('#ranked_points').html(data);
+          $j('#ranked_points').html(data['points']);
           ConsiderIt.misc.add_tips('#ranked_points');
       } );        
     },

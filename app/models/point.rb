@@ -7,40 +7,84 @@ class Point < ActiveRecord::Base
   
   acts_as_paranoid_versioned :if_changed => [:nutshell, :text, :user_id, :is_pro, :position_id]
 
-  
   cattr_reader :per_page
   @@per_page = 4  
   
   scope :pros, where( :is_pro => true )
   scope :cons, where( :is_pro => false )
-  scope :not_included_by, proc {|user| joins(:inclusions.outer, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NULL") }
-  scope :included_by, proc {|user| joins(:inclusions, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NOT NULL") }
   
-  scope :ranked_overall, order( "points.score DESC" )
-  scope :ranked_persuasiveness, order( "points.persuasiveness DESC" )
+  scope :not_included_by, proc {|user| 
+    if !user.nil?
+      joins(:inclusions.outer, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NULL")
+    end }
+    
+  scope :included_by, proc {|user| 
+    if !user.nil?
+      joins(:inclusions, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NOT NULL") 
+    end }
+  
+  scope :ranked_overall, 
+    where( "points.score > 0" )
+    order( "points.score DESC" )
+  
+  scope :ranked_persuasiveness, 
+    where( "points.persuasiveness > 0"). 
+    order( "points.persuasiveness DESC" )
+
+  scope :ranked_for_stance_segment, proc {|stance_bucket|
+      where("points.score_stance_group_#{stance_bucket} > 0").
+      order("points.score_stance_group_#{stance_bucket} DESC")
+  }
   
   def update_absolute_score
     define_appeal
-    define_attention #must come before persuasiveness
+    define_attention
     define_persuasiveness
+    
+    define_segment_scores
+    
     save
   end
+  
+  def define_segment_scores
     
+    metrics_per_segment = {}
+    (0..6).each {|stance_bucket| metrics_per_segment[stance_bucket] = [0,0]}
+
+    inclusions_by_segment = inclusions.joins(:position).select('count(*) cnt, positions.stance_bucket stance_bucket').group("positions.stance_bucket").order("positions.stance_bucket")
+    inclusions_by_segment.each do |row|
+      metrics_per_segment[row.stance_bucket.to_i][0] = row.cnt.to_i
+    end
+
+    listings_by_segment = point_listings.joins(:position).select('count(distinct point_listings.user_id) cnt, positions.stance_bucket stance_bucket').group("positions.stance_bucket").order("positions.stance_bucket")        
+    listings_by_segment.each do |row|
+      metrics_per_segment[row.stance_bucket.to_i][1] = row.cnt.to_i
+    end
+    
+    (0..6).each do |stance_bucket|
+      attr = "score_stance_group_#{stance_bucket}".intern
+            
+      if metrics_per_segment[stance_bucket][1] == 0
+        self.attributes[attr] = 0.0
+      else
+        self[attr] = metrics_per_segment[stance_bucket][0]**2 / metrics_per_segment[stance_bucket][1].to_f        
+      end
+    end
+  end
+
   def define_appeal
     self.appeal = entropy
   end
   
   def define_attention
-    self.num_inclusions = inclusions.count
     self.attention = self.num_inclusions
   end
   
   def define_persuasiveness
-    self.unique_listings = point_listings.select('DISTINCT user_id').count
     if self.unique_listings > 0
-      self.persuasiveness = self.num_inclusions.to_f / unique_listings 
+      self.persuasiveness = self.num_inclusions.to_f / self.unique_listings 
     else
-      self.persuasiveness = 1.0
+      self.persuasiveness = 1.0 #privilige those points that haven't been shown...
     end
   end
   
@@ -48,11 +92,23 @@ class Point < ActiveRecord::Base
   # update their relative scores. Very computationally
   # expensive, so should only be called periodically by cron job
   def self.update_relative_scores
+    num_inclusions_per_point = {}
+    Inclusion.select("count(*) cnt, point_id pnt").group(:point_id).each do |row|
+      num_inclusions_per_point[row.pnt.to_i] = row.cnt.to_i
+    end
+
+    num_listings_per_point = {}
+    PointListing.select("count(distinct user_id) cnt, point_id pnt").group(:point_id).each do |row|
+      num_listings_per_point[row.pnt.to_i] = row.cnt.to_i
+    end
 
     Option.all.each do |option|
-      
-      option.points.each do |pnt|
-        pnt.update_absolute_score
+      Point.transaction do        
+        option.points.each do |pnt|
+          pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
+          pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
+          pnt.update_absolute_score
+        end
       end
       
       # Point ranking across the metrics is done separately for pros and cons,
@@ -84,11 +140,13 @@ class Point < ActiveRecord::Base
           end
         end
         
-        group.each do |pnt|
-          pnt.score = relative_scores[pnt.id].inject(:+) / relative_scores[pnt.id].length          
-          pnt.save
+        Point.transaction do
+          group.each do |pnt|
+            pnt.score = relative_scores[pnt.id].inject(:+) / relative_scores[pnt.id].length          
+            pnt.save
+          end
         end
-                    
+                            
       end
 
     end
@@ -101,7 +159,7 @@ protected
     
     distribution = Array.new(5, 0.0001)
 
-    qry = inclusions.joins(:position, "AND inclusions.user_id = positions.user_id")   \
+    qry = inclusions.joins(:position)   \
                     .where("positions.published = 1" )                                      \
                     .group(:stance_bucket)                                            \
                     .select("COUNT(*) as cnt, positions.stance_bucket")
@@ -121,7 +179,7 @@ protected
     # scale the number of inclusions per stance group by the number of people who saw this 
     # point in the stance group
     scaling_distribution = Array.new(5, 0)
-    qry = point_listings.joins(:position, "AND point_listings.user_id = positions.user_id")   \
+    qry = point_listings.joins(:position)   \
                         .where("positions.published = 1" )                                      \
                         .group(:stance_bucket)                                            \
                         .select("COUNT(distinct point_listings.user_id) as cnt, positions.stance_bucket")

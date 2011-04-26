@@ -8,23 +8,24 @@ class OptionsController < ApplicationController
     @pro_points = @option.points.pros.ranked_overall.paginate(:page => 1, :per_page => 4)#.order "score DESC" \
     @con_points = @option.points.cons.ranked_overall.paginate(:page => 1, :per_page => 4)#.order "score DESC" \
     
-    (@pro_points + @con_points).each do |pnt|
-      PointListing.create!(
-        :option => @option,
-        :position => @position,
-        :point => pnt,
-        :user => @user,
-        :context => 4
-      )
+    PointListing.transaction do
+      (@pro_points + @con_points).each do |pnt|
+        PointListing.create!(
+          :option => @option,
+          :position => @position,
+          :point => pnt,
+          :user => @user,
+          :context => 4
+        )
+      end
     end
-    
+        
     @page = 1
     @bucket = 'all'
     
     @protovis = true
     
-    #TODO: replace this with chron job
-    Point.update_relative_scores
+    #Point.update_relative_scores
     
   end
 

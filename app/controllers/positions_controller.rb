@@ -7,7 +7,6 @@ class PositionsController < ApplicationController
     @position = current_user ? Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first : nil
 
     if @position.nil?
-      pp @position
       @position = Position.unscoped.create!( 
         :stance => 0.0, 
         :option_id => @option.id, 
@@ -15,8 +14,8 @@ class PositionsController < ApplicationController
       )
     end
     
-    @pro_points = @option.points.pros.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
-    @con_points = @option.points.cons.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
+    @pro_points = @option.points.pros.not_included_by(current_user).ranked_persuasiveness.paginate(:page => 1, :per_page => 4)
+    @con_points = @option.points.cons.not_included_by(current_user).ranked_persuasiveness.paginate(:page => 1, :per_page => 4)
 
     (@pro_points + @con_points).each do |pnt|
       PointListing.create!(
@@ -40,8 +39,8 @@ class PositionsController < ApplicationController
     @user = current_user
     @position = Position.find( params[:id] )
 
-    @pro_points = @option.points.pros.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
-    @con_points = @option.points.cons.not_included_by(current_user).paginate(:page => 1, :per_page => 4)
+    @pro_points = @option.points.pros.not_included_by(current_user).ranked_persuasiveness.paginate(:page => 1, :per_page => 4)
+    @con_points = @option.points.cons.not_included_by(current_user).ranked_persuasiveness.paginate(:page => 1, :per_page => 4)
 
     (@pro_points + @con_points).each do |pnt|
       PointListing.create!(

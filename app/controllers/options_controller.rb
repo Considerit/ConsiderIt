@@ -5,8 +5,8 @@ class OptionsController < ApplicationController
     
     @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
     
-    @pro_points = @option.points.pros.paginate(:page => 1, :per_page => 4)#.order "score DESC" \
-    @con_points = @option.points.cons.paginate(:page => 1, :per_page => 4)#.order "score DESC" \
+    @pro_points = @option.points.pros.ranked_overall.paginate(:page => 1, :per_page => 4)#.order "score DESC" \
+    @con_points = @option.points.cons.ranked_overall.paginate(:page => 1, :per_page => 4)#.order "score DESC" \
     
     (@pro_points + @con_points).each do |pnt|
       PointListing.create!(
@@ -24,10 +24,7 @@ class OptionsController < ApplicationController
     @protovis = true
     
     #TODO: replace this with chron job
-    @option.points.each do |pnt|
-      pnt.update_absolute_score
-      pnt.save
-    end
+    Point.update_relative_scores
     
   end
 

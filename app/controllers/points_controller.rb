@@ -31,10 +31,13 @@ class PointsController < ApplicationController
     @bucket = params[:bucket]
     if @bucket == 'all' || @bucket == ''
       group_name = 'all'
-      qry = qry#.order('score DESC')
+      qry = qry.ranked_overall
     elsif @bucket == 'self' && @user
       group_name = 'self'
-      qry = qry.joins(:inclusions).where(:inclusions => { :user_id => @user.id})      
+      qry = qry.joins(:inclusions).where(:inclusions => { :user_id => @user.id})    
+    elsif @bucket == 'other'
+      group_name = 'other'
+      qry = qry.not_included_by(current_user).ranked_persuasiveness  
     else
       ## specific voter segment...
       group_name = stance_name(@bucket)

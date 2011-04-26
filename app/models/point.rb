@@ -15,16 +15,15 @@ class Point < ActiveRecord::Base
   scope :not_included_by, proc {|user| joins(:inclusions.outer, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NULL") }
   scope :included_by, proc {|user| joins(:inclusions, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NOT NULL") }
   
+  scope :ranked_overall, order( "points.score DESC" )
+  scope :ranked_persuasiveness, order( "points.persuasiveness DESC" )
+  
   def update_absolute_score
     define_appeal
     define_attention #must come before persuasiveness
     define_persuasiveness
   end
-  
-  def update_relative_score
     
-  end
-  
   def define_appeal
     self.appeal = entropy
   end
@@ -42,6 +41,59 @@ class Point < ActiveRecord::Base
       self.persuasiveness = 1.0
     end
   end
+  
+  # Class method for iterating through all Points to 
+  # update their relative scores. Very computationally
+  # expensive, so should only be called periodically by cron job
+  def self.update_relative_scores
+
+    Option.all.each do |option|
+      
+      option.points do |pnt|
+        pnt.update_absolute_score
+        pnt.save
+      end
+      
+      # Point ranking across the metrics is done separately for pros and cons,
+      # fixed on a particular Option
+      point_groups = [
+        option.points.pros.select([:id, :appeal, :attention, :persuasiveness]).all,
+        option.points.cons.select([:id, :appeal, :attention, :persuasiveness]).all
+      ]
+
+      point_groups.each do |group|        
+        relative_scores = {}
+        
+        group.each {|pnt| relative_scores[pnt.id] = []}
+
+        [:appeal.to_s, :attention.to_s, :persuasiveness.to_s].each do |metric|
+          
+          # descending sort of points by current metric
+          group.sort! {|x,y| y.attributes[metric] <=> x.attributes[metric]}
+          
+          # now we'll compute the relative percentile ranking for the metric for each point (1=highest, 0 lowest)
+          cur_val = nil
+          rank = nil
+          group.each_with_index do |pnt, idx|
+            if !cur_val || pnt.attributes[metric] < cur_val
+              rank = idx.to_f
+              cur_val = pnt.attributes[metric]
+            end
+            relative_scores[pnt.id].push( 1 - rank / group.length )
+          end
+        end
+        
+        group.each do |pnt|
+          pnt.score = relative_scores[pnt.id].inject(:+) / relative_scores[pnt.id].length          
+          pnt.save
+        end
+                    
+      end
+
+    end
+  end
+  
+  
 
 protected
   def entropy
@@ -99,7 +151,7 @@ protected
         if val > 0
           # p is the probability of seeing this stance in the distribution
           p = 1.0 * val / total
-          e -= p * Math.log(p, 7)
+          e -= p * Math.log(p, 5)
         end
       end
     end

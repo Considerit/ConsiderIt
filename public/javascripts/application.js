@@ -10,11 +10,10 @@ ConsiderIt = {
     
     lists : {
 
-      update_counts : function(point_list, judgement, pagination) {
-        var footer = point_list.parent().find('.point_list_footer'),
-            total = footer.find('.total');
+      update_counts : function(point_list, pagination) {
+        var footer = point_list.parent().find('.paginate').parent();
             
-        footer.find('.total').html(pagination);  
+        footer.html(pagination);  
       },
 
       paginate_callback : function( response, column_selector ) {
@@ -128,7 +127,7 @@ ConsiderIt = {
     
         user_point_list.append(response['approved_point']);
         ConsiderIt.misc.add_tips(user_point_list.attr('id') + '.point_in_list:last');
-        //ConsiderIt.points.lists.update_counts(other_point_list, judgement, response['pagination']);
+        ConsiderIt.points.lists.update_counts(other_point_list, response['pagination']);
     
       });
     },

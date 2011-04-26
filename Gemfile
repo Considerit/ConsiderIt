@@ -42,12 +42,13 @@ gem 'whenever'
 gem 'yamler'
 
 # https://github.com/ludicast/yaml_db
-gem 'yaml_db'
+# gem 'yaml_db'
 
 # https://github.com/elight/acts_as_commentable_with_threading
 gem 'acts_as_commentable_with_threading'
 
 # https://github.com/documentcloud/jammit/
+#TODO: activate jammit
 gem 'jammit'
 
 # https://github.com/indirect/jquery-rails
@@ -59,6 +60,10 @@ gem 'acts_as_versioned'
 
 # https://github.com/ernie/meta_where
 gem "meta_where"
+
+# https://github.com/lucasefe/themes_for_rails#readme
+# TODO: theming!
+gem 'themes_for_rails'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

@@ -6,7 +6,7 @@ class InclusionsController < ApplicationController
     @point = Point.find(params[:point_id])
     @user = current_user 
     
-    current_page = params[:page]
+    current_page = params[:page].to_i
     
     @inclusion = current_user.inclusions.where( :point_id => @point.id ).first
     if !@inclusion
@@ -26,7 +26,8 @@ class InclusionsController < ApplicationController
         new_point = new_point.cons
       end
       
-      next_point = new_point.not_included_by(current_user).ranked_persuasiveness.paginate( :page => current_page, :per_page => 4 ).last
+      points = new_point.not_included_by(current_user).ranked_persuasiveness.paginate( :page => current_page, :per_page => 4 )
+      next_point = points.last
       
       if next_point
         PointListing.create!(
@@ -41,7 +42,13 @@ class InclusionsController < ApplicationController
       new_point = next_point ? render_to_string( :partial => "points/show_in_margin", :locals => { :point => next_point, :user => @user }) : nil
             
       #TODO: return pagination    
-      pagination = nil
+      pagination = render_to_string :partial => "points/column/pagination/block", :locals => { 
+        :points => points,
+        :column_selector => "#points_other_" + {true => "pro", false => "con"}[@point.is_pro], 
+        :is_pro => @point.is_pro, 
+        :page => current_page, 
+        :bucket => 'other', 
+        :mode => 'other'}
       
       approved_point = render_to_string :partial => "points/show_on_board_self", :locals => { :static => false, :point => @point, :user => @user }    
       response = { :new_point => new_point, :pagination => pagination, :approved_point => approved_point } 

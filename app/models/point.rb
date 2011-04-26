@@ -5,7 +5,8 @@ class Point < ActiveRecord::Base
   has_many :inclusions
   has_many :point_listings
   
-  acts_as_paranoid_versioned
+  acts_as_paranoid_versioned :if_changed => [:nutshell, :text, :user_id, :is_pro, :position_id]
+
   
   cattr_reader :per_page
   @@per_page = 4  
@@ -22,6 +23,7 @@ class Point < ActiveRecord::Base
     define_appeal
     define_attention #must come before persuasiveness
     define_persuasiveness
+    save
   end
     
   def define_appeal
@@ -49,9 +51,8 @@ class Point < ActiveRecord::Base
 
     Option.all.each do |option|
       
-      option.points do |pnt|
+      option.points.each do |pnt|
         pnt.update_absolute_score
-        pnt.save
       end
       
       # Point ranking across the metrics is done separately for pros and cons,
@@ -110,8 +111,8 @@ protected
       # collapse strong and moderate support/oppose to make more fair distribution
       if row.stance_bucket == '0'
         row.stance_bucket = '1'
-      elsif row.stance_bucket == '7'
-        row.stance_bucket = '6'
+      elsif row.stance_bucket == '6'
+        row.stance_bucket = '5'
       end
       distribution[row.stance_bucket.to_i - 1] += row.cnt.to_i     
     end
@@ -129,8 +130,8 @@ protected
       # collapse strong and moderate support/oppose to make more fair distribution
       if row.stance_bucket == '0'
         row.stance_bucket = '1'
-      elsif row.stance_bucket == '7'
-        row.stance_bucket = '6'
+      elsif row.stance_bucket == '6'
+        row.stance_bucket = '5'
       end
       scaling_distribution[row.stance_bucket.to_i - 1] += row.cnt.to_i     
     end
@@ -155,7 +156,6 @@ protected
         end
       end
     end
-    pp e
     e
     
   end

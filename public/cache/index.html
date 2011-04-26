@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head profile='http://gmpg.org/xfn/1'>
+    <title>
+      ConsiderIt
+    </title>
+    <link href='/favicon.ico' rel='icon' type='image/vnd.microsoft.icon'>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+    <meta content='' name='keywords'>
+    <meta content='' name='description'>
+    <script src="/javascripts/jquery.js?1303160142" type="text/javascript"></script>
+    <script src="/javascripts/jquery-ui.js?1303160142" type="text/javascript"></script>
+    <script src="/javascripts/rails.js?1303160142" type="text/javascript"></script>
+    <script src="/javascripts/application.js?1303847675" type="text/javascript"></script>
+    <meta name="csrf-param" content="authenticity_token"/>
+    <meta name="csrf-token" content="lQBC/txuj7VrMFwOk2p48Hn5Wvt3O+nM7hSCN1AdDxY="/>
+    <link href="/stylesheets/reset-min.css?1303160142" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/jquery_ui/jquery-ui-1.8.4.custom.css?1303160142" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/compiled/considerit.css?1303789655" media="screen" rel="stylesheet" type="text/css" />
+    <!--[if IE]>
+      <script data-path="/javascripts/" src="/javascripts/svg.js?1303160142" type="text/javascript"></script>
+      <meta content='true' name='svg.render.forceflash'>
+      <link href="/stylesheets/ie.css?1303160142" media="screen" rel="stylesheet" type="text/css" />
+    <![endif]-->
+    <!--[if lt IE 8]>
+      <link href="/stylesheets/ie7.css?1303160142" media="screen" rel="stylesheet" type="text/css" />
+    <![endif]-->
+    <!--[if lt IE 7]>
+      <link href="/stylesheets/ie6.css?1303160142" media="screen" rel="stylesheet" type="text/css" />
+      <script src="/javascripts/IE7.js?1303160142" type="text/javascript"></script>
+    <![endif]-->
+    <script src="/javascripts/jquery.corner.js?1303160142" type="text/javascript"></script>
+    <script src="/javascripts/jquery.noblecount.min.js?1303160142" type="text/javascript"></script>
+    <script src="/javascripts/jquery.qtip-1.0.0-rc3.js?1303160142" type="text/javascript"></script>
+    <script type='text/javascript'>
+      //<![CDATA[
+        $j = jQuery.noConflict();
+      //]]>
+    </script>
+    <!--
+      <script type='text/javascript'>
+        //<![CDATA[
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', '']);
+          _gaq.push(['_trackPageview']);
+          
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+        //]]>
+      </script>
+    -->
+  </head>
+  <body>
+    <div id='wrap'>
+      <div class='header' id='masthead'>
+        <div id='header_wrapper'>
+          <div id='offset_header'>
+            <div class='beta'>
+              <!--
+                Please report problems to bugs@livingvotersguide.org.
+              -->
+              Please share with family and friends!
+            </div>
+            <div class='logo_cell'>
+              <h1 id='logo'>
+                <a class='logo_home' href='/' title=''>
+                  <img alt="Logo" src="/images/apps/_base/logo.png?1303162365" />
+                </a>
+              </h1>
+            </div>
+            <div id='nav-user'>
+              <a href="/users/auth/facebook">Sign in with Facebook</a>
+              <a href="/users/sign_in">login</a>
+              <a href="/users/sign_up">register</a>
+              <!--
+                <div class='first login'>
+                  <a>
+                    Login
+                  </a>
+                </div>
+                <div class='create last'>
+                  <a class='nav_link'>
+                    Create an Account
+                  </a>
+                </div>
+                <div class='or'>
+                  or
+                </div>
+                <div class='fb'>
+                </div>
+                <div class='clear'></div>
+                <div id='login_dialog'></div>
+                <div id='create_dialog'></div>
+              -->
+            </div>
+            <div id='nav-primary'>
+              <ul class='nav primary'>
+                <li class='first'><a href="/" class="home" title="Living Voters Guide">Home</a></li>
+                <li class='drops middle'>
+                  <a>
+                    options
+                  </a>
+                  &nbsp;
+                  <ul class='dropdown'>
+                    <li class='false'>
+                      <a class='primary_nav_item' href='/options/1' title='Option Initiative 1100'>
+                        1100
+                        liquor
+                      </a>
+                    </li>
+                    <li class='false'>
+                      <a class='primary_nav_item' href='/options/2' title='Option Initiative 1105'>
+                        1105
+                        liquor
+                      </a>
+                    </li>
+                    <li class='false'>
+                      <a class='primary_nav_item' href='/options/3' title='Option Initiative 1082'>
+                        1082
+                        industrial insurance
+                      </a>
+                    </li>
+                    <li class='false'>
+                      <a class='primary_nav_item' href='/options/4' title='Option Initiative 1098'>
+                        1098
+                        state income tax
+                      </a>
+                    </li>
+                    <li class='false'>
+                      <a class='primary_nav_item' href='/options/5' title='Option Referendum Bill 52'>
+                        52
+                        Bond bill
+                      </a>
+                    </li>
+                    <li class='false'>
+                      <a class='primary_nav_item' href='/options/6' title='Option Resolution 8225'>
+                        8225
+                        Debt limit
+                      </a>
+                    </li>
+                    <li class='false'>
+                      <a class='primary_nav_item' href='/options/7' title='Option Resolution 4220'>
+                        4220
+                        Bail denial
+                      </a>
+                    </li>
+                    <li class='false'>
+                      <a class='primary_nav_item' href='/options/8' title='Option Initiative 1107'>
+                        1107
+                        state tax laws
+                      </a>
+                    </li>
+                    <li class='false'>
+                      <a class='primary_nav_item' href='/options/9' title='Option Initiative 1053'>
+                        1053
+                        tax increases
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+              <div class='clear'></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id='content'>
+        
+        <div id='intro'>
+          <div class='table_container'>
+            <table>
+              <tr>
+                
+              </tr>
+            </table>
+            <table>
+              <tr>
+                <!--
+                  <td class='graphic'>
+                    <img alt="Crowd of excited people, presumably enchanted by the Living Voters Guide" src="/images/placeholder-index.png" />
+                  </td>
+                -->
+                
+                <td>
+                  <div id='description'>
+                    <div class='header'>
+                      <div class='follow'>
+                        <span class='facebook'>
+                          <a class='fb_page' href='http://www.facebook.com/pages/Living-Voters-Guide/157151824312366' target='_blank' title='Find us on Facebook'>
+                            <img alt="Facebook logo" src="/images/facebook_button.png?1303583593" />
+                          </a>
+                        </span>
+                        <span class='twitter'>
+                          <a class='twitter_page' href='http://www.twitter.com/LVGuide' target='_blank' title='Follow us on Twitter'>
+                            <img alt="Twitter logo" src="/images/Twitter_button.png?1303583593" />
+                          </a>
+                        </span>
+                      </div>
+                      <div class='subheader'>
+                        <a class='home_initiative_link' href='/initiatives'>
+                          <h2>
+                            A guide to the 2010 Washington State Ballot Measures
+                            <div class='extra'>
+                              written by people like you
+                            </div>
+                          </h2>
+                          <div class='text'>
+                            <span class='italic'>
+                              Organize your thoughts...
+                            </span>
+                            Write a pro/con list for each measure.
+                          </div>
+                          <div class='text'>
+                            <span class='italic'>
+                              Cut through the campaign fog...
+                            </span>
+                            Hear what other Washingtonians think.
+                          </div>
+                          <div class='text'>
+                            <span class='italic'>
+                              Take the initiative...
+                            </span>
+                            Add your own voice to the guide.
+                          </div>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                
+              </tr>
+            </table>
+            <table>
+              <tr>
+                
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class='guide' id='initiative'>
+          <div class='get_started'>
+            Get started by clicking on a option below!
+          </div>
+          <div class='initiatives'>
+            <div id='initiatives' name='initiatives'>
+              <ul class='initiative_list'>
+                <li class='initiative_item false small' id='initiative_item-1'>
+                  <a class='initiative_block_wrapper' href='/options/1' title='Think through option Initiative 1100'>
+                    <div class='link_internal'>
+                      <h2>
+                        <div class='header'>
+                          <div class='designation'>
+                            Initiative
+                          </div>
+                          <div class='number'>
+                            1100
+                          </div>
+                        </div>
+                        <div class='subheader'>
+                          liquor
+                        </div>
+                        <div class='clear'></div>
+                        <div class='description'>
+                          <div class='hide'>
+                            This measure would close state liquor stores; authorize sale, distribution, and importation of spirits by private parties; and repeal certain requirements that govern the business operations of beer and wine distributors and producers.
+                          </div>
+                        </div>
+                      </h2>
+                    </div>
+                  </a>
+                </li>
+                <li class='initiative_item false small' id='initiative_item-2'>
+                  <a class='initiative_block_wrapper' href='/options/2' title='Think through option Initiative 1105'>
+                    <div class='link_internal'>
+                      <h2>
+                        <div class='header'>
+                          <div class='designation'>
+                            Initiative
+                          </div>
+                          <div class='number'>
+                            1105
+                          </div>
+                        </div>
+                        <div class='subheader'>
+                          liquor
+                        </div>
+                        <div class='clear'></div>
+                        <div class='description'>
+                          <div class='hide'>
+                            This measure would close all state liquor stores and license private parties to sell or distribute spirits. It would revise laws concerning regulation, taxation and government revenues from distribution and sale of spirits.
+                          </div>
+                        </div>
+                      </h2>
+                    </div>
+                  </a>
+                </li>
+                <li class='initiative_item false small' id='initiative_item-3'>
+                  <a class='initiative_block_wrapper' href='/options/3' title='Think through option Initiative 1082'>
+                    <div class='link_internal'>
+                      <h2>
+                        <div class='header'>
+                          <div class='designation'>
+                            Initiative
+                          </div>
+                          <div class='number'>
+                            1082
+                          </div>
+                        </div>
+                        <div class='subheader'>
+                          industrial insurance
+                        </div>
+                        <div class='clear'></div>
+                        <div class='description'>
+                          <div class='hide'>
+                            This measure would authorize employers to purchase private industrial insurance beginning July 1, 2012; direct the legislature to enact conforming legislation by March 1, 2012; and eliminate the worker-paid share of medical-benefit premiums.
+                          </div>
+                        </div>
+                      </h2>
+                    </div>
+                  </a>
+                </li>
+                <li class='initiative_item false small' id='initiative_item-4'>
+                  <a class='initiative_block_wrapper' href='/options/4' title='Think through option Initiative 1098'>
+                    <div class='link_internal'>
+                      <h2>
+                        <div class='header'>
+                          <div class='designation'>
+                            Initiative
+                          </div>
+                          <div class='number'>
+                            1098
+                          </div>
+                        </div>
+                        <div class='subheader'>
+                          state income tax
+                        </div>
+                        <div class='clear'></div>
+                        <div class='description'>
+                          <div class='hide'>
+                            This measure would tax &quot;adjusted gross income&quot; above $200,000 (individuals) and $400,000 (joint-filers), reduce state property tax levies, reduce certain business and occupation taxes, and direct any increased revenues to education and health.
+                          </div>
+                        </div>
+                      </h2>
+                    </div>
+                  </a>
+                </li>
+                <li class='initiative_item false small' id='initiative_item-5'>
+                  <a class='initiative_block_wrapper' href='/options/5' title='Think through option Referendum Bill 52'>
+                    <div class='link_internal'>
+                      <h2>
+                        <div class='header'>
+                          <div class='designation'>
+                            Referendum Bill
+                          </div>
+                          <div class='number'>
+                            52
+                          </div>
+                        </div>
+                        <div class='subheader'>
+                          Bond bill
+                        </div>
+                        <div class='clear'></div>
+                        <div class='description'>
+                          <div class='hide'>
+                            This bill would authorize bonds to finance construction and repair projects increasing energy efficiency in public schools and higher education buildings, and continue the sales tax on bottled water otherwise expiring in 2013.
+                          </div>
+                        </div>
+                      </h2>
+                    </div>
+                  </a>
+                </li>
+                <li class='initiative_item false small' id='initiative_item-6'>
+                  <a class='initiative_block_wrapper' href='/options/6' title='Think through option Resolution 8225'>
+                    <div class='link_internal'>
+                      <h2>
+                        <div class='header'>
+                          <div class='designation'>
+                            Resolution
+                          </div>
+                          <div class='number'>
+                            8225
+                          </div>
+                        </div>
+                        <div class='subheader'>
+                          Debt limit
+                        </div>
+                        <div class='clear'></div>
+                        <div class='description'>
+                          <div class='hide'>
+                            This amendment would require the state to reduce the interest accounted for in calculating the constitutional debt limit, by the amount of federal payments scheduled to be received to offset that interest.
+                          </div>
+                        </div>
+                      </h2>
+                    </div>
+                  </a>
+                </li>
+                <li class='initiative_item false small' id='initiative_item-7'>
+                  <a class='initiative_block_wrapper' href='/options/7' title='Think through option Resolution 4220'>
+                    <div class='link_internal'>
+                      <h2>
+                        <div class='header'>
+                          <div class='designation'>
+                            Resolution
+                          </div>
+                          <div class='number'>
+                            4220
+                          </div>
+                        </div>
+                        <div class='subheader'>
+                          Bail denial
+                        </div>
+                        <div class='clear'></div>
+                        <div class='description'>
+                          <div class='hide'>
+                            This amendment would authorize courts to deny bail for offenses punishable by the possibility of life in prison, on clear and convincing evidence of a propensity for violence that would likely endanger persons.
+                          </div>
+                        </div>
+                      </h2>
+                    </div>
+                  </a>
+                </li>
+                <li class='initiative_item false small' id='initiative_item-8'>
+                  <a class='initiative_block_wrapper' href='/options/8' title='Think through option Initiative 1107'>
+                    <div class='link_internal'>
+                      <h2>
+                        <div class='header'>
+                          <div class='designation'>
+                            Initiative
+                          </div>
+                          <div class='number'>
+                            1107
+                          </div>
+                        </div>
+                        <div class='subheader'>
+                          state tax laws
+                        </div>
+                        <div class='clear'></div>
+                        <div class='description'>
+                          <div class='hide'>
+                            This measure would end sales tax on candy; end temporary sales tax on some bottled water; end temporary excise taxes on carbonated beverages; and reduce tax rates for certain food processors.
+                          </div>
+                        </div>
+                      </h2>
+                    </div>
+                  </a>
+                </li>
+                <li class='initiative_item false small' id='initiative_item-9'>
+                  <a class='initiative_block_wrapper' href='/options/9' title='Think through option Initiative 1053'>
+                    <div class='link_internal'>
+                      <h2>
+                        <div class='header'>
+                          <div class='designation'>
+                            Initiative
+                          </div>
+                          <div class='number'>
+                            1053
+                          </div>
+                        </div>
+                        <div class='subheader'>
+                          tax increases
+                        </div>
+                        <div class='clear'></div>
+                        <div class='description'>
+                          <div class='hide'>
+                            This measure would restate existing statutory requirements that legislative actions raising taxes must be approved by two-thirds legislative majorities or receive voter approval, and that new or increased fees require majority legislative approval.
+                          </div>
+                        </div>
+                      </h2>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class='clear'></div>
+          </div>
+        </div>
+      </div>
+      <div class='footer' id='footer'>
+        <div>
+          <div class='sitemap'>
+            <div class='initiatives'>
+              <h4>options</h4>
+              <ul class='nav'>
+                <li class='false'>
+                  <a class='footer_initiative_link' href='/options/1' title='Initiative 1100'>
+                    1100
+                    liquor
+                  </a>
+                </li>
+                <li class='false'>
+                  <a class='footer_initiative_link' href='/options/2' title='Initiative 1105'>
+                    1105
+                    liquor
+                  </a>
+                </li>
+                <li class='false'>
+                  <a class='footer_initiative_link' href='/options/3' title='Initiative 1082'>
+                    1082
+                    industrial insurance
+                  </a>
+                </li>
+                <li class='false'>
+                  <a class='footer_initiative_link' href='/options/4' title='Initiative 1098'>
+                    1098
+                    state income tax
+                  </a>
+                </li>
+                <li class='false'>
+                  <a class='footer_initiative_link' href='/options/5' title='Referendum Bill 52'>
+                    52
+                    Bond bill
+                  </a>
+                </li>
+                <li class='false'>
+                  <a class='footer_initiative_link' href='/options/6' title='Resolution 8225'>
+                    8225
+                    Debt limit
+                  </a>
+                </li>
+                <li class='false'>
+                  <a class='footer_initiative_link' href='/options/7' title='Resolution 4220'>
+                    4220
+                    Bail denial
+                  </a>
+                </li>
+                <li class='false'>
+                  <a class='footer_initiative_link' href='/options/8' title='Initiative 1107'>
+                    1107
+                    state tax laws
+                  </a>
+                </li>
+                <li class='false'>
+                  <a class='footer_initiative_link' href='/options/9' title='Initiative 1053'>
+                    1053
+                    tax increases
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class='guides'>
+              <h4>
+                WA State Voter Guides
+              </h4>
+              <ul class='nav'>
+                <li><a href="http://sites.google.com/site/wavoter/ballot" target="_blank" title="Voters Guide by the League of Women Voters">League of Women Voters of Gr. Seattle</a></li>
+                <li><a href="http://waballotguide.com/" target="_blank" title="Voters Guide by Fuse">Progressive Voters Guide</a></li>
+                <li><a href="http://www.washingtonpolicy.org/research/ballot-measures/new" target="_blank" title="Voters Guide by the Washington Policy Center">Washington Policy Center</a></li>
+                <li><a href="http://wei.secstate.wa.gov/osos/en/Pages/OnlineVotersGuide.aspx" target="_blank" title="Voters Guide by the Secretary of State">Washington Secretary of State</a></li>
+                <li><a href="http://www.tvw.org/elections/2010videovotersguide.cfm" target="_blank" title="A video Voters Guide by TVW">TVW Video Voters Guide</a></li>
+              </ul>
+              <h4 class='later'>Other Resources</h4>
+              <ul class='nav'>
+                <li><a href="http://www.spokesman.com/stories/2010/sep/05/sizable-sums-target-voters/" target="_blank">Funding sources of various initiatives</a></li>
+                <li>
+                  Comparing the liquor initiatives
+                  <a href="http://www.spokesman.com/stories/2010/aug/27/i-1100-i-1105-would-cut-state-revenue/" target="_blank">[1]</a>
+                  <a href="http://seattletimes.nwsource.com/html/businesstechnology/2012690399_liquor22.html" target="_blank">[2]</a>
+                </li>
+                <li><a href="http://www.publicola.net/2010/07/02/extra-fizz-what-will-happen-if-both-liquor-measures-pass/" target="_blank">What if both liquor initiatives pass?</a></li>
+                <li><a href="http://www.ncsl.org/default.aspx?tabid=16600" target="_blank">About the initiative process</a></li>
+                <li><a href="http://www.sos.wa.gov/elections/initiatives/statistics.aspx" target="_blank">Stats &amp; history of WA ballot measures</a></li>
+                <li><a href="http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf" target="_blank">Filing an initiative in WA (PDF)</a></li>
+              </ul>
+            </div>
+            <div class='learn last'>
+              <h4>Learn more</h4>
+              <ul class='nav'>
+              </ul>
+              <ul class='nav'>
+                <li class='powered'>
+                  LVG is powered by the open source
+                  platform. Text is available under the Creative Commons Attribution-ShareAlike License. See
+                  for details.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type='text/javascript'>
+      //<![CDATA[
+        $j(document).ready(function(){
+          ConsiderIt.misc.add_tips();      
+        })     
+        
+        $j('#header_wrapper').corner('round top 5px');
+        $j('#nav-user').corner('bottom bl 5px');  
+        
+        $j('a.smooth_anchor').click(function(){
+          $j('html, body').animate({
+            scrollTop: $j($j(this).attr('href')).offset().top}, 1000);
+            return false;
+        });
+      //]]>
+    </script>
+  </body>
+</html>

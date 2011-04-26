@@ -48,10 +48,5 @@
 #initiative.guide   
   .get_started
     Get started by clicking on a #{APP_CONFIG['decisions']['name']['short']} below! 
-
-  .initiatives
-    #initiatives{ :name => "initiatives" }              
-      %ul.initiative_list
-        - get_initiatives.each do |option|
-          = render :partial => "options/block/small", :locals => { :option => option, :show_full_text => false }
-    .clear
+  
+  = render :partial => "options/blocks/strip"

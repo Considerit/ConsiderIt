@@ -1,7 +1,8 @@
-.initiatives
-  #initiatives{ :name => "initiatives" }              
-    %ul.initiative_list
-      - get_initiatives.each do |option|
-        = render :partial => "options/block/small", :locals => { :option => option, :show_full_text => false }
-      %li.clear
-    .clear
+- cache('option_strip') do
+  .initiatives
+    #initiatives{ :name => "initiatives" }              
+      %ul.initiative_list
+        - get_initiatives.each do |option|
+          = render :partial => "options/block/small", :locals => { :option => option, :show_full_text => false }
+        %li.clear
+      .clear

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110425051547) do
+ActiveRecord::Schema.define(:version => 20110426054929) do
 
   create_table "inclusion_versions", :force => true do |t|
     t.integer  "inclusion_id"
@@ -41,6 +41,9 @@ ActiveRecord::Schema.define(:version => 20110425051547) do
     t.integer  "version"
   end
 
+  add_index "inclusions", ["point_id"], :name => "index_inclusions_on_point_id"
+  add_index "inclusions", ["user_id"], :name => "index_inclusions_on_user_id"
+
   create_table "options", :force => true do |t|
     t.string   "designator"
     t.string   "category"
@@ -65,6 +68,9 @@ ActiveRecord::Schema.define(:version => 20110425051547) do
     t.datetime "updated_at"
   end
 
+  add_index "point_listings", ["point_id"], :name => "index_point_listings_on_point_id"
+  add_index "point_listings", ["position_id"], :name => "index_point_listings_on_position_id"
+
   create_table "point_versions", :force => true do |t|
     t.integer  "point_id"
     t.integer  "version"
@@ -83,13 +89,13 @@ ActiveRecord::Schema.define(:version => 20110425051547) do
     t.float    "attention"
     t.float    "persuasiveness"
     t.float    "appeal"
-    t.float    "score_stance_group-0"
-    t.float    "score_stance_group-1"
-    t.float    "score_stance_group-2"
-    t.float    "score_stance_group-3"
-    t.float    "score_stance_group-4"
-    t.float    "score_stance_group-5"
-    t.float    "score_stance_group-6"
+    t.float    "score_stance_group_0"
+    t.float    "score_stance_group_1"
+    t.float    "score_stance_group_2"
+    t.float    "score_stance_group_3"
+    t.float    "score_stance_group_4"
+    t.float    "score_stance_group_5"
+    t.float    "score_stance_group_6"
     t.datetime "deleted_at"
   end
 
@@ -111,16 +117,19 @@ ActiveRecord::Schema.define(:version => 20110425051547) do
     t.float    "attention"
     t.float    "persuasiveness"
     t.float    "appeal"
-    t.float    "score_stance_group-0"
-    t.float    "score_stance_group-1"
-    t.float    "score_stance_group-2"
-    t.float    "score_stance_group-3"
-    t.float    "score_stance_group-4"
-    t.float    "score_stance_group-5"
-    t.float    "score_stance_group-6"
-    t.datetime "deleted_at"
+    t.float    "score_stance_group_0"
+    t.float    "score_stance_group_1"
+    t.float    "score_stance_group_2"
+    t.float    "score_stance_group_3"
+    t.float    "score_stance_group_4"
+    t.float    "score_stance_group_5"
+    t.float    "score_stance_group_6"
     t.integer  "version"
+    t.datetime "deleted_at"
   end
+
+  add_index "points", ["is_pro"], :name => "index_points_on_is_pro"
+  add_index "points", ["option_id"], :name => "index_points_on_option_id"
 
   create_table "position_versions", :force => true do |t|
     t.integer  "position_id"
@@ -152,6 +161,11 @@ ActiveRecord::Schema.define(:version => 20110425051547) do
     t.datetime "deleted_at"
     t.integer  "version"
   end
+
+  add_index "positions", ["option_id"], :name => "index_positions_on_option_id"
+  add_index "positions", ["published"], :name => "index_positions_on_published"
+  add_index "positions", ["stance_bucket"], :name => "index_positions_on_stance_bucket"
+  add_index "positions", ["user_id"], :name => "index_positions_on_user_id"
 
   create_table "rails_admin_histories", :force => true do |t|
     t.string   "message"

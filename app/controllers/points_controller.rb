@@ -42,7 +42,7 @@ class PointsController < ApplicationController
       ## specific voter segment...
       group_name = stance_name(@bucket)
       @bucket = @bucket.to_i
-      qry = qry#.where("importance_#{@bucket} > 0").order("importance_#{@bucket} DESC")
+      qry = qry.ranked_for_stance_segment(@bucket) #.where("importance_#{@bucket} > 0").order("importance_#{@bucket} DESC")
     end
     
     if params.key?(:page)
@@ -70,21 +70,23 @@ class PointsController < ApplicationController
     end
         
     if context
-      points.each do |pnt|
-        PointListing.create!(
-          :option => @option,
-          :position => @position,
-          :point => pnt,
-          :user => @user,
-          :context => context
-        )
-      end          
+      PointListing.transaction do
+        points.each do |pnt|
+          PointListing.create!(
+            :option => @option,
+            :position => @position,
+            :point => pnt,
+            :user => @user,
+            :context => context
+          )
+        end          
+      end
     end
         
 
     
     respond_to do |format|
-      #TODO: refactor to make the logic behind these calls easier to follow
+      #TODO: refactor to make the logic behind these calls easier to follow & explicit
       format.js  {
         if pros_and_cons
           render :partial => "options/pro_con_board", :locals => { :group_id => @bucket, :group_name => group_name}    

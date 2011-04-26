@@ -11,7 +11,7 @@ class AddScoringToPoints < ActiveRecord::Migration
     add_column :points, :appeal, :float
     
     (0..6).each do |bucket|
-      add_column :points, "score_stance_group-#{bucket}".intern, :float
+      add_column :points, "score_stance_group_#{bucket}".intern, :float
     end
     
   end

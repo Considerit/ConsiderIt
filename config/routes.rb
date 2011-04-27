@@ -1,9 +1,9 @@
 ConsiderIt::Application.routes.draw do
+  
   root :to => "home#index"
   
   resources :options, :only => [:show] do
     resources :positions, :only => [:new, :edit, :create, :update, :show]
-    
     resources :points, :only => [:index, :create] do 
       resources :inclusions, :only => [:create, :destroy] 
     end
@@ -14,5 +14,7 @@ ConsiderIt::Application.routes.draw do
     :sessions => "users/sessions", 
     :registrations => "users/registrations" 
   }
-  
+
+  themes_for_rails # themes_for_rails gem routes 
+
 end

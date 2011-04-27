@@ -1,22 +1,21 @@
 #masthead.header
   #header_wrapper
     #offset_header
-        
+      
       .beta
-        / 
-          Please report problems to bugs@livingvotersguide.org.
-        Please share with family and friends!
+        = render :partial => "shared/header/action_call"
+
       .logo_cell
         %h1#logo
           %a.logo_home{ :href => root_path, :title => ""}
-            = image_tag "apps/#{APP_CONFIG['app_name']['short']}/logo.png"
+            = image_tag current_theme_image_path "logo.png"
             
       #nav-user
         - if user_signed_in?
-          = render :partial => "shared/logged_in_head"
+          = render :partial => "shared/header/logged_in_head"
           
         - else
-          = render :partial => "shared/logged_out_head"
+          = render :partial => "shared/header/logged_out_head"
             
       - cache('primary_menu_header') do
         #nav-primary

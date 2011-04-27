@@ -29,7 +29,8 @@
     - else
       = stylesheet_link_tag 'reset-min.css'
       = stylesheet_link_tag 'jquery_ui/jquery-ui-1.8.4.custom.css'
-      = stylesheet_link_tag 'compiled/considerit'
+      = stylesheet_link_tag 'considerit'
+      = stylesheet_link_tag current_theme_stylesheet_path('considerit.theme')
 
     - if @reflectable 
       - if Rails.env.production? || Rails.env.test?
@@ -91,12 +92,12 @@
   %body
   
     #wrap
-      = render :partial => "shared/header"
+      = render :partial => "shared/header/container"
       #content
         = render :partial => "shared/flash_messages"
         = yield
 
-      = render :partial => "shared/footer"         
+      = render :partial => "shared/footer/container"         
 
     :javascript
       $j(document).ready(function(){

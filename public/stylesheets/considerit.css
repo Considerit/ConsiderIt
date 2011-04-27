@@ -1490,7 +1490,7 @@ table {
   border-collapse: separate; }
 
 html {
-  background: #b4b4b4 url(/images/bg-body.png) left top repeat-x; }
+  background-color: #b4b4b4; }
 
 body {
   color: #222222;

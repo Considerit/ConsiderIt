@@ -16,5 +16,6 @@ ConsiderIt::Application.routes.draw do
   }
 
   themes_for_rails # themes_for_rails gem routes 
-
+  
+  match "/theme" => "theme#set", :via => :post
 end

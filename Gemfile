@@ -41,9 +41,6 @@ gem 'whenever'
 # https://github.com/markbates/yamler
 gem 'yamler'
 
-# https://github.com/ludicast/yaml_db
-# gem 'yaml_db'
-
 # https://github.com/elight/acts_as_commentable_with_threading
 gem 'acts_as_commentable_with_threading'
 
@@ -69,7 +66,8 @@ gem 'themes_for_rails'
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:
 group :development, :test do
-   gem 'ruby-debug19'
-   gem 'ruby-debug-ide'  
+  gem 'ruby-debug19'
+  gem 'ruby-debug-ide'  
 #   gem 'webrat'
+  gem 'heroku'
 end

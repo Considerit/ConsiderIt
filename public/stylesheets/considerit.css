@@ -1650,3 +1650,12 @@ ul.form {
 
 #user_session_submit {
   margin-top: 15px; }
+
+.available_themes {
+  position: absolute;
+  top: 5px;
+  left: 250px; }
+  .available_themes li {
+    float: left;
+    padding: 10px;
+    border-right: 1px dotted black; }

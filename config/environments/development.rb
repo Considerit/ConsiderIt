@@ -29,3 +29,4 @@ ConsiderIt::Application.configure do
   
 end
 
+GOOGLE_ANALYTICS = ''

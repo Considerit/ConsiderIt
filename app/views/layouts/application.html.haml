@@ -21,24 +21,15 @@
     -else
       %meta{ :name => 'description', :content => ""}
       
-    = javascript_include_tag :defaults
+    -# = javascript_include_tag :defaults
     = csrf_meta_tag
     
-    - if false && Rails.env.production? || Rails.env.test?
-      = stylesheet_link_tag 'considerit.min'
-    - else
-      = stylesheet_link_tag 'reset-min.css'
-      = stylesheet_link_tag 'jquery_ui/jquery-ui-1.8.4.custom.css'
-      = stylesheet_link_tag 'considerit'
-      = stylesheet_link_tag current_theme_stylesheet_path('considerit.theme')
+    
+    = include_stylesheets :common, :media => 'all'      
+    = stylesheet_link_tag current_theme_stylesheet_path('considerit.theme')
 
     - if @reflectable 
-      - if false && Rails.env.production? || Rails.env.test?
-        = stylesheet_link_tag '/reflect/css/reflect.min.css'
-      - else
-        = stylesheet_link_tag '/reflect/css/reflect.css'
-        = stylesheet_link_tag '/reflect/css/reflect.considerit.css'
-        = stylesheet_link_tag '/reflect/css/jquery.ui.css'
+      = include_stylesheets :reflect, :media => 'all'
     
     /[if IE]
       = javascript_include_tag "svg", :"data-path" => "/javascripts/"
@@ -50,28 +41,11 @@
       = stylesheet_link_tag 'ie6'
       = javascript_include_tag 'IE7'
     
-    - if false && Rails.env.production? || Rails.env.test?
-      = javascript_include_tag 'considerit.min'          
-    - else
-      = javascript_include_tag 'jquery.corner'
-      = javascript_include_tag 'jquery.noblecount.min'
-      = javascript_include_tag 'jquery.qtip-1.0.0-rc3'
-
-    - if @protovis
-      = javascript_include_tag "protovis-r3.3"
+    = include_javascripts :workspace
 
     - if @reflectable
-      - if false && Rails.env.production? || Rails.env.test?
-        = javascript_include_tag '/reflect/js/reflect_dependencies.min.js'
-      - else
-        = javascript_include_tag '/reflect/js/third_party/inheritance.js'      
-        = javascript_include_tag '/reflect/js/third_party/jquery.color.js'      
-        = javascript_include_tag '/reflect/js/third_party/jquery.highlight.js'      
-        = javascript_include_tag '/reflect/js/third_party/jquery.pulse.js'      
-        = javascript_include_tag '/reflect/js/third_party/jquery.jqote2.min.js'      
-        = javascript_include_tag '/reflect/js/third_party/json2.js'      
-        = javascript_include_tag '/reflect/js/reflect.js'
-        = javascript_include_tag '/reflect/js/reflect.considerit.js'    
+      = include_javascripts :reflect
+
 
     :javascript
       $j = jQuery.noConflict();

@@ -51,12 +51,12 @@ class Point < ActiveRecord::Base
     metrics_per_segment = {}
     (0..6).each {|stance_bucket| metrics_per_segment[stance_bucket] = [0,0]}
 
-    inclusions_by_segment = inclusions.joins(:position).select('count(*) cnt, positions.stance_bucket stance_bucket').group("positions.stance_bucket").order("positions.stance_bucket")
+    inclusions_by_segment = inclusions.joins(:position).select('COUNT(*) AS cnt, positions.stance_bucket AS stance_bucket').group("positions.stance_bucket").order("positions.stance_bucket")
     inclusions_by_segment.each do |row|
       metrics_per_segment[row.stance_bucket.to_i][0] = row.cnt.to_i
     end
 
-    listings_by_segment = point_listings.joins(:position).select('count(distinct point_listings.user_id) cnt, positions.stance_bucket stance_bucket').group("positions.stance_bucket").order("positions.stance_bucket")        
+    listings_by_segment = point_listings.joins(:position).select('COUNT(distinct point_listings.user_id) AS cnt, positions.stance_bucket AS stance_bucket').group("positions.stance_bucket").order("positions.stance_bucket")        
     listings_by_segment.each do |row|
       metrics_per_segment[row.stance_bucket.to_i][1] = row.cnt.to_i
     end
@@ -93,12 +93,12 @@ class Point < ActiveRecord::Base
   # expensive, so should only be called periodically by cron job
   def self.update_relative_scores
     num_inclusions_per_point = {}
-    Inclusion.select("count(*) cnt, point_id pnt").group(:point_id).each do |row|
+    Inclusion.select("COUNT(*) AS cnt, point_id AS pnt").group(:point_id).each do |row|
       num_inclusions_per_point[row.pnt.to_i] = row.cnt.to_i
     end
 
     num_listings_per_point = {}
-    PointListing.select("count(distinct user_id) cnt, point_id pnt").group(:point_id).each do |row|
+    PointListing.select("COUNT(distinct user_id) AS cnt, point_id AS pnt").group(:point_id).each do |row|
       num_listings_per_point[row.pnt.to_i] = row.cnt.to_i
     end
 
@@ -162,7 +162,7 @@ protected
     qry = inclusions.joins(:position)   \
                     .where("positions.published = 1" )                                      \
                     .group(:stance_bucket)                                            \
-                    .select("COUNT(*) as cnt, positions.stance_bucket")
+                    .select("COUNT(*) AS cnt, positions.stance_bucket")
                         
     # get the number of inclusions per stance group
     qry.each do |row|
@@ -182,7 +182,7 @@ protected
     qry = point_listings.joins(:position)   \
                         .where("positions.published = 1" )                                      \
                         .group(:stance_bucket)                                            \
-                        .select("COUNT(distinct point_listings.user_id) as cnt, positions.stance_bucket")
+                        .select("COUNT(distinct point_listings.user_id) AS cnt, positions.stance_bucket")
                  
     qry.each do |row|
       # collapse strong and moderate support/oppose to make more fair distribution

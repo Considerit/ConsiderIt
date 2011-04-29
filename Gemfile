@@ -20,6 +20,7 @@ gem 'mysql'
 # Bundle the extra gems:
 
 gem "haml"
+gem 'sass'
 
 # https://github.com/plataformatec/devise
 gem 'devise'

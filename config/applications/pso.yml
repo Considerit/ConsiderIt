@@ -1,0 +1,60 @@
+development: 
+  app_name: 
+    short: pso
+    long: Living Voters Guide
+  
+  theme: pso
+  
+  meta:
+    title: Youth Education Levy Campaign
+    subtitle: Think through the different aspects of the education levy
+    
+  perform_authentication: true
+  send_email: false
+  
+  home:
+    call: A guide to the 2010 Washington State Ballot Measures
+    subcall: written by people like you 
+    values:
+      - lead: Organize your thoughts...
+        follow: Write a pro/con list for each measure.
+      - lead: Cut through the campaign fog...
+        follow: Hear what other Washingtonians think. 
+      - lead: Take the initiative...
+        follow: Add your own voice to the guide.
+  
+  socmedia:
+    facebook:
+      include_follow: false
+      facebook_page: 
+    twitter:
+      include_follow: false
+      twitter_page: 
+  
+  decisions:
+    name: 
+      short: component
+      full: Levy component
+  
+  footer:
+    has_custom_resources: true
+    resources:
+      - title: Resources
+        items:
+          - anchor: League of Women Voters of Gr. Seattle
+            link: http://sites.google.com/site/wavoter/ballot
+            title: Voters Guide by the League of Women Voters
+      
+         
+  
+test: 
+  default_to: development
+  perform_authentication: true
+  send_email: true
+
+
+production:
+  default_to: development
+  perform_authentication: true
+  send_email: true
+

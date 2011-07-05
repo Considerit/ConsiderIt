@@ -1,3 +1,30 @@
 html {
-  background-color: #EAE6E3;
+  background: url('/themes/pso/images/header_bg.png') repeat-x left top #EAE6E3;
+}
+
+#description .subheader h2 {
+  font-variant: small-caps;
+  text-transform: lowercase;
+  margin-bottom: 0;
+  font-size: 40px;
+  line-height: 40px;
+} 
+
+#description .subheader .extra {
+  font-size: 22px;
+  font-variant: small-caps;
+  text-transform: lowercase;  
+  margin-bottom: 18px;
+}
+
+#description .subheader table td {
+  padding-right: 10px;
+}
+
+#masthead > div {
+  height: 0;
+}
+
+.powered_by {
+  display: none;
 }

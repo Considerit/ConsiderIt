@@ -13,15 +13,13 @@ development:
   send_email: false
   
   home:
-    call: A guide to the 2010 Washington State Ballot Measures
-    subcall: written by people like you 
+    call: Youth Education Levy Campaign
+    subcall: Think through the different aspects of the education levy together
     values:
-      - lead: Organize your thoughts...
-        follow: Write a pro/con list for each measure.
-      - lead: Cut through the campaign fog...
-        follow: Hear what other Washingtonians think. 
-      - lead: Take the initiative...
-        follow: Add your own voice to the guide.
+      - lead: Organize your thoughts
+        follow: Write a pro/con list for different components of the levy.
+      - lead: Uncover counterarguments
+        follow: Think through the arguments people might make against your position. 
   
   socmedia:
     facebook:
@@ -33,8 +31,8 @@ development:
   
   decisions:
     name: 
-      short: component
-      full: Levy component
+      short: levy component
+      full: levy component
   
   footer:
     has_custom_resources: true

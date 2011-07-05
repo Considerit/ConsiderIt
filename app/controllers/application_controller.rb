@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 private
   def theme_resolver
     if !session.has_key?('user_theme')
-      session["user_theme"] = "default"
+      session["user_theme"] = APP_CONFIG['theme']
     end
     session["user_theme"]
   end

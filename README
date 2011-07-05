@@ -24,33 +24,38 @@ ConsiderIt is open source, a Ruby on Rails project. It is licensed under the AGP
 
 == Getting Started
 
-manage ruby / rails installs with RVM: https://rvm.beginrescueend.com/gemsets/
+1. manage ruby / rails installs with RVM (https://rvm.beginrescueend.com/gemsets/). After installing rvm, install ruby 1.92 (rvm install 1.9.2)
   - good mac install directions at http://www.cowboycoded.com/2010/12/04/setting-up-rails-3-on-mac-osx-snow-leopard-10-6-4/
 
-repository / deployment
-- when creating app on heroku, specify 1.9.2 stack: http://devcenter.heroku.com/articles/stack
-- you can have multiple remote sites for git, such as github and heroku: http://devcenter.heroku.com/articles/git
+2. Clone from git repository into your workspace. note that you will have to setup your ssh keys with github first (see e.g. http://help.github.com/linux-set-up-git/)
+      <tt>git clone git@github.com:tkriplean/ConsiderIt.git</tt>
 
-for installing mysql gem:
+3. <tt>cd ConsiderIt</tt>. Note that an RVM project file (.rvmrc) already exists in the project. When you first cd into the directory, RVM should recognize this and ask if you trust it. You should say yes. 
+
+4. install gems
+   <tt>gem install rails</tt>
+   <tt>bundle install</tt>
+   <tt>rake gems:install</tt>
+
+4a. (for mac) when installing mysql gem:
   - sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/usr/local/mysql/bin/mysql_config
   - OR with MAMP: sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/Applications/MAMP/Library/bin/mysql_config
+  - accessing MAMP mysql via terminal: mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
 
-accessing MAMP mysql via terminal: mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
+4b. Imagemagick is required: http://www.imagemagick.org/script/index.php
 
-1. At the command prompt, create a new Rails application:
-       <tt>rails new myapp</tt> (where <tt>myapp</tt> is the application name)
+5. update config/database.yml as necessary
 
-2. Change directory to <tt>myapp</tt> and start the web server:
-       <tt>cd myapp; rails server</tt> (run with --help for options)
+6. create the database
+   <tt>rake db:create</tt>
+   <tt>rake db:migrate</tt>
 
-3. Go to http://localhost:3000/ and you'll see:
-       "Welcome aboard: You're riding Ruby on Rails!"
+5. Start the web server:
+       <tt>rails server</tt> (run with --help for options)
 
-4. Follow the guidelines to start developing your application. You can find
-the following resources handy:
-
-* The Getting Started Guide: http://guides.rubyonrails.org/getting_started.html
-* Ruby on Rails Tutorial Book: http://www.railstutorial.org/
+6. (optional) Deployment
+- when creating app on heroku, specify 1.9.2 stack: http://devcenter.heroku.com/articles/stack
+- you can have multiple remote sites for git, such as github and heroku: http://devcenter.heroku.com/articles/git
 
 
 == Description of Contents

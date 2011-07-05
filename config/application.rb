@@ -46,4 +46,4 @@ module ConsiderIt
   end
 end
 
-APPNAME = '_base'
+APPNAME = 'lvg'

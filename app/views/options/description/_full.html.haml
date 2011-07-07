@@ -11,5 +11,6 @@
           - for i in @option.format_description
             %li.initiative_desc_point= h i
         
-        #full_desc_block
-          =link_to "Read full text of #{@option.reference}", @option.url, :title => "Read full text of #{@option.reference}"
+        - if @option.url
+          #full_desc_block
+            =link_to "Read full text of #{@option.reference}", @option.url, :title => "Read full text of #{@option.reference}"

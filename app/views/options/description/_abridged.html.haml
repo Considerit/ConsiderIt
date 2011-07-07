@@ -10,6 +10,7 @@
         %ul
           - for i in @option.format_description
             %li.initiative_desc_point= h i
-        
-        #full_desc_block
-          =link_to "Read full text of Ballot #{@option.reference} (PDF)", @option.url, :title => "Read full description of #{@option.reference}"
+
+        - if @option.url        
+          #full_desc_block
+            =link_to "Read full text of Ballot #{@option.reference} (PDF)", @option.url, :title => "Read full description of #{@option.reference}"

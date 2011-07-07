@@ -1,5 +1,5 @@
 .logged_in_name
-  = link_to @user.username, edit_user_registration_path, :class => "settings"
+  = link_to @user.email, edit_user_registration_path, :class => "settings"
   
 .avatar
   -# = image_tag current_user.avatar.url(:thumb), :class => "nav_avatar", :alt => "Your profile picture"

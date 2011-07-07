@@ -22,5 +22,9 @@ class User < ActiveRecord::Base
     end
   end
   
+  def name
+    email[0..email.index('@')]
+  end
+  
       
 end

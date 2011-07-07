@@ -24,13 +24,13 @@ class Point < ActiveRecord::Base
     end }
   
   scope :ranked_overall, 
-    where( "points.score > 0" ).
+    # where( "points.score > 0" ).
     order( "points.score DESC" )
   
   scope :ranked_persuasiveness, 
-    where( "points.persuasiveness > 0"). 
+    # where( "points.persuasiveness > 0"). 
     order( "points.persuasiveness DESC" )
-
+    
   scope :ranked_for_stance_segment, proc {|stance_bucket|
       where("points.score_stance_group_#{stance_bucket} > 0").
       order("points.score_stance_group_#{stance_bucket} DESC")

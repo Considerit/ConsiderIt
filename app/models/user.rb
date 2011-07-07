@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   end
   
   def name
-    email[0..email.index('@')]
+    email[0..email.index('@')-1]
   end
   
       

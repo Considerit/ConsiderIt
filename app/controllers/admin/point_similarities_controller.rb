@@ -8,7 +8,7 @@ class Admin::PointSimilaritiesController < ApplicationController
 
     @total_compared = current_user.point_similarities.count
     @num_points = @option.points.count
-    if current_user.point_similarities.count >= num_points * (num_points+1)/2 - num_points
+    if current_user.point_similarities.count >= @num_points * (@num_points+1)/2 - @num_points
       first = current_user.point_similarities.where(:option_id => @option.id).first
       redirect_to edit_option_point_similarity_path(@option, first)
     end

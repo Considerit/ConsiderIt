@@ -160,7 +160,7 @@ protected
     distribution = Array.new(5, 0.0001)
 
     qry = inclusions.joins(:position)   \
-                    .where("positions.published = 1" )                                      \
+                    .where("positions.published" )                                      \
                     .group(:stance_bucket)                                            \
                     .select("COUNT(*) AS cnt, positions.stance_bucket")
                         

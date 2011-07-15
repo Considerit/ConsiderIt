@@ -1,0 +1,58 @@
+#point_similarity
+  = form_for [@option, @comparison] do |f|
+    
+    %h2
+      How similar are these points?
+      
+    
+    
+    #p1.point_to_be_compared
+      = @p1.nutshell
+      = @p1.text
+    
+    #p2.point_to_be_compared
+      = @p2.nutshell
+      = @p2.text
+    
+    .clear
+    
+    = f.hidden_field :value, :id => 'similarity_val'
+    = f.hidden_field :p1_id, :value => @p1.id
+    = f.hidden_field :p2_id, :value => @p2.id
+    
+    .slider_wrapper
+      
+      
+      .slider_footer
+        .left
+          completely unrelated &#8592;
+        
+        #similarity_slider
+        
+        .right
+          &#8594; basically the same
+        .clear
+        
+    .submit_buttons
+      .left
+        = submit_tag "<< Prev"
+      .right
+        = submit_tag "Next >>"
+      .clear
+      
+    .progress
+      #{@total_compared}/#{@num_points} comparisons completed for #{@option.designator}
+      
+:javascript
+  $j(function() {
+    $j( "#similarity_slider" ).slider({
+      value:#{@comparison.value},
+      min: -2,
+      max: 2,
+      step: 1,
+      slide: function( event, ui ) {
+        $j( "#similarity_val" ).val( ui.value );
+      }
+    });
+    $j( "#similarity_val" ).val( $j( "#similarity_slider" ).slider( "value" ) );
+  });

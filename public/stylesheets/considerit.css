@@ -1659,3 +1659,47 @@ ul.form {
     float: left;
     padding: 10px;
     border-right: 1px dotted black; }
+
+#point_similarity form {
+  margin: auto;
+  width: 650px; }
+  #point_similarity form .point_to_be_compared {
+    border: 3px solid #eeeeee;
+    padding: 10px;
+    width: 250px; }
+    #point_similarity form .point_to_be_compared#p1 {
+      margin-left: 10px;
+      float: left; }
+    #point_similarity form .point_to_be_compared#p2 {
+      margin-right: 10px;
+      float: right; }
+  #point_similarity form .slider_wrapper {
+    margin: 20px auto;
+    color: #777777; }
+    #point_similarity form .slider_wrapper > div {
+      margin: 0 auto; }
+    #point_similarity form .slider_wrapper .slider_footer {
+      width: 650px;
+      height: 25px;
+      margin-left: 70px; }
+      #point_similarity form .slider_wrapper .slider_footer .right {
+        width: 200px;
+        float: left; }
+      #point_similarity form .slider_wrapper .slider_footer .left {
+        width: 150px;
+        float: left; }
+      #point_similarity form .slider_wrapper .slider_footer #similarity_slider {
+        width: 200px;
+        margin: 0 auto;
+        float: left; }
+  #point_similarity form .submit_buttons {
+    width: 200px;
+    margin: 0 auto; }
+    #point_similarity form .submit_buttons .left {
+      float: left; }
+    #point_similarity form .submit_buttons .right {
+      float: right; }
+  #point_similarity form .progress {
+    margin: 25px auto;
+    color: #aaaaaa;
+    width: 150px; }

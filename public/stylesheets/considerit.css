@@ -1703,3 +1703,6 @@ ul.form {
     margin: 25px auto;
     color: #aaaaaa;
     width: 150px; }
+
+a.rate_point_similarity {
+  color: white; }

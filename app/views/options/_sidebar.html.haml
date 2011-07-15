@@ -17,7 +17,7 @@
         %a.take_stance1.add_qtip{ :href => new_option_position_path(@option), :title => "Collect your thoughts and make your voice heard by composing a pro/con list and taking stand on #{@option.designator}"}
           = image_tag "take_stand.png", :alt => "Contribute by taking a stance and writing a pro/con list on #{@option.designator}"
 
-  - if @user #&& @user.admin?
+  - if @user && @user.admin?
     %a.call.rate_point_similarity{ :href => new_option_point_similarity_path(@option) }
       Help compare points
       

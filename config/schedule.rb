@@ -7,6 +7,8 @@
 #
 # set :output, "/path/to/my/cron_log.log"
 #
+env :MAILTO, '""' 
+
 every 5.minutes do
   rake "cache:points"
 end

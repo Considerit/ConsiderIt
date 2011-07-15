@@ -46,7 +46,7 @@
 :javascript
   $j(function() {
     $j( "#similarity_slider" ).slider({
-      value:#{@comparison.value},
+      value:@init_val,
       min: -2,
       max: 2,
       step: 1,

@@ -33,7 +33,8 @@ class Admin::PointSimilaritiesController < ApplicationController
     end
 
     @comparison = @option.point_similarities.build
-
+    @init_val = 0
+    
     @p1 = @p2 = nil
     while ( !@p1 || !@p2) || (pairs.has_key?(@p1.id) && pairs[@p1.id].has_key?(@p2.id))
       (@p1, @p2) = @option.points.sample(2)
@@ -49,6 +50,8 @@ class Admin::PointSimilaritiesController < ApplicationController
     @total_compared = current_user.point_similarities.count
     @num_points = @option.points.count
     @comparison = PointSimilarity.find(params[:id])
+    @init_val = @comparison.value
+    
     @p1 = @comparison.p1
     @p2 = @comparison.p2
   end

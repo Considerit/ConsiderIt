@@ -1,7 +1,7 @@
 class Admin::PointSimilaritiesController < ApplicationController
   
   def new
-    redirect_to root_path unless current_user.admin?
+    #redirect_to root_path unless current_user.admin?
 
     @option = Option.find(params[:option_id])
     @user = current_user
@@ -42,7 +42,7 @@ class Admin::PointSimilaritiesController < ApplicationController
   end
   
   def edit    
-    redirect_to root_path unless current_user.admin?
+    #redirect_to root_path unless current_user.admin?
     
     @option = Option.find(params[:option_id])
     @user = current_user
@@ -54,6 +54,7 @@ class Admin::PointSimilaritiesController < ApplicationController
   end
   
   def create
+    # redirect_to root_path unless current_user.admin?
     @option = Option.find(params[:option_id])
     @user = current_user
     
@@ -75,6 +76,8 @@ class Admin::PointSimilaritiesController < ApplicationController
   end
 
   def update
+    # redirect_to root_path unless current_user.admin?
+    
     @option = Option.find(params[:option_id])
     @user = current_user
     @comparison = PointSimilarity.find(params[:id])

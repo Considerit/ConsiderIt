@@ -7,6 +7,7 @@ ConsiderIt::Application.routes.draw do
     resources :points, :only => [:index, :create] do 
       resources :inclusions, :only => [:create, :destroy] 
     end
+    resources :point_similarities, :module => :admin
   end
   
   devise_for :users, :controllers => { 
@@ -18,4 +19,5 @@ ConsiderIt::Application.routes.draw do
   themes_for_rails # themes_for_rails gem routes 
   
   match "/theme" => "theme#set", :via => :post
+  
 end

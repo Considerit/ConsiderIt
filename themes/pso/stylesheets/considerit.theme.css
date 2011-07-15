@@ -28,3 +28,17 @@ html {
 .powered_by {
   display: none;
 }
+
+
+.footer .learn > ul {
+  float: left;
+  margin: 0 20px;
+}
+#footer .sitemap > div.learn {
+  height: auto;
+}
+
+
+#footer .sitemap > div.learn {
+  width: auto;
+}

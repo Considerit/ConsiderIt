@@ -28,3 +28,37 @@ html {
 .powered_by {
   display: none;
 }
+
+
+.footer .learn > ul {
+  float: left;
+  margin: 0 20px;
+}
+#footer .sitemap > div.learn {
+  height: auto;
+}
+
+
+#footer .sitemap > div.learn {
+  width: auto;
+}
+
+.header .designation {
+display: none;
+}
+
+li.initiative_item.small > a .link_internal {
+    padding-top: 10px;
+}
+
+li.initiative_item.small > a .link_internal h2 .header .number {
+    font-size: 30px;
+}
+
+.fb_login_link {
+display:none;
+}
+
+#nav-primary {
+display: none;
+}

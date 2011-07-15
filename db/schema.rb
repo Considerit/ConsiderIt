@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110426054929) do
+ActiveRecord::Schema.define(:version => 20110714190816) do
 
   create_table "inclusion_versions", :force => true do |t|
     t.integer  "inclusion_id"
@@ -71,6 +71,16 @@ ActiveRecord::Schema.define(:version => 20110426054929) do
   add_index "point_listings", ["point_id"], :name => "index_point_listings_on_point_id"
   add_index "point_listings", ["position_id"], :name => "index_point_listings_on_position_id"
 
+  create_table "point_similarities", :force => true do |t|
+    t.integer  "p1_id"
+    t.integer  "p2_id"
+    t.integer  "option_id"
+    t.integer  "user_id"
+    t.integer  "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "point_versions", :force => true do |t|
     t.integer  "point_id"
     t.integer  "version"
@@ -124,8 +134,8 @@ ActiveRecord::Schema.define(:version => 20110426054929) do
     t.float    "score_stance_group_4"
     t.float    "score_stance_group_5"
     t.float    "score_stance_group_6"
-    t.integer  "version"
     t.datetime "deleted_at"
+    t.integer  "version"
   end
 
   add_index "points", ["is_pro"], :name => "index_points_on_is_pro"

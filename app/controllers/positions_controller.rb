@@ -57,33 +57,33 @@ class PositionsController < ApplicationController
         )
       end
     end
-        
+
     @included_pros = @option.points.pros.included_by(current_user)
     @included_cons = @option.points.cons.included_by(current_user)
 
     @page = 1
   end
-  
+
   def create
     @option = Option.find(params[:option_id])
 
     (stance, bucket) = get_stance_val_from_params(params)
-        
+
     params[:position].update({
       :user_id => current_user.id,
       :stance => stance,
       :stance_bucket => bucket,
       :published => true
     })
-    
+
     @position = Position.unscoped.find(params[:position][:position_id])
     params[:position].delete(:position_id)
     @position.update_attributes(params[:position])
     @position.save
-        
+
     respond_with(@option, @position) do |format|
       format.html { redirect_to(@option) }
-    end   
+    end
   end
   
   def update

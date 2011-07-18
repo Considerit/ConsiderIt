@@ -2,9 +2,7 @@
   = form_for [@option, @comparison] do |f|
     
     %h2
-      How similar are these points?
-      
-    
+      Are these points expressing the same idea, very different ideas, or somewhere in between?
     
     #p1.point_to_be_compared
       = @p1.nutshell
@@ -19,19 +17,31 @@
     = f.hidden_field :value, :id => 'similarity_val'
     = f.hidden_field :p1_id, :value => @p1.id
     = f.hidden_field :p2_id, :value => @p2.id
-    
-    .slider_wrapper
+   
       
+    .slider_wrapper
       
       .slider_footer
         .left
-          completely unrelated &#8592;
+          completely unrelated
         
         #similarity_slider
         
         .right
-          &#8594; basically the same
+          basically the same
         .clear
+
+    .current_value
+      .vallabel.five
+        Essentially the same but perhaps different wording.
+      .vallabel.four
+        Close, but with some differences.
+      .vallabel.three
+        A balance of similarities and differences.
+      .vallabel.two
+        Mostly different, but with some similarities.
+      .vallabel.one
+        Express completely different ideas.
         
     .submit_buttons
       .left
@@ -41,18 +51,22 @@
       .clear
       
     .progress
-      #{@total_compared}/#{@num_points} comparisons completed for #{@option.designator}
+      #{@total_compared}/#{@total_possible_comparisons} comparisons completed for #{@option.designator}
       
 :javascript
   $j(function() {
     $j( "#similarity_slider" ).slider({
       value:#{@init_val},
-      min: -2,
-      max: 2,
+      min: 1,
+      max: 5,
       step: 1,
       slide: function( event, ui ) {
         $j( "#similarity_val" ).val( ui.value );
+        $j( ".current_value .vallabel").hide();
+        $j( ".current_value .vallabel." + {5:'five',4:'four',3:'three',2:'two',1:'one'}[ui.value] ).show();
       }
     });
     $j( "#similarity_val" ).val( $j( "#similarity_slider" ).slider( "value" ) );
+    $j( ".current_value .vallabel").hide();
+    $j( ".current_value .vallabel." + {5:'five',4:'four',3:'three',2:'two',1:'one'}[#{@init_val}] ).show();
   });

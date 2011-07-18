@@ -8,14 +8,14 @@ class Admin::PointSimilaritiesController < ApplicationController
 
     @total_compared = current_user.point_similarities.count
     @num_points = @option.points.count
-    @total_possible_comparisons = @num_points * (@num_points+1)/2
+    @total_possible_comparisons = (@num_points * (@num_points-1))/2
+
     if current_user.point_similarities.count >= @total_possible_comparisons
       first = current_user.point_similarities.where(:option_id => @option.id).first
       redirect_to edit_option_point_similarity_path(@option, first)
     end
 
     pairs = {}
-    pp current_user.point_similarities
     
     current_user.point_similarities.each do |ps|
 
@@ -52,7 +52,7 @@ class Admin::PointSimilaritiesController < ApplicationController
     @num_points = @option.points.count
     @comparison = PointSimilarity.find(params[:id])
     @init_val = @comparison.value
-    @total_possible_comparisons = @num_points * (@num_points+1)/2
+    @total_possible_comparisons = (@num_points * (@num_points-1))/2
 
     @p1 = @comparison.p1
     @p2 = @comparison.p2

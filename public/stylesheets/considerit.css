@@ -1673,23 +1673,31 @@ ul.form {
     #point_similarity form .point_to_be_compared#p2 {
       margin-right: 10px;
       float: right; }
+  #point_similarity form .current_value {
+    margin: 10px auto;
+    width: 325px;
+    text-align: center;
+    border: 1px solid #85d55d;
+    background-color: #ceeebe;
+    color: #5cb62f;
+    padding: 5px; }
   #point_similarity form .slider_wrapper {
     margin: 20px auto;
-    color: #777777; }
+    color: #aaaaaa; }
     #point_similarity form .slider_wrapper > div {
       margin: 0 auto; }
     #point_similarity form .slider_wrapper .slider_footer {
       width: 650px;
       height: 25px;
-      margin-left: 70px; }
+      margin-left: 5px; }
       #point_similarity form .slider_wrapper .slider_footer .right {
-        width: 200px;
-        float: left; }
+        float: left;
+        margin-left: 20px; }
       #point_similarity form .slider_wrapper .slider_footer .left {
-        width: 150px;
-        float: left; }
+        float: left;
+        margin-right: 20px; }
       #point_similarity form .slider_wrapper .slider_footer #similarity_slider {
-        width: 200px;
+        width: 325px;
         margin: 0 auto;
         float: left; }
   #point_similarity form .submit_buttons {
@@ -1699,10 +1707,14 @@ ul.form {
       float: left; }
     #point_similarity form .submit_buttons .right {
       float: right; }
+    #point_similarity form .submit_buttons input {
+      background-color: white;
+      border: none;
+      color: black; }
   #point_similarity form .progress {
-    margin: 25px auto;
+    margin-top: 20px;
     color: #aaaaaa;
-    width: 150px; }
+    text-align: center; }
 
 a.rate_point_similarity {
   color: white; }

@@ -46,7 +46,6 @@ gem 'yamler'
 gem 'acts_as_commentable_with_threading'
 
 # https://github.com/documentcloud/jammit/
-#TODO: activate jammit
 gem 'jammit'
 
 # https://github.com/indirect/jquery-rails

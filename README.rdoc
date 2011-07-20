@@ -46,7 +46,7 @@ Below are quick installation instructions.  Also see Installation Hints
    RVM should recognize this and ask if you trust it. You should say yes.
 
 6. Install gems.  This item is in two parts: dealing with the
-problematic <tt>mysql</tt> gem; and installing everything else.
+   problematic <tt>mysql</tt> gem; and installing everything else.
    * The mysql gem is problematic on the Macintosh.  Here are quick
      directions -- see the Installation Hints below for alternatives if
      this doesn't work.
@@ -76,8 +76,8 @@ problematic <tt>mysql</tt> gem; and installing everything else.
    (run with --help for options)
 
 10. (optional) Deployment
-    - when creating app on heroku, specify 1.9.2 stack: http://devcenter.heroku.com/articles/stack
-    - you can have multiple remote sites for git, such as github and heroku: http://devcenter.heroku.com/articles/git
+    * when creating app on heroku, specify 1.9.2 stack: http://devcenter.heroku.com/articles/stack
+    * you can have multiple remote sites for git, such as github and heroku: http://devcenter.heroku.com/articles/git
 
 
 == Installation Hints

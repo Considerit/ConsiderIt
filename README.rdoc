@@ -45,22 +45,23 @@ Below are quick installation instructions.  Also see Installation Hints
    already exists in the project. When you first cd into the directory,
    RVM should recognize this and ask if you trust it. You should say yes.
 
-6. Install gems.
-   a. The mysql gem is problematic on the Macintosh.  Here are quick
-      directions -- see the Installation Hints below for alternatives if
-      this doesn't work.
+6. Install gems.  This item is in two parts: dealing with the
+problematic <tt>mysql</tt> gem; and installing everything else.
+   * The mysql gem is problematic on the Macintosh.  Here are quick
+     directions -- see the Installation Hints below for alternatives if
+     this doesn't work.
 
-      (for mac) when installing mysql gem:
-        sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/usr/local/mysql/bin/mysql_config
-      Or with MAMP:
-        sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/Applications/MAMP/Library/bin/mysql_config
-      accessing MAMP mysql via terminal: 
-        mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
+     (for mac) when installing mysql gem:
+       sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/usr/local/mysql/bin/mysql_config
+     Or with MAMP:
+       sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/Applications/MAMP/Library/bin/mysql_config
+     accessing MAMP mysql via terminal: 
+       mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
 
-   b. Install the other gems.  For the other gems, note that the Gemfile in the ConsiderIt directory
-      specifies a particular version of rails -- this will install that version.
-        gem install rails -v '3.0.6'
-        bundle install
+   * Install the other gems.  The Gemfile in the ConsiderIt directory specifies 
+     a particular version of rails -- the following command will install that version.
+       gem install rails -v '3.0.6'
+       bundle install
 
 7. Update config/database.yml as necessary.  You may need to change
    the user name or password, and perhaps use a different adaptor.  See
@@ -83,79 +84,79 @@ Below are quick installation instructions.  Also see Installation Hints
 
 These hints are currently only for the Macintosh.
 
-Step 1 suggests managing ruby installs with RVM (Ruby Version
-Manager).  This will install a recent version of Ruby, but also leave
-the built-in version of Ruby intact at /usr/bin/ruby
+1. Ruby.  This step suggests managing ruby installs with RVM (Ruby Version
+   Manager).  This will install a recent version of Ruby, but also leave
+   the built-in version of Ruby intact at /usr/bin/ruby
 
-The suggested script for installing rvm is:
-  bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)
+   The suggested script for installing rvm is:
+     bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)
 
-If this doesn't work try downloading the script from
-https://rvm.beginrescueend.com/install/rvm and running it directly as
-a shell script.
+   If this doesn't work try downloading the script from
+   https://rvm.beginrescueend.com/install/rvm and running it directly as
+   a shell script.
 
-After you're done, check that you have the correct version of ruby
-(should be 1.9.2):
-  ruby -v
+   After you're done, check that you have the correct version of ruby
+   (should be 1.9.2):
+     ruby -v
 
-Set this as the default in RVM so you don't have to switch each time
-you open a new shell:
-  rvm --default use 1.9.2
+   Set this as the default in RVM so you don't have to switch each time
+   you open a new shell:
+     rvm --default use 1.9.2
 
-Step 3 (clone from the git repository) This is appropriate if you just
-want a copy of the code.  If you plan to contribute, fork the
-repository instead so you have your own copy on github -- see
-http://help.github.com/fork-a-repo/
+2. Straightforward!
 
-Step 4 (install ImageMagick) For the Macintosh the recommended
-technique is to use MacPorts (http://www.macports.org/).  This
-involves building from source -- no dmg file, unfortunately.  However,
-this has worked fine on various Macs, so you probably won't have any
-trouble.
+3. Cloning the git repository - this is appropriate if you just
+   want a copy of the code.  If you plan to contribute, fork the
+   repository instead so you have your own copy on github -- see
+   http://help.github.com/fork-a-repo/
 
-Step 6 (install gems) As noted, the mysql gem is problematic on the
-Macintosh.  The mysql2 gem is touted as superior to the mysql gem, so
-you can try that if the instructions above don't work.  However, the
-most recent version didn't install correctly.  Installing an older
-version (0.2.7) worked on a Macbook air running Snow Leopard (version
-10.6.8).  You'll first need to fix a path problem for Ruby mysql2 gem
-to find the correct library by putting this in your .profile file:
+4. ImageMagick - for the Macintosh the recommended
+   technique is to use MacPorts (http://www.macports.org/).  This
+   involves building from source and takes a while -- no dmg file, 
+   unfortunately.  However, this has worked fine on various Macs, 
+   so you probably won't have any trouble.
 
-  export DYLD_LIBRARY_PATH="/usr/local/mysql/lib:$DYLD_LIBRARY_PATH"
+5. Straightforward!
 
-Then this should install the gem itself:
-  sudo env ARCHFLAGS="-arch x86_64" gem install mysql2 -v 0.2.7 -- --with-mysql-config=/usr/local/mysql/bin/mysql_config
+6. Install gems.  As noted, the mysql gem is problematic on the
+   Macintosh.  The mysql2 gem is touted as superior to the mysql gem, so
+   you can try that if the instructions above don't work.  However, the
+   most recent version didn't install correctly.  Installing an older
+   version (0.2.7) worked on a Macbook air running Snow Leopard (version
+   10.6.8).  You'll first need to fix a path problem for Ruby mysql2 gem
+   to find the correct library by putting this in your .profile file:
+     export DYLD_LIBRARY_PATH="/usr/local/mysql/lib:$DYLD_LIBRARY_PATH"
 
-If you use mysql2 rather than mysql, edit the Gemfile by replacing
-this line:
-  gem 'mysql'
-with
-  gem 'mysql2', '0.2.7'
+   Then this should install the gem itself:
+     sudo env ARCHFLAGS="-arch x86_64" gem install mysql2 -v 0.2.7 -- --with-mysql-config=/usr/local/mysql/bin/mysql_config
 
-Also replace mysql (the adaptor) in config/database.yml with mysql2.
+   If you use mysql2 rather than mysql, edit the Gemfile by replacing this line:
+     gem 'mysql'
+   with
+     gem 'mysql2', '0.2.7'
 
-Neither of these techniques worked on a desktop Mac Pro running
-Leopard (version 10.5.8).  There were various problems, including not
-being able to find the library.  To get this working I ended up
-removing the version of mysql installed from the dmg file and
-installed it using Macports.  (There must be a better way but this
-worked.)  Here are directions for completely removing MySQL if you end
-up needing to do this:
+   Also replace mysql (the adaptor) in config/database.yml with mysql2.
 
-http://akrabat.com/computing/uninstalling-mysql-on-mac-os-x-leopard/
+   Neither of these techniques worked on a desktop Mac Pro running
+   Leopard (version 10.5.8).  There were various problems, including not
+   being able to find the library.  To get this working I ended up
+   removing the version of mysql installed from the dmg file and
+   installed it using Macports.  (There must be a better way but this
+   worked.)  Here are directions for completely removing MySQL if you end
+   up needing to do this:
+   http://akrabat.com/computing/uninstalling-mysql-on-mac-os-x-leopard/
 
-Then install MySQL using Macports:
-  sudo port install mysql5
-  sudo port install mysql5-server
+   Then install MySQL using Macports:
+     sudo port install mysql5
+     sudo port install mysql5-server
 
-After this, a simple
-  sudo gem install mysql
-worked.
+   After this, a simple
+     sudo gem install mysql
+   worked.
 
-(Step 7) Update config/database.yml as necessary
-
-If you used the mysql2 gem, you'll need to change the adaptor
-accordingly.  Also edit the user name or password to taste.
+7. Update config/database.yml as necessary.
+   If you used the mysql2 gem, you'll need to change the adaptor
+   accordingly.  Also edit the user name or password to taste.
 
 Finally, if you are still having trouble with rails or with the mysql
 interface, try making a trivial test application with rails, as

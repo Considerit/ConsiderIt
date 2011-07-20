@@ -39,26 +39,28 @@ Below are quick installation instructions.  Also see Installation Hints
 
 4. Install ImageMagick: http://www.imagemagick.org/script/index.php
 
-5. <tt>cd ConsiderIt</tt>. Note that an RVM project file (.rvmrc)
+5. Go into the ConsiderIt directory:
+    cd ConsiderIt
+   Note that an RVM project file (.rvmrc)
    already exists in the project. When you first cd into the directory,
    RVM should recognize this and ask if you trust it. You should say yes.
 
 6. Install gems.
-   The mysql gem is problematic on the Macintosh.  Here are quick
-   directions -- see the Installation Hints below for alternatives if
-   this doesn't work.
+   a. The mysql gem is problematic on the Macintosh.  Here are quick
+      directions -- see the Installation Hints below for alternatives if
+      this doesn't work.
 
-   (for mac) when installing mysql gem:
-     sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/usr/local/mysql/bin/mysql_config
-   Or with MAMP:
-     sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/Applications/MAMP/Library/bin/mysql_config
-   accessing MAMP mysql via terminal: 
-     mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
+      (for mac) when installing mysql gem:
+        sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/usr/local/mysql/bin/mysql_config
+      Or with MAMP:
+        sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/Applications/MAMP/Library/bin/mysql_config
+      accessing MAMP mysql via terminal: 
+        mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
 
-   For the other gems, note that the Gemfile in the ConsiderIt directory
-   specifies a particular version of rails -- this will install that version.
-     gem install rails -v '3.0.6'
-     bundle install
+   b. Install the other gems.  For the other gems, note that the Gemfile in the ConsiderIt directory
+      specifies a particular version of rails -- this will install that version.
+        gem install rails -v '3.0.6'
+        bundle install
 
 7. Update config/database.yml as necessary.  You may need to change
    the user name or password, and perhaps use a different adaptor.  See

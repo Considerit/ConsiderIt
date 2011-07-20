@@ -1,4 +1,4 @@
-== ConsiderIt
+= ConsiderIt
 
 ConsiderIt is an open source deliberation platform that allows people to
 collaboratively create pro/con lists of the key points around any complex issue. 
@@ -25,58 +25,56 @@ ConsiderIt is open source, a Ruby on Rails project. It is licensed under the AGP
 Below are quick installation instructions.  Also see Installation Hints
 (next section) if you have problems.
 
-1. Manage ruby / rails installs with RVM (https://rvm.beginrescueend.com/gemsets/). 
-After installing rvm, install ruby 1.92 (rvm install 1.9.2)
-Good mac install directions at 
-http://www.cowboycoded.com/2010/12/04/setting-up-rails-3-on-mac-osx-snow-leopard-10-6-4/
+1. Manage ruby / rails installs with RVM (https://rvm.beginrescueend.com/gemsets/).
+   After installing rvm, install ruby 1.92 (rvm install 1.9.2)
+   Good mac install directions at
+   http://www.cowboycoded.com/2010/12/04/setting-up-rails-3-on-mac-osx-snow-leopard-10-6-4/
 
 2. Install a SQL database if needed.  We've been using MySQL (http://dev.mysql.com/downloads/)
 
 3. Clone from git repository into your workspace. note that you will
-have to set up your ssh keys with github first 
-(see e.g. http://help.github.com/linux-set-up-git/)
-  git clone git@github.com:tkriplean/ConsiderIt.git
+   have to set up your ssh keys with github first 
+   (see e.g. http://help.github.com/linux-set-up-git/)
+     git clone git@github.com:tkriplean/ConsiderIt.git
 
 4. Install ImageMagick: http://www.imagemagick.org/script/index.php
 
 5. <tt>cd ConsiderIt</tt>. Note that an RVM project file (.rvmrc)
-already exists in the project. When you first cd into the directory,
-RVM should recognize this and ask if you trust it. You should say yes.
+   already exists in the project. When you first cd into the directory,
+   RVM should recognize this and ask if you trust it. You should say yes.
 
-6. Install gems
+6. Install gems.
+   The mysql gem is problematic on the Macintosh.  Here are quick
+   directions -- see the Installation Hints below for alternatives if
+   this doesn't work.
 
-The mysql gem is problematic on the Macintosh.  Here are quick
-directions -- see the Installation Hints below for alternatives if
-this doesn't work.
+   (for mac) when installing mysql gem:
+     sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/usr/local/mysql/bin/mysql_config
+   Or with MAMP:
+     sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/Applications/MAMP/Library/bin/mysql_config
+   accessing MAMP mysql via terminal: 
+     mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
 
-(for mac) when installing mysql gem:
-  sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/usr/local/mysql/bin/mysql_config
-Or with MAMP:
-  sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/Applications/MAMP/Library/bin/mysql_config
-accessing MAMP mysql via terminal: 
-  mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
-
-For the other gems, note that the Gemfile in the ConsiderIt directory
-specifies a particular version of rails -- this will install that version.
-
-  gem install rails -v '3.0.6'
-  bundle install
+   For the other gems, note that the Gemfile in the ConsiderIt directory
+   specifies a particular version of rails -- this will install that version.
+     gem install rails -v '3.0.6'
+     bundle install
 
 7. Update config/database.yml as necessary.  You may need to change
-the user name or password, and perhaps use a different adaptor.  See
-Installation Hints.
+   the user name or password, and perhaps use a different adaptor.  See
+   Installation Hints.
 
 8. Create the database
-  rake db:create
-  rake db:migrate
+     rake db:create
+     rake db:migrate
 
 9. Start the web server:
-  rails server
-(run with --help for options)
+     rails server
+   (run with --help for options)
 
 10. (optional) Deployment
-- when creating app on heroku, specify 1.9.2 stack: http://devcenter.heroku.com/articles/stack
-- you can have multiple remote sites for git, such as github and heroku: http://devcenter.heroku.com/articles/git
+    - when creating app on heroku, specify 1.9.2 stack: http://devcenter.heroku.com/articles/stack
+    - you can have multiple remote sites for git, such as github and heroku: http://devcenter.heroku.com/articles/git
 
 
 == Installation Hints
@@ -152,7 +150,7 @@ After this, a simple
   sudo gem install mysql
 worked.
 
-7. Update config/database.yml as necessary
+(Step 7) Update config/database.yml as necessary
 
 If you used the mysql2 gem, you'll need to change the adaptor
 accordingly.  Also edit the user name or password to taste.

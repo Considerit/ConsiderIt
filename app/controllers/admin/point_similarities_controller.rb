@@ -1,7 +1,6 @@
 class Admin::PointSimilaritiesController < ApplicationController
   
   def index
-    redirect_to root_path unless current_user.admin?
     @user = current_user
     @option = Option.find(params[:option_id])
 

@@ -2,7 +2,7 @@
   = form_for [@option, @comparison] do |f|
     
     %h2
-      Are these points expressing the same idea, very different ideas, or somewhere in between?
+      How thematically similar are the arguments these points are making?
     
     #p1.point_to_be_compared
       = @p1.nutshell
@@ -17,42 +17,48 @@
     = f.hidden_field :value, :id => 'similarity_val'
     = f.hidden_field :p1_id, :value => @p1.id
     = f.hidden_field :p2_id, :value => @p2.id
-   
-      
+
     .slider_wrapper
-      
       .slider_footer
         .left
           completely unrelated
-        
+
         #similarity_slider
-        
+
         .right
           basically the same
         .clear
 
     .current_value
       .vallabel.five
-        Essentially the same but perhaps different wording.
+        The same argument, but perhaps with different wording.
       .vallabel.four
-        Close, but with some differences.
+        Not the same argument, but engages the same theme (e.g. teachers in classroom).
       .vallabel.three
-        A balance of similarities and differences.
+        Not related, but the themes are broadly related (e.g. education).
       .vallabel.two
-        Mostly different, but with some similarities.
+        Different arguments, but with vague thematic similarities.
       .vallabel.one
-        Express completely different ideas.
-        
+        Express completely different arguments on completely different themes.
+
     .submit_buttons
       .left
-        = submit_tag "<< Prev"
+        - if @current > 1
+          = submit_tag "<< Prev"
       .right
-        = submit_tag "Next >>"
+        - if @current < @total_possible_comparisons
+          = submit_tag "Next >>"
       .clear
-      
+
+    - if @total_compared >= @total_possible_comparisons
+      .completed
+        Congrats! You have coded all of the pairs for this measure.
+
     .progress
-      #{@total_compared}/#{@total_possible_comparisons} comparisons completed for #{@option.designator}
-      
+      viewing #{@current}/#{@total_possible_comparisons}
+      %div
+        (#{@total_compared} comparisons completed for #{@option.designator})
+
 :javascript
   $j(function() {
     $j( "#similarity_slider" ).slider({

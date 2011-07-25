@@ -35,6 +35,10 @@ class Admin::PointSimilaritiesController < ApplicationController
     @graph_def = []
 
     pairs.each do |pnt, compared_points|
+      weight = comparisons.inject(0){ |sum, el| sum + el.value }.to_f / comparisons.size
+      if weight < 4
+        next
+      end
       my_def = {
         "data" => {  
           "$color" => pnt.is_pro ? "#988"  : "#899",   
@@ -48,7 +52,7 @@ class Admin::PointSimilaritiesController < ApplicationController
         my_def["adjacencies"].push({
          "nodeTo" =>  "point-#{pnt2.id}",
          "nodeFrom" => "point-#{pnt.id}",
-         "data" => { "weight" => comparisons.inject(0){ |sum, el| sum + el.value }.to_f / comparisons.size }
+         "data" => { "weight" => weight }
         })
       end
       @graph_def.push(my_def)

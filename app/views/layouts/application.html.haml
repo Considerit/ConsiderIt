@@ -45,7 +45,8 @@
 
     - if @reflectable
       = include_javascripts :reflect
-
+      
+    = javascript_include_tag 'jit'
 
     :javascript
       $j = jQuery.noConflict();

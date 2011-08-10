@@ -1,38 +1,37 @@
-%li.point_in_list_other.point_in_list{ :id => "point_in_list_other-#{point.id}", :class => { false => 'con', true => 'pro'}[point.is_pro] }
-  %table
-    %tr
-      - if !point.is_pro
-        %td.include_point.left
-          .include.left
-            = render :partial => "inclusions/new", :locals => { :point => point }
-      
-      %td.body      
-        .username
-          by
-          = point.user.name
-                      
-        .point_text.nutshell 
-          - if point.nutshell.length > 0
-            = h point.nutshell
-          - else
-            = h point.text[0,137]
-            - if point.text.length > 137
-              
-              
-        .point_text.full
-          = h point.text
-
-        - if point.text and point.text.length > 0
-          .read_more
-            %a.toggle.more.point_text_toggle
-              read more
-            %a.toggle.less.hide.point_text_toggle
-              hide rest
+%li.point_in_list_other.point_in_list{ :id => "point_in_list_other-#{point.id}", :class => point.is_pro ? 'pro' : 'con' }
   
-      - if point.is_pro
-        %td.include_point.right
-          .include.right
-            = render :partial => "inclusions/new", :locals => { :point => point }
+  .body
+  
+    - if !point.is_pro
+      .include.left
+        = render :partial => "inclusions/new", :locals => { :point => point }
+
+    .username
+      by
+      = point.user.name
+
+    .point_text.nutshell 
+      - if point.nutshell.length > 0
+        = h point.nutshell
+      - else
+        = h point.text[0,137]
+        - if point.text.length > 137
+
+    .point_text.full
+      = h point.text
+
+    - if point.text and point.text.length > 0
+      .read_more
+        %a.toggle.more.point_text_toggle
+          read more
+        %a.toggle.less.hide.point_text_toggle
+          hide rest
+
+    - if point.is_pro
+      .include.right
+        = render :partial => "inclusions/new", :locals => { :point => point }
+
+
 
 :javascript
   ConsiderIt.points.set_more_less_text_toggle("#point_in_list_other-#{point.id}", #{point.id}, #{@option.id});

@@ -4,8 +4,8 @@ namespace :admin do
     dups = PointSimilarity.where('p1_id=p2_id')
     #pp dups
     if dups.length > 0
-      #dups.destroy
       p "deleting #{dups.length} duplicate point similarities"
+      dups.destroy
     end
   end
 

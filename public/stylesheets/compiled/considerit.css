@@ -3,60 +3,55 @@ li.point_in_list {
   margin-bottom: 8px;
   color: white;
   background-repeat: no-repeat;
-  position: relative;
-  opacity: 0.95; }
-  li.point_in_list:hover {
-    opacity: 1; }
-  li.point_in_list > table {
-    width: 100%; }
-  li.point_in_list.con td.body {
+  position: relative; }
+  li.point_in_list.con {
     background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent; }
-    li.point_in_list.con td.body .read_more a.toggle_more, li.point_in_list.con td.body .read_more a.toggle {
+    li.point_in_list.con .read_more a.toggle_more, li.point_in_list.con .read_more a.toggle {
       float: left; }
-  li.point_in_list.pro td.body {
+  li.point_in_list.pro {
     background: url("/images/chalk/point-pro-self.png") no-repeat scroll 0px 3px transparent; }
-    li.point_in_list.pro td.body .read_more a.toggle_more, li.point_in_list.pro td.body .read_more a.toggle {
+    li.point_in_list.pro .read_more a.toggle_more, li.point_in_list.pro .read_more a.toggle {
       float: left; }
-  li.point_in_list td.body {
+  li.point_in_list .body {
     overflow: hidden;
     padding: 3px 0 3px 38px;
     vertical-align: top; }
-    li.point_in_list td.body .wrapper {
+    li.point_in_list .body .wrapper {
       padding: 3px; }
-    li.point_in_list td.body .point_text.nutshell {
+    li.point_in_list .body .point_text.nutshell {
       font-size: 14px;
       line-height: 16px; }
-    li.point_in_list td.body .point_text.full {
+    li.point_in_list .body .point_text.full {
       font-size: 90%;
       margin: 10px 15px 10px 10px;
       display: none; }
-    li.point_in_list td.body .read_more {
+    li.point_in_list .body .read_more {
       height: 25px; }
-      li.point_in_list td.body .read_more a.toggle_more, li.point_in_list td.body .read_more a.toggle {
+      li.point_in_list .body .read_more a.toggle_more, li.point_in_list .body .read_more a.toggle {
         color: #c1c1c1;
         padding-top: 10px; }
-    li.point_in_list td.body .username {
+    li.point_in_list .body .username {
       font-size: 10px;
       color: #c1c1c1;
       padding-bottom: 2px; }
-  li.point_in_list.point_in_list_other td.body {
+  li.point_in_list.point_in_list_other {
     padding-bottom: 10px; }
-  li.point_in_list.point_in_list_other.pro {
-    background: #39665f url("/images/bg-point-pro.png") no-repeat left top; }
-    li.point_in_list.point_in_list_other.pro td.body {
-      background: url("/images/chalk/point-pro-other.png") no-repeat scroll 0px 3px transparent;
-      padding: 3px 0px 10px 0px; }
-      li.point_in_list.point_in_list_other.pro td.body .username, li.point_in_list.point_in_list_other.pro td.body .point_text.nutshell, li.point_in_list.point_in_list_other.pro td.body .read_more {
-        padding-left: 35px; }
-  li.point_in_list.point_in_list_other.con {
-    background: #654a74 url("/images/bg-point-con.png") no-repeat left top; }
-    li.point_in_list.point_in_list_other.con td.body {
-      padding: 3px 0px 3px 3px;
-      background: url("/images/chalk/point-con-other.png") no-repeat scroll 145px 3px transparent; }
-      li.point_in_list.point_in_list_other.con td.body .username, li.point_in_list.point_in_list_other.con td.body .point_text.nutshell, li.point_in_list.point_in_list_other.con td.body .read_more {
-        padding-right: 35px; }
-      li.point_in_list.point_in_list_other.con td.body .username {
-        text-align: right; }
+    li.point_in_list.point_in_list_other.pro {
+      background: #39665f url("/images/bg-point-pro.png") no-repeat left top; }
+      li.point_in_list.point_in_list_other.pro .body {
+        background: url("/images/chalk/point-pro-other.png") no-repeat scroll 0px 3px transparent;
+        padding: 3px 0px 10px 0px; }
+        li.point_in_list.point_in_list_other.pro .body .username, li.point_in_list.point_in_list_other.pro .body .point_text.nutshell, li.point_in_list.point_in_list_other.pro .body .read_more {
+          padding-left: 35px; }
+    li.point_in_list.point_in_list_other.con {
+      background: #654a74 url("/images/bg-point-con.png") no-repeat left top; }
+      li.point_in_list.point_in_list_other.con .body {
+        padding: 3px 0px 3px 3px;
+        background: url("/images/chalk/point-con-other.png") no-repeat scroll 145px 3px transparent; }
+        li.point_in_list.point_in_list_other.con .body .username, li.point_in_list.point_in_list_other.con .body .point_text.nutshell, li.point_in_list.point_in_list_other.con .body .read_more {
+          padding-right: 35px; }
+        li.point_in_list.point_in_list_other.con .body .username {
+          text-align: right; }
   li.point_in_list.point_in_list_self {
     width: 225px; }
   li.point_in_list.ranked .discuss, li.point_in_list.ranked .read_more {
@@ -971,50 +966,48 @@ li.new_comment.from_discussion {
     #initiative.userpage ol#step_through li#stance.step .position_container #points_self_pro {
       margin-left: 10px; }
 
-#intro {
+#intro .table_container {
+  background-color: black;
   width: 100%; }
-  #intro .table_container {
-    background-color: black;
+  #intro .table_container > table {
     width: 100%; }
-    #intro .table_container > table {
-      width: 100%; }
-      #intro .table_container > table .person_tapestry {
-        margin-top: 25px; }
-        #intro .table_container > table .person_tapestry ul.horizontal li {
-          float: left; }
-        #intro .table_container > table .person_tapestry ul.vertical {
-          width: 55px; }
-        #intro .table_container > table .person_tapestry ul li {
-          width: 55px;
-          height: 55px; }
-        #intro .table_container > table .person_tapestry img {
-          height: 55px; }
-      #intro .table_container > table #description {
-        padding: 10px 0px 10px 40px;
-        width: 725px; }
-        #intro .table_container > table #description .header .follow {
-          position: absolute;
-          z-index: 999;
-          top: -2px;
-          left: 850px; }
-        #intro .table_container > table #description .header .subheader .text {
-          font-size: 20px;
-          font-weight: normal;
-          font-style: normal;
-          font-family: Cambria, Helvetica Neue, Helvetica, Calibri, sans-serif;
-          color: #717171; }
-          #intro .table_container > table #description .header .subheader .text span {
-            padding-right: 10px;
-            color: #c1c1c1; }
-        #intro .table_container > table #description .header .subheader h2 {
-          font-size: 26px;
+    #intro .table_container > table .person_tapestry {
+      margin-top: 25px; }
+      #intro .table_container > table .person_tapestry ul.horizontal li {
+        float: left; }
+      #intro .table_container > table .person_tapestry ul.vertical {
+        width: 55px; }
+      #intro .table_container > table .person_tapestry ul li {
+        width: 55px;
+        height: 55px; }
+      #intro .table_container > table .person_tapestry img {
+        height: 55px; }
+    #intro .table_container > table #description {
+      padding: 10px 0px 10px 40px;
+      width: 725px; }
+      #intro .table_container > table #description .header .follow {
+        position: absolute;
+        z-index: 999;
+        top: -2px;
+        left: 850px; }
+      #intro .table_container > table #description .header .subheader .text {
+        font-size: 20px;
+        font-weight: normal;
+        font-style: normal;
+        font-family: Cambria, Helvetica Neue, Helvetica, Calibri, sans-serif;
+        color: #717171; }
+        #intro .table_container > table #description .header .subheader .text span {
+          padding-right: 10px;
           color: #c1c1c1; }
-          #intro .table_container > table #description .header .subheader h2 .extra {
-            color: #717171;
-            font-size: 24px;
-            line-height: 28px; }
-    #intro .table_container #infographic img {
-      width: 98%; }
+      #intro .table_container > table #description .header .subheader h2 {
+        font-size: 26px;
+        color: #c1c1c1; }
+        #intro .table_container > table #description .header .subheader h2 .extra {
+          color: #717171;
+          font-size: 24px;
+          line-height: 28px; }
+  #intro .table_container #infographic img {
+    width: 98%; }
 
 .get_started {
   margin-left: 40px;
@@ -1098,17 +1091,10 @@ li.new_comment.from_discussion {
   color: white;
   width: 100%;
   line-height: 18px; }
-  #footer > div {
-    padding: 29px 15px 15px 15px;
-    background-color: white;
-    margin: 0 auto;
-    min-width: 940px;
-    position: relative;
-    width: 940px; }
-    #footer > div:hover {
-      border-bottom: 1px solid #cccccc; }
-    #footer > div.bordernone:hover {
-      border-bottom: none; }
+  #footer > div:hover {
+    border-bottom: 1px solid #cccccc; }
+  #footer > div.bordernone:hover {
+    border-bottom: none; }
   #footer p.credit {
     margin: 0;
     float: right;
@@ -1169,127 +1155,55 @@ li.new_comment.from_discussion {
       clear: both;
       visibility: hidden; }
 
-#masthead {
-  min-width: 940px; }
-  #masthead > div {
-    margin: 67px auto 0 auto;
-    padding: 15px;
-    min-width: 940px;
+#wrap #masthead {
+  width: 940px;
+  margin-top: 67px;
+  height: 35px;
+  position: relative; }
+  #wrap #masthead .logo_cell {
     position: relative;
-    width: 900px;
-    background-color: white;
+    top: -80px; }
+    #wrap #masthead .logo_cell a {
+      overflow: hidden; }
+  #wrap #masthead .beta {
+    position: relative;
+    font-size: 10px;
+    color: white;
+    top: -30px;
+    left: 120px; }
+  #wrap #masthead #nav-user {
+    position: absolute;
+    top: -67px;
+    right: 0;
+    background-color: #e6e6e6;
     height: 35px; }
-    #masthead > div > #offset_header {
-      position: absolute;
-      top: -56px;
-      width: 100%; }
-      #masthead > div > #offset_header .logo_cell h1#logo a {
-        height: 110px;
-        width: 97px;
-        display: block;
-        overflow: hidden;
-        padding-right: 160px; }
-      #masthead > div > #offset_header .beta {
-        z-index: 999;
-        position: absolute;
-        font-size: 10px;
-        color: white;
-        top: 40px;
-        left: 125px;
-        width: 275px; }
-      #masthead > div > #offset_header #nav-primary {
-        position: absolute;
-        top: 55px;
-        right: 15px;
-        width: auto; }
-        #masthead > div > #offset_header #nav-primary .nav.primary {
-          list-style: none outside none;
-          margin: 0; }
-          #masthead > div > #offset_header #nav-primary .nav.primary > li {
-            float: left;
-            height: 36px; }
-            #masthead > div > #offset_header #nav-primary .nav.primary > li.middle, #masthead > div > #offset_header #nav-primary .nav.primary > li.last {
-              border-left: 2px dotted #894444; }
-            #masthead > div > #offset_header #nav-primary .nav.primary > li > a {
-              padding: 0 15px;
-              display: block;
-              font-weight: bold;
-              font-size: 14px;
-              height: 36px;
-              line-height: 38px;
-              text-transform: capitalize; }
-              #masthead > div > #offset_header #nav-primary .nav.primary > li > a:hover {
-                color: #8d0808; }
-            #masthead > div > #offset_header #nav-primary .nav.primary > li.drops:hover ul.dropdown {
-              display: block; }
-            #masthead > div > #offset_header #nav-primary .nav.primary > li.drops ul.dropdown {
-              position: absolute;
-              top: 35px;
-              left: 45px;
-              z-index: 99;
-              display: none;
-              padding: 5px 2px;
-              background-color: #555555; }
-              #masthead > div > #offset_header #nav-primary .nav.primary > li.drops ul.dropdown li {
-                z-index: 99;
-                background-color: #555555;
-                list-style: none outside none; }
-                #masthead > div > #offset_header #nav-primary .nav.primary > li.drops ul.dropdown li.finished.pro {
-                  background: transparent url("/images/finished_pro_small.png") no-repeat scroll left center; }
-                #masthead > div > #offset_header #nav-primary .nav.primary > li.drops ul.dropdown li.finished.neutral {
-                  background: transparent url("/images/finished_neutral_small.png") no-repeat scroll left center; }
-                #masthead > div > #offset_header #nav-primary .nav.primary > li.drops ul.dropdown li.finished.con {
-                  background: transparent url("/images/finished_con_small.png") no-repeat scroll left center; }
-                #masthead > div > #offset_header #nav-primary .nav.primary > li.drops ul.dropdown li a {
-                  padding: 1px 18px;
-                  color: white;
-                  height: auto;
-                  line-height: 18px;
-                  font-size: 12px;
-                  text-transform: capitalize; }
-                  #masthead > div > #offset_header #nav-primary .nav.primary > li.drops ul.dropdown li a:hover {
-                    text-shadow: none;
-                    text-decoration: underline; }
-      #masthead > div > #offset_header #nav-user {
-        position: absolute;
-        top: -12px;
-        right: 15px;
-        width: auto;
-        height: 35px;
-        margin: 0;
-        background-color: #e6e6e6; }
-        #masthead > div > #offset_header #nav-user > div {
-          padding-top: 5px;
-          line-height: 25px;
-          float: left; }
-          #masthead > div > #offset_header #nav-user > div.first {
-            border-right: 2px dotted #894444; }
-          #masthead > div > #offset_header #nav-user > div.fb form {
-            display: inline-block;
-            margin-right: 10px;
-            margin-top: 2px; }
-          #masthead > div > #offset_header #nav-user > div a {
-            padding: 16px 20px;
-            height: 25px;
-            line-height: 25px;
-            font-size: 14px;
-            font-weight: bold; }
-            #masthead > div > #offset_header #nav-user > div a:hover {
-              color: #8d0808; }
-          #masthead > div > #offset_header #nav-user > div.first.last a, #masthead > div > #offset_header #nav-user > div.first.last form {
-            padding-left: 0; }
-  #masthead .logged_in_name {
-    height: 35px; }
-  #masthead .avatar {
+    #wrap #masthead #nav-user > li {
+      padding: 5px 0 0 0;
+      display: inline-block; }
+      #wrap #masthead #nav-user > li.first {
+        border-right: 2px dotted #894444; }
+      #wrap #masthead #nav-user > li.fb form {
+        display: inline-block;
+        margin-right: 10px;
+        margin-top: 2px; }
+      #wrap #masthead #nav-user > li a {
+        padding: 16px 20px;
+        height: 25px;
+        line-height: 25px;
+        font-size: 14px;
+        font-weight: bold; }
+        #wrap #masthead #nav-user > li a:hover {
+          color: #8d0808; }
+      #wrap #masthead #nav-user > li.first.last a, #wrap #masthead #nav-user > li.first.last form {
+        padding-left: 0; }
+  #wrap #masthead .avatar {
     position: relative;
     top: -5px; }
-
-.fb, .fb_login {
+#wrap .fb, #wrap .fb_login {
   width: 76px;
   height: 29px;
   margin-left: 15px; }
-
-.fb input#user_submit, .fb_login input#user_submit, .fb_account input#user_submit {
+#wrap .fb input#user_submit, #wrap .fb_login input#user_submit, #wrap .fb_account input#user_submit {
   padding-right: 60px;
   padding-top: 15px;
   overflow: hidden;
@@ -1297,27 +1211,24 @@ li.new_comment.from_discussion {
   font-size: 0px;
   border: none;
   background-color: transparent; }
-
-.fb {
+#wrap .fb {
   background: transparent url("/images/fb_login.png") no-repeat scroll 0px 7px; }
-
-.fb_login {
+#wrap .fb_login {
   background: transparent url("/images/fb_login.png") no-repeat scroll 0px 0px; }
-
-#loginhtml .lvg_account h2, #loginhtml .lvg_account h3 {
+#wrap #loginhtml .lvg_account h2, #wrap #loginhtml .lvg_account h3 {
   display: none; }
-#loginhtml .fb_account {
+#wrap #loginhtml .fb_account {
   margin: 10px 0 0 75px; }
-  #loginhtml .fb_account li.or {
+  #wrap #loginhtml .fb_account li.or {
     color: gray;
     font-size: 18px;
     padding-top: 44px; }
-  #loginhtml .fb_account li.fb_form {
+  #wrap #loginhtml .fb_account li.fb_form {
     background: transparent url("/images/fb_big.jpg") no-repeat scroll 0px 0px;
     height: 128px;
     width: 128px;
     margin-left: 75px; }
-    #loginhtml .fb_account li.fb_form > form input#user_submit {
+    #wrap #loginhtml .fb_account li.fb_form > form input#user_submit {
       padding-right: 128px;
       padding-top: 128px; }
 
@@ -1497,14 +1408,14 @@ body {
   font-family: Helvetica Neue, Helvetica, Calibri, sans-serif;
   font-size: 14px; }
 
-#content > div {
-  margin: 0 auto;
-  min-width: 940px;
-  position: relative;
-  width: 940px;
-  max-width: 940px;
-  background-color: white;
-  padding: 15px; }
+#wrap {
+  position: relative; }
+  #wrap > div {
+    width: 940px;
+    margin: 0 auto;
+    padding: 15px;
+    background-color: white; }
+
 #content:after {
   content: ".";
   display: block;
@@ -1602,6 +1513,9 @@ input[type="submit"] {
   input[type="submit"]:focus {
     background-color: gray;
     border-color: gray; }
+
+#wrap {
+  position: static; }
 
 .message {
   background-color: white;

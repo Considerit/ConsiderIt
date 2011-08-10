@@ -1,42 +1,18 @@
 #masthead.header
-  #header_wrapper
-    #offset_header
       
-      .beta
-        = render :partial => "shared/header/action_call"
-    
-      -# = render :partial => "shared/available_themes"
-    
-      .logo_cell
-        %h1#logo
-          %a.logo_home{ :href => root_path, :title => ""}
-            = image_tag current_theme_image_path "logo.png"
-            
-      #nav-user
-        - if user_signed_in?
-          = render :partial => "shared/header/logged_in_head"
-          
-        - else
-          = render :partial => "shared/header/logged_out_head"
-            
-      - cache('primary_menu_header') do
-        #nav-primary
-          %ul.nav.primary
-            %li.first= link_to "Home", root_path, :class => "home", :title => "#{APP_CONFIG['app_name']['long']}"        
-            %li.drops.middle
-              %a
-                #{APP_CONFIG['decisions']['name']['short']}s
-              &nbsp;
-              %ul.dropdown
-                - get_initiatives.each do |option|
-                  %li{ :class => "#{has_stance(current_user, option)}"}
-                    %a.primary_nav_item{ :href => option_path(option), :title => "#{APP_CONFIG['decisions']['name']['full']} #{option.category} #{option.designator}" } 
-                      = option.designator
-                      = option.short_name               
-            
-            -#  %li.middle= link_to 'Community Rules', home_path('rules'), :class => 'rules', :title => "Guidelines for participation"
-            
-            -#  %li.last= link_to 'About Us', home_path('about_us'), :class => 'about', :title => "Who created the Living Voters Guide?"
-        .clear
+  .beta
+    = render :partial => "shared/header/action_call"
 
+  -# = render :partial => "shared/available_themes"
+
+  .logo_cell
+    %a.logo_home{ :href => root_path, :title => ""}
+      = image_tag current_theme_image_path "logo.png"
+        
+  %ul#nav-user
+    - if user_signed_in?
+      = render :partial => "shared/header/logged_in_head"
       
+    - else
+      = render :partial => "shared/header/logged_out_head"
+        

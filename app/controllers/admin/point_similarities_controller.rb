@@ -79,7 +79,6 @@ class Admin::PointSimilaritiesController < ApplicationController
 
     pairs = {}
 
-    
     current_user.point_similarities.where(:option_id=>@option.id).each do |ps|
 
       if pairs.has_key?(ps.p1_id)
@@ -102,12 +101,12 @@ class Admin::PointSimilaritiesController < ApplicationController
     last_comparison = current_user.point_similarities.where(:option_id=>@option.id).last
     if ( last_comparison && pairs[last_comparison.p1_id].length < @num_points - 1 && @total_compared % 10 != 9 )
       @p1 = last_comparison.p1
-      while ( !@p2) || (pairs.has_key?(@p1.id) && pairs[@p1.id].has_key?(@p2.id))
+      while ( !@p2) || @p2.id == @p1.id || (pairs.has_key?(@p1.id) && pairs[@p1.id].has_key?(@p2.id))
         @p2 = @option.points.sample()
       end
     else(!last_comparison || @total_compared % 10 == 9) 
       @p1 = @p2 = nil
-      while ( !@p1 || !@p2) || (pairs.has_key?(@p1.id) && pairs[@p1.id].has_key?(@p2.id))
+      while ( !@p1 || !@p2) || @p2.id == @p1.id || (pairs.has_key?(@p1.id) && pairs[@p1.id].has_key?(@p2.id))
         (@p1, @p2) = @option.points.sample(2)
       end
     end

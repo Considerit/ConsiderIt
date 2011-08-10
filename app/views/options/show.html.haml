@@ -13,6 +13,16 @@
     
     = render :partial => "options/view_breakdown", :locals => { :number => false }
     
+    %li.step.discuss
+      .head
+        %span.ol_number
+          3.      
+        %h3.banner
+          Discuss #{@option.designator}.
+          
+        .extra
+      .discussion
+        = render :partial => "comments/discussion_threads"
 
     %li.clear
      

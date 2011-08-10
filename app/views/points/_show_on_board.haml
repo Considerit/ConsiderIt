@@ -1,59 +1,57 @@
 %li.ranked.point_in_list{ :id => "ranked_point-#{point.id}", :class => { false => 'con', true => 'pro'}[point.is_pro] }
-  %table
-    %tr
-      %td.body      
-        .username
-          by
-          = point.user.name
-                      
-        .point_text.nutshell 
-          - if point.nutshell.length > 0
-            = h point.nutshell
-          - else
-            = h point.text[0,137]
-            - if point.text.length > 137
-              \...
+  .body      
+    .username
+      by
+      = point.user.name
+                  
+    .point_text.nutshell 
+      - if point.nutshell.length > 0
+        = h point.nutshell
+      - else
+        = h point.text[0,137]
+        - if point.text.length > 137
+          \...
 
-        .point_text.full
-          = h point.text
-          
+    .point_text.full
+      = h point.text
+      
 
-        - if point.text and point.text.length > 0
-          .read_more
-            %a.toggle.more.point_text_toggle
-              read more
-            %a.toggle.less.hide.point_text_toggle
-              hide rest
-            
-            - if @reflectable
-              .pipe.fl
-                &#124;
-            
-          :javascript
-            ConsiderIt.points.set_more_less_text_toggle('#ranked_point-#{point.id}', #{point.id}, #{@option.id});
-            
+    - if point.text and point.text.length > 0
+      .read_more
+        %a.toggle.more.point_text_toggle
+          read more
+        %a.toggle.less.hide.point_text_toggle
+          hide rest
+        
         - if @reflectable
-          .discuss
-            - if point.comment
-              %a.discuss_comment{ :href => "#comment-#{point.comment.id}", :title => "Join the discussion about this point" }
-                discuss (#{point.comment.children.size + 1})
-            - else
-              %a.start_discuss_comment.new_discussion{:title => "Start a discussion about this point"}
-                discuss
-                
-        - if false
-          .scores.hide
-            %ul
-              %li.inclusions.add_qtip{ :title => "#{point.inclusions} people included this #{{0=>'con', 1=>'pro'}[point.position]} in their pro/con list." }
-                = point.inclusions
-              %li.batting_average.add_qtip{ :title => "#{point.human_batting_average.to_d*100}% of people who viewed this #{{0=>'con', 1=>'pro'}[point.position]} when making their pro/con list decided to include it. It is similar to a batting average." }
-                = point.human_batting_average.sub!(/^0/, "")
-              %li.appeal.add_qtip{ :title => "This #{{0=>'con', 1=>'pro'}[point.position]} rated #{point.human_appeal} on a scale of 0-10 for how appealing it is to people who both support and oppose #{@initiative.number}." }
-                = point.human_appeal
-                            
-        .clear
-        -# if point.comment.nil? && current_user
-          /
-            .discussion.hide
-              -# = render :partial => "comments/new_comment", :locals => { :new_thread => true, :parent_id => nil, :point => point }
-          
+          .pipe.fl
+            &#124;
+        
+      :javascript
+        ConsiderIt.points.set_more_less_text_toggle('#ranked_point-#{point.id}', #{point.id}, #{@option.id});
+        
+    - if @reflectable
+      .discuss
+        - if point.comment
+          %a.discuss_comment{ :href => "#comment-#{point.comment.id}", :title => "Join the discussion about this point" }
+            discuss (#{point.comment.children.size + 1})
+        - else
+          %a.start_discuss_comment.new_discussion{:title => "Start a discussion about this point"}
+            discuss
+            
+    - if false
+      .scores.hide
+        %ul
+          %li.inclusions.add_qtip{ :title => "#{point.inclusions} people included this #{{0=>'con', 1=>'pro'}[point.position]} in their pro/con list." }
+            = point.inclusions
+          %li.batting_average.add_qtip{ :title => "#{point.human_batting_average.to_d*100}% of people who viewed this #{{0=>'con', 1=>'pro'}[point.position]} when making their pro/con list decided to include it. It is similar to a batting average." }
+            = point.human_batting_average.sub!(/^0/, "")
+          %li.appeal.add_qtip{ :title => "This #{{0=>'con', 1=>'pro'}[point.position]} rated #{point.human_appeal} on a scale of 0-10 for how appealing it is to people who both support and oppose #{@initiative.number}." }
+            = point.human_appeal
+                        
+    .clear
+    - if point.comment.nil? && current_user
+      
+      %ul.discussion.hide
+        = render :partial => "comments/new_comment", :locals => { :new_thread => true, :parent_id => nil, :point => point }
+      

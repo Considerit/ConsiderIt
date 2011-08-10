@@ -1,19 +1,14 @@
-.logged_in_name
+%li.logged_in_name
   = link_to @user.email, edit_user_registration_path, :class => "settings"
-  
-.avatar
-  -# = image_tag current_user.avatar.url(:thumb), :class => "nav_avatar", :alt => "Your profile picture"
-
+-#
+  %li.avatar
+    = image_tag current_user.avatar.url(:thumb), :class => "nav_avatar", :alt => "Your profile picture"
 - if current_user.admin?      
-  .middle
+  %li.middle
     = link_to 'Admin', "/admin", :class => 'admin'
-
-.last
+%li.last
   = link_to 'Log Out', destroy_user_session_path, :class => 'logout'
-
-.clear
-
-#settings_dialog
+%li.clear
 
 -# :javascript
   $j(document).ready(function() {

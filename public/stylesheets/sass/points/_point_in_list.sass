@@ -6,44 +6,36 @@ li.point_in_list
   color: white
   background-repeat: no-repeat
   position: relative
-  opacity: .95
-  &:hover
-    opacity: 1
-  
-  > table
-    width: 100%
 
   &.con
-    td.body
-      background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent      
-      .read_more
-        a.toggle_more, a.toggle
-          float: left
+    background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent      
+    .read_more
+      a.toggle_more, a.toggle
+        float: left
 
   &.pro
-    td.body
-      background: url("/images/chalk/point-pro-self.png") no-repeat scroll 0px 3px transparent     
-      .read_more
-        a.toggle_more, a.toggle
-          float: left
-      
-  td.body
+    background: url("/images/chalk/point-pro-self.png") no-repeat scroll 0px 3px transparent     
+    .read_more
+      a.toggle_more, a.toggle
+        float: left
+
+  .body
     overflow: hidden
     padding: 3px 0 3px 38px
     vertical-align: top
-    
+
     .wrapper // only in other
       padding: 3px
 
     .point_text.nutshell
       font-size: 14px
       line-height: 16px
-      
+
     .point_text.full
       font-size: 90%
       margin: 10px 15px 10px 10px
       display: none
-            
+
     .read_more
       height: 25px
       a.toggle_more, a.toggle
@@ -54,17 +46,15 @@ li.point_in_list
       font-size: 10px
       color: $txt_light_gray
       padding-bottom: 2px
-      
 
   &.point_in_list_other 
     
-    td.body
-      padding-bottom: 10px
+    padding-bottom: 10px
 
     &.pro
       background: $bk_green url('/images/bg-point-pro.png') no-repeat left top
        
-      td.body
+      .body
         background: url("/images/chalk/point-pro-other.png") no-repeat scroll 0px 3px transparent         
         padding: 3px 0px 10px 0px
 	
@@ -74,7 +64,7 @@ li.point_in_list
 
     &.con
       background: $bk_purple url('/images/bg-point-con.png') no-repeat left top
-      td.body
+      .body
         padding: 3px 0px 3px 3px
         background: url("/images/chalk/point-con-other.png") no-repeat scroll 145px 3px transparent         
         .username, .point_text.nutshell, .read_more

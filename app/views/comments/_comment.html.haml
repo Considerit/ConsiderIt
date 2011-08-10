@@ -1,0 +1,69 @@
+%li.comment{ :id=>"comment-#{comment.id}" }
+  %a{name="comment-#{comment.id}"}
+  
+  %table.comment_body
+    - if comment.violation || comment.user.nil?
+      %tr.subject_line
+        %td
+          .text
+            - if comment.subject && comment.subject.length > 0
+              %h3.subject
+                Thread closed  
+      %tr.body_row
+        %td
+          .user
+            - if comment.user.nil?
+              .avatar
+              .username
+                Account was deleted
+            - else
+              .avatar
+                - if comment.user.avatar
+                  = image_tag comment.user.avatar.url(:midsmall), :alt => "#{h comment.user.name}'s profile picture"
+              .username
+                = h comment.user.name
+          .text.comment_text    
+                
+            .body  
+              This comment has been removed because it violates one or more of our community rules, such as containing advertising or other inappropriate material.
+          .clear
+          
+    - else
+      %tr.subject_line{:class => "#{comment.point.nil? ? 'unaffiliated': {1=>'pro', 0=>'con'}[comment.point.position]}"}
+        %td
+          .text
+            - if comment.subject && comment.subject.length > 0
+              %h3.subject
+                = h comment.subject          
+      %tr.body_row
+        %td
+          .user
+            - if comment.user.nil?
+              .avatar
+              .username
+                Account was deleted
+            - else
+              .avatar
+                - if comment.user.avatar
+                  = image_tag comment.user.avatar.url(:midsmall), :alt => "#{h comment.user.name}'s profile picture"
+              .username
+                = h comment.user.name
+          .text.comment_text   
+                
+            .body  
+              = h comment.body
+             
+          .clear
+        %tr.reply_row
+          %td
+            %a.reply.write_comment_reply{ :title => "Write a response to #{h comment.user.first_name}" }
+              reply to #{h comment.user.first_name}
+            .reply.hide
+              = render :partial => "comments/new_comment", :locals => { :point => nil, :new_thread => false, :parent_id => comment.id, :comment => comment }
+            
+            
+           
+  %ul.comment_children
+    - comment.children.each do |child|
+      = render :partial => "comments/comment", :locals => { :comment => child, :child => true }
+        

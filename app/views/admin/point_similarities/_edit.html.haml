@@ -46,7 +46,7 @@
         - if @current > 1
           = submit_tag "<< Prev"
       .right
-        - if @current < @total_possible_comparisons
+        - if @current <= @total_possible_comparisons
           = submit_tag "Next >>"
       .clear
 

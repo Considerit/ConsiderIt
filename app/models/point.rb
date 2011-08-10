@@ -4,6 +4,7 @@ class Point < ActiveRecord::Base
   belongs_to :position
   has_many :inclusions
   has_many :point_listings
+  has_one :comment
   
   acts_as_paranoid_versioned :if_changed => [:nutshell, :text, :user_id, :is_pro, :position_id]
 

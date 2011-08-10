@@ -8,8 +8,10 @@ ConsiderIt::Application.routes.draw do
       resources :inclusions, :only => [:create, :destroy] 
     end
     resources :point_similarities, :module => :admin
+    resources :comments, :only => [:index, :create]
   end
   
+
   devise_for :users, :controllers => { 
     :omniauth_callbacks => "users/omniauth_callbacks", 
     :sessions => "users/sessions", 

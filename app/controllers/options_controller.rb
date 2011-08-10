@@ -19,13 +19,17 @@ class OptionsController < ApplicationController
         )
       end
     end
-        
+
     @page = 1
     @bucket = 'all'
     
     @protovis = true
     
     #Point.update_relative_scores
+
+    @comments = @option.root_comments
+    @comment = Comment.new      
+    @reflectable = true    
     
   end
 

@@ -102,16 +102,16 @@ body
   font-family: Helvetica Neue, Helvetica, Calibri, sans-serif
   font-size: 14px
 
-#content
-
+#wrap
+  position: relative
   > div
-    margin: 0 auto
-    min-width: 940px
-    position: relative
     width: 940px
-    max-width: 940px
-    background-color: white
+    margin: 0 auto
     padding: $std_gutter
+    background-color: white        
+
+#content
+    
 
   &:after
     content: "."
@@ -213,7 +213,10 @@ input[type="submit"]
   &:focus
     background-color: gray
     border-color: gray
-    
+
+#wrap
+  position: static
+
 .message
   background-color: white 
   font-size: 18px

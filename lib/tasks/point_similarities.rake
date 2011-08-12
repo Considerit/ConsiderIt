@@ -5,7 +5,9 @@ namespace :admin do
     #pp dups
     if dups.length > 0
       p "deleting #{dups.length} duplicate point similarities"
-      dups.destroy
+      dups.each do |dup|
+        dup.destroy	  
+      end 
     end
   end
 

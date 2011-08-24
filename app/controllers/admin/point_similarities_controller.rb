@@ -6,7 +6,6 @@ class Admin::PointSimilaritiesController < ApplicationController
 
     pairs = {};
     @option.point_similarities.each do |ps|
-      pp pairs
       if pairs.has_key?(ps.p1)
         if pairs[ps.p1].has_key?(ps.p2)
           pairs[ps.p1][ps.p2].push(ps)
@@ -75,6 +74,7 @@ class Admin::PointSimilaritiesController < ApplicationController
     if @total_compared >= @total_possible_comparisons
       first = current_user.point_similarities.where(:option_id => @option.id).first
       redirect_to edit_option_point_similarity_path(@option, first)
+      return
     end
 
     pairs = {}
@@ -97,7 +97,7 @@ class Admin::PointSimilaritiesController < ApplicationController
 
     @comparison = @option.point_similarities.build
     @init_val = 3
-
+    
     last_comparison = current_user.point_similarities.where(:option_id=>@option.id).last
     if ( last_comparison && pairs[last_comparison.p1_id].length < @num_points - 1 && @total_compared % 10 != 9 )
       @p1 = last_comparison.p1
@@ -110,7 +110,7 @@ class Admin::PointSimilaritiesController < ApplicationController
         (@p1, @p2) = @option.points.sample(2)
       end
     end
-    
+
   end
   
   def edit    

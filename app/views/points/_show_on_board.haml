@@ -23,21 +23,19 @@
         %a.toggle.less.hide.point_text_toggle
           hide rest
         
-        - if @reflectable
-          .pipe.fl
-            &#124;
+        .pipe.fl
+          &#124;
         
       :javascript
         ConsiderIt.points.set_more_less_text_toggle('#ranked_point-#{point.id}', #{point.id}, #{@option.id});
         
-    - if @reflectable
-      .discuss
-        - if point.comment
-          %a.discuss_comment{ :href => "#comment-#{point.comment.id}", :title => "Join the discussion about this point" }
-            discuss (#{point.comment.children.size + 1})
-        - else
-          %a.start_discuss_comment.new_discussion{:title => "Start a discussion about this point"}
-            discuss
+    .discuss
+      - if point.comment
+        %a.discuss_comment{ :href => "#comment-#{point.comment.id}", :title => "Join the discussion about this point" }
+          discuss (#{point.comment.children.size + 1})
+      - else
+        %a.start_discuss_comment.new_discussion{:title => "Start a discussion about this point"}
+          discuss
             
     - if false
       .scores.hide

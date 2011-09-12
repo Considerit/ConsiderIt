@@ -1,32 +1,92 @@
-%li.logged_in_name
-  = link_to @user.email, edit_user_registration_path, :class => "settings"
--#
-  %li.avatar
-    = image_tag current_user.avatar.url(:thumb), :class => "nav_avatar", :alt => "Your profile picture"
-- if current_user.admin?      
-  %li.middle
-    = link_to 'Admin', "/admin", :class => 'admin'
-%li.last
-  = link_to 'Log Out', destroy_user_session_path, :class => 'logout'
+
+%li.progress.triangle
+  #progressbar
+  .text_progress
+    #{current_user.positions.count}/#{get_initiatives.count} measures considered
+
+
+  -# = image_tag "user_settings_triangle.png", :class => 'triangle_img'
+  
+  .spacing
+
+  .hide
+    %ul.fr
+      %li
+        %a
+          View your personal voters guide
+    .clear
+
+
+%li.triangle
+  %a.settings
+    = @user.name
+  = image_tag "user_settings_triangle.png", :class => 'triangle_img'
+  
+
+  .spacing
+
+  .hide
+    .avatar.fl
+      %a.settings
+        = image_tag current_user.avatar.url(:thumb), :alt => "#{h current_user.name}'s profile picture"
+    %ul.fr
+      %li
+        %a.settings
+          Edit profile
+      - if current_user.admin?
+        %li
+          = link_to 'Admin', "/admin", :class => 'admin'
+      %li
+        = link_to 'Log Out', destroy_user_session_path, :class => 'logout'
+    .clear
+
+
 %li.clear
 
--# :javascript
+#settings_dialog
+
+- if !@user.pledge_taken
+  #pledge_dialog
+    = render :partial => "users/sessions/pledge"
+
+
+:javascript
   $j(document).ready(function() {
+    $j("#pledge_dialog").dialog({
+      bgiframe: true, 
+      autoOpen: true, 
+      modal: true,
+      width: 'auto',
+      draggable: false,
+      resizable: false
+    });
+
     $j("#settings_dialog").dialog({
       bgiframe: true, 
       autoOpen: false, 
       modal: true,
       width: 'auto',
       draggable: false,
-      resizable: false,
-      position: [500, 50]
+      resizable: false
     });
   
     $j('a.settings')
       .click(function(){
         var dialog = $j('#settings_dialog');
-        dialog.load("#{settings_ajax_path}");
+        dialog.load("#{edit_user_registration_path}");
         dialog.dialog('open');
       });
+
+    $j('.triangle')
+      .hover(
+        function(){
+          $j(this).find('.hide').slideDown();
+        },
+        function(){
+          $j(this).find('.hide').slideUp();        
+        });
+
+    $j("#progressbar").progressbar({ value: #{100 * current_user.positions.count / [1,get_initiatives.count].max } });
+
     
   });

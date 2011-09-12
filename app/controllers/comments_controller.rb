@@ -1,4 +1,5 @@
 class CommentsController < ApplicationController
+  protect_from_forgery
   def index
     @option = Option.find(params[:option_id])
     @comments = @option.root_comments

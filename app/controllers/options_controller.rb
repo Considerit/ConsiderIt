@@ -1,4 +1,6 @@
 class OptionsController < ApplicationController
+  protect_from_forgery
+
   def show
     @user = current_user
     @option = Option.find(params[:id])

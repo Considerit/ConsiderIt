@@ -3,7 +3,8 @@ li.point_in_list {
   margin-bottom: 8px;
   color: white;
   background-repeat: no-repeat;
-  position: relative; }
+  position: relative;
+  width: 205px; }
   li.point_in_list.con {
     background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent; }
     li.point_in_list.con .read_more a.toggle_more, li.point_in_list.con .read_more a.toggle {
@@ -23,8 +24,19 @@ li.point_in_list {
       line-height: 16px; }
     li.point_in_list .body .point_text.full {
       font-size: 90%;
-      margin: 10px 15px 10px 10px;
-      display: none; }
+      margin: 10px 15px 10px 36px;
+      display: none;
+      width: 90%; }
+      li.point_in_list .body .point_text.full .link h4 {
+        font-size: 15px;
+        margin: 8px 0; }
+      li.point_in_list .body .point_text.full .link ul {
+        margin-left: 0; }
+        li.point_in_list .body .point_text.full .link ul li {
+          padding: 2px 0; }
+          li.point_in_list .body .point_text.full .link ul li a {
+            color: white;
+            text-decoration: underline; }
     li.point_in_list .body .read_more {
       height: 25px; }
       li.point_in_list .body .read_more a.toggle_more, li.point_in_list .body .read_more a.toggle {
@@ -34,6 +46,13 @@ li.point_in_list {
       font-size: 10px;
       color: #c1c1c1;
       padding-bottom: 2px; }
+      li.point_in_list .body .username .avatar {
+        display: none;
+        position: absolute;
+        top: -79px;
+        border-top: 8px solid #39665f;
+        border-right: 8px solid #39665f;
+        border-left: 8px solid #39665f; }
   li.point_in_list.point_in_list_other {
     padding-bottom: 10px; }
     li.point_in_list.point_in_list_other.pro {
@@ -143,7 +162,7 @@ li.point_in_list {
   li.point_in_list .dismiss,
   li.point_in_list .include {
     position: absolute;
-    z-index: 999; }
+    z-index: 99; }
     li.point_in_list .dismiss input.judge_point,
     li.point_in_list .include input.judge_point {
       margin: 0;
@@ -170,8 +189,6 @@ li.point_in_list {
 .newpoint {
   width: 215px;
   margin: 20px 0; }
-  .newpoint .newpointform {
-    border: 3px solid #666666; }
 
 .newpointbutton button {
   font-size: 135%;
@@ -184,34 +201,121 @@ li.point_in_list {
     background: url(/images/add-con.png) left top no-repeat; }
 
 .newpointform {
-  background-color: transparent;
-  width: 95%;
   display: none;
-  margin: auto; }
-  .newpointform p.note {
-    color: #c1c1c1; }
-  .newpointform .text_group {
-    width: 100%;
-    .point-description-height: 150px; }
-    .newpointform .text_group .point-title,
-    .newpointform .text_group .point-description {
-      width: 190px; }
-  .newpointform .point-title-group {
-    margin-bottom: 10px; }
-    .newpointform .point-title-group .point-title {
-      height: 60px; }
-  .newpointform .count {
-    color: #c1c1c1;
-    padding-top: 2px; }
-  .newpointform .point-submit {
-    float: right; }
-  .newpointform .point-cancel {
-    float: right;
-    padding: 5px; }
-    .newpointform .point-cancel a {
-      color: #c1c1c1;
-      padding: 5px;
-      font-size: 12px; }
+  margin-top: -55px; }
+  .newpointform#newpointform-true form {
+    left: 0px; }
+  .newpointform#newpointform-false form {
+    left: -246px; }
+  .newpointform > form {
+    width: 460px;
+    margin: auto;
+    position: absolute;
+    z-index: 100;
+    background: url(/images/chalk/chalkboard_small.png) left top repeat;
+    padding: 5px 8px; }
+    .newpointform > form .symbol {
+      display: block;
+      float: left; }
+    .newpointform > form .form_proper {
+      float: left;
+      width: 415px; }
+      .newpointform > form .form_proper .username {
+        font-size: 10px;
+        color: #c1c1c1; }
+      .newpointform > form .form_proper p.note {
+        color: #c1c1c1; }
+      .newpointform > form .form_proper .text_group .point-title,
+      .newpointform > form .form_proper .text_group .point-description {
+        width: 360px; }
+      .newpointform > form .form_proper .count {
+        color: #c1c1c1;
+        display: inline-block;
+        margin-left: 5px; }
+      .newpointform > form .form_proper .point-title-group {
+        margin-bottom: 10px; }
+        .newpointform > form .form_proper .point-title-group .point-title {
+          height: 50px; }
+        .newpointform > form .form_proper .point-title-group .count {
+          margin-top: 25px; }
+      .newpointform > form .form_proper .point-description-group .point-description {
+        height: 70px; }
+      .newpointform > form .form_proper .point-description-group .count {
+        margin-top: 35px; }
+      .newpointform > form .form_proper .point-submit {
+        float: right;
+        margin-right: 38px; }
+        .newpointform > form .form_proper .point-submit input {
+          background-color: #999999;
+          background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.07, #777777), color-stop(1, #cccccc));
+          background-image: -moz-linear-gradient(center bottom, #777777 7%, #cccccc 100%);
+          color: #272727;
+          font-size: 12px;
+          padding: 3px 15px; }
+      .newpointform > form .form_proper .point-cancel {
+        float: right;
+        padding: 5px; }
+        .newpointform > form .form_proper .point-cancel a {
+          color: #c1c1c1;
+          padding: 5px;
+          font-size: 12px; }
+      .newpointform > form .form_proper .hide_name {
+        font-size: 11px;
+        margin-top: 12px; }
+        .newpointform > form .form_proper .hide_name label {
+          color: #c1c1c1;
+          letter-spacing: 0;
+          text-transform: inherit; }
+        .newpointform > form .form_proper .hide_name input {
+          margin-top: 2px; }
+
+#points_self_pro .point_link_prompt a.button {
+  color: #578e81; }
+
+#points_self_con .point_link_prompt a.button {
+  color: #7b538d; }
+
+.point_link_prompt a {
+  display: inline-block;
+  font-size: 13px; }
+  .point_link_prompt a.button {
+    border: 1px solid #666666;
+    background-color: #333333;
+    padding: 6px 5px; }
+  .point_link_prompt a.more_detail {
+    color: #717171;
+    margin-left: 12px;
+    margin-top: 18px; }
+
+.point_link_form fieldset {
+  position: relative;
+  background-color: #333333;
+  padding: 3px 8px;
+  margin-top: 7px;
+  width: 355px; }
+  .point_link_form fieldset .fields {
+    width: 320px; }
+    .point_link_form fieldset .fields input[type="text"] {
+      font-size: 11px;
+      padding: 2px 2px;
+      display: inline-block;
+      margin-left: 0; }
+      .point_link_form fieldset .fields input[type="text"].url {
+        margin-left: -1px; }
+    .point_link_form fieldset .fields .description {
+      width: 98%; }
+    .point_link_form fieldset .fields .url {
+      width: 98%; }
+    .point_link_form fieldset .fields .lead {
+      padding-top: 4px;
+      display: inline-block; }
+  .point_link_form fieldset .submit_block {
+    width: 30px;
+    margin-top: -3px; }
+    .point_link_form fieldset .submit_block a {
+      color: #717171;
+      padding: 3px 5px;
+      font-size: 10px; }
 
 #initiative h3 {
   font-size: 24px;
@@ -756,7 +860,7 @@ li.initiative_item {
     color: black; }
   #initiative li.breakdown .you_slider {
     position: absolute;
-    z-index: 3000;
+    z-index: 999;
     top: 95px;
     left: 593px; }
     #initiative li.breakdown .you_slider.call {
@@ -764,7 +868,7 @@ li.initiative_item {
       left: 661px; }
   #initiative li.breakdown .bars {
     position: absolute;
-    z-index: 999;
+    z-index: 99;
     top: -20px;
     left: 525px; }
     #initiative li.breakdown .bars .vizbase td {
@@ -797,7 +901,7 @@ li.initiative_item {
     #initiative li.breakdown .explore#ranked_points .filters {
       float: right;
       position: absolute;
-      z-index: 1000;
+      z-index: 100;
       top: 135px;
       right: 25px; }
       #initiative li.breakdown .explore#ranked_points .filters a#show_popular, #initiative li.breakdown .explore#ranked_points .filters a#show_self {
@@ -867,10 +971,7 @@ li.initiative_item {
     color: black;
     list-style: none outside none;
     padding: 10px;
-    opacity: 0.9;
     overflow: hidden; }
-    #discussion_threads .discussion-thread:hover {
-      opacity: 1; }
     #discussion_threads .discussion-thread.pro {
       background-color: #39665f; }
     #discussion_threads .discussion-thread.con {
@@ -966,78 +1067,6 @@ li.new_comment.from_discussion {
     #initiative.userpage ol#step_through li#stance.step .position_container #points_self_pro {
       margin-left: 10px; }
 
-#intro .table_container {
-  background-color: black;
-  width: 100%; }
-  #intro .table_container > table {
-    width: 100%; }
-    #intro .table_container > table .person_tapestry {
-      margin-top: 25px; }
-      #intro .table_container > table .person_tapestry ul.horizontal li {
-        float: left; }
-      #intro .table_container > table .person_tapestry ul.vertical {
-        width: 55px; }
-      #intro .table_container > table .person_tapestry ul li {
-        width: 55px;
-        height: 55px; }
-      #intro .table_container > table .person_tapestry img {
-        height: 55px; }
-    #intro .table_container > table #description {
-      padding: 10px 0px 10px 40px;
-      width: 725px; }
-      #intro .table_container > table #description .header .follow {
-        position: absolute;
-        z-index: 999;
-        top: -2px;
-        left: 850px; }
-      #intro .table_container > table #description .header .subheader .text {
-        font-size: 20px;
-        font-weight: normal;
-        font-style: normal;
-        font-family: Cambria, Helvetica Neue, Helvetica, Calibri, sans-serif;
-        color: #717171; }
-        #intro .table_container > table #description .header .subheader .text span {
-          padding-right: 10px;
-          color: #c1c1c1; }
-      #intro .table_container > table #description .header .subheader h2 {
-        font-size: 26px;
-        color: #c1c1c1; }
-        #intro .table_container > table #description .header .subheader h2 .extra {
-          color: #717171;
-          font-size: 24px;
-          line-height: 28px; }
-  #intro .table_container #infographic img {
-    width: 98%; }
-
-.get_started {
-  margin-left: 40px;
-  text-align: center;
-  font-size: 18px;
-  padding-bottom: 15px;
-  color: #717171; }
-
-#details {
-  min-height: 200px; }
-  #details table.init-details {
-    display: none; }
-    #details table.init-details td img {
-      max-width: 120px;
-      margin: 15px; }
-
-.home_header > h2 {
-  margin-top: 15px;
-  font-size: 36px; }
-  .home_header > h2 .subheader {
-    font-size: 24px;
-    font-weight: normal;
-    position: relative;
-    top: -5px;
-    color: gray; }
-
-#guide .img_container {
-  width: 100%;
-  text-align: center; }
-
 #static > * {
   padding-left: 20px; }
 #static.aboutus h3 {
@@ -1058,33 +1087,15 @@ li.new_comment.from_discussion {
         padding-bottom: 5px; }
       #static.aboutus td.list > ul ul.people {
         list-style: none outside none; }
-#static.tos ul {
-  padding-left: 50px; }
-#static.tos h3 {
-  padding-top: 15px; }
-#static.rules {
-  font-size: 16px;
-  line-height: 20px; }
-  #static.rules > p {
-    max-width: 650px;
-    font-size: 18px;
-    line-height: 20px; }
-  #static.rules ul {
-    margin-right: 12px; }
-    #static.rules ul li {
-      padding: 15px;
-      height: 350px;
-      width: 28%;
-      float: left;
-      list-style: none outside none;
-      background-color: #cccccc;
-      border: 3px solid gray; }
-      #static.rules ul li.middle {
-        margin: 0 10px; }
-      #static.rules ul li strong {
-        display: block;
-        padding-bottom: 10px;
-        font-size: 18px; }
+#static.tos {
+  width: 400px; }
+  #static.tos ul {
+    padding-left: 50px; }
+    #static.tos ul li {
+      list-style: inherit;
+      padding-bottom: 5px; }
+  #static.tos h3 {
+    padding-top: 15px; }
 
 #footer {
   clear: both;
@@ -1162,7 +1173,7 @@ li.new_comment.from_discussion {
   position: relative; }
   #wrap #masthead .logo_cell {
     position: relative;
-    top: -80px; }
+    top: -84px; }
     #wrap #masthead .logo_cell a {
       overflow: hidden; }
   #wrap #masthead .beta {
@@ -1171,66 +1182,78 @@ li.new_comment.from_discussion {
     color: white;
     top: -30px;
     left: 120px; }
-  #wrap #masthead #nav-user {
-    position: absolute;
-    top: -67px;
-    right: 0;
-    background-color: #e6e6e6;
-    height: 35px; }
-    #wrap #masthead #nav-user > li {
-      padding: 5px 0 0 0;
-      display: inline-block; }
-      #wrap #masthead #nav-user > li.first {
-        border-right: 2px dotted #894444; }
-      #wrap #masthead #nav-user > li.fb form {
+
+#nav-user {
+  position: absolute;
+  top: -67px;
+  right: 0;
+  background-color: black;
+  background-color: rgba(0, 0, 0, 0.15);
+  padding: 10px 15px; }
+  #nav-user *, #nav-user a {
+    color: #969696;
+    font-weight: bold; }
+  #nav-user a.register_link {
+    font-size: 14px; }
+  #nav-user .login_separator {
+    font-size: 10px; }
+  #nav-user a.login_link {
+    font-size: 12px; }
+  #nav-user > li {
+    display: inline-block;
+    vertical-align: top; }
+    #nav-user > li.triangle {
+      cursor: pointer;
+      position: relative; }
+      #nav-user > li.triangle .spacing {
+        height: 0px; }
+      #nav-user > li.triangle .hide {
+        z-index: 99;
+        position: absolute;
+        color: #666666;
+        right: 0;
+        width: 135px;
+        background-color: #750000; }
+        #nav-user > li.triangle .hide .avatar {
+          padding: 2px 0 0px 15px; }
+          #nav-user > li.triangle .hide .avatar a {
+            padding: 0;
+            margin: 0; }
+        #nav-user > li.triangle .hide ul {
+          margin-left: 0; }
+          #nav-user > li.triangle .hide ul li a {
+            width: 100%;
+            padding: 1px 10px 0 8px;
+            display: block;
+            cursor: pointer;
+            font-size: 12px; }
+            #nav-user > li.triangle .hide ul li a:hover {
+              color: #aaaaaa; }
+    #nav-user > li.progress.triangle {
+      width: 220px;
+      position: relative;
+      margin-right: 10px;
+      padding-right: 10px; }
+      #nav-user > li.progress.triangle .hide {
+        width: 100%; }
+      #nav-user > li.progress.triangle #progressbar {
         display: inline-block;
-        margin-right: 10px;
-        margin-top: 2px; }
-      #wrap #masthead #nav-user > li a {
-        padding: 16px 20px;
-        height: 25px;
-        line-height: 25px;
+        border: 1px solid #5a0002;
+        width: 100%;
+        height: 18px;
+        margin-top: 0px; }
+        #nav-user > li.progress.triangle #progressbar .ui-widget-header {
+          background: transparent url("/images/progress_back.png") 10px 10px;
+          border: 1px solid #ac0000; }
+      #nav-user > li.progress.triangle .triangle_img {
+        vertical-align: top;
+        margin-top: 6px; }
+      #nav-user > li.progress.triangle .text_progress {
+        color: #969696;
         font-size: 14px;
-        font-weight: bold; }
-        #wrap #masthead #nav-user > li a:hover {
-          color: #8d0808; }
-      #wrap #masthead #nav-user > li.first.last a, #wrap #masthead #nav-user > li.first.last form {
-        padding-left: 0; }
-  #wrap #masthead .avatar {
-    position: relative;
-    top: -5px; }
-#wrap .fb, #wrap .fb_login {
-  width: 76px;
-  height: 29px;
-  margin-left: 15px; }
-#wrap .fb input#user_submit, #wrap .fb_login input#user_submit, #wrap .fb_account input#user_submit {
-  padding-right: 60px;
-  padding-top: 15px;
-  overflow: hidden;
-  color: transparent;
-  font-size: 0px;
-  border: none;
-  background-color: transparent; }
-#wrap .fb {
-  background: transparent url("/images/fb_login.png") no-repeat scroll 0px 7px; }
-#wrap .fb_login {
-  background: transparent url("/images/fb_login.png") no-repeat scroll 0px 0px; }
-#wrap #loginhtml .lvg_account h2, #wrap #loginhtml .lvg_account h3 {
-  display: none; }
-#wrap #loginhtml .fb_account {
-  margin: 10px 0 0 75px; }
-  #wrap #loginhtml .fb_account li.or {
-    color: gray;
-    font-size: 18px;
-    padding-top: 44px; }
-  #wrap #loginhtml .fb_account li.fb_form {
-    background: transparent url("/images/fb_big.jpg") no-repeat scroll 0px 0px;
-    height: 128px;
-    width: 128px;
-    margin-left: 75px; }
-    #wrap #loginhtml .fb_account li.fb_form > form input#user_submit {
-      padding-right: 128px;
-      padding-top: 128px; }
+        position: absolute;
+        top: 1px;
+        left: 30px; }
 
 .LV_validation_message {
   font-weight: bold;
@@ -1258,107 +1281,193 @@ textarea.LV_invalid_field:hover,
 textarea.LV_invalid_field:active {
   border: 1px solid #cc0000; }
 
-#sessions h3 {
-  margin-bottom: 0px;
-  line-height: 20px; }
-#sessions h2 {
-  line-height: 30px; }
-#sessions ul.form {
-  width: 385px; }
-  #sessions ul.form > li.input_validates {
-    height: 50px; }
-  #sessions ul.form fieldset {
-    border: 1px solid #cccccc;
-    margin: 10px 5px; }
-    #sessions ul.form fieldset legend {
-      font-size: 14px;
-      color: #717171;
-      margin-left: 10px; }
-    #sessions ul.form fieldset ul {
-      padding: 5px 0; }
-      #sessions ul.form fieldset ul li.notifications {
-        padding: 3px 0; }
-        #sessions ul.form fieldset ul li.notifications label {
-          letter-spacing: 0px;
-          text-transform: none; }
-        #sessions ul.form fieldset ul li.notifications input {
-          display: inline;
-          height: 20px;
-          width: 20px;
-          margin-right: 5px; }
-#sessions #pledge {
-  display: none;
-  width: 385px; }
-  #sessions #pledge ul {
-    margin-left: 10px; }
-    #sessions #pledge ul li {
-      padding-bottom: 10px;
-      font-size: 12px; }
-
-.ui-dialog {
-  background: none repeat scroll 0 0 transparent;
-  border: none; }
-  .ui-dialog .ui-dialog-titlebar {
-    background: none repeat scroll 0 0 transparent;
-    border: none;
-    height: 24px;
-    margin: 0;
-    padding: 0;
-    position: relative;
-    z-index: 1000; }
-    .ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close {
-      position: absolute;
-      z-index: 999;
-      top: 38px;
-      background-color: gray;
-      left: 400px; }
-
-.ui-widget-overlay {
-  background: none repeat scroll 0 0 black;
-  opacity: 0.75; }
-
-#initial_form .extra {
-  font-size: 12px;
-  color: #717171;
-  padding-top: 10px; }
-
-#settings_dialog,
-#create_dialog,
-#login_dialog {
-  display: none;
-  background: none repeat scroll 0 0 white;
-  padding: 20px; }
-  #settings_dialog > #sessions,
-  #create_dialog > #sessions,
-  #login_dialog > #sessions {
-    width: 400px; }
-  #settings_dialog a,
-  #create_dialog a,
-  #login_dialog a {
-    font-weight: bold; }
-    #settings_dialog a:hover,
-    #create_dialog a:hover,
-    #login_dialog a:hover {
+.ui-widget-content #login_form,
+.ui-widget-content #registration_form,
+.ui-widget-content #pledge_form,
+.ui-widget-content #confirmation_sent {
+  font-family: Corbel, "Lucida Grande", Helvetica Neue, Helvetica, Calibri, sans-serif; }
+  .ui-widget-content #login_form > ul > li,
+  .ui-widget-content #registration_form > ul > li,
+  .ui-widget-content #pledge_form > ul > li,
+  .ui-widget-content #confirmation_sent > ul > li {
+    display: inline-block; }
+  .ui-widget-content #login_form h2,
+  .ui-widget-content #registration_form h2,
+  .ui-widget-content #pledge_form h2,
+  .ui-widget-content #confirmation_sent h2 {
+    font-size: 24px;
+    color: #333333; }
+  .ui-widget-content #login_form .sub,
+  .ui-widget-content #registration_form .sub,
+  .ui-widget-content #pledge_form .sub,
+  .ui-widget-content #confirmation_sent .sub {
+    font-size: 13px;
+    color: #999999; }
+    .ui-widget-content #login_form .sub a,
+    .ui-widget-content #registration_form .sub a,
+    .ui-widget-content #pledge_form .sub a,
+    .ui-widget-content #confirmation_sent .sub a {
+      color: inherit;
       text-decoration: underline; }
-    #settings_dialog a.faux_account_create,
-    #create_dialog a.faux_account_create,
-    #login_dialog a.faux_account_create {
-      background-color: gray;
-      color: white;
-      padding: 6px;
-      margin-top: 5px; }
-      #settings_dialog a.faux_account_create:hover,
-      #create_dialog a.faux_account_create:hover,
-      #login_dialog a.faux_account_create:hover {
-        text-decoration: none; }
-      #settings_dialog a.faux_account_create[disabled="disabled"], #settings_dialog a.faux_account_create[disabled="true"],
-      #create_dialog a.faux_account_create[disabled="disabled"],
-      #create_dialog a.faux_account_create[disabled="true"],
-      #login_dialog a.faux_account_create[disabled="disabled"],
-      #login_dialog a.faux_account_create[disabled="true"] {
-        background-color: #dddddd;
-        color: #aaaaaa;
-        cursor: default; }
+  .ui-widget-content #login_form h3,
+  .ui-widget-content #registration_form h3,
+  .ui-widget-content #pledge_form h3,
+  .ui-widget-content #confirmation_sent h3 {
+    margin: 15px 0 8px 0; }
+  .ui-widget-content #login_form .primary,
+  .ui-widget-content #registration_form .primary,
+  .ui-widget-content #pledge_form .primary,
+  .ui-widget-content #confirmation_sent .primary {
+    width: 375px;
+    background-color: white;
+    padding: 20px 25px;
+    border: 3px solid black; }
+    .ui-widget-content #login_form .primary #third_party a,
+    .ui-widget-content #registration_form .primary #third_party a,
+    .ui-widget-content #pledge_form .primary #third_party a,
+    .ui-widget-content #confirmation_sent .primary #third_party a {
+      margin: 2px 2px; }
+    .ui-widget-content #login_form .primary #lvg_account ul li span,
+    .ui-widget-content #registration_form .primary #lvg_account ul li span,
+    .ui-widget-content #pledge_form .primary #lvg_account ul li span,
+    .ui-widget-content #confirmation_sent .primary #lvg_account ul li span {
+      color: #696969;
+      font-size: 10px;
+      display: inline-block;
+      margin-top: 10px;
+      cursor: help; }
+    .ui-widget-content #login_form .primary #lvg_account li.email_field label,
+    .ui-widget-content #registration_form .primary #lvg_account li.email_field label,
+    .ui-widget-content #pledge_form .primary #lvg_account li.email_field label,
+    .ui-widget-content #confirmation_sent .primary #lvg_account li.email_field label {
+      padding-right: 30px; }
+    .ui-widget-content #login_form .primary #lvg_account li.password_field label,
+    .ui-widget-content #registration_form .primary #lvg_account li.password_field label,
+    .ui-widget-content #pledge_form .primary #lvg_account li.password_field label,
+    .ui-widget-content #confirmation_sent .primary #lvg_account li.password_field label {
+      padding-right: 6px; }
+    .ui-widget-content #login_form .primary #lvg_account li label,
+    .ui-widget-content #registration_form .primary #lvg_account li label,
+    .ui-widget-content #pledge_form .primary #lvg_account li label,
+    .ui-widget-content #confirmation_sent .primary #lvg_account li label {
+      color: #696969;
+      display: inline-block;
+      height: 30px;
+      padding-top: 8px; }
+    .ui-widget-content #login_form .primary #lvg_account .submit_footer,
+    .ui-widget-content #registration_form .primary #lvg_account .submit_footer,
+    .ui-widget-content #pledge_form .primary #lvg_account .submit_footer,
+    .ui-widget-content #confirmation_sent .primary #lvg_account .submit_footer {
+      margin-top: 10px; }
+      .ui-widget-content #login_form .primary #lvg_account .submit_footer a.cancel,
+      .ui-widget-content #registration_form .primary #lvg_account .submit_footer a.cancel,
+      .ui-widget-content #pledge_form .primary #lvg_account .submit_footer a.cancel,
+      .ui-widget-content #confirmation_sent .primary #lvg_account .submit_footer a.cancel {
+        display: inline-block;
+        padding: 5px 0 0 5px;
+        font-size: 12px;
+        color: #696969; }
+    .ui-widget-content #login_form .primary #lvg_account #user_new > a,
+    .ui-widget-content #registration_form .primary #lvg_account #user_new > a,
+    .ui-widget-content #pledge_form .primary #lvg_account #user_new > a,
+    .ui-widget-content #confirmation_sent .primary #lvg_account #user_new > a {
+      color: #696969;
+      font-size: 12px;
+      margin-top: 8px;
+      display: block; }
+    .ui-widget-content #login_form .primary .fineprint,
+    .ui-widget-content #registration_form .primary .fineprint,
+    .ui-widget-content #pledge_form .primary .fineprint,
+    .ui-widget-content #confirmation_sent .primary .fineprint {
+      margin-top: 2px;
+      font-size: 13px;
+      color: #999999; }
+    .ui-widget-content #login_form .primary .divider,
+    .ui-widget-content #registration_form .primary .divider,
+    .ui-widget-content #pledge_form .primary .divider,
+    .ui-widget-content #confirmation_sent .primary .divider {
+      margin: 10px 0;
+      border: 1px solid #e1e1e1; }
+    .ui-widget-content #login_form .primary #acknowledgment,
+    .ui-widget-content #registration_form .primary #acknowledgment,
+    .ui-widget-content #pledge_form .primary #acknowledgment,
+    .ui-widget-content #confirmation_sent .primary #acknowledgment {
+      color: #262626;
+      font-size: 12px; }
+      .ui-widget-content #login_form .primary #acknowledgment a,
+      .ui-widget-content #registration_form .primary #acknowledgment a,
+      .ui-widget-content #pledge_form .primary #acknowledgment a,
+      .ui-widget-content #confirmation_sent .primary #acknowledgment a {
+        text-decoration: underline; }
+  .ui-widget-content #login_form .secondary,
+  .ui-widget-content #registration_form .secondary,
+  .ui-widget-content #pledge_form .secondary,
+  .ui-widget-content #confirmation_sent .secondary {
+    background-color: #dddddd;
+    margin-top: 35px;
+    padding: 10px 15px 10px 25px;
+    width: 225px; }
+    .ui-widget-content #login_form .secondary ul,
+    .ui-widget-content #registration_form .secondary ul,
+    .ui-widget-content #pledge_form .secondary ul,
+    .ui-widget-content #confirmation_sent .secondary ul {
+      margin-left: 0; }
+      .ui-widget-content #login_form .secondary ul li,
+      .ui-widget-content #registration_form .secondary ul li,
+      .ui-widget-content #pledge_form .secondary ul li,
+      .ui-widget-content #confirmation_sent .secondary ul li {
+        font-size: 14px;
+        padding: 5px 0 10px 0;
+        color: #535353; }
+        .ui-widget-content #login_form .secondary ul li strong,
+        .ui-widget-content #registration_form .secondary ul li strong,
+        .ui-widget-content #pledge_form .secondary ul li strong,
+        .ui-widget-content #confirmation_sent .secondary ul li strong {
+          color: #2c2c2c; }
+  .ui-widget-content #login_form#pledge_form p, .ui-widget-content #login_form#confirmation_sent p,
+  .ui-widget-content #registration_form#pledge_form p,
+  .ui-widget-content #registration_form#confirmation_sent p,
+  .ui-widget-content #pledge_form#pledge_form p,
+  .ui-widget-content #pledge_form#confirmation_sent p,
+  .ui-widget-content #confirmation_sent#pledge_form p,
+  .ui-widget-content #confirmation_sent#confirmation_sent p {
+    color: #696969; }
+    .ui-widget-content #login_form#pledge_form p strong, .ui-widget-content #login_form#confirmation_sent p strong,
+    .ui-widget-content #registration_form#pledge_form p strong,
+    .ui-widget-content #registration_form#confirmation_sent p strong,
+    .ui-widget-content #pledge_form#pledge_form p strong,
+    .ui-widget-content #pledge_form#confirmation_sent p strong,
+    .ui-widget-content #confirmation_sent#pledge_form p strong,
+    .ui-widget-content #confirmation_sent#confirmation_sent p strong {
+      color: #333333; }
+  .ui-widget-content #login_form#pledge_form h2, .ui-widget-content #login_form#confirmation_sent h2,
+  .ui-widget-content #registration_form#pledge_form h2,
+  .ui-widget-content #registration_form#confirmation_sent h2,
+  .ui-widget-content #pledge_form#pledge_form h2,
+  .ui-widget-content #pledge_form#confirmation_sent h2,
+  .ui-widget-content #confirmation_sent#pledge_form h2,
+  .ui-widget-content #confirmation_sent#confirmation_sent h2 {
+    font-size: 24px;
+    color: #333333;
+    margin-bottom: 8px; }
+  .ui-widget-content #login_form#pledge_form #pledge, .ui-widget-content #login_form#confirmation_sent #pledge,
+  .ui-widget-content #registration_form#pledge_form #pledge,
+  .ui-widget-content #registration_form#confirmation_sent #pledge,
+  .ui-widget-content #pledge_form#pledge_form #pledge,
+  .ui-widget-content #pledge_form#confirmation_sent #pledge,
+  .ui-widget-content #confirmation_sent#pledge_form #pledge,
+  .ui-widget-content #confirmation_sent#confirmation_sent #pledge {
+    margin-bottom: 12px;
+    display: block; }
+  .ui-widget-content #login_form#pledge_form a.cancel, .ui-widget-content #login_form#confirmation_sent a.cancel,
+  .ui-widget-content #registration_form#pledge_form a.cancel,
+  .ui-widget-content #registration_form#confirmation_sent a.cancel,
+  .ui-widget-content #pledge_form#pledge_form a.cancel,
+  .ui-widget-content #pledge_form#confirmation_sent a.cancel,
+  .ui-widget-content #confirmation_sent#pledge_form a.cancel,
+  .ui-widget-content #confirmation_sent#confirmation_sent a.cancel {
+    color: #696969;
+    text-decoration: underline; }
 
 * {
   margin: 0;
@@ -1401,12 +1510,16 @@ table {
   border-collapse: separate; }
 
 html {
-  background-color: #b4b4b4; }
+  background-color: #b4b4b4;
+  min-height: 100%;
+  height: 100%; }
 
 body {
   color: #222222;
   font-family: Helvetica Neue, Helvetica, Calibri, sans-serif;
-  font-size: 14px; }
+  font-size: 14px;
+  min-height: 100%;
+  height: 100%; }
 
 #wrap {
   position: relative; }
@@ -1423,34 +1536,9 @@ body {
   clear: both;
   visibility: hidden; }
 
-h2 {
-  margin-bottom: 18px;
-  font-size: 28px;
-  line-height: 36px; }
-  h2 h3 {
-    margin-top: -18px;
-    clear: left;
-    color: #425d78;
-    font-weight: normal; }
-
-h3 {
-  margin-bottom: 18px;
-  font-size: 20px;
-  line-height: 36px; }
-  h3 h4 {
-    margin-top: -18px;
-    color: #425d78;
-    font-weight: normal; }
-
-h4 {
-  margin-bottom: 18px;
-  font-size: 14px;
-  line-height: 18px; }
-
-h5 {
-  margin-bottom: 18px;
-  font-size: 12px;
-  line-height: 18px; }
+h2.sub_follows {
+  margin-bottom: 0px;
+  line-height: normal; }
 
 p {
   margin-bottom: 18px; }
@@ -1490,23 +1578,24 @@ input, textarea {
   padding: 6px;
   vertical-align: top; }
 
-input[type="text"], input[type="password"], textarea {
-  border: 1px solid #bbbbbb;
+input[type="text"], input[type="password"], input[type="email"], textarea {
+  border: 1px solid #7e7e7e;
   color: #333333;
   font-family: Helvetica, Arial, sans-serif;
   font-size: 14px;
-  vertical-align: top; }
-  input[type="text"].blur, input[type="text"].example, input[type="password"].blur, input[type="password"].example, textarea.blur, textarea.example {
-    color: #a6abb0; }
-  input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+  vertical-align: top;
+  margin: 3px 2px; }
+  input[type="text"].blur, input[type="text"].example, input[type="password"].blur, input[type="password"].example, input[type="email"].blur, input[type="email"].example, textarea.blur, textarea.example {
+    color: #717171; }
+  input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, textarea:focus {
     background-color: azure;
     border-color: DeepSkyBlue; }
 
 button,
 input[type="submit"] {
-  background-color: gray;
+  background-color: #082872;
   color: white;
-  padding: 6px;
+  padding: 3px 10px;
   font-size: 14px;
   cursor: pointer; }
   button:focus,
@@ -1524,17 +1613,6 @@ input[type="submit"] {
   border: 10px solid black;
   padding: 25px;
   width: 350px; }
-
-#loading {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 5000;
-  background-color: red;
-  font-size: 150%;
-  color: white;
-  padding: 2px;
-  display: none; }
 
 ul.form {
   list-style: none outside none; }
@@ -1642,3 +1720,15 @@ a.rate_point_similarity {
 
 #infovis {
   height: 500px; }
+
+#lightbox {
+  display: none;
+  background: black;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: 99; }

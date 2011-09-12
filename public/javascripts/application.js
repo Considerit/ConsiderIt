@@ -34,14 +34,14 @@ ConsiderIt = {
       },
       
       new_button_clicked : function (sel) {
-        $j(sel + ' .newpointbutton').fadeOut('normal', function() {
-          $j(sel + ' .newpointform').fadeIn('slow');      
-        });
+        $j(sel + ' .newpointform').fadeIn('fast');      
+        $j('#lightbox').fadeIn('slow');
       },
       
       cancel_button_clicked : function (sel) {
-        $j(sel + ' .newpointform').fadeOut('slow', function(){
-          $j(sel + ' .newpointbutton').fadeIn();    
+        $j(sel + ' .newpointform').fadeOut(function(){
+          $j(sel + ' .newpointbutton').fadeIn();  
+          $j('#lightbox').fadeOut();  
         });    
       
       },    
@@ -65,36 +65,56 @@ ConsiderIt = {
         };
         
         form.find('.point-title').NobleCount( form_sel + ' .point-title-group .count', params);
-        params.max_chars = 500;
+        params.max_chars = 700;
         form.find('.point-description').NobleCount( form_sel + ' .point-description-group .count', params);  
       }      
     },
     
     set_more_less_text_toggle : function(sel, point_id, initiative_id) {
+
       $j(sel + ' .toggle.more').click(function(){
-        $j(sel + ' .point_text.full').slideDown();
+        var pnt_el = $j(sel);
+
+        pnt_el.css({
+          'z-index': 100,
+          'position': 'relative'  
+        });
+
+        $j('#lightbox').fadeIn();
+
+        pnt_el.animate({
+          width: '600px'
+        }, function(){
+          pnt_el.find('.point_text.full').slideDown(function(){
+            pnt_el.find('.avatar').fadeIn();
+          });
+        });
+
         $j(this).fadeOut(function(){$j(sel + ' .less').fadeIn();});
-        var data = {
-          point_text_toggle: {
-            more: true,
-            point_id: point_id,
-            initiative_id: initiative_id
-          }
-        };
-        // $j.post('/study/point_text_toggle', data);
+
       });
     
       $j(sel + ' .toggle.less').click(function(){
-        $j(sel + ' .point_text.full').slideUp();
+        var pnt_el = $j(sel);
+
+        $j(sel + ' .point_text.full').slideUp(function(){
+          pnt_el.find('.avatar').fadeOut();
+          pnt_el.animate({
+            width: '205px'},
+            function(){
+              pnt_el.css({
+                'z-index': 'inherit',
+                'position': 'relative'
+              });
+              $j('#lightbox').fadeOut();        
+            }
+          );
+        });
+
+
         $j(this).fadeOut(function(){$j(sel + ' .more').fadeIn();});
-        var data = {
-          point_text_toggle: {
-            more: false,
-            point_id: point_id,
-            initiative_id: initiative_id
-          }
-        };
-        // $j.post('/study/point_text_toggle', data);    
+
+        
       });
     
     }    
@@ -373,13 +393,23 @@ ConsiderIt = {
               } ).attr( 'disabled', true ).css( 'cursor', 'default' );
           t_obj.data( 'disabled', true );
       
-        }
-        
+        } 
       }
-      
     } 
   }
-  
 };
 
 })(jQuery);
+
+// TODO: integrate better into code
+// FROM: https://github.com/ryanb/complex-form-examples/blob/master/public/javascripts/application.js
+function remove_fields(link) {
+  jQuery(link).parents('.point_link_form').remove();
+}
+
+function add_fields(link, association, content) {
+  var new_id = new Date().getTime();
+  var regexp = new RegExp("new_" + association, "g");
+  var new_content = content.replace(regexp, new_id);
+  jQuery(link).parent().prepend(new_content);
+}

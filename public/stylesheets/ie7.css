@@ -4,7 +4,7 @@
 
 #wrap #masthead {
 	position: relative;
-	z-index: 9999;
+	z-index: 999;
 }
 
 body #wrap {
@@ -12,7 +12,7 @@ body #wrap {
 }
 
 body .ui-dialog {
-  z-index: 9999;
+  z-index: 99;
 }
 
 #footer .learn,
@@ -61,21 +61,4 @@ button, input[type="submit"] {
 
 #initiative.guide .initiatives > div ul.initiative_list {
   width: 100%;
-}
-
-
-#reflected .rf_comment_summary textarea.new_bullet_text {
-	width: 285px;
-}
-
-#reflected .rf_comment_summary tr.submit_footer li.submit {
-	width: 75px;
-}
-
-#reflected .rf_comment_summary tr.submit_footer a {
-	color: black;
-}
-
-#reflected div.new_bullet_prompt li.elicitation {
-	width: 90%;
 }

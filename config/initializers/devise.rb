@@ -14,6 +14,9 @@ Devise.setup do |config|
   # available as additional gems.
   require 'devise/orm/active_record'
 
+  #from omniauth docs: In order to use following features, you have to require openid store in Devise initializer.
+  require 'openid/store/filesystem'
+  
   # ==> Configuration for any authentication mechanism
   # Configure which keys are used when authenticating a user. The default is
   # just :email. You can configure it to use [:username, :subdomain], so for
@@ -63,7 +66,7 @@ Devise.setup do |config|
   # You can use this to let your user access some features of your application
   # without confirming the account, but blocking it after a certain period
   # (ie 2 days).
-  # config.confirm_within = 2.days
+  config.confirm_within = 2.months
 
   # Defines which key will be used when confirming an account
   # config.confirmation_keys = [ :email ]
@@ -171,7 +174,19 @@ Devise.setup do |config|
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
+
+  Twitter.configure do |twitter_config|
+    twitter_config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
+    twitter_config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
+    twitter_config.oauth_token = ENV['TWITTER_OAUTH_TOKEN']
+    twitter_config.oauth_token_secret = ENV['TWITTER_OAUTH_TOKEN_SECRET']
+  end
+
   config.omniauth :facebook, ENV['FB_ID'], ENV['FB_SECRET'], {:scope => 'email'}
+  config.omniauth :open_id, OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo'
+  config.omniauth :open_id, OpenID::Store::Filesystem.new('./tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id'
+
+  config.omniauth :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

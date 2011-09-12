@@ -10,8 +10,11 @@
       %td.body      
         .username
           by
-          = point.user.name
-                      
+          - if point.user
+            = point.user.name
+          - else
+            [unregistered]
+                                
         .point_text.nutshell 
           - if point.nutshell.length > 0
             = h point.nutshell

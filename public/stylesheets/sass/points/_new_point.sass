@@ -14,10 +14,7 @@
 .newpoint
   width: 215px
   margin: 20px 0
-  
-  .newpointform
-    border: 3px solid $brd_gray
-  
+      
 .newpointbutton button
   font-size: 135%
   width: 175px
@@ -31,38 +28,95 @@
 
 
 .newpointform
-  background-color: transparent
-  width: 95%
   display: none
-  margin: auto
+  margin-top: -55px
   
-  p.note
-    color: $txt_light_gray
-  
-  .text_group
-    width: 100%
-    .point-title,
-    .point-description
-      width: 190px
+  &#newpointform-true form
+    left: 0px
+
+  &#newpointform-false form
+    left: -246px
+
+  > form
+    width: 460px
+    margin: auto
+    position: absolute
+    z-index: 100
+    background: url(/images/chalk/chalkboard_small.png) left top repeat
+    padding: 5px 8px
+
+    .symbol
+      display: block
+      float: left
     
-    .point-description:
-      height: 150px
-    
-  .point-title-group
-    margin-bottom: 10px
-    .point-title
-      height: 60px
-  
-  .count
-    color: $txt_light_gray
-    padding-top: 2px
-    
-  .point-submit
-    float: right
-  .point-cancel
-    float: right
-    padding: 5px
-    a
-      color: $txt_light_gray
-      padding: 5px
-      font-size: 12px
+    .form_proper
+      float: left
+      width: 415px
+
+      .username
+        font-size: 10px
+        color: $txt_light_gray
+
+
+      p.note
+        color: $txt_light_gray
+      
+      .text_group
+        .point-title, 
+        .point-description
+          width: 360px
+
+      .count
+        color: $txt_light_gray
+        display: inline-block
+        margin-left: 5px
+
+      .point-title-group
+        margin-bottom: 10px
+        .point-title
+          height: 50px
+        .count
+          margin-top: 25px          
+
+      .point-description-group
+        .point-description
+          height: 70px  
+        .count
+          margin-top: 35px
+
+        
+      .point-submit
+        float: right
+        margin-right: 38px
+
+        input
+          background-color: #999
+          
+          background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(119,119,119)), color-stop(1, rgb(204,204,204)))
+          
+          background-image: -moz-linear-gradient(center bottom, rgb(119,119,119) 7%, rgb(204,204,204) 100%)
+
+          color: $txt_dark_gray
+
+          font-size: 12px
+          padding: 3px 15px
+
+      .point-cancel
+        float: right
+        padding: 5px
+        a
+          color: $txt_light_gray
+          padding: 5px
+          font-size: 12px
+
+      .hide_name
+        font-size: 11px
+        margin-top: 12px
+
+        label
+          color: $txt_light_gray
+          letter-spacing: 0
+          text-transform: inherit
+
+        input
+          margin-top: 2px

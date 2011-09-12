@@ -17,6 +17,8 @@ $txt_gray: #717171
 $txt_light_gray: #C1C1C1
 $txt_blue: #0342A1
 $txt_red: #8d0808
+$txt_green: #578E81
+$txt_purple: #7B538D
 
 $brd_red: #894444
 $brd_dark_red: #5F0000
@@ -31,6 +33,8 @@ $std_gutter: 15px
 
 @import "points/point_in_list"
 @import "points/new_point"
+
+@import "point_links/point_links"
 
 @import "initiatives/shared"
 @import "initiatives/index"
@@ -96,12 +100,15 @@ table
   
 html
   background-color: $bk_darkest_gray
+  min-height: 100%
+  height: 100%
   
 body
   color: #222
   font-family: Helvetica Neue, Helvetica, Calibri, sans-serif
   font-size: 14px
-
+  min-height: 100%
+  height: 100%
 #wrap
   position: relative
   > div
@@ -122,34 +129,10 @@ body
 
 
 h2
-  margin-bottom: 18px
-  font-size: 28px
-  line-height: 36px 
 
-  h3
-    margin-top: -18px
-    clear: left
-    color: #425d78
-    font-weight: normal
-
-h3
-  margin-bottom: 18px
-  font-size: 20px
-  line-height: 36px
-  h4
-    margin-top: -18px
-    color: #425d78
-    font-weight: normal
-
-h4
-  margin-bottom: 18px
-  font-size: 14px
-  line-height: 18px
-
-h5
-  margin-bottom: 18px
-  font-size: 12px
-  line-height: 18px
+  &.sub_follows
+    margin-bottom: 0px
+    line-height: normal
 
 p
   margin-bottom: 18px
@@ -189,24 +172,25 @@ input, textarea
   padding: 6px
   vertical-align: top
 
-input[type="text"], input[type="password"], textarea
-  border: 1px solid #bbb
+input[type="text"], input[type="password"], input[type="email"], textarea
+  border: 1px solid #7E7E7E
   color: #333
   font-family: Helvetica, Arial, sans-serif
   font-size: 14px
   vertical-align: top
+  margin: 3px 2px
 
   &.blur, &.example
-    color: #a6abb0
+    color: $txt_gray
   &:focus
     background-color: azure  
     border-color: DeepSkyBlue 
   
 button,
 input[type="submit"]
-  background-color: gray
+  background-color: #082872
   color: white
-  padding: 6px
+  padding: 3px 10px
   font-size: 14px
   cursor: pointer
   
@@ -224,17 +208,6 @@ input[type="submit"]
   border: 10px solid black
   padding: 25px
   width: 350px
-  
-#loading
-  position: fixed
-  top: 0
-  left: 0
-  z-index: 5000
-  background-color: red
-  font-size: 150%
-  color: white
-  padding: 2px
-  display: none
   
 ul.form
   @include nude-list
@@ -363,3 +336,15 @@ a.rate_point_similarity
 
 #infovis 
   height: 500px
+
+#lightbox
+  display: none
+  background: #000000
+  opacity: 0.5
+  filter: alpha(opacity=50)
+  position: fixed
+  top: 0px
+  left: 0px
+  min-width: 100%
+  min-height: 100%
+  z-index: 99

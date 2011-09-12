@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110727043807) do
+ActiveRecord::Schema.define(:version => 20110911035755) do
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",   :default => 0
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(:version => 20110727043807) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "point_id"
+    t.integer  "option_id"
   end
 
   add_index "comments", ["commentable_id"], :name => "index_comments_on_commentable_id"
@@ -70,6 +71,17 @@ ActiveRecord::Schema.define(:version => 20110727043807) do
     t.text     "description"
     t.string   "image"
     t.string   "url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "point_links", :force => true do |t|
+    t.integer  "point_id"
+    t.integer  "option_id"
+    t.integer  "user_id"
+    t.string   "url"
+    t.string   "description"
+    t.boolean  "approved",    :default => true
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -125,6 +137,9 @@ ActiveRecord::Schema.define(:version => 20110727043807) do
     t.float    "score_stance_group_5"
     t.float    "score_stance_group_6"
     t.datetime "deleted_at"
+    t.boolean  "published",            :default => true
+    t.boolean  "hide_name",            :default => false
+    t.boolean  "share",                :default => true
   end
 
   add_index "point_versions", ["point_id"], :name => "index_point_versions_on_point_id"
@@ -154,6 +169,9 @@ ActiveRecord::Schema.define(:version => 20110727043807) do
     t.float    "score_stance_group_6"
     t.datetime "deleted_at"
     t.integer  "version"
+    t.boolean  "published",            :default => true
+    t.boolean  "hide_name",            :default => false
+    t.boolean  "share",                :default => true
   end
 
   add_index "points", ["is_pro"], :name => "index_points_on_is_pro"
@@ -219,8 +237,8 @@ ActiveRecord::Schema.define(:version => 20110727043807) do
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
 
   create_table "users", :force => true do |t|
-    t.string   "email",                               :default => "",    :null => false
-    t.string   "encrypted_password",   :limit => 128, :default => "",    :null => false
+    t.string   "email",                               :default => ""
+    t.string   "encrypted_password",   :limit => 128, :default => ""
     t.string   "reset_password_token"
     t.datetime "remember_created_at"
     t.integer  "sign_in_count",                       :default => 0
@@ -233,12 +251,27 @@ ActiveRecord::Schema.define(:version => 20110727043807) do
     t.datetime "confirmation_sent_at"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "username"
     t.text     "sessions"
     t.boolean  "admin",                               :default => false
+    t.string   "avatar_file_name"
+    t.string   "avatar_content_type"
+    t.integer  "avatar_file_size"
+    t.datetime "avatar_updated_at"
+    t.string   "avatar_remote_url"
+    t.string   "name"
+    t.integer  "zip"
+    t.text     "bio"
+    t.string   "url"
+    t.string   "facebook_uid"
+    t.string   "google_uid"
+    t.string   "yahoo_uid"
+    t.string   "openid_uid"
+    t.string   "twitter_uid"
+    t.string   "twitter_handle"
+    t.boolean  "pledge_taken",                        :default => false
   end
 
-  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
+  add_index "users", ["email"], :name => "index_users_on_email"
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 
 end

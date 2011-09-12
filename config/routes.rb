@@ -1,5 +1,7 @@
 ConsiderIt::Application.routes.draw do
   
+  resources :point_links
+
   root :to => "home#index"
   
   resources :options, :only => [:show] do
@@ -10,16 +12,20 @@ ConsiderIt::Application.routes.draw do
     resources :point_similarities, :module => :admin
     resources :comments, :only => [:index, :create]
   end
-  
 
   devise_for :users, :controllers => { 
     :omniauth_callbacks => "users/omniauth_callbacks", 
     :sessions => "users/sessions", 
-    :registrations => "users/registrations" 
+    :registrations => "users/registrations",
+    :passwords => "users/passwords",
+    :confirmations => "users/confirmations"
   }
 
   themes_for_rails # themes_for_rails gem routes 
-  
+
   match "/theme" => "theme#set", :via => :post
-  
+  match "/home/zip" => "home#set_zipcode", :via => :post
+  match "/home/pledge" => "home#take_pledge", :via => :post
+  match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit/ } 
+
 end

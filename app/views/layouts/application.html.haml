@@ -27,9 +27,6 @@
     
     = include_stylesheets :common, :media => 'all'      
     = stylesheet_link_tag current_theme_stylesheet_path('considerit.theme')
-
-    - if @reflectable 
-      = include_stylesheets :reflect, :media => 'all'
     
     /[if IE]
       = javascript_include_tag "svg", :"data-path" => "/javascripts/"
@@ -42,9 +39,6 @@
       = javascript_include_tag 'IE7'
     
     = include_javascripts :workspace
-
-    - if @reflectable
-      = include_javascripts :reflect
       
     = javascript_include_tag 'jit'
 
@@ -65,7 +59,8 @@
   
   
   %body
-  
+    #lightbox
+
     #wrap
       = render :partial => "shared/header/container"
       #content
@@ -82,8 +77,14 @@
       $j('#masthead').corner('round top 5px');
       $j('#nav-user').corner('bottom bl 5px');  
 
+      $j('input[type="submit"]').corner('3px');
+
       $j('a.smooth_anchor').click(function(){
         $j('html, body').animate({
           scrollTop: $j($j(this).attr('href')).offset().top}, 1000);
           return false;
+      });
+
+      $j('.has_example').example(function() {
+         return $j(this).attr('title'); 
       });

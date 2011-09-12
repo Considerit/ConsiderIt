@@ -2,28 +2,21 @@ class Point < ActiveRecord::Base
   belongs_to :user
   belongs_to :option
   belongs_to :position
-  has_many :inclusions
-  has_many :point_listings
+  has_many :inclusions, :dependent => :destroy
+  has_many :point_listings, :dependent => :destroy
+  has_many :point_links, :dependent => :destroy
   has_one :comment
-  
+
+  accepts_nested_attributes_for :point_links, :reject_if => lambda { |pl| pl[:url].blank? }, :allow_destroy => true
+
   acts_as_paranoid_versioned :if_changed => [:nutshell, :text, :user_id, :is_pro, :position_id]
 
   cattr_reader :per_page
   @@per_page = 4  
-  
+
+  default_scope where( :published => true )  
   scope :pros, where( :is_pro => true )
   scope :cons, where( :is_pro => false )
-  
-  scope :not_included_by, proc {|user| 
-    if !user.nil?
-      joins(:inclusions.outer, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NULL")
-    end }
-    
-  scope :included_by, proc {|user| 
-    if !user.nil?
-      joins(:inclusions, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NOT NULL") 
-    end }
-  
   scope :ranked_overall, 
     # where( "points.score > 0" ).
     order( "points.score DESC" )
@@ -36,6 +29,33 @@ class Point < ActiveRecord::Base
       where("points.score_stance_group_#{stance_bucket} > 0").
       order("points.score_stance_group_#{stance_bucket} DESC")
   }
+  
+  scope :not_included_by, proc {|user, included_points| 
+    chain = !user.nil? ? joins(:inclusions.outer, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NULL") : nil
+
+    if included_points.length > 0
+      chain = chain.nil? ? where("points.id NOT IN (?)", included_points) : chain.where("points.id NOT IN (?)", included_points)
+    end 
+    chain
+  }
+  
+  def self.included_by_stored(user, option)
+    if user
+      option.points.unscoped
+        joins(:inclusions, "AND inclusions.user_id = #{user.id}").
+        where("inclusions.user_id IS NOT NULL")
+    else
+      option.points.where(:id => -1) #null set
+    end
+  end
+
+  def self.included_by_unstored(included_points, option)
+    if included_points.length > 0
+      option.points.unscoped.where("points.id IN (?)", included_points)
+    else
+      option.points.where(:id => -1) #null set
+    end
+  end
   
   def update_absolute_score
     define_appeal

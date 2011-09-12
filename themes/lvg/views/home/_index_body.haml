@@ -1,43 +1,38 @@
 .table_container
- 
-  %table
-    %tr
-      = render :partial => "home/person_tapestry", :locals => {:vertical => false, :count => 17}
-  %table
-    %tr
-      /
-        %td.graphic
-          = image_tag "placeholder-index.png", :alt => "Crowd of excited people, presumably enchanted by the Living Voters Guide"
-      = render :partial => "home/person_tapestry", :locals => {:vertical => true, :count => 5}
-      
-      %td
-        #description
+  #description
 
-          .header
-            .follow
-              - if APP_CONFIG['socmedia']['facebook']['include_follow']
-                %span.facebook
-                  %a.fb_page{ :href => "#{APP_CONFIG['socmedia']['facebook']['facebook_page']}", :target => "_blank", :title => "Find us on Facebook" }
-                    = image_tag "facebook_button.png", :alt => "Facebook logo"
-              - if APP_CONFIG['socmedia']['twitter']['include_follow']
-                %span.twitter
-                  %a.twitter_page{ :href => "#{APP_CONFIG['socmedia']['twitter']['twitter_page']}", :target => "_blank", :title => "Follow us on Twitter" }
-                    = image_tag "Twitter_button.png", :alt => "Twitter logo"        
-            .subheader
-              %a.home_initiative_link{ :href => "/initiatives" }
-                %h2 
-                  = APP_CONFIG['home']['call']
-                  .extra
-                    = APP_CONFIG['home']['subcall']
-                
-                - APP_CONFIG['home']['values'].each do |value|
-                  .text
-                    %span.italic
-                      = value['lead'] 
-                    = value['follow'] 
+    .header
+      .follow
+        - if APP_CONFIG['socmedia']['facebook']['include_follow']
+          %span.facebook
+            %a.fb_page{ :href => "#{APP_CONFIG['socmedia']['facebook']['facebook_page']}", :target => "_blank", :title => "Find us on Facebook" }
+              = image_tag "facebook_button.png", :alt => "Facebook logo"
+        - if APP_CONFIG['socmedia']['twitter']['include_follow']
+          %span.twitter
+            %a.twitter_page{ :href => "#{APP_CONFIG['socmedia']['twitter']['twitter_page']}", :target => "_blank", :title => "Follow us on Twitter" }
+              = image_tag "Twitter_button.png", :alt => "Twitter logo"        
+      .subheader
+        %h2 
+          = APP_CONFIG['home']['call']
+          .extra
+            = APP_CONFIG['home']['subcall']
+        
+        - APP_CONFIG['home']['values'].each do |value|
+          .text
+            %span.italic
+              = value['lead'] 
+            = value['follow'] 
+    
+    = form_tag '/home/zip', :id => 'zip' do
+      = text_field_tag "zipcode"
+  
+:javascript
 
-
-      = render :partial => "home/person_tapestry", :locals => {:vertical => true, :count => 5}
-  %table
-    %tr
-      = render :partial => "home/person_tapestry", :locals => {:vertical => false, :count => 17}
+  $j("input#zipcode").autocomplete({
+    source: ["98102", "98105", "98106", "98112"],
+    select: function(event, ui){
+     $j.post("#{home_zip_path}", { zip: ui.item.value }, function(data){
+      $j('#zip').append(data);
+     });
+    }
+  });

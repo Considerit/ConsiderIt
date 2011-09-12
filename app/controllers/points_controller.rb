@@ -1,4 +1,6 @@
 class PointsController < ApplicationController
+  protect_from_forgery
+
   respond_to :json
   
   
@@ -37,7 +39,7 @@ class PointsController < ApplicationController
       qry = qry.joins(:inclusions).where(:inclusions => { :user_id => @user.id})    
     elsif @bucket == 'other'
       group_name = 'other'
-      qry = qry.not_included_by(current_user).ranked_persuasiveness  
+      qry = qry.not_included_by(current_user, session[@option.id][:included_points].keys).ranked_persuasiveness  
     else
       ## specific voter segment...
       @bucket = @bucket.to_i
@@ -101,23 +103,24 @@ class PointsController < ApplicationController
   end
   
   def create
-    
-    @point = Point.create!(params[:point])
-    
-    @user = current_user
     @option = Option.find(params[:option_id])
     @position = current_user ? Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first : nil
-    
-    #TODO: save session ids properly
-    inclusion = Inclusion.create!(
-      :option_id => @option.id,
-      :user_id => @user.id,
-      :point_id => @point.id,
-      :included_as_pro => @point.is_pro, #TODO: allow user to switch polarity
-      #:session_id => ...
-      :position_id => @position ? @position.id : nil
-    )
-    
+    @user = current_user
+
+    params[:point][:option_id] = params[:option_id]   
+    if current_user
+      params[:point][:user_id] = current_user.id
+    else
+      params[:point][:published] = false
+    end
+
+    @point = Point.create!(params[:point])
+
+    if current_user.nil?
+      session[@option.id][:written_points].push(@point.id)
+    end
+    session[@option.id][:included_points][@point.id] = 1    
+
     PointListing.create!(
       :option => @option,
       :position => @position,
@@ -126,8 +129,10 @@ class PointsController < ApplicationController
       :context => 7 # own point has been seen
     )
 
-    @point.update_absolute_score
-    @point.save
+    if @point.published
+      @point.update_absolute_score
+      @point.save
+    end
     
     respond_with(@option, @point) do |format|
       format.js {render :partial => "points/show_on_board_self", :locals => { :point => @point, :static => false }}

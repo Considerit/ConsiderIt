@@ -32,17 +32,11 @@
           %li= link_to "Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :target => "_blank"
 
     %div.learn.last
-      %h4 Learn more
-      %ul.nav
-        -# %li= link_to "Media inquiries and news stories", home_path('media'), :title => 'Contact information for media and press about the Living Voters Guide' 
-        -# %li= link_to "Participation Rules", home_path('rules'), :title => 'Guidelines for participation'    
-        -# %li= link_to "Terms of Use", home_path('terms-of-use'), :title => 'Consent form, privacy policy, terms of use' 
-        -# %li= link_to "About us", home_path('about_us'), :title => 'Who created the Living Voters Guide?'           
   
       %ul.nav
         %li.powered
           LVG is powered by the open source 
-          -# = link_to "ConsiderIt", home_path('considerit'), :title => 'The open source ConsiderIt platform' 
+          = link_to "ConsiderIt", '/home/considerit', :title => 'The open source ConsiderIt platform' 
           platform. Text is available under the Creative Commons Attribution-ShareAlike License. See 
-          -# = link_to "Terms of Use", home_path('terms-of-use')
+          = link_to "Terms of Use", '/home/terms-of-use'
           for details.

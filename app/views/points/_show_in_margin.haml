@@ -7,25 +7,45 @@
         = render :partial => "inclusions/new", :locals => { :point => point }
 
     .username
-      by
-      = point.user.name
+      - if !point.hide_name
+        .avatar
+          = image_tag point.user.avatar.url(:midsmall), :alt => "#{h point.user}'s profile picture"
 
+      by 
+      - if point.hide_name
+        <anonymous>
+      - elsif point.user
+        = point.user.name
+      - else
+        <unregistered>
+          
     .point_text.nutshell 
+
       - if point.nutshell.length > 0
         = h point.nutshell
       - else
-        = h point.text[0,137]
-        - if point.text.length > 137
-
+        = h point.text.length > 137 ? point.text[0,137] : point.text
+    
     .point_text.full
-      = h point.text
+      .details
+        = point.text
+      
+      .link
+        %h4
+          external links
+        - if point.point_links.count > 0
+          %ul
+            - point.point_links.each do |pl|
+              = render :partial => 'point_links/show', :locals => { :point_link => pl }
+        - else
+          none provided
+          
 
-    - if point.text and point.text.length > 0
-      .read_more
-        %a.toggle.more.point_text_toggle
-          read more
-        %a.toggle.less.hide.point_text_toggle
-          hide rest
+    .read_more
+      %a.toggle.more.point_text_toggle
+        read more / discuss
+      %a.toggle.less.hide.point_text_toggle
+        hide rest
 
     - if point.is_pro
       .include.right
@@ -36,3 +56,5 @@
 :javascript
   ConsiderIt.points.set_more_less_text_toggle("#point_in_list_other-#{point.id}", #{point.id}, #{@option.id});
   $j('#point_in_list_other-#{point.id}').corner('all 5px');
+
+  $j('.avatar').corner('5px');

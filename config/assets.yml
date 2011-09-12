@@ -1,4 +1,4 @@
-embed_assets: on
+embed_assets: off
 
 javascripts:
   workspace:
@@ -10,21 +10,11 @@ javascripts:
     - public/javascripts/jquery.noblecount.min.js
     - public/javascripts/jquery.qtip-1.0.0-rc3.js
     - public/javascripts/protovis-r3.3.js
-  reflect:
-    - public/javascripts/reflect/js/third_party/inheritance.js     
-    - public/javascripts/reflect/js/third_party/jquery.color.js      
-    - public/javascripts/reflect/js/third_party/jquery.highlight.js      
-    - public/javascripts/reflect/js/third_party/jquery.pulse.js  
-    - public/javascripts/reflect/js/third_party/jquery.jqote2.min.js     
-    - public/javascripts/reflect/js/third_party/json2.js
-    - public/javascripts/reflect/js/reflect.js
-    - public/javascripts/reflect/js/reflect.considerit.js
+    - public/javascripts/jquery.example.min.js
 
 stylesheets:
   common:
     - public/stylesheets/reset-min.css
     - public/stylesheets/jquery_ui/jquery-ui-1.8.4.custom.css
+    - public/stylesheets/jquery_ui/jquery-ui-custom.css
     - public/stylesheets/considerit.css
-  reflect:
-    - public/stylesheets/reflect/css/reflect.css    
-    - public/stylesheets/reflect/css/reflect.considerit.css

@@ -143,7 +143,7 @@ li.point_in_list {
   li.point_in_list .dismiss,
   li.point_in_list .include {
     position: absolute;
-    z-index: 999; }
+    z-index: 99; }
     li.point_in_list .dismiss input.judge_point,
     li.point_in_list .include input.judge_point {
       margin: 0;
@@ -756,7 +756,7 @@ li.initiative_item {
     color: black; }
   #initiative li.breakdown .you_slider {
     position: absolute;
-    z-index: 3000;
+    z-index: 999;
     top: 95px;
     left: 593px; }
     #initiative li.breakdown .you_slider.call {
@@ -764,7 +764,7 @@ li.initiative_item {
       left: 661px; }
   #initiative li.breakdown .bars {
     position: absolute;
-    z-index: 999;
+    z-index: 99;
     top: -20px;
     left: 525px; }
     #initiative li.breakdown .bars .vizbase td {
@@ -797,7 +797,7 @@ li.initiative_item {
     #initiative li.breakdown .explore#ranked_points .filters {
       float: right;
       position: absolute;
-      z-index: 1000;
+      z-index: 999;
       top: 135px;
       right: 25px; }
       #initiative li.breakdown .explore#ranked_points .filters a#show_popular, #initiative li.breakdown .explore#ranked_points .filters a#show_self {
@@ -987,7 +987,7 @@ li.new_comment.from_discussion {
       width: 725px; }
       #intro .table_container > table #description .header .follow {
         position: absolute;
-        z-index: 999;
+        z-index: 99;
         top: -2px;
         left: 850px; }
       #intro .table_container > table #description .header .subheader .text {
@@ -1295,28 +1295,6 @@ textarea.LV_invalid_field:active {
       padding-bottom: 10px;
       font-size: 12px; }
 
-.ui-dialog {
-  background: none repeat scroll 0 0 transparent;
-  border: none; }
-  .ui-dialog .ui-dialog-titlebar {
-    background: none repeat scroll 0 0 transparent;
-    border: none;
-    height: 24px;
-    margin: 0;
-    padding: 0;
-    position: relative;
-    z-index: 1000; }
-    .ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close {
-      position: absolute;
-      z-index: 999;
-      top: 38px;
-      background-color: gray;
-      left: 400px; }
-
-.ui-widget-overlay {
-  background: none repeat scroll 0 0 black;
-  opacity: 0.75; }
-
 #initial_form .extra {
   font-size: 12px;
   color: #717171;
@@ -1524,17 +1502,6 @@ input[type="submit"] {
   border: 10px solid black;
   padding: 25px;
   width: 350px; }
-
-#loading {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 5000;
-  background-color: red;
-  font-size: 150%;
-  color: white;
-  padding: 2px;
-  display: none; }
 
 ul.form {
   list-style: none outside none; }

@@ -1,0 +1,159 @@
+
+%div#registration_form
+
+  .primary.fr
+    %h2.sub_follows
+      - if @context == 'position_submit'
+        To save your position, join LVG!
+      - else
+        Join the Living Voters Guide
+    .sub
+      already have an account? 
+      %a#login_instead
+        Log in
+
+    #third_party
+
+      %h3
+        Use your account from:
+
+      - ['facebook', 'twitter', 'google', 'yahoo'].each do |provider|
+        %a{ :href => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',500, 500)" }
+          = image_tag("#{provider}.png")
+
+      .fineprint
+        We won't post to your news feed or share your info.
+
+    .divider
+
+    #lvg_account
+      
+      %h3
+        Or, sign up the old-fashioned way!
+
+      = form_for(resource, :as => resource_name, :url => registration_path( resource_name), :html => { :multipart => true }) do |f|
+      
+        %ul
+          %li
+            = devise_error_messages!
+          %li.name_field
+            = f.text_field :name, :class => 'has_example', :title => 'first and last name'
+
+            %span{ :title => 'Please provide your real name. We do not confirm this, but we believe it is beneficial in a political space to back up your voice by signing it with your real name.'}
+              why?
+            
+          %li.email_field.has_example
+            = f.email_field :email, :class => 'has_example', :title => 'email address'
+
+            %span{ :title => 'Your email is never shown to other users and we promise not to share your information with third parties. Your email is only used to confirm your account and to send notifications of relevant events, like someone replying to a comment you left.'}
+              why?
+
+          %li.password_field
+            = f.password_field :password, :class => 'has_example', :title => 'password'
+
+            %span
+              password
+
+
+          -# %li.avatar_field
+            -#= f.file_field :avatar, :class => 'has_example', :title => 'profile picture'
+        
+        .submit_footer
+          = f.submit "Join"
+
+          %a.cancel
+            cancel
+
+    .divider
+
+    #acknowledgment
+      By signing up, you acknowledge that you have have read, agree to and were bored by the 
+      %a
+        Terms of Use.
+
+  .secondary.fr
+    %h3
+      Why join LVG?
+    
+    %ul
+
+      %li    
+        %strong
+          Your vote will count. 
+        We will tally your support or opposition in the totals.
+
+      %li
+        %strong
+          Write pros and cons
+        that others people can consider.
+        
+      %li
+        %strong
+          Save your position
+        for all measures to create your personal voters guide.
+      
+      %li
+        %strong 
+          Discuss with others. 
+        Comment on pros and cons, or the issue broadly. 
+  
+  .clear
+
+:javascript
+  $j('.has_example').example(function() {
+     return $j(this).attr('title'); 
+  });
+
+  $j('input[type="submit"]').corner('5px');
+  $j('#registration_form .primary, #registration_form .secondary').corner('8px');
+
+  $j('#lvg_account a.cancel').click(function(){
+    $j('.user_dialog').dialog('close');
+  });
+
+  $j('a#login_instead').click(function(){
+    $j('#registration_form').load('#{new_user_session_path(:third_party=>false)}');
+  });
+
+  $j('#acknowledgment a').click(function(){
+    show_tos(500, 700);  
+  });
+
+  var newWindow;
+
+  function login(provider_url, width, height) {
+    var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+        screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+        outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+        outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+        left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
+        top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
+        features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+
+        newwindow = window.open(provider_url, 'Login', features);
+
+    if (window.focus)
+      newwindow.focus();
+
+    return false;
+  }
+
+
+  function show_tos(width, height) {
+    var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+        screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+        outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+        outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+        left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
+        top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
+        features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+
+        var tos = window.open('/home/terms-of-use', 'Terms of Use', features);
+
+    if (tos.focus)
+      tos.focus();
+
+    return false;
+  }
+
+

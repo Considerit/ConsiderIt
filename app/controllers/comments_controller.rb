@@ -2,10 +2,9 @@ class CommentsController < ApplicationController
   protect_from_forgery
   def index
     @option = Option.find(params[:option_id])
-    @comments = @option.root_comments
     
     format.js {
-      render :partial => "comments/discussion", :locals => { :new_thread => true, :parent_id => nil }
+      render :partial => "comments/discussion", :locals => { :comments => @option.root_comments, :new_thread => true, :parent_id => nil }
     }
 
   end
@@ -23,7 +22,7 @@ class CommentsController < ApplicationController
   
       if grounded_in_point
         point = Point.find(params[:comment][:point_id])
-        if point.comment.nil?
+        if point.comments.count == 0
           @comment.subject = "#{{1 => "Pro", 0 => "Con"}[point.position]} :: #{point.nutshell}"
           @comment.point_id = params[:comment][:point_id].to_i
         end

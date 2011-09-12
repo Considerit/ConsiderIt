@@ -1,63 +1,36 @@
--# = link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook), :class=> "fb_login_link"
-= link_to "login", new_user_session_path
-= link_to "register", new_user_registration_path
+%a.register_link
+  Create an account
 
-/
-  .first.login
-    %a
-      Login
-  .create.last
-    %a.nav_link
-      Create an Account
-  .or
-    or
-  .fb
-    -# = render :partial => "users/facebook_registration"
-  .clear
-  
-  #login_dialog
-  #create_dialog
-  
-  -# :javascript
-    $j(document).ready(function() {
-      $j("#login_dialog").dialog({
-        bgiframe: true, 
-        autoOpen: false, 
-        modal: true,
-        width: 'auto',
-        draggable: false,
-        resizable: false,
-        position: [500, 50]
-      });
-      $j("#create_dialog").dialog({
-        bgiframe: true, 
-        autoOpen: false, 
-        modal: true,
-        width: 'auto',
-        draggable: false,
-        resizable: false,
-        position: [400, 50]
-      });    
-    
-      $j('.login a')
-        .click(function(){
-          var dialog = $j('#login_dialog');
-          dialog.load("#{login_ajax_path}");
-          dialog.dialog('open');
-        });
-      
-      $j('.create a')
-        .click(function(){
-          var dialog = $j('#create_dialog');
-          dialog.load("#{register_ajax_path}");
-          dialog.dialog('open');
-        });
-     
-    });
-  - if @fb_registration
-    :javascript
-      $j(document).ready(function(){
-        var dialog = $j('#create_dialog');
-        dialog.load("#{register_facebook_ajax_path}");
-        dialog.dialog('open');
-      });
+%span.login_separator
+  or
+
+%a.login_link
+  Login
+
+#register_dialog.user_dialog
+
+#login_dialog.user_dialog
+
+:javascript
+  $j('.user_dialog').dialog({
+    autoOpen: false,
+    modal: true,
+    draggable: false,
+    dialogClass: 'alert',
+    width: 775,
+    height: 435
+  });
+
+  $j('.login_link').click(function(){
+    $j('#login_dialog')
+      .load("#{new_user_session_path(:third_party=>false)}")
+      .dialog('open');
+    return false;
+  });
+
+  $j('.register_link').click(function(){
+    $j('#register_dialog')
+      .load("#{new_user_registration_path(:third_party=>false, :context=>"header")}")
+      .dialog('open');
+    return false;
+  });

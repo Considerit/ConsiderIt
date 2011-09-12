@@ -1,7 +1,14 @@
 class ApplicationController < ActionController::Base
-  protect_from_forgery
+  #protect_from_forgery
   theme :theme_resolver
-  
+
+  def render(*args)
+    if args
+      args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
+    end
+    super
+  end
+    
 private
   def theme_resolver
     if !session.has_key?('user_theme')
@@ -9,4 +16,9 @@ private
     end
     session["user_theme"]
   end
+
+  def store_location(path)
+    session[:return_to] = path
+  end
+
 end

@@ -7,6 +7,8 @@ li.point_in_list
   background-repeat: no-repeat
   position: relative
 
+  width: 205px
+
   &.con
     background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent      
     .read_more
@@ -32,9 +34,28 @@ li.point_in_list
       line-height: 16px
 
     .point_text.full
+      
       font-size: 90%
-      margin: 10px 15px 10px 10px
+      margin: 10px 15px 10px 36px
       display: none
+      width: 90%
+
+      .details
+
+      .link
+        h4
+          font-size: 15px
+          margin: 8px 0
+        ul
+          margin-left: 0
+          li 
+            padding: 2px 0
+            a
+              color: white
+              text-decoration: underline
+
+
+
 
     .read_more
       height: 25px
@@ -46,6 +67,15 @@ li.point_in_list
       font-size: 10px
       color: $txt_light_gray
       padding-bottom: 2px
+
+      .avatar
+        display: none
+        position: absolute
+        top: -79px
+        border-top: 8px solid #39665F
+        border-right: 8px solid #39665F
+        border-left: 8px solid #39665F
+    
 
   &.point_in_list_other 
     
@@ -165,7 +195,7 @@ li.point_in_list
   .dismiss,
   .include
     position: absolute
-    z-index: 999
+    z-index: 99
 
     
     input.judge_point

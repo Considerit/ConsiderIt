@@ -1,0 +1,14 @@
+%div
+  %p
+    Welcome to the LVG community, #{@resource.name}!
+
+  %p 
+    You can confirm your account by following the link below. After you do so, your votes on ballot measures will be counted toward the totals. 
+
+  %p 
+    = confirmation_url(@resource, :confirmation_token => @resource.confirmation_token)
+
+  %p
+    Thanks, and we look forward to your contributions. 
+
+    The LVG team

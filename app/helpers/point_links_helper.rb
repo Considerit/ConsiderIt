@@ -1,0 +1,2 @@
+module PointLinksHelper
+end

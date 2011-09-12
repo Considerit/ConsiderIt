@@ -1,0 +1,61 @@
+ul.point_links
+  
+#points_self_pro .point_link_prompt a.button
+  color: $txt_green
+
+#points_self_con .point_link_prompt a.button
+  color: $txt_purple
+
+.point_link_prompt
+  a
+    display: inline-block
+    font-size: 13px
+
+    &.button
+      border: 1px solid $brd_gray
+      background-color: #333
+      padding: 6px 5px
+
+    &.more_detail
+      color: $txt_gray
+      margin-left: 12px
+      margin-top: 18px
+
+.point_link_form
+  
+  fieldset
+    position: relative
+    background-color: #333
+    padding: 3px 8px
+    margin-top: 7px
+    width: 355px
+    
+    .fields
+      width: 320px
+      input[type="text"]
+        font-size: 11px
+        padding: 2px 2px
+        display: inline-block
+        margin-left: 0
+
+        &.url
+          margin-left: -1px
+
+      .description
+        width: 98%
+      
+      .url
+        width: 98%
+
+      .lead
+        padding-top: 4px
+        display: inline-block
+    
+    .submit_block
+      width: 30px
+      
+      margin-top: -3px
+      a
+        color: $txt_gray
+        padding: 3px 5px   
+        font-size: 10px 

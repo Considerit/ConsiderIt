@@ -1,101 +1,125 @@
-#sessions
-  h3
-    margin-bottom: 0px
-    line-height: 20px
-  h2
-    line-height: 30px
-  
-  ul.form
-    width: 385px
+.ui-widget-content
+
+  #login_form,
+  #registration_form,
+  #pledge_form,
+  #confirmation_sent
+    font-family: Corbel, "Lucida Grande", Helvetica Neue, Helvetica, Calibri, sans-serif
+
+    > ul > li
+      display: inline-block
+
+    h2
+      font-size: 24px
+      color: #333
+
+    .sub
+      font-size: 13px
+      color: #999
+
+      a
+        color: inherit
+        text-decoration: underline
     
-    > li.input_validates
-      height: 50px
-      
-    fieldset
-      border: 1px solid #ccc
-      margin: 10px 5px
+
+
+
+
+    h3
+      margin: 15px 0 8px 0
+    
+    .primary
+      width: 375px
+      background-color: white
+      padding: 20px 25px
+      border: 3px solid black
+
+      #third_party
+
+        a
+          margin: 2px 2px
+
+      #lvg_account
+        ul li span
+          color: #696969
+          font-size: 10px
+          display: inline-block
+          margin-top: 10px
+          cursor: help
+
+        li.email_field label
+          padding-right: 30px
+        li.password_field label
+          padding-right: 6px
         
-      legend
-        font-size: 14px
-        color: $txt_gray
-        margin-left: 10px
-      ul
-        padding: 5px 0
-        li.notifications
-          padding: 3px 0
-          label
-            letter-spacing: 0px
-            text-transform: none
-          input
-            display: inline
-            height: 20px
-            width: 20px
-            margin-right: 5px
-          
-  #pledge
-    display: none
-    width: 385px
-    
-    ul
-      margin-left: 10px
-      
-      li
-        padding-bottom: 10px
+        li label
+          color: #696969
+          display: inline-block
+          height: 30px
+          padding-top: 8px
+
+        .submit_footer
+          margin-top: 10px
+
+          a.cancel
+            display: inline-block
+            padding: 5px 0 0 5px
+            font-size: 12px
+            color: #696969
+        
+        #user_new > a
+          color: #696969
+          font-size: 12px
+          margin-top: 8px
+          display: block
+
+      .fineprint
+        margin-top: 2px
+        font-size: 13px
+        color: #999
+
+      .divider
+        margin: 10px 0
+        border: 1px solid #e1e1e1
+
+      #acknowledgment
+        color: #262626
         font-size: 12px
-      
-.ui-dialog       
-  background: none repeat scroll 0 0 transparent
-  border: none
-  
-  .ui-dialog-titlebar
-    background: none repeat scroll 0 0 transparent
-    border: none
-    height: 24px
-    margin: 0
-    padding: 0
-    position: relative
-    z-index: 1000
-    
-    .ui-dialog-titlebar-close
-      position: absolute
-      z-index: 999
-      top: 38px
-      background-color: gray
-      left: 400px
-    
-.ui-widget-overlay
-  background: none repeat scroll 0 0 black
-  opacity: .75
 
-#initial_form
-  .extra
-    font-size: 12px
-    color: $txt_gray
-    padding-top: 10px
-    
-#settings_dialog,
-#create_dialog,      
-#login_dialog
-  display: none
-  background: none repeat scroll 0 0 white
-  padding: 20px
-  
-  > #sessions
-    width: 400px
-  
-  a
-    font-weight: bold
-    &:hover
-      text-decoration: underline
+        a
+          text-decoration: underline
 
-    &.faux_account_create
-      background-color: gray
-      color: white
-      padding: 6px
-      margin-top: 5px
-      &:hover
-        text-decoration: none  
-      &[disabled="disabled"], &[disabled="true"]
-        background-color: #ddd
-        color: #aaa
-        cursor: default
+    .secondary
+      background-color: #ddd
+      margin-top: 35px
+      padding: 10px 15px 10px 25px
+          
+      width: 225px
+      ul
+        margin-left: 0
+        li
+          font-size: 14px
+          padding: 5px 0 10px 0 
+          color: #535353
+
+          strong
+            color: #2C2C2C
+  
+    &#pledge_form, &#confirmation_sent
+      p 
+        color: #696969   
+        strong
+          color: #333        
+
+      h2
+        font-size: 24px
+        color: #333
+        margin-bottom: 8px
+
+      #pledge
+        margin-bottom: 12px
+        display: block
+
+      a.cancel
+        color: #696969
+        text-decoration: underline

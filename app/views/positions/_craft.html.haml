@@ -41,70 +41,22 @@
             
             %td.user_position
               .position_container
-                - if user_signed_in?
                   
-                  .points_self#points_self_pro
-                    .points_list_header
-                    = render :partial => "points/column/user", :locals => { :position => 1, :points => @included_pros, :static => false }
-                    = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_self_pro' }
+                .points_self#points_self_pro
+                  .points_list_header
+                  = render :partial => "points/column/user", :locals => { :position => 1, :points => @included_pros, :static => false }
+                  = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_self_pro' }
 
-                  .points_self#points_self_con 
-                    .points_list_header
-                    = render :partial => "points/column/user", :locals => { :position => 0, :points => @included_cons, :static => false }
-                    = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_self_con' }
-                                        
-                  .clear
-                - else
+                .points_self#points_self_con 
+                  .points_list_header
+                  = render :partial => "points/column/user", :locals => { :position => 0, :points => @included_cons, :static => false }
+                  = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_self_con' }
 
-                  .points_self#points_self_pro
-                    .points_list_header
-                
-                  .points_self#points_self_con 
-                    .points_list_header
-                  
-                  .clear
-                    
-                  .must_be_logged_in 
-                    .contribute
-                      to contribute
-                    .login_or_create
-                      .login
-                        %a
-                      .create
-                        \...or
-                        %a
-                          create an account
-                    .fb_login
-                      -# = render :partial => "users/facebook_registration"
-                    .clear
-                      
-                    .why.hide
-                      %a
-                        Why should I?
-                      %ul.hide
-                        %li
-                          %strong 
-                            Share 
-                          your opinion with others.
-                        %li
-                          %strong
-                            Explore 
-                          the stances that other voters have taken.
-                        %li
-                          %strong
-                            Discuss 
-                          the initiative with others.
-                        %li 
-                          Be more 
-                          %strong
-                            informed 
-                          when you vote.
-                                                    
-
+                .clear
 
             %td.points_other#points_other_con
               = render :partial => "points/column/margin", :locals => { :is_pro => false, :points => @con_points }
-  
+
     %li.stance.update_stance.step.slide
       .head
         %span.ol_number
@@ -120,27 +72,39 @@
       
     %li#submitstance.step
       .rest
-                
-        - if @user
-          
-          .stanceform
+                          
+        .stanceform
+          - if !@user
+            = form_for :position, :url => option_positions_path(@option), :remote => true do |f|
+              = render :partial => "positions/form", :locals => { :f => f, :action => action }
 
-            - if action == 'edit'
-              = form_for [@option, @position] do |f|
-                = render :partial => "positions/form", :locals => { :f => f, :action => action }
-                            
-            - elsif action == 'new'
-              = form_for :position, :url => option_positions_path(@option), do |f|
-                = render :partial => "positions/form", :locals => { :f => f, :action => action }
+            #position_save_login_trigger.user_dialog
 
-            .stance_status              
-              Don't worry, you can change your list and stance later. 
-              
-        - else
-          %span 
-            .stanceform
-              .stance_status
-                %strong
-                  You must be logged in to take your stance!    
-            
-    
+            :javascript
+              $j('#position_save_login_trigger').dialog({
+                autoOpen: false,
+                modal: true,
+                draggable: false,
+                dialogClass: 'alert',
+                width: 775,
+                height: 435
+              });
+
+              $j('.stanceform input.submit').click(function(){
+                $j('#position_save_login_trigger')
+                  .load("#{new_user_registration_path(:third_party=>false, :context=>"position_submit")}")
+                  .dialog('open');
+                return true;
+              });
+
+
+          - elsif action == 'edit'
+            = form_for [@option, @position] do |f|
+              = render :partial => "positions/form", :locals => { :f => f, :action => action }
+                          
+          - elsif action == 'new'
+            = form_for :position, :url => option_positions_path(@option) do |f|
+              = render :partial => "positions/form", :locals => { :f => f, :action => action }
+
+          .stance_status              
+            Don't worry, you can change your list and stance later. 

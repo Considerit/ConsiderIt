@@ -4,9 +4,9 @@ ul.form > li input#user_session_remember_me.check {
   margin-top: 0;
 }
 
-#reflected .rf_comment_summary .bullet ul.response_footer_wrapper button, 
-#reflected .rf_comment_summary .bullet ul.bullet_operations button, 
-#reflected .rf_comment_summary .bullet .submit_buttons button {
-	background-color: transparent;
+#wrap #masthead #nav-user {
+  /* For IE 5.5 - 7*/
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+  /* For IE 8*/
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
 }
-

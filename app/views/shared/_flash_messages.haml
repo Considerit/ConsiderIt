@@ -1,26 +1,2 @@
--if @message || flash[:info] || flash[:error] || flash[:notice]
-  #flashmessage
-
-    - if @message
-      %div
-        .message.info=h @message
-    - if flash[:info]
-      %div
-        .message.info= flash[:info]
-    - elsif flash[:error]
-      %div
-        .message.error= flash[:error]
-    - elsif flash[:notice]
-      %div
-        .message.info= flash[:notice]
-
-  :javascript
-    $j('#flashmessage').dialog({
-      bgiframe: true, 
-      autoOpen: true, 
-      modal: true,
-      width: 'auto',
-      draggable: false,
-      resizable: false,
-      position: [400, 50]
-    });
+- flash.each do |key, value|
+  = content_tag :div, value, :class => "flash #{key}" unless value.blank?

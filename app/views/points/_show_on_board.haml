@@ -30,7 +30,7 @@
         ConsiderIt.points.set_more_less_text_toggle('#ranked_point-#{point.id}', #{point.id}, #{@option.id});
         
     .discuss
-      - if point.comment
+      - if point.comments.count > 0
         %a.discuss_comment{ :href => "#comment-#{point.comment.id}", :title => "Join the discussion about this point" }
           discuss (#{point.comment.children.size + 1})
       - else
@@ -48,8 +48,8 @@
             = point.human_appeal
                         
     .clear
-    - if point.comment.nil? && current_user
+    - if point.comments.count == 0 && current_user
       
       %ul.discussion.hide
-        = render :partial => "comments/new_comment", :locals => { :new_thread => true, :parent_id => nil, :point => point }
+        = render :partial => "comments/new_comment", :locals => { :new_thread => true, :parent_id => nil, :point => point, :comments => [] }
       

@@ -22,7 +22,7 @@
           
         .extra
       .discussion
-        = render :partial => "comments/discussion_threads"
+        = render :partial => "comments/discussion_threads", :locals => { :comments => @comments}
 
     %li.clear
      

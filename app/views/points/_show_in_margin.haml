@@ -39,7 +39,12 @@
               = render :partial => 'point_links/show', :locals => { :point_link => pl }
         - else
           none provided
-          
+
+      .discuss
+        %h4
+          discussion
+        
+        = render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :point => point }
 
     .read_more
       %a.toggle.more.point_text_toggle

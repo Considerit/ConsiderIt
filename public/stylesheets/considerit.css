@@ -27,7 +27,7 @@ li.point_in_list {
       margin: 10px 15px 10px 36px;
       display: none;
       width: 90%; }
-      li.point_in_list .body .point_text.full .link h4 {
+      li.point_in_list .body .point_text.full h4 {
         font-size: 15px;
         margin: 8px 0; }
       li.point_in_list .body .point_text.full .link ul {

@@ -95,17 +95,18 @@
         .rest
           padding: 10px
                 
-          table#points
+          #points
             width: 100%
-            
-            td.user_position 
+            > div
+              display: inline-block
+            .user_position 
               vertical-align: top
-            
-            td.points_other
+              margin-left: -20px
+
+            .points_other
               vertical-align: top
-              width: 215px
-              padding-top: 25px
-              
+              padding-top: 50px
+
               .other
                 padding-bottom: 5px
                   
@@ -139,12 +140,15 @@
                       .total
                         padding-top: 10px
                         
-              &#points_other_pro ul.point_list_footer
-                td
-                  float: left
-              &#points_other_con ul.point_list_footer
-                td
-                  float: right
+              &#points_other_pro 
+                ul.point_list_footer
+                  td
+                    float: left
+              &#points_other_con 
+                margin-left: -14px
+                ul.point_list_footer
+                  td
+                    float: right
 
                   
        

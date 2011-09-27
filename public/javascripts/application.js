@@ -5,9 +5,187 @@ var ConsiderIt; //global namespace for ConsiderIt js methods
 $j = jQuery.noConflict();
 
 ConsiderIt = {
+  init : function() {
+
+    ConsiderIt.delegators();
+    ConsiderIt.misc.add_tips(); 
+
+    ConsiderIt.per_request();
+
+    $j(document).ajaxComplete(function() {
+      ConsiderIt.per_request();
+    });    
+    
+    $j('a.smooth_anchor').click(function(){
+      $j('html, body').animate({
+        scrollTop: $j($j(this).attr('href')).offset().top}, 1000);
+        return false;
+    });
+
+    $j("#points_other_pro, #points_other_con").each(function(){
+      $j(this).infiniteCarousel({
+        speed: 1000,
+        vertical: true,
+        total_items: parseInt($j(this).find('.total').text()),
+        items_per_page: 3,
+        loading_from_ajax: true, 
+        dim: 600,
+        resetSizePerPage: true
+      });
+    });
+
+    $j('.initiatives.horizontal').infiniteCarousel({
+      speed: 1500,
+      vertical: false,
+      total_items: 6,
+      items_per_page: 6,
+      loading_from_ajax: false,
+      dim: 700    
+    });
+
+    // google analytics
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+        
+  },
+  per_request : function() {
+    $j('#masthead').corner('round top 5px');
+    $j('#nav-user').corner('bottom bl 5px');  
+    $j('.point_in_list_other').corner('all 5px');
+    $j('.avatar').corner('5px');
+    $j('input[type="submit"]').corner('5px');
+    $j('#registration_form .primary, #registration_form .secondary').corner('8px');
+    $j('#pledge_form button').corner('5px');
+    $j('#confirmation_sent button#go').corner('5px');
+    $j('.newpointform > form').corner('5px');
+    $j('.point_link_prompt .button').corner('5px');
+    $j('#console').corner('5px');
+    $j('#console .nav a').corner('5px');
+
+    $j('.has_example').example(function() {
+       return $j(this).attr('title'); 
+    });
+  },
+
+  delegators : function() {
+    $j(document).delegate('#confirmation_sent button#go', 'click', function(){
+        $j('#pledge_dialog').dialog('close');
+      });
+
+    $j(document).delegate("li.ranked.point_in_list a.new_discussion", "click", function() {
+      var point_id = $j(this).parents('.point_in_list:first').attr('id').substring(13);
+      var form = $j(this).parents('.discuss').siblings('.discussion');
+      $j(this).hide();
+      form.slideDown();
+    });
+
+    $j(document).delegate('li.ranked.point_in_list .discussion .cancel', 'click',  function() {
+      var point_id = $j(this).parents('.point_in_list:first').attr('id').substring(13);
+      var form = $j(this).parents('.discussion');
+      form.slideUp();
+      
+      $j(this).parents('.discussion').parent().find('a.new_discussion').show();
+      
+    });  
+
+    $j(document).delegate('.point_in_list .toggle.more', 'click', function(){
+      var pnt_el_main = $j(this).parents('.point_in_list'),
+          pnt_el = pnt_el_main.clone(true, true); // deep clone with cloned events
+
+      var is_pro = pnt_el.hasClass('pro');
+      pnt_el.addClass('expanded');
+
+      pnt_el.hide();
+
+      pnt_el.css({
+        'z-index': 10000,
+        'position': 'absolute'  
+      });
+      $j('body').append(pnt_el.detach());
+      pnt_el.css(pnt_el_main.offset());
+
+      pnt_el.show();
+
+      $j('#lightbox').fadeIn();
+
+      pnt_el_main.css('visibility', 'hidden');
+      var animate_properties = { width: '600px' };
+      if ( !is_pro ){
+        animate_properties['marginLeft'] = -600 + pnt_el.width() + 'px' ;
+      }
+      pnt_el.animate(animate_properties, function(){
+        pnt_el.find('.point_text.full').slideDown(function(){
+          pnt_el.find('.avatar').fadeIn();
+        });
+      });
+
+      pnt_el.find('.toggle.more').fadeOut(function(){pnt_el.find('.less').fadeIn();});
+
+    });
+  
+    $j(document).delegate('.point_in_list .toggle.less', 'click', function(){
+      var pnt_el = $j(this).parents('.point_in_list'),
+          pnt_el_main = $j('#' + pnt_el.attr('id') + ':not(.expanded)');
+
+      var is_pro = pnt_el.hasClass('pro');      
+
+      var animate_properties = { width: '224px' };
+      if ( !is_pro ){
+        animate_properties['marginLeft'] = '0' ;
+      }
+
+      pnt_el.find('.point_text.full').slideUp(function(){
+        pnt_el.find('.avatar').fadeOut();
+        pnt_el.animate(animate_properties, function(){
+          pnt_el.css({
+            'z-index': 'inherit',
+            'position': 'relative'
+          });
+          pnt_el_main.css('visibility', 'visible');
+                                      
+          $j('#lightbox').fadeOut();  
+          pnt_el.remove();
+        });
+      });
+
+      //$j(this).fadeOut(function(){pnt_el.find('.more').fadeIn();});
+    });
+
+    $j(document).delegate('#lvg_account a.cancel', 'click', function(){
+      $j('.user_dialog').dialog('close');
+    });
+
+    $j(document).delegate('#acknowledgment a', 'click', function(){
+      show_tos(500, 700);  
+    });
+
+  /*
+  $j(document).delegate('.next, .prev', 'ajax:success', function(data, response, xhr){
+    var point_col = $j(this).parents('.points_other, .points_self');
+    var is_next = $j(this).hasClass('next');
+
+    point_col.find('.point_list').append(
+      $j($j(response['points'])[0]).html()
+    );
+
+    $j(response['points']).each(function(){
+      if($j(this).hasClass('point_list_footer')){
+        point_col.find('.point_list_footer').html($j(this).html());
+      }
+    });
+    
+    ConsiderIt.misc.add_tips();
+
+  });
+  */
+
+  },
 
   points : {
-    
+
     lists : {
 
       update_counts : function(point_list, pagination) {
@@ -16,10 +194,6 @@ ConsiderIt = {
         footer.html(pagination);  
       },
 
-      paginate_callback : function( response, column_selector ) {
-        $j(column_selector).html(response['points']);
-        ConsiderIt.misc.add_tips(column_selector);
-      }
       
     },
     
@@ -69,56 +243,6 @@ ConsiderIt = {
         form.find('.point-description').NobleCount( form_sel + ' .point-description-group .count', params);  
       }      
     },
-    
-    set_more_less_text_toggle : function(sel, point_id, initiative_id) {
-
-      $j(sel + ' .toggle.more').click(function(){
-        var pnt_el = $j(sel);
-
-        pnt_el.css({
-          'z-index': 100,
-          'position': 'relative'  
-        });
-
-        $j('#lightbox').fadeIn();
-
-        pnt_el.animate({
-          width: '600px'
-        }, function(){
-          pnt_el.find('.point_text.full').slideDown(function(){
-            pnt_el.find('.avatar').fadeIn();
-          });
-        });
-
-        $j(this).fadeOut(function(){$j(sel + ' .less').fadeIn();});
-
-      });
-    
-      $j(sel + ' .toggle.less').click(function(){
-        var pnt_el = $j(sel);
-
-        $j(sel + ' .point_text.full').slideUp(function(){
-          pnt_el.find('.avatar').fadeOut();
-          pnt_el.animate({
-            width: '205px'},
-            function(){
-              pnt_el.css({
-                'z-index': 'inherit',
-                'position': 'relative'
-              });
-              $j('#lightbox').fadeOut();        
-            }
-          );
-        });
-
-
-        $j(this).fadeOut(function(){$j(sel + ' .more').fadeIn();});
-
-        
-      });
-    
-    }    
-    
     
   },
   
@@ -412,4 +536,38 @@ function add_fields(link, association, content) {
   var regexp = new RegExp("new_" + association, "g");
   var new_content = content.replace(regexp, new_id);
   jQuery(link).parent().prepend(new_content);
+}
+
+function show_tos(width, height) {
+  var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+      screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+      outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+      outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+      left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
+      top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
+      features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+
+      var tos = window.open('/home/terms-of-use', 'Terms of Use', features);
+
+  if (tos.focus)
+    tos.focus();
+
+  return false;
+}
+
+function login(provider_url, width, height) {
+  var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+      screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+      outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+      outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+      left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
+      top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
+      features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+
+  newwindow = window.open(provider_url, 'Login', features);
+
+  if (window.focus)
+    newwindow.focus();
+
+  return false;
 }

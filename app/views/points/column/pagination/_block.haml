@@ -1,21 +1,23 @@
 - if points && points.length > 0 && points.respond_to?(:previous_page)
+
+
+
+  - if prev
+    .arrow
+      %a.back
+
   .paginate
-  
-    %table
-      %td.arrow
-        - if points.previous_page
-          = render :partial => "points/column/pagination/link", :locals => { :column_selector => column_selector, :is_pro => is_pro, :target_page => page - 1, :bucket => bucket, :mode => mode, :is_next => false}
-          
-      %td.text
-        = points.offset + 1
-        \- 
-        = [points.offset + points.per_page, points.total_entries].min
-        of     
-        = points.total_entries
-      %td.arrow
-        - if points.next_page
-          = render :partial => "points/column/pagination/link", :locals => { :column_selector => column_selector, :is_pro => is_pro, :target_page => page + 1, :bucket => bucket, :mode => mode, :is_next => true}
+    %span.curr_first
+      #{points.offset + 1} 
+    \– 
+    %span.curr_last
+      #{[points.offset + points.per_page, points.total_entries].min} 
+    of
+    %span.total
+      #{points.total_entries} #{is_pro ? "pros" : "cons"}
 
-
-  
-  
+  - if !prev
+    
+    .arrow
+      = link_to "",  option_points_path(@option, :pros_only => is_pro, :cons_only => !is_pro, :page => page + 1, :bucket => bucket, :mode => mode), :remote => true, :id => "paginate_points-#{mode}-#{page + 1}-#{is_pro}", :class => 'forward ajax'
+      %a.forward.not_ajax

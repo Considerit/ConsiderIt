@@ -9,11 +9,28 @@ $medium_height: 90px
 $large_width: 278px
 $large_height: 265px
 
-ul.initiative_list
-  width: 100%
-  margin: 0
+.initiatives
+  margin: 15px auto
 
-          
+  .paginate
+    width: 20px
+    display: inline-block
+    margin-top: 40px
+
+    a.forward 
+      text-align: right
+      display: block
+    a.back
+      text-align: left
+      display: block
+
+  .carousel
+    height: 90px
+
+    ul.initiative_list
+
+
+
 li.initiative_item
   @include nude-list
   
@@ -26,13 +43,6 @@ li.initiative_item
   position: relative
   
   &.finished
-    &.pro
-      background: $bk_gray url('/images/finished_pro.png') no-repeat left top
-    &.neutral
-      background: $bk_gray url('/images/finished_neutral.png') no-repeat left top
-    &.con
-      background: $bk_gray url('/images/finished_con.png') no-repeat left top
-
     &:hover, &.active
       background-color: black
   

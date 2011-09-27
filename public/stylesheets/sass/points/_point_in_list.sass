@@ -2,41 +2,67 @@
 li.point_in_list
   @include nude-list
   margin-bottom: 8px
+
+  &.expanded
+    height: auto
   
   color: white
   background-repeat: no-repeat
   position: relative
 
-  width: 205px
+  width: 224px
 
   &.con
-    background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent      
+    background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent  
+    .body
+      padding: 3px 15px 3px 35px
     .read_more
       a.toggle_more, a.toggle
         float: left
+        &.hide
+          left: 0
 
+    .username
+      .avatar
+        border-color: $brd_purple_dark
+        right: 0
+
+      .less.point_text_toggle
+        float: left
+        color: white
+             
   &.pro
     background: url("/images/chalk/point-pro-self.png") no-repeat scroll 0px 3px transparent     
+    .body
+      padding: 3px 35px 3px 35px
     .read_more
       a.toggle_more, a.toggle
         float: left
+        &.hide
+          right: 0
 
+    .username
+      .avatar
+        border-color: $brd_green_dark
+        left: 0
+
+      .less.point_text_toggle
+        float: right
+        color: white                
   .body
     overflow: hidden
-    padding: 3px 0 3px 38px
     vertical-align: top
 
     .wrapper // only in other
       padding: 3px
 
     .point_text.nutshell
-      font-size: 14px
-      line-height: 16px
+      font-size: 13px
+      line-height: 15px
 
     .point_text.full
-      
       font-size: 90%
-      margin: 10px 15px 10px 36px
+      margin: 10px 0
       display: none
       width: 90%
 
@@ -56,14 +82,18 @@ li.point_in_list
               color: white
               text-decoration: underline
 
-
-
-
     .read_more
-      height: 25px
+      position: relative
+      bottom: 0
       a.toggle_more, a.toggle
         color: $txt_light_gray
         padding-top: 10px
+        
+        &.hide
+          position: absolute
+          top: 0
+          padding: 3px 10px
+          color: white
 
     .username
       font-size: 10px
@@ -74,33 +104,36 @@ li.point_in_list
         display: none
         position: absolute
         top: -79px
-        border-top: 8px solid #39665F
-        border-right: 8px solid #39665F
-        border-left: 8px solid #39665F
-    
+        border-width: 8px 8px 5px
+        border-style: solid
+  
+
 
   &.point_in_list_other 
     
-    padding-bottom: 10px
+    padding-bottom: 5px
 
     &.pro
-      background: $bk_green url('/images/bg-point-pro.png') no-repeat left top
+      background: transparent url('/images/bg-point-pro-200.png') no-repeat left top
        
       .body
-        background: url("/images/chalk/point-pro-other.png") no-repeat scroll 0px 3px transparent         
-        padding: 3px 0px 10px 0px
-	
-        .username, .point_text.nutshell, .read_more
-          padding-left: 35px
+        background: url("/images/chalk/point-pro-other-42.png") no-repeat scroll left 3px transparent         
+
+        .username, 
+        .point_text.nutshell, 
+        .read_more
+          padding: 0
         
 
     &.con
-      background: $bk_purple url('/images/bg-point-con.png') no-repeat left top
+      background: transparent url('/images/bg-point-con.png') no-repeat right top
       .body
-        padding: 3px 0px 3px 3px
-        background: url("/images/chalk/point-con-other.png") no-repeat scroll 145px 3px transparent         
-        .username, .point_text.nutshell, .read_more
-          padding-right: 35px
+        padding-top: 3px
+        background: url("/images/chalk/point-con-other-42.png") no-repeat scroll right 3px transparent         
+        .username, 
+        .point_text.nutshell, 
+        .read_more
+          padding: 0
         .username
           text-align: right
 					
@@ -112,7 +145,7 @@ li.point_in_list
       font-size: 12px
       float: left
     .read_more
-      margin: 0px 0px 0 0px
+      margin: 0
       a.toggle
         color: $txt_light_gray
         padding-right: 10px      
@@ -148,70 +181,108 @@ li.point_in_list
             background-color: black
             color: white
             
-  td.dismiss_point,
-  td.include_point
-    width: 12px
          
-    .dismiss.left
-      top: 35px
-      left: 0px    
-      width: 12px
-      .judgepointform
-        
-        margin: 0 5px 0 0px
-        input.judge_point
-          display: none
-          background-image: url("/images/arrow-left-dark.png")              
-          &:hover
-            background-image: url("/images/arrow-left-dark-hover.png")
-                         
-    .include.left
-      top: -5px
-      left: -29px
-      .judgepointform
-        input.judge_point
-          background-image: url("/images/arrow-left.png")              
-          &:hover
-            background-image: url("/images/arrow-left-hover.png")
-          
-    .dismiss.right
-      top: 35px
-      left: 200px    
-      .judgepointform
-        margin: 0 0px 0 5px
-        input.judge_point
-          display: none
-          background-image: url("/images/arrow-right-dark.png")      
-          &:hover
-            background-image: url("/images/arrow-right-dark-hover.png")
-                  
-    .include.right
-      top: -4px
-      left: 181px
-      .judgepointform
-        input.judge_point
-          background-image: url("/images/arrow-right.png")      
-          &:hover
-            background-image: url("/images/arrow-right-hover.png")
+  
+  &.expanded.point_in_list_other
+    &.pro
+      background-color: $bk_green
+      .body
+    &.con
+      background-color: $bk_purple    
+      .body
+        padding: 3px 23px 10px 60px
 
-  .dismiss,
+    .include
+      display: none
+    &.pro, &.con
+      background-image: none
+
   .include
     position: absolute
     z-index: 99
+    top: -2px    
+    padding: 0
+    height: 25px
+    width: 48px
+    background-repeat: no-repeat
 
-    
     input.judge_point
       margin: 0
-      color: $txt_light_gray
-      background: none no-repeat scroll 0 center transparent
+      color: white
       border: none
-      background-color: transparent
-      width: 50px
-      height: 35px
+      font-size: 30px
+      background-color: inherit
             
-    &:hover
-      cursor: pointer
+      &:hover
+        cursor: pointer
+        color: #082872
+
+    &.include_con
+      left: -9px
+      background-image: url('/images/arrow-left.png')      
+      &:hover
+        background-image: url('/images/arrow-left-hover-short.png')
+      .judgepointform
+        input.judge_point
+                            
+    &.include_pro
+      left: 180px
+      background-image: url('/images/arrow-right.png')
+      &:hover
+        background-image: url('/images/arrow-right-hover-short.png')
+
+      .judgepointform
+        input.judge_point
 
 
 
-    
+.point_list_footer
+  min-height: 35px
+  text-align: center
+  margin: 5px 0
+  
+  .arrow
+    height: 18px
+
+  .forward, .back
+    width: 15px
+    height: 15px
+    background-repeat: no-repeat
+    background-position: 0 3px
+    display: inline-block
+
+  .paginate
+    font-size: 12px
+    font-weight: bold
+
+  .paginate, .arrow
+    vertical-align: text-top
+
+#points_other_pro .point_list_footer
+  padding-right: 20px
+
+  .paginate
+    color: $brd_green_dark
+
+#points_other_con .point_list_footer
+  padding-left: 20px
+
+  .paginate
+    color: $brd_purple_dark
+
+
+.points_other .point_list_footer
+
+  .forward
+    background-image: url('/images/arrow-down.png')
+  
+  .back
+    background-image: url('/images/arrow-up.png')
+
+.points_self .point_list_footer
+
+  .forward
+    background-image: url('/images/arrow-next.png')
+  
+  .back
+    background-image: url('/images/arrow-prev.png')

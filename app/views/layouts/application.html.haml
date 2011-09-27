@@ -40,7 +40,7 @@
     
     = include_javascripts :workspace
       
-    = javascript_include_tag 'jit'
+    / = javascript_include_tag 'jit'
 
     :javascript
       $j = jQuery.noConflict();
@@ -51,11 +51,7 @@
         _gaq.push(['_setAccount', '#{GOOGLE_ANALYTICS}']);
         _gaq.push(['_trackPageview']);
     
-        (function() {
-          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
+
   
   
   %body
@@ -71,20 +67,5 @@
 
     :javascript
       $j(document).ready(function(){
-        ConsiderIt.misc.add_tips();      
-      })     
-
-      $j('#masthead').corner('round top 5px');
-      $j('#nav-user').corner('bottom bl 5px');  
-
-      $j('input[type="submit"]').corner('3px');
-
-      $j('a.smooth_anchor').click(function(){
-        $j('html, body').animate({
-          scrollTop: $j($j(this).attr('href')).offset().top}, 1000);
-          return false;
-      });
-
-      $j('.has_example').example(function() {
-         return $j(this).attr('title'); 
-      });
+        ConsiderIt.init();     
+      });   

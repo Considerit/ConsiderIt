@@ -37,6 +37,7 @@ ConsiderIt::Application.configure do
     :enable_starttls_auto => true
   }
 
+  Sass::Plugin.options[:debug_info] = true
 
   Paperclip.options[:command_path] = "/opt/local/bin/"
 end

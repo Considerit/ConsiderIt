@@ -4,3 +4,115 @@ html
   background-image: url(/themes/lvg/images/bg-body.png) 
   background-position: left top
   background-repeat: repeat-x
+
+
+#intro 
+  padding: 0 10px
+  #description
+
+    #value
+      width: 475px
+      height: 350px
+      float: left
+
+      h1
+        font-size: 33px
+        font-weight: bold
+        color: #0042A1
+
+      .subheader 
+        margin-left: 4px
+        h2
+          font-size: 17px
+          color: #A7A7A7
+          font-weight: normal
+
+          ul
+            margin: 18px 23px
+            li
+              background-image: url(/images/checkbox.png)
+              background-repeat: no-repeat
+              font-weight: bold
+              font-size: 24px
+              color: black
+              padding: 10px 0 10px 65px
+              margin: 8px 0
+
+    #tutorial
+      width: 425px
+      height: 350px
+      float: right
+      #console
+        background-color: black
+      .frame, .nav
+        width: 415px 
+      .frame
+        height: 292px
+        margin-top: 10px  
+      .nav
+        height: 30px
+        ul 
+          padding: 0 10px
+          li
+            display: inline
+            margin: 0 10px 0 0
+            a
+              display: inline-block            
+              padding: 3px 5px
+              background-color: #D0D0D0
+              color: #FF6300
+
+              &.selected, &.selected:hover
+                background-color: white
+              &:hover
+                background-color: #e4e4e4
+             
+  #initiative
+    background-image: url('/images/get_started_block.png')
+    background-repeat: no-repeat
+    height: 250px
+    padding: 12px 30px
+    position: relative
+    margin-bottom: 50px
+
+    h2.get_started
+      color: #AACDFB
+      font-size: 37px
+      font-weight: bold
+      display: inline-block
+
+      .subheader
+        font-size: 20px
+        color: white
+        font-weight: normal
+        display: inline-block
+    
+    #zipcode_entry
+      background-color: #700000
+      position: absolute
+      height: 80px
+      width: 550px
+      left: 150px
+      top: 200px
+      padding: 20px 30px
+
+      .triangle
+        position: absolute
+        top: -20px
+        font-size: 25px
+        color: #700000
+        left: 150px
+
+      .prompt
+        font-size: 20px
+        color: white
+        font-weight: normal
+        float: left
+        width: 290px
+
+      .zipform
+        float: right
+        padding-top: 20px
+        input[type="text"]
+          font-size: 20px
+          text-align: center

@@ -1,7 +1,3 @@
 %ul.point_list
-
   - points.each do |point|
     = render :partial => "points/show_in_margin", :locals => { :point => point }
- 
-.point_list_footer
-  = render :partial => "points/column/pagination/block", :locals => { :points => points, :is_pro => is_pro, :bucket => 'other', :page => @page, :mode => 'other', :column_selector => "#points_other_" + {true => "pro", false => "con"}[is_pro]} 

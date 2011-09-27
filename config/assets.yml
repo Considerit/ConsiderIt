@@ -11,6 +11,7 @@ javascripts:
     - public/javascripts/jquery.qtip-1.0.0-rc3.js
     - public/javascripts/protovis-r3.3.js
     - public/javascripts/jquery.example.min.js
+    - public/javascripts/jquery.jcarousel.min.js
 
 stylesheets:
   common:

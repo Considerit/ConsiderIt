@@ -100,60 +100,14 @@
   .clear
 
 :javascript
-  $j('.has_example').example(function() {
-     return $j(this).attr('title'); 
-  });
-
-  $j('input[type="submit"]').corner('5px');
-  $j('#registration_form .primary, #registration_form .secondary').corner('8px');
-
-  $j('#lvg_account a.cancel').click(function(){
-    $j('.user_dialog').dialog('close');
-  });
-
   $j('a#login_instead').click(function(){
-    $j('#registration_form').load('#{new_user_session_path(:third_party=>false)}');
+      $j('#registration_form').load('#{new_user_session_path(:third_party=>false)}');
   });
 
-  $j('#acknowledgment a').click(function(){
-    show_tos(500, 700);  
-  });
-
-  var newWindow;
-
-  function login(provider_url, width, height) {
-    var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
-        screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
-        outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
-        outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
-        left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
-        top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
-        features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
-
-        newwindow = window.open(provider_url, 'Login', features);
-
-    if (window.focus)
-      newwindow.focus();
-
-    return false;
-  }
 
 
-  function show_tos(width, height) {
-    var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
-        screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
-        outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
-        outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
-        left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
-        top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
-        features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
 
-        var tos = window.open('/home/terms-of-use', 'Terms of Use', features);
 
-    if (tos.focus)
-      tos.focus();
 
-    return false;
-  }
 
 

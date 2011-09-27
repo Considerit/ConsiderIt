@@ -3,13 +3,15 @@
   .body
   
     - if !point.is_pro
-      .include.left
+      .include.include_con
         = render :partial => "inclusions/new", :locals => { :point => point }
 
     .username
       - if !point.hide_name
-        .avatar
-          = image_tag point.user.avatar.url(:midsmall), :alt => "#{h point.user}'s profile picture"
+        = image_tag point.user.avatar.url(:midsmall), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
+
+      %a.toggle.less.hide.point_text_toggle
+        close
 
       by 
       - if point.hide_name
@@ -49,17 +51,8 @@
     .read_more
       %a.toggle.more.point_text_toggle
         read more / discuss
-      %a.toggle.less.hide.point_text_toggle
-        hide rest
+
 
     - if point.is_pro
-      .include.right
+      .include.include_pro
         = render :partial => "inclusions/new", :locals => { :point => point }
-
-
-
-:javascript
-  ConsiderIt.points.set_more_less_text_toggle("#point_in_list_other-#{point.id}", #{point.id}, #{@option.id});
-  $j('#point_in_list_other-#{point.id}').corner('all 5px');
-
-  $j('.avatar').corner('5px');

@@ -1,0 +1,72 @@
+%li.new_comment{:class => { true => 'from_discussion', false => 'from_point'}[point.nil?]}
+  - if new_thread
+    - if !point
+      %h3
+        - if !comments || comments.length == 0
+          Start the Discussion!
+        - else    
+          Start Another Discussion
+        
+  - else
+    %h3
+      Reply to #{h comment.user.first_name}
+  
+  - if current_user
+    %table.comment_body
+      %tr.body_row
+        %td
+          .user
+            .avatar
+              - if point
+                -# = image_tag current_user.avatar.url(:thumb), :alt => "your profile picture"
+              - else
+                -# = image_tag current_user.avatar.url(:normal), :alt => "your profile picture"
+              
+            .username
+              = h current_user.name
+          .text    
+            = form_for :comment, :remote => true, :url => option_comments_path(@option), :success => "callback_add_comment_success(request, '#{parent_id}', #{point.nil? ? false : point.id} )" do |f|
+              = f.hidden_field :option_id, :value=>@option.id
+              
+              - if point
+                = f.hidden_field :point_id, :value => point.id
+                
+              - if !new_thread
+                = f.hidden_field :parent_id, :value=>parent_id
+                
+              %ul.form
+                - if new_thread && !point
+                  %li.the_subject
+                    = f.text_field :subject, :id => "comment_subject", :example => 'what is the discussion topic?'
+                    %span.count
+                      90
+                 
+                %li.body
+                  - if parent_id
+                    = f.text_area :body, :id => "comment_body-replyto-#{parent_id}", :example => 'what do you want to say?' 
+                  - else
+                    - if point
+                      = f.text_area :body, :id => "comment_body-point-#{point.id}", :example => 'what do you want to say?'                   
+                    - else
+                      = f.text_area :body, :id => "comment_body", :example => 'what do you want to say?' 
+                  
+                  %span.count
+                    1000
+                = f.submit "Add comment", :class => "comment_submit"
+                -if !new_thread || point
+                  %a.cancel.new_comment_cancel
+                    cancel
+          .clear
+  - else
+    You must be logged in to leave a comment.
+  
+  - if parent_id
+    :javascript
+      ConsiderIt.comments.create.initialize_counters('#comment-#{parent_id}' + ' .new_comment:first');
+  - elsif point
+    :javascript
+      ConsiderIt.comments.create.initialize_counters('#ranked_point-#{point.id}' + ' .new_comment:first');  
+  - else 
+    :javascript
+      ConsiderIt.comments.create.initialize_counters('.comment_section > .new_comment');
+

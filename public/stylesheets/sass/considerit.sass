@@ -24,8 +24,9 @@ $brd_red: #894444
 $brd_dark_red: #5F0000
 $brd_gray: #666
 $brd_light_gray: #848484
-$brd_green: #888888  
-$brd_purple: #668888
+
+$brd_green_dark: #39665F
+$brd_purple_dark: #654a74
 
 $std_gutter: 15px
 
@@ -57,6 +58,7 @@ $std_gutter: 15px
 @import "shared/form_validation"
 @import "accounts/sessions"
 
+@import "carousel"
 
 *
   margin: 0
@@ -114,7 +116,7 @@ body
   > div
     width: 940px
     margin: 0 auto
-    padding: $std_gutter
+    padding: 10px $std_gutter
     background-color: white        
 
 #content
@@ -347,4 +349,4 @@ a.rate_point_similarity
   left: 0px
   min-width: 100%
   min-height: 100%
-  z-index: 99
+  z-index: 100

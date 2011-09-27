@@ -1,0 +1,109 @@
+/*
+Syntax error: Invalid CSS after "margin:": expected pseudoclass or pseudoelement, was "0"
+        on line 18 of /Users/travis/Documents/considerit_20/ConsiderIt/public/stylesheets/sass/carousel.sass
+
+13: .infiniteCarousel > div > ul 
+14:   width: 9999px
+15:   list-style-image:none
+16:   list-style-position:outside
+17:   list-style-type:none
+18:   margin:0
+19:   padding:0
+20:   position: absolute
+21:   top: 0
+22: 
+23: 
+
+Backtrace:
+/Users/travis/Documents/considerit_20/ConsiderIt/public/stylesheets/sass/carousel.sass:18
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/scss/parser.rb:898:in `expected'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/scss/parser.rb:841:in `expected'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/scss/parser.rb:823:in `expr!'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/scss/parser.rb:595:in `pseudo'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/scss/parser.rb:491:in `simple_selector_sequence'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/scss/parser.rb:466:in `_selector'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/scss/parser.rb:450:in `selector_comma_sequence'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/scss/parser.rb:822:in `expr!'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/scss/static_parser.rb:18:in `parse_selector'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:229:in `visit_rule'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:235:in `visit_rule'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:47:in `visit_root'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:7:in `visit'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/tree/root_node.rb:20:in `render'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/engine.rb:293:in `_render'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/engine.rb:241:in `block in render'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/util.rb:297:in `silence_sass_warnings'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/engine.rb:241:in `render'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:319:in `update_stylesheet'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:181:in `block (2 levels) in update_stylesheets'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:175:in `each'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:175:in `block in update_stylesheets'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:173:in `each'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:173:in `update_stylesheets'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/plugin.rb:81:in `update_stylesheets'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/plugin.rb:54:in `check_for_updates'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/sass-3.1.7/lib/sass/plugin/rack.rb:51:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/warden-1.0.5/lib/warden/manager.rb:35:in `block in call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/warden-1.0.5/lib/warden/manager.rb:34:in `catch'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/warden-1.0.5/lib/warden/manager.rb:34:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/best_standards_support.rb:17:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/head.rb:14:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/rack-1.2.3/lib/rack/methodoverride.rb:24:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/params_parser.rb:21:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/flash.rb:182:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/session/abstract_store.rb:149:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/cookies.rb:302:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/activerecord-3.0.9/lib/active_record/query_cache.rb:32:in `block in call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/activerecord-3.0.9/lib/active_record/connection_adapters/abstract/query_cache.rb:28:in `cache'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/activerecord-3.0.9/lib/active_record/query_cache.rb:12:in `cache'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/activerecord-3.0.9/lib/active_record/query_cache.rb:31:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/activerecord-3.0.9/lib/active_record/connection_adapters/abstract/connection_pool.rb:354:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/callbacks.rb:46:in `block in call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/activesupport-3.0.9/lib/active_support/callbacks.rb:421:in `_run_call_callbacks'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/callbacks.rb:44:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/rack-1.2.3/lib/rack/sendfile.rb:107:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/remote_ip.rb:48:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/show_exceptions.rb:47:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/railties-3.0.9/lib/rails/rack/logger.rb:13:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/rack-1.2.3/lib/rack/runtime.rb:17:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/activesupport-3.0.9/lib/active_support/cache/strategy/local_cache.rb:72:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/rack-1.2.3/lib/rack/lock.rb:11:in `block in call'
+<internal:prelude>:10:in `synchronize'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/rack-1.2.3/lib/rack/lock.rb:11:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/static.rb:30:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/actionpack-3.0.9/lib/action_dispatch/middleware/static.rb:30:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/railties-3.0.9/lib/rails/application.rb:168:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/railties-3.0.9/lib/rails/application.rb:77:in `method_missing'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/railties-3.0.9/lib/rails/rack/log_tailer.rb:14:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/rack-1.2.3/lib/rack/content_length.rb:13:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/rack-1.2.3/lib/rack/chunked.rb:15:in `call'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/rack-1.2.3/lib/rack/handler/mongrel.rb:67:in `process'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/mongrel-1.2.0.pre2/lib/mongrel.rb:165:in `block in process_client'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/mongrel-1.2.0.pre2/lib/mongrel.rb:164:in `each'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/mongrel-1.2.0.pre2/lib/mongrel.rb:164:in `process_client'
+/Users/travis/.rvm/gems/ruby-1.9.2-p180/gems/mongrel-1.2.0.pre2/lib/mongrel.rb:291:in `block (2 levels) in run'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Invalid CSS after \"margin:\": expected pseudoclass or pseudoelement, was \"0\"\A         on line 18 of /Users/travis/Documents/considerit_20/ConsiderIt/public/stylesheets/sass/carousel.sass\A \A 13: .infiniteCarousel > div > ul \A 14:   width: 9999px\A 15:   list-style-image:none\A 16:   list-style-position:outside\A 17:   list-style-type:none\A 18:   margin:0\A 19:   padding:0\A 20:   position: absolute\A 21:   top: 0\A 22: \A 23: "; }

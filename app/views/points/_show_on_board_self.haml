@@ -33,9 +33,6 @@
             %a.toggle.less.hide.point_text_toggle
               hide rest
   
-          :javascript
-            ConsiderIt.points.set_more_less_text_toggle("#point_in_list_self-#{point.id}", #{point.id}, #{@option.id});
-
       - if !point.is_pro && !static
         %td.dismiss_point.right
           .dismiss.right

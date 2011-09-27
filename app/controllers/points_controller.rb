@@ -54,11 +54,11 @@ class PointsController < ApplicationController
     end
 
     if pros_and_cons
-      @con_points = qry.cons.paginate( :page => @page, :per_page => 4 )
-      @pro_points = qry.pros.paginate( :page => @page, :per_page => 4 )
+      @con_points = qry.cons.paginate( :page => @page, :per_page => 3 )
+      @pro_points = qry.pros.paginate( :page => @page, :per_page => 3 )
       points = @con_points + @pro_points
     else
-      points = qry.paginate( :page => @page, :per_page => 4 )
+      points = qry.paginate( :page => @page, :per_page => 3 )
     end
     
     if group_name == 'self'

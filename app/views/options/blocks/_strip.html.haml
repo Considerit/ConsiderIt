@@ -1,8 +1,14 @@
 - cache('option_strip') do
-  .initiatives
-    #initiatives{ :name => "initiatives" }              
+  .initiatives.horizontal
+    .paginate.fl
+      %a.back
+        = image_tag 'arrow-prev.png'
+    #initiatives.carousel.fl{ :name => "initiatives" }
       %ul.initiative_list
         - get_initiatives.each do |option|
           = render :partial => "options/block/small", :locals => { :option => option, :show_full_text => false }
-        %li.clear
       .clear
+    .paginate.fr
+      %a.forward.not_ajax
+        = image_tag 'arrow-next.png'
+    .clear

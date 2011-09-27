@@ -1,4 +1,127 @@
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\000033}}
 html {
   background-image: url(/themes/lvg/images/bg-body.png);
   background-position: left top;
   background-repeat: repeat-x; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\000039}}
+#intro {
+  padding: 0 10px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000313}}
+  #intro #description #value {
+    width: 475px;
+    height: 350px;
+    float: left; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000318}}
+    #intro #description #value h1 {
+      font-size: 33px;
+      font-weight: bold;
+      color: #0042a1; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000323}}
+    #intro #description #value .subheader {
+      margin-left: 4px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000325}}
+      #intro #description #value .subheader h2 {
+        font-size: 17px;
+        color: #a7a7a7;
+        font-weight: normal; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000330}}
+        #intro #description #value .subheader h2 ul {
+          margin: 18px 23px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000332}}
+          #intro #description #value .subheader h2 ul li {
+            background-image: url(/images/checkbox.png);
+            background-repeat: no-repeat;
+            font-weight: bold;
+            font-size: 24px;
+            color: black;
+            padding: 10px 0 10px 65px;
+            margin: 8px 0; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000341}}
+  #intro #description #tutorial {
+    width: 425px;
+    height: 350px;
+    float: right; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000345}}
+    #intro #description #tutorial #console {
+      background-color: black; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000347}}
+    #intro #description #tutorial .frame, #intro #description #tutorial .nav {
+      width: 415px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000349}}
+    #intro #description #tutorial .frame {
+      height: 292px;
+      margin-top: 10px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000352}}
+    #intro #description #tutorial .nav {
+      height: 30px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000354}}
+      #intro #description #tutorial .nav ul {
+        padding: 0 10px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000356}}
+        #intro #description #tutorial .nav ul li {
+          display: inline;
+          margin: 0 10px 0 0; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000359}}
+          #intro #description #tutorial .nav ul li a {
+            display: inline-block;
+            padding: 3px 5px;
+            background-color: #d0d0d0;
+            color: #ff6300; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000365}}
+            #intro #description #tutorial .nav ul li a.selected, #intro #description #tutorial .nav ul li a.selected:hover {
+              background-color: white; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000367}}
+            #intro #description #tutorial .nav ul li a:hover {
+              background-color: #e4e4e4; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000370}}
+  #intro #initiative {
+    background-image: url("/images/get_started_block.png");
+    background-repeat: no-repeat;
+    height: 250px;
+    padding: 12px 30px;
+    position: relative;
+    margin-bottom: 50px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000378}}
+    #intro #initiative h2.get_started {
+      color: #aacdfb;
+      font-size: 37px;
+      font-weight: bold;
+      display: inline-block; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000384}}
+      #intro #initiative h2.get_started .subheader {
+        font-size: 20px;
+        color: white;
+        font-weight: normal;
+        display: inline-block; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000390}}
+    #intro #initiative #zipcode_entry {
+      background-color: #700000;
+      position: absolute;
+      height: 80px;
+      width: 550px;
+      left: 150px;
+      top: 200px;
+      padding: 20px 30px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000399}}
+      #intro #initiative #zipcode_entry .triangle {
+        position: absolute;
+        top: -20px;
+        font-size: 25px;
+        color: #700000;
+        left: 150px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003106}}
+      #intro #initiative #zipcode_entry .prompt {
+        font-size: 20px;
+        color: white;
+        font-weight: normal;
+        float: left;
+        width: 290px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003113}}
+      #intro #initiative #zipcode_entry .zipform {
+        float: right;
+        padding-top: 20px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003116}}
+        #intro #initiative #zipcode_entry .zipform input[type="text"] {
+          font-size: 20px;
+          text-align: center; }

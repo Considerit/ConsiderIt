@@ -1,0 +1,28 @@
+.infiniteCarousel
+  position: relative
+
+  &.vertical
+    .wrapper 
+      width: inherit
+
+      > ul
+        height: 9999px
+        left: 0
+  &.horizontal
+    .wrapper 
+      height: inherit
+
+      > ul
+        width: 9999px
+        top: 0
+
+  .wrapper
+    overflow: auto
+
+    > ul 
+      list-style-image: none
+      list-style-position: outside
+      list-style-type: none
+
+      > li 
+        display: block

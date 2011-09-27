@@ -121,9 +121,9 @@ protected
     # This is an edge case. We should allow users to delete a point before it is published/included by others, which should further
     # relegate this issue to an insignificant edge case. 
     @pro_points = @option.points.pros.not_included_by(current_user, session[@option.id][:included_points].keys).
-                    ranked_persuasiveness.paginate(:page => 1, :per_page => 4)    
+                    ranked_persuasiveness.paginate(:page => 1, :per_page => 3)    
     @con_points = @option.points.cons.not_included_by(current_user, session[@option.id][:included_points].keys).
-                    ranked_persuasiveness.paginate(:page => 1, :per_page => 4)
+                    ranked_persuasiveness.paginate(:page => 1, :per_page => 3)
   
     PointListing.transaction do
 

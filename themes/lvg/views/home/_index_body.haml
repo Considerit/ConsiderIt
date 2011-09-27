@@ -1,31 +1,71 @@
-.table_container
-  #description
+#description
+  #value 
+    %h1 
+      Washington state's
+      %br
+      citizen-powered voters guide
 
-    .header
-      .follow
-        - if APP_CONFIG['socmedia']['facebook']['include_follow']
-          %span.facebook
-            %a.fb_page{ :href => "#{APP_CONFIG['socmedia']['facebook']['facebook_page']}", :target => "_blank", :title => "Find us on Facebook" }
-              = image_tag "facebook_button.png", :alt => "Facebook logo"
-        - if APP_CONFIG['socmedia']['twitter']['include_follow']
-          %span.twitter
-            %a.twitter_page{ :href => "#{APP_CONFIG['socmedia']['twitter']['twitter_page']}", :target => "_blank", :title => "Follow us on Twitter" }
-              = image_tag "Twitter_button.png", :alt => "Twitter logo"        
       .subheader
         %h2 
-          = APP_CONFIG['home']['call']
-          .extra
-            = APP_CONFIG['home']['subcall']
+          Your forum for the 2011 election
+          %ul
+            %li
+              By the people.
+            %li
+              For the people.
         
-        - APP_CONFIG['home']['values'].each do |value|
-          .text
-            %span.italic
-              = value['lead'] 
-            = value['follow'] 
-    
-    = form_tag '/home/zip', :id => 'zip' do
-      = text_field_tag "zipcode"
+        %h2
+          By thinking together, we can build a better Washington.
+
+      
+  #tutorial
+    #console
+      .frame
+      .nav
+        %ul
+          %li
+            %a.selected
+              What is the LVG?
+          %li
+            %a 
+              How do I use the LVG?
+          %li
+            %a
+              Who are we?
+  .clear
+
+  .header.hide
+    .follow
+      - if APP_CONFIG['socmedia']['facebook']['include_follow']
+        %span.facebook
+          %a.fb_page{ :href => "#{APP_CONFIG['socmedia']['facebook']['facebook_page']}", :target => "_blank", :title => "Find us on Facebook" }
+            = image_tag "facebook_button.png", :alt => "Facebook logo"
+      - if APP_CONFIG['socmedia']['twitter']['include_follow']
+        %span.twitter
+          %a.twitter_page{ :href => "#{APP_CONFIG['socmedia']['twitter']['twitter_page']}", :target => "_blank", :title => "Follow us on Twitter" }
+            = image_tag "Twitter_button.png", :alt => "Twitter logo"        
+
+
+#initiative.guide
+  %h2.get_started
+    Get started
+    .subheader
+      by clicking any of the ballot measures below.
   
+  = render :partial => "options/blocks/strip"
+
+  #zipcode_entry
+    .triangle
+      &#x25b2;
+    .prompt
+      %strong
+        Enter your ZIP code 
+      to unlock the local city and county ballot measures you will be voting on. 
+    .zipform
+      = form_tag '/home/zip', :id => 'zip' do
+        = text_field_tag "zipcode", '', :title => 'your zip code', :class => 'has_example'
+    .clear
+
 :javascript
 
   $j("input#zipcode").autocomplete({

@@ -25,10 +25,7 @@
         
         .pipe.fl
           &#124;
-        
-      :javascript
-        ConsiderIt.points.set_more_less_text_toggle('#ranked_point-#{point.id}', #{point.id}, #{@option.id});
-        
+                
     .discuss
       - if point.comments.count > 0
         %a.discuss_comment{ :href => "#comment-#{point.comment.id}", :title => "Join the discussion about this point" }

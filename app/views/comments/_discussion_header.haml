@@ -1,0 +1,22 @@
+%li{ :id=>"thread-#{comment.id}", :class => "discussion-thread #{comment.point.nil? ? 'unaffiliated': {1=>'pro', 0=>'con'}[comment.point.position]}"}
+  %table.comment_body
+    %tr
+      %td
+        .user
+          .avatar
+            - if !comment.user.nil? && comment.user.avatar
+              = image_tag comment.user.avatar.url(:small), :alt => "#{h comment.user.name}'s profile picture"
+      %td
+        .text
+          %a.smooth_anchor.discussion_thread_head{ :href => "#comment-#{comment.id}", :title => "Click to read or participate in this discussion" }
+            %h3.subject
+              = h comment.subject
+
+            = number_responses(comment)
+            replies 
+            
+             
+            - unless comment.user.nil?
+              \- Started by
+              = h comment.user.name
+            

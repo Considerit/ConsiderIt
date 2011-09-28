@@ -6,7 +6,7 @@ ConsiderIt::Application.routes.draw do
   
   resources :options, :only => [:show] do
     resources :positions, :only => [:new, :edit, :create, :update, :show]
-    resources :points, :only => [:index, :create] do 
+    resources :points, :only => [:index, :create, :update, :destroy] do 
       resources :inclusions, :only => [:create, :destroy] 
     end
     resources :point_similarities, :module => :admin

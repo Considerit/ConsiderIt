@@ -37,7 +37,7 @@
 
           .points_other#points_other_pro
             .point_list_footer
-              = render :partial => "points/column/pagination/block", :locals => { :points => @pro_points, :is_pro => true, :bucket => 'other', :page => @page, :mode => 'other', :column_selector => "#points_other_pro", :prev => false, :prev => true} 
+              = render :partial => "points/column/pagination/block", :locals => { :points => @pro_points, :is_pro => true, :bucket => 'other', :page => @page, :mode => 'other', :column_selector => "#points_other_pro", :prev => true} 
 
             .carousel
               = render :partial => "points/column/margin", :locals => { :is_pro => true, :points => @pro_points }
@@ -89,10 +89,16 @@
       .rest
 
         .stanceform
-          - if !@user
-            = form_for :position, :url => option_positions_path(@option), :remote => true do |f|
-              = render :partial => "positions/form", :locals => { :f => f, :action => action }
 
+          = form_for [@option, @position] do |f|
+            =f.hidden_field :stance, :id => "stance-value", :value=>0.0
+            =f.hidden_field :option_id, :value=>@option.id
+
+            =f.hidden_field :position_id, :value => @position.id
+              
+            = submit_tag "", :class => "submit submit_stance", :title => "Save your stance and position on #{@option.reference}"
+
+          - if !@user
             #position_save_login_trigger.user_dialog
 
             :javascript
@@ -112,13 +118,6 @@
                 return true;
               });
 
-          - elsif action == 'edit'
-            = form_for [@option, @position] do |f|
-              = render :partial => "positions/form", :locals => { :f => f, :action => action }
-
-          - elsif action == 'new'
-            = form_for :position, :url => option_positions_path(@option) do |f|
-              = render :partial => "positions/form", :locals => { :f => f, :action => action }
 
           .stance_status              
             Don't worry, you can change your list and stance later. 

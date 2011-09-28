@@ -1,6 +1,5 @@
 %ul.point_list 
   - if points
     - points.each do |point|
-      = render :partial => "points/show_on_board", :locals => { :point => point } 
+      = render :partial => "points/show", :locals => { :context => 'board', :point => point } 
 
-= render :partial => "points/column/pagination/block", :locals => { :points => points, :is_pro => is_pro, :bucket => @bucket, :page => @page, :mode => 'board', :column_selector => "#points_self_" + {true => "pro", false => "con"}[is_pro] + " .inner"} 

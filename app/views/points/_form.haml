@@ -1,0 +1,59 @@
+.pointform{ :id => "newpointform-#{is_pro}", :class => "#{action}pointform"}
+
+  = form_for [@option, point], :action => action, :remote => true do |f|
+
+    =image_tag "chalk/point-#{is_pro ? 'pro' : 'con'}-self.png", :class => 'symbol'
+
+    .form_proper
+      =f.hidden_field :is_pro, :id => "point-current-is_pro", :value => is_pro
+
+      .username
+        by
+        - if point && point.hide_name
+          [name hidden]
+        - elsif @user
+          = @user.name
+        - else
+          [unregistered]
+
+      .point-title-group.form-group.inline.text_group
+        = f.text_area :nutshell, :title => 'Summarize your point in 140 characters or less', :class => "point-title has_example"
+        %span.count
+          140
+
+      .point-description-group.form-group.inline.text_group
+        = f.text_area :text, :title => "(optional) write a longer description of your point", :class => "point-description has_example", :value => point.text
+        %span.count
+          700
+
+      .point_link_block
+        %ul.point_links
+
+          = f.fields_for :point_links do |builder|
+            %li
+              = builder.text_field 'url', :class => 'has_example', :title => 'The URL of the website'
+
+              = builder.text_field 'description', :class => 'has_example', :title => 'A brief description of the website'
+      
+        .point_link_prompt
+          = link_to_add_fields "+ Link to a website", f, :point_links, 'point_links/point_link_fields', 'button'
+            
+          %a.more_detail.add_qtip{ :title => 'When you link to credible websites that support the point that you just wrote, other voters will be more likely to understand and believe your point.'}
+            why should I? 
+      
+      .hide_name
+        = f.check_box :hide_name
+        = f.label :hide_name, 'Hide your name from other users'
+
+      - if @user
+        %p.note
+          %strong.alert
+            Remember your pledge!
+
+      .point-submit
+        = f.submit 'Done', :class => "submit_new_point #{is_pro ? 'pro' : 'con'}"
+        
+      .point-cancel
+        %a.new_point_cancel
+          cancel
+    .clear

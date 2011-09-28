@@ -14,7 +14,6 @@
 
     .point_text.full
       = h point.text
-      
 
     - if point.text and point.text.length > 0
       .read_more
@@ -25,7 +24,7 @@
         
         .pipe.fl
           &#124;
-                
+
     .discuss
       - if point.comments.count > 0
         %a.discuss_comment{ :href => "#comment-#{point.comment.id}", :title => "Join the discussion about this point" }

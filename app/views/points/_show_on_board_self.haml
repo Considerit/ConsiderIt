@@ -1,4 +1,64 @@
 %li.point_in_list_self.point_in_list{ :id => "point_in_list_self-#{point.id}", :class => { false => 'con', true => 'pro'}[point.is_pro] }
+
+  .body
+  
+    - if !point.is_pro
+      .include.include_con
+        = render :partial => "inclusions/new", :locals => { :point => point }
+
+    .username
+      - if !point.hide_name
+        = image_tag point.user.avatar.url(:midsmall), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
+
+      %a.toggle.less.hide.point_text_toggle
+        close
+
+      by 
+      - if point.hide_name
+        <anonymous>
+      - elsif point.user
+        = point.user.name
+      - else
+        <unregistered>
+          
+    .point_text.nutshell 
+
+      - if point.nutshell.length > 0
+        = h point.nutshell
+      - else
+        = h point.text.length > 137 ? point.text[0,137] : point.text
+    
+    .point_text.full
+      .details
+        %h4
+          details
+        .the_details       
+          = point.text
+      
+      .link
+        %h4
+          external links
+        - if point.point_links.count > 0
+          %ul
+            - point.point_links.each do |pl|
+              = render :partial => 'point_links/show', :locals => { :point_link => pl }
+        - else
+          none provided
+
+      .discuss
+        %h4
+          discussion
+        
+        = render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :point => point }
+
+    .read_more
+      %a.toggle.more.point_text_toggle
+        read more / discuss
+
+    - if point.is_pro
+      .include.include_pro
+        = render :partial => "inclusions/new", :locals => { :point => point }
+
   %table
     %tr
 
@@ -37,9 +97,3 @@
         %td.dismiss_point.right
           .dismiss.right
             = render :partial => "inclusions/delete", :locals => { :point => point }
-  
-  :javascript
-    $j("#point_in_list_self-#{point.id}").hover( 
-      function(){ $j(this).find('td.dismiss_point .judge_point').fadeIn();},
-      function(){ $j(this).find('td.dismiss_point .judge_point').fadeOut();}
-    );

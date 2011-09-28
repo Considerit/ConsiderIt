@@ -32,18 +32,10 @@ class InclusionsController < ApplicationController
       )
     end
 
-    rendered_next_point = next_point ? render_to_string( :partial => "points/show_in_margin", :locals => { :point => next_point }) : nil
-    
-    pagination = render_to_string :partial => "points/column/pagination/block", :locals => { 
-      :points => points,
-      :column_selector => "#points_other_" + {true => "pro", false => "con"}[@point.is_pro], 
-      :is_pro => @point.is_pro, 
-      :page => current_page, 
-      :bucket => 'other', 
-      :mode => 'other'}
-    
-    approved_point = render_to_string :partial => "points/show_on_board_self", :locals => { :static => false, :point => @point }    
-    response = { :new_point => rendered_next_point, :pagination => pagination, :approved_point => approved_point } 
+    rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :context => 'margin', :point => next_point }) : nil
+        
+    approved_point = render_to_string :partial => "points/show", :locals => { :context => 'self', :static => false, :point => @point }    
+    response = { :new_point => rendered_next_point, :approved_point => approved_point } 
     
     render :json => response.to_json
   end
@@ -52,7 +44,7 @@ class InclusionsController < ApplicationController
     @option = Option.find(params[:option_id])
     @point = Point.find(params[:point_id])
 
-    session [@option.id][:included_points].delete(params[:point_id])    
+    session[@option.id][:included_points].delete(params[:point_id])    
     if current_user
       @inc = current_user.inclusions.where(:point_id => @point.id).first
       if @inc
@@ -61,7 +53,7 @@ class InclusionsController < ApplicationController
     end
     
     render :json => { 
-       :deleted_point => render_to_string(:partial => "points/show_in_margin", :locals => { :static => false, :point => @point })   
+       :deleted_point => render_to_string(:partial => "points/show", :locals => { :context => 'margin', :static => false, :point => @point })   
     }.to_json
   end
 end

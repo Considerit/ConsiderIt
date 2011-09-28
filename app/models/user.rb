@@ -88,5 +88,9 @@ class User < ActiveRecord::Base
     twitter_uid.nil?
   end   
   
+  def first_name
+    name.split(' ')[0]  
+  end
+  
       
 end

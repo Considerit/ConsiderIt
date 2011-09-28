@@ -1,48 +1,69 @@
-#initiative
-  .full_discussion
-    li.comment, li.new_comment
+li.comment, li.new_comment
+  position: relative
+  margin-top: 8px
+    
+  
+  .comment_body
+    width: 100%
+    padding: 5px
+    
+    .body_row
+      .comment_text
+        position: relative
+        .triangle
+          position: absolute
+          top: 5px
+          left: -15px
+          font-size: 18px
+
+    .subject_line
+      &.pro .text
+        background-color: $bk_green   
+      &.con .text
+        background-color: $bk_purple   
+      &.unaffiliated .text
+        background-color: #777   
+
+      .text
+        width: 95%
+        margin-bottom: 8px         
+        .subject
+          font-size: 18px
+          color: white
+          padding: 5px 10px
+
+    .reply_row
+      a.reply
+        margin-left: 120px
+        padding: 10px 10px 10px 30px
+        font-size: 14px
+        background: transparent url("/images/comment-reply.png") no-repeat scroll 0px 2px 
+        display: block
+        &:hover
+          background-image: url("/images/comment-reply_hover.png") 
+          text-decoration: underline
+
+.point_in_list_margin
+  &.pro li.comment, &.pro li.new_comment 
+    .body_row
+      .comment_text
+        background-color: #6FAEA1
       
-      margin-top: 8px
-        
-      
-      table.comment_body
-        width: 100%
-        border-bottom: 1px dotted #ccc    
-        padding: 5px
-        
-        .body_row
-          .user, .text
-            float: left
-                
-          .user
-            width: 120px
+      .triangle
+        color: #6FAEA1
+
+  li.comment, li.new_comment 
+    .body_row
+      .user
+        position: absolute
+        left: 0px
+
           
-          .text
-            width: 83%
+      .comment_text
+        min-height: 70px
+        margin-left: 85px
+        color: $txt_dark_gray
+        padding: 8px
 
-        .subject_line
-          &.pro .text
-            background-color: $bk_green   
-          &.con .text
-            background-color: $bk_purple   
-          &.unaffiliated .text
-            background-color: #777   
-
-          .text
-            width: 95%
-            margin-bottom: 8px         
-            .subject
-              font-size: 18px
-              color: white
-              padding: 5px 10px
-        .reply_row
-          a.reply
-            margin-left: 120px
-            padding: 10px 10px 10px 30px
-            font-size: 14px
-            background: transparent url("/images/comment-reply.png") no-repeat scroll 0px 2px 
-            display: block
-            &:hover
-              background-image: url("/images/comment-reply_hover.png") 
-              text-decoration: underline
-            
+    .reply_row, .subject_line
+      display: none

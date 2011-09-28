@@ -134,9 +134,44 @@ class PointsController < ApplicationController
       @point.save
     end
     
-    respond_with(@option, @point) do |format|
-      format.js {render :partial => "points/show_on_board_self", :locals => { :point => @point, :static => false }}
+    new_point = render_to_string :partial => "points/show", :locals => { :context => 'self', :point => @point, :static => false }
+    response = {
+      :new_point => new_point
+    }
+    render :json => response.to_json
+
+  end
+
+  # TODO: server-side permissions check for this operation
+  def update
+    @option = Option.find(params[:option_id])
+    @position = current_user ? Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first : nil
+    @user = current_user
+    @point = Point.unscoped.find(params[:id])
+
+    @point.update_attributes!(params[:point])
+    @point.save
+
+    new_point = render_to_string :partial => "points/show", :locals => { :context => 'self', :point => @point, :static => false }
+    response = {
+      :new_point => new_point
+    }
+    render :json => response.to_json
+
+  end
+
+  def destroy
+    # TODO: server-side permissions check for this operation
+    @point = Point.unscoped.find(params[:id])
+    if current_user.nil?
+      session[@point.option_id][:written_points].delete(@point.id)
     end
+    session[@point.option_id][:included_points].delete(@point.id)  
+
+    @point.destroy
+
+    response = {:result => 'successful'}
+    render :json => response.to_json
   end
   
 protected 

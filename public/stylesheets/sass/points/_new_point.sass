@@ -14,34 +14,39 @@
 
 #points_self_con
   .newpointbutton
-    text-align: right
         
 .newpoint
   width: 215px
   margin: 20px 0
 
       
-.newpointbutton button
-  font-size: 135%
-  width: 175px
-  height: 50px
-  border: none
-  
-  &.pro
-    background: url(/images/add-pro.png) left top no-repeat
-  &.con
-    background: url(/images/add-con.png) left top no-repeat
+.newpointbutton 
+  text-align: center
+  button
+    font-size: 135%
+    width: 175px
+    height: 50px
+    border: none
+    
+    &.pro
+      background: url(/images/add-pro.png) left top no-repeat
+    &.con
+      background: url(/images/add-con.png) left top no-repeat
 
 
 .newpointform
+
+#points_self_pro
+  .pointform form
+    left: 0
+
+#points_self_con
+  .pointform form
+    left: -246px
+  
+.pointform
   display: none
   margin-top: -55px
-  
-  &#newpointform-true form
-    left: 0px
-
-  &#newpointform-false form
-    left: -246px
 
   > form
     width: 460px

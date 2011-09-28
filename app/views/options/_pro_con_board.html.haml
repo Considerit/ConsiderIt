@@ -50,13 +50,19 @@
 
   .points_self#points_self_pro
     .points_list_header
+      = render :partial => "points/column/pagination/block", :locals => { :points => @pro_points, :is_pro => true, :bucket => @bucket, :page => 1, :mode => 'board', :column_selector => "#points_self_pro .inner", :prev => true}     
     .inner
       = render :partial => "points/column/all", :locals => { :points => @pro_points, :is_pro => true }
+    .points_list_header
+      = render :partial => "points/column/pagination/block", :locals => { :points => @pro_points, :is_pro => true, :bucket => @bucket, :page => 2, :mode => 'board', :column_selector => "#points_self_pro .inner", :prev => false}    
+          
   .points_self#points_self_con 
     .points_list_header
+      = render :partial => "points/column/pagination/block", :locals => { :points => @con_points, :is_pro => false, :bucket => @bucket, :page => 1, :mode => 'board', :column_selector => "#points_self_con .inner", :prev => true}       
     .inner
       = render :partial => "points/column/all", :locals => { :points => @con_points, :is_pro => false }
-      
+    .points_list_header
+      = render :partial => "points/column/pagination/block", :locals => { :points => @con_points, :is_pro => false, :bucket => @bucket, :page => 2, :mode => 'board', :column_selector => "#points_self_con .inner", :prev => false}          
 
   .clear 
 

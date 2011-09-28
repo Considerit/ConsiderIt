@@ -43,6 +43,8 @@ ConsiderIt = {
       dim: 700    
     });
 
+    ConsiderIt.points.create.initialize_counters('#newpointform-true');
+    ConsiderIt.points.create.initialize_counters('#newpointform-false');
     // google analytics
     (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -54,7 +56,7 @@ ConsiderIt = {
   per_request : function() {
     $j('#masthead').corner('round top 5px');
     $j('#nav-user').corner('bottom bl 5px');  
-    $j('.point_in_list_other').corner('all 5px');
+    $j('.point_in_list_margin').corner('all 5px');
     $j('.avatar').corner('5px');
     $j('input[type="submit"]').corner('5px');
     $j('#registration_form .primary, #registration_form .secondary').corner('8px');
@@ -65,32 +67,81 @@ ConsiderIt = {
     $j('#console').corner('5px');
     $j('#console .nav a').corner('5px');
 
-    $j('.has_example').example(function() {
-       return $j(this).attr('title'); 
+    $j('.has_example').each(function(){
+      $j(this).example($j(this).attr('title')); 
     });
   },
 
   delegators : function() {
+
+    /////////////
+    // ACCOUNTS
+    /////////////
+
     $j(document).delegate('#confirmation_sent button#go', 'click', function(){
         $j('#pledge_dialog').dialog('close');
       });
 
-    $j(document).delegate("li.ranked.point_in_list a.new_discussion", "click", function() {
-      var point_id = $j(this).parents('.point_in_list:first').attr('id').substring(13);
-      var form = $j(this).parents('.discuss').siblings('.discussion');
-      $j(this).hide();
-      form.slideDown();
+    $j(document).delegate('#lvg_account a.cancel', 'click', function(){
+      $j('.user_dialog').dialog('close');
     });
 
-    $j(document).delegate('li.ranked.point_in_list .discussion .cancel', 'click',  function() {
-      var point_id = $j(this).parents('.point_in_list:first').attr('id').substring(13);
-      var form = $j(this).parents('.discussion');
-      form.slideUp();
-      
-      $j(this).parents('.discussion').parent().find('a.new_discussion').show();
-      
-    });  
+    $j(document).delegate('#acknowledgment a', 'click', function(){
+      show_tos(500, 700);  
+    });
 
+    //////////////
+    // POINTS
+    //////////////
+
+    // new button clicked
+    $j('#points').delegate('.newpoint .newpointbutton button', 'click', function(){
+      $j(this).parents('.newpoint:first').find('.newpointform').fadeIn('fast');      
+      $j('#lightbox').fadeIn('slow');
+    });
+
+    // new point cancel clicked
+    $j('#points').delegate('.newpoint .newpointform .new_point_cancel', 'click', function(){
+      $j(this).parents('.newpointform:first').fadeOut(function(){
+        $j('#lightbox').fadeOut();  
+      });
+    });
+
+    // edit point clicked
+    $j('#points').delegate('a.editpoint', 'click', function(){
+      $j(this).parents('.edit:first').find('.editpointform').fadeIn('fast');      
+      $j('#lightbox').fadeIn('slow');
+    });
+
+    // edit point cancel clicked
+    $j('#points').delegate('.edit .editform .new_point_cancel', 'click', function(){
+      $j(this).parents('.editpointform:first').fadeOut(function(){
+        $j('#lightbox').fadeOut();  
+      });
+    });
+
+    // Create callback
+    $j('#points').delegate('.newpoint .newpointform form', 'ajax:success', function(data, response, xhr){
+      $j(this).parents('.points_self:first').find('.point_list:first').append(response['new_point']);
+      $j(this).find('textarea').val('');
+      $j(this).find('.point-title-group .count').html(140);
+      $j(this).find('.point-description-group .count').html(500);
+      
+      $j(this).find('.new_point_cancel').trigger('click');
+    });
+
+    // Update callback
+    $j('#points').delegate('.editpointform form', 'ajax:success', function(data, response, xhr){
+      $j(this).parents('.point_in_list:first').replaceWith(response['new_point']);
+      $j('#lightbox').fadeOut();  
+    });
+
+    // Delete callback
+    $j('#points').delegate('.deletepointform form', 'ajax:success', function(data, response, xhr){
+      $j(this).parents('.point_in_list:first').fadeOut();
+    });
+
+    // Toggle point details ON
     $j(document).delegate('.point_in_list .toggle.more', 'click', function(){
       var pnt_el_main = $j(this).parents('.point_in_list'),
           pnt_el = pnt_el_main.clone(true, true); // deep clone with cloned events
@@ -126,13 +177,13 @@ ConsiderIt = {
 
     });
   
+    // Toggle point details OFF
     $j(document).delegate('.point_in_list .toggle.less', 'click', function(){
       var pnt_el = $j(this).parents('.point_in_list'),
-          pnt_el_main = $j('#' + pnt_el.attr('id') + ':not(.expanded)');
-
-      var is_pro = pnt_el.hasClass('pro');      
-
-      var animate_properties = { width: '224px' };
+          pnt_el_main = $j('#' + pnt_el.attr('id') + ':not(.expanded)'),
+          is_pro = pnt_el.hasClass('pro'),
+          animate_properties = { width: '224px' };
+      
       if ( !is_pro ){
         animate_properties['marginLeft'] = '0' ;
       }
@@ -142,45 +193,108 @@ ConsiderIt = {
         pnt_el.animate(animate_properties, function(){
           pnt_el.css({
             'z-index': 'inherit',
-            'position': 'relative'
+            'position': 'relative',
+            'top': 'auto',
+            'left': 'auto',
+            'right': 'auto',
+            'display': 'block'
           });
-          pnt_el_main.css('visibility', 'visible');
-                                      
+          pnt_el_main.replaceWith(pnt_el);          
+          pnt_el.removeClass('expanded');
+
           $j('#lightbox').fadeOut();  
-          pnt_el.remove();
+
+          pnt_el.find('.toggle.less').fadeOut(function(){
+            pnt_el.find('.more').fadeIn();
+          });
+
         });
       });
 
-      //$j(this).fadeOut(function(){pnt_el.find('.more').fadeIn();});
+      
     });
 
-    $j(document).delegate('#lvg_account a.cancel', 'click', function(){
-      $j('.user_dialog').dialog('close');
-    });
 
-    $j(document).delegate('#acknowledgment a', 'click', function(){
-      show_tos(500, 700);  
-    });
+    //////////////
+    // INCLUSIONS
+    //////////////
 
-  /*
-  $j(document).delegate('.next, .prev', 'ajax:success', function(data, response, xhr){
-    var point_col = $j(this).parents('.points_other, .points_self');
-    var is_next = $j(this).hasClass('next');
-
-    point_col.find('.point_list').append(
-      $j($j(response['points'])[0]).html()
-    );
-
-    $j(response['points']).each(function(){
-      if($j(this).hasClass('point_list_footer')){
-        point_col.find('.point_list_footer').html($j(this).html());
-      }
-    });
+    // Include in list
+    $j(document).delegate('.include .judgepointform form', 'ajax:success', function(data, response, xhr){
+      var included_point = $j(this).parents('.point_in_list_margin'), 
+      replacement_point = response['new_point'];
     
-    ConsiderIt.misc.add_tips();
+      if ( included_point.hasClass('pro') ) {
+        var user_point_list = $j('#points_self_pro .point_list');
+        var other_point_list = $j('#points_other_pro .point_list');
+      } else {
+        var user_point_list = $j('#points_self_con .point_list');
+        var other_point_list = $j('#points_other_con .point_list');
+      }
+    
+      included_point.fadeOut('slow', function() {
+        if ( replacement_point ) { 
+          included_point.replaceWith(replacement_point);
+          ConsiderIt.misc.add_tips(included_point.attr('id'));
+        } else {
+          included_point.remove();
+        }
+    
+        user_point_list.append(response['approved_point']);
+        ConsiderIt.misc.add_tips(user_point_list.attr('id') + '.point_in_list:last');
+        //ConsiderIt.points.lists.update_counts(other_point_list, response['pagination']);
+      });
+    });
 
-  });
-  */
+    // Remove from list
+    $j(document).delegate('.remove .judgepointform form', 'ajax:success', function(data, response, xhr){
+      var point_in_margin = response['deleted_point'],
+        old_point = $j(this).parents('.point_in_list_self:first');
+            
+      if ( old_point.hasClass('pro') ) {
+        var other_point_list = $j('#points_other_pro .point_list');
+      } else {
+        var other_point_list = $j('#points_other_con .point_list');
+      }
+      
+      old_point.fadeOut('slow', function(){
+        old_point.remove(); 
+        other_point_list.append(point_in_margin);
+        ConsiderIt.misc.add_tips(other_point_list.attr('id') + '.point_in_list:last');                            
+        //ConsiderIt.points.lists.update_counts(new_point_list, judgement, jsoned['pagination']); 
+      });  
+    });
+
+    //////////////
+    //COMMENTS
+    //////////////
+
+    // post new comment
+    $j(document).delegate('.new_comment form', 'ajax:success', function(data, response, xhr){
+        
+      var new_point = response['new_point'],
+      $parent = $j(this).parents('.comment:first');
+      //because we cloned the point in order to show an expanded version when the point in the list 
+      // is contained in the carousel, need to add the comment in both places...
+      $parent = $j('#' + $parent.attr('id'));
+      if($parent.length > 0){
+        $parent.find('.comment_children:first').prepend(new_point);
+        $j('.new_comment textarea').val("");
+        $parent.find('.reply_row a.cancel').trigger('click');
+        ConsiderIt.misc.add_tips('#' + parent.attr('id') + ' .comment_children:first .comment:first');
+      } else {
+        $j(this).parents('.new_comment:first').before(new_point);
+        $j(this).find('textarea, .the_subject input').val("");
+      }
+      
+      /*      
+      if (grounded_in_point) {
+        $j('html, body').animate({
+          scrollTop: $j("#comment-" + response['comment_id']).offset().top}, 1000);  
+      }*/
+
+
+    });
 
   },
 
@@ -198,27 +312,6 @@ ConsiderIt = {
     },
     
     create : {
-      post_callback : function( response_text, sel ) {
-        $j(sel + ' .point_list').append(response_text);
-        $j(sel + ' .newpointform textarea').val('');
-        $j(sel + ' .newpointform .point-title-group .count').html(140);
-        $j(sel + ' .newpointform .point-description-group .count').html(500);
-            
-        ConsiderIt.points.create.cancel_button_clicked( sel );
-      },
-      
-      new_button_clicked : function (sel) {
-        $j(sel + ' .newpointform').fadeIn('fast');      
-        $j('#lightbox').fadeIn('slow');
-      },
-      
-      cancel_button_clicked : function (sel) {
-        $j(sel + ' .newpointform').fadeOut(function(){
-          $j(sel + ' .newpointbutton').fadeIn();  
-          $j('#lightbox').fadeOut();  
-        });    
-      
-      },    
       
       positive_count : function( t_obj, char_area, c_settings, char_rem ) {
         ConsiderIt.misc.noblecount.positive_count(t_obj, char_area, c_settings, char_rem, '.newpointform', '.point-submit input' );
@@ -243,57 +336,6 @@ ConsiderIt = {
         form.find('.point-description').NobleCount( form_sel + ' .point-description-group .count', params);  
       }      
     },
-    
-  },
-  
-  inclusions : {
-    
-    new_callback : function(response, point_id) {
-    
-      var included_point = $j('#point_in_list_other-' + point_id),
-      replacement_point = response['new_point'];
-    
-      if ( included_point.hasClass('pro') ) {
-        var user_point_list = $j('#points_self_pro .point_list');
-        var other_point_list = $j('#points_other_pro .point_list');
-      } else {
-        var user_point_list = $j('#points_self_con .point_list');
-        var other_point_list = $j('#points_other_con .point_list');
-      }
-    
-      included_point.fadeOut('slow', function() {
-        if ( replacement_point ) { // && (other_point_list.find('#' + $j($j(replacement_point)[0]).attr('id')).length == 0)) {
-          included_point.replaceWith(replacement_point);
-          ConsiderIt.misc.add_tips(included_point.attr('id'));
-        } else {
-          included_point.remove();
-        }
-    
-        user_point_list.append(response['approved_point']);
-        ConsiderIt.misc.add_tips(user_point_list.attr('id') + '.point_in_list:last');
-        ConsiderIt.points.lists.update_counts(other_point_list, response['pagination']);
-    
-      });
-    },
-    
-    delete_callback : function(response, point_id) {
-      var point_in_margin = response['deleted_point'];
-      var old_point = $j('#point_in_list_self-' + point_id);
-            
-      if ( old_point.hasClass('pro') ) {
-        var other_point_list = $j('#points_other_pro .point_list');
-      } else {
-        var other_point_list = $j('#points_other_con .point_list');
-      }
-      
-      old_point.fadeOut('slow', function(){
-        old_point.remove(); 
-        other_point_list.append(point_in_margin);
-        ConsiderIt.misc.add_tips(other_point_list.attr('id') + '.point_in_list:last');                            
-        //ConsiderIt.points.lists.update_counts(new_point_list, judgement, jsoned['pagination']); 
-      });        
-            
-    }    
     
   },
 
@@ -390,38 +432,7 @@ ConsiderIt = {
   comments : {
     
     create : {
-      
-      post_callback : function(response_text, parent_id, grounded_in_point){
-        var response = $j.parseJSON(response_text);
-        
-        var new_point = response['new_point']; 
-        
-        if (grounded_in_point) { 
-          rerendered_point = response['rerendered_ranked_point'];
-          $j('#ranked_point-'+grounded_in_point).replaceWith(rerendered_point);   
-          add_tips('#ranked_point-'+grounded_in_point);
-        }
-      
-        //new_point.hide();
-        
-        if(parent_id){
-          $j('#comment-'+parent_id+' .comment_children:first').prepend(new_point);
-          $j('.new_comment textarea').val("");
-          $j('#comment-'+parent_id+' .reply_row a.cancel').trigger('click');
-        } else {
-          $j('.comment_section > .new_comment:first').before(new_point);
-          $j('.new_comment textarea, .new_comment li.the_subject input').val("");
-        }
-        //new_point.fadeIn('slow');
-        
-        ConsiderIt.misc.add_tips('#comment-'+parent_id+' .comment_children:first .comment:first');
-        
-        if (grounded_in_point) {
-          $j('html, body').animate({
-            scrollTop: $j("#comment-" + response['comment_id']).offset().top}, 1000);  
-        }
-      },
-      
+            
       positive_count : function( t_obj, char_area, c_settings, char_rem ) {
         ConsiderIt.misc.noblecount.negative_count(t_obj, char_area, c_settings, char_rem, '.form', '.comment_submit' );
       },

@@ -14,8 +14,8 @@ li.point_in_list
 
   &.con
     background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent  
-    .body
-      padding: 3px 15px 3px 35px
+    > .body
+      padding: 3px 35px 3px 35px
     .read_more
       a.toggle_more, a.toggle
         float: left
@@ -33,7 +33,7 @@ li.point_in_list
              
   &.pro
     background: url("/images/chalk/point-pro-self.png") no-repeat scroll 0px 3px transparent     
-    .body
+    > .body
       padding: 3px 35px 3px 35px
     .read_more
       a.toggle_more, a.toggle
@@ -49,7 +49,7 @@ li.point_in_list
       .less.point_text_toggle
         float: right
         color: white                
-  .body
+  > .body
     overflow: hidden
     vertical-align: top
 
@@ -66,16 +66,20 @@ li.point_in_list
       display: none
       width: 90%
 
+      .details .the_details, .link ul, .discuss ul
+        margin-left: 8px
+
       h4
-        font-size: 15px
+        font-size: 17px
         margin: 8px 0
-          
+        color: #C1C1C1
+        text-transform: capitalize
+      
       .details
 
       .link
 
         ul
-          margin-left: 0
           li 
             padding: 2px 0
             a
@@ -109,14 +113,14 @@ li.point_in_list
   
 
 
-  &.point_in_list_other 
+  &.point_in_list_margin
     
     padding-bottom: 5px
 
     &.pro
       background: transparent url('/images/bg-point-pro-200.png') no-repeat left top
        
-      .body
+      > .body
         background: url("/images/chalk/point-pro-other-42.png") no-repeat scroll left 3px transparent         
 
         .username, 
@@ -127,7 +131,7 @@ li.point_in_list
 
     &.con
       background: transparent url('/images/bg-point-con.png') no-repeat right top
-      .body
+      > .body
         padding-top: 3px
         background: url("/images/chalk/point-con-other-42.png") no-repeat scroll right 3px transparent         
         .username, 
@@ -141,25 +145,6 @@ li.point_in_list
     width: 225px
       
   &.ranked
-    .discuss, .read_more
-      font-size: 12px
-      float: left
-    .read_more
-      margin: 0
-      a.toggle
-        color: $txt_light_gray
-        padding-right: 10px      
-      .pipe
-        padding: 10px 10px 0 0
-        color: $bk_gray
-    .discuss
-      padding-top: 10px
-      
-      display: block
-      margin: 0
-      > a
-        color: $txt_light_gray
-     
       
     .scores
       float: right
@@ -183,13 +168,13 @@ li.point_in_list
             
          
   
-  &.expanded.point_in_list_other
+  &.expanded.point_in_list_margin
     &.pro
       background-color: $bk_green
-      .body
+      > .body
     &.con
       background-color: $bk_purple    
-      .body
+      > .body
         padding: 3px 23px 10px 60px
 
     .include
@@ -197,7 +182,7 @@ li.point_in_list
     &.pro, &.con
       background-image: none
 
-  .include
+  &.point_in_list_margin .include
     position: absolute
     z-index: 99
     top: -2px    
@@ -212,7 +197,7 @@ li.point_in_list
       border: none
       font-size: 30px
       background-color: inherit
-            
+
       &:hover
         cursor: pointer
         color: #082872

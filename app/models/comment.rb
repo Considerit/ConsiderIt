@@ -1,16 +1,11 @@
 class Comment < ActiveRecord::Base
   acts_as_nested_set :scope => [:commentable_id, :commentable_type]
-  has_one :point
   validates_presence_of :body
   validates_presence_of :user
-  
-  # NOTE: install the acts_as_votable plugin if you 
-  # want user to vote on the quality of comments.
-  #acts_as_voteable
-  
-  # NOTE: Comments belong to a user
+    
   belongs_to :user
-  
+  belongs_to :point
+
   # Helper class method that allows you to build a comment
   # by passing a commentable object, a user_id, and comment text
   # example in readme
@@ -23,6 +18,11 @@ class Comment < ActiveRecord::Base
     c
   end
   
+
+  def violation
+    false
+  end
+
   #helper method to check if a comment has children
   def has_children?
     self.children.size > 0 
@@ -46,8 +46,9 @@ class Comment < ActiveRecord::Base
     commentable_str.constantize.find(commentable_id)
   end
 
-  # TODO: implement below
-  # def notify_parties(send = APP_CONFIG['send_email'])
+  #TODO: implement below
+  def notify_parties(send = APP_CONFIG['send_email'])
+
   #   message_sent_to = {}
   #   initiative = find_commentable
   #   grounded_in_point = !point.nil?
@@ -94,6 +95,6 @@ class Comment < ActiveRecord::Base
   #     end
   #   end
   #   return message_sent_to
-  # end
+  end
 
 end

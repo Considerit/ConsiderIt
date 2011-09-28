@@ -1,11 +1,6 @@
 .judgepointform{ :id => "judgepointform_#{point.id}" }
-  = form_for :inclusion, :remote => true, :url => option_point_inclusions_path(@option, point, :page => @page), do |f|
+  = form_for :inclusion, :remote => true, :url => option_point_inclusions_path(@option, point, :page => @page) do |f|
     =f.hidden_field :option_id, :value=>@option.id
     =f.hidden_field :point_id, :value=>point.id
-    =f.submit :class => 'judge_point include no_qtip', :type => 'submit', :value => "", :name => "judge", :title => 'Click to add this point to your list. You can remove it later if you want.'
-
-:javascript
-  $j("#judgepointform_#{point.id}").bind('ajax:success', function(data, status, xhr){
-    ConsiderIt.inclusions.new_callback(status, #{point.id});
-  });
+    =f.submit :class => 'judge_point no_qtip', :type => 'submit', :value => "", :name => "judge", :title => 'Click to add this point to your list. You can remove it later if you want.'
   

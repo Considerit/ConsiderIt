@@ -3,7 +3,7 @@ class PointsController < ApplicationController
 
   respond_to :json
   
-  
+  POINTS_PER_PAGE = 4
   ########
   ##
   # handles calls from:
@@ -54,11 +54,11 @@ class PointsController < ApplicationController
     end
 
     if pros_and_cons
-      @con_points = qry.cons.paginate( :page => @page, :per_page => 3 )
-      @pro_points = qry.pros.paginate( :page => @page, :per_page => 3 )
+      @con_points = qry.cons.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
+      @pro_points = qry.pros.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
       points = @con_points + @pro_points
     else
-      points = qry.paginate( :page => @page, :per_page => 3 )
+      points = qry.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
     end
     
     if group_name == 'self'
@@ -93,9 +93,9 @@ class PointsController < ApplicationController
       resp = render_to_string :partial => "options/pro_con_board", :locals => { :group_id => @bucket, :group_name => group_name}    
     else
       if mode == 'other'
-        resp = render_to_string :partial => "points/column/margin", :locals => {:points => points, :is_pro => params.key?(:pros_only)}   
+        resp = render_to_string :partial => "points/column", :locals => {:points => points, :is_pro => params.key?(:pros_only), :context => 'margin'}   
       else
-        resp = render_to_string :partial => "points/column/all", :locals => {:points => points, :is_pro => params.key?(:pros_only)}          
+        resp = render_to_string :partial => "points/column", :locals => {:points => points, :is_pro => params.key?(:pros_only), :context => 'board'}          
       end
     end
     

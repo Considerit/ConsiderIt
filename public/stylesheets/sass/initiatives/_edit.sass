@@ -1,28 +1,35 @@
+
 #initiative
   #description
-    padding: 10px
-    margin-bottom: 20px
-    background-color: $bk_light_gray
-    .init_graphic
-      img
-        width: 175px
-    .init_text
-      vertical-align: top
-      padding-left: 20px
-      
-      h1.initiative_name
-        margin-bottom: 5px
-        line-height: 30px
-        text-transform: capitalize
-          
-      li.initiative_desc_point
-        width: 90%
-        padding: 5px 0px
-        line-height: 18px
-        @include nude-list
+    margin: -55px 0 20px 0
+
+    .description_wrapper
+      float: left
+      width: 500px
+      margin: 40px 70px 0 50px
+
+      .init_text
+        vertical-align: top
+        
+        h2.locality
+          font-size: 16px
+          font-weight: normal
+          line-height: 16px
+          color: $txt_light_gray
+
+        h1.initiative_name
+          margin-bottom: 5px
+          font-size: 25px
+          font-weight: normal
+          line-height: 30px
+          text-transform: capitalize
+          padding-bottom: 5px
+
+        .initiative_desc_point
+          width: 90%
+          padding: 5px 0px
+          line-height: 18px
     
-      #show
-        display: none
   
   .position
     margin: auto
@@ -101,7 +108,7 @@
               display: inline-block
             .user_position 
               vertical-align: top
-              margin-left: -20px
+              margin-left: -60px
 
             .points_other
               vertical-align: top
@@ -145,7 +152,7 @@
                   td
                     float: left
               &#points_other_con 
-                margin-left: -14px
+                margin-left: -63px
                 ul.point_list_footer
                   td
                     float: right

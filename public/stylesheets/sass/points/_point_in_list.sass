@@ -5,6 +5,9 @@ li.point_in_list
 
   &.expanded
     height: auto
+
+    .operations
+      display: none
   
   color: white
   background-repeat: no-repeat
@@ -17,10 +20,6 @@ li.point_in_list
     > .body
       padding: 3px 35px 3px 35px
     .read_more
-      a.toggle_more, a.toggle
-        float: left
-        &.hide
-          left: 0
 
     .username
       .avatar
@@ -36,10 +35,6 @@ li.point_in_list
     > .body
       padding: 3px 35px 3px 35px
     .read_more
-      a.toggle_more, a.toggle
-        float: left
-        &.hide
-          right: 0
 
     .username
       .avatar
@@ -48,7 +43,8 @@ li.point_in_list
 
       .less.point_text_toggle
         float: right
-        color: white                
+        color: white  
+                      
   > .body
     overflow: hidden
     vertical-align: top
@@ -74,7 +70,7 @@ li.point_in_list
         margin: 8px 0
         color: #C1C1C1
         text-transform: capitalize
-      
+
       .details
 
       .link
@@ -87,15 +83,12 @@ li.point_in_list
               text-decoration: underline
 
     .read_more
-      position: relative
-      bottom: 0
       a.toggle_more, a.toggle
         color: $txt_light_gray
         padding-top: 10px
-        
+        display: inline-block
+
         &.hide
-          position: absolute
-          top: 0
           padding: 3px 10px
           color: white
 
@@ -118,7 +111,7 @@ li.point_in_list
     padding-bottom: 5px
 
     &.pro
-      background: transparent url('/images/bg-point-pro-200.png') no-repeat left top
+      background: transparent url('/images/bg-point-pro.png') no-repeat left top
        
       > .body
         background: url("/images/chalk/point-pro-other-42.png") no-repeat scroll left 3px transparent         
@@ -141,10 +134,34 @@ li.point_in_list
         .username
           text-align: right
 					
+  
   &.point_in_list_self
-    width: 225px
-      
-  &.ranked
+    width: 265px
+
+    .operations        
+
+      > div, >div > div
+        display: inline-block
+        
+        .bullet
+          font-size: 8px
+          color: $txt_gray
+          vertical-align: middle
+          
+
+        a.point_operation, 
+        button.point_operation,
+        input.point_operation 
+          font-size: 12px
+          color: $txt_gray
+          padding: 0
+          margin: 0
+          vertical-align: middle
+
+          &:hover
+            color: $txt_light_gray
+
+  &.point_in_list_board
       
     .scores
       float: right
@@ -165,17 +182,14 @@ li.point_in_list
           &:hover
             background-color: black
             color: white
-            
-         
-  
-  &.expanded.point_in_list_margin
+
+  &.expanded.point_in_list
     &.pro
       background-color: $bk_green
       > .body
     &.con
       background-color: $bk_purple    
       > .body
-        padding: 3px 23px 10px 60px
 
     .include
       display: none
@@ -219,8 +233,6 @@ li.point_in_list
       .judgepointform
         input.judge_point
 
-
-
 .point_list_footer
   min-height: 35px
   text-align: center
@@ -229,11 +241,13 @@ li.point_in_list
   .arrow
     height: 18px
 
-  .forward, .back
+  input.forward
+    background-position: 0 3px
+
+  input.forward, button.back, button.forward
     width: 15px
     height: 15px
     background-repeat: no-repeat
-    background-position: 0 3px
     display: inline-block
 
   .paginate
@@ -243,18 +257,29 @@ li.point_in_list
   .paginate, .arrow
     vertical-align: text-top
 
-#points_other_pro .point_list_footer
-  padding-right: 20px
+#points_self_pro
+  margin-left: 15px
 
-  .paginate
-    color: $brd_green_dark
+#points_self_con
+  margin-right: 15px
 
-#points_other_con .point_list_footer
-  padding-left: 20px
+#points_other_pro
+  left: -43px
 
-  .paginate
-    color: $brd_purple_dark
+  .point_list_footer
+    padding-right: 20px
 
+    .paginate
+      color: $brd_green_dark
+
+#points_other_con
+  right: -45px
+
+  .point_list_footer
+    padding-left: 20px
+
+    .paginate
+      color: $brd_purple_dark
 
 .points_other .point_list_footer
 
@@ -271,3 +296,5 @@ li.point_in_list
   
   .back
     background-image: url('/images/arrow-prev.png')
+
+

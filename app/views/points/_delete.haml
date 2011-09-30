@@ -2,6 +2,6 @@
 
   = form_for point, :remote => true, :url => option_point_path(@option, point), :html => { :method => :delete } do |f| 
 
-    %input{:class => 'delete_point no_qtip', :type => 'submit', :value => "delete", :name => "delete", :title => 'Click to permanently delete this point'}
+    %input{:class => 'delete_point no_qtip linkify point_operation', :type => 'submit', :value => "delete", :name => "delete", :title => 'Click to permanently delete this point'}
 
   

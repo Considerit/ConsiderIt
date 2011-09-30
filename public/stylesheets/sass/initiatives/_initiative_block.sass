@@ -1,183 +1,169 @@
 
-
-$small_width: 85px
-$small_height: 80px
-  
-$medium_width: 140px
-$medium_height: 90px
-
-$large_width: 278px
-$large_height: 265px
-
 .initiatives
   margin: 15px auto
 
   .paginate
-    width: 20px
     display: inline-block
-    margin-top: 40px
 
-    a.forward 
-      text-align: right
+    .forward, .back
       display: block
-    a.back
-      text-align: left
-      display: block
+      background-repeat: no-repeat
+      height: 16px
+      width: 13px
+      cursor: pointer
+      
 
   .carousel
-    height: 90px
 
     ul.initiative_list
+  
+  &.vertical
+    margin: -15px 20px 0 0
+    float: right
+    width: 300px
 
+    .paginate
+      width: 100%
+      height: 16px
+
+      .forward, .back
+        margin-left: auto
+        opacity: .6
+        padding-right: 5px
+
+      &.first
+        .back
+          background-image: url('/images/arrow-up.png')
+      &.last
+        .forward
+          background-image: url('/images/arrow-down.png')
+          background-position: 0 5px
+
+    .carousel
+    
+  &.horizontal
+    .paginate
+      width: 20px
+      margin-top: 40px
+      &.first
+        float: left
+        .back
+          background-image: url('/images/arrow-prev.png')
+      &.last
+        float: right
+        .forward
+          background-image: url('/images/arrow-next.png')
+
+      .forward 
+        text-align: right
+      .back
+        text-align: left
+
+    .carousel
+      height: 90px
+      float: left
 
 
 li.initiative_item
   @include nude-list
   
   background-color: $bk_gray
-  float: left
   margin: 0px 10px 10px 0px
   padding: 10px
   border: 1px solid $bk_gray
   border-bottom: 1px solid $brd_light_gray
   position: relative
+  color: black
   
   &.finished
+    background-image: none
     &:hover, &.active
       background-color: black
-  
+      color: white
+
   &:hover, &.active
     background-color: black
+    color: white
 
   > a
-    color: black
-    position: absolute
-    top: 0px
-    left: 0px 
-    padding: 10px 
+    color: inherit
     margin: auto
-    
-    &:hover, &.active
-      color: white
+    display: inline-block
+    padding: 10px
+                
+    font-weight: bold
+    font-family: helvetica
+    letter-spacing: -3px
+    text-align: center
           
-    .link_internal
-      margin: auto
-      
-      h2
-        font-weight: bold
-        font-family: helvetica
-        letter-spacing: -3px
-        text-align: center
-        padding-top: 0px
-        
-        .header
-          
-          .designation
-            letter-spacing: 0px
-            text-transform: uppercase
+    .designation
+      letter-spacing: 0px
 
-        .subheader
-          width: 100%
-          letter-spacing: -1px
-          margin: 10px 0px 0px 0px
-          text-transform: capitalize
-          
-      .description
-        margin-left: 10px     
-        text-align: justify    
+    .short_name
+      width: 100%
+      letter-spacing: -1px
+      text-transform: capitalize
 
-  &.large
-    height: $large_height
-    width: $large_width
-    
-    > a
-      height: $large_height
-      width: $large_width
-
-      .link_internal
-        padding: 0
-        height: $large_height
-        width: $large_width
-              
-        h2
-          font-size: 30px
-          line-height: 25px
-        
-          .subheader
-            font-size: 28px    
-            line-height: 22px
-            margin-top: 3px
-            
-          .header
-            .designation
-              font-size: 14px
-              
-            .number
-              font-size: 75px
-              line-height: 60px 
-              
-  &.medium
-    height: $medium_height
-    width: $medium_width
-    
-    > a
-      height: $medium_height
-      width: $medium_width
-
-      .link_internal
-        padding: 0
-        height: $medium_height
-        width: $medium_width
-              
-        h2
-          font-size: 30px
-          line-height: 25px
-        
-          .subheader
-            font-size: 14px
-            line-height: 14px
-            margin-top: 3px
-            
-          .header
-            .designation
-              font-size: 10px
-              
-            .number
-              font-size: 55px  
-              line-height: 40px
                
-  &.small
-    height: $small_height
-    width: $small_width
-    padding: 5px
+  &.horizontal
     margin: 0 5px 5px 0
-    
+    float: left 
+    padding: 0
+
     &.finished
-      background-image: none
+      
     
     > a
-      height: $small_height
-      width: $small_width
-      padding: 5px
+           
+      font-size: 26px
+      line-height: 22px
+  
+      .short_name
+        font-size: 12px
+        line-height: 12px
       
-      .link_internal
-        padding: 0
-        height: $small_height
-        width: $small_width
-            
-        h2
-          font-size: 26px
-          line-height: 22px
+      .designation
+        font-size: 8px
+        line-height: 15px
+        text-transform: uppercase
       
-          .subheader
-            font-size: 12px
-            line-height: 10px
-            margin-top: 1px
-          
-          .header
-            .designation
-              font-size: 8px
-            
-            .number
-              font-size: 40px   
-              line-height: 35px 
+      .number
+        font-size: 40px   
+        line-height: 40px 
+
+  &.vertical
+    margin: 3px 0
+    padding: 0
+
+    &.finished
+    
+    > a      
+      font-size: 26px
+      line-height: 22px
+      width: 100%
+      height: 100%
+      padding: 0
+      margin: 0
+
+      > div
+        display: inline-block
+
+      .number
+        font-size: 28px   
+        line-height: 28px 
+        width: 60px
+        padding: 5px 0
+        text-align: right
+        margin-right: 15px
+
+      .short_name
+        width: 135px
+        font-size: 15px
+        line-height: 15px
+        text-align: left
+        margin-right: 15px
+      
+      .designation
+        font-size: 13px
+        text-align: left
+      

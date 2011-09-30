@@ -52,27 +52,34 @@
         = render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :point => point }
 
     .operations
+      .read_more
+        %a.toggle.more.point_text_toggle.point_operation
+          #{ context == 'margin' ? 'read more / discuss' : 'details/discuss'}
+          - if point.comments.count > 0
+            (#{point.comments.count})
+
       - if context == 'self'
         - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
         - if point_creator
           .edit
-            %a.editpoint
+            .bullet
+              &#8226;
+
+            %a.editpoint.point_operation
               edit
             .editform
               = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
 
         .remove
+          .bullet
+            &#8226;
+                    
           -if point_creator
             = render :partial => "points/delete", :locals => { :point => point } 
           -else
             = render :partial => "inclusions/delete", :locals => { :point => point }
 
-      .read_more
-        %a.toggle.more.point_text_toggle
-          #{ context == 'margin' ? 'read more / discuss' : 'details/discuss'}
-          - if point.comments.count > 0
-            (#{point.comments.count})
 
     - if context == 'margin' && point.is_pro
       .include.include_pro

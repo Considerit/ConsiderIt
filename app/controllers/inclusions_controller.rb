@@ -2,9 +2,16 @@ class InclusionsController < ApplicationController
   protect_from_forgery
 
   respond_to :json
+
+  POINTS_PER_PAGE = 4
   
   def create
     
+    if params.has_key?(:delete) && params[:delete]
+      destroy(params)
+      return
+    end
+
     @option = Option.find(params[:option_id])
     @point = Point.find(params[:point_id])
 
@@ -13,13 +20,13 @@ class InclusionsController < ApplicationController
       return
     end
 
-    current_page = params[:page].to_i
+    @page = params[:page].to_i
     candidate_next_points = @point.is_pro ? @option.points.pros : @option.points.cons
 
     session[@option.id][:included_points][params[:point_id]] = 1
 
     candidate_next_points = candidate_next_points.not_included_by(current_user, session[@option.id][:included_points].keys)
-    points = candidate_next_points.ranked_persuasiveness.paginate( :page => current_page, :per_page => 4 )
+    points = candidate_next_points.ranked_persuasiveness.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
     next_point = points.last
     
     if next_point
@@ -35,12 +42,16 @@ class InclusionsController < ApplicationController
     rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :context => 'margin', :point => next_point }) : nil
         
     approved_point = render_to_string :partial => "points/show", :locals => { :context => 'self', :static => false, :point => @point }    
-    response = { :new_point => rendered_next_point, :approved_point => approved_point } 
+    response = { :new_point => rendered_next_point, :approved_point => approved_point, :total_remaining => points.total_entries } 
     
     render :json => response.to_json
   end
   
-  def destroy
+  protected
+
+  #cannot just route here in normal REST fashion because for unregistered users, 
+  # we do not save the inclusion and hence do not have an ID for the inclusion
+  def destroy(params)
     @option = Option.find(params[:option_id])
     @point = Point.find(params[:point_id])
 
@@ -51,9 +62,14 @@ class InclusionsController < ApplicationController
         session[@option.id][:deleted_points][@point.id] = 1
       end
     end
-    
+
+    @page = params[:page].to_i
+    candidate_next_points = @point.is_pro ? @option.points.pros : @option.points.cons
+    points = candidate_next_points.not_included_by(current_user, session[@option.id][:included_points].keys).ranked_persuasiveness.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
+
     render :json => { 
-       :deleted_point => render_to_string(:partial => "points/show", :locals => { :context => 'margin', :static => false, :point => @point })   
+      :deleted_point => render_to_string(:partial => "points/show", :locals => { :context => 'margin', :static => false, :point => @point }), 
+      :total_remaining => points.total_entries 
     }.to_json
   end
 end

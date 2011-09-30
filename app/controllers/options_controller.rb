@@ -1,14 +1,16 @@
 class OptionsController < ApplicationController
   protect_from_forgery
 
+  POINTS_PER_PAGE = 4
+  
   def show
     @user = current_user
     @option = Option.find(params[:id])
     
     @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
     
-    @pro_points = @option.points.pros.ranked_overall.paginate(:page => 1, :per_page => 4)
-    @con_points = @option.points.cons.ranked_overall.paginate(:page => 1, :per_page => 4)
+    @pro_points = @option.points.pros.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
+    @con_points = @option.points.cons.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
 
     PointListing.transaction do
       (@pro_points + @con_points).each do |pnt|

@@ -4,7 +4,7 @@
   });
 
 #initiative.edit
-  = render :partial => "options/description/full"
+  = render :partial => "options/description"
   
   %ol#step_through
     %li.gut.step.slide
@@ -37,13 +37,13 @@
 
           .points_other#points_other_pro
             .point_list_footer
-              = render :partial => "points/column/pagination/block", :locals => { :points => @pro_points, :is_pro => true, :bucket => 'other', :page => @page, :mode => 'other', :column_selector => "#points_other_pro", :prev => true} 
+              = render :partial => "points/pagination_block", :locals => { :points => @pro_points, :is_pro => true, :bucket => 'other', :page => @page, :mode => 'other', :column_selector => "#points_other_pro", :prev => true} 
 
             .carousel
-              = render :partial => "points/column/margin", :locals => { :is_pro => true, :points => @pro_points }
+              = render :partial => "points/column", :locals => { :is_pro => true, :points => @pro_points, :context => 'margin' }
 
             .point_list_footer
-              = render :partial => "points/column/pagination/block", :locals => { :points => @pro_points, :is_pro => true, :bucket => 'other', :page => @page, :mode => 'other', :column_selector => "#points_other_pro", :prev => false} 
+              = render :partial => "points/pagination_block", :locals => { :points => @pro_points, :is_pro => true, :bucket => 'other', :page => @page, :mode => 'other', :column_selector => "#points_other_pro", :prev => false} 
 
 
           .user_position
@@ -51,12 +51,12 @@
 
               .points_self#points_self_pro
                 .points_list_header
-                = render :partial => "points/column/user", :locals => { :position => 1, :points => @included_pros, :static => false }
+                = render :partial => "points/column", :locals => { :position => 1, :points => @included_pros, :static => false, :context => 'self' }
                 = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_self_pro' }
 
               .points_self#points_self_con 
                 .points_list_header
-                = render :partial => "points/column/user", :locals => { :position => 0, :points => @included_cons, :static => false }
+                = render :partial => "points/column", :locals => { :position => 0, :points => @included_cons, :static => false, :context => 'self' }
                 = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_self_con' }
 
               .clear
@@ -64,12 +64,12 @@
           .points_other#points_other_con
 
             .point_list_footer
-              = render :partial => "points/column/pagination/block", :locals => { :points => @con_points, :is_pro => false, :bucket => 'other', :page => @page - 1, :mode => 'other', :column_selector => "#points_other_con", :prev => true} 
+              = render :partial => "points/pagination_block", :locals => { :points => @con_points, :is_pro => false, :bucket => 'other', :page => @page - 1, :mode => 'other', :column_selector => "#points_other_con", :prev => true} 
             .carousel
-              = render :partial => "points/column/margin", :locals => { :is_pro => false, :points => @con_points }
+              = render :partial => "points/column", :locals => { :is_pro => false, :points => @con_points, :context => 'margin' }
 
             .point_list_footer
-              = render :partial => "points/column/pagination/block", :locals => { :points => @con_points, :is_pro => false, :bucket => 'other', :page => @page - 1, :mode => 'other', :column_selector => "#points_other_con", :prev => false} 
+              = render :partial => "points/pagination_block", :locals => { :points => @con_points, :is_pro => false, :bucket => 'other', :page => @page - 1, :mode => 'other', :column_selector => "#points_other_con", :prev => false} 
 
 
     %li.stance.update_stance.step.slide

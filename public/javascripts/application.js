@@ -14,7 +14,7 @@ ConsiderIt = {
 
     $j(document).ajaxComplete(function() {
       ConsiderIt.per_request();
-    });    
+    });
     
     $j('a.smooth_anchor').click(function(){
       $j('html, body').animate({
@@ -26,11 +26,14 @@ ConsiderIt = {
       $j(this).infiniteCarousel({
         speed: 1000,
         vertical: true,
-        total_items: parseInt($j(this).find('.total').text()),
-        items_per_page: 3,
+        total_items: parseInt($j(this).find('.total:first').text()),
+        items_per_page: 4,
         loading_from_ajax: true, 
         dim: 600,
-        resetSizePerPage: true
+        resetSizePerPage: true,
+        total_items_callback: function($carousel){
+          return parseInt($carousel.find('.total:first').text());
+        }
       });
     });
 
@@ -41,6 +44,15 @@ ConsiderIt = {
       items_per_page: 6,
       loading_from_ajax: false,
       dim: 700    
+    });
+
+    $j('.initiatives.vertical').infiniteCarousel({
+      speed: 1500,
+      vertical: true,
+      total_items: 6,
+      items_per_page: 6,
+      loading_from_ajax: false,
+      dim: 330
     });
 
     ConsiderIt.points.create.initialize_counters('#newpointform-true');
@@ -162,6 +174,12 @@ ConsiderIt = {
 
       $j('#lightbox').fadeIn();
 
+      // store properties for restoration later...
+      pnt_el.data('properties', {
+        width: pnt_el_main.css('width'),
+        marginLeft: pnt_el_main.css('marginLeft')
+      });
+
       pnt_el_main.css('visibility', 'hidden');
       var animate_properties = { width: '600px' };
       if ( !is_pro ){
@@ -182,11 +200,7 @@ ConsiderIt = {
       var pnt_el = $j(this).parents('.point_in_list'),
           pnt_el_main = $j('#' + pnt_el.attr('id') + ':not(.expanded)'),
           is_pro = pnt_el.hasClass('pro'),
-          animate_properties = { width: '224px' };
-      
-      if ( !is_pro ){
-        animate_properties['marginLeft'] = '0' ;
-      }
+          animate_properties = pnt_el.data('properties');
 
       pnt_el.find('.point_text.full').slideUp(function(){
         pnt_el.find('.avatar').fadeOut();
@@ -201,12 +215,12 @@ ConsiderIt = {
           });
           pnt_el_main.replaceWith(pnt_el);          
           pnt_el.removeClass('expanded');
+          pnt_el.find('.toggle.less').hide();
 
           $j('#lightbox').fadeOut();  
 
-          pnt_el.find('.toggle.less').fadeOut(function(){
-            pnt_el.find('.more').fadeIn();
-          });
+          pnt_el.find('.more').fadeIn();
+
 
         });
       });
@@ -222,7 +236,7 @@ ConsiderIt = {
     // Include in list
     $j(document).delegate('.include .judgepointform form', 'ajax:success', function(data, response, xhr){
       var included_point = $j(this).parents('.point_in_list_margin'), 
-      replacement_point = response['new_point'];
+      replacement_point = $j(response['new_point']);
     
       if ( included_point.hasClass('pro') ) {
         var user_point_list = $j('#points_self_pro .point_list');
@@ -231,9 +245,21 @@ ConsiderIt = {
         var user_point_list = $j('#points_self_con .point_list');
         var other_point_list = $j('#points_other_con .point_list');
       }
-    
+      var point_list_footer = other_point_list.parents('.infiniteCarousel:first').find('.point_list_footer');
+
+      point_list_footer.find('.total').text(response['total_remaining']);
+      if ( parseInt(point_list_footer.find('.curr_last').first().text()) > parseInt(response['total_remaining']) ){
+        point_list_footer.find('.curr_last').text(response['total_remaining']);
+      }
+      if ( parseInt(point_list_footer.find('.curr_first').first().text()) > parseInt(response['total_remaining']) ){
+        point_list_footer.find('.curr_first').text(response['total_remaining']);
+      }
+
+      var replacement_point_already_in_list = other_point_list.find('#' + replacement_point.attr('id')).length > 0;
+
       included_point.fadeOut('slow', function() {
-        if ( replacement_point ) { 
+        // only use replacement point if it doesn't already exist in the list
+        if ( replacement_point && replacement_point.length > 0 && !replacement_point_already_in_list ) { 
           included_point.replaceWith(replacement_point);
           ConsiderIt.misc.add_tips(included_point.attr('id'));
         } else {
@@ -242,27 +268,29 @@ ConsiderIt = {
     
         user_point_list.append(response['approved_point']);
         ConsiderIt.misc.add_tips(user_point_list.attr('id') + '.point_in_list:last');
-        //ConsiderIt.points.lists.update_counts(other_point_list, response['pagination']);
       });
     });
 
     // Remove from list
     $j(document).delegate('.remove .judgepointform form', 'ajax:success', function(data, response, xhr){
       var point_in_margin = response['deleted_point'],
-        old_point = $j(this).parents('.point_in_list_self:first');
-            
-      if ( old_point.hasClass('pro') ) {
-        var other_point_list = $j('#points_other_pro .point_list');
-      } else {
-        var other_point_list = $j('#points_other_con .point_list');
+        old_point = $j(this).parents('.point_in_list_self:first'),
+        other_point_list = old_point.hasClass('pro') ? $j('#points_other_pro .point_list') : $j('#points_other_con .point_list'),
+        point_list_footer = other_point_list.parents('.infiniteCarousel:first').find('.point_list_footer');
+
+      point_list_footer.find('.total').text(response['total_remaining']);
+      if ( parseInt(point_list_footer.find('.curr_last').first().text()) > parseInt(response['total_remaining']) ){
+        point_list_footer.find('.curr_last').text(response['total_remaining']);
       }
-      
+      if ( parseInt(point_list_footer.find('.curr_first').first().text()) > parseInt(response['total_remaining']) ){
+        point_list_footer.find('.curr_first').text(response['total_remaining']);
+      }
       old_point.fadeOut('slow', function(){
         old_point.remove(); 
         other_point_list.append(point_in_margin);
+        other_point_list.parents('.infiniteCarousel');
         ConsiderIt.misc.add_tips(other_point_list.attr('id') + '.point_in_list:last');                            
-        //ConsiderIt.points.lists.update_counts(new_point_list, judgement, jsoned['pagination']); 
-      });  
+      });
     });
 
     //////////////
@@ -306,7 +334,7 @@ ConsiderIt = {
         var footer = point_list.parent().find('.paginate').parent();
             
         footer.html(pagination);  
-      },
+      }
 
       
     },
@@ -335,7 +363,7 @@ ConsiderIt = {
         params.max_chars = 700;
         form.find('.point-description').NobleCount( form_sel + ' .point-description-group .count', params);  
       }      
-    },
+    }
     
   },
 

@@ -1,0 +1,22 @@
+#description
+  .description_wrapper
+    .init_text
+      %h2.locality
+        State of Washington
+        = @option.category
+        = @option.designator
+        
+      %h1.initiative_name
+        #{@option.name}
+        
+    .full_text
+      - for i in @option.format_description
+        %p.initiative_desc_point= h i
+      
+      - if @option.url
+        #full_desc_block
+          =link_to "Read full text of #{@option.reference}", @option.url, :title => "Read full text of #{@option.reference}"
+
+  = render :partial => "options/blocks/strip", :locals => { :is_vertical => true }
+
+  .clear

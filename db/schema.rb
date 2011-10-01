@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110911035755) do
+ActiveRecord::Schema.define(:version => 20111001071458) do
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",   :default => 0
@@ -30,6 +30,13 @@ ActiveRecord::Schema.define(:version => 20110911035755) do
 
   add_index "comments", ["commentable_id"], :name => "index_comments_on_commentable_id"
   add_index "comments", ["user_id"], :name => "index_comments_on_user_id"
+
+  create_table "domain_maps", :force => true do |t|
+    t.integer "identifier"
+    t.integer "option_id"
+  end
+
+  add_index "domain_maps", ["identifier"], :name => "index_domain_maps_on_identifier"
 
   create_table "inclusion_versions", :force => true do |t|
     t.integer  "inclusion_id"
@@ -73,6 +80,8 @@ ActiveRecord::Schema.define(:version => 20110911035755) do
     t.string   "url"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "domain"
+    t.string   "domain_short"
   end
 
   create_table "point_links", :force => true do |t|

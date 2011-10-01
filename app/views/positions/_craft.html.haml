@@ -49,15 +49,15 @@
           .user_position
             .position_container
 
-              .points_self#points_self_pro
+              .points_self#points_on_board_pro
                 .points_list_header
                 = render :partial => "points/column", :locals => { :position => 1, :points => @included_pros, :static => false, :context => 'self' }
-                = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_self_pro' }
+                = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_on_board_pro' }
 
-              .points_self#points_self_con 
+              .points_self#points_on_board_con
                 .points_list_header
                 = render :partial => "points/column", :locals => { :position => 0, :points => @included_cons, :static => false, :context => 'self' }
-                = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_self_con' }
+                = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_on_board_con' }
 
               .clear
 
@@ -90,15 +90,20 @@
 
         .stanceform
 
-          = form_for [@option, @position] do |f|
-            =f.hidden_field :stance, :id => "stance-value", :value=>0.0
-            =f.hidden_field :option_id, :value=>@option.id
+          - if @user
+            = form_for [@option, @position] do |f|
+              =f.hidden_field :stance, :id => "stance-value", :value=>0.0
+              =f.hidden_field :option_id, :value=>@option.id
+              =f.hidden_field :position_id, :value => @position.id              
+              =f.submit "", :class => "submit submit_stance", :title => "Save your stance and position on #{@option.reference}"
 
-            =f.hidden_field :position_id, :value => @position.id
-              
-            = submit_tag "", :class => "submit submit_stance", :title => "Save your stance and position on #{@option.reference}"
+          - else
+            = form_for :position, :url => option_positions_path(@option), :remote => true, do |f|
+              =f.hidden_field :stance, :id => "stance-value", :value=>0.0
+              =f.hidden_field :option_id, :value=>@option.id
+              =f.hidden_field :position_id, :value => @position.id              
+              =f.submit "", :class => "submit submit_stance", :title => "Save your stance and position on #{@option.reference}"
 
-          - if !@user
             #position_save_login_trigger.user_dialog
 
             :javascript
@@ -107,8 +112,7 @@
                 modal: true,
                 draggable: false,
                 dialogClass: 'alert',
-                width: 775,
-                height: 435
+                width: 775
               });
 
               $j('.stanceform input.submit').click(function(){

@@ -9,6 +9,10 @@ class OptionsController < ApplicationController
     
     @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
     
+    if !@position
+      redirect_to(new_option_position_path(@option))
+    end
+
     @pro_points = @option.points.pros.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
     @con_points = @option.points.cons.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
 

@@ -1,5 +1,5 @@
 
-%div#registration_form
+#registration_form
 
   .primary.fr
     %h2.sub_follows
@@ -18,7 +18,7 @@
         Use your account from:
 
       - ['facebook', 'twitter', 'google', 'yahoo'].each do |provider|
-        %a{ :href => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',500, 500)" }
+        %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',500, 500)" }
           = image_tag("#{provider}.png")
 
       .fineprint
@@ -39,13 +39,13 @@
           %li.name_field
             = f.text_field :name, :class => 'has_example', :title => 'first and last name'
 
-            %span{ :title => 'Please provide your real name. We do not confirm this, but we believe it is beneficial in a political space to back up your voice by signing it with your real name.'}
+            %span.add_qtip{ :title => 'Please provide your real name. We do not confirm this, but we believe it is beneficial in a political space to back up your voice by signing it with your real name.'}
               why?
             
           %li.email_field.has_example
             = f.email_field :email, :class => 'has_example', :title => 'email address'
 
-            %span{ :title => 'Your email is never shown to other users and we promise not to share your information with third parties. Your email is only used to confirm your account and to send notifications of relevant events, like someone replying to a comment you left.'}
+            %span.add_qtip{ :title => 'Your email is never shown to other users and we promise not to share your information with third parties. Your email is only used to confirm your account and to send notifications of relevant events, like someone replying to a comment you left.'}
               why?
 
           %li.password_field
@@ -53,7 +53,6 @@
 
             %span
               password
-
 
           -# %li.avatar_field
             -#= f.file_field :avatar, :class => 'has_example', :title => 'profile picture'
@@ -84,14 +83,19 @@
 
       %li
         %strong
-          Write pros and cons
-        that others people can consider.
+          Share your pros and cons
+        for other people to consider.
         
       %li
         %strong
           Save your position
-        for all measures to create your personal voters guide.
+        to create your personal voters guide.
       
+      %li
+        %strong
+          Explore the most important points
+        for users who support, oppose or are neutral on the issue.
+
       %li
         %strong 
           Discuss with others. 

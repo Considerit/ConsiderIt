@@ -16,9 +16,10 @@ li.point_in_list
   width: 224px
 
   &.con
-    background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent  
     > .body
-      padding: 3px 35px 3px 35px
+      background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent  
+
+      padding: 3px 35px 3px 39px
     .read_more
 
     .username
@@ -29,11 +30,13 @@ li.point_in_list
       .less.point_text_toggle
         float: left
         color: white
+        margin-left: -30px  
              
   &.pro
-    background: url("/images/chalk/point-pro-self.png") no-repeat scroll 0px 3px transparent     
     > .body
-      padding: 3px 35px 3px 35px
+      padding: 3px 35px 3px 39px
+      background: url("/images/chalk/point-pro-self.png") no-repeat scroll 0px 3px transparent     
+
     .read_more
 
     .username
@@ -43,7 +46,8 @@ li.point_in_list
 
       .less.point_text_toggle
         float: right
-        color: white  
+        color: white 
+        margin-right: -25px 
                       
   > .body
     overflow: hidden
@@ -81,6 +85,10 @@ li.point_in_list
             a
               color: white
               text-decoration: underline
+
+            .domain
+              text-decoration: none
+              color: $txt_light_gray
 
     .read_more
       a.toggle_more, a.toggle
@@ -138,10 +146,15 @@ li.point_in_list
   &.point_in_list_self
     width: 265px
 
+  &.point_in_list_board,
+  &.point_in_list_self
+
     .operations        
 
       > div, >div > div
         display: inline-block
+        &.pointform
+          display: none
         
         .bullet
           font-size: 8px
@@ -160,9 +173,23 @@ li.point_in_list
 
           &:hover
             color: $txt_light_gray
+        
+        .deletepointformproper
+          position: absolute
+          left: 0
+          padding: 3px
+          width: 150px
+          margin-left: 35px
+          
+          > *
+            vertical-align: middle
+
+          a, input
+            color: $txt_light_gray
 
   &.point_in_list_board
-      
+    width: 400px
+
     .scores
       float: right
       width: 120px
@@ -244,23 +271,13 @@ li.point_in_list
   input.forward
     background-position: 0 3px
 
-  input.forward, button.back, button.forward
-    width: 15px
-    height: 15px
-    background-repeat: no-repeat
-    display: inline-block
-
-  .paginate
-    font-size: 12px
-    font-weight: bold
-
   .paginate, .arrow
     vertical-align: text-top
 
-#points_self_pro
+#points_on_board_pro
   margin-left: 15px
 
-#points_self_con
+#points_on_board_con
   margin-right: 15px
 
 #points_other_pro
@@ -281,20 +298,24 @@ li.point_in_list
     .paginate
       color: $brd_purple_dark
 
-.points_other .point_list_footer
+.points_other 
+  .point_list_footer
 
-  .forward
-    background-image: url('/images/arrow-down.png')
-  
-  .back
-    background-image: url('/images/arrow-up.png')
+    .forward
+      background-image: url('/images/arrow-down.png')
+    
+    .back
+      background-image: url('/images/arrow-up.png')
 
-.points_self .point_list_footer
+.points_board
+  .point_list_footer
+    .paginate
+      color: $txt_light_gray
 
-  .forward
-    background-image: url('/images/arrow-next.png')
-  
-  .back
-    background-image: url('/images/arrow-prev.png')
+    .forward
+      background-image: url('/images/arrow-down-light.png')
+    
+    .back
+      background-image: url('/images/arrow-up-light.png')
 
 

@@ -1,24 +1,24 @@
-%li{ :id => "initiative_item-#{option.id}", :class => "initiative_item #{has_stance(current_user, option)} #{option==@option ? 'active' : 'not-active'} #{is_vertical ? 'vertical' : 'horizontal'}" }
+%li{ :id => "initiative_item-#{option.id}", :class => "initiative_item #{has_stance(option) ? 'finished' : 'not-finished'} #{option==@option ? 'active' : 'not-active'} #{style}" }
 
   %a.initiative_block_wrapper{ :href => option_path(option), :title => "Think through option #{option.category} #{option.designator}"}
 
-    - if is_vertical
-      .number
-        = option.designator
-
+    - if style == 'vertical'
       .short_name
         = option.short_name
 
-      .designation
-        state
+      .number
+        = option.designator
 
     - else
 
       .designation
-        = option.category
+        state
 
       .number
         = option.designator
                               
       .short_name
         = option.short_name
+
+  .completion
+    &#x2713;

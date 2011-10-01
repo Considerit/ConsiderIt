@@ -4,7 +4,7 @@
       %h4 #{APP_CONFIG['decisions']['name']['short']}s
       %ul.nav
         - get_initiatives.each do |option|
-          %li{ :class => "#{has_stance(current_user, option)}"}
+          %li{ :class => "#{has_stance(option)}"}
             %a.footer_initiative_link{ :href => option_path(option), :title => "#{option.category} #{option.designator}" } 
               = option.designator
               = option.short_name

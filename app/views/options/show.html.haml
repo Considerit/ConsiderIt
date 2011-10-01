@@ -4,8 +4,6 @@
   %ol#step_through    
     %li.head
       = render :partial => "options/description"
-      = render :partial => "options/sidebar"
-      .clear
     
     = render :partial => "options/view_breakdown", :locals => { :number => false }
     
@@ -22,16 +20,7 @@
 
     %li.clear
      
-
-  - if @position
-    .take_stand
-      %a.update_stance2.add_qtip{ :href => edit_option_position_path(@option, @position), :title => "Click here to change your stance and update your pro/con list."}
-        = image_tag "update_position.png", :alt => "Click to update your stance on #{@option.reference}"
-    .take_stand
-      %a.join_discussion2.add_qtip{ :href => "#discussion_threads", :title => "Join or start a discussion about #{@option.reference}."}
-        = image_tag "participate_in_discussion.png", :alt => "Click to join or start a discussion about #{@option.reference}"
-  
-  - else
+  - if !@position
     .take_stand
       .button
         %a.take_stand3.add_qtip{ :href => new_option_position_path(@option, @position), :title => "Collect your thoughts and make your voice heard by composing a pro/con list and taking stand on #{@option.designator}"}

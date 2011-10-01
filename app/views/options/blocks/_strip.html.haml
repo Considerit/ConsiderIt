@@ -1,14 +1,13 @@
 - cache('option_strip') do
-  .initiatives{ :class => "#{is_vertical ? 'vertical' : 'horizontal'}" }
+  .initiatives{ :class => "#{style}" }
     .paginate.first
-      .back
+      %button.back
     .carousel{ :name => "initiatives" }
       %ul.initiative_list
         - get_initiatives.each do |option|
-          = render :partial => "options/blocks/item", :locals => { :option => option, :show_full_text => false, :is_vertical => is_vertical }
+          = render :partial => "options/blocks/item", :locals => { :option => option, :show_full_text => false, :style => style }
       .clear
     .paginate.last
-      .forward.not_ajax
+      %button.forward.not_ajax
     .clear
-
 

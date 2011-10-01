@@ -43,7 +43,9 @@
             - point.point_links.each do |pl|
               = render :partial => 'point_links/show', :locals => { :point_link => pl }
         - else
-          none provided
+          %ul
+            %li
+              none provided
 
       .discuss
         %h4
@@ -68,8 +70,7 @@
 
             %a.editpoint.point_operation
               edit
-            .editform
-              = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
+            = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
 
         .remove
           .bullet

@@ -45,12 +45,13 @@ class PositionsController < ApplicationController
   
   def update
     @option = Option.find(params[:option_id])
-    @position = current_user.positions.find(params[:id])
+    @position = current_user.positions.unscoped.find(params[:id])
     
     (stance, bucket) = get_stance_val_from_params(params)
     
     @position.stance = stance
     @position.stance_bucket = bucket
+    @position.published = 1
     @position.save
 
     save_actions(@position)
@@ -126,7 +127,7 @@ protected
                     ranked_persuasiveness.paginate(:page => 1, :per_page => POINTS_PER_PAGE)    
     @con_points = @option.points.cons.not_included_by(current_user, session[@option.id][:included_points].keys).
                     ranked_persuasiveness.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
-  
+
     PointListing.transaction do
 
       (@pro_points + @con_points).each do |pnt|

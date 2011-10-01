@@ -20,7 +20,7 @@
   &.vertical
     margin: -15px 20px 0 0
     float: right
-    width: 300px
+    width: 200px
 
     .paginate
       width: 100%
@@ -44,7 +44,7 @@
   &.horizontal
     .paginate
       width: 20px
-      margin-top: 40px
+      margin-top: 30px
       &.first
         float: left
         .back
@@ -63,6 +63,39 @@
       height: 90px
       float: left
 
+#description .initiatives
+  position: absolute
+  top: -95px
+  left: 120px
+
+  &.horizontal
+    .paginate
+      margin-top: 25px
+    .carousel
+
+      li.initiative_item
+        margin-right: 4px
+        > a
+          padding: 5px
+          height: 60px
+          min-width: 40px
+
+          > div
+            width: 70px
+
+          .short_name
+            font-size: 12px
+            line-height: 12px
+                      
+          .designation
+            font-size: 8px
+            line-height: 15px
+            text-transform: uppercase
+          
+          .number
+            font-size: 20px   
+            line-height: 20px 
+            letter-spacing: -2px
 
 li.initiative_item
   @include nude-list
@@ -75,11 +108,15 @@ li.initiative_item
   position: relative
   color: black
   
-  &.finished
-    background-image: none
-    &:hover, &.active
-      background-color: black
-      color: white
+  .completion
+    display: none
+
+  &.finished .completion
+    display: block
+    position: absolute
+    bottom: 0
+    right: 0
+    
 
   &:hover, &.active
     background-color: black
@@ -90,6 +127,7 @@ li.initiative_item
     margin: auto
     display: inline-block
     padding: 10px
+    min-width: 90px
                 
     font-weight: bold
     font-family: helvetica
@@ -108,16 +146,9 @@ li.initiative_item
   &.horizontal
     margin: 0 5px 5px 0
     float: left 
-    padding: 0
-
-    &.finished
-      
+    padding: 0      
     
     > a
-           
-      font-size: 26px
-      line-height: 22px
-  
       .short_name
         font-size: 12px
         line-height: 12px
@@ -149,19 +180,21 @@ li.initiative_item
         display: inline-block
 
       .number
-        font-size: 28px   
-        line-height: 28px 
-        width: 60px
+        font-size: 15px   
+        line-height: 15px 
+        width: 30px
         padding: 5px 0
         text-align: right
-        margin-right: 15px
+        letter-spacing: -1px
 
       .short_name
-        width: 135px
-        font-size: 15px
-        line-height: 15px
-        text-align: left
         margin-right: 15px
+        width: 135px
+        font-size: 14px
+        line-height: 14px
+        text-align: right
+        letter-spacing: 0
+        font-weight: normal
       
       .designation
         font-size: 13px

@@ -12,11 +12,3 @@
     - if !comment.violation && !comment.subject.nil? && comment.subject.length > 0
       = render :partial => "comments/discussion_header", :locals => { :comment => comment }
     
-    
-
-      
-  :javascript
-    $j('#discussion_threads a').click(function(){
-      $j('.full_discussion').show();
-      $j('.load').hide();
-    });

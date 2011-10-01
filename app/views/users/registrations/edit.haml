@@ -1,0 +1,14 @@
+#update_registration_form
+  #lvg_account
+    %h2
+      Set profile picture
+    
+    = form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :multipart => true, :method => :put }) do |f|
+      
+      = f.file_field :avatar
+      
+      .submit
+        = f.submit "Update"
+
+        %a.cancel
+          cancel

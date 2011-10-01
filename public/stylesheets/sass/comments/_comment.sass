@@ -9,12 +9,14 @@ li.comment, li.new_comment
     
     .body_row
       .comment_text
+        background-color: white
         position: relative
         .triangle
           position: absolute
           top: 5px
           left: -15px
           font-size: 18px
+          color: white
 
     .subject_line
       &.pro .text
@@ -44,19 +46,12 @@ li.comment, li.new_comment
           text-decoration: underline
 
 .point_in_list
-  &.pro li.comment, &.pro li.new_comment 
-    .body_row
-      .comment_text
-        background-color: #6FAEA1
-      
-      .triangle
-        color: #6FAEA1
-
   li.comment, li.new_comment 
     .body_row
       .user
         position: absolute
         left: 0px
+        max-width: 70px
 
           
       .comment_text

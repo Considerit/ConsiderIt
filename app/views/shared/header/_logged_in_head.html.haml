@@ -1,5 +1,5 @@
 
-%li.progress.triangle
+%li.progress
   #progressbar
   .text_progress
     #{current_user.positions.count}/#{get_initiatives.count} measures considered
@@ -9,17 +9,18 @@
   
   .spacing
 
-  .hide
-    %ul.fr
-      %li
-        %a
-          View your personal voters guide
-    .clear
+  -#
+    .hide
+      %ul.fr
+        %li
+          %a
+            View your personal voters guide
+      .clear
 
 
 %li.triangle
   %a.settings
-    = @user.name
+    = current_user.name
   = image_tag "user_settings_triangle.png", :class => 'triangle_img'
   
 
@@ -32,7 +33,7 @@
     %ul.fr
       %li
         %a.settings
-          Edit profile
+          Set picture
       - if current_user.admin?
         %li
           = link_to 'Admin', "/admin", :class => 'admin'
@@ -45,7 +46,7 @@
 
 #settings_dialog
 
-- if !@user.pledge_taken
+- if !current_user.pledge_taken
   #pledge_dialog
     = render :partial => "users/sessions/pledge"
 
@@ -77,7 +78,7 @@
         dialog.dialog('open');
       });
 
-    $j('.triangle')
+    $j('#nav-user .triangle')
       .hover(
         function(){
           $j(this).find('.hide').slideDown();

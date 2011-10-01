@@ -15,15 +15,3 @@
       = link_to_remove_fields "delete", f
 
     .clear
-
-
-:javascript
-  //TODO: these selectors will likely also select the con version when it should only be selecting the pro version and vice versa...bad things will likely result
-
-  $j('.point_link_form .has_example').each(function(){
-    if($j(this).val() == '') {
-      $j(this).example(function() {
-        return $j(this).attr('title'); 
-      });
-    }
-  });

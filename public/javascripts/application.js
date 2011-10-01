@@ -8,7 +8,6 @@ ConsiderIt = {
   init : function() {
 
     ConsiderIt.delegators();
-    ConsiderIt.misc.add_tips(); 
 
     ConsiderIt.per_request();
 
@@ -37,6 +36,21 @@ ConsiderIt = {
       });
     });
 
+    $j("#ranked_points .points_board").each(function(){
+      $j(this).infiniteCarousel({
+        speed: 1000,
+        vertical: true,
+        total_items: parseInt($j(this).find('.total:first').text()),
+        items_per_page: 4,
+        loading_from_ajax: true, 
+        dim: 700,
+        resetSizePerPage: true,
+        total_items_callback: function($carousel){
+          return parseInt($carousel.find('.total:first').text());
+        }
+      });
+    });    
+
     $j('.initiatives.horizontal').infiniteCarousel({
       speed: 1500,
       vertical: false,
@@ -52,11 +66,11 @@ ConsiderIt = {
       total_items: 6,
       items_per_page: 6,
       loading_from_ajax: false,
-      dim: 330
+      dim: 250
     });
 
-    ConsiderIt.points.create.initialize_counters('#newpointform-true');
-    ConsiderIt.points.create.initialize_counters('#newpointform-false');
+    //ConsiderIt.points.create.initialize_counters('.newpointform, .editpointform');
+
     // google analytics
     (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -68,7 +82,8 @@ ConsiderIt = {
   per_request : function() {
     $j('#masthead').corner('round top 5px');
     $j('#nav-user').corner('bottom bl 5px');  
-    $j('.point_in_list_margin').corner('all 5px');
+    $j('.point_in_list_margin, .point_in_list.expanded').corner('5px');
+
     $j('.avatar').corner('5px');
     $j('input[type="submit"]').corner('5px');
     $j('#registration_form .primary, #registration_form .secondary').corner('8px');
@@ -78,10 +93,35 @@ ConsiderIt = {
     $j('.point_link_prompt .button').corner('5px');
     $j('#console').corner('5px');
     $j('#console .nav a').corner('5px');
+    $j('.point_in_list .comment_text').corner('5px');
 
     $j('.has_example').each(function(){
-      $j(this).example($j(this).attr('title')); 
+      if($j(this).val() == '') {
+        $j(this).example(function() {
+          return $j(this).attr('title'); 
+        });
+      }
     });
+
+    $j('.add_qtip').each(function(){
+      if(!$j(this).data('qtip')) {
+        $(this).qtip({ 
+          style: { name: 'cream', tip: true }, 
+          position: {corner: { target: 'bottomMiddle', tooltip: 'topMiddle' } }
+        });
+      }
+    });
+
+    $j('.expanded .is_counted, .user_position .is_counted').each(function(){
+      if( !$(this).data('has_noblecount') ){
+        $j(this).NobleCount($j(this).siblings('.count'), {
+          block_negative: true,
+          max_chars : parseInt($j(this).siblings('.count').text()),          
+          on_negative : ConsiderIt.noblecount.on_negative,
+          on_positive : ConsiderIt.noblecount.on_positive
+        });
+      }
+    });    
   },
 
   delegators : function() {
@@ -95,7 +135,7 @@ ConsiderIt = {
       });
 
     $j(document).delegate('#lvg_account a.cancel', 'click', function(){
-      $j('.user_dialog').dialog('close');
+      $j('.user_dialog, #settings_dialog').dialog('close');
     });
 
     $j(document).delegate('#acknowledgment a', 'click', function(){
@@ -108,26 +148,19 @@ ConsiderIt = {
 
     // new button clicked
     $j('#points').delegate('.newpoint .newpointbutton button', 'click', function(){
-      $j(this).parents('.newpoint:first').find('.newpointform').fadeIn('fast');      
+      $j(this).parents('.newpoint:first').find('.pointform').fadeIn('fast');      
       $j('#lightbox').fadeIn('slow');
-    });
-
-    // new point cancel clicked
-    $j('#points').delegate('.newpoint .newpointform .new_point_cancel', 'click', function(){
-      $j(this).parents('.newpointform:first').fadeOut(function(){
-        $j('#lightbox').fadeOut();  
-      });
     });
 
     // edit point clicked
     $j('#points').delegate('a.editpoint', 'click', function(){
-      $j(this).parents('.edit:first').find('.editpointform').fadeIn('fast');      
+      $j(this).parents('.edit:first').find('.pointform').fadeIn('fast');      
       $j('#lightbox').fadeIn('slow');
     });
 
-    // edit point cancel clicked
-    $j('#points').delegate('.edit .editform .new_point_cancel', 'click', function(){
-      $j(this).parents('.editpointform:first').fadeOut(function(){
+    // new/edit point cancel clicked
+    $j('#points').delegate('.new_point_cancel', 'click', function(){
+      $j(this).parents('.pointform:first').fadeOut(function(){
         $j('#lightbox').fadeOut();  
       });
     });
@@ -143,9 +176,17 @@ ConsiderIt = {
     });
 
     // Update callback
-    $j('#points').delegate('.editpointform form', 'ajax:success', function(data, response, xhr){
+    $j('#points').delegate('.editform form', 'ajax:success', function(data, response, xhr){
       $j(this).parents('.point_in_list:first').replaceWith(response['new_point']);
       $j('#lightbox').fadeOut();  
+    });
+
+    // Delete confirmation prompt
+    $j('#points').delegate('a.delete_point', 'click', function(){
+      $j(this).siblings('form').show();  
+    });
+    $j('#points').delegate('.deletepointform a.cancel', 'click', function(){
+      $j(this).parents('form').hide();  
     });
 
     // Delete callback
@@ -192,7 +233,7 @@ ConsiderIt = {
       });
 
       pnt_el.find('.toggle.more').fadeOut(function(){pnt_el.find('.less').fadeIn();});
-
+      ConsiderIt.per_request();
     });
   
     // Toggle point details OFF
@@ -239,10 +280,10 @@ ConsiderIt = {
       replacement_point = $j(response['new_point']);
     
       if ( included_point.hasClass('pro') ) {
-        var user_point_list = $j('#points_self_pro .point_list');
+        var user_point_list = $j('#points_on_board_pro .point_list');
         var other_point_list = $j('#points_other_pro .point_list');
       } else {
-        var user_point_list = $j('#points_self_con .point_list');
+        var user_point_list = $j('#points_on_board_con .point_list');
         var other_point_list = $j('#points_other_con .point_list');
       }
       var point_list_footer = other_point_list.parents('.infiniteCarousel:first').find('.point_list_footer');
@@ -261,13 +302,11 @@ ConsiderIt = {
         // only use replacement point if it doesn't already exist in the list
         if ( replacement_point && replacement_point.length > 0 && !replacement_point_already_in_list ) { 
           included_point.replaceWith(replacement_point);
-          ConsiderIt.misc.add_tips(included_point.attr('id'));
         } else {
           included_point.remove();
         }
     
         user_point_list.append(response['approved_point']);
-        ConsiderIt.misc.add_tips(user_point_list.attr('id') + '.point_in_list:last');
       });
     });
 
@@ -289,7 +328,6 @@ ConsiderIt = {
         old_point.remove(); 
         other_point_list.append(point_in_margin);
         other_point_list.parents('.infiniteCarousel');
-        ConsiderIt.misc.add_tips(other_point_list.attr('id') + '.point_in_list:last');                            
       });
     });
 
@@ -309,13 +347,12 @@ ConsiderIt = {
         $parent.find('.comment_children:first').prepend(new_point);
         $j('.new_comment textarea').val("");
         $parent.find('.reply_row a.cancel').trigger('click');
-        ConsiderIt.misc.add_tips('#' + parent.attr('id') + ' .comment_children:first .comment:first');
       } else {
         $j(this).parents('.new_comment:first').before(new_point);
         $j(this).find('textarea, .the_subject input').val("");
       }
       
-      /*      
+      /*
       if (grounded_in_point) {
         $j('html, body').animate({
           scrollTop: $j("#comment-" + response['comment_id']).offset().top}, 1000);  
@@ -324,47 +361,6 @@ ConsiderIt = {
 
     });
 
-  },
-
-  points : {
-
-    lists : {
-
-      update_counts : function(point_list, pagination) {
-        var footer = point_list.parent().find('.paginate').parent();
-            
-        footer.html(pagination);  
-      }
-
-      
-    },
-    
-    create : {
-      
-      positive_count : function( t_obj, char_area, c_settings, char_rem ) {
-        ConsiderIt.misc.noblecount.positive_count(t_obj, char_area, c_settings, char_rem, '.newpointform', '.point-submit input' );
-      },
-      
-      negative_count : function( t_obj, char_area, c_settings, char_rem ) {
-        ConsiderIt.misc.noblecount.negative_count(t_obj, char_area, c_settings, char_rem, '.newpointform', '.point-submit input' );
-      },
-      
-      initialize_counters : function( form_sel ) {
-        var form = $j(form_sel);
-            
-        var params = {
-          on_negative : ConsiderIt.points.create.negative_count,
-          on_positive : ConsiderIt.points.create.positive_count,
-          block_negative: true,
-          max_chars : 140
-        };
-        
-        form.find('.point-title').NobleCount( form_sel + ' .point-title-group .count', params);
-        params.max_chars = 700;
-        form.find('.point-description').NobleCount( form_sel + ' .point-description-group .count', params);  
-      }      
-    }
-    
   },
 
   positions : {
@@ -427,7 +423,6 @@ ConsiderIt = {
       $j.get("/options/" + option_id + "/points", { bucket: bucket },
         function(data){
           $j('#ranked_points').html(data['points']);
-          ConsiderIt.misc.add_tips('#ranked_points');
       } );        
     },
     
@@ -461,28 +456,7 @@ ConsiderIt = {
     
     create : {
             
-      positive_count : function( t_obj, char_area, c_settings, char_rem ) {
-        ConsiderIt.misc.noblecount.negative_count(t_obj, char_area, c_settings, char_rem, '.form', '.comment_submit' );
-      },
-      
-      negative_count : function( t_obj, char_area, c_settings, char_rem ) {
-        ConsiderIt.misc.noblecount.negative_count(t_obj, char_area, c_settings, char_rem, '.form', '.comment_submit' );
-      },
-      
-      initialize_counters : function( form_sel ) {
-        var form = $j(form_sel);
-        
-        var params = {
-          on_negative : ConsiderIt.comments.create.negative_count,
-          on_positive : ConsiderIt.comments.create.positive_count,
-          block_negative: true,
-          max_chars : 90
-        };
-        
-        form.find('.the_subject input').NobleCount( form_sel + ' .the_subject .count', params);
-        params.max_chars = 1000;
-        form.find('.body textarea').NobleCount( form_sel + ' .body .count', params);  
-      }
+
       
     },
 
@@ -504,62 +478,53 @@ ConsiderIt = {
     }
     
   },
-  
-  misc : {
-    add_tips : function( sel ){
-      if (!sel) {
-        $j('.add_qtip').qtip({ style: { name: 'cream', tip: true }, position: {corner: { target: 'bottomMiddle', tooltip: 'topMiddle' } }});
-      } else {
-        $j(sel + ' .add_qtip').qtip({ style: { name: 'cream', tip: true }, position: {corner: { target: 'bottomMiddle', tooltip: 'topMiddle' } }});  
-      }
-    },    
-   
-    noblecount : {
 
-      positive_count : function( t_obj, char_area, c_settings, char_rem, parent_selector, submit_selector ) {
-        var submit_button = t_obj.parents( parent_selector ).find( submit_selector );
-        
-        if ( char_area.hasClass( 'too_many_chars' ) ) {
-          char_area.removeClass( 'too_many_chars' ).css( {
-            'font-weight' : 'normal',
-            'font-size' : '125%'
-          } );
+  noblecount :  {
+    positive_count : function( t_obj, char_area, c_settings, char_rem ) {
+      var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
       
-          submit_button
-              .animate( {
-                opacity : 1,
-                duration : 50
-              } ).attr( 'disabled', false ).css( 'cursor', 'pointer' );
-          t_obj.data( 'disabled', false );
-        } else if ( char_rem < c_settings.max_chars && $j( t_obj ).data( 'disabled' ) ) {
-          t_obj.data( 'disabled', false );
-          submit_button
-              .attr( 'disabled', false );
-        } else if ( char_rem == c_settings.max_chars ) {
-          t_obj.data( 'disabled', true );
-          submit_button
-              .attr( 'disabled', true );
-        }
-        
-      },    
-      negative_count : function( t_obj, char_area, c_settings, char_rem, parent_selector, submit_selector ) {
-        if ( !char_area.hasClass( 'too_many_chars' ) ) {
-          char_area.addClass( 'too_many_chars' ).css( {
-            'font-weight' : 'bold',
-            'font-size' : '175%'
-          } );
-      
-          t_obj.parents( parent_selector ).find( submit_selector )
-              .animate( {
-                opacity : .25,
-                duration : 50
-              } ).attr( 'disabled', true ).css( 'cursor', 'default' );
-          t_obj.data( 'disabled', true );
-      
-        } 
+      if ( char_area.hasClass( 'too_many_chars' ) ) {
+        char_area.removeClass( 'too_many_chars' ).css( {
+          'font-weight' : 'normal',
+          'font-size' : '125%'
+        } );
+    
+        submit_button
+            .animate( {
+              opacity : 1,
+              duration : 50
+            } ).attr( 'disabled', false ).css( 'cursor', 'pointer' );
+        t_obj.data( 'disabled', false );
+      } else if ( char_rem < c_settings.max_chars && $j( t_obj ).data( 'disabled' ) ) {
+        t_obj.data( 'disabled', false );
+        submit_button
+            .attr( 'disabled', false );
+      } else if ( char_rem == c_settings.max_chars ) {
+        t_obj.data( 'disabled', true );
+        submit_button
+            .attr( 'disabled', true );
       }
-    } 
+      
+    },    
+    negative_count : function( t_obj, char_area, c_settings, char_rem ) {
+      var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
+      if ( !char_area.hasClass( 'too_many_chars' ) ) {
+        char_area.addClass( 'too_many_chars' ).css( {
+          'font-weight' : 'bold',
+          'font-size' : '175%'
+        } );
+    
+        t_obj.parents( parent_selector ).find( submit_selector )
+            .animate( {
+              opacity : .25,
+              duration : 50
+            } ).attr( 'disabled', true ).css( 'cursor', 'default' );
+        t_obj.data( 'disabled', true );
+    
+      } 
+    }
   }
+  
 };
 
 })(jQuery);
@@ -603,7 +568,7 @@ function login(provider_url, width, height) {
       top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
       features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
 
-  newwindow = window.open(provider_url, 'Login', features);
+  newwindow = window.open(provider_url, '_blank', features);
 
   if (window.focus)
     newwindow.focus();

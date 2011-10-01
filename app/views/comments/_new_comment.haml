@@ -16,11 +16,8 @@
       .body_row
         .user
           .avatar
-            - if point
-              -# = image_tag current_user.avatar.url(:thumb), :alt => "your profile picture"
-            - else
-              -# = image_tag current_user.avatar.url(:normal), :alt => "your profile picture"
-            
+            = image_tag current_user.avatar.url(:midsmall), :alt => "your profile picture"
+
           .username
             = h current_user.name
         .text    
@@ -36,35 +33,19 @@
             %ul.form
               - if new_thread && !point
                 %li.the_subject
-                  = f.text_field :subject, :id => "comment_subject", :example => 'what is the discussion topic?'
+                  = f.text_field :subject, :id => "comment_subject", :class => 'is_counted', :example => 'what is the discussion topic?'
                   %span.count
                     90
                
               %li.body
-                - if parent_id
-                  = f.text_area :body, :id => "comment_body-replyto-#{parent_id}", :example => 'what do you want to say?' 
-                - else
-                  - if point
-                    = f.text_area :body, :id => "comment_body-point-#{point.id}", :example => 'what do you want to say?'                   
-                  - else
-                    = f.text_area :body, :id => "comment_body", :example => 'what do you want to say?' 
-                
+                = f.text_area :body, :id => "comment_body", :class => 'has_example is_counted', :title => 'Type your comment here...'                 
                 %span.count
                   1000
-            = f.submit "Add comment", :class => "comment_submit"
-            -if !new_thread || point
+
+            = f.submit "Add comment", :class => "comment_submit gray"
+            -if !new_thread
               %a.cancel.new_comment_cancel
                 cancel
+        .clear
   - else
     You must be logged in to leave a comment.
-  
-  - if parent_id
-    :javascript
-      ConsiderIt.comments.create.initialize_counters('#comment-#{parent_id}' + ' .new_comment:first');
-  - elsif point
-    :javascript
-      ConsiderIt.comments.create.initialize_counters('#ranked_point-#{point.id}' + ' .new_comment:first');  
-  - else 
-    :javascript
-      ConsiderIt.comments.create.initialize_counters('.comment_section > .new_comment');
-

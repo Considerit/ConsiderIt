@@ -9,6 +9,15 @@ module OptionsHelper
     total = distribution.inject(:+).to_f    
     distribution.collect! { |stance_count| sprintf "%.1f", (100 * stance_count / total) }
     return '[' + distribution.join(',') + ']'
-  end  
+  end
+
+  def number_responses( comment )
+    comments = 0
+    comment.children.each do |child|
+      comments += 1 + number_responses(child)
+    end
+    return comments
+  end
+  
   
 end

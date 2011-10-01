@@ -6,7 +6,7 @@
         = "#{APP_CONFIG['meta']['title']} :: #{@title}"
     - else
       %title
-        ConsiderIt
+        #{APP_CONFIG['meta']['title']}
     
     %link{ :href => "/favicon.ico", :rel => "icon", :type => "image/vnd.microsoft.icon" }
     %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }

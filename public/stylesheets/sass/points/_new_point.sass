@@ -1,19 +1,15 @@
 
-#points_self_pro
+#points_on_board_pro
   .newpoint
     margin-left: 20px
     .newpointform
       padding: 5px 5px 5px 5px
 
-#points_self_con
+#points_on_board_con
   .newpoint
     margin-right: 20px
     .newpointform
       padding: 5px 5px 5px 5px
-
-
-#points_self_con
-  .newpointbutton
         
 .newpoint
   width: 215px
@@ -21,13 +17,14 @@
 
       
 .newpointbutton 
-  text-align: center
   button
+
     font-size: 135%
     width: 175px
     height: 50px
     border: none
-    
+    margin: 0 20px
+
     &.pro
       background: url(/images/add-pro.png) left top no-repeat
     &.con
@@ -36,11 +33,11 @@
 
 .newpointform
 
-#points_self_pro
+#points_on_board_pro
   .pointform form
     left: 0
 
-#points_self_con
+#points_on_board_con
   .pointform form
     left: -246px
   
@@ -72,10 +69,9 @@
       p.note
         color: $txt_light_gray
       
-      .text_group
-        .point-title, 
-        .point-description
-          width: 360px
+      .point-title, 
+      .point-description
+        width: 360px
 
       .count
         color: $txt_light_gray
@@ -96,21 +92,15 @@
           margin-top: 35px
 
         
+      .point-pledge
+        float: left
+        padding-top: 4px
+
       .point-submit
         float: right
         margin-right: 38px
 
         input
-          background-color: #999
-          
-          background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(119,119,119)), color-stop(1, rgb(204,204,204)))
-          
-          background-image: -moz-linear-gradient(center bottom, rgb(119,119,119) 7%, rgb(204,204,204) 100%)
-
-          color: $txt_dark_gray
-
-          font-size: 12px
-          padding: 3px 15px
 
       .point-cancel
         float: right
@@ -122,7 +112,8 @@
 
       .hide_name
         font-size: 11px
-        margin-top: 12px
+        margin: 12px 0
+        width: 200px
 
         label
           color: $txt_light_gray
@@ -130,4 +121,3 @@
           text-transform: inherit
 
         input
-          margin-top: 2px

@@ -1,4 +1,6 @@
 #description
+  = render :partial => "options/blocks/strip", :locals => { :style => 'horizontal' }
+
   .description_wrapper
     .init_text
       %h2.locality
@@ -17,6 +19,7 @@
         #full_desc_block
           =link_to "Read full text of #{@option.reference}", @option.url, :title => "Read full text of #{@option.reference}"
 
-  = render :partial => "options/blocks/strip", :locals => { :is_vertical => true }
+    = render :partial => "options/sidebar"
+
 
   .clear

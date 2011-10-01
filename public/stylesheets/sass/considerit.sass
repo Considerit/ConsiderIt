@@ -38,7 +38,6 @@ $std_gutter: 15px
 @import "point_links/point_links"
 
 @import "initiatives/shared"
-@import "initiatives/index"
 @import "initiatives/show"
 @import "initiatives/edit"
 @import "initiatives/pro_con_container"
@@ -153,9 +152,6 @@ a
   img
     border: none
 
-li ul, li ol
-  margin: 0 0 0 18px
-
 ul
   margin: 0
   list-style-type: disc
@@ -187,13 +183,27 @@ input[type="text"], input[type="password"], input[type="email"], textarea
   font-size: 14px
   vertical-align: top
   margin: 3px 2px
+  box-shadow: none
 
   &.blur, &.example
     color: $txt_gray
   &:focus
     background-color: azure  
     border-color: DeepSkyBlue 
+
+button.gray,
+input[type="submit"].gray  
+  background-color: #999
   
+  background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(119,119,119)), color-stop(1, rgb(204,204,204)))
+  
+  background-image: -moz-linear-gradient(center bottom, rgb(119,119,119) 7%, rgb(204,204,204) 100%)
+
+  color: $txt_dark_gray
+
+  font-size: 12px
+  padding: 3px 15px
+
 button,
 input[type="submit"]
   background-color: #082872
@@ -216,6 +226,9 @@ input[type="submit"]
   border: 10px solid black
   padding: 25px
   width: 350px
+
+.add_qtip
+  cursor: help
   
 ul.form
   @include nude-list

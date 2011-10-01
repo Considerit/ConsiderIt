@@ -1,6 +1,7 @@
 - if points && points.length > 0 && points.respond_to?(:previous_page)
+  - both ||= false
 
-  - if prev
+  - if both || prev
     .arrow
       %button.back.linkify
 
@@ -15,7 +16,7 @@
       #{points.total_entries} 
     #{is_pro ? "pros" : "cons"}
 
-  - if !prev
+  - if both || !prev
     
     .arrow
       = button_to "",  option_points_path(@option, :pros_only => is_pro, :cons_only => !is_pro, :page => page + 1, :bucket => bucket, :mode => mode), :remote => true, :method => 'get', :id => "paginate_points-#{mode}-#{page + 1}-#{is_pro}", :class => 'forward ajax linkify'

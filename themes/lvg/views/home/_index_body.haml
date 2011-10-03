@@ -32,17 +32,39 @@
   #tutorial
     #console
       .frame
+        .what.hide
+        .how.hide
+        .who
+          .explanation
+            The Living Voters Guide is 
+            %strong 
+              a free and non-partisan service 
+            provided by Seattle City Club and the University of Washington. 
+
+          %ul.images
+
+            %li.first
+              = link_to image_tag('cityclub.jpg'), 'http://www.seattlecityclub.org/', :target => '_blank'
+            %li.last
+              = link_to image_tag('uw_logo.jpg'), 'http://engage.cs.washington.edu/', :target => '_blank'
+            .clear
+
+          .explanation
+            We designed and developed the #{link_to 'open source LVG platform', '/considerit'} with the support of the National Science Foundation, under grant IIS 0966929. 
+        
+
       .nav
         %ul
           %li
-            %a.selected
+            %a.what
               What is the LVG?
           %li
-            %a 
+            %a.how
               How do I use the LVG?
           %li
-            %a
+            %a.who.selected
               Who are we?
+                        
   .clear
 
         

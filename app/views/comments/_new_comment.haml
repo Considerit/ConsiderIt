@@ -42,6 +42,13 @@
                 %span.count
                   1000
 
+            - if current_user
+              .point-pledge
+                %p.note
+                  %strong.alert
+                    Remember your pledge!
+
+
             = f.submit "Add comment", :class => "comment_submit gray"
             -if !new_thread
               %a.cancel.new_comment_cancel

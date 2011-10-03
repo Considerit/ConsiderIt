@@ -5,7 +5,7 @@ class AddDomainToOption < ActiveRecord::Migration
   end
 
   def self.down
-    drop_column :options, :domain
-    drop_column :options, :domain_short
+    remove_column :options, :domain
+    remove_column :options, :domain_short
   end
 end

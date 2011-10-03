@@ -3,20 +3,10 @@
   
   %ol#step_through    
     %li.head
-      = render :partial => "options/description"
+      = render :partial => "options/description", :locals => {:hide_initially => true}
     
     = render :partial => "options/view_breakdown", :locals => { :number => false }
     
-    %li.step.discuss
-      .head
-        %span.ol_number
-          3.      
-        %h3.banner
-          Discuss #{@option.designator}.
-          
-        .extra
-      .discussion
-        = render :partial => "comments/discussion_threads", :locals => { :comments => @comments}
 
     %li.clear
      

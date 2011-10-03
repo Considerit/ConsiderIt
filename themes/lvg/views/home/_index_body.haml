@@ -1,4 +1,15 @@
 #description
+
+  #follow
+    - if APP_CONFIG['socmedia']['facebook']['include_follow']
+      %span.facebook
+        %a.fb_page{ :href => "#{APP_CONFIG['socmedia']['facebook']['facebook_page']}", :target => "_blank", :title => "Find us on Facebook" }
+          = image_tag "facebook_button.png", :alt => "Facebook logo"
+    - if APP_CONFIG['socmedia']['twitter']['include_follow']
+      %span.twitter
+        %a.twitter_page{ :href => "#{APP_CONFIG['socmedia']['twitter']['twitter_page']}", :target => "_blank", :title => "Follow us on Twitter" }
+          = image_tag "Twitter_button.png", :alt => "Twitter logo"
+
   #value 
     %h1 
       Washington state's
@@ -34,16 +45,7 @@
               Who are we?
   .clear
 
-  .header.hide
-    .follow
-      - if APP_CONFIG['socmedia']['facebook']['include_follow']
-        %span.facebook
-          %a.fb_page{ :href => "#{APP_CONFIG['socmedia']['facebook']['facebook_page']}", :target => "_blank", :title => "Find us on Facebook" }
-            = image_tag "facebook_button.png", :alt => "Facebook logo"
-      - if APP_CONFIG['socmedia']['twitter']['include_follow']
-        %span.twitter
-          %a.twitter_page{ :href => "#{APP_CONFIG['socmedia']['twitter']['twitter_page']}", :target => "_blank", :title => "Follow us on Twitter" }
-            = image_tag "Twitter_button.png", :alt => "Twitter logo"        
+        
 
 
 #initiative.guide
@@ -52,27 +54,49 @@
     .subheader
       by clicking any of the ballot measures below.
   
-  = render :partial => "options/blocks/strip", :locals => { :style => 'horizontal' }
+  = render :partial => "options/blocks/strip", :locals => { :style => 'horizontal', :hide_initially => false }
 
-  #zipcode_entry
-    .triangle
-      &#x25b2;
-    .prompt
-      %strong
-        Enter your ZIP code 
-      to unlock the local city and county ballot measures you will be voting on. 
-    .zipform
-      = form_tag '/home/zip', :id => 'zip' do
-        = text_field_tag "zipcode", '', :title => 'your zip code', :class => 'has_example'
-    .clear
+  - if @domain
+    #zipcode_entered
+      %span.greeting
+        Hello, citizen of #{@domain.name}!
+      %span.unlocked
+        - if (cnt = @domain.domain_maps.count) == 0
+          According to our records, #{@domain.name} does not have any local measures on the ballot. 
+        - else
+          #{@domain.name} has #{cnt} local #{cnt==1 ? 'measure' : 'measures'}.
+      .reset
+        Is #{@domain.identifier} not your zip code? 
+        %a 
+          change
+        .resetform.hide
+          = form_tag '/home/domain', :id => 'domain' do
+            = text_field_tag "domain", '', :title => 'your zip code', :class => 'has_example'
+            = submit_tag 'Change your zipcode', :class => 'gray'
+                
+  - else
+    #zipcode_entry
+      .triangle
+        &#x25b2;
 
-:javascript
+      .prompt
+        %strong
+          Enter your ZIP code 
+        to unlock your local measures. 
+      .zipform
+        = form_tag '/home/domain', :id => 'domain' do
+          = text_field_tag "domain", '', :title => 'your zip code', :class => 'has_example'
+          = submit_tag 'Set', :class => 'gray'
+      .clear
 
-  $j("input#zipcode").autocomplete({
-    source: ["98102", "98105", "98106", "98112"],
-    select: function(event, ui){
-     $j.post("#{home_zip_path}", { zip: ui.item.value }, function(data){
-      $j('#zip').append(data);
-     });
-    }
-  });
+    :javascript
+
+      $j("input#domain").autocomplete({
+        source: #{get_available_domains()},
+        select: function(event, ui){
+         /*$j.post("#{home_domain_path}", { domain: ui.item.value }, function(data){
+          $j('#domain').append(data);
+         });
+         */
+        }
+      });

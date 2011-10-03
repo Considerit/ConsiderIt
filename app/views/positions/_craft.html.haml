@@ -4,7 +4,7 @@
   });
 
 #initiative.edit
-  = render :partial => "options/description"
+  = render :partial => "options/description", :locals => { :hide_initially => false }
   
   %ol#step_through
     %li.gut.step.slide

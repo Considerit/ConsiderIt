@@ -24,7 +24,7 @@ ConsiderIt::Application.routes.draw do
   themes_for_rails # themes_for_rails gem routes 
 
   match "/theme" => "theme#set", :via => :post
-  match "/home/zip" => "home#set_zipcode", :via => :post
+  match "/home/domain" => "home#set_domain", :via => :post
   match "/home/pledge" => "home#take_pledge", :via => :post
   match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit/ } 
 

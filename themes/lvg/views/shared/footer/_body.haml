@@ -1,7 +1,7 @@
 %div
   .sitemap
     %div.initiatives
-      %h4 #{APP_CONFIG['decisions']['name']['short']}s
+      %h4 Ballot Measures
       %ul.nav
         - get_initiatives.each do |option|
           %li{ :class => "#{has_stance(option)}"}
@@ -18,25 +18,15 @@
           - resource_block['items'].each do |resource|
             %li= link_to "#{resource['anchor']}", "#{resource['link']}", :target => "_blank", :title => "#{resource['title']}"        
 
-      - if APP_CONFIG['footer']['has_custom_resources']
-        %h4.later Other Resources
-        %ul.nav
-          %li= link_to "Funding sources of various initiatives", "http://www.spokesman.com/stories/2010/sep/05/sizable-sums-target-voters/", :target => "_blank"
-          %li
-            Comparing the liquor initiatives
-            = link_to "[1]", "http://www.spokesman.com/stories/2010/aug/27/i-1100-i-1105-would-cut-state-revenue/", :target => "_blank"          
-            = link_to "[2]", "http://seattletimes.nwsource.com/html/businesstechnology/2012690399_liquor22.html", :target => "_blank"          
-          %li= link_to "What if both liquor initiatives pass?", "http://www.publicola.net/2010/07/02/extra-fizz-what-will-happen-if-both-liquor-measures-pass/", :target => "_blank"
-          %li= link_to "About the initiative process", "http://www.ncsl.org/default.aspx?tabid=16600", :target => "_blank"
-          %li= link_to "Stats \& history of WA ballot measures", "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :target => "_blank"
-          %li= link_to "Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :target => "_blank"
 
-    %div.learn.last
+    %div.guides
   
+      %h4 Other Resources
       %ul.nav
-        %li.powered
-          LVG is powered by the open source 
-          = link_to "ConsiderIt", '/home/considerit', :title => 'The open source ConsiderIt platform' 
-          platform. Text is available under the Creative Commons Attribution-ShareAlike License. See 
-          = link_to "Terms of Use", '/home/terms-of-use'
-          for details.
+        %li= link_to "Funding sources of various initiatives", "http://www.spokesman.com/stories/2010/sep/05/sizable-sums-target-voters/", :target => "_blank"
+        %li          
+        %li= link_to "About the initiative process", "http://www.ncsl.org/default.aspx?tabid=16600", :target => "_blank"
+        %li= link_to "Stats \& history of WA ballot measures", "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :target => "_blank"
+        %li= link_to "Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :target => "_blank"
+        -if @domain && @domain.name == 'Seattle'
+          %li= link_to "King County government voting tips", "http://your.kingcounty.gov/elections/your/docs/Candidate_Tips.pdf", :target => '_blank', :class => 'highlight'

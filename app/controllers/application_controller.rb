@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
     if args
       args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
     end
+    @domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil
     super
   end
     

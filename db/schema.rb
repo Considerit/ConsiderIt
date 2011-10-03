@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111001071458) do
+ActiveRecord::Schema.define(:version => 20111003014006) do
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",   :default => 0
@@ -32,11 +32,16 @@ ActiveRecord::Schema.define(:version => 20111001071458) do
   add_index "comments", ["user_id"], :name => "index_comments_on_user_id"
 
   create_table "domain_maps", :force => true do |t|
-    t.integer "identifier"
     t.integer "option_id"
+    t.integer "domain_id"
   end
 
-  add_index "domain_maps", ["identifier"], :name => "index_domain_maps_on_identifier"
+  create_table "domains", :force => true do |t|
+    t.integer "identifier"
+    t.string  "name"
+  end
+
+  add_index "domains", ["identifier"], :name => "index_domains_on_identifier"
 
   create_table "inclusion_versions", :force => true do |t|
     t.integer  "inclusion_id"
@@ -82,6 +87,8 @@ ActiveRecord::Schema.define(:version => 20111001071458) do
     t.datetime "updated_at"
     t.string   "domain"
     t.string   "domain_short"
+    t.text     "long_description",   :limit => 2147483647
+    t.text     "additional_details", :limit => 2147483647
   end
 
   create_table "point_links", :force => true do |t|
@@ -268,7 +275,6 @@ ActiveRecord::Schema.define(:version => 20111001071458) do
     t.datetime "avatar_updated_at"
     t.string   "avatar_remote_url"
     t.string   "name"
-    t.integer  "zip"
     t.text     "bio"
     t.string   "url"
     t.string   "facebook_uid"
@@ -278,6 +284,7 @@ ActiveRecord::Schema.define(:version => 20111001071458) do
     t.string   "twitter_uid"
     t.string   "twitter_handle"
     t.boolean  "pledge_taken",                        :default => false
+    t.integer  "domain_id"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"

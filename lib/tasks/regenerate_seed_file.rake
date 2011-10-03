@@ -1,18 +1,3 @@
-# create_table "options", :force => true do |t|
-#   t.string   "designator"
-#   t.string   "category"
-#   t.string   "name"
-#   t.string   "short_name"
-#   t.text     "description"
-#   t.string   "image"
-#   t.string   "url"
-#   t.datetime "created_at"
-#   t.datetime "updated_at"
-#   t.string   "domain"
-#   t.string   "domain_short"
-# end
-
-
 require 'csv'
 require 'pp'
 
@@ -23,27 +8,13 @@ namespace :admin do
     domains = {}
     CSV.foreach("lib/tasks/measures.csv") do |row|
         if row[0] != 'Source'
-            domain = row[3].strip
+            domain = row[11].strip
             if !domains.has_key?(domain)
                 domains[domain] = {
                     :measures => [],
                     :zips => []
                 }
             end
-
-            if domain.downcase.include? 'county'
-                domain_short = 'county'
-            elsif domain.downcase.include? 'city'
-                domain_short = 'city'
-            elsif domain.downcase.include? 'state'
-                domain_short = 'state'
-            elsif domain.downcase.include? 'town'
-                domain_short = 'town'
-            elsif domain.downcase.include? 'port'
-                domain_short = 'port'
-            elsif domain.downcase.include? 'district'
-                domain_short = 'district'
-            end                
 
             domains[domain][:measures].push({
                 :id => row[1],          #ID
@@ -53,8 +24,11 @@ namespace :admin do
                 :designator => row[5],  #number
                 :name => row[6],        #title
                 :description => row[7], #description
-                :url => row[8],         #URL
-                :domain_short => domain_short
+                :long_description => row[8], #explanatory statement
+                :additional_details => row[9], #fiscal impact statement
+                :url => row[10],         #URL
+                :domain_lookup => row[11], #jurisdiction lookup
+                :domain_short => row[3].strip
             })
 
         end
@@ -68,10 +42,23 @@ namespace :admin do
     end
 
     seedf = File.new('db/seeds.lvg2.root.rb', "w")
+
+    zips = {}
+    CSV.foreach("lib/tasks/zips.csv") do |row|
+        if row[0] != ''
+            zips[row[0]] = 1
+            seedf.puts "
+z#{row[0]} = Domain.create!(
+  :identifier => #{row[0]},
+  :name => '#{row[2].capitalize}'
+)".force_encoding('utf-8').encode
+
+        end
+    end
+
     cnt = 0
     zip_cnt = 0
     domains.each_pair do |k,v|
-        pp k
         v[:measures].each do |measure|
             seedf.puts "
 o#{cnt} = Option.create!(
@@ -82,15 +69,21 @@ o#{cnt} = Option.create!(
   :domain_short => '#{measure[:domain_short]}',
   :url => '#{measure[:url]}',
   :category => '#{measure[:category]}',
-  :designator => '#{measure[:designator]}'
+  :designator => '#{measure[:designator]}',
+  :long_description => '#{measure[:long_description]}',
+  :additional_details => '#{measure[:additional_details]}'
 )".force_encoding('utf-8').encode
+            zips_added = {}
             v[:zips].each do |zip|
-                seedf.puts "
-z#{zip_cnt} = DomainMap.create!(
-  :identifier => #{zip},
-  :option => o#{cnt}
-)".force_encoding('utf-8').encode
-                zip_cnt += 1
+                if zips.has_key?(zip) && !zips_added.has_key?(zip)
+                    seedf.puts "
+    z#{zip_cnt} = DomainMap.create!(
+      :domain => z#{zip},
+      :option => o#{cnt}
+    )".force_encoding('utf-8').encode
+                    zip_cnt += 1
+                    zips_added[zip] = 1
+                end
             end
         cnt += 1
         end

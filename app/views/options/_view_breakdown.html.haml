@@ -6,27 +6,17 @@
   
 %li.step.breakdown
   .head
-    - if number
-      %span.ol_number
-        2.     
-      %h3.banner
-        Discuss the pros and cons of #{@option.designator}.
-      .extra
-        Click the discuss link to join or start a discussion about a point.        
-    - else
-      %h3.banner
-        Explore what others think about #{@option.designator}.
+    %h3.banner
+      Now explore a breakdown of what other voters feel about #{@option.designator}!
 
-      .extra
-        %strong
-          Click on a bar 
-        to see some of the key points that the group believes in.
+    .extra
+      %strong
+        Click on a bar 
+      to see the pros and cons which that voter segment finds most important.
   
     - if @position
       .you_slider
-        = image_tag "slider_you.png", :class => "add_qtip", :title => "This is where you stand on #{@option.designator}. Click 'Update your Position' below if you change your mind."
-      :javascript
-        $j('.you_slider').css('left', 589 + (6 - #{@position.stance_bucket}) * 43 + 'px');
+        = image_tag "slider_you.png", :title => "This is where you stand on #{@option.designator}."
     - else
       .you_slider.call
         %a.add_qtip.take_stand2{ :href => new_option_position_path(@option), :title => "Click to use the Living Voters Guide to collect your thoughts and make your voice heard on #{@option.designator}"}
@@ -49,7 +39,27 @@
           .inner
             Oppose
   
+  .position_marker
+    .triangle 
+      &#x25c0;
+    .label
+      Your position
+    .current
+      = @position.stance_name
+
+    .operations
+      =link_to 'edit', edit_option_position_path(@option, @position)
+      
+      -# %span.bullet
+      -#  &#8226;
+
+      -# %span.share
+      -#  share
+
+
   .explore#ranked_points   
     = render :partial => "options/pro_con_board", :locals => { :group_name => 'everyone', :group_id => 'all' }
 
 
+:javascript
+  $j('.you_slider').css('left', $j('.pedestal').position().left + (6 - #{@position.stance_bucket}) * 64.3 + 12 + 'px');

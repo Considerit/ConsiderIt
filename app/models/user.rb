@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
   has_many :inclusions
   has_many :point_listings
   has_many :point_similarities
+  belongs_to :domain
   
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable

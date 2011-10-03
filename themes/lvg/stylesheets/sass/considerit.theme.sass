@@ -5,9 +5,25 @@ html
   background-position: left top
   background-repeat: repeat-x
 
+.powered_by
+  padding-top: 2px
+  color: #717171
+  font-size: 12px
+
+  a 
+    color: #414141
+    font-weight: bold
 
 #intro 
   padding: 0 10px
+
+  .beta
+    position: absolute
+    font-size: 10px
+    color: white
+    top: -71px
+    left: 150px
+      
   #description
 
     #value
@@ -42,17 +58,19 @@ html
       width: 425px
       height: 350px
       float: right
+
+
       #console
         background-color: black
-      .frame, .nav
-        width: 415px 
+        padding: 0 10px
+
       .frame
         height: 292px
         margin-top: 10px  
+
       .nav
         height: 30px
         ul 
-          padding: 0 10px
           li
             display: inline
             margin: 0 10px 0 0
@@ -87,10 +105,30 @@ html
         font-weight: normal
         display: inline-block
     
+    #zipcode_entered
+      background-color: #700000
+      padding: 6px 30px
+      color: #c1c1c1
+      margin: 0 auto
+      font-size: 16px
+      width: 450px
+      text-align: center
+
+      .reset
+        color: #999
+        font-size: 10px
+
+        input.gray
+          margin-top: 4px
+
+        a
+          color: inherit
+          text-decoration: underline
+
     #zipcode_entry
       background-color: #700000
       position: absolute
-      height: 80px
+      height: 60px
       width: 550px
       left: 150px
       top: 185px
@@ -112,7 +150,25 @@ html
 
       .zipform
         float: right
-        padding-top: 20px
+        padding-top: 5px
+        
+
         input[type="text"]
           font-size: 20px
           text-align: center
+          width: 160px
+        input[type="submit"]
+          margin-top: 5px
+          font-size: 14px
+          display: inline-block
+          margin-left: 7px
+
+.highlight
+  background-color: #700000
+  color: white
+  padding: 2px 5px
+
+#follow
+  position: absolute
+  right: 20px
+  top: -80px

@@ -9,6 +9,26 @@ class Position < ActiveRecord::Base
   
   default_scope where( :published => true )
   scope :published, where( :published => true )
+
+  def stance_name
+    case stance_bucket
+      when 0
+        return "strongly opposed"
+      when 1
+        return "moderately opposed"
+      when 2
+        return "slightly opposed"
+      when 3
+        return "undecided"
+      when 4
+        return "slight support"
+      when 5
+        return "moderate support"
+      when 6
+        return "strong support"
+    end
+  end    
+
 end
 
 

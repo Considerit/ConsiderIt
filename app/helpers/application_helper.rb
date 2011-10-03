@@ -1,7 +1,26 @@
 module ApplicationHelper
   
+  def get_available_domains
+    domains = []
+    Domain.all.each do |d|
+      domains.push("#{d.identifier}")
+    end
+    return domains
+  end
+
   def get_initiatives
-    return Option.all(:order => "id")
+    options = []
+    #TODO: do a join here instead???
+    if session.has_key?(:domain)
+      domain = Domain.find(session[:domain])
+      domain.domain_maps.each do |dm|
+        options.push(dm.option)
+      end
+    end
+    #TODO: add a "show_all, :integer" field to Option 
+    # that can be queried here instead
+    options += Option.where(:domain_short => 'WA state').order(:designator)
+    return options
   end
 
   def has_stance(option)

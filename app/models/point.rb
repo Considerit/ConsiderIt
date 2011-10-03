@@ -41,8 +41,8 @@ class Point < ActiveRecord::Base
   
   def self.included_by_stored(user, option)
     if user
-      option.points.unscoped
-        joins(:inclusions, "AND inclusions.user_id = #{user.id}").
+      Point.
+        joins(:inclusions, "AND inclusions.user_id = #{user.id} AND points.option_id = #{option.id}").
         where("inclusions.user_id IS NOT NULL")
     else
       option.points.where(:id => -1) #null set

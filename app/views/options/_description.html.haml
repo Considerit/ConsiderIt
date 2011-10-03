@@ -11,11 +11,11 @@
         = @option.designator
         
       %h1.initiative_name
-        #{@option.name}
+        #{@option.name.html_safe}
 
     .full_text
       - for i in @option.format_description
-        %p.initiative_desc_point= h i
+        %p.initiative_desc_point= h i.html_safe
     
     - if @option.long_description && @option.long_description.strip != ''
       .long_description

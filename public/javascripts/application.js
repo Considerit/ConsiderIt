@@ -78,21 +78,23 @@ ConsiderIt = {
         
   },
   per_request : function() {
-    $j('#masthead').corner('round top 5px');
-    $j('#nav-user').corner('bottom bl 5px');  
-    $j('.point_in_list_margin, .point_in_list.expanded').corner('5px');
+    if ( !$j.browser.msie ) {
+      $j('#masthead').corner('round top 5px');
+      $j('#nav-user').corner('bottom bl 5px');  
+      $j('.point_in_list_margin, .point_in_list.expanded').corner('5px');
 
-    $j('.avatar').corner('5px');
-    $j('input[type="submit"]').corner('5px');
-    $j('#registration_form .primary, #registration_form .secondary').corner('8px');
-    $j('#pledge_form button').corner('5px');
-    $j('#confirmation_sent button#go').corner('5px');
-    $j('.newpointform > form').corner('5px');
-    $j('.point_link_prompt .button').corner('5px');
-    $j('#console').corner('5px');
-    $j('#console .nav a').corner('5px');
-    $j('.point_in_list .comment_text').corner('5px');
-
+      $j('.avatar').corner('5px');
+      $j('input[type="submit"]').corner('5px');
+      $j('#registration_form .primary, #registration_form .secondary').corner('8px');
+      $j('#pledge_form button').corner('5px');
+      $j('#confirmation_sent button#go').corner('5px');
+      $j('.newpointform > form').corner('5px');
+      $j('.point_link_prompt .button').corner('5px');
+      $j('#console').corner('5px');
+      $j('#console .nav a').corner('5px');
+      $j('.point_in_list .comment_text').corner('5px');
+    }
+    
     $j('.has_example').each(function(){
       if($j(this).val() == '') {
         $j(this).example(function() {
@@ -187,19 +189,19 @@ ConsiderIt = {
     // new button clicked
     $j('#points').delegate('.newpoint .newpointbutton button', 'click', function(){
       $j(this).parents('.newpoint:first').find('.pointform').fadeIn('fast');      
-      $j('#lightbox').fadeIn('slow');
+      show_lightbox();
     });
 
     // edit point clicked
     $j('#points').delegate('a.editpoint', 'click', function(){
       $j(this).parents('.edit:first').find('.pointform').fadeIn('fast');      
-      $j('#lightbox').fadeIn('slow');
+      show_lightbox();
     });
 
     // new/edit point cancel clicked
     $j('#points').delegate('.new_point_cancel', 'click', function(){
       $j(this).parents('.pointform:first').fadeOut(function(){
-        $j('#lightbox').fadeOut();  
+        hide_lightbox();
       });
     });
 
@@ -216,7 +218,7 @@ ConsiderIt = {
     // Update callback
     $j('#points').delegate('.editform form', 'ajax:success', function(data, response, xhr){
       $j(this).parents('.point_in_list:first').replaceWith(response['new_point']);
-      $j('#lightbox').fadeOut();  
+      hide_lightbox(); 
     });
 
     // Delete confirmation prompt
@@ -251,7 +253,7 @@ ConsiderIt = {
 
       pnt_el.show();
 
-      $j('#lightbox').fadeIn();
+      show_lightbox();
 
       // store properties for restoration later...
       pnt_el.data('properties', {
@@ -296,7 +298,7 @@ ConsiderIt = {
           pnt_el.removeClass('expanded');
           pnt_el.find('.toggle.less').hide();
 
-          $j('#lightbox').fadeOut();  
+          hide_lightbox();  
 
           pnt_el.find('.more').fadeIn();
 
@@ -567,7 +569,33 @@ ConsiderIt = {
 
 })(jQuery);
 
+
 // TODO: integrate better into code
+
+function show_lightbox(callback){
+  $j('#lightbox').css({
+    'background' : '#000000',
+    'z-index' : 100
+  });
+  if ( !$j.browser.msie ) {
+
+    $j('#lightbox').fadeIn(callback);
+  } else {
+    
+  }
+}
+
+function hide_lightbox(callback){
+  if ( !$j.browser.msie ) {
+    $j('#lightbox').fadeOut(callback);
+  } else {
+    $j('#lightbox').css({
+      'background' : 'transparent',
+      'z-index' : -100
+    });    
+  }
+}
+
 // FROM: https://github.com/ryanb/complex-form-examples/blob/master/public/javascripts/application.js
 function remove_fields(link) {
   jQuery(link).parents('.point_link_form').remove();

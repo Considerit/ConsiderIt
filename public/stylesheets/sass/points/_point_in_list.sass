@@ -184,8 +184,9 @@ li.point_in_list
           > *
             vertical-align: middle
 
-          a, input
+          a, input[type="submit"]
             color: $txt_light_gray
+            background-color: transparent
 
   &.point_in_list_board
     width: 370px
@@ -232,12 +233,12 @@ li.point_in_list
     width: 48px
     background-repeat: no-repeat
 
-    input.judge_point
+    input[type="submit"].judge_point
       margin: 0
-      color: white
       border: none
-      font-size: 30px
-      background-color: inherit
+      font-size: 0px
+      width: 100%
+      background-color: transparent
 
       &:hover
         cursor: pointer

@@ -86,7 +86,7 @@ h1
 
 input[type="submit"].linkify,
 button.linkify
-  background-color: inherit
+  background-color: transparent
   color: inherit
   border: none
 
@@ -357,16 +357,18 @@ a.rate_point_similarity
   height: 500px
 
 #lightbox
-  display: none
-  background: #000000
+  
+  background: transparent
   opacity: 0.5
-  filter: alpha(opacity=50)
+  zoom: 1
   position: fixed
   top: 0px
   left: 0px
   min-width: 100%
   min-height: 100%
-  z-index: 100
+  width: 100%
+  height: 100%
+  z-index: -100
 
 .ui-menu
   background-color: rgba(0, 0, 0, 0.4)

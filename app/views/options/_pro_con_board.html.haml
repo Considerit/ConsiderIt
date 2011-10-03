@@ -1,21 +1,16 @@
 - if group_name == 'everyone' || group_name == 'all'
   %h3  
-    Key overall points for #{@option.designator}
-  .extra  
-    The most popular points overall.
+    A ranked list of the most popular points
+    %span.group
+      overall
 
   .filters
     %a#show_self.show_group
-      show
-      %span.italic
-        your
-      pros and cons
+      show your pros and cons
 
 - elsif group_name == 'self'
   %h3  
-    Important points for you on #{@option.designator}. 
-  .extra  
-    Click the "Update your stance" button to add to or remove points from your list.
+    The points YOU think are important
 
   .filters
     %a#show_popular.show_group
@@ -24,13 +19,13 @@
 
 - else
   %h3
-    Key points for those who 
+    A ranked list of points
         
     %span.group
       = group_name
-      
-    #{@option.designator}      
     
+    found important
+          
   .filters
     %a#show_popular.show_group
       show overall key points
@@ -39,11 +34,7 @@
       show
       %span.italic
         your
-      pros and cons
-
-        
-  .extra
-    Points often included in the positions of those who #{group_name} #{@option.reference}.    
+      pros and cons  
 
 .position_container
    

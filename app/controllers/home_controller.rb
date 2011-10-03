@@ -10,17 +10,17 @@ class HomeController < ApplicationController
     render :action => params[:page]
   end  
 
-  def set_zipcode
-    session[:zip] = params[:zip]
-    if current_user
-      current_user.zip = params[:zip]
-      current_user.save
+  def set_domain
+    domain = Domain.where(:identifier => params[:domain]).first()
+    if domain
+      session[:domain] = domain
+      if current_user
+        current_user.domain_id = session[:domain]
+        current_user.save
+      end
     end
-
-    #TODO: check to make sure zip is valid
-    respond_to do |format|
-      format.js {render :partial => "home/zip_set", :locals => { :zip => params[:zip] }}
-    end
+    
+    redirect_to request.referrer
   end
 
   def take_pledge

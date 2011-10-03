@@ -19,6 +19,10 @@
                               
       .short_name
         = option.short_name
+      
+      - if option==@option && hide_initially
+        %a.show_option_description
+          show details
 
   .completion
     &#x2713;

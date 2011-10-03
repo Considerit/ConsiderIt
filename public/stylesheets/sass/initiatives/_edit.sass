@@ -1,15 +1,59 @@
 
 #initiative
+  &.guide
+    li.breakdown
+      border: 3px solid $bk_light_blue
+
+        
+    ol#step_through li.step
+      margin: 0 40px
+      padding-bottom: 0
+
+      .head
+        padding: 15px 15px 15px 15px
+        color: $txt_dark_gray
+        position: relative
+
+        .extra
+          padding: 0
+          letter-spacing: 1px
+          top: -3px
+
   #description
+    &.hiding
+      background-color: inherit
+      .description_wrapper, .pic, #full_desc_block
+        display: none
+            
     background-color: $bk_light_gray
     position: relative
 
-    margin: 20px 0 20px 0
+    margin: 0px 0 20px 0
+    padding-bottom: 15px
+
+    .pic
+      float: left
+      width: 175px
+      height: 162px
+      margin: 25px 18px 0 13px
+      background: url('/images/placeholder-tax.png') no-repeat scroll top left
+
+    #full_desc_block
+      background-color: $bk_gray
+      position: absolute
+      right: 0
+      top: 0
+      a
+        padding: 6px 10px
+        display: inline-block
+        color: $txt_gray
+        text-decoration: underline
+        font-size: 12px
 
     .description_wrapper
       float: left
-      width: 600px
-      margin: 15px 70px 0 50px
+      width: 580px
+      margin: 15px 70px 0 0px
 
       .init_text
         vertical-align: top
@@ -17,23 +61,40 @@
         h2.locality
           font-size: 16px
           font-weight: normal
-          line-height: 16px
+          line-height: 20px
           color: $txt_gray
+          font-variant: small-caps
+          text-transform: lowercase
 
         h1.initiative_name
           margin-bottom: 5px
-          font-size: 25px
-          font-weight: normal
-          line-height: 30px
+          font-size: 24px
+          font-weight: bold
+          line-height: 25px
           text-transform: capitalize
           padding-bottom: 5px
+          color: $txt_dark_gray
 
         .initiative_desc_point
           width: 90%
           padding: 5px 0px
           line-height: 18px
-    
-  
+
+      .full_text, .long_description, .additional
+        width: 480px
+      
+      .long_description, .additional
+        .prompt
+          font-size: 15px
+          font-weight: bold
+          color: $txt_dark_gray
+          a
+            font-size: 12px
+            font-weight: normal
+            text-decoration: underline
+            color: inherit
+      
+
   .position
     margin: auto
     .slider_table
@@ -116,6 +177,7 @@
             .points_other
               vertical-align: top
               padding-top: 50px
+              width: 224px
 
               .other
                 padding-bottom: 5px

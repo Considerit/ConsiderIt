@@ -179,21 +179,21 @@ protected
   def stance_name(d)
     case d
       when 0
-        return "strongly oppose"
+        return "strong opposers"
       when 1
-        return "oppose"
+        return "moderate opposers"
       when 2
-        return "moderately oppose"
+        return "light opposers"
       when 3
-        return "are undecided on"
+        return "undecideds"
       when 4
-        return "moderately support"
+        return "light supporters"
       when 5
-        return "support"
+        return "moderate supporters"
       when 6
-        return "strongly support"
+        return "strong supporters"
     end   
   end  
-
+  
   
 end

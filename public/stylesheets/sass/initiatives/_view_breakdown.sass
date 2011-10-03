@@ -10,10 +10,10 @@
       color: black
     
     .you_slider
-      position: relative
+      position: absolute
       z-index: 999
-      top: 14px
-      left: 593px
+      bottom: 0px
+      left: 0px
       width: 50px
       
       &.call
@@ -21,10 +21,9 @@
         left: 661px
       
     .bars
-      position: absolute
-      z-index: 99
-      top: -20px
-      left: 525px
+      margin: auto
+      padding-top: 15px
+
       .viz
         .stance_chart
           
@@ -35,25 +34,61 @@
           font-size: 14px
           .inner, .pedestal
             position: relative
-            top: -10px
+            top: -8px
+          
+          .inner
+            padding: 0 15px
+
           &.middle
             height: 0px
-            margin-left: 0px
-            width: 300px
+            width: 450px
+
             .pedestal
               background-color: #ccc
               height: 5px
-              width: 300px
-              margin-left: 6px
+              width: 104%
+              margin-left: -10px
   
           &.first
             padding-right: 3px
           &.last
             padding-left: 3px
-            
+    
+    
+    .position_marker
+      background-color: $bk_dark_red
+      color: white
+      position: absolute
+      top: 110px
+      right: -20px
+      padding: 10px 15px
+
+      .triangle
+        position: absolute
+        left: -14px
+        color: $bk_dark_red
+        top: 30px
+        font-size: 18px
+
+      .label
+        color: $txt_light_gray
+        font-size: 14px
+
+      .current
+        font-size: 18px
+        text-weight: bold
+
+      .operations
+        margin-top: 4px
+        a
+          font-size: 14px
+          color: inherit
+          text-decoration: underline
+
+              
     .explore#ranked_points
       background-color: $bk_light_blue
-      margin: 8px 10px 10px 10px
+      margin: 0
       padding: 15px
               
       .extra 
@@ -63,17 +98,14 @@
         color: white
     
       .filters
-        float: right
-        position: absolute
-        z-index: 100
-        top: 135px
-        right: 25px
         
         a#show_popular, a#show_self
           font-size: 12px
           font-weight: bold
           display: block
-          text-align: right
+          text-align: left
+          padding-bottom: 4px
+          
           
           &:hover
             text-decoration: underline

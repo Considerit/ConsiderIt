@@ -51,20 +51,29 @@ ConsiderIt = {
       });
     });    
 
-    $j('.initiatives.horizontal').infiniteCarousel({
+    $j('#intro .initiatives.horizontal').infiniteCarousel({
       speed: 1500,
       vertical: false,
-      total_items: 6,
-      items_per_page: 6,
+      total_items: 5,
+      items_per_page: 5,
       loading_from_ajax: false,
-      dim: 700    
+      dim: 650    
     });
+
+    $j('#description .initiatives.horizontal').infiniteCarousel({
+      speed: 1500,
+      vertical: false,
+      total_items: 8,
+      items_per_page: 8,
+      loading_from_ajax: false,
+      dim: 720
+    });    
 
     $j('.initiatives.vertical').infiniteCarousel({
       speed: 1500,
       vertical: true,
-      total_items: 6,
-      items_per_page: 6,
+      total_items: 5,
+      items_per_page: 5,
       loading_from_ajax: false,
       dim: 250
     });
@@ -140,6 +149,30 @@ ConsiderIt = {
 
     $j(document).delegate('#acknowledgment a', 'click', function(){
       show_tos(500, 700);  
+    });
+
+    $j(document).delegate('#zipcode_entered .reset a', 'click', function(){
+      $j(this).siblings('.resetform').show();
+    });
+
+    //////////////
+    // OPTIONS
+    //////////////
+    $j(document).delegate('#description a.show_option_description', 'click', function(){
+      $j('#description').removeClass('hiding');
+      $j(this).remove();
+    });
+
+    $j(document).delegate('.description_wrapper .prompt a', 'click', function(){
+      if($j(this).hasClass('hidden')){
+        $j(this).parents('.prompt:first').siblings('.full').slideDown();
+        $j(this).text('hide details');
+      } else {
+        $j(this).parents('.prompt:first').siblings('.full').slideUp();
+        $j(this).text('show');
+      }
+      $j(this).toggleClass('hidden');
+
     });
 
     //////////////
@@ -419,7 +452,7 @@ ConsiderIt = {
     stance_group_clicked : function(bucket, option_id) {
       //if ( bucket == 'all' ) group_name = 'everyone';
       //else group_name = ConsiderIt.positions.stance_name(bucket);
-    
+
       $j.get("/options/" + option_id + "/points", { bucket: bucket },
         function(data){
           $j('#ranked_points').html(data['points']);

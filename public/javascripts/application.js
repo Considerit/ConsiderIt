@@ -34,22 +34,7 @@ ConsiderIt = {
           return parseInt($carousel.find('.total:first').text());
         }
       });
-    });
-
-    $j("#ranked_points .points_board").each(function(){
-      $j(this).infiniteCarousel({
-        speed: 1000,
-        vertical: true,
-        total_items: parseInt($j(this).find('.total:first').text()),
-        items_per_page: 4,
-        loading_from_ajax: true, 
-        dim: 700,
-        resetSizePerPage: true,
-        total_items_callback: function($carousel){
-          return parseInt($carousel.find('.total:first').text());
-        }
-      });
-    });    
+    }); 
 
     $j('#intro .initiatives.horizontal').infiniteCarousel({
       speed: 1500,
@@ -77,6 +62,10 @@ ConsiderIt = {
       loading_from_ajax: false,
       dim: 250
     });
+
+    if( $j('#intro').length == 0 ){
+      //$j('#masthead').append('<a class="home" href="/">home</a>');
+    }
 
     //ConsiderIt.points.create.initialize_counters('.newpointform, .editpointform');
 
@@ -130,7 +119,23 @@ ConsiderIt = {
           on_positive : ConsiderIt.noblecount.on_positive
         });
       }
-    });    
+    });  
+
+    $j("#ranked_points .points_board").each(function(){
+      $j(this).infiniteCarousel({
+        speed: 1000,
+        vertical: true,
+        total_items: parseInt($j(this).find('.total:first').text()),
+        items_per_page: 4,
+        loading_from_ajax: true, 
+        dim: 700,
+        resetSizePerPage: true,
+        total_items_callback: function($carousel){
+          return parseInt($carousel.find('.total:first').text());
+        }
+      });
+    });   
+
   },
 
   delegators : function() {

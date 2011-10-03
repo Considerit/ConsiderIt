@@ -17,7 +17,7 @@
       - for i in @option.format_description
         %p.initiative_desc_point= h i
     
-    - if @option.long_description
+    - if @option.long_description && @option.long_description.strip != ''
       .long_description
         .prompt
           Long Description
@@ -26,7 +26,7 @@
         .full.hide
           = @option.long_description.html_safe
 
-    - if @option.additional_details
+    - if @option.additional_details && @option.additional_details.strip != ''
       .additional
         .prompt
           Fiscal impact statement
@@ -38,7 +38,7 @@
 
   .clear
 
-  - if @option.url
+  - if @option.url && @option.url.strip != ''
     #full_desc_block
-      =link_to "Official measure site", @option.url, :title => "Visit the official listing on the state's website", :target => '_blank'
+      =link_to "read the official measure", @option.url, :title => "Visit the official listing on the state's website", :target => '_blank'
 

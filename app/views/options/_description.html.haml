@@ -1,5 +1,7 @@
-#description
-  = render :partial => "options/blocks/strip", :locals => { :style => 'horizontal' }
+#description{ :class => "#{hide_initially ? 'hiding' : ''}"}
+  = render :partial => "options/blocks/strip", :locals => { :style => 'horizontal', :hide_initially => hide_initially }
+
+  .pic
 
   .description_wrapper
     .init_text
@@ -10,16 +12,33 @@
         
       %h1.initiative_name
         #{@option.name}
-        
+
     .full_text
       - for i in @option.format_description
         %p.initiative_desc_point= h i
-      
-      - if @option.url
-        #full_desc_block
-          =link_to "Read full text of #{@option.reference}", @option.url, :title => "Read full text of #{@option.reference}"
+    
+    - if @option.long_description
+      .long_description
+        .prompt
+          Long Description
+          %a.hidden
+            show
+        .full.hide
+          = @option.long_description.html_safe
 
-    = render :partial => "options/sidebar"
+    - if @option.additional_details
+      .additional
+        .prompt
+          Fiscal impact statement
+          %a.hidden
+            show
+        .full.hide
+          = @option.additional_details.html_safe
 
 
   .clear
+
+  - if @option.url
+    #full_desc_block
+      =link_to "Official measure site", @option.url, :title => "Visit the official listing on the state's website", :target => '_blank'
+

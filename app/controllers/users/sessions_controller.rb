@@ -32,8 +32,8 @@ class Users::SessionsController < Devise::SessionsController
       session['reify_activities'] = true 
     end    
 
-    if current_user && session[:zip] != current_user.zip
-      current_user.zip = session[:zip]
+    if current_user && session[:domain] != current_user.domain_id
+      current_user.domain_id = session[:domain]
       current_user.save
     end
 

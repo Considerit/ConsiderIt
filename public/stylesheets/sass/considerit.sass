@@ -28,8 +28,6 @@ $brd_light_gray: #848484
 $brd_green_dark: #39665F
 $brd_purple_dark: #654a74
 
-$std_gutter: 15px
-
 @import "mixins"
 
 @import "points/point_in_list"
@@ -38,7 +36,6 @@ $std_gutter: 15px
 @import "point_links/point_links"
 
 @import "initiatives/shared"
-@import "initiatives/show"
 @import "initiatives/edit"
 @import "initiatives/pro_con_container"
 @import "initiatives/initiative_block"
@@ -121,8 +118,9 @@ body
   > div
     width: 940px
     margin: 0 auto
-    padding: 10px $std_gutter
-    background-color: white        
+    padding: 10px 25px
+    background-color: white    
+    position: relative    
 
 #content
     
@@ -369,3 +367,19 @@ a.rate_point_similarity
   min-width: 100%
   min-height: 100%
   z-index: 100
+
+.ui-menu
+  background-color: rgba(0, 0, 0, 0.4)
+
+  .ui-menu-item a
+    color: $txt_light_gray
+
+  .ui-menu-item:hover
+    a
+      color: white
+      border: 1px solid black
+      background-color: black
+      border-radius: 0px
+
+.flash.notice
+  display: none

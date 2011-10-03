@@ -65,19 +65,50 @@
 
 #description .initiatives
   position: absolute
-  top: -95px
-  left: 120px
+  top: -105px
+  left: 140px
 
   &.horizontal
     .paginate
-      margin-top: 25px
+      margin-top: 3px
     .carousel
 
       li.initiative_item
-        margin-right: 4px
+        border-top: none
+        border-right: none
+        border-left: none
+        margin-right: 6px
+
+        .designation
+          display: none
+        
+        .short_name
+          display: none
+
+        &.active
+          position: relative
+          background-color: white
+          color: black
+          border-bottom: none
+          padding-bottom: 25px
+          > a
+            height: auto
+            padding-bottom: 10px
+          
+          .show_option_description
+            position: absolute
+            bottom: -10px
+            left: 12px
+            width: 50px
+
+            color: inherit
+            text-decoration: underline
+            letter-spacing: 0
+
+
         > a
-          padding: 5px
-          height: 60px
+          padding: 5px 5px 2px 5px
+          height: 14px
           min-width: 40px
 
           > div
@@ -114,7 +145,7 @@ li.initiative_item
   &.finished .completion
     display: block
     position: absolute
-    bottom: 0
+    top: 0
     right: 0
     
 

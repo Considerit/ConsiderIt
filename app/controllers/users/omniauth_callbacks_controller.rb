@@ -28,10 +28,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if session.has_key?('position_to_be_published')
         session['reify_activities'] = true 
       end
-      if @user && session[:zip] != @user.zip
-        @user.zip = session[:zip]
-        @user.save
-      end
+
+    if @user && session[:domain] != @user.domain_id
+      @user.domain_id = session[:domain]
+      @user.save
+    end
 
     else
       session["devise.third_party"] = env["omniauth.auth"]

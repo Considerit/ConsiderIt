@@ -2,7 +2,7 @@
 %li.progress
   #progressbar
   .text_progress
-    #{current_user.positions.count}/#{get_initiatives.count} measures considered
+    #{current_user.positions.count}/#{get_initiatives.length} measures considered
 
 
   -# = image_tag "user_settings_triangle.png", :class => 'triangle_img'
@@ -87,7 +87,9 @@
           $j(this).find('.hide').slideUp();        
         });
 
-    $j("#progressbar").progressbar({ value: #{100 * current_user.positions.count / [1,get_initiatives.count].max } });
+    $j("#progressbar").each(function(){
+      $j(this).progressbar({ value: #{100 * current_user.positions.count / [1,get_initiatives.length].max } });
+    });
 
     
   });

@@ -164,10 +164,18 @@ protected
     actions[:included_points] = {}
 
     actions[:written_points].each do |pnt_id|
-      pnt = position.points.where( :point_id => pnt_id)
+      pnt = Point.unscoped.find( pnt_id )
       pnt.user_id = position.user_id
       pnt.position_id = position.id
+      pnt.published = 1
       pnt.save
+      Inclusion.create!( { 
+        :point_id => pnt_id,
+        :user_id => position.user_id,
+        :position_id => position.id,
+        :option_id => position.option_id
+      } )      
+
     end
     actions[:written_points] = {}
 

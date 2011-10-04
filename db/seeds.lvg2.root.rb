@@ -3692,19 +3692,19 @@ o1 = Option.create!(
 )
 
 p0 = Point.create!(
-  :option => o0,
+  :option => o1,
   :user => admin,
   :is_pro => true,
   :nutshell => 'Saving more $ in good economic times will help us be better prepared for bad times, evening out the boom/bust budget cycle we\'ve been on.',
-  :text => ''
+:text => '', :published => true
 )
 
 p1 = Point.create!(
-  :option => o0,
+  :option => o1,
   :user => admin,
   :is_pro => false,
   :nutshell => 'Saving more than we can afford will mean money is sitting in the bank while people go without basic goods and services they need.',
-  :text => ''
+:text => '', :published => true
 )
 
 o2 = Option.create!(
@@ -3790,36 +3790,37 @@ o2 = Option.create!(
 )
  
 p2 = Point.create!(
-  :option => o0,
+  :option => o2,
   :user => admin,
   :is_pro => true,
   :nutshell => '1125 creates more accountability to the people by requiring a majority vote of the legislature to set toll rates.',
-  :text => ''
+:text => '', :published => true
 )
 
 p3 = Point.create!(
-  :option => o0,
+  :option => o2,
   :user => admin,
   :is_pro => true,
   :nutshell => '1125 ensures that all toll revenue can only be used for transportation projects, nothing else.',
-  :text => ''
+:text => '', :published => true
 )
 
 
 p4 = Point.create!(
-  :option => o0,
+  :option => o2,
   :user => admin,
   :is_pro => false,
   :nutshell => 'Right now, an independent commission of experts set tolls. 1125 endangers transportation funding by requiring the legislature to set tolls.',
-  :text => 'Investors will be concerned about buying bonds backed by tolls that are subject to legislative politics, stalling other important transportation projects.'
+  :text => 'Investors will be concerned about buying bonds backed by tolls that are subject to legislative politics, stalling other important transportation projects.',
+  :published => true
 )
 
 p5 = Point.create!(
-  :option => o0,
+  :option => o2,
   :user => admin,
   :is_pro => false,
   :nutshell => 'We cannot afford the inevitable legal battles that will result from this initiative, forcing even more cuts to basic health and education.',
-  :text => ''
+:text => '', :published => true
 )
 
 
@@ -4097,35 +4098,35 @@ o3 = Option.create!(
  
 
 p6 = Point.create!(
-  :option => o0,
+  :option => o3,
   :user => admin,
   :is_pro => true,
   :nutshell => '1163 would require care workers to pass a fed background check beyond the currently mandated a local check, catching out of state crimes.',
-  :text => ''
+:text => '', :published => true
 )
 
 p7 = Point.create!(
-  :option => o0,
+  :option => o3,
   :user => admin,
   :is_pro => true,
   :nutshell => '1163 restores training and background check requirements passed by voters in 2008 and delayed by the legislature.',
-  :text => ''
+:text => '', :published => true
 )
 
 p8 = Point.create!(
-  :option => o0,
+  :option => o3,
   :user => admin,
   :is_pro => false,
   :nutshell => 'Moves up requirements that are planned to go into effect in 2014 to 2012, putting financial burden on WA at a time when we can\'t afford one.',
-  :text => ''
+:text => '', :published => true
 )
 
 p9 = Point.create!(
-  :option => o0,
+  :option => o3,
   :user => admin,
   :is_pro => false,
   :nutshell => 'To comply with 1163, the state would need to hire three additional auditors and five additional fraud investigators that it can\'t afford.',
-  :text => ''
+:text => '', :published => true
 )
 
 
@@ -4144,35 +4145,35 @@ o4 = Option.create!(
 )
 
 p10 = Point.create!(
-  :option => o0,
+  :option => o4,
   :user => admin,
   :is_pro => true,
   :nutshell => '1183 gets the state out of the liquor business, allowing consumers to purchase liquor at licensed retailers as they do in most other states.',
-  :text => ''
+:text => '', :published => true
 )
 
 p11 = Point.create!(
-  :option => o0,
+  :option => o4,
   :user => admin,
   :is_pro => true,
   :nutshell => '1183 will increase state revenue at a time when it is desperately needed.',
-  :text => ''
+:text => '', :published => true
 )
 
 p12 = Point.create!(
-  :option => o0,
+  :option => o4,
   :user => admin,
   :is_pro => false,
   :nutshell => '1183 will result in many more liquor stores, meaning more access for minors and more enforcement work for an overburdened police force.',
-  :text => ''
+:text => '', :published => true
 )
 
 p13 = Point.create!(
-  :option => o0,
+  :option => o4,
   :user => admin,
   :is_pro => false,
   :nutshell => '1183 increases state revenue by increasing taxes on retailers, who pass it on in higher liquor prices for consumers.',
-  :text => ''
+:text => '', :published => true
 )
 
 

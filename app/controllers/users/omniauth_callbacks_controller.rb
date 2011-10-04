@@ -23,7 +23,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     @user = User.find_for_third_party_auth(env["omniauth.auth"], current_user)
     
     if @user.persisted?
-      flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => env["omniauth.auth"]["provider"]
       sign_in @user, :event => :authentication
       if session.has_key?('position_to_be_published')
         session['reify_activities'] = true 

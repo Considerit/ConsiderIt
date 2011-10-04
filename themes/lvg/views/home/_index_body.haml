@@ -32,9 +32,13 @@
   #tutorial
     #console
       .frame
-        .what.hide
+        .what
+          %iframe{ :src => "http://player.vimeo.com/video/30006158?title=0&amp;byline=0&amp;portrait=0", :width => "353", :height => "265", :frameborder => "0", :webkitAllowFullScreen => true, :allowFullScreen => true }
+
         .how.hide
-        .who
+          %iframe{ :src => "http://player.vimeo.com/video/30006158?title=0&amp;byline=0&amp;portrait=0", :width => "300", :height => "353", :frameborder => "0", :webkitAllowFullScreen => true, :allowFullScreen => true }
+
+        .who.hide
           .explanation
             The Living Voters Guide is 
             %strong 
@@ -58,13 +62,13 @@
       .nav
         %ul
           %li
-            %a.what
+            %a.what.selected
               What is the LVG?
           %li
             %a.how
               How do I use the LVG?
           %li
-            %a.who.selected
+            %a.who
               Who are we?
   :javascript
     $j('#tutorial').delegate('.nav ul a', 'click', function(){

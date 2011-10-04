@@ -615,7 +615,7 @@ function show_tos(width, height) {
       outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
       left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
       top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
-      features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+      features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=yes');
 
       var tos = window.open('/home/terms-of-use', 'Terms of Use', features);
 
@@ -632,7 +632,7 @@ function login(provider_url, width, height) {
       outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
       left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
       top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
-      features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+      features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=yes');
 
   newwindow = window.open(provider_url, '_blank', features);
 

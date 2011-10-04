@@ -12,7 +12,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       current_user.domain_id = session[:domain]
       current_user.save
     end
-
+    redirect_to request.referer
   end
   def update
     current_user.avatar = params[:user][:avatar]

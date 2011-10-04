@@ -51,5 +51,5 @@ ConsiderIt::Application.configure do
   config.active_support.deprecation = :notify
 end
 
-GOOGLE_ANALYTICS = ''
+GOOGLE_ANALYTICS = 'UA-6357039-5'
 

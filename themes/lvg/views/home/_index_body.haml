@@ -51,8 +51,10 @@
 
           .explanation
             We designed and developed the #{link_to 'open source LVG platform', '/considerit'} with the support of the National Science Foundation, under grant IIS 0966929. 
-        
 
+          .questions
+            Send questions and feedback to #{mail_to 'info@livingvotersguide.org'}.
+        
       .nav
         %ul
           %li
@@ -64,7 +66,17 @@
           %li
             %a.who.selected
               Who are we?
-                        
+  :javascript
+    $j('#tutorial').delegate('.nav ul a', 'click', function(){
+      if ( !$j(this).hasClass('selected')){
+        $j(this).parent().siblings('li').find('a').removeClass('selected');
+        var cls = $j(this).attr('class');
+        $j(this).addClass('selected');
+        $j(this).parents('.nav').siblings('.frame').find('> div')
+          .hide().filter('.' + cls).show();
+      }
+    });
+
   .clear
 
         

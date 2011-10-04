@@ -179,26 +179,33 @@ html {
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003176}}
 .who {
-  padding: 30px 15px;
+  padding: 20px 15px;
   color: #888888;
   font-size: 15px;
   line-height: 20px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003182}}
+  .who .questions {
+    font-size: 13px;
+    margin-top: 5px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003186}}
   .who strong {
     color: #accdfe; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003185}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003189}}
   .who ul {
-    padding: 5px 35px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003188}}
+    padding: 5px 40px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003192}}
     .who ul li {
       display: inline; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003191}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003195}}
       .who ul li.first {
         float: left; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003193}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003197}}
       .who ul li.last {
         float: right; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003196}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003200}}
+      .who ul li img {
+        height: 90px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003204}}
   .who a {
     color: inherit;
     text-decoration: underline; }

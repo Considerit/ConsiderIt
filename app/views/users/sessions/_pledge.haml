@@ -33,9 +33,20 @@
 
 
   $j('button#pledge').click(function(){
-    $j.post("#{home_pledge_path}", function(data){
-      $j('#pledge_dialog').html(data);
+
+    $.ajax({
+      url: "#{home_pledge_path}",
+      success: function(data){
+        $j('#pledge_dialog').html(data);
+      }),
+      error: function(data){
+        $j('#pledge_dialog').html(data);
+      })
     });
+
+    /*$ j.post("#{home_pledge_path}", function(data){
+      $j('#pledge_dialog').html(data);
+      }); */
   });
 
   $j('#pledge_form a.cancel').click(function(){

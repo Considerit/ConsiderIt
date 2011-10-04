@@ -14,4 +14,12 @@
     .submit_block.fr
       = link_to_remove_fields "delete", f
 
+    :javascript
+      $j('.has_example').each(function(){
+        if($j(this).val() == '') {
+          $j(this).example(function() {
+            return $j(this).attr('title'); 
+          });
+        }
+      });
     .clear

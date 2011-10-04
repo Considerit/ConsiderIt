@@ -1,5 +1,5 @@
 %li
-  %a{ :href => point_link.url, :target => '_blank' }
+  %a{ :href => point_link.safe_url, :target => '_blank' }
     #{point_link.description}
   %span.domain
     [#{point_link.short_loc}]

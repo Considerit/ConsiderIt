@@ -42,7 +42,7 @@ ConsiderIt = {
       total_items: 5,
       items_per_page: 5,
       loading_from_ajax: false,
-      dim: 650    
+      dim: 680    
     });
 
     $j('#description .initiatives.horizontal').infiniteCarousel({

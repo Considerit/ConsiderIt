@@ -7,12 +7,27 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def create
-    super
-    if current_user && session[:domain] != current_user.domain_id
-      current_user.domain_id = session[:domain]
-      current_user.save
+    build_resource
+
+    if resource.save
+      if resource.active_for_authentication?
+        sign_in(resource_name, resource)
+        if current_user && session[:domain] != current_user.domain_id
+          current_user.domain_id = session[:domain]
+          current_user.save
+        end
+        redirect_to request.referer
+
+      else
+        set_flash_message :notice, :inactive_signed_up, :reason => inactive_reason(resource) if is_navigational_format?
+        expire_session_data_after_sign_in!
+        respond_with resource, :location => after_inactive_sign_up_path_for(resource)
+      end
+    else
+      clean_up_passwords(resource)
+      respond_with_navigational(resource) { render_with_scope :new }
     end
-    redirect_to request.referer
+    
   end
   def update
     current_user.avatar = params[:user][:avatar]

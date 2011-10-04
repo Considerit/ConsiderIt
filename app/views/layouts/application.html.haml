@@ -24,7 +24,6 @@
     -# = javascript_include_tag :defaults
     = csrf_meta_tag
     
-    
     = include_stylesheets :common, :media => 'all'      
     = stylesheet_link_tag current_theme_stylesheet_path('considerit.theme')
     
@@ -36,7 +35,6 @@
       = stylesheet_link_tag 'ie7'
     /[if lt IE 7]
       = stylesheet_link_tag 'ie6'
-      = javascript_include_tag 'IE7'
     
     = include_javascripts :workspace
       

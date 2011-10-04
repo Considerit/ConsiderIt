@@ -16,6 +16,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
           current_user.domain_id = session[:domain]
           current_user.save
         end
+        if session.has_key?('position_to_be_published')
+          session['reify_activities'] = true 
+        end
         redirect_to request.referer
 
       else

@@ -1,7 +1,7 @@
-require 'ruby-debug'
 class HomeController < ApplicationController
   #caches_page :index
-  
+  respond_to :json, :html
+
   def index
     @user = current_user
   end

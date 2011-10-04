@@ -182,12 +182,12 @@ html {
   margin: 35px 0px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003181}}
 .frame .how iframe {
-  margin: 15px 0px; }
+  margin: 30px 0px; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003184}}
 .who {
   padding: 20px 15px;
-  color: #888888;
+  color: #cccccc;
   font-size: 15px;
   line-height: 20px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/themes\/lvg\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\00003190}}

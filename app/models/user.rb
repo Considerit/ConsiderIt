@@ -37,7 +37,6 @@ class User < ActiveRecord::Base
   end
 
   def self.find_for_third_party_auth(access_token, signed_in_resource=nil)
-    pp access_token
     case access_token['provider']
       when 'twitter'
         user = User.find_by_twitter_uid(access_token['uid'])
@@ -77,6 +76,7 @@ class User < ActiveRecord::Base
             raise 'Not a supported provider'
         end
       end
+      user.skip_confirmation!
       user.save
     end
 

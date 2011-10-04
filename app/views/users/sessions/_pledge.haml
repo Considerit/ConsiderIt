@@ -37,10 +37,10 @@
     $.ajax({
       type: 'POST',
       url: "#{home_pledge_path}",
-      success: function(data){
+      success: function(data, response, xhr){
         $j('#pledge_dialog').html(data);
       },
-      error: function(data){
+      error: function(data, response, xhr){
         $j('#pledge_dialog').html(data);
       }
     });

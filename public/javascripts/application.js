@@ -216,7 +216,7 @@ ConsiderIt = {
     });
 
     // Update callback
-    $j('#points').delegate('.editform form', 'ajax:success', function(data, response, xhr){
+    $j('#points').delegate('.editpointform form', 'ajax:success', function(data, response, xhr){
       $j(this).parents('.point_in_list:first').replaceWith(response['new_point']);
       hide_lightbox(); 
     });

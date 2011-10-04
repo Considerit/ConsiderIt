@@ -3654,12 +3654,15 @@ z98953 = Domain.create!(
   :name => 'Zillah'
 )
 
-admin = User.create!(
+admin = User.new(
   :name => 'LVG Admin',
   :email => 'info@livingvotersguide.org',
   :password   => 'password',
   :password_confirmation => 'password'
 )
+
+admin.skip_confirmation!
+admin.save
 
 o0 = Option.create!(
   :name => 'Concerning the length of time a voter must reside in Washington to vote for president and vice president.',
@@ -4113,7 +4116,7 @@ p8 = Point.create!(
   :option => o0,
   :user => admin,
   :is_pro => false,
-  :nutshell => 'Moves up requirements that are planned to go into effect in 2014 to 2012, putting financial burden on WA at a time when we can’t afford one.',
+  :nutshell => 'Moves up requirements that are planned to go into effect in 2014 to 2012, putting financial burden on WA at a time when we can\'t afford one.',
   :text => ''
 )
 
@@ -4121,7 +4124,7 @@ p9 = Point.create!(
   :option => o0,
   :user => admin,
   :is_pro => false,
-  :nutshell => 'To comply with 1163, the state would need to hire three additional auditors and five additional fraud investigators that it can’t afford.',
+  :nutshell => 'To comply with 1163, the state would need to hire three additional auditors and five additional fraud investigators that it can\'t afford.',
   :text => ''
 )
 

@@ -38,10 +38,10 @@
       url: "#{home_pledge_path}",
       success: function(data){
         $j('#pledge_dialog').html(data);
-      }),
+      },
       error: function(data){
         $j('#pledge_dialog').html(data);
-      })
+      }
     });
 
     /*$ j.post("#{home_pledge_path}", function(data){

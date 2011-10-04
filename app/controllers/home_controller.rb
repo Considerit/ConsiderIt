@@ -32,11 +32,9 @@ class HomeController < ApplicationController
       flash[:notice] = "Welcome to the LVG community!"
     end
 
-    response = {:html => render_to_string(:partial => "users/sessions/confirmation_sent"})
-    respond_to do |format|
-      format.js {render :json => response.to_json}
-    end
-        
+    response = {:html => render_to_string(:partial => "users/sessions/confirmation_sent")}
+    render :json => response.to_json
+
   end
 
 end

@@ -107,13 +107,18 @@ protected
     end
 
     if is_new
-      @position = current_user ? Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first : nil
+      if current_user
+        @position = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first 
+      else
+        @position = session.has_key?("position-#{@option.id}") ? Position.unscoped.find(session["position-#{@option.id}"]) : nil
+      end
       if @position.nil?
         @position = Position.unscoped.create!( 
           :stance => 0.0, 
           :option_id => @option.id, 
           :user_id => @user ? @user.id : nil
         )
+        session["position-#{@option.id}"] = @position.id
       end
     else
       @position = Position.find( params[:id] )

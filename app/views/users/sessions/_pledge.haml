@@ -35,6 +35,7 @@
   $j('button#pledge').click(function(){
 
     $.ajax({
+      type: 'POST',
       url: "#{home_pledge_path}",
       success: function(data){
         $j('#pledge_dialog').html(data);

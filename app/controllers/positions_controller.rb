@@ -81,7 +81,7 @@ protected
     # When we are redirected back to the position page after a user creates their account, 
     # we should save their actions and redirect to results page
     if session.has_key?('reify_activities') && session['reify_activities']
-
+      pp 'POSITION REDIRECTION'
       @position = Position.unscoped.find(session['position_to_be_published'])
       # check to see if this user already had a previous position
       prev_pos = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first
@@ -103,6 +103,7 @@ protected
       session.delete('reify_activities')
       session.delete('position_to_be_published')  
       redirect_to(@option)
+      pp 'REDIRECTING!'
       return
     end
 

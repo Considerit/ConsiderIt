@@ -218,83 +218,84 @@ li.point_in_list {
       border: none;
       font-size: 0px;
       width: 100%;
-      background-color: transparent; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003243}}
+      background-color: transparent;
+      height: 25px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003244}}
       li.point_in_list.point_in_list_margin .include input[type="submit"].judge_point:hover {
         cursor: pointer;
         color: #082872; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003247}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003248}}
     li.point_in_list.point_in_list_margin .include.include_con {
       left: -9px;
       background-image: url("/images/arrow-left.png"); }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003250}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003251}}
       li.point_in_list.point_in_list_margin .include.include_con:hover {
         background-image: url("/images/arrow-left-hover-short.png"); }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003255}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003256}}
     li.point_in_list.point_in_list_margin .include.include_pro {
       left: 180px;
       background-image: url("/images/arrow-right.png"); }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003258}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003259}}
       li.point_in_list.point_in_list_margin .include.include_pro:hover {
         background-image: url("/images/arrow-right-hover-short.png"); }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003264}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003265}}
 .point_list_footer {
   min-height: 35px;
   text-align: center;
   margin: 5px 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003269}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003270}}
   .point_list_footer .arrow {
     height: 18px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003272}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003273}}
   .point_list_footer input.forward {
     background-position: 0 3px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003275}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003276}}
   .point_list_footer .paginate, .point_list_footer .arrow {
     vertical-align: text-top; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003278}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003279}}
 #points_on_board_pro {
   margin-left: 15px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003281}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003282}}
 #points_on_board_con {
   margin-right: 15px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003284}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003285}}
 #points_other_pro {
   left: -43px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003287}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003288}}
   #points_other_pro .point_list_footer {
     padding-right: 20px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003290}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003291}}
     #points_other_pro .point_list_footer .paginate {
       color: #39665f; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003293}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003294}}
 #points_other_con {
   right: -45px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003296}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003297}}
   #points_other_con .point_list_footer {
     padding-left: 20px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003299}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003300}}
     #points_other_con .point_list_footer .paginate {
       color: #654a74; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003305}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003306}}
 .points_other .point_list_footer .forward {
   background-image: url("/images/arrow-down.png"); }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003308}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003309}}
 .points_other .point_list_footer .back {
   background-image: url("/images/arrow-up.png"); }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003313}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003314}}
 .points_board .point_list_footer .paginate {
   color: #c1c1c1; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003316}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003317}}
 .points_board .point_list_footer .forward {
   background-image: url("/images/arrow-down-light.png"); }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003319}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/points\/_point_in_list\.sass}line{font-family:\00003320}}
 .points_board .point_list_footer .back {
   background-image: url("/images/arrow-up-light.png"); }
 

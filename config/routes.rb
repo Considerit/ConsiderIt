@@ -28,4 +28,5 @@ ConsiderIt::Application.routes.draw do
   match "/home/pledge" => "home#take_pledge", :via => :post
   match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit/ } 
 
+  match '/home/study/:category' => "home#study", :via => :post
 end

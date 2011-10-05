@@ -40,9 +40,7 @@
         .event("mouseover", function() this.i(this.index))
         .event("mouseout", function() this.i(-1))
         .event("click", function(){
-          ConsiderIt.positions.stance_group_clicked(this.index, option_id);
-          //try{log_general(this.parent.$canvas[0], 'click', 'view breakdown ' + this.index, true);}
-          //catch(err){}
+          ConsiderIt.positions.stance_group_clicked(this.index);
         });
 
     var label = bar     

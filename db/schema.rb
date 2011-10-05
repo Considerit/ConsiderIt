@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111003014006) do
+ActiveRecord::Schema.define(:version => 20111005053612) do
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",   :default => 0
@@ -251,6 +251,22 @@ ActiveRecord::Schema.define(:version => 20111003014006) do
 
   add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
+
+  create_table "study_data", :force => true do |t|
+    t.integer  "option_id"
+    t.integer  "user_id"
+    t.integer  "position_id"
+    t.integer  "point_id"
+    t.integer  "category"
+    t.integer  "session_id"
+    t.text     "detail1"
+    t.text     "detail2"
+    t.integer  "ival"
+    t.float    "fval"
+    t.boolean  "bval"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "users", :force => true do |t|
     t.string   "email",                               :default => ""

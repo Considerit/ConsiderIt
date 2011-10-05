@@ -67,7 +67,6 @@ class PositionsController < ApplicationController
   
 protected
   def handle_new_edit(is_new)
-
     @option = Option.find(params[:option_id])
     @user = current_user
 
@@ -81,13 +80,13 @@ protected
     # When we are redirected back to the position page after a user creates their account, 
     # we should save their actions and redirect to results page
     if session.has_key?('reify_activities') && session['reify_activities']
-      pp 'POSITION REDIRECTION'
       @position = Position.unscoped.find(session['position_to_be_published'])
       # check to see if this user already had a previous position
       prev_pos = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first
       if prev_pos
         #resolve by combining positions, taking stance from newly submitted...
         prev_pos.stance = @position.stance
+        prev_pos.stance_bucket = @position.stance_bucket
         save_actions(prev_pos)
         prev_pos.save
         @position.point_listings.update_all({:user_id => current_user.id, :position_id => prev_pos.id})
@@ -103,7 +102,6 @@ protected
       session.delete('reify_activities')
       session.delete('position_to_be_published')  
       redirect_to(@option)
-      pp 'REDIRECTING!'
       return
     end
 
@@ -171,30 +169,34 @@ protected
 
     actions[:written_points].each do |pnt_id|
       pnt = Point.unscoped.find( pnt_id )
-      pnt.user_id = position.user_id
+
+      if pnt.user_id.nil?
+        pnt.user_id = position.user_id
+        pnt.published = 1
+      end
       pnt.position_id = position.id
-      pnt.published = 1
-      pnt.save
+      pp position
+      pp position.stance_bucket
+      pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001})
       Inclusion.create!( { 
         :point_id => pnt_id,
         :user_id => position.user_id,
         :position_id => position.id,
         :option_id => position.option_id
       } )      
-
+      pnt.update_absolute_score
     end
-    actions[:written_points] = {}
+    actions[:written_points] = []
 
     actions[:deleted_points].each do |pnt|
       current_user.inclusions.where(:point_id => pnt).destroy
     end
     actions[:deleted_points] = {}
-
-  
-
   end
 
   def get_stance_val_from_params( params )
+    pp params
+
     stance = -1 * Float(params[:position][:stance])
     if stance > 1
       stance = 1

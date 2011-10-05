@@ -204,6 +204,13 @@ problems (mostly Macintosh-specific).
    by hand, so the link with the <tt>csv</tt> file is broken -- if you
    want to make changes, just edit the seeds file.
 
+   **Caution!** Once people have added login information, points, and so
+   forth to a running deployment, don't use <tt>rake db:seed</tt> on
+   the production system since that will reset the database.  Instead,
+   test all the changes on a test version, using the commands above,
+   then (painful) make the needed edits to the database on the
+   production version to bring it into correspondence with the seeds file.
+
 ## Description of Contents
 
 The default directory structure of a generated Ruby on Rails application:

@@ -37,4 +37,25 @@ class HomeController < ApplicationController
 
   end
 
+  def study
+    category = params[:category]
+    sd = StudyData.create!({
+      :category => category.to_i,
+      :user_id => current_user ? current_user.id : nil,
+      :session_id => request.session_options[:id],
+
+      :position_id => params[:position_id],
+      :point_id => params[:point_id],
+      :option_id => params[:option_id],
+      :detail1 => params[:detail1],
+      :detail2 => params[:detail2],
+      :ival => params[:ival].to_i,
+      :fval => params[:fval].to_f,
+      :bval => params[:bval] == 'true'
+    })
+    response = {:success => "success"}
+    render :json => response.to_json
+
+  end
+
 end

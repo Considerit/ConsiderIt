@@ -10,15 +10,15 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111005053612) do
+ActiveRecord::Schema.define(:version => 20111005213143) do
 
   create_table "comments", :force => true do |t|
-    t.integer  "commentable_id",   :default => 0
-    t.string   "commentable_type", :default => ""
-    t.string   "title",            :default => ""
+    t.integer  "commentable_id",    :default => 0
+    t.string   "commentable_type",  :default => ""
+    t.string   "title",             :default => ""
     t.text     "body"
-    t.string   "subject",          :default => ""
-    t.integer  "user_id",          :default => 0,  :null => false
+    t.string   "subject",           :default => ""
+    t.integer  "user_id",           :default => 0,  :null => false
     t.integer  "parent_id"
     t.integer  "lft"
     t.integer  "rgt"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(:version => 20111005053612) do
     t.datetime "updated_at"
     t.integer  "point_id"
     t.integer  "option_id"
+    t.boolean  "passes_moderation"
   end
 
   add_index "comments", ["commentable_id"], :name => "index_comments_on_commentable_id"
@@ -188,6 +189,7 @@ ActiveRecord::Schema.define(:version => 20111005053612) do
     t.boolean  "published",            :default => true
     t.boolean  "hide_name",            :default => false
     t.boolean  "share",                :default => true
+    t.boolean  "passes_moderation"
   end
 
   add_index "points", ["is_pro"], :name => "index_points_on_is_pro"

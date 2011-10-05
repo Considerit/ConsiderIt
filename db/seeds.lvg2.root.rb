@@ -4995,7 +4995,7 @@ o5 = Option.create!(
   :domain_short => 'City of Connell',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'CNNL 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -5016,7 +5016,7 @@ o6 = Option.create!(
   :domain_short => 'Asotin EMS Dist.',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'EMS 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -5042,7 +5042,7 @@ o7 = Option.create!(
   :domain_short => 'Clarkston EMS Dist.',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'EMS 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -5068,7 +5068,7 @@ o8 = Option.create!(
   :domain_short => 'Asotin Fire Dist.',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'FPD 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -5102,7 +5102,7 @@ o9 = Option.create!(
   :domain_short => 'City of Palouse',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'PAL 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -5126,7 +5126,7 @@ o10 = Option.create!(
   :domain_short => 'City of Palouse',
   :url => '',
   :category => 'Proposition',
-  :designator => '2',
+  :designator => 'PAL 2',
   :long_description => '',
   :additional_details => ''
 )
@@ -5147,7 +5147,7 @@ o11 = Option.create!(
   :domain_short => 'City of Palouse',
   :url => '',
   :category => 'Proposition',
-  :designator => '3',
+  :designator => 'PAL 3',
   :long_description => '',
   :additional_details => ''
 )
@@ -5173,7 +5173,7 @@ o12 = Option.create!(
   :domain_short => 'City of Newport',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'NPT 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -5198,7 +5198,7 @@ o13 = Option.create!(
   :domain_short => 'Sacheen S&W',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'SSW 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -5251,7 +5251,7 @@ o14 = Option.create!(
   :domain_short => 'Selkirk School Dist.',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'SEL 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -5294,7 +5294,7 @@ o15 = Option.create!(
   :domain_short => 'Sacheen S&W',
   :url => '',
   :category => 'Proposition',
-  :designator => '2',
+  :designator => 'SSW 2',
   :long_description => '',
   :additional_details => ''
 )
@@ -5344,7 +5344,7 @@ o16 = Option.create!(
   :domain_short => 'Douglas Hosp. Dist.',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'HOSP 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -5398,7 +5398,7 @@ o17 = Option.create!(
   :domain_short => 'Douglas Cem. D.',
   :url => '',
   :category => 'Proposition',
-  :designator => '4',
+  :designator => 'CMTY 4',
   :long_description => '',
   :additional_details => ''
 )
@@ -5449,7 +5449,7 @@ o18 = Option.create!(
   :domain_short => 'Town of Farmington',
   :url => '',
   :category => 'Proposition',
-  :designator => '10',
+  :designator => 'FRM 10',
   :long_description => '',
   :additional_details => ''
 )
@@ -5475,7 +5475,7 @@ o19 = Option.create!(
   :domain_short => 'Town of Farmington',
   :url => '',
   :category => 'Proposition',
-  :designator => '11',
+  :designator => 'FRM 11',
   :long_description => '',
   :additional_details => ''
 )
@@ -5498,7 +5498,7 @@ o20 = Option.create!(
   :domain_short => 'Town of Farmington',
   :url => '',
   :category => 'Proposition',
-  :designator => '9',
+  :designator => 'FRM 9',
   :long_description => '',
   :additional_details => ''
 )
@@ -5528,7 +5528,7 @@ o21 = Option.create!(
   :domain_short => 'Franklin County',
   :url => '',
   :category => 'Proposition',
-  :designator => '2',
+  :designator => 'FRNK 2',
   :long_description => '',
   :additional_details => ''
 )
@@ -5573,7 +5573,7 @@ o22 = Option.create!(
   :domain_short => 'Town of Waterville',
   :url => '',
   :category => 'Proposition',
-  :designator => '2',
+  :designator => 'WTRV 2',
   :long_description => '',
   :additional_details => ''
 )
@@ -5594,7 +5594,7 @@ o23 = Option.create!(
   :domain_short => 'Town of Waterville',
   :url => '',
   :category => 'Proposition',
-  :designator => '3',
+  :designator => 'WTRV 3',
   :long_description => '',
   :additional_details => ''
 )
@@ -5617,7 +5617,7 @@ o24 = Option.create!(
   :domain_short => 'Town of Waterville',
   :url => '',
   :category => 'Proposition',
-  :designator => '5',
+  :designator => 'WTRV 5',
   :long_description => '',
   :additional_details => ''
 )
@@ -5637,7 +5637,7 @@ o25 = Option.create!(
   :domain_short => 'City of Tekoa',
   :url => '',
   :category => 'Proposition',
-  :designator => '4',
+  :designator => 'TEKO 4',
   :long_description => '',
   :additional_details => ''
 )
@@ -5657,7 +5657,7 @@ o26 = Option.create!(
   :domain_short => 'Town of Albion',
   :url => '',
   :category => 'Proposition',
-  :designator => '5',
+  :designator => 'EMS 5',
   :long_description => '',
   :additional_details => ''
 )
@@ -5678,7 +5678,7 @@ o27 = Option.create!(
   :domain_short => 'Town of Colton',
   :url => '',
   :category => 'Proposition',
-  :designator => '6',
+  :designator => 'CLTN 6',
   :long_description => '',
   :additional_details => ''
 )
@@ -5697,7 +5697,7 @@ o28 = Option.create!(
   :domain_short => 'Town of Endicott',
   :url => '',
   :category => 'Proposition',
-  :designator => '7',
+  :designator => 'ENDI 7',
   :long_description => '',
   :additional_details => ''
 )
@@ -5716,7 +5716,7 @@ o29 = Option.create!(
   :domain_short => 'Town of Endicott',
   :url => '',
   :category => 'Proposition',
-  :designator => '8',
+  :designator => 'ENDI 8',
   :long_description => '',
   :additional_details => ''
 )
@@ -5743,7 +5743,7 @@ o30 = Option.create!(
   :domain_short => 'Kitsap County',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'KTSP 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -5893,7 +5893,7 @@ o31 = Option.create!(
   :domain_short => 'Kitsap County',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'BAIN 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -6046,7 +6046,7 @@ o32 = Option.create!(
   :domain_short => 'City of Bremerton',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'BREM 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -6090,7 +6090,7 @@ o33 = Option.create!(
   :domain_short => 'Port of Tracyton',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'TRCY 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -6116,7 +6116,7 @@ o34 = Option.create!(
   :domain_short => 'Yakima County',
   :url => '',
   :category => 'Proposition',
-  :designator => '2',
+  :designator => 'YKM 2',
   :long_description => '',
   :additional_details => ''
 )
@@ -6259,7 +6259,7 @@ o35 = Option.create!(
   :domain_short => 'Yakima County',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'YKM 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -6403,7 +6403,7 @@ o36 = Option.create!(
   :domain_short => 'Naches P&R Dist.',
   :url => '',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'NACH 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -6431,7 +6431,7 @@ o37 = Option.create!(
   :domain_short => 'City of Carnation',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40321&eid=1249',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'CARN 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -6461,7 +6461,7 @@ o38 = Option.create!(
   :domain_short => 'City of Des Moines',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40322&eid=1249',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'DMOI 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -6492,7 +6492,7 @@ o39 = Option.create!(
   :domain_short => 'City of Pacific',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40323&eid=1249',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'PACI 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -6513,7 +6513,7 @@ o40 = Option.create!(
   :domain_short => 'City of SeaTac',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40324&eid=1249',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'STAC 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -6561,7 +6561,7 @@ o41 = Option.create!(
   :domain_short => 'City of Seattle',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40325&eid=1249',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'SEA 1',
   :long_description => 'Seattle Proposition 1 approves a property tax
     increase totaling $231,562,000 over seven years. The levy is
     limited so that the City shall not levy more than $32,101,000 in
@@ -6958,7 +6958,7 @@ o42 = Option.create!(
   :domain_short => 'Seattle TBD',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40328&eid=1249',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'STBD 1',
   :long_description => 'If approved, this proposition imposes a $60
     vehicle license fee (VLF) for a ten-year period on qualifying
     vehicles registered to owners within the Seattle Transportation
@@ -7307,7 +7307,7 @@ o43 = Option.create!(
   :domain_short => 'City of Tukwila',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40326&eid=1249',
   :category => 'Adv Measure',
-  :designator => '1',
+  :designator => 'TUK 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -7354,7 +7354,7 @@ o44 = Option.create!(
   :domain_short => 'North Bend TBD',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40327&eid=1249',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'NBND 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -7398,7 +7398,7 @@ o45 = Option.create!(
   :domain_short => 'Shoreline SD',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40329&eid=1249',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'SHOR 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -7426,7 +7426,7 @@ o46 = Option.create!(
   :domain_short => 'King Cty FPD 28',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40330&eid=1249',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'KCFD 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -7455,7 +7455,7 @@ o47 = Option.create!(
   :domain_short => 'Si View Park Dist.',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40331&eid=1249',
   :category => 'Proposition',
-  :designator => '1',
+  :designator => 'SI 1',
   :long_description => '',
   :additional_details => ''
 )
@@ -7493,7 +7493,7 @@ o48 = Option.create!(
   :domain_short => 'Si View Park Dist.',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40332&eid=1249',
   :category => 'Proposition',
-  :designator => '2',
+   :designator => 'SI 2',
   :long_description => '',
   :additional_details => ''
 )

@@ -97,12 +97,12 @@
   - if @domain
     #zipcode_entered
       %span.greeting
-        Hello, citizen of #{@domain.name}!
+        Hello, citizen!
       %span.unlocked
         - if (cnt = @domain.domain_maps.count) == 0
-          According to our records, #{@domain.name} does not have any local measures on the ballot. 
+          According to our records, the #{@domain.name} area does not have any local measures on the ballot. 
         - else
-          #{@domain.name} has #{cnt} local #{cnt==1 ? 'measure' : 'measures'}.
+          In the list above, you can now access #{cnt} #{@domain.name} area #{cnt==1 ? 'measure' : 'measures'} likely to be on your ballot.
       .reset
         Is #{@domain.identifier} not your zip code? 
         %a 

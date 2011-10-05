@@ -3667,27 +3667,135 @@ admin.save
 o0 = Option.create!(
   :name => 'Concerning the length of time a voter must reside in Washington to vote for president and vice president.',
   :short_name => 'Pres/VP Voting',
-  :description => 'The legislature has proposed a constitutional amendment on repealing article VI, section 1A, of the Washington Constitution. \n\nThis amendment would remove an inoperative provision from the state constitution regarding the length of time a voter must reside in Washington to vote for president and vice-president.',
+  :description => 'The legislature has proposed a constitutional
+    amendment on repealing article VI, section 1A, of the Washington
+    Constitution. \n\nThis amendment would remove an inoperative
+    provision from the state constitution regarding the length of time
+    a voter must reside in Washington to vote for president and
+    vice-president.',
   :domain => 'State of Washington',
   :domain_short => 'WA State',
   :url => 'http://wei.secstate.wa.gov/osos/en/PreviousElections/2011/general/Documents/8205%20complete%20text.pdf',
   :category => 'Senate Joint Resolution',
   :designator => '8205',
-  :long_description => '<b>The Constitutional Provision as it Presently Exists</b> <br> The Washington Constitution currently contains two provisions relating to the length of time that a person must be a resident of Washington in order to vote. One of those provisions, article VI, section 1A, is inoperative because of court decisions and a more recent amendment to the other provision, article VI, section 1.<br> &nbsp;<br> Article VI, section 1, provides that all citizens who are at least eighteen years old are entitled to vote if they have lived in the state, county, and precinct for at least 30 days before the election. The second provision, article VI, section 1A, states that all citizens of the United States who become residents of Washington during a presidential election year may vote for the offices of president and vice president if they resided in Washington for at least 60 days before the election.<br> &nbsp;<br> The voters added article VI, section 1A, to the state constitution in 1966 as Amendment 46. At that time, article VI, section 1, of the state constitution required voters to reside in the state for a full year prior to voting and, in addition, required that they live in the county for 90 days and the city, town, ward, or precinct for 30 days before the election. Therefore, when section 1A was added to the constitution in 1966, it provided a more lenient residency requirement so that new residents of the state could vote for president and vice president after a shorter, 60-day period of residency. <br> &nbsp;<br> After the voters approved adding section 1A to the state constitution, the United States Supreme Court ruled that any requirement that voters live in a particular place longer than 30 days in order to vote is unconstitutional. Based upon that holding, the Washington Supreme Court held that the 90-day county and one-year state residency requirements stated in article VI, section 1, were unconstitutional. Washington voters then approved amending article VI, section 1, to read as it does today in order to conform to the court decisions, but this amendment did not repeal or change article VI, section 1A. Washington law therefore currently entitles all otherwise-qualified citizens to vote if they have resided within the state, county, and precinct for at least 30 days. <br> &nbsp;<br> Article VI, section 1A, remains part of the state constitution, but has no operative effect.<br> &nbsp;<br> <b>The Effect of the Proposed Amendment, if Approved</b> This measure proposes to amend the state constitution to remove article VI, section 1A, from the state constitution. The state constitution would continue to entitle all otherwise-eligible citizens of the United States to vote if they have resided in Washington, and in their county and precinct, for at least 30 days before the election.<p>',
-  :additional_details => 'Not required by law'
-)
-
+  :long_description => '<b>The Constitutional Provision as it
+    Presently Exists</b> <br> The Washington Constitution currently
+    contains two provisions relating to the length of time that a
+    person must be a resident of Washington in order to vote. One of
+    those provisions, article VI, section 1A, is inoperative because
+    of court decisions and a more recent amendment to the other
+    provision, article VI, section 1.<br> &nbsp;<br> Article VI,
+    section 1, provides that all citizens who are at least eighteen
+    years old are entitled to vote if they have lived in the state,
+    county, and precinct for at least 30 days before the election. The
+    second provision, article VI, section 1A, states that all citizens
+    of the United States who become residents of Washington during a
+    presidential election year may vote for the offices of president
+    and vice president if they resided in Washington for at least 60
+    days before the election.<br> &nbsp;<br> The voters added article
+    VI, section 1A, to the state constitution in 1966 as Amendment
+    46. At that time, article VI, section 1, of the state constitution
+    required voters to reside in the state for a full year prior to
+    voting and, in addition, required that they live in the county for
+    90 days and the city, town, ward, or precinct for 30 days before
+    the election. Therefore, when section 1A was added to the
+    constitution in 1966, it provided a more lenient residency
+    requirement so that new residents of the state could vote for
+    president and vice president after a shorter, 60-day period of
+    residency. <br> &nbsp;<br> After the voters approved adding
+    section 1A to the state constitution, the United States Supreme
+    Court ruled that any requirement that voters live in a particular
+    place longer than 30 days in order to vote is
+    unconstitutional. Based upon that holding, the Washington Supreme
+    Court held that the 90-day county and one-year state residency
+    requirements stated in article VI, section 1, were
+    unconstitutional. Washington voters then approved amending article
+    VI, section 1, to read as it does today in order to conform to the
+    court decisions, but this amendment did not repeal or change
+    article VI, section 1A. Washington law therefore currently
+    entitles all otherwise-qualified citizens to vote if they have
+    resided within the state, county, and precinct for at least 30
+    days. <br> &nbsp;<br> Article VI, section 1A, remains part of the
+    state constitution, but has no operative effect.<br> &nbsp;<br>
+    <b>The Effect of the Proposed Amendment, if Approved</b> This
+    measure proposes to amend the state constitution to remove article
+    VI, section 1A, from the state constitution. The state
+    constitution would continue to entitle all otherwise-eligible
+    citizens of the United States to vote if they have resided in
+    Washington, and in their county and precinct, for at least 30 days
+    before the election.<p>',
+  :additional_details => 'Not required by law' )
 
 o1 = Option.create!(
   :name => 'Concerning the budget stabilization account maintained in the state treasury.',
   :short_name => 'Budget Acct.',
-  :description => 'The legislature has proposed a constitutional amendment on the budget stabilization account maintained in the state treasury. \n\nThis amendment would require the legislature to transfer additional moneys to the budget stabilization account in each fiscal biennium in which the state has received "extraordinary revenue growth," as defined, with certain limitations.',
+  :description => 'The legislature has proposed a constitutional
+    amendment on the budget stabilization account maintained in the
+    state treasury. \n\nThis amendment would require the legislature
+    to transfer additional moneys to the budget stabilization account
+    in each fiscal biennium in which the state has received
+    "extraordinary revenue growth," as defined, with certain
+    limitations.',
   :domain => 'State of Washington',
   :domain_short => 'WA State',
   :url => 'http://wei.secstate.wa.gov/osos/en/PreviousElections/2011/general/Documents/8206%20complete%20text.pdf',
   :category => 'Senate Joint Resolution',
   :designator => '8206',
-  :long_description => '<b>The Constitutional Provision as it Presently Exists</b><br> Article VII, section 12 of the Washington Constitution requires a budget stabilization account to be maintained in the state treasury. By the end of each fiscal year (June 30 of each year), the legislature must transfer to the budget stabilization account an amount equal to one percent of the general state revenues for that fiscal year. The legislature may approve the transfer of additional amounts. &ldquo;General state revenues&rdquo; means all state revenues that are not derived from a state undertaking or dedicated to a particular purpose, as set forth in article VIII, section 1 of the Washington Constitution.<br> &nbsp;<br> Article VII, section 12 also authorizes the legislature to withdraw money from the budget stabilization account. The legislature may do so by majority vote in two situations: (1) during a fiscal year in which the governor declares a state of emergency in response to a catastrophic event that requires government action to protect life or public safety; or (2) in a fiscal year for which the forecasted state employment growth is estimated to be less than one percent. In addition, at any time the balance in the budget stabilization account exceeds ten percent of estimated general state revenues for that fiscal year, the legislature by majority vote may transfer the amount in excess of ten percent to the education construction fund. Otherwise, a three-fifths vote of the legislature is required to withdraw or transfer money from the budget stabilization account. All relevant estimates of employment and revenue are made by the state economic and revenue forecast council.<br> &nbsp;<br> <b>The Effect of the Proposed Amendment, if Approved</b><br> The proposed amendment to article VII, section 12 would require additional revenue to be transferred to the budget stabilization account in any fiscal biennium in which there has been &ldquo;extraordinary revenue growth,&rdquo; with certain limitations. &ldquo;Extraordinary revenue growth&rdquo; is defined by reference to a baseline consisting of the average biennial percentage growth in general state revenues over the preceding five biennia. Any growth in general state revenue that is more than one-third greater than the baseline is defined as &ldquo;extraordinary revenue growth.&rdquo; In determining whether &ldquo;extraordinary revenue growth&rdquo; has occurred, historical general state revenues must be adjusted to reflect statutory changes to revenue dedication.<br> &nbsp;<br> The legislature would be required to transfer three-fourths of that &ldquo;extraordinary revenue growth&rdquo; to the budget stabilization account, subject to two limitations. First, no transfer of &ldquo;extraordinary revenue growth&rdquo; is required where annual average state employment growth during the preceding fiscal biennium averaged less than one percent per fiscal year. Second, no transfer of &ldquo;extraordinary revenue growth&rdquo; is required unless the transfer would exceed the amount already transferred to the budget stabilization account during the fiscal biennium, under present law. The deadline for transferring the additional revenue would be the end of each fiscal biennium (June 30 in odd-numbered years).<br> &nbsp;<br> No change would be made to the legislature&rsquo;s authority to withdraw money from the budget stabilization account.<p> ',
+  :long_description => '<b>The Constitutional Provision as it
+    Presently Exists</b><br> Article VII, section 12 of the Washington
+    Constitution requires a budget stabilization account to be
+    maintained in the state treasury. By the end of each fiscal year
+    (June 30 of each year), the legislature must transfer to the
+    budget stabilization account an amount equal to one percent of the
+    general state revenues for that fiscal year. The legislature may
+    approve the transfer of additional amounts. &ldquo;General state
+    revenues&rdquo; means all state revenues that are not derived from
+    a state undertaking or dedicated to a particular purpose, as set
+    forth in article VIII, section 1 of the Washington
+    Constitution.<br> &nbsp;<br> Article VII, section 12 also
+    authorizes the legislature to withdraw money from the budget
+    stabilization account. The legislature may do so by majority vote
+    in two situations: (1) during a fiscal year in which the governor
+    declares a state of emergency in response to a catastrophic event
+    that requires government action to protect life or public safety;
+    or (2) in a fiscal year for which the forecasted state employment
+    growth is estimated to be less than one percent. In addition, at
+    any time the balance in the budget stabilization account exceeds
+    ten percent of estimated general state revenues for that fiscal
+    year, the legislature by majority vote may transfer the amount in
+    excess of ten percent to the education construction
+    fund. Otherwise, a three-fifths vote of the legislature is
+    required to withdraw or transfer money from the budget
+    stabilization account. All relevant estimates of employment and
+    revenue are made by the state economic and revenue forecast
+    council.<br> &nbsp;<br> <b>The Effect of the Proposed Amendment,
+    if Approved</b><br> The proposed amendment to article VII, section
+    12 would require additional revenue to be transferred to the
+    budget stabilization account in any fiscal biennium in which there
+    has been &ldquo;extraordinary revenue growth,&rdquo; with certain
+    limitations. &ldquo;Extraordinary revenue growth&rdquo; is defined
+    by reference to a baseline consisting of the average biennial
+    percentage growth in general state revenues over the preceding
+    five biennia. Any growth in general state revenue that is more
+    than one-third greater than the baseline is defined as
+    &ldquo;extraordinary revenue growth.&rdquo; In determining whether
+    &ldquo;extraordinary revenue growth&rdquo; has occurred,
+    historical general state revenues must be adjusted to reflect
+    statutory changes to revenue dedication.<br> &nbsp;<br> The
+    legislature would be required to transfer three-fourths of that
+    &ldquo;extraordinary revenue growth&rdquo; to the budget
+    stabilization account, subject to two limitations. First, no
+    transfer of &ldquo;extraordinary revenue growth&rdquo; is required
+    where annual average state employment growth during the preceding
+    fiscal biennium averaged less than one percent per fiscal
+    year. Second, no transfer of &ldquo;extraordinary revenue
+    growth&rdquo; is required unless the transfer would exceed the
+    amount already transferred to the budget stabilization account
+    during the fiscal biennium, under present law. The deadline for
+    transferring the additional revenue would be the end of each
+    fiscal biennium (June 30 in odd-numbered years).<br> &nbsp;<br> No
+    change would be made to the legislature&rsquo;s authority to
+    withdraw money from the budget stabilization account.<p> ',
   :additional_details => 'Not required by law'
 )
 
@@ -3710,84 +3818,300 @@ p1 = Point.create!(
 o2 = Option.create!(
   :name => 'Concerning state expenditures on transportation.',
   :short_name => 'Transportation Exp.',
-  :description => 'Initiative Measure No. 1125 concerns state expenditures on transportation. \n\nThis measure would prohibit the use of motor vehicle fund revenue and vehicle toll revenue for non-transportation purposes, and require that road and bridge tolls be set by the legislature and be project-specific.',
+  :description => 'Initiative Measure No. 1125 concerns state
+    expenditures on transportation. \n\nThis measure would prohibit
+    the use of motor vehicle fund revenue and vehicle toll revenue for
+    non-transportation purposes, and require that road and bridge
+    tolls be set by the legislature and be project-specific.',
   :domain => 'State of Washington',
   :domain_short => 'WA State',
   :url => 'http://wei.secstate.wa.gov/osos/en/PreviousElections/2011/general/Documents/1125%20Full%20Text%20for%20VP.pdf',
   :category => 'Initiative',
   :designator => '1125',
   :long_description => '<b>The Law as it Presently Exists</b><br> The
-  legislature has enacted various laws that direct where and how tolls
-  can be set for bridges, ferries, tunnels, roads, and related
-  facilities. Those laws also restrict the ways in which toll revenue
-  can be used. Initiative Measure No. 1125 would impose additional
-  restrictions on the use of toll revenue.<br> &nbsp;<br> The
-  Eighteenth Amendment to the Washington Constitution requires that
-  certain state revenue be used only for &ldquo;highway
-  purposes.&rdquo; That amendment, which was approved in 1944,
-  provides that the following revenue must be paid into the state
-  treasury and placed in a special fund to be used exclusively for
-  &ldquo;highway purposes&rdquo;: all fees the state collects as
-  license fees for motor vehicles; all excise taxes the state collects
-  on the sale, distribution, or use of motor vehicle fuel; and all
-  other state revenue &ldquo;intended to be used for highway
-  purposes.&rdquo; That fund is the &ldquo;motor vehicle fund&rdquo;
-  established in RCW 46.68.070. The Eighteenth Amendment also lists
-  some uses that must be considered &ldquo;highway purposes,&rdquo;
-  including the necessary operating, engineering, and legal expenses
-  connected with the administration of public highways, county roads,
-  and city streets; and the construction, reconstruction, maintenance,
-  repair, and betterment of public highways, county roads, bridges,
-  and city streets.<br> &nbsp;<br> Since well before the adoption of
-  the Eighteenth Amendment, the legislature has authorized the use of
-  tolls as one means of paying for the acquisition, construction, and
-  operation of bridges, ferries, tunnels, roads, and related
-  facilities. That authority includes the use of tolls to retire bonds
-  issued to finance acquisition and construction of bridges, ferries,
-  tunnels, roads, and related facilities; tolls used for that purpose
-  must be deposited in special trust funds kept separate from all
-  other funds.<br> &nbsp;<br> Under current law, the legislature must
-  authorize the collection of tolls but it can delegate the authority
-  to set the amounts of tolls. The legislature has designated the
-  state Transportation Commission as the &ldquo;tolling
-  authority&rdquo; responsible for setting most tolls, under standards
-  and guidelines established in law to ensure that the revenue
-  generated by tolls is sufficient to pay maintenance and operating
-  costs for the facility; pay principal and interest on bonds, related
-  financing costs, and insurance; and reimburse the motor vehicle fund
-  for any money used from that fund to pay for bonds.&nbsp; Unless
-  otherwise provided in law, all revenue from a toll facility is to be
-  used for that facility, and tolls may continue to be collected after
-  initial construction has been paid for to fund additional capacity,
-  maintenance, and operation of the facility.<br> &nbsp;<br> <b>The
-  Effect of the Proposed Measure, if Approved</b><br> Initiative
-  Measure No. 1125 would require that toll amounts be set by the
-  legislature by majority vote, rather than by the Transportation
-  Commission, and would make the setting of toll amounts subject to
-  statutes that require preparation of various reports and analyses
-  relating to costs. It would require that tolls be &ldquo;uniform and
-  consistent&rdquo; and would not allow variable pricing of
-  tolls. (&ldquo;Variable priced&rdquo; tolls typically are higher
-  during periods of traffic congestion and lower at other times of the
-  day or week.)<br> &nbsp;<br> While the measure would leave in place
-  the authority to collect and use tolls for the preservation,
-  maintenance, management, and operation of a facility, it would add
-  provisions that limit the use of some tolls to construction and
-  capital improvement only and that require tolls on future facilities
-  to end after the cost of the project is paid. The measure would
-  require revenue from tolls to be used only for purposes
-  &ldquo;consistent with&rdquo; the Eighteenth Amendment, and would
-  prohibit any revenue in the motor vehicle fund or any toll fund from
-  being transferred to the &ldquo;general fund or other funds&rdquo;
-  and used for &ldquo;non-transportation purposes.&rdquo;<br>
-  &nbsp;<br> The measure would restate the existing requirement that
-  tolls must be used on the facility for which they are collected,
-  explicitly referencing the Interstate 90 floating bridge. The
-  measure also would prohibit the state or a state agency from
-  transferring or using &ldquo;gas-tax-funded or toll-funded lanes on
-  state highways&rdquo; for &ldquo;non-highway purposes.&rdquo; <p> ',
-  :additional_details => 'No fiscal impact is assumed for the Tacoma Narrows Bridge and State Route 167 toll lanes. Fiscal impacts for future toll roads and toll bridges are unknown and indeterminate. The State Treasurer states that bonds secured solely by toll revenue will become prohibitively expensive if the Legislature sets tolls, thus eliminating this financing tool for transportation projects. Prohibiting variable tolling will require additional analyses estimated to cost up to $8.3 million. Because the restrictions on future toll revenue, toll expenditures and toll lanes cannot be quantified, the fiscal impact on state and local governments from these provisions is indeterminate.<br> &nbsp;<br> <b>General Assumptions</b><br> <ul>   <li>The initiative is effective Dec. 8, 2011, and applies prospectively.</li>   <li>The term &ldquo;highway purposes&rdquo; is used to describe the 18th Amendment purposes. For purposes of the fiscal impact statement, &ldquo;highway purposes&rdquo; excludes operating funds for transit and other funding for transit, bicycle and pedestrian facilities that do not directly benefit the highway system.</li>   <li>Estimates are described using the state&rsquo;s fiscal year (FY) of July 1 through June 30.</li>   <li>The fiscal impact statement covers the period FY 2012 through FY 2017.</li>   <li>Fiscal impacts are measured against current law, enacted budgets and bond authorizations.</li>   <li>Bonds are a form of state debt used to finance capital construction and transportation projects. Bonds enable the state to receive funds today on the promise that the funds will be repaid with interest. Bonds must be authorized by the Legislature and identify how the debt will be paid.</li> </ul>  <b>Assumptions by Section</b><br> <ul>   <li>Section 2 limits expenditures from the Motor Vehicle Fund and toll funds to transportation purposes.</li>   <li>Section 3 prohibits the state and its agencies from the transfer or use of gas tax or toll-funded lanes for non-highway purposes.</li>   <li>Section 4 applies to all tolled facilities, except the Tacoma Narrows Bridge and state ferries. The Legislature shall determine and establish tolls and charges on tolled facilities. The initiative does not change existing tolls, toll rates or methodologies. However, to impose a new toll, increase a toll or change a toll methodology to increase revenue, the Legislature must act. In addition, toll revenue must be used for the facility in which the funds are generated and only for highway purposes.</li>   <li>Sections 5 through 7 apply to toll bridges and other state toll facilities, excluding state ferries, first authorized after July 1, 2008. The Legislature is the tolling authority for all state highways. The initiative does not change existing tolls, toll rates or methodologies. However, to impose a new toll, increase a toll or change a toll methodology to increase revenue, the Legislature must act. In addition, for the future:  <ul>   <li>Toll revenue must be used for the facility in which the funds are generated;</li>   <li>Toll revenue must be used only for highway purposes;</li>   <li>Toll rates must be uniform and consistent and may not include variable pricing; and</li>   <li>Tolls on future tolled facilities must end after the cost of the project is paid.</li> </ul> </li>    <li>Section 8 applies only to tolls on the Interstate 90 floating bridge. Toll revenue from this facility must be used exclusively for toll facilities and capital improvements on Interstate 90 and only for highway purposes.</li> </ul>  &nbsp;<br> <b>State and Local Fiscal Impacts</b><br> Section 2. No fiscal impact is assumed from this section. Expenditures from the Motor Vehicle Fund and toll funds are restricted by law to transportation purposes.<br> &nbsp;<br> Section 3. This restriction is assumed to have no impact on state or local revenues. The restriction also does not direct new expenditures or new costs. Therefore, it is assumed that state and local governments will adjust their actions to comply with this restriction, resulting in no new increased or decreased costs.<br> &nbsp;<br> Sections 4 through 8 are described by tolled facility:<br> &nbsp;<br> Tacoma Narrows Bridge<br> These sections do not apply to this bridge, and therefore, no fiscal impact is assumed.<br> &nbsp;<br> State Route 167 High-Occupancy Vehicle Lanes<br> Because these tolled lanes were first authorized before July 1, 2008, only Section 4 applies to them. Tolls are authorized for this facility until June 30, 2013. It is not anticipated that toll rates will increase during this authorization. Therefore, no fiscal impact is assumed on toll revenues from the lanes. There is no debt on these lanes.<br> &nbsp;<br> Tolls collected from high-occupancy toll lanes can be used to increase transit, vanpool, carpool and trip reduction services in the State Route 167 corridor, which could be inconsistent with highway purposes. However, enacted budgets provide that all tolls collected from the lanes be used solely for the operation, administration and enforcement of these lanes. Therefore, no fiscal impact is assumed for state and local expenditures.<br> &nbsp;<br> State Route 520 Bridge<br> Sections 4 though 7 apply to this bridge. Tolls are authorized and have been set for this bridge. The Legislature has identified toll revenue as part of the State Route 520 bridge replacement and high-occupancy vehicle program. It is not known whether a toll rate increase will be necessary during the period covered by this fiscal impact statement. However, if it is necessary, the Legislature will need to act to set tolls subject to requirements contained in Section 7.<br> &nbsp;<br> Current law requires the use of variable tolling. If a toll rate increase is necessary, a new toll rate analysis and supplemental environmental review will be required to implement a uniform and consistent toll rate. Assuming that these analyses can be conducted concurrently within project schedules, the cost is estimated at up to $3.2 million. Prior analysis indicates that a fixed toll rate equivalent to the weighted average of variable tolls could reduce revenue by up to 11 percent due to different traffic patterns (Parsons Brinckerhoff analysis, March 2008). However, because a new analysis is necessary to quantify impacts and it is not certain that a toll rate increase is necessary during the period covered by the fiscal impact statement, the impact on toll revenue is indeterminate.<br> &nbsp;<br> Federal Urban Partnership Agreement (UPA) grants were awarded to the Washington State Department of Transportation, King County and King County Ferry District conditioned on implementing variable tolling on the existing State Route 520 bridge. If a toll rate increase is necessary and variable tolling is prohibited, the state, King County and King County Ferry District would lose authority to spend remaining grant funds and could be required to repay the entire grant amount. The state has spent $64.4 million of the state&rsquo;s $86.1 million UPA grant, leaving $21.7 million remaining as of July 2011. King County has spent $34.8 million of the county&rsquo;s $41 million UPA grant, leaving $6.2 million remaining as of July 2011. The King County Ferry District was awarded $1 million, none of which has been spent as of July 2011. Because it is not known if a toll rate increase is necessary during the period covered by the fiscal impact statement or what action the federal government will take, the impact on this grant revenue is indeterminate.<br> &nbsp;<br> Tolls collected from State Route 520 can be used to provide for the operations of conveyances of people or goods, which could be inconsistent with highway purposes. However, current law and enacted budgets provide that tolls collected from State Route 520 must be used for operation and administration of the tolled bridge and high-occupancy vehicle program and to repay bond obligations used to finance construction and capital improvement costs, which are assumed to be consistent with highway purposes. Therefore, no fiscal impact is assumed on state and local government expenditures during the period covered by the fiscal impact statement.<br> &nbsp;<br> Current law authorizes the issuance of $1.95 billion in bonds secured solely by toll revenue or secured by both toll and gas tax revenue. The State Treasurer states that requiring tolls to be set and adjusted by the Legislature rather than by an independent toll-setting body would make the cost of bonds secured solely by toll revenue prohibitively expensive and would be unprecedented nationally. Because investors in toll revenue bonds see the independence of toll-setting bodies as a critical credit characteristic, no other toll revenue bond issuer in the nation sets tolls subject to legislative approval (Public Resource Advisory Group analysis, Feb. 8, 2011). Therefore, the State Treasurer states that bonds secured solely by toll revenue would be eliminated as a financing tool for the bridge. Gas tax or other revenues would be necessary to issue bonds, reducing overall capacity to finance transportation projects, which may impact future expenditures.<br> &nbsp;<br> Interstate 405 High-Occupancy Vehicle Lanes<br> Sections 4 though 7 apply to these lanes. Tolls are authorized for these lanes, but tolls have not been set. Current law requires the use of dynamic tolling. To implement a uniform and consistent toll rate, a new toll rate analysis and supplemental environmental review would be required. Assuming that these analyses can be conducted concurrently within project schedules, the cost is estimated at up to $2.5 million. Because the new analysis is necessary to quantify impacts, the impact on toll revenue is indeterminate.<br> &nbsp;<br> Tolls collected from Interstate 405 high-occupancy vehicle lanes can be used to provide for the operations of conveyances of people or goods, which could be inconsistent with the highway purposes. However, current law and enacted budgets provide that tolls collected from the lanes must be used for operation and administration of the tolled lanes and to repay bond obligations to finance construction and capital improvement costs, which are assumed to be consistent with the highway purposes. Therefore, no fiscal impact is assumed on state and local government expenditures during the period covered by the fiscal impact statement.<br> &nbsp;<br> Current bond authorizations for construction and capital improvements of Interstate 405 high-occupancy vehicle lanes from Bellevue to Lynnwood are secured by gas tax revenue. Therefore, no fiscal impact is assumed on indebtedness for these lanes.<br> &nbsp;<br> State Route 99 Alaskan Way Viaduct<br> Sections 4 though 7 apply to this highway. Tolls have not been authorized by the Legislature. Current toll rate analysis for this highway has assumed the use of variable pricing. To implement a uniform and consistent rate, a new toll rate analysis and supplemental environmental review would be required. Assuming that these analyses can be conducted concurrently within project schedules, the cost is estimated at up to $2.6 million. Because tolls have not been authorized and the new analysis is necessary to quantify impacts, the impact to toll revenue is indeterminate.<br> &nbsp;<br> The Legislature has identified toll revenue as part of the State Route 99 Alaskan Way Viaduct replacement project. This expenditure is assumed to be consistent with the highway purposes. Therefore, no fiscal impact is assumed on state and local expenditures.<br> &nbsp;<br> Current bond authorizations for construction and capital improvements for portions of the State Route 99 Alaskan Way Viaduct replacement project are secured by gas tax revenue. If costs exceed $2.4 billion, no more than $400 million of additional costs will be financed with toll revenue. Because there is no authorization to use toll revenue for bonds, the fiscal impact on indebtedness for this highway is indeterminate. Additionally, the State Treasurer states that bonds secured solely by toll revenue would be eliminated as a financing tool for this highway.<br> &nbsp;<br> Interstate 90 Floating Bridge<br> Sections 4 though 8 will apply to this bridge. Whether the Legislature will authorize tolls on the Interstate 90 floating bridge and for what purpose are unknown. Therefore, the fiscal impact is unknown and indeterminate. Additionally, State Treasurer states that bonds secured solely by toll revenue would be eliminated as a financing tool for this highway.<br> &nbsp;<br> Future Facilities<br> Sections 4 though 7 will apply to future tolled facilities. The Washington State Department of Transportation was directed by the Legislature to conduct tolling analysis on the Interstate 5 Columbia River Crossing in Clark County, Interstate 5 express lanes between Seattle and Northgate, Interstate 90 in King County, Interstate 405 high-occupancy vehicle lanes from Bellevue south, State Route 509 in King County and State Route 167 extension in Pierce County. Whether the Legislature will authorize tolling on these highways and for what purpose are unknown. Therefore, the fiscal impact is unknown and indeterminate. Additionally, the State Treasurer states that bonds secured solely by toll revenue would be eliminated as a financing tool for these bridges and highways.'
-)
+    legislature has enacted various laws that direct where and how
+    tolls can be set for bridges, ferries, tunnels, roads, and related
+    facilities. Those laws also restrict the ways in which toll
+    revenue can be used. Initiative Measure No. 1125 would impose
+    additional restrictions on the use of toll revenue.<br> &nbsp;<br>
+    The Eighteenth Amendment to the Washington Constitution requires
+    that certain state revenue be used only for &ldquo;highway
+    purposes.&rdquo; That amendment, which was approved in 1944,
+    provides that the following revenue must be paid into the state
+    treasury and placed in a special fund to be used exclusively for
+    &ldquo;highway purposes&rdquo;: all fees the state collects as
+    license fees for motor vehicles; all excise taxes the state
+    collects on the sale, distribution, or use of motor vehicle fuel;
+    and all other state revenue &ldquo;intended to be used for highway
+    purposes.&rdquo; That fund is the &ldquo;motor vehicle fund&rdquo;
+    established in RCW 46.68.070. The Eighteenth Amendment also lists
+    some uses that must be considered &ldquo;highway purposes,&rdquo;
+    including the necessary operating, engineering, and legal expenses
+    connected with the administration of public highways, county
+    roads, and city streets; and the construction, reconstruction,
+    maintenance, repair, and betterment of public highways, county
+    roads, bridges, and city streets.<br> &nbsp;<br> Since well before
+    the adoption of the Eighteenth Amendment, the legislature has
+    authorized the use of tolls as one means of paying for the
+    acquisition, construction, and operation of bridges, ferries,
+    tunnels, roads, and related facilities. That authority includes
+    the use of tolls to retire bonds issued to finance acquisition and
+    construction of bridges, ferries, tunnels, roads, and related
+    facilities; tolls used for that purpose must be deposited in
+    special trust funds kept separate from all other funds.<br>
+    &nbsp;<br> Under current law, the legislature must authorize the
+    collection of tolls but it can delegate the authority to set the
+    amounts of tolls. The legislature has designated the state
+    Transportation Commission as the &ldquo;tolling authority&rdquo;
+    responsible for setting most tolls, under standards and guidelines
+    established in law to ensure that the revenue generated by tolls
+    is sufficient to pay maintenance and operating costs for the
+    facility; pay principal and interest on bonds, related financing
+    costs, and insurance; and reimburse the motor vehicle fund for any
+    money used from that fund to pay for bonds.&nbsp; Unless otherwise
+    provided in law, all revenue from a toll facility is to be used
+    for that facility, and tolls may continue to be collected after
+    initial construction has been paid for to fund additional
+    capacity, maintenance, and operation of the facility.<br>
+    &nbsp;<br> <b>The Effect of the Proposed Measure, if
+    Approved</b><br> Initiative Measure No. 1125 would require that
+    toll amounts be set by the legislature by majority vote, rather
+    than by the Transportation Commission, and would make the setting
+    of toll amounts subject to statutes that require preparation of
+    various reports and analyses relating to costs. It would require
+    that tolls be &ldquo;uniform and consistent&rdquo; and would not
+    allow variable pricing of tolls. (&ldquo;Variable priced&rdquo;
+    tolls typically are higher during periods of traffic congestion
+    and lower at other times of the day or week.)<br> &nbsp;<br> While
+    the measure would leave in place the authority to collect and use
+    tolls for the preservation, maintenance, management, and operation
+    of a facility, it would add provisions that limit the use of some
+    tolls to construction and capital improvement only and that
+    require tolls on future facilities to end after the cost of the
+    project is paid. The measure would require revenue from tolls to
+    be used only for purposes &ldquo;consistent with&rdquo; the
+    Eighteenth Amendment, and would prohibit any revenue in the motor
+    vehicle fund or any toll fund from being transferred to the
+    &ldquo;general fund or other funds&rdquo; and used for
+    &ldquo;non-transportation purposes.&rdquo;<br> &nbsp;<br> The
+    measure would restate the existing requirement that tolls must be
+    used on the facility for which they are collected, explicitly
+    referencing the Interstate 90 floating bridge. The measure also
+    would prohibit the state or a state agency from transferring or
+    using &ldquo;gas-tax-funded or toll-funded lanes on state
+    highways&rdquo; for &ldquo;non-highway purposes.&rdquo; <p> ',
+  :additional_details => 'No fiscal impact is assumed for the Tacoma
+    Narrows Bridge and State Route 167 toll lanes. Fiscal impacts for
+    future toll roads and toll bridges are unknown and
+    indeterminate. The State Treasurer states that bonds secured
+    solely by toll revenue will become prohibitively expensive if the
+    Legislature sets tolls, thus eliminating this financing tool for
+    transportation projects. Prohibiting variable tolling will require
+    additional analyses estimated to cost up to $8.3 million. Because
+    the restrictions on future toll revenue, toll expenditures and
+    toll lanes cannot be quantified, the fiscal impact on state and
+    local governments from these provisions is indeterminate.<br>
+    &nbsp;<br> <b>General Assumptions</b><br> <ul> <li>The initiative
+    is effective Dec. 8, 2011, and applies prospectively.</li> <li>The
+    term &ldquo;highway purposes&rdquo; is used to describe the 18th
+    Amendment purposes. For purposes of the fiscal impact statement,
+    &ldquo;highway purposes&rdquo; excludes operating funds for
+    transit and other funding for transit, bicycle and pedestrian
+    facilities that do not directly benefit the highway system.</li>
+    <li>Estimates are described using the state&rsquo;s fiscal year
+    (FY) of July 1 through June 30.</li> <li>The fiscal impact
+    statement covers the period FY 2012 through FY 2017.</li>
+    <li>Fiscal impacts are measured against current law, enacted
+    budgets and bond authorizations.</li> <li>Bonds are a form of
+    state debt used to finance capital construction and transportation
+    projects. Bonds enable the state to receive funds today on the
+    promise that the funds will be repaid with interest. Bonds must be
+    authorized by the Legislature and identify how the debt will be
+    paid.</li> </ul> <b>Assumptions by Section</b><br> <ul>
+    <li>Section 2 limits expenditures from the Motor Vehicle Fund and
+    toll funds to transportation purposes.</li> <li>Section 3
+    prohibits the state and its agencies from the transfer or use of
+    gas tax or toll-funded lanes for non-highway purposes.</li>
+    <li>Section 4 applies to all tolled facilities, except the Tacoma
+    Narrows Bridge and state ferries. The Legislature shall determine
+    and establish tolls and charges on tolled facilities. The
+    initiative does not change existing tolls, toll rates or
+    methodologies. However, to impose a new toll, increase a toll or
+    change a toll methodology to increase revenue, the Legislature
+    must act. In addition, toll revenue must be used for the facility
+    in which the funds are generated and only for highway
+    purposes.</li> <li>Sections 5 through 7 apply to toll bridges and
+    other state toll facilities, excluding state ferries, first
+    authorized after July 1, 2008. The Legislature is the tolling
+    authority for all state highways. The initiative does not change
+    existing tolls, toll rates or methodologies. However, to impose a
+    new toll, increase a toll or change a toll methodology to increase
+    revenue, the Legislature must act. In addition, for the future:
+    <ul> <li>Toll revenue must be used for the facility in which the
+    funds are generated;</li> <li>Toll revenue must be used only for
+    highway purposes;</li> <li>Toll rates must be uniform and
+    consistent and may not include variable pricing; and</li>
+    <li>Tolls on future tolled facilities must end after the cost of
+    the project is paid.</li> </ul> </li> <li>Section 8 applies only
+    to tolls on the Interstate 90 floating bridge. Toll revenue from
+    this facility must be used exclusively for toll facilities and
+    capital improvements on Interstate 90 and only for highway
+    purposes.</li> </ul> &nbsp;<br> <b>State and Local Fiscal
+    Impacts</b><br> Section 2. No fiscal impact is assumed from this
+    section. Expenditures from the Motor Vehicle Fund and toll funds
+    are restricted by law to transportation purposes.<br> &nbsp;<br>
+    Section 3. This restriction is assumed to have no impact on state
+    or local revenues. The restriction also does not direct new
+    expenditures or new costs. Therefore, it is assumed that state and
+    local governments will adjust their actions to comply with this
+    restriction, resulting in no new increased or decreased costs.<br>
+    &nbsp;<br> Sections 4 through 8 are described by tolled
+    facility:<br> &nbsp;<br> Tacoma Narrows Bridge<br> These sections
+    do not apply to this bridge, and therefore, no fiscal impact is
+    assumed.<br> &nbsp;<br> State Route 167 High-Occupancy Vehicle
+    Lanes<br> Because these tolled lanes were first authorized before
+    July 1, 2008, only Section 4 applies to them. Tolls are authorized
+    for this facility until June 30, 2013. It is not anticipated that
+    toll rates will increase during this authorization. Therefore, no
+    fiscal impact is assumed on toll revenues from the lanes. There is
+    no debt on these lanes.<br> &nbsp;<br> Tolls collected from
+    high-occupancy toll lanes can be used to increase transit,
+    vanpool, carpool and trip reduction services in the State Route
+    167 corridor, which could be inconsistent with highway
+    purposes. However, enacted budgets provide that all tolls
+    collected from the lanes be used solely for the operation,
+    administration and enforcement of these lanes. Therefore, no
+    fiscal impact is assumed for state and local expenditures.<br>
+    &nbsp;<br> State Route 520 Bridge<br> Sections 4 though 7 apply to
+    this bridge. Tolls are authorized and have been set for this
+    bridge. The Legislature has identified toll revenue as part of the
+    State Route 520 bridge replacement and high-occupancy vehicle
+    program. It is not known whether a toll rate increase will be
+    necessary during the period covered by this fiscal impact
+    statement. However, if it is necessary, the Legislature will need
+    to act to set tolls subject to requirements contained in Section
+    7.<br> &nbsp;<br> Current law requires the use of variable
+    tolling. If a toll rate increase is necessary, a new toll rate
+    analysis and supplemental environmental review will be required to
+    implement a uniform and consistent toll rate. Assuming that these
+    analyses can be conducted concurrently within project schedules,
+    the cost is estimated at up to $3.2 million. Prior analysis
+    indicates that a fixed toll rate equivalent to the weighted
+    average of variable tolls could reduce revenue by up to 11 percent
+    due to different traffic patterns (Parsons Brinckerhoff analysis,
+    March 2008). However, because a new analysis is necessary to
+    quantify impacts and it is not certain that a toll rate increase
+    is necessary during the period covered by the fiscal impact
+    statement, the impact on toll revenue is indeterminate.<br>
+    &nbsp;<br> Federal Urban Partnership Agreement (UPA) grants were
+    awarded to the Washington State Department of Transportation, King
+    County and King County Ferry District conditioned on implementing
+    variable tolling on the existing State Route 520 bridge. If a toll
+    rate increase is necessary and variable tolling is prohibited, the
+    state, King County and King County Ferry District would lose
+    authority to spend remaining grant funds and could be required to
+    repay the entire grant amount. The state has spent $64.4 million
+    of the state&rsquo;s $86.1 million UPA grant, leaving $21.7
+    million remaining as of July 2011. King County has spent $34.8
+    million of the county&rsquo;s $41 million UPA grant, leaving $6.2
+    million remaining as of July 2011. The King County Ferry District
+    was awarded $1 million, none of which has been spent as of July
+    2011. Because it is not known if a toll rate increase is necessary
+    during the period covered by the fiscal impact statement or what
+    action the federal government will take, the impact on this grant
+    revenue is indeterminate.<br> &nbsp;<br> Tolls collected from
+    State Route 520 can be used to provide for the operations of
+    conveyances of people or goods, which could be inconsistent with
+    highway purposes. However, current law and enacted budgets provide
+    that tolls collected from State Route 520 must be used for
+    operation and administration of the tolled bridge and
+    high-occupancy vehicle program and to repay bond obligations used
+    to finance construction and capital improvement costs, which are
+    assumed to be consistent with highway purposes. Therefore, no
+    fiscal impact is assumed on state and local government
+    expenditures during the period covered by the fiscal impact
+    statement.<br> &nbsp;<br> Current law authorizes the issuance of
+    $1.95 billion in bonds secured solely by toll revenue or secured
+    by both toll and gas tax revenue. The State Treasurer states that
+    requiring tolls to be set and adjusted by the Legislature rather
+    than by an independent toll-setting body would make the cost of
+    bonds secured solely by toll revenue prohibitively expensive and
+    would be unprecedented nationally. Because investors in toll
+    revenue bonds see the independence of toll-setting bodies as a
+    critical credit characteristic, no other toll revenue bond issuer
+    in the nation sets tolls subject to legislative approval (Public
+    Resource Advisory Group analysis, Feb. 8, 2011). Therefore, the
+    State Treasurer states that bonds secured solely by toll revenue
+    would be eliminated as a financing tool for the bridge. Gas tax or
+    other revenues would be necessary to issue bonds, reducing overall
+    capacity to finance transportation projects, which may impact
+    future expenditures.<br> &nbsp;<br> Interstate 405 High-Occupancy
+    Vehicle Lanes<br> Sections 4 though 7 apply to these lanes. Tolls
+    are authorized for these lanes, but tolls have not been
+    set. Current law requires the use of dynamic tolling. To implement
+    a uniform and consistent toll rate, a new toll rate analysis and
+    supplemental environmental review would be required. Assuming that
+    these analyses can be conducted concurrently within project
+    schedules, the cost is estimated at up to $2.5 million. Because
+    the new analysis is necessary to quantify impacts, the impact on
+    toll revenue is indeterminate.<br> &nbsp;<br> Tolls collected from
+    Interstate 405 high-occupancy vehicle lanes can be used to provide
+    for the operations of conveyances of people or goods, which could
+    be inconsistent with the highway purposes. However, current law
+    and enacted budgets provide that tolls collected from the lanes
+    must be used for operation and administration of the tolled lanes
+    and to repay bond obligations to finance construction and capital
+    improvement costs, which are assumed to be consistent with the
+    highway purposes. Therefore, no fiscal impact is assumed on state
+    and local government expenditures during the period covered by the
+    fiscal impact statement.<br> &nbsp;<br> Current bond
+    authorizations for construction and capital improvements of
+    Interstate 405 high-occupancy vehicle lanes from Bellevue to
+    Lynnwood are secured by gas tax revenue. Therefore, no fiscal
+    impact is assumed on indebtedness for these lanes.<br> &nbsp;<br>
+    State Route 99 Alaskan Way Viaduct<br> Sections 4 though 7 apply
+    to this highway. Tolls have not been authorized by the
+    Legislature. Current toll rate analysis for this highway has
+    assumed the use of variable pricing. To implement a uniform and
+    consistent rate, a new toll rate analysis and supplemental
+    environmental review would be required. Assuming that these
+    analyses can be conducted concurrently within project schedules,
+    the cost is estimated at up to $2.6 million. Because tolls have
+    not been authorized and the new analysis is necessary to quantify
+    impacts, the impact to toll revenue is indeterminate.<br>
+    &nbsp;<br> The Legislature has identified toll revenue as part of
+    the State Route 99 Alaskan Way Viaduct replacement project. This
+    expenditure is assumed to be consistent with the highway
+    purposes. Therefore, no fiscal impact is assumed on state and
+    local expenditures.<br> &nbsp;<br> Current bond authorizations for
+    construction and capital improvements for portions of the State
+    Route 99 Alaskan Way Viaduct replacement project are secured by
+    gas tax revenue. If costs exceed $2.4 billion, no more than $400
+    million of additional costs will be financed with toll
+    revenue. Because there is no authorization to use toll revenue for
+    bonds, the fiscal impact on indebtedness for this highway is
+    indeterminate. Additionally, the State Treasurer states that bonds
+    secured solely by toll revenue would be eliminated as a financing
+    tool for this highway.<br> &nbsp;<br> Interstate 90 Floating
+    Bridge<br> Sections 4 though 8 will apply to this bridge. Whether
+    the Legislature will authorize tolls on the Interstate 90 floating
+    bridge and for what purpose are unknown. Therefore, the fiscal
+    impact is unknown and indeterminate. Additionally, State Treasurer
+    states that bonds secured solely by toll revenue would be
+    eliminated as a financing tool for this highway.<br> &nbsp;<br>
+    Future Facilities<br> Sections 4 though 7 will apply to future
+    tolled facilities. The Washington State Department of
+    Transportation was directed by the Legislature to conduct tolling
+    analysis on the Interstate 5 Columbia River Crossing in Clark
+    County, Interstate 5 express lanes between Seattle and Northgate,
+    Interstate 90 in King County, Interstate 405 high-occupancy
+    vehicle lanes from Bellevue south, State Route 509 in King County
+    and State Route 167 extension in Pierce County. Whether the
+    Legislature will authorize tolling on these highways and for what
+    purpose are unknown. Therefore, the fiscal impact is unknown and
+    indeterminate. Additionally, the State Treasurer states that bonds
+    secured solely by toll revenue would be eliminated as a financing
+    tool for these bridges and highways.'  )
  
 p2 = Point.create!(
   :option => o2,
@@ -3827,7 +4151,12 @@ p5 = Point.create!(
 o3 = Option.create!(
   :name => 'Concerning long-term care workers and services for elderly and disabled people.',
   :short_name => 'LT Care workers',
-  :description => 'Initiative Measure No. 1163 concerns long-term care workers and services for elderly and disabled people. \n\nThis measure would reinstate background checks, training, and other requirements for long-term care workers and providers, if amended in 2011; and address financial accountability and administrative expenses of the long-term in-home care program.',
+  :description => 'Initiative Measure No. 1163 concerns long-term care
+    workers and services for elderly and disabled people. \n\nThis
+    measure would reinstate background checks, training, and other
+    requirements for long-term care workers and providers, if amended
+    in 2011; and address financial accountability and administrative
+    expenses of the long-term in-home care program.',
   :domain => 'State of Washington',
   :domain_short => 'WA State',
   :url => 'http://wei.secstate.wa.gov/osos/en/PreviousElections/2011/general/Documents/1163%20Full%20Text%20for%20VP.pdf',
@@ -4134,15 +4463,489 @@ p9 = Point.create!(
 o4 = Option.create!(
   :name => 'Concerning liquor: beer, wine, and spirits (hard liquor).',
   :short_name => 'Liquor',
-  :description => 'Initiative Measure No. 1183 concerns liquor: beer, wine, and spirits (hard liquor).\n\nThis measure would close state liquor stores and sell their assets; license private parties to sell and distribute spirits; set license fees based on sales; regulate licensees; and change regulation of wine distribution.',
+  :description => 'Initiative Measure No. 1183 concerns liquor: beer,
+    wine, and spirits (hard liquor).\n\nThis measure would close state
+    liquor stores and sell their assets; license private parties to
+    sell and distribute spirits; set license fees based on sales;
+    regulate licensees; and change regulation of wine distribution.',
   :domain => 'State of Washington',
   :domain_short => 'WA State',
   :url => 'http://wei.secstate.wa.gov/osos/en/PreviousElections/2011/general/Documents/1183%20Full%20Text%20for%20VP.pdf',
   :category => 'Initiative',
   :designator => '1183',
-  :long_description => '<b>The Law as it Presently Exists</b><br> In Washington, the state sells and controls the distribution and sale of &ldquo;spirits.&rdquo; The term &ldquo;spirits&rdquo; refers to alcoholic beverages also called &ldquo;hard liquor&rdquo; (whiskies, vodka, gin, etc.). Spirits include beverages containing distilled alcohol and wines exceeding twenty-four percent alcohol by volume. Spirits do not include lower alcohol content beverages such as flavored malt beverages, beer, or wines containing less than twenty-four percent alcohol by volume.<br> &nbsp;<br> In Washington, spirits are sold at retail at state-run liquor stores and at &ldquo;contract liquor stores.&rdquo; Contract liquor stores are private businesses that sell spirits and other liquor under a contract with the state. Washington has approximately 165 state liquor stores and 160 contract liquor stores.<br> &nbsp;<br> The Washington State Liquor Control Board (&ldquo;the Board&rdquo;) operates the state liquor stores and oversees the contract liquor stores. Among its responsibilities, the Board regulates liquor advertising in the state. The Board, however, cannot advertise liquor sales.<br> &nbsp;<br> The Board sets the price for spirits sold at state-run and contract liquor stores based on the wholesale cost of the spirits, taxes, and a markup authorized by statute. The Board also collects the taxes imposed on the retail sale of spirits, and collects license fees and penalties. The proceeds received from the sale of spirits, the tax revenues on spirits, and license fees are distributed to cities, counties, and the state. Certain revenues are dedicated to funding programs addressing alcohol and drug abuse treatment and prevention.<br> &nbsp;<br> In Washington, manufacturers and suppliers of spirits may only sell spirits to the Board. The Board acts as the sole distributor of spirits sold in the state liquor stores and contract liquor stores, and sold by restaurants and certain other licensed sellers. Under a law effective June 15, 2011, the state must examine whether to lease the state&rsquo;s liquor distribution facilities to a private party, and whether such a lease would produce better financial returns for the state.<br> &nbsp;<br> Existing law allows private parties to sell or distribute alcoholic beverages that are not spirits, such as wine or beer. Wine and beer sellers are licensed by the state. There are different licenses for each of &ldquo;three tiers&rdquo; of the wine and beer business: (1) manufacturing; (2) distribution; and (3) retail sales. Existing law regulates the financial relationships and business transactions allowed between manufacturers, distributors, and retailers. While there are some exceptions, retailers are allowed to purchase wine or beer only from distributors. Similarly, distributors are allowed to purchase only from manufacturers, with certain exceptions.<br> &nbsp;<br> Existing law requires wine and beer manufacturers and distributors to maintain published price lists and offer the same price to every buyer. This requirement of uniform pricing prevents manufacturers or distributors from selling wine or beer at discounted prices to select customers, such as a quantity discount or other business reason for a discount. Existing law also requires wine and beer retailers to receive all wine and beer at their retail store and to not take delivery or store wine or beer at a separate warehouse location.<br> &nbsp;<br>  <b>The Effect of the Proposed Measure, if Approved</b><br> Initiative 1183 allows private parties to sell and distribute spirits, and alters the Liquor Control Board&rsquo;s powers and duties. It eliminates the Board&rsquo;s power to operate state liquor stores, to supervise the contract liquor stores, to distribute liquor, and to set the prices of spirits. Initiative 1183 directs the Board to close state liquor stores by June 1, 2012. It directs the Board to sell assets connected with liquor sales and distribution, and to sell at auction the right to operate a private liquor store at the location of any existing state liquor store. Initiative 1183 repeals a 2011 law that directed the state to examine the financial benefit of leasing the state liquor distribution facilities to a private party.<br> &nbsp;<br> Under Initiative 1183, qualifying private parties may obtain licenses to distribute spirits or to sell spirits at retail. A retail spirits license allows the retailer to sell spirits directly to consumers, and allows the sale of up to 24 liters of spirits for resale at a licensed premise, such as to a restaurant. Initiative 1183 allows private distributors to start selling spirits on March 1, 2012, and private retail spirits sales to start on June 1, 2012.<br> &nbsp;<br> To obtain a retail spirits license, a store must have at least 10,000 square feet of enclosed retail space in a single structure. However, Initiative 1183 also allows a retail spirits license for a store at the location of a former state liquor store or contract liquor store, even if the store is smaller than 10,000 square feet. It also allows smaller stores where there are no 10,000 square foot licensed spirits stores in the area. Initiative 1183 requires retail stores to participate in training their employees to prevent sales of alcohol to minors and inebriated persons.<br> &nbsp;<br> Initiative 1183 allows local governments and the public to provide input before issuance of a license to sell spirits. Initiative 1183 preserves local government power to zone and regulate the location of liquor stores.<br> &nbsp;<br> Initiative 1183 would not change the existing taxes on spirits. Initiative 1183 would require spirits retailers and distributors to pay license fees to the state. Retail stores would pay a fee of seventeen percent of gross revenues from spirits sales under the license, plus an annual $166 fee. Spirits distributors would pay an annual $1,320 fee, plus a percentage of gross revenues from spirits sales under the license. During the first two years of a spirits distributor license, the distributor license fee would be ten percent of the distributor&rsquo;s gross spirits sales. After two years, the spirits distributor fee would drop to five percent of the distributor&rsquo;s gross spirits sales.<br> &nbsp;<br> Initiative 1183 also requires that all persons holding spirits distributor licenses must have together paid a total of one hundred fifty million dollars in spirits distributor license fees by March 31, 2013. If the total license fees received from all distributor license holders is less than one hundred fifty million dollars, the Board must collect additional spirits distributor license fees to make up the difference. This additional fee would be allocated among the persons who held a spirits distributor license at any time before March 31, 2013.<br> &nbsp;<br> In addition to existing laws controlling the distribution of moneys received by the Board, a portion of fees from retail spirits licenses and spirits distributor licenses would be distributed to border areas, counties, and cities to enhance public safety programs.<br> &nbsp;<br> Initiative 1183 also changes laws that regulate the retailers, distributors, and manufacturers of wine. Initiative 1183 eliminates the requirement that distributors and manufacturers of wine sell at a uniform price, which would allow the sale of wine at different prices based on business reasons. Spirits could also be sold to different distributors and retailers at different prices. Beer manufacturers and distributors, however, would continue to be regulated by existing laws requiring uniform pricing. Under Initiative 1183, retailers could accept delivery of wine at a retail store or at a warehouse location. Under Initiative 1183, a store licensed to sell wine at retail may also obtain an endorsement allowing the store to sell to license holders who sell wine for consumption on the premise. For example, this would allow the store to sell wine to a restaurant that resells the wine by the glass or bottle to its customers.<p>',
-  :additional_details => ' <p>The fiscal impact cannot be precisely estimated because the private market will determine bottle cost and markup for spirits.&nbsp;Using a range of assumptions, total State General Fund revenues increase an estimated $216 million to $253 million and total local revenues increase an estimated $186 million to $227 million, after Liquor Control Board one-time and ongoing expenses, over six fiscal years.&nbsp;A one-time net state revenue gain of $28.4 million is estimated from sale of the state liquor distribution center. One-time debt service costs are $5.3 million. Ongoing new state costs are estimated at $158,600 over six fiscal years.&nbsp;&nbsp;</p>   <p><b>General Assumptions</b></p> <ul> <li>The initiative uses the term &#39;spirits&#39; to describe alcoholic beverages that are distilled instead of fermented. For purposes of the fiscal impact statement, the term &#39;liquor&#39; is used for &#39;spirits&#39; to maintain consistent terminology. Beer and wine are not spirits or liquor.</li>  <li>Estimates are described using the state&#39;s fiscal year (FY) of July 1 through June 30.</li>  <li>New liquor distributor licenses and new liquor retailer licenses are available beginning Feb. 8, 2012. There is no limit on the number of licenses that can be issued.&nbsp;</li>  <li>Liquor distributor licensees can begin making sales of liquor March 1, 2012. Liquor retailer licensees can begin making sales of liquor June 1, 2012.</li>  <li>By June 15, 2012, the state will no longer operate the state liquor distribution center or state liquor stores.</li>  <li>Estimates assume 1,428 licensed liquor retailers based on research from implementation of Substitute Senate Bill 6329 that authorized beer and wine tasting at grocery stores with a fully enclosed retail area of 9,000 square feet and the current number of state-operated and contract-operated liquor stores (328). The number of licenses is assumed to be constant for each fiscal year.&nbsp;</li>  <li>Estimates assume 184 licensed liquor distributors, based on the number of current Washington State Liquor Control Board (LCB) licensed beer and wine distributors, wine distributors, distilleries and liquor importers. The number of licenses is assumed to be constant for each fiscal year.&nbsp;</li>  <li>Estimates of impacts are measured against the June 2011 LCB revenue forecast (forecast).</li>  <li>Retail liquor liter sales are estimated to grow 5 percent from increased access to liquor. This assumption is based on an academic study and growth experienced in Alberta, Canada, after converting from state-operated liquor stores to private liquor stores. A decrease in liquor liter sales is estimated using the forecast price elasticity assumption of 0.49 percent. Price elasticity is a method used to calculate the change in consumption of a good when price increases or decreases. For every 1 percent increase/decrease in price, liquor liter sales increase/decrease 0.49 percent. Growth from increased access and price elasticity is in addition to normal 3 percent growth in liquor liter sales assumed in the forecast.</li> </ul>  <p><b>State and Local Revenues</b></p>  <p>Actual fiscal impacts depend on liquor bottle cost in the private market and the markup applied by both private liquor distributors and retailers. Therefore, there is a wide range of potential fiscal impacts.&nbsp;</p>   <p>To estimate gains or losses to the state and local governments, the fiscal impact statement used a model developed for prior initiatives, adjusted to reflect the content of this initiative. The model measures the difference between LCB forecasted liquor revenues and the sum of the revenue gains and losses generated under the initiative using the set of assumptions set forth below.</p>  <p><b>Total Estimated State General Fund Revenues</b></p>   <table >  <tr >   <td width=50 ><b ><span>Fiscal   Year</span></b>   </td>   <td width=74 >   <b ><span>2012</span></b>   </td>   <td width=82 >   <b ><span>2013</span></b>   </td>   <td width=82 >   <b ><span>2014</span></b>   </td>   <td width=83 ><b ><span>2015</span></b>   </td>   <td width=83 ><b ><span>2016</span></b>   </td>   <td width=83 ><b ><span>2017</span></b>   </td>   <td width=91 >   <b ><span>TOTAL</span></b>   </td>  </tr>  <tr >   <td width=50 ><b ><span>Low   Markup</span></b>   </td>   <td width=74 >   <b ><span>$5,404,000</span></b>   </td>   <td width=82 >   <b ><span>$51,373,000</span></b>   </td>   <td width=82 >   <b ><span>$52,007,000</span></b>   </td>   <td width=83 ><b ><span>$36,083,000</span></b>   </td>   <td width=83 ><b ><span>$35,669,000</span></b>   </td>   <td width=83 ><b ><span>$35,244,000</span></b>   </td>   <td width=91 >   <b ><span>$215,780,000</span></b>   </td>  </tr>  <tr >   <td width=50 ><b ><span>High   Markup</span></b>   </td>   <td width=74 >   <b ><span>$8,777,000</span></b>   </td>   <td width=82 >   <b ><span>$59,054,000</span></b>   </td>   <td width=82 >   <b ><span>$58,372,000</span></b>   </td>   <td width=83 ><b ><span>$42,164,000</span></b>   </td>   <td width=83 ><b ><span>$42,204,000</span></b>   </td>   <td width=83 ><b ><span>$42,260,000</span></b>   </td>   <td width=91 >   <b ><span>$252,831,000</span></b>   </td>  </tr> </table>   <p><b>Total Estimated Local Government Revenues</b></p>   <table >  <tr >   <td width=50 ><b ><span>Fiscal   Year</span></b>   </td>   <td width=74 >   <b ><span>2012</span></b>   </td>   <td width=82 >   <b ><span>2013</span></b>   </td>   <td width=82 >   <b ><span>2014</span></b>   </td>   <td width=83 ><b ><span>2015</span></b>   </td>   <td width=83 ><b ><span>2016</span></b>   </td>   <td width=83 ><b ><span>2017</span></b>   </td>   <td width=91 >   <b ><span>TOTAL</span></b>   </td>  </tr>  <tr >   <td width=50 ><b ><span>Low   Markup</span></b>   </td>   <td width=74 >   <b ><span>$6,012,000</span></b>   </td>   <td width=82 >   <b ><span>$56,913,000</span></b>   </td>   <td width=82 >   <b ><span>$42,500,000</span></b>   </td>   <td width=83 ><b ><span>$27,973,000</span></b>   </td>   <td width=83 ><b ><span>$26,757,000</span></b>   </td>   <td width=83 ><b ><span>$25,492,000</span></b>   </td>   <td width=91 >   <b ><span>$185,647,000</span></b>   </td>  </tr>  <tr >   <td width=50 ><b ><span>High   Markup</span></b>   </td>   <td width=74 >   <b ><span>$8,361,000</span></b>   </td>   <td width=82 >   <b ><span>$63,034,000</span></b>   </td>   <td width=82 >   <b ><span>$50,741,000</span></b>   </td>   <td width=83 ><b ><span>$35,770,000</span></b>   </td>   <td width=83 ><b ><span>$34,949,000</span></b>   </td>   <td width=83 ><b ><span>$34,098,000</span></b>   </td>   <td width=91 >   <b ><span>$226,953,000</span></b>   </td>  </tr> </table>   <p><b>State and Local Government Revenue Assumptions</b></p>  <ul> <li>LCB&#39;s forecasted average bottle price for a liter of liquor (before taxes and markup) is used to estimate both state and private market bottle price.</li>  <li>State&#39;s markup on liquor is 51.9 percent during FY 2012 and FY 2013, and 39.2 percent thereafter.</li>  <li>Total private distributor/retailer markup for liquor sold in stores is set at a low of 52 percent and a high of 72 percent from March 1, 2012, to March 1, 2014. Thereafter, the private market markup is assumed to be a low of 47 percent and a high of 67 percent. The selected range was based on the following sources: <ul> <li>Low markup &#8212; 25 percent &#8212; is based on U.S. Internal Revenue Service data (sales revenue minus cost of goods) of retail food, beverage and liquor stores throughout the United States.</li>  <li>High markup &#8212; 45 percent &#8212; is the total liquor markup contained in the Washington State Auditor review and is based on information from the Distilled Spirits Council of the United States.&nbsp;</li>  <li>To these percentages, 27 percent is added through Feb. 28, 2014, and 22 percent is added thereafter. These percentages represent the total amount of new liquor distributor and retailer license fees under the initiative. While individual distributor and retailer actions will vary, academic research supports an assumption that, in the aggregate statewide, the value of the new liquor distributor and retailer license fees will be passed on to the consumer in the private market markup.</li> </ul> </li>  </ul>  <p><b> Markup Assumptions</b></p>  <table>  <tr>   <td width=50><b ><span>Fiscal   Year</span></b>   </td>   <td width=50 ><b ><span>2012</span></b>   </td>   <td width=50 ><b ><span>2013</span></b>   </td>   <td width=98 >   <b ><span>July 1,   2013 to Feb. 28, 2014</span></b>   </td>   <td width=111 >   <b ><span>March   1, 2014 to June 30, 2014</span></b>   </td>   <td width=51 >   <b ><span>2015</span></b>   </td>   <td width=51 >   <b ><span>2016</span></b>   </td>   <td width=51 >   <b ><span>2017</span></b>   </td>  </tr>  <tr >   <td width=50 ><b ><span>State   Markup</span></b>   </td>   <td width=50 ><b ><span>51.90%</span></b>   </td>   <td width=50 ><b ><span>51.90%</span></b>   </td>   <td width=98 >   <b ><span>39.20%</span></b>   </td>   <td width=111 >   <b ><span>39.20%</span></b>   </td>   <td width=51 >   <b ><span>39.20%</span></b>   </td>   <td width=51 >   <b ><span>39.20%</span></b>   </td>   <td width=51 >   <b ><span>39.20%</span></b>   </td>  </tr>  <tr style=>   <td width=50 ><b ><span>Low   Markup</span></b>   </td>   <td width=50 ><b ><span>52%</span></b>   </td>   <td width=50 ><b ><span>52%</span></b>   </td>   <td width=98 >   <b ><span>52%</span></b>   </td>   <td width=111 >   <b ><span>47%</span></b>   </td>   <td width=51 >   <b ><span>47%</span></b>   </td>   <td width=51 >   <b ><span>47%</span></b>   </td>   <td width=51 >   <b ><span>47%</span></b>   </td>  </tr>  <tr >   <td width=50 ><b ><span>High   Markup</span></b>   </td>   <td width=50 ><b ><span>72%</span></b>   </td>   <td width=50 ><b ><span>72%</span></b>   </td>   <td width=98 >   <b ><span>72%</span></b>   </td>   <td width=111 >   <b ><span>67%</span></b>   </td>   <td width=51 >   <b ><span>67%</span></b>   </td>   <td width=51 >   <b ><span>67%</span></b>   </td>   <td width=51 >   <b ><span>67%</span></b>   </td>  </tr> </table>  <ul> <li>The initiative imposes a new liquor distributor license fee of 10 percent of total liquor revenues from March 1, 2012, to March 1, 2014; the fee decreases to 5 percent thereafter. The initiative imposes a new liquor retailer license fee of 17 percent of total liquor revenues beginning June 1, 2012.</li>  <li>Based on inventory information from the Retail Owners Institute, private liquor stores are estimated to maintain two months of liquor inventory. In contrast, state-operated liquor stores maintain 1.2 months of liquor inventory. Therefore, an additional 0.8 month of liquor liter sales to liquor <span class=GramE>retailers is assumed during FY 2012.&nbsp;</li>  <li>If the new liquor distributor license fee totals less than $150 million by March 31, 2013, these licensees must pay the difference between $150 million and actual receipts by May 31, 2013. The model estimates that $84 million to $91 million will be paid by licensees during FY 2013 due to this requirement.</li>  <li>The initiative sets a $1,320 license fee for each liquor distribution location and a $166 license fee for each liquor retailer license. Both fees are due at the time of license renewal.&nbsp;</li>  <li>Liquor distributor licensees are assumed to be subject to the wholesaling business and occupation (B&amp;O) tax. Liquor retailer licensees are assumed to be subject to the retailing B&amp;O tax.&nbsp;</li>  <li>Liquor liter taxes and liquor sales taxes are amended by the initiative, but these changes are assumed not to increase, create or eliminate any tax.</li>  <li>Except for the loss of sales in state-operated liquor stores, estimates do not assume any change in pricing or volume of sales of beer and wine.</li>  <li>State-operated liquor stores sell Washington State Lottery products to the public. The estimate assumes 25 percent of these sales will be lost and remaining sales will occur in other outlets selling Washington State Lottery products. This revenue loss is estimated to be $1.8 million over six years.</li>  <li>Estimates of sales by current restaurant licensees who sell liquor at retail are limited to changes from price elasticity and the loss of the state&#39;s 15 percent quantity price discount to these licensees.</li>  <li>Estimates do not assume any change in sales by liquor stores operated on military bases. Such sales are assumed not to be subject to liquor liter taxes, liquor sales taxes or B&amp;O tax.</li>  <li>Estimates do not assume any change in sales by liquor stores operated by tribes. Such sales are assumed to be subject to liquor liter taxes and liquor sales taxes based on current agreements between tribes and LCB, but are not subject to B&amp;O tax.</li>  <li>No additional change is assumed for tax avoidance/non-compliance by consumers or migration of sales in and out of state by consumers. These items are assumed in the forecast price elasticity assumption.</li>  <li>Revenue from the state markup used to pay for the state liquor distribution center and state liquor store costs are netted to zero. The initiative eliminates both the revenue (markup) and the costs (state liquor distribution center and state liquor stores), which results in no additional revenue to the state.&nbsp;</li>  <li>The initiative requires new liquor distributor and retailer fees to be deposited into the Liquor Revolving Fund. The Liquor Revolving Fund is distributed by statute in the following order: <ol> <li>Payment of LCB administrative costs;</li>  <li>Distributions to state accounts for specific purposes (such as drug and alcohol research at the University of Washington and Washington State University);</li>  <li>Border areas (cities, towns and counties adjacent to the Canadian border); and</li>  <li>The  remainder after these distributions: a) 50 percent to the State General Fund; b) 10 percent to counties; and 3) 40 percent to cities and towns. </li> </ol> </li> </ul>  <p>Therefore, the model first reduces the Liquor Revolving Fund by LCB costs, one-time and ongoing, to determine total revenues distributed to the State General Fund and local governments. Other revenues (beer taxes, wine taxes, penalties, etc.) deposited into the Liquor Revolving Fund are assumed to be unaffected by the initiative and continue to be shared between the state and local governments.</p>  <p><b>Specific Local Government Revenue Assumptions</b></p>  <ul> <li>New liquor distributor and retailers license fees must be used to maintain, in the aggregate, Liquor Revolving Fund distributions to counties, cities, towns, border areas and the Municipal Research Service Center in an amount no less than the amount received in comparable periods. For purposes of the model, comparable period is measured by funds forecasted for calendar year 2011. The model estimates that local distributions will exceed the maintenance level required by the initiative each fiscal year.&nbsp;</li>  <li>An additional $10 million is also provided to counties, cities, towns and border areas.&nbsp;</li>  <li>Approximately 38 cities and towns impose a local B&amp;O tax. Using data from the Washington State Department of Revenue&#39;s 2008 Tax Reference Manual, total local B&amp;O tax is approximately 10 percent of total state B&amp;O tax. Assuming this ratio, $3 million is estimated as new local B&amp;O taxes from liquor sales over six fiscal years.</li>  <li>Total local government revenues are the sum of the increased Liquor Revolving Fund distributions, the additional $10 million and local B&amp;O tax.</li>  </ul>  <p><b>Specific State Asset Assumptions</b></p>  <p>The sale of the state liquor distribution center is estimated to generate a potential net $28.4 million in revenue. Because the sale date cannot be precisely determined, this revenue is stated separately and excluded from the total State General Fund revenue estimates in the first table above. The value of the state liquor distribution center is estimated to be $20.4 million, based on the King County Assessor&#39;s Office 2011 assessed value of the property. The sale of the equipment in the state liquor distribution center is estimated to be $8 million, based on the 2010 Washington State Auditor review, which assumed the sale of $16 million in assets would return about $8 million. Costs to sell the state liquor distribution center are estimated to total $1 million at the time of sale.&nbsp;</p>  <p>The initiative requires LCB to sell by public auction the right &#8212; at each state-owned store location &#8212; to operate a liquor store upon the premises without regard to the size of the premises if the applicant otherwise qualifies for a liquor retailer license. All state-operated liquor stores are leased and cannot be transferred or assigned. In addition, of the 166 state-operated liquor stores, 127 are located within one block of a grocery store. Because these factors (location, competition and lessor) will vary by state-operated liquor store and will affect the value of each operating right, revenue generated from the auction is indeterminate and not assumed in the model.&nbsp;</p>  <p>The initiative would repeal Engrossed Substitute Senate Bill 5942 (ESSB 5942), which directed the Office of Financial Management to conduct a competitive process for the selection of a private sector entity to lease and modernize the state&#39;s liquor warehousing and distribution facilities. Under ESSB 5942, if a proposal is determined to be in the best interests of the state by the Office of Financial Management after consultation with LCB and an advisory board created through the legislation, LCB may contract with that private entity for the lease of the state&#39;s liquor warehousing and distribution facilities. Because it is not known if LCB will enter into a contract, no revenue is assumed in the model.</p>  <p><b>State and Local Expenditure Estimate Assumptions</b></p>  <p>Revenue gains will accrue to existing accounts, the largest being the State General Fund, which may be used for any governmental purpose as appropriated by the Legislature.</p>  <p>Washington State Lottery proceeds in excess of expenses are deposited into the State Opportunity Pathways Account to support programs in higher education and early learning. Due to the loss of some lottery product sales in state liquor stores, it is estimated that funds to this account will decrease $1.8 million over six fiscal years.</p>  <p>Each county and city is required to spend 2 percent of its share of liquor revenues on alcohol and chemical dependency services, and these expenditures will increase. The additional $10 million distributed to cities, towns, counties and border areas are for enhancing public safety programs. The remaining revenue can be used for any allowable local government purpose.</p>  <p><b>State and Local Cost Estimate Assumptions</b></p>  <p>The fiscal impact statement does not estimate state costs or state savings due to social impacts from approval of the initiative. No costs are assumed for local governments.</p>  <p><b>Liquor Control Board Costs</b></p>  <p>Estimated one-time and ongoing LCB costs are assumed to be paid by the Liquor Revolving Fund.&nbsp; Therefore, payment of the following costs is reflected in the State General Fund revenue estimate.</p>  <p>LCB ongoing costs for licensing, enforcement and administration are estimated to increase by $350,000 for new fee-collection costs and implementing the &#39;responsible vendor program.&#39;&nbsp; No state costs from increased enforcement activities are assumed in the estimate.</p>  <p>Assuming a closure date of June 15, 2012, LCB will incur one-time state costs associated with managing the closure of the state liquor distribution center and state liquor stores. There will be additional one-time costs for issuing new licenses. These state costs are estimated to total $28.7 million during FYs 2012 and 2013:</p> <ul> <li>Unemployment, sick leave and vacation buyout costs for state employees estimated at $11.8 million.</li>  <li>Information technology changes and staff to issue new licenses estimated at $2.7 million.</li>  <li>Staffing costs to coordinate the sale of existing inventory, termination of contract store leases, surplus of store fixtures and auction of state-operated store operating rights estimated at $11 million.</li>  <li>Final audits of each state and contract liquor store estimated at $1.9 million.</li>  <li>Project management and additional human resource staff estimated at $1.3 million.</li> </ul>  <p><b>Department of Revenue Costs</b></p>  <p>The Washington State Department of Revenue will administer the collection of liquor excise tax from licensed liquor distributors and retailers. Costs include additional staff, information technology changes, rule-making and policy activities, taxpayer mailings and workshops, supplies and materials. Total one-time state costs are estimated to total $120,100 during FY 2012. Ongoing costs are estimated to be $38,500 each fiscal year beginning FY 2013.&nbsp;</p>   <p><b>State Indebtedness</b></p>  <p>There is $5.3 million in debt service costs for a Certificate of Participation bond for the state liquor distribution center that is scheduled to be paid by Dec. 1, 2013. This one-time state cost is assumed in FY 2014.</p> '
-)
+  :long_description => '<b>The Law as it Presently Exists</b><br> In
+    Washington, the state sells and controls the distribution and sale
+    of &ldquo;spirits.&rdquo; The term &ldquo;spirits&rdquo; refers to
+    alcoholic beverages also called &ldquo;hard liquor&rdquo;
+    (whiskies, vodka, gin, etc.). Spirits include beverages containing
+    distilled alcohol and wines exceeding twenty-four percent alcohol
+    by volume. Spirits do not include lower alcohol content beverages
+    such as flavored malt beverages, beer, or wines containing less
+    than twenty-four percent alcohol by volume.<br> &nbsp;<br> In
+    Washington, spirits are sold at retail at state-run liquor stores
+    and at &ldquo;contract liquor stores.&rdquo; Contract liquor
+    stores are private businesses that sell spirits and other liquor
+    under a contract with the state. Washington has approximately 165
+    state liquor stores and 160 contract liquor stores.<br> &nbsp;<br>
+    The Washington State Liquor Control Board (&ldquo;the
+    Board&rdquo;) operates the state liquor stores and oversees the
+    contract liquor stores. Among its responsibilities, the Board
+    regulates liquor advertising in the state. The Board, however,
+    cannot advertise liquor sales.<br> &nbsp;<br> The Board sets the
+    price for spirits sold at state-run and contract liquor stores
+    based on the wholesale cost of the spirits, taxes, and a markup
+    authorized by statute. The Board also collects the taxes imposed
+    on the retail sale of spirits, and collects license fees and
+    penalties. The proceeds received from the sale of spirits, the tax
+    revenues on spirits, and license fees are distributed to cities,
+    counties, and the state. Certain revenues are dedicated to funding
+    programs addressing alcohol and drug abuse treatment and
+    prevention.<br> &nbsp;<br> In Washington, manufacturers and
+    suppliers of spirits may only sell spirits to the Board. The Board
+    acts as the sole distributor of spirits sold in the state liquor
+    stores and contract liquor stores, and sold by restaurants and
+    certain other licensed sellers. Under a law effective June 15,
+    2011, the state must examine whether to lease the state&rsquo;s
+    liquor distribution facilities to a private party, and whether
+    such a lease would produce better financial returns for the
+    state.<br> &nbsp;<br> Existing law allows private parties to sell
+    or distribute alcoholic beverages that are not spirits, such as
+    wine or beer. Wine and beer sellers are licensed by the
+    state. There are different licenses for each of &ldquo;three
+    tiers&rdquo; of the wine and beer business: (1) manufacturing; (2)
+    distribution; and (3) retail sales. Existing law regulates the
+    financial relationships and business transactions allowed between
+    manufacturers, distributors, and retailers. While there are some
+    exceptions, retailers are allowed to purchase wine or beer only
+    from distributors. Similarly, distributors are allowed to purchase
+    only from manufacturers, with certain exceptions.<br> &nbsp;<br>
+    Existing law requires wine and beer manufacturers and distributors
+    to maintain published price lists and offer the same price to
+    every buyer. This requirement of uniform pricing prevents
+    manufacturers or distributors from selling wine or beer at
+    discounted prices to select customers, such as a quantity discount
+    or other business reason for a discount. Existing law also
+    requires wine and beer retailers to receive all wine and beer at
+    their retail store and to not take delivery or store wine or beer
+    at a separate warehouse location.<br> &nbsp;<br> <b>The Effect of
+    the Proposed Measure, if Approved</b><br> Initiative 1183 allows
+    private parties to sell and distribute spirits, and alters the
+    Liquor Control Board&rsquo;s powers and duties. It eliminates the
+    Board&rsquo;s power to operate state liquor stores, to supervise
+    the contract liquor stores, to distribute liquor, and to set the
+    prices of spirits. Initiative 1183 directs the Board to close
+    state liquor stores by June 1, 2012. It directs the Board to sell
+    assets connected with liquor sales and distribution, and to sell
+    at auction the right to operate a private liquor store at the
+    location of any existing state liquor store. Initiative 1183
+    repeals a 2011 law that directed the state to examine the
+    financial benefit of leasing the state liquor distribution
+    facilities to a private party.<br> &nbsp;<br> Under Initiative
+    1183, qualifying private parties may obtain licenses to distribute
+    spirits or to sell spirits at retail. A retail spirits license
+    allows the retailer to sell spirits directly to consumers, and
+    allows the sale of up to 24 liters of spirits for resale at a
+    licensed premise, such as to a restaurant. Initiative 1183 allows
+    private distributors to start selling spirits on March 1, 2012,
+    and private retail spirits sales to start on June 1, 2012.<br>
+    &nbsp;<br> To obtain a retail spirits license, a store must have
+    at least 10,000 square feet of enclosed retail space in a single
+    structure. However, Initiative 1183 also allows a retail spirits
+    license for a store at the location of a former state liquor store
+    or contract liquor store, even if the store is smaller than 10,000
+    square feet. It also allows smaller stores where there are no
+    10,000 square foot licensed spirits stores in the area. Initiative
+    1183 requires retail stores to participate in training their
+    employees to prevent sales of alcohol to minors and inebriated
+    persons.<br> &nbsp;<br> Initiative 1183 allows local governments
+    and the public to provide input before issuance of a license to
+    sell spirits. Initiative 1183 preserves local government power to
+    zone and regulate the location of liquor stores.<br> &nbsp;<br>
+    Initiative 1183 would not change the existing taxes on
+    spirits. Initiative 1183 would require spirits retailers and
+    distributors to pay license fees to the state. Retail stores would
+    pay a fee of seventeen percent of gross revenues from spirits
+    sales under the license, plus an annual $166 fee. Spirits
+    distributors would pay an annual $1,320 fee, plus a percentage of
+    gross revenues from spirits sales under the license. During the
+    first two years of a spirits distributor license, the distributor
+    license fee would be ten percent of the distributor&rsquo;s gross
+    spirits sales. After two years, the spirits distributor fee would
+    drop to five percent of the distributor&rsquo;s gross spirits
+    sales.<br> &nbsp;<br> Initiative 1183 also requires that all
+    persons holding spirits distributor licenses must have together
+    paid a total of one hundred fifty million dollars in spirits
+    distributor license fees by March 31, 2013. If the total license
+    fees received from all distributor license holders is less than
+    one hundred fifty million dollars, the Board must collect
+    additional spirits distributor license fees to make up the
+    difference. This additional fee would be allocated among the
+    persons who held a spirits distributor license at any time before
+    March 31, 2013.<br> &nbsp;<br> In addition to existing laws
+    controlling the distribution of moneys received by the Board, a
+    portion of fees from retail spirits licenses and spirits
+    distributor licenses would be distributed to border areas,
+    counties, and cities to enhance public safety programs.<br>
+    &nbsp;<br> Initiative 1183 also changes laws that regulate the
+    retailers, distributors, and manufacturers of wine. Initiative
+    1183 eliminates the requirement that distributors and
+    manufacturers of wine sell at a uniform price, which would allow
+    the sale of wine at different prices based on business
+    reasons. Spirits could also be sold to different distributors and
+    retailers at different prices. Beer manufacturers and
+    distributors, however, would continue to be regulated by existing
+    laws requiring uniform pricing. Under Initiative 1183, retailers
+    could accept delivery of wine at a retail store or at a warehouse
+    location. Under Initiative 1183, a store licensed to sell wine at
+    retail may also obtain an endorsement allowing the store to sell
+    to license holders who sell wine for consumption on the
+    premise. For example, this would allow the store to sell wine to a
+    restaurant that resells the wine by the glass or bottle to its
+    customers.<p>',
+  :additional_details => ' <p>The fiscal impact cannot be precisely
+    estimated because the private market will determine bottle cost
+    and markup for spirits.&nbsp;Using a range of assumptions, total
+    State General Fund revenues increase an estimated $216 million to
+    $253 million and total local revenues increase an estimated $186
+    million to $227 million, after Liquor Control Board one-time and
+    ongoing expenses, over six fiscal years.&nbsp;A one-time net state
+    revenue gain of $28.4 million is estimated from sale of the state
+    liquor distribution center. One-time debt service costs are $5.3
+    million. Ongoing new state costs are estimated at $158,600 over
+    six fiscal years.&nbsp;&nbsp;</p> <p><b>General
+    Assumptions</b></p> <ul> <li>The initiative uses the term
+    &#39;spirits&#39; to describe alcoholic beverages that are
+    distilled instead of fermented. For purposes of the fiscal impact
+    statement, the term &#39;liquor&#39; is used for &#39;spirits&#39;
+    to maintain consistent terminology. Beer and wine are not spirits
+    or liquor.</li> <li>Estimates are described using the state&#39;s
+    fiscal year (FY) of July 1 through June 30.</li> <li>New liquor
+    distributor licenses and new liquor retailer licenses are
+    available beginning Feb. 8, 2012. There is no limit on the number
+    of licenses that can be issued.&nbsp;</li> <li>Liquor distributor
+    licensees can begin making sales of liquor March 1, 2012. Liquor
+    retailer licensees can begin making sales of liquor June 1,
+    2012.</li> <li>By June 15, 2012, the state will no longer operate
+    the state liquor distribution center or state liquor stores.</li>
+    <li>Estimates assume 1,428 licensed liquor retailers based on
+    research from implementation of Substitute Senate Bill 6329 that
+    authorized beer and wine tasting at grocery stores with a fully
+    enclosed retail area of 9,000 square feet and the current number
+    of state-operated and contract-operated liquor stores (328). The
+    number of licenses is assumed to be constant for each fiscal
+    year.&nbsp;</li> <li>Estimates assume 184 licensed liquor
+    distributors, based on the number of current Washington State
+    Liquor Control Board (LCB) licensed beer and wine distributors,
+    wine distributors, distilleries and liquor importers. The number
+    of licenses is assumed to be constant for each fiscal
+    year.&nbsp;</li> <li>Estimates of impacts are measured against the
+    June 2011 LCB revenue forecast (forecast).</li> <li>Retail liquor
+    liter sales are estimated to grow 5 percent from increased access
+    to liquor. This assumption is based on an academic study and
+    growth experienced in Alberta, Canada, after converting from
+    state-operated liquor stores to private liquor stores. A decrease
+    in liquor liter sales is estimated using the forecast price
+    elasticity assumption of 0.49 percent. Price elasticity is a
+    method used to calculate the change in consumption of a good when
+    price increases or decreases. For every 1 percent
+    increase/decrease in price, liquor liter sales increase/decrease
+    0.49 percent. Growth from increased access and price elasticity is
+    in addition to normal 3 percent growth in liquor liter sales
+    assumed in the forecast.</li> </ul> <p><b>State and Local
+    Revenues</b></p> <p>Actual fiscal impacts depend on liquor bottle
+    cost in the private market and the markup applied by both private
+    liquor distributors and retailers. Therefore, there is a wide
+    range of potential fiscal impacts.&nbsp;</p> <p>To estimate gains
+    or losses to the state and local governments, the fiscal impact
+    statement used a model developed for prior initiatives, adjusted
+    to reflect the content of this initiative. The model measures the
+    difference between LCB forecasted liquor revenues and the sum of
+    the revenue gains and losses generated under the initiative using
+    the set of assumptions set forth below.</p> <p><b>Total Estimated
+    State General Fund Revenues</b></p> <table > <tr > <td width=50
+    ><b ><span>Fiscal Year</span></b> </td> <td width=74 > <b
+    ><span>2012</span></b> </td> <td width=82 > <b
+    ><span>2013</span></b> </td> <td width=82 > <b
+    ><span>2014</span></b> </td> <td width=83 ><b
+    ><span>2015</span></b> </td> <td width=83 ><b
+    ><span>2016</span></b> </td> <td width=83 ><b
+    ><span>2017</span></b> </td> <td width=91 > <b
+    ><span>TOTAL</span></b> </td> </tr> <tr > <td width=50 ><b
+    ><span>Low Markup</span></b> </td> <td width=74 > <b
+    ><span>$5,404,000</span></b> </td> <td width=82 > <b
+    ><span>$51,373,000</span></b> </td> <td width=82 > <b
+    ><span>$52,007,000</span></b> </td> <td width=83 ><b
+    ><span>$36,083,000</span></b> </td> <td width=83 ><b
+    ><span>$35,669,000</span></b> </td> <td width=83 ><b
+    ><span>$35,244,000</span></b> </td> <td width=91 > <b
+    ><span>$215,780,000</span></b> </td> </tr> <tr > <td width=50 ><b
+    ><span>High Markup</span></b> </td> <td width=74 > <b
+    ><span>$8,777,000</span></b> </td> <td width=82 > <b
+    ><span>$59,054,000</span></b> </td> <td width=82 > <b
+    ><span>$58,372,000</span></b> </td> <td width=83 ><b
+    ><span>$42,164,000</span></b> </td> <td width=83 ><b
+    ><span>$42,204,000</span></b> </td> <td width=83 ><b
+    ><span>$42,260,000</span></b> </td> <td width=91 > <b
+    ><span>$252,831,000</span></b> </td> </tr> </table> <p><b>Total
+    Estimated Local Government Revenues</b></p> <table > <tr > <td
+    width=50 ><b ><span>Fiscal Year</span></b> </td> <td width=74 > <b
+    ><span>2012</span></b> </td> <td width=82 > <b
+    ><span>2013</span></b> </td> <td width=82 > <b
+    ><span>2014</span></b> </td> <td width=83 ><b
+    ><span>2015</span></b> </td> <td width=83 ><b
+    ><span>2016</span></b> </td> <td width=83 ><b
+    ><span>2017</span></b> </td> <td width=91 > <b
+    ><span>TOTAL</span></b> </td> </tr> <tr > <td width=50 ><b
+    ><span>Low Markup</span></b> </td> <td width=74 > <b
+    ><span>$6,012,000</span></b> </td> <td width=82 > <b
+    ><span>$56,913,000</span></b> </td> <td width=82 > <b
+    ><span>$42,500,000</span></b> </td> <td width=83 ><b
+    ><span>$27,973,000</span></b> </td> <td width=83 ><b
+    ><span>$26,757,000</span></b> </td> <td width=83 ><b
+    ><span>$25,492,000</span></b> </td> <td width=91 > <b
+    ><span>$185,647,000</span></b> </td> </tr> <tr > <td width=50 ><b
+    ><span>High Markup</span></b> </td> <td width=74 > <b
+    ><span>$8,361,000</span></b> </td> <td width=82 > <b
+    ><span>$63,034,000</span></b> </td> <td width=82 > <b
+    ><span>$50,741,000</span></b> </td> <td width=83 ><b
+    ><span>$35,770,000</span></b> </td> <td width=83 ><b
+    ><span>$34,949,000</span></b> </td> <td width=83 ><b
+    ><span>$34,098,000</span></b> </td> <td width=91 > <b
+    ><span>$226,953,000</span></b> </td> </tr> </table> <p><b>State
+    and Local Government Revenue Assumptions</b></p> <ul>
+    <li>LCB&#39;s forecasted average bottle price for a liter of
+    liquor (before taxes and markup) is used to estimate both state
+    and private market bottle price.</li> <li>State&#39;s markup on
+    liquor is 51.9 percent during FY 2012 and FY 2013, and 39.2
+    percent thereafter.</li> <li>Total private distributor/retailer
+    markup for liquor sold in stores is set at a low of 52 percent and
+    a high of 72 percent from March 1, 2012, to March 1,
+    2014. Thereafter, the private market markup is assumed to be a low
+    of 47 percent and a high of 67 percent. The selected range was
+    based on the following sources: <ul> <li>Low markup &#8212; 25
+    percent &#8212; is based on U.S. Internal Revenue Service data
+    (sales revenue minus cost of goods) of retail food, beverage and
+    liquor stores throughout the United States.</li> <li>High markup
+    &#8212; 45 percent &#8212; is the total liquor markup contained in
+    the Washington State Auditor review and is based on information
+    from the Distilled Spirits Council of the United
+    States.&nbsp;</li> <li>To these percentages, 27 percent is added
+    through Feb. 28, 2014, and 22 percent is added thereafter. These
+    percentages represent the total amount of new liquor distributor
+    and retailer license fees under the initiative. While individual
+    distributor and retailer actions will vary, academic research
+    supports an assumption that, in the aggregate statewide, the value
+    of the new liquor distributor and retailer license fees will be
+    passed on to the consumer in the private market markup.</li> </ul>
+    </li> </ul> <p><b> Markup Assumptions</b></p> <table> <tr> <td
+    width=50><b ><span>Fiscal Year</span></b> </td> <td width=50 ><b
+    ><span>2012</span></b> </td> <td width=50 ><b
+    ><span>2013</span></b> </td> <td width=98 > <b ><span>July 1, 2013
+    to Feb. 28, 2014</span></b> </td> <td width=111 > <b ><span>March
+    1, 2014 to June 30, 2014</span></b> </td> <td width=51 > <b
+    ><span>2015</span></b> </td> <td width=51 > <b
+    ><span>2016</span></b> </td> <td width=51 > <b
+    ><span>2017</span></b> </td> </tr> <tr > <td width=50 ><b
+    ><span>State Markup</span></b> </td> <td width=50 ><b
+    ><span>51.90%</span></b> </td> <td width=50 ><b
+    ><span>51.90%</span></b> </td> <td width=98 > <b
+    ><span>39.20%</span></b> </td> <td width=111 > <b
+    ><span>39.20%</span></b> </td> <td width=51 > <b
+    ><span>39.20%</span></b> </td> <td width=51 > <b
+    ><span>39.20%</span></b> </td> <td width=51 > <b
+    ><span>39.20%</span></b> </td> </tr> <tr style=> <td width=50 ><b
+    ><span>Low Markup</span></b> </td> <td width=50 ><b
+    ><span>52%</span></b> </td> <td width=50 ><b ><span>52%</span></b>
+    </td> <td width=98 > <b ><span>52%</span></b> </td> <td width=111
+    > <b ><span>47%</span></b> </td> <td width=51 > <b
+    ><span>47%</span></b> </td> <td width=51 > <b
+    ><span>47%</span></b> </td> <td width=51 > <b
+    ><span>47%</span></b> </td> </tr> <tr > <td width=50 ><b
+    ><span>High Markup</span></b> </td> <td width=50 ><b
+    ><span>72%</span></b> </td> <td width=50 ><b ><span>72%</span></b>
+    </td> <td width=98 > <b ><span>72%</span></b> </td> <td width=111
+    > <b ><span>67%</span></b> </td> <td width=51 > <b
+    ><span>67%</span></b> </td> <td width=51 > <b
+    ><span>67%</span></b> </td> <td width=51 > <b
+    ><span>67%</span></b> </td> </tr> </table> <ul> <li>The initiative
+    imposes a new liquor distributor license fee of 10 percent of
+    total liquor revenues from March 1, 2012, to March 1, 2014; the
+    fee decreases to 5 percent thereafter. The initiative imposes a
+    new liquor retailer license fee of 17 percent of total liquor
+    revenues beginning June 1, 2012.</li> <li>Based on inventory
+    information from the Retail Owners Institute, private liquor
+    stores are estimated to maintain two months of liquor
+    inventory. In contrast, state-operated liquor stores maintain 1.2
+    months of liquor inventory. Therefore, an additional 0.8 month of
+    liquor liter sales to liquor <span class=GramE>retailers is
+    assumed during FY 2012.&nbsp;</li> <li>If the new liquor
+    distributor license fee totals less than $150 million by March 31,
+    2013, these licensees must pay the difference between $150 million
+    and actual receipts by May 31, 2013. The model estimates that $84
+    million to $91 million will be paid by licensees during FY 2013
+    due to this requirement.</li> <li>The initiative sets a $1,320
+    license fee for each liquor distribution location and a $166
+    license fee for each liquor retailer license. Both fees are due at
+    the time of license renewal.&nbsp;</li> <li>Liquor distributor
+    licensees are assumed to be subject to the wholesaling business
+    and occupation (B&amp;O) tax. Liquor retailer licensees are
+    assumed to be subject to the retailing B&amp;O tax.&nbsp;</li>
+    <li>Liquor liter taxes and liquor sales taxes are amended by the
+    initiative, but these changes are assumed not to increase, create
+    or eliminate any tax.</li> <li>Except for the loss of sales in
+    state-operated liquor stores, estimates do not assume any change
+    in pricing or volume of sales of beer and wine.</li>
+    <li>State-operated liquor stores sell Washington State Lottery
+    products to the public. The estimate assumes 25 percent of these
+    sales will be lost and remaining sales will occur in other outlets
+    selling Washington State Lottery products. This revenue loss is
+    estimated to be $1.8 million over six years.</li> <li>Estimates of
+    sales by current restaurant licensees who sell liquor at retail
+    are limited to changes from price elasticity and the loss of the
+    state&#39;s 15 percent quantity price discount to these
+    licensees.</li> <li>Estimates do not assume any change in sales by
+    liquor stores operated on military bases. Such sales are assumed
+    not to be subject to liquor liter taxes, liquor sales taxes or
+    B&amp;O tax.</li> <li>Estimates do not assume any change in sales
+    by liquor stores operated by tribes. Such sales are assumed to be
+    subject to liquor liter taxes and liquor sales taxes based on
+    current agreements between tribes and LCB, but are not subject to
+    B&amp;O tax.</li> <li>No additional change is assumed for tax
+    avoidance/non-compliance by consumers or migration of sales in and
+    out of state by consumers. These items are assumed in the forecast
+    price elasticity assumption.</li> <li>Revenue from the state
+    markup used to pay for the state liquor distribution center and
+    state liquor store costs are netted to zero. The initiative
+    eliminates both the revenue (markup) and the costs (state liquor
+    distribution center and state liquor stores), which results in no
+    additional revenue to the state.&nbsp;</li> <li>The initiative
+    requires new liquor distributor and retailer fees to be deposited
+    into the Liquor Revolving Fund. The Liquor Revolving Fund is
+    distributed by statute in the following order: <ol> <li>Payment of
+    LCB administrative costs;</li> <li>Distributions to state accounts
+    for specific purposes (such as drug and alcohol research at the
+    University of Washington and Washington State University);</li>
+    <li>Border areas (cities, towns and counties adjacent to the
+    Canadian border); and</li> <li>The remainder after these
+    distributions: a) 50 percent to the State General Fund; b) 10
+    percent to counties; and 3) 40 percent to cities and towns. </li>
+    </ol> </li> </ul> <p>Therefore, the model first reduces the Liquor
+    Revolving Fund by LCB costs, one-time and ongoing, to determine
+    total revenues distributed to the State General Fund and local
+    governments. Other revenues (beer taxes, wine taxes, penalties,
+    etc.)  deposited into the Liquor Revolving Fund are assumed to be
+    unaffected by the initiative and continue to be shared between the
+    state and local governments.</p> <p><b>Specific Local Government
+    Revenue Assumptions</b></p> <ul> <li>New liquor distributor and
+    retailers license fees must be used to maintain, in the aggregate,
+    Liquor Revolving Fund distributions to counties, cities, towns,
+    border areas and the Municipal Research Service Center in an
+    amount no less than the amount received in comparable periods. For
+    purposes of the model, comparable period is measured by funds
+    forecasted for calendar year 2011. The model estimates that local
+    distributions will exceed the maintenance level required by the
+    initiative each fiscal year.&nbsp;</li> <li>An additional $10
+    million is also provided to counties, cities, towns and border
+    areas.&nbsp;</li> <li>Approximately 38 cities and towns impose a
+    local B&amp;O tax. Using data from the Washington State Department
+    of Revenue&#39;s 2008 Tax Reference Manual, total local B&amp;O
+    tax is approximately 10 percent of total state B&amp;O
+    tax. Assuming this ratio, $3 million is estimated as new local
+    B&amp;O taxes from liquor sales over six fiscal years.</li>
+    <li>Total local government revenues are the sum of the increased
+    Liquor Revolving Fund distributions, the additional $10 million
+    and local B&amp;O tax.</li> </ul> <p><b>Specific State Asset
+    Assumptions</b></p> <p>The sale of the state liquor distribution
+    center is estimated to generate a potential net $28.4 million in
+    revenue. Because the sale date cannot be precisely determined,
+    this revenue is stated separately and excluded from the total
+    State General Fund revenue estimates in the first table above. The
+    value of the state liquor distribution center is estimated to be
+    $20.4 million, based on the King County Assessor&#39;s Office 2011
+    assessed value of the property. The sale of the equipment in the
+    state liquor distribution center is estimated to be $8 million,
+    based on the 2010 Washington State Auditor review, which assumed
+    the sale of $16 million in assets would return about $8
+    million. Costs to sell the state liquor distribution center are
+    estimated to total $1 million at the time of sale.&nbsp;</p>
+    <p>The initiative requires LCB to sell by public auction the right
+    &#8212; at each state-owned store location &#8212; to operate a
+    liquor store upon the premises without regard to the size of the
+    premises if the applicant otherwise qualifies for a liquor
+    retailer license. All state-operated liquor stores are leased and
+    cannot be transferred or assigned. In addition, of the 166
+    state-operated liquor stores, 127 are located within one block of
+    a grocery store. Because these factors (location, competition and
+    lessor) will vary by state-operated liquor store and will affect
+    the value of each operating right, revenue generated from the
+    auction is indeterminate and not assumed in the model.&nbsp;</p>
+    <p>The initiative would repeal Engrossed Substitute Senate Bill
+    5942 (ESSB 5942), which directed the Office of Financial
+    Management to conduct a competitive process for the selection of a
+    private sector entity to lease and modernize the state&#39;s
+    liquor warehousing and distribution facilities. Under ESSB 5942,
+    if a proposal is determined to be in the best interests of the
+    state by the Office of Financial Management after consultation
+    with LCB and an advisory board created through the legislation,
+    LCB may contract with that private entity for the lease of the
+    state&#39;s liquor warehousing and distribution
+    facilities. Because it is not known if LCB will enter into a
+    contract, no revenue is assumed in the model.</p> <p><b>State and
+    Local Expenditure Estimate Assumptions</b></p> <p>Revenue gains
+    will accrue to existing accounts, the largest being the State
+    General Fund, which may be used for any governmental purpose as
+    appropriated by the Legislature.</p> <p>Washington State Lottery
+    proceeds in excess of expenses are deposited into the State
+    Opportunity Pathways Account to support programs in higher
+    education and early learning. Due to the loss of some lottery
+    product sales in state liquor stores, it is estimated that funds
+    to this account will decrease $1.8 million over six fiscal
+    years.</p> <p>Each county and city is required to spend 2 percent
+    of its share of liquor revenues on alcohol and chemical dependency
+    services, and these expenditures will increase. The additional $10
+    million distributed to cities, towns, counties and border areas
+    are for enhancing public safety programs. The remaining revenue
+    can be used for any allowable local government purpose.</p>
+    <p><b>State and Local Cost Estimate Assumptions</b></p> <p>The
+    fiscal impact statement does not estimate state costs or state
+    savings due to social impacts from approval of the initiative. No
+    costs are assumed for local governments.</p> <p><b>Liquor Control
+    Board Costs</b></p> <p>Estimated one-time and ongoing LCB costs
+    are assumed to be paid by the Liquor Revolving Fund.&nbsp;
+    Therefore, payment of the following costs is reflected in the
+    State General Fund revenue estimate.</p> <p>LCB ongoing costs for
+    licensing, enforcement and administration are estimated to
+    increase by $350,000 for new fee-collection costs and implementing
+    the &#39;responsible vendor program.&#39;&nbsp; No state costs
+    from increased enforcement activities are assumed in the
+    estimate.</p> <p>Assuming a closure date of June 15, 2012, LCB
+    will incur one-time state costs associated with managing the
+    closure of the state liquor distribution center and state liquor
+    stores. There will be additional one-time costs for issuing new
+    licenses. These state costs are estimated to total $28.7 million
+    during FYs 2012 and 2013:</p> <ul> <li>Unemployment, sick leave
+    and vacation buyout costs for state employees estimated at $11.8
+    million.</li> <li>Information technology changes and staff to
+    issue new licenses estimated at $2.7 million.</li> <li>Staffing
+    costs to coordinate the sale of existing inventory, termination of
+    contract store leases, surplus of store fixtures and auction of
+    state-operated store operating rights estimated at $11
+    million.</li> <li>Final audits of each state and contract liquor
+    store estimated at $1.9 million.</li> <li>Project management and
+    additional human resource staff estimated at $1.3 million.</li>
+    </ul> <p><b>Department of Revenue Costs</b></p> <p>The Washington
+    State Department of Revenue will administer the collection of
+    liquor excise tax from licensed liquor distributors and
+    retailers. Costs include additional staff, information technology
+    changes, rule-making and policy activities, taxpayer mailings and
+    workshops, supplies and materials. Total one-time state costs are
+    estimated to total $120,100 during FY 2012. Ongoing costs are
+    estimated to be $38,500 each fiscal year beginning FY
+    2013.&nbsp;</p> <p><b>State Indebtedness</b></p> <p>There is $5.3
+    million in debt service costs for a Certificate of Participation
+    bond for the state liquor distribution center that is scheduled to
+    be paid by Dec. 1, 2013. This one-time state cost is assumed in FY
+    2014.</p> ' )
 
 p10 = Point.create!(
   :option => o4,
@@ -4181,7 +4984,13 @@ p13 = Point.create!(
 o5 = Option.create!(
   :name => 'Levy for Parks and Recreation Operations and Capital Improvements',
   :short_name => 'Parks Levy',
-  :description => 'The City of Connell Council adopted Ordinance No. 898 asking voters to increase property taxes to finance parks and recreation operations and facility improvements. This proposition would increase the City&rsquo;s regular property tax levy by $0.40 per $1,000 over the current levy of assessed valuation for collection beginning in 2012 and use the 2012 levy amount to recalculate subsequent levy limits. ',
+  :description => 'The City of Connell Council adopted Ordinance
+    No. 898 asking voters to increase property taxes to finance parks
+    and recreation operations and facility improvements. This
+    proposition would increase the City&rsquo;s regular property tax
+    levy by $0.40 per $1,000 over the current levy of assessed
+    valuation for collection beginning in 2012 and use the 2012 levy
+    amount to recalculate subsequent levy limits. ',
   :domain => 'City of Connell',
   :domain_short => 'City of Connell',
   :url => '',
@@ -4199,7 +5008,10 @@ o5 = Option.create!(
 o6 = Option.create!(
   :name => 'EMS District 1 City of Asotin',
   :short_name => 'EMS Levy',
-  :description => 'Shall a special levy be collected in 2012 of $30,369.00 requiring approximately $0.40 per thousand of assessed valuation for the City of Asotin to pay for emergency medical services?',
+  :description => 'Shall a special levy be collected in 2012 of
+    $30,369.00 requiring approximately $0.40 per thousand of assessed
+    valuation for the City of Asotin to pay for emergency medical
+    services?',
   :domain => 'City of Asotin',
   :domain_short => 'Asotin EMS Dist.',
   :url => '',
@@ -4217,7 +5029,15 @@ o6 = Option.create!(
 o7 = Option.create!(
   :name => 'EMS District 2 City of Clarkston',
   :short_name => 'EMS Levy',
-  :description => 'City of Clarkston, Washington emergency medical services excess tax levy. The City Council of the City of Clarkston, Washington, adopted Resolution No. 2011-08 concerning a proposition to finance emergency medical services. This proposition, if approved, would permit maintenance and operation of Rescue One Emergency Medical Services through the levy of a special excess tax for collection in 2012 of $486,834 requiring approximately $1.27 per thousand dollars of assessed value (based on 100% of true and fair value).',
+  :description => 'City of Clarkston, Washington emergency medical
+    services excess tax levy. The City Council of the City of
+    Clarkston, Washington, adopted Resolution No. 2011-08 concerning a
+    proposition to finance emergency medical services. This
+    proposition, if approved, would permit maintenance and operation
+    of Rescue One Emergency Medical Services through the levy of a
+    special excess tax for collection in 2012 of $486,834 requiring
+    approximately $1.27 per thousand dollars of assessed value (based
+    on 100% of true and fair value).',
   :domain => 'City of Clarkston',
   :domain_short => 'Clarkston EMS Dist.',
   :url => '',
@@ -4235,7 +5055,15 @@ o7 = Option.create!(
 o8 = Option.create!(
   :name => 'Asotin County Fire Protection District No. 1 Emergency Medical Services Property Tax Levy',
   :short_name => 'EMS Levy',
-  :description => 'Asotin County Fire Protection District No. 1 - Board of Commissioners - Proposition Authorizing Emergency Medical Services Property Tax Levy.  Shall Asotin County Fire Protection District No. 1 be authorized to impose regular emergency medical services property tax levies of fifty cents or less per thousand dollars of assessed valuation for each of six consecutive years beginning in 2011 for collection in 2012 for the purpose of providing, maintaining and upgrading emergency medical services in the District.',
+  :description => 'Asotin County Fire Protection District No. 1 -
+    Board of Commissioners - Proposition Authorizing Emergency Medical
+    Services Property Tax Levy.  Shall Asotin County Fire Protection
+    District No. 1 be authorized to impose regular emergency medical
+    services property tax levies of fifty cents or less per thousand
+    dollars of assessed valuation for each of six consecutive years
+    beginning in 2011 for collection in 2012 for the purpose of
+    providing, maintaining and upgrading emergency medical services in
+    the District.',
   :domain => 'Asotin County',
   :domain_short => 'Asotin Fire Dist.',
   :url => '',
@@ -4263,7 +5091,13 @@ o8 = Option.create!(
 o9 = Option.create!(
   :name => 'City of Palouse Street Improvements and Street Oiling',
   :short_name => 'Street Levy',
-  :description => 'For the purpose of funding street improvements and street oiling, the City Council of the City of Palouse proposes, pursuant to RCW 84.52.052, to impose an excess property tax levy upon all taxable property within the City in the amount of $40,000.00, an estimated $0.83 per $1,000.00, of assessed value in the year 2011 for collection in 2012, as provided in Resolution 2011-06.',
+  :description => 'For the purpose of funding street improvements and
+    street oiling, the City Council of the City of Palouse proposes,
+    pursuant to RCW 84.52.052, to impose an excess property tax levy
+    upon all taxable property within the City in the amount of
+    $40,000.00, an estimated $0.83 per $1,000.00, of assessed value in
+    the year 2011 for collection in 2012, as provided in Resolution
+    2011-06.',
   :domain => 'City of Palouse',
   :domain_short => 'City of Palouse',
   :url => '',
@@ -4281,7 +5115,13 @@ o9 = Option.create!(
 o10 = Option.create!(
   :name => 'City of Palouse Swimming Pool Levy',
   :short_name => 'Swimming Pool Levy',
-  :description => 'For the purpose of funding the operation and maintenance of the swimming pool, the City Council of the City of Palouse proposes, pursuant to RCW 84.52.052, to impose an excess property tax levy upon all taxable property within the City in the amount of $28,000.00 an estimated $0.58 per $1,000.00, of assessed value in the year 2011 for collection in 2012, as provided by Resolution 2011-07.',
+  :description => 'For the purpose of funding the operation and
+    maintenance of the swimming pool, the City Council of the City of
+    Palouse proposes, pursuant to RCW 84.52.052, to impose an excess
+    property tax levy upon all taxable property within the City in the
+    amount of $28,000.00 an estimated $0.58 per $1,000.00, of assessed
+    value in the year 2011 for collection in 2012, as provided by
+    Resolution 2011-07.',
   :domain => 'City of Palouse',
   :domain_short => 'City of Palouse',
   :url => '',
@@ -4299,7 +5139,10 @@ o10 = Option.create!(
 o11 = Option.create!(
   :name => 'City of Palouse EMS Levy',
   :short_name => 'EMS Levy',
-  :description => 'Shall the City of Palouse be authorized to impose an additional property tax levy in the amount of fifty cents (.50) per thousand dollars of assessed valuation for each of six (6) consecutive years for provision of emergency medical services?',
+  :description => 'Shall the City of Palouse be authorized to impose
+    an additional property tax levy in the amount of fifty cents (.50)
+    per thousand dollars of assessed valuation for each of six (6)
+    consecutive years for provision of emergency medical services?',
   :domain => 'City of Palouse',
   :domain_short => 'City of Palouse',
   :url => '',
@@ -4317,7 +5160,15 @@ o11 = Option.create!(
 o12 = Option.create!(
   :name => 'City of Newport Property Tax Levy Lid Lift Dedicated to Street Preservation and Repair',
   :short_name => 'Street Levy',
-  :description => 'The Newport City Council adopted Resolution No. 80111 concerning a proposition to increase its regular property tax levy. If approved, this proposition would authorize the City to increase its regular property levy rate from its current level of $1.96 cents to a rate of $2.50 cents per $1,000 of assessed value for collection in 2012 and thereafter, which amount will be used for computing legal limits on levies in subsequent years pursuant to RCW Chapter 84.55, and the additional funds can only be used for street preservation and repair. ',
+  :description => 'The Newport City Council adopted Resolution
+    No. 80111 concerning a proposition to increase its regular
+    property tax levy. If approved, this proposition would authorize
+    the City to increase its regular property levy rate from its
+    current level of $1.96 cents to a rate of $2.50 cents per $1,000
+    of assessed value for collection in 2012 and thereafter, which
+    amount will be used for computing legal limits on levies in
+    subsequent years pursuant to RCW Chapter 84.55, and the additional
+    funds can only be used for street preservation and repair. ',
   :domain => 'City of Newport',
   :domain_short => 'City of Newport',
   :url => '',
@@ -4335,7 +5186,14 @@ o12 = Option.create!(
 o13 = Option.create!(
   :name => 'Sacheen Lake Sewer and Water District One Year Excess Levy for Maintenance and Operation',
   :short_name => 'Water/Sewer Levy',
-  :description => 'Shall the following taxes, in excess of regular, non voted property tax levies, for operation and maintenance purposes be levied for Sacheen Lake Water and Sewer District&rsquo;s General Fund upon all taxable property within the District;  A tax of approximately $ 0.85 per thousand dollars of assessed valuation (based on true and fair value) to provide $60,545.00, said levy to be made in 2011 for collection in 2012. ',
+  :description => 'Shall the following taxes, in excess of regular,
+    non voted property tax levies, for operation and maintenance
+    purposes be levied for Sacheen Lake Water and Sewer
+    District&rsquo;s General Fund upon all taxable property within the
+    District; A tax of approximately $ 0.85 per thousand dollars of
+    assessed valuation (based on true and fair value) to provide
+    $60,545.00, said levy to be made in 2011 for collection in
+    2012. ',
   :domain => 'Pend Oreille County',
   :domain_short => 'Sacheen S&W',
   :url => '',
@@ -4378,7 +5236,17 @@ o13 = Option.create!(
 o14 = Option.create!(
   :name => 'Selkirk School District No. 70 Capital Levy for School Expansion and Consolidation',
   :short_name => 'School Levy',
-  :description => 'The Board of Directors of Selkirk School District No. 70 adopted Resolution No. 10-11/09, concerning a proposition to finance school expansion and consolidation.  This proposition would authorize the District, as Phase I of a two phase project, to expand Selkirk Junior-Senior High School to consolidate Grades K-12 including constructing additional classrooms and new roof from the cafeteria to the south classrooms and levy the following excess taxes, on all taxable property within the District.  Approximate levy rate/$1,000: $2.88; Levy amount: $750,000 for 2012 and $750,000 for 2013, all as provided in Resolution No. 10-11/09.',
+  :description => 'The Board of Directors of Selkirk School District
+    No. 70 adopted Resolution No. 10-11/09, concerning a proposition
+    to finance school expansion and consolidation.  This proposition
+    would authorize the District, as Phase I of a two phase project,
+    to expand Selkirk Junior-Senior High School to consolidate Grades
+    K-12 including constructing additional classrooms and new roof
+    from the cafeteria to the south classrooms and levy the following
+    excess taxes, on all taxable property within the District.
+    Approximate levy rate/$1,000: $2.88; Levy amount: $750,000 for
+    2012 and $750,000 for 2013, all as provided in Resolution
+    No. 10-11/09.',
   :domain => 'Pend Oreille County',
   :domain_short => 'Selkirk School Dist.',
   :url => '',
@@ -4464,7 +5332,14 @@ o15 = Option.create!(
 o16 = Option.create!(
   :name => 'Douglas County Hospital District One Year Excess Levy',
   :short_name => 'Hospital Levy',
-  :description => 'The Douglas County Hospital District No. 2 (Waterville Clinic and Ambulance) Board of Commissioners adopted Resolution #60 on July 20, 2011, containing a proposition to finance maintenance and operation. This proposition would authorize the district to levy excess taxes upon all taxable property within the district in the sum of $65,000, requiring collection of approximately $0.40 per $1,000 of assessed valuation in 2012.',
+  :description => 'The Douglas County Hospital District No. 2
+    (Waterville Clinic and Ambulance) Board of Commissioners adopted
+    Resolution #60 on July 20, 2011, containing a proposition to
+    finance maintenance and operation. This proposition would
+    authorize the district to levy excess taxes upon all taxable
+    property within the district in the sum of $65,000, requiring
+    collection of approximately $0.40 per $1,000 of assessed valuation
+    in 2012.',
   :domain => 'Douglas County',
   :domain_short => 'Douglas Hosp. Dist.',
   :url => '',
@@ -4512,7 +5387,13 @@ o16 = Option.create!(
 o17 = Option.create!(
   :name => 'Douglas County Cemetery District No. 2 One Year Maintenance and Operations Excess Tax Levy',
   :short_name => 'Cemetary Dist.',
-  :description => 'The Douglas County Cemetery District No. 2 Board of Commissioners adopted Resolution #2011/002 on August 8, 2011, containing a proposition to finance maintenance and operations.  This proposition would authorize the district to levy excess taxes upon all taxable property within the district in the sum of $70,000, requiring collection of approximately $0.53 per $1,000 of assessed valuation in 2012.',
+  :description => 'The Douglas County Cemetery District No. 2 Board of
+    Commissioners adopted Resolution #2011/002 on August 8, 2011,
+    containing a proposition to finance maintenance and operations.
+    This proposition would authorize the district to levy excess taxes
+    upon all taxable property within the district in the sum of
+    $70,000, requiring collection of approximately $0.53 per $1,000 of
+    assessed valuation in 2012.',
   :domain => 'Douglas County',
   :domain_short => 'Douglas Cem. D.',
   :url => '',
@@ -4560,7 +5441,10 @@ o17 = Option.create!(
 o18 = Option.create!(
   :name => 'Town of Farmington Current Expense Fund Levy',
   :short_name => 'Current Expense Levy',
-  :description => 'Shall the Town of Farmington levy a special tax of $15,000, an estimated $2.40, per $1,000  of the 2011 assessed valuation, for Current Expense Fund, for collection in 2012 be approved?',
+  :description => 'Shall the Town of Farmington levy a special tax of
+    $15,000, an estimated $2.40, per $1,000 of the 2011 assessed
+    valuation, for Current Expense Fund, for collection in 2012 be
+    approved?',
   :domain => 'Town of Farmington',
   :domain_short => 'Town of Farmington',
   :url => '',
@@ -4583,7 +5467,10 @@ o18 = Option.create!(
 o19 = Option.create!(
   :name => 'Town of Farmington Special Equipment Levy',
   :short_name => 'Special Eqpt Levy',
-  :description => 'Shall the Town of Farmington levy a special tax of $5,000, an estimated $0.93, per one thousand dollars of the 2011 assessed valuation, for Special Equipment Fund, for collection in 2012, be approved?',
+  :description => 'Shall the Town of Farmington levy a special tax of
+    $5,000, an estimated $0.93, per one thousand dollars of the 2011
+    assessed valuation, for Special Equipment Fund, for collection in
+    2012, be approved?',
   :domain => 'Town of Farmington',
   :domain_short => 'Town of Farmington',
   :url => '',
@@ -4629,7 +5516,14 @@ o20 = Option.create!(
 o21 = Option.create!(
   :name => 'Franklin County and Cities Criminal Justice and Public Purposes Sales and Use Tax',
   :short_name => 'Criminal Justice Levy',
-  :description => 'The Board of Franklin County Commissioners adopted Resolution No. 2011-____, concerning a proposition for a county and cities&rsquo; criminal justice and public purposes sales and use tax. This proposition would authorize the sales and use tax in Franklin County and Cities therein be increased three-tenths of one percent (0.3%) for thirty years to improve, expand, operate, and maintain the County jail, and support criminal justice or public purposes as permitted bv law.',
+  :description => 'The Board of Franklin County Commissioners adopted
+    Resolution No. 2011-____, concerning a proposition for a county
+    and cities&rsquo; criminal justice and public purposes sales and
+    use tax. This proposition would authorize the sales and use tax in
+    Franklin County and Cities therein be increased three-tenths of
+    one percent (0.3%) for thirty years to improve, expand, operate,
+    and maintain the County jail, and support criminal justice or
+    public purposes as permitted by law.',
   :domain => 'Franklin County',
   :domain_short => 'Franklin County',
   :url => '',
@@ -4672,7 +5566,9 @@ o21 = Option.create!(
 o22 = Option.create!(
   :name => 'Mosquito Control District Formation',
   :short_name => 'Mosquito District',
-  :description => 'Shall a mosquito control district be established for the area described in Resolution No. CE 11-38B adopted on August 8, 2011, by the Board of County Commissioners?',
+  :description => 'Shall a mosquito control district be established for the area 
+    described in Resolution No. CE 11-38B adopted on August 8, 2011, by the 
+    Board of County Commissioners?',
   :domain => 'Town of Waterville',
   :domain_short => 'Town of Waterville',
   :url => '',
@@ -4690,7 +5586,10 @@ o22 = Option.create!(
 o23 = Option.create!(
   :name => 'Mosquito Control District One Year Levy',
   :short_name => 'Mosquito Levy',
-  :description => 'Shall the mosquito control district, if formed, levy a general tax of twenty-five cents ($0.25) per thousand dollars of assessed value for one year upon all taxable property within the district in excess of constitutional and/or statutory tax limits for authorized purposes of the district?',
+  :description => 'Shall the mosquito control district, if formed, levy a general tax 
+    of twenty-five cents ($0.25) per thousand dollars of assessed value for one year
+    upon all taxable property within the district in excess of constitutional and/or
+    statutory tax limits for authorized purposes of the district?',
   :domain => 'Town of Waterville',
   :domain_short => 'Town of Waterville',
   :url => '',
@@ -4708,7 +5607,12 @@ o23 = Option.create!(
 o24 = Option.create!(
   :name => 'Waterville Permanent Regular Levy Lid Lift',
   :short_name => 'Levy Lid Lift',
-  :description => 'The Waterville Town Council adopted Resolution No. 2011-05 containing a  Proposition that would authorize regular property taxes at the maximum rate of $2.80 per $1,000 of assessed valuation for the year 2012. This is a  permanent levy lid lift. For a minimum period of six (6) years, $.50 per  $1,000 of the levy increase shall be dedicated to continuing maintenance and  operation of the Town&rsquo;s swimming pool. Should this proposition be  approved?',
+  :description => 'The Waterville Town Council adopted Resolution No. 2011-05 
+    containing a  Proposition that would authorize regular property taxes at the 
+    maximum rate of $2.80 per $1,000 of assessed valuation for the year 2012. This 
+    is a  permanent levy lid lift. For a minimum period of six (6) years, $.50 per $1,000 
+    of the levy increase shall be dedicated to continuing maintenance and operation of 
+    the Town&rsquo;s swimming pool. Should this proposition be  approved?',
   :domain => 'Town of Waterville',
   :domain_short => 'Town of Waterville',
   :url => '',
@@ -4726,7 +5630,9 @@ o24 = Option.create!(
 o25 = Option.create!(
   :name => 'City of Tekoa Street Levy',
   :short_name => 'Street Levy',
-  :description => 'Shall the City of Tekoa levy a special tax in the amount of $50,000.00, an estimated $2.19 per one thousand dollars of assessed valuation, for collection in 2012, for operation and maintenance in the Street Department?',
+  :description => 'Shall the City of Tekoa levy a special tax in the amount 
+    of $50,000.00, an estimated $2.19 per one thousand dollars of assessed 
+    valuation, for collection in 2012, for operation and maintenance in the Street Department?',
   :domain => 'City of Tekoa',
   :domain_short => 'City of Tekoa',
   :url => '',
@@ -4744,7 +5650,9 @@ o25 = Option.create!(
 o26 = Option.create!(
   :name => 'Town of Albion EMS Levy',
   :short_name => 'EMS Levy',
-  :description => 'Shall the Town of Albion levy a special tax levy of $1,000, an estimated $0.50 per one thousand dollars of assessed valuation for six consecutive years beginning in 2012 for Emergency Medical Services?',
+  :description => 'Shall the Town of Albion levy a special tax levy of $1,000, 
+    an estimated $0.50 per one thousand dollars of assessed valuation for six 
+    consecutive years beginning in 2012 for Emergency Medical Services?',
   :domain => 'Town of Albion',
   :domain_short => 'Town of Albion',
   :url => '',
@@ -4762,7 +5670,10 @@ o26 = Option.create!(
 o27 = Option.create!(
   :name => 'Town of Colton Levy',
   :short_name => 'Street/Water Levy',
-  :description => 'Shall the Town of Colton be authorized to levy additional taxes by an excess levy for collection in 2012 of approximately $1.20 per $1,000.00 of assessed value, to raise the $30,000.00 for General Operations, Improvements of the Town Streets and Water System?',
+  :description => 'Shall the Town of Colton be authorized to levy additional taxes 
+    by an excess levy for collection in 2012 of approximately $1.20 per $1,000.00 
+    of assessed value, to raise the $30,000.00 for General Operations, Improvements 
+    of the Town Streets and Water System?',
   :domain => 'Town of Colton',
   :domain_short => 'Town of Colton',
   :url => '',
@@ -4780,7 +5691,8 @@ o27 = Option.create!(
 o28 = Option.create!(
   :name => 'Town of Endicott Street Levy',
   :short_name => 'Street Levy',
-  :description => 'Shall the Town of Endicott be authorized to impose a special tax levy in 2011for collection in 2012 of $20,000 for Street Work and Maintenance?',
+  :description => 'Shall the Town of Endicott be authorized to impose a special
+    tax levy in 2011 for collection in 2012 of $20,000 for Street Work and Maintenance?',
   :domain => 'Town of Endicott',
   :domain_short => 'Town of Endicott',
   :url => '',
@@ -4798,7 +5710,8 @@ o28 = Option.create!(
 o29 = Option.create!(
   :name => 'Town of Endicott City Park Levy',
   :short_name => 'City Park Levy',
-  :description => 'Shall the Town of Endicott be authorized to impose a special tax levy in 2011 for collection in 2012 of $7,000.00 for City Park Maintenance?',
+  :description => 'Shall the Town of Endicott be authorized to impose a special
+    tax levy in 2011 for collection in 2012 of $7,000.00 for City Park Maintenance?',
   :domain => 'Town of Endicott',
   :domain_short => 'Town of Endicott',
   :url => '',
@@ -4816,7 +5729,16 @@ o29 = Option.create!(
 o30 = Option.create!(
   :name => 'Veterans and Human Services Levy',
   :short_name => 'Veterans Svcs.',
-  :description => 'The Kitsap County Board of Commissioners approved Resolution Nos. 123-2011 and 124-2011 concerning funding for veterans, health and human services.  This proposition would fund capital facilities and services that reduce medical costs, homelessness and criminal justice system involvement, with half of the proceeds supporting veterans, military personnel and their families, and the other half supporting other families in need.  It would authorize Kitsap County to increase its projected regular property tax levy rate of $1.10 by up to 5 cents per $1,000 of assessed valuation, to $1.15, for collection in 2012, with levy increases in each of the following five years limited as provided by chapter 84.55 RCW. ',
+  :description => 'The Kitsap County Board of Commissioners approved Resolution 
+    Nos. 123-2011 and 124-2011 concerning funding for veterans, health and
+    human services.  This proposition would fund capital facilities and services
+    that reduce medical costs, homelessness and criminal justice system involvement,
+    with half of the proceeds supporting veterans, military personnel and their
+    families, and the other half supporting other families in need.  It would
+    authorize Kitsap County to increase its projected regular property tax levy
+    rate of $1.10 by up to 5 cents per $1,000 of assessed valuation, to $1.15,
+    for collection in 2012, with levy increases in each of the following five
+    years limited as provided by chapter 84.55 RCW.',
   :domain => 'Kitsap County',
   :domain_short => 'Kitsap County',
   :url => '',
@@ -4959,7 +5881,14 @@ o30 = Option.create!(
 o31 = Option.create!(
   :name => 'Formation of Port of Bainbridge Island',
   :short_name => 'Port Formation',
-  :description => 'The Kitsap County Board of Commissioners adopted Resolution No. 110-2011 concerning formation of the Port of Bainbridge Island.  If approved, this proposition would form the Port of Bainbridge Island, with boundaries coextensive with those of the City of Bainbridge Island and governed by a five-member Port Commission with members elected at large.  Should the Port of Bainbridge Island be formed? (Pursuant to RCW 53.04.023 & BOCC Res. No. 110-2011)',
+  :description => 'The Kitsap County Board of Commissioners adopted
+    Resolution No. 110-2011 concerning formation of the Port of
+    Bainbridge Island.  If approved, this proposition would form the
+    Port of Bainbridge Island, with boundaries coextensive with those
+    of the City of Bainbridge Island and governed by a five-member
+    Port Commission with members elected at large.  Should the Port of
+    Bainbridge Island be formed? (Pursuant to RCW 53.04.023 & BOCC
+    Res. No. 110-2011)',
   :domain => 'Kitsap County',
   :domain_short => 'Kitsap County',
   :url => '',
@@ -5102,7 +6031,17 @@ o31 = Option.create!(
 o32 = Option.create!(
   :name => 'Proposed Charter Amendment to Reduce the Size of City Council',
   :short_name => 'Council Size Red.',
-  :description => 'The Bremerton City Council adopted Resolution No. 3139, approving a proposition to be sent to the voters to amend the Bremerton City Charter reducing the size of the City Council.\n\nIf approved, this proposition amends the City Charter reducing the number of Council members and Council districts from nine to seven, and makes other related changes.  Council members elected in 2011 to represent current Council districts will serve two year terms.  In 2013, the seven new Council districts, as redistricted, will elect new Council members.  These Council members will initially serve staggered terms beginning in 2014.  Thereafter, all Council members shall serve four year terms.',
+  :description => 'The Bremerton City Council adopted Resolution
+    No. 3139, approving a proposition to be sent to the voters to
+    amend the Bremerton City Charter reducing the size of the City
+    Council.\n\nIf approved, this proposition amends the City Charter
+    reducing the number of Council members and Council districts from
+    nine to seven, and makes other related changes.  Council members
+    elected in 2011 to represent current Council districts will serve
+    two year terms.  In 2013, the seven new Council districts, as
+    redistricted, will elect new Council members.  These Council
+    members will initially serve staggered terms beginning in 2014.
+    Thereafter, all Council members shall serve four year terms.',
   :domain => 'City of Bremerton',
   :domain_short => 'City of Bremerton',
   :url => '',
@@ -5140,7 +6079,13 @@ o32 = Option.create!(
 o33 = Option.create!(
   :name => 'Enlargement of Port of Tracyton',
   :short_name => 'Port Enlargement',
-  :description => 'This proposition concerns the enlargement of the Port of Tracyton.  The proposition would authorize the Port of Tracyton to enlarge its existing geographical boundaries by annexing to the Port the territory legally described in Port of Tracyton Resolution No. 2011-01. Should this proposition be enacted into law? (Pursuant to RCW 53.04.080 and Port District Resolution No. 2011-01)',
+  :description => 'This proposition concerns the enlargement of the
+    Port of Tracyton.  The proposition would authorize the Port of
+    Tracyton to enlarge its existing geographical boundaries by
+    annexing to the Port the territory legally described in Port of
+    Tracyton Resolution No. 2011-01. Should this proposition be
+    enacted into law?  (Pursuant to RCW 53.04.080 and Port District
+    Resolution No. 2011-01)',
   :domain => 'Port of Tracyton',
   :domain_short => 'Port of Tracyton',
   :url => '',
@@ -5158,7 +6103,15 @@ o33 = Option.create!(
 o34 = Option.create!(
   :name => 'EMS Levy Authorization',
   :short_name => 'EMS Levy',
-  :description => 'The Board of Yakima County Commissioners adopted Resolution No. 317-2011 concerning a proposition to finance emergency medical care and emergency medical services.  This proposition would authorize Yakima County to continue to impose regular property tax levies of twenty-five cents per thousand dollars of assessed valuation (.25/$1,000.00) or less, for the ten consecutive years beginning January 1, 2014, the proceeds to be used to provide emergency medical care or emergency medical services according to RCW 84.52.069.',
+  :description => 'The Board of Yakima County Commissioners adopted
+    Resolution No. 317-2011 concerning a proposition to finance
+    emergency medical care and emergency medical services.  This
+    proposition would authorize Yakima County to continue to impose
+    regular property tax levies of twenty-five cents per thousand
+    dollars of assessed valuation (.25/$1,000.00) or less, for the ten
+    consecutive years beginning January 1, 2014, the proceeds to be
+    used to provide emergency medical care or emergency medical
+    services according to RCW 84.52.069.',
   :domain => 'Yakima County',
   :domain_short => 'Yakima County',
   :url => '',
@@ -5296,7 +6249,12 @@ o34 = Option.create!(
 o35 = Option.create!(
   :name => 'Yakima County Home Rule',
   :short_name => 'Home Rule Charter',
-  :description => 'Proposition No. 1 concerns a proposal to frame a home rule charter for Yakima County. If approved, a board of fifteen (15) freeholders would be elected for the purpose of drafting a home rule charter for submission to the voters of Yakima County to adopt or reject pursuant to Article XI, Section 4, of the Washington State Constitution.',
+  :description => 'Proposition No. 1 concerns a proposal to frame a
+    home rule charter for Yakima County. If approved, a board of
+    fifteen (15) freeholders would be elected for the purpose of
+    drafting a home rule charter for submission to the voters of
+    Yakima County to adopt or reject pursuant to Article XI, Section
+    4, of the Washington State Constitution.',
   :domain => 'Yakima County',
   :domain_short => 'Yakima County',
   :url => '',
@@ -5434,7 +6392,13 @@ o35 = Option.create!(
 o36 = Option.create!(
   :name => 'Naches Park & Recreation District Special Levy',
   :short_name => 'Parks Levy',
-  :description => 'The Commissioners of the Naches Park and Recreation District adopted Resolution 2011-09 concerning a proposition to finance the general operating and equipment expenses of the District.  This proposition would authorize the district to levy $95,000 in excess property taxes (approximately $.58 per $1,000 of assessed valuation) to be collected in 2012 and again in 2013 to meet general operating and equipment expenses.',
+  :description => 'The Commissioners of the Naches Park and Recreation
+    District adopted Resolution 2011-09 concerning a proposition to
+    finance the general operating and equipment expenses of the
+    District.  This proposition would authorize the district to levy
+    $95,000 in excess property taxes (approximately $.58 per $1,000 of
+    assessed valuation) to be collected in 2012 and again in 2013 to
+    meet general operating and equipment expenses.',
   :domain => 'Town of Naches',
   :domain_short => 'Naches P&R Dist.',
   :url => '',
@@ -5452,7 +6416,17 @@ o36 = Option.create!(
 o37 = Option.create!(
   :name => 'Levy for Criminal Justice Services and Cash Reserve Stabilization',
   :short_name => 'Criminal Justice Levy',
-  :description => 'The Carnation City Council has passed Resolution No. 366, placing funding for criminal justice services and stabilization of the City&rsquo;s monetary reserves before the voters.<p>This six-year proposition would increase the regular property tax rate for collection in 2012 by $0.61 to $1.90 per $1,000 of assessed valuation.  The 2012 levy amount would become the base upon which levy increases would be computed for each of the five succeeding years.  The revenue would be used to fund criminal justice services, including police, jail, prosecution, courts, public defender, and domestic violence advocacy, and to help stabilize the City&rsquo;s monetary reserves.',
+  :description => 'The Carnation City Council has passed Resolution
+    No. 366, placing funding for criminal justice services and
+    stabilization of the City&rsquo;s monetary reserves before the
+    voters.<p>This six-year proposition would increase the regular
+    property tax rate for collection in 2012 by $0.61 to $1.90 per
+    $1,000 of assessed valuation.  The 2012 levy amount would become
+    the base upon which levy increases would be computed for each of
+    the five succeeding years.  The revenue would be used to fund
+    criminal justice services, including police, jail, prosecution,
+    courts, public defender, and domestic violence advocacy, and to
+    help stabilize the City&rsquo;s monetary reserves.',
   :domain => 'City of Carnation',
   :domain_short => 'City of Carnation',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40321&eid=1249',
@@ -5470,7 +6444,19 @@ o37 = Option.create!(
 o38 = Option.create!(
   :name => 'Utility Occupation Tax for Des Moines Beach Park and Streets',
   :short_name => 'Historic Bldgs, Streets',
-  :description => 'The Des Moines City Council adopted Resolution No. 1169 concerning a proposition to increase the City Utility Occupation Tax to restore Beach Park Historic District buildings and facilities;  fund maintenance and operations;  and for City street paving improvements.  This proposition would restore Des Moines Beach Park Historic Buildings and facilities; fund maintenance and operations; and improve City streets to prevent their further deterioration.  This proposition increases the current 6% utility occupation tax to 9% authorizing:  (1) 1% for Beach Park capital projects for 20 years or until capital bonds are repaid and thereafter that 1% tax ends; (2) 0.5% for Beach Park maintenance and operations; and (3) 1.5% for City street paving improvements.',
+  :description => 'The Des Moines City Council adopted Resolution
+    No. 1169 concerning a proposition to increase the City Utility
+    Occupation Tax to restore Beach Park Historic District buildings
+    and facilities; fund maintenance and operations; and for City
+    street paving improvements.  This proposition would restore Des
+    Moines Beach Park Historic Buildings and facilities; fund
+    maintenance and operations; and improve City streets to prevent
+    their further deterioration.  This proposition increases the
+    current 6% utility occupation tax to 9% authorizing: (1) 1% for
+    Beach Park capital projects for 20 years or until capital bonds
+    are repaid and thereafter that 1% tax ends; (2) 0.5% for Beach
+    Park maintenance and operations; and (3) 1.5% for City street
+    paving improvements.',
   :domain => 'City of Des Moines',
   :domain_short => 'City of Des Moines',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40322&eid=1249',
@@ -5493,7 +6479,15 @@ o38 = Option.create!(
 o39 = Option.create!(
   :name => 'Levy Lid Lift for Street Improvements',
   :short_name => 'Street Levy',
-  :description => 'The City Council of the City of Pacific, adopted Resolution No. 1076 concerning a property tax levy increase for street improvements.  If approved, this proposition would (1) increase the regular property tax levy above the increase allowed under Ch. 84.55 RCW, to a total rate of $1.66396/$1,000 assessed value for collection in 2012;  (2) increase the 2013-2017 maximum permitted levy amounts by inflation (measured by CPI); and (3) dedicate the increase to purchasing street repair and improvement materials.  This measure expires after 2017. ',
+  :description => 'The City Council of the City of Pacific, adopted
+    Resolution No. 1076 concerning a property tax levy increase for
+    street improvements.  If approved, this proposition would (1)
+    increase the regular property tax levy above the increase allowed
+    under Ch. 84.55 RCW, to a total rate of $1.66396/$1,000 assessed
+    value for collection in 2012; (2) increase the 2013-2017 maximum
+    permitted levy amounts by inflation (measured by CPI); and (3)
+    dedicate the increase to purchasing street repair and improvement
+    materials.  This measure expires after 2017. ',
   :domain => 'City of Pacific',
   :domain_short => 'City of Pacific',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40323&eid=1249',
@@ -5511,7 +6505,10 @@ o39 = Option.create!(
 o40 = Option.create!(
   :name => 'Change in Plan of Government',
   :short_name => 'Mayor/Council?',
-  :description => 'Shall the City of SeaTac abandon its present Council-Manager plan of government under which it currently operates under RCW 35A.13 and adopt in its place the Mayor-Council plan of government under the provisions of RCW 35A.12?',
+  :description => 'Shall the City of SeaTac abandon its present
+    Council-Manager plan of government under which it currently
+    operates under RCW 35A.13 and adopt in its place the Mayor-Council
+    plan of government under the provisions of RCW 35A.12?',
   :domain => 'City of SeaTac',
   :domain_short => 'City of SeaTac',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40324&eid=1249',
@@ -5549,7 +6546,17 @@ o40 = Option.create!(
 o41 = Option.create!(
   :name => 'Regular Tax Levy Including Families and Education',
   :short_name => 'Families & Educ.',
-  :description => 'The City of Seattle&rsquo;s Proposition concerns renewing and enhancing Education-Support Services to improve academic achievement.\n\nThis proposition would fund City services, including school readiness, academic achievement in elementary, middle and high school, college/career preparation, and student health and community partnerships as provided in Ordinance 123567. It authorizes regular property taxes above RCW 84.55 limits, allowing additional 2012 collection of up to $32,101,000 (approximately $0.27/$1000 assessed value) and up to $231,562,000 over seven years. In 2012, total City taxes collected would not exceed $3.60 per $1,000 of assessed value.',
+  :description => 'The City of Seattle&rsquo;s Proposition concerns
+    renewing and enhancing Education-Support Services to improve
+    academic achievement.\n\nThis proposition would fund City
+    services, including school readiness, academic achievement in
+    elementary, middle and high school, college/career preparation,
+    and student health and community partnerships as provided in
+    Ordinance 123567. It authorizes regular property taxes above RCW
+    84.55 limits, allowing additional 2012 collection of up to
+    $32,101,000 (approximately $0.27/$1000 assessed value) and up to
+    $231,562,000 over seven years. In 2012, total City taxes collected
+    would not exceed $3.60 per $1,000 of assessed value.',
   :domain => 'City of Seattle',
   :domain_short => 'City of Seattle',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40325&eid=1249',
@@ -5936,7 +6943,17 @@ o41 = Option.create!(
 o42 = Option.create!(
   :name => 'Increased Vehicle License Fee',
   :short_name => 'Transportation Improvements',
-  :description => 'The Seattle Transportation Benefit District&rsquo;s Proposition No. 1 concerns an increased Vehicle License Fee for transportation improvements.  If approved, this proposition would fund transportation facilities and services benefitting the City of Seattle, including: transportation system repairs, maintenance and safety improvements; transit improvements to increase speed, reliability and access; and pedestrian, bicycle and freight mobility programs, all as provided in STBD Resolution No. 5.  It would authorize a $60 increase in the Vehicle License Fee beginning in 2012, allowing collection of approximately $20.4 million annually for ten years.',
+  :description => 'The Seattle Transportation Benefit District&rsquo;s
+    Proposition No. 1 concerns an increased Vehicle License Fee for
+    transportation improvements.  If approved, this proposition would
+    fund transportation facilities and services benefitting the City
+    of Seattle, including: transportation system repairs, maintenance
+    and safety improvements; transit improvements to increase speed,
+    reliability and access; and pedestrian, bicycle and freight
+    mobility programs, all as provided in STBD Resolution No. 5.  It
+    would authorize a $60 increase in the Vehicle License Fee
+    beginning in 2012, allowing collection of approximately $20.4
+    million annually for ten years.',
   :domain => 'City of Seattle',
   :domain_short => 'Seattle TBD',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40328&eid=1249',
@@ -6282,7 +7299,10 @@ o42 = Option.create!(
 o43 = Option.create!(
   :name => 'Licensed Card Rooms in the City of Tukwila',
   :short_name => 'Card Rooms',
-  :description => 'Tukwila Resolution No. 1745 submits the following question to the voters of the City of Tukwila regarding social card rooms in the City:\n\nShould gambling in the form of social card rooms be allowed in Tukwila?',
+  :description => 'Tukwila Resolution No. 1745 submits the following
+    question to the voters of the City of Tukwila regarding social
+    card rooms in the City:\n\nShould gambling in the form of social
+    card rooms be allowed in Tukwila?',
   :domain => 'City of Tukwila',
   :domain_short => 'City of Tukwila',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40326&eid=1249',
@@ -6320,7 +7340,16 @@ o43 = Option.create!(
 o44 = Option.create!(
   :name => 'Sales and Use Tax for Transportation Improvements',
   :short_name => 'Transportation Improvements',
-  :description => 'The Board of North Bend Transportation Benefit District No. 1 has adopted Resolution No. 01-2011 concerning a proposition to finance transportation improvements.  This proposition would authorize a sales and use tax at a rate of two-tenths of one percent (.2%) of the selling price in the case of a sales tax, or value of article used in the case of a use tax, for a period not exceeding 10 years, and dedicate that tax to repaying North Bend Transportation Benefit District No. 1 indebtedness incurred to finance street and related improvements specified in Resolution No. 01-2011.',
+  :description => 'The Board of North Bend Transportation Benefit
+    District No. 1 has adopted Resolution No. 01-2011 concerning a
+    proposition to finance transportation improvements.  This
+    proposition would authorize a sales and use tax at a rate of
+    two-tenths of one percent (.2%) of the selling price in the case
+    of a sales tax, or value of article used in the case of a use tax,
+    for a period not exceeding 10 years, and dedicate that tax to
+    repaying North Bend Transportation Benefit District No. 1
+    indebtedness incurred to finance street and related improvements
+    specified in Resolution No. 01-2011.',
   :domain => 'City of North Bend',
   :domain_short => 'North Bend TBD',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40327&eid=1249',
@@ -6343,7 +7372,28 @@ o44 = Option.create!(
 o45 = Option.create!(
   :name => 'Supplemental Levy to Support Class Size',
   :short_name => 'School Levy',
-  :description => 'The Board of Directors of Shoreline School District No. 412 adopted Resolution No. 2011-14, concerning a supplemental levy to support class size.  This proposition would address impacts on class size due to State budget reductions by levying the following excess taxes, in addition to the existing levies for educational programs, maintenance and operations approved by the voters in February, 2010, on all taxable property within the District.\n\nPassage of Proposition No. 1 would allow the levy of $1,300,000 of property taxes within the Shoreline School District for collection in 2012, the levy of $1,400,000 of taxes for collection in 2013, and the levy of $1,500,000 in taxes for 2014. The purpose of the levy is to support class size in response to State budget reductions.  This supplemental levy is in addition to the maintenance and operation levy, approved by the voters in the February 2010 election, on all taxable property within the District.  The taxes approved by this proposition would be deposited in the Shoreline School District&rsquo;s General Fund and expended to support class size.  If authorized by the voters and based upon current assessed valuation information, the estimated levy rates per $1000 of assessed value would be $0.09 (2012 collection); $0.09 (2013 collection) and $0.10 (2014 collection).',
+  :description => 'The Board of Directors of Shoreline School District
+    No. 412 adopted Resolution No. 2011-14, concerning a supplemental
+    levy to support class size.  This proposition would address
+    impacts on class size due to State budget reductions by levying
+    the following excess taxes, in addition to the existing levies for
+    educational programs, maintenance and operations approved by the
+    voters in February, 2010, on all taxable property within the
+    District.\n\nPassage of Proposition No. 1 would allow the levy of
+    $1,300,000 of property taxes within the Shoreline School District
+    for collection in 2012, the levy of $1,400,000 of taxes for
+    collection in 2013, and the levy of $1,500,000 in taxes for
+    2014. The purpose of the levy is to support class size in response
+    to State budget reductions.  This supplemental levy is in addition
+    to the maintenance and operation levy, approved by the voters in
+    the February 2010 election, on all taxable property within the
+    District.  The taxes approved by this proposition would be
+    deposited in the Shoreline School District&rsquo;s General Fund
+    and expended to support class size.  If authorized by the voters
+    and based upon current assessed valuation information, the
+    estimated levy rates per $1000 of assessed value would be $0.09
+    (2012 collection); $0.09 (2013 collection) and $0.10 (2014
+    collection).',
   :domain => 'City of Shoreline',
   :domain_short => 'Shoreline SD',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40329&eid=1249',
@@ -6428,7 +7478,17 @@ o47 = Option.create!(
 o48 = Option.create!(
   :name => 'One-Year Operations and Maintenance Levy',
   :short_name => 'Parks Levy',
-  :description => 'The Board of Directors of the Si View Metropolitan Park District adopted Resolution No. 2011-03 concerning a proposition for basic safety, maintenance and operations.  This proposition would maintain current operations, facilities and programs, including the Si View Community Center and Pool, parks, playfields, playgrounds, sports programs, trails, adult programming, summer camps, and after-school recreation programs for youth and teens, by authorizing the District to levy a one-year excess property tax levy on all taxable property within the District at an approximate rate of $0.21/$1,000 of assessed value to provide $462,000, to be collected in 2012.',
+  :description => 'The Board of Directors of the Si View Metropolitan
+    Park District adopted Resolution No. 2011-03 concerning a
+    proposition for basic safety, maintenance and operations.  This
+    proposition would maintain current operations, facilities and
+    programs, including the Si View Community Center and Pool, parks,
+    playfields, playgrounds, sports programs, trails, adult
+    programming, summer camps, and after-school recreation programs
+    for youth and teens, by authorizing the District to levy a
+    one-year excess property tax levy on all taxable property within
+    the District at an approximate rate of $0.21/$1,000 of assessed
+    value to provide $462,000, to be collected in 2012.',
   :domain => 'Si View Metropolitan Park District',
   :domain_short => 'Si View Park Dist.',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40332&eid=1249',

@@ -7,7 +7,7 @@
         = render :partial => "inclusions/new", :locals => { :point => point }
 
     .username
-      - if !point.hide_name && !point.user_id.nil?
+      - if !point.hide_name && point.user
         = image_tag point.user.avatar.url(:midsmall), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
 
       %a.toggle.less.hide.point_text_toggle
@@ -16,7 +16,7 @@
       by 
       - if point.hide_name
         <anonymous>
-      - elsif !point.user_id.nil?
+      - elsif point.user
         = point.user.name
       - else
         <unregistered>

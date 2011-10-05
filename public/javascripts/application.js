@@ -420,50 +420,23 @@ ConsiderIt = {
       $j('#stance-value').val( new_value );  
     },
     
-    
-    initialize_sliders : function(starting_value, initiative_name, initiative_id){
-      var params = { 
-        min: -1.0, 
-        max: 1.0, 
-        value: starting_value, 
-        step: .015,
-        slide: function(event, ui) {
-          $j('.slider').each(function(){
-            if ( ui.value != $j(this).slider('value') ) {
-              $j(this).slider('value', ui.value)
-            }
-          });
-        },
-        change: function(event, ui) {
-          value = ui.value
-          ConsiderIt.positions.set_slider_value(value, initiative_name);
-        },
-        stop: function(event, ui){
-          data = {
-            slider_movement : {
-              initiative_id: initiative_id,
-              value: ui.value,
-              slider_id: $j(this).attr('id').substring(6)  
-            }
-          };
-          
-          //$j.post('/study/slider_move', data);
-                
-        }
-        };
-        
-      $j(".slider").slider(params);
-      ConsiderIt.positions.set_slider_value(starting_value, initiative_name);
-    },
-    
-    stance_group_clicked : function(bucket, option_id) {
+    stance_group_clicked : function(bucket) {
       //if ( bucket == 'all' ) group_name = 'everyone';
       //else group_name = ConsiderIt.positions.stance_name(bucket);
+      var option_id = $j('#option_id').text(),
+          position_id = $j('#position_id').text();
 
       $j.get("/options/" + option_id + "/points", { bucket: bucket },
         function(data){
           $j('#ranked_points').html(data['points']);
-      } );        
+      } );
+
+      $j.post('/home/study/3', {
+        position_id: position_id,
+        option_id: option_id,
+        detail1: bucket
+      });  
+            
     },
     
     set_stance : function(bucket, dontadjust) {

@@ -1,6 +1,46 @@
 :javascript
   $j(document).ready(function(){
-    ConsiderIt.positions.initialize_sliders(#{-1 * @position.stance}, '#{@option.short_name}', #{@option.id});
+
+    // INITIALIZE SLIDERS
+    var params = { 
+      min: -1.0, 
+      max: 1.0, 
+      value: #{-1 * @position.stance}, 
+      step: .015,
+      slide: function(event, ui) {
+        $j('.slider').each(function(){
+          if ( ui.value != $j(this).slider('value') ) {
+            $j(this).slider('value', ui.value)
+          }
+        });
+      },
+      change: function(event, ui) {
+        value = ui.value
+        ConsiderIt.positions.set_slider_value(value, '#{@option.short_name}');
+      },
+      stop: function(event, ui){
+        $j.post('/home/study/2', {
+          position_id: #{@position.id},
+          option_id: #{@option.id},
+          ival: $j(this).attr('id').substring(6),
+          fval: ui.value
+        });   
+      }
+    };
+
+    $j(".slider").slider(params);
+    ConsiderIt.positions.set_slider_value(#{-1 * @position.stance}, '#{@option.short_name}');
+      
+    // Study delegators for point expansions
+    $j(document).delegate('.point_in_list a.toggle', 'click', function(){
+      $j.post('/home/study/1', {
+        position_id: #{@position.id},
+        option_id: #{@option.id},
+        point_id: $j(this).parents('.point_in_list').find('.id:first').text(),
+        bval: $j(this).hasClass('more')
+      });   
+    });
+
   });
 
 #initiative.edit

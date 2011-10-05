@@ -195,7 +195,6 @@ protected
   end
 
   def get_stance_val_from_params( params )
-    pp params
 
     stance = -1 * Float(params[:position][:stance])
     if stance > 1

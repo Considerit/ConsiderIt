@@ -191,17 +191,15 @@ problems (mostly Macintosh-specific).
 
 12. Updating Measures.  Prior to launch, you can edit the measures
     information by editing the file <tt>ConsiderIt/db/seeds.lvg2.root.rb</tt>.
-    After editing the file, you need to rebuild the database.  First remove the
-    existing database tables <tt>considerit2_dev</tt> and <tt>considerit2_test</tt>.
-    Then execute
+    After editing the file, you need to rebuild the database.  To do this
+    execute
 
-          rake db:create
-          rake db:migrate
+          rake db:reset
           rake db:seed
 
    The file <tt>ConsiderIt/db/seeds.lvg2.root.rb</tt> was generated from 
-   the file <tt>ConsiderIt/lib/tasks/measures.csv</tt> 
-   (a big spreadsheet of all the measures), using <tt>rake admin:regen_seeds</tt>.
+   the file <tt>ConsiderIt/lib/tasks/measures.csv</tt> (a big spreadsheet
+   of all the measures), using <tt>rake admin:regen_seeds</tt>.
    However, the <tt>seeds.lvg2.root.rb</tt> file has since then been edited
    by hand, so the link with the <tt>csv</tt> file is broken -- if you
    want to make changes, just edit the seeds file.

@@ -17,7 +17,12 @@ class PointsController < ApplicationController
   def index
     @option = Option.find(params[:option_id])
     @user = current_user
-    @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
+    if current_user
+      @position = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first 
+    else
+      @position = session.has_key?("position-#{@option.id}") ? Position.unscoped.find(session["position-#{@option.id}"]) : nil
+    end
+
     mode = params[:mode]
     
     qry = @option.points
@@ -70,7 +75,17 @@ class PointsController < ApplicationController
     else
       context = 6 # pagination requested on options page
     end
-        
+    
+    StudyData.create!({
+      :category => 4,
+      :user => current_user,
+      :session_id => request.session_options[:id],
+      :position => @position,
+      :option => @option,
+      :detail1 => @bucket,
+      :ival => context
+    })
+
     if context
       PointListing.transaction do
         points.each do |pnt|
@@ -104,7 +119,12 @@ class PointsController < ApplicationController
   
   def create
     @option = Option.find(params[:option_id])
-    @position = current_user ? Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first : nil
+    if current_user
+      @position = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first 
+    else
+      @position = session.has_key?("position-#{@option.id}") ? Position.unscoped.find(session["position-#{@option.id}"]) : nil
+    end
+
     @user = current_user
 
     params[:point][:option_id] = params[:option_id]   
@@ -142,7 +162,11 @@ class PointsController < ApplicationController
   # TODO: server-side permissions check for this operation
   def update
     @option = Option.find(params[:option_id])
-    @position = current_user ? Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first : nil
+    if current_user
+      @position = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first 
+    else
+      @position = session.has_key?("position-#{@option.id}") ? Position.unscoped.find(session["position-#{@option.id}"]) : nil
+    end
     @user = current_user
     @point = Point.unscoped.find(params[:id])
 

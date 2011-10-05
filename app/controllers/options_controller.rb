@@ -11,6 +11,7 @@ class OptionsController < ApplicationController
     
     if !@position
       redirect_to(new_option_position_path(@option))
+      return
     end
 
     @pro_points = @option.points.pros.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)

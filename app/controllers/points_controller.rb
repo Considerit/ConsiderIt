@@ -116,9 +116,7 @@ class PointsController < ApplicationController
 
     @point = Point.create!(params[:point])
 
-    if current_user.nil?
-      session[@option.id][:written_points].push(@point.id)
-    end
+    session[@option.id][:written_points].push(@point.id)
     session[@option.id][:included_points][@point.id] = 1    
 
     PointListing.create!(
@@ -131,7 +129,6 @@ class PointsController < ApplicationController
 
     if @point.published
       @point.update_absolute_score
-      @point.save
     end
     
     new_point = render_to_string :partial => "points/show", :locals => { :context => 'self', :point => @point, :static => false }
@@ -163,9 +160,7 @@ class PointsController < ApplicationController
   def destroy
     # TODO: server-side permissions check for this operation
     @point = Point.unscoped.find(params[:id])
-    if current_user.nil?
-      session[@point.option_id][:written_points].delete(@point.id)
-    end
+    session[@point.option_id][:written_points].delete(@point.id)
     session[@point.option_id][:included_points].delete(@point.id)  
 
     @point.destroy

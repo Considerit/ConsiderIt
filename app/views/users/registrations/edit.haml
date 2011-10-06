@@ -1,12 +1,30 @@
 #update_registration_form
   #lvg_account
     %h2
-      Set profile picture
-    
+      Edit Profile
+
+
+        
     = form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :multipart => true, :method => :put }) do |f|
-      
-      = f.file_field :avatar
-      
+
+      %ul
+        %li
+          = f.label :avatar, "Your picture"          
+          = f.file_field :avatar
+
+        - if !current_user.email
+          %li
+            = f.label :email, "Email address"
+            = f.email_field
+
+        %li
+          = f.check_box :notification_author
+          = f.label :notification_author, 'Email me when someone comments on a pro or con point that I wrote.'
+
+        %li
+          = f.check_box :notification_commenter
+          = f.label :notification_commenter, 'Email me when someone comments on a pro or con point that I also commented on.'
+
       .submit
         = f.submit "Update"
 

@@ -941,7 +941,7 @@ z98042 = Domain.create!(
 
 z98045 = Domain.create!(
   :identifier => 98045,
-  :name => 'North bend'
+  :name => 'North Bend'
 )
 
 z98047 = Domain.create!(
@@ -1636,7 +1636,7 @@ z98670 = Domain.create!(
 
 z98672 = Domain.create!(
   :identifier => 98672,
-  :name => 'White salmon'
+  :name => 'White Salmon'
 )
 
 z98673 = Domain.create!(
@@ -2611,7 +2611,7 @@ z98610 = Domain.create!(
 
 z98639 = Domain.create!(
   :identifier => 98639,
-  :name => 'North bonneville'
+  :name => 'North Bonneville'
 )
 
 z98648 = Domain.create!(
@@ -2656,7 +2656,7 @@ z98037 = Domain.create!(
 
 z98043 = Domain.create!(
   :identifier => 98043,
-  :name => 'Mountlake terrace'
+  :name => 'Mountlake Terrace'
 )
 
 z98046 = Domain.create!(
@@ -2666,7 +2666,7 @@ z98046 = Domain.create!(
 
 z98082 = Domain.create!(
   :identifier => 98082,
-  :name => 'Mill creek'
+  :name => 'Mill Creek'
 )
 
 z98087 = Domain.create!(
@@ -2726,12 +2726,12 @@ z98241 = Domain.create!(
 
 z98251 = Domain.create!(
   :identifier => 98251,
-  :name => 'Gold bar'
+  :name => 'Gold Bar'
 )
 
 z98252 = Domain.create!(
   :identifier => 98252,
-  :name => 'Granite falls'
+  :name => 'Granite Falls'
 )
 
 z98256 = Domain.create!(
@@ -2741,12 +2741,12 @@ z98256 = Domain.create!(
 
 z98258 = Domain.create!(
   :identifier => 98258,
-  :name => 'Lake stevens'
+  :name => 'Lake Stevens'
 )
 
 z98259 = Domain.create!(
   :identifier => 98259,
-  :name => 'North lakewood'
+  :name => 'North Lakewood'
 )
 
 z98270 = Domain.create!(
@@ -2806,7 +2806,7 @@ z98296 = Domain.create!(
 
 z99001 = Domain.create!(
   :identifier => 99001,
-  :name => 'Airway heights'
+  :name => 'Airway Heights'
 )
 
 z99003 = Domain.create!(
@@ -2836,7 +2836,7 @@ z99009 = Domain.create!(
 
 z99011 = Domain.create!(
   :identifier => 99011,
-  :name => 'Fairchild air force base'
+  :name => 'Fairchild Air Force Base'
 )
 
 z99012 = Domain.create!(
@@ -2846,7 +2846,7 @@ z99012 = Domain.create!(
 
 z99014 = Domain.create!(
   :identifier => 99014,
-  :name => 'Four lakes'
+  :name => 'Four Lakes'
 )
 
 z99016 = Domain.create!(
@@ -2861,7 +2861,7 @@ z99018 = Domain.create!(
 
 z99019 = Domain.create!(
   :identifier => 99019,
-  :name => 'Liberty lake'
+  :name => 'Liberty Lake'
 )
 
 z99020 = Domain.create!(
@@ -2876,7 +2876,7 @@ z99021 = Domain.create!(
 
 z99022 = Domain.create!(
   :identifier => 99022,
-  :name => 'Medical lake'
+  :name => 'Medical Lake'
 )
 
 z99023 = Domain.create!(
@@ -2886,17 +2886,17 @@ z99023 = Domain.create!(
 
 z99025 = Domain.create!(
   :identifier => 99025,
-  :name => 'Newman lake'
+  :name => 'Newman Lake'
 )
 
 z99026 = Domain.create!(
   :identifier => 99026,
-  :name => 'Nine mile falls'
+  :name => 'Nine Mile Falls'
 )
 
 z99027 = Domain.create!(
   :identifier => 99027,
-  :name => 'Otis orchards'
+  :name => 'Otis Orchards'
 )
 
 z99030 = Domain.create!(
@@ -3126,12 +3126,12 @@ z99137 = Domain.create!(
 
 z99141 = Domain.create!(
   :identifier => 99141,
-  :name => 'Kettle falls'
+  :name => 'Kettle Falls'
 )
 
 z99148 = Domain.create!(
   :identifier => 99148,
-  :name => 'Loon lake'
+  :name => 'Loon Lake'
 )
 
 z99151 = Domain.create!(
@@ -3231,7 +3231,7 @@ z98530 = Domain.create!(
 
 z98540 = Domain.create!(
   :identifier => 98540,
-  :name => 'East olympia'
+  :name => 'East Olympia'
 )
 
 z98556 = Domain.create!(
@@ -3291,7 +3291,7 @@ z99323 = Domain.create!(
 
 z99324 = Domain.create!(
   :identifier => 99324,
-  :name => 'College place'
+  :name => 'College Place'
 )
 
 z99329 = Domain.create!(
@@ -3316,7 +3316,7 @@ z99361 = Domain.create!(
 
 z99362 = Domain.create!(
   :identifier => 99362,
-  :name => 'Walla walla'
+  :name => 'Walla Walla'
 )
 
 z99363 = Domain.create!(
@@ -3386,7 +3386,7 @@ z98248 = Domain.create!(
 
 z98262 = Domain.create!(
   :identifier => 98262,
-  :name => 'Lummi island'
+  :name => 'Lummi Island'
 )
 
 z98264 = Domain.create!(
@@ -3406,7 +3406,7 @@ z98276 = Domain.create!(
 
 z98281 = Domain.create!(
   :identifier => 98281,
-  :name => 'Point roberts'
+  :name => 'Point Roberts'
 )
 
 z98295 = Domain.create!(
@@ -3501,7 +3501,7 @@ z99170 = Domain.create!(
 
 z99171 = Domain.create!(
   :identifier => 99171,
-  :name => 'Saint john'
+  :name => 'Saint John'
 )
 
 z99174 = Domain.create!(
@@ -3576,7 +3576,7 @@ z98923 = Domain.create!(
 
 z98929 = Domain.create!(
   :identifier => 98929,
-  :name => 'Goose prairie'
+  :name => 'Goose Prairie'
 )
 
 z98930 = Domain.create!(
@@ -3646,7 +3646,7 @@ z98951 = Domain.create!(
 
 z98952 = Domain.create!(
   :identifier => 98952,
-  :name => 'White swan'
+  :name => 'White Swan'
 )
 
 z98953 = Domain.create!(
@@ -6492,7 +6492,7 @@ o39 = Option.create!(
   :domain_short => 'City of Pacific',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40323&eid=1249',
   :category => 'Proposition',
-  :designator => 'Paci 1',
+  :designator => 'Pcfc 1',
   :long_description => '',
   :additional_details => ''
 )

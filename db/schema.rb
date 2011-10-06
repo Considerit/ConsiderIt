@@ -157,6 +157,7 @@ ActiveRecord::Schema.define(:version => 20111006045648) do
     t.boolean  "published",            :default => true
     t.boolean  "hide_name",            :default => false
     t.boolean  "share",                :default => true
+    t.boolean  "passes_moderation"
   end
 
   add_index "point_versions", ["point_id"], :name => "index_point_versions_on_point_id"

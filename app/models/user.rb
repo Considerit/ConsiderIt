@@ -13,8 +13,8 @@ class User < ActiveRecord::Base
   devise :omniauthable, :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :trackable, :validatable
          
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar
-  
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :notification_author, :notification_commenter
+
   attr_accessor :avatar_url
   before_validation :download_remote_image, :if => :avatar_url_provided?
   validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'

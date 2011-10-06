@@ -5,6 +5,7 @@ class Comment < ActiveRecord::Base
     
   belongs_to :user
   belongs_to :point
+  belongs_to :option
 
   # Helper class method that allows you to build a comment
   # by passing a commentable object, a user_id, and comment text
@@ -47,34 +48,38 @@ class Comment < ActiveRecord::Base
   end
 
   def notify_parties
-
     message_sent_to = {}
-    option = find_commentable
+
+    begin
     
-    point_author = point.user
-    if point_author.id != user_id && point_author.notification_author && point_author.email.length > 0
-      #Notifier.deliver_someone_discussed_your_point(option, point, self, point_author)
-      message_sent_to[point_author.id] = [point_author.name, 'point discussed']
-    end
-
-    point.comments.each do |comment|
-      recipient = comment.user
-      if !message_sent_to.has_key?(recipient.id) \
-        && recipient.notification_commenter \
-        && recipient.id != user_id 
-
-        #Notifier.deliver_someone_commented_on_thread(option, self, recipient)
-        message_sent_to[recipient.id] = [recipient.name, 'same discussion']
+      point_author = point.user
+      if point_author.id != user_id && point_author.notification_author && point_author.email.length > 0
+        #Notifier.deliver_someone_discussed_your_point(option, point, self, point_author)
+        message_sent_to[point_author.id] = [point_author.name, 'point discussed']
       end
-    end
 
-    point.inclusions.each do |inclusion|
-      if inclusion.position.notification_includer
-        includer = inclusion.user
-        if !message_sent_to.has_key?(includer.id) && includer.id == user_id
-          #Notifier.deliver_someone_commented_on_an_included_point(option, self, includer)
-          message_sent_to[recipient.id] = [recipient.name, 'comment on included point']
+      point.comments.each do |comment|
+        recipient = comment.user
+        if !message_sent_to.has_key?(recipient.id) \
+          && recipient.notification_commenter \
+          && recipient.id != user_id 
+
+          #Notifier.deliver_someone_commented_on_thread(option, self, recipient)
+          message_sent_to[recipient.id] = [recipient.name, 'same discussion']
         end
+      end
+
+      point.inclusions.each do |inclusion|
+        if inclusion.user.positions.find(option.id).notification_includer
+          includer = inclusion.user
+          if !message_sent_to.has_key?(includer.id) && includer.id == user_id
+            #Notifier.deliver_someone_commented_on_an_included_point(option, self, includer)
+            message_sent_to[recipient.id] = [recipient.name, 'comment on included point']
+          end
+        end
+      end
+    rescue
+
     end
 
     return message_sent_to

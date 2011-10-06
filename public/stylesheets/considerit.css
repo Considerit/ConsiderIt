@@ -780,35 +780,56 @@ li.point_in_list {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003259}}
     #initiative ol#step_through li.step#submitstance .extra {
       color: black; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003261}}
-    #initiative ol#step_through li.step#submitstance input.submit {
-      background-color: transparent;
-      background-image: url("/images/submit-stance.png");
-      background-repeat: no-repeat;
-      cursor: pointer;
-      text-shadow: gray 1px 1px 2px;
-      width: 180px;
-      height: 55px;
-      border: none; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003271}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003262}}
     #initiative ol#step_through li.step#submitstance .rest {
       margin: auto;
       width: 100%;
       padding: 10px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003276}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003267}}
       #initiative ol#step_through li.step#submitstance .rest > div {
         margin: auto; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003279}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003270}}
         #initiative ol#step_through li.step#submitstance .rest > div form {
-          width: 180px;
-          margin-left: 380px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003283}}
+          margin: auto;
+          width: 400px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003274}}
+          #initiative ol#step_through li.step#submitstance .rest > div form input[type="submit"] {
+            background-color: transparent;
+            background-image: url("/images/submit-stance.png");
+            background-repeat: no-repeat;
+            cursor: pointer;
+            text-shadow: gray 1px 1px 2px;
+            width: 380px;
+            height: 75px;
+            border: none;
+            padding: 0; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003285}}
+          #initiative ol#step_through li.step#submitstance .rest > div form a {
+            display: inline-block;
+            margin-left: 240px;
+            margin-top: -10px;
+            font-size: 10px;
+            color: #717171;
+            font-weight: bold; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003292}}
+            #initiative ol#step_through li.step#submitstance .rest > div form a:hover {
+              text-decoration: underline; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003295}}
+          #initiative ol#step_through li.step#submitstance .rest > div form label {
+            color: #717171;
+            text-transform: none;
+            letter-spacing: 0;
+            padding-left: 5px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003301}}
+          #initiative ol#step_through li.step#submitstance .rest > div form li {
+            padding: 5px 0; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003304}}
         #initiative ol#step_through li.step#submitstance .rest > div .stance_status {
           padding-bottom: 5px;
           text-align: center;
           color: #717171;
           font-size: 14px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003288}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_edit\.sass}line{font-family:\00003309}}
           #initiative ol#step_through li.step#submitstance .rest > div .stance_status .name {
             font-weight: bold; }
 
@@ -1774,33 +1795,41 @@ textarea.LV_invalid_field:hover,
 textarea.LV_invalid_field:active {
   border: 1px solid #cc0000; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\000032}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\000033}}
+#user_edit label {
+  text-transform: none;
+  letter-spacing: 0; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\000036}}
+#user_edit h2 {
+  margin-bottom: 5px; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\000039}}
 #update_registration_form {
   background-color: white;
   padding: 15px 25px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\000036}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000313}}
   #update_registration_form .submit {
     margin-top: 5px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\000038}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000315}}
     #update_registration_form .submit a.cancel {
       display: inline-block;
       padding: 5px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000314}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000321}}
 .ui-widget-content #login_form,
 .ui-widget-content #registration_form,
 .ui-widget-content #update_registration_form,
 .ui-widget-content #pledge_form,
 .ui-widget-content #confirmation_sent {
   font-family: Corbel, "Lucida Grande", Helvetica Neue, Helvetica, Calibri, sans-serif; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000321}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000328}}
   .ui-widget-content #login_form > ul > li,
   .ui-widget-content #registration_form > ul > li,
   .ui-widget-content #update_registration_form > ul > li,
   .ui-widget-content #pledge_form > ul > li,
   .ui-widget-content #confirmation_sent > ul > li {
     display: inline-block; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000324}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000331}}
   .ui-widget-content #login_form h2,
   .ui-widget-content #registration_form h2,
   .ui-widget-content #update_registration_form h2,
@@ -1808,7 +1837,7 @@ textarea.LV_invalid_field:active {
   .ui-widget-content #confirmation_sent h2 {
     font-size: 24px;
     color: #333333; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000328}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000335}}
   .ui-widget-content #login_form .sub,
   .ui-widget-content #registration_form .sub,
   .ui-widget-content #update_registration_form .sub,
@@ -1816,7 +1845,7 @@ textarea.LV_invalid_field:active {
   .ui-widget-content #confirmation_sent .sub {
     font-size: 13px;
     color: #999999; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000332}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000339}}
     .ui-widget-content #login_form .sub a,
     .ui-widget-content #registration_form .sub a,
     .ui-widget-content #update_registration_form .sub a,
@@ -1824,14 +1853,14 @@ textarea.LV_invalid_field:active {
     .ui-widget-content #confirmation_sent .sub a {
       color: inherit;
       text-decoration: underline; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000337}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000344}}
   .ui-widget-content #login_form h3,
   .ui-widget-content #registration_form h3,
   .ui-widget-content #update_registration_form h3,
   .ui-widget-content #pledge_form h3,
   .ui-widget-content #confirmation_sent h3 {
     margin: 15px 0 8px 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000340}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000347}}
   .ui-widget-content #login_form .primary,
   .ui-widget-content #registration_form .primary,
   .ui-widget-content #update_registration_form .primary,
@@ -1841,14 +1870,14 @@ textarea.LV_invalid_field:active {
     background-color: white;
     padding: 20px 25px;
     border: 3px solid black; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000348}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000355}}
     .ui-widget-content #login_form .primary #third_party a,
     .ui-widget-content #registration_form .primary #third_party a,
     .ui-widget-content #update_registration_form .primary #third_party a,
     .ui-widget-content #pledge_form .primary #third_party a,
     .ui-widget-content #confirmation_sent .primary #third_party a {
       margin: 2px 2px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000352}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000359}}
     .ui-widget-content #login_form .primary #lvg_account ul li span,
     .ui-widget-content #registration_form .primary #lvg_account ul li span,
     .ui-widget-content #update_registration_form .primary #lvg_account ul li span,
@@ -1859,21 +1888,21 @@ textarea.LV_invalid_field:active {
       display: inline-block;
       margin-top: 10px;
       cursor: help; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000359}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000366}}
     .ui-widget-content #login_form .primary #lvg_account li.email_field label,
     .ui-widget-content #registration_form .primary #lvg_account li.email_field label,
     .ui-widget-content #update_registration_form .primary #lvg_account li.email_field label,
     .ui-widget-content #pledge_form .primary #lvg_account li.email_field label,
     .ui-widget-content #confirmation_sent .primary #lvg_account li.email_field label {
       padding-right: 30px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000361}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000368}}
     .ui-widget-content #login_form .primary #lvg_account li.password_field label,
     .ui-widget-content #registration_form .primary #lvg_account li.password_field label,
     .ui-widget-content #update_registration_form .primary #lvg_account li.password_field label,
     .ui-widget-content #pledge_form .primary #lvg_account li.password_field label,
     .ui-widget-content #confirmation_sent .primary #lvg_account li.password_field label {
       padding-right: 6px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000364}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000371}}
     .ui-widget-content #login_form .primary #lvg_account li label,
     .ui-widget-content #registration_form .primary #lvg_account li label,
     .ui-widget-content #update_registration_form .primary #lvg_account li label,
@@ -1883,14 +1912,14 @@ textarea.LV_invalid_field:active {
       display: inline-block;
       height: 30px;
       padding-top: 8px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000370}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000377}}
     .ui-widget-content #login_form .primary #lvg_account .submit_footer,
     .ui-widget-content #registration_form .primary #lvg_account .submit_footer,
     .ui-widget-content #update_registration_form .primary #lvg_account .submit_footer,
     .ui-widget-content #pledge_form .primary #lvg_account .submit_footer,
     .ui-widget-content #confirmation_sent .primary #lvg_account .submit_footer {
       margin-top: 10px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000373}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000380}}
       .ui-widget-content #login_form .primary #lvg_account .submit_footer a.cancel,
       .ui-widget-content #registration_form .primary #lvg_account .submit_footer a.cancel,
       .ui-widget-content #update_registration_form .primary #lvg_account .submit_footer a.cancel,
@@ -1900,7 +1929,7 @@ textarea.LV_invalid_field:active {
         padding: 5px 0 0 5px;
         font-size: 12px;
         color: #696969; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000379}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000386}}
     .ui-widget-content #login_form .primary #lvg_account #user_new > a,
     .ui-widget-content #registration_form .primary #lvg_account #user_new > a,
     .ui-widget-content #update_registration_form .primary #lvg_account #user_new > a,
@@ -1910,7 +1939,7 @@ textarea.LV_invalid_field:active {
       font-size: 12px;
       margin-top: 8px;
       display: block; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000385}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000392}}
     .ui-widget-content #login_form .primary .fineprint,
     .ui-widget-content #registration_form .primary .fineprint,
     .ui-widget-content #update_registration_form .primary .fineprint,
@@ -1919,7 +1948,7 @@ textarea.LV_invalid_field:active {
       margin-top: 2px;
       font-size: 13px;
       color: #999999; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000390}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000397}}
     .ui-widget-content #login_form .primary .divider,
     .ui-widget-content #registration_form .primary .divider,
     .ui-widget-content #update_registration_form .primary .divider,
@@ -1927,7 +1956,7 @@ textarea.LV_invalid_field:active {
     .ui-widget-content #confirmation_sent .primary .divider {
       margin: 10px 0;
       border: 1px solid #e1e1e1; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000394}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003101}}
     .ui-widget-content #login_form .primary #acknowledgment,
     .ui-widget-content #registration_form .primary #acknowledgment,
     .ui-widget-content #update_registration_form .primary #acknowledgment,
@@ -1935,14 +1964,14 @@ textarea.LV_invalid_field:active {
     .ui-widget-content #confirmation_sent .primary #acknowledgment {
       color: #262626;
       font-size: 12px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\0000398}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003105}}
       .ui-widget-content #login_form .primary #acknowledgment a,
       .ui-widget-content #registration_form .primary #acknowledgment a,
       .ui-widget-content #update_registration_form .primary #acknowledgment a,
       .ui-widget-content #pledge_form .primary #acknowledgment a,
       .ui-widget-content #confirmation_sent .primary #acknowledgment a {
         text-decoration: underline; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003101}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003108}}
   .ui-widget-content #login_form .secondary,
   .ui-widget-content #registration_form .secondary,
   .ui-widget-content #update_registration_form .secondary,
@@ -1952,14 +1981,14 @@ textarea.LV_invalid_field:active {
     margin-top: 35px;
     padding: 10px 15px 10px 25px;
     width: 225px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003107}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003114}}
     .ui-widget-content #login_form .secondary ul,
     .ui-widget-content #registration_form .secondary ul,
     .ui-widget-content #update_registration_form .secondary ul,
     .ui-widget-content #pledge_form .secondary ul,
     .ui-widget-content #confirmation_sent .secondary ul {
       margin-left: 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003109}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003116}}
       .ui-widget-content #login_form .secondary ul li,
       .ui-widget-content #registration_form .secondary ul li,
       .ui-widget-content #update_registration_form .secondary ul li,
@@ -1968,14 +1997,14 @@ textarea.LV_invalid_field:active {
         font-size: 14px;
         padding: 5px 0 10px 0;
         color: #535353; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003114}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003121}}
         .ui-widget-content #login_form .secondary ul li strong,
         .ui-widget-content #registration_form .secondary ul li strong,
         .ui-widget-content #update_registration_form .secondary ul li strong,
         .ui-widget-content #pledge_form .secondary ul li strong,
         .ui-widget-content #confirmation_sent .secondary ul li strong {
           color: #2c2c2c; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003118}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003125}}
   .ui-widget-content #login_form#pledge_form p, .ui-widget-content #login_form#confirmation_sent p,
   .ui-widget-content #registration_form#pledge_form p,
   .ui-widget-content #registration_form#confirmation_sent p,
@@ -1986,7 +2015,7 @@ textarea.LV_invalid_field:active {
   .ui-widget-content #confirmation_sent#pledge_form p,
   .ui-widget-content #confirmation_sent#confirmation_sent p {
     color: #696969; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003120}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003127}}
     .ui-widget-content #login_form#pledge_form p strong, .ui-widget-content #login_form#confirmation_sent p strong,
     .ui-widget-content #registration_form#pledge_form p strong,
     .ui-widget-content #registration_form#confirmation_sent p strong,
@@ -1997,7 +2026,7 @@ textarea.LV_invalid_field:active {
     .ui-widget-content #confirmation_sent#pledge_form p strong,
     .ui-widget-content #confirmation_sent#confirmation_sent p strong {
       color: #333333; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003123}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003130}}
   .ui-widget-content #login_form#pledge_form h2, .ui-widget-content #login_form#confirmation_sent h2,
   .ui-widget-content #registration_form#pledge_form h2,
   .ui-widget-content #registration_form#confirmation_sent h2,
@@ -2010,7 +2039,7 @@ textarea.LV_invalid_field:active {
     font-size: 24px;
     color: #333333;
     margin-bottom: 8px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003128}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003135}}
   .ui-widget-content #login_form#pledge_form #pledge, .ui-widget-content #login_form#confirmation_sent #pledge,
   .ui-widget-content #registration_form#pledge_form #pledge,
   .ui-widget-content #registration_form#confirmation_sent #pledge,
@@ -2022,7 +2051,7 @@ textarea.LV_invalid_field:active {
   .ui-widget-content #confirmation_sent#confirmation_sent #pledge {
     margin-bottom: 12px;
     display: block; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003132}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/accounts\/_sessions\.sass}line{font-family:\00003139}}
   .ui-widget-content #login_form#pledge_form a.cancel, .ui-widget-content #login_form#confirmation_sent a.cancel,
   .ui-widget-content #registration_form#pledge_form a.cancel,
   .ui-widget-content #registration_form#confirmation_sent a.cancel,

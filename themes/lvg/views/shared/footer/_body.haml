@@ -28,8 +28,7 @@
         %li= link_to "About the initiative process", "http://www.ncsl.org/default.aspx?tabid=16600", :target => "_blank"
         %li= link_to "Stats \& history of WA ballot measures", "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :target => "_blank"
         %li= link_to "Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :target => "_blank"
-        -if @domain && @domain.name == 'Seattle'
-          %li= link_to "King County government voting tips", "http://your.kingcounty.gov/elections/your/docs/Candidate_Tips.pdf", :target => '_blank', :class => 'highlight'
+
 
     %div.guides.partners
       -if @domain && @domain.name == 'Seattle'

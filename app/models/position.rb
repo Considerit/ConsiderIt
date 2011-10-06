@@ -10,6 +10,7 @@ class Position < ActiveRecord::Base
   default_scope where( :published => true )
   scope :published, where( :published => true )
 
+  
   def stance_name
     case stance_bucket
       when 0

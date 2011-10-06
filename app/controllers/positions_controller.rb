@@ -48,7 +48,9 @@ class PositionsController < ApplicationController
     @position = current_user.positions.unscoped.find(params[:id])
     
     (stance, bucket) = get_stance_val_from_params(params)
-    
+
+    params[:position].delete(:position_id)
+    @position.update_attributes(params[:position])
     @position.stance = stance
     @position.stance_bucket = bucket
     @position.published = 1
@@ -63,6 +65,22 @@ class PositionsController < ApplicationController
   
   def show
     
+  end
+
+  def destroy
+    @option = Option.find(params[:option_id])
+    if current_user
+      @position = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first 
+    else
+      @position = session.has_key?("position-#{@option.id}") ? Position.unscoped.find(session["position-#{@option.id}"]) : nil
+    end
+    if @position && @position.published
+      redirect_to(option_path(@position.option))
+    else
+      session.delete('reify_activities')
+      session.delete('position_to_be_published')  
+      redirect_to root_path
+    end
   end
   
 protected
@@ -87,6 +105,8 @@ protected
         #resolve by combining positions, taking stance from newly submitted...
         prev_pos.stance = @position.stance
         prev_pos.stance_bucket = @position.stance_bucket
+        prev_pos.notification_includer = @position.notification_includer
+        prev_pos.notification_option_subscriber = @position.notification_option_subscriber
         save_actions(prev_pos)
         prev_pos.save
         @position.point_listings.update_all({:user_id => current_user.id, :position_id => prev_pos.id})
@@ -175,8 +195,6 @@ protected
         pnt.published = 1
       end
       pnt.position_id = position.id
-      pp position
-      pp position.stance_bucket
       pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001})
       Inclusion.create!( { 
         :point_id => pnt_id,

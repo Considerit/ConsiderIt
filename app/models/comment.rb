@@ -46,55 +46,38 @@ class Comment < ActiveRecord::Base
     commentable_str.constantize.find(commentable_id)
   end
 
-  #TODO: implement below
-  def notify_parties(send = APP_CONFIG['send_email'])
+  def notify_parties
 
-  #   message_sent_to = {}
-  #   initiative = find_commentable
-  #   grounded_in_point = !point.nil?
+    message_sent_to = {}
+    option = find_commentable
     
-  #   if !parent_id.nil?
-  #     parent_commenter = Comment.find(parent_id).user
+    point_author = point.user
+    if point_author.id != user_id && point_author.notification_author && point_author.email.length > 0
+      #Notifier.deliver_someone_discussed_your_point(option, point, self, point_author)
+      message_sent_to[point_author.id] = [point_author.name, 'point discussed']
+    end
 
-  #     if parent_commenter.id != user_id && parent_commenter.user_mailer_preferences.comment_response
-  #       if send
-  #         Notifier.deliver_someone_replied_to_your_comment(initiative, self, parent_commenter)
-  #       end
-  #       message_sent_to[parent_commenter.id] = [parent_commenter.name, 'replied to']
-  #     end
-  #   end
-    
-  #   if grounded_in_point && !message_sent_to.key?(point.user_id)
-  #     point_author = point.user
-  #     if point_author.id != user_id && point_author.user_mailer_preferences.point_discussed
-  #       if send
-  #         Notifier.deliver_someone_discussed_your_point(initiative, point, self, point_author)
-  #       end
-  #       message_sent_to[point_author.id] = [point_author.name, 'point discussed']
-  #     end
-  #   end
+    point.comments.each do |comment|
+      recipient = comment.user
+      if !message_sent_to.has_key?(recipient.id) \
+        && recipient.notification_commenter \
+        && recipient.id != user_id 
 
-  #   if parent_id
-  #     parent = Comment.find(parent_id)
-  #     if !parent.parent_id.nil?
-  #       parent = parent.root
-  #     end
-      
-  #     parent.root.self_and_descendants.each do |comment|
-  #       if comment.created_at < created_at
-  #         recipient = comment.user
-  #         if !message_sent_to.key?(recipient.id) \
-  #           && recipient.user_mailer_preferences.thread_commented \
-  #           && recipient.id != user_id 
-  #           if send
-  #             Notifier.deliver_someone_commented_on_thread(initiative, self, recipient)
-  #           end
-  #           message_sent_to[recipient.id] = [recipient.name, 'same discussion']
-  #         end
-  #       end
-  #     end
-  #   end
-  #   return message_sent_to
+        #Notifier.deliver_someone_commented_on_thread(option, self, recipient)
+        message_sent_to[recipient.id] = [recipient.name, 'same discussion']
+      end
+    end
+
+    point.inclusions.each do |inclusion|
+      if inclusion.position.notification_includer
+        includer = inclusion.user
+        if !message_sent_to.has_key?(includer.id) && includer.id == user_id
+          #Notifier.deliver_someone_commented_on_an_included_point(option, self, includer)
+          message_sent_to[recipient.id] = [recipient.name, 'comment on included point']
+        end
+    end
+
+    return message_sent_to
   end
 
 end

@@ -6,7 +6,6 @@ class AddMessagingPreferencesToUser < ActiveRecord::Migration
     add_column :positions, :notification_option_subscriber, :boolean
     add_column :position_versions, :notification_includer, :boolean
     add_column :position_versions, :notification_option_subscriber, :boolean
-
   end
 
   def self.down

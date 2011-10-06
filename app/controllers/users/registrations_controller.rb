@@ -33,8 +33,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
     
   end
   def update
-    current_user.avatar = params[:user][:avatar]
+    current_user.update_attributes(params[:user])
     current_user.save
+    pp current_user
     redirect_to request.referer
   end
 end

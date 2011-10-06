@@ -173,7 +173,18 @@ class Point < ActiveRecord::Base
     end
   end
   
-  
+  def notify_parties
+    message_sent_to = {}
+    #email anyone who subscribes to points for the option
+    option.positions.where(:notification_option_subscriber => true).each
+      position_taker = position.user
+      if !message_sent_to.has_key?(position_taker.id)
+        #Notifier.deliver_new_point_about_option(option, self, position_taker)
+        message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to option']
+      end
+    end
+    return message_sent_to
+  end
 
 protected
   def entropy

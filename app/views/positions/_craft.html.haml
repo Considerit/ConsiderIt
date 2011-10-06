@@ -136,32 +136,49 @@
               =f.hidden_field :option_id, :value=>@option.id
               =f.hidden_field :position_id, :value => @position.id              
               =f.submit "", :class => "submit submit_stance", :title => "Save your stance and position on #{@option.reference}"
+              = link_to "discard your #{@position.published ? 'changes' : 'position'}", option_position_path(@option, @position), :method => :delete
+
+              %ul
+                %li
+                  = f.check_box :notification_includer
+                  = f.label :notification_includer, 'Email me when someone comments on a pro or con point that I included in my list.'
+
+                %li
+                  = f.check_box :notification_option_subscriber
+                  = f.label :notification_option_subscriber, 'Email me when someone writes a new pro or con point about this measure.'
 
           - else
-            = form_for :position, :url => option_positions_path(@option), :remote => true, do |f|
+            = form_for :position, :url => option_positions_path(@option, @position), :remote => true, do |f|
               =f.hidden_field :stance, :id => "stance-value", :value=>0.0
               =f.hidden_field :option_id, :value=>@option.id
               =f.hidden_field :position_id, :value => @position.id              
               =f.submit "", :class => "submit submit_stance", :title => "Save your stance and position on #{@option.reference}"
 
-            #position_save_login_trigger.user_dialog
+              = link_to "discard your #{@position.published ? 'changes' : 'position'}", option_position_path(@option, @position), :method => :delete
 
-            :javascript
-              $j('#position_save_login_trigger').dialog({
-                autoOpen: false,
-                modal: true,
-                draggable: false,
-                dialogClass: 'alert',
-                width: 775
-              });
+              %ul
+                %li
+                  = f.check_box :notification_includer
+                  = f.label :notification_includer, 'Email me when someone comments on a pro or con point that I included in my list.'
 
-              $j('.stanceform input.submit').click(function(){
-                $j('#position_save_login_trigger')
-                  .load("#{new_user_registration_path(:third_party=>false, :context=>"position_submit")}")
-                  .dialog('open');
-                return true;
-              });
+                %li
+                  = f.check_box :notification_option_subscriber
+                  = f.label :notification_option_subscriber, 'Email me when someone writes a new pro or con point about this measure.'
 
+              #position_save_login_trigger.user_dialog
 
-          .stance_status              
-            Don't worry, you can change your list and stance later. 
+              :javascript
+                $j('#position_save_login_trigger').dialog({
+                  autoOpen: false,
+                  modal: true,
+                  draggable: false,
+                  dialogClass: 'alert',
+                  width: 775
+                });
+
+                $j('.stanceform input.submit').click(function(){
+                  $j('#position_save_login_trigger')
+                    .load("#{new_user_registration_path(:third_party=>false, :context=>"position_submit")}")
+                    .dialog('open');
+                  return true;
+                });    

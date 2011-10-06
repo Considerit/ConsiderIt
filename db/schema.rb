@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111005213143) do
+ActiveRecord::Schema.define(:version => 20111006045648) do
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",    :default => 0
@@ -204,10 +204,12 @@ ActiveRecord::Schema.define(:version => 20111005213143) do
     t.text     "explanation"
     t.float    "stance"
     t.integer  "stance_bucket"
-    t.boolean  "published",     :default => false
+    t.boolean  "published",                      :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+    t.boolean  "notification_includer"
+    t.boolean  "notification_option_subscriber"
   end
 
   add_index "position_versions", ["position_id"], :name => "index_position_versions_on_position_id"
@@ -219,11 +221,13 @@ ActiveRecord::Schema.define(:version => 20111005213143) do
     t.text     "explanation"
     t.float    "stance"
     t.integer  "stance_bucket"
-    t.boolean  "published",     :default => false
+    t.boolean  "published",                      :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "version"
+    t.boolean  "notification_includer"
+    t.boolean  "notification_option_subscriber"
   end
 
   add_index "positions", ["option_id"], :name => "index_positions_on_option_id"
@@ -271,11 +275,11 @@ ActiveRecord::Schema.define(:version => 20111005213143) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                               :default => ""
-    t.string   "encrypted_password",   :limit => 128, :default => ""
+    t.string   "email",                                 :default => ""
+    t.string   "encrypted_password",     :limit => 128, :default => ""
     t.string   "reset_password_token"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                       :default => 0
+    t.integer  "sign_in_count",                         :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -286,7 +290,7 @@ ActiveRecord::Schema.define(:version => 20111005213143) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "sessions"
-    t.boolean  "admin",                               :default => false
+    t.boolean  "admin",                                 :default => false
     t.string   "avatar_file_name"
     t.string   "avatar_content_type"
     t.integer  "avatar_file_size"
@@ -301,8 +305,10 @@ ActiveRecord::Schema.define(:version => 20111005213143) do
     t.string   "openid_uid"
     t.string   "twitter_uid"
     t.string   "twitter_handle"
-    t.boolean  "pledge_taken",                        :default => false
+    t.boolean  "pledge_taken",                          :default => false
     t.integer  "domain_id"
+    t.boolean  "notification_commenter",                :default => true
+    t.boolean  "notification_author",                   :default => true
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"

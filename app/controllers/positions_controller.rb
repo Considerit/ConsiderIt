@@ -193,6 +193,7 @@ protected
       if pnt.user_id.nil?
         pnt.user_id = position.user_id
         pnt.published = 1
+        pnt.notify_parties
       end
       pnt.position_id = position.id
       pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001})

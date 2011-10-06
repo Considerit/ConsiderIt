@@ -149,6 +149,7 @@ class PointsController < ApplicationController
 
     if @point.published
       @point.update_absolute_score
+      @point.notify_parties
     end
     
     new_point = render_to_string :partial => "points/show", :locals => { :context => 'self', :point => @point, :static => false }

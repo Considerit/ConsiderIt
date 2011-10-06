@@ -13,7 +13,7 @@ class HomeController < ApplicationController
   def set_domain
     domain = Domain.where(:identifier => params[:domain]).first()
     if domain
-      session[:domain] = domain
+      session[:domain] = domain.id
       if current_user
         current_user.domain_id = session[:domain]
         current_user.save

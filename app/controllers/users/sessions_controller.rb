@@ -32,9 +32,11 @@ class Users::SessionsController < Devise::SessionsController
       session['reify_activities'] = true 
     end    
 
-    if current_user && session[:domain] != current_user.domain_id
+    if current_user && session.has_key?(:domain) && session[:domain] && session[:domain] != current_user.domain_id
       current_user.domain_id = session[:domain]
       current_user.save
+    elsif current_user && current_user.domain_id
+      session[:domain] = current_user.domain_id
     end
 
     respond_with resource, :location => redirect_location(resource_name, resource)

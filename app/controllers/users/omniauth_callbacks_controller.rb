@@ -28,9 +28,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         session['reify_activities'] = true 
       end
 
-    if @user && session[:domain] != @user.domain_id
+    if @user && session.has_key?(:domain) && session[:domain] && session[:domain] != @user.domain_id
       @user.domain_id = session[:domain]
       @user.save
+    elsif @user && @user.domain_id
+      session[:domain] = current_user.domain_id
     end
 
     else

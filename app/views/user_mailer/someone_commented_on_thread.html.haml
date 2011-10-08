@@ -10,21 +10,24 @@
       Hi #{@user.name},
     
     %p
-      #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for #{@point.option.category} #{@point.option.designator}:
+      #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for #{@point.option.category} #{@point.option.designator} that you also commented on. The point states that "#{@point.nutshell}". The comment says:
 
     %blockquote
-      #{@point.nutshell}
+      #{@comment.body}
 
     %p 
       Visit the 
-      %a{ :href => "#{option_path(@point.option)}" }
+      %a{ :href => "#{option_url(@point.option)}" }
         #{@point.option.category} #{@point.option.designator} page
-      to read the details, comment on this point and/or include it in your pro/con list. 
+      to respond. 
 
     %p
       The LVG team
 
+    %p 
+      p.s. We apologize if the above comment is offensive. We will review any comment deemed offensive (such as containing a personal attack), and block the offending commenter if appropriate. 
+
     %hr
 
     %p
-      To unsubscribe to messages for #{@point.option.category} #{@point.option.designator}, visit the page linked to above, deselect the checkbox near the bottom of the page and save your position. 
+      To unsubscribe to these notifications, visit #{root_url} and edit your profile preferences.

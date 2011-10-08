@@ -1,0 +1,30 @@
+!!! Strict
+%html(xmlns="http://www.w3.org/1999/xhtml")
+  %head
+    %meta{ :content => "text/html; charset=UTF-8", "http-equiv".intern => "Content-Type"}
+
+    %style
+      blockquote { padding-left: 10px; border-left: 1px solid #666; }
+  %body
+    %p
+      Hi #{@user.name},
+    
+    %p
+      #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for #{@point.option.category} #{@point.option.designator}:
+
+    %blockquote
+      #{@point.nutshell}
+
+    %p 
+      Visit the 
+      %a{ :href => "#{option_path(@point.option)}" }
+        #{@point.option.category} #{@point.option.designator} page
+      to read the details, comment on this point and/or include it in your pro/con list. 
+
+    %p
+      The LVG team
+
+    %hr
+
+    %p
+      To unsubscribe to messages for #{@point.option.category} #{@point.option.designator}, visit the page linked to above, deselect the checkbox near the bottom of the page and save your position. 

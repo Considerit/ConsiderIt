@@ -175,10 +175,18 @@ protected
 
   def save_actions ( position )
     actions = session[position.option_id]
-    actions[:included_points].each do |pnt|
-      if !Inclusion.where( :position_id => position.id ).where( :point_id => pnt)
+    pp 'CHECKING INCLUSIONS'
+
+    actions[:included_points].each do |point_id, value|
+
+      pp 'CHECKING INCLUSIONS'
+      pp point_id
+      pp Inclusion.where( :position_id => position.id ).where( :point_id => point_id).where( :user_id => position.user_id )
+
+      if Inclusion.where( :position_id => position.id ).where( :point_id => point_id).where( :user_id => position.user_id ).count == 0
+        pp 'CREATING'
         Inclusion.create!( { 
-          :point_id => pnt,
+          :point_id => point_id,
           :user_id => position.user_id,
           :position_id => position.id,
           :option_id => position.option_id
@@ -207,8 +215,12 @@ protected
     end
     actions[:written_points] = []
 
-    actions[:deleted_points].each do |pnt|
-      current_user.inclusions.where(:point_id => pnt).destroy
+    actions[:deleted_points].each do |point_id, value|
+      pp point_id
+      pp value
+      current_user.inclusions.where(:point_id => point_id).each do |inc|
+        inc.destroy
+      end
     end
     actions[:deleted_points] = {}
   end

@@ -148,7 +148,7 @@
                   = f.label :notification_option_subscriber, 'Email me when someone writes a new pro or con point about this measure.'
 
           - else
-            = form_for :position, :url => option_positions_path(@option, @position), :remote => true, do |f|
+            = form_for :position, :url => option_positions_path(@option), :remote => true, do |f|
               =f.hidden_field :stance, :id => "stance-value", :value=>0.0
               =f.hidden_field :option_id, :value=>@option.id
               =f.hidden_field :position_id, :value => @position.id              

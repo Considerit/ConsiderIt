@@ -180,7 +180,9 @@ class Point < ActiveRecord::Base
       option.positions.where(:notification_option_subscriber => true).each do |pos|
         position_taker = pos.user
         if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
-          UserMailer.option_subscription(position_taker, self).deliver
+          if position_taker.email && position_taker.email.length > 0
+            UserMailer.option_subscription(position_taker, self).deliver
+          end
           message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to option']
         end
       end

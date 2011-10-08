@@ -1,17 +1,33 @@
-Hi #{@user.name},
+!!! Strict
+%html(xmlns="http://www.w3.org/1999/xhtml")
+  %head
+    %meta{ :content => "text/html; charset=UTF-8", "http-equiv".intern => "Content-Type"}
 
+    %style
+      blockquote { padding-left: 10px; border-left: 1px solid #666; }
+  %body
+    %p
+      Hi #{@user.name},
+    
+    %p
+      #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for #{@point.option.category} #{@point.option.designator} that you included in your pro/con list. The point states that "#{@point.nutshell}". The comment says:
 
-#{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for #{@point.option.category} #{@point.option.designator}:
+    %blockquote
+      #{@comment.body}
 
+    %p 
+      Visit the 
+      %a{ :href => "#{option_url(@point.option)}" }
+        #{@point.option.category} #{@point.option.designator} page
+      to respond. 
 
-"#{@point.nutshell}"
+    %p
+      The LVG team
 
+    %p 
+      p.s. We apologize if the above comment is offensive. We will review any comment deemed offensive (such as containing a personal attack), and block the offending commenter if appropriate. 
 
-Visit the #{@point.option.category} #{@point.option.designator} page [#{option_path(@point.option)}] to read the details, comment on this point and/or include it in your pro/con list. 
+    %hr
 
-
-The LVG team
-
-
-=================================
-To unsubscribe to messages for #{@point.option.category} #{@point.option.designator}, visit the page linked to above, deselect the checkbox near the bottom of the page and save your position. 
+    %p
+      To unsubscribe to messages for #{@point.option.category} #{@point.option.designator}, visit the page linked to above, deselect the checkbox near the bottom of the page and save your position. 

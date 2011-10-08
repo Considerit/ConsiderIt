@@ -7512,3 +7512,171 @@ o48 = Option.create!(
       :domain => z98068,
       :option => o48
     )
+
+
+o49 = Option.create!(
+  :name => 'A City Charter Amendment Establishing a Community Bill of Rights',
+  :short_name => 'Charter Amendment',
+  :description => 'Initiative No. 2011-1, designated as Ordinance
+    No. C-34757, proposes that the City Charter be amended to add a
+    Community Bill of Rights, which secures the right of neighborhood
+    residents to approve re-zonings proposed for significant new
+    development, recognizes the right of neighborhood residents to
+    reject development which violates the City Charter or the city&rsquo;s
+    comprehensive plan, expands protections for the Spokane River and
+    Spokane Valley - Rathdrum Prairie Aquifer and provides
+    constitutional protections in the workplace.',
+  :domain => 'City of Spokane',
+  :domain_short => 'Spokane',
+  :url => 'https://wei.secstate.wa.gov/spokane/Pages/OnlineVotersGuide.aspx?Electionid=42&sorttype=Measures#ososTop',
+  :category => 'Proposition',
+  :designator => 'Spk 1',
+  :long_description => '',
+  :additional_details => ''
+)
+
+    z317 = DomainMap.create!(
+      :domain => z99201,
+      :option => o49
+    )
+
+    z318 = DomainMap.create!(
+      :domain => z99202,
+      :option => o49
+    )
+
+    z319 = DomainMap.create!(
+      :domain => z99203,
+      :option => o49
+    )
+
+    z320 = DomainMap.create!(
+      :domain => z99204,
+      :option => o49
+    )
+
+    z321 = DomainMap.create!(
+      :domain => z99205,
+      :option => o49
+    )
+
+    z322 = DomainMap.create!(
+      :domain => z99206,
+      :option => o49
+    )
+
+    z323 = DomainMap.create!(
+      :domain => z99207,
+      :option => o49
+    )
+
+    z324 = DomainMap.create!(
+      :domain => z99208,
+      :option => o49
+    )
+
+    z325 = DomainMap.create!(
+      :domain => z99209,
+      :option => o49
+    )
+
+    z326 = DomainMap.create!(
+      :domain => z99210,
+      :option => o49
+    )
+
+    z327 = DomainMap.create!(
+      :domain => z99211,
+      :option => o49
+    )
+
+    z328 = DomainMap.create!(
+      :domain => z99212,
+      :option => o49
+    )
+
+    z329 = DomainMap.create!(
+      :domain => z99213,
+      :option => o49
+    )
+
+    z330 = DomainMap.create!(
+      :domain => z99214,
+      :option => o49
+    )
+
+    z331 = DomainMap.create!(
+      :domain => z99215,
+      :option => o49
+    )
+
+    z332 = DomainMap.create!(
+      :domain => z99216,
+      :option => o49
+    )
+
+    z333 = DomainMap.create!(
+      :domain => z99217,
+      :option => o49
+    )
+
+    z334 = DomainMap.create!(
+      :domain => z99218,
+      :option => o49
+    )
+
+    z335 = DomainMap.create!(
+      :domain => z99219,
+      :option => o49
+    )
+
+    z336 = DomainMap.create!(
+      :domain => z99220,
+      :option => o49
+    )
+
+    z337 = DomainMap.create!(
+      :domain => z99223,
+      :option => o49
+    )
+
+    z338 = DomainMap.create!(
+      :domain => z99224,
+      :option => o49
+    )
+
+    z339 = DomainMap.create!(
+      :domain => z99228,
+      :option => o49
+    )
+
+    z340 = DomainMap.create!(
+      :domain => z99251,
+      :option => o49
+    )
+
+    z341 = DomainMap.create!(
+      :domain => z99252,
+      :option => o49
+    )
+
+    z342 = DomainMap.create!(
+      :domain => z99256,
+      :option => o49
+    )
+
+    z343 = DomainMap.create!(
+      :domain => z99258,
+      :option => o49
+    )
+
+    z344 = DomainMap.create!(
+      :domain => z99260,
+      :option => o49
+    )
+
+    z345 = DomainMap.create!(
+      :domain => z99299,
+      :option => o49
+    )
+

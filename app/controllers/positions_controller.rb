@@ -179,12 +179,7 @@ protected
 
     actions[:included_points].each do |point_id, value|
 
-      pp 'CHECKING INCLUSIONS'
-      pp point_id
-      pp Inclusion.where( :position_id => position.id ).where( :point_id => point_id).where( :user_id => position.user_id )
-
       if Inclusion.where( :position_id => position.id ).where( :point_id => point_id).where( :user_id => position.user_id ).count == 0
-        pp 'CREATING'
         Inclusion.create!( { 
           :point_id => point_id,
           :user_id => position.user_id,

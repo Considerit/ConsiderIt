@@ -54,9 +54,13 @@ class Comment < ActiveRecord::Base
     
       point_author = point.user
       if point_author.id != user_id && point_author.notification_author && point_author.email.length > 0
-        #Notifier.deliver_someone_discussed_your_point(option, point, self, point_author)
-        message_sent_to[point_author.id] = [point_author.name, 'point discussed']
+        if point_author.email && point_author.email.length > 0
+          UserMailer.someone_discussed_your_point(point_author, point, self).deliver
+        end
       end
+      # if they don't want to get comments for their own points, don't notifications for other 
+      # derivative notifications
+      message_sent_to[point_author.id] = [point_author.name, 'point discussed']
 
       point.comments.each do |comment|
         recipient = comment.user
@@ -64,7 +68,9 @@ class Comment < ActiveRecord::Base
           && recipient.notification_commenter \
           && recipient.id != user_id 
 
-          #Notifier.deliver_someone_commented_on_thread(option, self, recipient)
+          if recipient.email && recipient.email.length > 0
+            UserMailer.someone_commented_on_thread(recipient, point, self).deliver
+          end
           message_sent_to[recipient.id] = [recipient.name, 'same discussion']
         end
       end
@@ -73,7 +79,9 @@ class Comment < ActiveRecord::Base
         if inclusion.user.positions.find(option.id).notification_includer
           includer = inclusion.user
           if !message_sent_to.has_key?(includer.id) && includer.id == user_id
-            #Notifier.deliver_someone_commented_on_an_included_point(option, self, includer)
+            if includer.email && includer.email.length > 0
+              UserMailer.someone_commented_on_an_included_point(includer, point, self).deliver
+            end
             message_sent_to[recipient.id] = [recipient.name, 'comment on included point']
           end
         end

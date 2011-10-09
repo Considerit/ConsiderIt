@@ -6438,7 +6438,31 @@ o39 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40321&eid=1249',
   :category => 'Proposition',
   :designator => 'Carn 1',
-  :long_description => '',
+  :long_description => '<p>Ensuring sufficient funding for criminal
+    justice services, including police, jails, prosecution, courts,
+    public defense and domestic violence advocacy, are important
+    budget priorities of the Carnation City Council.  If approved,
+    Proposition 1 would provide additional revenue that would be
+    specifically earmarked for these purposes, as well as helping to
+    stabilize the City&rsquo;s monetary reserves.</p>
+    <p>State law allows cities to &ldquo;lift&rdquo; the cap on regular property tax
+    levy increases by obtaining voter approval of the proposed
+    increase.  The City&rsquo;s regular property tax rate is currently $1.29
+    per $1,000 of assessed valuation.  If Proposition 1 is approved,
+    the City&rsquo;s tax rate for collection in 2012 would increase by $0.61
+    to $1.90 per $1,000 of assessed valuation.  Assuming a 4.12
+    percent decrease in the City&rsquo;s 2012 total assessed valuation
+    consistent with recent historical trends, the proposition would
+    generate approximately $100,000 in additional property tax revenue
+    for 2012.  These additional funds would be used exclusively to
+    fund criminal justice services and to help stabilize the City&rsquo;s
+    monetary reserves.</p>
+    <p>For properties valued at $350,000, landowners currently pay
+    approximately $451.50 per year in City of Carnation property
+    taxes.  Under Proposition 1, this amount would increase to $665.00
+    for collection in 2012.</p>
+    <p>The 2012 levy amount would become the base upon which levy increases
+    for years 2013 through 2017 would be computed.</p>',
   :additional_details => ''
 )
 
@@ -6468,7 +6492,31 @@ o40 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40322&eid=1249',
   :category => 'Proposition',
   :designator => 'DesM 1',
-  :long_description => '',
+  :long_description => 'If approved by voters, Proposition 1 would
+    authorize the City of Des Moines to increase the Utility
+    Occupation Tax on City utilities from 6% to 9% to provide funding
+    for Des Moines Beach Park Historic District facility renovation
+    and City street pavement overlays and repairs.  The decline in
+    Real Estate Excise Tax (REET) and reduction of property values
+    have reduced the sources of revenue which had provided funding for
+    the City&rsquo;s municipal facilities and streets capital construction
+    projects.  Funds from the increase would provide: (1) 1% dedicated
+    to Des Moines Beach Park capital improvements to: restore and
+    reopen the park&rsquo;s historic Dining Hall, Sun Home Lodge, Picnic
+    Shelter, Restroom, and Cabins and Cottages; renovate the Founders
+    Lodge; replace the play area and wood bridge; install irrigation
+    and pathways; and repair roadways, parking areas and utilities.
+    The City would issue 20 year bonds with this 1% tax and this tax
+    would end once the bonds are repaid; (2) 1/2% dedicated to Beach
+    Park buildings and facilities maintenance and operations and
+    repairs and replacement; and (3) 1.5% dedicated to repaving,
+    repairing and renovating City streets.  Individual street projects
+    would be selected based on pavement condition and the optimum time
+    to minimize overall street system preservation, reactive
+    maintenance and rehabilitation costs.  Taxes received and money
+    spent will be tracked so the public can be assured that their
+    money is being used for these purposes and not for other general
+    expenses.',
   :additional_details => ''
 )
 
@@ -6499,7 +6547,17 @@ o41 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40323&eid=1249',
   :category => 'Proposition',
   :designator => 'Pcfc 1',
-  :long_description => '',
+  :long_description => 'Proposition No. 1 would provide funding of the
+    purchase of materials only for the repair of Pacific Streets.  The
+    &ldquo;levy lid&rdquo; (chap. 84.55 RCW) limits annual property taxes to 101%
+    of the City&rsquo;s previous highest levy amount, plus certain
+    adjustments (e.g., new construction), unless voters approve a
+    proposition for a greater increase. This proposition would
+    authorize an increase of $0.22260/$1,000 over the 2011 levy rate,
+    which was $1.44136/$1,000 assessed value. If approved, the levy
+    rate for collection in 2012 would be no greater than
+    $1.66396/$1,000 and is based on 2011 assessed values. If approved,
+    the &ldquo;levy lid&rdquo; expires in 2017. ',
   :additional_details => ''
 )
 
@@ -6520,7 +6578,31 @@ o42 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40324&eid=1249',
   :category => 'Proposition',
   :designator => 'STac 1',
-  :long_description => '',
+  :long_description => '<p>SeaTac is authorized by state law to be
+    governed under one of two plans of government.  SeaTac now
+    operates under the Council-Manager plan.  If approved, this
+    proposition would change the plan of government to the
+    Mayor-Council plan.</p>
+    <p>Pursuant to RCW 35A.13, the Council-Manager plan of government,
+    now in effect, consists of an elected city council which is the
+    legislative body of the City.  The Council appoints the City
+    Manager who is the chief executive officer of the City government.
+    The Councilmembers choose a chairperson from among their number
+    who has the title of Mayor and who presides at meetings of the
+    council and is recognized as the head of the City for ceremonial
+    purposes.</p>
+    <p>Pursuant to RCW 35A.12, the government of a city which adopts the
+    Mayor-Council plan is vested in an elected Mayor and an elected
+    City Council.  The Council is the legislative body of the City.
+    The Mayor is the chief executive officer.  The Mayor may appoint a
+    chief administrative officer.  The Mayor also presides at Council
+    meetings, but with a vote only in the case of a tie, and with
+    right of veto subject to override by a majority of all
+    Councilmembers plus one.</p>
+    <p>A &ldquo;Yes&rdquo; vote is in favor of changing to the Mayor-Council plan of
+    government.</p>
+    <p>A &ldquo;No&rdquo; vote is against the change and favors retention of the
+    Council-Manager plan.</p>',
   :additional_details => ''
 )
 
@@ -7314,7 +7396,26 @@ o45 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40326&eid=1249',
   :category => 'Adv Measure',
   :designator => 'Tukw 1',
-  :long_description => '',
+  :long_description => '<p>This is an advisory measure seeking voter
+    input regarding the continuation of social card rooms in the City
+    of Tukwila.  The advisory measures asks voters whether they would
+    prefer to ban gambling in the form of social card rooms or allow
+    it city-wide.</p>
+    <p>Washington State law allows social card games to be used as a
+    commercial stimulant for businesses such as restaurants.  This
+    form of gambling is licensed by the State of Washington.  There
+    are currently four restaurants using social card games as
+    commercial stimulants in the City of Tukwila.</p>
+    <p>The City has limited control regarding placement of these
+    establishments and they are allowed to locate where local zoning
+    allows restaurants.  The City has the ability to ban this type of
+    gambling completely.  To do so, would cause a loss of
+    approximately $2.1 million dollars to the City&rsquo;s budget, annually.</p>
+    <p>This measure is advisory only.  The result of the election on this
+    measure will provide the Tukwila City Council with voter input,
+    but approval or rejection of the measure does not legally require
+    or prohibit gambling in the form of social card rooms within the
+    City</p>.',
   :additional_details => ''
 )
 
@@ -7361,7 +7462,26 @@ o46 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40327&eid=1249',
   :category => 'Proposition',
   :designator => 'NB 1',
-  :long_description => '',
+  :long_description => 'North Bend voters are asked to authorize
+    dedicated funding for transportation needs by increasing the sales
+    and use tax by two-tenths of one percent (0.002). An increase of
+    0.002 on taxable spending of $100 amounts to 20 cents. The
+    increase would generate approximately $400,000 per year for street
+    reconstruction, intersection improvements, construction of
+    walkways, new signal installation, and street resurfacing to
+    preserve their condition and reduce future maintenance costs. This
+    increase is requested by the Board of the North Bend
+    Transportation Benefit District (TBD), governed by the North Bend
+    City Council members acting as a separate board of directors. 100%
+    of the revenue generated by the tax is dedicated to transportation
+    projects and can be used for no other purpose. All of these
+    improvements will occur exclusively within the City of North
+    Bend. A detailed list of the improvements, their cost and
+    priorities are contained in TBD Resolution 01-2011 and the City of
+    North Bend 6-Year Transportation Improvement Program and are
+    available upon request from the North Bend City Clerk. If
+    approved, this local sales tax will expire in 10 years unless
+    sooner terminated by the TBD.',
   :additional_details => ''
 )
 
@@ -7378,36 +7498,45 @@ o46 = Option.create!(
 o47 = Option.create!(
   :name => 'Supplemental Levy to Support Class Size',
   :short_name => 'School Levy',
-  :description => 'The Board of Directors of Shoreline School District
+  :description => '<p>The Board of Directors of Shoreline School District
     No. 412 adopted Resolution No. 2011-14, concerning a supplemental
     levy to support class size.  This proposition would address
     impacts on class size due to State budget reductions by levying
     the following excess taxes, in addition to the existing levies for
     educational programs, maintenance and operations approved by the
     voters in February, 2010, on all taxable property within the
-    District.\n\nPassage of Proposition No. 1 would allow the levy of
-    $1,300,000 of property taxes within the Shoreline School District
-    for collection in 2012, the levy of $1,400,000 of taxes for
-    collection in 2013, and the levy of $1,500,000 in taxes for
-    2014. The purpose of the levy is to support class size in response
-    to State budget reductions.  This supplemental levy is in addition
-    to the maintenance and operation levy, approved by the voters in
-    the February 2010 election, on all taxable property within the
-    District.  The taxes approved by this proposition would be
-    deposited in the Shoreline School District&rsquo;s General Fund
-    and expended to support class size.  If authorized by the voters
-    and based upon current assessed valuation information, the
-    estimated levy rates per $1000 of assessed value would be $0.09
-    (2012 collection); $0.09 (2013 collection) and $0.10 (2014
-    collection).',
+    District:</p>
+    <p>
+    <table style="text-align: center;" cellpadding="2" cellspacing="2"> 
+    <tbody> <tr> <td>Collection Year</td>
+    <td>Approximate Levy Rate<br>/$1,000 Assessed
+    Value</td> <td>Levy Amount</td> </tr> <tr> <td>2012</td>
+    <td>$0.09</td> <td>$1,300,000</td> </tr> <tr> <td>2013</td>
+    <td>$0.09</td> <td>$1,400,000</td> </tr> <tr> <td>2014</td>
+    <td>$0.10</td> <td>$1,500,000</td> </tr> </tbody> </table> </p>
+    <p> all as provided in Resolution No. 2011-14. Should this
+    proposition be approved?</p>',
   :domain => 'City of Shoreline',
   :domain_short => 'Shoreline SD',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40329&eid=1249',
-  :category => 'Proposition',
+  :category => 'Proposition', 
   :designator => 'Shor 1',
-  :long_description => '',
-  :additional_details => ''
-)
+  :long_description => 'Passage of Proposition No. 1 would allow the
+     levy of $1,300,000 of property taxes within the Shoreline School
+     District for collection in 2012, the levy of $1,400,000 of taxes
+     for collection in 2013, and the levy of $1,500,000 in taxes for
+     2014. The purpose of the levy is to support class size in
+     response to State budget reductions.  This supplemental levy is
+     in addition to the maintenance and operation levy, approved by
+     the voters in the February 2010 election, on all taxable property
+     within the District.  The taxes approved by this proposition
+     would be deposited in the Shoreline School District&rsquo;s
+     General Fund and expended to support class size.  If authorized
+     by the voters and based upon current assessed valuation
+     information, the estimated levy rates per $1000 of assessed value
+     would be $0.09 (2012 collection); $0.09 (2013 collection) and
+     $0.10 (2014 collection).',
+   :additional_details => '' )
 
     z309 = DomainMap.create!(
       :domain => z98133,
@@ -7434,7 +7563,27 @@ o48 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40330&eid=1249',
   :category => 'Proposition',
   :designator => 'KCFD 1',
-  :long_description => '',
+  :long_description => '<p>Washington State Law, at RCW 52.14.015, allows
+    increasing the board of commissioners of a fire protection
+    district from three to five, with voter approval.  The two
+    additional positions would be filled by registered voters who
+    reside anywhere within the fire district.  For approval, such a
+    proposition requires a simple majority of the registered voters
+    casting ballots on the measure.</p>
+    <p>The Board of Fire Commissioners for the Enumclaw Fire Department
+    (Fire District #28) has passed a resolution determining that it
+    would be in the best interest of the district and its citizens to
+    increase the number of fire commissioners from three to five.  The
+    resolution states that the purpose of the measure is to encourage
+    broader participation in the decision making function of the
+    Board.  Adding two fire commissioners to the Board would increase
+    representation from the community.</p>
+    <p>With changes in service and increasing service demands, the fire
+    department finds the provision of services becomes more complex.
+    A larger Board of elected officials will help to deal with this
+    increasing complexity.  This change will allow the Commissioners
+    to appoint committees of the Board to study issues for
+    presentation to the full Board.</p>',
   :additional_details => ''
 )
 
@@ -7463,7 +7612,31 @@ o49 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40331&eid=1249',
   :category => 'Proposition',
   :designator => 'Si 1',
-  :long_description => '',
+  :long_description => 'Due to changes in state law, beginning in 2012
+    Si View Metropolitan Park District&rsquo;s existing levy will be
+    re-allocated to other taxing districts within King County in
+    accordance with a statutory formula.  This re-allocation process
+    is known as prorationing.  The District&rsquo;s existing levy maintains
+    basic safety and current operations and park district facilities
+    and programs, including the Si View Community Center and Pool,
+    parks, playfields, playgrounds, trails, adult programming, fitness
+    and youth sports programs, summer camps, and after-school
+    recreation programs for youth and teens.  If Proposition 1 is not
+    passed by voters, the District will incur a projected 44% decrease
+    from its current funding and would be required to make major cuts
+    in operations, recreational programs, basic safety, operations and
+    maintenance of Si View Community Center and Pool, parks and
+    facilities.  If Proposition 1 and Proposition 2 are not passed by
+    voters, the District will incur a projected 84% decrease from its
+    current funding which would likely force the closure of District
+    parks, pool and recreation programs.  Passage of Proposition 1
+    would protect $0.25 of the District&rsquo;s existing regular tax levy
+    from prorationing for a period of six years beginning in 2012.  If
+    passed by voters, Proposition 1 would protect the Park District&rsquo;s
+    existing levy from prorationing and preserve current funding and
+    services for basic safety, operations, maintenance of facilities
+    and recreational programs.  Passage of Proposition 1 will help
+    preserve current levels of service and funding for the District.',
   :additional_details => ''
 )
 
@@ -7501,7 +7674,29 @@ o50 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40332&eid=1249',
   :category => 'Proposition',
   :designator => 'Si 2',
-  :long_description => '',
+  :long_description => 'The Si View Metropolitan Park District&rsquo;s
+    current property tax levy funds the basic safety, ongoing
+    maintenance and day-to-day operations of park facilities and
+    recreation programs, including the Si View Community Center and
+    Pool, parks, playfields, playgrounds, sports programs, trails,
+    adult programming, summer camps, and after-school recreation
+    programs for youth and teens.  Local revenues in the District have
+    declined significantly in recent years.  If Proposition 2 is not
+    passed by voters, local funding will be reduced by approximately
+    40 percent in 2012 (approximately $461,529) and major cuts will be
+    required in the day-to-day operations, recreational programs,
+    basic safety, and on-going maintenance of Si View Community Center
+    and Pool, parks and facilities.  If Proposition 2 and Proposition
+    1 are not passed by voters, the District will incur a projected
+    84% decrease from its current funding which would likely force the
+    closure of District parks, pool and recreation programs.  If
+    passed, Proposition 2 would help maintain - not increase - current
+    levels of funding and services.  Proposition 2 would authorize the
+    District to levy a one-year excess property tax on all taxable
+    property within the District in an approximate rate of 21 cents
+    per $1,000 of assessed value for collection in 2012.  Proposition
+    2 is a one-year operations and maintenance levy that will help
+    maintain the current level of District funding and services.',
   :additional_details => ''
 )
 

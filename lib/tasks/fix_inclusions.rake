@@ -6,7 +6,8 @@ namespace :admin do
     s = f.read
 
     positions = {}
-    reg = /Started POST "\/options\/(?<option_id>[\d]+)\/positions" for (?<ip>[\d|\.]+) at (?<time>[\d|\-]+ [\d|\:]+) -0700[\s]+Processing by PositionsController#create as JS[\s]+Parameters: {"utf8"=>"", "authenticity_token"=>"[^"]+", "position"=>{"stance"=>"[-|\d|\.]+", "option_id"=>"[\d]+", "position_id"=>"(?<position_id>[\d]+)"}, "commit"=>"", "option_id"=>"[\d]+"}/
+
+    reg = /Started POST "\/options\/(?<option_id>[\d]+)\/positions" for (?<ip>[\d|\.]+) at (?<time>[\d|\-]+ [\d|\:]+) -0700[\s]+Processing by PositionsController#create as JS[\s]+Parameters: {"utf8"=>"", "authenticity_token"=>"[^"]+", "position"=>{"stance"=>"[-|\d|\.]+", "option_id"=>"[\d]+", "position_id"=>"(?<position_id>[\d]+)"}/
     result = s.scan(reg)
     result.each do |option_id,ip,time,position_id|
       if !positions.has_key? ip
@@ -15,7 +16,7 @@ namespace :admin do
       positions[ip][option_id] = position_id
     end
 
-    reg = /Started POST "\/options\/(?<option_id>[\d]+)\/positions\/(?<position_id>[\d]+)" for (?<ip>[\d|\.]+) at (?<time>[\d|\-]+ [\d|\:]+)/
+    reg = /Started POST "\/options\/(?<option_id>[\d]+)\/positions[\/|\.](?<position_id>[\d]+)" for (?<ip>[\d|\.]+) at (?<time>[\d|\-]+ [\d|\:]+)/
     result = s.scan(reg)
     result.each do |option_id,position_id,ip,time|
       if !positions.has_key? ip
@@ -53,15 +54,17 @@ namespace :admin do
       end
     end
 
+
+    pp position_matches.length
     position_matches.each do |option_id, position_id, point_id|
       begin
-            position = Position.find(position_id)
-
-            user_id = position.user_id
-            existing = Inclusion.where(:user_id => user_id, :option_id => option_id, :point_id => point_id)
-            if existing.count == 0
-               Inclusion.create!( :user_id => user_id, :position_id => position_id, :point_id => point_id, :option_id => option_id )
-            end
+            pp 'MATCH ' + position_id + ', ' + point_id
+            #position = Position.find(position_id)
+            #user_id = position.user_id
+            #existing = Inclusion.where(:user_id => user_id, :option_id => option_id, :point_id => point_id)
+            #if existing.count == 0
+            #   Inclusion.create!( :user_id => user_id, :position_id => position_id, :point_id => point_id, :option_id => option_id )
+            #end
       rescue
         #p 'COULD NOT FIND POSITION ' + position_id
       end

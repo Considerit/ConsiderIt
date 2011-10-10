@@ -200,12 +200,12 @@ protected
       end
       pnt.position_id = position.id
       pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001})
-      Inclusion.create!( { 
-        :point_id => pnt_id,
-        :user_id => position.user_id,
-        :position_id => position.id,
-        :option_id => position.option_id
-      } )      
+      #Inclusion.create!( { 
+      #  :point_id => pnt_id,
+      #  :user_id => position.user_id,
+      #  :position_id => position.id,
+      #  :option_id => position.option_id
+      #} )      
       pnt.update_absolute_score
     end
     actions[:written_points] = []

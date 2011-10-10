@@ -29,54 +29,54 @@ under the AGPL.
 Here are installation instructions, along with some hints in case of
 problems (mostly Macintosh-specific).
 
-1. Manage ruby / rails installs with
-   [RVM](https://rvm.beginrescueend.com/gemsets/).  After installing
-   rvm, install ruby 1.92:
+* Manage ruby / rails installs with
+  [RVM](https://rvm.beginrescueend.com/gemsets/).  After installing
+  rvm, install ruby 1.92:
 
           rvm install 1.9.2
 
-   Good mac install
-   directions
-   [here](http://www.cowboycoded.com/2010/12/04/setting-up-rails-3-on-mac-osx-snow-leopard-10-6-4/).
-   You can use RVM to install Ruby in a personal directory or in the
-   system directory.  Personal directory is recommended in any case;
-   for linux this is also useful if you don't have root access.  On
-   the Mac, RVM will install a recent version of Ruby, but also leave
-   the built-in version of Ruby intact at <tt>/usr/bin/ruby</tt>.
+  Good mac install
+  directions
+  [here](http://www.cowboycoded.com/2010/12/04/setting-up-rails-3-on-mac-osx-snow-leopard-10-6-4/).
+  You can use RVM to install Ruby in a personal directory or in the
+  system directory.  Personal directory is recommended in any case;
+  for linux this is also useful if you don't have root access.  On
+  the Mac, RVM will install a recent version of Ruby, but also leave
+  the built-in version of Ruby intact at <tt>/usr/bin/ruby</tt>.
 
-   The suggested script for installing rvm is:
+  The suggested script for installing rvm is:
 
           bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)
 
-   If this doesn't work, try downloading and saving the script,
-   and running it directly as a shell script.
-   After you're done, check that you have the correct version of ruby
-   (should be 1.9.2):
+  If this doesn't work, try downloading and saving the script,
+  and running it directly as a shell script.
+  After you're done, check that you have the correct version of ruby
+  (should be 1.9.2):
 
           ruby -v
 
-   Set this as the default in RVM so you don't have to switch each time
-   you open a new shell:
+  Set this as the default in RVM so you don't have to switch each time
+  you open a new shell:
 
           rvm --default use 1.9.2
 
-2. Install a SQL database if needed.  We've been using 
-   [MySQL](http://dev.mysql.com/downloads/).
+* Install a SQL database if needed.  We've been using 
+  [MySQL](http://dev.mysql.com/downloads/).
 
-3. Clone from git repository into your workspace using the following command.
-   Note that you will have to set up your ssh keys with github first
-   (see [github linux setup](http://help.github.com/linux-set-up-git/)).
+* Clone from git repository into your workspace using the following command.
+  Note that you will have to set up your ssh keys with github first
+  (see [github linux setup](http://help.github.com/linux-set-up-git/)).
 
           git clone git@github.com:tkriplean/ConsiderIt.git
 
-4. Install [ImageMagick](http://www.imagemagick.org/script/index.php).
-   For the Macintosh the recommended technique is to use
-   [MacPorts](http://www.macports.org/).  This involves building from
-   source and takes a while -- no dmg file, unfortunately.  However,
-   this has worked fine on various Macs, so you probably won't have
-   any trouble.
+* Install [ImageMagick](http://www.imagemagick.org/script/index.php).
+  For the Macintosh the recommended technique is to use
+  [MacPorts](http://www.macports.org/).  This involves building from
+  source and takes a while -- no dmg file, unfortunately.  However,
+  this has worked fine on various Macs, so you probably won't have
+  any trouble.
 
-5. Go into the ConsiderIt directory:
+* Go into the ConsiderIt directory:
 
           cd ConsiderIt
 
@@ -84,132 +84,136 @@ problems (mostly Macintosh-specific).
   you first cd into the directory, RVM should recognize this and ask
   if you trust it.  You should say yes.
 
-6. Install gems.  First deal with the problematic <tt>mysql</tt> gem
-   (at least it's problematic on the mac); and then install everything
-   else.  To install the mysql gem on the Mac, first try this:
+* Install gems.  First deal with the problematic <tt>mysql</tt> gem
+  (at least it's problematic on the mac); and then install everything
+  else.  To install the mysql gem on the Mac, first try this:
 
           sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/usr/local/mysql/bin/mysql_config
 
-   Or with MAMP:
+  Or with MAMP:
 
           sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/Applications/MAMP/Library/bin/mysql_config
 
-   accessing MAMP mysql via terminal: 
+  accessing MAMP mysql via terminal: 
 
           mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
 
-   Now install the other gems.  The Gemfile in the ConsiderIt
-     directory specifies a particular version of rails, so specify that.
+  Now install the other gems.  The Gemfile in the ConsiderIt
+  directory specifies a particular version of rails, so specify that.
 
           gem install rails -v '3.0.6'
           bundle install
 
-   As noted, the mysql gem is problematic on the
-   Macintosh.  The mysql2 gem is touted as superior to the mysql gem, so
-   you can try that if the instructions above don't work.  However, the
-   most recent version of mysql2 didn't install correctly.  Installing an older
-   version (0.2.7) worked on a Macbook air running Snow Leopard (version
-   10.6.8).  You'll first need to fix a path problem for Ruby mysql2 gem
-   to find the correct library by putting this in your .profile file:
+  As noted, the mysql gem is problematic on the
+  Macintosh.  The mysql2 gem is touted as superior to the mysql gem, so
+  you can try that if the instructions above don't work.  However, the
+  most recent version of mysql2 didn't install correctly.  Installing an older
+  version (0.2.7) worked on a Macbook air running Snow Leopard (version
+  10.6.8).  You'll first need to fix a path problem for Ruby mysql2 gem
+  to find the correct library by putting this in your .profile file:
 
           export DYLD_LIBRARY_PATH="/usr/local/mysql/lib:$DYLD_LIBRARY_PATH"
 
-   Then this should install the gem itself:
+  Then this should install the gem itself:
 
           sudo env ARCHFLAGS="-arch x86_64" gem install mysql2 -v 0.2.7 -- --with-mysql-config=/usr/local/mysql/bin/mysql_config
 
-   If you use mysql2 rather than mysql, edit the Gemfile by replacing
-   this line: <tt>gem 'mysql'</tt> with 
+  If you use mysql2 rather than mysql, edit the Gemfile by replacing
+  this line: <tt>gem 'mysql'</tt> with 
 
           gem 'mysql2', '0.2.7'
 
-   Also replace mysql (the adaptor) in <tt>config/database.yml</tt>
-   with mysql2.
+  Also replace mysql (the adaptor) in <tt>config/database.yml</tt>
+  with mysql2.
 
-   Neither of these techniques worked on a desktop Mac Pro running
-   Leopard (version 10.5.8).  There were various problems, including not
-   being able to find the library.  To get this working I ended up
-   removing the version of mysql installed from the dmg file and
-   installed it using Macports.  (There must be a better way but this
-   worked.)  Here are directions for completely removing MySQL if you end
-   up needing to do this:
-   [http://akrabat.com/computing/uninstalling-mysql-on-mac-os-x-leopard/](http://akrabat.com/computing/uninstalling-mysql-on-mac-os-x-leopard/)
+  Neither of these techniques worked on a desktop Mac Pro running
+  Leopard (version 10.5.8).  There were various problems, including not
+  being able to find the library.  To get this working I ended up
+  removing the version of mysql installed from the dmg file and
+  installed it using Macports.  (There must be a better way but this
+  worked.)  Here are directions for completely removing MySQL if you end
+  up needing to do this:
+  [http://akrabat.com/computing/uninstalling-mysql-on-mac-os-x-leopard/](http://akrabat.com/computing/uninstalling-mysql-on-mac-os-x-leopard/)
 
-   Then install MySQL using Macports:
+  Then install MySQL using Macports:
 
           sudo port install mysql5
           sudo port install mysql5-server
 
-   After this, a simple
+  After this, a simple
 
           sudo gem install mysql
 
-   worked.
+  worked.
 
-7. Update <tt>config/database.yml</tt> as necessary.  If you used the
-   mysql2 gem, you'll need to change the adaptor accordingly.  Also
-   edit the user name or password to taste.
+* Update <tt>config/database.yml</tt> as necessary.  If you used the
+  mysql2 gem, you'll need to change the adaptor accordingly.  Also
+  edit the user name or password to taste.
 
-8. Create the database
+* Create the database
 
           rake db:create
           rake db:migrate
           rake db:seed
 
-9. Start the web server:
+* Start the web server:
 
           rails server
 
-   (run with <tt>--help</tt> for options)
+  (run with <tt>--help</tt> for options)
 
-10. (optional) Deployment
+* (optional) Deployment
     * When creating app on heroku, specify 1.9.2 stack: http://devcenter.heroku.com/articles/stack
     * You can have multiple remote sites for git, such as github and heroku: http://devcenter.heroku.com/articles/git
 
 
-11. More Troubleshooting.  If you are still having trouble with rails
-    or with the mysql interface, try making a trivial test application
-    with rails, as described
-    [here](http://www.cowboycoded.com/2010/12/04/setting-up-rails-3-on-mac-osx-snow-leopard-10-6-4/)
+* More Troubleshooting.  If you are still having trouble with rails
+  or with the mysql interface, try making a trivial test application
+  with rails, as described
+  [here](http://www.cowboycoded.com/2010/12/04/setting-up-rails-3-on-mac-osx-snow-leopard-10-6-4/)
 
           rails new test_app
           cd test_app
           bundle install
           rails s
 
-   Then point a browser to <tt>http://localhost:3000</tt> and see if it works.
-   Be sure and click the "About your application’s environment" link
-   as part of the test since that queries the database.
+  Then point a browser to <tt>http://localhost:3000</tt> and see if it works.
+  Be sure and click the "About your application’s environment" link
+  as part of the test since that queries the database.
 
-   This first version of the test application uses the built-in
-   database sqlite3.  If this works, next try using mysql -- change
-   the Gemfile to use mysql (or mysql2) rather than sqlite, and also
-   edit config/database.yml to use mysql as well.  Run "bundle
-   install" again and start up rails -- if things still work then you
-   know that rails and the mysql gem are OK and the problem is
-   elsewhere.
+  This first version of the test application uses the built-in
+  database sqlite3.  If this works, next try using mysql -- change
+  the Gemfile to use mysql (or mysql2) rather than sqlite, and also
+  edit config/database.yml to use mysql as well.  Run "bundle
+  install" again and start up rails -- if things still work then you
+  know that rails and the mysql gem are OK and the problem is
+  elsewhere.
 
-12. Updating Measures.  Prior to launch, you can edit the measures
-    information by editing the file <tt>ConsiderIt/db/seeds.lvg2.root.rb</tt>.
-    After editing the file, you need to rebuild the database.  To do this
-    execute
+* Updating Measures.  Prior to launch, you can edit the measures
+  information by editing the file <tt>ConsiderIt/db/seeds.lvg2.root.rb</tt>.
+  After editing the file, you need to rebuild the database.  To do this
+  execute
 
-          rake db:reset
+          rake db:drop
+          rake db:create
+          rake db:migrate
           rake db:seed
 
-   The file <tt>ConsiderIt/db/seeds.lvg2.root.rb</tt> was generated from 
-   the file <tt>ConsiderIt/lib/tasks/measures.csv</tt> (a big spreadsheet
-   of all the measures), using <tt>rake admin:regen_seeds</tt>.
-   However, the <tt>seeds.lvg2.root.rb</tt> file has since then been edited
-   by hand, so the link with the <tt>csv</tt> file is broken -- if you
-   want to make changes, just edit the seeds file.
+  The file <tt>ConsiderIt/db/seeds.lvg2.root.rb</tt> was generated
+  from the file <tt>ConsiderIt/lib/tasks/measures.csv</tt> (a big
+  spreadsheet of all the measures), using <tt>rake
+  admin:regen_seeds</tt>.  However, the <tt>seeds.lvg2.root.rb</tt>
+  file has since then been edited by hand, so the link with the
+  <tt>csv</tt> file is broken -- if you want to make changes, just
+  edit the seeds file.
 
-   **Caution!** Once people have added login information, points, and so
-   forth to a running deployment, don't use <tt>rake db:seed</tt> on
-   the production system since that will reset the database.  Instead,
-   test all the changes on a test version, using the commands above,
-   then (painful) make the needed edits to the database on the
-   production version to bring it into correspondence with the seeds file.
+  **Caution!** Once people have added login information, points, and
+  so forth to a running deployment, don't use <tt>rake db:seed</tt> on
+  the production system since that will reset the database.  Instead,
+  test all the changes on a test version, using the commands above,
+  then (painful) make the needed edits to the database on the
+  production version to bring it into correspondence with the seeds
+  file.
 
 ## Description of Contents
 

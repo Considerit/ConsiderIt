@@ -1,3 +1,6 @@
+# This is the seeds file that was in the repository as
+#    seeds.lvg2.root.rb 
+# before adding the 9/28/2011 measures from the Secretary of State's office
 
 z99105 = Domain.create!(
   :identifier => 99105,
@@ -41,7 +44,7 @@ z99403 = Domain.create!(
 
 z99320 = Domain.create!(
   :identifier => 99320,
-  :name => 'Benton City'
+  :name => 'Benton city'
 )
 
 z99336 = Domain.create!(
@@ -81,7 +84,7 @@ z99352 = Domain.create!(
 
 z99353 = Domain.create!(
   :identifier => 99353,
-  :name => 'West Richland'
+  :name => 'West richland'
 )
 
 z99354 = Domain.create!(
@@ -116,7 +119,7 @@ z98816 = Domain.create!(
 
 z98817 = Domain.create!(
   :identifier => 98817,
-  :name => 'Chelan Falls'
+  :name => 'Chelan falls'
 )
 
 z98821 = Domain.create!(
@@ -171,7 +174,7 @@ z98324 = Domain.create!(
 
 z98326 = Domain.create!(
   :identifier => 98326,
-  :name => 'Clallam Bay'
+  :name => 'Clallam bay'
 )
 
 z98331 = Domain.create!(
@@ -186,22 +189,22 @@ z98343 = Domain.create!(
 
 z98350 = Domain.create!(
   :identifier => 98350,
-  :name => 'La Push'
+  :name => 'La push'
 )
 
 z98357 = Domain.create!(
   :identifier => 98357,
-  :name => 'Neah Bay'
+  :name => 'Neah bay'
 )
 
 z98362 = Domain.create!(
   :identifier => 98362,
-  :name => 'Port Angeles'
+  :name => 'Port angeles'
 )
 
 z98363 = Domain.create!(
   :identifier => 98363,
-  :name => 'Port Angeles'
+  :name => 'Port angeles'
 )
 
 z98381 = Domain.create!(
@@ -221,12 +224,12 @@ z98601 = Domain.create!(
 
 z98604 = Domain.create!(
   :identifier => 98604,
-  :name => 'Battle Ground'
+  :name => 'Battle ground'
 )
 
 z98606 = Domain.create!(
   :identifier => 98606,
-  :name => 'Brush Prairie'
+  :name => 'Brush prairie'
 )
 
 z98607 = Domain.create!(
@@ -241,7 +244,7 @@ z98622 = Domain.create!(
 
 z98629 = Domain.create!(
   :identifier => 98629,
-  :name => 'La Center'
+  :name => 'La center'
 )
 
 z98642 = Domain.create!(
@@ -361,7 +364,7 @@ z98609 = Domain.create!(
 
 z98611 = Domain.create!(
   :identifier => 98611,
-  :name => 'Castle Rock'
+  :name => 'Castle rock'
 )
 
 z98616 = Domain.create!(
@@ -401,7 +404,7 @@ z98674 = Domain.create!(
 
 z98802 = Domain.create!(
   :identifier => 98802,
-  :name => 'East Wenatchee'
+  :name => 'East wenatchee'
 )
 
 z98813 = Domain.create!(
@@ -426,7 +429,7 @@ z98845 = Domain.create!(
 
 z98850 = Domain.create!(
   :identifier => 98850,
-  :name => 'Rock Island'
+  :name => 'Rock island'
 )
 
 z98858 = Domain.create!(
@@ -531,7 +534,7 @@ z98832 = Domain.create!(
 
 z98837 = Domain.create!(
   :identifier => 98837,
-  :name => 'Moses Lake'
+  :name => 'Moses lake'
 )
 
 z98848 = Domain.create!(
@@ -541,7 +544,7 @@ z98848 = Domain.create!(
 
 z98851 = Domain.create!(
   :identifier => 98851,
-  :name => 'Soap Lake'
+  :name => 'Soap lake'
 )
 
 z98853 = Domain.create!(
@@ -556,22 +559,22 @@ z98857 = Domain.create!(
 
 z98860 = Domain.create!(
   :identifier => 98860,
-  :name => 'Wilson Creek'
+  :name => 'Wilson creek'
 )
 
 z99115 = Domain.create!(
   :identifier => 99115,
-  :name => 'Coulee City'
+  :name => 'Coulee city'
 )
 
 z99123 = Domain.create!(
   :identifier => 99123,
-  :name => 'Electric City'
+  :name => 'Electric city'
 )
 
 z99133 = Domain.create!(
   :identifier => 99133,
-  :name => 'Grand Coulee'
+  :name => 'Grand coulee'
 )
 
 z99135 = Domain.create!(
@@ -591,7 +594,7 @@ z99349 = Domain.create!(
 
 z99357 = Domain.create!(
   :identifier => 99357,
-  :name => 'Royal City'
+  :name => 'Royal city'
 )
 
 z98520 = Domain.create!(
@@ -601,17 +604,17 @@ z98520 = Domain.create!(
 
 z98526 = Domain.create!(
   :identifier => 98526,
-  :name => 'Amanda Park'
+  :name => 'Amanda park'
 )
 
 z98535 = Domain.create!(
   :identifier => 98535,
-  :name => 'Copalis Beach'
+  :name => 'Copalis beach'
 )
 
 z98536 = Domain.create!(
   :identifier => 98536,
-  :name => 'Copalis Crossing'
+  :name => 'Copalis crossing'
 )
 
 z98537 = Domain.create!(
@@ -671,12 +674,12 @@ z98568 = Domain.create!(
 
 z98569 = Domain.create!(
   :identifier => 98569,
-  :name => 'Ocean Shores'
+  :name => 'Ocean shores'
 )
 
 z98571 = Domain.create!(
   :identifier => 98571,
-  :name => 'Pacific Beach'
+  :name => 'Pacific beach'
 )
 
 z98575 = Domain.create!(
@@ -726,17 +729,17 @@ z98260 = Domain.create!(
 
 z98277 = Domain.create!(
   :identifier => 98277,
-  :name => 'Oak Harbor'
+  :name => 'Oak harbor'
 )
 
 z98278 = Domain.create!(
   :identifier => 98278,
-  :name => 'Oak Harbor'
+  :name => 'Oak harbor'
 )
 
 z98282 = Domain.create!(
   :identifier => 98282,
-  :name => 'Camano Island'
+  :name => 'Camano island'
 )
 
 z98320 = Domain.create!(
@@ -751,7 +754,7 @@ z98325 = Domain.create!(
 
 z98339 = Domain.create!(
   :identifier => 98339,
-  :name => 'Port Hadlock'
+  :name => 'Port hadlock'
 )
 
 z98358 = Domain.create!(
@@ -761,12 +764,12 @@ z98358 = Domain.create!(
 
 z98365 = Domain.create!(
   :identifier => 98365,
-  :name => 'Port Ludlow'
+  :name => 'Port ludlow'
 )
 
 z98368 = Domain.create!(
   :identifier => 98368,
-  :name => 'Port Townsend'
+  :name => 'Port townsend'
 )
 
 z98376 = Domain.create!(
@@ -786,7 +789,7 @@ z98002 = Domain.create!(
 
 z98003 = Domain.create!(
   :identifier => 98003,
-  :name => 'Federal Way'
+  :name => 'Federal way'
 )
 
 z98004 = Domain.create!(
@@ -821,7 +824,7 @@ z98009 = Domain.create!(
 
 z98010 = Domain.create!(
   :identifier => 98010,
-  :name => 'Black Diamond'
+  :name => 'Black diamond'
 )
 
 z98011 = Domain.create!(
@@ -856,12 +859,12 @@ z98022 = Domain.create!(
 
 z98023 = Domain.create!(
   :identifier => 98023,
-  :name => 'Federal Way'
+  :name => 'Federal way'
 )
 
 z98024 = Domain.create!(
   :identifier => 98024,
-  :name => 'Fall City'
+  :name => 'Fall city'
 )
 
 z98025 = Domain.create!(
@@ -916,7 +919,7 @@ z98035 = Domain.create!(
 
 z98038 = Domain.create!(
   :identifier => 98038,
-  :name => 'Maple Valley'
+  :name => 'Maple valley'
 )
 
 z98039 = Domain.create!(
@@ -926,7 +929,7 @@ z98039 = Domain.create!(
 
 z98040 = Domain.create!(
   :identifier => 98040,
-  :name => 'Mercer Island'
+  :name => 'Mercer island'
 )
 
 z98041 = Domain.create!(
@@ -1006,7 +1009,7 @@ z98062 = Domain.create!(
 
 z98063 = Domain.create!(
   :identifier => 98063,
-  :name => 'Federal Way'
+  :name => 'Federal way'
 )
 
 z98064 = Domain.create!(
@@ -1071,7 +1074,7 @@ z98092 = Domain.create!(
 
 z98093 = Domain.create!(
   :identifier => 98093,
-  :name => 'Federal Way'
+  :name => 'Federal way'
 )
 
 z98101 = Domain.create!(
@@ -1406,7 +1409,7 @@ z98061 = Domain.create!(
 
 z98110 = Domain.create!(
   :identifier => 98110,
-  :name => 'Bainbridge Island'
+  :name => 'Bainbridge island'
 )
 
 z98310 = Domain.create!(
@@ -1476,17 +1479,17 @@ z98359 = Domain.create!(
 
 z98364 = Domain.create!(
   :identifier => 98364,
-  :name => 'Port Gamble'
+  :name => 'Port gamble'
 )
 
 z98366 = Domain.create!(
   :identifier => 98366,
-  :name => 'Port Orchard'
+  :name => 'Port orchard'
 )
 
 z98367 = Domain.create!(
   :identifier => 98367,
-  :name => 'Port Orchard'
+  :name => 'Port orchard'
 )
 
 z98370 = Domain.create!(
@@ -1511,7 +1514,7 @@ z98383 = Domain.create!(
 
 z98384 = Domain.create!(
   :identifier => 98384,
-  :name => 'South Colby'
+  :name => 'South colby'
 )
 
 z98386 = Domain.create!(
@@ -1531,12 +1534,12 @@ z98393 = Domain.create!(
 
 z98068 = Domain.create!(
   :identifier => 98068,
-  :name => 'Snoqualmie Pass'
+  :name => 'Snoqualmie pass'
 )
 
 z98922 = Domain.create!(
   :identifier => 98922,
-  :name => 'Cle Elum'
+  :name => 'Cle elum'
 )
 
 z98925 = Domain.create!(
@@ -1566,7 +1569,7 @@ z98941 = Domain.create!(
 
 z98943 = Domain.create!(
   :identifier => 98943,
-  :name => 'South Cle Elum'
+  :name => 'South cle elum'
 )
 
 z98946 = Domain.create!(
@@ -1626,7 +1629,7 @@ z98635 = Domain.create!(
 
 z98650 = Domain.create!(
   :identifier => 98650,
-  :name => 'Trout Lake'
+  :name => 'Trout lake'
 )
 
 z98670 = Domain.create!(
@@ -1736,7 +1739,7 @@ z98570 = Domain.create!(
 
 z98572 = Domain.create!(
   :identifier => 98572,
-  :name => 'Pe Ell'
+  :name => 'Pe ell'
 )
 
 z98582 = Domain.create!(
@@ -1746,7 +1749,7 @@ z98582 = Domain.create!(
 
 z98585 = Domain.create!(
   :identifier => 98585,
-  :name => 'Silver Creek'
+  :name => 'Silver creek'
 )
 
 z98591 = Domain.create!(
@@ -2021,7 +2024,7 @@ z98638 = Domain.create!(
 
 z98640 = Domain.create!(
   :identifier => 98640,
-  :name => 'Ocean Park'
+  :name => 'Ocean park'
 )
 
 z98641 = Domain.create!(
@@ -2051,7 +2054,7 @@ z99152 = Domain.create!(
 
 z99153 = Domain.create!(
   :identifier => 99153,
-  :name => 'Metaline Falls'
+  :name => 'Metaline falls'
 )
 
 z99156 = Domain.create!(
@@ -2066,7 +2069,7 @@ z99180 = Domain.create!(
 
 z98303 = Domain.create!(
   :identifier => 98303,
-  :name => 'Anderson Island'
+  :name => 'Anderson island'
 )
 
 z98304 = Domain.create!(
@@ -2096,7 +2099,7 @@ z98328 = Domain.create!(
 
 z98329 = Domain.create!(
   :identifier => 98329,
-  :name => 'Gig Harbor'
+  :name => 'Gig harbor'
 )
 
 z98330 = Domain.create!(
@@ -2106,17 +2109,17 @@ z98330 = Domain.create!(
 
 z98332 = Domain.create!(
   :identifier => 98332,
-  :name => 'Gig Harbor'
+  :name => 'Gig harbor'
 )
 
 z98333 = Domain.create!(
   :identifier => 98333,
-  :name => 'Fox Island'
+  :name => 'Fox island'
 )
 
 z98335 = Domain.create!(
   :identifier => 98335,
-  :name => 'Gig Harbor'
+  :name => 'Gig harbor'
 )
 
 z98338 = Domain.create!(
@@ -2131,7 +2134,7 @@ z98344 = Domain.create!(
 
 z98348 = Domain.create!(
   :identifier => 98348,
-  :name => 'La Grande'
+  :name => 'La grande'
 )
 
 z98349 = Domain.create!(
@@ -2186,7 +2189,7 @@ z98375 = Domain.create!(
 
 z98385 = Domain.create!(
   :identifier => 98385,
-  :name => 'South Prairie'
+  :name => 'South prairie'
 )
 
 z98387 = Domain.create!(
@@ -2206,7 +2209,7 @@ z98390 = Domain.create!(
 
 z98391 = Domain.create!(
   :identifier => 98391,
-  :name => 'Bonney Lake'
+  :name => 'Bonney lake'
 )
 
 z98394 = Domain.create!(
@@ -2231,7 +2234,7 @@ z98397 = Domain.create!(
 
 z98398 = Domain.create!(
   :identifier => 98398,
-  :name => 'Paradise Inn'
+  :name => 'Paradise inn'
 )
 
 z98401 = Domain.create!(
@@ -2336,7 +2339,7 @@ z98424 = Domain.create!(
 
 z98430 = Domain.create!(
   :identifier => 98430,
-  :name => 'Camp Murray'
+  :name => 'Camp murray'
 )
 
 z98431 = Domain.create!(
@@ -2351,7 +2354,7 @@ z98433 = Domain.create!(
 
 z98438 = Domain.create!(
   :identifier => 98438,
-  :name => 'Mcchord AFB'
+  :name => 'Mcchord afb'
 )
 
 z98439 = Domain.create!(
@@ -2426,7 +2429,7 @@ z98466 = Domain.create!(
 
 z98467 = Domain.create!(
   :identifier => 98467,
-  :name => 'University Place'
+  :name => 'University place'
 )
 
 z98471 = Domain.create!(
@@ -2491,12 +2494,12 @@ z98580 = Domain.create!(
 
 z98222 = Domain.create!(
   :identifier => 98222,
-  :name => 'Blakely Island'
+  :name => 'Blakely island'
 )
 
 z98243 = Domain.create!(
   :identifier => 98243,
-  :name => 'Deer Harbor'
+  :name => 'Deer harbor'
 )
 
 z98245 = Domain.create!(
@@ -2506,12 +2509,12 @@ z98245 = Domain.create!(
 
 z98250 = Domain.create!(
   :identifier => 98250,
-  :name => 'Friday Harbor'
+  :name => 'Friday harbor'
 )
 
 z98261 = Domain.create!(
   :identifier => 98261,
-  :name => 'Lopez Island'
+  :name => 'Lopez island'
 )
 
 z98279 = Domain.create!(
@@ -2526,7 +2529,7 @@ z98280 = Domain.create!(
 
 z98286 = Domain.create!(
   :identifier => 98286,
-  :name => 'Shaw Island'
+  :name => 'Shaw island'
 )
 
 z98297 = Domain.create!(
@@ -2571,7 +2574,7 @@ z98255 = Domain.create!(
 
 z98257 = Domain.create!(
   :identifier => 98257,
-  :name => 'La Conner'
+  :name => 'La conner'
 )
 
 z98263 = Domain.create!(
@@ -2586,12 +2589,12 @@ z98267 = Domain.create!(
 
 z98273 = Domain.create!(
   :identifier => 98273,
-  :name => 'Mount Vernon'
+  :name => 'Mount vernon'
 )
 
 z98274 = Domain.create!(
   :identifier => 98274,
-  :name => 'Mount Vernon'
+  :name => 'Mount vernon'
 )
 
 z98283 = Domain.create!(
@@ -2601,7 +2604,7 @@ z98283 = Domain.create!(
 
 z98284 = Domain.create!(
   :identifier => 98284,
-  :name => 'Sedro Woolley'
+  :name => 'Sedro woolley'
 )
 
 z98610 = Domain.create!(
@@ -2826,7 +2829,7 @@ z99005 = Domain.create!(
 
 z99006 = Domain.create!(
   :identifier => 99006,
-  :name => 'Deer Park'
+  :name => 'Deer park'
 )
 
 z99009 = Domain.create!(
@@ -3271,7 +3274,7 @@ z98612 = Domain.create!(
 
 z98621 = Domain.create!(
   :identifier => 98621,
-  :name => 'Grays River'
+  :name => 'Grays river'
 )
 
 z98643 = Domain.create!(
@@ -3396,7 +3399,7 @@ z98264 = Domain.create!(
 
 z98266 = Domain.create!(
   :identifier => 98266,
-  :name => 'Maple Falls'
+  :name => 'Maple falls'
 )
 
 z98276 = Domain.create!(
@@ -3466,7 +3469,7 @@ z99136 = Domain.create!(
 
 z99143 = Domain.create!(
   :identifier => 99143,
-  :name => 'LaCrosse'
+  :name => 'Lacrosse'
 )
 
 z99149 = Domain.create!(
@@ -5647,10 +5650,7 @@ o25 = Option.create!(
       :option => o25
     )
 
-#o26 (Tekoa Park and Recreation District Levy) moved to end of file so
-# that the first 50 options are the same with the old and new measures
-
-o27 = Option.create!(
+o26 = Option.create!(
   :name => 'Town of Albion EMS Levy',
   :short_name => 'EMS Levy',
   :description => 'Shall the Town of Albion levy a special tax levy of $1,000, 
@@ -5665,12 +5665,12 @@ o27 = Option.create!(
   :additional_details => ''
 )
 
-    z59 = DomainMap.create!(
+    z58 = DomainMap.create!(
       :domain => z99102,
-      :option => o27
+      :option => o26
     )
 
-o28 = Option.create!(
+o27 = Option.create!(
   :name => 'Town of Colton Levy',
   :short_name => 'Street/Water Levy',
   :description => 'Shall the Town of Colton be authorized to levy additional taxes 
@@ -5686,12 +5686,12 @@ o28 = Option.create!(
   :additional_details => ''
 )
 
-    z60 = DomainMap.create!(
+    z59 = DomainMap.create!(
       :domain => z99113,
-      :option => o28
+      :option => o27
     )
 
-o29 = Option.create!(
+o28 = Option.create!(
   :name => 'Town of Endicott Street Levy',
   :short_name => 'Street Levy',
   :description => 'Shall the Town of Endicott be authorized to impose a special
@@ -5700,7 +5700,26 @@ o29 = Option.create!(
   :domain_short => 'Town of Endicott',
   :url => '',
   :category => 'Proposition',
-  :designator => 'Endt 7',
+  :designator => 'Endi 7',
+  :long_description => '',
+  :additional_details => ''
+)
+
+    z60 = DomainMap.create!(
+      :domain => z99125,
+      :option => o28
+    )
+
+o29 = Option.create!(
+  :name => 'Town of Endicott City Park Levy',
+  :short_name => 'City Park Levy',
+  :description => 'Shall the Town of Endicott be authorized to impose a special
+    tax levy in 2011 for collection in 2012 of $7,000.00 for City Park Maintenance?',
+  :domain => 'Town of Endicott',
+  :domain_short => 'Town of Endicott',
+  :url => '',
+  :category => 'Proposition',
+  :designator => 'Endi 8',
   :long_description => '',
   :additional_details => ''
 )
@@ -5711,28 +5730,6 @@ o29 = Option.create!(
     )
 
 o30 = Option.create!(
-  :name => 'Town of Endicott City Park Levy',
-  :short_name => 'City Park Levy',
-  :description => 'Shall the Town of Endicott be authorized to impose a special
-    tax levy in 2011 for collection in 2012 of $7,000.00 for City Park Maintenance?',
-  :domain => 'Town of Endicott',
-  :domain_short => 'Town of Endicott',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Endt 8',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z62 = DomainMap.create!(
-      :domain => z99125,
-      :option => o30
-    )
-
-#o31 (Endicott Cemetery District #4 Levy) moved to end of file so
-# that the first 50 options are the same with the old and new measures
-
-o32 = Option.create!(
   :name => 'Veterans and Human Services Levy',
   :short_name => 'Veterans Svcs.',
   :description => 'The Kitsap County Board of Commissioners approved Resolution 
@@ -5754,137 +5751,137 @@ o32 = Option.create!(
   :additional_details => ''
 )
 
+    z62 = DomainMap.create!(
+      :domain => z98366,
+      :option => o30
+    )
+
+    z63 = DomainMap.create!(
+      :domain => z98110,
+      :option => o30
+    )
+
     z64 = DomainMap.create!(
-      :domain => z98061,
-      :option => o32
+      :domain => z98315,
+      :option => o30
     )
 
     z65 = DomainMap.create!(
-      :domain => z98110,
-      :option => o32
+      :domain => z98370,
+      :option => o30
     )
 
     z66 = DomainMap.create!(
-      :domain => z98310,
-      :option => o32
+      :domain => z98312,
+      :option => o30
     )
 
     z67 = DomainMap.create!(
-      :domain => z98311,
-      :option => o32
+      :domain => z98310,
+      :option => o30
     )
 
     z68 = DomainMap.create!(
-      :domain => z98312,
-      :option => o32
+      :domain => z98311,
+      :option => o30
     )
 
     z69 = DomainMap.create!(
       :domain => z98314,
-      :option => o32
+      :option => o30
     )
 
     z70 = DomainMap.create!(
-      :domain => z98315,
-      :option => o32
+      :domain => z98337,
+      :option => o30
     )
 
     z71 = DomainMap.create!(
       :domain => z98322,
-      :option => o32
+      :option => o30
     )
 
     z72 = DomainMap.create!(
-      :domain => z98337,
-      :option => o32
+      :domain => z98346,
+      :option => o30
     )
 
     z73 = DomainMap.create!(
-      :domain => z98340,
-      :option => o32
+      :domain => z98359,
+      :option => o30
     )
 
     z74 = DomainMap.create!(
-      :domain => z98342,
-      :option => o32
+      :domain => z98340,
+      :option => o30
     )
 
     z75 = DomainMap.create!(
-      :domain => z98345,
-      :option => o32
+      :domain => z98342,
+      :option => o30
     )
 
     z76 = DomainMap.create!(
-      :domain => z98346,
-      :option => o32
+      :domain => z98345,
+      :option => o30
     )
 
     z77 = DomainMap.create!(
-      :domain => z98353,
-      :option => o32
+      :domain => z98364,
+      :option => o30
     )
 
     z78 = DomainMap.create!(
-      :domain => z98359,
-      :option => o32
+      :domain => z98353,
+      :option => o30
     )
 
     z79 = DomainMap.create!(
-      :domain => z98364,
-      :option => o32
+      :domain => z98061,
+      :option => o30
     )
 
     z80 = DomainMap.create!(
-      :domain => z98366,
-      :option => o32
+      :domain => z98380,
+      :option => o30
     )
 
     z81 = DomainMap.create!(
-      :domain => z98367,
-      :option => o32
+      :domain => z98383,
+      :option => o30
     )
 
     z82 = DomainMap.create!(
-      :domain => z98370,
-      :option => o32
+      :domain => z98367,
+      :option => o30
     )
 
     z83 = DomainMap.create!(
       :domain => z98378,
-      :option => o32
+      :option => o30
     )
 
     z84 = DomainMap.create!(
-      :domain => z98380,
-      :option => o32
+      :domain => z98384,
+      :option => o30
     )
 
     z85 = DomainMap.create!(
-      :domain => z98383,
-      :option => o32
+      :domain => z98386,
+      :option => o30
     )
 
     z86 = DomainMap.create!(
-      :domain => z98384,
-      :option => o32
+      :domain => z98392,
+      :option => o30
     )
 
     z87 = DomainMap.create!(
-      :domain => z98386,
-      :option => o32
-    )
-
-    z88 = DomainMap.create!(
-      :domain => z98392,
-      :option => o32
-    )
-
-    z89 = DomainMap.create!(
       :domain => z98393,
-      :option => o32
+      :option => o30
     )
 
-o33 = Option.create!(
+o31 = Option.create!(
   :name => 'Formation of Port of Bainbridge Island',
   :short_name => 'Port Formation',
   :description => 'The Kitsap County Board of Commissioners adopted
@@ -5904,137 +5901,137 @@ o33 = Option.create!(
   :additional_details => ''
 )
 
+    z88 = DomainMap.create!(
+      :domain => z98366,
+      :option => o31
+    )
+
+    z89 = DomainMap.create!(
+      :domain => z98110,
+      :option => o31
+    )
+
     z90 = DomainMap.create!(
-      :domain => z98061,
-      :option => o33
+      :domain => z98315,
+      :option => o31
     )
 
     z91 = DomainMap.create!(
-      :domain => z98110,
-      :option => o33
+      :domain => z98370,
+      :option => o31
     )
 
     z92 = DomainMap.create!(
-      :domain => z98310,
-      :option => o33
+      :domain => z98312,
+      :option => o31
     )
 
     z93 = DomainMap.create!(
-      :domain => z98311,
-      :option => o33
+      :domain => z98310,
+      :option => o31
     )
 
     z94 = DomainMap.create!(
-      :domain => z98312,
-      :option => o33
+      :domain => z98311,
+      :option => o31
     )
 
     z95 = DomainMap.create!(
       :domain => z98314,
-      :option => o33
+      :option => o31
     )
 
     z96 = DomainMap.create!(
-      :domain => z98315,
-      :option => o33
+      :domain => z98337,
+      :option => o31
     )
 
     z97 = DomainMap.create!(
       :domain => z98322,
-      :option => o33
+      :option => o31
     )
 
     z98 = DomainMap.create!(
-      :domain => z98337,
-      :option => o33
+      :domain => z98346,
+      :option => o31
     )
 
     z99 = DomainMap.create!(
-      :domain => z98340,
-      :option => o33
+      :domain => z98359,
+      :option => o31
     )
 
     z100 = DomainMap.create!(
-      :domain => z98342,
-      :option => o33
+      :domain => z98340,
+      :option => o31
     )
 
     z101 = DomainMap.create!(
-      :domain => z98345,
-      :option => o33
+      :domain => z98342,
+      :option => o31
     )
 
     z102 = DomainMap.create!(
-      :domain => z98346,
-      :option => o33
+      :domain => z98345,
+      :option => o31
     )
 
     z103 = DomainMap.create!(
-      :domain => z98353,
-      :option => o33
+      :domain => z98364,
+      :option => o31
     )
 
     z104 = DomainMap.create!(
-      :domain => z98359,
-      :option => o33
+      :domain => z98353,
+      :option => o31
     )
 
     z105 = DomainMap.create!(
-      :domain => z98364,
-      :option => o33
+      :domain => z98061,
+      :option => o31
     )
 
     z106 = DomainMap.create!(
-      :domain => z98366,
-      :option => o33
+      :domain => z98380,
+      :option => o31
     )
 
     z107 = DomainMap.create!(
-      :domain => z98367,
-      :option => o33
+      :domain => z98383,
+      :option => o31
     )
 
     z108 = DomainMap.create!(
-      :domain => z98370,
-      :option => o33
+      :domain => z98367,
+      :option => o31
     )
 
     z109 = DomainMap.create!(
       :domain => z98378,
-      :option => o33
+      :option => o31
     )
 
     z110 = DomainMap.create!(
-      :domain => z98380,
-      :option => o33
+      :domain => z98384,
+      :option => o31
     )
 
     z111 = DomainMap.create!(
-      :domain => z98383,
-      :option => o33
+      :domain => z98386,
+      :option => o31
     )
 
     z112 = DomainMap.create!(
-      :domain => z98384,
-      :option => o33
+      :domain => z98392,
+      :option => o31
     )
 
     z113 = DomainMap.create!(
-      :domain => z98386,
-      :option => o33
-    )
-
-    z114 = DomainMap.create!(
-      :domain => z98392,
-      :option => o33
-    )
-
-    z115 = DomainMap.create!(
       :domain => z98393,
-      :option => o33
+      :option => o31
     )
 
-o34 = Option.create!(
+o32 = Option.create!(
   :name => 'Proposed Charter Amendment to Reduce the Size of City Council',
   :short_name => 'Council Size Red.',
   :description => 'The Bremerton City Council adopted Resolution
@@ -6057,32 +6054,32 @@ o34 = Option.create!(
   :additional_details => ''
 )
 
-    z116 = DomainMap.create!(
+    z114 = DomainMap.create!(
       :domain => z98310,
-      :option => o34
+      :option => o32
+    )
+
+    z115 = DomainMap.create!(
+      :domain => z98311,
+      :option => o32
+    )
+
+    z116 = DomainMap.create!(
+      :domain => z98312,
+      :option => o32
     )
 
     z117 = DomainMap.create!(
-      :domain => z98311,
-      :option => o34
+      :domain => z98314,
+      :option => o32
     )
 
     z118 = DomainMap.create!(
-      :domain => z98312,
-      :option => o34
-    )
-
-    z119 = DomainMap.create!(
-      :domain => z98314,
-      :option => o34
-    )
-
-    z120 = DomainMap.create!(
       :domain => z98337,
-      :option => o34
+      :option => o32
     )
 
-o35 = Option.create!(
+o33 = Option.create!(
   :name => 'Enlargement of Port of Tracyton',
   :short_name => 'Port Enlargement',
   :description => 'This proposition concerns the enlargement of the
@@ -6101,12 +6098,12 @@ o35 = Option.create!(
   :additional_details => ''
 )
 
-    z121 = DomainMap.create!(
+    z119 = DomainMap.create!(
       :domain => z98393,
-      :option => o35
+      :option => o33
     )
 
-o36 = Option.create!(
+o34 = Option.create!(
   :name => 'EMS Levy Authorization',
   :short_name => 'EMS Levy',
   :description => 'The Board of Yakima County Commissioners adopted
@@ -6127,132 +6124,132 @@ o36 = Option.create!(
   :additional_details => ''
 )
 
+    z120 = DomainMap.create!(
+      :domain => z98902,
+      :option => o34
+    )
+
+    z121 = DomainMap.create!(
+      :domain => z98920,
+      :option => o34
+    )
+
     z122 = DomainMap.create!(
-      :domain => z98901,
-      :option => o36
+      :domain => z98921,
+      :option => o34
     )
 
     z123 = DomainMap.create!(
-      :domain => z98902,
-      :option => o36
+      :domain => z98937,
+      :option => o34
     )
 
     z124 = DomainMap.create!(
-      :domain => z98903,
-      :option => o36
+      :domain => z98923,
+      :option => o34
     )
 
     z125 = DomainMap.create!(
-      :domain => z98904,
-      :option => o36
+      :domain => z98951,
+      :option => o34
     )
 
     z126 = DomainMap.create!(
-      :domain => z98907,
-      :option => o36
+      :domain => z98901,
+      :option => o34
     )
 
     z127 = DomainMap.create!(
-      :domain => z98908,
-      :option => o36
+      :domain => z98903,
+      :option => o34
     )
 
     z128 = DomainMap.create!(
-      :domain => z98909,
-      :option => o36
+      :domain => z98904,
+      :option => o34
     )
 
     z129 = DomainMap.create!(
-      :domain => z98920,
-      :option => o36
+      :domain => z98930,
+      :option => o34
     )
 
     z130 = DomainMap.create!(
-      :domain => z98921,
-      :option => o36
+      :domain => z98932,
+      :option => o34
     )
 
     z131 = DomainMap.create!(
-      :domain => z98923,
-      :option => o36
+      :domain => z98933,
+      :option => o34
     )
 
     z132 = DomainMap.create!(
-      :domain => z98930,
-      :option => o36
+      :domain => z98935,
+      :option => o34
     )
 
     z133 = DomainMap.create!(
-      :domain => z98932,
-      :option => o36
+      :domain => z98936,
+      :option => o34
     )
 
     z134 = DomainMap.create!(
-      :domain => z98933,
-      :option => o36
+      :domain => z98938,
+      :option => o34
     )
 
     z135 = DomainMap.create!(
-      :domain => z98935,
-      :option => o36
+      :domain => z98939,
+      :option => o34
     )
 
     z136 = DomainMap.create!(
-      :domain => z98936,
-      :option => o36
+      :domain => z98942,
+      :option => o34
     )
 
     z137 = DomainMap.create!(
-      :domain => z98937,
-      :option => o36
+      :domain => z98944,
+      :option => o34
     )
 
     z138 = DomainMap.create!(
-      :domain => z98938,
-      :option => o36
+      :domain => z98947,
+      :option => o34
     )
 
     z139 = DomainMap.create!(
-      :domain => z98939,
-      :option => o36
+      :domain => z98948,
+      :option => o34
     )
 
     z140 = DomainMap.create!(
-      :domain => z98942,
-      :option => o36
+      :domain => z98952,
+      :option => o34
     )
 
     z141 = DomainMap.create!(
-      :domain => z98944,
-      :option => o36
+      :domain => z98907,
+      :option => o34
     )
 
     z142 = DomainMap.create!(
-      :domain => z98947,
-      :option => o36
+      :domain => z98908,
+      :option => o34
     )
 
     z143 = DomainMap.create!(
-      :domain => z98948,
-      :option => o36
+      :domain => z98909,
+      :option => o34
     )
 
     z144 = DomainMap.create!(
-      :domain => z98951,
-      :option => o36
-    )
-
-    z145 = DomainMap.create!(
-      :domain => z98952,
-      :option => o36
-    )
-
-    z146 = DomainMap.create!(
       :domain => z98953,
-      :option => o36
+      :option => o34
     )
 
-o37 = Option.create!(
+o35 = Option.create!(
   :name => 'Yakima County Home Rule',
   :short_name => 'Home Rule Charter',
   :description => 'Proposition No. 1 concerns a proposal to frame a
@@ -6270,132 +6267,132 @@ o37 = Option.create!(
   :additional_details => ''
 )
 
+    z145 = DomainMap.create!(
+      :domain => z98902,
+      :option => o35
+    )
+
+    z146 = DomainMap.create!(
+      :domain => z98920,
+      :option => o35
+    )
+
     z147 = DomainMap.create!(
-      :domain => z98901,
-      :option => o37
+      :domain => z98921,
+      :option => o35
     )
 
     z148 = DomainMap.create!(
-      :domain => z98902,
-      :option => o37
+      :domain => z98937,
+      :option => o35
     )
 
     z149 = DomainMap.create!(
-      :domain => z98903,
-      :option => o37
+      :domain => z98923,
+      :option => o35
     )
 
     z150 = DomainMap.create!(
-      :domain => z98904,
-      :option => o37
+      :domain => z98951,
+      :option => o35
     )
 
     z151 = DomainMap.create!(
-      :domain => z98907,
-      :option => o37
+      :domain => z98901,
+      :option => o35
     )
 
     z152 = DomainMap.create!(
-      :domain => z98908,
-      :option => o37
+      :domain => z98903,
+      :option => o35
     )
 
     z153 = DomainMap.create!(
-      :domain => z98909,
-      :option => o37
+      :domain => z98904,
+      :option => o35
     )
 
     z154 = DomainMap.create!(
-      :domain => z98920,
-      :option => o37
+      :domain => z98930,
+      :option => o35
     )
 
     z155 = DomainMap.create!(
-      :domain => z98921,
-      :option => o37
+      :domain => z98932,
+      :option => o35
     )
 
     z156 = DomainMap.create!(
-      :domain => z98923,
-      :option => o37
+      :domain => z98933,
+      :option => o35
     )
 
     z157 = DomainMap.create!(
-      :domain => z98930,
-      :option => o37
+      :domain => z98935,
+      :option => o35
     )
 
     z158 = DomainMap.create!(
-      :domain => z98932,
-      :option => o37
+      :domain => z98936,
+      :option => o35
     )
 
     z159 = DomainMap.create!(
-      :domain => z98933,
-      :option => o37
+      :domain => z98938,
+      :option => o35
     )
 
     z160 = DomainMap.create!(
-      :domain => z98935,
-      :option => o37
+      :domain => z98939,
+      :option => o35
     )
 
     z161 = DomainMap.create!(
-      :domain => z98936,
-      :option => o37
+      :domain => z98942,
+      :option => o35
     )
 
     z162 = DomainMap.create!(
-      :domain => z98937,
-      :option => o37
+      :domain => z98944,
+      :option => o35
     )
 
     z163 = DomainMap.create!(
-      :domain => z98938,
-      :option => o37
+      :domain => z98947,
+      :option => o35
     )
 
     z164 = DomainMap.create!(
-      :domain => z98939,
-      :option => o37
+      :domain => z98948,
+      :option => o35
     )
 
     z165 = DomainMap.create!(
-      :domain => z98942,
-      :option => o37
+      :domain => z98952,
+      :option => o35
     )
 
     z166 = DomainMap.create!(
-      :domain => z98944,
-      :option => o37
+      :domain => z98907,
+      :option => o35
     )
 
     z167 = DomainMap.create!(
-      :domain => z98947,
-      :option => o37
+      :domain => z98908,
+      :option => o35
     )
 
     z168 = DomainMap.create!(
-      :domain => z98948,
-      :option => o37
+      :domain => z98909,
+      :option => o35
     )
 
     z169 = DomainMap.create!(
-      :domain => z98951,
-      :option => o37
-    )
-
-    z170 = DomainMap.create!(
-      :domain => z98952,
-      :option => o37
-    )
-
-    z171 = DomainMap.create!(
       :domain => z98953,
-      :option => o37
+      :option => o35
     )
 
-o38 = Option.create!(
+o36 = Option.create!(
   :name => 'Naches Park & Recreation District Special Levy',
   :short_name => 'Parks Levy',
   :description => 'The Commissioners of the Naches Park and Recreation
@@ -6414,12 +6411,12 @@ o38 = Option.create!(
   :additional_details => ''
 )
 
-    z172 = DomainMap.create!(
+    z170 = DomainMap.create!(
       :domain => z98937,
-      :option => o38
+      :option => o36
     )
 
-o39 = Option.create!(
+o37 = Option.create!(
   :name => 'Levy for Criminal Justice Services and Cash Reserve Stabilization',
   :short_name => 'Criminal Justice Levy',
   :description => 'The Carnation City Council has passed Resolution
@@ -6438,40 +6435,16 @@ o39 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40321&eid=1249',
   :category => 'Proposition',
   :designator => 'Carn 1',
-  :long_description => '<p>Ensuring sufficient funding for criminal
-    justice services, including police, jails, prosecution, courts,
-    public defense and domestic violence advocacy, are important
-    budget priorities of the Carnation City Council.  If approved,
-    Proposition 1 would provide additional revenue that would be
-    specifically earmarked for these purposes, as well as helping to
-    stabilize the City&rsquo;s monetary reserves.</p>
-    <p>State law allows cities to &ldquo;lift&rdquo; the cap on regular property tax
-    levy increases by obtaining voter approval of the proposed
-    increase.  The City&rsquo;s regular property tax rate is currently $1.29
-    per $1,000 of assessed valuation.  If Proposition 1 is approved,
-    the City&rsquo;s tax rate for collection in 2012 would increase by $0.61
-    to $1.90 per $1,000 of assessed valuation.  Assuming a 4.12
-    percent decrease in the City&rsquo;s 2012 total assessed valuation
-    consistent with recent historical trends, the proposition would
-    generate approximately $100,000 in additional property tax revenue
-    for 2012.  These additional funds would be used exclusively to
-    fund criminal justice services and to help stabilize the City&rsquo;s
-    monetary reserves.</p>
-    <p>For properties valued at $350,000, landowners currently pay
-    approximately $451.50 per year in City of Carnation property
-    taxes.  Under Proposition 1, this amount would increase to $665.00
-    for collection in 2012.</p>
-    <p>The 2012 levy amount would become the base upon which levy increases
-    for years 2013 through 2017 would be computed.</p>',
+  :long_description => '',
   :additional_details => ''
 )
 
-    z173 = DomainMap.create!(
+    z171 = DomainMap.create!(
       :domain => z98014,
-      :option => o39
+      :option => o37
     )
 
-o40 = Option.create!(
+o38 = Option.create!(
   :name => 'Utility Occupation Tax for Des Moines Beach Park and Streets',
   :short_name => 'Historic Bldgs, Streets',
   :description => 'The Des Moines City Council adopted Resolution
@@ -6492,45 +6465,21 @@ o40 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40322&eid=1249',
   :category => 'Proposition',
   :designator => 'DesM 1',
-  :long_description => 'If approved by voters, Proposition 1 would
-    authorize the City of Des Moines to increase the Utility
-    Occupation Tax on City utilities from 6% to 9% to provide funding
-    for Des Moines Beach Park Historic District facility renovation
-    and City street pavement overlays and repairs.  The decline in
-    Real Estate Excise Tax (REET) and reduction of property values
-    have reduced the sources of revenue which had provided funding for
-    the City&rsquo;s municipal facilities and streets capital construction
-    projects.  Funds from the increase would provide: (1) 1% dedicated
-    to Des Moines Beach Park capital improvements to: restore and
-    reopen the park&rsquo;s historic Dining Hall, Sun Home Lodge, Picnic
-    Shelter, Restroom, and Cabins and Cottages; renovate the Founders
-    Lodge; replace the play area and wood bridge; install irrigation
-    and pathways; and repair roadways, parking areas and utilities.
-    The City would issue 20 year bonds with this 1% tax and this tax
-    would end once the bonds are repaid; (2) 1/2% dedicated to Beach
-    Park buildings and facilities maintenance and operations and
-    repairs and replacement; and (3) 1.5% dedicated to repaving,
-    repairing and renovating City streets.  Individual street projects
-    would be selected based on pavement condition and the optimum time
-    to minimize overall street system preservation, reactive
-    maintenance and rehabilitation costs.  Taxes received and money
-    spent will be tracked so the public can be assured that their
-    money is being used for these purposes and not for other general
-    expenses.',
+  :long_description => '',
   :additional_details => ''
 )
 
-    z174 = DomainMap.create!(
+    z172 = DomainMap.create!(
       :domain => z98148,
-      :option => o40
+      :option => o38
     )
 
-    z175 = DomainMap.create!(
+    z173 = DomainMap.create!(
       :domain => z98198,
-      :option => o40
+      :option => o38
     )
 
-o41 = Option.create!(
+o39 = Option.create!(
   :name => 'Levy Lid Lift for Street Improvements',
   :short_name => 'Street Levy',
   :description => 'The City Council of the City of Pacific, adopted
@@ -6547,26 +6496,16 @@ o41 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40323&eid=1249',
   :category => 'Proposition',
   :designator => 'Pcfc 1',
-  :long_description => 'Proposition No. 1 would provide funding of the
-    purchase of materials only for the repair of Pacific Streets.  The
-    &ldquo;levy lid&rdquo; (chap. 84.55 RCW) limits annual property taxes to 101%
-    of the City&rsquo;s previous highest levy amount, plus certain
-    adjustments (e.g., new construction), unless voters approve a
-    proposition for a greater increase. This proposition would
-    authorize an increase of $0.22260/$1,000 over the 2011 levy rate,
-    which was $1.44136/$1,000 assessed value. If approved, the levy
-    rate for collection in 2012 would be no greater than
-    $1.66396/$1,000 and is based on 2011 assessed values. If approved,
-    the &ldquo;levy lid&rdquo; expires in 2017. ',
+  :long_description => '',
   :additional_details => ''
 )
 
-    z176 = DomainMap.create!(
+    z174 = DomainMap.create!(
       :domain => z98047,
-      :option => o41
+      :option => o39
     )
 
-o42 = Option.create!(
+o40 = Option.create!(
   :name => 'Change in Plan of Government',
   :short_name => 'Mayor/Council?',
   :description => 'Shall the City of SeaTac abandon its present
@@ -6578,60 +6517,36 @@ o42 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40324&eid=1249',
   :category => 'Proposition',
   :designator => 'STac 1',
-  :long_description => '<p>SeaTac is authorized by state law to be
-    governed under one of two plans of government.  SeaTac now
-    operates under the Council-Manager plan.  If approved, this
-    proposition would change the plan of government to the
-    Mayor-Council plan.</p>
-    <p>Pursuant to RCW 35A.13, the Council-Manager plan of government,
-    now in effect, consists of an elected city council which is the
-    legislative body of the City.  The Council appoints the City
-    Manager who is the chief executive officer of the City government.
-    The Councilmembers choose a chairperson from among their number
-    who has the title of Mayor and who presides at meetings of the
-    council and is recognized as the head of the City for ceremonial
-    purposes.</p>
-    <p>Pursuant to RCW 35A.12, the government of a city which adopts the
-    Mayor-Council plan is vested in an elected Mayor and an elected
-    City Council.  The Council is the legislative body of the City.
-    The Mayor is the chief executive officer.  The Mayor may appoint a
-    chief administrative officer.  The Mayor also presides at Council
-    meetings, but with a vote only in the case of a tie, and with
-    right of veto subject to override by a majority of all
-    Councilmembers plus one.</p>
-    <p>A &ldquo;Yes&rdquo; vote is in favor of changing to the Mayor-Council plan of
-    government.</p>
-    <p>A &ldquo;No&rdquo; vote is against the change and favors retention of the
-    Council-Manager plan.</p>',
+  :long_description => '',
   :additional_details => ''
 )
 
-    z177 = DomainMap.create!(
+    z175 = DomainMap.create!(
       :domain => z98148,
-      :option => o42
+      :option => o40
+    )
+
+    z176 = DomainMap.create!(
+      :domain => z98158,
+      :option => o40
+    )
+
+    z177 = DomainMap.create!(
+      :domain => z98168,
+      :option => o40
     )
 
     z178 = DomainMap.create!(
-      :domain => z98158,
-      :option => o42
+      :domain => z98188,
+      :option => o40
     )
 
     z179 = DomainMap.create!(
-      :domain => z98168,
-      :option => o42
-    )
-
-    z180 = DomainMap.create!(
-      :domain => z98188,
-      :option => o42
-    )
-
-    z181 = DomainMap.create!(
       :domain => z98198,
-      :option => o42
+      :option => o40
     )
 
-o43 = Option.create!(
+o41 = Option.create!(
   :name => 'Regular Tax Levy Including Families and Education',
   :short_name => 'Families & Educ.',
   :description => 'The City of Seattle&rsquo;s Proposition concerns
@@ -6728,307 +6643,307 @@ o43 = Option.create!(
   :additional_details => ''
 )
 
-    z182 = DomainMap.create!(
+    z180 = DomainMap.create!(
       :domain => z98101,
-      :option => o43
+      :option => o41
+    )
+
+    z181 = DomainMap.create!(
+      :domain => z98102,
+      :option => o41
+    )
+
+    z182 = DomainMap.create!(
+      :domain => z98103,
+      :option => o41
     )
 
     z183 = DomainMap.create!(
-      :domain => z98102,
-      :option => o43
+      :domain => z98104,
+      :option => o41
     )
 
     z184 = DomainMap.create!(
-      :domain => z98103,
-      :option => o43
+      :domain => z98105,
+      :option => o41
     )
 
     z185 = DomainMap.create!(
-      :domain => z98104,
-      :option => o43
+      :domain => z98106,
+      :option => o41
     )
 
     z186 = DomainMap.create!(
-      :domain => z98105,
-      :option => o43
+      :domain => z98107,
+      :option => o41
     )
 
     z187 = DomainMap.create!(
-      :domain => z98106,
-      :option => o43
+      :domain => z98108,
+      :option => o41
     )
 
     z188 = DomainMap.create!(
-      :domain => z98107,
-      :option => o43
+      :domain => z98109,
+      :option => o41
     )
 
     z189 = DomainMap.create!(
-      :domain => z98108,
-      :option => o43
+      :domain => z98111,
+      :option => o41
     )
 
     z190 = DomainMap.create!(
-      :domain => z98109,
-      :option => o43
+      :domain => z98112,
+      :option => o41
     )
 
     z191 = DomainMap.create!(
-      :domain => z98111,
-      :option => o43
+      :domain => z98113,
+      :option => o41
     )
 
     z192 = DomainMap.create!(
-      :domain => z98112,
-      :option => o43
+      :domain => z98114,
+      :option => o41
     )
 
     z193 = DomainMap.create!(
-      :domain => z98113,
-      :option => o43
+      :domain => z98115,
+      :option => o41
     )
 
     z194 = DomainMap.create!(
-      :domain => z98114,
-      :option => o43
+      :domain => z98116,
+      :option => o41
     )
 
     z195 = DomainMap.create!(
-      :domain => z98115,
-      :option => o43
+      :domain => z98117,
+      :option => o41
     )
 
     z196 = DomainMap.create!(
-      :domain => z98116,
-      :option => o43
+      :domain => z98118,
+      :option => o41
     )
 
     z197 = DomainMap.create!(
-      :domain => z98117,
-      :option => o43
+      :domain => z98119,
+      :option => o41
     )
 
     z198 = DomainMap.create!(
-      :domain => z98118,
-      :option => o43
+      :domain => z98121,
+      :option => o41
     )
 
     z199 = DomainMap.create!(
-      :domain => z98119,
-      :option => o43
+      :domain => z98122,
+      :option => o41
     )
 
     z200 = DomainMap.create!(
-      :domain => z98121,
-      :option => o43
+      :domain => z98124,
+      :option => o41
     )
 
     z201 = DomainMap.create!(
-      :domain => z98122,
-      :option => o43
+      :domain => z98125,
+      :option => o41
     )
 
     z202 = DomainMap.create!(
-      :domain => z98124,
-      :option => o43
+      :domain => z98126,
+      :option => o41
     )
 
     z203 = DomainMap.create!(
-      :domain => z98125,
-      :option => o43
+      :domain => z98127,
+      :option => o41
     )
 
     z204 = DomainMap.create!(
-      :domain => z98126,
-      :option => o43
+      :domain => z98129,
+      :option => o41
     )
 
     z205 = DomainMap.create!(
-      :domain => z98127,
-      :option => o43
+      :domain => z98131,
+      :option => o41
     )
 
     z206 = DomainMap.create!(
-      :domain => z98129,
-      :option => o43
+      :domain => z98132,
+      :option => o41
     )
 
     z207 = DomainMap.create!(
-      :domain => z98131,
-      :option => o43
+      :domain => z98133,
+      :option => o41
     )
 
     z208 = DomainMap.create!(
-      :domain => z98132,
-      :option => o43
+      :domain => z98134,
+      :option => o41
     )
 
     z209 = DomainMap.create!(
-      :domain => z98133,
-      :option => o43
+      :domain => z98136,
+      :option => o41
     )
 
     z210 = DomainMap.create!(
-      :domain => z98134,
-      :option => o43
+      :domain => z98138,
+      :option => o41
     )
 
     z211 = DomainMap.create!(
-      :domain => z98136,
-      :option => o43
+      :domain => z98139,
+      :option => o41
     )
 
     z212 = DomainMap.create!(
-      :domain => z98138,
-      :option => o43
+      :domain => z98141,
+      :option => o41
     )
 
     z213 = DomainMap.create!(
-      :domain => z98139,
-      :option => o43
+      :domain => z98144,
+      :option => o41
     )
 
     z214 = DomainMap.create!(
-      :domain => z98141,
-      :option => o43
+      :domain => z98145,
+      :option => o41
     )
 
     z215 = DomainMap.create!(
-      :domain => z98144,
-      :option => o43
+      :domain => z98146,
+      :option => o41
     )
 
     z216 = DomainMap.create!(
-      :domain => z98145,
-      :option => o43
+      :domain => z98148,
+      :option => o41
     )
 
     z217 = DomainMap.create!(
-      :domain => z98146,
-      :option => o43
+      :domain => z98154,
+      :option => o41
     )
 
     z218 = DomainMap.create!(
-      :domain => z98148,
-      :option => o43
+      :domain => z98155,
+      :option => o41
     )
 
     z219 = DomainMap.create!(
-      :domain => z98154,
-      :option => o43
+      :domain => z98158,
+      :option => o41
     )
 
     z220 = DomainMap.create!(
-      :domain => z98155,
-      :option => o43
+      :domain => z98160,
+      :option => o41
     )
 
     z221 = DomainMap.create!(
-      :domain => z98158,
-      :option => o43
+      :domain => z98161,
+      :option => o41
     )
 
     z222 = DomainMap.create!(
-      :domain => z98160,
-      :option => o43
+      :domain => z98164,
+      :option => o41
     )
 
     z223 = DomainMap.create!(
-      :domain => z98161,
-      :option => o43
+      :domain => z98165,
+      :option => o41
     )
 
     z224 = DomainMap.create!(
-      :domain => z98164,
-      :option => o43
+      :domain => z98166,
+      :option => o41
     )
 
     z225 = DomainMap.create!(
-      :domain => z98165,
-      :option => o43
+      :domain => z98168,
+      :option => o41
     )
 
     z226 = DomainMap.create!(
-      :domain => z98166,
-      :option => o43
+      :domain => z98170,
+      :option => o41
     )
 
     z227 = DomainMap.create!(
-      :domain => z98168,
-      :option => o43
+      :domain => z98174,
+      :option => o41
     )
 
     z228 = DomainMap.create!(
-      :domain => z98170,
-      :option => o43
+      :domain => z98175,
+      :option => o41
     )
 
     z229 = DomainMap.create!(
-      :domain => z98174,
-      :option => o43
+      :domain => z98177,
+      :option => o41
     )
 
     z230 = DomainMap.create!(
-      :domain => z98175,
-      :option => o43
+      :domain => z98178,
+      :option => o41
     )
 
     z231 = DomainMap.create!(
-      :domain => z98177,
-      :option => o43
+      :domain => z98181,
+      :option => o41
     )
 
     z232 = DomainMap.create!(
-      :domain => z98178,
-      :option => o43
+      :domain => z98185,
+      :option => o41
     )
 
     z233 = DomainMap.create!(
-      :domain => z98181,
-      :option => o43
+      :domain => z98188,
+      :option => o41
     )
 
     z234 = DomainMap.create!(
-      :domain => z98185,
-      :option => o43
+      :domain => z98190,
+      :option => o41
     )
 
     z235 = DomainMap.create!(
-      :domain => z98188,
-      :option => o43
+      :domain => z98191,
+      :option => o41
     )
 
     z236 = DomainMap.create!(
-      :domain => z98190,
-      :option => o43
+      :domain => z98194,
+      :option => o41
     )
 
     z237 = DomainMap.create!(
-      :domain => z98191,
-      :option => o43
+      :domain => z98195,
+      :option => o41
     )
 
     z238 = DomainMap.create!(
-      :domain => z98194,
-      :option => o43
+      :domain => z98198,
+      :option => o41
     )
 
     z239 = DomainMap.create!(
-      :domain => z98195,
-      :option => o43
-    )
-
-    z240 = DomainMap.create!(
-      :domain => z98198,
-      :option => o43
-    )
-
-    z241 = DomainMap.create!(
       :domain => z98199,
-      :option => o43
+      :option => o41
     )
 
-o44 = Option.create!(
+o42 = Option.create!(
   :name => 'Increased Vehicle License Fee',
   :short_name => 'Transportation Improvements',
   :description => 'The Seattle Transportation Benefit District&rsquo;s
@@ -7084,307 +6999,307 @@ o44 = Option.create!(
   :additional_details => ''
 )
 
-    z242 = DomainMap.create!(
+    z240 = DomainMap.create!(
       :domain => z98101,
-      :option => o44
+      :option => o42
+    )
+
+    z241 = DomainMap.create!(
+      :domain => z98102,
+      :option => o42
+    )
+
+    z242 = DomainMap.create!(
+      :domain => z98103,
+      :option => o42
     )
 
     z243 = DomainMap.create!(
-      :domain => z98102,
-      :option => o44
+      :domain => z98104,
+      :option => o42
     )
 
     z244 = DomainMap.create!(
-      :domain => z98103,
-      :option => o44
+      :domain => z98105,
+      :option => o42
     )
 
     z245 = DomainMap.create!(
-      :domain => z98104,
-      :option => o44
+      :domain => z98106,
+      :option => o42
     )
 
     z246 = DomainMap.create!(
-      :domain => z98105,
-      :option => o44
+      :domain => z98107,
+      :option => o42
     )
 
     z247 = DomainMap.create!(
-      :domain => z98106,
-      :option => o44
+      :domain => z98108,
+      :option => o42
     )
 
     z248 = DomainMap.create!(
-      :domain => z98107,
-      :option => o44
+      :domain => z98109,
+      :option => o42
     )
 
     z249 = DomainMap.create!(
-      :domain => z98108,
-      :option => o44
+      :domain => z98111,
+      :option => o42
     )
 
     z250 = DomainMap.create!(
-      :domain => z98109,
-      :option => o44
+      :domain => z98112,
+      :option => o42
     )
 
     z251 = DomainMap.create!(
-      :domain => z98111,
-      :option => o44
+      :domain => z98113,
+      :option => o42
     )
 
     z252 = DomainMap.create!(
-      :domain => z98112,
-      :option => o44
+      :domain => z98114,
+      :option => o42
     )
 
     z253 = DomainMap.create!(
-      :domain => z98113,
-      :option => o44
+      :domain => z98115,
+      :option => o42
     )
 
     z254 = DomainMap.create!(
-      :domain => z98114,
-      :option => o44
+      :domain => z98116,
+      :option => o42
     )
 
     z255 = DomainMap.create!(
-      :domain => z98115,
-      :option => o44
+      :domain => z98117,
+      :option => o42
     )
 
     z256 = DomainMap.create!(
-      :domain => z98116,
-      :option => o44
+      :domain => z98118,
+      :option => o42
     )
 
     z257 = DomainMap.create!(
-      :domain => z98117,
-      :option => o44
+      :domain => z98119,
+      :option => o42
     )
 
     z258 = DomainMap.create!(
-      :domain => z98118,
-      :option => o44
+      :domain => z98121,
+      :option => o42
     )
 
     z259 = DomainMap.create!(
-      :domain => z98119,
-      :option => o44
+      :domain => z98122,
+      :option => o42
     )
 
     z260 = DomainMap.create!(
-      :domain => z98121,
-      :option => o44
+      :domain => z98124,
+      :option => o42
     )
 
     z261 = DomainMap.create!(
-      :domain => z98122,
-      :option => o44
+      :domain => z98125,
+      :option => o42
     )
 
     z262 = DomainMap.create!(
-      :domain => z98124,
-      :option => o44
+      :domain => z98126,
+      :option => o42
     )
 
     z263 = DomainMap.create!(
-      :domain => z98125,
-      :option => o44
+      :domain => z98127,
+      :option => o42
     )
 
     z264 = DomainMap.create!(
-      :domain => z98126,
-      :option => o44
+      :domain => z98129,
+      :option => o42
     )
 
     z265 = DomainMap.create!(
-      :domain => z98127,
-      :option => o44
+      :domain => z98131,
+      :option => o42
     )
 
     z266 = DomainMap.create!(
-      :domain => z98129,
-      :option => o44
+      :domain => z98132,
+      :option => o42
     )
 
     z267 = DomainMap.create!(
-      :domain => z98131,
-      :option => o44
+      :domain => z98133,
+      :option => o42
     )
 
     z268 = DomainMap.create!(
-      :domain => z98132,
-      :option => o44
+      :domain => z98134,
+      :option => o42
     )
 
     z269 = DomainMap.create!(
-      :domain => z98133,
-      :option => o44
+      :domain => z98136,
+      :option => o42
     )
 
     z270 = DomainMap.create!(
-      :domain => z98134,
-      :option => o44
+      :domain => z98138,
+      :option => o42
     )
 
     z271 = DomainMap.create!(
-      :domain => z98136,
-      :option => o44
+      :domain => z98139,
+      :option => o42
     )
 
     z272 = DomainMap.create!(
-      :domain => z98138,
-      :option => o44
+      :domain => z98141,
+      :option => o42
     )
 
     z273 = DomainMap.create!(
-      :domain => z98139,
-      :option => o44
+      :domain => z98144,
+      :option => o42
     )
 
     z274 = DomainMap.create!(
-      :domain => z98141,
-      :option => o44
+      :domain => z98145,
+      :option => o42
     )
 
     z275 = DomainMap.create!(
-      :domain => z98144,
-      :option => o44
+      :domain => z98146,
+      :option => o42
     )
 
     z276 = DomainMap.create!(
-      :domain => z98145,
-      :option => o44
+      :domain => z98148,
+      :option => o42
     )
 
     z277 = DomainMap.create!(
-      :domain => z98146,
-      :option => o44
+      :domain => z98154,
+      :option => o42
     )
 
     z278 = DomainMap.create!(
-      :domain => z98148,
-      :option => o44
+      :domain => z98155,
+      :option => o42
     )
 
     z279 = DomainMap.create!(
-      :domain => z98154,
-      :option => o44
+      :domain => z98158,
+      :option => o42
     )
 
     z280 = DomainMap.create!(
-      :domain => z98155,
-      :option => o44
+      :domain => z98160,
+      :option => o42
     )
 
     z281 = DomainMap.create!(
-      :domain => z98158,
-      :option => o44
+      :domain => z98161,
+      :option => o42
     )
 
     z282 = DomainMap.create!(
-      :domain => z98160,
-      :option => o44
+      :domain => z98164,
+      :option => o42
     )
 
     z283 = DomainMap.create!(
-      :domain => z98161,
-      :option => o44
+      :domain => z98165,
+      :option => o42
     )
 
     z284 = DomainMap.create!(
-      :domain => z98164,
-      :option => o44
+      :domain => z98166,
+      :option => o42
     )
 
     z285 = DomainMap.create!(
-      :domain => z98165,
-      :option => o44
+      :domain => z98168,
+      :option => o42
     )
 
     z286 = DomainMap.create!(
-      :domain => z98166,
-      :option => o44
+      :domain => z98170,
+      :option => o42
     )
 
     z287 = DomainMap.create!(
-      :domain => z98168,
-      :option => o44
+      :domain => z98174,
+      :option => o42
     )
 
     z288 = DomainMap.create!(
-      :domain => z98170,
-      :option => o44
+      :domain => z98175,
+      :option => o42
     )
 
     z289 = DomainMap.create!(
-      :domain => z98174,
-      :option => o44
+      :domain => z98177,
+      :option => o42
     )
 
     z290 = DomainMap.create!(
-      :domain => z98175,
-      :option => o44
+      :domain => z98178,
+      :option => o42
     )
 
     z291 = DomainMap.create!(
-      :domain => z98177,
-      :option => o44
+      :domain => z98181,
+      :option => o42
     )
 
     z292 = DomainMap.create!(
-      :domain => z98178,
-      :option => o44
+      :domain => z98185,
+      :option => o42
     )
 
     z293 = DomainMap.create!(
-      :domain => z98181,
-      :option => o44
+      :domain => z98188,
+      :option => o42
     )
 
     z294 = DomainMap.create!(
-      :domain => z98185,
-      :option => o44
+      :domain => z98190,
+      :option => o42
     )
 
     z295 = DomainMap.create!(
-      :domain => z98188,
-      :option => o44
+      :domain => z98191,
+      :option => o42
     )
 
     z296 = DomainMap.create!(
-      :domain => z98190,
-      :option => o44
+      :domain => z98194,
+      :option => o42
     )
 
     z297 = DomainMap.create!(
-      :domain => z98191,
-      :option => o44
+      :domain => z98195,
+      :option => o42
     )
 
     z298 = DomainMap.create!(
-      :domain => z98194,
-      :option => o44
+      :domain => z98198,
+      :option => o42
     )
 
     z299 = DomainMap.create!(
-      :domain => z98195,
-      :option => o44
-    )
-
-    z300 = DomainMap.create!(
-      :domain => z98198,
-      :option => o44
-    )
-
-    z301 = DomainMap.create!(
       :domain => z98199,
-      :option => o44
+      :option => o42
     )
 
-o45 = Option.create!(
+o43 = Option.create!(
   :name => 'Licensed Card Rooms in the City of Tukwila',
   :short_name => 'Card Rooms',
   :description => 'Tukwila Resolution No. 1745 submits the following
@@ -7396,55 +7311,36 @@ o45 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40326&eid=1249',
   :category => 'Adv Measure',
   :designator => 'Tukw 1',
-  :long_description => '<p>This is an advisory measure seeking voter
-    input regarding the continuation of social card rooms in the City
-    of Tukwila.  The advisory measures asks voters whether they would
-    prefer to ban gambling in the form of social card rooms or allow
-    it city-wide.</p>
-    <p>Washington State law allows social card games to be used as a
-    commercial stimulant for businesses such as restaurants.  This
-    form of gambling is licensed by the State of Washington.  There
-    are currently four restaurants using social card games as
-    commercial stimulants in the City of Tukwila.</p>
-    <p>The City has limited control regarding placement of these
-    establishments and they are allowed to locate where local zoning
-    allows restaurants.  The City has the ability to ban this type of
-    gambling completely.  To do so, would cause a loss of
-    approximately $2.1 million dollars to the City&rsquo;s budget, annually.</p>
-    <p>This measure is advisory only.  The result of the election on this
-    measure will provide the Tukwila City Council with voter input,
-    but approval or rejection of the measure does not legally require
-    or prohibit gambling in the form of social card rooms within the
-    City</p>.',
+  :long_description => '',
   :additional_details => ''
 )
 
-    z302 = DomainMap.create!(
+    z300 = DomainMap.create!(
       :domain => z98108,
-      :option => o45
+      :option => o43
+    )
+
+    z301 = DomainMap.create!(
+      :domain => z98138,
+      :option => o43
+    )
+
+    z302 = DomainMap.create!(
+      :domain => z98168,
+      :option => o43
     )
 
     z303 = DomainMap.create!(
-      :domain => z98138,
-      :option => o45
+      :domain => z98178,
+      :option => o43
     )
 
     z304 = DomainMap.create!(
-      :domain => z98168,
-      :option => o45
-    )
-
-    z305 = DomainMap.create!(
-      :domain => z98178,
-      :option => o45
-    )
-
-    z306 = DomainMap.create!(
       :domain => z98188,
-      :option => o45
+      :option => o43
     )
 
-o46 = Option.create!(
+o44 = Option.create!(
   :name => 'Sales and Use Tax for Transportation Improvements',
   :short_name => 'Transportation Improvements',
   :description => 'The Board of North Bend Transportation Benefit
@@ -7462,137 +7358,88 @@ o46 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40327&eid=1249',
   :category => 'Proposition',
   :designator => 'NB 1',
-  :long_description => 'North Bend voters are asked to authorize
-    dedicated funding for transportation needs by increasing the sales
-    and use tax by two-tenths of one percent (0.002). An increase of
-    0.002 on taxable spending of $100 amounts to 20 cents. The
-    increase would generate approximately $400,000 per year for street
-    reconstruction, intersection improvements, construction of
-    walkways, new signal installation, and street resurfacing to
-    preserve their condition and reduce future maintenance costs. This
-    increase is requested by the Board of the North Bend
-    Transportation Benefit District (TBD), governed by the North Bend
-    City Council members acting as a separate board of directors. 100%
-    of the revenue generated by the tax is dedicated to transportation
-    projects and can be used for no other purpose. All of these
-    improvements will occur exclusively within the City of North
-    Bend. A detailed list of the improvements, their cost and
-    priorities are contained in TBD Resolution 01-2011 and the City of
-    North Bend 6-Year Transportation Improvement Program and are
-    available upon request from the North Bend City Clerk. If
-    approved, this local sales tax will expire in 10 years unless
-    sooner terminated by the TBD.',
+  :long_description => '',
   :additional_details => ''
 )
 
-    z307 = DomainMap.create!(
+    z305 = DomainMap.create!(
       :domain => z98045,
-      :option => o46
+      :option => o44
     )
 
-    z308 = DomainMap.create!(
+    z306 = DomainMap.create!(
       :domain => z98068,
-      :option => o46
+      :option => o44
     )
 
-o47 = Option.create!(
+o45 = Option.create!(
   :name => 'Supplemental Levy to Support Class Size',
   :short_name => 'School Levy',
-  :description => '<p>The Board of Directors of Shoreline School District
+  :description => 'The Board of Directors of Shoreline School District
     No. 412 adopted Resolution No. 2011-14, concerning a supplemental
     levy to support class size.  This proposition would address
     impacts on class size due to State budget reductions by levying
     the following excess taxes, in addition to the existing levies for
     educational programs, maintenance and operations approved by the
     voters in February, 2010, on all taxable property within the
-    District:</p>
-    <p>
-    <table style="text-align: center;" cellpadding="2" cellspacing="2"> 
-    <tbody> <tr> <td>Collection Year</td>
-    <td>Approximate Levy Rate<br>/$1,000 Assessed
-    Value</td> <td>Levy Amount</td> </tr> <tr> <td>2012</td>
-    <td>$0.09</td> <td>$1,300,000</td> </tr> <tr> <td>2013</td>
-    <td>$0.09</td> <td>$1,400,000</td> </tr> <tr> <td>2014</td>
-    <td>$0.10</td> <td>$1,500,000</td> </tr> </tbody> </table> </p>
-    <p> all as provided in Resolution No. 2011-14. Should this
-    proposition be approved?</p>',
+    District.\n\nPassage of Proposition No. 1 would allow the levy of
+    $1,300,000 of property taxes within the Shoreline School District
+    for collection in 2012, the levy of $1,400,000 of taxes for
+    collection in 2013, and the levy of $1,500,000 in taxes for
+    2014. The purpose of the levy is to support class size in response
+    to State budget reductions.  This supplemental levy is in addition
+    to the maintenance and operation levy, approved by the voters in
+    the February 2010 election, on all taxable property within the
+    District.  The taxes approved by this proposition would be
+    deposited in the Shoreline School District&rsquo;s General Fund
+    and expended to support class size.  If authorized by the voters
+    and based upon current assessed valuation information, the
+    estimated levy rates per $1000 of assessed value would be $0.09
+    (2012 collection); $0.09 (2013 collection) and $0.10 (2014
+    collection).',
   :domain => 'City of Shoreline',
   :domain_short => 'Shoreline SD',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40329&eid=1249',
-  :category => 'Proposition', 
+  :category => 'Proposition',
   :designator => 'Shor 1',
-  :long_description => 'Passage of Proposition No. 1 would allow the
-     levy of $1,300,000 of property taxes within the Shoreline School
-     District for collection in 2012, the levy of $1,400,000 of taxes
-     for collection in 2013, and the levy of $1,500,000 in taxes for
-     2014. The purpose of the levy is to support class size in
-     response to State budget reductions.  This supplemental levy is
-     in addition to the maintenance and operation levy, approved by
-     the voters in the February 2010 election, on all taxable property
-     within the District.  The taxes approved by this proposition
-     would be deposited in the Shoreline School District&rsquo;s
-     General Fund and expended to support class size.  If authorized
-     by the voters and based upon current assessed valuation
-     information, the estimated levy rates per $1000 of assessed value
-     would be $0.09 (2012 collection); $0.09 (2013 collection) and
-     $0.10 (2014 collection).',
-   :additional_details => '' )
+  :long_description => '',
+  :additional_details => ''
+)
+
+    z307 = DomainMap.create!(
+      :domain => z98133,
+      :option => o45
+    )
+
+    z308 = DomainMap.create!(
+      :domain => z98155,
+      :option => o45
+    )
 
     z309 = DomainMap.create!(
-      :domain => z98133,
-      :option => o47
-    )
-
-    z310 = DomainMap.create!(
-      :domain => z98155,
-      :option => o47
-    )
-
-    z311 = DomainMap.create!(
       :domain => z98177,
-      :option => o47
+      :option => o45
     )
 
-o48 = Option.create!(
+o46 = Option.create!(
   :name => 'Increasing Number of Commissioners',
   :short_name => 'Fire Dist Commission',
-  :description => 'Shall the board of commissioners of King County Fire Protection District No. 28 be 
-    increased from three members to five members?',
+  :description => 'Shall the board of commissioners of King County Fire Protection District No. 28 be increased from three members to five members?',
   :domain => 'City of Enumclaw',
   :domain_short => 'King Cty FPD 28',
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40330&eid=1249',
   :category => 'Proposition',
   :designator => 'KCFD 1',
-  :long_description => '<p>Washington State Law, at RCW 52.14.015, allows
-    increasing the board of commissioners of a fire protection
-    district from three to five, with voter approval.  The two
-    additional positions would be filled by registered voters who
-    reside anywhere within the fire district.  For approval, such a
-    proposition requires a simple majority of the registered voters
-    casting ballots on the measure.</p>
-    <p>The Board of Fire Commissioners for the Enumclaw Fire Department
-    (Fire District #28) has passed a resolution determining that it
-    would be in the best interest of the district and its citizens to
-    increase the number of fire commissioners from three to five.  The
-    resolution states that the purpose of the measure is to encourage
-    broader participation in the decision making function of the
-    Board.  Adding two fire commissioners to the Board would increase
-    representation from the community.</p>
-    <p>With changes in service and increasing service demands, the fire
-    department finds the provision of services becomes more complex.
-    A larger Board of elected officials will help to deal with this
-    increasing complexity.  This change will allow the Commissioners
-    to appoint committees of the Board to study issues for
-    presentation to the full Board.</p>',
+  :long_description => '',
   :additional_details => ''
 )
 
-    z312 = DomainMap.create!(
+    z310 = DomainMap.create!(
       :domain => z98022,
-      :option => o48
+      :option => o46
     )
 
-o49 = Option.create!(
+o47 = Option.create!(
   :name => 'Protection of Current Tax Levy from Prorationing',
   :short_name => 'Park Levy Allocation',
   :description => 'The Board of Directors of the Si View Metropolitan
@@ -7612,50 +7459,26 @@ o49 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40331&eid=1249',
   :category => 'Proposition',
   :designator => 'Si 1',
-  :long_description => 'Due to changes in state law, beginning in 2012
-    Si View Metropolitan Park District&rsquo;s existing levy will be
-    re-allocated to other taxing districts within King County in
-    accordance with a statutory formula.  This re-allocation process
-    is known as prorationing.  The District&rsquo;s existing levy maintains
-    basic safety and current operations and park district facilities
-    and programs, including the Si View Community Center and Pool,
-    parks, playfields, playgrounds, trails, adult programming, fitness
-    and youth sports programs, summer camps, and after-school
-    recreation programs for youth and teens.  If Proposition 1 is not
-    passed by voters, the District will incur a projected 44% decrease
-    from its current funding and would be required to make major cuts
-    in operations, recreational programs, basic safety, operations and
-    maintenance of Si View Community Center and Pool, parks and
-    facilities.  If Proposition 1 and Proposition 2 are not passed by
-    voters, the District will incur a projected 84% decrease from its
-    current funding which would likely force the closure of District
-    parks, pool and recreation programs.  Passage of Proposition 1
-    would protect $0.25 of the District&rsquo;s existing regular tax levy
-    from prorationing for a period of six years beginning in 2012.  If
-    passed by voters, Proposition 1 would protect the Park District&rsquo;s
-    existing levy from prorationing and preserve current funding and
-    services for basic safety, operations, maintenance of facilities
-    and recreational programs.  Passage of Proposition 1 will help
-    preserve current levels of service and funding for the District.',
+  :long_description => '',
   :additional_details => ''
 )
 
-    z313 = DomainMap.create!(
+    z311 = DomainMap.create!(
       :domain => z98045,
-      :option => o49
+      :option => o47
     )
 
-    z314 = DomainMap.create!(
+    z312 = DomainMap.create!(
       :domain => z98065,
-      :option => o49
+      :option => o47
     )
 
-    z315 = DomainMap.create!(
+    z313 = DomainMap.create!(
       :domain => z98068,
-      :option => o49
+      :option => o47
     )
 
-o50 = Option.create!(
+o48 = Option.create!(
   :name => 'One-Year Operations and Maintenance Levy',
   :short_name => 'Parks Levy',
   :description => 'The Board of Directors of the Si View Metropolitan
@@ -7674,48 +7497,27 @@ o50 = Option.create!(
   :url => 'http://your.kingcounty.gov/elections/contests/measureinfo.aspx?cid=40332&eid=1249',
   :category => 'Proposition',
   :designator => 'Si 2',
-  :long_description => 'The Si View Metropolitan Park District&rsquo;s
-    current property tax levy funds the basic safety, ongoing
-    maintenance and day-to-day operations of park facilities and
-    recreation programs, including the Si View Community Center and
-    Pool, parks, playfields, playgrounds, sports programs, trails,
-    adult programming, summer camps, and after-school recreation
-    programs for youth and teens.  Local revenues in the District have
-    declined significantly in recent years.  If Proposition 2 is not
-    passed by voters, local funding will be reduced by approximately
-    40 percent in 2012 (approximately $461,529) and major cuts will be
-    required in the day-to-day operations, recreational programs,
-    basic safety, and on-going maintenance of Si View Community Center
-    and Pool, parks and facilities.  If Proposition 2 and Proposition
-    1 are not passed by voters, the District will incur a projected
-    84% decrease from its current funding which would likely force the
-    closure of District parks, pool and recreation programs.  If
-    passed, Proposition 2 would help maintain - not increase - current
-    levels of funding and services.  Proposition 2 would authorize the
-    District to levy a one-year excess property tax on all taxable
-    property within the District in an approximate rate of 21 cents
-    per $1,000 of assessed value for collection in 2012.  Proposition
-    2 is a one-year operations and maintenance levy that will help
-    maintain the current level of District funding and services.',
+  :long_description => '',
   :additional_details => ''
 )
 
-    z316 = DomainMap.create!(
+    z314 = DomainMap.create!(
       :domain => z98045,
-      :option => o50
+      :option => o48
     )
 
-    z317 = DomainMap.create!(
+    z315 = DomainMap.create!(
       :domain => z98065,
-      :option => o50
+      :option => o48
     )
 
-    z318 = DomainMap.create!(
+    z316 = DomainMap.create!(
       :domain => z98068,
-      :option => o50
+      :option => o48
     )
 
-o51 = Option.create!(
+
+o49 = Option.create!(
   :name => 'A City Charter Amendment Establishing a Community Bill of Rights',
   :short_name => 'Charter Amendment',
   :description => 'Initiative No. 2011-1, designated as Ordinance
@@ -7728,7 +7530,7 @@ o51 = Option.create!(
     Spokane Valley - Rathdrum Prairie Aquifer and provides
     constitutional protections in the workplace.',
   :domain => 'City of Spokane',
-  :domain_short => 'City of Spokane',
+  :domain_short => 'Spokane',
   :url => 'https://wei.secstate.wa.gov/spokane/Pages/OnlineVotersGuide.aspx?Electionid=42&sorttype=Measures#ososTop',
   :category => 'Proposition',
   :designator => 'Spk 1',
@@ -7736,5120 +7538,148 @@ o51 = Option.create!(
   :additional_details => ''
 )
 
-    z319 = DomainMap.create!(
+    z317 = DomainMap.create!(
       :domain => z99201,
-      :option => o51
+      :option => o49
+    )
+
+    z318 = DomainMap.create!(
+      :domain => z99202,
+      :option => o49
+    )
+
+    z319 = DomainMap.create!(
+      :domain => z99203,
+      :option => o49
     )
 
     z320 = DomainMap.create!(
-      :domain => z99202,
-      :option => o51
+      :domain => z99204,
+      :option => o49
     )
 
     z321 = DomainMap.create!(
-      :domain => z99203,
-      :option => o51
+      :domain => z99205,
+      :option => o49
     )
 
     z322 = DomainMap.create!(
-      :domain => z99204,
-      :option => o51
+      :domain => z99206,
+      :option => o49
     )
 
     z323 = DomainMap.create!(
-      :domain => z99205,
-      :option => o51
+      :domain => z99207,
+      :option => o49
     )
 
     z324 = DomainMap.create!(
-      :domain => z99206,
-      :option => o51
+      :domain => z99208,
+      :option => o49
     )
 
     z325 = DomainMap.create!(
-      :domain => z99207,
-      :option => o51
+      :domain => z99209,
+      :option => o49
     )
 
     z326 = DomainMap.create!(
-      :domain => z99208,
-      :option => o51
+      :domain => z99210,
+      :option => o49
     )
 
     z327 = DomainMap.create!(
-      :domain => z99209,
-      :option => o51
+      :domain => z99211,
+      :option => o49
     )
 
     z328 = DomainMap.create!(
-      :domain => z99210,
-      :option => o51
+      :domain => z99212,
+      :option => o49
     )
 
     z329 = DomainMap.create!(
-      :domain => z99211,
-      :option => o51
+      :domain => z99213,
+      :option => o49
     )
 
     z330 = DomainMap.create!(
-      :domain => z99212,
-      :option => o51
+      :domain => z99214,
+      :option => o49
     )
 
     z331 = DomainMap.create!(
-      :domain => z99213,
-      :option => o51
+      :domain => z99215,
+      :option => o49
     )
 
     z332 = DomainMap.create!(
-      :domain => z99214,
-      :option => o51
+      :domain => z99216,
+      :option => o49
     )
 
     z333 = DomainMap.create!(
-      :domain => z99215,
-      :option => o51
+      :domain => z99217,
+      :option => o49
     )
 
     z334 = DomainMap.create!(
-      :domain => z99216,
-      :option => o51
+      :domain => z99218,
+      :option => o49
     )
 
     z335 = DomainMap.create!(
-      :domain => z99217,
-      :option => o51
+      :domain => z99219,
+      :option => o49
     )
 
     z336 = DomainMap.create!(
-      :domain => z99218,
-      :option => o51
+      :domain => z99220,
+      :option => o49
     )
 
     z337 = DomainMap.create!(
-      :domain => z99219,
-      :option => o51
+      :domain => z99223,
+      :option => o49
     )
 
     z338 = DomainMap.create!(
-      :domain => z99220,
-      :option => o51
+      :domain => z99224,
+      :option => o49
     )
 
     z339 = DomainMap.create!(
-      :domain => z99223,
-      :option => o51
+      :domain => z99228,
+      :option => o49
     )
 
     z340 = DomainMap.create!(
-      :domain => z99224,
-      :option => o51
+      :domain => z99251,
+      :option => o49
     )
 
     z341 = DomainMap.create!(
-      :domain => z99228,
-      :option => o51
+      :domain => z99252,
+      :option => o49
     )
 
     z342 = DomainMap.create!(
-      :domain => z99251,
-      :option => o51
+      :domain => z99256,
+      :option => o49
     )
 
     z343 = DomainMap.create!(
-      :domain => z99252,
-      :option => o51
+      :domain => z99258,
+      :option => o49
     )
 
     z344 = DomainMap.create!(
-      :domain => z99256,
-      :option => o51
+      :domain => z99260,
+      :option => o49
     )
 
     z345 = DomainMap.create!(
-      :domain => z99258,
-      :option => o51
-    )
-
-    z346 = DomainMap.create!(
-      :domain => z99260,
-      :option => o51
-    )
-
-    z347 = DomainMap.create!(
       :domain => z99299,
-      :option => o51
-    )
-
-o52 = Option.create!(
-  :name => 'Manson Parks and Recreation District Levy',
-  :short_name => 'Parks Levy',
-  :description => 'Will the Manson Parks and Recreation District be
-    authorized to impose regular property tax levies of $.25 or less
-    per thousand dollars of assessed valuation for each of three
-    consecutive years.',
-  :domain => 'Manson',
-  :domain_short => 'Manson Parks and Recreation District',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Mnsn 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z348 = DomainMap.create!(
-      :domain => z98831,
-      :option => o52
-    )
-
-o53 = Option.create!(
-  :name => 'Chelan County Fire Protection District No. 6 Levy',
-  :short_name => 'FPD Levy',
-  :description => 'Shall Chelan County Fire Protection District No. 6
-    be authorized to levy a regular property tax of seventy eight
-    cents ($0.78) per one thousand dollars ($1,000.00) of true and
-    fair valuation, to be levied in 2011, and collected in 2012, with
-    the resulting levy being used for the future levy limit
-    calculations as allowed and authorized under RCW 84.55?',
-  :domain => 'Peshastin',
-  :domain_short => 'Fire Dist 6 Monitor Peshastin',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Chln 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z349 = DomainMap.create!(
-      :domain => z98847,
-      :option => o53
-    )
-
-o54 = Option.create!(
-  :name => ' Ambulance and Emergency Medical Services Funding',
-  :short_name => 'EMS Levy',
-  :description => ' Ambulance and Emergency Medical Services Funding
-    $567,296 Shall an excess levy of eighty nine cents per thousand
-    dollars of value, estimated to collect not more than five hundred
-    sixty seven thousand two hundred ninety six dollars, be assessed
-    against all property in Pacific County, except that within the
-    boundaries of the Ocean Beach, Ocosta or North River School
-    Districts, and collected in 2012 to subsidize ambulance and
-    emergency medical serves within the NPCEMS District No. 1 Service
-    Area?',
-  :domain => 'Pacific County',
-  :domain_short => 'Emergency Med. Service 1',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'EMS 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z350 = DomainMap.create!(
-      :domain => z98527,
-      :option => o54
-    )
-
-    z351 = DomainMap.create!(
-      :domain => z98554,
-      :option => o54
-    )
-
-    z352 = DomainMap.create!(
-      :domain => z98561,
-      :option => o54
-    )
-
-    z353 = DomainMap.create!(
-      :domain => z98577,
-      :option => o54
-    )
-
-    z354 = DomainMap.create!(
-      :domain => z98586,
-      :option => o54
-    )
-
-    z355 = DomainMap.create!(
-      :domain => z98590,
-      :option => o54
-    )
-
-    z356 = DomainMap.create!(
-      :domain => z98614,
-      :option => o54
-    )
-
-    z357 = DomainMap.create!(
-      :domain => z98624,
-      :option => o54
-    )
-
-    z358 = DomainMap.create!(
-      :domain => z98631,
-      :option => o54
-    )
-
-    z359 = DomainMap.create!(
-      :domain => z98637,
-      :option => o54
-    )
-
-    z360 = DomainMap.create!(
-      :domain => z98638,
-      :option => o54
-    )
-
-    z361 = DomainMap.create!(
-      :domain => z98640,
-      :option => o54
-    )
-
-    z362 = DomainMap.create!(
-      :domain => z98641,
-      :option => o54
-    )
-
-    z363 = DomainMap.create!(
-      :domain => z98644,
-      :option => o54
-    )
-
-o55 = Option.create!(
-  :name => 'North Whidbey Park and Recreation District Levy',
-  :short_name => 'Parks Levy',
-  :description => 'Will the North Whidbey Park and Recreation District
-    be authorized to impose regular property tax levies, to follow an
-    expiring levy, of seventeen cents ($0.17) or less per thousand
-    dollars of assessed valuation for each of six consecutive years
-    commencing in 2011, for collection in the years 2012 through 2017,
-    to pay a portion of the District&rsquo;s operating and maintenance
-    expenses, all as provided in District Resolution 11-02?',
-  :domain => 'Island County',
-  :domain_short => 'No Whidbey Pk and Rec',
-  :url => '',
-  :category => 'Proposition',
-  :designator => '11108',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z364 = DomainMap.create!(
-      :domain => z98236,
-      :option => o55
-    )
-
-    z365 = DomainMap.create!(
-      :domain => z98239,
-      :option => o55
-    )
-
-    z366 = DomainMap.create!(
-      :domain => z98249,
-      :option => o55
-    )
-
-    z367 = DomainMap.create!(
-      :domain => z98253,
-      :option => o55
-    )
-
-    z368 = DomainMap.create!(
-      :domain => z98260,
-      :option => o55
-    )
-
-    z369 = DomainMap.create!(
-      :domain => z98277,
-      :option => o55
-    )
-
-    z370 = DomainMap.create!(
-      :domain => z98278,
-      :option => o55
-    )
-
-    z371 = DomainMap.create!(
-      :domain => z98282,
-      :option => o55
-    )
-
-o56 = Option.create!(
-  :name => 'Port Townsend Fire and Emergency Services Levy',
-  :short_name => 'EMS Levy',
-  :description => 'Levy Lid Lift The City Council of the City of Port
-    Townsend has adopted Ordinance 3060A, concerning the City&rsquo;s
-    regular property tax levy. If approved, Proposition [1] would
-    authorize a maximum levy rate for collection in 2012 of $2.4868
-    per $1,000 assessed value which is an increase of approximately
-    $0.43/$1,000. The increase is restricted to providing for fire
-    protection, prevention and emergency services by contract with
-    East Jefferson Fire Rescue, to match the EJFR&rsquo;s
-    residents&rsquo; contribution. Increases (plus all previously
-    voter-approved increases) will be used in future levy limit
-    calculations, except that this increase expires if the City
-    annexes into EJFR.',
-  :domain => 'City of Port Townsend',
-  :domain_short => 'City of Port Townsend',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'PT 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z372 = DomainMap.create!(
-      :domain => z98368,
-      :option => o56
-    )
-
-o57 = Option.create!(
-  :name => 'City of Bothell Annexation',
-  :short_name => 'Annexation',
-  :description => ' Shall the area of unincorporated Snohomish County
-    known as the proposed North, East and West of Bothell Annexation
-    be annexed to the City of Bothell and subject to Bothell zoning as
-    provided in Ordinance 2053?',
-  :domain => 'City of Bothell',
-  :domain_short => 'city of Bothell',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Bthl 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z373 = DomainMap.create!(
-      :domain => z98011,
-      :option => o57
-    )
-
-    z374 = DomainMap.create!(
-      :domain => z98012,
-      :option => o57
-    )
-
-    z375 = DomainMap.create!(
-      :domain => z98021,
-      :option => o57
-    )
-
-    z376 = DomainMap.create!(
-      :domain => z98028,
-      :option => o57
-    )
-
-    z377 = DomainMap.create!(
-      :domain => z98041,
-      :option => o57
-    )
-
-    z378 = DomainMap.create!(
-      :domain => z98082,
-      :option => o57
-    )
-
-o58 = Option.create!(
-  :name => 'Edmonds City Services Levy',
-  :short_name => 'EMS Levy',
-  :description => 'The Edmonds City Council has passed Ordinance
-    No. 3848 to place before the voters property taxes to help
-    maintain current levels of service in public safety, parks, and
-    other city services.  To help maintain service levels in public
-    safety, parks, and other city services, this proposition would
-    authorize an increase in the regular property tax rate for
-    collection in 2012 of 0.17256368 per $1,000 of assessed valuation,
-    for a total regular property tax rate (if only this proposition
-    passes) of 1.82823515 per $1,000 of assessed valuation. The 2012
-    levy amount would become the basis upon which levy increases would
-    be computed for 2013 and 2014.',
-  :domain => 'City of Edmonds',
-  :domain_short => 'City of Edmonds',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Edmd 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z379 = DomainMap.create!(
-      :domain => z98020,
-      :option => o58
-    )
-
-    z380 = DomainMap.create!(
-      :domain => z98026,
-      :option => o58
-    )
-
-o59 = Option.create!(
-  :name => 'Edmonds Street Levy',
-  :short_name => 'Street Levy',
-  :description => 'The Edmonds City Council has passed Ordinance
-    No. 3849 to place before the voters property taxes to fund street
-    pavement overlays.  To fund street pavement overlays, this
-    proposition would authorize an increase in the regular property
-    tax rate for collection in 2012 of 0.17256368 per $1,000 of
-    assessed valuation, for a total regular property tax rate (if only
-    this proposition passes) of 1.82823515 per $1,000 of assessed
-    valuation. The 2012 levy amount would become the basis upon which
-    levy increases would be computed for 2013 and 2014.',
-  :domain => 'City of Edmonds',
-  :domain_short => 'City of Edmonds',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Edmd 2',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z381 = DomainMap.create!(
-      :domain => z98020,
-      :option => o59
-    )
-
-    z382 = DomainMap.create!(
-      :domain => z98026,
-      :option => o59
-    )
-
-o60 = Option.create!(
-  :name => 'Edmonds Building Maintenance and Park Improvement',
-  :short_name => 'Parks Levy',
-  :description => 'The Edmonds City Council has passed Ordinance
-    No. 3850 to place before the voters property taxes to fund
-    building maintenance and park improvements.  To fund building
-    maintenance and park improvements, this proposition would
-    authorize an increase in the regular property tax rate for
-    collection in 2012 of 0.08628184 per $1,000 of assessed valuation,
-    for a total regular property tax rate (if only this proposition
-    passes) of 1.74195331 per $1,000 of assessed valuation. The 2012
-    levy amount would become the basis upon which levy increases would
-    be computed for 2013 and 2014.',
-  :domain => 'City of Edmonds',
-  :domain_short => 'City of Edmonds',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Edmd 3',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z383 = DomainMap.create!(
-      :domain => z98020,
-      :option => o60
-    )
-
-    z384 = DomainMap.create!(
-      :domain => z98026,
-      :option => o60
-    )
-
-o61 = Option.create!(
-  :name => 'Change in Plan of Government',
-  :short_name => 'Council/Manager?',
-  :description => ' Shall the City of Lynnwood adopt the
-    Council/Manager form of government and abandon the Council/Mayor
-    form of government? The adoption of the Council/Manager form of
-    government would not affect the City&rsquo;s eligibility to be
-    governed under Title 35A of the Revised Code of Washington.',
-  :domain => 'City of Lynnwood',
-  :domain_short => 'City of Lynnwood',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Lynn 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z385 = DomainMap.create!(
-      :domain => z98036,
-      :option => o61
-    )
-
-    z386 = DomainMap.create!(
-      :domain => z98037,
-      :option => o61
-    )
-
-    z387 = DomainMap.create!(
-      :domain => z98046,
-      :option => o61
-    )
-
-    z388 = DomainMap.create!(
-      :domain => z98087,
-      :option => o61
-    )
-
-o62 = Option.create!(
-  :name => 'Sales and Use Tax Increase',
-  :short_name => 'Sales/Use Tax',
-  :description => 'The City Council of the City of Monroe has adopted
-    Resolution No. 2011/010 concerning a sales and use tax increase
-    pursuant to RCW 82.14.450. If approved, this proposition would
-    authorize an additional sales and use tax at the rate of 0.1
-    percent to be used exclusively for criminal justice purposes.',
-  :domain => 'City of Monroe',
-  :domain_short => 'City of Monroe',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Mnr 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z389 = DomainMap.create!(
-      :domain => z98272,
-      :option => o62
-    )
-
-o63 = Option.create!(
-  :name => 'Term Limits',
-  :short_name => 'Term Limits',
-  :description => 'The Monroe City Council has passed Resolution
-    No. 2011/018, placing the issue of term limits for local elected
-    officials before the voters.  The City of Monroe is considering
-    the adoption of an ordinance establishing term limits for the
-    positions of Mayor and Council Member. The proposed ordinance
-    would generally prohibit these officials from servicing more than
-    eight total years in the same office, but would allow limited
-    exceptions for certain vacancy appointments and situations where
-    eight consecutive years have lapsed since the end of the
-    official&rsquo;s most recent term.',
-  :domain => 'City of Monroe',
-  :domain_short => 'City of Monroe',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Mnr 2',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z390 = DomainMap.create!(
-      :domain => z98272,
-      :option => o63
-    )
-
-o64 = Option.create!(
-  :name => 'Traffic Safety Cameras',
-  :short_name => 'Traffic Cameras',
-  :description => 'In 2007 the Monroe City Council adopted Ordinance
-    No. 002/2007, establishing an Automated Traffic Safety Camera
-    program in accordance with RCW 46.63.170. This program authorizes
-    the use of Automated Traffic Safety Cameras to detect certain
-    traffic infractions at specified locations within the City.
-    Should this program be continued beyond September, 2013?',
-  :domain => 'City of Monroe',
-  :domain_short => 'City of Monroe',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Mnr 3',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z391 = DomainMap.create!(
-      :domain => z98272,
-      :option => o64
-    )
-
-o65 = Option.create!(
-  :name => 'Fire Protection District Levy',
-  :short_name => 'FPD Levy',
-  :description => 'The Board of Fire Commissioners of Snohomish County
-    Fire Protection District No. 4 adopted Resolution No. 455 to
-    finance fire protection and other services. This proposition would
-    allow the District to restore its regular tax levy rate to its
-    previously authorized limit of $1.50 per $1,000 assessed value in
-    2012; and authorize an annual increase of up to 6% (not to exceed
-    a rate of $1.50) for each of the five succeeding years through
-    2017, but would not authorize an excess levy.',
-  :domain => 'Snohomish County',
-  :domain_short => 'Fire District 04',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD4 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z392 = DomainMap.create!(
-      :domain => z98012,
-      :option => o65
-    )
-
-    z393 = DomainMap.create!(
-      :domain => z98020,
-      :option => o65
-    )
-
-    z394 = DomainMap.create!(
-      :domain => z98021,
-      :option => o65
-    )
-
-    z395 = DomainMap.create!(
-      :domain => z98026,
-      :option => o65
-    )
-
-    z396 = DomainMap.create!(
-      :domain => z98036,
-      :option => o65
-    )
-
-    z397 = DomainMap.create!(
-      :domain => z98037,
-      :option => o65
-    )
-
-    z398 = DomainMap.create!(
-      :domain => z98043,
-      :option => o65
-    )
-
-    z399 = DomainMap.create!(
-      :domain => z98046,
-      :option => o65
-    )
-
-    z400 = DomainMap.create!(
-      :domain => z98082,
-      :option => o65
-    )
-
-    z401 = DomainMap.create!(
-      :domain => z98087,
-      :option => o65
-    )
-
-    z402 = DomainMap.create!(
-      :domain => z98201,
-      :option => o65
-    )
-
-    z403 = DomainMap.create!(
-      :domain => z98203,
-      :option => o65
-    )
-
-    z404 = DomainMap.create!(
-      :domain => z98204,
-      :option => o65
-    )
-
-    z405 = DomainMap.create!(
-      :domain => z98205,
-      :option => o65
-    )
-
-    z406 = DomainMap.create!(
-      :domain => z98206,
-      :option => o65
-    )
-
-    z407 = DomainMap.create!(
-      :domain => z98207,
-      :option => o65
-    )
-
-    z408 = DomainMap.create!(
-      :domain => z98208,
-      :option => o65
-    )
-
-    z409 = DomainMap.create!(
-      :domain => z98213,
-      :option => o65
-    )
-
-    z410 = DomainMap.create!(
-      :domain => z98223,
-      :option => o65
-    )
-
-    z411 = DomainMap.create!(
-      :domain => z98241,
-      :option => o65
-    )
-
-    z412 = DomainMap.create!(
-      :domain => z98251,
-      :option => o65
-    )
-
-    z413 = DomainMap.create!(
-      :domain => z98252,
-      :option => o65
-    )
-
-    z414 = DomainMap.create!(
-      :domain => z98256,
-      :option => o65
-    )
-
-    z415 = DomainMap.create!(
-      :domain => z98258,
-      :option => o65
-    )
-
-    z416 = DomainMap.create!(
-      :domain => z98259,
-      :option => o65
-    )
-
-    z417 = DomainMap.create!(
-      :domain => z98270,
-      :option => o65
-    )
-
-    z418 = DomainMap.create!(
-      :domain => z98271,
-      :option => o65
-    )
-
-    z419 = DomainMap.create!(
-      :domain => z98272,
-      :option => o65
-    )
-
-    z420 = DomainMap.create!(
-      :domain => z98275,
-      :option => o65
-    )
-
-    z421 = DomainMap.create!(
-      :domain => z98287,
-      :option => o65
-    )
-
-    z422 = DomainMap.create!(
-      :domain => z98290,
-      :option => o65
-    )
-
-    z423 = DomainMap.create!(
-      :domain => z98291,
-      :option => o65
-    )
-
-    z424 = DomainMap.create!(
-      :domain => z98292,
-      :option => o65
-    )
-
-    z425 = DomainMap.create!(
-      :domain => z98293,
-      :option => o65
-    )
-
-    z426 = DomainMap.create!(
-      :domain => z98294,
-      :option => o65
-    )
-
-    z427 = DomainMap.create!(
-      :domain => z98296,
-      :option => o65
-    )
-
-o66 = Option.create!(
-  :name => 'Increasing Number of Commissioners',
-  :short_name => 'Fire Dist Commission',
-  :description => 'Shall the Board of Commissioners of Snohomish
-    County Fire Protection District No. 24 be increased from three
-    members to five members?',
-  :domain => 'Snohomish County',
-  :domain_short => 'Fire District 24',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD24 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z428 = DomainMap.create!(
-      :domain => z98012,
-      :option => o66
-    )
-
-    z429 = DomainMap.create!(
-      :domain => z98020,
-      :option => o66
-    )
-
-    z430 = DomainMap.create!(
-      :domain => z98021,
-      :option => o66
-    )
-
-    z431 = DomainMap.create!(
-      :domain => z98026,
-      :option => o66
-    )
-
-    z432 = DomainMap.create!(
-      :domain => z98036,
-      :option => o66
-    )
-
-    z433 = DomainMap.create!(
-      :domain => z98037,
-      :option => o66
-    )
-
-    z434 = DomainMap.create!(
-      :domain => z98043,
-      :option => o66
-    )
-
-    z435 = DomainMap.create!(
-      :domain => z98046,
-      :option => o66
-    )
-
-    z436 = DomainMap.create!(
-      :domain => z98082,
-      :option => o66
-    )
-
-    z437 = DomainMap.create!(
-      :domain => z98087,
-      :option => o66
-    )
-
-    z438 = DomainMap.create!(
-      :domain => z98201,
-      :option => o66
-    )
-
-    z439 = DomainMap.create!(
-      :domain => z98203,
-      :option => o66
-    )
-
-    z440 = DomainMap.create!(
-      :domain => z98204,
-      :option => o66
-    )
-
-    z441 = DomainMap.create!(
-      :domain => z98205,
-      :option => o66
-    )
-
-    z442 = DomainMap.create!(
-      :domain => z98206,
-      :option => o66
-    )
-
-    z443 = DomainMap.create!(
-      :domain => z98207,
-      :option => o66
-    )
-
-    z444 = DomainMap.create!(
-      :domain => z98208,
-      :option => o66
-    )
-
-    z445 = DomainMap.create!(
-      :domain => z98213,
-      :option => o66
-    )
-
-    z446 = DomainMap.create!(
-      :domain => z98223,
-      :option => o66
-    )
-
-    z447 = DomainMap.create!(
-      :domain => z98241,
-      :option => o66
-    )
-
-    z448 = DomainMap.create!(
-      :domain => z98251,
-      :option => o66
-    )
-
-    z449 = DomainMap.create!(
-      :domain => z98252,
-      :option => o66
-    )
-
-    z450 = DomainMap.create!(
-      :domain => z98256,
-      :option => o66
-    )
-
-    z451 = DomainMap.create!(
-      :domain => z98258,
-      :option => o66
-    )
-
-    z452 = DomainMap.create!(
-      :domain => z98259,
-      :option => o66
-    )
-
-    z453 = DomainMap.create!(
-      :domain => z98270,
-      :option => o66
-    )
-
-    z454 = DomainMap.create!(
-      :domain => z98271,
-      :option => o66
-    )
-
-    z455 = DomainMap.create!(
-      :domain => z98272,
-      :option => o66
-    )
-
-    z456 = DomainMap.create!(
-      :domain => z98275,
-      :option => o66
-    )
-
-    z457 = DomainMap.create!(
-      :domain => z98287,
-      :option => o66
-    )
-
-    z458 = DomainMap.create!(
-      :domain => z98290,
-      :option => o66
-    )
-
-    z459 = DomainMap.create!(
-      :domain => z98291,
-      :option => o66
-    )
-
-    z460 = DomainMap.create!(
-      :domain => z98292,
-      :option => o66
-    )
-
-    z461 = DomainMap.create!(
-      :domain => z98293,
-      :option => o66
-    )
-
-    z462 = DomainMap.create!(
-      :domain => z98294,
-      :option => o66
-    )
-
-    z463 = DomainMap.create!(
-      :domain => z98296,
-      :option => o66
-    )
-
-o67 = Option.create!(
-  :name => 'Prescott Park and Recreation Levy',
-  :short_name => 'Parks Levy',
-  :description => 'Prescott Joint Park and Recreation District
-    Maintenance &amp; Operation Excess Levy The Board of Commissioners
-    of the Prescott Joint Park and Recreation District adopted
-    Resolution No.7-27-11 B, concerning a proposition to finance
-    maintenance and operation expenses. This proposition would
-    authorize the District to levy the following excess taxes upon all
-    taxable property within the District, for support of the
-    District&rsquo;s maintenance and operation expenses for 2012:
-    Approximate Levy $110,000.00; Levy Year 2011/2012; Rate/$1,000
-    $00.48, all as provided in Resolution No. 7-27-11 B.',
-  :domain => 'Town of Prescott',
-  :domain_short => 'Parks and Rec., Prsctt',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Pres 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z464 = DomainMap.create!(
-      :domain => z99348,
-      :option => o67
-    )
-
-o68 = Option.create!(
-  :name => 'Waitsburg Flood Control Bonds',
-  :short_name => 'Flood Control',
-  :description => 'City of Waitsburg General Obligation Coppei Flood
-    Control Bonds Principal Amount of $2,000,000 The City Council of
-    the City of Waitsburg approved Resolution No. 2011-586 concerning
-    a proposition to finance capital improvements related to flood
-    protection from Coppei Creek. This proposition would authorize the
-    city to pay the costs of a Flood Control Project along Coppei
-    Creek including the installation of flood walls, levee and other
-    flood protection activites; to issue not to exceed $2,000,000 of
-    General Obligation Bonds maturing within a maximum term of 20
-    years to pay for such flood control and capital improvements; and
-    levy annual excess property tax levies to pay and retire such
-    bonds.',
-  :domain => 'City of Waitsburg',
-  :domain_short => 'Tax District 32',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Wait 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z465 = DomainMap.create!(
-      :domain => z99361,
-      :option => o68
-    )
-
-o69 = Option.create!(
-  :name => 'Whatcom County Cemetery District Levy',
-  :short_name => 'Cemetary Dist.',
-  :description => 'The Board of Cemetery Commissioners of Cemetery
-    District #1, Whatcom County Washington, adopted Resolution
-    No. 01-11 concerning a proposition to restore the District&rsquo;s
-    regular property tax levy. The proposition authorizes the District
-    to restore its regular property tax levy to an amount not to
-    exceed ($.1125) per $1,000.00 of assessed value for collection in
-    2012 to pay operational cost increases, and set the limit factor
-    at 100% plus the annual percentage change for each of the six
-    years (2012 to 2017). 2016 levy amount will be used to calculate
-    subsequent levy limits.',
-  :domain => 'Whatcom County',
-  :domain_short => 'Cemetery District 1',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Cmty 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z466 = DomainMap.create!(
-      :domain => z98220,
-      :option => o69
-    )
-
-    z467 = DomainMap.create!(
-      :domain => z98225,
-      :option => o69
-    )
-
-    z468 = DomainMap.create!(
-      :domain => z98226,
-      :option => o69
-    )
-
-    z469 = DomainMap.create!(
-      :domain => z98227,
-      :option => o69
-    )
-
-    z470 = DomainMap.create!(
-      :domain => z98228,
-      :option => o69
-    )
-
-    z471 = DomainMap.create!(
-      :domain => z98229,
-      :option => o69
-    )
-
-    z472 = DomainMap.create!(
-      :domain => z98230,
-      :option => o69
-    )
-
-    z473 = DomainMap.create!(
-      :domain => z98231,
-      :option => o69
-    )
-
-    z474 = DomainMap.create!(
-      :domain => z98240,
-      :option => o69
-    )
-
-    z475 = DomainMap.create!(
-      :domain => z98244,
-      :option => o69
-    )
-
-    z476 = DomainMap.create!(
-      :domain => z98247,
-      :option => o69
-    )
-
-    z477 = DomainMap.create!(
-      :domain => z98248,
-      :option => o69
-    )
-
-    z478 = DomainMap.create!(
-      :domain => z98262,
-      :option => o69
-    )
-
-    z479 = DomainMap.create!(
-      :domain => z98264,
-      :option => o69
-    )
-
-    z480 = DomainMap.create!(
-      :domain => z98266,
-      :option => o69
-    )
-
-    z481 = DomainMap.create!(
-      :domain => z98276,
-      :option => o69
-    )
-
-    z482 = DomainMap.create!(
-      :domain => z98281,
-      :option => o69
-    )
-
-    z483 = DomainMap.create!(
-      :domain => z98295,
-      :option => o69
-    )
-
-o70 = Option.create!(
-  :name => 'Whatcom County Independent Salary Commission',
-  :short_name => 'Salary Commission',
-  :description => 'The Whatcom County Council has proposed an
-    amendment to the Whatcom County Charter concerning establishment
-    of an independent salary commission. This measure would establish
-    an independent salary commission to fix the compensation of
-    Whatcom County elected officials, subject to a referendum by the
-    people.',
-  :domain => 'Whatcom County',
-  :domain_short => 'Whatcom County',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Whcm 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z484 = DomainMap.create!(
-      :domain => z98220,
-      :option => o70
-    )
-
-    z485 = DomainMap.create!(
-      :domain => z98225,
-      :option => o70
-    )
-
-    z486 = DomainMap.create!(
-      :domain => z98226,
-      :option => o70
-    )
-
-    z487 = DomainMap.create!(
-      :domain => z98227,
-      :option => o70
-    )
-
-    z488 = DomainMap.create!(
-      :domain => z98228,
-      :option => o70
-    )
-
-    z489 = DomainMap.create!(
-      :domain => z98229,
-      :option => o70
-    )
-
-    z490 = DomainMap.create!(
-      :domain => z98230,
-      :option => o70
-    )
-
-    z491 = DomainMap.create!(
-      :domain => z98231,
-      :option => o70
-    )
-
-    z492 = DomainMap.create!(
-      :domain => z98240,
-      :option => o70
-    )
-
-    z493 = DomainMap.create!(
-      :domain => z98244,
-      :option => o70
-    )
-
-    z494 = DomainMap.create!(
-      :domain => z98247,
-      :option => o70
-    )
-
-    z495 = DomainMap.create!(
-      :domain => z98248,
-      :option => o70
-    )
-
-    z496 = DomainMap.create!(
-      :domain => z98262,
-      :option => o70
-    )
-
-    z497 = DomainMap.create!(
-      :domain => z98264,
-      :option => o70
-    )
-
-    z498 = DomainMap.create!(
-      :domain => z98266,
-      :option => o70
-    )
-
-    z499 = DomainMap.create!(
-      :domain => z98276,
-      :option => o70
-    )
-
-    z500 = DomainMap.create!(
-      :domain => z98281,
-      :option => o70
-    )
-
-    z501 = DomainMap.create!(
-      :domain => z98295,
-      :option => o70
-    )
-
-o71 = Option.create!(
-  :name => 'Northwest Park and Recreation District No. 2 Levy',
-  :short_name => 'Parks Levy',
-  :description => 'The Board of Commissioners of Northwest Park and
-    Recreation District No. 2 adopted Resolution No. 2011-01
-    concerning a proposition to impose a property tax levy of $0.10
-    per $1,000.00 of assessed valuation for a six (6) year period
-    (2012-2017) to fund staffing, operations, maintenance and capital
-    improvements in order to provide programs, an activity center and
-    park and recreational improvements for people of all ages in the
-    greater Blaine-Birch Bay area.',
-  :domain => 'Whatcom County',
-  :domain_short => 'Northwest Park and Recreation District 2',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'NWPR 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z502 = DomainMap.create!(
-      :domain => z98220,
-      :option => o71
-    )
-
-    z503 = DomainMap.create!(
-      :domain => z98225,
-      :option => o71
-    )
-
-    z504 = DomainMap.create!(
-      :domain => z98226,
-      :option => o71
-    )
-
-    z505 = DomainMap.create!(
-      :domain => z98227,
-      :option => o71
-    )
-
-    z506 = DomainMap.create!(
-      :domain => z98228,
-      :option => o71
-    )
-
-    z507 = DomainMap.create!(
-      :domain => z98229,
-      :option => o71
-    )
-
-    z508 = DomainMap.create!(
-      :domain => z98230,
-      :option => o71
-    )
-
-    z509 = DomainMap.create!(
-      :domain => z98231,
-      :option => o71
-    )
-
-    z510 = DomainMap.create!(
-      :domain => z98240,
-      :option => o71
-    )
-
-    z511 = DomainMap.create!(
-      :domain => z98244,
-      :option => o71
-    )
-
-    z512 = DomainMap.create!(
-      :domain => z98247,
-      :option => o71
-    )
-
-    z513 = DomainMap.create!(
-      :domain => z98248,
-      :option => o71
-    )
-
-    z514 = DomainMap.create!(
-      :domain => z98262,
-      :option => o71
-    )
-
-    z515 = DomainMap.create!(
-      :domain => z98264,
-      :option => o71
-    )
-
-    z516 = DomainMap.create!(
-      :domain => z98266,
-      :option => o71
-    )
-
-    z517 = DomainMap.create!(
-      :domain => z98276,
-      :option => o71
-    )
-
-    z518 = DomainMap.create!(
-      :domain => z98281,
-      :option => o71
-    )
-
-    z519 = DomainMap.create!(
-      :domain => z98295,
-      :option => o71
-    )
-
-o72 = Option.create!(
-  :name => 'Skamania County Fire District Levy',
-  :short_name => 'Fire Dist Levy',
-  :description => 'Permanent Levy Lid Lift The Skamania County Fire
-    District No. 5 Board of Fire Commissioners adopted Resolution
-    2011-02 to recommend increasing the District&rsquo;s property tax
-    levy. This proposition would allow Fire District No. 5 to increase
-    its expense levy to $0.90 per thousand dollars of assessed value
-    (current level of $0.66) for each collection beginning in
-    2012. Levy increases in subsequent years would be subject to
-    limitations under RCW 84.55. Funds would support equipment
-    replacement, maintenance and operations.',
-  :domain => 'Skamania County',
-  :domain_short => 'Fire Dist #5',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'SFD 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z520 = DomainMap.create!(
-      :domain => z98610,
-      :option => o72
-    )
-
-    z521 = DomainMap.create!(
-      :domain => z98639,
-      :option => o72
-    )
-
-    z522 = DomainMap.create!(
-      :domain => z98648,
-      :option => o72
-    )
-
-    z523 = DomainMap.create!(
-      :domain => z98651,
-      :option => o72
-    )
-
-o73 = Option.create!(
-  :name => 'Skamania School District Levy',
-  :short_name => 'School Levy',
-  :description => 'Educational Programs &amp; Operations Levy The
-    Board of Directors of Skamania School District No. 2 adopted
-    Resolution No. 2011-02 concerning this proposition. This
-    proposition authorizes the District to levy the following excess
-    taxes on all taxable property within the District, to support the
-    District&rsquo;s maintenance and operations: Collection Year 2012,
-    Estimated Levy Rate per $1,000 Assessed Value $1.35, Levy Amount
-    $175,000; Collection Year 2013, Estimated Levy Rate per $1,000
-    Assessed Value $1.32, Levy Amount $175,000.',
-  :domain => 'Skamania County',
-  :domain_short => 'Skamania School',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'SSD 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z524 = DomainMap.create!(
-      :domain => z98610,
-      :option => o73
-    )
-
-    z525 = DomainMap.create!(
-      :domain => z98639,
-      :option => o73
-    )
-
-    z526 = DomainMap.create!(
-      :domain => z98648,
-      :option => o73
-    )
-
-    z527 = DomainMap.create!(
-      :domain => z98651,
-      :option => o73
-    )
-
-o74 = Option.create!(
-  :name => 'Real Estate Excise Tax Extension',
-  :short_name => 'Land Bank',
-  :description => 'A Petition has been submitted regarding the time
-    period for the conservation area real estate excise tax. This
-    measure would extend real estate excise tax paid by the purchaser,
-    in the amount of one percent of the purchase price, for an
-    additional 12 years, through December 5, 2026, to be used by the
-    Land Bank for the acquisition and maintenance of conservation
-    areas.',
-  :domain => 'San Juan County',
-  :domain_short => 'San Juan County',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'SJ 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z528 = DomainMap.create!(
-      :domain => z98222,
-      :option => o74
-    )
-
-    z529 = DomainMap.create!(
-      :domain => z98243,
-      :option => o74
-    )
-
-    z530 = DomainMap.create!(
-      :domain => z98245,
-      :option => o74
-    )
-
-    z531 = DomainMap.create!(
-      :domain => z98250,
-      :option => o74
-    )
-
-    z532 = DomainMap.create!(
-      :domain => z98261,
-      :option => o74
-    )
-
-    z533 = DomainMap.create!(
-      :domain => z98279,
-      :option => o74
-    )
-
-    z534 = DomainMap.create!(
-      :domain => z98280,
-      :option => o74
-    )
-
-    z535 = DomainMap.create!(
-      :domain => z98286,
-      :option => o74
-    )
-
-    z536 = DomainMap.create!(
-      :domain => z98297,
-      :option => o74
-    )
-
-o75 = Option.create!(
-  :name => 'Solid Waste User Charge',
-  :short_name => 'Solid Waste Charge',
-  :description => 'Shall San Juan County, Washington, impose a solid
-    waste user charge for a period of 15 years upon real property in
-    its unincorporated areas in proportion with its calculated burden
-    of solid waste to fund current and future maintenance and
-    operations, including operational and capital reserves and capital
-    needs of the County system of solid waste disposal, and debt
-    service, coverage ratios and reserves for warrants, notes, bonds
-    and other evidences of indebtedness which are related to the
-    management of solid waste all as provided by Ordinance
-    No. 19-2011?',
-  :domain => 'San Juan County',
-  :domain_short => 'San Juan County',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'SJ 2',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z537 = DomainMap.create!(
-      :domain => z98222,
-      :option => o75
-    )
-
-    z538 = DomainMap.create!(
-      :domain => z98243,
-      :option => o75
-    )
-
-    z539 = DomainMap.create!(
-      :domain => z98245,
-      :option => o75
-    )
-
-    z540 = DomainMap.create!(
-      :domain => z98250,
-      :option => o75
-    )
-
-    z541 = DomainMap.create!(
-      :domain => z98261,
-      :option => o75
-    )
-
-    z542 = DomainMap.create!(
-      :domain => z98279,
-      :option => o75
-    )
-
-    z543 = DomainMap.create!(
-      :domain => z98280,
-      :option => o75
-    )
-
-    z544 = DomainMap.create!(
-      :domain => z98286,
-      :option => o75
-    )
-
-    z545 = DomainMap.create!(
-      :domain => z98297,
-      :option => o75
-    )
-
-o76 = Option.create!(
-  :name => 'Orcas Island School Levy',
-  :short_name => 'School Levy',
-  :description => 'The Board of Directors of Orcas Island School
-    District No. 137 adopted Resolution No. 2011-09 authorizing a
-    capital levy for facility improvements. This measure provides
-    funds for the repayment of the principal due on the bonds issued
-    by the District for certain renovations of the Nellie S. Milton
-    Elementary School and authorizes the following excess levy for one
-    year on all taxable property within the District: Collection Year
-    2012, Approximate Levy Rate/$1,000 Assessed Value $0.28, Levy
-    Amount $900,000.',
-  :domain => 'San Juan County',
-  :domain_short => 'Orcas Island School District #137',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'SJ 3',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z546 = DomainMap.create!(
-      :domain => z98222,
-      :option => o76
-    )
-
-    z547 = DomainMap.create!(
-      :domain => z98243,
-      :option => o76
-    )
-
-    z548 = DomainMap.create!(
-      :domain => z98245,
-      :option => o76
-    )
-
-    z549 = DomainMap.create!(
-      :domain => z98250,
-      :option => o76
-    )
-
-    z550 = DomainMap.create!(
-      :domain => z98261,
-      :option => o76
-    )
-
-    z551 = DomainMap.create!(
-      :domain => z98279,
-      :option => o76
-    )
-
-    z552 = DomainMap.create!(
-      :domain => z98280,
-      :option => o76
-    )
-
-    z553 = DomainMap.create!(
-      :domain => z98286,
-      :option => o76
-    )
-
-    z554 = DomainMap.create!(
-      :domain => z98297,
-      :option => o76
-    )
-
-o77 = Option.create!(
-  :name => 'EMS Levy for Fire Protection District 3',
-  :short_name => 'EMS Levy',
-  :description => 'Shall Grays Harbor County Fire District No. 3 levy
-    upon the regular taxable property within the District, in addition
-    to the regular levy; the sum of $36,000 (approximately $.0540 per
-    thousand of assessed valuation) for the year of 2012 for the
-    purpose of providing emergency care and ambulance services to its
-    citizens?',
-  :domain => 'Grays Harbor County',
-  :domain_short => 'Fire District 3',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD3 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z555 = DomainMap.create!(
-      :domain => z98520,
-      :option => o77
-    )
-
-    z556 = DomainMap.create!(
-      :domain => z98526,
-      :option => o77
-    )
-
-    z557 = DomainMap.create!(
-      :domain => z98535,
-      :option => o77
-    )
-
-    z558 = DomainMap.create!(
-      :domain => z98536,
-      :option => o77
-    )
-
-    z559 = DomainMap.create!(
-      :domain => z98537,
-      :option => o77
-    )
-
-    z560 = DomainMap.create!(
-      :domain => z98541,
-      :option => o77
-    )
-
-    z561 = DomainMap.create!(
-      :domain => z98547,
-      :option => o77
-    )
-
-    z562 = DomainMap.create!(
-      :domain => z98550,
-      :option => o77
-    )
-
-    z563 = DomainMap.create!(
-      :domain => z98552,
-      :option => o77
-    )
-
-    z564 = DomainMap.create!(
-      :domain => z98557,
-      :option => o77
-    )
-
-    z565 = DomainMap.create!(
-      :domain => z98559,
-      :option => o77
-    )
-
-    z566 = DomainMap.create!(
-      :domain => z98562,
-      :option => o77
-    )
-
-    z567 = DomainMap.create!(
-      :domain => z98563,
-      :option => o77
-    )
-
-    z568 = DomainMap.create!(
-      :domain => z98566,
-      :option => o77
-    )
-
-    z569 = DomainMap.create!(
-      :domain => z98568,
-      :option => o77
-    )
-
-    z570 = DomainMap.create!(
-      :domain => z98569,
-      :option => o77
-    )
-
-    z571 = DomainMap.create!(
-      :domain => z98571,
-      :option => o77
-    )
-
-    z572 = DomainMap.create!(
-      :domain => z98575,
-      :option => o77
-    )
-
-    z573 = DomainMap.create!(
-      :domain => z98583,
-      :option => o77
-    )
-
-    z574 = DomainMap.create!(
-      :domain => z98587,
-      :option => o77
-    )
-
-    z575 = DomainMap.create!(
-      :domain => z98595,
-      :option => o77
-    )
-
-o78 = Option.create!(
-  :name => 'EMS Levy for Fire Protection District 8',
-  :short_name => 'EMS Levy',
-  :description => 'Shall Grays Harbor County Fire Protection District
-    No. 8 be authorized to levy a regular property tax in the sum of
-    $0.50 per one thousand dollars of assessed valuation each year for
-    six consecutive years beginning in 2011 to be collected in 2012,
-    for the provision of no fee Basic Life Support Emergency Medical
-    Service Ambulance, all as provided in Grays Harbor County Fire
-    Protection District No. 8 Resolution No. 2010-012 and the laws of
-    the State of Washington, RCW 84.52.069?',
-  :domain => 'Grays Harbor County',
-  :domain_short => 'Fire District 8',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD8 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z576 = DomainMap.create!(
-      :domain => z98520,
-      :option => o78
-    )
-
-    z577 = DomainMap.create!(
-      :domain => z98526,
-      :option => o78
-    )
-
-    z578 = DomainMap.create!(
-      :domain => z98535,
-      :option => o78
-    )
-
-    z579 = DomainMap.create!(
-      :domain => z98536,
-      :option => o78
-    )
-
-    z580 = DomainMap.create!(
-      :domain => z98537,
-      :option => o78
-    )
-
-    z581 = DomainMap.create!(
-      :domain => z98541,
-      :option => o78
-    )
-
-    z582 = DomainMap.create!(
-      :domain => z98547,
-      :option => o78
-    )
-
-    z583 = DomainMap.create!(
-      :domain => z98550,
-      :option => o78
-    )
-
-    z584 = DomainMap.create!(
-      :domain => z98552,
-      :option => o78
-    )
-
-    z585 = DomainMap.create!(
-      :domain => z98557,
-      :option => o78
-    )
-
-    z586 = DomainMap.create!(
-      :domain => z98559,
-      :option => o78
-    )
-
-    z587 = DomainMap.create!(
-      :domain => z98562,
-      :option => o78
-    )
-
-    z588 = DomainMap.create!(
-      :domain => z98563,
-      :option => o78
-    )
-
-    z589 = DomainMap.create!(
-      :domain => z98566,
-      :option => o78
-    )
-
-    z590 = DomainMap.create!(
-      :domain => z98568,
-      :option => o78
-    )
-
-    z591 = DomainMap.create!(
-      :domain => z98569,
-      :option => o78
-    )
-
-    z592 = DomainMap.create!(
-      :domain => z98571,
-      :option => o78
-    )
-
-    z593 = DomainMap.create!(
-      :domain => z98575,
-      :option => o78
-    )
-
-    z594 = DomainMap.create!(
-      :domain => z98583,
-      :option => o78
-    )
-
-    z595 = DomainMap.create!(
-      :domain => z98587,
-      :option => o78
-    )
-
-    z596 = DomainMap.create!(
-      :domain => z98595,
-      :option => o78
-    )
-
-o79 = Option.create!(
-  :name => 'EMS Levy for Fire Protection District 11 - Proposition 1',
-  :short_name => 'EMS Levy',
-  :description => 'Shall Grays Harbor County Fire Protection District
-    No. 11 be authorized to levy a regular property tax in the sum of
-    $21,500 or about $0.25 or less per one thousand dollars of
-    assessed valuation for 2011 to be collected in 2012, for the
-    provision of emergency medical care and ambulance/aid car service,
-    all as provided in Grays Harbor County Fire Protection District
-    No. 11 Resolution No. 2011-03 and the laws of the State of
-    Washington, RCW 84.52.069?',
-  :domain => 'Grays Harbor County',
-  :domain_short => 'Fire District 11',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD11 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z597 = DomainMap.create!(
-      :domain => z98520,
-      :option => o79
-    )
-
-    z598 = DomainMap.create!(
-      :domain => z98526,
-      :option => o79
-    )
-
-    z599 = DomainMap.create!(
-      :domain => z98535,
-      :option => o79
-    )
-
-    z600 = DomainMap.create!(
-      :domain => z98536,
-      :option => o79
-    )
-
-    z601 = DomainMap.create!(
-      :domain => z98537,
-      :option => o79
-    )
-
-    z602 = DomainMap.create!(
-      :domain => z98541,
-      :option => o79
-    )
-
-    z603 = DomainMap.create!(
-      :domain => z98547,
-      :option => o79
-    )
-
-    z604 = DomainMap.create!(
-      :domain => z98550,
-      :option => o79
-    )
-
-    z605 = DomainMap.create!(
-      :domain => z98552,
-      :option => o79
-    )
-
-    z606 = DomainMap.create!(
-      :domain => z98557,
-      :option => o79
-    )
-
-    z607 = DomainMap.create!(
-      :domain => z98559,
-      :option => o79
-    )
-
-    z608 = DomainMap.create!(
-      :domain => z98562,
-      :option => o79
-    )
-
-    z609 = DomainMap.create!(
-      :domain => z98563,
-      :option => o79
-    )
-
-    z610 = DomainMap.create!(
-      :domain => z98566,
-      :option => o79
-    )
-
-    z611 = DomainMap.create!(
-      :domain => z98568,
-      :option => o79
-    )
-
-    z612 = DomainMap.create!(
-      :domain => z98569,
-      :option => o79
-    )
-
-    z613 = DomainMap.create!(
-      :domain => z98571,
-      :option => o79
-    )
-
-    z614 = DomainMap.create!(
-      :domain => z98575,
-      :option => o79
-    )
-
-    z615 = DomainMap.create!(
-      :domain => z98583,
-      :option => o79
-    )
-
-    z616 = DomainMap.create!(
-      :domain => z98587,
-      :option => o79
-    )
-
-    z617 = DomainMap.create!(
-      :domain => z98595,
-      :option => o79
-    )
-
-o80 = Option.create!(
-  :name => 'EMS Levy for Fire Protection District 11 - Proposition 2',
-  :short_name => 'EMS Levy',
-  :description => 'Shall Grays Harbor County Fire Protection District
-    No. 11 levy the regular taxable property within the District, in
-    addition to its regular levy, the sum of $70,000 or about $.60 or
-    less per thousand dollars of assessed value for the year 2012 for
-    the purpose of providing emergency medical care and ambulance/aid
-    car service to its citizens, all as provided in Grays Harbor
-    County Fire Protection District No. 11 Resolution No. 2011-01 and
-    the laws of the State of Washington, RCW 84.52.069?',
-  :domain => 'Grays Harbor County',
-  :domain_short => 'Fire District 11',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD11 2',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z618 = DomainMap.create!(
-      :domain => z98520,
-      :option => o80
-    )
-
-    z619 = DomainMap.create!(
-      :domain => z98526,
-      :option => o80
-    )
-
-    z620 = DomainMap.create!(
-      :domain => z98535,
-      :option => o80
-    )
-
-    z621 = DomainMap.create!(
-      :domain => z98536,
-      :option => o80
-    )
-
-    z622 = DomainMap.create!(
-      :domain => z98537,
-      :option => o80
-    )
-
-    z623 = DomainMap.create!(
-      :domain => z98541,
-      :option => o80
-    )
-
-    z624 = DomainMap.create!(
-      :domain => z98547,
-      :option => o80
-    )
-
-    z625 = DomainMap.create!(
-      :domain => z98550,
-      :option => o80
-    )
-
-    z626 = DomainMap.create!(
-      :domain => z98552,
-      :option => o80
-    )
-
-    z627 = DomainMap.create!(
-      :domain => z98557,
-      :option => o80
-    )
-
-    z628 = DomainMap.create!(
-      :domain => z98559,
-      :option => o80
-    )
-
-    z629 = DomainMap.create!(
-      :domain => z98562,
-      :option => o80
-    )
-
-    z630 = DomainMap.create!(
-      :domain => z98563,
-      :option => o80
-    )
-
-    z631 = DomainMap.create!(
-      :domain => z98566,
-      :option => o80
-    )
-
-    z632 = DomainMap.create!(
-      :domain => z98568,
-      :option => o80
-    )
-
-    z633 = DomainMap.create!(
-      :domain => z98569,
-      :option => o80
-    )
-
-    z634 = DomainMap.create!(
-      :domain => z98571,
-      :option => o80
-    )
-
-    z635 = DomainMap.create!(
-      :domain => z98575,
-      :option => o80
-    )
-
-    z636 = DomainMap.create!(
-      :domain => z98583,
-      :option => o80
-    )
-
-    z637 = DomainMap.create!(
-      :domain => z98587,
-      :option => o80
-    )
-
-    z638 = DomainMap.create!(
-      :domain => z98595,
-      :option => o80
-    )
-
-o81 = Option.create!(
-  :name => 'EMS Levy for Fire Protection District 12',
-  :short_name => 'EMS Levy',
-  :description => 'Shall Grays Harbor County Fire Protection District
-    No. 12 be authorized to levy a regular property tax in the sum of
-    $.50 (maximum) per $1,000 assessed valuation each year for six
-    consecutive years beginning in 2011 to be collected in 2012 for
-    the provision of Emergency Medical Services all as provided in
-    Grays Harbor County Fire Protection District No. 12 Resolution
-    No. 11-2 and the Laws of the State of Washington, RCW 84.52.069?',
-  :domain => 'Grays Harbor County',
-  :domain_short => 'Fire District 12',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD12 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z639 = DomainMap.create!(
-      :domain => z98520,
-      :option => o81
-    )
-
-    z640 = DomainMap.create!(
-      :domain => z98526,
-      :option => o81
-    )
-
-    z641 = DomainMap.create!(
-      :domain => z98535,
-      :option => o81
-    )
-
-    z642 = DomainMap.create!(
-      :domain => z98536,
-      :option => o81
-    )
-
-    z643 = DomainMap.create!(
-      :domain => z98537,
-      :option => o81
-    )
-
-    z644 = DomainMap.create!(
-      :domain => z98541,
-      :option => o81
-    )
-
-    z645 = DomainMap.create!(
-      :domain => z98547,
-      :option => o81
-    )
-
-    z646 = DomainMap.create!(
-      :domain => z98550,
-      :option => o81
-    )
-
-    z647 = DomainMap.create!(
-      :domain => z98552,
-      :option => o81
-    )
-
-    z648 = DomainMap.create!(
-      :domain => z98557,
-      :option => o81
-    )
-
-    z649 = DomainMap.create!(
-      :domain => z98559,
-      :option => o81
-    )
-
-    z650 = DomainMap.create!(
-      :domain => z98562,
-      :option => o81
-    )
-
-    z651 = DomainMap.create!(
-      :domain => z98563,
-      :option => o81
-    )
-
-    z652 = DomainMap.create!(
-      :domain => z98566,
-      :option => o81
-    )
-
-    z653 = DomainMap.create!(
-      :domain => z98568,
-      :option => o81
-    )
-
-    z654 = DomainMap.create!(
-      :domain => z98569,
-      :option => o81
-    )
-
-    z655 = DomainMap.create!(
-      :domain => z98571,
-      :option => o81
-    )
-
-    z656 = DomainMap.create!(
-      :domain => z98575,
-      :option => o81
-    )
-
-    z657 = DomainMap.create!(
-      :domain => z98583,
-      :option => o81
-    )
-
-    z658 = DomainMap.create!(
-      :domain => z98587,
-      :option => o81
-    )
-
-    z659 = DomainMap.create!(
-      :domain => z98595,
-      :option => o81
-    )
-
-o82 = Option.create!(
-  :name => 'EMS Levy for Fire Protection District 14',
-  :short_name => 'EMS Levy',
-  :description => 'Shall Grays Harbor County Fire Protection District
-    No. 14 be authorized to levy upon the regular taxable property
-    within the district, in addition to the regular levy, the sum of
-    $54,300.00 or approximately $0.44 per $1,000 assessed valuation,
-    for collection in 2012 for the provision of emergency medical care
-    and ambulance services all as provided in Grays Harbor County Fire
-    Protection District No. 14 Resolution No. 11-11 and the Laws of
-    the State of Washington?',
-  :domain => 'Grays Harbor County',
-  :domain_short => 'Fire District 14',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD14 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z660 = DomainMap.create!(
-      :domain => z98520,
-      :option => o82
-    )
-
-    z661 = DomainMap.create!(
-      :domain => z98526,
-      :option => o82
-    )
-
-    z662 = DomainMap.create!(
-      :domain => z98535,
-      :option => o82
-    )
-
-    z663 = DomainMap.create!(
-      :domain => z98536,
-      :option => o82
-    )
-
-    z664 = DomainMap.create!(
-      :domain => z98537,
-      :option => o82
-    )
-
-    z665 = DomainMap.create!(
-      :domain => z98541,
-      :option => o82
-    )
-
-    z666 = DomainMap.create!(
-      :domain => z98547,
-      :option => o82
-    )
-
-    z667 = DomainMap.create!(
-      :domain => z98550,
-      :option => o82
-    )
-
-    z668 = DomainMap.create!(
-      :domain => z98552,
-      :option => o82
-    )
-
-    z669 = DomainMap.create!(
-      :domain => z98557,
-      :option => o82
-    )
-
-    z670 = DomainMap.create!(
-      :domain => z98559,
-      :option => o82
-    )
-
-    z671 = DomainMap.create!(
-      :domain => z98562,
-      :option => o82
-    )
-
-    z672 = DomainMap.create!(
-      :domain => z98563,
-      :option => o82
-    )
-
-    z673 = DomainMap.create!(
-      :domain => z98566,
-      :option => o82
-    )
-
-    z674 = DomainMap.create!(
-      :domain => z98568,
-      :option => o82
-    )
-
-    z675 = DomainMap.create!(
-      :domain => z98569,
-      :option => o82
-    )
-
-    z676 = DomainMap.create!(
-      :domain => z98571,
-      :option => o82
-    )
-
-    z677 = DomainMap.create!(
-      :domain => z98575,
-      :option => o82
-    )
-
-    z678 = DomainMap.create!(
-      :domain => z98583,
-      :option => o82
-    )
-
-    z679 = DomainMap.create!(
-      :domain => z98587,
-      :option => o82
-    )
-
-    z680 = DomainMap.create!(
-      :domain => z98595,
-      :option => o82
-    )
-
-o83 = Option.create!(
-  :name => 'Timberland Regional Library District Annexation',
-  :short_name => 'Library Dist',
-  :description => 'Shall the City of Hoquiam be annexed to and be a
-    part of the Timberland Regional Library District? ',
-  :domain => 'City of Hoquiam',
-  :domain_short => 'City of Hoquiam - All',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Lib 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z681 = DomainMap.create!(
-      :domain => z98550,
-      :option => o83
-    )
-
-o84 = Option.create!(
-  :name => 'Grant County Cemetery District No. 2 Levy',
-  :short_name => 'Cemetary Dist.',
-  :description => 'The Board of Commissioners of Grant County Cemetery
-    District No. 2 adopted Resolution No. 11-1, concerning a
-    proposition to finance maintenance and operation expenses. This
-    proposition would authorize the District to levy the following
-    excess taxes upon all taxable property within the District, for
-    the support of the District&rsquo;s maintenance and operation
-    expenses: Collection Year 2012, Approximate Levy Rate Per Levy
-    Amount $1000 Assessed Value $0.22500, Total $8000.00.  All as
-    provided in Resolution No. 11-1. ',
-  :domain => 'Grant County',
-  :domain_short => 'Wilson Creek Cemetery Dist #2',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Cem 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z682 = DomainMap.create!(
-      :domain => z98823,
-      :option => o84
-    )
-
-    z683 = DomainMap.create!(
-      :domain => z98824,
-      :option => o84
-    )
-
-    z684 = DomainMap.create!(
-      :domain => z98832,
-      :option => o84
-    )
-
-    z685 = DomainMap.create!(
-      :domain => z98837,
-      :option => o84
-    )
-
-    z686 = DomainMap.create!(
-      :domain => z98848,
-      :option => o84
-    )
-
-    z687 = DomainMap.create!(
-      :domain => z98851,
-      :option => o84
-    )
-
-    z688 = DomainMap.create!(
-      :domain => z98853,
-      :option => o84
-    )
-
-    z689 = DomainMap.create!(
-      :domain => z98857,
-      :option => o84
-    )
-
-    z690 = DomainMap.create!(
-      :domain => z98860,
-      :option => o84
-    )
-
-    z691 = DomainMap.create!(
-      :domain => z99115,
-      :option => o84
-    )
-
-    z692 = DomainMap.create!(
-      :domain => z99123,
-      :option => o84
-    )
-
-    z693 = DomainMap.create!(
-      :domain => z99133,
-      :option => o84
-    )
-
-    z694 = DomainMap.create!(
-      :domain => z99135,
-      :option => o84
-    )
-
-    z695 = DomainMap.create!(
-      :domain => z99321,
-      :option => o84
-    )
-
-    z696 = DomainMap.create!(
-      :domain => z99349,
-      :option => o84
-    )
-
-    z697 = DomainMap.create!(
-      :domain => z99357,
-      :option => o84
-    )
-
-o85 = Option.create!(
-  :name => 'Grant County Port District Commissioner Election Procedures',
-  :short_name => 'Port District',
-  :description => 'Shall Grant County Port District No. 5, which is
-    currently divided into three (3) separate commissioner districts,
-    cease using the three (3) commissioner districts so as to permit
-    the election of three (3) commissioners At Large, from anywhere
-    within the district boundaries?  All as provided in Resolution
-    No. 2011-2.',
-  :domain => 'Grant County',
-  :domain_short => 'Grant County Port Dist #5',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Port 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z698 = DomainMap.create!(
-      :domain => z98823,
-      :option => o85
-    )
-
-    z699 = DomainMap.create!(
-      :domain => z98824,
-      :option => o85
-    )
-
-    z700 = DomainMap.create!(
-      :domain => z98832,
-      :option => o85
-    )
-
-    z701 = DomainMap.create!(
-      :domain => z98837,
-      :option => o85
-    )
-
-    z702 = DomainMap.create!(
-      :domain => z98848,
-      :option => o85
-    )
-
-    z703 = DomainMap.create!(
-      :domain => z98851,
-      :option => o85
-    )
-
-    z704 = DomainMap.create!(
-      :domain => z98853,
-      :option => o85
-    )
-
-    z705 = DomainMap.create!(
-      :domain => z98857,
-      :option => o85
-    )
-
-    z706 = DomainMap.create!(
-      :domain => z98860,
-      :option => o85
-    )
-
-    z707 = DomainMap.create!(
-      :domain => z99115,
-      :option => o85
-    )
-
-    z708 = DomainMap.create!(
-      :domain => z99123,
-      :option => o85
-    )
-
-    z709 = DomainMap.create!(
-      :domain => z99133,
-      :option => o85
-    )
-
-    z710 = DomainMap.create!(
-      :domain => z99135,
-      :option => o85
-    )
-
-    z711 = DomainMap.create!(
-      :domain => z99321,
-      :option => o85
-    )
-
-    z712 = DomainMap.create!(
-      :domain => z99349,
-      :option => o85
-    )
-
-    z713 = DomainMap.create!(
-      :domain => z99357,
-      :option => o85
-    )
-
-o86 = Option.create!(
-  :name => 'Public Safetey Sales Tax',
-  :short_name => 'Sales Tax Increase',
-  :description => 'The Shelton City Commission Passed Resolution
-    No. 1027-0811 to allow voters to decide whether to pass a
-    one-tenth of one percent public safety sales tax. If passed,
-    dollars collected shall support police patrol, school resource
-    officer, crime prevention, police equipment replacement, fire
-    suppression, emergency rescue, animal control, parking control,
-    code enforcement, police officer reserves, and associated support
-    services.',
-  :domain => 'City of Shelton',
-  :domain_short => 'City of Shelton',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Shel 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z714 = DomainMap.create!(
-      :domain => z98584,
-      :option => o86
-    )
-
-o87 = Option.create!(
-  :name => 'Mason County Fire Protection District No. 5 Levy',
-  :short_name => 'Fire Dist Levy',
-  :description => 'The Board of Commissioners for Mason County Fire
-    Protection District No. 5 adopted Resolution No. 331, concerning a
-    proposition to finance maintenance and operations expenses. This
-    proposition would authorize the District to levy taxes for
-    maintenance and operations in the amount of $2,200,000.00 per year
-    for two consecutive years beginning in 2011 to be collected in the
-    year following at an initial approximate levy rate of $1.00 per
-    $1,000.00 of assessed valuation, as provided by RCW 84.52.130.',
-  :domain => 'Mason County',
-  :domain_short => 'Fire Protection Dist 5',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD5 2',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z715 = DomainMap.create!(
-      :domain => z98524,
-      :option => o87
-    )
-
-    z716 = DomainMap.create!(
-      :domain => z98528,
-      :option => o87
-    )
-
-    z717 = DomainMap.create!(
-      :domain => z98546,
-      :option => o87
-    )
-
-    z718 = DomainMap.create!(
-      :domain => z98548,
-      :option => o87
-    )
-
-    z719 = DomainMap.create!(
-      :domain => z98555,
-      :option => o87
-    )
-
-    z720 = DomainMap.create!(
-      :domain => z98560,
-      :option => o87
-    )
-
-    z721 = DomainMap.create!(
-      :domain => z98584,
-      :option => o87
-    )
-
-    z722 = DomainMap.create!(
-      :domain => z98588,
-      :option => o87
-    )
-
-    z723 = DomainMap.create!(
-      :domain => z98592,
-      :option => o87
-    )
-
-o88 = Option.create!(
-  :name => 'Mason County Fire Protection District No. 16 Levy',
-  :short_name => 'Fire Dist Levy',
-  :description => 'The Board of Commissioners for Mason County Fire
-    Protection District No.16 adopted Resolution No. 2011-06,
-    concerning a proposition to finance maintenance and operations
-    expenses. This proposition would authorize the District to levy
-    taxes for the provision of emergency medical services pursuant to
-    RCW 84.52.069 in the amount of $0.35 per $1000.00 of assessed
-    valuation for each of ten consecutive years beginning with levy
-    year 2011 for collection starting in 2012.',
-  :domain => 'Mason County',
-  :domain_short => 'Fire Protection Dist 16',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD16 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z724 = DomainMap.create!(
-      :domain => z98524,
-      :option => o88
-    )
-
-    z725 = DomainMap.create!(
-      :domain => z98528,
-      :option => o88
-    )
-
-    z726 = DomainMap.create!(
-      :domain => z98546,
-      :option => o88
-    )
-
-    z727 = DomainMap.create!(
-      :domain => z98548,
-      :option => o88
-    )
-
-    z728 = DomainMap.create!(
-      :domain => z98555,
-      :option => o88
-    )
-
-    z729 = DomainMap.create!(
-      :domain => z98560,
-      :option => o88
-    )
-
-    z730 = DomainMap.create!(
-      :domain => z98584,
-      :option => o88
-    )
-
-    z731 = DomainMap.create!(
-      :domain => z98588,
-      :option => o88
-    )
-
-    z732 = DomainMap.create!(
-      :domain => z98592,
-      :option => o88
-    )
-
-o89 = Option.create!(
-  :name => 'Hood Canal School District Levy',
-  :short_name => 'School Levy',
-  :description => 'The Board of Directors of Hood Canal School
-    District No. 404 adopted Resolution No. 07-10-11, concerning
-    facility improvements. This proposition would fund the upgrading
-    of the District&rsquo;s network servers, hardware, software, and
-    phone systems, and authorizes the following excess levy on all
-    taxable property within the District: Approximate Levy Rate/$1,000
-    $0.2091, Collection Year 2012, Levy Amount $250,000.',
-  :domain => 'Mason County',
-  :domain_short => 'Hood Canal School 404',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'HCSD 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z733 = DomainMap.create!(
-      :domain => z98524,
-      :option => o89
-    )
-
-    z734 = DomainMap.create!(
-      :domain => z98528,
-      :option => o89
-    )
-
-    z735 = DomainMap.create!(
-      :domain => z98546,
-      :option => o89
-    )
-
-    z736 = DomainMap.create!(
-      :domain => z98548,
-      :option => o89
-    )
-
-    z737 = DomainMap.create!(
-      :domain => z98555,
-      :option => o89
-    )
-
-    z738 = DomainMap.create!(
-      :domain => z98560,
-      :option => o89
-    )
-
-    z739 = DomainMap.create!(
-      :domain => z98584,
-      :option => o89
-    )
-
-    z740 = DomainMap.create!(
-      :domain => z98588,
-      :option => o89
-    )
-
-    z741 = DomainMap.create!(
-      :domain => z98592,
-      :option => o89
-    )
-
-o90 = Option.create!(
-  :name => 'Lincoln County Fire Protection District No. 6 Levy',
-  :short_name => 'Fire Dist Levy',
-  :description => 'The Board of Commissioners of Lincoln County Fire
-    Protection District No. 6 adopted Resolution No. 2011-03
-    concerning a proposition to finance new fire fighting vehicles,
-    safety equipment, and supplies. Shall a special levy of
-    $100,000.00 be collected in each of four years in 2012, 2013,
-    2014, 2015 requiring approximately $1.32 per $1,000.00 of assessed
-    valuation?',
-  :domain => 'Lincoln County',
-  :domain_short => 'Fire District 6',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD6 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z742 = DomainMap.create!(
-      :domain => z99008,
-      :option => o90
-    )
-
-    z743 = DomainMap.create!(
-      :domain => z99029,
-      :option => o90
-    )
-
-    z744 = DomainMap.create!(
-      :domain => z99032,
-      :option => o90
-    )
-
-    z745 = DomainMap.create!(
-      :domain => z99103,
-      :option => o90
-    )
-
-    z746 = DomainMap.create!(
-      :domain => z99117,
-      :option => o90
-    )
-
-    z747 = DomainMap.create!(
-      :domain => z99122,
-      :option => o90
-    )
-
-    z748 = DomainMap.create!(
-      :domain => z99134,
-      :option => o90
-    )
-
-    z749 = DomainMap.create!(
-      :domain => z99144,
-      :option => o90
-    )
-
-    z750 = DomainMap.create!(
-      :domain => z99147,
-      :option => o90
-    )
-
-    z751 = DomainMap.create!(
-      :domain => z99154,
-      :option => o90
-    )
-
-    z752 = DomainMap.create!(
-      :domain => z99159,
-      :option => o90
-    )
-
-    z753 = DomainMap.create!(
-      :domain => z99185,
-      :option => o90
-    )
-
-o91 = Option.create!(
-  :name => 'Point Roberts Park and Recreation District Levy',
-  :short_name => 'Parks Levy',
-  :description => 'Shall a tax, of approximately $0.084065 cents per
-    thousand dollars of assessed valuation (based on 100% of true and
-    fair value) to provide $49,500 (forty-nine thousand five hundred
-    dollars) for operation and maintenance purposes be levied for the
-    Point Roberts Park and Recreation District #1 in 2011 for
-    collection in 2012, 2013, 2014, 2015, 2016, and 2017 upon all
-    taxable property within the District, all as specified in Point
-    Roberts Park and Recreation District #1, Resolution One?',
-  :domain => 'Point Roberts',
-  :domain_short => 'Point Roberts Park and Recreation District 1',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'PR 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z754 = DomainMap.create!(
-      :domain => z98281,
-      :option => o91
-    )
-
-o92 = Option.create!(
-  :name => 'Kittitas County Fire Protection District No. 1 Levy',
-  :short_name => 'Fire Dist Levy',
-  :description => 'The Board of Commissioners of Kittitas County Fire
-    Protection District No. 1 adopted Resolution 6-15-11a concerning a
-    proposition to maintain operations and hire fulltime
-    firefighters. If approved, this proposition would establish the
-    District&rsquo;s regular property tax levy at $1.50 per $1,000 of
-    assessed value to be assessed in 2011 and collected in 2012. The
-    funds will finance improved fire protection operations, pay for
-    fulltime paid fireghters and improve emergency medical service
-    levels. The maximum allowable levy in 2011 shall serve as the base
-    for subsequent levy limitations as provided in chapter 84.55 RCW,
-    all as provided in Resolution 6-15-11a.',
-  :domain => 'Kittitas County',
-  :domain_short => 'Fire District 1',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD1 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z755 = DomainMap.create!(
-      :domain => z98068,
-      :option => o92
-    )
-
-    z756 = DomainMap.create!(
-      :domain => z98922,
-      :option => o92
-    )
-
-    z757 = DomainMap.create!(
-      :domain => z98925,
-      :option => o92
-    )
-
-    z758 = DomainMap.create!(
-      :domain => z98926,
-      :option => o92
-    )
-
-    z759 = DomainMap.create!(
-      :domain => z98934,
-      :option => o92
-    )
-
-    z760 = DomainMap.create!(
-      :domain => z98940,
-      :option => o92
-    )
-
-    z761 = DomainMap.create!(
-      :domain => z98941,
-      :option => o92
-    )
-
-    z762 = DomainMap.create!(
-      :domain => z98943,
-      :option => o92
-    )
-
-    z763 = DomainMap.create!(
-      :domain => z98946,
-      :option => o92
-    )
-
-    z764 = DomainMap.create!(
-      :domain => z98950,
-      :option => o92
-    )
-
-o93 = Option.create!(
-  :name => 'Automated Traffic Safety Camera Removal',
-  :short_name => 'Traffic Cameras',
-  :description => 'City of Bellingham Initiative No. 2011-01 concerns
-    automated traffic safety cameras. This measure would require the
-    removal of any automated cameras used to issue tickets for
-    stoplight, railroad crossing, and school zone violations installed
-    under a 2010 ordinance and prohibit the installation of such
-    cameras to issue tickets, unless approved by City Council and a
-    majority of voters at an election, and limit the penalty to the
-    lowest parking ticket fine.',
-  :domain => 'City of Bellingham',
-  :domain_short => 'City of Bellingham',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Bel 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z765 = DomainMap.create!(
-      :domain => z98225,
-      :option => o93
-    )
-
-    z766 = DomainMap.create!(
-      :domain => z98226,
-      :option => o93
-    )
-
-    z767 = DomainMap.create!(
-      :domain => z98227,
-      :option => o93
-    )
-
-    z768 = DomainMap.create!(
-      :domain => z98228,
-      :option => o93
-    )
-
-    z769 = DomainMap.create!(
-      :domain => z98229,
-      :option => o93
-    )
-
-o94 = Option.create!(
-  :name => 'Automated Traffic Safety Camera Advisory Vote',
-  :short_name => 'Traffic Cameras',
-  :description => 'Initiative Measure No. 1 concerns advisory votes on
-    City ordinances authorizing automatic traffic safety cameras.
-    This Measure would require a City ordinance authorizing the use of
-    automated traffic safety cameras, enacted after January 1, 2007,
-    be subject to advisory vote at the next general election after
-    ordinance enactment.',
-  :domain => 'City of Longview',
-  :domain_short => 'City of Longview',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Lngv 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z770 = DomainMap.create!(
-      :domain => z98632,
-      :option => o94
-    )
-
-o95 = Option.create!(
-  :name => 'Automated Traffic Safety Cameras in School Zones',
-  :short_name => 'Traffic Cameras',
-  :description => 'The City Council of the City of Longview adopted
-    Resolution No. 1997 concerning the question whether or not the
-    City of Longview should continue with the use of automated traffic
-    safety cameras in school zones. This Proposition No. 2 is to
-    consider the continued use of automated traffic safety cameras in
-    school zones only after the end of the current ordinance period of
-    May 1, 2012. This proposition is an advisory vote for
-    consideration by the City Council.  Should the City of Longview
-    continue with the use of automated traffic safety cameras in
-    school zones after the end of the trial period May 1, 2012?',
-  :domain => 'City of Longview',
-  :domain_short => 'City of Longview',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Lngv 3',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z771 = DomainMap.create!(
-      :domain => z98632,
-      :option => o95
-    )
-
-o96 = Option.create!(
-  :name => 'Automated Traffic Safety Cameras - Advisory Vote',
-  :short_name => 'Traffic Cameras',
-  :description => 'The City Council of the City of Longview adopted
-    Resolution No. 1996 concerning the question whether or not the
-    City of Longview should continue with the use of automated traffic
-    safety cameras at intersections (commonly known as &ldquo;red
-    light cameras&rdquo;). This Proposition No. 1 is to consider the
-    continued use of automated traffic safety cameras at intersections
-    only after the end of the current ordinance period of May 1,
-    2012. This proposition is an advisory vote for consideration by
-    the City Council.  Should the City of Longview continue with the
-    use of automated traffic safety cameras at intersections (commonly
-    known as &ldquo;red light cameras&rdquo;) after the end of the
-    trial period May 1, 2012?',
-  :domain => 'City of Longview',
-  :domain_short => 'City of Longview',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Lngv 2',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z772 = DomainMap.create!(
-      :domain => z98632,
-      :option => o96
-    )
-
-o97 = Option.create!(
-  :name => 'Sales and Use Tax Increase for Police, Criminal Justice, and Fire Protection',
-  :short_name => 'Sales/Use Tax',
-  :description => 'The City Council of the City of Woodland adopted
-    Ordinance No. 1216 concerning a sales and use tax increase
-    pursuant to RCW 82.14.450. If approved, this proposition would
-    authorize the City to fix and impose an additional sales and use
-    tax of 0.1%, split between the City (85%) and Cowlitz and Clark
-    Counties (15%). City proceeds shall be used to construct and equip
-    a new police facility with a multi-purpose community meeting room
-    and to pay other criminal justice and fire protection costs. The
-    tax will expire after the costs of the police facility are fully
-    repaid.',
-  :domain => 'City of Woodland',
-  :domain_short => 'City of Woodland',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Wood 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z773 = DomainMap.create!(
-      :domain => z98674,
-      :option => o97
-    )
-
-o98 = Option.create!(
-  :name => 'Onalaska School Levy',
-  :short_name => 'School Levy',
-  :description => 'The Board of Directors of Onalaska School District
-    No. 300 adopted Resolution 10-11-11, concerning a proposition to
-    improve and repair school facilities. This proposition authorizes
-    the District to repair school facilities (including replacing
-    elementary school roof, resurfacing high school track, refinishing
-    middle and high school gymnasium floors, repairing asphalt, and
-    upgrading HVAC), and levy the following excess taxes for the
-    Capital Projects Fund on all taxable property within the District:
-    Collection Year 2012, Approximate Levy Rate per $1000 Assessed
-    Value $0.34, Levy Amount $150,000; Collection Year 2013,
-    Approximate Levy Rate per $1000 Assessed Value $0.34, Levy Amount
-    $150,000; Collection Year 2014, Approximate Levy Rate per $1000
-    Assessed Value $0.34, Levy Amount $150,000; Collection Year 2015,
-    Approximate Levy Rate per $1000 Assessed Value $0.34, Levy Amount
-    $150,000; as provided in Resolution 10-11-11.',
-  :domain => 'Onalaska',
-  :domain_short => 'Onalaska School District #300',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'On 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z774 = DomainMap.create!(
-      :domain => z98570,
-      :option => o98
-    )
-
-o99 = Option.create!(
-  :name => 'Formation of Port of Winlock',
-  :short_name => 'Port Formation',
-  :description => 'This measure proposes the formation of a port
-    district to be known as the Port of Winlock with the same
-    boundaries as Winlock School District #232 and a board consisting
-    of three port commissioners elected at large.Should the Port of
-    Winlock be created?',
-  :domain => 'City of Winlock',
-  :domain_short => 'Proposed Winlock Port District',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Wnlk 2',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z775 = DomainMap.create!(
-      :domain => z98596,
-      :option => o99
-    )
-
-o100 = Option.create!(
-  :name => 'Sale and Discharge of Fireworks within the City of Olympia',
-  :short_name => 'Fireworks',
-  :description => 'Shall the sale and discharge of fireworks be
-    prohibited within the City of Olympia at all times of the year
-    with the exception of public displays and the sale, use and
-    discharge of small trick and novelty devices?',
-  :domain => 'City of Olympia',
-  :domain_short => 'City of Olympia',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Oly 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z776 = DomainMap.create!(
-      :domain => z98501,
-      :option => o100
-    )
-
-    z777 = DomainMap.create!(
-      :domain => z98502,
-      :option => o100
-    )
-
-    z778 = DomainMap.create!(
-      :domain => z98503,
-      :option => o100
-    )
-
-    z779 = DomainMap.create!(
-      :domain => z98504,
-      :option => o100
-    )
-
-    z780 = DomainMap.create!(
-      :domain => z98505,
-      :option => o100
-    )
-
-    z781 = DomainMap.create!(
-      :domain => z98506,
-      :option => o100
-    )
-
-    z782 = DomainMap.create!(
-      :domain => z98507,
-      :option => o100
-    )
-
-    z783 = DomainMap.create!(
-      :domain => z98508,
-      :option => o100
-    )
-
-    z784 = DomainMap.create!(
-      :domain => z98509,
-      :option => o100
-    )
-
-    z785 = DomainMap.create!(
-      :domain => z98511,
-      :option => o100
-    )
-
-    z786 = DomainMap.create!(
-      :domain => z98512,
-      :option => o100
-    )
-
-    z787 = DomainMap.create!(
-      :domain => z98513,
-      :option => o100
-    )
-
-    z788 = DomainMap.create!(
-      :domain => z98516,
-      :option => o100
-    )
-
-    z789 = DomainMap.create!(
-      :domain => z98599,
-      :option => o100
-    )
-
-o101 = Option.create!(
-  :name => 'Lacey Fire District 3 Levy',
-  :short_name => 'Fire Dist Levy',
-  :description => 'The Board of Fire Commissioners of Fire Protection
-    District No. 3 Thurston County, Washington, (Lacey Fire District
-    3) adopted Resolution No. 812-08-11 concerning a proposition to
-    restore the District&rsquo;s regular property tax levy. The
-    proposition would authorize the District to restore its regular
-    property tax levy to an amount not to exceed $1.50 per $1,000 of
-    assessed value for collection in 2012 to pay increases in
-    operational costs, and set the limit factor at 106% for each of
-    the five succeeding years (2013-2017). The 2017 levy amount will
-    be used to calculate subsequent levy limits.',
-  :domain => 'City of Lacey',
-  :domain_short => 'Fire Protection District No. 03 - Lacey',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Lcy 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z790 = DomainMap.create!(
-      :domain => z98503,
-      :option => o101
-    )
-
-    z791 = DomainMap.create!(
-      :domain => z98506,
-      :option => o101
-    )
-
-    z792 = DomainMap.create!(
-      :domain => z98509,
-      :option => o101
-    )
-
-    z793 = DomainMap.create!(
-      :domain => z98513,
-      :option => o101
-    )
-
-    z794 = DomainMap.create!(
-      :domain => z98516,
-      :option => o101
-    )
-
-o102 = Option.create!(
-  :name => 'Fire Protection District No. 8 Bonds',
-  :short_name => 'Fire Dist Bonds',
-  :description => 'The Board of Fire Commissioners of Fire Protection
-    District No. 8 adopted Resolution No. 11-04 concerning a
-    proposition to issue general obligation bonds. This proposition
-    would authorize the District to construct and equip a full-service
-    fire station to replace two outdated garage stations and issue no
-    more than $1,200,000 of general obligation bonds maturing within
-    12 years and authorize the annual levy of excess property taxes
-    upon all taxable property within the District to pay the debt
-    service on the bonds in the 3rd through 12th years, as provided in
-    Resolution No. 11-04.',
-  :domain => 'South Bay',
-  :domain_short => 'Fire Protection District No. 08 - South Bay',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD8 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z795 = DomainMap.create!(
-      :domain => z98501,
-      :option => o102
-    )
-
-o103 = Option.create!(
-  :name => 'Spokane Regional Animal Protection Shelter.',
-  :short_name => 'Animal Shelter',
-  :description => 'The Board of Spokane County Commissioners adopted
-    Resolution No. 2011-0679, concerning a proposition to replace the
-    Spokane Regional Animal Protection Shelter. This proposition would
-    increase the regular property tax levy up to 5.8 cents per $1,000
-    of assessed valuation in 2012 and automatically terminate within 9
-    years or less unless reauthorized by public vote, be used
-    exclusively to replace the regional animal protection shelter,
-    result in a total authorized regular property tax levy rate of up
-    to $1.298 per $1,000 of assessed valuation for collection in 2012
-    and adjust the levy thereafter as allowed by chapter 84.55 RCW.',
-  :domain => 'Spokane County',
-  :domain_short => 'County Wide',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'SpCy 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z796 = DomainMap.create!(
-      :domain => z99001,
-      :option => o103
-    )
-
-    z797 = DomainMap.create!(
-      :domain => z99003,
-      :option => o103
-    )
-
-    z798 = DomainMap.create!(
-      :domain => z99004,
-      :option => o103
-    )
-
-    z799 = DomainMap.create!(
-      :domain => z99005,
-      :option => o103
-    )
-
-    z800 = DomainMap.create!(
-      :domain => z99006,
-      :option => o103
-    )
-
-    z801 = DomainMap.create!(
-      :domain => z99009,
-      :option => o103
-    )
-
-    z802 = DomainMap.create!(
-      :domain => z99011,
-      :option => o103
-    )
-
-    z803 = DomainMap.create!(
-      :domain => z99012,
-      :option => o103
-    )
-
-    z804 = DomainMap.create!(
-      :domain => z99014,
-      :option => o103
-    )
-
-    z805 = DomainMap.create!(
-      :domain => z99016,
-      :option => o103
-    )
-
-    z806 = DomainMap.create!(
-      :domain => z99018,
-      :option => o103
-    )
-
-    z807 = DomainMap.create!(
-      :domain => z99019,
-      :option => o103
-    )
-
-    z808 = DomainMap.create!(
-      :domain => z99020,
-      :option => o103
-    )
-
-    z809 = DomainMap.create!(
-      :domain => z99021,
-      :option => o103
-    )
-
-    z810 = DomainMap.create!(
-      :domain => z99022,
-      :option => o103
-    )
-
-    z811 = DomainMap.create!(
-      :domain => z99023,
-      :option => o103
-    )
-
-    z812 = DomainMap.create!(
-      :domain => z99025,
-      :option => o103
-    )
-
-    z813 = DomainMap.create!(
-      :domain => z99026,
-      :option => o103
-    )
-
-    z814 = DomainMap.create!(
-      :domain => z99027,
-      :option => o103
-    )
-
-    z815 = DomainMap.create!(
-      :domain => z99030,
-      :option => o103
-    )
-
-    z816 = DomainMap.create!(
-      :domain => z99031,
-      :option => o103
-    )
-
-    z817 = DomainMap.create!(
-      :domain => z99036,
-      :option => o103
-    )
-
-    z818 = DomainMap.create!(
-      :domain => z99037,
-      :option => o103
-    )
-
-    z819 = DomainMap.create!(
-      :domain => z99039,
-      :option => o103
-    )
-
-    z820 = DomainMap.create!(
-      :domain => z99201,
-      :option => o103
-    )
-
-    z821 = DomainMap.create!(
-      :domain => z99202,
-      :option => o103
-    )
-
-    z822 = DomainMap.create!(
-      :domain => z99203,
-      :option => o103
-    )
-
-    z823 = DomainMap.create!(
-      :domain => z99204,
-      :option => o103
-    )
-
-    z824 = DomainMap.create!(
-      :domain => z99205,
-      :option => o103
-    )
-
-    z825 = DomainMap.create!(
-      :domain => z99206,
-      :option => o103
-    )
-
-    z826 = DomainMap.create!(
-      :domain => z99207,
-      :option => o103
-    )
-
-    z827 = DomainMap.create!(
-      :domain => z99208,
-      :option => o103
-    )
-
-    z828 = DomainMap.create!(
-      :domain => z99209,
-      :option => o103
-    )
-
-    z829 = DomainMap.create!(
-      :domain => z99210,
-      :option => o103
-    )
-
-    z830 = DomainMap.create!(
-      :domain => z99211,
-      :option => o103
-    )
-
-    z831 = DomainMap.create!(
-      :domain => z99212,
-      :option => o103
-    )
-
-    z832 = DomainMap.create!(
-      :domain => z99213,
-      :option => o103
-    )
-
-    z833 = DomainMap.create!(
-      :domain => z99214,
-      :option => o103
-    )
-
-    z834 = DomainMap.create!(
-      :domain => z99215,
-      :option => o103
-    )
-
-    z835 = DomainMap.create!(
-      :domain => z99216,
-      :option => o103
-    )
-
-    z836 = DomainMap.create!(
-      :domain => z99217,
-      :option => o103
-    )
-
-    z837 = DomainMap.create!(
-      :domain => z99218,
-      :option => o103
-    )
-
-    z838 = DomainMap.create!(
-      :domain => z99219,
-      :option => o103
-    )
-
-    z839 = DomainMap.create!(
-      :domain => z99220,
-      :option => o103
-    )
-
-    z840 = DomainMap.create!(
-      :domain => z99223,
-      :option => o103
-    )
-
-    z841 = DomainMap.create!(
-      :domain => z99224,
-      :option => o103
-    )
-
-    z842 = DomainMap.create!(
-      :domain => z99228,
-      :option => o103
-    )
-
-    z843 = DomainMap.create!(
-      :domain => z99251,
-      :option => o103
-    )
-
-    z844 = DomainMap.create!(
-      :domain => z99252,
-      :option => o103
-    )
-
-    z845 = DomainMap.create!(
-      :domain => z99256,
-      :option => o103
-    )
-
-    z846 = DomainMap.create!(
-      :domain => z99258,
-      :option => o103
-    )
-
-    z847 = DomainMap.create!(
-      :domain => z99260,
-      :option => o103
-    )
-
-    z848 = DomainMap.create!(
-      :domain => z99299,
-      :option => o103
-    )
-
-o104 = Option.create!(
-  :name => ' Spokane County Fire Protection District No. 8 Levy',
-  :short_name => 'Fire Dist Levy',
-  :description => 'The Board of Spokane County Fire Protection
-    District No. 8 adopted Resolution 11-03, authorizing the following
-    proposition to restore a portion of funding lost due to declining
-    property values in order to maintain levels of service and to
-    adequately operate and maintain the District&rsquo;s operations,
-    facilities and emergency medical, rescue and fire services. Shall
-    the District levy a tax upon its taxable property, for maintenance
-    and operations, as authorized by RCW 84.52.130 in the amount of
-    $400,963 per year for two consecutive years beginning in 2011 to
-    be collected in the year following at an initial approximate levy
-    rate of 17 cents per thousand of assessed value (the actual levy
-    rate will be based on assessed values at the time of the
-    levies).',
-  :domain => 'Spokane County',
-  :domain_short => 'FD08',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD8 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z849 = DomainMap.create!(
-      :domain => z99001,
-      :option => o104
-    )
-
-    z850 = DomainMap.create!(
-      :domain => z99003,
-      :option => o104
-    )
-
-    z851 = DomainMap.create!(
-      :domain => z99004,
-      :option => o104
-    )
-
-    z852 = DomainMap.create!(
-      :domain => z99005,
-      :option => o104
-    )
-
-    z853 = DomainMap.create!(
-      :domain => z99006,
-      :option => o104
-    )
-
-    z854 = DomainMap.create!(
-      :domain => z99009,
-      :option => o104
-    )
-
-    z855 = DomainMap.create!(
-      :domain => z99011,
-      :option => o104
-    )
-
-    z856 = DomainMap.create!(
-      :domain => z99012,
-      :option => o104
-    )
-
-    z857 = DomainMap.create!(
-      :domain => z99014,
-      :option => o104
-    )
-
-    z858 = DomainMap.create!(
-      :domain => z99016,
-      :option => o104
-    )
-
-    z859 = DomainMap.create!(
-      :domain => z99018,
-      :option => o104
-    )
-
-    z860 = DomainMap.create!(
-      :domain => z99019,
-      :option => o104
-    )
-
-    z861 = DomainMap.create!(
-      :domain => z99020,
-      :option => o104
-    )
-
-    z862 = DomainMap.create!(
-      :domain => z99021,
-      :option => o104
-    )
-
-    z863 = DomainMap.create!(
-      :domain => z99022,
-      :option => o104
-    )
-
-    z864 = DomainMap.create!(
-      :domain => z99023,
-      :option => o104
-    )
-
-    z865 = DomainMap.create!(
-      :domain => z99025,
-      :option => o104
-    )
-
-    z866 = DomainMap.create!(
-      :domain => z99026,
-      :option => o104
-    )
-
-    z867 = DomainMap.create!(
-      :domain => z99027,
-      :option => o104
-    )
-
-    z868 = DomainMap.create!(
-      :domain => z99030,
-      :option => o104
-    )
-
-    z869 = DomainMap.create!(
-      :domain => z99031,
-      :option => o104
-    )
-
-    z870 = DomainMap.create!(
-      :domain => z99036,
-      :option => o104
-    )
-
-    z871 = DomainMap.create!(
-      :domain => z99037,
-      :option => o104
-    )
-
-    z872 = DomainMap.create!(
-      :domain => z99039,
-      :option => o104
-    )
-
-    z873 = DomainMap.create!(
-      :domain => z99201,
-      :option => o104
-    )
-
-    z874 = DomainMap.create!(
-      :domain => z99202,
-      :option => o104
-    )
-
-    z875 = DomainMap.create!(
-      :domain => z99203,
-      :option => o104
-    )
-
-    z876 = DomainMap.create!(
-      :domain => z99204,
-      :option => o104
-    )
-
-    z877 = DomainMap.create!(
-      :domain => z99205,
-      :option => o104
-    )
-
-    z878 = DomainMap.create!(
-      :domain => z99206,
-      :option => o104
-    )
-
-    z879 = DomainMap.create!(
-      :domain => z99207,
-      :option => o104
-    )
-
-    z880 = DomainMap.create!(
-      :domain => z99208,
-      :option => o104
-    )
-
-    z881 = DomainMap.create!(
-      :domain => z99209,
-      :option => o104
-    )
-
-    z882 = DomainMap.create!(
-      :domain => z99210,
-      :option => o104
-    )
-
-    z883 = DomainMap.create!(
-      :domain => z99211,
-      :option => o104
-    )
-
-    z884 = DomainMap.create!(
-      :domain => z99212,
-      :option => o104
-    )
-
-    z885 = DomainMap.create!(
-      :domain => z99213,
-      :option => o104
-    )
-
-    z886 = DomainMap.create!(
-      :domain => z99214,
-      :option => o104
-    )
-
-    z887 = DomainMap.create!(
-      :domain => z99215,
-      :option => o104
-    )
-
-    z888 = DomainMap.create!(
-      :domain => z99216,
-      :option => o104
-    )
-
-    z889 = DomainMap.create!(
-      :domain => z99217,
-      :option => o104
-    )
-
-    z890 = DomainMap.create!(
-      :domain => z99218,
-      :option => o104
-    )
-
-    z891 = DomainMap.create!(
-      :domain => z99219,
-      :option => o104
-    )
-
-    z892 = DomainMap.create!(
-      :domain => z99220,
-      :option => o104
-    )
-
-    z893 = DomainMap.create!(
-      :domain => z99223,
-      :option => o104
-    )
-
-    z894 = DomainMap.create!(
-      :domain => z99224,
-      :option => o104
-    )
-
-    z895 = DomainMap.create!(
-      :domain => z99228,
-      :option => o104
-    )
-
-    z896 = DomainMap.create!(
-      :domain => z99251,
-      :option => o104
-    )
-
-    z897 = DomainMap.create!(
-      :domain => z99252,
-      :option => o104
-    )
-
-    z898 = DomainMap.create!(
-      :domain => z99256,
-      :option => o104
-    )
-
-    z899 = DomainMap.create!(
-      :domain => z99258,
-      :option => o104
-    )
-
-    z900 = DomainMap.create!(
-      :domain => z99260,
-      :option => o104
-    )
-
-    z901 = DomainMap.create!(
-      :domain => z99299,
-      :option => o104
-    )
-
-o105 = Option.create!(
-  :name => ' Spokane County Fire Protection District No. 13 Bonds and Levy',
-  :short_name => 'Fire Dist Bonds',
-  :description => 'The Board of Fire Commissioners of Fire Protection
-    District No. 13, Spokane County, Washington adopted Resolution
-    No. 2011-1 concerning a proposition to construct a new fire
-    station. This proposition would authorize the District to
-    construct and equip a new fire station and purchase fire fighting
-    and life saving equipment; issue no more than $2,250,000 of
-    general obligation bonds maturing within 20 years; and levy annual
-    excess property taxes to repay the bonds, all as provided in
-    Resolution No. 2011-1.',
-  :domain => 'Spokane County',
-  :domain_short => 'FD13',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'FD13 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z902 = DomainMap.create!(
-      :domain => z99001,
-      :option => o105
-    )
-
-    z903 = DomainMap.create!(
-      :domain => z99003,
-      :option => o105
-    )
-
-    z904 = DomainMap.create!(
-      :domain => z99004,
-      :option => o105
-    )
-
-    z905 = DomainMap.create!(
-      :domain => z99005,
-      :option => o105
-    )
-
-    z906 = DomainMap.create!(
-      :domain => z99006,
-      :option => o105
-    )
-
-    z907 = DomainMap.create!(
-      :domain => z99009,
-      :option => o105
-    )
-
-    z908 = DomainMap.create!(
-      :domain => z99011,
-      :option => o105
-    )
-
-    z909 = DomainMap.create!(
-      :domain => z99012,
-      :option => o105
-    )
-
-    z910 = DomainMap.create!(
-      :domain => z99014,
-      :option => o105
-    )
-
-    z911 = DomainMap.create!(
-      :domain => z99016,
-      :option => o105
-    )
-
-    z912 = DomainMap.create!(
-      :domain => z99018,
-      :option => o105
-    )
-
-    z913 = DomainMap.create!(
-      :domain => z99019,
-      :option => o105
-    )
-
-    z914 = DomainMap.create!(
-      :domain => z99020,
-      :option => o105
-    )
-
-    z915 = DomainMap.create!(
-      :domain => z99021,
-      :option => o105
-    )
-
-    z916 = DomainMap.create!(
-      :domain => z99022,
-      :option => o105
-    )
-
-    z917 = DomainMap.create!(
-      :domain => z99023,
-      :option => o105
-    )
-
-    z918 = DomainMap.create!(
-      :domain => z99025,
-      :option => o105
-    )
-
-    z919 = DomainMap.create!(
-      :domain => z99026,
-      :option => o105
-    )
-
-    z920 = DomainMap.create!(
-      :domain => z99027,
-      :option => o105
-    )
-
-    z921 = DomainMap.create!(
-      :domain => z99030,
-      :option => o105
-    )
-
-    z922 = DomainMap.create!(
-      :domain => z99031,
-      :option => o105
-    )
-
-    z923 = DomainMap.create!(
-      :domain => z99036,
-      :option => o105
-    )
-
-    z924 = DomainMap.create!(
-      :domain => z99037,
-      :option => o105
-    )
-
-    z925 = DomainMap.create!(
-      :domain => z99039,
-      :option => o105
-    )
-
-    z926 = DomainMap.create!(
-      :domain => z99201,
-      :option => o105
-    )
-
-    z927 = DomainMap.create!(
-      :domain => z99202,
-      :option => o105
-    )
-
-    z928 = DomainMap.create!(
-      :domain => z99203,
-      :option => o105
-    )
-
-    z929 = DomainMap.create!(
-      :domain => z99204,
-      :option => o105
-    )
-
-    z930 = DomainMap.create!(
-      :domain => z99205,
-      :option => o105
-    )
-
-    z931 = DomainMap.create!(
-      :domain => z99206,
-      :option => o105
-    )
-
-    z932 = DomainMap.create!(
-      :domain => z99207,
-      :option => o105
-    )
-
-    z933 = DomainMap.create!(
-      :domain => z99208,
-      :option => o105
-    )
-
-    z934 = DomainMap.create!(
-      :domain => z99209,
-      :option => o105
-    )
-
-    z935 = DomainMap.create!(
-      :domain => z99210,
-      :option => o105
-    )
-
-    z936 = DomainMap.create!(
-      :domain => z99211,
-      :option => o105
-    )
-
-    z937 = DomainMap.create!(
-      :domain => z99212,
-      :option => o105
-    )
-
-    z938 = DomainMap.create!(
-      :domain => z99213,
-      :option => o105
-    )
-
-    z939 = DomainMap.create!(
-      :domain => z99214,
-      :option => o105
-    )
-
-    z940 = DomainMap.create!(
-      :domain => z99215,
-      :option => o105
-    )
-
-    z941 = DomainMap.create!(
-      :domain => z99216,
-      :option => o105
-    )
-
-    z942 = DomainMap.create!(
-      :domain => z99217,
-      :option => o105
-    )
-
-    z943 = DomainMap.create!(
-      :domain => z99218,
-      :option => o105
-    )
-
-    z944 = DomainMap.create!(
-      :domain => z99219,
-      :option => o105
-    )
-
-    z945 = DomainMap.create!(
-      :domain => z99220,
-      :option => o105
-    )
-
-    z946 = DomainMap.create!(
-      :domain => z99223,
-      :option => o105
-    )
-
-    z947 = DomainMap.create!(
-      :domain => z99224,
-      :option => o105
-    )
-
-    z948 = DomainMap.create!(
-      :domain => z99228,
-      :option => o105
-    )
-
-    z949 = DomainMap.create!(
-      :domain => z99251,
-      :option => o105
-    )
-
-    z950 = DomainMap.create!(
-      :domain => z99252,
-      :option => o105
-    )
-
-    z951 = DomainMap.create!(
-      :domain => z99256,
-      :option => o105
-    )
-
-    z952 = DomainMap.create!(
-      :domain => z99258,
-      :option => o105
-    )
-
-    z953 = DomainMap.create!(
-      :domain => z99260,
-      :option => o105
-    )
-
-    z954 = DomainMap.create!(
-      :domain => z99299,
-      :option => o105
-    )
-
-o106 = Option.create!(
-  :name => 'Change in Plan of Government',
-  :short_name => 'Council/Manager?',
-  :description => 'Proposition No. 1 concerns the adoption of the
-    Council-Manager form of government within the City of Liberty
-    Lake. The adoption of this measure would not affect the
-    City&rsquo;s eligibility to be governed under Title 35A RCW, but
-    would replace the present Mayor-Council form of government with
-    the Council-Manager form, effectively replacing the Mayor with a
-    City Manager. Shall the City of Liberty Lake adopt a
-    Council-Manager form of government?',
-  :domain => 'City of Liberty Lake',
-  :domain_short => 'City of Liberty Lake',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'LL 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z955 = DomainMap.create!(
-      :domain => z99016,
-      :option => o106
-    )
-
-    z956 = DomainMap.create!(
-      :domain => z99019,
-      :option => o106
-    )
-
-o107 = Option.create!(
-  :name => 'Rockford Fire Protection Services Levy',
-  :short_name => 'Fire Dist Levy',
-  :description => 'The Rockford Town Council enacted Resolution 11-4R
-    concerning a proposition to finance 2012 fire protection
-    services. This proposition would authorize the Town to levy an
-    excess property tax in 2012 on all taxable property within the
-    Town of Rockford at an approximate rate of $0.51 per $1,000 of
-    assessed value to raise $12,500 to be used to provide adequate
-    services in 2012.',
-  :domain => 'Town of Rockford',
-  :domain_short => 'Town of Rockford',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Rkfd 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z957 = DomainMap.create!(
-      :domain => z99030,
-      :option => o107
-    )
-
-o108 = Option.create!(
-  :name => 'Spangle Fire Protection Services Levy',
-  :short_name => 'Fire Levy',
-  :description => 'The Spangle Town Council enacted ordinance No. 398
-    concerning a proposition to finance the 2012 fire protection
-    services. This proposition would authorize the Town to levy an
-    excess property tax in 2012 on all taxable property within the
-    Town of Spangle in an approximate rate of $1.50 per $1,000 of
-    assessed value to raise $23,000 to be used to provide adequate
-    fire protection services in 2012.',
-  :domain => 'Town of Spangle',
-  :domain_short => 'Town of Spangle',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Spng 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z958 = DomainMap.create!(
-      :domain => z99031,
-      :option => o108
-    )
-
-o109 = Option.create!(
-  :name => 'Spangle Police Protection Services Levy',
-  :short_name => 'Police Levy',
-  :description => 'The Spangle Town Council enacted ordinance No. 399
-    concerning a proposition to finance the 2012 police protection
-    services. This proposition would authorize the Town to levy an
-    excess property tax in 2012 on all taxable property within the
-    Town of Spangle in an approximate rate of $1.00 per $1,000 of
-    assessed value to raise $16,000 to be used to provide adequate
-    police protection services in 2012.',
-  :domain => 'Town of Spangle',
-  :domain_short => 'Town of Spangle',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Spng 2',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z959 = DomainMap.create!(
-      :domain => z99031,
-      :option => o109
-    )
-
-o110 = Option.create!(
-  :name => 'Spangle Cemetery District #1 Levy',
-  :short_name => 'Cemetary Dist.',
-  :description => 'The Board of Directors of Spangle Cemetery District
-    #1 adopted Resolution #01-11 on June 28, 2011 concerning a
-    proposition to finance 2012 maintenance and operation
-    expenses. This proposition would authorize the District to levy
-    excess tax upon all taxable property within the District for support
-    of the District&rsquo;s maintenance and operation expenses as
-    follows: In 2011, levy a rate of approximately $0.15 per $1,000 of
-    assessed value, for collection of $12,500.00 in 2012.',
-  :domain => 'Town of Spangle',
-  :domain_short => 'CD-01 Spangle',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Cem 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z960 = DomainMap.create!(
-      :domain => z99031,
-      :option => o110
-    )
-
-o111 = Option.create!(
-  :name => 'Street Bonds and Levy',
-  :short_name => 'Street Levy',
-  :description => 'City Council Ordinance No. 11-011 authorizes a
-    proposition to issue up to $2,142,000 General Obligation Bonds to
-    finance conversion of Sprague and Appleway to two-way streets
-    between Argonne/Dishman-Mica and University Road; including
-    striping, signalization, and Americans with Disabilities Act
-    compliance; and to levy excess property taxes annually to repay
-    the bonds within a maximum term of 20 years.',
-  :domain => 'City of Spokane Valley',
-  :domain_short => 'City of Spokane Valley',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'SpVy 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z961 = DomainMap.create!(
-      :domain => z99016,
-      :option => o111
-    )
-
-    z962 = DomainMap.create!(
-      :domain => z99027,
-      :option => o111
-    )
-
-    z963 = DomainMap.create!(
-      :domain => z99037,
-      :option => o111
-    )
-
-    z964 = DomainMap.create!(
-      :domain => z99206,
-      :option => o111
-    )
-
-    z965 = DomainMap.create!(
-      :domain => z99211,
-      :option => o111
-    )
-
-    z966 = DomainMap.create!(
-      :domain => z99212,
-      :option => o111
-    )
-
-    z967 = DomainMap.create!(
-      :domain => z99213,
-      :option => o111
-    )
-
-    z968 = DomainMap.create!(
-      :domain => z99214,
-      :option => o111
-    )
-
-    z969 = DomainMap.create!(
-      :domain => z99215,
-      :option => o111
-    )
-
-    z970 = DomainMap.create!(
-      :domain => z99216,
-      :option => o111
-    )
-
-    z971 = DomainMap.create!(
-      :domain => z99223,
-      :option => o111
-    )
-
-o112 = Option.create!(
-  :name => 'Additional Sales and Use Tax',
-  :short_name => 'Sales/Use Tax',
-  :description => 'The Board of Commissioners of Stevens County,
-    Washington adopted Resolutions No. 13-2011 and No. 16-2011,
-    concerning a proposition to impose additional sales and use
-    tax. This proposition would impose a three-tenths of one percent
-    sales and use tax for collection in years 2012, 2013, 2014, 2015,
-    and 2016, would share the revenues with the cities and towns and
-    authorize the County to use its portion of revenues to fund
-    criminal justice needs such as animal control, additional police
-    protection, mitigation of congested court systems, or relief of
-    overcrowded jails, all as provided in Resolutions No. 13-2011 and
-    No. 16-2011.',
-  :domain => 'Stevens County',
-  :domain_short => 'Countywide',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Stvn 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z972 = DomainMap.create!(
-      :domain => z99013,
-      :option => o112
-    )
-
-    z973 = DomainMap.create!(
-      :domain => z99034,
-      :option => o112
-    )
-
-    z974 = DomainMap.create!(
-      :domain => z99040,
-      :option => o112
-    )
-
-    z975 = DomainMap.create!(
-      :domain => z99101,
-      :option => o112
-    )
-
-    z976 = DomainMap.create!(
-      :domain => z99109,
-      :option => o112
-    )
-
-    z977 = DomainMap.create!(
-      :domain => z99110,
-      :option => o112
-    )
-
-    z978 = DomainMap.create!(
-      :domain => z99114,
-      :option => o112
-    )
-
-    z979 = DomainMap.create!(
-      :domain => z99126,
-      :option => o112
-    )
-
-    z980 = DomainMap.create!(
-      :domain => z99129,
-      :option => o112
-    )
-
-    z981 = DomainMap.create!(
-      :domain => z99131,
-      :option => o112
-    )
-
-    z982 = DomainMap.create!(
-      :domain => z99137,
-      :option => o112
-    )
-
-    z983 = DomainMap.create!(
-      :domain => z99141,
-      :option => o112
-    )
-
-    z984 = DomainMap.create!(
-      :domain => z99148,
-      :option => o112
-    )
-
-    z985 = DomainMap.create!(
-      :domain => z99151,
-      :option => o112
-    )
-
-    z986 = DomainMap.create!(
-      :domain => z99157,
-      :option => o112
-    )
-
-    z987 = DomainMap.create!(
-      :domain => z99167,
-      :option => o112
-    )
-
-    z988 = DomainMap.create!(
-      :domain => z99173,
-      :option => o112
-    )
-
-    z989 = DomainMap.create!(
-      :domain => z99181,
-      :option => o112
-    )
-
-o113 = Option.create!(
-  :name => 'Stevens County Lake Spokane Parks and Recreation District Levy',
-  :short_name => 'Parks Levy',
-  :description => 'The commissioners of the Stevens County Lake
-    Spokane Parks and Recreation District adopted Resolution
-    No. 2011-1 concerning a proposition to finance initial development
-    and operation expenses. This proposition would authorize the
-    District to levy the following excess taxes upon all taxable
-    property within the District to construct roads, water, power,
-    basic infrastructure and apply for grants to leverage funds for
-    park development and operation expenses.  Approximate Levy
-    Collection Years Rate/$1000 Assessed Value Levy Amount 2012 $0.30
-    $132,000 2013 $0.30 $132,000 2014 $0.30 $132,000 2015 $0.30
-    $132,00 2016 $0.30 $132,000 2017 $0.30 $132,000 All as provided in
-    Resolution No. 2011-1.',
-  :domain => 'Stevens County',
-  :domain_short => 'Lake Spokane Park and Recreation Dist',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'LSPR 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z990 = DomainMap.create!(
-      :domain => z99013,
-      :option => o113
-    )
-
-    z991 = DomainMap.create!(
-      :domain => z99034,
-      :option => o113
-    )
-
-    z992 = DomainMap.create!(
-      :domain => z99040,
-      :option => o113
-    )
-
-    z993 = DomainMap.create!(
-      :domain => z99101,
-      :option => o113
-    )
-
-    z994 = DomainMap.create!(
-      :domain => z99109,
-      :option => o113
-    )
-
-    z995 = DomainMap.create!(
-      :domain => z99110,
-      :option => o113
-    )
-
-    z996 = DomainMap.create!(
-      :domain => z99114,
-      :option => o113
-    )
-
-    z997 = DomainMap.create!(
-      :domain => z99126,
-      :option => o113
-    )
-
-    z998 = DomainMap.create!(
-      :domain => z99129,
-      :option => o113
-    )
-
-    z999 = DomainMap.create!(
-      :domain => z99131,
-      :option => o113
-    )
-
-    z1000 = DomainMap.create!(
-      :domain => z99137,
-      :option => o113
-    )
-
-    z1001 = DomainMap.create!(
-      :domain => z99141,
-      :option => o113
-    )
-
-    z1002 = DomainMap.create!(
-      :domain => z99148,
-      :option => o113
-    )
-
-    z1003 = DomainMap.create!(
-      :domain => z99151,
-      :option => o113
-    )
-
-    z1004 = DomainMap.create!(
-      :domain => z99157,
-      :option => o113
-    )
-
-    z1005 = DomainMap.create!(
-      :domain => z99167,
-      :option => o113
-    )
-
-    z1006 = DomainMap.create!(
-      :domain => z99173,
-      :option => o113
-    )
-
-    z1007 = DomainMap.create!(
-      :domain => z99181,
-      :option => o113
-    )
-
-o114 = Option.create!(
-  :name => 'Relocation and Expansion of the Colville Municipal Airport',
-  :short_name => 'Airport',
-  :description => 'The City Council of the City of Colville adopted
-    Resolution No. 07-11 concerning the relocation and expansion of
-    the Colville Municipal Airport. The City Council seeks a
-    recommendation, by an advisory vote only, on whether or not the
-    City of Colville should proceed with the process to relocate and
-    expand the Colville Municipal Airport. A &ldquo;yes&rdquo; vote
-    would recommend that the City of Colville should proceed with the
-    process to relocate and expand the airport. A &ldquo;no&rdquo;
-    vote would recommend that the City of Colville should cease the
-    process to relocate and expand the airport. ',
-  :domain => 'City of Colville',
-  :domain_short => 'Colville',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Clvl 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1008 = DomainMap.create!(
-      :domain => z99114,
-      :option => o114
-    )
-
-o115 = Option.create!(
-  :name => 'LaCrosse School District Levy',
-  :short_name => 'School Levy',
-  :description => 'LaCrosse School District #126 Joint with Adams
-    County #87 Special Election Proposition #1 The Board of Directors
-    of LaCrosse School District #126 adopted Resolution No. 10-11-06
-    concerning a Educational Capital Project Levy.  The proposition
-    would authorize the modernization, renovation and improvement of
-    the existing facilities, including technology infrastructure, and
-    the acquisition of equipment; and authorize the District to levy
-    the following excess taxes on all taxable property within the
-    District.  Approximate Levy Collection Rate/$1,000 Levy Year
-    Assessed Value Amount 2012 $2.59 $366,666 2013 $2.59 $366,666 2014
-    $2.59 $366,666 2015 $2.59 $366,666 2016 $2.59 $366,666 2017 $2.59
-    $366,666 all as provided in District Resolution No. 10-11-06. ',
-  :domain => 'Town of LaCrosse',
-  :domain_short => 'LaCrosse School District - 126',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'LaC 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1009 = DomainMap.create!(
-      :domain => z99136,
-      :option => o115
-    )
-
-    z1010 = DomainMap.create!(
-      :domain => z99143,
-      :option => o115
-    )
-
-o116 = Option.create!(
-  :name => 'Swimming Pool Levy',
-  :short_name => 'Swimming Pool Levy',
-  :description => 'Shall a special levy of $35,000.00 as estimated
-    $0.26 per $1,000.00 of assessed valuation, for the Operation and
-    Maintenance of the Swimming Pool, be approved for collection in
-    2012?',
-  :domain => 'Town of LaCrosse',
-  :domain_short => 'LaCrosse Park District - 1',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'LPD 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1011 = DomainMap.create!(
-      :domain => z99136,
-      :option => o116
-    )
-
-    z1012 = DomainMap.create!(
-      :domain => z99143,
-      :option => o116
-    )
-
-o117 = Option.create!(
-  :name => 'Sewer Upgrade and Capital  Improvements Levy',
-  :short_name => 'Water/Sewer Levy',
-  :description => 'Shall a special tax levy of $65,000.00, an
-    estimated $2.06 or less per one thousand dollars of assessed
-    valuation, be collected in 2012, for water and sewer upgrade and
-    capital improvements for the Town of St. John, be authorized and
-    approved? ',
-  :domain => 'Town of St John',
-  :domain_short => 'St John Town',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'StJ 2',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1013 = DomainMap.create!(
-      :domain => z99171,
-      :option => o117
-    )
-
-o118 = Option.create!(
-  :name => 'St. John Park and Recreation District Levy',
-  :short_name => 'Parks Levy',
-  :description => 'Shall a special tax levy of $35,000, an estimated
-    $0.22 per one thousand dollars of assessed valuation, for the
-    operating fund, swimming pool, capital outlay, and/or cumulative
-    reserve for St. John Park &amp; Recreation District #3 be
-    approved?  ',
-  :domain => 'Town of St John',
-  :domain_short => 'St. John Park District - 3',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'StJP 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1014 = DomainMap.create!(
-      :domain => z99171,
-      :option => o118
-    )
-
-o119 = Option.create!(
-  :name => 'St. John Street Levy',
-  :short_name => 'Street Levy',
-  :description => 'Shall a special tax levy of $55,000.00, an
-    estimated $1.74 or less per one thousand dollars of assessed
-    valuation, be collected in 2012, for street improvements and
-    maintenance for the town of St. John, be authorized and
-    approved?',
-  :domain => 'Town of St John',
-  :domain_short => 'St John Town',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'StJ 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1015 = DomainMap.create!(
-      :domain => z99171,
-      :option => o119
-    )
-
-o120 = Option.create!(
-  :name => 'Oakesdale Park and Recreation District Levy',
-  :short_name => 'Parks Levy',
-  :description => 'Shall the Oakesdale Park & Recreation District #4
-    be authorized to impose a special levy tax of $67,000, an
-    estimated $0.82 per thousand dollars of assessed valuation, to be
-    collected in 2012 for the purpose of operating, maintaining and
-    improving its recreational facilities?',
-  :domain => 'Town of Oakesdale',
-  :domain_short => 'Oakesdale Park District - 4',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Oak 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1016 = DomainMap.create!(
-      :domain => z99158,
-      :option => o120
-    )
-
-o121 = Option.create!(
-  :name => 'Oakesdale Cemetery District #1 Levy',
-  :short_name => 'Cemetary Dist.',
-  :description => 'Shall a special tax levy of $45,000.00, an
-    estimated $ .89 per one thousand dollars of assessed valuation in
-    2011 for collection in 2012, for the continued improvement and
-    General Maintenance of the Oakesdale Cemetery District #1 be
-    authorized and approved? ',
-  :domain => 'Town of Oakesdale',
-  :domain_short => 'Oakesdale Cemetery District - 1',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Cem 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1017 = DomainMap.create!(
-      :domain => z99158,
-      :option => o121
-    )
-
-o122 = Option.create!(
-  :name => 'Rosalia Park and Recreation District Levy',
-  :short_name => 'Parks Levy',
-  :description => 'Shall Rosalia Park & Recreation District #5 be
-    authorized to impose a special tax levy of $48,455, an estimated
-    $0.47 or less per one thousand dollars of assessed valuation to be
-    collected in 2012 for the maintaining and operations of its
-    Recreation Facilities? ',
-  :domain => 'Town of Rosalia',
-  :domain_short => 'Rosalia Park District - 5',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Rosa 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1018 = DomainMap.create!(
-      :domain => z99170,
-      :option => o122
-    )
-
-o123 = Option.create!(
-  :name => 'Garfield Cemetery District #2 Levy',
-  :short_name => 'Cemetary Dist.',
-  :description => 'Shall the Garfield Cemetery District #2, levy a
-    special tax in the amount of $20,000.00, an estimated $0.34, or
-    less, per one thousand dollars of assessed valuation, be collected
-    in 2012, for operation and maintaining the Cemetery?',
-  :domain => 'City of Garfield',
-  :domain_short => 'Garfield Cemetery District - 2',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'GCD 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1019 = DomainMap.create!(
-      :domain => z99130,
-      :option => o123
-    )
-
-o124 = Option.create!(
-  :name => 'C-TRAN Sales and Use Tax Increase',
-  :short_name => 'C-TRAN Sales/Use Tax',
-  :description => 'C-TRAN, Clark County Public Transportation Benefit
-    Area Authority, in adopting Resolution BR-11-004, authorizes a
-    proposition to increase the sales and use tax by 0.2 percent, or
-    two pennies on a ten dollar purchase, to preserve C-TRAN local
-    fixed route, limited, commuter and Connector service in the City
-    of Vancouver and its 2005 Urban Growth Boundary, and the city
-    limits only of Camas, Washougal, Battle Ground, La Center,
-    Ridgefield, and the town of Yacolt; and to meet the current and
-    projected growth for Paratransit service, C-VAN.',
-  :domain => 'Clark County',
-  :domain_short => 'C-TRAN Transportation District',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'CT 1',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z1020 = DomainMap.create!(
-      :domain => z98601,
-      :option => o124
-    )
-
-    z1021 = DomainMap.create!(
-      :domain => z98604,
-      :option => o124
-    )
-
-    z1022 = DomainMap.create!(
-      :domain => z98606,
-      :option => o124
-    )
-
-    z1023 = DomainMap.create!(
-      :domain => z98607,
-      :option => o124
-    )
-
-    z1024 = DomainMap.create!(
-      :domain => z98622,
-      :option => o124
-    )
-
-    z1025 = DomainMap.create!(
-      :domain => z98629,
-      :option => o124
-    )
-
-    z1026 = DomainMap.create!(
-      :domain => z98642,
-      :option => o124
-    )
-
-    z1027 = DomainMap.create!(
-      :domain => z98660,
-      :option => o124
-    )
-
-    z1028 = DomainMap.create!(
-      :domain => z98661,
-      :option => o124
-    )
-
-    z1029 = DomainMap.create!(
-      :domain => z98662,
-      :option => o124
-    )
-
-    z1030 = DomainMap.create!(
-      :domain => z98663,
-      :option => o124
-    )
-
-    z1031 = DomainMap.create!(
-      :domain => z98664,
-      :option => o124
-    )
-
-    z1032 = DomainMap.create!(
-      :domain => z98665,
-      :option => o124
-    )
-
-    z1033 = DomainMap.create!(
-      :domain => z98666,
-      :option => o124
-    )
-
-    z1034 = DomainMap.create!(
-      :domain => z98668,
-      :option => o124
-    )
-
-    z1035 = DomainMap.create!(
-      :domain => z98671,
-      :option => o124
-    )
-
-    z1036 = DomainMap.create!(
-      :domain => z98675,
-      :option => o124
-    )
-
-    z1037 = DomainMap.create!(
-      :domain => z98682,
-      :option => o124
-    )
-
-    z1038 = DomainMap.create!(
-      :domain => z98683,
-      :option => o124
-    )
-
-    z1039 = DomainMap.create!(
-      :domain => z98684,
-      :option => o124
-    )
-
-    z1040 = DomainMap.create!(
-      :domain => z98685,
-      :option => o124
-    )
-
-    z1041 = DomainMap.create!(
-      :domain => z98686,
-      :option => o124
-    )
-
-    z1042 = DomainMap.create!(
-      :domain => z98687,
-      :option => o124
-    )
-
-# moved from its original position to the end of the file
-o26 = Option.create!(
-  :name => 'Tekoa Park and Recreation District Levy',
-  :short_name => 'Parks Levy',
-  :description => 'Shall the Tekoa Park &amp; Recreation District #6
-    levy a maintenance and operation tax in the amount of $85,000.00,
-    an estimated $1.56 per one thousand dollars of assessed valuation,
-    for collection in 2012, for the annual and normal operation and
-    maintenance of the Tekoa Parks and pool?',
-  :domain => 'City of Tekoa',
-  :domain_short => 'Tekoa Park District - 6',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Teko 22',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z58 = DomainMap.create!(
-      :domain => z99033,
-      :option => o26
-    )
-
-# moved from its original position to the end of the file
-o31 = Option.create!(
-  :name => 'Endicott Cemetery District #4 Levy',
-  :short_name => 'Cemetary Dist.',
-  :description => 'Shall the Endicott Cemetery District #4 be
-    authorized to impose a special tax levy of $20,000.00 an estimated
-    $ .35 or less per one thousand dollars of assessed valuation, to
-    be collected in 2012 for General Maintenance?',
-  :domain => 'Town of Endicott',
-  :domain_short => 'Endicott Cemetery District - 4',
-  :url => '',
-  :category => 'Proposition',
-  :designator => 'Endt 17',
-  :long_description => '',
-  :additional_details => ''
-)
-
-    z63 = DomainMap.create!(
-      :domain => z99125,
-      :option => o31
+      :option => o49
     )
 

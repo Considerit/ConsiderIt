@@ -54,13 +54,16 @@ namespace :admin do
     end
 
     position_matches.each do |option_id, position_id, point_id|
-      position = Position.find(position_id)
-      pp position.user_id
-      pp position.user.id
-      user_id = position.user_id
-      existing = Inclusion.where(:user_id => user_id, :option_id => option_id, :point_id => point_id)
-      if existing.count == 0
-        p "Inclusion.create!( :user_id => #{user_id}, :position_id => #{position_id}, :point_id => #{point_id}, :option_id => #{option_id} )"
+      begin
+            position = Position.find(position_id)
+
+            user_id = position.user_id
+            existing = Inclusion.where(:user_id => user_id, :option_id => option_id, :point_id => point_id)
+            if existing.count == 0
+               Inclusion.create!( :user_id => user_id, :position_id => position_id, :point_id => point_id, :option_id => option_id )
+            end
+      rescue
+        #p 'COULD NOT FIND POSITION ' + position_id
       end
     end
 

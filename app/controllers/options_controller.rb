@@ -43,7 +43,14 @@ class OptionsController < ApplicationController
   end
 
   def index
+    headers['Content-Type'] = 'application/xml'
+
     @options = Option.all
+    respond_to do |format|
+      format.xml {  } # sitemap is a named scope
+      format.html {  }
+    end
+
   end
 
 end

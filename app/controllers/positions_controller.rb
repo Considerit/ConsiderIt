@@ -88,6 +88,9 @@ protected
     @option = Option.find(params[:option_id])
     @user = current_user
 
+    @title = "#{@option.category} #{@option.designator} #{@option.short_name}"
+    @keywords = "#{@option.domain} #{@option.category} #{@option.designator} #{@option.name} Washington 2011"
+
     if !session.has_key?(@option.id)
       session[@option.id] = {
         :included_points => {},

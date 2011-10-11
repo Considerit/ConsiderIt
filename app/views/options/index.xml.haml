@@ -3,6 +3,6 @@
 %urlset{:xmlns => "http://www.sitemaps.org/schemas/sitemap/0.9"}
   - for option in @options
     %url
-      %loc #{option_url(option)}
+      %loc #{new_option_position_url(option)}
       %changefreq never
       %priority 0.5

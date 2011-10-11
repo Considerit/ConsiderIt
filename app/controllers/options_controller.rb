@@ -42,4 +42,8 @@ class OptionsController < ApplicationController
     
   end
 
+  def index
+    @options = Option.all
+  end
+
 end

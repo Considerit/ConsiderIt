@@ -4,6 +4,7 @@ class HomeController < ApplicationController
 
   def index
     @user = current_user
+    @keywords = "Washington Voters Guide 2011 Election Ballot Measures Initiatives"
   end
 
   def show

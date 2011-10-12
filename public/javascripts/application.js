@@ -326,15 +326,9 @@ ConsiderIt = {
         var user_point_list = $j('#points_on_board_con .point_list');
         var other_point_list = $j('#points_other_con .point_list');
       }
-      var point_list_footer = other_point_list.parents('.infiniteCarousel:first').find('.point_list_footer');
 
-      point_list_footer.find('.total').text(response['total_remaining']);
-      if ( parseInt(point_list_footer.find('.curr_last').first().text()) > parseInt(response['total_remaining']) ){
-        point_list_footer.find('.curr_last').text(response['total_remaining']);
-      }
-      if ( parseInt(point_list_footer.find('.curr_first').first().text()) > parseInt(response['total_remaining']) ){
-        point_list_footer.find('.curr_first').text(response['total_remaining']);
-      }
+
+      var carousel = other_point_list.parents('.infiniteCarousel:first');
 
       var replacement_point_already_in_list = other_point_list.find('#' + replacement_point.attr('id')).length > 0;
 
@@ -347,6 +341,7 @@ ConsiderIt = {
         }
     
         user_point_list.append(response['approved_point']);
+        carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
       });
     });
 
@@ -355,19 +350,12 @@ ConsiderIt = {
       var point_in_margin = response['deleted_point'],
         old_point = $j(this).parents('.point_in_list_self:first'),
         other_point_list = old_point.hasClass('pro') ? $j('#points_other_pro .point_list') : $j('#points_other_con .point_list'),
-        point_list_footer = other_point_list.parents('.infiniteCarousel:first').find('.point_list_footer');
+        carousel = other_point_list.parents('.infiniteCarousel:first');
 
-      point_list_footer.find('.total').text(response['total_remaining']);
-      if ( parseInt(point_list_footer.find('.curr_last').first().text()) > parseInt(response['total_remaining']) ){
-        point_list_footer.find('.curr_last').text(response['total_remaining']);
-      }
-      if ( parseInt(point_list_footer.find('.curr_first').first().text()) > parseInt(response['total_remaining']) ){
-        point_list_footer.find('.curr_first').text(response['total_remaining']);
-      }
       old_point.fadeOut('slow', function(){
         old_point.remove(); 
         other_point_list.append(point_in_margin);
-        other_point_list.parents('.infiniteCarousel');
+        carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
       });
     });
 
@@ -391,13 +379,6 @@ ConsiderIt = {
         $j(this).parents('.new_comment:first').before(new_point);
         $j(this).find('textarea, .the_subject input').val("");
       }
-      
-      /*
-      if (grounded_in_point) {
-        $j('html, body').animate({
-          scrollTop: $j("#comment-" + response['comment_id']).offset().top}, 1000);  
-      }*/
-
 
     });
 
@@ -462,33 +443,6 @@ ConsiderIt = {
           return "strongly support"
       }
     }  
-    
-  },
-    
-  comments : {
-    
-    create : {
-            
-
-      
-    },
-
-    set_comment_reply_toggle_events : function(){
-      $j('.comment').each(function(){
-        var comment_id = $j(this).attr('id').substring(8);
-        $j('#comment-'+comment_id+' a.reply:first').click(function(){
-          $j('#comment-'+comment_id+' div.reply.hide:first').slideDown(function(){
-            $j('#comment-'+comment_id+' a.reply:first').fadeOut();
-           });
-        });
-      
-        $j('#comment-'+comment_id+' .new_comment:first a.cancel').click(function(){
-          $j('#comment-'+comment_id+' div.reply.hide:first').slideUp(function(){
-            $j('#comment-'+ comment_id +' a.reply:first').fadeIn();
-           });
-        });    
-      });
-    }
     
   },
 

@@ -80,6 +80,7 @@ ConsiderIt = {
   per_request : function() {
     if ( !$j.browser.msie ) {
       $j('#masthead').corner('round top 5px');
+      $j('#initiative #description .initiative_item').corner('round top 5px');
       $j('#nav-user').corner('bottom bl 5px');  
       $j('.point_in_list_margin, .point_in_list.expanded').corner('5px');
 

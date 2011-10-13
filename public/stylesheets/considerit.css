@@ -978,89 +978,78 @@ ul.point_list {
       height: 16px;
       width: 13px;
       cursor: pointer; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000320}}
-  .initiatives.vertical {
-    margin: -15px 20px 0 0;
-    float: right;
-    width: 200px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000325}}
-    .initiatives.vertical .paginate {
-      width: 100%;
-      height: 16px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000329}}
-      .initiatives.vertical .paginate .forward, .initiatives.vertical .paginate .back {
-        margin-left: auto;
-        opacity: 0.6;
-        padding-right: 5px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000335}}
-      .initiatives.vertical .paginate.first .back {
-        background-image: url("/images/arrow-up.png"); }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000338}}
-      .initiatives.vertical .paginate.last .forward {
-        background-image: url("/images/arrow-down.png");
-        background-position: 0 5px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000345}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000316}}
   .initiatives.horizontal .paginate {
     width: 20px;
     margin-top: 30px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000348}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000319}}
     .initiatives.horizontal .paginate.first {
       float: left; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000350}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000321}}
       .initiatives.horizontal .paginate.first .back {
         background-image: url("/images/arrow-prev.png"); }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000352}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000323}}
     .initiatives.horizontal .paginate.last {
       float: right; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000354}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000325}}
       .initiatives.horizontal .paginate.last .forward {
         background-image: url("/images/arrow-next.png"); }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000357}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000328}}
     .initiatives.horizontal .paginate .forward {
       text-align: right; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000359}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000330}}
     .initiatives.horizontal .paginate .back {
       text-align: left; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000362}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000333}}
   .initiatives.horizontal .carousel {
     height: 90px;
     float: left; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000366}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000337}}
     .initiatives.horizontal .carousel li.initiative_item.local {
-      background-color: #fff0e5; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000369}}
+      color: #700000; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000340}}
       .initiatives.horizontal .carousel li.initiative_item.local:hover {
-        background-color: black; }
+        color: white; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000372}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000343}}
 #description .initiatives {
   position: absolute;
-  top: -121px;
+  top: -118px;
   left: 140px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000378}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000349}}
   #description .initiatives.horizontal .paginate {
     margin-top: 3px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000382}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000353}}
   #description .initiatives.horizontal .carousel li.initiative_item {
     border-top: none;
     border-right: none;
     border-left: none;
     margin-right: 6px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000390}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000359}}
+    #description .initiatives.horizontal .carousel li.initiative_item.local {
+      color: black; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000361}}
+      #description .initiatives.horizontal .carousel li.initiative_item.local:hover {
+        color: white; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000364}}
+    #description .initiatives.horizontal .carousel li.initiative_item .designation {
+      text-transform: none;
+      font-size: 9.5; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000368}}
     #description .initiatives.horizontal .carousel li.initiative_item .short_name {
       display: none; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000393}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000371}}
     #description .initiatives.horizontal .carousel li.initiative_item.active {
       position: relative;
       background-color: white;
       color: black;
       border-bottom: none;
       padding-bottom: 25px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000399}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000377}}
       #description .initiatives.horizontal .carousel li.initiative_item.active > a {
         height: auto;
         padding-bottom: 10px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003103}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000381}}
       #description .initiatives.horizontal .carousel li.initiative_item.active .show_option_description {
         position: absolute;
         bottom: -10px;
@@ -1069,29 +1058,29 @@ ul.point_list {
         color: inherit;
         text-decoration: underline;
         letter-spacing: 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003114}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000392}}
     #description .initiatives.horizontal .carousel li.initiative_item > a {
-      padding: 5px 5px 0px 5px;
+      padding: 2px 5px 0px 5px;
       min-width: 40px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003118}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000396}}
       #description .initiatives.horizontal .carousel li.initiative_item > a > div {
         width: 70px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003121}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\0000399}}
       #description .initiatives.horizontal .carousel li.initiative_item > a .short_name {
         font-size: 12px;
         line-height: 12px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003125}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003103}}
       #description .initiatives.horizontal .carousel li.initiative_item > a .designation {
         font-size: 8px;
         line-height: 15px;
         text-transform: uppercase; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003130}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003108}}
       #description .initiatives.horizontal .carousel li.initiative_item > a .number {
         font-size: 20px;
         line-height: 20px;
         letter-spacing: -2px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003135}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003113}}
 li.initiative_item {
   list-style: none outside none;
   background-color: #d0d0d0;
@@ -1101,20 +1090,20 @@ li.initiative_item {
   border-bottom: 1px solid #848484;
   position: relative;
   color: black; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003146}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003124}}
   li.initiative_item .completion {
     display: none; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003149}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003127}}
   li.initiative_item.finished .completion {
     display: block;
     position: absolute;
     top: 0;
     right: 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003156}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003134}}
   li.initiative_item:hover, li.initiative_item.active {
     background-color: black;
     color: white; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003160}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003138}}
   li.initiative_item > a {
     color: inherit;
     margin: auto;
@@ -1125,37 +1114,37 @@ li.initiative_item {
     font-family: helvetica;
     letter-spacing: -3px;
     text-align: center; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003172}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003150}}
     li.initiative_item > a .designation {
       letter-spacing: 0px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003175}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003153}}
     li.initiative_item > a .short_name {
       width: 100%;
       letter-spacing: -1px;
       text-transform: capitalize; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003181}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003159}}
   li.initiative_item.horizontal {
     margin: 0 5px 5px 0;
     float: left;
     padding: 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003187}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003165}}
     li.initiative_item.horizontal > a .short_name {
       font-size: 12px;
       line-height: 12px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003191}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003169}}
     li.initiative_item.horizontal > a .designation {
       font-size: 8px;
       line-height: 15px;
       text-transform: uppercase; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003196}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003174}}
     li.initiative_item.horizontal > a .number {
       font-size: 40px;
       line-height: 40px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003200}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003178}}
   li.initiative_item.vertical {
     margin: 3px 0;
     padding: 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003206}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003184}}
     li.initiative_item.vertical > a {
       font-size: 26px;
       line-height: 22px;
@@ -1163,10 +1152,10 @@ li.initiative_item {
       height: 100%;
       padding: 0;
       margin: 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003214}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003192}}
       li.initiative_item.vertical > a > div {
         display: inline-block; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003217}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003195}}
       li.initiative_item.vertical > a .number {
         font-size: 15px;
         line-height: 15px;
@@ -1174,7 +1163,7 @@ li.initiative_item {
         padding: 5px 0;
         text-align: right;
         letter-spacing: -1px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003225}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003203}}
       li.initiative_item.vertical > a .short_name {
         margin-right: 15px;
         width: 135px;
@@ -1183,7 +1172,7 @@ li.initiative_item {
         text-align: right;
         letter-spacing: 0;
         font-weight: normal; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003234}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_initiative_block\.sass}line{font-family:\00003212}}
       li.initiative_item.vertical > a .designation {
         font-size: 13px;
         text-align: left; }
@@ -1556,98 +1545,112 @@ li.new_comment.from_discussion {
     padding-top: 15px; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\000031}}
-#footer {
+#wrap #footer {
   clear: both;
   color: white;
-  width: 100%;
-  line-height: 18px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\000039}}
-  #footer > div.bordernone:hover {
+  line-height: 18px;
+  width: 990px;
+  padding: 10px 0; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000310}}
+  #wrap #footer > div.bordernone:hover {
     border-bottom: none; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000312}}
-  #footer p.credit {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000313}}
+  #wrap #footer p.credit {
     margin: 0;
     float: right;
     font-size: 11px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000318}}
-  #footer .sitemap {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000319}}
+  #wrap #footer .sitemap {
     background-color: #e6e6e6;
     color: black; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000319}}
-    #footer .sitemap .initiatives {
-      margin: 0 auto; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000321}}
-      #footer .sitemap .initiatives h4 {
-        padding-left: 5px;
-        text-transform: capitalize; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000324}}
-      #footer .sitemap .initiatives ul.nav {
-        padding-left: 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000326}}
-        #footer .sitemap .initiatives ul.nav > li {
-          padding-left: 17px;
-          text-transform: capitalize; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000331}}
-          #footer .sitemap .initiatives ul.nav > li.finished.pro {
-            background: transparent url("/images/finished_pro_small.png") no-repeat left center; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000333}}
-          #footer .sitemap .initiatives ul.nav > li.finished.neutral {
-            background: transparent url("/images/finished_neutral_small.png") no-repeat left center; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000335}}
-          #footer .sitemap .initiatives ul.nav > li.finished.con {
-            background: transparent url("/images/finished_con_small.png") no-repeat left center; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000339}}
-    #footer .sitemap ul.nav {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000322}}
+    #wrap #footer .sitemap ul.nav {
       padding-left: 8px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000345}}
-    #footer .sitemap a:hover {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000328}}
+    #wrap #footer .sitemap a:hover {
       text-decoration: underline; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000348}}
-    #footer .sitemap > div {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000331}}
+    #wrap #footer .sitemap > div {
       padding: 20px;
       font-size: 12px;
       float: left; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000353}}
-      #footer .sitemap > div li {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000337}}
+      #wrap #footer .sitemap > div.partners {
+        float: right; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000340}}
+      #wrap #footer .sitemap > div li {
         list-style: none outside none; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000356}}
-      #footer .sitemap > div.initiatives {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000343}}
+      #wrap #footer .sitemap > div.initiatives {
         width: 190px;
-        background-color: #555555;
-        color: white; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000361}}
-        #footer .sitemap > div.initiatives a {
+        height: 160px;
+        color: white;
+        margin: 0 auto;
+        background-image: url("/themes/lvg/images/bg-body.png");
+        position: relative;
+        padding: 10px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000352}}
+        #wrap #footer .sitemap > div.initiatives #follow {
+          position: relative;
+          margin: auto;
+          width: 165px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000357}}
+          #wrap #footer .sitemap > div.initiatives #follow > span {
+            display: inline-block; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000360}}
+            #wrap #footer .sitemap > div.initiatives #follow > span.facebook {
+              float: left; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000362}}
+            #wrap #footer .sitemap > div.initiatives #follow > span.twitter {
+              float: right; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000365}}
+        #wrap #footer .sitemap > div.initiatives img {
+          display: block;
+          margin: auto; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000369}}
+        #wrap #footer .sitemap > div.initiatives h4 {
+          padding-left: 5px;
+          text-transform: capitalize; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000372}}
+        #wrap #footer .sitemap > div.initiatives ul.nav {
+          padding-left: 0; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000374}}
+          #wrap #footer .sitemap > div.initiatives ul.nav > li {
+            padding-left: 17px;
+            text-transform: capitalize; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000377}}
+        #wrap #footer .sitemap > div.initiatives a {
           color: white; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000364}}
-      #footer .sitemap > div.guides {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000380}}
+      #wrap #footer .sitemap > div.guides {
         width: 225px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000367}}
-        #footer .sitemap > div.guides.partners {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000383}}
+        #wrap #footer .sitemap > div.guides.partners {
           width: auto;
           padding: 0px 0 0 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000371}}
-          #footer .sitemap > div.guides.partners img {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000387}}
+          #wrap #footer .sitemap > div.guides.partners img {
             width: 180px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000374}}
-      #footer .sitemap > div.learn {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000390}}
+      #wrap #footer .sitemap > div.learn {
         width: 405px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000377}}
-        #footer .sitemap > div.learn .powered {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000393}}
+        #wrap #footer .sitemap > div.learn .powered {
           padding-top: 30px;
           font-size: 14px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000382}}
-      #footer .sitemap > div.last {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000398}}
+      #wrap #footer .sitemap > div.last {
         margin-right: 0;
         float: right; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000387}}
-      #footer .sitemap > div h4 {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\00003103}}
+      #wrap #footer .sitemap > div h4 {
         margin-bottom: 9px;
         font-size: 20px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000391}}
-        #footer .sitemap > div h4.later {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\00003107}}
+        #wrap #footer .sitemap > div h4.later {
           margin-top: 9px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\0000394}}
-    #footer .sitemap:after {
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_footer\.sass}line{font-family:\00003110}}
+    #wrap #footer .sitemap:after {
       content: ".";
       display: block;
       height: 0;

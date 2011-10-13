@@ -1,9 +1,10 @@
-#footer
+#wrap #footer
   clear: both
   color: white
-  width: 100%
   line-height: 18px
-  
+  width: 990px
+  padding: 10px 0
+
   > div
     
     &.bordernone:hover
@@ -16,25 +17,7 @@
 
   
   .sitemap
-    .initiatives
-      margin: 0 auto
-      h4
-        padding-left: 5px
-        text-transform: capitalize
-      ul.nav
-        padding-left: 0
-        > li
-          padding-left: 17px
-          text-transform: capitalize
-          
-          &.finished
-            &.pro
-              background: transparent url('/images/finished_pro_small.png') no-repeat left center
-            &.neutral
-              background: transparent url('/images/finished_neutral_small.png') no-repeat left center
-            &.con
-              background: transparent url('/images/finished_con_small.png') no-repeat left center
-            
+   
       
     ul.nav
       padding-left: 8px
@@ -50,14 +33,47 @@
       font-size: 12px
       
       float: left
+
+      &.partners
+        float: right
+
       li
         @include nude-list
             
       &.initiatives
         width: 190px
-        background-color: $bk_dark_gray
+        height: 160px
         color: white
-        
+        margin: 0 auto
+        background-image: url("/themes/lvg/images/bg-body.png")
+        position: relative
+        padding: 10px
+
+        #follow
+          position: relative
+          margin: auto
+          width: 165px
+
+          > span
+            display: inline-block
+
+            &.facebook
+              float: left
+            &.twitter
+              float: right
+
+        img
+          display: block
+          margin: auto
+
+        h4
+          padding-left: 5px
+          text-transform: capitalize
+        ul.nav
+          padding-left: 0
+          > li
+            padding-left: 17px
+            text-transform: capitalize          
         a
           color: white
 

@@ -1,13 +1,9 @@
 %div
+
   .sitemap
     %div.initiatives
-      %h4 Ballot Measures
-      %ul.nav
-        - get_initiatives.each do |option|
-          %li{ :class => "#{has_stance(option)}"}
-            %a.footer_initiative_link{ :href => option_path(option), :title => "#{option.category} #{option.designator}" } 
-              = option.designator
-              = option.short_name
+      = image_tag current_theme_image_path "logo2.png"
+      = render :partial => "home/follow"
       
     %div.guides
       
@@ -23,14 +19,13 @@
   
       %h4 Other Resources
       %ul.nav
-        %li= link_to "King County Libraries infoVote 2011", "http://www.kcls.org/infovote/", :target => "_blank"
-        %li          
         %li= link_to "About the initiative process", "http://www.ncsl.org/default.aspx?tabid=16600", :target => "_blank"
         %li= link_to "Stats \& history of WA ballot measures", "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :target => "_blank"
         %li= link_to "Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :target => "_blank"
+        -if @domain && @domain.name == 'Seattle'
+          %li= link_to "King County Libraries infoVote 2011", "http://www.kcls.org/infovote/", :target => "_blank"
 
 
     %div.guides.partners
       -if @domain && @domain.name == 'Seattle'
         = link_to image_tag('king5.png'), "http://kingcounty.gov/elections/", :target => '_blank'
-

@@ -5386,7 +5386,7 @@ o16 = Option.create!(
 
 o17 = Option.create!(
   :name => 'Douglas County Cemetery District No. 2 One Year Maintenance and Operations Excess Tax Levy',
-  :short_name => 'Cemetary Dist.',
+  :short_name => 'Cemetery Dist.',
   :description => 'The Douglas County Cemetery District No. 2 Board of
     Commissioners adopted Resolution #2011/002 on August 8, 2011,
     containing a proposition to finance maintenance and operations.
@@ -8808,7 +8808,7 @@ o68 = Option.create!(
 
 o69 = Option.create!(
   :name => 'Whatcom County Cemetery District Levy',
-  :short_name => 'Cemetary Dist.',
+  :short_name => 'Cemetery Dist.',
   :description => 'The Board of Cemetery Commissioners of Cemetery
     District #1, Whatcom County Washington, adopted Resolution
     No. 01-11 concerning a proposition to restore the District&rsquo;s
@@ -10183,7 +10183,7 @@ o83 = Option.create!(
 
 o84 = Option.create!(
   :name => 'Grant County Cemetery District No. 2 Levy',
-  :short_name => 'Cemetary Dist.',
+  :short_name => 'Cemetery Dist.',
   :description => 'The Board of Commissioners of Grant County Cemetery
     District No. 2 adopted Resolution No. 11-1, concerning a
     proposition to finance maintenance and operation expenses. This
@@ -12108,7 +12108,7 @@ o109 = Option.create!(
 
 o110 = Option.create!(
   :name => 'Spangle Cemetery District #1 Levy',
-  :short_name => 'Cemetary Dist.',
+  :short_name => 'Cemetery Dist.',
   :description => 'The Board of Directors of Spangle Cemetery District
     #1 adopted Resolution #01-11 on June 28, 2011 concerning a
     proposition to finance 2012 maintenance and operation
@@ -12609,7 +12609,7 @@ o120 = Option.create!(
 
 o121 = Option.create!(
   :name => 'Oakesdale Cemetery District #1 Levy',
-  :short_name => 'Cemetary Dist.',
+  :short_name => 'Cemetery Dist.',
   :description => 'Shall a special tax levy of $45,000.00, an
     estimated $ .89 per one thousand dollars of assessed valuation in
     2011 for collection in 2012, for the continued improvement and
@@ -12653,7 +12653,7 @@ o122 = Option.create!(
 
 o123 = Option.create!(
   :name => 'Garfield Cemetery District #2 Levy',
-  :short_name => 'Cemetary Dist.',
+  :short_name => 'Cemetery Dist.',
   :description => 'Shall the Garfield Cemetery District #2, levy a
     special tax in the amount of $20,000.00, an estimated $0.34, or
     less, per one thousand dollars of assessed valuation, be collected
@@ -12834,7 +12834,7 @@ o26 = Option.create!(
 # moved from its original position to the end of the file
 o31 = Option.create!(
   :name => 'Endicott Cemetery District #4 Levy',
-  :short_name => 'Cemetary Dist.',
+  :short_name => 'Cemetery Dist.',
   :description => 'Shall the Endicott Cemetery District #4 be
     authorized to impose a special tax levy of $20,000.00 an estimated
     $ .35 or less per one thousand dollars of assessed valuation, to

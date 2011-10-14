@@ -9,12 +9,12 @@
 
       .username
         by
-        - if point && point.hide_name
-          [name hidden]
-        - elsif @user
-          = @user.name
+        - if point.hide_name
+          anonymous
+        - elsif point.user
+          = point.user.name
         - else
-          [unregistered]
+          unknown
 
       .point-title-group
         = f.text_area :nutshell, :title => '(required) Summarize your point in 140 characters', :class => "point-title has_example is_counted"

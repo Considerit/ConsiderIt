@@ -88,8 +88,9 @@ protected
     @option = Option.find(params[:option_id])
     @user = current_user
 
-    @title = "#{@option.category} #{@option.designator} #{@option.short_name}"
+    @title = "#{@option.domain} #{@option.designator} #{@option.name}"
     @keywords = "#{@option.domain} #{@option.category} #{@option.designator} #{@option.name} Washington 2011"
+    @description = "Learn more and put your best arguments forward about #{@option.domain} #{@option.category} #{@option.designator} #{@option.short_name}. You'll be voting on it in the 2011 election!"
 
     if !session.has_key?(@option.id)
       session[@option.id] = {

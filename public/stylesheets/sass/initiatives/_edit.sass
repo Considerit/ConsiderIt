@@ -196,16 +196,18 @@
                 
           #points
             width: 100%
-            > div
-              display: inline-block
+            position: relative
+            
             .user_position 
               vertical-align: top
-              margin-left: -60px
+              margin: auto
+              width: 586px
 
             .points_other
               vertical-align: top
               padding-top: 50px
-              width: 224px
+              position: absolute
+              top: 0
 
               .other
                 padding-bottom: 5px
@@ -215,39 +217,20 @@
                 color: #444
                 top: -3px
                 
-              ul.point_list_footer
-                margin: 0
-                li
-                  margin: auto
-                  @include nude-list
-        
-                  &.count
-                    min-width: 100px
-                              
-                  &.refresh
-                    > div
-                      text-align: center
-                      
-                    .total
-                      color: $txt_dark_gray
-                      font-size: 12px
-                      font-weight: bold
-                    
-                    &.prev
-                      .total
-                        padding-bottom: 10px
-                    &.next
-                      .total
-                        padding-top: 10px
-                        
+              .carousel
+                padding: 5px
+
               &#points_other_pro 
-                ul.point_list_footer
-                  td
-                    float: left
+                left: -80px
+                .carousel
+                  width: 530px
+
               &#points_other_con 
-                margin-left: -63px
-                ul.point_list_footer
-                  td
+                right: -80px
+
+                .carousel
+                  width: 530px
+                  .point_list
                     float: right
 
                   

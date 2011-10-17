@@ -57,7 +57,7 @@ GEM
     cocaine (0.2.0)
     columnize (0.3.4)
     daemons (1.0.10)
-    devise (1.4.8)
+    devise (1.4.7)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.0.3)
       warden (~> 1.0.3)
@@ -209,7 +209,7 @@ PLATFORMS
 DEPENDENCIES
   acts_as_commentable_with_threading
   acts_as_versioned
-  devise
+  devise (= 1.4.7)
   haml
   heroku
   jammit

@@ -2096,14 +2096,14 @@ textarea.LV_invalid_field:active {
     width: inherit; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/_carousel\.sass}line{font-family:\000038}}
     .infiniteCarousel.vertical .wrapper > ul {
-      height: 9999px;
+      height: 1200px;
       left: 0; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/_carousel\.sass}line{font-family:\0000312}}
   .infiniteCarousel.horizontal .wrapper {
     height: inherit; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/_carousel\.sass}line{font-family:\0000315}}
     .infiniteCarousel.horizontal .wrapper > ul {
-      width: 9999px;
+      width: 1200px;
       top: 0; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/_carousel\.sass}line{font-family:\0000319}}
   .infiniteCarousel .wrapper {

@@ -31,7 +31,11 @@ ConsiderIt = {
         dim: 600,
         resetSizePerPage: true,
         total_items_callback: function($carousel){
-          return parseInt($carousel.find('.total:first').text());
+          if ($carousel.find('.total:first').length > 0) {
+            return parseInt($carousel.find('.total:first').text());
+          } else {
+            return $carousel.find('li.point_in_list').length;
+          }
         }
       });
     }); 
@@ -78,12 +82,12 @@ ConsiderIt = {
         
   },
   per_request : function() {
-    if ( !$j.browser.msie ) {
-      $j('#masthead').corner('round top 5px');
-      $j('#initiative #description .initiative_item').corner('round top 5px');
-      $j('#nav-user').corner('bottom bl 5px');  
-      $j('.point_in_list_margin, .point_in_list.expanded').corner('5px');
 
+    if ( !$j.browser.msie ) {
+      $j('#nav-user').corner('bottom bl 5px');  
+      $j('#masthead').corner('round top 5px');
+      $j('.point_in_list_margin, .point_in_list.expanded').corner('5px');
+      $j('#initiative #description .initiative_item').corner('round top 5px');
       $j('.avatar').corner('5px');
       $j('input[type="submit"]').corner('5px');
       $j('#registration_form .primary, #registration_form .secondary').corner('8px');
@@ -94,8 +98,39 @@ ConsiderIt = {
       $j('#console').corner('5px');
       $j('#console .nav a').corner('5px');
       $j('.point_in_list .comment_text').corner('5px');
+      $j('.droppable').corner('5px');
     }
-    
+
+    $j('.carousel .point_in_list_margin.pro').draggable({
+      helper: 'clone',
+      cursor: 'move',
+      snap: '#drop-pro'
+    });
+
+    $j('.carousel .point_in_list_margin.con').draggable({
+      helper: 'clone',
+      cursor: 'move',
+      snap: '#drop-con'
+    });
+
+    $j('#drop-con').droppable( {
+      hoverClass: 'hovered',
+      drop: function( event, ui ) {
+        var draggable = ui.draggable;
+        $j('#inclusion_submit', draggable).trigger('click');
+      },
+      accept: '.con'
+    } );
+
+    $j('#drop-pro').droppable( {
+      hoverClass: 'hovered',
+      drop: function( event, ui ) {
+        var draggable = ui.draggable;
+        $j('#inclusion_submit', draggable).trigger('click');
+      },
+      accept: '.pro'
+    } );      
+           
     $j('.has_example').each(function(){
       if($j(this).val() == '') {
         $j(this).example(function() {
@@ -237,8 +272,11 @@ ConsiderIt = {
 
     // Toggle point details ON
     $j(document).delegate('.point_in_list .toggle.more', 'click', function(){
-      var pnt_el_main = $j(this).parents('.point_in_list'),
-          pnt_el = pnt_el_main.clone(true, true); // deep clone with cloned events
+      var pnt_el_main = $j(this).parents('.point_in_list');
+      pnt_el_main.draggable( "destroy" );
+
+      var pnt_el = pnt_el_main.clone(true, true); // deep clone with cloned events
+
 
       var is_pro = pnt_el.hasClass('pro');
       pnt_el.addClass('expanded');
@@ -276,7 +314,7 @@ ConsiderIt = {
       pnt_el.find('.toggle.more').fadeOut(function(){pnt_el.find('.less').fadeIn();});
       ConsiderIt.per_request();
     });
-  
+
     // Toggle point details OFF
     $j(document).delegate('.point_in_list .toggle.less', 'click', function(){
       var pnt_el = $j(this).parents('.point_in_list'),
@@ -295,14 +333,19 @@ ConsiderIt = {
             'right': 'auto',
             'display': 'block'
           });
-          pnt_el_main.replaceWith(pnt_el);          
-          pnt_el.removeClass('expanded');
-          pnt_el.find('.toggle.less').hide();
+          pnt_el_main.replaceWith(pnt_el); 
+
+          pnt_el
+            .removeClass('expanded')
+            .find('.toggle.less').hide();
+
+          if ( pnt_el.hasClass('point_in_list_margin') ) {
+            pnt_el.draggable({helper: 'clone', cursor: 'move'})
+          }
 
           hide_lightbox();  
 
           pnt_el.find('.more').fadeIn();
-
 
         });
       });
@@ -328,7 +371,6 @@ ConsiderIt = {
         var other_point_list = $j('#points_other_con .point_list');
       }
 
-
       var carousel = other_point_list.parents('.infiniteCarousel:first');
 
       var replacement_point_already_in_list = other_point_list.find('#' + replacement_point.attr('id')).length > 0;
@@ -340,7 +382,10 @@ ConsiderIt = {
         } else {
           included_point.remove();
         }
-    
+        replacement_point.draggable({
+          helper: 'clone',
+          cursor: 'move'
+        });
         user_point_list.append(response['approved_point']);
         carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
       });
@@ -348,7 +393,7 @@ ConsiderIt = {
 
     // Remove from list
     $j(document).delegate('.remove .judgepointform form', 'ajax:success', function(data, response, xhr){
-      var point_in_margin = response['deleted_point'],
+      var point_in_margin = $j(response['deleted_point']),
         old_point = $j(this).parents('.point_in_list_self:first'),
         other_point_list = old_point.hasClass('pro') ? $j('#points_other_pro .point_list') : $j('#points_other_con .point_list'),
         carousel = other_point_list.parents('.infiniteCarousel:first');
@@ -357,6 +402,10 @@ ConsiderIt = {
         old_point.remove(); 
         other_point_list.append(point_in_margin);
         carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
+        point_in_margin.draggable({
+          helper: 'clone',
+          cursor: 'move'
+        });
       });
     });
 
@@ -503,7 +552,7 @@ ConsiderIt = {
 function show_lightbox(callback){
   $j('#lightbox').css({
     'background' : '#000000',
-    'z-index' : 100
+    'z-index' : 1000
   });
   if ( !$j.browser.msie ) {
 

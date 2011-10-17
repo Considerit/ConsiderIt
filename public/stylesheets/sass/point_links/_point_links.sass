@@ -1,10 +1,15 @@
 ul.point_links
-  
-#points_on_board_pro .point_link_prompt a.button
-  color: $txt_green
 
-#points_on_board_con .point_link_prompt a.button
-  color: $txt_purple
+.form-pro .point_link_prompt
+  .button
+    border-color: $brd_green_dark
+    background-color: #326732
+
+.form-con .point_link_prompt
+  .button
+    border-color: $brd_red_dark
+    background-color: #673232
+
 
 .point_link_prompt
   a
@@ -12,10 +17,14 @@ ul.point_links
     font-size: 13px
 
     &.button
-      border: 1px solid $brd_gray
-      background-color: #333
+      border: 2px solid
       padding: 6px 5px
+      color: $txt_light_gray
+      opacity: .85
 
+      &:hover
+        opacity: 1
+    
     &.more_detail
       color: $txt_gray
       margin-left: 12px
@@ -25,7 +34,7 @@ ul.point_links
   
   fieldset
     position: relative
-    background-color: #333
+    border: 1px solid $brd_light_gray
     padding: 3px 8px
     margin-top: 7px
     width: 355px

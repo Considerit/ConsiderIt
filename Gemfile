@@ -2,8 +2,6 @@ source 'http://rubygems.org'
 
 gem 'rails', '3.0.10'
 
-
-
 gem "mysql2", "~> 0.2.7"
 
 gem 'mongrel', '1.2.0.pre2'
@@ -12,7 +10,7 @@ gem "haml"
 gem 'sass'
 
 # https://github.com/plataformatec/devise
-gem 'devise'
+gem 'devise', '1.4.7'
 
 # https://github.com/plataformatec/devise/wiki/OmniAuth:-Overview
 gem "oa-oauth", :require => "omniauth/oauth"

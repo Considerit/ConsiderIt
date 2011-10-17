@@ -3,6 +3,12 @@
   .id.hide
     = point.id
     
+  .bullet_point
+    -if point.is_pro
+      +
+    - else 
+      &#x2013;
+
   .body
 
     - if context == 'margin' && !point.is_pro
@@ -59,7 +65,7 @@
     .operations
       .read_more
         %a.toggle.more.point_text_toggle.point_operation
-          #{ context == 'margin' ? 'read more / discuss' : 'details/discuss'}
+          details / discuss
           - if point.comments.count > 0
             (#{point.comments.count})
 
@@ -88,3 +94,5 @@
     - if context == 'margin' && point.is_pro
       .include.include_pro
         = render :partial => "inclusions/new", :locals => { :point => point }
+
+  .clear

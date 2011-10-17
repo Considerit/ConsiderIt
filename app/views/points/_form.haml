@@ -1,8 +1,12 @@
 .pointform{ :class => "#{action}pointform" }
 
-  = form_for [@option, point], :action => action, :remote => true do |f|
+  = form_for [@option, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'}"}, :remote => true do |f|
 
-    =image_tag "chalk/point-#{is_pro ? 'pro' : 'con'}-self.png", :class => 'symbol'
+    .bullet_point
+      -if is_pro
+        +
+      - else 
+        &#x2013;
 
     .form_proper
       =f.hidden_field :is_pro, :id => "point-current-is_pro", :value => is_pro

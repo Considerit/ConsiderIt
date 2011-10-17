@@ -2,6 +2,10 @@
 li.point_in_list
   @include nude-list
   margin-bottom: 8px
+  color: white
+  background-repeat: no-repeat
+  position: relative
+  width: 232px
 
   &.expanded
     height: auto
@@ -9,49 +13,36 @@ li.point_in_list
     .operations
       display: none
   
-  color: white
-  background-repeat: no-repeat
-  position: relative
 
-  width: 224px
+
+  .less.point_text_toggle
+    float: right
+    color: white 
+
+  .bullet_point
+    margin-top: 3px
 
   &.con
-    > .body
-      background: url("/images/chalk/point-con-self.png") no-repeat scroll 0px 3px transparent  
-
-      padding: 3px 35px 3px 39px
-    .read_more
-
     .username
       .avatar
-        border-color: $brd_purple_dark
-        right: 0
+        border-color: $brd_red_dark
 
-      .less.point_text_toggle
-        float: left
-        color: white
-        margin-left: -30px  
+    .bullet_point
+      color: $brd_red_dark
+
              
   &.pro
-    > .body
-      padding: 3px 35px 3px 39px
-      background: url("/images/chalk/point-pro-self.png") no-repeat scroll 0px 3px transparent     
-
-    .read_more
-
     .username
       .avatar
         border-color: $brd_green_dark
-        left: 0
 
-      .less.point_text_toggle
-        float: right
-        color: white 
-        margin-right: -25px 
-                      
+    .bullet_point
+      color: $brd_green_dark
+
   > .body
     overflow: hidden
     vertical-align: top
+    padding: 3px 10px 3px 35px
 
     .wrapper // only in other
       padding: 3px
@@ -90,10 +81,30 @@ li.point_in_list
               text-decoration: none
               color: $txt_light_gray
 
+    .operations   
+      padding-top: 3px     
+
+      > div, >div > div
+        display: inline-block
+        &.pointform
+          display: none
+        
+        .bullet
+          font-size: 8px
+          color: $txt_gray
+          vertical-align: middle
+          
+        a.point_operation, 
+        button.point_operation,
+        input.point_operation 
+          font-size: 12px
+          padding: 0
+          margin: 0
+          vertical-align: middle
+
     .read_more
       a.toggle_more, a.toggle
-        color: $txt_light_gray
-        padding-top: 10px
+        padding-top: 5px
         display: inline-block
         text-decoration: underline
 
@@ -109,72 +120,78 @@ li.point_in_list
       .avatar
         display: none
         position: absolute
-        top: -79px
-        border-width: 8px 8px 5px
+        top: -76px
+        border-width: 4px 4px 2px
         border-style: solid
   
 
 
   &.point_in_list_margin
-    
+    z-index: 100
     padding-bottom: 5px
+    border: 3px solid
+    cursor: move
+
+    -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
+    -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
+    box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
+
 
     &.pro
-      background: transparent url('/images/bg-point-pro.png') no-repeat left top
-       
-      > .body
-        background: url("/images/chalk/point-pro-other-42.png") no-repeat scroll left 3px transparent         
-
-        .username, 
-        .point_text.nutshell, 
-        .read_more
-          padding: 0
-        
+      background-color: $bk_green
+      border-color: $brd_green_dark
 
     &.con
-      background: transparent url('/images/bg-point-con.png') no-repeat right top
-      > .body
-        padding-top: 3px
-        background: url("/images/chalk/point-con-other-42.png") no-repeat scroll right 3px transparent         
-        .username, 
-        .point_text.nutshell, 
-        .read_more
-          padding: 0
-        .username
-          text-align: right
-					
-  
-  &.point_in_list_self
-    width: 265px
+      background-color: $bk_red
+      border-color: $brd_red_dark
 
-  &.point_in_list_board,
-  &.point_in_list_self
+    .include
+      display: none
 
     .operations        
 
       > div, >div > div
-        display: inline-block
-        &.pointform
-          display: none
-        
-        .bullet
-          font-size: 8px
-          color: $txt_gray
-          vertical-align: middle
-          
-
+                  
         a.point_operation, 
         button.point_operation,
         input.point_operation 
-          font-size: 12px
-          color: $txt_gray
-          padding: 0
-          margin: 0
-          vertical-align: middle
-
+          color: $txt_light_gray
           &:hover
-            color: $txt_light_gray
-        
+            color: white
+  
+  &.point_in_list_self
+    width: 240px
+
+  &.point_in_list_board,
+  &.point_in_list_self
+    border: 2px solid transparent
+
+    &.con
+      .bullet_point
+        color: $bk_red
+      &.expanded
+        .bullet_point
+          color: $brd_red_dark
+
+    &.pro
+      .bullet_point
+        color: $bk_green
+      &.expanded
+        .bullet_point
+          color: $brd_green_dark
+
+    .operations        
+
+      > div, >div > div
+                      
+        a.cancel,
+        a.point_operation, 
+        button.point_operation,
+        input.point_operation 
+          color: $txt_gray
+          &:hover
+            color: $txt_light_gray                
+
         .deletepointformproper
           position: absolute
           left: 0
@@ -184,10 +201,6 @@ li.point_in_list
           
           > *
             vertical-align: middle
-
-          a, input[type="submit"]
-            color: $txt_light_gray
-            background-color: transparent
 
   &.point_in_list_board
     width: 370px
@@ -217,7 +230,7 @@ li.point_in_list
       background-color: $bk_green
       > .body
     &.con
-      background-color: $bk_purple    
+      background-color: $bk_red    
       > .body
 
     .include
@@ -225,43 +238,6 @@ li.point_in_list
     &.pro, &.con
       background-image: none
 
-  &.point_in_list_margin .include
-    position: absolute
-    z-index: 99
-    top: -2px    
-    padding: 0
-    height: 25px
-    width: 48px
-    background-repeat: no-repeat
-
-    input[type="submit"].judge_point
-      margin: 0
-      border: none
-      font-size: 0px
-      width: 100%
-      background-color: transparent
-      height: 25px
-      
-      &:hover
-        cursor: pointer
-        color: #082872
-
-    &.include_con
-      left: -9px
-      background-image: url('/images/arrow-left.png')      
-      &:hover
-        background-image: url('/images/arrow-left-hover-short.png')
-      .judgepointform
-        input.judge_point
-                            
-    &.include_pro
-      left: 180px
-      background-image: url('/images/arrow-right.png')
-      &:hover
-        background-image: url('/images/arrow-right-hover-short.png')
-
-      .judgepointform
-        input.judge_point
 
 .point_list_footer
   min-height: 35px
@@ -278,10 +254,10 @@ li.point_in_list
     vertical-align: text-top
 
 #points_on_board_pro
-  margin-left: 15px
+  margin-left: 25px
 
 #points_on_board_con
-  margin-right: 15px
+  margin-right: 25px
 
 #points_other_pro
   left: -43px
@@ -296,14 +272,15 @@ li.point_in_list
   right: -45px
 
   .point_list_footer
-    padding-left: 20px
-
+    position: relative
+    left: 55%
+        
     .paginate
-      color: $brd_purple_dark
+      color: $brd_red_dark
 
 .points_other 
   .point_list_footer
-
+    width: 240px
     .forward
       background-image: url('/images/arrow-down.png')
     

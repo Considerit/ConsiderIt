@@ -1,0 +1,13 @@
+.droppable{ :id => "drop-#{position == 1 ? 'pro' : 'con'}"}
+  .bullet_point
+    -if position == 1
+      +
+    - else 
+      &#x2013;
+  
+  .prompt
+    %strong
+      drag and drop     
+    #{position == 1 ? 'pros' : 'cons'} you agree with here.
+  
+  .clear

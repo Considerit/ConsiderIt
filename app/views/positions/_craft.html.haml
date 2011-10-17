@@ -85,22 +85,6 @@
             .point_list_footer
               = render :partial => "points/pagination_block", :locals => { :points => @pro_points, :is_pro => true, :bucket => 'other', :page => @page, :mode => 'other', :column_selector => "#points_other_pro", :prev => false} 
 
-
-          .user_position
-            .position_container
-
-              .points_self#points_on_board_pro
-                .points_list_header
-                = render :partial => "points/column", :locals => { :position => 1, :points => @included_pros, :static => false, :context => 'self' }
-                = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_on_board_pro' }
-
-              .points_self#points_on_board_con
-                .points_list_header
-                = render :partial => "points/column", :locals => { :position => 0, :points => @included_cons, :static => false, :context => 'self' }
-                = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_on_board_con' }
-
-              .clear
-
           .points_other#points_other_con
 
             .point_list_footer
@@ -110,6 +94,29 @@
 
             .point_list_footer
               = render :partial => "points/pagination_block", :locals => { :points => @con_points, :is_pro => false, :bucket => 'other', :page => @page - 1, :mode => 'other', :column_selector => "#points_other_con", :prev => false} 
+
+
+          .user_position
+            .position_container
+
+              .points_self#points_on_board_pro
+                .points_list_header
+                = render :partial => "points/column", :locals => { :position => 1, :points => @included_pros, :static => false, :context => 'self' }
+                
+                = render :partial => "points/drop_target", :locals => { :position => 1 }
+
+                = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_on_board_pro' }
+
+              .points_self#points_on_board_con
+                .points_list_header
+                = render :partial => "points/column", :locals => { :position => 0, :points => @included_cons, :static => false, :context => 'self' }
+
+                = render :partial => "points/drop_target", :locals => { :position => 0 }
+
+                = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_on_board_con' }
+
+              .clear
+
 
 
     %li.stance.update_stance.step.slide

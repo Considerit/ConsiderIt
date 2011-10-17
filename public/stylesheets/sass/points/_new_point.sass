@@ -1,28 +1,27 @@
-
-
-        
 .newpoint
   width: 215px
-  margin: 20px auto
+  margin: 20px 0
 
   .newpointform
     padding: 5px
-
       
 .newpointbutton 
   button
 
     font-size: 135%
-    width: 175px
+    width: 240px
     height: 50px
     border: none
-    margin: 0 20px
 
     &.pro
-      background: url(/images/add-pro.png) left top no-repeat
-    &.con
-      background: url(/images/add-con.png) left top no-repeat
+      background: url('/images/write-pro.png') left top no-repeat
+      &:hover
+        background-image: url('/images/write-pro-hover.png')
 
+    &.con
+      background: url('/images/write-con.png') left top no-repeat
+      &:hover
+        background-image: url('/images/write-con-hover.png')
 
 .newpointform
 
@@ -42,22 +41,35 @@
     width: 460px
     margin: auto
     position: absolute
-    z-index: 100
-    background: url(/images/chalk/chalkboard_small.png) left top repeat
+    z-index: 1000
     padding: 5px 8px
+    border: 3px solid
+
+    &.form-pro
+      border-color: $brd_green_dark
+      background-color: $bk_green
+
+      .bullet_point
+        color: $brd_green_dark
+
+    &.form-con
+      border-color: $brd_red_dark
+      background-color: $bk_red
+
+      .bullet_point
+        color: $brd_red_dark
 
     .symbol
       display: block
       float: left
     
     .form_proper
-      float: left
       width: 415px
+      padding-left: 30px
 
       .username
         font-size: 10px
         color: $txt_light_gray
-
 
       p.note
         color: $txt_light_gray
@@ -84,7 +96,6 @@
         .count
           margin-top: 35px
 
-        
       .point-pledge
         float: left
         padding-top: 4px
@@ -92,8 +103,6 @@
       .point-submit
         float: right
         margin-right: 38px
-
-        input
 
       .point-cancel
         float: right
@@ -112,5 +121,3 @@
           color: $txt_light_gray
           letter-spacing: 0
           text-transform: inherit
-
-        input

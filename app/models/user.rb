@@ -1,11 +1,14 @@
 require 'open-uri'
 
 class User < ActiveRecord::Base
-  has_many :points
-  has_many :positions
-  has_many :inclusions
-  has_many :point_listings
-  has_many :point_similarities
+  has_many :points, :dependent => :destroy
+  has_many :positions, :dependent => :destroy
+  has_many :inclusions, :dependent => :destroy
+  has_many :point_listings, :dependent => :destroy
+  has_many :point_similarities, :dependent => :destroy
+  has_many :comments, :dependent => :destroy
+  has_many :point_links, :dependent => :destroy
+
   belongs_to :domain
   
   # Include default devise modules. Others available are:

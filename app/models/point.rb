@@ -209,7 +209,12 @@ protected
       elsif row.stance_bucket == '6'
         row.stance_bucket = '5'
       end
-      distribution[row.stance_bucket.to_i - 1] += row.cnt.to_i     
+      begin
+        distribution[row.stance_bucket.to_i - 1] += row.cnt.to_i    
+      rescue
+        'error'
+      end
+       
     end
     
     

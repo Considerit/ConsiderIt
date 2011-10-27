@@ -233,7 +233,10 @@ protected
       elsif row.stance_bucket == '6'
         row.stance_bucket = '5'
       end
-      scaling_distribution[row.stance_bucket.to_i - 1] += row.cnt.to_i     
+      begin
+        scaling_distribution[row.stance_bucket.to_i - 1] += row.cnt.to_i     
+      rescue
+      end
     end
     
     (0..4).each do |idx|

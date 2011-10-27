@@ -3,11 +3,11 @@ class Admin::DashboardController < ApplicationController
   def index
     @series = []
 
-    names = ['~Visitors', 'Users', 'Positions','Points', 'Inclusions', 'Comments']
-    [Session, User, Position, Point, Inclusion, Comment].each_with_index do |data, idx|
+    names = ['~Visitors', 'Users', 'Positions','Points', 'Inclusions', 'Comments', 'Misc client activities']
+    [Session, User, Position, Point, Inclusion, Comment, StudyData].each_with_index do |data, idx|
       dates = {}
       data.all.each do |row|
-        split_date = row.created_at.to_s.split(/[- :]/)
+        split_date = row.created_at.in_time_zone("Pacific Time (US & Canada)").to_s.split(/[- :]/)
         date_key = [split_date[0], split_date[1].to_i-1, split_date[2]]
         dates[date_key] ||= 0
         dates[date_key] += 1           

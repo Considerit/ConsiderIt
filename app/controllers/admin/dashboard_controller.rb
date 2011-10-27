@@ -3,8 +3,8 @@ class Admin::DashboardController < ApplicationController
   def index
     @series = []
 
-    names = ['Users', 'Points', 'Inclusions', 'Comments']
-    [User, Point, Inclusion, Comment].each_with_index do |data, idx|
+    names = ['Sessions', 'Users', 'Points', 'Inclusions', 'Comments']
+    [Session, User, Point, Inclusion, Comment].each_with_index do |data, idx|
       dates = {}
       data.all.each do |row|
         split_date = row.created_at.to_s.split(/[- :]/)

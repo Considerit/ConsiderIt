@@ -7,10 +7,12 @@ class Admin::DashboardController < ApplicationController
     [Session, User, Position, Point, Inclusion, Comment, StudyData].each_with_index do |data, idx|
       dates = {}
       data.all.each do |row|
-        split_date = row.created_at.in_time_zone("Pacific Time (US & Canada)").to_s.split(/[- :]/)
-        date_key = [split_date[0], split_date[1].to_i-1, split_date[2]]
-        dates[date_key] ||= 0
-        dates[date_key] += 1           
+        if !row.created_at.nil?
+          split_date = row.created_at.in_time_zone("Pacific Time (US & Canada)").to_s.split(/[- :]/)
+          date_key = [split_date[0], split_date[1].to_i-1, split_date[2]]
+          dates[date_key] ||= 0
+          dates[date_key] += 1  
+        end         
       end
 
       time = []

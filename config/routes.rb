@@ -13,6 +13,7 @@ ConsiderIt::Application.routes.draw do
     resources :comments, :only => [:index, :create]
   end
 
+
   devise_for :users, :controllers => { 
     :omniauth_callbacks => "users/omniauth_callbacks", 
     :sessions => "users/sessions", 
@@ -28,5 +29,7 @@ ConsiderIt::Application.routes.draw do
   match "/home/pledge" => "home#take_pledge", :via => :post
   match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit/ } 
 
-  match '/home/study/:category' => "home#study", :via => :post
+  match '/home/study/:category' => "home#study", :via => :post  
+  match '/admin/dashboard' => "admin/dashboard#index", :via => :get, :module => :admin
+
 end

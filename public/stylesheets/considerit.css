@@ -1774,7 +1774,7 @@ li.new_comment.from_discussion {
         margin-top: 0px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_header\.sass}line{font-family:\0000390}}
         #nav-user > li.progress #progressbar .ui-widget-header {
-          background: transparent url("/images/progress_back.png") 10px 10px;
+          background-color: #900000;
           border: 1px solid #ac0000; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/ConsiderIt\/public\/stylesheets\/sass\/shared\/_header\.sass}line{font-family:\0000395}}
       #nav-user > li.progress .triangle_img {

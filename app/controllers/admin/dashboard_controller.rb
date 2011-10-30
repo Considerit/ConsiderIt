@@ -3,7 +3,7 @@ class Admin::DashboardController < ApplicationController
   def index
     @series = []
 
-    names = ['~Visitors', 'Users', 'Positions','Points', 'Inclusions', 'Comments', 'Misc client activities']
+    names = ['~Visitors', 'Users', 'Positions', 'Inclusions','Points', 'Comments', 'Misc client activities']
     [Session, User, Position, Point, Inclusion, Comment, StudyData].each_with_index do |data, idx|
       dates = {}
       data.all.each do |row|

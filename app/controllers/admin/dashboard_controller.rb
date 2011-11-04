@@ -1,3 +1,5 @@
+require 'date'
+
 class Admin::DashboardController < ApplicationController
   
   def index
@@ -8,23 +10,19 @@ class Admin::DashboardController < ApplicationController
       dates = {}
       data.all.each do |row|
         if !row.created_at.nil?
-          split_date = row.created_at.in_time_zone("Pacific Time (US & Canada)").to_s.split(/[- :]/)
-          date_key = [split_date[0], split_date[1].to_i-1, split_date[2]]
-          dates[date_key] ||= 0
-          dates[date_key] += 1  
+          date = row.created_at.in_time_zone("Pacific Time (US & Canada)").to_date
+          dates[date] ||= 0
+          dates[date] += 1  
         end         
       end
 
-      pp dates
-
       time = []
-      dates.each do |split_date, cnt|
-        time.push([ "Date.UTC(#{split_date[0]}, #{split_date[1].to_i}, #{split_date[2]}, 0, 0, 0)" , cnt])
+      dates.each do |date, cnt|
+        time.push([ "Date.UTC(#{date.year}, #{date.month}, #{date.day}, 0, 0, 0)" , cnt, date])
       end
 
-      time.sort! {|x,y| x[0] <=> y[0] }
+      time.sort! {|x,y| x[2] <=> y[2] }
 
-      pp time
       cumulative = []
       prev = 0
       time.each_with_index do |row, idx|
@@ -108,7 +106,6 @@ class Admin::DashboardController < ApplicationController
       @series.push([seriesOptions, yAxisOptions, names[idx], chartOptions, title])
 
     end
-    @series = @series
 
   end
 

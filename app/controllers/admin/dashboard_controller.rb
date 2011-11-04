@@ -18,7 +18,7 @@ class Admin::DashboardController < ApplicationController
 
       time = []
       dates.each do |date, cnt|
-        time.push([ "Date.UTC(#{date.year}, #{date.month}, #{date.day}, 0, 0, 0)" , cnt, date])
+        time.push([ "Date.UTC(#{date.year}, #{date.month-1}, #{date.day}, 0, 0, 0)" , cnt, date])
       end
 
       time.sort! {|x,y| x[2] <=> y[2] }

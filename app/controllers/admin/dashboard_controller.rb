@@ -15,12 +15,16 @@ class Admin::DashboardController < ApplicationController
         end         
       end
 
+      pp dates
+
       time = []
-      dates.each do |split_date, val|
-        time.push([ "Date.UTC(#{split_date[0]}, #{split_date[1].to_i}, #{split_date[2]}, 0, 0, 0)" , val])
+      dates.each do |split_date, cnt|
+        time.push([ "Date.UTC(#{split_date[0]}, #{split_date[1].to_i}, #{split_date[2]}, 0, 0, 0)" , cnt])
       end
 
       time.sort! {|x,y| x[0] <=> y[0] }
+
+      pp time
       cumulative = []
       prev = 0
       time.each_with_index do |row, idx|

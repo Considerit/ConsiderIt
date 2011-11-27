@@ -1,40 +1,7 @@
 - if group_name == 'everyone' || group_name == 'all'
   %h3  
-    A ranked list of the most popular points
-    %span.group
-      overall
+    Pros and cons, ranked by importance to these participants
 
-  .filters
-    %a#show_self.show_group
-      show your pros and cons
-
-- elsif group_name == 'self'
-  %h3  
-    The points YOU think are important
-
-  .filters
-    %a#show_popular.show_group
-      show overall key points
-
-
-- else
-  %h3
-    A ranked list of points
-        
-    %span.group
-      = group_name
-    
-    found important
-          
-  .filters
-    %a#show_popular.show_group
-      show overall key points
-
-    %a#show_self.show_group
-      show
-      %span.italic
-        your
-      pros and cons  
 
 .position_container
    

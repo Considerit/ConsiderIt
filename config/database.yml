@@ -1,21 +1,24 @@
 development:
-  adapter: mysql
-  database: considerit2_dev
+  adapter: mysql2
+  database: dub_dev
   username: root
   password: root
   host: localhost
+  socket: /Applications/MAMP/tmp/mysql/mysql.sock
 
 test:
-  adapter: mysql
-  database: considerit2_test
+  adapter: mysql2
+  database: dub_test
   password: root
   host: localhost
+  socket: /Applications/MAMP/tmp/mysql/mysql.sock
 
 production:
-  adapter: mysql
-  database: considerit2_production
+  adapter: mysql2
+  database: dub_production
   username: root
   password: root
   host: localhost
+  socket: /Applications/MAMP/tmp/mysql/mysql.sock
 
 

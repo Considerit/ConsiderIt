@@ -3,6 +3,8 @@ class HomeController < ApplicationController
   respond_to :json, :html
 
   def index
+    redirect_to Option.find(1)
+
     @user = current_user
     @keywords = "Washington Voters Guide 2011 Election Ballot Measures Initiatives"
     @description = "A guide to the Washington State 2011 election, written by citizens like you. Think through the pros and cons of state and local ballot measures and initiatives. Discover what other voters think."

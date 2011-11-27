@@ -1,0 +1,32 @@
+
+%div.group.shadow_offset{:class=>"ranked_points_bucket_#{group_id}"}
+  .triangle
+    &#x25B2;
+  .ranked_points_header
+
+    - if group_name == 'user'
+      Pros and cons important to #{@user_points.name}
+    - else
+      Pros and cons, ranked by importance to these reviewers
+
+  .position_container
+     
+    .points_board#points_on_board_pro
+      .points_list_header
+
+      .carousel
+        = render :partial => "points/column", :locals => { :points => @pro_points, :is_pro => true, :context => 'board' }
+      
+      .point_list_footer
+        = render :partial => "points/pagination_block", :locals => { :points => @pro_points, :is_pro => true, :bucket => @bucket, :page => @page, :mode => 'board', :column_selector => "#points_other_pro", :both => true} 
+
+    .points_board#points_on_board_con 
+      .points_list_header
+
+      .carousel
+        = render :partial => "points/column", :locals => { :points => @con_points, :is_pro => false, :context => 'board' }
+
+      .point_list_footer
+        = render :partial => "points/pagination_block", :locals => { :points => @con_points, :is_pro => false, :bucket => @bucket, :page => @page, :mode => 'board', :column_selector => "#points_other_con", :both => true} 
+
+    .clear 

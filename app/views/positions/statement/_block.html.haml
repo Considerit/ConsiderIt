@@ -1,0 +1,13 @@
+%li.statement{:class=>"bucket-#{position.stance_bucket}", :id=>"user-#{position.user_id}"}
+  %a.view_statement
+    .avatar
+      - if position.user.avatar
+        = image_tag position.user.avatar.url(:normal), :alt => "#{h position.user.name}'s profile picture"
+    .username
+      = h position.user.short_name    
+    .read_statement            
+      show review
+    .commentcount
+      #{position.comments.count} comments
+    .userid.hide
+      #{position.user_id}

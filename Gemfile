@@ -35,7 +35,7 @@ gem 'whenever'
 gem 'yamler'
 
 # https://github.com/elight/acts_as_commentable_with_threading
-gem 'acts_as_commentable_with_threading'
+# gem 'acts_as_commentable_with_threading'
 
 # https://github.com/documentcloud/jammit/
 gem 'jammit'

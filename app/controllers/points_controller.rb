@@ -17,6 +17,7 @@ class PointsController < ApplicationController
   def index
     @option = Option.find(params[:option_id])
     @user = current_user
+
     if current_user
       @position = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first 
     else
@@ -39,9 +40,11 @@ class PointsController < ApplicationController
     if @bucket == 'all' || @bucket == ''
       group_name = 'all'
       qry = qry.ranked_overall
-    elsif @bucket == 'self' && @user
-      group_name = 'self'
-      qry = qry.joins(:inclusions).where(:inclusions => { :user_id => @user.id})    
+    elsif @bucket[0..3] == 'user'
+      group_name = 'user'
+      user_points_id = @bucket[5..@bucket.length].to_i
+      @user_points = User.find(user_points_id)
+      qry = qry.joins(:inclusions).where(:inclusions => { :user_id => user_points_id})    
     elsif @bucket == 'other'
       group_name = 'other'
       qry = qry.not_included_by(current_user, session[@option.id][:included_points].keys).ranked_persuasiveness  
@@ -66,8 +69,8 @@ class PointsController < ApplicationController
       points = qry.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
     end
     
-    if group_name == 'self'
-      context = nil # looking through their own included points
+    if group_name == 'user'
+      context = 10 # looking through someone else's included points
     elsif pros_and_cons
       context = 5  # initial load of voter segment on options page
     elsif mode == 'other'

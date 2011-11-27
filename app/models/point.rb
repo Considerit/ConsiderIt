@@ -1,11 +1,15 @@
+
 class Point < ActiveRecord::Base
+  
+  is_commentable
+
   belongs_to :user
   belongs_to :option
   belongs_to :position
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
   has_many :point_links, :dependent => :destroy
-  has_many :comments, :dependent => :destroy
+  
 
   accepts_nested_attributes_for :point_links, :reject_if => lambda { |pl| pl[:url].blank? }, :allow_destroy => true
 
@@ -56,7 +60,8 @@ class Point < ActiveRecord::Base
       option.points.where(:id => -1) #null set
     end
   end
-  
+
+
   def update_absolute_score
     define_appeal
     define_attention

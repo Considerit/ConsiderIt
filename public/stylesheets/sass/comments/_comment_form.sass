@@ -1,6 +1,13 @@
 
 
 li.new_comment
+  width: 400px
+  background-color: #BBBBBB
+  @include nude-list
+  font-size: 14px
+
+  .user
+    float: left
   .avatar
     top: 0
   .count
@@ -8,7 +15,7 @@ li.new_comment
     
   li.body
     textarea
-      height: 80px
+      height: 170px
   
   .comment_submit
     margin: 10px 0 5px 0
@@ -17,68 +24,32 @@ li.new_comment
   .comment_body
     border-bottom: none
     width: 100%
-    .text
-
-      a.cancel
-        float: left
-        color: gray
+    margin-top: 5px
         
-  &.from_point
-    @include nude-list
-    font-size: 14px
-    .comment_body
-      margin-top: 5px
-      .body_row
-        .user
-          max-width: 70px
-          font-size: 10px
-        .text
-          margin-left: 85px
-          form
-            ul.form
-              margin: 0
-              li.body
-                textarea
-                  width: 365px
-                .count
-                  color: $txt_light_gray
-                  width: 35px
-                  display: block
-                  float: right
-                  padding-left: 5px
-                  
-              .comment_submit
-              
-              a.cancel
-                font-size: 10px
-                margin-left: 10px
-                padding-top: 16px 
-          
-    
- 
-  
-  &.from_discussion
-    
-    font-size: 20px
-    
-    .count
-      color: $txt_light_gray
-      
-    li.the_subject
-      input[type="text"]
-        display: inline
-        width: 500px
-    li.body
-      textarea
-        width: 500px
-    
-    .comment_submit
-    
-    .comment_body
+    .body_row
+      .user
+        max-width: 70px
+        font-size: 10px
       .text
-        width: 550px
-  
-        a.cancel
-          font-size: 12px
-          margin-left: 10px
-          padding-top: 16px
+        margin-left: 85px
+        form
+          ul.form
+            margin: 0
+            li.body
+              textarea
+                width: 325px
+              .count
+                color: $txt_light_gray
+                width: 35px
+                display: block
+                float: right
+                padding-left: 5px
+                
+            .comment_submit
+            
+            a.cancel
+              font-size: 10px
+              margin-left: 10px
+              padding-top: 16px 
+              float: left
+              color: gray

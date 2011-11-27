@@ -1,0 +1,290 @@
+html
+  background-image: url(/themes/blogademia/images/bg-body.png) 
+  background-position: left top
+  background-repeat: repeat-x
+
+
+
+#initiative #description .description_wrapper
+  margin: auto
+  float: none
+  width-top: 45px
+  width: auto
+
+#initiative #description
+  background-color: transparent
+  margin-top: 0px
+
+.full object
+  left: -150px
+  position: relative
+
+.point-pledge
+  display: none
+
+
+#col1, #col2, #col3
+  float: left
+
+#col1
+  width: 200px
+  margin-left: 10px
+  color: #222
+
+  img
+    margin-top: 10px
+
+
+
+
+#col2
+  width: 500px
+  margin-left: 20px
+  h1
+    color: #444055
+    font-size: 19pt
+    margin-bottom: 4px
+  h2
+    color: #bbb
+    font-size: 16pt
+  p.subheader
+    font-style: italic
+
+#col3
+  width: 137px
+  position: absolute
+  left: 20px
+  top: 220px
+
+  .additional
+    .full
+      position: absolute
+      left: 170px
+      padding: 10px 20px
+      top: 0
+      width: 600px
+      z-index: 200
+      background-color: #9FA6D6
+      border: 3px solid #333
+    
+
+  .paper_link
+    padding: 5px 10px
+    background-color: #2A1C42
+    text-align: center
+    margin-bottom: 5px
+    opacity: .9
+    cursor: pointer
+
+    &:hover
+      opacity: 1
+    a
+      color: white
+      font-size: 12pt
+
+
+#initiative ol#step_through li.step .head .ol_number
+  background-color: #2A1C42
+
+#initiative ol#step_through li#stance.step
+  background-color: #9FA6D6
+
+#initiative ol#step_through li.slide
+  background-color: #B39FD6
+
+#initiative ol#step_through li.statement
+  background-color: #B39FD6
+
+  textarea
+    margin: auto
+    height: 200px
+    width: 564px
+    display: block
+
+#initiative #description .description_wrapper .full_text, #initiative #description .description_wrapper .long_description, #initiative #description .description_wrapper .additional 
+  width: auto
+
+#initiative ol#step_through li#submitstance.step .rest > div form input[type="submit"]
+  background-color: #2A1C42
+
+#initiative li.breakdown .position_marker
+  background-color: #2A1C42
+  .triangle
+    color: #2A1C42
+
+
+#wrap #footer
+  background-color: #2A1C42
+  .powered_by
+    text-align: center
+    a
+      font-weight: bold
+      text-decoration: underline
+      color: white
+
+.horizontal .paginate.first .back
+
+#initiative ol#step_through li.step.statement_carousel
+  background-color: #c4c4c4
+  padding: 10px 20px
+
+  .paginate
+    padding-top: 30px
+    &.first .back
+      background-image: url("/images/arrow-prev-dark.png")
+    &.last .forward
+      background-image: url("/images/arrow-next-dark.png")
+
+  .carousel
+    ul li.statement
+      opacity: .9
+      &:hover
+        opacity: 1    
+      background-color: inherit
+      width: 105px
+      margin: auto
+      display: inline-block
+      a
+        text-align: center  
+        color: #333
+              
+        .username
+          font-weight: bold
+          font-size: 10pt
+          color: #333
+          line-height: 9pt
+
+        .read_statement, .hide_statement
+          text-decoration: underline
+          
+          font-size: 9pt
+          vertical-align: top
+          &:hover
+            color: black
+        .commentcount
+          font-size: 7pt
+
+  .head
+    h3
+      font-size: 16pt
+      font-weight: normal
+
+      .display_count
+        font-size: 10pt
+        color: #333
+        padding-top: 5px
+
+        span.hide
+          font-size: 10pt
+          a.show_all
+            color: #333
+      
+#initiative ol#step_through li.step.statements
+  background-color: #c4c4c4
+  padding-bottom: 10px
+  .full_statement
+    position: relative
+    z-index: 1
+    .wrapper
+      position: relative
+      background-color: #9FA6D6
+      width: 800px
+      margin: auto
+      padding: 15px
+      .close
+        color: black
+        position: absolute
+        right: 20px
+        top: 10px
+        font-weight: bold
+        text-decoration: underline
+        font-size: 9pt
+
+      .col1
+        float: left
+        width: 260px
+        position: relative
+        .avatar
+          .pic
+            width: 175px
+            text-align: center
+            position: relative
+            z-index: 100
+          .tri
+            position: absolute
+            left: 170px
+            top: 20px
+            z-index: 50
+        .username
+          width: 175px
+          text-align: center
+          font-size: 14pt
+      .col2
+        width: 485px
+        float: left
+        .stance
+          margin-bottom: 10px
+          font-size: 10pt
+          font-weight: bold
+          .stance_name
+            font-variant: small-caps
+            font-size: 14pt
+    .discuss
+      display: block
+      position: relative
+      margin: 0 40px
+
+      li.new_comment .comment_body .body_row .text form ul.form li.body textarea
+        width: 275px
+
+#initiative li.ranked_points #ranked_points.explore
+  background-color: #c4c4c4
+
+#wrap #footer
+  width: 100%
+  
+
+.horizontal_carousel 
+  margin: auto
+
+svg
+  rect
+    cursor: pointer
+
+#initiative li.ranked_points #ranked_points.explore .filters a#show_popular, #initiative li.ranked_points #ranked_points.explore .filters a#show_self
+  display: none
+
+#ranked_points
+  padding: 15px 25px
+  > .group
+    background-color: #B39FD6 
+    position: relative
+    padding-bottom: 20px
+    .triangle
+      position: absolute
+      left: 50%
+      top: -20px
+      font-size: 15pt
+      color: #B39FD6
+
+    .ranked_points_header
+      font-size: 14pt
+      color: black
+      padding: 15px
+      margin: auto
+
+    .position_container
+      width: 675px
+      margin: auto
+
+.submit_a_position
+  position: absolute
+  background-color: #2A1C42
+  color: white
+  padding: 5px 20px
+  font-size: 14pt
+  top: 195px
+  left: 310px
+  opacity: .75
+  &:hover
+    opacity: 1

@@ -32,14 +32,16 @@
 		  .add(pv.Bar)
         .data(option_stance_data) //counts
         .def("i", -1)
+        .def('sel', -1)
         .width( function() get_bar_width() - spacing)
         .left( function() (6 - this.index) * get_bar_width() + spacing * 2)
         .height(function(d) d * height  / get_scaler() )
         .bottom(0)
-        .fillStyle(function(d) this.i() == this.index ? "black" : colors[this.index])
+        .fillStyle(function(d) this.i() == this.index ? "black" : this.sel() == this.index ? "#B39FD6" : colors[this.index])
         .event("mouseover", function() this.i(this.index))
         .event("mouseout", function() this.i(-1))
         .event("click", function(){
+          this.sel(this.index);
           ConsiderIt.positions.stance_group_clicked(this.index);
         });
 
@@ -55,7 +57,7 @@
 								
 		try{
       // does not work in IE
-		  bar.title(function(d) "Click to see the most compelling reasons for people who " + ConsiderIt.positions.stance_name(this.index) + " this measure.");
+		  //bar.title(function(d) "Click to see the most compelling reasons for people who " + ConsiderIt.positions.stance_name(this.index) + " this measure.");
 			ie = false;  
 		} catch(err){
 		  ie = true;

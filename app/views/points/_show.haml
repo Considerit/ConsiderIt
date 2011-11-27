@@ -1,98 +1,87 @@
 %li.point_in_list{ :id => "point_in_list_#{context}-#{point.id}", :class => "point_in_list_#{context} point_in_list #{point.is_pro ? 'pro' : 'con'}" }
   
-  .id.hide
-    = point.id
-    
-  .bullet_point
-    -if point.is_pro
-      +
-    - else 
-      &#x2013;
+  .inner
 
-  .body
+    .id.hide
+      = point.id
+      
+    .bullet_point
+      -if point.is_pro
+        +
+      - else 
+        &#x2013;
 
-    - if context == 'margin' && !point.is_pro
-      .include.include_con
-        = render :partial => "inclusions/new", :locals => { :point => point }
+    .body
 
-    .username
-      - if !point.hide_name && point.user
-        = image_tag point.user.avatar.url(:midsmall), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
+      - if context == 'margin' && !point.is_pro
+        .include.include_con
+          = render :partial => "inclusions/new", :locals => { :point => point }
 
-      %a.toggle.less.hide.point_text_toggle
-        close
+      .username
+        - if !point.hide_name && point.user
+          = image_tag point.user.avatar.url(:midsmall), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
 
-      by 
-      - if point.hide_name
-        anonymous
-      - elsif point.user
-        = point.user.name
-      - else
-        unknown
-          
-    .point_text.nutshell 
+        %a.toggle.less.hide.point_text_toggle
+          close
 
-      - if point.nutshell.length > 0
-        = h point.nutshell
-      - else
-        = h point.text.length > 137 ? point.text[0,137] : point.text
-    
-    .point_text.full
-      .details
-        %h4
-          details
-        .the_details       
-          = point.text
-
-      .link
-        %h4
-          external links
-        - if point.point_links.count > 0
-          %ul
-            - point.point_links.each do |pl|
-              = render :partial => 'point_links/show', :locals => { :point_link => pl }
+        by 
+        - if point.hide_name
+          anonymous
+        - elsif point.user
+          = point.user.name
         - else
-          %ul
-            %li
-              none provided
+          unknown
+            
+      .point_text.nutshell 
 
-      .discuss
-        %h4
-          discussion
+        - if point.nutshell.length > 0
+          = h point.nutshell
+        - else
+          = h point.text.length > 137 ? point.text[0,137] : point.text
+      
+      .point_text.full
+        .details
+          .the_details       
+            = point.text
 
-        = render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :point => point }
+        .link
+          - if point.point_links.count > 0
+            %ul
+              - point.point_links.each_with_index do |pl, idx|
+                = render :partial => 'point_links/show', :locals => { :point_link => pl, :idx => idx }
 
-    .operations
-      .read_more
-        %a.toggle.more.point_text_toggle.point_operation
-          details / discuss
-          - if point.comments.count > 0
-            (#{point.comments.count})
+      .operations
+        .read_more
+          %a.toggle.more.point_text_toggle.point_operation
+            details / discuss
+            - if point.comments.count > 0
+              (#{point.comments.count})
 
-      - if context == 'self'
-        - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
+        - if context == 'self'
+          - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
-        - if point_creator
-          .edit
+          - if point_creator
+            .edit
+              .bullet
+                &#8226;
+
+              %a.editpoint.point_operation
+                edit
+              = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
+
+          .remove
             .bullet
               &#8226;
-
-            %a.editpoint.point_operation
-              edit
-            = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
-
-        .remove
-          .bullet
-            &#8226;
-                    
-          -if point_creator
-            = render :partial => "points/delete", :locals => { :point => point } 
-          -else
-            = render :partial => "inclusions/delete", :locals => { :point => point }
-
+                      
+            -if point_creator
+              = render :partial => "points/delete", :locals => { :point => point } 
+            -else
+              = render :partial => "inclusions/delete", :locals => { :point => point }
 
     - if context == 'margin' && point.is_pro
       .include.include_pro
         = render :partial => "inclusions/new", :locals => { :point => point }
 
+  = render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :commentable => point, :context => 'point' }
+    
   .clear

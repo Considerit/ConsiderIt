@@ -4,8 +4,6 @@
     display: none
 
   &.guide
-    li.breakdown
-      border: 3px solid $bk_light_blue
 
         
     ol#step_through li.step
@@ -13,7 +11,7 @@
       padding-bottom: 0
 
       .head
-        padding: 15px 15px 15px 15px
+        padding: 0px 0 15px 0
         color: $txt_dark_gray
         position: relative
 
@@ -255,37 +253,44 @@
             
             form
               margin: auto
-              width: 400px
+              width: 660px
 
               input[type="submit"]
-                background-color: transparent
-                background-image: url('/images/submit-stance.png') 
-                background-repeat: no-repeat
+                background-color: $button_color
                 cursor: pointer
                 text-shadow: gray 1px 1px 2px
                 width: 380px
                 height: 75px
                 border: none
                 padding: 0
+                color: white
+                font-size: 24pt
+                opacity: .9
+
+                &:hover
+                  opacity: 1
               
               a
                 display: inline-block
-                margin-left: 240px
-                margin-top: -10px
-                font-size: 10px
+                margin-left: 40px
+                font-size: 12pt
                 color: $txt_gray                
                 font-weight: bold
+                text-decoration: underline
+                margin-top: 30px
                 &:hover
-                  text-decoration: underline
+                  color: $txt_dark_gray
 
               label
                 color: $txt_gray
                 text-transform: none
                 letter-spacing: 0
                 padding-left: 5px
-
-              li
-                padding: 5px 0
+              
+              ul
+                margin-top: 10px
+                li
+                  padding: 5px 0
 
             .stance_status
               padding-bottom: 5px

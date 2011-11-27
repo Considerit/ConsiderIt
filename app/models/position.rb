@@ -5,6 +5,8 @@ class Position < ActiveRecord::Base
   has_many :points
   has_many :point_listings
   
+  is_commentable
+  
   acts_as_paranoid_versioned
   
   default_scope where( :published => true )
@@ -14,19 +16,19 @@ class Position < ActiveRecord::Base
   def stance_name
     case stance_bucket
       when 0
-        return "strongly opposed"
+        return "strongly oppose"
       when 1
-        return "moderately opposed"
+        return "oppose"
       when 2
-        return "slightly opposed"
+        return "weakly oppose"
       when 3
-        return "undecided"
+        return "undecided about"
       when 4
-        return "slight support"
+        return "weakly support"
       when 5
-        return "moderate support"
+        return "support"
       when 6
-        return "strong support"
+        return "strongly support"
     end
   end    
 

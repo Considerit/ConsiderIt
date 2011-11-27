@@ -10,7 +10,7 @@
       slide: function(event, ui) {
         $j('.slider').each(function(){
           if ( ui.value != $j(this).slider('value') ) {
-            $j(this).slider('value', ui.value)
+            $j(this).slider("option", "value", ui.value);
           }
         });
       },

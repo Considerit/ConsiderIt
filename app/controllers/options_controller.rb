@@ -12,7 +12,7 @@ class OptionsController < ApplicationController
 
     @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
     
-    if !@position
+    if !@position && (!params.has_key? :redirect || params[:redirect] == 'true' )
       redirect_to(new_option_position_path(@option))
       return
     end
@@ -39,9 +39,9 @@ class OptionsController < ApplicationController
     
     #Point.update_relative_scores
 
-    @comments = @option.root_comments
-    @comment = Comment.new      
-    @reflectable = true    
+    #@comments = @option.root_comments
+    #@comment = Comment.new      
+    #@reflectable = true    
     
   end
 

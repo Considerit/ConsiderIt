@@ -1,11 +1,12 @@
 #initiative
 
   li.breakdown
-    border: 2px solid $bk_blue
-    border-width-left: 1px
     position: relative
     padding-bottom: 0
     
+    .head
+      top: -25px
+
     .extra
       color: black
     
@@ -14,15 +15,24 @@
       z-index: 999
       bottom: 0px
       left: 0px
-      width: 50px
       
+      img
+        width: 25px
+        display: block
+        margin: auto
+              
       &.call
         top: 104px
         left: 661px
       
+      a
+        color: $txt_gray
+        text-decoration: underline
+        &:hover
+          color: $txt_dark_gray
+      
     .bars
       margin: auto
-      padding-top: 15px
 
       .viz
         .stance_chart
@@ -57,17 +67,19 @@
     
     .position_marker
       background-color: $bk_dark_red
-      color: white
+      color: #eee
       position: absolute
-      top: 110px
-      right: -20px
-      padding: 10px 15px
+      top: 60px
+      right: -10px
+      padding: 5px 10px
+      z-index: 100
+      width: 130px
 
       .triangle
         position: absolute
         left: -14px
         color: $bk_dark_red
-        top: 30px
+        top: 10px
         font-size: 18px
 
       .label
@@ -85,7 +97,7 @@
           color: inherit
           text-decoration: underline
 
-              
+  li.ranked_points
     .explore#ranked_points
       background-color: $bk_light_blue
       margin: 0
@@ -109,3 +121,7 @@
           
           &:hover
             text-decoration: underline
+
+
+
+

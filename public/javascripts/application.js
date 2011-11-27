@@ -67,6 +67,15 @@ ConsiderIt = {
       dim: 250
     });
 
+    $j('li.step.statement_carousel .horizontal_carousel').infiniteCarousel({
+      speed: 1500,
+      vertical: false,
+      total_items: 5,
+      items_per_page: 7,
+      loading_from_ajax: false,
+      dim: 805    
+    });    
+
     if( $j('#intro').length == 0 ){
       //$j('#masthead').append('<a class="home" href="/">home</a>');
     }
@@ -84,9 +93,10 @@ ConsiderIt = {
   per_request : function() {
 
     if ( !$j.browser.msie ) {
+      $j('.add_corner').corner('5px');
       $j('#nav-user').corner('bottom bl 5px');  
       $j('#masthead').corner('round top 5px');
-      $j('.point_in_list_margin, .point_in_list.expanded').corner('5px');
+      $j('.point_in_list_margin .inner, .point_in_list.expanded .inner').corner('5px');
       $j('#initiative #description .initiative_item').corner('round top 5px');
       $j('.avatar').corner('5px');
       $j('input[type="submit"]').corner('5px');
@@ -209,7 +219,7 @@ ConsiderIt = {
     $j(document).delegate('.description_wrapper .prompt a', 'click', function(){
       if($j(this).hasClass('hidden')){
         $j(this).parents('.prompt:first').siblings('.full').slideDown();
-        $j(this).text('hide details');
+        $j(this).text('hide');
       } else {
         $j(this).parents('.prompt:first').siblings('.full').slideUp();
         $j(this).text('show');
@@ -218,6 +228,43 @@ ConsiderIt = {
 
     });
 
+    //////////////
+    // POSITIONS
+    //////////////
+
+    // Toggle position statement clicked
+
+    $j("#step_through").delegate(".statement a, .full_statement a.close", 'click', function(event){
+      var user_id = $j.trim($j(this).parent().find('.userid').text()),
+          prompt = $j("#user-" + user_id + " a").find('.read_statement'),
+          closing = $j.trim(prompt.text()) == 'hide';
+
+
+      $j("#user-" + user_id + "-full").slideToggle('slow', function(){
+        var prompt = $j("#user-" + user_id + " a").find('.read_statement');
+        prompt.text( closing ? 'show review' : 'hide' );
+      });
+
+      $j(".full_statement:visible:not(#user-" + user_id + "-full)").each(function(){
+        $j('.read_statement').text('show review');
+        $j(this).fadeOut();
+      }); 
+
+      if ( !closing ) {
+        ConsiderIt.positions.stance_group_clicked('user-' + user_id);
+      } else if ( event.which ) { // don't want to do anything if triggered programmatically
+        var bucket = $j('li.step.statement_carousel').data('showing');
+        $j('#ranked_points .group').fadeOut();
+        $j('#ranked_points .ranked_points_bucket_'+bucket).fadeIn();
+      }
+
+
+    });    
+
+    $j("#step_through").delegate(".display_count .show_all", 'click', function(){
+      ConsiderIt.positions.stance_group_clicked('all');      
+    });
+            
     //////////////
     // POINTS
     //////////////
@@ -272,83 +319,87 @@ ConsiderIt = {
 
     // Toggle point details ON
     $j(document).delegate('.point_in_list .toggle.more', 'click', function(){
-      var pnt_el_main = $j(this).parents('.point_in_list');
-      pnt_el_main.draggable( "destroy" );
+      var real_point = $j(this).parents('.point_in_list');      
+      real_point.draggable( "destroy" );
+      var placeholder = real_point.clone(true, true); // deep clone with cloned events
 
-      var pnt_el = pnt_el_main.clone(true, true); // deep clone with cloned events
+      var is_pro = real_point.hasClass('pro');
 
+      // store properties for restoration later...
+      real_point.data('properties', {
+        width: real_point.css('width'),
+        marginLeft: real_point.css('marginLeft')
+      });
 
-      var is_pro = pnt_el.hasClass('pro');
-      pnt_el.addClass('expanded');
+      //real_point.hide();
+      real_point.addClass('expanded');
 
-      pnt_el.hide();
+      real_point.after(placeholder);
 
-      pnt_el.css({
-        'z-index': 10000,
+      real_point.css({
+        'z-index': 1001,
         'position': 'absolute'  
       });
-      $j('body').append(pnt_el.detach());
-      pnt_el.css(pnt_el_main.offset());
-
-      pnt_el.show();
 
       show_lightbox();
 
-      // store properties for restoration later...
-      pnt_el.data('properties', {
-        width: pnt_el_main.css('width'),
-        marginLeft: pnt_el_main.css('marginLeft')
-      });
-
-      pnt_el_main.css('visibility', 'hidden');
-      var animate_properties = { width: '600px' };
+      placeholder.css('visibility', 'hidden');
+      var animate_properties = { width: '900px' };
       if ( !is_pro ){
-        animate_properties['marginLeft'] = -600 + pnt_el.width() + 'px' ;
+        offset = real_point.hasClass('point_in_list_margin') ? -900 : -700;
+        animate_properties['marginLeft'] = offset + real_point.width() + 'px' ;
       }
-      pnt_el.animate(animate_properties, function(){
-        pnt_el.find('.point_text.full').slideDown(function(){
-          pnt_el.find('.avatar').fadeIn();
+      real_point.animate(animate_properties, function(){
+        real_point.find('.point_text.full').slideDown(function(){
+          real_point.find('.avatar').fadeIn();
+          real_point.find('.discuss').slideDown();
         });
       });
 
-      pnt_el.find('.toggle.more').fadeOut(function(){pnt_el.find('.less').fadeIn();});
+      real_point.find('.toggle.more').fadeOut(function(){real_point.find('.less').fadeIn();});
       ConsiderIt.per_request();
     });
 
     // Toggle point details OFF
     $j(document).delegate('.point_in_list .toggle.less', 'click', function(){
-      var pnt_el = $j(this).parents('.point_in_list'),
-          pnt_el_main = $j('#' + pnt_el.attr('id') + ':not(.expanded)'),
-          is_pro = pnt_el.hasClass('pro'),
-          animate_properties = pnt_el.data('properties');
 
-      pnt_el.find('.point_text.full').slideUp(function(){
-        pnt_el.find('.avatar').fadeOut();
-        pnt_el.animate(animate_properties, function(){
-          pnt_el.css({
-            'z-index': 'inherit',
-            'position': 'relative',
-            'top': 'auto',
-            'left': 'auto',
-            'right': 'auto',
-            'display': 'block'
+      var real_point = $j(this).parents('.point_in_list'), 
+          placeholder = $j('#' + real_point.attr('id') + ':not(.expanded)'),
+          is_pro = real_point.hasClass('pro'),
+          animate_properties = real_point.data('properties');
+
+      real_point.find('.discuss').slideUp(function(){
+        real_point.find('.avatar').fadeOut();
+        real_point.find('.point_text.full').slideUp(function(){
+          real_point.animate(animate_properties, function(){
+            real_point.css({
+              'z-index': 'inherit',
+              'position': 'relative',
+              'top': 'auto',
+              'left': 'auto',
+              'right': 'auto',
+              'display': 'block'
+            });
+            placeholder.remove();
+
+            real_point
+              .removeClass('expanded')
+              .find('.toggle.less').hide();
+
+            if ( real_point.hasClass('point_in_list_margin') ) {
+              real_point.draggable({helper: 'clone', cursor: 'move'})
+            }
+
+            hide_lightbox();  
+
+            real_point.find('.more').fadeIn();
+
           });
-          pnt_el_main.replaceWith(pnt_el); 
+        });        
 
-          pnt_el
-            .removeClass('expanded')
-            .find('.toggle.less').hide();
 
-          if ( pnt_el.hasClass('point_in_list_margin') ) {
-            pnt_el.draggable({helper: 'clone', cursor: 'move'})
-          }
-
-          hide_lightbox();  
-
-          pnt_el.find('.more').fadeIn();
-
-        });
       });
+
 
       
     });
@@ -452,16 +503,48 @@ ConsiderIt = {
     },
     
     stance_group_clicked : function(bucket) {
-      //if ( bucket == 'all' ) group_name = 'everyone';
-      //else group_name = ConsiderIt.positions.stance_name(bucket);
+
       var option_id = $j('#option_id').text(),
-          position_id = $j('#position_id').text();
+          position_id = $j('#position_id').text(),
+          nest = '#ranked_points .ranked_points_bucket_'+bucket,
+          $stored = $j(nest);
 
-      $j.get("/options/" + option_id + "/points", { bucket: bucket },
-        function(data){
-          $j('#ranked_points').html(data['points']);
-      } );
+      if( $stored.length > 0 ) {
+        $j('#ranked_points .group').fadeOut();
+        $stored.fadeIn();
+      } else {
+        $j.get("/options/" + option_id + "/points", { bucket: bucket },
+          function(data){
+            $j('#ranked_points .group').fadeOut();
+            $j('#ranked_points').append(data['points']);
+        } );
+      }
 
+      // update position statements
+      if ( bucket.toString().substring(0,4) == 'user' ){
+        
+      } else if ( bucket == 'all' ) {
+        $j('.statement:hidden').fadeIn();
+        $j('.display_count .hide').hide();
+        $j('li.step.statement_carousel .head .banner .fl').text('All reviewers');
+        $j('.display_count .showing').text($j('.display_count .total').text());
+
+        $j('li.step.statement_carousel').data('showing', bucket);
+      } else {
+        var with_bucket = $j('.bucket-' + bucket),
+            without_bucket = $j('.statement:not(.bucket-' + bucket);
+        without_bucket.fadeOut('slow', function(){
+          with_bucket.fadeIn('slow');
+        });
+        
+        $j('li.step.statement_carousel .head .banner .fl').text('Reviewers who ' + ConsiderIt.positions.stance_name(bucket) + " this paper\'s acceptance");        
+        $j('.display_count .hide').show();
+        $j('.display_count .showing').text(with_bucket.length);
+
+        $j('.full_statement:visible a.close').trigger('click');
+        $j('li.step.statement_carousel').data('showing', bucket);
+      }
+    
       $j.post('/home/study/3', {
         position_id: position_id,
         option_id: option_id,
@@ -482,11 +565,11 @@ ConsiderIt = {
         case 1: 
           return "oppose"
         case 2:
-          return "moderately oppose"
+          return "weakly oppose"
         case 3:
-          return "are neutral on"
+          return "are undecided about"
         case 4:
-          return "moderately support"
+          return "weakly support"
         case 5:
           return "support"
         case 6:

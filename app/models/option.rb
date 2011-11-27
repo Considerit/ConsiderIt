@@ -1,5 +1,4 @@
 class Option < ActiveRecord::Base
-  acts_as_commentable
   has_many :points
   has_many :positions
   has_many :inclusions

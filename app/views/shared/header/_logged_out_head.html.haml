@@ -12,24 +12,26 @@
 #login_dialog.user_dialog
 
 :javascript
-  $j('.user_dialog').dialog({
-    autoOpen: false,
-    modal: true,
-    draggable: false,
-    dialogClass: 'alert',
-    width: 775
-  });
+  $j(document).ready(function(){
+    $j('.user_dialog').dialog({
+      autoOpen: false,
+      modal: true,
+      draggable: false,
+      dialogClass: 'alert',
+      width: 775
+    });
 
-  $j('.login_link').click(function(){
-    $j('#login_dialog')
-      .load("#{new_user_session_path(:third_party=>false)}")
-      .dialog('open');
-    return false;
-  });
+    $j('.login_link').click(function(){
+      $j('#login_dialog')
+        .load("#{new_user_session_path(:third_party=>false)}")
+        .dialog('open');
+      return false;
+    });
 
-  $j('.register_link').click(function(){
-    $j('#register_dialog')
-      .load("#{new_user_registration_path(:third_party=>false, :context=>"header")}")
-      .dialog('open');
-    return false;
+    $j('.register_link').click(function(){
+      $j('#register_dialog')
+        .load("#{new_user_registration_path(:third_party=>false, :context=>"header")}")
+        .dialog('open');
+      return false;
+    });
   });

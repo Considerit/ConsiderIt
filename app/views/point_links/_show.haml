@@ -1,4 +1,6 @@
 %li
+  %span.lead
+    [#{idx}]
   - if point_link.description.length > 0
     %a{ :href => point_link.safe_url, :target => '_blank' }
       #{point_link.description}

@@ -1,60 +1,26 @@
-#initiative
-  .full_discussion
-    ul.comment_children,
-    ul.comment_section,
-    ul#discussion_threads
-      @include nude-list
-      
-    ul.comment_section
-      margin-left: 0px
-      > li.new_comment
-        margin-top: 25px
-        
-        h3
-          margin-bottom: 5px
-    
-#discussion_threads
-  margin: 0
-  
-  > h3
-    margin-bottom: 10px              
-    a#start_new_discussion
-      padding: 10px
-      text-align: center
-      text-decoration: underline
+.discuss
+  position: absolute
+  margin: 0px 20px
+  display: none
+  background-color: white
+  z-index: -9000
+  padding: 10px 20px
+  color: #444
+  -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
+  -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
+  box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
 
-    
-  .discussion-thread
-    margin-bottom: 4px
-    color: black
-    @include nude-list
-    padding: 10px
-    overflow: hidden
-    
-    &.pro
-      background-color: $bk_green
-    &.con
-      background-color: $bk_red
-    &.unaffiliated
-      background-color: $bk_dark_gray
-      
-    td
-      vertical-align: top
-        
-      .text 
-        padding-left: 5px
-        
-        > a
-          color: white
-          width: 100%     
-          padding: 0 120px 40px 0       
-            
-        h3.subject
-          font-size: 14px
-          line-height: 15px
-          padding-bottom: 5px
-        
-        font-size: 12px
-     
-
-    
+  .discussion_header
+    .top
+      font-size: 22pt
+      color: #aaa
+      font-weight: bold
+      line-height: 18pt
+      margin-top: 5px
+    .bottom
+      font-size: 10px
+      color: #aaa
+    hr
+      background-color: #c5c5c5
+      border: none
+      height: 0px

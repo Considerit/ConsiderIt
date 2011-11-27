@@ -1,3 +1,4 @@
+# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -10,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111006045648) do
+ActiveRecord::Schema.define(:version => 20111122220353) do
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",    :default => 0
@@ -248,6 +249,48 @@ ActiveRecord::Schema.define(:version => 20111006045648) do
   end
 
   add_index "rails_admin_histories", ["item", "table", "month", "year"], :name => "index_histories_on_item_and_table_and_month_and_year"
+
+  create_table "reflect_bullet_revisions", :force => true do |t|
+    t.integer  "bullet_id"
+    t.integer  "comment_id"
+    t.text     "text"
+    t.integer  "user_id"
+    t.boolean  "active",     :default => true
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "reflect_bullets", :force => true do |t|
+    t.integer  "comment_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "reflect_highlights", :force => true do |t|
+    t.integer  "bullet_id"
+    t.integer  "bullet_rev"
+    t.string   "element_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "reflect_response_revisions", :force => true do |t|
+    t.integer  "bullet_id"
+    t.integer  "bullet_rev"
+    t.integer  "response_id"
+    t.text     "text"
+    t.integer  "user_id"
+    t.integer  "signal"
+    t.boolean  "active",      :default => true
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "reflect_responses", :force => true do |t|
+    t.integer  "bullet_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false

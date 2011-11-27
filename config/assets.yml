@@ -12,6 +12,18 @@ javascripts:
     - public/javascripts/protovis-r3.3.js
     - public/javascripts/jquery.example.min.js
     - public/javascripts/jquery.jcarousel.min.js
+    - themes/blogademia/javascripts/pdfobject.js
+
+    - public/reflect_commenting/js/third_party/inheritance.js
+    - public/reflect_commenting/js/third_party/jquery.highlight.js
+    - public/reflect_commenting/js/third_party/jquery.jqote2.min.js
+    - public/reflect_commenting/js/third_party/jquery.noblecount.min.js
+    - public/reflect_commenting/js/third_party/jquery.qtip.min.js
+    - public/reflect_commenting/js/third_party/json2.js
+
+    - public/reflect_commenting/js/reflect.js
+    - public/reflect_commenting/js/reflect.considerit.js
+
 
 stylesheets:
   common:
@@ -19,3 +31,6 @@ stylesheets:
     - public/stylesheets/jquery_ui/jquery-ui-1.8.4.custom.css
     - public/stylesheets/jquery_ui/jquery-ui-custom.css
     - public/stylesheets/considerit.css
+
+    - public/reflect_commenting/css/reflect.css
+    - public/reflect_commenting/css/reflect.considerit.css

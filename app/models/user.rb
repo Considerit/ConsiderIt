@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
 
   has_attached_file :avatar, 
       :default_url => "/images/:attachment/:style_default-profile-pic.png",   
-      :styles => { :large => "200x200#", :normal => "100x100#", :midsmall => "70x70#", :small => "50x50#", :thumb => "35x35#"}
+      :styles => { :large => "200x200#", :big => "100x100#", :normal => '85x85#', :midsmall => "70x70#", :small => "50x50#", :thumb => "35x35#"}
       #:path => ":rails_root/public/images/:attachment/uploaded/:id/:style_:basename.:extension",
       #:url => "/images/:attachment/uploaded/:id/:style_:basename.:extension"
 
@@ -95,6 +95,13 @@ class User < ActiveRecord::Base
   def first_name
     name.split(' ')[0]  
   end
-  
+
+  def short_name
+    split = name.split(' ')
+    if split.length > 1
+      return "#{split[0][0]}. #{split[-1]}"
+    end
+    return split[0]  
+  end
       
 end

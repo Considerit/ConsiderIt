@@ -1,8 +1,7 @@
 class ActsAsCommentableWithThreadingMigration < ActiveRecord::Migration
   def self.up
     create_table :comments, :force => true do |t|
-      t.integer :commentable_id, :default => 0
-      t.string :commentable_type, :default => ""
+      t.references :commentable, :polymorphic => true
       t.string :title, :default => ""
       t.text :body, :default => ""
       t.string :subject, :default => ""

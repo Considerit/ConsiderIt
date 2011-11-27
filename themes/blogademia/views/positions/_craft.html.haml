@@ -1,0 +1,208 @@
+:javascript
+  $j(document).ready(function(){
+
+    // INITIALIZE SLIDERS
+    var params = { 
+      min: -1.0, 
+      max: 1.0, 
+      value: #{-1 * @position.stance}, 
+      step: .015,
+      slide: function(event, ui) {
+        $j('.slider').each(function(){
+          if ( ui.value != $j(this).slider('value') ) {
+            $j(this).slider("option", "value", ui.value);
+            ConsiderIt.positions.set_slider_value(ui.value, '#{@option.short_name}');
+          }
+        });
+      },
+      change: function(event, ui) {
+        value = ui.value
+        ConsiderIt.positions.set_slider_value(value, '#{@option.short_name}');
+      },
+      stop: function(event, ui){
+        $j.post('/home/study/2', {
+          position_id: #{@position.id},
+          option_id: #{@option.id},
+          ival: $j(this).attr('id').substring(6),
+          fval: ui.value
+        });   
+      }
+    };
+
+    $j(".slider").slider(params);
+    ConsiderIt.positions.set_slider_value(#{-1 * @position.stance}, '#{@option.short_name}');
+      
+    // Study delegators for point expansions
+    $j(document).delegate('.point_in_list a.toggle', 'click', function(){
+      $j.post('/home/study/1', {
+        position_id: #{@position.id},
+        option_id: #{@option.id},
+        point_id: $j(this).parents('.point_in_list').find('.id:first').text(),
+        bval: $j(this).hasClass('more')
+      });   
+    });
+
+  });
+
+#initiative.edit
+  = render :partial => "options/description", :locals => { :hide_initially => false }
+  
+  %ol#step_through
+    %li.gut.step.slide
+      .head
+        %span.ol_number
+          1.      
+        %h3.banner
+          Is this paper suitable for publication at CHI?
+        .extra
+          Click and drag the slider to indicate whether you support or oppose this measure
+      
+      .rest.position
+        = render :partial => "options/slider_and_viz/slider", :locals => { :id => 1, :viz_stance => false }
+      
+    %li#stance.step   
+      .head
+        %span.ol_number
+          2.   
+        %h3.banner
+          What are the most important factors in your decision?
+        .extra
+          Add your own points, optionally including points by other reviewers by 
+          %strong
+            clicking the arrows.
+        
+      .rest         
+        #points 
+
+          .points_other#points_other_pro
+            .point_list_footer
+              = render :partial => "points/pagination_block", :locals => { :points => @pro_points, :is_pro => true, :bucket => 'other', :page => @page, :mode => 'other', :column_selector => "#points_other_pro", :prev => true} 
+
+            .carousel
+              = render :partial => "points/column", :locals => { :is_pro => true, :points => @pro_points, :context => 'margin' }
+
+            .point_list_footer
+              = render :partial => "points/pagination_block", :locals => { :points => @pro_points, :is_pro => true, :bucket => 'other', :page => @page, :mode => 'other', :column_selector => "#points_other_pro", :prev => false} 
+
+          .points_other#points_other_con
+
+            .point_list_footer
+              = render :partial => "points/pagination_block", :locals => { :points => @con_points, :is_pro => false, :bucket => 'other', :page => @page - 1, :mode => 'other', :column_selector => "#points_other_con", :prev => true} 
+            .carousel
+              = render :partial => "points/column", :locals => { :is_pro => false, :points => @con_points, :context => 'margin' }
+
+            .point_list_footer
+              = render :partial => "points/pagination_block", :locals => { :points => @con_points, :is_pro => false, :bucket => 'other', :page => @page - 1, :mode => 'other', :column_selector => "#points_other_con", :prev => false} 
+
+
+          .user_position
+            .position_container
+
+              .points_self#points_on_board_pro
+                .points_list_header
+                = render :partial => "points/column", :locals => { :position => 1, :points => @included_pros, :static => false, :context => 'self' }
+                
+                = render :partial => "points/drop_target", :locals => { :position => 1 }
+
+                = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_on_board_pro' }
+
+              .points_self#points_on_board_con
+                .points_list_header
+                = render :partial => "points/column", :locals => { :position => 0, :points => @included_cons, :static => false, :context => 'self' }
+
+                = render :partial => "points/drop_target", :locals => { :position => 0 }
+
+                = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_on_board_con' }
+
+              .clear
+
+
+    %li.statement.step
+      .head
+        %span.ol_number
+          3.      
+        %h3.banner
+          What are your overall thoughts on this paper?
+        .extra
+          Click and drag the slider to indicate whether you support or oppose this measure
+      
+      .rest.statement
+        = text_area_tag :statement, @position.explanation
+
+
+    %li#submitstance.step
+      .rest
+
+        .stanceform
+
+          - if @user
+            = form_for [@option, @position] do |f|
+
+              .stance.position_statement.hide
+                = label_tag :explanation, "Optional review that summarizes your thoughts"
+                = f.text_area :explanation
+                 
+              =f.hidden_field :stance, :id => "stance-value", :value=>0.0
+              =f.hidden_field :option_id, :value=>@option.id
+              =f.hidden_field :position_id, :value => @position.id              
+              =f.submit "Save your review!", :class => "shadow_centered submit submit_stance", :title => "Save your stance and position on #{@option.reference}"
+              = link_to "No, just show me the results...", option_path(@option, :redirect => 'false')
+
+              %ul
+                %li
+                  = f.check_box :notification_option_subscriber
+                  = f.label :notification_option_subscriber, 'Email me when someone contributes a new pro or con'
+
+                %li
+                  = f.check_box :notification_includer
+                  = f.label :notification_includer, 'Email me when someone comments on a pro or con in my list'
+
+
+          - else
+            = form_for :position, :url => option_positions_path(@option), :remote => true, do |f|
+
+              .stance.position_statement.hide
+                = label_tag :explanation, "Optional review that summarizes your thoughts"
+                = f.text_area :explanation
+
+
+              =f.hidden_field :stance, :id => "stance-value", :value=>0.0
+              =f.hidden_field :option_id, :value=>@option.id
+              =f.hidden_field :position_id, :value => @position.id              
+              =f.submit "Save your review!", :class => "shadow_centered submit submit_stance", :title => "Save your stance and position on #{@option.reference}"
+              = link_to "No, just show me the results...", option_path(@option, :redirect => 'false')
+
+
+              %ul
+                %li
+                  = f.check_box :notification_option_subscriber
+                  = f.label :notification_option_subscriber, 'Email me when someone contributes a new pro or con point'
+
+                %li
+                  = f.check_box :notification_includer
+                  = f.label :notification_includer, 'Email me when someone comments on a point in my list'
+
+
+              #position_save_login_trigger.user_dialog
+
+              :javascript
+                $j('#position_save_login_trigger').dialog({
+                  autoOpen: false,
+                  modal: true,
+                  draggable: false,
+                  dialogClass: 'alert',
+                  width: 775
+                });
+
+                $j('.stanceform input.submit').click(function(){
+                  $j('#position_save_login_trigger')
+                    .load("#{new_user_registration_path(:third_party=>false, :context=>"position_submit")}")
+                    .dialog('open');
+                  return true;
+                });  
+                  
+    :javascript
+      $j('li.statement.step textarea').change(function(){
+        var statement = $j(this).val();
+        $j('form .stance.position_statement textarea').val(statement);
+      });  

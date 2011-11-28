@@ -145,7 +145,7 @@
               =f.hidden_field :stance, :id => "stance-value", :value=>0.0
               =f.hidden_field :option_id, :value=>@option.id
               =f.hidden_field :position_id, :value => @position.id              
-              =f.submit "Save your review!", :class => "shadow_centered submit submit_stance", :title => "Save your stance and position on #{@option.reference}"
+              =f.submit "Save your review!", :class => "shadow_centered submit submit_stance"
               = link_to "No, just show me the results...", option_path(@option, :redirect => 'false')
 
               %ul
@@ -169,7 +169,7 @@
               =f.hidden_field :stance, :id => "stance-value", :value=>0.0
               =f.hidden_field :option_id, :value=>@option.id
               =f.hidden_field :position_id, :value => @position.id              
-              =f.submit "Save your review!", :class => "shadow_centered submit submit_stance", :title => "Save your stance and position on #{@option.reference}"
+              =f.submit "Save your review!", :class => "shadow_centered submit submit_stance"
               = link_to "No, just show me the results...", option_path(@option, :redirect => 'false')
 
 

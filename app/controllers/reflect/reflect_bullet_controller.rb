@@ -7,7 +7,7 @@ class Reflect::ReflectBulletController < ApplicationController
     comments = JSON.parse(params[:comments].gsub('\\',''))
     data = {}
     
-    db_bullets = ReflectBulletRevision.all( :conditions => { :comment_id => comments } )
+    db_bullets = Reflect::ReflectBulletRevision.all( :conditions => { :comment_id => comments } )
 
     db_bullets.each do |db_bullet_rev| 
       db_bullet = db_bullet_rev.bullet
@@ -80,7 +80,7 @@ class Reflect::ReflectBulletController < ApplicationController
   protected
 
   def get_current_bullet
-    bullet_rev = ReflectBulletRevision.find_by_bullet_id(params[:bullet_id])
+    bullet_rev = Reflect::ReflectBulletRevision.find_by_bullet_id(params[:bullet_id])
     if bullet_rev
       bullet_obj = bullet_rev.bullet
     else
@@ -134,7 +134,7 @@ class Reflect::ReflectBulletController < ApplicationController
     
     modify = !bullet_obj.nil?
     
-    new_rev = ReflectBulletRevision.new(
+    new_rev = Reflect::ReflectBulletRevision.new(
        :comment_id => comment_id,
        :user => user,
        :text => text
@@ -144,7 +144,7 @@ class Reflect::ReflectBulletController < ApplicationController
       bullet_rev.active = false
 
     else
-      bullet_obj = ReflectBullet.new(
+      bullet_obj = Reflect::ReflectBullet.new(
          :comment_id => comment_id
       )
       bullet_obj.save

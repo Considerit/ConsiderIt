@@ -320,8 +320,13 @@ ConsiderIt = {
     // Toggle point details ON
     $j(document).delegate('.point_in_list .toggle.more', 'click', function(){
       var real_point = $j(this).parents('.point_in_list');      
-      real_point.draggable( "destroy" );
-      var placeholder = real_point.clone(true, true); // deep clone with cloned events
+      real_point.draggable( "disable" );
+      var placeholder = $j('<li>'); 
+      placeholder
+        .addClass('point_in_list')
+        .attr('id', real_point.attr('id'))
+        .height(real_point.height())
+        .css('visibility', 'hidden');
 
       var is_pro = real_point.hasClass('pro');
 
@@ -343,7 +348,6 @@ ConsiderIt = {
 
       show_lightbox();
 
-      placeholder.css('visibility', 'hidden');
       var animate_properties = { width: '900px' };
       if ( !is_pro ){
         offset = real_point.hasClass('point_in_list_margin') ? -900 : -700;
@@ -380,18 +384,18 @@ ConsiderIt = {
               'right': 'auto',
               'display': 'block'
             });
-            placeholder.remove();
 
             real_point
               .removeClass('expanded')
               .find('.toggle.less').hide();
 
             if ( real_point.hasClass('point_in_list_margin') ) {
-              real_point.draggable({helper: 'clone', cursor: 'move'})
+              real_point.draggable( "enable" );
             }
 
             hide_lightbox();  
-
+            
+            placeholder.remove();
             real_point.find('.more').fadeIn();
 
           });
@@ -422,41 +426,48 @@ ConsiderIt = {
         var other_point_list = $j('#points_other_con .point_list');
       }
 
-      var carousel = other_point_list.parents('.infiniteCarousel:first');
-
-      var replacement_point_already_in_list = other_point_list.find('#' + replacement_point.attr('id')).length > 0;
+      var carousel = other_point_list.parents('.infiniteCarousel:first'),
+          replacement_point_already_in_list = other_point_list.find('#' + replacement_point.attr('id')).length > 0;
 
       included_point.fadeOut('slow', function() {
         // only use replacement point if it doesn't already exist in the list
-        if ( replacement_point && replacement_point.length > 0 && !replacement_point_already_in_list ) { 
-          included_point.replaceWith(replacement_point);
-        } else {
-          included_point.remove();
-        }
+        included_point = replacement_point && replacement_point.length > 0 && !replacement_point_already_in_list
+           ? included_point.replaceWith(replacement_point) 
+           : included_point.detach();
+
         replacement_point.draggable({
           helper: 'clone',
           cursor: 'move'
         });
-        user_point_list.append(response['approved_point']);
+        user_point_list.append(included_point);
+        included_point
+          .removeClass('point_in_list_margin')
+          .addClass('point_in_list_self')
+          .fadeIn('slow');
+
         carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
       });
     });
 
     // Remove from list
     $j(document).delegate('.remove .judgepointform form', 'ajax:success', function(data, response, xhr){
-      var point_in_margin = $j(response['deleted_point']),
-        old_point = $j(this).parents('.point_in_list_self:first'),
+      var old_point = $j(this).parents('.point_in_list_self:first'),
         other_point_list = old_point.hasClass('pro') ? $j('#points_other_pro .point_list') : $j('#points_other_con .point_list'),
         carousel = other_point_list.parents('.infiniteCarousel:first');
 
       old_point.fadeOut('slow', function(){
-        old_point.remove(); 
-        other_point_list.append(point_in_margin);
+        old_point = old_point.detach(); 
+        other_point_list.append(old_point);
         carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
-        point_in_margin.draggable({
-          helper: 'clone',
-          cursor: 'move'
-        });
+        old_point
+          .fadeIn('slow')
+          .removeClass('point_in_list_self')
+          .addClass('point_in_list_margin')
+          .corner('5px')
+          .draggable({
+            helper: 'clone',
+            cursor: 'move'
+          });
       });
     });
 

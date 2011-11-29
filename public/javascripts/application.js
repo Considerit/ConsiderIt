@@ -151,7 +151,7 @@ ConsiderIt = {
 
     $j('.add_qtip').each(function(){
       if(!$j(this).data('qtip')) {
-        $(this).qtip({ 
+        $j(this).qtip({ 
           style: { name: 'cream', tip: true }, 
           position: {corner: { target: 'bottomMiddle', tooltip: 'topMiddle' } }
         });
@@ -159,7 +159,7 @@ ConsiderIt = {
     });
 
     $j('.expanded .is_counted, .user_position .is_counted').each(function(){
-      if( !$(this).data('has_noblecount') ){
+      if( !$j(this).data('has_noblecount') ){
         $j(this).NobleCount($j(this).siblings('.count'), {
           block_negative: true,
           max_chars : parseInt($j(this).siblings('.count').text()),          
@@ -293,7 +293,7 @@ ConsiderIt = {
       $j(this).parents('.points_self:first').find('.point_list:first').append(response['new_point']);
       $j(this).find('textarea').val('');
       $j(this).find('.point-title-group .count').html(140);
-      $j(this).find('.point-description-group .count').html(500);
+      $j(this).find('.point-description-group .count').html(2000);
       
       $j(this).find('.new_point_cancel').trigger('click');
     });
@@ -348,11 +348,18 @@ ConsiderIt = {
 
       show_lightbox();
 
-      var animate_properties = { width: '900px' };
       if ( !is_pro ){
         offset = real_point.hasClass('point_in_list_margin') ? -900 : -700;
-        animate_properties['marginLeft'] = offset + real_point.width() + 'px' ;
+      } else {
+        offset = real_point.hasClass('point_in_list_margin') ? 0 : -430;
       }
+
+      var animate_properties = { 
+        width: '900px',
+        marginLeft:  offset + real_point.width() + 'px'
+      };
+
+
       real_point.animate(animate_properties, function(){
         real_point.find('.point_text.full').slideDown(function(){
           real_point.find('.avatar').fadeIn();
@@ -394,7 +401,7 @@ ConsiderIt = {
             }
 
             hide_lightbox();  
-            
+
             placeholder.remove();
             real_point.find('.more').fadeIn();
 
@@ -650,7 +657,7 @@ function show_lightbox(callback){
   });
   if ( !$j.browser.msie ) {
 
-    $j('#lightbox').fadeIn(callback);
+    $j('#lightbox').fadeIn('slow', callback);
   } else {
     
   }
@@ -658,7 +665,7 @@ function show_lightbox(callback){
 
 function hide_lightbox(callback){
   if ( !$j.browser.msie ) {
-    $j('#lightbox').fadeOut(callback);
+    $j('#lightbox').fadeOut('slow', callback);
   } else {
     $j('#lightbox').css({
       'background' : 'transparent',

@@ -41,7 +41,7 @@
       .point_text.full
         .details
           .the_details       
-            = point.text
+            = h simple_format(point.text)
 
         .link
           - if point.point_links.count > 0

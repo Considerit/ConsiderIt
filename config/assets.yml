@@ -17,7 +17,6 @@ javascripts:
     - public/reflect_commenting/js/third_party/inheritance.js
     - public/reflect_commenting/js/third_party/jquery.highlight.js
     - public/reflect_commenting/js/third_party/jquery.jqote2.min.js
-    - public/reflect_commenting/js/third_party/jquery.noblecount.min.js
     - public/reflect_commenting/js/third_party/jquery.qtip.min.js
     - public/reflect_commenting/js/third_party/json2.js
 

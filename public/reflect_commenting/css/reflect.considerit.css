@@ -20,9 +20,9 @@
 }
 #reflected .rf_comment_wrapper .rf_comment_text_wrapper {
   background-color: #BBBBBB;	
-  -moz-box-shadow: 2px 4px 0.5em rgba(0, 0, 0, 0.8);
-  -webkit-box-shadow: 2px 4px 0.5em rgba(0, 0, 0, 0.8);
-  box-shadow: 2px 4px 0.5em rgba(0, 0, 0, 0.8);
+  -moz-box-shadow: 1px 1px 0.1em rgba(0, 0, 0, 0.6);
+  -webkit-box-shadow: 1px 1px 0.1em rgba(0, 0, 0, 0.6);
+  box-shadow: 1px 1px 0.1em rgba(0, 0, 0, 0.6);
 }
 
 #reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list {
@@ -148,4 +148,9 @@ button.add_bullet {
 #reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container div, #reflected .bullet .rf_evaluation .badges .rf_rating .rf_selector_container .rf_selector, .rate_bullet .rate_bullet_dialog .flag .rating_class {
 	
 	background-image: url("../media/reflect_sprite.png");
+}
+
+#reflected .rf_clarification {
+	background-color: #bbb;
+	margin-right: 10px;
 }

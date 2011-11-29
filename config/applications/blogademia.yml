@@ -11,6 +11,8 @@ development:
     
   perform_authentication: true
   send_email: false
+  default_from_email: web@dub.washington.edu
+  email_head: DUB Blogademia
   
   home:
     call: A guide to the 2010 Washington State Ballot Measures

@@ -11,7 +11,8 @@ development:
     
   perform_authentication: true
   send_email: false
-  
+  default_from_email: XXX  
+
   home:
     call: call
     subcall: subcall

@@ -6,22 +6,24 @@
       .user
         = image_tag current_theme_image_path "profile.png"
 
-
     #col2
 
       .init_text        
-        %h2.author
-          Travis Kriplean
         %h1
           How would you review this paper?
+        %h2.author
+          Travis Kriplean
+
         %p.subheader
-          Let's all review this CHI submission so we can have a grounded discussion about how social system contributions should be reviewed. We also demonstrate a new system for reviewing papers. 
+          Let's all review this CHI submission so we can have a grounded discussion about how to review social system contributions. In the process, use a new academic review system. Please spread the word!
       
       .full_text
+
         %p
-          There has been much discussion about the role of system and design contributions in the CHI community. But these conversations do not seem to go anywhere: they get caught up in ungrounded, abstract discussion highlighting value tensions between innovation and science; and the conversations are undercut by the nagging suspicion that, well, the research under question is actually incremental in the first place.
-        %p
-          I think we need to have a more grounded discussion to move the conversation forward: <strong>let's review a social systems contribution together, as a community.</strong> This will help us better establish where we share common criteria and where they diverge. 
+          There has been much 
+          %a{:href => 'http://dubfuture.blogspot.com/2009/11/i-give-up-on-chiuist.html', :target=>"_blank"}
+            discussion 
+          about the role of system/design contributions in the CHI community. But these conversations do not seem to produce change, as they often remain abstract discussions pitting invention against evaluation rigor. I think we need to have a more grounded discussion to move the conversation forward: <strong>let's review a social systems contribution together, as a community.</strong> This will help us better establish where we share common criteria and where they diverge.
 
           %span.outset
             %span.triangle
@@ -29,9 +31,15 @@
             This continues the conversation Michael Bernstein started about
             = link_to 'evaluating social systems contributions', 'http://people.csail.mit.edu/msbernst/papers/trouble-altchi2011.pdf'
         %p
-          Here I have posted the submission, reviews, and rebuttal. The work reported on represents two years of work of which I am quite proud. The reviews nicely highlight the tension in our community between innovation (creating new futures) and science (understanding what is happening). The reviews are mixed, with two positive reviews (R1 & R2), a very negative review (R3), and a meta review suggesting that s/he cannot advocate for the paper. The reviewers raise legitimate concerns, but the underlying gap in values is what is remarkable. 
+          Here I have posted the submission and reviews for a paper I submitted. The reviews highlight the tension in our community between creating new possible futures and "objective" validation of those systems, with two generally positive reviews (R1 & R2), a very negative review (R3), and a neutral meta review.
+
         %p
-          This value tension is important because a hardline stance on what a contribution must do will severely undercut what the community can accomplish. I was originally attracted to HCI/CSCW because of its potential to be a vibrant combination of innovation and science for creating better social systems, with the real value coming from the intersection of the two. But we need to have some division of intellectual labor to benefit from the combination. In a design-oriented field partially about creating new futures, why does there seems to be a pervasive lack of awareness that there can be valuable academic work that does not objectively prove a set of claims? 
+          Conveniently, my PhD research is creating new systems to support community deliberation. To support what I hope you find to be a more enjoyable and constructive reviewing experience, I have adapted two of my systems, one of which is reported on in the paper. Feel free to start reading the submission and reviews now; I'm just going to add my own perspective on this debate below. 
+
+        %h3
+          CHI reviewing dissuades new social systems
+        %p
+          I believe that the CHI/CSCW reviewing process overemphasizes the importance of rigorous evaluation. This severely undercuts what the community can accomplish. I was originally attracted to HCI/CSCW because of its potential to combine innovation and science for creating better social systems, with the real value coming from the intersection of the two. In a design-oriented field partially about creating new futures, why is there a lack of awareness that there can be valuable academic work that does not objectively prove a set of claims? 
           %span.outset
             %span.triangle
               &#x25C0;          
@@ -39,24 +47,27 @@
               &ldquo;I cannot help wondering what the status of scientific research in the CHI domain is if this paper comes to be accepted as a full research paper.&rdquo;
             %span.signature
               &mdash; R3
-        %p
-          The value tension is also important because the evaluation criteria by which we judge research selects for the next generation of researchers. This is salient for me. As a graduating PhD student, I am questioning whether the HCI community (and academia more broadly) is the right place from which to make the contributions to society that I wish to make. The style of research I practice puts forward a unique design-oriented theoretical framing of a challenging problem, creates a novel system in the space, deploys the system in a number of real contexts, and performs some fairly subjective/experiential examination of what happened in order to get a handle on whether the system appears to have basic utility for discretionary use by the public. The contribution is thus in signaling whether it may be fruitful for other system designers to start down the same path, as well as highlighting opportunities for more controlled inquiry about specific aspects of the design. When reviewers demand that in the same paper we also create generalizable, "objective" findings alongside these other contributions, it basically eliminates the possibility of this style of research. I see this evaluation standard as incentivising students and faculty alike to conduct safer, less ambitious, less imaginative social design efforts, or to simply study existing systems rather than create new ones. I am not alone in this assessment amongst PhD students. Many of potential contributors to a more significant research agenda for HCI/CSCW are being driven away.  
+        
+        %h3 
+          CHI reviewing dissuades students from academic careers
 
         %p
-          So instead of having an abstract discussion about innovation vs science, let's try to have a very specific conversation about it. What are the appropriate criteria by which to evaluate this paper, and more broadly, this brand of research? You might be thinking, "the work is probably not that good." Well, go take a look and participate! Say why. Engage with others. It is entirely possible that this work is "not good" by the standards of the CHI community, which is something I would rather learn sooner than later. 
+          The evaluation criteria by which we judge research selects for the next generation of researchers. This is salient for me. As a graduating PhD student, I am questioning whether the HCI community (and academia more broadly) is the right place from which to make the contributions to society that I wish to make. The style of research I practice creates new design-oriented framing of challenging problems, creates novel systems grounded in the frame, deploys them in real situations, and examines what happened in order to understand if the approach appears to have basic utility outside of the lab. When reviewers demand generalizable, "objective" findings alongside these other contributions, I question the fundamental values of the community. I see this evaluation standard as incentivising students and faculty alike to conduct safer, less ambitious, less imaginative social design efforts, or to simply study existing systems rather than create new ones. Many other students I talk with share this assessment, and many who are capable of being major contributors to a more significant research agenda for HCI/CSCW are being driven away.  
+
+
+        %h3
+          So, let's review this social systems contribution together!
 
         %p
-          To support this conversation, I have adapted another platform for public deliberation I invented and integrated it with the Reflect interface described in the paper. I have seeded the system with my extraction of the pros and cons the reviewers brought up. Hopefully, aside from having the conversation itself, the system  will demonstrate a new way for constructively reviewing papers. 
+          What are the appropriate criteria by which to evaluate this paper, and more broadly, this style of research? You might be thinking, "the work is probably not that good." Well, go take a look and participate! Say why. Engage with others.
 
-        %p
-          Also, <strong>please spread the word to your HCI/CSCW colleagues!</strong> The more people that participate, the more that the discussion has the chance to improve our understanding of our own values and those of others. 
-
+ 
 
 
     #col3    
       .paper_link.add_corner.shadow_centered
       
-        %a{:href => "http://www.cs.washington.edu/homes/travis/papers/reflect_chi_full.pdf", :target => '_blank'}
+        %a{:href => "http://www.cs.washington.edu/homes/travis/papers/reflect_chi_submitted.pdf", :target => '_blank'}
           Read the paper
                   
         -# %object{:data => "http://www.cs.washington.edu/homes/travis/papers/reflect_chi_full.pdf", :type => "application/pdf", :width => "850px", :height => "750px"}

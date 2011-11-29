@@ -376,7 +376,7 @@ li.point_in_list {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/points\/_new_point\.sass}line{font-family:\0000377}}
       .pointform > form .form_proper .point-title,
       .pointform > form .form_proper .point-description {
-        width: 360px; }
+        width: 350px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/points\/_new_point\.sass}line{font-family:\0000381}}
       .pointform > form .form_proper .count {
         color: #c1c1c1;
@@ -1377,25 +1377,29 @@ li.comment, li.new_comment {
   z-index: -9000;
   padding: 10px 20px;
   color: #444444;
+  width: 91%;
   -moz-box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.8);
   -webkit-box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.8);
   box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.8); }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_discussion\.sass}line{font-family:\0000314}}
-  .discuss .discussion_header .top {
-    font-size: 22pt;
-    color: #aaaaaa;
-    font-weight: bold;
-    line-height: 18pt;
-    margin-top: 5px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_discussion\.sass}line{font-family:\0000320}}
-  .discuss .discussion_header .bottom {
-    font-size: 10px;
-    color: #aaaaaa; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_discussion\.sass}line{font-family:\0000315}}
+  .discuss .discussion_header {
+    display: none; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_discussion\.sass}line{font-family:\0000317}}
+    .discuss .discussion_header .top {
+      font-size: 22pt;
+      color: #aaaaaa;
+      font-weight: bold;
+      line-height: 18pt;
+      margin-top: 5px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_discussion\.sass}line{font-family:\0000323}}
-  .discuss .discussion_header hr {
-    background-color: #c5c5c5;
-    border: none;
-    height: 0px; }
+    .discuss .discussion_header .bottom {
+      font-size: 10px;
+      color: #aaaaaa; }
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_discussion\.sass}line{font-family:\0000326}}
+    .discuss .discussion_header hr {
+      background-color: #c5c5c5;
+      border: none;
+      height: 0px; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\000033}}
 li.new_comment {
@@ -2422,7 +2426,7 @@ a.rate_point_similarity {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/considerit\.sass}line{font-family:\00003357}}
 #lightbox {
   background: transparent;
-  opacity: 0.5;
+  opacity: 0.75;
   zoom: 1;
   position: fixed;
   top: 0px;

@@ -46,7 +46,7 @@ ConsiderIt = {
       total_items: 5,
       items_per_page: 5,
       loading_from_ajax: false,
-      dim: 680    
+      dim: 680
     });
 
     $j('#description .initiatives.horizontal').infiniteCarousel({
@@ -159,7 +159,8 @@ ConsiderIt = {
     });
 
     $j('.expanded .is_counted, .user_position .is_counted').each(function(){
-      if( !$j(this).data('has_noblecount') ){
+      if( !$j(this).data('has_noblecount') ){        
+
         $j(this).NobleCount($j(this).siblings('.count'), {
           block_negative: true,
           max_chars : parseInt($j(this).siblings('.count').text()),          
@@ -183,6 +184,8 @@ ConsiderIt = {
         }
       });
     });   
+
+    ConsiderIt.update_carousel_heights();
 
   },
 
@@ -336,27 +339,32 @@ ConsiderIt = {
         marginLeft: real_point.css('marginLeft')
       });
 
-      //real_point.hide();
-      real_point.addClass('expanded');
-
       real_point.after(placeholder);
 
-      real_point.css({
-        'z-index': 1001,
-        'position': 'absolute'  
-      });
+      real_point = real_point.detach();
+      $j('body').append(real_point);
+
+      real_point
+        .addClass('expanded')
+        .css({
+          'z-index': 1001,
+          'position': 'absolute',
+          'top': placeholder.offset().top,
+          'left': placeholder.offset().left 
+        });
 
       show_lightbox();
 
       if ( !is_pro ){
         offset = real_point.hasClass('point_in_list_margin') ? -900 : -700;
+        offset += real_point.width();
       } else {
-        offset = real_point.hasClass('point_in_list_margin') ? 0 : -430;
+        offset = real_point.hasClass('point_in_list_margin') ? 0 : -200;
       }
 
       var animate_properties = { 
         width: '900px',
-        marginLeft:  offset + real_point.width() + 'px'
+        marginLeft:  offset + 'px'
       };
 
 
@@ -395,6 +403,8 @@ ConsiderIt = {
             real_point
               .removeClass('expanded')
               .find('.toggle.less').hide();
+            
+            placeholder.replaceWith(real_point);
 
             if ( real_point.hasClass('point_in_list_margin') ) {
               real_point.draggable( "enable" );
@@ -597,6 +607,11 @@ ConsiderIt = {
     
   },
 
+  update_carousel_heights: function(){
+    $j('.points_other .point_list').css({
+      'height': $j('.user_position').height()
+    })
+  },
   noblecount :  {
     positive_count : function( t_obj, char_area, c_settings, char_rem ) {
       var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );

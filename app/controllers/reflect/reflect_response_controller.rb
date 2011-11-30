@@ -91,14 +91,6 @@ class Reflect::ReflectResponseController < ApplicationController
     
     text = params[:text]
     
-    if (text == '')
-      respond_to do |format|
-        format.js  {
-          render :json => {}.to_json
-        }
-      end              
-    end
-    
     modify = !response_obj.nil?
     
     new_rev = Reflect::ReflectResponseRevision.new(

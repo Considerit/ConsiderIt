@@ -1,13 +1,10 @@
 
-%div.group.shadow_offset{:class=>"ranked_points_bucket_#{group_id}"}
-  .triangle
-    &#x25B2;
-  .ranked_points_header
-
+%div.group{:class=>"ranked_points_bucket_#{group_id}"}
+  %h3.banner
     - if group_name == 'user'
-      Pros and cons important to #{@user_points.name}
+      Factors #{@user_points.name} considers important
     - else
-      Pros and cons, ranked by importance to these reviewers
+      Factors these reviewers consider important
 
   .position_container
      

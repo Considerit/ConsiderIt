@@ -957,7 +957,7 @@ Reflect = {
             count_sel = '#rf_comment_wrapper-' + 
             this.comment.id + ' .bullet.modify li.count';
             
-        this.elements.new_bullet_text.NobleCount(count_sel , settings );
+        this.elements.new_bullet_text.NobleCount($j(count_sel) , settings );
         this.options.text_backup = this.text;
         
         // wont work in Greasemonkey
@@ -1167,7 +1167,7 @@ Reflect = {
             count_sel = '#bullet-' 
             + this.bullet.id 
             + ' .response_prompt li.count';
-        this.elements.new_response_text.NobleCount( count_sel, settings );    
+        this.elements.new_response_text.NobleCount( $j(count_sel), settings );    
 
       },
       set_id : function ( id, rev ) {

@@ -1,8 +1,9 @@
 (function($) {
+  var subdirectory = '';
   reflect_server_settings = {
-    media_dir: '/reflect/media',
-    reflectPath: '/reflect_commenting',
-    servicesPath: '/reflect',
+    media_dir: subdirectory + '/reflect/media',
+    reflectPath: subdirectory + '/reflect_commenting',
+    servicesPath: subdirectory + '/reflect',
   };
   var $j = jQuery.noConflict();
 
@@ -36,7 +37,7 @@
       this.api_loc = reflect_server_settings.servicesPath;
     },
     get_templates: function(callback) {
-      $j.get(reflect_server_settings.reflectPath + '/templates/templates.html', callback);
+      $j.get(reflect_server_settings.servicesPath + '/get_templates', callback);
     },
     get_current_user: function() {
       var user = $j.trim($j('#nav-user .triangle .settings:visible').text());

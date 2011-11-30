@@ -3,11 +3,8 @@
     .avatar
       - if position.user.avatar
         = image_tag position.user.avatar.url(:normal), :alt => "#{h position.user.name}'s profile picture"
-    .username
-      = h position.user.short_name    
-    .read_statement            
-      show review
-    .commentcount
-      #{position.comments.count} comments
+      .username
+        = h position.user.short_name    
+
     .userid.hide
       #{position.user_id}

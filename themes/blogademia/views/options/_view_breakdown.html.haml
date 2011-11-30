@@ -44,7 +44,8 @@
   .head
     %h3.banner
       .fl
-        Read and discuss the reviews
+        All reviewers & the factors they consider important
+          
       .fr.display_count
         %span.showing
           #{@option.positions.length}
@@ -60,15 +61,20 @@
       .clear
 
   .horizontal_carousel.horizontal
+    %h3
+      Click to read and comment on a review
+      
     .paginate.first
       %button.back  
     .carousel
       %ul
         - @option.positions.each do |position|
           = render :partial => "positions/statement/block", :locals => { :position => position }
-                
+    
     .paginate.last
       %button.forward.not_ajax
+    .clear
+
   .clear
 
 %li.step.statements

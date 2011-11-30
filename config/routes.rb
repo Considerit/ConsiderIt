@@ -36,7 +36,7 @@ ConsiderIt::Application.routes.draw do
 
     namespace :reflect do
       match "/data" => "reflect_bullet#index", :via => :get
-      
+      match "/get_templates" => "reflect_bullet#get_templates", :via => :get
       match "/bullet_new" => 'reflect_bullet#create', :via => :post
       match "/bullet_update" => 'reflect_bullet#update', :via => :post
       match "/bullet_delete" => 'reflect_bullet#destroy', :via => :post

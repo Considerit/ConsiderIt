@@ -71,9 +71,10 @@ ConsiderIt = {
       speed: 1500,
       vertical: false,
       total_items: 5,
-      items_per_page: 7,
+      items_per_page: 8,
       loading_from_ajax: false,
-      dim: 805    
+      dim: 880,
+      resetSizePerPage: false
     });    
 
     if( $j('#intro').length == 0 ){
@@ -564,8 +565,8 @@ ConsiderIt = {
         without_bucket.fadeOut('slow', function(){
           with_bucket.fadeIn('slow');
         });
-        
-        $j('li.step.statement_carousel .head .banner .fl').text('Reviewers who ' + ConsiderIt.positions.stance_name(bucket) + " this paper\'s acceptance");        
+      
+        $j('li.step.statement_carousel .head .banner .fl').text(ConsiderIt.positions.stance_name(bucket) + " & the factors they consider important");        
         $j('.display_count .hide').show();
         $j('.display_count .showing').text(with_bucket.length);
 
@@ -589,19 +590,19 @@ ConsiderIt = {
     stance_name : function(d) {
       switch (d) {
         case 0: 
-          return "strongly oppose"
+          return "Strong opposers"
         case 1: 
-          return "oppose"
+          return "Opposers"
         case 2:
-          return "weakly oppose"
+          return "Borderline opposers"
         case 3:
-          return "are undecided about"
+          return "Neutral reviewers"
         case 4:
-          return "weakly support"
+          return "Borderline supporters"
         case 5:
-          return "support"
+          return "Supporters"
         case 6:
-          return "strongly support"
+          return "Strong supporters"
       }
     }  
     

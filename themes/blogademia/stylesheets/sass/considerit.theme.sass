@@ -131,8 +131,8 @@ html
 
   textarea
     margin: auto
-    height: 200px
-    width: 564px
+    height: 300px
+    width: 572px
     display: block
 
 #initiative #description .description_wrapper .full_text, #initiative #description .description_wrapper .long_description, #initiative #description .description_wrapper .additional 
@@ -181,7 +181,11 @@ html
       a
         text-align: center  
         color: #333
-              
+        
+        .avatar
+          img
+            width: 85px
+
         .username
           font-weight: bold
           font-size: 10pt
@@ -271,8 +275,25 @@ html
       li.new_comment .comment_body .body_row .text form ul.form li.body textarea
         width: 275px
 
-#initiative li.ranked_points #ranked_points.explore
-  background-color: #c4c4c4
+#initiative li.ranked_points 
+
+  #ranked_points.explore
+    background-color: #c4c4c4
+
+    .filters a#show_popular, .filters a#show_self
+      display: none
+
+    h3.banner
+      font-weight: normal
+      font-size: 16px
+      background: url("/images/chalk/chalkboard.png") repeat scroll left top transparent
+      padding: 4px 20px
+      width: 375px
+      text-align: center
+      margin: auto
+      position: relative
+      bottom: -5px
+      color: #999
 
 #wrap #footer
   width: 100%
@@ -284,14 +305,11 @@ html
 svg
   rect
     cursor: pointer
-
-#initiative li.ranked_points #ranked_points.explore .filters a#show_popular, #initiative li.ranked_points #ranked_points.explore .filters a#show_self
-  display: none
+  
 
 #ranked_points
   padding: 15px 25px
   > .group
-    background-color: #B39FD6 
     position: relative
     padding-bottom: 20px
     .triangle
@@ -301,14 +319,10 @@ svg
       font-size: 15pt
       color: #B39FD6
 
-    .ranked_points_header
-      font-size: 14pt
-      color: black
-      padding: 15px
-      margin: auto
+
 
     .position_container
-      width: 675px
+      width: 728px
       margin: auto
 
 .submit_a_position

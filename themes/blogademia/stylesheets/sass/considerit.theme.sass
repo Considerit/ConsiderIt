@@ -159,7 +159,7 @@ html
 .horizontal .paginate.first .back
 
 #initiative ol#step_through li.step.statement_carousel
-  background-color: #c4c4c4
+  background-color: #DFE0DE
   padding: 10px 20px
 
   .paginate
@@ -169,38 +169,49 @@ html
     &.last .forward
       background-image: url("/images/arrow-next-dark.png")
 
-  .carousel
-    ul li.statement
-      opacity: .9
-      &:hover
-        opacity: 1    
-      background-color: inherit
-      width: 105px
-      margin: auto
-      display: inline-block
-      a
-        text-align: center  
-        color: #333
-        
-        .avatar
-          img
-            width: 85px
+  .horizontal
+    background-color: #AEACAB
+    padding: 5px 10px 0 10px
+    left: -40px
 
-        .username
-          font-weight: bold
-          font-size: 10pt
+    > h3
+      font-size: 9pt
+      margin-bottom: 8px
+      color: #555
+      font-weight: normal
+
+    .carousel
+      ul li.statement
+        background-color: inherit
+        margin: auto
+        display: inline-block
+        a.view_statement
+          text-align: center  
           color: #333
-          line-height: 9pt
-
-        .read_statement, .hide_statement
-          text-decoration: underline
+          position: relative
           
-          font-size: 9pt
-          vertical-align: top
-          &:hover
-            color: black
-        .commentcount
-          font-size: 7pt
+          .avatar
+            position: relative
+            img
+              width: 85px
+              border: 5px solid transparent
+              &:hover
+                border-color: #A289D1
+
+            .username
+              font-size: 10pt
+              color: #333
+              line-height: 9pt
+              background-color: rgba(150, 150, 150, 0.75)
+              position: absolute
+              bottom: 8px
+              width: 85px
+              margin-left: 5px
+              overflow: hidden
+
+              /* For IE 8*/
+              -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#bb777777, endColorstr=#bb777777)"
+
 
   .head
     h3
@@ -253,6 +264,7 @@ html
             left: 170px
             top: 20px
             z-index: 50
+
         .username
           width: 175px
           text-align: center
@@ -278,22 +290,11 @@ html
 #initiative li.ranked_points 
 
   #ranked_points.explore
-    background-color: #c4c4c4
+    background-color: #DFE0DE
 
     .filters a#show_popular, .filters a#show_self
       display: none
 
-    h3.banner
-      font-weight: normal
-      font-size: 16px
-      background: url("/images/chalk/chalkboard.png") repeat scroll left top transparent
-      padding: 4px 20px
-      width: 375px
-      text-align: center
-      margin: auto
-      position: relative
-      bottom: -5px
-      color: #999
 
 #wrap #footer
   width: 100%

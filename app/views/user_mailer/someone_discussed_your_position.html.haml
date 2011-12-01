@@ -10,14 +10,14 @@
       Hi #{@user.name},
     
     %p
-      #{@comment.user.name} commented on your #{@point.is_pro ? 'pro' : 'con'} point. The comment says:
+      #{@comment.user.name} commented on your review of #{@point.option.category} #{@point.option.designator}. The comment says:
 
     %blockquote
       #{@comment.body}
 
     %p 
-      Go 
-      %a{ :href => "#{option_url(@point.option)}" }
+      Go
+      %a{ :href => "#{option_url(@position.option)}" }
         here
       to respond. 
 

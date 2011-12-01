@@ -143,6 +143,7 @@ html
 #initiative ol#step_through li.slide
   background-color: #B39FD6
 
+
 #initiative ol#step_through li.statement
   background-color: #B39FD6
 
@@ -151,6 +152,48 @@ html
     height: 300px
     width: 572px
     display: block
+  
+
+#initiative ol#step_through li.statements
+  background-color: #DFE0DE
+  position: relative
+
+  .full_statement
+    position: absolute
+    background-color: #A289D1
+    z-index: 1001
+    width: 835px
+    top: -14px
+    left: 13px
+
+    .wrapper
+      a.close
+        float: right
+        margin-right: 10px
+        margin-top: 8px
+        color: black
+        font-weight: bold
+        font-size: 8pt
+
+      .textblock
+        padding: 20px 100px
+        .username
+          font-weight: bold
+          font-size: 18pt
+        .stance
+          font-weight: bold
+          font-size: 12pt
+
+          .stance_name
+            text-transform: capitalize
+
+        .prose
+          margin-top: 10px
+
+    .discuss
+
+
+      
 
 #initiative #description .description_wrapper .full_text, #initiative #description .description_wrapper .long_description, #initiative #description .description_wrapper .additional 
   width: auto
@@ -202,6 +245,14 @@ html
         background-color: inherit
         margin: auto
         display: inline-block
+
+        &.active
+          .view_statement .avatar 
+            img
+              border-color: #A289D1
+            .username
+              display: none
+
         a.view_statement
           text-align: center  
           color: #333
@@ -245,64 +296,7 @@ html
           a.show_all
             color: #333
       
-#initiative ol#step_through li.step.statements
-  background-color: #c4c4c4
-  padding-bottom: 10px
-  .full_statement
-    position: relative
-    z-index: 1
-    .wrapper
-      position: relative
-      background-color: #9FA6D6
-      width: 800px
-      margin: auto
-      padding: 15px
-      .close
-        color: black
-        position: absolute
-        right: 20px
-        top: 10px
-        font-weight: bold
-        text-decoration: underline
-        font-size: 9pt
 
-      .col1
-        float: left
-        width: 260px
-        position: relative
-        .avatar
-          .pic
-            width: 175px
-            text-align: center
-            position: relative
-            z-index: 100
-          .tri
-            position: absolute
-            left: 170px
-            top: 20px
-            z-index: 50
-
-        .username
-          width: 175px
-          text-align: center
-          font-size: 14pt
-      .col2
-        width: 485px
-        float: left
-        .stance
-          margin-bottom: 10px
-          font-size: 10pt
-          font-weight: bold
-          .stance_name
-            font-variant: small-caps
-            font-size: 14pt
-    .discuss
-      display: block
-      position: relative
-      margin: 0 40px
-
-      li.new_comment .comment_body .body_row .text form ul.form li.body textarea
-        width: 275px
 
 #initiative li.ranked_points 
 

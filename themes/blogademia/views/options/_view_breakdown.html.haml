@@ -62,14 +62,15 @@
 
   .horizontal_carousel.horizontal
     %h3
-      Click to read and comment on a review
-      
+      Click to read a review and comment on it
+
     .paginate.first
       %button.back  
     .carousel
       %ul
         - @option.positions.each do |position|
           = render :partial => "positions/statement/block", :locals => { :position => position }
+          
     
     .paginate.last
       %button.forward.not_ajax

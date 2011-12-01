@@ -154,6 +154,10 @@
                   = f.label :notification_option_subscriber, 'Email me when someone contributes a new pro or con'
 
                 %li
+                  = f.check_box :notification_statement_subscriber
+                  = f.label :notification_statement_subscriber, 'Email me when someone adds a new review'
+
+                %li
                   = f.check_box :notification_includer
                   = f.label :notification_includer, 'Email me when someone comments on a pro or con in my list'
 
@@ -178,6 +182,10 @@
                   = f.check_box :notification_option_subscriber
                   = f.label :notification_option_subscriber, 'Email me when someone contributes a new pro or con point'
 
+                %li
+                  = f.check_box :notification_statement_subscriber
+                  = f.label :notification_statement_subscriber, 'Email me when someone adds a new review'
+                  
                 %li
                   = f.check_box :notification_includer
                   = f.label :notification_includer, 'Email me when someone comments on a point in my list'

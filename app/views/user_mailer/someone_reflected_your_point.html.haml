@@ -10,22 +10,22 @@
       Hi #{@user.name},
     
     %p
-      #{@comment.user.name} commented on your #{@point.is_pro ? 'pro' : 'con'} point. The comment says:
+      #{@bullet.user.name} summarized your comment. They believe you meant that:
 
     %blockquote
-      #{@comment.body}
+      #{@bullet.text}
 
     %p 
-      Go 
-      %a{ :href => "#{option_url(@point.option)}" }
+      Go
+      %a{ :href => "#{option_url(@comment.root_object.option)}" }
         here
-      to respond. 
+      to verify whether the summary is accurate, and clarify your point if necessary. 
 
     %p
       Thanks!
 
     %p 
-      p.s. We apologize if the above comment is offensive. We will review any comment deemed offensive (such as containing a personal attack), and block the offending commenter if appropriate. 
+      p.s. We apologize if the above summary is offensive. We will review any summary deemed offensive (such as containing a personal attack), and block the offending user if appropriate. 
 
     %hr
 

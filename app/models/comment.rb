@@ -8,6 +8,8 @@ class Comment < ActiveRecord::Base
   belongs_to :user
   belongs_to :commentable, :polymorphic=>true
 
+  has_many :reflect_bullets, :dependent => :destroy
+  has_many :reflect_bullet_revisions, :dependent => :destroy
 
   # Helper class method that allows you to build a comment
   # by passing a commentable object, a user_id, and comment text
@@ -35,31 +37,38 @@ class Comment < ActiveRecord::Base
     begin
       obj = root_object()
 
+      # notify creator of root object
       author = obj.user
       if author.id != user_id && author.notification_author && author.email.length > 0
         if author.email && author.email.length > 0
-          UserMailer.someone_discussed_your_point(author, obj, self).deliver
+          if commentable_type == 'Point'
+            UserMailer.someone_discussed_your_point(author, obj, self).deliver
+          elsif commentable_type == 'Position'
+            UserMailer.someone_discussed_your_position(author, obj, self).deliver
+          end
         end
       end
-      # if they don't want to get comments for their own points, don't notifications for other 
-      # derivative notifications
+      # if they don't want to get comments for their own stuff, then they also don't want  
+      # notifications for other derivative notifications
       message_sent_to[author.id] = [author.name, 'point discussed']
+
+
+      # For all other participants in the discussion...
+      obj.comments.each do |comment|
+        recipient = comment.user
+        if !message_sent_to.has_key?(recipient.id) \
+          && recipient.notification_commenter \
+          && recipient.id != user_id 
+
+          if recipient.email && recipient.email.length > 0   
+            UserMailer.someone_commented_on_thread(recipient, obj, self).deliver
+          end
+          message_sent_to[recipient.id] = [recipient.name, 'same discussion']
+        end
+      end
 
       if commentable_type == 'Point'
         point = obj
-        point.comments.each do |comment|
-          recipient = comment.user
-          if !message_sent_to.has_key?(recipient.id) \
-            && recipient.notification_commenter \
-            && recipient.id != user_id 
-
-            if recipient.email && recipient.email.length > 0
-              UserMailer.someone_commented_on_thread(recipient, point, self).deliver
-            end
-            message_sent_to[recipient.id] = [recipient.name, 'same discussion']
-          end
-        end
-
         point.inclusions.each do |inclusion|
           if inclusion.user.positions.find(option.id).notification_includer
             includer = inclusion.user

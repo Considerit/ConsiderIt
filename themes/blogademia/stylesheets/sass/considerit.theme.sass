@@ -37,7 +37,7 @@ html
 
 
 #col2
-  width: 500px
+  width: 512px
   margin-left: 20px
   margin-top: -27px
   h1
@@ -58,6 +58,8 @@ html
     margin-top: 10px
 
   .full_text
+    margin-top: 10px
+    text-align: justify
     p
       position: relative
       .outset
@@ -69,6 +71,7 @@ html
         width: 150px
         padding: 5px 10px
         font-size: 9pt
+        text-align: left
 
         .triangle
           color: #B39FD6
@@ -82,6 +85,16 @@ html
           font-style: italic
 
         .signature
+        
+        &.personal
+          top: -60px
+          background-color: #9FA6D6
+          bottom: inherit
+          .triangle
+            top: 5px
+            color: #9FA6D6
+        &.status
+          bottom: 110px
 
 #col3
   width: 137px

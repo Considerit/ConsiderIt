@@ -139,7 +139,6 @@ class Reflect::ReflectBulletController < ApplicationController
     if modify
       new_rev.bullet_id = bullet_obj.id
       bullet_rev.active = false
-
     else
       bullet_obj = Reflect::ReflectBullet.new(
          :comment_id => comment_id

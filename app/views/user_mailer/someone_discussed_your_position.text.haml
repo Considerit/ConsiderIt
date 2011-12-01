@@ -1,12 +1,12 @@
 Hi #{@user.name},
     
-#{@comment.user.name} commented on your #{@point.is_pro ? 'pro' : 'con'} point. The comment says:
+#{@comment.user.name} commented on your review of #{@point.option.category} #{@point.option.designator}. The comment says:
 
 
 "#{@comment.body}"
 
 
-Go to #{option_url(@point.option)}] to respond. 
+Go to #{option_url(@position.option)} to respond. 
 
 
 Thanks!

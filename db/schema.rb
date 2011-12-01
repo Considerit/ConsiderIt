@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111122220353) do
+ActiveRecord::Schema.define(:version => 20111201190625) do
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",    :default => 0
@@ -206,12 +206,13 @@ ActiveRecord::Schema.define(:version => 20111122220353) do
     t.text     "explanation"
     t.float    "stance"
     t.integer  "stance_bucket"
-    t.boolean  "published",                      :default => false
+    t.boolean  "published",                         :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.boolean  "notification_includer"
     t.boolean  "notification_option_subscriber"
+    t.boolean  "notification_statement_subscriber"
   end
 
   add_index "position_versions", ["position_id"], :name => "index_position_versions_on_position_id"
@@ -223,13 +224,14 @@ ActiveRecord::Schema.define(:version => 20111122220353) do
     t.text     "explanation"
     t.float    "stance"
     t.integer  "stance_bucket"
-    t.boolean  "published",                      :default => false
+    t.boolean  "published",                         :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "version"
     t.boolean  "notification_includer"
     t.boolean  "notification_option_subscriber"
+    t.boolean  "notification_statement_subscriber"
   end
 
   add_index "positions", ["option_id"], :name => "index_positions_on_option_id"
@@ -353,6 +355,8 @@ ActiveRecord::Schema.define(:version => 20111122220353) do
     t.integer  "domain_id"
     t.boolean  "notification_commenter",                :default => true
     t.boolean  "notification_author",                   :default => true
+    t.boolean  "notification_reflector",                :default => true
+    t.boolean  "notification_responder",                :default => true
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"

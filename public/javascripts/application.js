@@ -4,7 +4,10 @@ var ConsiderIt; //global namespace for ConsiderIt js methods
 
 $j = jQuery.noConflict();
 
+
+
 ConsiderIt = {
+  study : false,
   init : function() {
 
     ConsiderIt.delegators();
@@ -241,18 +244,21 @@ ConsiderIt = {
     $j("#step_through").delegate(".statement a, .full_statement a.close", 'click', function(event){
       var user_id = $j.trim($j(this).parent().find('.userid').text()),
           prompt = $j("#user-" + user_id + " a").find('.read_statement'),
-          closing = $j.trim(prompt.text()) == 'hide';
+          closing = !$j(this).hasClass('.view_statement') && $j(this).find('.username:visible').length == 0,
+          full_statement = $j("#user-" + user_id + "-full"),
+          statement = $j("#user-" + user_id);
 
 
-      $j("#user-" + user_id + "-full").slideToggle('slow', function(){
-        var prompt = $j("#user-" + user_id + " a").find('.read_statement');
-        prompt.text( closing ? 'show review' : 'hide' );
+      full_statement.slideToggle('slow', function(){
+        if ( closing ) {
+          statement.removeClass('active');
+          hide_lightbox();
+        } else {
+          statement.addClass('active');
+          show_lightbox();
+        }
+
       });
-
-      $j(".full_statement:visible:not(#user-" + user_id + "-full)").each(function(){
-        $j('.read_statement').text('show review');
-        $j(this).fadeOut();
-      }); 
 
       if ( !closing ) {
         ConsiderIt.positions.stance_group_clicked('user-' + user_id);
@@ -574,12 +580,14 @@ ConsiderIt = {
         $j('li.step.statement_carousel').data('showing', bucket);
       }
     
-      $j.post('/home/study/3', {
-        position_id: position_id,
-        option_id: option_id,
-        detail1: bucket
-      });  
-            
+      if (ConsiderIt.study){
+        $j.post('/home/study/3', {
+          position_id: position_id,
+          option_id: option_id,
+          detail1: bucket
+        });  
+      }
+                  
     },
     
     set_stance : function(bucket, dontadjust) {

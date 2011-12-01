@@ -1,0 +1,27 @@
+!!! Strict
+%html(xmlns="http://www.w3.org/1999/xhtml")
+  %head
+    %meta{ :content => "text/html; charset=UTF-8", "http-equiv".intern => "Content-Type"}
+
+    %style
+      blockquote { padding-left: 10px; border-left: 1px solid #666; }
+  %body
+    %p
+      Hi #{@user.name},
+    
+    %p
+      #{@position.user.name} contributed a new review for #{@position.option.category} #{@position.option.designator}.
+
+    %p 
+      Visit the 
+      %a{ :href => "#{option_url(@position.option)}" }
+        #{@point.option.category} #{@point.option.designator} page
+      to read and comment on it.
+
+    %p
+      Thanks!
+
+    %hr
+
+    %p
+      To unsubscribe to these messages, visit the link above, and modify your review by deselecting the checkbox near the bottom of the page. 

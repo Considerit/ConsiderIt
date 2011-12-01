@@ -2,9 +2,10 @@
   %a.view_statement
     .avatar
       - if position.user.avatar
-        = image_tag position.user.avatar.url(:normal), :alt => "#{h position.user.name}'s profile picture"
+        = image_tag position.user.avatar.url(:large), :alt => "#{h position.user.name}'s profile picture"
       .username
         = h position.user.short_name    
 
     .userid.hide
       #{position.user_id}
+  

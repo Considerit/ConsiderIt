@@ -1,22 +1,17 @@
 .full_statement.hide{:id=>"user-#{position.user_id}-full"}
-  .wrapper.shadow_offset
+  .wrapper
     .userid.hide
       #{position.user_id}
     %a.close
       close
-
-    .col1
-      .avatar
-        - if position.user.avatar
-          = image_tag position.user.avatar.url(:large), :alt => "#{h position.user.name}'s profile picture", :class=>'pic'
-          = image_tag 'speak_triangle.png', :class=>'tri'
+      
+    .textblock
       .username
-        = h position.user.name
-    .col2
+        = h position.user.name    
       .stance
         %span.stance_name  
-          #{position.stance_name} 
-        this paper's acceptance to CHI
+          #{position.stance_name}: 
+        #{position.stance_long}
 
       .prose
         = h simple_format(position.explanation)

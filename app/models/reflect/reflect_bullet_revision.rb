@@ -8,16 +8,15 @@ class Reflect::ReflectBulletRevision < ActiveRecord::Base
   
   default_scope where( :active => true )
 
-  #TODO
-  def notify_parties(send = APP_CONFIG['send_email'])
-  #   user = comment.user
-  #   sent_to = {}
-  #   if user.user_mailer_preferences.point_summarized
-  #     if send
-  #       Notifier.deliver_someone_summarized_your_comment(comment.find_commentable, self, user)
-  #     end
-  #     sent_to[user.id] = user.name
-  #   end
-  #   return sent_to
+  def notify_parties
+    commenter = comment.user
+    message_sent_to = {}
+    bulleter = user
+    if commenter.id != bulleter.id && commenter.notification_reflector && commenter.email.length > 0
+      UserMailer.someone_reflected_your_point(commenter, self, comment)
+      message_sent_to[commenter.id]
+    end
+
+    return message_sent_to
   end
 end

@@ -21,7 +21,7 @@ ConsiderIt::Application.routes.draw do
       :registrations => "users/registrations",
       :passwords => "users/passwords",
       :confirmations => "users/confirmations"
-    }
+    }, :path => ENV.fetch('RAILS_RELATIVE_URL_ROOT', '')
 
     themes_for_rails # themes_for_rails gem routes 
 

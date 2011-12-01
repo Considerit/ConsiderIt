@@ -18,7 +18,7 @@
         If you used your account from:
 
       - ['facebook', 'twitter', 'google', 'yahoo'].each do |provider|
-        %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',500, 500)" }
+        %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}', 800, 500)" }
           = image_tag("#{provider}.png")
 
     .divider

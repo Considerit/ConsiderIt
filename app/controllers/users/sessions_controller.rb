@@ -8,13 +8,13 @@ class Users::SessionsController < Devise::SessionsController
     if ( params[:third_party] )
     	case params[:provider]
 	    	when 'twitter'
-	    		redirect_to ENV['RAILS_RELATIVE_URL_ROOT'] || '' + user_omniauth_authorize_path(:twitter)
+	    		redirect_to ENV['RAILS_RELATIVE_URL_ROOT'] || '' + user_omniauth_authorize_path(:twitter).to_s
 	    	when 'facebook'
-	    		redirect_to ENV['RAILS_RELATIVE_URL_ROOT'] || '' + user_omniauth_authorize_path(:facebook)
+	    		redirect_to ENV['RAILS_RELATIVE_URL_ROOT'] || '' + user_omniauth_authorize_path(:facebook).to_s
 	    	when 'google'
-	    		redirect_to ENV['RAILS_RELATIVE_URL_ROOT'] || '' + user_omniauth_authorize_path(:google)
+	    		redirect_to ENV['RAILS_RELATIVE_URL_ROOT'] || '' + user_omniauth_authorize_path(:google).to_s
 	    	when 'yahoo'
-	    		redirect_to ENV['RAILS_RELATIVE_URL_ROOT'] || '' + user_omniauth_authorize_path(:yahoo, :openid_url => "http://yahoo.com")
+	    		redirect_to ENV['RAILS_RELATIVE_URL_ROOT'] || '' + user_omniauth_authorize_path(:yahoo, :openid_url => "http://yahoo.com").to_s
 	    	else
 	    		raise 'Unsupported provider'
     	end

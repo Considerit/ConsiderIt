@@ -109,11 +109,13 @@ class Reflect::ReflectResponseController < ApplicationController
          :bullet_id => cur_bullet.id,
       )
       new_rev.response_id = response_obj.id
-      new_rev.notify_parties
     end
     
     new_rev.save
-    
+    if modify
+      new_rev.notify_parties
+    end
+
     return {:insert_id => response_obj.id, :rev_id => new_rev.id, :u => user.name, :sig => signal}.to_json
 
   end

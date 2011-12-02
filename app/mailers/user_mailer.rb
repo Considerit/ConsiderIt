@@ -51,13 +51,14 @@ class UserMailer < ActionMailer::Base
     @comment = comment
     email_with_name = "#{@user.name} <#{@user.email}>"
     mail(:to => email_with_name, :subject => "[#{APP_CONFIG['email_head']}] new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote")
-  end  
+  end
 
   def someone_reflected_your_point(user, bullet, comment)
     @user = user
     @bullet = bullet
     @comment = comment
     email_with_name = "#{@user.name} <#{@user.email}>"
+        
     mail(:to => email_with_name, :subject => "[#{APP_CONFIG['email_head']}] #{@bullet.user.name} summarized your comment")
   end
 

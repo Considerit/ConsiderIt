@@ -7,8 +7,9 @@ class OptionsController < ApplicationController
     @user = current_user
     @option = Option.find(params[:id])
     
-    @title = "#{@option.category} #{@option.designator} #{@option.short_name}"
-    @keywords = "#{@option.domain} #{@option.category} #{@option.designator} #{@option.name} Washington 2011"
+    #@title = "#{@option.category} #{@option.designator} #{@option.short_name}"
+    @title = "#{@option.short_name}"
+    @keywords = "#{@option.domain} #{@option.category} #{@option.designator} #{@option.name}"
 
     @position = current_user ? current_user.positions.where(:option_id => @option.id).first : nil
     

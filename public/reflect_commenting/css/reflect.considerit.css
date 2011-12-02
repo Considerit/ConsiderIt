@@ -38,6 +38,7 @@
 #reflected .rf_comment_wrapper .rf_comment_summary .reflect_header .rf_title {
 	padding: 4px 0 0 20px;
 	border: none;
+	font-size: 8pt;
 }
 
 #reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_point {
@@ -69,13 +70,13 @@ button.add_bullet {
 }
 
 #reflected .rf_comment_wrapper .rf_comment_text_wrapper {
-	width: 400px;
+	width: 490px;
 	position: relative;
 	z-index: 100;
 }
 
 #reflected .rf_comment_wrapper .rf_comment_summary {
-	width: 350px;
+	width: 300px;
 	position: relative;
 	z-index: 50;	
 }
@@ -89,6 +90,9 @@ button.add_bullet {
 	
 }
 
+#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main .bullet_text {
+	font-size: 9pt;
+}
 #reflected li.be_neutral {
 	font-size: 85%;
 	
@@ -110,8 +114,8 @@ button.add_bullet {
 }
 
 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main ul.bullet_main_wrapper li.bullet_point img {
-	width: 30px;
+#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_point {
+	font-size: 10pt;
 }
 
 #reflected div.comment_summary {
@@ -153,4 +157,28 @@ button.add_bullet {
 #reflected .rf_clarification {
 	background-color: #bbb;
 	margin-right: 10px;
+}
+
+button.button_as_link {
+	font-size: 8pt;
+}
+
+#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.be_neutral, #reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.be_neutral,
+#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.submit a, #reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.submit a {
+	font-size: 8pt;
+}
+
+
+#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions .arrow {
+	font-size: 175%;
+	left: -14px;
+}
+
+#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions {
+	font-size: 11pt;
+}
+
+
+#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.count, #reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.count {
+	font-size: 9pt;
 }

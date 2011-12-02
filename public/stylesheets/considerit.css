@@ -1402,51 +1402,50 @@ li.comment, li.new_comment {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\000033}}
 li.new_comment {
   width: 400px;
-  background-color: #bbbbbb;
   list-style: none outside none;
   font-size: 14px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\000039}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\000038}}
   li.new_comment .user {
     float: left; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000311}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000310}}
   li.new_comment .avatar {
     top: 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000313}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000312}}
   li.new_comment .count {
     color: #c1c1c1; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000317}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000316}}
   li.new_comment li.body textarea {
     height: 170px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000320}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000319}}
   li.new_comment .comment_submit {
     margin: 10px 0 5px 0;
     float: left; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000324}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000323}}
   li.new_comment .comment_body {
     border-bottom: none;
     width: 100%;
     margin-top: 5px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000330}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000329}}
     li.new_comment .comment_body .body_row .user {
       max-width: 70px;
       font-size: 10px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000333}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000332}}
     li.new_comment .comment_body .body_row .text {
       margin-left: 85px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000336}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000335}}
       li.new_comment .comment_body .body_row .text form ul.form {
         margin: 0; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000339}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000338}}
         li.new_comment .comment_body .body_row .text form ul.form li.body textarea {
           width: 325px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000341}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000340}}
         li.new_comment .comment_body .body_row .text form ul.form li.body .count {
           color: #c1c1c1;
           width: 35px;
           display: block;
           float: right;
           padding-left: 5px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000350}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/comments\/_comment_form\.sass}line{font-family:\0000349}}
         li.new_comment .comment_body .body_row .text form ul.form a.cancel {
           font-size: 10px;
           margin-left: 10px;

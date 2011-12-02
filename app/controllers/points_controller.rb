@@ -35,7 +35,7 @@ class PointsController < ApplicationController
     else
       pros_and_cons = true
     end
-    
+
     @bucket = params[:bucket]
     if @bucket == 'all' || @bucket == ''
       group_name = 'all'
@@ -61,7 +61,11 @@ class PointsController < ApplicationController
       @page = 1
     end
 
-    if pros_and_cons
+    if group_name == 'user'
+      @con_points = qry.cons.paginate( :page => @page, :per_page => 50 )
+      @pro_points = qry.pros.paginate( :page => @page, :per_page => 50 )
+      points = @con_points + @pro_points
+    elsif pros_and_cons
       @con_points = qry.cons.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
       @pro_points = qry.pros.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
       points = @con_points + @pro_points

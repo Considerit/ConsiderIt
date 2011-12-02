@@ -69,7 +69,8 @@ html
       margin-bottom: 10px
 
       a
-        color: #222
+        color: #666
+        text-decoration: underline
 
       position: relative
       .outset
@@ -150,29 +151,22 @@ html
   background-color: #B39FD6
 
 
-#initiative ol#step_through li.statement
-  background-color: #B39FD6
-
-  textarea
-    margin: auto
-    height: 300px
-    width: 572px
-    display: block
-  
 
 #initiative ol#step_through li.statements
-  background-color: #DFE0DE
+  background-color: transparent
   position: relative
 
   .full_statement
     position: absolute
     background-color: #A289D1
     z-index: 1001
-    width: 835px
+    width: 735px
     top: -14px
-    left: 13px
+    left: 0px
 
     .wrapper
+      position: relative
+      z-index: 100
       a.close
         float: right
         margin-right: 10px
@@ -183,7 +177,7 @@ html
 
       .textblock
         padding: 20px 100px
-        .username
+        > .username
           font-weight: bold
           font-size: 18pt
         .stance
@@ -195,6 +189,27 @@ html
 
         .prose
           margin-top: 10px
+
+        .important_points
+          a
+            color: black
+            text-decoration: underline
+
+          .group 
+            display: none
+
+          .point_list_footer
+            display: none
+
+          .point_in_list .discuss
+            display: none
+          .operations
+            display: none
+          .position_container
+            width: 692px
+            position: relative
+            left: -87px
+            margin-top: 10px
 
     .discuss
 
@@ -220,128 +235,121 @@ html
     a
       font-weight: bold
       text-decoration: underline
-      color: white
-
-.horizontal .paginate.first .back
-
-#initiative ol#step_through li.step.statement_carousel
-  background-color: #DFE0DE
-  padding: 10px 20px
-
-  .paginate
-    padding-top: 30px
-    &.first .back
-      background-image: url("/images/arrow-prev-dark.png")
-    &.last .forward
-      background-image: url("/images/arrow-next-dark.png")
-
-  .horizontal
-    background-color: #AEACAB
-    padding: 5px 10px 0 10px
-    left: -40px
-
-    > h3
-      font-size: 9pt
-      margin-bottom: 8px
-      color: #555
-      font-weight: normal
-
-    .carousel
-      ul li.statement
-        background-color: inherit
-        margin: auto
-        display: inline-block
-
-        &.active
-          .view_statement .avatar 
-            img
-              border-color: #A289D1
-            .username
-              display: none
-
-        a.view_statement
-          text-align: center  
-          color: #333
-          position: relative
-          
-          .avatar
-            position: relative
-            img
-              width: 85px
-              border: 5px solid transparent
-              &:hover
-                border-color: #A289D1
-
-            .username
-              font-size: 10pt
-              color: #333
-              line-height: 9pt
-              background-color: rgba(150, 150, 150, 0.75)
-              position: absolute
-              bottom: 8px
-              width: 85px
-              margin-left: 5px
-              overflow: hidden
-
-              /* For IE 8*/
-              -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#bb777777, endColorstr=#bb777777)"
-
-
-  .head
-    h3
-      font-size: 16pt
-      font-weight: normal
-
-      .display_count
-        font-size: 10pt
-        color: #333
-        padding-top: 5px
-
-        span.hide
-          font-size: 10pt
-          a.show_all
-            color: #333
-      
-
-
-#initiative li.ranked_points 
-
-  #ranked_points.explore
-    background-color: #DFE0DE
-
-    .filters a#show_popular, .filters a#show_self
-      display: none
+      color: white  
 
 
 #wrap #footer
   width: 100%
   
 
-.horizontal_carousel 
-  margin: auto
 
 svg
   rect
     cursor: pointer
   
+#initiative li.ranked_points
+  h3
+    font-size: 26pt
+    line-height: 20pt
+    &.subheader
+      font-size: 10pt
+      color: #777
+      line-height: 15pt
+      padding-bottom: 5px
+      font-weight: normal
+    strong 
+      font-weight: normal
 
-#ranked_points
-  padding: 15px 25px
-  > .group
-    position: relative
-    padding-bottom: 20px
-    .triangle
-      position: absolute
-      left: 50%
-      top: -20px
-      font-size: 15pt
-      color: #B39FD6
 
+  #ranked_points.explore
+    padding: 0 10px
+    background-color: transparent
 
+    > .group
+      position: relative
+      padding-bottom: 20px
+      .triangle
+        position: absolute
+        left: 50%
+        top: -20px
+        font-size: 15pt
+        color: #B39FD6
 
-    .position_container
-      width: 728px
-      margin: auto
+      .position_container
+        width: 700px
+        margin: auto
+
+    .filters a#show_popular, .filters a#show_self
+      display: none
+    
+    .edit, .remove
+      display: none
+
+  .statement_carousel
+    background-color: transparent
+
+    .paginate
+      padding-top: 27px
+      width: 100%
+      &.first .back
+      &.last .forward
+      button
+        background-color: transparent
+        border: none
+        font-size: 10pt
+        color: #353535
+        padding-right: 25px
+      h3.subheader
+        padding-bottom: 0
+    .vertical
+
+      > h3
+        font-size: 9pt
+        margin-bottom: 8px
+        color: #555
+        font-weight: normal
+
+      .carousel
+        width: 200px
+        ul li.statement
+          background-color: inherit
+          margin: auto
+          display: inline-block
+
+          &.active
+            z-index: 1002
+            position: relative
+            .view_statement .avatar 
+              .username
+                display: none
+
+          a.view_statement
+            text-align: center  
+            color: #333
+            position: relative
+            
+            .avatar
+              position: relative
+              img
+                width: 85px
+                border: 3px solid transparent
+                &:hover
+                  border-color: #A289D1
+
+              .username
+                font-size: 10pt
+                color: #333
+                line-height: 9pt
+                background-color: rgba(150, 150, 150, 0.75)
+                position: absolute
+                bottom: 8px
+                width: 85px
+                margin-left: 3px
+                overflow: hidden
+
+                /* For IE 8*/
+                -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#bb777777, endColorstr=#bb777777)"
+
 
 .submit_a_position
   position: absolute
@@ -354,3 +362,20 @@ svg
   opacity: .75
   &:hover
     opacity: 1
+
+
+.stance_chart text
+  display: none
+
+.showing_filtered a
+  text-decoration: underline
+  color: #ccc
+
+#initiative ol#step_through li.statement.step
+  background-color: #B39FD6
+  textarea
+    display: block
+    height: 300px
+    margin: auto
+    width: 572px
+  

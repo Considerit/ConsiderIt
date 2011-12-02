@@ -1,5 +1,5 @@
 .full_statement.hide{:id=>"user-#{position.user_id}-full"}
-  .wrapper
+  .wrapper.shadow_offset
     .userid.hide
       #{position.user_id}
     %a.close
@@ -15,6 +15,12 @@
 
       .prose
         = h simple_format(position.explanation)
+      
+      .important_points
+        %a.show
+          Show #{position.user.first_name}'s pro and con considerations
+        %a.hide
+          Hide these points
     .clear
 
   = render :partial => 'comments/discussion', :locals => { :comments => position.comments.count > 0 ? position.comments : [], :commentable => position, :context => 'position'}

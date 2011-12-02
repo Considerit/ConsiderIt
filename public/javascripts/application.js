@@ -8,6 +8,7 @@ $j = jQuery.noConflict();
 
 ConsiderIt = {
   study : false,
+  subdirectory: '/blogademia',
   init : function() {
 
     ConsiderIt.delegators();
@@ -556,7 +557,7 @@ ConsiderIt = {
         if( $stored.length > 0 ) {
           $stored.fadeIn();
         } else {
-          $j.get("/options/" + option_id + "/points", { bucket: bucket },
+          $j.get(ConsiderIt.subdirectory + "/options/" + option_id + "/points", { bucket: bucket },
             function(data){
               $j('.full_statement:visible .important_points').append(data['points']);
           } );
@@ -583,7 +584,7 @@ ConsiderIt = {
           $j('#ranked_points .group').fadeOut();
           $stored.fadeIn();
         } else {
-          $j.get("/options/" + option_id + "/points", { bucket: bucket },
+          $j.get(ConsiderIt.subdirectory + "/options/" + option_id + "/points", { bucket: bucket },
             function(data){
               $j('#ranked_points .group').fadeOut();
               $j('#ranked_points').append(data['points']);
@@ -612,13 +613,13 @@ ConsiderIt = {
 
 
     
-      if (ConsiderIt.study){
-        $j.post('/home/study/3', {
-          position_id: position_id,
-          option_id: option_id,
-          detail1: bucket
-        });  
-      }
+      //if (ConsiderIt.study){
+      //  $j.post('/home/study/3', {
+      //    position_id: position_id,
+      //    option_id: option_id,
+      //    detail1: bucket
+      //  });  
+      //}
                   
     },
     

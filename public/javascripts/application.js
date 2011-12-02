@@ -251,7 +251,7 @@ ConsiderIt = {
 
       if ( closing ) {
         statement.removeClass('active');
-        full_statement.find('> .discuss').slideUp();
+        full_statement.children('.discuss').slideUp();
         hide_lightbox();
       } else {
         $j('.full_statement a.close:visible').trigger('click');
@@ -262,7 +262,7 @@ ConsiderIt = {
 
       full_statement.slideToggle('slow', function(){
         if (!closing) { 
-          full_statement.find('> .discuss').slideDown('slow');
+          full_statement.children('.discuss').slideDown('slow');
         }
       });
 

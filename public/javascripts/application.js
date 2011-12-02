@@ -162,7 +162,7 @@ ConsiderIt = {
       }
     });
 
-    $j('.expanded .is_counted, .user_position .is_counted').each(function(){
+    $j('.new_comment .is_counted, .user_position .is_counted').each(function(){
       if( !$j(this).data('has_noblecount') ){        
 
         $j(this).NobleCount($j(this).siblings('.count'), {

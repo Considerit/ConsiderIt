@@ -30,14 +30,14 @@
     }
   });
 
-  if (ConsiderIt && ConsiderIt.study) {
-    $j(document).delegate('.point_in_list a.toggle', 'click', function(){
-      $j.post('/home/study/1', {
-        position_id: #{@position.id},
-        option_id: #{@option.id},
-        point_id: $j(this).parents('.point_in_list').find('.id:first').text(),
-        bval: $j(this).hasClass('more')
-      });   
-    });
-  }
+  //if (ConsiderIt && ConsiderIt.study) {
+  //  $j(document).delegate('.point_in_list a.toggle', 'click', function(){
+  //    $j.post('/home/study/1', {
+  //      position_id: #{@position.id},
+  //      option_id: #{@option.id},
+  //      point_id: $j(this).parents('.point_in_list').find('.id:first').text(),
+  //      bval: $j(this).hasClass('more')
+  //    });   
+  //  });
+  //}
   

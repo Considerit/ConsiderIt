@@ -954,33 +954,22 @@ ul.point_list {
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003106}}
         .position_container .must_be_logged_in .login_or_create .create a {
           text-decoration: underline; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003108}}
-    .position_container .must_be_logged_in .fb_login {
-      width: 75px;
-      margin-top: 20px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003111}}
-      .position_container .must_be_logged_in .fb_login button {
-        border: none;
-        padding: none;
-        width: 66px;
-        height: 22px;
-        background: transparent url("/images/fb_login.png") no-repeat top left; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003118}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003110}}
     .position_container .must_be_logged_in .why a {
       font-size: 12px;
       text-decoration: underline;
       color: gray;
       font-weight: bold; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003124}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003116}}
     .position_container .must_be_logged_in li {
       padding: 3px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003126}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003118}}
     .position_container .must_be_logged_in a {
       color: white;
       text-decoration: underline;
       cursor: pointer; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003131}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003123}}
 .droppable {
   border: 2px dashed #666666;
   color: #666666;
@@ -991,16 +980,16 @@ ul.point_list {
   height: 39px;
   top: -19px;
   margin-bottom: 5px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003141}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003133}}
   .droppable .prompt {
     width: 160px;
     padding-left: 20px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003145}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003137}}
   .droppable.hovered {
     color: #eeeeee;
     border-color: #eeeeee; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003149}}
+@media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/public\/stylesheets\/sass\/initiatives\/_pro_con_container\.sass}line{font-family:\00003141}}
 .bullet_point {
   font-size: 28px;
   font-weight: bold;

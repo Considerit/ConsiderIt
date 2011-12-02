@@ -14,6 +14,11 @@
   function get_bar_width(){
     return get_width() / 7;
   }
+
+  function reset_selected_idx(){
+    bar.def('sel', -1);
+    bar.render();
+  }
     
 	// protovis_stance_has_been_rendered is for IE hack
   if ( option_stance_data && ( typeof(protovis_stance_has_been_rendered) == "undefined" || protovis_stance_has_been_rendered == false) ) {

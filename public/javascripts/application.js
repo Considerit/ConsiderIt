@@ -70,13 +70,13 @@ ConsiderIt = {
       dim: 250
     });
 
-    $j('li.step.statement_carousel .horizontal_carousel').infiniteCarousel({
+    $j('.statement_carousel .vertical_carousel').infiniteCarousel({
       speed: 1500,
-      vertical: false,
-      total_items: 5,
-      items_per_page: 8,
+      vertical: true,
+      //total_items: 5,
+      items_per_page: 12,
       loading_from_ajax: false,
-      dim: 880,
+      dim: 610,
       resetSizePerPage: false
     });    
 
@@ -102,7 +102,7 @@ ConsiderIt = {
       $j('#masthead').corner('round top 5px');
       $j('.point_in_list_margin .inner, .point_in_list.expanded .inner').corner('5px');
       $j('#initiative #description .initiative_item').corner('round top 5px');
-      $j('.avatar').corner('5px');
+      //$j('.avatar').corner('5px');
       $j('input[type="submit"]').corner('5px');
       $j('#registration_form .primary, #registration_form .secondary').corner('8px');
       $j('#pledge_form button').corner('5px');
@@ -248,31 +248,38 @@ ConsiderIt = {
           full_statement = $j("#user-" + user_id + "-full"),
           statement = $j("#user-" + user_id);
 
+      if ( closing ) {
+        statement.removeClass('active');
+        $j('.discuss').slideUp();
+        hide_lightbox();
+      } else {
+        $j('.full_statement a.close:visible').trigger('click');
+        statement.addClass('active');
+
+        show_lightbox();
+      }
 
       full_statement.slideToggle('slow', function(){
-        if ( closing ) {
-          statement.removeClass('active');
-          hide_lightbox();
-        } else {
-          statement.addClass('active');
-          show_lightbox();
+        if (!closing) { 
+          full_statement.find('.discuss').slideDown('slow');
         }
-
       });
 
       if ( !closing ) {
         ConsiderIt.positions.stance_group_clicked('user-' + user_id);
       } else if ( event.which ) { // don't want to do anything if triggered programmatically
-        var bucket = $j('li.step.statement_carousel').data('showing');
-        $j('#ranked_points .group').fadeOut();
-        $j('#ranked_points .ranked_points_bucket_'+bucket).fadeIn();
+
       }
 
 
     });    
 
-    $j("#step_through").delegate(".display_count .show_all", 'click', function(){
+    $j("#step_through").delegate(".show_all", 'click', function(){
       ConsiderIt.positions.stance_group_clicked('all');      
+    });
+
+    $j('#step_through').delegate(".full_statement .important_points .show, .full_statement .important_points .hide", 'click', function(){
+      $j(this).parent().children().fadeToggle(); 
     });
             
     //////////////
@@ -541,44 +548,69 @@ ConsiderIt = {
 
       var option_id = $j('#option_id').text(),
           position_id = $j('#position_id').text(),
-          nest = '#ranked_points .ranked_points_bucket_'+bucket,
+          nest = '.ranked_points_bucket_'+bucket,
           $stored = $j(nest);
-
-      if( $stored.length > 0 ) {
-        $j('#ranked_points .group').fadeOut();
-        $stored.fadeIn();
-      } else {
-        $j.get("/options/" + option_id + "/points", { bucket: bucket },
-          function(data){
-            $j('#ranked_points .group').fadeOut();
-            $j('#ranked_points').append(data['points']);
-        } );
-      }
 
       // update position statements
       if ( bucket.toString().substring(0,4) == 'user' ){
-        
+        if( $stored.length > 0 ) {
+          $stored.fadeIn();
+        } else {
+          $j.get("/options/" + option_id + "/points", { bucket: bucket },
+            function(data){
+              $j('.full_statement:visible .important_points').append(data['points']);
+          } );
+        }
       } else if ( bucket == 'all' ) {
+        $j('#ranked_points .group').fadeOut();
+        $stored.fadeIn();
         $j('.statement:hidden').fadeIn();
-        $j('.display_count .hide').hide();
-        $j('li.step.statement_carousel .head .banner .fl').text('All reviewers');
-        $j('.display_count .showing').text($j('.display_count .total').text());
+
+        $j('.showing_filtered').fadeOut(function(){
+          $j('.showing_all').fadeIn();
+        });
+
+        $j('.explore#ranked_points h3.banner').text('All reviews');
+        $j('.explore#ranked_points h3.subheader').text('Ranked pros and cons that reviewers considered important.');
 
         $j('li.step.statement_carousel').data('showing', bucket);
+        reset_selected_idx();
+        $j('.statement_carousel .vertical_carousel')
+          .infiniteCarousel({'operation': 'restart'});
       } else {
+
+        if( $stored.length > 0 ) {
+          $j('#ranked_points .group').fadeOut();
+          $stored.fadeIn();
+        } else {
+          $j.get("/options/" + option_id + "/points", { bucket: bucket },
+            function(data){
+              $j('#ranked_points .group').fadeOut();
+              $j('#ranked_points').append(data['points']);
+          } );
+        }        
         var with_bucket = $j('.bucket-' + bucket),
             without_bucket = $j('.statement:not(.bucket-' + bucket);
         without_bucket.fadeOut('slow', function(){
           with_bucket.fadeIn('slow');
         });
-      
-        $j('li.step.statement_carousel .head .banner .fl').text(ConsiderIt.positions.stance_name(bucket) + " & the factors they consider important");        
-        $j('.display_count .hide').show();
-        $j('.display_count .showing').text(with_bucket.length);
+
+        $j('.explore#ranked_points h3.banner').html(ConsiderIt.positions.stance_name(bucket));
+        $j('.explore#ranked_points h3.subheader').text('Ranked pros and cons these reviewers considered important.');
+
+        if ( $j('.showing_filtered:hidden').length > 0) {
+          $j('.showing_all').fadeOut(function(){
+            $j('.showing_filtered').fadeIn();
+          });
+        }
 
         $j('.full_statement:visible a.close').trigger('click');
         $j('li.step.statement_carousel').data('showing', bucket);
+        $j('.statement_carousel .vertical_carousel')
+          .infiniteCarousel({'operation': 'restart'});        
       }
+
+
     
       if (ConsiderIt.study){
         $j.post('/home/study/3', {

@@ -32,60 +32,61 @@
             Oppose
   
   .position_marker.shadow_offset
-    .triangle 
-      &#x25C0;
 
-    %strong
-      Click a bar
+    .showing_all
+      .triangle 
+        &#x25C0;
 
-    to filter the reviews below
+      %strong
+        Click a bar
 
-%li.step.statement_carousel
-  .head
-    %h3.banner
-      .fl
-        All reviewers & the factors they consider important
-          
-      .fr.display_count
-        %span.showing
-          #{@option.positions.length}
-        #{"\/"}
-        %span.total
-          #{@option.positions.length}
+      to filter the reviews below
 
-        %span.hide
-          [
-          %a.show_all
-            show all
-          ]
-      .clear
+    .showing_filtered.hide
+      %a.show_all
+        Show all reviews
 
-  .horizontal_carousel.horizontal
-    %h3
-      Click to read a review and comment on it
 
-    .paginate.first
-      %button.back  
-    .carousel
-      %ul
-        - @option.positions.each do |position|
-          = render :partial => "positions/statement/block", :locals => { :position => position }
-          
-    
-    .paginate.last
-      %button.forward.not_ajax
-    .clear
-
-  .clear
-
-%li.step.statements
+%li.statements
   - @option.positions.each do |position|
     = render :partial => "positions/statement/show", :locals => { :position => position }
 
-%li.step.ranked_points
-  .explore#ranked_points   
+%li.ranked_points
+
+  .explore#ranked_points.fl 
+    %h3.banner
+      All reviews
+
+    %h3.subheader
+      Ranked pros and cons that reviewers considered important. 
+   
     = render :partial => "options/pro_con_board", :locals => { :group_name => 'everyone', :group_id => 'all' }
 
+  .statement_carousel.fr
+
+    .vertical_carousel.vertical
+
+
+      .paginate.first
+        %h3.subheader
+          Click to read a review.
+          %button.back.fr  
+            &#x25B2;
+      .carousel
+        %ul
+          - @option.positions.each do |position|
+            = render :partial => "positions/statement/block", :locals => { :position => position }
+            
+      
+      .paginate.last
+        %button.forward.not_ajax.fr
+          &#x25BC;
+      .clear
+
+    .clear
+
+
+  .clear
 - if @position
   :javascript
     $j('.you_slider').css('left', $j('.pedestal').position().left + (6 - #{@position.stance_bucket}) * 64.3 - 30 + 'px');

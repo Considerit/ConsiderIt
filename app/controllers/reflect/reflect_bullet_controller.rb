@@ -136,6 +136,7 @@ class Reflect::ReflectBulletController < ApplicationController
        :user => user,
        :text => text
     )    
+
     if modify
       new_rev.bullet_id = bullet_obj.id
       bullet_rev.active = false
@@ -145,10 +146,12 @@ class Reflect::ReflectBulletController < ApplicationController
       )
       bullet_obj.save
       new_rev.bullet_id = bullet_obj.id  
-      new_rev.notify_parties
     end
     
     new_rev.save
+    if modify
+      new_rev.notify_parties
+    end
     
     if params.key?(:highlights)
       highlights = JSON.parse(params[:highlights].gsub('\\',''))

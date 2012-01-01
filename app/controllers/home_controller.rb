@@ -3,7 +3,7 @@ class HomeController < ApplicationController
   respond_to :json, :html
 
   def index
-    redirect_to Option.find(1)
+    #redirect_to Option.find(1)
 
     @user = current_user
     @keywords = "Washington Voters Guide 2011 Election Ballot Measures Initiatives"

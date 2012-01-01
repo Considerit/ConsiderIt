@@ -1,0 +1,142 @@
+#initiative.guide
+
+  ol#step_through li.step
+    margin: 0 40px
+    padding-bottom: 0
+
+    li.step
+      .head
+        padding: 0px 0 15px 0
+        color: $txt_dark_gray
+        position: relative
+
+        .extra
+          padding: 0
+          letter-spacing: 1px
+          top: -3px
+
+      &.breakdown
+        position: relative
+        padding-bottom: 0
+        
+        .head
+          top: -25px
+
+        .extra
+          color: black
+        
+        .you_slider
+          position: absolute
+          z-index: 999
+          bottom: 0px
+          left: 0px
+          
+          img
+            width: 25px
+            display: block
+            margin: auto
+                  
+          &.call
+            top: 104px
+            left: 661px
+          
+          a
+            color: $txt_gray
+            text-decoration: underline
+            &:hover
+              color: $txt_dark_gray
+          
+        .bars
+          margin: auto
+
+          .viz
+            .stance_chart
+              
+          .vizbase
+      
+            td
+              color: $txt_gray
+              font-size: 14px
+              .inner, .pedestal
+                position: relative
+                top: -8px
+              
+              .inner
+                padding: 0 15px
+
+              &.middle
+                height: 0px
+                width: 450px
+
+                .pedestal
+                  background-color: #ccc
+                  height: 5px
+                  width: 104%
+                  margin-left: -10px
+      
+              &.first
+                padding-right: 3px
+              &.last
+                padding-left: 3px
+        
+        
+        .position_marker
+          background-color: $bk_dark_red
+          color: #eee
+          position: absolute
+          top: 60px
+          right: -10px
+          padding: 5px 10px
+          z-index: 100
+          width: 130px
+
+          .triangle
+            position: absolute
+            left: -14px
+            color: $bk_dark_red
+            top: 10px
+            font-size: 18px
+
+          .label
+            color: $txt_light_gray
+            font-size: 14px
+
+          .current
+            font-size: 18px
+            text-weight: bold
+
+          .operations
+            margin-top: 4px
+            a
+              font-size: 14px
+              color: inherit
+              text-decoration: underline
+
+      &.ranked_points
+        .explore#ranked_points
+          background-color: $bk_light_blue
+          margin: 0
+          padding: 15px
+                  
+          .extra 
+            padding: 3px 0 0 2px        
+      
+          .group
+            color: white
+        
+          .filters
+            
+            a#show_popular, a#show_self
+              font-size: 12px
+              font-weight: bold
+              display: block
+              text-align: left
+              padding-bottom: 4px
+              
+              
+              &:hover
+                text-decoration: underline
+
+
+
+

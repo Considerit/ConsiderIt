@@ -1,53 +1,53 @@
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\000031}}
 .position_container {
-  background: url("/blogademia/images/chalk/chalkboard.png?1322438292") repeat scroll left top transparent; }
+  background: url("/images/chalk/chalkboard.png?1322438292") repeat scroll left top transparent; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\000036}}
   .position_container .points_self#points_on_board_pro .points_list_header, .position_container .points_board#points_on_board_pro .points_list_header {
-    background: transparent url("/blogademia/images/chalk/pro_back.png") no-repeat scroll top center; }
+    background: transparent url("/images/chalk/pro_back.png") no-repeat scroll top center; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000312}}
   .position_container .points_self#points_on_board_con .points_list_header, .position_container .points_board#points_on_board_con .points_list_header {
-    background: transparent url("/blogademia/images/chalk/con_back.png") no-repeat scroll top center; }
+    background: transparent url("/images/chalk/con_back.png") no-repeat scroll top center; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000318}}
 .points_other .point_list_footer .forward {
-  background-image: url("/blogademia/images/arrow-down.png"); }
+  background-image: url("/images/arrow-down.png"); }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000321}}
 .points_other .point_list_footer .back {
-  background-image: url("/blogademia/images/arrow-up.png"); }
+  background-image: url("/images/arrow-up.png"); }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000326}}
 .points_board .point_list_footer .forward {
-  background-image: url("/blogademia/images/arrow-down-light.png"); }
+  background-image: url("/images/arrow-down-light.png"); }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000329}}
 .points_board .point_list_footer .back {
-  background-image: url("/blogademia/images/arrow-up-light.png"); }
+  background-image: url("/images/arrow-up-light.png"); }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000334}}
 .newpointbutton button.pro {
-  background: url("/blogademia/images/write-pro.png") left top no-repeat; }
+  background: url("/images/write-pro.png") left top no-repeat; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000336}}
   .newpointbutton button.pro:hover {
-    background-image: url("/blogademia/images/write-pro-hover.png"); }
+    background-image: url("/images/write-pro-hover.png"); }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000339}}
 .newpointbutton button.con {
-  background: url("/blogademia/images/write-con.png") left top no-repeat; }
+  background: url("/images/write-con.png") left top no-repeat; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000341}}
   .newpointbutton button.con:hover {
-    background-image: url("/blogademia/images/write-con-hover.png"); }
+    background-image: url("/images/write-con-hover.png"); }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000347}}
 .horizontal .paginate.first .back {
-  background-image: url("/blogademia/images/arrow-prev.png"); }
+  background-image: url("/images/arrow-prev.png"); }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000350}}
 .horizontal .paginate.last .forward {
-  background-image: url("/blogademia/images/arrow-next.png"); }
+  background-image: url("/images/arrow-next.png"); }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000353}}
 #initiative .position {
   margin: auto; }
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000358}}
   #initiative .position .slider_table .slider_container .ui-slider a.ui-slider-handle {
-    background: url("/blogademia/images/slider.png") repeat-x scroll 50% 50% transparent; }
+    background: url("/images/slider.png") repeat-x scroll 50% 50% transparent; }
 
 @media -sass-debug-info{filename{font-family:file\:\/\/\/Users\/travis\/Documents\/considerit_20\/dub\/ConsiderIt\/themes\/blogademia\/stylesheets\/sass\/considerit\.theme\.sass}line{font-family:\0000362}}
 html {

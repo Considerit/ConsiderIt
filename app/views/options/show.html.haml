@@ -1,3 +1,9 @@
+:javascript
+  option_stance_data = #{stance_fractions(@option)};
+  option_id = #{@option.id};
+  //for IE7 compatability
+  protovis_stance_has_been_rendered = false;
+
 #initiative.guide
   #option_id.hide
     = @option.id
@@ -8,7 +14,54 @@
     %li.head
       = render :partial => "options/description", :locals => {:hide_initially => true}
     
-    = render :partial => "options/view_breakdown", :locals => { :number => false }
+    %li.step.breakdown
+      .head
+      
+        .operations
+          -if @position && @position.published
+            .you_slider
+              = image_tag "slider.png", :title => "This is where you stand on #{@option.designator}."
+              =link_to 'Modify your position', edit_option_position_path(@option, @position)
+          -else
+            .submit_a_position.shadow_offset.add_corner
+              You have yet to 
+              =link_to 'submit a position', new_option_position_path(@option)
+
+        
+        %table.bars
+          %tr
+            %td
+            %td.viz
+              = render :partial => "options/stance_histogram"
+            %td
+                  
+          %tr.vizbase
+            %td.first
+              .inner
+                Support
+            %td.middle
+              .pedestal
+            %td.last
+              .inner
+                Oppose
+      
+      .position_marker
+        .triangle 
+          &#x25C0;
+
+        %strong
+          Click a bar
+
+        to filter the reviews.
+
+    %li.ranked_points
+      .explore#ranked_points   
+        .wrapper.shadow_offset
+          .triangle 
+            &#x25B2;  
+          = render :partial => "options/pro_con_board", :locals => { :group_name => 'everyone', :group_id => 'all' }
+      
+          
     
 
     %li.clear
@@ -29,6 +82,10 @@
       $j(this).children('a').addClass('active');
     }
   });
+
+  $j('.you_slider').css('left', $j('.pedestal').position().left + (6 - #{@position.stance_bucket}) * 64.3 - 30 + 'px');
+
+
 
   //if (ConsiderIt && ConsiderIt.study) {
   //  $j(document).delegate('.point_in_list a.toggle', 'click', function(){

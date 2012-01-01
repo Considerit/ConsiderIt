@@ -1,0 +1,126 @@
+#initiatives.edit
+
+  ol#step_through
+    
+    .extra
+      display: none
+      
+    li.step
+      
+      &.slide
+        background-color: $bk_blue
+
+        .position
+          margin: auto
+    
+      &#stance
+        background-color: $bk_light_blue
+        .extra
+          color: black
+        .rest
+          padding: 10px
+                
+          #points
+            width: 100%
+            position: relative
+            
+            .user_position 
+              vertical-align: top
+              margin: auto
+              width: 586px
+
+            .points_other
+              vertical-align: top
+              padding-top: 50px
+              position: absolute
+              top: 0
+
+              .other
+                padding-bottom: 5px
+                  
+              .extra
+                font-size: 10px
+                color: #444
+                top: -3px
+                
+              .carousel
+                padding: 5px
+
+              &#points_other_pro 
+                left: -80px
+                .carousel
+                  width: 530px
+
+              &#points_other_con 
+                right: -80px
+
+                .carousel
+                  width: 530px
+                  .point_list
+                    float: right
+
+                  
+       
+      &#submitstance
+        margin-bottom: 0px
+        padding-bottom: 5px
+          
+        .extra
+          color: black
+                    
+        .rest
+          margin: auto
+          width: 100%
+          padding: 10px
+          
+          > div
+            margin: auto
+            
+            form
+              margin: auto
+              width: 660px
+
+              input[type="submit"]
+                background-color: $button_color
+                cursor: pointer
+                text-shadow: gray 1px 1px 2px
+                width: 380px
+                height: 75px
+                border: none
+                padding: 0
+                color: white
+                font-size: 24pt
+                opacity: .9
+
+                &:hover
+                  opacity: 1
+              
+              a
+                display: inline-block
+                margin-left: 40px
+                font-size: 12pt
+                color: $txt_gray                
+                font-weight: bold
+                text-decoration: underline
+                margin-top: 30px
+                &:hover
+                  color: $txt_dark_gray
+
+              label
+                color: $txt_gray
+                text-transform: none
+                letter-spacing: 0
+                padding-left: 5px
+              
+              ul
+                margin-top: 10px
+                li
+                  padding: 5px 0
+
+            .stance_status
+              padding-bottom: 5px
+              text-align: center
+              color: $txt_gray
+              font-size: 14px
+              .name
+                font-weight: bold

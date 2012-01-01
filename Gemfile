@@ -44,14 +44,15 @@ gem 'jammit'
 gem 'jquery-rails'
 
 # http://ward.vandewege.net/blog/2011/04/acts_as_paranoid-and-acts_as_versioned-on-rails-3/
+# https://github.com/goncalossilva/rails3_acts_as_paranoid
 gem 'rails3_acts_as_paranoid'
 gem 'acts_as_versioned'
 
 # https://github.com/ernie/meta_where
+# will not be updates for Rails 3.1, check out https://github.com/ernie/squeel instead
 gem "meta_where"
 
-# https://github.com/lucasefe/themes_for_rails#readme
-# TODO: theming!
+# https://github.com/lucasefe/themes_for_rails
 gem 'themes_for_rails'
 
 # Bundle gems for the local environment. Make sure to

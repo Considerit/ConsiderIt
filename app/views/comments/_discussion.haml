@@ -22,4 +22,4 @@
     - comments.each do |comment|
       = render :partial => "comments/comment", :locals => { :comment => comment }
     
-    = render :partial => "comments/new_comment", :locals => { :commentable => commentable, :context => context, :comments => comments }
+    = render :partial => "comments/new", :locals => { :commentable => commentable, :context => context, :comments => comments }

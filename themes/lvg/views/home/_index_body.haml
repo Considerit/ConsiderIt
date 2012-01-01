@@ -1,4 +1,4 @@
-#description
+#home
 
   = render :partial => "home/follow"
 
@@ -82,13 +82,13 @@
         
 
 
-#initiative.guide
+#active_options
   %h2.get_started
     Get started
     .subheader
       by clicking any of the ballot measures below.
   
-  = render :partial => "options/blocks/strip", :locals => { :style => 'horizontal', :hide_initially => false }
+  = render :partial => "options/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false }
 
   - if @domain
     #zipcode_entered

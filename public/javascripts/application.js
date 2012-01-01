@@ -8,7 +8,7 @@ $j = jQuery.noConflict();
 
 ConsiderIt = {
   study : false,
-  subdirectory: '/blogademia',
+  subdirectory: '',//'/blogademia',
   init : function() {
 
     ConsiderIt.delegators();

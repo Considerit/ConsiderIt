@@ -60,8 +60,9 @@
         .extra
           Click and drag the slider to indicate whether you support or oppose this measure
       
+      // TODO: this should probably be named "stance", not "position"
       .rest.position
-        = render :partial => "options/slider_and_viz/slider", :locals => { :id => 1, :viz_stance => false }
+        = render :partial => "positions/slider", :locals => { :id => 1, :viz_stance => false }
       
     %li#stance.step   
       .head
@@ -99,6 +100,8 @@
 
 
           .user_position
+
+          
             .position_container
 
               .points_self#points_on_board_pro
@@ -132,7 +135,7 @@
           Click and drag the slider to update your stance on this initiative
     
       .rest.position
-        = render :partial => "options/slider_and_viz/slider", :locals => { :id => 2, :viz_stance => false }
+        = render :partial => "positions/slider", :locals => { :id => 2, :viz_stance => false }
       
     %li#submitstance.step
       .rest

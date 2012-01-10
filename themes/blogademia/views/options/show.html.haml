@@ -14,7 +14,7 @@
       
   
 
-  %ol#step_through      
+  %ol      
 
     %li.step.breakdown
       .head
@@ -72,7 +72,7 @@
         %h3.subheader
           Ranked pros and cons that reviewers considered important. 
        
-        = render :partial => "options/pro_con_board", :locals => { :group_name => 'everyone', :group_id => 'all' }
+        = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :pro_points => @pro_points, :con_points => @con_points }
 
       .statement_carousel.fr
 

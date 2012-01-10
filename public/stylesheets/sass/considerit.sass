@@ -27,14 +27,16 @@ $brd_green_dark: #1C3B1D
 $brd_red_dark: #3B1D1D
 
 @import "mixins"
+@import "carousel"
 
-@import "points/point_in_list"
+@import "points/show"
 @import "points/new_point"
+@import "points/column"
+@import "points/pro_con_list"
 
 @import "point_links/point_links"
 
-@import "options/shared"
-@import "options/pro_con_container"
+
 @import "options/blocks"
 @import "options/show"
 @import "options/description"
@@ -57,7 +59,6 @@ $brd_red_dark: #3B1D1D
 
 @import "users/sessions"
 
-@import "carousel"
 
 *
   margin: 0
@@ -227,6 +228,23 @@ input[type="submit"]
   border: 10px solid black
   padding: 25px
   width: 350px
+
+
+.head
+  h3.banner
+    font-size: 24px
+    margin-bottom: 0px
+    line-height: normal
+        
+    a
+      text-decoration: underline
+          
+  .extra
+    position: relative
+    top: -6px
+
+
+
 
 .add_qtip
   cursor: help

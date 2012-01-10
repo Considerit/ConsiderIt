@@ -10,11 +10,11 @@
   #position_id.hide
     = @position.id
   
-  %ol#step_through    
+  %ol    
     %li.head
       = render :partial => "options/description", :locals => {:hide_initially => true}
     
-    %li.step.breakdown
+    %li.breakdown
       .head
       
         .operations
@@ -59,18 +59,13 @@
         .wrapper.shadow_offset
           .triangle 
             &#x25B2;  
-          = render :partial => "options/pro_con_board", :locals => { :group_name => 'everyone', :group_id => 'all' }
-      
-          
-    
+
+          %h3.banner
+            Pros and cons important to these participants
+
+          = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :pro_points => @pro_points, :con_points => @con_points }
 
     %li.clear
-     
-  - if !@position
-    .take_stand
-      .button
-        %a.take_stand3.add_qtip{ :href => new_option_position_path(@option, @position), :title => "Collect your thoughts and make your voice heard by composing a pro/con list and taking stand on #{@option.designator}"}
-          = image_tag "take_stand_large.png", :alt => "Contribute by taking a stance and writing a pro/con list on #{@option.designator}"
 
  
 :javascript

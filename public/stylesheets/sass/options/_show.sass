@@ -1,10 +1,10 @@
 #initiative.guide
 
-  ol#step_through li.step
-    margin: 0 40px
-    padding-bottom: 0
+  > ol
+    @include nude-list  
 
     li.step
+
       .head
         padding: 0px 0 15px 0
         color: $txt_dark_gray
@@ -18,6 +18,7 @@
       &.breakdown
         position: relative
         padding-bottom: 0
+        margin: 0 40px
         
         .head
           top: -25px
@@ -114,16 +115,17 @@
 
       &.ranked_points
         .explore#ranked_points
+          position: relative
           background-color: $bk_light_blue
           margin: 0
           padding: 15px
                   
           .extra 
             padding: 3px 0 0 2px        
-      
+
           .group
             color: white
-        
+
           .filters
             
             a#show_popular, a#show_self
@@ -136,6 +138,8 @@
               
               &:hover
                 text-decoration: underline
+        
+
 
 
 

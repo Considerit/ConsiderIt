@@ -23,8 +23,6 @@ class PointsController < ApplicationController
     else
       @position = session.has_key?("position-#{@option.id}") ? Position.unscoped.find(session["position-#{@option.id}"]) : nil
     end
-
-    mode = params[:mode]
     
     qry = @option.points
     pros_and_cons = false
@@ -45,8 +43,8 @@ class PointsController < ApplicationController
       user_points_id = @bucket[5..@bucket.length].to_i
       @user_points = User.find(user_points_id)
       qry = qry.joins(:inclusions).where(:inclusions => { :user_id => user_points_id})    
-    elsif @bucket == 'other'
-      group_name = 'other'
+    elsif @bucket == 'margin'
+      group_name = 'margin'
       qry = qry.not_included_by(current_user, session[@option.id][:included_points].keys).ranked_persuasiveness  
     else
       ## specific voter segment...
@@ -77,7 +75,7 @@ class PointsController < ApplicationController
       context = 10 # looking through someone else's included points
     elsif pros_and_cons
       context = 5  # initial load of voter segment on options page
-    elsif mode == 'other'
+    elsif group_name == 'margin'
       context = 2 # pagination requested on position page
     else
       context = 6 # pagination requested on options page
@@ -110,15 +108,11 @@ class PointsController < ApplicationController
 
     
     #TODO: refactor to make the logic behind these calls easier to follow & explicit
-
     if pros_and_cons
-      resp = render_to_string :partial => "options/pro_con_board", :locals => { :group_id => @bucket, :group_name => group_name}    
+      resp = render_to_string :partial => "points/pro_con_list", :locals => { :bucket => @bucket, :dynamic => false}    
     else
-      if mode == 'other'
-        resp = render_to_string :partial => "points/column", :locals => {:points => points, :is_pro => params.key?(:pros_only), :context => 'margin'}   
-      else
-        resp = render_to_string :partial => "points/column", :locals => {:points => points, :is_pro => params.key?(:pros_only), :context => 'board'}          
-      end
+      origin = group_name == 'margin' ? 'margin' : 'board'
+      resp = render_to_string :partial => "points/column", :locals => { :points => points, :is_pro => params.key?(:pros_only), :origin => origin, :bucket => @bucket, :enable_pagination => false, :page => @page }
     end
     
     render :json => { :points => resp }.to_json

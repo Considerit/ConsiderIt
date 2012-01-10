@@ -1,4 +1,41 @@
-%ul.point_list 
-  - if points
-    - points.each do |point|
-      = render :partial => "points/show", :locals => { :context => context, :point => point } 
+// Parameters
+//   points : list of points to be displayed (REQUIRED)
+//   is_pro : if these points are pro points or not (REQUIRED)
+//   origin : specifies where the points came from { margin | board | self } (REQUIRED)
+//   bucket : if origin is board, bucket specifies if the points are a specific subset of pros/cons
+- bucket ||= origin
+
+// (OPTIONAL) PAGINATION VARIABLES
+
+// Is this container a paginated carousel?
+- enable_pagination ||= false
+
+// These points' page.
+- page ||= 1
+
+// Include a pagination block before the points?
+- paginate_before ||= false
+
+// Include a pagination block before the points?
+- paginate_after ||= false
+
+// Should both the prev and next arrows show up in each pagination block?
+- show_both_arrows ||= false
+
+
+
+.point_column{ :class => "point_column_#{origin} #{enable_pagination ? 'carousel' : ''}"}
+
+  - if enable_pagination && paginate_before
+    .point_list_footer
+      = render :partial => "points/pagination_block", :locals => { :points => points, :is_pro => is_pro, :bucket => bucket, :page => page - 1, :origin => origin, :is_before_list => true, :show_both_arrows => show_both_arrows} 
+
+  %ul.point_list 
+    - if points
+      - points.each do |point|
+        = render :partial => "points/show", :locals => { :origin => origin, :point => point } 
+
+  - if enable_pagination && paginate_after
+
+    .point_list_footer
+      = render :partial => "points/pagination_block", :locals => { :points => points, :is_pro => is_pro, :bucket => bucket, :page => page, :origin => origin, :is_before_list => false, :show_both_arrows => show_both_arrows}   

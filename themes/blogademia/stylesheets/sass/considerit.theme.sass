@@ -1,16 +1,12 @@
-.position_container
+.pro_con_list
   background: url("/images/chalk/chalkboard.png?1322438292") repeat scroll left top transparent
 
-  .points_self, .points_board 
-    &#points_on_board_pro
-      .points_list_header
-        //chalk
-        background: transparent url("/images/chalk/pro_back.png") no-repeat scroll top center
+  .pro_con_list_header
+    &.pro_header
+      background: transparent url("/images/chalk/pro_back.png") no-repeat scroll top center
         
-    &#points_on_board_con
-      //chalk
-      .points_list_header
-        background: transparent url("/images/chalk/con_back.png") no-repeat scroll top center
+    &.con_header
+      background: transparent url("/images/chalk/con_back.png") no-repeat scroll top center
 
 
 .points_other 
@@ -21,7 +17,7 @@
     .back
       background-image: url('/images/arrow-up.png')
 
-.points_board
+#ranked_points .full_column
   .point_list_footer
     .forward
       background-image: url('/images/arrow-down-light.png')
@@ -202,18 +198,18 @@ html
       font-size: 12pt
 
 
-#initiative ol#step_through li.step .head .ol_number
+#initiative > ol li.step .head .ol_number
   background-color: #2A1C42
 
-#initiative ol#step_through li#stance.step
+#initiative > ol li#stance.step
   background-color: #9FA6D6
 
-#initiative ol#step_through li.slide
+#initiative > ol li.slide
   background-color: #B39FD6
 
 
 
-#initiative ol#step_through li.statements
+#initiative > ol li.statements
   background-color: transparent
   position: relative
 
@@ -266,7 +262,7 @@ html
             display: none
           .operations
             display: none
-          .position_container
+          .pro_con_list
             width: 692px
             position: relative
             left: -87px
@@ -280,7 +276,7 @@ html
 #initiative #description .description_wrapper .full_text, #initiative #description .description_wrapper .long_description, #initiative #description .description_wrapper .additional 
   width: auto
 
-#initiative ol#step_through li#submitstance.step .rest > div form input[type="submit"]
+#initiative > ol li#submitstance.step .rest > div form input[type="submit"]
   background-color: #2A1C42
 
 #initiative li.breakdown .position_marker
@@ -336,7 +332,7 @@ svg
         font-size: 15pt
         color: #B39FD6
 
-      .position_container
+      .pro_con_list
         width: 700px
         margin: auto
 
@@ -432,7 +428,7 @@ svg
   text-decoration: underline
   color: #ccc
 
-#initiative ol#step_through li.statement.step
+#initiative > ol li.statement.step
   background-color: #B39FD6
   textarea
     display: block

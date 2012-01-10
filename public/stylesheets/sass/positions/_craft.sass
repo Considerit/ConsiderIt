@@ -1,17 +1,39 @@
 #initiatives.edit
 
-  ol#step_through
-    
+  > ol
+    @include nude-list
+
     .extra
       display: none
+      padding: 3px 0 0 50px
+      color: white
       
     li.step
-      
+      margin-bottom: 30px
+      padding-bottom: 25px
+
+      .head
+        
+        padding: 20px 10px 5px 0px
+
+        .ol_number
+          background-color: $bk_dark_blue
+          padding: 3px 3px 3px 20px
+          position: relative
+          left: -10px
+          color: white
+          font-size: 22px
+          font-weight: bold
+
+
+
       &.slide
         background-color: $bk_blue
 
         .position
           margin: auto
+          color: white
+          margin-top: 10px
     
       &#stance
         background-color: $bk_light_blue
@@ -24,32 +46,34 @@
             width: 100%
             position: relative
             
-            .user_position 
-              vertical-align: top
-              margin: auto
-              width: 586px
-
             .points_other
               vertical-align: top
               padding-top: 50px
               position: absolute
               top: 0
 
-              .other
-                padding-bottom: 5px
-                  
-              .extra
-                font-size: 10px
-                color: #444
-                top: -3px
+              .point_list_footer
+                width: 240px
+                .forward
+                  background-image: url('/images/arrow-down.png')
                 
+                .back
+                  background-image: url('/images/arrow-up.png')
+                      
               .carousel
                 padding: 5px
-
+              
+                
               &#points_other_pro 
                 left: -80px
                 .carousel
                   width: 530px
+                .point_list_footer
+                  padding-right: 20px
+
+                  .paginate
+                    color: $brd_green_dark
+
 
               &#points_other_con 
                 right: -80px
@@ -58,22 +82,24 @@
                   width: 530px
                   .point_list
                     float: right
-
+                .point_list_footer
+                  position: relative
+                  left: 55%
+                      
+                  .paginate
+                    color: $brd_red_dark
                   
        
       &#submitstance
         margin-bottom: 0px
         padding-bottom: 5px
-          
-        .extra
-          color: black
-                    
+                              
         .rest
           margin: auto
           width: 100%
           padding: 10px
           
-          > div
+          .stanceform
             margin: auto
             
             form
@@ -116,11 +142,3 @@
                 margin-top: 10px
                 li
                   padding: 5px 0
-
-            .stance_status
-              padding-bottom: 5px
-              text-align: center
-              color: $txt_gray
-              font-size: 14px
-              .name
-                font-weight: bold

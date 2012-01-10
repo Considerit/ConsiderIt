@@ -116,13 +116,13 @@ ConsiderIt = {
       $j('.droppable').corner('5px');
     }
 
-    $j('.carousel .point_in_list_margin.pro').draggable({
+    $j('.point_in_list_margin.pro').draggable({
       helper: 'clone',
       cursor: 'move',
       snap: '#drop-pro'
     });
 
-    $j('.carousel .point_in_list_margin.con').draggable({
+    $j('.point_in_list_margin.con').draggable({
       helper: 'clone',
       cursor: 'move',
       snap: '#drop-con'
@@ -163,7 +163,7 @@ ConsiderIt = {
       }
     });
 
-    $j('.new_comment .is_counted, .user_position .is_counted').each(function(){
+    $j('.new_comment .is_counted, .pro_con_list .is_counted').each(function(){
       if( !$j(this).data('has_noblecount') ){        
 
         $j(this).NobleCount($j(this).siblings('.count'), {
@@ -175,7 +175,7 @@ ConsiderIt = {
       }
     });  
 
-    $j("#ranked_points .points_board").each(function(){
+    $j("#ranked_points .full_column").each(function(){
       $j(this).infiniteCarousel({
         speed: 1000,
         vertical: true,
@@ -236,13 +236,18 @@ ConsiderIt = {
 
     });
 
+    //NOTE: in current codebase, these elements do not appear
+    $j(document).delegate('a#show_popular', 'click', function() {ConsiderIt.positions.stance_group_clicked('all');});
+    $j(document).delegate('a#show_self', 'click', function() {ConsiderIt.positions.stance_group_clicked('self');});
+
+
     //////////////
     // POSITIONS
     //////////////
 
     // Toggle position statement clicked
 
-    $j("#step_through").delegate(".statement a, .full_statement a.close", 'click', function(event){
+    $j("body").delegate(".statement a, .full_statement a.close", 'click', function(event){
       var user_id = $j.trim($j(this).parent().find('.userid').text()),
           prompt = $j("#user-" + user_id + " a").find('.read_statement'),
           closing = !$j(this).hasClass('.view_statement') && $j(this).find('.username:visible').length == 0,
@@ -275,11 +280,11 @@ ConsiderIt = {
 
     });    
 
-    $j("#step_through").delegate(".show_all", 'click', function(){
+    $j("body").delegate(".show_all", 'click', function(){
       ConsiderIt.positions.stance_group_clicked('all');      
     });
 
-    $j('#step_through').delegate(".full_statement .important_points .show, .full_statement .important_points .hide", 'click', function(){
+    $j('body').delegate(".full_statement .important_points .show, .full_statement .important_points .hide", 'click', function(){
       $j(this).parent().children().fadeToggle(); 
     });
             
@@ -288,27 +293,27 @@ ConsiderIt = {
     //////////////
 
     // new button clicked
-    $j('#points').delegate('.newpoint .newpointbutton button', 'click', function(){
+    $j('.pro_con_list.dynamic').delegate('.newpoint .newpointbutton button', 'click', function(){
       $j(this).parents('.newpoint:first').find('.pointform').fadeIn('fast');      
       show_lightbox();
     });
 
     // edit point clicked
-    $j('#points').delegate('a.editpoint', 'click', function(){
+    $j('.pro_con_list.dynamic').delegate('a.editpoint', 'click', function(){
       $j(this).parents('.edit:first').find('.pointform').fadeIn('fast');      
       show_lightbox();
     });
 
     // new/edit point cancel clicked
-    $j('#points').delegate('.new_point_cancel', 'click', function(){
+    $j('.pro_con_list.dynamic').delegate('.new_point_cancel', 'click', function(){
       $j(this).parents('.pointform:first').fadeOut(function(){
         hide_lightbox();
       });
     });
 
     // Create callback
-    $j('#points').delegate('.newpoint .newpointform form', 'ajax:success', function(data, response, xhr){
-      $j(this).parents('.points_self:first').find('.point_list:first').append(response['new_point']);
+    $j('.pro_con_list.dynamic').delegate('.newpoint .newpointform form', 'ajax:success', function(data, response, xhr){
+      $j(this).parents('.full_column:first').find('.point_list:first').append(response['new_point']);
       $j(this).find('textarea').val('');
       $j(this).find('.point-title-group .count').html(140);
       $j(this).find('.point-description-group .count').html(2000);
@@ -317,21 +322,21 @@ ConsiderIt = {
     });
 
     // Update callback
-    $j('#points').delegate('.editpointform form', 'ajax:success', function(data, response, xhr){
+    $j('.pro_con_list.dynamic').delegate('.editpointform form', 'ajax:success', function(data, response, xhr){
       $j(this).parents('.point_in_list:first').replaceWith(response['new_point']);
       hide_lightbox(); 
     });
 
     // Delete confirmation prompt
-    $j('#points').delegate('a.delete_point', 'click', function(){
+    $j('.pro_con_list.dynamic').delegate('a.delete_point', 'click', function(){
       $j(this).siblings('form').show();  
     });
-    $j('#points').delegate('.deletepointform a.cancel', 'click', function(){
+    $j('.pro_con_list.dynamic').delegate('.deletepointform a.cancel', 'click', function(){
       $j(this).parents('form').hide();  
     });
 
     // Delete callback
-    $j('#points').delegate('.deletepointform form', 'ajax:success', function(data, response, xhr){
+    $j('.pro_con_list.dynamic').delegate('.deletepointform form', 'ajax:success', function(data, response, xhr){
       $j(this).parents('.point_in_list:first').fadeOut();
     });
 
@@ -651,7 +656,7 @@ ConsiderIt = {
 
   update_carousel_heights: function(){
     $j('.points_other .point_list').css({
-      'height': $j('.user_position').height()
+      'height': $j('.pro_con_list').height()
     })
   },
   noblecount :  {

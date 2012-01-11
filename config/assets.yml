@@ -12,7 +12,6 @@ javascripts:
     - public/javascripts/protovis-r3.3.js
     - public/javascripts/jquery.example.min.js
     - public/javascripts/jquery.jcarousel.min.js
-    - themes/blogademia/javascripts/pdfobject.js
 
     - public/reflect_commenting/js/third_party/inheritance.js
     - public/reflect_commenting/js/third_party/jquery.highlight.js

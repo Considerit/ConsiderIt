@@ -8,7 +8,8 @@
   #option_id.hide
     = @option.id
   #position_id.hide
-    = @position.id
+    - if @position
+      = @position.id
   
   %ol    
     %li.head
@@ -78,7 +79,9 @@
     }
   });
 
-  $j('.you_slider').css('left', $j('.pedestal').position().left + (6 - #{@position.stance_bucket}) * 64.3 - 30 + 'px');
+- if @position
+  :javascript
+    $j('.you_slider').css('left', $j('.pedestal').position().left + (6 - #{@position.stance_bucket}) * 64.3 - 30 + 'px');
 
 
 

@@ -1,0 +1,19 @@
+%li.considerations.step   
+  .head
+    %span.ol_number
+      = number 
+    %h3.banner
+      = prompt
+    
+  .rest         
+    #points 
+
+      .points_other#points_other_pro
+
+        = render :partial => "points/column", :locals => { :points => @pro_points, :is_pro => true, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => true, :paginate_after => true, :show_both_arrows => false }
+
+      .points_other#points_other_con
+
+        = render :partial => "points/column", :locals => { :points => @con_points, :is_pro => false, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => true, :paginate_after => true, :show_both_arrows => false }
+
+      = render :partial => "points/pro_con_list", :locals => { :pro_points => @included_pros, :con_points => @included_cons, :dynamic => true }

@@ -1,0 +1,140 @@
+#craft_position
+
+  > ol
+    @include nude-list
+
+    .extra
+      display: none
+      padding: 3px 0 0 50px
+      color: white
+      
+    li.step
+      margin-bottom: 30px
+      padding-bottom: 25px
+
+      .head
+        
+        padding: 20px 10px 5px 0px
+
+        .ol_number
+          padding: 3px 3px 3px 20px
+          position: relative
+          left: -10px
+          color: white
+          font-size: 22px
+          font-weight: bold
+
+      &.slide
+
+        .position
+          margin: auto
+          color: white
+          margin-top: 10px
+    
+      &.considerations
+        .extra
+          color: black
+        .rest
+          padding: 10px
+                
+          #points
+            width: 100%
+            position: relative
+            
+            .points_other
+              vertical-align: top
+              padding-top: 50px
+              position: absolute
+              top: 0
+
+              .point_list_footer
+                width: 240px
+                .forward
+                  background-image: image-url('arrow-down.png')
+                
+                .back
+                  background-image: image-url('arrow-up.png')
+                      
+              .carousel
+                padding: 5px
+              
+                
+              &#points_other_pro 
+                left: -80px
+                .carousel
+                  width: 530px
+                .point_list_footer
+                  padding-right: 20px
+
+
+              &#points_other_con 
+                right: -80px
+
+                .carousel
+                  width: 530px
+                  .point_list
+                    float: right
+                .point_list_footer
+                  position: relative
+                  left: 55%
+                                        
+       
+      &#submitstance
+        margin-bottom: 0px
+        padding-bottom: 5px
+                              
+        .rest
+          margin: auto
+          width: 100%
+          padding: 10px
+          
+          .stanceform
+            margin: auto
+            
+            form
+              margin: auto
+              width: 660px
+
+              input[type="submit"]
+                cursor: pointer
+                text-shadow: gray 1px 1px 2px
+                width: 380px
+                height: 75px
+                border: none
+                padding: 0
+                color: white
+                font-size: 24pt
+                opacity: .9
+
+                &:hover
+                  opacity: 1
+              
+              a
+                display: inline-block
+                margin-left: 40px
+                font-size: 12pt
+                color: #999                
+                font-weight: bold
+                text-decoration: underline
+                margin-top: 30px
+                &:hover
+                  color: #272727
+
+              label
+                color: #999
+                text-transform: none
+                letter-spacing: 0
+                padding-left: 5px
+              
+              ul
+                margin-top: 10px
+                li
+                  padding: 5px 0
+                  
+      &.statement
+        background-color: #B39FD6
+        textarea
+          display: block
+          height: 300px
+          margin: auto
+          width: 572px

@@ -1,0 +1,26 @@
+.ui-dialog {
+	border: none;
+}
+
+.ui-dialog-titlebar {
+	display: none;
+}
+
+.ui-menu {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.ui-menu .ui-menu-item a {
+    color: #C1C1C1;
+}
+
+.ui-menu .ui-menu-item:hover a {
+      color: white;
+      border: 1px solid black;
+      background-color: black;
+      border-radius: 0px;
+}
+      
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {}
+  opacity: 1;
+}

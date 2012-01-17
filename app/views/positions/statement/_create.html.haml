@@ -1,0 +1,9 @@
+%li.statement.step
+  .head
+    %span.ol_number
+      = number     
+    %h3.banner
+      = prompt
+  
+  .rest.statement
+    = text_area_tag :statement, @position.explanation

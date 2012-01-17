@@ -8,23 +8,23 @@ module ApplicationHelper
     return domains
   end
 
-  def get_initiatives
-    options = []
+  def get_proposals
+    proposals = []
     #TODO: do a join here instead???
     if session.has_key?(:domain)
       domain = Domain.find(session[:domain])
       domain.domain_maps.each do |dm|
-        options.push(dm.option)
+        proposals.push(dm.proposal)
       end
     end
     #TODO: add a "show_all, :integer" field to Option 
     # that can be queried here instead
-    options += Option.where(:domain_short => 'WA state').order(:designator)
-    return options
+    proposals += Proposal.where(:domain_short => 'WA state').order(:designator)
+    return proposals
   end
 
-  def has_stance(option)
-    return current_user && current_user.positions.where(:option_id => option.id).count > 0
+  def has_stance(proposal)
+    return current_user && current_user.positions.where(:proposal_id => proposal.id).count > 0
   end
 
 

@@ -9,9 +9,15 @@ ConsiderIt::Application.configure do
   # Log error messages when you accidentally call methods on nil.
   config.whiny_nils = true
 
+  # Do not compress assets
+  config.assets.compress = false
+   
+  # Expands the lines which load the assets
+  config.assets.debug = true
+
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
-  config.action_view.debug_rjs             = true
+  # config.action_view.debug_rjs             = true
   config.action_controller.perform_caching = false
 
   # Don't care if the mailer can't send
@@ -37,9 +43,11 @@ ConsiderIt::Application.configure do
     :enable_starttls_auto => true
   }
 
-  Sass::Plugin.options[:debug_info] = true
+  #Sass::Plugin.options[:debug_info] = true
 
   Paperclip.options[:command_path] = "/opt/local/bin/"
+
+
 end
 
 GOOGLE_ANALYTICS = ''

@@ -1,0 +1,131 @@
+:javascript
+  proposal_stance_data = #{stance_fractions(@proposal)};
+  proposal_id = #{@proposal.id};
+  //for IE7 compatability
+  protovis_stance_has_been_rendered = false;
+
+#explore_proposal
+  #proposal_id.hide
+    = @proposal.id
+  #position_id.hide
+    - if @position
+      = @position.id
+  
+  %ol    
+    %li.head
+      = render :partial => "proposals/description", :locals => {:hide_initially => true}
+    
+    %li.breakdown
+      .head
+      
+        .operations
+          -if @position && @position.published
+            .you_slider
+              = image_tag "slider.png", :title => "This is where you stand on #{@proposal.designator}."
+              =link_to 'Modify your position', edit_proposal_position_path(@proposal, @position)
+          -else
+            =link_to 'submit your own opinion', new_proposal_position_path(@proposal), :class => "submit_a_position shadow_offset add_corner"
+
+        %table.bars
+          %tr
+            %td
+            %td.viz
+              = render :partial => "proposals/stance_histogram"
+            %td
+                  
+          %tr.vizbase
+            %td.first
+              .inner
+                Support
+            %td.middle
+              .pedestal
+            %td.last
+              .inner
+                Oppose
+      
+      .position_marker.shadow_offset
+
+        .showing_all
+          .triangle 
+            &#x25C0;
+
+          %strong
+            Click a bar
+
+          to filter the results below
+
+        .showing_filtered.hide
+          %a.show_all
+            Show all positions
+
+
+    %li.statements
+      - @proposal.positions.each do |position|
+        = render :partial => "positions/statement/show", :locals => { :position => position }
+
+    %li.ranked_points
+      .explore#ranked_points.fl 
+        %h3.banner
+          All reviews
+
+        %h3.subheader
+          Ranked pros and cons that these participants considered important. 
+       
+        = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :pro_points => @pro_points, :con_points => @con_points }
+
+      .statement_carousel.fr
+
+        .vertical_carousel.vertical
+
+
+          .paginate.first
+            %h3.subheader
+              Click to read a review.
+              %button.back.fr  
+                &#x25B2;
+          .carousel
+            %ul
+              - @proposal.positions.each do |position|
+                = render :partial => "positions/statement/block", :locals => { :position => position }
+                
+          
+          .paginate.last
+            %button.forward.not_ajax.fr
+              &#x25BC;
+          .clear
+
+        .clear
+
+
+      .clear
+    
+    %li.clear
+
+ 
+:javascript
+  $j('.proposal_item').each(function(){
+    var proposal_id = $j(this).attr('id').substring(14);
+    
+    if (proposal_id == #{@proposal.id}){
+      $j(this).addClass('active');
+      $j(this).children('a').addClass('active');
+    }
+  });
+
+- if @position
+  :javascript
+    $j('.you_slider').css('left', $j('.pedestal').position().left + (6 - #{@position.stance_bucket}) * 64.3 - 30 + 'px');
+
+
+
+  //if (ConsiderIt && ConsiderIt.study) {
+  //  $j(document).delegate('.point_in_list a.toggle', 'click', function(){
+  //    $j.post('/home/study/1', {
+  //      position_id: #{@position.id},
+  //      proposal_id: #{@proposal.id},
+  //      point_id: $j(this).parents('.point_in_list').find('.id:first').text(),
+  //      bval: $j(this).hasClass('more')
+  //    });   
+  //  });
+  //}
+  

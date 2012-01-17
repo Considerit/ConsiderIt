@@ -12,6 +12,5 @@ public/images/old
 *.DS_STORE
 .sass-cache/
 public/cache/
-themes/eva
 public/system/avatars
 *.bk

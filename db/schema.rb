@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111201190625) do
+ActiveRecord::Schema.define(:version => 20120114194923) do
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",    :default => 0
@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(:version => 20111201190625) do
   add_index "comments", ["user_id"], :name => "index_comments_on_user_id"
 
   create_table "domain_maps", :force => true do |t|
-    t.integer "option_id"
+    t.integer "proposal_id"
     t.integer "domain_id"
   end
 
@@ -62,7 +62,7 @@ ActiveRecord::Schema.define(:version => 20111201190625) do
   add_index "inclusion_versions", ["inclusion_id"], :name => "index_inclusion_versions_on_inclusion_id"
 
   create_table "inclusions", :force => true do |t|
-    t.integer  "option_id"
+    t.integer  "proposal_id"
     t.integer  "position_id"
     t.integer  "point_id"
     t.integer  "user_id"
@@ -77,25 +77,9 @@ ActiveRecord::Schema.define(:version => 20111201190625) do
   add_index "inclusions", ["point_id"], :name => "index_inclusions_on_point_id"
   add_index "inclusions", ["user_id"], :name => "index_inclusions_on_user_id"
 
-  create_table "options", :force => true do |t|
-    t.string   "designator"
-    t.string   "category"
-    t.string   "name"
-    t.string   "short_name"
-    t.text     "description"
-    t.string   "image"
-    t.string   "url"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "domain"
-    t.string   "domain_short"
-    t.text     "long_description",   :limit => 2147483647
-    t.text     "additional_details", :limit => 2147483647
-  end
-
   create_table "point_links", :force => true do |t|
     t.integer  "point_id"
-    t.integer  "option_id"
+    t.integer  "proposal_id"
     t.integer  "user_id"
     t.string   "url"
     t.string   "description"
@@ -105,7 +89,7 @@ ActiveRecord::Schema.define(:version => 20111201190625) do
   end
 
   create_table "point_listings", :force => true do |t|
-    t.integer  "option_id"
+    t.integer  "proposal_id"
     t.integer  "position_id"
     t.integer  "point_id"
     t.integer  "user_id"
@@ -122,7 +106,7 @@ ActiveRecord::Schema.define(:version => 20111201190625) do
   create_table "point_similarities", :force => true do |t|
     t.integer  "p1_id"
     t.integer  "p2_id"
-    t.integer  "option_id"
+    t.integer  "proposal_id"
     t.integer  "user_id"
     t.integer  "value"
     t.datetime "created_at"
@@ -164,7 +148,7 @@ ActiveRecord::Schema.define(:version => 20111201190625) do
   add_index "point_versions", ["point_id"], :name => "index_point_versions_on_point_id"
 
   create_table "points", :force => true do |t|
-    t.integer  "option_id"
+    t.integer  "proposal_id"
     t.integer  "position_id"
     t.integer  "user_id"
     t.integer  "session_id"
@@ -195,7 +179,7 @@ ActiveRecord::Schema.define(:version => 20111201190625) do
   end
 
   add_index "points", ["is_pro"], :name => "index_points_on_is_pro"
-  add_index "points", ["option_id"], :name => "index_points_on_option_id"
+  add_index "points", ["proposal_id"], :name => "index_points_on_option_id"
 
   create_table "position_versions", :force => true do |t|
     t.integer  "position_id"
@@ -211,14 +195,14 @@ ActiveRecord::Schema.define(:version => 20111201190625) do
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.boolean  "notification_includer"
-    t.boolean  "notification_option_subscriber"
+    t.boolean  "notification_proposal_subscriber"
     t.boolean  "notification_statement_subscriber"
   end
 
   add_index "position_versions", ["position_id"], :name => "index_position_versions_on_position_id"
 
   create_table "positions", :force => true do |t|
-    t.integer  "option_id"
+    t.integer  "proposal_id"
     t.integer  "user_id"
     t.integer  "session_id"
     t.text     "explanation"
@@ -230,14 +214,38 @@ ActiveRecord::Schema.define(:version => 20111201190625) do
     t.datetime "deleted_at"
     t.integer  "version"
     t.boolean  "notification_includer"
-    t.boolean  "notification_option_subscriber"
+    t.boolean  "notification_proposal_subscriber"
     t.boolean  "notification_statement_subscriber"
   end
 
-  add_index "positions", ["option_id"], :name => "index_positions_on_option_id"
+  add_index "positions", ["proposal_id"], :name => "index_positions_on_option_id"
   add_index "positions", ["published"], :name => "index_positions_on_published"
   add_index "positions", ["stance_bucket"], :name => "index_positions_on_stance_bucket"
   add_index "positions", ["user_id"], :name => "index_positions_on_user_id"
+
+  create_table "proposals", :force => true do |t|
+    t.string   "designator"
+    t.string   "category"
+    t.string   "name"
+    t.string   "short_name"
+    t.text     "description"
+    t.string   "image"
+    t.string   "url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "domain"
+    t.string   "domain_short"
+    t.text     "long_description",          :limit => 2147483647
+    t.text     "additional_details",        :limit => 2147483647
+    t.string   "poles"
+    t.string   "slider_prompt"
+    t.string   "considerations_prompt"
+    t.string   "statement_prompt"
+    t.string   "headers"
+    t.string   "entity"
+    t.string   "discussion_mode"
+    t.boolean  "enable_position_statement"
+  end
 
   create_table "rails_admin_histories", :force => true do |t|
     t.string   "message"
@@ -305,7 +313,7 @@ ActiveRecord::Schema.define(:version => 20111201190625) do
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
 
   create_table "study_data", :force => true do |t|
-    t.integer  "option_id"
+    t.integer  "proposal_id"
     t.integer  "user_id"
     t.integer  "position_id"
     t.integer  "point_id"

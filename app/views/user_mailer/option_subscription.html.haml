@@ -10,15 +10,15 @@
       Hi #{@user.name},
     
     %p
-      #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for #{@point.option.category} #{@point.option.designator}:
+      #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for #{@point.proposal.category} #{@point.proposal.designator}:
 
     %blockquote
       #{@point.nutshell}
 
     %p 
       Visit the 
-      %a{ :href => "#{option_url(@point.option)}" }
-        #{@point.option.category} #{@point.option.designator} page
+      %a{ :href => "#{proposal_url(@point.proposal)}" }
+        #{@point.proposal.category} #{@point.proposal.designator} page
       to read the details, comment on this point and/or include it in your pro/con list. 
 
     %p

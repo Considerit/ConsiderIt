@@ -3,7 +3,7 @@ class HomeController < ApplicationController
   respond_to :json, :html
 
   def index
-    #redirect_to Option.find(1)
+    #redirect_to Proposal.find(1)
 
     @user = current_user
     @keywords = "Washington Voters Guide 2011 Election Ballot Measures Initiatives"
@@ -50,7 +50,7 @@ class HomeController < ApplicationController
 
       :position_id => params[:position_id],
       :point_id => params[:point_id],
-      :option_id => params[:option_id],
+      :proposal_id => params[:proposal_id],
       :detail1 => params[:detail1],
       :detail2 => params[:detail2],
       :ival => params[:ival].to_i,

@@ -10,8 +10,8 @@
           .username
             = h current_user.name
         .text    
-          = form_for :comment, :remote => true, :url => option_comments_path(@option) do |f|
-            = f.hidden_field :option_id, :value=>@option.id
+          = form_for :comment, :remote => true, :url => proposal_comments_path(@proposal) do |f|
+            = f.hidden_field :proposal_id, :value=>@proposal.id
             
             - if context == 'point'
               = f.hidden_field :point_id, :value => commentable.id

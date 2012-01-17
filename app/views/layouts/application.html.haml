@@ -6,7 +6,7 @@
         = "#{@title} – #{APP_CONFIG['meta']['title']}"
     - else
       %title
-        Your guide to the 2011 Washington Election – #{APP_CONFIG['meta']['title']}
+        #{APP_CONFIG['meta']['title']}
     
     %link{ :href => "/favicon.ico", :rel => "icon", :type => "image/vnd.microsoft.icon" }
     %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
@@ -26,7 +26,7 @@
     -# = javascript_include_tag :defaults
     = csrf_meta_tag
     
-    = include_stylesheets :common, :media => 'all'      
+    = stylesheet_link_tag 'application' 
     = stylesheet_link_tag current_theme_stylesheet_path('considerit.theme')
     
     /[if IE]
@@ -38,10 +38,8 @@
     /[if lt IE 7]
       = stylesheet_link_tag 'ie6'
     
-    = include_javascripts :workspace
+    = javascript_include_tag 'application'
       
-    / = javascript_include_tag 'jit'
-
     :javascript
       $j = jQuery.noConflict();
 

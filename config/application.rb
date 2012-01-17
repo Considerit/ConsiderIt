@@ -4,9 +4,12 @@ require 'rails/all'
 require 'pp'
 
 
-# If you have a Gemfile, require the gems listed there, including any gems
-# you've limited to :test, :development, or :production.
-Bundler.require(:default, Rails.env) if defined?(Bundler)
+if defined?(Bundler)
+  # If you precompile assets before deploying to production, use this line
+  Bundler.require *Rails.groups(:assets => %w(development test))
+  # If you want your assets lazily compiled in production, use this line
+  # Bundler.require(:default, :assets, Rails.env)
+end
 
 module ConsiderIt
   class Application < Rails::Application
@@ -42,6 +45,10 @@ module ConsiderIt
     config.filter_parameters += [:password]
 
     config.action_controller.page_cache_directory = Rails.public_path + "/cache"
+
+    config.assets.enabled = true
+
+    config.assets.version = '1.0'
 
   end
 end

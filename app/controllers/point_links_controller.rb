@@ -1,12 +1,12 @@
 class PointLinksController < ApplicationController
   def create
-    @option = Option.find(params[:option_id])
+    @proposal = Proposal.find(params[:proposal_id])
 
     pp params
-    params[:point_link][:option_id] = @option.id
+    params[:point_link][:proposal_id] = @proposal.id
     @point_link = PointLink.new(params[:point_link])
 
-    respond_with(@option, @point_link) do |format|
+    respond_with(@proposal, @point_link) do |format|
       format.js {
         render :partial => 'point_links/show'
       }

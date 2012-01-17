@@ -10,15 +10,15 @@
       Hi #{@user.name},
     
     %p
-      #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for #{@point.option.category} #{@point.option.designator} that you included in your pro/con list. The point states that "#{@point.nutshell}". The comment says:
+      #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for #{@point.proposal.category} #{@point.proposal.designator} that you included in your pro/con list. The point states that "#{@point.nutshell}". The comment says:
 
     %blockquote
       #{@comment.body}
 
     %p 
       Visit the 
-      %a{ :href => "#{option_url(@point.option)}" }
-        #{@point.option.category} #{@point.option.designator} page
+      %a{ :href => "#{proposal_url(@point.proposal)}" }
+        #{@point.proposal.category} #{@point.proposal.designator} page
       to respond. 
 
     %p
@@ -30,4 +30,4 @@
     %hr
 
     %p
-      To unsubscribe to messages for #{@point.option.category} #{@point.option.designator}, visit the page linked to above, deselect the checkbox near the bottom of the page and save your position. 
+      To unsubscribe to messages for #{@point.proposal.category} #{@point.proposal.designator}, visit the page linked to above, deselect the checkbox near the bottom of the page and save your position. 

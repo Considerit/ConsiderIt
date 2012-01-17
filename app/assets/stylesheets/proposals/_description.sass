@@ -1,0 +1,104 @@
+.proposal_prompt
+
+  background-color: #E6E6E6 
+  position: relative
+  margin: 0px 0 20px 0
+  padding-bottom: 15px
+
+  &.hiding
+    background-color: inherit
+    
+    .description_wrapper, .pic, #full_desc_block
+      display: none
+
+  .pic
+    float: left
+    width: 175px
+    height: 162px
+    margin: 25px 18px 0 13px
+    background: image-url('placeholder-tax.png') no-repeat scroll top left
+
+  #full_desc_block
+    background-color: #D0D0D0
+    position: absolute
+    right: 0
+    top: 0
+    a
+      padding: 6px 10px
+      display: inline-block
+      color: #999
+      text-decoration: underline
+      font-size: 12px
+
+  .description_wrapper
+    float: left
+    width: 580px
+    margin: 15px 70px 0 0px
+
+    .init_text
+      vertical-align: top
+      
+      h2.locality
+        font-size: 16px
+        font-weight: normal
+        line-height: 20px
+        color: #999
+        font-variant: small-caps
+        text-transform: lowercase
+
+      h1.proposal_name
+        margin-bottom: 5px
+        font-size: 24px
+        font-weight: bold
+        line-height: 25px
+        text-transform: capitalize
+        padding-bottom: 5px
+        color: #272727
+
+      > p
+        width: 90%
+        padding: 5px 0px
+        line-height: 18px
+
+    .full_text, .long_description, .additional
+      width: 480px
+    
+    .long_description, .additional
+      .prompt
+        font-size: 15px
+        font-weight: bold
+        color: #272727
+        a
+          font-size: 12px
+          font-weight: normal
+          text-decoration: underline
+          color: inherit
+      
+      table
+        display: block
+        margin-left: -50px
+
+        p 
+          margin-bottom: 0
+
+        tr
+          padding: 3px 0
+
+          td
+            padding: 5px 10px
+      ul
+        li
+          list-style-type: disc
+      ol
+        li 
+          list-style-type: decimal
+      ul, ol
+        margin-left: 15px
+        li
+
+        ul li
+          list-style-type: circle
+        ol li
+          list-style-type: lower-latin
+        ol, ul
+          margin-left: 25px

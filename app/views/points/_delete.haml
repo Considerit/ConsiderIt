@@ -2,7 +2,7 @@
   %a.delete_point.linkify.point_operation
     delete
 
-  = form_for point, :remote => true, :url => option_point_path(@option, point), :html => { :method => :delete, :class => 'deletepointformproper hide' } do |f| 
+  = form_for point, :remote => true, :url => proposal_point_path(@proposal, point), :html => { :method => :delete, :class => 'deletepointformproper hide' } do |f| 
     %span.prompt
       Are you sure?
     %a.cancel

@@ -70,7 +70,7 @@ class Comment < ActiveRecord::Base
       if commentable_type == 'Point'
         point = obj
         point.inclusions.each do |inclusion|
-          if inclusion.user.positions.find(option.id).notification_includer
+          if inclusion.user.positions.find(inclusion.proposal.id).notification_includer
             includer = inclusion.user
             if !message_sent_to.has_key?(includer.id) && includer.id == user_id
               if includer.email && includer.email.length > 0

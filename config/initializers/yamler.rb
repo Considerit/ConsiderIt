@@ -56,4 +56,4 @@ class Hash
 end
 
 
-APP_CONFIG = Configuration.load_yaml "config/applications/#{APPNAME}.yml", :hash => RAILS_ENV, :inherit => :default_to
+APP_CONFIG = Configuration.load_yaml "config/applications/#{APPNAME}.yml", :hash => Rails.env, :inherit => :default_to

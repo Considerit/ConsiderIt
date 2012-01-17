@@ -11,15 +11,15 @@
 
     - if @point    
       %p
-        #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for #{@point.option.category} #{@point.option.designator} that you also commented on. The point states that "#{@point.nutshell}". The comment says:
+        #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for #{@point.proposal.category} #{@point.proposal.designator} that you also commented on. The point states that "#{@point.nutshell}". The comment says:
 
       %blockquote
         #{@comment.body}
 
       %p 
         Visit the 
-        %a{ :href => "#{option_url(@point.option)}" }
-          #{@point.option.category} #{@point.option.designator} page
+        %a{ :href => "#{proposal_url(@point.proposal)}" }
+          #{@point.proposal.category} #{@point.proposal.designator} page
         to respond. 
 
     - elsif @position
@@ -27,7 +27,7 @@
         #{@comment.user.name} also commented on #{@position.user.name}'s review.
       %p 
         Go 
-        %a{ :href => "#{option_url(@position.option)}" }
+        %a{ :href => "#{proposal_url(@position.proposal)}" }
           here
         to read and respond. 
 

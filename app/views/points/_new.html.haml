@@ -3,7 +3,7 @@
   
     %button{ :title => "Click to write your own #{is_pro ? 'pro' : 'con'} point.", :class => "#{is_pro ? 'pro' : 'con'} write_new" }
     
-    = render :partial => 'points/form', :locals => {:point => Point.new(:option => @option), :is_pro => is_pro, :action => 'new' }
+    = render :partial => 'points/form', :locals => {:point => Point.new(:proposal => @proposal), :is_pro => is_pro, :action => 'new' }
     
 
 

@@ -1,8 +1,0 @@
-- base_url = "http://#{request.host_with_port}"
-!!! XML
-%urlset{:xmlns => "http://www.sitemaps.org/schemas/sitemap/0.9"}
-  - for option in @options
-    %url
-      %loc #{new_option_position_url(option)}
-      %changefreq never
-      %priority 0.5

@@ -1,0 +1,278 @@
+#explore_proposal
+
+  > ol
+    @include nude-list  
+
+    li
+
+      .head
+        padding: 0px 0 15px 0
+        color: #272727
+        position: relative
+
+        .extra
+          padding: 0
+          letter-spacing: 1px
+          top: -3px
+
+      &.breakdown
+        position: relative
+        padding-bottom: 0
+        margin: 0 40px
+        
+        .head
+          top: -25px
+
+          .submit_a_position
+            position: absolute
+            background-color: #2A1C42
+            color: white
+            padding: 5px 20px
+            font-size: 14pt
+            top: 195px
+            left: 310px
+            opacity: .75
+            &:hover
+              opacity: 1
+
+        .extra
+          color: black
+        
+        .you_slider
+          position: absolute
+          z-index: 999
+          bottom: 0px
+          left: 0px
+          
+          img
+            width: 25px
+            display: block
+            margin: auto
+                  
+          &.call
+            top: 104px
+            left: 661px
+          
+          a
+            color: #999
+            text-decoration: underline
+            &:hover
+              color: #272727
+          
+        .bars
+          margin: auto
+
+          .viz
+            .stance_chart
+              svg rect
+                cursor: pointer
+              
+          .vizbase
+      
+            td
+              color: #999
+              font-size: 14px
+              .inner, .pedestal
+                position: relative
+                top: -8px
+              
+              .inner
+                padding: 0 15px
+
+              &.middle
+                height: 0px
+                width: 450px
+
+                .pedestal
+                  background-color: #ccc
+                  height: 5px
+                  width: 104%
+                  margin-left: -10px
+      
+              &.first
+                padding-right: 3px
+              &.last
+                padding-left: 3px
+        
+        
+        .position_marker
+          background-color: black
+          color: #eee
+          position: absolute
+          top: 60px
+          right: -10px
+          padding: 5px 10px
+          z-index: 100
+          width: 130px
+
+          .triangle
+            position: absolute
+            left: -14px
+            top: 10px
+            font-size: 18px
+
+          .label
+            color: #C1C1C1
+            font-size: 14px
+
+          .current
+            font-size: 18px
+            text-weight: bold
+
+          .operations
+            margin-top: 4px
+            a
+              font-size: 14px
+              color: inherit
+              text-decoration: underline
+
+      &.ranked_points
+        h3
+          font-size: 26pt
+          line-height: 20pt
+          &.subheader
+            font-size: 10pt
+            color: #777
+            line-height: 15pt
+            padding-bottom: 5px
+            font-weight: normal
+          strong 
+            font-weight: normal
+
+
+        .explore#ranked_points
+          position: relative
+          margin: 0
+          padding: 0 10px
+
+          .pro_con_list
+            width: 700px
+            margin: auto
+            padding-bottom: 20px
+
+            .edit, .remove
+              display: none
+
+          .extra 
+            padding: 3px 0 0 2px        
+        
+        .statement_carousel
+          background-color: transparent
+
+          .vertical
+            .paginate
+              padding-top: 27px
+              width: 100%
+              button
+                color: #353535
+                padding-right: 25px
+              h3.subheader
+                padding-bottom: 0
+
+            .carousel
+              width: 200px
+
+              li.statement
+                background-color: inherit
+                margin: auto
+                display: inline-block
+
+                &.active
+                  z-index: 1002
+                  position: relative
+                  .view_statement .avatar 
+                    .username
+                      display: none
+
+                a.view_statement
+                  text-align: center  
+                  color: #333
+                  position: relative
+                  
+                  .avatar
+                    position: relative
+                    img
+                      width: 85px
+                      border: 3px solid transparent
+                      &:hover
+                        border-color: black
+
+                    .username
+                      font-size: 10pt
+                      color: #333
+                      line-height: 9pt
+                      background-color: rgba(150, 150, 150, 0.75)
+                      position: absolute
+                      bottom: 8px
+                      width: 85px
+                      margin-left: 3px
+                      overflow: hidden
+
+                      /* For IE 8*/
+                      -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#bb777777, endColorstr=#bb777777)"  
+
+        
+
+        
+
+      &.statements
+        background-color: transparent
+        position: relative
+
+        .position_statement
+          position: absolute
+          z-index: 1001
+          width: 735px
+          top: -14px
+          left: 0px
+
+          .wrapper
+            position: relative
+            z-index: 100
+            a.close
+              float: right
+              margin-right: 10px
+              margin-top: 8px
+              color: black
+              font-weight: bold
+              font-size: 8pt
+
+            .textblock
+              padding: 20px 100px
+              > .username
+                font-weight: bold
+                font-size: 18pt
+              .stance
+                font-weight: bold
+                font-size: 12pt
+
+                .stance_name
+                  text-transform: capitalize
+
+              .prose
+                margin-top: 10px
+
+              .important_points
+                a
+                  color: black
+                  text-decoration: underline
+
+                .group 
+                  display: none
+
+                .point_list_footer
+                  display: none
+
+                .point_in_list .discuss
+                  display: none
+                .operations
+                  display: none
+                .pro_con_list
+                  width: 692px
+                  position: relative
+                  left: -87px
+                  margin-top: 10px
+
+
+
+

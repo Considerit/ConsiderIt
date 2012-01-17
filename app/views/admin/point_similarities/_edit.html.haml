@@ -1,5 +1,5 @@
 #point_similarity
-  = form_for [@option, @comparison] do |f|
+  = form_for [@proposal, @comparison] do |f|
     
     %h2
       Are these positions...
@@ -59,7 +59,7 @@
     .progress
       viewing #{@current}/#{@total_possible_comparisons}
       %div
-        (#{@total_compared} comparisons completed for #{@option.designator})
+        (#{@total_compared} comparisons completed for #{@proposal.designator})
 
 :javascript
   $j(function() {

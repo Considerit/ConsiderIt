@@ -1,0 +1,44 @@
+$dark_background_theme: #2A1C42
+$medium_background_theme: #9FA6D6
+$light_background_theme: #B39FD6
+
+$primary_button_background_color: $dark_background_theme
+
+button,
+input[type="submit"]
+  background-color: $primary_button_background_color
+
+#craft_position > ol 
+  li.step 
+    .head .ol_number
+      background-color: $dark_background_theme
+
+    &.considerations
+      background-color: $medium_background_theme
+
+    &.slide
+      background-color: $light_background_theme
+
+    &#submitstance .rest .stanceform form input[type="submit"]
+      background-color: $dark_background_theme
+
+    &.statement
+      background-color: $light_background_theme
+
+#explore_proposal > ol 
+
+  li.breakdown 
+    .position_marker
+      background-color: $dark_background_theme
+      .triangle
+        color: $dark_background_theme
+
+    .submit_a_position
+      background-color: $dark_background_theme      
+
+  li.statements
+    .position_statement
+      background-color: $light_background_theme
+
+#wrap #footer
+  background-color: $dark_background_theme

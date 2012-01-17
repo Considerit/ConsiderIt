@@ -1,0 +1,54 @@
+
+
+li.new_comment
+  width: 400px
+  @include nude-list
+  font-size: 14px
+
+  .user
+    float: left
+  .avatar
+    top: 0
+  .count
+    color: #C1C1C1
+    
+  li.body
+    textarea
+      height: 170px
+  
+  .comment_submit
+    margin: 10px 0 5px 0
+    float: left
+  
+  .comment_body
+    border-bottom: none
+    width: 100%
+    margin-top: 5px
+        
+    .body_row
+      .user
+        max-width: 70px
+        font-size: 10px
+      .text
+        margin-left: 85px
+        form
+          ul.form
+            margin: 0
+            li.body
+              textarea
+                width: 325px
+              .count
+                color: #C1C1C1
+                width: 35px
+                display: block
+                float: right
+                padding-left: 5px
+                
+            .comment_submit
+            
+            a.cancel
+              font-size: 10px
+              margin-left: 10px
+              padding-top: 16px 
+              float: left
+              color: gray

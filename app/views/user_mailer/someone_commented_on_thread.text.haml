@@ -2,18 +2,18 @@ Hi #{@user.name},
 
 
 - if @comment
-  #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for #{@point.option.category} #{@point.option.designator} that you also commented on. The point states that "#{@point.nutshell}". The comment says:
+  #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for #{@point.proposal.category} #{@point.proposal.designator} that you also commented on. The point states that "#{@point.nutshell}". The comment says:
 
 
   "#{@point.nutshell}"
 
 
-  Visit the #{@point.option.category} #{@point.option.designator} page [#{option_url(@point.option)}] to read the details, comment on this point and/or include it in your pro/con list. 
+  Visit the #{@point.proposal.category} #{@point.proposal.designator} page [#{proposal_url(@point.proposal)}] to read the details, comment on this point and/or include it in your pro/con list. 
 
 - elsif @position
   #{@comment.user.name} also commented on #{@position.user.name}'s review.
 
-  Go to #{option_url(@position.option)}" } to read and respond. 
+  Go to #{proposal_url(@position.proposal)}" } to read and respond. 
 
 
 Thanks!

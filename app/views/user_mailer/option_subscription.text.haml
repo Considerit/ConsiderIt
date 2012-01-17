@@ -1,13 +1,13 @@
 Hi #{@user.name},
 
 
-#{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for #{@point.option.category} #{@point.option.designator}:
+#{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for #{@point.proposal.category} #{@point.proposal.designator}:
 
 
 "#{@point.nutshell}"
 
 
-Visit the #{@point.option.category} #{@point.option.designator} page [#{option_url(@point.option)}] to read the details, comment on this point and/or include it in your pro/con list. 
+Visit the #{@point.proposal.category} #{@point.proposal.designator} page [#{proposal_url(@point.proposal)}] to read the details, comment on this point and/or include it in your pro/con list. 
 
 
 Thanks!

@@ -1,0 +1,9 @@
+#sitemap
+  %h1
+    Washington State Ballot Measures, 2011
+  %ul
+    - @proposals.each do |opt|
+
+      %li
+        %a{ :href => "#{proposal_path(opt)}", :title => "#{opt.domain} #{opt.category} #{opt.designator} #{opt.name}"}
+          #{opt.domain} #{opt.category} #{opt.designator} #{opt.name} 

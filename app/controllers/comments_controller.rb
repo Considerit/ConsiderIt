@@ -8,7 +8,7 @@ class CommentsController < ApplicationController
   end
 
   def create
-    @option = Option.find(params[:comment][:option_id])
+    @proposal = Proposal.find(params[:comment][:proposal_id])
     @user_who_commented = current_user
     
     existing = Comment.find_by_body(params[:comment][:body])

@@ -86,8 +86,6 @@ class User < ActiveRecord::Base
     user
   end
 
-  protected
-
   def email_required? 
     twitter_uid.nil?
   end   

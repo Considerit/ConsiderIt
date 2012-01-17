@@ -1,13 +1,13 @@
 class Position < ActiveRecord::Base
   belongs_to :user
-  belongs_to :option  
+  belongs_to :proposal  
   has_many :inclusions
   has_many :points
   has_many :point_listings
   
   is_commentable
   
-  acts_as_paranoid_versioned
+  #acts_as_paranoid_versioned
   
   default_scope where( :published => true )
   scope :published, where( :published => true )
@@ -15,8 +15,8 @@ class Position < ActiveRecord::Base
   def notify_parties
     message_sent_to = {}
     begin
-      #email anyone who subscribes to reviews for the option
-      option.positions.where(:notification_statement_subscriber => true).each do |pos|
+      #email anyone who subscribes to reviews for the proposal
+      proposal.positions.where(:notification_statement_subscriber => true).each do |pos|
         position_taker = pos.user
         if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
           if position_taker.email && position_taker.email.length > 0

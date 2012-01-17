@@ -1,0 +1,43 @@
+$primary_button_background_color = #082872
+
+$dark_background_theme: #0342A1
+$light_background_theme: #ADCDFF
+$medium_background_theme: #74ABFF
+
+$dark_header_background: #710000
+
+button,
+input[type="submit"]
+  background-color: $primary_button_background_color
+
+#craft_position > ol 
+  li.step
+    .head .ol_number
+      background-color: $dark_background_theme
+
+  &.considerations
+    background-color: $light_background_theme
+
+  &.slide
+    background-color: $medium_background_theme
+
+  &.statement
+    background-color: $light_background_theme
+
+#explore_proposal > ol 
+
+  li.breakdown 
+    .position_marker
+      background-color: $dark_header_background
+      .triangle
+        color: $dark_header_background
+
+    .submit_a_position
+      background-color: $dark_background_theme      
+
+  li.statements
+    .position_statement
+      background-color: $light_background_theme
+
+#wrap #footer
+  background-color: $dark_background_theme

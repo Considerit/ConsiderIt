@@ -4,7 +4,7 @@ class Point < ActiveRecord::Base
   is_commentable
 
   belongs_to :user
-  belongs_to :option
+  belongs_to :proposal
   belongs_to :position
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
@@ -13,7 +13,7 @@ class Point < ActiveRecord::Base
 
   accepts_nested_attributes_for :point_links, :reject_if => lambda { |pl| pl[:url].blank? }, :allow_destroy => true
 
-  acts_as_paranoid_versioned :if_changed => [:nutshell, :text, :user_id, :is_pro, :position_id]
+  #acts_as_paranoid_versioned :if_changed => [:nutshell, :text, :user_id, :is_pro, :position_id]
 
   cattr_reader :per_page
   @@per_page = 4  
@@ -43,21 +43,21 @@ class Point < ActiveRecord::Base
     chain
   }
   
-  def self.included_by_stored(user, option)
+  def self.included_by_stored(user, proposal)
     if user
       Point.
-        joins(:inclusions, "AND inclusions.user_id = #{user.id} AND points.option_id = #{option.id}").
+        joins(:inclusions, "AND inclusions.user_id = #{user.id} AND points.proposal_id = #{proposal.id}").
         where("inclusions.user_id IS NOT NULL")
     else
-      option.points.where(:id => -1) #null set
+      proposal.points.where(:id => -1) #null set
     end
   end
 
-  def self.included_by_unstored(included_points, option)
+  def self.included_by_unstored(included_points, proposal)
     if included_points.length > 0
-      option.points.unscoped.where("points.id IN (?)", included_points)
+      proposal.points.unscoped.where("points.id IN (?)", included_points)
     else
-      option.points.where(:id => -1) #null set
+      proposal.points.where(:id => -1) #null set
     end
   end
 
@@ -128,9 +128,9 @@ class Point < ActiveRecord::Base
       num_listings_per_point[row.pnt.to_i] = row.cnt.to_i
     end
 
-    Option.all.each do |option|
+    Proposal.all.each do |proposal|
       Point.transaction do        
-        option.points.each do |pnt|
+        proposal.points.each do |pnt|
           pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
           pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
           pnt.update_absolute_score
@@ -138,10 +138,10 @@ class Point < ActiveRecord::Base
       end
       
       # Point ranking across the metrics is done separately for pros and cons,
-      # fixed on a particular Option
+      # fixed on a particular Proposal
       point_groups = [
-        option.points.pros.select([:id, :appeal, :attention, :persuasiveness]).all,
-        option.points.cons.select([:id, :appeal, :attention, :persuasiveness]).all
+        proposal.points.pros.select([:id, :appeal, :attention, :persuasiveness]).all,
+        proposal.points.cons.select([:id, :appeal, :attention, :persuasiveness]).all
       ]
 
       point_groups.each do |group|        
@@ -181,14 +181,14 @@ class Point < ActiveRecord::Base
   def notify_parties
     message_sent_to = {}
     begin
-      #email anyone who subscribes to points for the option
-      option.positions.where(:notification_option_subscriber => true).each do |pos|
+      #email anyone who subscribes to points for the proposal
+      proposal.positions.where(:notification_proposal_subscriber => true).each do |pos|
         position_taker = pos.user
         if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
           if position_taker.email && position_taker.email.length > 0
-            UserMailer.option_subscription(position_taker, self).deliver
+            UserMailer.proposal_subscription(position_taker, self).deliver
           end
-          message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to option']
+          message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to proposal']
         end
       end
     rescue

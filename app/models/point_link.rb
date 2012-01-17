@@ -3,7 +3,7 @@ require 'uri'
 class PointLink < ActiveRecord::Base
   belongs_to :point
   belongs_to :user
-  belongs_to :option  
+  belongs_to :proposal  
 
   def short_loc
     if URI.parse(url).host

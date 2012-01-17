@@ -24,7 +24,7 @@
               = image_tag "slider.png", :title => "This is where you stand on #{@proposal.designator}."
               =link_to 'Modify your position', edit_proposal_position_path(@proposal, @position)
           -else
-            =link_to 'submit your own opinion', new_proposal_position_path(@proposal), :class => "submit_a_position shadow_offset add_corner"
+            =button_to 'submit your own opinion', new_proposal_position_path(@proposal), :class => "submit_a_position shadow_offset add_corner"
 
         %table.bars
           %tr

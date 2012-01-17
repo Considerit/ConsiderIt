@@ -1,7 +1,7 @@
 - origin = dynamic ? 'self' : 'board'
 - bucket = @bucket || origin
 
-.pro_con_list{ :class => dynamic ? 'dynamic' : 'static'}
+.pro_con_list{ :class => " #{dynamic ? 'dynamic' : 'static'} domain_#{bucket}"}
  
   .full_column.pro_column#points_on_board_pro
     .pro_con_list_header.pro_header
@@ -13,7 +13,6 @@
 
     - if dynamic
       = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_on_board_pro' }
-
 
   .full_column.con_column#points_on_board_con 
     .pro_con_list_header.con_header

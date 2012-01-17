@@ -18,5 +18,5 @@
   - if show_both_arrows || !is_before_list
     
     .arrow
-      = button_to "",  option_points_path(@option, :pros_only => is_pro, :cons_only => !is_pro, :page => page + 1, :bucket => bucket), :remote => true, :method => 'get', :id => "paginate_points-#{origin}-#{page + 1}-#{is_pro}", :class => 'forward ajax linkify'
+      = button_to "",  proposal_points_path(@proposal, :pros_only => is_pro, :cons_only => !is_pro, :page => page + 1, :bucket => bucket), :remote => true, :method => 'get', :id => "paginate_points-#{origin}-#{page + 1}-#{is_pro}", :class => 'forward ajax linkify'
       %button.forward.not_ajax.linkify

@@ -15,16 +15,16 @@ class PointsController < ApplicationController
   #     
   #########
   def index
-    @option = Option.find(params[:option_id])
+    @proposal = Proposal.find(params[:proposal_id])
     @user = current_user
 
     if current_user
-      @position = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first 
+      @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
     else
-      @position = session.has_key?("position-#{@option.id}") ? Position.unscoped.find(session["position-#{@option.id}"]) : nil
+      @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
     end
     
-    qry = @option.points
+    qry = @proposal.points
     pros_and_cons = false
     if ( params.key?(:cons_only) )
       qry = qry.cons
@@ -45,7 +45,7 @@ class PointsController < ApplicationController
       qry = qry.joins(:inclusions).where(:inclusions => { :user_id => user_points_id})    
     elsif @bucket == 'margin'
       group_name = 'margin'
-      qry = qry.not_included_by(current_user, session[@option.id][:included_points].keys).ranked_persuasiveness  
+      qry = qry.not_included_by(current_user, session[@proposal.id][:included_points].keys).ranked_persuasiveness  
     else
       ## specific voter segment...
       @bucket = @bucket.to_i
@@ -74,11 +74,11 @@ class PointsController < ApplicationController
     if group_name == 'user'
       context = 10 # looking through someone else's included points
     elsif pros_and_cons
-      context = 5  # initial load of voter segment on options page
+      context = 5  # initial load of voter segment on proposals page
     elsif group_name == 'margin'
       context = 2 # pagination requested on position page
     else
-      context = 6 # pagination requested on options page
+      context = 6 # pagination requested on proposals page
     end
     
     StudyData.create!({
@@ -86,7 +86,7 @@ class PointsController < ApplicationController
       :user => current_user,
       :session_id => request.session_options[:id],
       :position => @position,
-      :option => @option,
+      :proposal => @proposal,
       :detail1 => @bucket,
       :ival => context
     })
@@ -95,7 +95,7 @@ class PointsController < ApplicationController
       PointListing.transaction do
         points.each do |pnt|
           PointListing.create!(
-            :option => @option,
+            :proposal => @proposal,
             :position => @position,
             :point => pnt,
             :user => @user,
@@ -109,7 +109,7 @@ class PointsController < ApplicationController
     
     #TODO: refactor to make the logic behind these calls easier to follow & explicit
     if pros_and_cons
-      resp = render_to_string :partial => "points/pro_con_list", :locals => { :bucket => @bucket, :dynamic => false}    
+      resp = render_to_string :partial => "points/pro_con_list", :locals => { :bucket => @bucket, :dynamic => false, :pro_points => @pro_points, :con_points => @con_points}    
     else
       origin = group_name == 'margin' ? 'margin' : 'board'
       resp = render_to_string :partial => "points/column", :locals => { :points => points, :is_pro => params.key?(:pros_only), :origin => origin, :bucket => @bucket, :enable_pagination => false, :page => @page }
@@ -119,16 +119,16 @@ class PointsController < ApplicationController
   end
   
   def create
-    @option = Option.find(params[:option_id])
+    @proposal = Proposal.find(params[:proposal_id])
     if current_user
-      @position = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first 
+      @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
     else
-      @position = session.has_key?("position-#{@option.id}") ? Position.unscoped.find(session["position-#{@option.id}"]) : nil
+      @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
     end
 
     @user = current_user
 
-    params[:point][:option_id] = params[:option_id]   
+    params[:point][:proposal_id] = params[:proposal_id]   
     if current_user
       params[:point][:user_id] = current_user.id
     else
@@ -137,11 +137,11 @@ class PointsController < ApplicationController
 
     @point = Point.create!(params[:point])
 
-    session[@option.id][:written_points].push(@point.id)
-    session[@option.id][:included_points][@point.id] = 1    
+    session[@proposal.id][:written_points].push(@point.id)
+    session[@proposal.id][:included_points][@point.id] = 1    
 
     PointListing.create!(
-      :option => @option,
+      :proposal => @proposal,
       :position => @position,
       :point => @point,
       :user => @user,
@@ -163,11 +163,11 @@ class PointsController < ApplicationController
 
   # TODO: server-side permissions check for this operation
   def update
-    @option = Option.find(params[:option_id])
+    @proposal = Proposal.find(params[:proposal_id])
     if current_user
-      @position = Position.unscoped.where(:option_id => @option.id, :user_id => current_user.id).first 
+      @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
     else
-      @position = session.has_key?("position-#{@option.id}") ? Position.unscoped.find(session["position-#{@option.id}"]) : nil
+      @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
     end
     @user = current_user
     @point = Point.unscoped.find(params[:id])
@@ -186,8 +186,8 @@ class PointsController < ApplicationController
   def destroy
     # TODO: server-side permissions check for this operation
     @point = Point.unscoped.find(params[:id])
-    session[@point.option_id][:written_points].delete(@point.id)
-    session[@point.option_id][:included_points].delete(@point.id)  
+    session[@point.proposal_id][:written_points].delete(@point.id)
+    session[@point.proposal_id][:included_points].delete(@point.id)  
 
     @point.destroy
 

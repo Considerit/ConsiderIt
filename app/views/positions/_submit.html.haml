@@ -1,0 +1,23 @@
+.stance.position_statement.hide
+  = label_tag :explanation, "Optional review that summarizes your thoughts"
+  = f.text_area :explanation
+   
+=f.hidden_field :stance, :id => "stance-value", :value=>0.0
+=f.hidden_field :proposal_id, :value=>@proposal.id
+=f.hidden_field :position_id, :value => @position.id              
+=f.submit "Save!", :class => "submit submit_stance shadow_centered"
+= link_to "No, just show me the results...", proposal_path(@proposal, :redirect => 'false')
+= link_to "discard your #{@position.published ? 'changes' : 'position'}", proposal_position_path(@proposal, @position), :method => :delete
+
+%ul
+  %li
+    = f.check_box :notification_proposal_subscriber
+    = f.label :notification_proposal_subscriber, 'Email me when someone contributes a new pro or con'
+
+  %li
+    = f.check_box :notification_statement_subscriber
+    = f.label :notification_statement_subscriber, 'Email me when someone adds a new review'
+
+  %li
+    = f.check_box :notification_includer
+    = f.label :notification_includer, 'Email me when someone comments on a pro or con in my list'

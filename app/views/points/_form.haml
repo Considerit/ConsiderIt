@@ -1,6 +1,6 @@
 .pointform{ :class => "#{action}pointform" }
 
-  = form_for [@option, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'}"}, :remote => true do |f|
+  = form_for [@proposal, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'}"}, :remote => true do |f|
 
     .bullet_point
       -if is_pro

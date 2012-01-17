@@ -5,7 +5,7 @@ ConsiderIt::Application.routes.draw do
 
     root :to => "home#index"
     
-    resources :options, :only => [:show, :index] do
+    resources :proposals, :only => [:show, :index] do
       resources :positions, :only => [:new, :edit, :create, :update, :show, :destroy]
       resources :points, :only => [:index, :create, :update, :destroy] do 
         resources :inclusions, :only => [:create] 
@@ -13,7 +13,6 @@ ConsiderIt::Application.routes.draw do
       resources :point_similarities, :module => :admin
       resources :comments, :only => [:index, :create]
     end
-
 
     devise_for :users, :controllers => { 
       :omniauth_callbacks => "users/omniauth_callbacks", 

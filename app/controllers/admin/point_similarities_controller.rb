@@ -2,10 +2,10 @@ class Admin::PointSimilaritiesController < ApplicationController
   
   def index
     @user = current_user
-    @option = Option.find(params[:option_id])
+    @proposal = Proposal.find(params[:proposal_id])
 
     pairs = {};
-    @option.point_similarities.each do |ps|
+    @proposal.point_similarities.each do |ps|
       if pairs.has_key?(ps.p1)
         if pairs[ps.p1].has_key?(ps.p2)
           pairs[ps.p1][ps.p2].push(ps)
@@ -63,23 +63,23 @@ class Admin::PointSimilaritiesController < ApplicationController
   def new
     redirect_to root_path unless current_user.admin?
 
-    @option = Option.find(params[:option_id])
+    @proposal = Proposal.find(params[:proposal_id])
     @user = current_user
 
-    @total_compared = current_user.point_similarities.where(:option_id=>@option.id).count
-    @num_points = @option.points.count
+    @total_compared = current_user.point_similarities.where(:proposal_id=>@proposal.id).count
+    @num_points = @proposal.points.count
     @total_possible_comparisons = (@num_points * (@num_points-1))/2
     @current = @total_compared + 1
 
     if @total_compared >= @total_possible_comparisons
-      first = current_user.point_similarities.where(:option_id => @option.id).first
-      redirect_to edit_option_point_similarity_path(@option, first)
+      first = current_user.point_similarities.where(:proposal_id => @proposal.id).first
+      redirect_to edit_proposal_point_similarity_path(@proposal, first)
       return
     end
 
     pairs = {}
 
-    current_user.point_similarities.where(:option_id=>@option.id).each do |ps|
+    current_user.point_similarities.where(:proposal_id=>@proposal.id).each do |ps|
 
       if pairs.has_key?(ps.p1_id)
         pairs[ps.p1_id][ps.p2_id] = 1
@@ -95,19 +95,19 @@ class Admin::PointSimilaritiesController < ApplicationController
 
     end
 
-    @comparison = @option.point_similarities.build
+    @comparison = @proposal.point_similarities.build
     @init_val = 3
     
-    last_comparison = current_user.point_similarities.where(:option_id=>@option.id).last
+    last_comparison = current_user.point_similarities.where(:proposal_id=>@proposal.id).last
     if ( last_comparison && pairs[last_comparison.p1_id].length < @num_points - 1 && @total_compared % 10 != 9 )
       @p1 = last_comparison.p1
       while ( !@p2) || @p2.id == @p1.id || (pairs.has_key?(@p1.id) && pairs[@p1.id].has_key?(@p2.id))
-        @p2 = @option.points.sample()
+        @p2 = @proposal.points.sample()
       end
     else(!last_comparison || @total_compared % 10 == 9) 
       @p1 = @p2 = nil
       while ( !@p1 || !@p2) || @p2.id == @p1.id || (pairs.has_key?(@p1.id) && pairs[@p1.id].has_key?(@p2.id))
-        (@p1, @p2) = @option.points.sample(2)
+        (@p1, @p2) = @proposal.points.sample(2)
       end
     end
 
@@ -116,14 +116,14 @@ class Admin::PointSimilaritiesController < ApplicationController
   def edit    
     redirect_to root_path unless current_user.admin?
     
-    @option = Option.find(params[:option_id])
+    @proposal = Proposal.find(params[:proposal_id])
     @user = current_user
-    @total_compared = current_user.point_similarities.where(:option_id=>@option.id).count
-    @num_points = @option.points.count
+    @total_compared = current_user.point_similarities.where(:proposal_id=>@proposal.id).count
+    @num_points = @proposal.points.count
     @comparison = PointSimilarity.find(params[:id])
     @init_val = @comparison.value
     @total_possible_comparisons = (@num_points * (@num_points-1))/2
-    @current = current_user.point_similarities.where(:option_id=>@option.id).where('id <' + params[:id]).count + 1
+    @current = current_user.point_similarities.where(:proposal_id=>@proposal.id).where('id <' + params[:id]).count + 1
 
     @p1 = @comparison.p1
     @p2 = @comparison.p2
@@ -131,54 +131,54 @@ class Admin::PointSimilaritiesController < ApplicationController
   
   def create
     redirect_to root_path unless current_user.admin?
-    @option = Option.find(params[:option_id])
+    @proposal = Proposal.find(params[:proposal_id])
     @user = current_user
     
     params[:point_similarity].update({
       :user_id => current_user.id,
-      :option_id => @option.id,
+      :proposal_id => @proposal.id,
     })
     
-    last = current_user.point_similarities.where(:option_id => @option.id).last
+    last = current_user.point_similarities.where(:proposal_id => @proposal.id).last
     @comparison = PointSimilarity.create!(params[:point_similarity])
 
     if params[:commit] == 'Next >>'
-      redirect_to new_option_point_similarity_path(@option)
+      redirect_to new_proposal_point_similarity_path(@proposal)
     else
-      redirect_to edit_option_point_similarity_path(@option, last)
+      redirect_to edit_proposal_point_similarity_path(@proposal, last)
     end
   end
 
   def update
     redirect_to root_path unless current_user.admin?
     
-    @option = Option.find(params[:option_id])
+    @proposal = Proposal.find(params[:proposal_id])
     @user = current_user
     @comparison = PointSimilarity.find(params[:id])
     
     @comparison.value = params[:point_similarity][:value]
     @comparison.save
 
-    last = current_user.point_similarities.where(:option_id => @option.id).last
+    last = current_user.point_similarities.where(:proposal_id => @proposal.id).last
 
     if params[:commit] == 'Next >>'
       if last.id > @comparison.id
         comp_next = current_user.point_similarities
-          .where(:option_id => @option.id)
+          .where(:proposal_id => @proposal.id)
           .where('id > ?', @comparison.id)
           .order('id')
           .first
-        redirect_to edit_option_point_similarity_path(@option, comp_next)
+        redirect_to edit_proposal_point_similarity_path(@proposal, comp_next)
       else
-        redirect_to new_option_point_similarity_path(@option)        
+        redirect_to new_proposal_point_similarity_path(@proposal)        
       end
     else
       comp_prev = current_user.point_similarities
-        .where(:option_id => @option.id)
+        .where(:proposal_id => @proposal.id)
         .where('id < ?', @comparison.id)
         .order('id DESC')
         .first        
-      redirect_to edit_option_point_similarity_path(@option, comp_prev)
+      redirect_to edit_proposal_point_similarity_path(@proposal, comp_prev)
     end
   end
   

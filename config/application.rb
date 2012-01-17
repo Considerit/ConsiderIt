@@ -53,4 +53,4 @@ module ConsiderIt
   end
 end
 
-APPNAME = 'blogademia'
+APPNAME = 'lvg'#'blogademia'

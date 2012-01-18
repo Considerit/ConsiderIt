@@ -69,8 +69,16 @@
     width: 570px
     min-height: 700px
 
-    &.full_column
+    .full_column
       width: 240px
+      border: 2px solid transparent
+
+    .hovered
+      border-color: #777
+
+      .droppable
+        color: #eee
+        border-color: #eee
 
     .droppable
       border: 2px dashed #666
@@ -80,18 +88,16 @@
       line-height: normal
       position: relative
       height: 39px
-      top: -19px
       margin-bottom: 5px
       .prompt
         width: 160px
         padding-left: 20px
 
-      &.hovered
-        color: #eee
-        border-color: #eee
+
 
 
 .bullet_point
+  display: none
   font-size: 28px
   font-weight: bold
   width: 15px

@@ -49,7 +49,7 @@
   });
 
 - entity = @proposal.entity || 'Proposal'
-- slider_prompt = @proposal.slider_prompt || "What is your current opinion of this #{entity}?"
+- slider_prompt = @proposal.slider_prompt || "What is your current opinion of this #{entity.downcase}?"
 - considerations_prompt = @proposal.considerations_prompt || "What are the most important factors in your decision?"
 - statement_prompt = @proposal.statement_prompt || "What are your overall thoughts on this paper?"
 
@@ -63,7 +63,7 @@
 
     = render :partial => "positions/considerations", :locals => { :number => 2, :prompt => considerations_prompt }
 
-    = render :partial => "positions/slider", :locals => { :id => 2, :number => 3, :prompt => "Update your stance, if it has changed." }
+    = render :partial => "positions/slider", :locals => { :id => 2, :number => 3, :prompt => "Update your opinion, if it has changed." }
     
     - if @proposal.enable_position_statement
       = render :partial => "positions/statement/create", :locals => { :number => 4, :prompt => statement_prompt}

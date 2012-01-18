@@ -39,7 +39,7 @@ class InclusionsController < ApplicationController
       )
     end
 
-    rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :context => 'margin', :point => next_point }) : nil
+    rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :origin => 'margin', :point => next_point }) : nil
         
     response = { :new_point => rendered_next_point, :total_remaining => points.total_entries } 
     

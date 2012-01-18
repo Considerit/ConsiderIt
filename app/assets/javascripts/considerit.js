@@ -118,30 +118,30 @@ ConsiderIt = {
 
     $j('.point_in_list_margin.pro').draggable({
       helper: 'clone',
-      cursor: 'move',
-      snap: '#drop-pro'
+      cursor: 'move'
+      //snap: '#drop-pro'
     });
 
     $j('.point_in_list_margin.con').draggable({
       helper: 'clone',
-      cursor: 'move',
-      snap: '#drop-con'
+      cursor: 'move'
+      //snap: '#drop-con'
     });
 
-    $j('#drop-con').droppable( {
+    $j('#points_on_board_con').droppable( {
       hoverClass: 'hovered',
       drop: function( event, ui ) {
         var draggable = ui.draggable;
-        $j('#inclusion_submit', draggable).trigger('click');
+        $j('.inclusion_submit', draggable).trigger('click');
       },
       accept: '.con'
     } );
 
-    $j('#drop-pro').droppable( {
+    $j('#points_on_board_pro').droppable( {
       hoverClass: 'hovered',
       drop: function( event, ui ) {
         var draggable = ui.draggable;
-        $j('#inclusion_submit', draggable).trigger('click');
+        $j('.inclusion_submit', draggable).trigger('click');
       },
       accept: '.pro'
     } );      

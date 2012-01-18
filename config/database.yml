@@ -1,6 +1,6 @@
 development:
   adapter: mysql2
-  database: dub_dev
+  database: considerit2_dev
   username: root
   password: root
   host: localhost

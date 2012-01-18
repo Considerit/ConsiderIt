@@ -2,4 +2,4 @@
   = form_for :inclusion, :remote => true, :url => proposal_point_inclusions_path(@proposal, point, :page => @page) do |f|
     =f.hidden_field :proposal_id, :value=>@proposal.id
     =f.hidden_field :point_id, :value=>point.id
-    =f.submit :class => 'judge_point no_qtip', :type => 'submit', :value => "", :name => "judge", :title => 'Click to add this point to your list. You can remove it later if you want.'
+    =f.submit :class => 'inclusion_submit', :type => 'submit', :value => "", :name => "judge", :title => 'Click to add this point to your list. You can remove it later if you want.'

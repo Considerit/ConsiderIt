@@ -81,10 +81,7 @@ li.point_in_list
                 color: #C1C1C1
 
       .operations   
-        padding-top: 3px   
-        opacity: .4
-        &:hover
-          opacity: 1  
+        opacity: .7
 
         > div, > div > div
           display: inline-block
@@ -106,7 +103,6 @@ li.point_in_list
 
         .read_more
           a.toggle_more, a.toggle
-            padding-top: 5px
             display: inline-block
             text-decoration: underline
 
@@ -120,13 +116,9 @@ li.point_in_list
     cursor: move
     opacity: .85
 
-    &:hover
-      opacity: 1
     &.expanded
       cursor: auto
       opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
-
-    
 
     .inner
       padding-bottom: 5px
@@ -145,7 +137,8 @@ li.point_in_list
       display: none
 
     .inner > .body 
-      font-size: 12px
+      .nutshell
+        font-size: 12px
       .operations        
         .edit, .remove
           display: none

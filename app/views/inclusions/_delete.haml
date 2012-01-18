@@ -2,4 +2,4 @@
 
   = form_for :inclusion, :remote => true, :url => proposal_point_inclusions_path(@proposal, point, :page => @page, :delete => true) do |f| 
        
-    %input{:class => 'judge_point no_qtip linkify point_operation', :type => 'submit', :value => "#{ current_user && point.user_id == current_user.id ? 'delete' : 'remove'}", :name => "judge", :title => 'Click to remove this point from your list'}
+    %input{:class => 'inclusion_submit linkify point_operation', :type => 'submit', :value => "#{ current_user && point.user_id == current_user.id ? 'delete' : 'remove'}", :name => "judge", :title => 'Click to remove this point from your list'}

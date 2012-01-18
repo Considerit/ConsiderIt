@@ -31,7 +31,7 @@ li.point_in_list
       color: $pro_point_dark
 
   .inner
-    border: 2px solid
+    border: 1px solid
     -moz-box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)
     -webkit-box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)
     box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)
@@ -39,18 +39,22 @@ li.point_in_list
     > .body
       overflow: hidden
       vertical-align: top
-      padding: 3px 10px 3px 35px
+      padding: 3px 10px 3px 10px
 
       .username
         font-size: 10px
         color: #C1C1C1
         padding-bottom: 2px
+        display: none
 
         .avatar
           display: none
           position: absolute
           top: -70px
           border-style: solid
+      
+      .nested_user
+        font-size: 11px
 
       .point_text.nutshell
         font-size: 13px
@@ -76,7 +80,10 @@ li.point_in_list
                 color: #C1C1C1
 
       .operations   
-        padding-top: 3px     
+        padding-top: 3px   
+        opacity: .4
+        &:hover
+          opacity: 1  
 
         > div, > div > div
           display: inline-block
@@ -108,9 +115,17 @@ li.point_in_list
 
   &.point_in_list_margin
     z-index: 100
+    width: 200px
+    cursor: move
+    opacity: .85
+
+    &:hover
+      opacity: 1
     &.expanded
       cursor: auto
-    cursor: move
+      opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
+
+    
 
     .inner
       padding-bottom: 5px
@@ -128,18 +143,20 @@ li.point_in_list
     .include
       display: none
 
-    .inner > .body .operations        
-      .edit, .remove
-        display: none
+    .inner > .body 
+      font-size: 12px
+      .operations        
+        .edit, .remove
+          display: none
 
-      > div, >div > div
-                  
-        a.point_operation, 
-        button.point_operation,
-        input.point_operation 
-          color: #C1C1C1
-          &:hover
-            color: white
+        > div, >div > div
+                    
+          a.point_operation, 
+          button.point_operation,
+          input.point_operation 
+            color: #C1C1C1
+            &:hover
+              color: white
 
   &.point_in_list_board,
   &.point_in_list_self
@@ -231,6 +248,12 @@ li.point_in_list
     &.pro, &.con
       .inner
         background-image: none
+
+        .body .username
+          display: block
+
+          .nested_user
+            display: none
 
     .operations
       display: none

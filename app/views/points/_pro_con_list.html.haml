@@ -6,23 +6,21 @@
   .full_column.pro_column#points_on_board_pro
     .pro_con_list_header.pro_header
 
-    - if dynamic
-      = render :partial => "points/drop_target", :locals => { :position => 1 }
-
     = render :partial => "points/column", :locals => { :points => pro_points, :is_pro => true, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
     - if dynamic
+      = render :partial => "points/drop_target", :locals => { :position => 1 }
+
       = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_on_board_pro' }
 
   .full_column.con_column#points_on_board_con 
     .pro_con_list_header.con_header
 
+    = render :partial => "points/column", :locals => { :points => con_points, :is_pro => false, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
+
     - if dynamic
       = render :partial => "points/drop_target", :locals => { :position => 0 }
 
-    = render :partial => "points/column", :locals => { :points => con_points, :is_pro => false, :origin => origin, :bucket => bucket, :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
-
-    - if dynamic
       = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_on_board_con' }
 
   .clear 

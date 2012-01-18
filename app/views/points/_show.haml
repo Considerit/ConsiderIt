@@ -37,6 +37,15 @@
           = h point.nutshell
         - else
           = h point.text.length > 137 ? point.text[0,137] : point.text
+
+        %span.italic.nested_user
+          - if point.hide_name
+            anonymous
+          - elsif point.user
+            = point.user.name
+          - else
+            unknown
+
       
       .point_text.full
         .details

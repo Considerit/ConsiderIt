@@ -49,6 +49,26 @@ class Position < ActiveRecord::Base
     end
   end    
 
+  def stance_name_adverb
+    case stance_bucket
+      when 0
+        return "strongly oppose"
+      when 1
+        return "oppose"
+      when 2
+        return "weakly oppose"
+      when 3
+        return "are undecided"
+      when 4
+        return "weakly support"
+      when 5
+        return "support"
+      when 6
+        return "strongly support"
+    end
+  end    
+
+
   def stance_long
     case stance_bucket
       when 0

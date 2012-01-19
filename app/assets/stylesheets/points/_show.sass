@@ -12,15 +12,12 @@ li.point_in_list
     float: right
     color: white 
 
-  .bullet_point
-    margin-top: 6px
-
   &.con
     .username .avatar
       border-color: $con_point_dark
 
     .bullet_point
-      color: $con_point_dark
+      //color: $con_point_dark
 
              
   &.pro
@@ -28,7 +25,7 @@ li.point_in_list
       border-color: $pro_point_dark
 
     .bullet_point
-      color: $pro_point_dark
+      //color: $pro_point_dark
 
   .inner
     border: 1px solid
@@ -60,6 +57,7 @@ li.point_in_list
       .point_text.nutshell
         font-size: 13px
         line-height: 15px
+        color: #eee   
 
       .point_text.full
         font-size: 90%
@@ -82,6 +80,7 @@ li.point_in_list
 
       .operations   
         opacity: .7
+        line-height: 13px
 
         > div, > div > div
           display: inline-block
@@ -114,7 +113,6 @@ li.point_in_list
     z-index: 100
     width: 200px
     cursor: move
-    opacity: .85
 
     &.expanded
       cursor: auto
@@ -137,8 +135,12 @@ li.point_in_list
       display: none
 
     .inner > .body 
+
       .nutshell
         font-size: 12px
+        line-height: 14px
+        opacity: .7
+
       .operations        
         .edit, .remove
           display: none
@@ -154,6 +156,9 @@ li.point_in_list
 
   &.point_in_list_board,
   &.point_in_list_self
+    
+
+    width: 240px
     .inner
       border-color: transparent
       -moz-box-shadow: none
@@ -167,18 +172,21 @@ li.point_in_list
 
     &.con
       .bullet_point
-        color: #844
+        //color: #844
       &.expanded
         .bullet_point
-          color: $con_point_dark
+          //color: $con_point_dark
 
     &.pro
       .bullet_point
-        color: #686
+        //color: #686
       &.expanded
         .bullet_point
-          color: $pro_point_dark
+          //color: $pro_point_dark
 
+    .body
+      padding: 3px 5px 3px 13px
+  
     .operations        
 
       > div, >div > div
@@ -201,11 +209,8 @@ li.point_in_list
           > *
             vertical-align: middle
 
-  &.point_in_list_self
-    width: 240px
 
   &.point_in_list_board
-    width: 315px
 
     .scores
       float: right

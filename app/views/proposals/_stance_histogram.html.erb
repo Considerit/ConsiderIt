@@ -4,7 +4,7 @@
   spacing = 0;
 
   function get_width(){
-    return $j('.vizbase .middle').width() - spacing * 2;
+    //return $j('.vizbase .middle').width() - spacing * 2;
   }
   
   function get_scaler(){
@@ -12,7 +12,8 @@
   }
   
   function get_bar_width(){
-    return get_width() / 7;
+    return 60;
+    //return get_width() / 7;
   }
 
   function reset_selected_idx(){
@@ -30,7 +31,8 @@
 		var height = 180;
 		
     var vis = new pv.Panel()
-        .width(get_width() + spacing)
+        //.width(get_width() + spacing)
+        .width(440)
         .height(height);
 		
     var bar = vis
@@ -39,10 +41,12 @@
         .def("i", -1)
         .def('sel', -1)
         .width( function() get_bar_width() - spacing)
-        .left( function() (6 - this.index) * get_bar_width() + spacing * 2)
-        .height(function(d) d * height  / get_scaler() )
+        .left( function() (6 - this.index) * get_bar_width() + 17 )
+        .height(function(d) d * (height-2)  / get_scaler() )
         .bottom(0)
-        .fillStyle(function(d) this.i() == this.index ? "black" : this.sel() == this.index ? "#B39FD6" : colors[this.index])
+        .strokeStyle('black')
+        .lineWidth(.5)
+        .fillStyle(function(d) this.i() == this.index ? "black" : this.sel() == this.index || this.sel() == -1 ? "#A79EBD" : "#949494")
         .event("mouseover", function() this.i(this.index))
         .event("mouseout", function() this.i(-1))
         .event("click", function(){

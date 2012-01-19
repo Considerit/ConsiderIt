@@ -1,4 +1,5 @@
 #explore_proposal
+  background: #ffffff image-url('results_narrative.png') no-repeat 0px 75px
 
   > ol
     @include nude-list  
@@ -15,26 +16,18 @@
           letter-spacing: 1px
           top: -3px
 
-      &.breakdown
-        position: relative
-        padding-bottom: 0
-        margin: 0 40px
-        
-        .head
-          top: -25px
+      &.personal_position
 
-          .submit_a_position
-            position: absolute
-            padding: 5px 20px
-            font-size: 14pt
-            top: 195px
-            left: 310px
-            opacity: .75
-            &:hover
-              opacity: 1
+        .submit_a_position
+          position: absolute
+          padding: 4px 15px
+          font-size: 12pt
+          top: -42px
+          right: 13px
+          opacity: .75
+          &:hover
+            opacity: 1
 
-        .extra
-          color: black
         
         .you_slider
           position: absolute
@@ -56,14 +49,51 @@
             text-decoration: underline
             &:hover
               color: #272727
-          
+
+      &.results_narrative
+        color: #363636
+        font-size: 22px
+        position: relative
+        font-weight: 200
+
+        .action_call
+          position: absolute
+          top: 52px
+          width: 155px
+          left: 15px
+
+        .participant_connection
+          position: absolute
+          right: 175px
+          top: 70px
+
+        .points_connection
+          position: absolute
+          top: 390px
+          width: 164px
+          right: 77px
+
+
+      &.breakdown
+        position: relative
+        padding-bottom: 0
+        margin: 0 40px
+        
+        .head
+          top: -25px
+
+        .extra
+          color: black
+
         .bars
-          margin: auto
+          margin-left: 35px
 
           .viz
             .stance_chart
               svg rect
                 cursor: pointer
+              text
+                display: none
               
           .vizbase
       
@@ -94,20 +124,13 @@
         
         
         .position_marker
-          background-color: black
-          color: #eee
           position: absolute
-          top: 60px
-          right: -10px
-          padding: 5px 10px
-          z-index: 100
-          width: 130px
-
-          .triangle
-            position: absolute
-            left: -14px
-            top: 10px
-            font-size: 18px
+          bottom: 33px
+          left: 251px
+          color: #999
+          font-size: 13px
+          width: 175px
+          text-align: center
 
           .label
             color: #C1C1C1
@@ -117,6 +140,10 @@
             font-size: 18px
             text-weight: bold
 
+          .showing_filtered a
+            text-decoration: underline
+            color: inherit
+
           .operations
             margin-top: 4px
             a
@@ -125,6 +152,7 @@
               text-decoration: underline
 
       &.ranked_points
+        position: relative
         h3
           font-size: 26pt
           line-height: 20pt
@@ -144,9 +172,10 @@
           padding: 0 10px
 
           .pro_con_list
-            width: 700px
-            margin: auto
+            margin-left: 64px
             padding-bottom: 20px
+            width: 600px
+
 
             .edit, .remove
               display: none
@@ -156,6 +185,9 @@
         
         .statement_carousel
           background-color: transparent
+          position: absolute
+          top: -128px
+          right: 0px
 
           .vertical
             .paginate
@@ -174,28 +206,37 @@
                 background-color: inherit
                 margin: auto
                 display: inline-block
+                float: right
+                opacity: .85
 
                 &.active
                   z-index: 1002
                   position: relative
+                  opacity: 1
                   .view_statement .avatar 
                     .username
                       display: none
+                &:hover
+                  opacity: 1
 
                 a.view_statement
                   text-align: center  
                   color: #333
                   position: relative
+
+                  &:hover .avatar .username
+                    display: block
                   
                   .avatar
                     position: relative
+                    height: 45px
+
                     img
-                      width: 85px
-                      border: 3px solid transparent
-                      &:hover
-                        border-color: black
+                      width: 45px
+                      height: 45px
 
                     .username
+                      display: none
                       font-size: 10pt
                       color: #333
                       line-height: 9pt

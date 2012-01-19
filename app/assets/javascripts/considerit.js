@@ -75,9 +75,9 @@ ConsiderIt = {
       speed: 1500,
       vertical: true,
       //total_items: 5,
-      items_per_page: 12,
+      items_per_page: 20,
       loading_from_ajax: false,
-      dim: 610,
+      dim: 270,
       resetSizePerPage: false
     });    
 

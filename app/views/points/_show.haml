@@ -6,10 +6,12 @@
       = point.id
       
     .bullet_point
-      -if point.is_pro
-        +
-      - else 
-        &#x2013;
+      - if origin != 'margin'
+        &#8226;
+      //- if point.is_pro
+      //  +
+      //- else 
+      //  &#x2013;
 
     .body
 

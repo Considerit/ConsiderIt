@@ -15,17 +15,30 @@
     %li.head
       = render :partial => "proposals/description", :locals => {:hide_initially => true}
     
+    %li.personal_position
+      -if @position && @position.published
+        //.you_slider
+        //  = image_tag "slider.png", :title => "This is where you stand on #{@proposal.designator}."
+        
+        You #{@position.stance_name_adverb} #{link_to('modify', edit_proposal_position_path(@proposal, @position))}
+      
+      -else
+        = button_to 'submit your own opinion', new_proposal_position_path(@proposal), :method => :get, :class => "submit_a_position shadow_offset add_corner"
+    
+    %li.results_narrative
+
+      .action_call
+        Explore what people think.
+
+      .participant_connection
+        Overall, they
+
+      .points_connection
+        consider these to be the most important factors.
+        
     %li.breakdown
       .head
       
-        .operations
-          -if @position && @position.published
-            .you_slider
-              = image_tag "slider.png", :title => "This is where you stand on #{@proposal.designator}."
-              = link_to 'Modify your position', edit_proposal_position_path(@proposal, @position)
-          -else
-            = button_to 'submit your own opinion', new_proposal_position_path(@proposal), :method => :get, :class => "submit_a_position shadow_offset add_corner"
-
         %table.bars
           %tr
             %td
@@ -43,49 +56,37 @@
               .inner
                 Oppose
       
-      .position_marker.shadow_offset
+      .position_marker
 
         .showing_all
-          .triangle 
-            &#x25C0;
-
-          %strong
-            Click a bar
-
-          to filter the results below
+          Click a bar to filter the results
 
         .showing_filtered.hide
           %a.show_all
-            Show all positions
+            Show all results
 
 
     %li.statements
-      - @proposal.positions.each do |position|
+      - @proposal.positions.published.each do |position|
         = render :partial => "positions/statement/show", :locals => { :position => position }
 
     %li.ranked_points
-      .explore#ranked_points.fl 
-        %h3.banner
-          All reviews
-
-        %h3.subheader
-          Ranked pros and cons that these participants considered important. 
+      .explore#ranked_points
        
         = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :pro_points => @pro_points, :con_points => @con_points }
 
-      .statement_carousel.fr
+      .statement_carousel
 
         .vertical_carousel.vertical
 
 
           .paginate.first
             %h3.subheader
-              Click to read a review.
               %button.back.fr  
                 &#x25B2;
           .carousel
             %ul
-              - @proposal.positions.each do |position|
+              - @proposal.positions.published.each do |position|
                 = render :partial => "positions/statement/block", :locals => { :position => position }
                 
           
@@ -114,7 +115,7 @@
 
 - if @position
   :javascript
-    $j('.you_slider').css('left', $j('.pedestal').position().left + (6 - #{@position.stance_bucket}) * 64.3 - 30 + 'px');
+    //$j('.you_slider').css('left', $j('.pedestal').position().left + (6 - #{@position.stance_bucket}) * 64.3 - 30 + 'px');
 
 
 

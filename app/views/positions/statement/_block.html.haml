@@ -1,11 +1,12 @@
-%li.statement{:class=>"bucket-#{position.stance_bucket}", :id=>"user-#{position.user_id}"}
-  %a.view_statement
-    .avatar
-      - if position.user.avatar
-        = image_tag position.user.avatar.url(:large), :alt => "#{h position.user.name}'s profile picture"
-      .username
-        = h position.user.short_name    
+- if position.user
+  %li.statement{:class=>"bucket-#{position.stance_bucket}", :id=>"user-#{position.user_id}"}
+    %a.view_statement
+      .avatar
+        - if position.user.avatar
+          = image_tag position.user.avatar.url(:large), :alt => "#{h position.user.name}'s profile picture"
+        .username
+          = h position.user.short_name    
 
-    .userid.hide
-      #{position.user_id}
+      .userid.hide
+        #{position.user_id}
   

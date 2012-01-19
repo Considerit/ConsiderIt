@@ -1,6 +1,6 @@
 development:
   adapter: mysql2
-  database: considerit2_dev
+  database: lvg2_dev
   username: root
   password: root
   host: localhost

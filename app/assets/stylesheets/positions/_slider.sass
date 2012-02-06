@@ -2,18 +2,11 @@
   margin: auto
   width: 85%
   font-size: 20px
-
-  ul.position_labels
-    width: 100%
-    li
-      float: left
-      margin-right: 4%
-      @include nude-list
-      font-size: 16px
       
   td.slider_label 
     div
       width: 125px
+      color: #555
     
     &.left
       text-align: right
@@ -34,7 +27,16 @@
     .ui-slider
       width: 600px
       background: none
-      background-color: #D0D0D0
+      background-image: linear-gradient(bottom, rgb(106,106,106) -1%, rgb(170,170,170) 75%)
+      background-image: -o-linear-gradient(bottom, rgb(106,106,106) -1%, rgb(170,170,170) 75%)
+      background-image: -moz-linear-gradient(bottom, rgb(106,106,106) -1%, rgb(170,170,170) 75%)
+      background-image: -webkit-linear-gradient(bottom, rgb(106,106,106) -1%, rgb(170,170,170) 75%)
+      background-image: -ms-linear-gradient(bottom, rgb(106,106,106) -1%, rgb(170,170,170) 75%)
+
+      background-image: -webkit-gradient(linear, left bottom, left top, color-stop(-0.01, rgb(106,106,106)), color-stop(0.75, rgb(170,170,170)))
+
+      box-shadow: 2px 2px 3px rgba(black, .4) 
+
       border: none
       height: 16px
       a.ui-slider-handle
@@ -45,8 +47,11 @@
         top: -.2em
         height: 32px
         width: 28px
-        
+
+        &:hover
+          cursor: move
 
   
   .center
     font-size: 12px
+    color: rgba(#666, .8)

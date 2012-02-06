@@ -30,9 +30,9 @@ ConsiderIt = {
         speed: 1000,
         vertical: true,
         total_items: parseInt($j(this).find('.total:first').text()),
-        items_per_page: 4,
+        items_per_page: 3,
         loading_from_ajax: true, 
-        dim: 600,
+        dim: 750,
         resetSizePerPage: true,
         total_items_callback: function($carousel){
           if ($carousel.find('.total:first').length > 0) {
@@ -71,15 +71,7 @@ ConsiderIt = {
     //   dim: 250
     // });
 
-    $j('.statement_carousel .vertical_carousel').infiniteCarousel({
-      speed: 1500,
-      vertical: true,
-      //total_items: 5,
-      items_per_page: 20,
-      loading_from_ajax: false,
-      dim: 270,
-      resetSizePerPage: false
-    });    
+    
 
     if( $j('#intro').length == 0 ){
       //$j('#masthead').append('<a class="home" href="/">home</a>');
@@ -100,8 +92,9 @@ ConsiderIt = {
     if ( !$j.browser.msie ) {
       $j('.add_corner').corner('5px');
       $j('#nav-user').corner('bottom bl 5px');  
-      $j('#masthead').corner('round top 5px');
-      $j('.point_in_list_margin .inner, .point_in_list.expanded .inner').corner('5px');
+      $j('#content').corner('round 5px');
+      $j('.considerations, .slide, .statement').corner('5px');
+      //$j('.point_in_list_margin, .point_in_list.expanded').corner('5px');
       $j('.proposal_prompt .proposal_item').corner('round top 5px');
       //$j('.avatar').corner('5px');
       $j('input[type="submit"]').corner('5px');
@@ -189,6 +182,16 @@ ConsiderIt = {
         }
       });
     });   
+
+    $j('.statement_carousel .vertical_carousel').infiniteCarousel({
+      speed: 1500,
+      vertical: true,
+      //total_items: 5,
+      items_per_page: 20,
+      loading_from_ajax: false,
+      dim: 270,
+      resetSizePerPage: false
+    });
 
     ConsiderIt.update_carousel_heights();
 
@@ -292,22 +295,41 @@ ConsiderIt = {
     // POINTS
     //////////////
 
+    // mouseover a point
+    $j('.point_list').delegate('.point_in_list', 'hover', function( event ) {
+      var el = $j(this).find('.operations');
+      if ( event.type === 'mouseenter' ) {
+        el.stop(true, false)
+          .fadeTo('slow', 1.0, 'easeInQuart');
+      } else {
+        el.stop(true, false)
+          .fadeOut('fast');
+      }
+    });
+
     // new button clicked
     $j('.pro_con_list.dynamic').delegate('.newpoint .newpointbutton button', 'click', function(){
-      $j(this).parents('.newpoint:first').find('.pointform').fadeIn('fast');      
-      show_lightbox();
+      $j('.droppable').fadeOut();
+      $j(this).fadeOut(function(){
+        $j(this).parents('.newpoint:first').find('.pointform').fadeIn('fast');    
+      });  
+      //show_lightbox();
     });
 
     // edit point clicked
     $j('.pro_con_list.dynamic').delegate('a.editpoint', 'click', function(){
-      $j(this).parents('.edit:first').find('.pointform').fadeIn('fast');      
-      show_lightbox();
+      $j('.droppable').fadeOut();
+      $j(this).fadeOut(function(){
+        $j(this).parents('.edit:first').find('.pointform').fadeIn('fast');    
+      });  
+      //show_lightbox();
     });
 
     // new/edit point cancel clicked
     $j('.pro_con_list.dynamic').delegate('.new_point_cancel', 'click', function(){
       $j(this).parents('.pointform:first').fadeOut(function(){
-        hide_lightbox();
+        $j(this).parents('.newpoint').find('.write_new').fadeIn();  //hide_lightbox();
+        $j('.droppable').fadeIn();
       });
     });
 
@@ -412,7 +434,7 @@ ConsiderIt = {
         real_point.find('.point_text.full').slideUp(function(){
           real_point.animate(animate_properties, function(){
             real_point.css({
-              'z-index': 'inherit',
+              'z-index': 'auto',
               'position': 'relative',
               'top': 'auto',
               'left': 'auto',
@@ -480,7 +502,11 @@ ConsiderIt = {
         included_point
           .removeClass('point_in_list_margin')
           .addClass('point_in_list_self')
-          .fadeIn('slow');
+          .fadeIn('slow', function(){
+            $j('.pro_con_list .droppable').fadeOut('slow').remove();
+          });
+
+        
 
         carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
       });
@@ -570,39 +596,40 @@ ConsiderIt = {
       } else if ( bucket == 'all' ) {
         $j('#ranked_points .pro_con_list').fadeOut();
         $stored.fadeIn();
-        $j('.statement:hidden').fadeIn();
+        //$j('.statement:hidden').fadeIn();
 
-        $j('.showing_filtered').fadeOut(function(){
-          $j('.showing_all').fadeIn();
-        });
+        $j('.showing_filtered').hide();
+        $j('.showing_all').show();
 
-        $j('.explore#ranked_points h3.banner').text('All reviews');
-        $j('.explore#ranked_points h3.subheader').text('Ranked pros and cons that reviewers considered important.');
+        $j('.participant_connection .group_name').text('Overall, they');
 
-        $j('li.step.statement_carousel').data('showing', bucket);
+        //$j('.statement_carousel').data('showing', bucket);
         reset_selected_idx();
         $j('.statement_carousel .vertical_carousel')
           .infiniteCarousel({'operation': 'restart'});
       } else {
 
         if( $stored.length > 0 ) {
-          $j('#ranked_points .pro_con_list').fadeOut();
-          $stored.fadeIn();
-        } else {
+          $j('#ranked_points .pro_con_list, li.statements').hide();
+          $stored.show();
+        } else {          
+          $j('.results_narrative, #ranked_points').addClass('loading');
           $j.get(ConsiderIt.subdirectory + "/proposals/" + proposal_id + "/points", { bucket: bucket },
             function(data){
-              $j('#ranked_points .pro_con_list').fadeOut();
+              $j('.results_narrative, #ranked_points').removeClass('loading');
+              $j('#ranked_points .pro_con_list, li.statements').hide();
               $j('#ranked_points').append(data['points']);
+              $j('li.statements:first').after(data['participants']);
           } );
-        }        
+        }
+
+        /*        
         var with_bucket = $j('.bucket-' + bucket),
             without_bucket = $j('.statement:not(.bucket-' + bucket);
         without_bucket.fadeOut('slow', function(){
           with_bucket.fadeIn('slow');
-        });
-
-        $j('.explore#ranked_points h3.banner').html(ConsiderIt.positions.stance_name(bucket));
-        $j('.explore#ranked_points h3.subheader').text('Ranked pros and cons these reviewers considered important.');
+        }); */
+        $j('.participant_connection .group_name').text(ConsiderIt.positions.stance_name(parseInt(bucket)));
 
         if ( $j('.showing_filtered:hidden').length > 0) {
           $j('.showing_all').fadeOut(function(){
@@ -611,9 +638,9 @@ ConsiderIt = {
         }
 
         $j('.position_statement:visible a.close').trigger('click');
-        $j('li.step.statement_carousel').data('showing', bucket);
-        $j('.statement_carousel .vertical_carousel')
-          .infiniteCarousel({'operation': 'restart'});        
+        //$j('.statement_carousel').data('showing', bucket);
+        //$j('.statement_carousel .vertical_carousel')
+        //  .infiniteCarousel({'operation': 'restart'});        
       }
 
 
@@ -642,7 +669,7 @@ ConsiderIt = {
         case 2:
           return "Borderline opposers"
         case 3:
-          return "Neutral reviewers"
+          return "Neutral parties"
         case 4:
           return "Borderline supporters"
         case 5:

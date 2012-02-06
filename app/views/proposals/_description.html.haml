@@ -35,10 +35,9 @@
         .full.hide
           = @proposal.additional_details.html_safe
 
+    - if @proposal.url && @proposal.url.strip != ''
+      #full_desc_block
+        #{'...'}or read the 
+        =link_to "official measure", @proposal.url, :title => "Visit the official listing on the state's website", :target => '_blank'
 
   .clear
-
-  - if @proposal.url && @proposal.url.strip != ''
-    #full_desc_block
-      =link_to "read the official measure", @proposal.url, :title => "Visit the official listing on the state's website", :target => '_blank'
-

@@ -5,7 +5,10 @@ li.point_in_list
   margin-bottom: 8px
   color: white
   background-repeat: no-repeat
-  
+  //border: 1px solid
+  -moz-box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)
+  -webkit-box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)
+  box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)  
   width: 232px
 
   .less.point_text_toggle
@@ -27,121 +30,193 @@ li.point_in_list
     .bullet_point
       //color: $pro_point_dark
 
-  .inner
-    border: 1px solid
-    -moz-box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)
-    -webkit-box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)
-    box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)
+  &:hover .body .operations
+    // visibility: visible
 
-    > .body
-      overflow: hidden
-      vertical-align: top
-      padding: 3px 10px 3px 10px
+  > .body
+    overflow: hidden
+    vertical-align: top
+    padding: 3px 10px 3px 10px
 
-      .username
-        font-size: 10px
-        color: #C1C1C1
-        padding-bottom: 2px
+    .username
+      font-size: 10px
+      color: #C1C1C1
+      padding-bottom: 2px
+      display: none
+
+      .avatar
         display: none
+        position: absolute
+        top: -70px
+        border-style: solid
+    
+    .nested_user
+      font-size: 11px
+      white-space: nowrap
+      font-style: italic
 
-        .avatar
-          display: none
-          position: absolute
-          top: -70px
-          border-style: solid
-      
-      .nested_user
-        font-size: 11px
-        white-space: nowrap
+    .point_text
+      font-family: Verdana, Geneva, sans-serif
 
-      .point_text.nutshell
-        font-size: 13px
-        line-height: 15px
-        color: #eee   
+    .point_text.nutshell
+      font-size: 13px
+      color: #eee
+      padding-bottom: 9px
 
-      .point_text.full
-        font-size: 90%
-        margin: 15px 0
-        display: none
-        width: 90%
+    .point_text.full
+      font-size: 90%
+      margin: 15px 0
+      display: none
+      width: 90%
 
-        .link
+      .link
 
-          ul
-            li 
-              padding: 2px 0
-              a
-                color: white
-                text-decoration: underline
-
-              .domain
-                text-decoration: none
-                color: #C1C1C1
-
-      .operations   
-        opacity: .7
-        line-height: 13px
-
-        > div, > div > div
-          display: inline-block
-          &.pointform
-            display: none
-          
-          .bullet
-            font-size: 8px
-            color: #999
-            vertical-align: middle
-            
-          a.point_operation, 
-          button.point_operation,
-          input.point_operation 
-            font-size: 12px
-            padding: 0
-            margin: 0
-            vertical-align: middle
-
-        .read_more
-          a.toggle_more, a.toggle
-            display: inline-block
-            text-decoration: underline
-
-            &.hide
-              padding: 3px 10px
+        ul
+          li 
+            padding: 2px 0
+            a
               color: white
+              text-decoration: underline
+
+            .domain
+              text-decoration: none
+              color: #C1C1C1
+
+    .operations   
+      position: absolute
+      opacity: 0
+      text-align: right
+      right: 10px
+      bottom: 4px
+
+      > div, > div > div
+        display: inline-block
+        &.pointform
+          display: none
+        
+        .bullet
+          font-size: 8px
+          color: #555
+          vertical-align: middle
+          
+        a.point_operation, 
+        button.point_operation,
+        input.point_operation 
+          font-size: 11px
+          padding: 0
+          margin: 0
+          vertical-align: middle
+
+      .read_more
+        a.toggle_more, a.toggle
+          display: inline-block
+          font-size: 11px
+          &.hide
+            padding: 3px 10px
+
+        .comment_count
+          display: inline-block
+          position: absolute
+          right: 6px
+          z-index: 2
+          top: 5px
+          font-size: 9px
+
+        .comment_icon
+          display: inline-block
+          position: relative
+          z-index: 1
+          width: 19px
+
+          &:before, &:after, span:before, span:after
+            content: ''
+            right: 0
+            position: absolute
+          
+          span:after, span:before
+            background: none repeat scroll 0 0 rgba(#666, .3)
+            margin: -10px 0 0
+          
+          span:before
+            border-radius: 2px
+            height: 13px
+            //margin-top: -8px
+            width: 16px
+
+          span:after
+            background: none repeat scroll 0 0 transparent    
+            border-color: rgba(#666, .3) transparent transparent rgba(#666, .3)
+            border-right: 2px solid transparent
+            border-style: solid
+            border-width: 2px
+            right: 8px
+            margin-top: 3px   
+
+
+
 
   &.point_in_list_margin
-    z-index: 100
-    width: 200px
+    width: 172px
+    height: 129px
     cursor: move
+    @include curl-shadow
+    padding-bottom: 5px
+    margin-bottom: 18px
+
+
+    &:hover .triangle
+      display: block
+
+    .triangle
+      position: absolute
+      top: 0
+      right: -1px
+      width: 0
+      height: 0
+      line-height: 0
+      border-top-color:  #d8d8d8
+      border-right-color: #d8d8d8
+      border-bottom-color: rgba(#888, .3)
+      border-left-color: rgba(#888, .3)
+      display: none
+      border-width: 7px
+      border-style: solid
+      box-shadow: -1px 1px 1px rgba(#aaa,.1)
 
     &.expanded
       cursor: auto
       opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
-
-    .inner
-      padding-bottom: 5px
+      
+      &:after, &:before
+        box-shadow: none
 
     &.pro
-      .inner
-        background-color: $pro_point_light
-        border-color: $pro_point_dark
+      background-color: $pro_point_light
+      //border-color: $pro_point_dark
 
     &.con
-      .inner
-        background-color: $con_point_light
-        border-color: $con_point_dark
+      background-color: $con_point_light
+      //border-color: $con_point_dark
 
     .include
       display: none
 
-    .inner > .body 
+    .bullet_point
+      left: 5px
+      top: 8px
+      color: rgba(#4C4C4C, .5)
+
+    > .body 
+      padding: 10px 10px 3px 16px
 
       .nutshell
-        font-size: 12px
-        line-height: 14px
+        font-size: 11px
         opacity: .7
+        color: black
+        width: 145px
 
       .operations        
+
         .edit, .remove
           display: none
 
@@ -150,22 +225,20 @@ li.point_in_list
           a.point_operation, 
           button.point_operation,
           input.point_operation 
-            color: #C1C1C1
+            color: #444
             &:hover
-              color: white
+              color: black
 
   &.point_in_list_board,
   &.point_in_list_self
-    
-
-    width: 240px
-    .inner
-      border-color: transparent
-      -moz-box-shadow: none
-      -webkit-box-shadow: none
-      box-shadow: none
       
-    &.expanded .inner
+    width: 255px
+    border-color: transparent
+    -moz-box-shadow: none
+    -webkit-box-shadow: none
+    box-shadow: none
+      
+    &.expanded
       -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
       -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
       box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
@@ -186,8 +259,9 @@ li.point_in_list
 
     .body
       padding: 3px 5px 3px 13px
-  
+            
     .operations        
+      bottom: -3px
 
       > div, >div > div
                       
@@ -195,7 +269,7 @@ li.point_in_list
         a.point_operation, 
         button.point_operation,
         input.point_operation 
-          color: #999
+          color: #777
           &:hover
             color: #C1C1C1                
 
@@ -236,23 +310,21 @@ li.point_in_list
     height: auto
 
     &.pro
-      .inner
-        background-color: $pro_point_light
+      background-color: $pro_point_light
     &.con
-      .inner
-        background-color: $con_point_light    
+      background-color: $con_point_light    
 
     .include
       display: none
     &.pro, &.con
-      .inner
-        background-image: none
+      
+      background-image: none
 
-        .body .username
-          display: block
+      .body .username
+        display: block
 
-          .nested_user
-            display: none
+        .nested_user
+          display: none
 
     .operations
       display: none

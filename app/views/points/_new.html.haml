@@ -1,7 +1,10 @@
 .newpoint
   .newpointbutton
+    .bullet_point
+      &#8226;
   
-    %button{ :title => "Click to write your own #{is_pro ? 'pro' : 'con'} point.", :class => "#{is_pro ? 'pro' : 'con'} write_new" }
+    %button{ :class => "add_corner #{is_pro ? 'pro' : 'con'} write_new" }
+      Write a new #{is_pro ? 'pro' : 'con'} point
     
     = render :partial => 'points/form', :locals => {:point => Point.new(:proposal => @proposal), :is_pro => is_pro, :action => 'new' }
     

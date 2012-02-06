@@ -3,7 +3,7 @@ class PositionsController < ApplicationController
 
   respond_to :html
 
-  POINTS_PER_PAGE = 4
+  POINTS_PER_PAGE = 3
   
   def new
     handle_new_edit(true)

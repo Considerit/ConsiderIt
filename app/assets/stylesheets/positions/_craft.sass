@@ -8,21 +8,17 @@
       padding: 3px 0 0 50px
       color: white
       
-    li.step
-      margin-bottom: 30px
-      padding-bottom: 25px
+    li
+      &.step
+        margin-bottom: 30px
+        padding-bottom: 25px
+        box-shadow: 1px 1px 2px rgba(black,.4)
+        background: image-url('wall_texture.png') repeat scroll 0 0 transparent
 
-      .head
-        
-        padding: 20px 10px 5px 0px
+        .head
+          
+          padding: 20px 10px 5px 0px
 
-        .ol_number
-          padding: 3px 3px 3px 20px
-          position: relative
-          left: -10px
-          color: white
-          font-size: 22px
-          font-weight: bold
 
       &.slide
 
@@ -43,24 +39,51 @@
             
             .points_other
               vertical-align: top
-              padding-top: 50px
+              padding-top: 80px
               position: absolute
               top: 0
 
+              h3
+                @include inset-text
+                font-size: 19px
+                color: #555
+                font-variant: small-caps
+                text-transform: lowercase
+                padding-bottom: 10px
+                width: 172px
+                text-align: center
+                font-weight: normal
+                line-height: 18px
+
+                .subheader
+                  font-size: 10px
+                  font-variant: normal
+              
+              .point_list
+                z-index: 100
+                width: 172px
+
               .point_list_footer
-                width: 200px
-                .forward
-                  background-image: image-url('arrow-down.png')
+                width: 172px
+                //.forward
+                //  background-image: image-url('arrow-down.png')
                 
-                .back
-                  background-image: image-url('arrow-up.png')
+                //.back
+                //  background-image: image-url('arrow-up.png')
+                
+                .arrow
+                  color: #777
+
+                .paginate
+                  font-weight: normal
+                  color: #666                 
                       
               .carousel
-                padding: 5px
+                padding: 5px 3px
               
                 
               &#points_other_pro 
-                left: -50px
+                left: 0
                 .carousel
                   width: 530px
                 .point_list_footer
@@ -68,15 +91,16 @@
 
 
               &#points_other_con 
-                right: -50px
-
+                right: 0
+                h3
+                  margin-left: 360px
                 .carousel
                   width: 530px
                   .point_list
                     float: right
                 .point_list_footer
                   position: relative
-                  left: 62%
+                  left: 361px
                                         
        
       &#submitstance
@@ -93,16 +117,13 @@
             
             form
               margin: auto
-              width: 660px
+              width: 400px
 
               input[type="submit"]
-                cursor: pointer
-                text-shadow: gray 1px 1px 2px
-                width: 380px
+                width: 100%
                 height: 75px
                 border: none
                 padding: 0
-                color: white
                 font-size: 24pt
                 opacity: .9
 
@@ -119,6 +140,9 @@
                 margin-top: 30px
                 &:hover
                   color: #272727
+                
+                &.skip_save
+                  position: absolute
 
               label
                 color: #999

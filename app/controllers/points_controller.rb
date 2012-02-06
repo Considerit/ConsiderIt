@@ -26,18 +26,21 @@ class PointsController < ApplicationController
     
     qry = @proposal.points
     pros_and_cons = false
-    if ( params.key?(:cons_only) )
+    if ( params.key?(:cons_only) && params[:cons_only] == 'true'  )
       qry = qry.cons
-    elsif ( params.key?(:pros_only) )
+    elsif ( params.key?(:pros_only) && params[:pros_only] == 'true' )
       qry = qry.pros
     else
       pros_and_cons = true
     end
 
     @bucket = params[:bucket]
+    @positions = @proposal.positions.published
     if @bucket == 'all' || @bucket == ''
       group_name = 'all'
       qry = qry.ranked_overall
+      
+
     elsif @bucket[0..3] == 'user'
       group_name = 'user'
       user_points_id = @bucket[5..@bucket.length].to_i
@@ -51,6 +54,7 @@ class PointsController < ApplicationController
       @bucket = @bucket.to_i
       group_name = self.stance_name(@bucket)
       qry = qry.ranked_for_stance_segment(@bucket) #.where("importance_#{@bucket} > 0").order("importance_#{@bucket} DESC")
+      @positions = @proposal.positions.published.where( :stance_bucket => @bucket )    
     end
     
     if params.key?(:page)
@@ -105,17 +109,17 @@ class PointsController < ApplicationController
       end
     end
         
-
-    
     #TODO: refactor to make the logic behind these calls easier to follow & explicit
     if pros_and_cons
-      resp = render_to_string :partial => "points/pro_con_list", :locals => { :bucket => @bucket, :dynamic => false, :pro_points => @pro_points, :con_points => @con_points}    
+      resp = { :points => render_to_string(:partial => "points/pro_con_list", :locals => { :bucket => @bucket, :dynamic => false, :pro_points => @pro_points, :con_points => @con_points}),
+               :participants => render_to_string(:partial => "proposals/participants")   }
+    
     else
       origin = group_name == 'margin' ? 'margin' : 'board'
-      resp = render_to_string :partial => "points/column", :locals => { :points => points, :is_pro => params.key?(:pros_only), :origin => origin, :bucket => @bucket, :enable_pagination => false, :page => @page }
+      resp = { :points => render_to_string(:partial => "points/column", :locals => { :points => points, :is_pro => params.key?(:pros_only), :origin => origin, :bucket => @bucket, :enable_pagination => false, :page => @page }) }
     end
     
-    render :json => { :points => resp }.to_json
+    render :json => resp.to_json
   end
   
   def create
@@ -153,7 +157,7 @@ class PointsController < ApplicationController
       @point.notify_parties
     end
     
-    new_point = render_to_string :partial => "points/show", :locals => { :context => 'self', :point => @point, :static => false }
+    new_point = render_to_string :partial => "points/show", :locals => { :origin => 'self', :point => @point, :static => false }
     response = {
       :new_point => new_point
     }

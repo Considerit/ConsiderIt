@@ -1,7 +1,5 @@
 %li.considerations.step   
   .head
-    %span.ol_number
-      = number 
     %h3.banner
       = prompt
     
@@ -10,10 +8,22 @@
 
       .points_other#points_other_pro
 
-        = render :partial => "points/column", :locals => { :points => @pro_points, :is_pro => true, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => true, :paginate_after => true, :show_both_arrows => false }
+        %h3
+          Pros by other users
+          = render :partial => 'shared/ledge'
+          .subheader
+            drag important pros into your list
+
+        = render :partial => "points/column", :locals => { :points => @pro_points, :is_pro => true, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
       .points_other#points_other_con
 
-        = render :partial => "points/column", :locals => { :points => @con_points, :is_pro => false, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => true, :paginate_after => true, :show_both_arrows => false }
+        %h3
+          Cons by other users
+          = render :partial => 'shared/ledge'
+          .subheader
+            drag important cons into your list
+
+        = render :partial => "points/column", :locals => { :points => @con_points, :is_pro => false, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
       = render :partial => "points/pro_con_list", :locals => { :pro_points => @included_pros, :con_points => @included_cons, :dynamic => true }

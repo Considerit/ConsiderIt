@@ -8,7 +8,7 @@
       value: #{-1 * @position.stance}, 
       step: .015,
       slide: function(event, ui) {
-        $j('.slider').each(function(){
+        $j('.slider:not(#' + $j(event.currentTarget).attr('id') +')').each(function(){
           if ( ui.value != $j(this).slider('value') ) {
             $j(this).slider("option", "value", ui.value);
             ConsiderIt.positions.set_slider_value(ui.value);
@@ -68,7 +68,7 @@
     - if @proposal.enable_position_statement
       = render :partial => "positions/statement/create", :locals => { :number => 4, :prompt => statement_prompt}
 
-    %li#submitstance.step
+    %li#submitstance
       .rest
 
         .stanceform

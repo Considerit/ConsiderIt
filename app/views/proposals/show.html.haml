@@ -23,7 +23,7 @@
         You #{@position.stance_name_adverb} #{link_to('modify', edit_proposal_position_path(@proposal, @position))}
       
       -else
-        = button_to 'submit your own opinion', new_proposal_position_path(@proposal), :method => :get, :class => "submit_a_position shadow_offset add_corner"
+        = button_to 'submit your own opinion', new_proposal_position_path(@proposal), :method => :get, :class => "submit_a_position important add_corner"
     
     %li.results_narrative
 
@@ -31,7 +31,9 @@
         Explore what people think.
 
       .participant_connection
-        Overall, they
+        .group_name
+          Overall, they
+        .ajax_loading
 
       .points_connection
         consider these to be the most important factors.
@@ -66,39 +68,14 @@
             Show all results
 
 
-    %li.statements
-      - @proposal.positions.published.each do |position|
-        = render :partial => "positions/statement/show", :locals => { :position => position }
+    = render :partial => "proposals/participants", :locals => {  }
+
 
     %li.ranked_points
       .explore#ranked_points
        
         = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :pro_points => @pro_points, :con_points => @con_points }
 
-      .statement_carousel
-
-        .vertical_carousel.vertical
-
-
-          .paginate.first
-            %h3.subheader
-              %button.back.fr  
-                &#x25B2;
-          .carousel
-            %ul
-              - @proposal.positions.published.each do |position|
-                = render :partial => "positions/statement/block", :locals => { :position => position }
-                
-          
-          .paginate.last
-            %button.forward.not_ajax.fr
-              &#x25BC;
-          .clear
-
-        .clear
-
-
-      .clear
     
     %li.clear
 

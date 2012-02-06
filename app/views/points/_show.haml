@@ -1,92 +1,96 @@
 %li.point_in_list{ :id => "point_in_list_#{origin}-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'}" }
   
-  .inner
+  .id.hide
+    = point.id
+    
+  .bullet_point
+    &#8226;
+    //- if point.is_pro
+    //  +
+    //- else 
+    //  &#x2013;
 
-    .id.hide
-      = point.id
-      
-    .bullet_point
-      - if origin != 'margin'
-        &#8226;
-      //- if point.is_pro
-      //  +
-      //- else 
-      //  &#x2013;
+  - if origin == 'margin'
+    .triangle 
 
-    .body
+  .body
 
-      .include.hide
-        = render :partial => "inclusions/new", :locals => { :point => point }
+    .include.hide
+      = render :partial => "inclusions/new", :locals => { :point => point }
 
-      .username
-        - if !point.hide_name && point.user
-          = image_tag point.user.avatar.url(:midsmall), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
+    .username
+      - if !point.hide_name && point.user
+        = image_tag point.user.avatar.url(:midsmall), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
 
-        %a.toggle.less.hide.point_text_toggle
-          close
+      %a.toggle.less.hide.point_text_toggle
+        close
 
-        by 
+      by 
+      - if point.hide_name
+        anonymous
+      - elsif point.user
+        = point.user.name
+      - else
+        unknown
+          
+    .point_text.nutshell 
+
+      - if point.nutshell.length > 0
+        = h point.nutshell
+      - else
+        = h point.text.length > 137 ? point.text[0,137] : point.text
+
+      %span.nested_user
+        \- 
         - if point.hide_name
           anonymous
         - elsif point.user
           = point.user.name
         - else
           unknown
-            
-      .point_text.nutshell 
 
-        - if point.nutshell.length > 0
-          = h point.nutshell
-        - else
-          = h point.text.length > 137 ? point.text[0,137] : point.text
+    
+    .point_text.full
+      .details
+        .the_details       
+          = h simple_format(point.text)
 
-        %span.italic.nested_user
-          \- 
-          - if point.hide_name
-            anonymous
-          - elsif point.user
-            = point.user.name
-          - else
-            unknown
+      .link
+        - if point.point_links.count > 0
+          %ul
+            - point.point_links.each_with_index do |pl, idx|
+              = render :partial => 'point_links/show', :locals => { :point_link => pl, :idx => idx }
 
-      
-      .point_text.full
-        .details
-          .the_details       
-            = h simple_format(point.text)
+    .operations
 
-        .link
-          - if point.point_links.count > 0
-            %ul
-              - point.point_links.each_with_index do |pl, idx|
-                = render :partial => 'point_links/show', :locals => { :point_link => pl, :idx => idx }
+      - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
-      .operations
-        .read_more
-          %a.toggle.more.point_text_toggle.point_operation
-            details / discuss
-            - if point.comments.count > 0
-              (#{point.comments.count})
+      - if point_creator
+        .edit
 
-        - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
-
-        - if point_creator
-          .edit
-            .bullet
-              &#8226;
-
-            %a.editpoint.point_operation
-              edit
-            = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
-
-        .remove
+          %a.editpoint.point_operation
+            edit
+          = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
           .bullet
             &#8226;
-                    
-          -if point_creator
-            = render :partial => "points/delete", :locals => { :point => point } 
-          -else
-            = render :partial => "inclusions/delete", :locals => { :point => point }
+
+      .remove
+                  
+        -if point_creator
+          = render :partial => "points/delete", :locals => { :point => point } 
+        -else
+          = render :partial => "inclusions/delete", :locals => { :point => point }
+
+      .read_more
+        - if origin != 'margin'
+          .bullet
+            &#8226;      
+        %a.toggle.more.point_text_toggle.point_operation
+          read more
+          .comment_count
+            #{point.comments.count}
+          .comment_icon
+            %span
 
 
   = render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :commentable => point, :context => 'point' }

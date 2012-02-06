@@ -1,11 +1,13 @@
+$content_width: 980px
+
 $gutter_color: #B4B4B4
 $link_color: #0342A1
 
-$pro_point_light: #2A8956 //#3A763A
-$con_point_light: #9E4D50 //#763939
+$pro_point_light: #E4F6CE //#2A8956 
+$con_point_light: #FEDFE3 //#9E4D50 
 
-$pro_point_dark: #1C3B1D
-$con_point_dark: #3B1D1D
+$pro_point_dark: darken($pro_point_light, 30%) //#1C3B1D
+$con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 
 @import "mixins"
 @import "carousel"
@@ -42,6 +44,8 @@ $con_point_dark: #3B1D1D
 
 h1, h2, h3, h4, h5, h6
   font-weight: bold
+  //font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif
+  font-family: Candara, Calibri, Segoe, "Segoe UI", Optima, Arial, sans-serif
 
 strong
   font-weight: bold
@@ -77,40 +81,37 @@ table
   border-collapse: separate  
 
 html
-  background-color: $gutter_color
-  background-position: left top
-  background-repeat: repeat-x
   min-height: 100%
   height: 100%
+  background: image-url('texture.png') repeat left top #890000
 
 body
   color: #222
-  font-family: Helvetica Neue, Helvetica, Calibri, sans-serif
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
   font-size: 14px
-  min-height: 100%
-  height: 100%
 
 #wrap
   position: static
   > div
-    width: 940px
+    width: $content_width
     margin: 0 auto
-    padding: 10px 25px
-    background-color: white    
+    padding: 10px 15px
     position: relative    
 
-#content    
-  &:after
-    content: "."
-    display: block
-    height: 0
-    clear: both
-    visibility: hidden
+    &#content   
+      padding-top: 65px
+      background-color: white    
+      box-shadow: 1px 2px 5px #000000
+       
+      &:after
+        content: "."
+        display: block
+        height: 0
+        clear: both
+        visibility: hidden
 
-h2
-  &.sub_follows
-    margin-bottom: 0px
-    line-height: normal
+h2.sub_follows
+  margin-bottom: 0px
 
 p
   margin-bottom: 18px
@@ -150,7 +151,6 @@ input, textarea
 input[type="text"], input[type="password"], input[type="email"], textarea
   border: 1px solid #7E7E7E
   color: #333
-  font-family: Helvetica, Arial, sans-serif
   font-size: 14px
   vertical-align: top
   margin: 3px 2px
@@ -162,6 +162,8 @@ input[type="text"], input[type="password"], input[type="email"], textarea
     background-color: #eee  
     border-color: black
 
+
+
 button,
 input[type="submit"]
   color: white
@@ -172,11 +174,27 @@ input[type="submit"]
   &:focus
     background-color: gray
     border-color: gray
+  
+  &.important
+    -moz-box-shadow: 1px 1px 2px rgba(0, 0, 0, .8)
+    -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .8)
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, .8)
+    color: white
+
+    background: #45484d /* Old browsers */
+    background: -moz-linear-gradient(top,  #45484d 0%, #000000 100%) /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#45484d), color-stop(100%,#000000)) /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #45484d 0%,#000000 100%) /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #45484d 0%,#000000 100%) /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #45484d 0%,#000000 100%) /* IE10+ */
+    background: linear-gradient(top,  #45484d 0%,#000000 100%) /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=0 ) /* IE6-9 */
+
 
 button.gray,
 input[type="submit"].gray  
-  backgroundcolor: #999
-  backgroundimage: webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(119,119,119)), color-stop(1, rgb(204,204,204)))
+  background-color: #999
+  background-image: webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(119,119,119)), color-stop(1, rgb(204,204,204)))
   background-image: -moz-linear-gradient(center bottom, rgb(119,119,119) 7%, rgb(204,204,204) 100%)
   color: #272727
   font-size: 12px
@@ -186,13 +204,26 @@ input[type="submit"].gray
     opacity: 1
 
 
+.loading .ajax_loading
+  display: block
+
+.ajax_loading
+  background-image: image-url("ajax-loader.gif") 
+  display: none
+  width: 15px
+  height: 15px
+  
 
 .head
+  text-align: center
   h3.banner
-    font-size: 24px
+    font-size: 28px
     margin-bottom: 0px
-    line-height: normal
     display: inline
+    text-align: center
+    color: #555
+    font-weight: normal
+    @include outset-text
         
     a
       text-decoration: underline
@@ -217,12 +248,18 @@ input[type="submit"].gray
   height: 100%
   z-index: -100
 
-.shadow_centered
-  -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
-  -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
-  box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
-
 .shadow_offset
   -moz-box-shadow: 2px 4px 0.5em rgba(0, 0, 0, 0.8)
   -webkit-box-shadow: 2px 4px 0.5em rgba(0, 0, 0, 0.8)
   box-shadow: 2px 4px 0.5em rgba(0, 0, 0, 0.8)
+
+hr.ledge
+  width: 100%
+  margin: auto
+  border: none
+  height: 1px
+  &.top
+    background-color: rgba(white, .15)
+  &.bottom
+    background-color: rgba(black, .15)
+

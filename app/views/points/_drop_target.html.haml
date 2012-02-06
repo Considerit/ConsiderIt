@@ -1,13 +1,10 @@
-.droppable{ :id => "drop-#{position == 1 ? 'pro' : 'con'}"}
-  .bullet_point.hide
-    -if position == 1
-      +
-    - else 
-      &#x2013;
+.droppable
+  
+  = image_tag 'drop_instruction_right.png', :class => 'drop_instruction right'
   
   .prompt
-    %strong
-      drag and drop     
-    #{position == 1 ? 'pros' : 'cons'} you agree with.
+    Drag and drop important points by other users into your list.
+
+  = image_tag 'drop_instruction_left.png', :class => 'drop_instruction left'
   
   .clear

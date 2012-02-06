@@ -1,6 +1,5 @@
 .proposal_prompt
 
-  background-color: #E6E6E6 
   position: relative
   margin: 0px 0 20px 0
   padding-bottom: 15px
@@ -15,25 +14,22 @@
     float: left
     width: 175px
     height: 162px
-    margin: 25px 18px 0 13px
-    background: image-url('placeholder-tax.png') no-repeat scroll top left
+    margin: 15px 18px 0 13px
+    background: none no-repeat scroll top left
 
   #full_desc_block
-    background-color: #D0D0D0
-    position: absolute
-    right: 0
-    top: 0
     a
-      padding: 6px 10px
-      display: inline-block
-      color: #999
       text-decoration: underline
-      font-size: 12px
+      color: black
+      opacity: .8
+      &:hover
+        opacity: 1
+
 
   .description_wrapper
     float: left
     width: 580px
-    margin: 15px 70px 0 0px
+    margin: 0 70px 0 0px
 
     .init_text
       vertical-align: top
@@ -41,7 +37,6 @@
       h2.locality
         font-size: 16px
         font-weight: normal
-        line-height: 20px
         color: #999
         font-variant: small-caps
         text-transform: lowercase
@@ -50,15 +45,9 @@
         margin-bottom: 5px
         font-size: 24px
         font-weight: bold
-        line-height: 25px
         text-transform: capitalize
         padding-bottom: 5px
         color: #272727
-
-      > p
-        width: 90%
-        padding: 5px 0px
-        line-height: 18px
 
     .full_text, .long_description, .additional
       width: 480px

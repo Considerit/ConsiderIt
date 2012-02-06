@@ -1,6 +1,30 @@
-<div class="stance_chart">
+.stance_chart
 
-<script type="text/javascript+protovis">
+<!-- <svg font-size="10px" font-family="sans-serif" fill="none" stroke="none" stroke-width="1.5" width="440" height="180">
+  <g>
+    <rect x="377" y="58.99122807017544" width="60" height="121.00877192982456" fill="rgb(167,158,189)" stroke="rgb(0,0,0)" stroke-width="0.5"/>
+    <rect x="317" y="45.719298245614056" width="60" height="134.28070175438594" fill="rgb(167,158,189)" stroke="rgb(0,0,0)" stroke-width="0.5"/>
+    <rect x="257" y="119.10526315789474" width="60" height="60.89473684210525" fill="rgb(167,158,189)" stroke="rgb(0,0,0)" stroke-width="0.5"/>
+    <rect x="197" y="123.00877192982458" width="60" height="56.99122807017543" fill="rgb(167,158,189)" stroke="rgb(0,0,0)" stroke-width="0.5"/>
+    <rect x="137" y="126.13157894736841" width="60" height="53.86842105263158" fill="rgb(167,158,189)" stroke="rgb(0,0,0)" stroke-width="0.5"/>
+    <rect x="77" y="5.122807017543863" width="60" height="174.87719298245614" fill="rgb(167,158,189)" stroke="rgb(0,0,0)" stroke-width="0.5"/>
+    <rect x="17" y="2" width="60" height="178" fill="rgb(167,158,189)" stroke="rgb(0,0,0)" stroke-width="0.5"/>
+  </g>
+   <g>
+    <text pointer-events="none" y="3" dy=".71em" transform="translate(407, 61.9912)" fill="rgb(255,255,255)" text-anchor="middle" style="font: 11.3596px sans-serif;">15.5%</text>
+    <text pointer-events="none" y="3" dy=".71em" transform="translate(347, 48.7193)" fill="rgb(255,255,255)" text-anchor="middle" style="font: 11.5088px sans-serif;">17.2%</text>
+    <text pointer-events="none" y="3" dy=".71em" transform="translate(287, 122.105)" fill="rgb(255,255,255)" text-anchor="middle" style="font: 10.6842px sans-serif;">7.8%</text>
+    <text pointer-events="none" y="3" dy=".71em" transform="translate(227, 126.009)" fill="rgb(255,255,255)" text-anchor="middle" style="font: 10.6404px sans-serif;">7.3%</text>
+    <text pointer-events="none" y="3" dy=".71em" transform="translate(167, 129.132)" fill="rgb(255,255,255)" text-anchor="middle" style="font: 10.6053px sans-serif;">6.9%</text>
+    <text pointer-events="none" y="3" dy=".71em" transform="translate(107, 8.12281)" fill="rgb(255,255,255)" text-anchor="middle" style="font: 11.9649px sans-serif;">22.4%</text>
+    <text pointer-events="none" y="3" dy=".71em" transform="translate(47, 5)" fill="rgb(255,255,255)" text-anchor="middle" style="font: 12px sans-serif;">22.8%</text>
+  </g>
+
+ </svg>
+ -->
+
+
+%script{:type => "text/javascript+protovis"}
   spacing = 0;
 
   function get_width(){
@@ -107,11 +131,3 @@
 	  
 	  protovis_stance_has_been_rendered = true;
 	}
-  
-
-</script>
-
-
-
-
-</div>

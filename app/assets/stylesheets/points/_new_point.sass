@@ -1,99 +1,77 @@
 .newpoint
-  width: 215px
-  margin: 20px 0
+  margin: 0 0 15px 0
+  top: -19px
+  position: relative
 
-  .newpointform
-    padding: 5px
-      
-.newpointbutton 
-  button
+  .bullet_point
+    top: 9px
 
-    font-size: 135%
-    width: 240px
-    height: 50px
-    border: none
+  .newpointbutton 
+    
+    button
+      background-color: inherit
+      color: white
+      font-size: 20px
+      width: 240px
+      //height: 40px
+      border: none
+      padding: 5px
+      position: relative
+      padding-left: 10px
+      text-align: left
+      opacity: .75
+      text-decoration: underline
 
-    &.pro
-      background: image-url('write-pro.png') left top no-repeat
       &:hover
-        background-image: image-url('write-pro-hover.png')
-
-    &.con
-      background: image-url('write-con.png') left top no-repeat
-      &:hover
-        background-image: image-url('write-con-hover.png')
+        opacity: 1
 
 
-#points_on_board_pro
-  .pointform form
-    left: 0
-
-#points_on_board_con
-  .pointform form
-    left: -246px
+      // &.pro
+      //   background-color: rgba($pro_point_light, .5)
+      //   border: 2px solid lighten($pro_point_light, 10%)
+          
+      // &.con
+      //   background-color: rgba($con_point_light, .5)
+      //   border: 2px solid lighten($con_point_light, 10%)
   
 .pointform
+  background-image: -moz-linear-gradient(center top , rgba(255, 255, 255, 0) 13%, rgba(255, 255, 255, 0.05) 100%)
+  border-radius: 5px
+  padding: 0 5px
+
   display: none
-  margin-top: -55px
+  //margin-top: -55px
 
   > form
-    width: 460px
-    margin: auto
-    position: absolute
-    z-index: 1000
-    padding: 5px 8px
-    border: 3px solid
-
-    &.form-pro
-      border-color: $pro_point_dark
-      background-color: $pro_point_light
-
-      .bullet_point
-        color: $pro_point_dark
-
-    &.form-con
-      border-color: $con_point_dark
-      background-color: $con_point_light
-
-      .bullet_point
-        color: $con_point_dark
-
-    .symbol
-      display: block
-      float: left
-    
+    background-color: transparent
+          
     .form_proper
-      width: 415px
-      padding-left: 30px
-
-      .username
-        font-size: 10px
-        color: #C1C1C1
 
       p.note
         color: #C1C1C1
-      
-      .point-title, 
-      .point-description
-        width: 350px
+
+      textarea, textarea:focus
+        background-color: transparent
+        margin-left: 6px
+        border-color: #666
+        font-size: 13px
+        width: 91%
+        color: #e1e1e1        
 
       .count
-        color: #C1C1C1
+        color: #888
         display: inline-block
-        margin-left: 5px
+        position: relative
+        float: right
+        font-size: 11px
 
       .point-title-group
-        margin-bottom: 10px
         .point-title
-          height: 50px
-        .count
-          margin-top: 25px          
+          height: 90px
 
       .point-description-group
         .point-description
-          height: 70px  
-        .count
-          margin-top: 35px
+          height: 120px  
 
       .point-pledge
         float: left
@@ -101,7 +79,17 @@
 
       .point-submit
         float: right
-        margin-right: 38px
+        margin: 4px 0 0 0
+        font-weight: bold
+
+
+        input
+          background-color: transparent
+          padding: 0
+          opacity: .8
+
+          &:hover
+            opacity: 1
 
       .point-cancel
         float: right
@@ -110,13 +98,16 @@
           color: #C1C1C1
           padding: 5px
           font-size: 12px
+          opacity: .8
+          &:hover
+            opacity: 1
 
       .hide_name
-        font-size: 11px
-        margin: 12px 0
-        width: 200px
+        font-size: 12px
+        margin: 8px 0 12px 4px
 
         label
           color: #C1C1C1
           letter-spacing: 0
           text-transform: inherit
+          margin-left: 3px

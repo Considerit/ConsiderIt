@@ -7,8 +7,8 @@ module ProposalHelper
       distribution[row.stance_bucket.to_i] = row.cnt.to_i
     end      
     total = distribution.inject(:+).to_f    
-    distribution.collect! { |stance_count| sprintf "%.1f", (100 * stance_count / total) }
-    return '[' + distribution.join(',') + ']'
+    distribution.collect! { |stance_count| 100 * stance_count / total }
+    return distribution
   end
 
   # def number_responses( comment )

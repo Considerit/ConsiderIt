@@ -3,10 +3,14 @@
     %a.view_statement
       .avatar
         - if position.user.avatar
-          = image_tag position.user.avatar.url(:large), :alt => "#{h position.user.name}'s profile picture"
+          = image_tag position.user.avatar.url(:small), :alt => "#{h position.user.name}'s profile picture"
         .username
-          = h position.user.short_name    
+          = h position.user.name    
 
       .userid.hide
         #{position.user_id}
+
+
+    .full_position_details.hide
+      = render :partial => "positions/statement/show", :locals => { :position => position }
   

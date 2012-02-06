@@ -2,13 +2,16 @@
   padding: 0px 5px
   vertical-align: top
   margin: auto
+  position: relative
+  font-family: Verdana,Geneva,sans-serif
 
-  background: transparent image-url("chalk/chalkboard.png") repeat scroll top left                                
+  background: transparent image-url("chalk/chalkboard.jpg") repeat scroll top left                                
   border: 3px solid
   border-top-color: #bbb
   border-right-color: #222
   border-left-color: #777
   border-bottom-color: #222
+  box-shadow: 2px 2px 4px rgba(black, .7)
   
   > div
     position: relative      
@@ -19,22 +22,26 @@
       height: 120px 
       width: 200px
       margin: 0 auto
+      position: relative
+      background: transparent image-url("chalk/point_header_back.png") no-repeat scroll top center
 
-      &.pro_header
-        background: transparent image-url("chalk/pro_back.png") no-repeat scroll top center
-        padding-left: 20px
-
-      &.con_header
-        background: transparent image-url("chalk/con_back.png") no-repeat scroll top center
+      .inner
+        position: relative
+        top: 28px
+        left: 46px
+        font-size: 45px
+        color: #ddd
+        font-variant: small-caps
+        font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif
 
 
     &#points_on_board_pro
       float: left
-      margin: 0 5px 0 25px
+      padding: 0 5px 0 25px
 
     &#points_on_board_con
       float: right
-      margin-right: 25px
+      padding-right: 25px
 
 
 
@@ -44,6 +51,13 @@
     min-height: 550px
 
     .full_column
+      
+      &#points_on_board_pro
+        padding: 0 5px 0 35px
+
+      &#points_on_board_con
+        padding-right: 30px
+
       .carousel
         top: -25px
         position: relative
@@ -55,11 +69,11 @@
         .paginate
           color: #C1C1C1
 
-        .forward
-          background-image: image-url('arrow-down-light.png')
+        //.forward
+        //  background-image: image-url('arrow-down-light.png')
         
-        .back
-          background-image: image-url('arrow-up-light.png')
+        //.back
+        //  background-image: image-url('arrow-up-light.png')
 
 
 
@@ -71,26 +85,36 @@
     .full_column
       width: 240px
       border: 2px solid transparent
+      min-height: 670px
 
     .hovered
       border-color: #777
 
       .droppable
         color: #eee
-        border-color: #eee
 
     .droppable
-      border: 2px dashed #666
-      color: #666
-      padding: 13px 15px
-      width: 203px
-      line-height: normal
-      position: relative
-      height: 39px
-      margin-bottom: 5px
+      position: absolute
+      left: 0
+      top: 282px
+      margin: auto      
+      color: rgba(#aaa, .8)
+      width: 570px
+      font-size: 13px
+      text-align: center
+
       .prompt
-        width: 160px
-        padding-left: 20px
+        width: 200px
+        margin: 51px auto 0 auto
+        display: inline-block
+
+      .drop_instruction
+        position: absolute
+        &.right
+          left: 0
+        &.left
+          right: 0
+
 
 
 
@@ -101,4 +125,4 @@
   top: 2px
   left: 1px
   font-family: Impact, Impact5, Charcoal6, sans-serif
-  color: #777
+  color: #ccc

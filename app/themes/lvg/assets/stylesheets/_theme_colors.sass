@@ -1,28 +1,27 @@
 $primary_button_background_color: #082872
 
-$dark_background_theme: #0342A1
-$light_background_theme: #ADCDFF
-$medium_background_theme: #74ABFF
+$dark_background_theme: desaturate(#0342A1, 35%)
+$light_background_theme: #d7d7d7 //#e4def9 //desaturate(#ADCDFF, 35%)
+$medium_background_theme: desaturate(#74ABFF, 35%)
 
 $dark_header_background: #710000
 
 button,
 input[type="submit"]
-  background-color: $primary_button_background_color
-  color: white
+  background-color: gray
   border: none
+  color: white
+  &.important
+    //background-color: $primary_button_background_color    
+
   
 #craft_position > ol 
   li.step
-    .head .ol_number
-      background-color: $dark_background_theme
 
     &.considerations
       background-color: $light_background_theme
-
     &.slide
       background-color: $medium_background_theme
-
     &.statement
       background-color: $light_background_theme
 
@@ -33,4 +32,4 @@ input[type="submit"]
       background-color: $light_background_theme
 
 #wrap #footer
-  background-color: white
+  //background-color: white

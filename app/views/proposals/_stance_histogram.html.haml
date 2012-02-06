@@ -1,0 +1,40 @@
+- proposal_stance_data = stance_fractions(@proposal)
+- bar_width = 60
+- max_bar_height = 178
+- height_scaler = proposal_stance_data.max
+- selected_color = "#A79EBD"
+- deselected_color = "#949494"
+- hover_color = '#333'
+
+.stance_chart
+
+  %svg{ 'font-family'.intern => 'sans-serif', 'font-size'.intern => '10px', :fill => "none", :stroke => "none", 'stroke-width'.intern => 1.5, :width => bar_width * 7 + 20, :height => max_bar_height}
+    
+    %g
+      - proposal_stance_data.each_with_index do |bucket_percentile, index| 
+        - height = bucket_percentile * max_bar_height / height_scaler
+        %rect{ :x => 17 + index * bar_width, :y => max_bar_height - height, :width => bar_width, :height => height, :fill => selected_color, :stroke => "rgb(0,0,0)", 'stroke-width'.intern => 0.5, :idx => index}
+
+:javascript
+  var selected = -1;
+  function reset_selected_idx(){
+    selected = -1;
+    $j('.stance_chart svg rect').attr('fill', "#{selected_color}")
+  }
+
+  $j(document).ready(function(){
+    $j('.stance_chart svg rect').mouseover(function(){
+      $j(this).attr('fill', "#{hover_color}");
+    });
+
+    $j('.stance_chart svg rect').mouseout(function(){
+      $j(this).attr('fill', selected == -1 || $j(this).attr('idx') == selected ? "#{selected_color}" : "#{deselected_color}");
+    });    
+
+    $j('.stance_chart svg rect').click(function(){
+      $j(this).siblings().attr('fill', "#{deselected_color}");
+      $j(this).attr('fill', "#{selected_color}");
+      selected = $j(this).attr('idx');
+      ConsiderIt.positions.stance_group_clicked(selected);
+    });
+  });

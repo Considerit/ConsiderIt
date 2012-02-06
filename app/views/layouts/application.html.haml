@@ -1,5 +1,5 @@
 !!! Strict
-%html(xmlns="http://www.w3.org/1999/xhtml"){:style => "background-image: url(#{current_theme_image_path 'bg-body.png'});"}
+%html(xmlns="http://www.w3.org/1999/xhtml")
   %head{ :profile => "http://gmpg.org/xfn/1" }
     - if @title
       %title
@@ -30,8 +30,8 @@
     = stylesheet_link_tag current_theme_stylesheet_path('considerit.theme')
     
     /[if IE]
-      = javascript_include_tag "svg", :"data-path" => "/javascripts/"
-      %meta{ :content => "true", :name => "svg.render.forceflash"}
+      /= javascript_include_tag "svg", :"data-path" => "/javascripts/"
+      /%meta{ :content => "true", :name => "svg.render.forceflash"}
       = stylesheet_link_tag 'ie'
     /[if lt IE 8]
       = stylesheet_link_tag 'ie7'
@@ -39,6 +39,7 @@
       = stylesheet_link_tag 'ie6'
     
     = javascript_include_tag 'application'
+
       
     :javascript
       $j = jQuery.noConflict();

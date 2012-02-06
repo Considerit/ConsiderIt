@@ -9,3 +9,32 @@
     font-weight: bold
     text-outline: none
     
+
+@mixin curl-shadow
+  box-shadow: 0 1px 1px 0 rgba(black,0.2)
+  position: relative
+
+  &:before, &:after
+    content: ""
+    position: absolute
+    width: 170px
+    height: 100px
+    z-index: -1
+    box-shadow: 0 14px 2px 0 rgba(black,0.3)
+    bottom: 14px
+
+  &:before
+    -webkit-transform: rotate(-5deg) skewX(-5deg)
+    -moz-transform: rotate(-5deg) skewX(-5deg)
+    left: 1px
+
+  &:after
+    -webkit-transform: rotate(5deg) skewX(5deg)
+    -moz-transform: rotate(5deg) skewX(5deg)
+    right: 1px
+
+@mixin inset-text
+  text-shadow: rgba(white, .4) -1px -1px
+
+@mixin outset-text
+  text-shadow: rgba(black, .1) 1px 1px

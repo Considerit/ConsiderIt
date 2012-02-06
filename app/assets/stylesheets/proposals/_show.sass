@@ -51,20 +51,24 @@
               color: #272727
 
       &.results_narrative
-        color: #363636
+        color: #555
         font-size: 22px
         position: relative
-        font-weight: 200
+        //font-weight: 200
+        font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif
+
+        &.loading
+          color: #aaa
 
         .action_call
           position: absolute
-          top: 52px
+          top: 57px
           width: 155px
           left: 15px
 
         .participant_connection
           position: absolute
-          right: 175px
+          left: 634px
           top: 70px
 
         .points_connection
@@ -72,6 +76,75 @@
           top: 390px
           width: 164px
           right: 77px
+
+      &.statements
+        .statement_carousel
+          background-color: transparent
+          position: absolute
+          top: -128px
+          right: 23px
+
+          .vertical
+            .paginate
+              padding-top: 27px
+              width: 100%
+              button
+                color: #353535
+                padding-right: 25px
+                position: absolute
+                right: -38px
+
+                &.back
+                  top: 100px
+
+                &.forward
+                  top: 150px
+
+              h3.subheader
+                padding-bottom: 0
+
+            .carousel
+              width: 200px
+
+              li.statement
+                background-color: inherit
+                margin: auto
+                display: inline-block
+                float: right
+
+                &.active
+                  z-index: 1002
+                  position: relative
+                  .view_statement .avatar .username
+                    display: none
+                &:hover
+                  .view_statement .avatar .username
+                    display: block
+
+                a.view_statement
+                  text-align: center  
+                  color: #333
+                  position: relative
+
+                  &:hover .avatar .username
+                    display: block
+                  
+                  .avatar
+                    position: relative
+                    height: 45px
+
+                    img
+                      width: 45px
+                      height: 45px
+
+                    .username
+                      display: none
+                      font-size: 8pt
+                      color: white
+                      background-color: rgba(black, .5)
+                      position: absolute
+                      bottom: 0px
+
 
 
       &.breakdown
@@ -129,7 +202,7 @@
           left: 251px
           color: #999
           font-size: 13px
-          width: 175px
+          width: 197px
           text-align: center
 
           .label
@@ -153,23 +226,14 @@
 
       &.ranked_points
         position: relative
-        h3
-          font-size: 26pt
-          line-height: 20pt
-          &.subheader
-            font-size: 10pt
-            color: #777
-            line-height: 15pt
-            padding-bottom: 5px
-            font-weight: normal
-          strong 
-            font-weight: normal
-
 
         .explore#ranked_points
           position: relative
           margin: 0
           padding: 0 10px
+
+          &.loading
+            opacity: .7
 
           .pro_con_list
             margin-left: 64px
@@ -183,80 +247,11 @@
           .extra 
             padding: 3px 0 0 2px        
         
-        .statement_carousel
-          background-color: transparent
-          position: absolute
-          top: -128px
-          right: 0px
-
-          .vertical
-            .paginate
-              padding-top: 27px
-              width: 100%
-              button
-                color: #353535
-                padding-right: 25px
-              h3.subheader
-                padding-bottom: 0
-
-            .carousel
-              width: 200px
-
-              li.statement
-                background-color: inherit
-                margin: auto
-                display: inline-block
-                float: right
-                opacity: .85
-
-                &.active
-                  z-index: 1002
-                  position: relative
-                  opacity: 1
-                  .view_statement .avatar 
-                    .username
-                      display: none
-                &:hover
-                  opacity: 1
-
-                a.view_statement
-                  text-align: center  
-                  color: #333
-                  position: relative
-
-                  &:hover .avatar .username
-                    display: block
-                  
-                  .avatar
-                    position: relative
-                    height: 45px
-
-                    img
-                      width: 45px
-                      height: 45px
-
-                    .username
-                      display: none
-                      font-size: 10pt
-                      color: #333
-                      line-height: 9pt
-                      background-color: rgba(150, 150, 150, 0.75)
-                      position: absolute
-                      bottom: 8px
-                      width: 85px
-                      margin-left: 3px
-                      overflow: hidden
-
-                      /* For IE 8*/
-                      -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#bb777777, endColorstr=#bb777777)"  
-
-        
-
-        
 
       &.statements
         background-color: transparent
         position: relative
+        z-index: 1000
 
         .position_statement
           position: absolute

@@ -12,7 +12,8 @@ class ProposalsController < ApplicationController
     @keywords = "#{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
 
     @position = current_user ? current_user.positions.where(:proposal_id => @proposal.id).first : nil
-    
+    @positions = @proposal.positions.published
+
     if !@position && (!params.has_key? :redirect || params[:redirect] == 'true' )
       redirect_to(new_proposal_position_path(@proposal))
       return

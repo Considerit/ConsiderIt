@@ -1,62 +1,31 @@
 
-li.point_in_list
+.point_in_list
   @include nude-list
   position: relative
   margin-bottom: 8px
   color: white
   background-repeat: no-repeat
   //border: 1px solid
-  -moz-box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)
-  -webkit-box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)
   box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)  
   width: 232px
-
-  .less.point_text_toggle
-    float: right
-    color: white 
-
-  &.con
-    .username .avatar
-      border-color: $con_point_dark
-
-    .bullet_point
-      //color: $con_point_dark
-
-             
-  &.pro
-    .username .avatar
-      border-color: $pro_point_dark
-
-    .bullet_point
-      //color: $pro_point_dark
+  border: 1px solid transparent
 
   &:hover .body .operations
     // visibility: visible
 
+  > .extra
+    display: none
   > .body
     overflow: hidden
     vertical-align: top
     padding: 3px 10px 3px 10px
 
-    .username
-      font-size: 10px
-      color: #C1C1C1
-      padding-bottom: 2px
+    .avatar
       display: none
 
-      .avatar
-        display: none
-        position: absolute
-        top: -70px
-        border-style: solid
-    
     .nested_user
-      font-size: 11px
       white-space: nowrap
       font-style: italic
-
-    .point_text
-      font-family: Verdana, Geneva, sans-serif
 
     .point_text.nutshell
       font-size: 13px
@@ -164,8 +133,17 @@ li.point_in_list
     margin-bottom: 18px
 
 
+    &:hover
+      background: image-url('paper.png') repeat left top transparent
+
+      &.pro
+        background-color: $pro_point_expanded
+      &.con
+        background-color: $con_point_expanded
+
+
     &:hover .triangle
-      display: block
+      //display: block
 
     .triangle
       position: absolute
@@ -183,19 +161,15 @@ li.point_in_list
       border-style: solid
       box-shadow: -1px 1px 1px rgba(#aaa,.1)
 
-    &.expanded
-      cursor: auto
-      opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
-      
-      &:after, &:before
-        box-shadow: none
 
     &.pro
       background-color: $pro_point_light
+      border-right: none
       //border-color: $pro_point_dark
 
     &.con
       background-color: $con_point_light
+      border-left: none
       //border-color: $con_point_dark
 
     .include
@@ -213,7 +187,6 @@ li.point_in_list
         font-size: 11px
         opacity: .7
         color: black
-        width: 145px
 
       .operations        
 
@@ -234,29 +207,8 @@ li.point_in_list
       
     width: 255px
     border-color: transparent
-    -moz-box-shadow: none
-    -webkit-box-shadow: none
     box-shadow: none
       
-    &.expanded
-      -moz-box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
-      -webkit-box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
-      box-shadow: 0 0 .5em rgba(0, 0, 0, .8)
-
-    &.con
-      .bullet_point
-        //color: #844
-      &.expanded
-        .bullet_point
-          //color: $con_point_dark
-
-    &.pro
-      .bullet_point
-        //color: #686
-      &.expanded
-        .bullet_point
-          //color: $pro_point_dark
-
     .body
       padding: 3px 5px 3px 13px
             
@@ -269,6 +221,7 @@ li.point_in_list
         a.point_operation, 
         button.point_operation,
         input.point_operation 
+          @include linkify
           color: #777
           &:hover
             color: #C1C1C1                
@@ -285,6 +238,7 @@ li.point_in_list
 
 
   &.point_in_list_board
+    width: 310px
 
     .scores
       float: right
@@ -306,28 +260,200 @@ li.point_in_list
             background-color: black
             color: white
 
-  &.expanded
-    height: auto
 
-    &.pro
-      background-color: $pro_point_light
-    &.con
-      background-color: $con_point_light    
+.point_in_list.expanded
+  border-color: #444
+  box-shadow: 0px 1px 2px rgba(black, .4)
+  z-index: 1001
+  position: absolute
 
-    .include
-      display: none
-    &.pro, &.con
-      
-      background-image: none
+  .body
+    overflow: visible
 
-      .body .username
-        display: block
-
-        .nested_user
-          display: none
+    .avatar
+      margin-right: 15px
+      width: 58px
+      margin-top: 5px
+      box-shadow: 0px 1px 2px rgba(black, .2)
+      position: absolute
 
     .operations
       display: none
 
+  .extra
+    position: absolute
+    top: -1px
+    
+    
+    padding: 100px 0 20px 0
+    background: inherit
+    color: black
+    z-index: -1
+    border: 1px solid transparent
+    display: block
+    min-height: 125px
+
+    .less.point_text_toggle
+      display: none
+
+    &.animation_state-extra_expand
+      padding-top: 130px
+      display: block
+      border-color: #444    
+      box-shadow: 0px 1px 2px rgba(black, .4) 
+
+    > *
+      visibility: hidden
+
+  .body > .nutshell
+    
+    &.animation_state-nutshell_spill
+      font-size: 20px
+      width: 650px
 
 
+  &.pro
+    border-radius: 5px 0 0 5px
+    
+    .nutshell
+      left: 16px
+
+    .extra
+      border-radius: 0 5px 5px 5px
+
+    &:after
+      right: -2px
+
+  &.con
+    border-radius: 0 5px 5px 0px
+
+    .nutshell
+      right: 10px
+
+    .body .avatar
+      left: -569px
+
+    .extra
+      border-radius: 5px 0 5px 5px
+
+    &:after
+      left: 0px
+
+  &.point_in_list_self, &.point_in_list_board
+    background: image-url('chalk/chalkboard.jpg') repeat top left #333
+
+    .remove
+      display: none
+
+    .extra, body > .nutshell, &.animation_state-finished .toggle.less
+      color: #EDEDED
+
+    .extra.animation_state-extra_expand
+      width: 630px
+      border: 5px solid white
+      border-radius: 5px
+      top: -10px
+      padding-right: 40px
+      padding-left: 80px
+
+    .toggle.less
+      top: 0
+
+    &.pro 
+      .avatar
+        left: -60px
+
+      .nutshell.animation_state-nutshell_spill
+
+      .extra.animation_state-extra_expand
+        left: -75px
+
+    &.con 
+      .avatar
+        left: -335px
+
+      .nutshell.animation_state-nutshell_spill
+        left: -265px
+      
+      .extra.animation_state-extra_expand
+        left: -350px
+
+      .extra .less
+        right: 6px
+
+
+  &.point_in_list_margin
+    background: image-url('paper.png') repeat left top transparent
+    cursor: auto
+    opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
+    
+    .body > .nutshell
+      color: black
+    
+    &:hover
+      .triangle
+        display: none
+
+    &:after, &:before
+      box-shadow: none
+
+    .include
+      display: none
+
+    .extra
+      width: 0px
+
+    &:after
+      content: ''
+      top: 0
+      width: 5px
+      height: 133px
+      position: absolute
+      background: inherit
+    
+    .toggle.less
+      top: 5px
+
+    .extra.animation_state-extra_expand
+      width: 488px
+
+    &.pro 
+      background-color: $pro_point_expanded
+      .nutshell.animation_state-nutshell_spill
+        left: 100px
+      .extra.animation_state-extra_expand
+        left: 172px
+        padding-right: 80px
+        padding-left: 40px
+
+    &.con 
+      background-color: $con_point_expanded  
+      .nutshell.animation_state-nutshell_spill
+        left: -496px
+      
+      .extra.animation_state-extra_expand
+        left: -608px
+        padding-right: 40px
+        padding-left: 80px
+
+      .extra .less
+        right: -164px
+
+
+  &.animation_state-finished
+    .nutshell
+      font-family: Georgia, Times, "Times New Roman", serif
+      font-size: 22px
+    .extra
+   
+      > *
+        visibility: visible
+      
+      .less
+        display: block
+        position: absolute
+        color: #424242
+        right: 5px
+
+
+  

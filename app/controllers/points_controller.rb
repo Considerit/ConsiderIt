@@ -39,8 +39,6 @@ class PointsController < ApplicationController
     if @bucket == 'all' || @bucket == ''
       group_name = 'all'
       qry = qry.ranked_overall
-      
-
     elsif @bucket[0..3] == 'user'
       group_name = 'user'
       user_points_id = @bucket[5..@bucket.length].to_i
@@ -185,6 +183,12 @@ class PointsController < ApplicationController
     }
     render :json => response.to_json
 
+  end
+
+  def show
+    point = Point.find(params[:id])
+    point_details = render_to_string :partial => "points/details", :locals => { :point => point }
+    render :json => { :details => point_details }
   end
 
   def destroy

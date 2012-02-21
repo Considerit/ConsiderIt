@@ -1,3 +1,10 @@
+@mixin heading
+  font-family: Georgia, Times, "Times New Roman", serif
+
+@mixin chalk
+  font-family: 'Chelsea Market', sans-serif
+  color: #ddd
+
 @mixin nude-list
   list-style: none outside none
 
@@ -8,6 +15,20 @@
   &:hover
     font-weight: bold
     text-outline: none
+
+@mixin flip-horizontal
+  -moz-transform: scaleX(-1)
+  -o-transform: scaleX(-1)
+  -webkit-transform: scaleX(-1)
+  transform: scaleX(-1)
+  filter: FlipH
+  -ms-filter: "FlipH"
+
+@mixin linkify 
+  background-color: transparent
+  color: inherit
+  border: none
+  cursor: pointer
     
 
 @mixin curl-shadow

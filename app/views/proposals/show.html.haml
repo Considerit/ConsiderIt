@@ -10,75 +10,50 @@
   #position_id.hide
     - if @position
       = @position.id
+
+  = render :partial => "proposals/description", :locals => {:hide_initially => true, :prompt => "What people think about #{@proposal.category} #{@proposal.designator}"}
   
   %ol    
-    %li.head
-      = render :partial => "proposals/description", :locals => {:hide_initially => true}
-    
-    %li.personal_position
-      -if @position && @position.published
-        //.you_slider
-        //  = image_tag "slider.png", :title => "This is where you stand on #{@proposal.designator}."
-        
-        You #{@position.stance_name_adverb} #{link_to('modify', edit_proposal_position_path(@proposal, @position))}
-      
-      -else
-        = button_to 'submit your own opinion', new_proposal_position_path(@proposal), :method => :get, :class => "submit_a_position important add_corner"
-    
-    %li.results_narrative
-
-      .action_call
-        Explore what people think.
-
-      .participant_connection
-        .group_name
-          Overall, they
-        .ajax_loading
-
-      .points_connection
-        consider these to be the most important factors.
-        
+                
     %li.breakdown
-      .head
       
-        %table.bars
-          %tr
-            %td
-            %td.viz
-              = render :partial => "proposals/stance_histogram"
-            %td
-                  
-          %tr.vizbase
-            %td.first
-              .inner
-                Support
-            %td.middle
-              .pedestal
-            %td.last
-              .inner
-                Oppose
-      
-      .position_marker
+      .pre
+        .personal_position
+          -if @position && @position.published
+            //.you_slider
+            //  = image_tag "slider.png", :title => "This is where you stand on #{@proposal.designator}."
+            
+            You #{@position.stance_name_adverb} #{link_to('update', edit_proposal_position_path(@proposal, @position))}
+          
+          -else
+            You haven't spoken yet
+            = button_to 'contribute a position', new_proposal_position_path(@proposal), :method => :get, :class => "submit_a_position"
+        .action
+          Click a bar to learn more
 
-        .showing_all
-          Click a bar to filter the results
+      .histogram_arrow
+        .support
+          support
+        .oppose
+          oppose
 
-        .showing_filtered.hide
-          %a.show_all
-            Show all results
-
-
-    = render :partial => "proposals/participants", :locals => {  }
-
+      .histogram
+        .viz
+          = render :partial => "proposals/stance_histogram"
 
     %li.ranked_points
+
       .explore#ranked_points
+
+        .participant_container
+          = render :partial => "proposals/participants"
        
-        = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :pro_points => @pro_points, :con_points => @con_points }
+        = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => 'all', :pro_points => @pro_points, :con_points => @con_points }
 
-    
+        - @segments.each_with_index do |(pros,cons), bucket| 
+          = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => bucket, :pro_points => pros, :con_points => cons}
+
     %li.clear
-
  
 :javascript
   $j('.proposal_item').each(function(){

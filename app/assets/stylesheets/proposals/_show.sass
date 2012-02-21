@@ -1,229 +1,147 @@
 #explore_proposal
-  background: #ffffff image-url('results_narrative.png') no-repeat 0px 75px
 
   > ol
     @include nude-list  
 
     li
 
-      .head
-        padding: 0px 0 15px 0
-        color: #272727
-        position: relative
-
-        .extra
-          padding: 0
-          letter-spacing: 1px
-          top: -3px
-
-      &.personal_position
-
-        .submit_a_position
-          position: absolute
-          padding: 4px 15px
-          font-size: 12pt
-          top: -42px
-          right: 13px
-          opacity: .75
-          &:hover
-            opacity: 1
-
-        
-        .you_slider
-          position: absolute
-          z-index: 999
-          bottom: 0px
-          left: 0px
-          
-          img
-            width: 25px
-            display: block
-            margin: auto
-                  
-          &.call
-            top: 104px
-            left: 661px
-          
-          a
-            color: #999
-            text-decoration: underline
-            &:hover
-              color: #272727
-
-      &.results_narrative
-        color: #555
-        font-size: 22px
-        position: relative
-        //font-weight: 200
-        font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif
-
-        &.loading
-          color: #aaa
-
-        .action_call
-          position: absolute
-          top: 57px
-          width: 155px
-          left: 15px
-
-        .participant_connection
-          position: absolute
-          left: 634px
-          top: 70px
-
-        .points_connection
-          position: absolute
-          top: 390px
-          width: 164px
-          right: 77px
-
-      &.statements
-        .statement_carousel
-          background-color: transparent
-          position: absolute
-          top: -128px
-          right: 23px
-
-          .vertical
-            .paginate
-              padding-top: 27px
-              width: 100%
-              button
-                color: #353535
-                padding-right: 25px
-                position: absolute
-                right: -38px
-
-                &.back
-                  top: 100px
-
-                &.forward
-                  top: 150px
-
-              h3.subheader
-                padding-bottom: 0
-
-            .carousel
-              width: 200px
-
-              li.statement
-                background-color: inherit
-                margin: auto
-                display: inline-block
-                float: right
-
-                &.active
-                  z-index: 1002
-                  position: relative
-                  .view_statement .avatar .username
-                    display: none
-                &:hover
-                  .view_statement .avatar .username
-                    display: block
-
-                a.view_statement
-                  text-align: center  
-                  color: #333
-                  position: relative
-
-                  &:hover .avatar .username
-                    display: block
-                  
-                  .avatar
-                    position: relative
-                    height: 45px
-
-                    img
-                      width: 45px
-                      height: 45px
-
-                    .username
-                      display: none
-                      font-size: 8pt
-                      color: white
-                      background-color: rgba(black, .5)
-                      position: absolute
-                      bottom: 0px
-
-
-
       &.breakdown
-        position: relative
         padding-bottom: 0
-        margin: 0 40px
-        
-        .head
-          top: -25px
+        margin: auto
+        width: $histogram_width
 
-        .extra
-          color: black
 
-        .bars
-          margin-left: 35px
+        .pre 
+          .action, .personal_position
+            top: 170px
+            position: absolute
+            font-size: 8pt
+            color: #999
+            z-index: 50
+                      
+          .action
+            left: 63px
+
+          .personal_position
+            right: 0px
+            left: 828px
+
+            form
+              input
+                @include linkify
+                text-decoration: underline
+                font-size: 8pt
+                padding: 0
+                &:hover
+                  color: #666
+                
+        .histogram_arrow
+          z-index: 0
+          position: absolute
+          width: 654px
+          left: 177px
+          height: 16px
+          border-radius: 5px
+          top: 287px
+
+          // background-color: #f1f1f1
+          // box-shadow: 1px 2px 3px rgba(black, .1)     
+          // background-image: linear-gradient(bottom, #ddd -1%, #eee 75%)
+          // background-image: -o-linear-gradient(bottom, #ddd -1%, #eee 75%)
+          // background-image: -moz-linear-gradient(bottom, #ddd -1%, #eee 75%)
+          // background-image: -webkit-linear-gradient(bottom, #ddd -1%, #eee 75%)
+          // background-image: -ms-linear-gradient(bottom, #ddd -1%, #eee 75%)
+          // background-image: -webkit-gradient(linear, left bottom, left top, color-stop(-0.01, #ddd), color-stop(0.75, #eee))
+          // border-bottom: 1px solid #ccc
+
+          .support, .oppose
+            position: absolute
+            color: #888
+            font-size: 11pt
+            top: -3px
+
+          .support
+            left: -40px
+          
+          .oppose
+            right: -40px
+
+
+        .histogram
+          padding: 0px
+          color: #272727
+          position: relative
+          z-index: 1
 
           .viz
-            .stance_chart
-              svg rect
-                cursor: pointer
-              text
-                display: none
-              
-          .vizbase
-      
-            td
-              color: #999
-              font-size: 14px
-              .inner, .pedestal
-                position: relative
-                top: -8px
-              
-              .inner
-                padding: 0 15px
+            line-height: 0
+            height: $histogram_height
+            position: relative
+            width: $histogram_width + 100
+            left: 5px
+            top: -3px
+            .bar
+              cursor: pointer
+              background-color: #888
+              width: $histogram_bar_width
+              display: inline-block
+              border: 3px solid #666
+              border-bottom: none
+              position: relative
+              bottom: 0
 
-              &.middle
-                height: 0px
-                width: 450px
+              &:hover
+                background-color: #666
+                border-color: #333
+                z-index: 40
+                              
+              &.selected
+                background: image-url("chalk/chalkboard.jpg") repeat left top #333
+                box-shadow: 0px 1px 2px black
+                z-index: 60
+                border-color: black
+                border-top-left-radius: 8px 
+                border-top-right-radius: 8px
 
-                .pedestal
-                  background-color: #ccc
+                &:after, &:before
+                  content: ''
+                  position: absolute
+                  width: 21px
+                  height: 25px
+                  z-index: 90
+                  bottom: 0
+                  //background: image-url("bar_selected_left.png") no-repeat left top transparent
+
+                &:before
+                  left: -20px
+                  
+                &:after
+                  @include flip-horizontal
+                  right: -20px
+                .close
+                  display: block
+                  position: absolute
+                  right: 5px
+                  top: 5px
+                  color: #ccc
+                  z-index: 1
+                  &:hover
+                    color: white
+                      
+                .border_cover
+                  display: block
                   height: 5px
-                  width: 104%
-                  margin-left: -10px
-      
-              &.first
-                padding-right: 3px
-              &.last
-                padding-left: 3px
+                  width: $histogram_bar_width + 2
+                  left: -1px
+                  position: absolute
+                  background: image-url("chalk/chalkboard.jpg") repeat left top #333
+                  bottom: -4px
+                  border-top-right-radius: 6px
+                  border-top-left-radius: 6px
+
+              .close, .border_cover
+                display: none
         
-        
-        .position_marker
-          position: absolute
-          bottom: 33px
-          left: 251px
-          color: #999
-          font-size: 13px
-          width: 197px
-          text-align: center
-
-          .label
-            color: #C1C1C1
-            font-size: 14px
-
-          .current
-            font-size: 18px
-            text-weight: bold
-
-          .showing_filtered a
-            text-decoration: underline
-            color: inherit
-
-          .operations
-            margin-top: 4px
-            a
-              font-size: 14px
-              color: inherit
-              text-decoration: underline
-
       &.ranked_points
         position: relative
 
@@ -236,77 +154,141 @@
             opacity: .7
 
           .pro_con_list
-            margin-left: 64px
-            padding-bottom: 20px
-            width: 600px
-
+            border: 3px solid #666
+            border-radius: 5px
+            box-shadow: 0 2px 4px #666
+            &.segmented
+              border-color: black
 
             .edit, .remove
               display: none
 
+            .full_column
+              min-width: 310px
+            
+
+
           .extra 
             padding: 3px 0 0 2px        
-        
 
-      &.statements
-        background-color: transparent
-        position: relative
-        z-index: 1000
 
-        .position_statement
+        .participant_connection
+          padding: $participants_height + 35 0 10px 0
+          @include chalk
+          text-align: center
+
+          .group_name
+            display: inline-block
+                  
+        .participant_container
+          padding: 0 5px
+          clear: both
           position: absolute
-          z-index: 1001
-          width: 735px
-          top: -14px
-          left: 0px
+          left: 50%
+          margin-left: -$histogram_width/2
+          top: 18px
 
-          .wrapper
+          .participants
+            background-color: transparent
             position: relative
-            z-index: 100
-            a.close
-              float: right
-              margin-right: 10px
-              margin-top: 8px
-              color: black
-              font-weight: bold
-              font-size: 8pt
+            z-index: 1000
+            width: $histogram_width
+            height: $participants_height
+            margin: auto
 
-            .textblock
-              padding: 20px 100px
-              > .username
-                font-weight: bold
-                font-size: 18pt
-              .stance
-                font-weight: bold
-                font-size: 12pt
+            .position_statement
+              position: absolute
+              z-index: 1001
+              width: 735px
+              top: -14px
+              left: 0px
 
-                .stance_name
-                  text-transform: capitalize
-
-              .prose
-                margin-top: 10px
-
-              .important_points
-                a
+              .wrapper
+                position: relative
+                z-index: 100
+                a.close
+                  float: right
+                  margin-right: 10px
+                  margin-top: 8px
                   color: black
-                  text-decoration: underline
+                  font-weight: bold
+                  font-size: 8pt
 
-                .group 
+                .textblock
+                  padding: 20px 100px
+                  > .username
+                    font-weight: bold
+                    font-size: 18pt
+                  .stance
+                    font-weight: bold
+                    font-size: 12pt
+
+                    .stance_name
+                      text-transform: capitalize
+
+                  .prose
+                    margin-top: 10px
+
+                  .important_points
+                    a
+                      color: black
+                      text-decoration: underline
+
+                    .group 
+                      display: none
+
+                    .point_list_footer
+                      display: none
+
+                    .point_in_list .discuss
+                      display: none
+                    .operations
+                      display: none
+                    .pro_con_list
+                      width: 692px
+                      position: relative
+                      left: -87px
+                      margin-top: 10px
+
+            li.statement
+              background-color: inherit
+              margin: auto
+              float: left
+
+              &.active
+                z-index: 1002
+                position: relative
+                .view_statement .avatar .username
                   display: none
+              &:hover
+                .view_statement .avatar .username
+                  display: block
 
-                .point_list_footer
+              .view_statement
+                text-align: center  
+                color: #333
+                position: relative
+                line-height: 0
+                display: block
+                cursor: pointer
+
+                img
                   display: none
+                  max-height: 50px
+                  max-width: 50px
 
-                .point_in_list .discuss
+
+                &:hover .username
+                  display: block
+                
+                .username
+                  font-size: 8pt
+                  color: white
+                  background-color: rgba(black, .5)
+                  position: absolute
+                  line-height: normal
+                  white-space: nowrap
                   display: none
-                .operations
-                  display: none
-                .pro_con_list
-                  width: 692px
-                  position: relative
-                  left: -87px
-                  margin-top: 10px
-
-
-
+                  z-index: 2
+                  bottom: -30px
 

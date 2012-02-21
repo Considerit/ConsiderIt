@@ -1,4 +1,10 @@
 $content_width: 980px
+$pro_con_list_static_width: 730px
+
+$histogram_bar_width: 80px
+$histogram_width: $histogram_bar_width * 7 + 38
+$histogram_height: 178px
+$participants_height: 80px
 
 $gutter_color: #B4B4B4
 $link_color: #0342A1
@@ -6,8 +12,13 @@ $link_color: #0342A1
 $pro_point_light: #E4F6CE //#2A8956 
 $con_point_light: #FEDFE3 //#9E4D50 
 
+$pro_point_expanded: #F5FEEE
+$con_point_expanded: #FEEFF2
+
 $pro_point_dark: darken($pro_point_light, 30%) //#1C3B1D
 $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
+
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,600italic,800,300italic|Chelsea+Market)
 
 @import "mixins"
 @import "carousel"
@@ -38,14 +49,13 @@ $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 
 @import "users/sessions"
 
-*
-  margin: 0
-  padding: 0
+// *
+//   margin: 0
+//   padding: 0
 
 h1, h2, h3, h4, h5, h6
   font-weight: bold
-  //font-family: "Trebuchet MS", "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Tahoma, sans-serif
-  font-family: Candara, Calibri, Segoe, "Segoe UI", Optima, Arial, sans-serif
+  @include heading
 
 strong
   font-weight: bold
@@ -71,11 +81,6 @@ h1
 .hide
   display: none
 
-input[type="submit"].linkify,
-button.linkify
-  background-color: transparent
-  color: inherit
-  border: none
 
 table
   border-collapse: separate  
@@ -83,15 +88,41 @@ table
 html
   min-height: 100%
   height: 100%
-  background: image-url('texture.png') repeat left top #890000
+  background: image-url('spots.png') repeat left top #890000
+  position: relative
+  z-index: 0
 
 body
   color: #222
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+  font-family: 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
   font-size: 14px
+  position: relative
+  z-index: 1
+
+  &:after, &:before
+    content: ''
+    height: 100%
+    position: absolute
+    width: 100%
+
+  &:after
+    z-index: 1
+    background-color: #767676
+    top: 300px
+    border-top: 1px solid #919191
+    border-bottom: 1px solid #111
+    box-shadow: 0px 1px 2px #444
+    max-height: 1400px
+  &:before
+    z-index: 2
+    top: 400px
+    background-color: #bbb
+    max-height: 1200px
 
 #wrap
-  position: static
+  position: relative
+  z-index: 4
+
   > div
     width: $content_width
     margin: 0 auto
@@ -102,6 +133,10 @@ body
       padding-top: 65px
       background-color: white    
       box-shadow: 1px 2px 5px #000000
+      position: relative
+      z-index: 5
+      border-radius: 5px
+
        
       &:after
         content: "."
@@ -146,7 +181,7 @@ label
 
 input, textarea
   padding: 6px
-  vertical-align: top
+  //vertical-align: top
 
 input[type="text"], input[type="password"], input[type="email"], textarea
   border: 1px solid #7E7E7E
@@ -170,6 +205,7 @@ input[type="submit"]
   padding: 3px 10px
   font-size: 14px
   cursor: pointer
+  border-radius: 5px
   
   &:focus
     background-color: gray
@@ -216,21 +252,71 @@ input[type="submit"].gray
 
 .head
   text-align: center
+  margin-bottom: 20px
+  background: image-url('banner.png') repeat left top white
+  padding: 10px 10px 10px 0px
+  width: 978px
+  position: relative
+  left: -6px
+  border: 1px solid
+  border-color: white #BBB #999
+  box-shadow: 0px 1px 2px rgba(black, .4)
+
+  &.single
+    width: 1006px
+    left: -19px
+    &:before
+      right: -19px
+    &:after
+      left: -19px
+
+  &:before, &:after
+    background: image-url('banner-ribbon.png') repeat left top transparent
+    content: ''
+    height: 58px
+    position: absolute
+    width: 21px
+    z-index: -2
+    border: 1px solid
+    border-color: white #BBB #999
+    top: 9px
+  &:after
+    left: -33px
+    border-left: none
+
+  &:before
+    right: -33px
+    border-left: none
+    @include flip-horizontal
+    
   h3.banner
-    font-size: 28px
+    font-size: 32px
     margin-bottom: 0px
-    display: inline
     text-align: center
     color: #555
     font-weight: normal
-    @include outset-text
+    @include inset-text
+
+    &.double
+      &:before, &:after
+        background: image-url('banner.png') repeat left top white
+        content: ''   
+        height: 58px
+        position: absolute
+        width: 20px
+        z-index: -1
+        top: 4px
+        border: 1px solid
+        border-color: white #BBB #999
+        box-shadow: 0px 1px 2px rgba(black, .4)
+
+      &:after
+        right: -16px
+      &:before
+        left: -16px
         
     a
       text-decoration: underline
-          
-  .extra
-    position: relative
-    top: -6px
 
 .add_qtip
   cursor: help
@@ -247,11 +333,6 @@ input[type="submit"].gray
   width: 100%
   height: 100%
   z-index: -100
-
-.shadow_offset
-  -moz-box-shadow: 2px 4px 0.5em rgba(0, 0, 0, 0.8)
-  -webkit-box-shadow: 2px 4px 0.5em rgba(0, 0, 0, 0.8)
-  box-shadow: 2px 4px 0.5em rgba(0, 0, 0, 0.8)
 
 hr.ledge
   width: 100%

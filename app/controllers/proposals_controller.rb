@@ -22,23 +22,28 @@ class ProposalsController < ApplicationController
     @pro_points = @proposal.points.pros.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
     @con_points = @proposal.points.cons.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
 
-    PointListing.transaction do
-      (@pro_points + @con_points).each do |pnt|
-        PointListing.create!(
-          :proposal => @proposal,
-          :position => @position,
-          :point => pnt,
-          :user => @user,
-          :context => 4
-        )
-      end
+    @segments = Array.new(7)
+    (0..6).each do |bucket|
+      qry = @proposal.points.ranked_for_stance_segment(bucket)
+      @segments[bucket] = [qry.pros.paginate( :page => 1, :per_page => POINTS_PER_PAGE ),
+        qry.cons.paginate( :page => 1, :per_page => POINTS_PER_PAGE )]
     end
 
+
+    #PointListing.transaction do
+    #  (@pro_points + @con_points).each do |pnt|
+    #    PointListing.create!(
+    #      :proposal => @proposal,
+    #      :position => @position,
+    #      :point => pnt,
+    #      :user => @user,
+    #      :context => 4
+    #    )
+    #  end
+    #end
+
     @page = 1
-    @bucket = 'all'
-    
-    @protovis = true
-    
+        
     #Point.update_relative_scores
 
     #@comments = @proposal.root_comments

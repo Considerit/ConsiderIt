@@ -1,13 +1,10 @@
 - poles = @proposal.poles || 'Support/Oppose'
 - support_pole, oppose_pole = poles.split('/')
-- extra_text |= "Click and drag the slider to indicate your level of support or opposition"
 
 %li.gut.step.slide
   .head
-    %h3.banner
+    %h3.banner.double
       = prompt
-    .extra
-      = extra_text
   
   // TODO: this should probably be named "stance", not "position"
   .rest.position

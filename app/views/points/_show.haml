@@ -1,4 +1,4 @@
-%li.point_in_list{ :id => "point_in_list_#{origin}-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'}" }
+%li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'}" }
   
   .id.hide
     = point.id
@@ -18,20 +18,8 @@
     .include.hide
       = render :partial => "inclusions/new", :locals => { :point => point }
 
-    .username
-      - if !point.hide_name && point.user
-        = image_tag point.user.avatar.url(:midsmall), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
-
-      %a.toggle.less.hide.point_text_toggle
-        close
-
-      by 
-      - if point.hide_name
-        anonymous
-      - elsif point.user
-        = point.user.name
-      - else
-        unknown
+    - if !point.hide_name && point.user
+      = image_tag point.user.avatar.url(:midsmall), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
           
     .point_text.nutshell 
 
@@ -48,18 +36,6 @@
           = point.user.name
         - else
           unknown
-
-    
-    .point_text.full
-      .details
-        .the_details       
-          = h simple_format(point.text)
-
-      .link
-        - if point.point_links.count > 0
-          %ul
-            - point.point_links.each_with_index do |pl, idx|
-              = render :partial => 'point_links/show', :locals => { :point_link => pl, :idx => idx }
 
     .operations
 
@@ -92,7 +68,8 @@
           .comment_icon
             %span
 
+  .extra  
+    .ajax_loading
 
-  = render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :commentable => point, :context => 'point' }
     
   .clear

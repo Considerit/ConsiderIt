@@ -1,24 +1,18 @@
 #craft_position
 
-  > ol
+  > ol.user_opinion
     @include nude-list
-
-    .extra
-      display: none
-      padding: 3px 0 0 50px
-      color: white
+    background: image-url('wall_texture.png') repeat scroll 0 0 #ccc
+    box-shadow: 0 4px 7px rgba(0, 0, 0, 0.5)
+    border-radius: 5px
+    border: 1px solid
+    border-color: white #c1c1c1 #bbb #c1c1c1
+    padding: 12px 0
       
     li
       &.step
         margin-bottom: 30px
-        padding-bottom: 25px
-        box-shadow: 1px 1px 2px rgba(black,.4)
-        background: image-url('wall_texture.png') repeat scroll 0 0 transparent
-
-        .head
-          
-          padding: 20px 10px 5px 0px
-
+        padding-bottom: 25px          
 
       &.slide
 
@@ -43,21 +37,25 @@
               position: absolute
               top: 0
 
-              h3
-                @include inset-text
-                font-size: 19px
-                color: #555
-                font-variant: small-caps
-                text-transform: lowercase
-                padding-bottom: 10px
-                width: 172px
-                text-align: center
-                font-weight: normal
-                line-height: 18px
+              &#points_other_con
+                .heading
+                  float: right
 
-                .subheader
+              .heading
+                width: 172px
+                padding: 0 3px 10px 3px
+                text-align: center
+
+                .lead
+                  @include inset-text
+                  font-size: 17px
+                  color: #555
+                  font-variant: small-caps
+                  line-height: 12px
+                  font-family: Copperplate, "Franklin gothic", sans-serif
+
+                .sublead
                   font-size: 10px
-                  font-variant: normal
               
               .point_list
                 z-index: 100
@@ -101,59 +99,6 @@
                 .point_list_footer
                   position: relative
                   left: 361px
-                                        
-       
-      &#submitstance
-        margin-bottom: 0px
-        padding-bottom: 5px
-                              
-        .rest
-          margin: auto
-          width: 100%
-          padding: 10px
-          
-          .stanceform
-            margin: auto
-            
-            form
-              margin: auto
-              width: 400px
-
-              input[type="submit"]
-                width: 100%
-                height: 75px
-                border: none
-                padding: 0
-                font-size: 24pt
-                opacity: .9
-
-                &:hover
-                  opacity: 1
-              
-              a
-                display: inline-block
-                margin-left: 40px
-                font-size: 12pt
-                color: #999                
-                font-weight: bold
-                text-decoration: underline
-                margin-top: 30px
-                &:hover
-                  color: #272727
-                
-                &.skip_save
-                  position: absolute
-
-              label
-                color: #999
-                text-transform: none
-                letter-spacing: 0
-                padding-left: 5px
-              
-              ul
-                margin-top: 10px
-                li
-                  padding: 5px 0
                   
       &.statement
         background-color: #B39FD6
@@ -162,3 +107,61 @@
           height: 300px
           margin: auto
           width: 572px
+
+  #submitstance
+    margin: 20px 0px 10px 0px
+    padding-bottom: 5px
+                          
+    .rest
+      margin: auto
+      width: 100%
+      padding: 10px
+      
+      .stanceform
+        margin: auto
+        
+        form
+          margin: auto
+          width: 400px
+          position: relative
+
+          input[type="submit"]
+            width: 100%
+            height: 75px
+            border: none
+            padding: 0
+            font-size: 24pt
+            opacity: .9
+            border-top: 1px solid #ddd
+            border-bottom: 1px solid black
+            box-shadow: 0 2px 5px #000000
+
+            &:hover
+              opacity: 1
+          
+          a
+            display: inline-block
+            margin-left: 40px
+            font-size: 11pt
+            color: #999                
+            font-weight: bold
+            text-decoration: underline
+            margin-top: 30px
+            &:hover
+              color: #272727
+            
+            &.skip_save
+              position: absolute
+              top: 0
+              right: -268px
+
+          label
+            color: #999
+            text-transform: none
+            letter-spacing: 0
+            padding-left: 5px
+          
+          ul
+            margin-top: 10px
+            li
+              padding: 5px 0

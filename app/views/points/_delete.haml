@@ -1,5 +1,5 @@
 .deletepointform
-  %a.delete_point.linkify.point_operation
+  %a.delete_point.point_operation
     delete
 
   = form_for point, :remote => true, :url => proposal_point_path(@proposal, point), :html => { :method => :delete, :class => 'deletepointformproper hide' } do |f| 
@@ -8,7 +8,7 @@
     %a.cancel
       no
 
-    %input{:class => 'delete_point no_qtip linkify point_operation', :type => 'submit', :value => "yes", :name => "delete", :title => 'Click to permanently delete this point'}
+    %input{:class => 'delete_point point_operation', :type => 'submit', :value => "yes", :name => "delete", :title => 'Click to permanently delete this point'}
 
 
   

@@ -3,7 +3,6 @@
   vertical-align: top
   margin: auto
   position: relative
-  font-family: Verdana,Geneva,sans-serif
 
   background: transparent image-url("chalk/chalkboard.jpg") repeat scroll top left                                
   border: 3px solid
@@ -11,8 +10,13 @@
   border-right-color: #222
   border-left-color: #777
   border-bottom-color: #222
-  box-shadow: 2px 2px 4px rgba(black, .7)
+  box-shadow: 1px 2px 4px rgba(black, .7)
   
+  display: none
+  &.domain_all, &.domain_self
+    display: block
+
+
   > div
     position: relative      
   
@@ -20,20 +24,17 @@
 
     .pro_con_list_header   
       height: 120px 
-      width: 200px
-      margin: 0 auto
-      position: relative
       background: transparent image-url("chalk/point_header_back.png") no-repeat scroll top center
 
+
       .inner
+        @include chalk
+        font-size: 40px
+        height: 100%
+        text-align: center
         position: relative
         top: 28px
-        left: 46px
-        font-size: 45px
-        color: #ddd
-        font-variant: small-caps
-        font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif
-
+        left: -6px
 
     &#points_on_board_pro
       float: left
@@ -49,6 +50,10 @@
   // for pro/con lists that can't have new points added to them
   &.static
     min-height: 550px
+    width: $pro_con_list_static_width
+    margin: auto
+    border-top: none
+    box-shadow: none
 
     .full_column
       
@@ -58,8 +63,13 @@
       &#points_on_board_con
         padding-right: 30px
 
+      .pro_con_list_header
+        background-position: center -23px 
+        .inner
+          top: 6px
+
       .carousel
-        top: -25px
+        top: -50px
         position: relative
         
         ul.point_list
@@ -96,7 +106,7 @@
     .droppable
       position: absolute
       left: 0
-      top: 282px
+      top: 227px
       margin: auto      
       color: rgba(#aaa, .8)
       width: 570px

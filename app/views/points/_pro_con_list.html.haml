@@ -1,7 +1,16 @@
 - origin = dynamic ? 'self' : 'board'
-- bucket = @bucket || origin
+- bucket ||= origin
 
 .pro_con_list{ :class => " #{dynamic ? 'dynamic' : 'static'} domain_#{bucket}"}
+
+  - if !dynamic
+    .participant_connection      
+      Most popular factors
+      - if bucket != 'all'
+        .group_name
+          for #{stance_name(bucket)}  
+
+      .ajax_loading
  
   .full_column.pro_column#points_on_board_pro
     .pro_con_list_header.pro_header

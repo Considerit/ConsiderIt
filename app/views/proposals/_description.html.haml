@@ -1,17 +1,17 @@
+- prompt ||= "Proposed: #{@proposal.domain} #{@proposal.category} #{@proposal.designator}"
+
 .proposal_prompt{ :class => "#{hide_initially ? 'hiding' : ''}"}
-  = render :partial => "proposals/blocks/strip", :locals => { :style => 'menu', :hide_initially => hide_initially }
+
+  / = render :partial => "proposals/blocks/strip", :locals => { :style => 'menu', :hide_initially => hide_initially }
+
+  .head.single
+    %h3.banner=prompt
 
   .pic
 
   .description_wrapper
-    .init_text
-      %h2.locality
-        = @proposal.domain
-        = @proposal.category
-        = @proposal.designator
-        
-      %h1.proposal_name
-        #{@proposal.name.html_safe}
+    .proposal_name
+      #{@proposal.name.html_safe}
 
     .full_text
       - for i in @proposal.format_description

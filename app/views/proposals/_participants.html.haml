@@ -1,25 +1,5 @@
-%li.statements{ :class => "domain_#{@bucket}"}
-  .statement_carousel
 
-    .vertical_carousel.vertical
-
-
-      .paginate.first
-        %h3.subheader
-          %button.back 
-            &#x25B2;
-      .carousel
-        %ul
-          - @positions.each do |position|
-            = render :partial => "positions/statement/block", :locals => { :position => position }
-            
-      
-      .paginate.last
-        %button.forward.not_ajax
-          &#x25BC;
-      .clear
-
-    .clear
-
-
-  .clear
+%ul.participants
+  - @positions.each do |position|
+    = render :partial => "positions/statement/block", :locals => { :position => position }            
+  %li.clear

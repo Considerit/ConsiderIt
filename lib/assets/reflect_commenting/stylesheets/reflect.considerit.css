@@ -2,49 +2,99 @@
 	display: none;
 }
 
-#reflected .response_prompt ul.response_eval > li label {
+.reflected .response_prompt {
+	opacity: 1;
+	cursor: pointer;
+	font-size: 9pt;
+	opacity: .65;
+	width: 92%;
+	padding: 6px 9px;
+	border-color: black;
+	border-radius: 5px;
+}.reflected .response_prompt .prompt {
+	font-size: 9pt;
+	color: #222;
+}.reflected .response_prompt .action_call {
+	font-size: 8pt;
+	color: #444;
+} .reflected .response_prompt .floating_arrow {
+	color: black;
+} .reflected input.response_maybe {
+	position: absolute;
+	left: -21px;
+	top: 5px;
+} .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined {
+	margin-left: 20px;
+} .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined textarea {
+		padding:0;
+		height: 16px;
+		font-size: 8pt;
+} .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined label {
+		padding-left:0;
+		font-size: 8pt;
+} .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined .count {
+	position: absolute;
+	bottom: -15px;
+	right: 0px;
+	font-size: 8pt;
+}
+.reflected li.bullet.connect .submit_footer, 
+.reflected li.bullet.modify .submit_footer {
+	position: absolute;	
+}
+.reflected .response_prompt .rf_dialog .submit_footer a {
+	color: #aaa;
+	font-size: 8pt;
+}
+.reflected .response_prompt ul.response_eval > li label {
 	letter-spacing: 0;
 	text-transform: none;
+	color: black;
 }
 
-#reflected .response_prompt .floating_arrow {
-	color: #2A1C42;
-}
-#reflected .response_prompt {
-	border-color: #2A1C42;
-	background-color: #DAD6DB;
+.reflected .rf_comment_wrapper .rf_comment_text_wrapper {
+
+	padding-right: 0;
 }
 
-#reflected a.user {
+
+
+.reflected a.user {
 	vertical-align: baseline;
 }
-#reflected .rf_comment_wrapper .rf_comment_text_wrapper {
-  background-color: #BBBBBB;	
-  -moz-box-shadow: 1px 1px 0.1em rgba(0, 0, 0, 0.6);
-  -webkit-box-shadow: 1px 1px 0.1em rgba(0, 0, 0, 0.6);
-  box-shadow: 1px 1px 0.1em rgba(0, 0, 0, 0.6);
+.reflected .rf_comment_wrapper .rf_comment_text_wrapper {
+
 }
 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list {
-	margin-left: 5px;
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list {
+	margin-left: 0px;
 }
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet {
-	padding: 0 0 6px 10px;
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet {
+	padding: 0 0 6px 0px;
+	opacity: .8;
+} .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet:hover {
 }
 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main {
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.new_bullet {
+	padding: 0;
+	width: 270px;
+	z-index: 100;
+} 
+
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main {
 	width: 98%;
 }
-#reflected .rf_comment_wrapper .rf_comment_summary .reflect_header .rf_title {
+.reflected .rf_comment_wrapper .rf_comment_summary .reflect_header .rf_title {
 	padding: 4px 0 0 20px;
 	border: none;
 	font-size: 8pt;
 }
 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_point {
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_point {
 	margin-top: 0;
 	padding-top: 0;
-	left: -18px;
+	left: -10px;
+	top: 0;
 }
 
 .point_in_list li.comment .body_row .reflect_header .user {
@@ -54,74 +104,101 @@
 }
 
 
-#reflected .rf_clarification {
-	color: #222;
-}
+
 button.add_bullet {
   font-size: 14px;
 }
 
-#reflected .ctext {
+.reflected .ctext {
 	clear: both;
 }
 
-#reflected .bullet_author {
+.reflected .bullet_author {
 	display: none;
 }
 
-#reflected .rf_comment_wrapper .rf_comment_text_wrapper {
-	width: 490px;
+
+
+.reflected .point_in_list_margin .rf_comment_wrapper .rf_comment_text_wrapper {
+  background-image: url('/assets/comment_reflect_connector_margin.png');
+
+}
+.reflected .rf_comment_wrapper .rf_comment_text_wrapper {
+	width: 375px;
 	position: relative;
 	z-index: 100;
+	background: url('/assets/comment_reflect_connector.png') no-repeat bottom right;
+	vertical-align: top;
 }
 
-#reflected .rf_comment_wrapper .rf_comment_summary {
-	width: 300px;
+.reflected .rf_comment_wrapper .rf_comment_summary {
+	width: 270px;
 	position: relative;
 	z-index: 50;	
+	vertical-align: bottom;
+	padding: 0 0 0px 20px;
 }
 
-#reflected .rf_comment_wrapper .rf_comment_summary .summary {
-	background-color: #E1E1E1;
-	margin: 5px 0;
+.reflected .rf_comment_wrapper .rf_comment_summary .summary {
 }
 
-#reflected .rf_comment_text_wrapper, #reflected .rf_comment_summary {
+.reflected .rf_comment_text_wrapper, .reflected .rf_comment_summary {
 	
 }
 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main .bullet_text {
-	font-size: 9pt;
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main .bullet_text {
+	font-size: 8pt;
 }
-#reflected li.be_neutral {
+.reflected li.be_neutral {
 	font-size: 85%;
 	
 }
 
-#reflected .new_bullet_text {
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.new_bullet .prompt .add_bullet {
+	font-size: 8pt;
+}
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.new_bullet .prompt {
+	padding-left: 0;
+
+}
+
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .bullet_main .rf_dialog .new_bullet_text_wrap textarea.new_bullet_text {
+	font-size: 8pt;
+	margin-left: -8px;
+	height: 15px;
+}
+
+.reflected .new_bullet_text {
 	margin-top: 3px;
 }
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.new_bullet .bullet_main ul.bullet_main_wrapper li.new_bullet_prompt, 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main ul.bullet_main_wrapper li.new_bullet_prompt, 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .bullet_main ul.bullet_main_wrapper li.new_bullet_prompt {
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.new_bullet .bullet_main ul.bullet_main_wrapper li.new_bullet_prompt, 
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main ul.bullet_main_wrapper li.new_bullet_prompt, 
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .bullet_main ul.bullet_main_wrapper li.new_bullet_prompt {
 	margin-left: 38px;	
 }
 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.new_bullet .bullet_main ul.bullet_main_wrapper li.bullet_dialog table.new_bullet_wrapper, 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main ul.bullet_main_wrapper li.bullet_dialog table.new_bullet_wrapper, 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .bullet_main ul.bullet_main_wrapper li.bullet_dialog table.new_bullet_wrapper {
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.new_bullet .bullet_main ul.bullet_main_wrapper li.bullet_dialog table.new_bullet_wrapper, 
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main ul.bullet_main_wrapper li.bullet_dialog table.new_bullet_wrapper, 
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .bullet_main ul.bullet_main_wrapper li.bullet_dialog table.new_bullet_wrapper {
 	width: 98%;
 }
 
-
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_point {
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_point {
 	font-size: 10pt;
 }
 
-#reflected div.comment_summary {
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main .bullet_text {
+	padding-left: 3px;
+
+}
+
+.reflected div.comment_summary {
 	position:relative;
 }
 
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer {
+	padding-bottom: 0;
+}
 .commentlist li {
 	background:transparent;
 }
@@ -130,55 +207,63 @@ button.add_bullet {
   overflow:visible;
 }
 
-#reflected .comment_summary ul {
+.reflected .comment_summary ul {
 	width: 100%;	
 }
 
-#reflected .comment_summary li {
+.reflected .comment_summary li {
 	width: auto;
 	background: inherit;
 }
 
-#reflected .rf_comment * {
-	vertical-align: top;
+.reflected .rf_comment * {
+	//vertical-align: top;
 }
 
-#reflected table, 
-#reflected th, 
-#reflected td {
+.reflected table, 
+.reflected th, 
+.reflected td {
 	border:none;
 }
 
-#reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container div, #reflected .bullet .rf_evaluation .badges .rf_rating .rf_selector_container .rf_selector, .rate_bullet .rate_bullet_dialog .flag .rating_class {
+.reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container div, .reflected .bullet .rf_evaluation .badges .rf_rating .rf_selector_container .rf_selector, .rate_bullet .rate_bullet_dialog .flag .rating_class {
 	
 	background-image: url("../media/reflect_sprite.png");
 }
 
-#reflected .rf_clarification {
-	background-color: #bbb;
-	margin-right: 10px;
+
+.reflected .rf_clarification {
+	background-color: rgba(125,125,125,.05);
+	margin-right: 0; 
+	margin-top: 0;
+	font-size: 8pt;
+} .reflected .rf_clarification span {
+	font-variant: small-caps;
+} .reflected .rf_clarification a.user {
 }
 
 button.button_as_link {
 	font-size: 8pt;
 }
 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.be_neutral, #reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.be_neutral,
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.submit a, #reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.submit a {
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.be_neutral, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.be_neutral,
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.submit a, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.submit a {
 	font-size: 8pt;
 }
 
 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions .arrow {
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions .arrow {
 	font-size: 175%;
 	left: -14px;
+	color: white;
 }
 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions {
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions {
 	font-size: 11pt;
+	color: #333;
 }
 
 
-#reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.count, #reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.count {
-	font-size: 9pt;
+.reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.count, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.count {
+	font-size: 8pt;
 }

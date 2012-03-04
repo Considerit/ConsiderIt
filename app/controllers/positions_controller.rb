@@ -74,13 +74,15 @@ class PositionsController < ApplicationController
     else
       @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
     end
-    if @position && @position.published
-      redirect_to(proposal_path(@position.proposal))
-    else
-      session.delete('reify_activities')
-      session.delete('position_to_be_published')  
-      redirect_to root_path
-    end
+    
+    redirect_to(proposal_path(@position.proposal, :redirect => 'false'))
+    session.delete('reify_activities')
+    session.delete('position_to_be_published')
+    session[@proposal.id] = {
+        :included_points => {},
+        :deleted_points => {},
+        :written_points => []
+      }
   end
   
 protected
@@ -151,11 +153,14 @@ protected
     # the following code does not select the unpublished points by the current user or that are stored in session['written_points'].
     # This is an edge case. We should allow users to delete a point before it is published/included by others, which should further
     # relegate this issue to an insignificant edge case. 
-    @pro_points = @proposal.points.pros.not_included_by(current_user, session[@proposal.id][:included_points].keys).
+
+
+    @pro_points = @proposal.points.includes(:point_links, :user).pros.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
                     ranked_persuasiveness.paginate(:page => 1, :per_page => POINTS_PER_PAGE)    
-    @con_points = @proposal.points.cons.not_included_by(current_user, session[@proposal.id][:included_points].keys).
+    @con_points = @proposal.points.includes(:point_links, :user).cons.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
                     ranked_persuasiveness.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
 
+    #TODO: bulk insert...
     PointListing.transaction do
 
       (@pro_points + @con_points).each do |pnt|
@@ -169,9 +174,9 @@ protected
       end
     end
     
-    @included_pros = Point.included_by_stored(current_user, @proposal).where(:is_pro => true) + 
+    @included_pros = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:point_links, :user).where(:is_pro => true) + 
                      Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => true)
-    @included_cons = Point.included_by_stored(current_user, @proposal).where(:is_pro => false) + 
+    @included_cons = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:point_links, :user).where(:is_pro => false) + 
                      Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => false)
 
     @page = 1
@@ -179,7 +184,6 @@ protected
 
   def save_actions ( position )
     actions = session[position.proposal_id]
-    pp 'CHECKING INCLUSIONS'
 
     actions[:included_points].each do |point_id, value|
 
@@ -215,8 +219,6 @@ protected
     actions[:written_points] = []
 
     actions[:deleted_points].each do |point_id, value|
-      pp point_id
-      pp value
       current_user.inclusions.where(:point_id => point_id).each do |inc|
         inc.destroy
       end

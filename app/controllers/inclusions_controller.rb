@@ -15,7 +15,7 @@ class InclusionsController < ApplicationController
     @proposal = Proposal.find(params[:proposal_id])
     @point = Point.find(params[:point_id])
 
-    if (current_user && current_user.inclusions.where( :point_id => @point.id ).first) || session[@proposal.id][:included_points].has_key?(params[:point_id])
+    if (current_user && (!session[@proposal.id][:deleted_points].has_key?(@point.id) && current_user.inclusions.where( :point_id => @point.id ).first)) || session[@proposal.id][:included_points].has_key?(params[:point_id])
       render :json => { :success => false }.to_json
       return
     end
@@ -25,7 +25,7 @@ class InclusionsController < ApplicationController
 
     session[@proposal.id][:included_points][params[:point_id]] = 1
 
-    candidate_next_points = candidate_next_points.not_included_by(current_user, session[@proposal.id][:included_points].keys)
+    candidate_next_points = candidate_next_points.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys)
     points = candidate_next_points.ranked_persuasiveness.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
     next_point = points.last
     
@@ -54,7 +54,10 @@ class InclusionsController < ApplicationController
     @proposal = Proposal.find(params[:proposal_id])
     @point = Point.find(params[:point_id])
 
+    pp session[@proposal.id][:included_points]
     session[@proposal.id][:included_points].delete(params[:point_id])    
+    pp session[@proposal.id][:included_points]
+    pp session[@proposal.id][:deleted_points]
     if current_user
       @inc = current_user.inclusions.where(:point_id => @point.id).first
       if @inc
@@ -64,8 +67,18 @@ class InclusionsController < ApplicationController
 
     @page = params[:page].to_i
     candidate_next_points = @point.is_pro ? @proposal.points.pros : @proposal.points.cons
-    points = candidate_next_points.not_included_by(current_user, session[@proposal.id][:included_points].keys).ranked_persuasiveness.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
+    
+    points = candidate_next_points.not_included_by(
+      current_user, 
+      session[@proposal.id][:included_points].keys, 
+      session[@proposal.id][:deleted_points].keys
+    ).ranked_persuasiveness.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
 
+    points.each do |pt| 
+      pp pt
+    end
+    pp points.total_entries
+    
     render :json => { 
       :total_remaining => points.total_entries 
     }.to_json

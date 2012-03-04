@@ -3,15 +3,17 @@
 
   %fieldset
     
-    .fields.fl
-      .url 
-        = f.text_field 'url', :class => 'has_example url', :title => 'http://...'
+    .fields
+      .url.inlined
+        = f.label :url, 'http://...'
+        = f.text_field :url, :class => 'url', :title => 'http://...'
 
-      .description
-        = f.text_field 'description', :class => 'has_example description', :title => 'A brief description'
+      .description.inlined
+        = f.label :description, 'brief description'
+        = f.text_field :description, :class => 'description', :title => 'A brief description'
 
 
-    .submit_block.fr
+    .submit_block
       = link_to_remove_fields "delete", f
 
     :javascript

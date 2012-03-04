@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.3'
+gem 'rails', '3.2.1'
 
 gem "mysql2" #, "~> 0.2.7"
 
@@ -16,7 +16,7 @@ gem 'devise', '1.4.7'
 gem "oa-oauth", :require => "omniauth/oauth"
 gem 'oa-openid', :require => 'omniauth/openid'
 
-gem 'twitter'
+gem 'twitter', "~> 1.7"
 
 # https://github.com/sferik/rails_admin/
 gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git' #, :branch => 'rails-3.0'
@@ -56,7 +56,7 @@ gem 'acts_as_versioned'
 # gem "meta_where"
 
 # https://github.com/lucasefe/themes_for_rails
-gem "themes_for_rails"
+gem "themes_for_rails", '0.5.0.pre'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
@@ -64,11 +64,10 @@ gem "themes_for_rails"
 group :development, :test do
   # gem 'ruby-debug19', :require => 'ruby-debug'
   # gem 'heroku'
-  gem 'active_reload'
 end
 
 group :assets do
-  gem 'sass-rails',   "~> 3.1.0"
-  gem 'coffee-rails', "~> 3.1.0"
+  gem 'sass-rails',   "~> 3.2.3"
+  gem 'coffee-rails', "~> 3.2.1"
   gem 'uglifier'
 end

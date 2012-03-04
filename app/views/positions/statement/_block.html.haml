@@ -1,13 +1,21 @@
 
+- has_explanation = position.explanation && position.explanation.length > 0
 
 - if position.user
-  %li.statement{:class=>"bucket-#{position.stance_bucket}", :id=>"user-#{position.user_id}"}
+  %li.statement{:class=>"bucket-#{position.stance_bucket} #{has_explanation ? 'with_explanation' : 'no_explanation'}", :id=>"user-#{position.user_id}"}
     .view_statement
       - if position.user.avatar
         = image_tag position.user.avatar.url(:small), :alt => "#{h position.user.name}'s profile picture"
-      
+        .overlay
       .username
         = h position.user.name    
+
+        - if has_explanation
+          %blockquote.explanation
+            = simple_format position.explanation
+
+          %a.readmore
+            discuss
 
       .userid.hide
         #{position.user_id}

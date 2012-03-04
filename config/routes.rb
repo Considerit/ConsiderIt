@@ -24,7 +24,7 @@ ConsiderIt::Application.routes.draw do
 
     themes_for_rails # themes_for_rails gem routes 
 
-    match "/theme" => "theme#set", :via => :post
+    #match "/theme" => "theme#set", :via => :post
     match "/home/domain" => "home#set_domain", :via => :post
     match "/home/pledge" => "home#take_pledge", :via => :post
     match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|help/ } 
@@ -32,18 +32,14 @@ ConsiderIt::Application.routes.draw do
     match '/home/study/:category' => "home#study", :via => :post  
     match '/admin/dashboard' => "admin/dashboard#index", :via => :get, :module => :admin
 
-
     namespace :reflect do
       match "/data" => "reflect_bullet#index", :via => :get
-      match "/get_templates" => "reflect_bullet#get_templates", :via => :get
       match "/bullet_new" => 'reflect_bullet#create', :via => :post
       match "/bullet_update" => 'reflect_bullet#update', :via => :post
       match "/bullet_delete" => 'reflect_bullet#destroy', :via => :post
-
       match "/response_new" => 'reflect_response#create', :via => :post
       match "/response_update" => 'reflect_response#update', :via => :post
-      match "/response_delete" => 'reflect_response#destroy', :via => :post
-              
+      match "/response_delete" => 'reflect_response#destroy', :via => :post              
     end
   end
 

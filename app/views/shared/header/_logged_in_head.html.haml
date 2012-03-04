@@ -29,14 +29,14 @@
   .hide
     .avatar.fl
       %a.settings
-        = image_tag current_user.avatar.url(:thumb), :alt => "#{h current_user.name}'s profile picture"
+        = image_tag current_user.avatar.url(:small), :alt => "#{h current_user.name}'s profile picture"
     %ul.fr
       %li
         %a.settings
           Edit profile
       - if current_user.admin?
         %li
-          = link_to 'Admin', rails_admin_dashboard_path, :class => 'admin'
+          = link_to 'Admin', admin_dashboard_path, :class => 'admin'
       %li
         = link_to 'Log Out', destroy_user_session_path, :class => 'logout'
     .clear

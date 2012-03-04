@@ -4,13 +4,6 @@ li.new_comment
   width: 400px
   @include nude-list
   font-size: 14px
-
-  .user
-    float: left
-  .avatar
-    top: 0
-  .count
-    color: #C1C1C1
     
   li.body
     textarea
@@ -30,20 +23,30 @@ li.new_comment
         max-width: 70px
         font-size: 10px
       .text
-        margin-left: 85px
+
         form
+          .point-pledge
+            font-size: 9pt
+
           ul.form
-            margin: 0
             li.body
+              background-color: white
+              width: 360px
+
+              label
+                font-size: 10pt
               textarea
-                width: 325px
+                font-size: 10pt
+                height: 40px
+                margin: 0
               .count
-                color: #C1C1C1
                 width: 35px
                 display: block
-                float: right
-                padding-left: 5px
-                
+                position: absolute
+                right: 0
+                font-size: 9pt
+                bottom: -18px
+
             .comment_submit
             
             a.cancel
@@ -52,3 +55,6 @@ li.new_comment
               padding-top: 16px 
               float: left
               color: gray
+
+        .point-pledge, .count
+          opacity: .6

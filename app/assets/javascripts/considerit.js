@@ -15,8 +15,10 @@ ConsiderIt = {
 
     ConsiderIt.per_request();
 
-    $j(document).ajaxComplete(function() {
-      ConsiderIt.per_request();
+    $j(document).ajaxComplete(function(e, xhr, settings) {
+      if ( settings.url.indexOf('reflect') == -1 ) {
+        ConsiderIt.per_request();
+      }
     });
     
     $j('a.smooth_anchor').click(function(){
@@ -24,6 +26,8 @@ ConsiderIt = {
         scrollTop: $j($j(this).attr('href')).offset().top}, 1000);
         return false;
     });
+
+    $j('.pointform textarea').autoResize({extraSpace: 0});
 
     $j("#points_other_pro, #points_other_con").each(function(){
       $j(this).infiniteCarousel({
@@ -144,9 +148,9 @@ ConsiderIt = {
 
         $j(this).NobleCount($j(this).siblings('.count'), {
           block_negative: true,
-          max_chars : parseInt($j(this).siblings('.count').text()),          
-          on_negative : ConsiderIt.noblecount.on_negative,
-          on_positive : ConsiderIt.noblecount.on_positive
+          max_chars : parseInt($j(this).siblings('.count').text())          
+          //on_negative : ConsiderIt.noblecount.negative_count,
+          //on_positive : ConsiderIt.noblecount.positive_count
         });
       }
     });  
@@ -181,6 +185,24 @@ ConsiderIt = {
   },
 
   delegators : function() {
+
+
+    /////////////
+    // GENERAL
+    /////////////
+
+    $j("body") 
+      .on('focus', '.inlined label + input, .inlined label + textarea', function () {
+          $j(this).prev("label").addClass("focus");
+        })
+      .on('keypress', '.inlined label + input, .inlined label + textarea', function () {
+          $j(this).prev("label").addClass("has-text").removeClass("focus");
+        })
+      .on('blur', '.inlined label + input, .inlined label + textarea', function () {
+          if($j(this).val() == "") {
+            $j(this).prev("label").removeClass("has-text").removeClass("focus");
+          }
+        });
 
     /////////////
     // ACCOUNTS
@@ -227,34 +249,41 @@ ConsiderIt = {
     //////////////
 
     // mouseover a point
-    $j('.point_list').delegate('.point_in_list', 'hover', function( event ) {
-      var el = $j(this).find('.operations');
-      if ( event.type === 'mouseenter' ) {
-        el.stop(true, false)
-          .fadeTo('slow', 1.0, 'easeInQuart');
-      } else {
-        el.stop(true, false)
-          .fadeOut('fast');
+    $j('.point_list').delegate('.point_in_list:not(.expanded)', 'hover', function( event ) {
+      if ( $j('.point_in_list.expanded').length == 0 ){
+        var el = $j(this).find('.operations');
+        if ( event.type === 'mouseenter' ) {
+          el.stop(true, false)
+            .fadeTo('slow', 1.0, 'easeInQuart');
+        } else {
+          el.stop(true, false)
+            .fadeOut('fast');
+        }
       }
     });
 
     // mouseover read more button
-    $j('.point_in_list_margin').delegate('.point_text_toggle.more', 'hover', function(event){
-      var parent = $j(this).parents('.point_in_list_margin');
-      if ( event.type === 'mouseenter' ) {
-        parent.draggable( "disable" );
-        parent.removeClass('ui-draggable-disabled ui-state-disabled');
-      } else {
-        parent.draggable( "enable" );
+    $j('.point_in_list_margin').delegate('.point_text_toggle.more:not(.expanded)', 'hover', function(event){
+      if ( $j('.point_in_list.expanded').length == 0 ){
+        var parent = $j(this).parents('.point_in_list_margin');
+        if ( event.type === 'mouseenter' ) {
+          parent.draggable( "disable" );
+          parent.removeClass('ui-draggable-disabled ui-state-disabled');
+        } else if ( !parent.hasClass('expanded') ) {
+          parent.draggable( "enable" );
+        }
       }
-
     });
 
     // new button clicked
     $j('.pro_con_list.dynamic').delegate('.newpoint .newpointbutton button', 'click', function(){
       $j('.droppable').fadeOut();
-      $j(this).fadeOut(function(){
-        $j(this).parents('.newpoint').filter(":first").find('.pointform').fadeIn('fast');    
+      $j(this).fadeOut(100, function(){
+        $j(this).parents('.newpoint').filter(":first").find('.pointform')
+          .fadeIn('fast')
+          .find('.point-title-group textarea')
+            .focus(); 
+
       });  
       //show_lightbox();
     });
@@ -270,10 +299,14 @@ ConsiderIt = {
 
     // new/edit point cancel clicked
     $j('.pro_con_list.dynamic').delegate('.new_point_cancel', 'click', function(){
-      $j(this).parents('.pointform').filter(":first").fadeOut(function(){
-        $j(this).parents('.newpoint').find('.write_new').fadeIn();  //hide_lightbox();
-        $j('.droppable').fadeIn();
-      });
+      var form = $j(this).parents('.pointform').filter(":first");
+        form.find('.point_link_form').remove();
+        form
+          .fadeOut(function(){
+            $j(this).parents('.newpoint').find('.write_new').fadeIn();  //hide_lightbox();
+            $j('.droppable').fadeIn();
+          })
+          .find('textarea').val('');
     });
 
     // Create callback
@@ -306,7 +339,7 @@ ConsiderIt = {
     });
 
     var close_point_click = function(e){
-      if ( $j(e.target).parents('.point_in_list.expanded').length == 0  && $j('body > .ui-widget-overlay').length == 0) {
+      if ( !$j(e.target).hasClass('expanded') && $j(e.target).parents('.point_in_list.expanded').length == 0  && $j('body > .ui-widget-overlay').length == 0 && $j(e.target).filter(':visible').length > 0) {
         $j('.point_in_list.expanded .toggle.less:visible').trigger('click');
       }
     };
@@ -328,8 +361,8 @@ ConsiderIt = {
       placeholder
         .attr('id', real_point.attr('id'))
         .height(real_point.height())
-        .addClass(real_point.attr('class'))
-        .css('visibility', 'hidden');
+        .addClass(real_point.attr('class'));
+        //.css('visibility', 'hidden');
 
       //close other open points...
       $j('.point_in_list.expanded .toggle.less:visible').trigger('click');
@@ -347,87 +380,123 @@ ConsiderIt = {
         });
 
       //start complex animation...
-      var nutshell = real_point.find('.nutshell'),
-        extra = real_point.find('.extra'),
-        is_pro = real_point.hasClass('pro'),
-        details_loaded = extra.find('> .ajax_loading').length == 0;
+      var body = real_point.find('> .body'),
+          full = body.find('> .full'),
+          nutshell = real_point.find('.nutshell'),
+          extra = real_point.find('.extra'),
+          is_pro = real_point.hasClass('pro'),
+          is_margin = real_point.hasClass('point_in_list_margin'),
+          details_loaded = extra.find('> .ajax_loading').length == 0;
       
-      if ( details_loaded ) {
-        extra.css({'width': '488px'});
-        real_height = extra.height();
-        extra.css({'width': '', 'height': real_height});
+      real_point.data({
+        'nutshell': {
+          'width': nutshell.css('width'),
+          'font-size': nutshell.css('font-size')
+        },
+        'container': placeholder.parent()
+      });
+
+      nutshell_animate_props = {
+        'width': '650px',
+        'font-size': '12pt'
       }
 
-      extra.addClass('animation_state-extra_expand', 'slow', 'easeOutQuint', function(){
+      if ( !is_pro ) {
+        nutshell.css({'left': nutshell.offset().left, 'top': nutshell.offset().top - $j(document).scrollTop(), 'position': 'fixed'});
 
-        nutshell.css({
-           'display': 'inline',
-           'position': 'absolute'
-        });
+        if ( is_margin ) {
+          nutshell_animate_props['left'] = '-=522px';
+        } else {
+          nutshell_animate_props['left'] = '-=290px';
+        }
+      }
 
-        nutshell.addClass('animation_state-nutshell_spill', 'slow', 'easeInQuad', function(){
+      real_point.find('.bullet_point, .nutshell .nested_user').fadeOut();
+      real_point.find('.toggle.more').hide();
+      real_point.addClass('animation_state-expanded', 'slow', 'easeInOutQuad', function(){
+        real_point.find('.avatar').fadeIn('slow');
+        nutshell.animate(nutshell_animate_props, 
+          {'duration': 'slow', 'easing': 'easeInOutQuad', 'complete': function(){
+          $j(this).css({'left': '', 'top': '', 'position': ''});
 
-          real_point.find('.avatar').fadeIn();
-          real_point.find('.bullet_point').fadeOut();
+          real_point.addClass('animation_state-finished', 'fast', 'easeInQuad', function(){
+            
 
-          real_point.addClass('animation_state-finished');
+            full.slideDown(function(){
 
-          if ( !details_loaded ) {
-            var proposal_id = $j('#proposal_id').text();
-            $j.get('/proposals/' + proposal_id + '/points/' + point_id, function(data){
-              $j('.extra', real_point)
-                .html(data.details)
-                .css({height: 'auto'});
-              real_height = extra.height();
-              extra.animate('slow', {'height': real_height});                      
+
+              if ( !details_loaded ) {
+                var proposal_id = $j('#proposal_id').text();
+                $j.get('/proposals/' + proposal_id + '/points/' + point_id, {'origin' : is_margin ? 'margin' : 'self'}, function(data){
+                  $j('.extra', real_point)
+                    .html(data.details)
+                    .find('textarea').autoResize({extraSpace:0});
+                  
+                  //real_point.animate(5000, {'height': '+=' + extra.height()}, function(){
+                    //real_point.css('height', '');
+                  //});      
+                  //extra.slideDown(5000);
+                });
+              } else {
+                //real_point.animate(5000, {'height': '+=' + extra.height()}, function(){
+                  //real_point.css('height', '');
+                //});      
+                extra.slideDown();
+              }
             });
-          }
-        });
+          });
+        }});
 
         $j(document)
           .click(close_point_click)
-          .keypress(close_point_key);
-
+          .keyup(close_point_key);
       });
 
 
-      real_point.find('.toggle.more').fadeOut();
+      
     });
 
     // Toggle point details OFF
     $j(document).delegate('.point_in_list .toggle.less', 'click', function(){
 
       var real_point = $j(this).parents('.point_in_list'), 
-          placeholder = $j('#' + real_point.attr('id') + ':not(.expanded)'),
-          is_pro = real_point.hasClass('pro'),
-          nutshell = real_point.find('.nutshell'),
-          extra = real_point.find('.extra');
+          placeholder = $j('#' + real_point.attr('id'), real_point.data('container')),
+          nutshell = real_point.find('.nutshell');
 
       $j(document)
         .unbind('click', close_point_click)
         .unbind('keypress', close_point_key);
 
-      real_point.find('.avatar').hide();
-      real_point.find('.bullet_point').show();
+      //real_point.css({'height': 'auto'})
+      real_point.find('.extra, > .body .full').fadeOut(500);
 
-      real_point.removeClass('animation_state-finished');
-      nutshell.removeClass('animation_state-nutshell_spill', 'fast', 'easeOutQuad');
-      extra.removeClass('animation_state-extra_expand', 'fast', 'easeOutQuad', function(){        
-        nutshell.css({ 'display': '', 'position': '' });
+      real_point.find('> .body .avatar').fadeOut( 600, function(){
+        if ( real_point.hasClass('animation_state-finished')) { 
+          real_point.removeClass('animation_state-finished');
 
-        real_point
-          .css({left:'',top:''})
-          .removeClass('expanded');
-        placeholder.replaceWith(real_point);
+          nutshell.animate(real_point.data('nutshell'), 1000, 'easeInOutQuad', function(){
+            nutshell.css({'width': '', 'font-size': ''});
+          }); 
+          real_point.removeClass('animation_state-expanded', 1000, 'easeInOutQuad', function(){        
+            //nutshell.css({ 'display': '', 'position': '' });
 
-        if ( real_point.hasClass('point_in_list_margin') ) {
-          real_point.draggable( "enable" );
-        }
+            real_point.find('.bullet_point').show();
 
-        placeholder.remove();
-        real_point.find('.operations').hide().find('.more').show();
+            real_point
+              .css({'left':'','top':'','height':''})
+              .removeClass('expanded');
+            placeholder.replaceWith(real_point);
 
-      });        
+            if ( real_point.hasClass('point_in_list_margin') ) {
+              real_point.draggable( "enable" );
+            }
+            real_point.find('>.body .nutshell .nested_user').fadeIn();
+            //placeholder.remove();
+            real_point.find('.operations').hide().find('.more').show();
+
+          }); 
+        }       
+      });
 
     });
 
@@ -438,7 +507,7 @@ ConsiderIt = {
     // Include in list
     $j(document).delegate('.include .judgepointform form', 'ajax:success', function(data, response, xhr){
       var included_point = $j(this).parents('.point_in_list_margin'), 
-      replacement_point = $j(response['new_point']);
+          replacement_point = $j(response['new_point']);
     
       if ( included_point.hasClass('pro') ) {
         var user_point_list = $j('#points_on_board_pro .point_list');
@@ -467,9 +536,11 @@ ConsiderIt = {
           .addClass('point_in_list_self')
           .fadeIn('slow', function(){
             $j('.pro_con_list .droppable').fadeOut('slow').remove();
-          });
+            carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
+          })
+          .draggable( "destroy" );
 
-        carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
+        
       });
     });
 
@@ -482,15 +553,17 @@ ConsiderIt = {
       old_point.fadeOut('slow', function(){
         old_point = old_point.detach(); 
         other_point_list.append(old_point);
-        carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
         old_point
-          .fadeIn('slow')
           .removeClass('point_in_list_self')
           .addClass('point_in_list_margin')
           .draggable({
             helper: 'clone',
             cursor: 'move'
+          })
+          .fadeIn('slow', function(){
+            carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
           });
+
       });
     });
 
@@ -615,6 +688,22 @@ ConsiderIt = {
       $j(this).parent().children().fadeToggle(); 
     });
 
+    //////////////
+    //PROPOSAL
+    //////////////
+
+    $j('.proposal_prompt').on('click', '.head a.show_details', function(){
+      $j('.proposal_prompt').find('.pic, .description_wrapper').slideDown('slow');
+      $j(this).hide();
+      $j(this).siblings('a').show();
+    });
+
+    $j('.proposal_prompt').on('click', '.head a.hide_details', function(){
+      $j('.proposal_prompt').find('.pic, .description_wrapper').slideUp('slow');
+      $j(this).hide();
+      $j(this).siblings('a').show();
+    });
+
   },
 
   positions : {
@@ -633,7 +722,7 @@ ConsiderIt = {
 
       if (hide_participants) hide_participants.hide();
       show_participants
-        .css({width: dim, height: dim})
+        .css({'width': dim, 'height': dim})
         .show();
 
 
@@ -739,9 +828,10 @@ ConsiderIt = {
   },
   noblecount :  {
     positive_count : function( t_obj, char_area, c_settings, char_rem ) {
-      var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
       
       if ( char_area.hasClass( 'too_many_chars' ) ) {
+        var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
+
         char_area.removeClass( 'too_many_chars' ).css( {
           'font-weight' : 'normal',
           'font-size' : '125%'
@@ -754,10 +844,15 @@ ConsiderIt = {
             } ).attr( 'disabled', false ).css( 'cursor', 'pointer' );
         t_obj.data( 'disabled', false );
       } else if ( char_rem < c_settings.max_chars && $j( t_obj ).data( 'disabled' ) ) {
+        var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
+
         t_obj.data( 'disabled', false );
         submit_button
             .attr( 'disabled', false );
       } else if ( char_rem == c_settings.max_chars ) {
+
+        var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
+
         t_obj.data( 'disabled', true );
         submit_button
             .attr( 'disabled', true );
@@ -765,7 +860,6 @@ ConsiderIt = {
       
     },    
     negative_count : function( t_obj, char_area, c_settings, char_rem ) {
-      var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
       if ( !char_area.hasClass( 'too_many_chars' ) ) {
         char_area.addClass( 'too_many_chars' ).css( {
           'font-weight' : 'bold',

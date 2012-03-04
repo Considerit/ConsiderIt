@@ -1,24 +1,27 @@
-- if points && points.length > 0 && points.respond_to?(:previous_page)
+-# if points && points.length > 0 && points.respond_to?(:previous_page)
 
-  - if show_both_arrows || is_before_list
-    .arrow
-      %button.back
-        &#9650;
+- has_items = points && points.length > 0 && points.respond_to?(:previous_page)
 
-  .paginate
-    %span.curr_first
-      #{points.offset + 1} 
-    \– 
-    %span.curr_last
-      #{[points.offset + points.per_page, points.total_entries].min} 
-    of
-    %span.total
-      #{points.total_entries} 
-    //#{is_pro ? "pros" : "cons"}
+- if show_both_arrows || is_before_list
+  .arrow
+    %button.back
+      &#9650;
 
-  - if show_both_arrows || !is_before_list
+.paginate
+  %span.curr_first
+    = has_items ? points.offset + 1 : 0 
+  \– 
+  %span.curr_last
+    = has_items ? [points.offset + points.per_page, points.total_entries].min : 0
+  of
+  %span.total
+    = has_items ? points.total_entries : 0
     
-    .arrow
-      = button_to '&#9660;'.html_safe,  proposal_points_path(@proposal, :pros_only => is_pro, :cons_only => !is_pro, :page => page + 1, :bucket => bucket), :remote => true, :method => 'get', :id => "paginate_points-#{origin}-#{page + 1}-#{is_pro}", :class => 'forward ajax'
-      %button.forward.not_ajax
-        &#9660;
+  //#{is_pro ? "pros" : "cons"}
+
+- if show_both_arrows || !is_before_list
+  
+  .arrow
+    = button_to '&#9660;'.html_safe,  proposal_points_path(@proposal, :pros_only => is_pro, :cons_only => !is_pro, :page => page + 1, :bucket => bucket), :remote => true, :method => 'get', :id => "paginate_points-#{origin}-#{page + 1}-#{is_pro}", :class => 'forward ajax'
+    %button.forward.not_ajax
+      &#9660;

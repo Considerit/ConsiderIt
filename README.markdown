@@ -84,8 +84,12 @@ problems (mostly Macintosh-specific).
   you first cd into the directory, RVM should recognize this and ask
   if you trust it.  You should say yes.
 
+* Install Ruby and activate it:
+		rvm install 1.9.3-head
+		rvm use 1.9.3-head
+
 * Install gems.  First deal with the problematic <tt>mysql</tt> gem
-  (at least it's problematic on the mac); and then install everything
+  (at least it's problematic on the mac and ubuntu 11.04); and then install everything
   else.  To install the mysql gem on the Mac, first try this:
 
           sudo env ARCHFLAGS="-arch x86_64" gem install mysql -with-mysql-config=/usr/local/mysql/bin/mysql_config
@@ -97,6 +101,12 @@ problems (mostly Macintosh-specific).
   accessing MAMP mysql via terminal: 
 
           mysql --socket=/Applications/MAMP/tmp/mysql/mysql.sock -u root -p
+          
+  To install the mysql gem on Ubuntu remove the socket from config/database.yml. 
+  Make sure that the you have created the password in config/database.yml for
+  the user and hostname that you have specified. When the host is not specified in
+  the Ubuntu version of mysql it does not default to 'localhost'.
+  
 
   Now install the other gems.  The Gemfile in the ConsiderIt
   directory specifies a particular version of rails, so specify that.
@@ -155,6 +165,16 @@ problems (mostly Macintosh-specific).
           rake db:create
           rake db:migrate
           rake db:seed
+  
+  On Ubuntu 11.04 create fails with an error saying that it cannot find the 
+  Javascript runtime. If you get this error install node.js from 
+  
+          https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
+
+  On Ubuntu 11.04 you will also come accross the error "rake aborted! stack level too deep". 
+  To fix this run these commands instead:
+          bundle exec rake db:create
+          bundle exec rake db:migrate
 
 * Start the web server:
 

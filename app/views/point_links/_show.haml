@@ -1,11 +1,9 @@
 %li
-  %span.lead
-    [#{idx}]
+  // %span.lead
+  //   &ndash;
   - if point_link.description.length > 0
-    %a{ :href => point_link.safe_url, :target => '_blank' }
-      #{point_link.description}
+    %a{ :href => point_link.safe_url, :target => '_blank' }=point_link.description
     %span.domain
       [#{point_link.short_loc}]
   - else
-    %a{ :href => point_link.safe_url, :target => '_blank' }
-      #{point_link.safe_url}
+    %a{ :href => point_link.safe_url, :target => '_blank' }=point_link.safe_url

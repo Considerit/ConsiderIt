@@ -4,11 +4,8 @@
     .comment_body
       .body_row
         .user
-          .avatar
-            = image_tag current_user.avatar.url(:midsmall), :alt => "your profile picture"
+          = image_tag current_user.avatar.url(:medium), :alt => "your profile picture", :class => "avatar"
 
-          .username
-            = h current_user.name
         .text    
           = form_for :comment, :remote => true, :url => proposal_comments_path(@proposal) do |f|
             = f.hidden_field :proposal_id, :value=>@proposal.id
@@ -20,16 +17,16 @@
                             
             %ul.form
                
-              %li.body
-                = f.text_area :body, :id => "comment_body", :class => 'has_example is_counted', :title => 'Type your comment here...'
+              %li.body.inlined
+                = f.label :body, 'Type your comment here...'
+                = f.text_area :body, :id => "comment_body", :class => ' is_counted', :title => 'Type your comment here...'
                 %span.count
                   1000
 
-            - if current_user
-              .point-pledge
-                %p.note
-                  %strong.alert
-                    Remember your pledge!
+            // - if current_user
+            //   .point-pledge
+            //     %p.note
+            //       Thanks for keeping it civil!
 
             = f.submit "Add comment", :class => "comment_submit gray"
 

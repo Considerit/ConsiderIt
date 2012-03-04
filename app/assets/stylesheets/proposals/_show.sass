@@ -2,6 +2,7 @@
 
   > ol
     @include nude-list  
+    position: relative
 
     li
 
@@ -13,7 +14,7 @@
 
         .pre 
           .action, .personal_position
-            top: 170px
+            top: 20px
             position: absolute
             font-size: 8pt
             color: #999
@@ -25,24 +26,30 @@
           .personal_position
             right: 0px
             left: 828px
+            padding: 5px
+            background: image-url('paper.png') repeat top left #f1f1f1
+            border-radius: 5px
+            text-align: center
+            border-bottom: 1px solid #999
+            border-top: 1px solid white
+            box-shadow: 0px 1px 2px #aaa
+            color: #666
+            display: block
+            opacity: .75
+            &:hover
+              opacity: 1
 
-            form
-              input
-                @include linkify
-                text-decoration: underline
-                font-size: 8pt
-                padding: 0
-                &:hover
-                  color: #666
+            span
+              text-decoration: underline
                 
         .histogram_arrow
           z-index: 0
           position: absolute
           width: 654px
-          left: 177px
+          left: 163px
           height: 16px
           border-radius: 5px
-          top: 287px
+          top: 160px
 
           // background-color: #f1f1f1
           // box-shadow: 1px 2px 3px rgba(black, .1)     
@@ -164,7 +171,7 @@
               display: none
 
             .full_column
-              min-width: 310px
+              min-width: 326px
             
 
 
@@ -264,6 +271,39 @@
                 .view_statement .avatar .username
                   display: block
 
+              &.with_explanation 
+                .view_statement
+                  .overlay
+                    box-shadow: inset 0 0 1px rgba(yellow, 0.25)
+                    width: 100%
+                    height: 100%
+                    z-index: 1
+                    top: 0
+                    left: 0
+                    display: block
+                    background: transparent
+                    position: absolute
+                    z-index: 3
+
+                  > img
+                    position: relative
+
+                .username
+                  margin-left: -150px
+                  width: 300px
+
+                  &:after
+                    left: 138px
+
+              &.no_explanation 
+                .username
+                  margin-left: -75px
+                  width: 150px
+
+                  &:after
+                    left: 62px
+
+
               .view_statement
                 text-align: center  
                 color: #333
@@ -277,18 +317,48 @@
                   max-height: 50px
                   max-width: 50px
 
-
                 &:hover .username
                   display: block
                 
                 .username
-                  font-size: 8pt
+                  font-size: 10pt
                   color: white
-                  background-color: rgba(black, .5)
+                  background-color: rgba(black, .9)
                   position: absolute
                   line-height: normal
                   white-space: nowrap
                   display: none
                   z-index: 2
-                  bottom: -30px
+                  top: 100%
+                  margin-top: 14px
+                  border-radius: 5px
+                  padding: 2px 5px
+                  left: 50%
+
+
+
+
+                  &:after
+                    content: "\25B2"
+                    position: absolute
+                    padding: 0 4px 0
+                    top: -15px
+                    color: rgba(black, .9)
+
+                  blockquote.explanation
+                    white-space: normal
+                    padding: 5px 0 0 0 
+                    font-style: italic
+                    font-size: 9pt
+
+                    p
+                      margin-bottom: 6px
+
+                  a.readmore
+                    text-decoration: underline
+                    color: white
+                    opacity: .8
+                    font-size: 9pt
+                    &:hover
+                      opacity: 1
 

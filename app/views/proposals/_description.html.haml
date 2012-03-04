@@ -6,6 +6,11 @@
 
   .head.single
     %h3.banner=prompt
+    - if hide_initially
+      %a.show_details
+        show details
+      %a.hide_details.hide
+        hide details
 
   .pic
 

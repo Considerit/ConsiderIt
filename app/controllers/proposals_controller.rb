@@ -12,19 +12,19 @@ class ProposalsController < ApplicationController
     @keywords = "#{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
 
     @position = current_user ? current_user.positions.where(:proposal_id => @proposal.id).first : nil
-    @positions = @proposal.positions.published
+    @positions = @proposal.positions.includes(:user).published
 
     if !@position && (!params.has_key? :redirect || params[:redirect] == 'true' )
       redirect_to(new_proposal_position_path(@proposal))
       return
     end
 
-    @pro_points = @proposal.points.pros.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
-    @con_points = @proposal.points.cons.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
+    @pro_points = @proposal.points.includes(:point_links, :user).pros.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
+    @con_points = @proposal.points.includes(:point_links, :user).cons.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
 
     @segments = Array.new(7)
     (0..6).each do |bucket|
-      qry = @proposal.points.ranked_for_stance_segment(bucket)
+      qry = @proposal.points.includes(:point_links, :user).ranked_for_stance_segment(bucket)
       @segments[bucket] = [qry.pros.paginate( :page => 1, :per_page => POINTS_PER_PAGE ),
         qry.cons.paginate( :page => 1, :per_page => POINTS_PER_PAGE )]
     end

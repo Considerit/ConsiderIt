@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
   theme :theme_resolver
 
   def render(*args)
-    @theme = theme_resolver
+    #@theme = theme_resolver
     if args
       args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
     end

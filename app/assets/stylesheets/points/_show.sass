@@ -3,135 +3,117 @@
   @include nude-list
   position: relative
   margin-bottom: 8px
-  color: white
   background-repeat: no-repeat
-  //border: 1px solid
   box-shadow: 1px 2px 0.2em rgba(0, 0, 0, 0.8)  
-  width: 232px
-  border: 1px solid transparent
-
-  &:hover .body .operations
-    // visibility: visible
+  border: 5px solid transparent
 
   > .extra
+    visibility: hidden
     display: none
+
   > .body
-    overflow: hidden
     vertical-align: top
-    padding: 3px 10px 3px 10px
+    //padding: 3px 10px 3px 10px
+    position: relative
 
     .avatar
       display: none
 
     .nested_user
-      white-space: nowrap
       font-style: italic
 
     .point_text.nutshell
       font-size: 13px
       color: #eee
-      padding-bottom: 9px
+      padding-bottom: 17px
+
+      > .nested_user
+        white-space: nowrap
+        display: inline-block
 
     .point_text.full
-      font-size: 90%
-      margin: 15px 0
       display: none
-      width: 90%
+      font-size: 12pt
+
+      > .nested_user
+        font-size: 12pt
+
+      p
+        margin-bottom: 8px
 
       .link
-
         ul
           li 
             padding: 2px 0
+            font-size: 12pt
             a
-              color: white
               text-decoration: underline
 
             .domain
               text-decoration: none
-              color: #C1C1C1
 
-    .operations   
-      position: absolute
-      opacity: 0
-      text-align: right
-      right: 10px
-      bottom: 4px
+  .operations   
+    position: absolute
+    opacity: 0
+    text-align: right
+    right: 10px
+    bottom: 4px
 
-      > div, > div > div
-        display: inline-block
-        &.pointform
-          display: none
+    > div, > div > div
+      display: inline-block
+      &.pointform
+        display: none
         
-        .bullet
-          font-size: 8px
-          color: #555
-          vertical-align: middle
-          
-        a.point_operation, 
-        button.point_operation,
-        input.point_operation 
-          font-size: 11px
-          padding: 0
-          margin: 0
-          vertical-align: middle
+      a.point_operation, 
+      button.point_operation,
+      input.point_operation 
+        font-size: 11px
+        padding: 0
+        margin: 0
+        font-family: georgia, times, seriff
+        font-weight: bold
 
-      .read_more
-        a.toggle_more, a.toggle
-          display: inline-block
-          font-size: 11px
-          &.hide
-            padding: 3px 10px
+      .editpoint:after, &.remove:after
+        content: '\2022'
+        font-size: 8px
+        position: relative
+        right: 1px
+        color: #e1e1e1
 
-        .comment_count
-          display: inline-block
+    .read_more
+      a.toggle_more, a.toggle
+        display: inline-block
+        font-size: 11px
+        &.hide
+          padding: 3px 10px
+
+      .comment_count
+        display: inline-block
+        font-size: 10px
+        height: 14px
+        padding: 0 5px
+        text-align: center
+        border-radius: 5px
+        position: relative
+        vertical-align: top
+
+        &:after
           position: absolute
-          right: 6px
-          z-index: 2
-          top: 5px
-          font-size: 9px
-
-        .comment_icon
-          display: inline-block
-          position: relative
-          z-index: 1
-          width: 19px
-
-          &:before, &:after, span:before, span:after
-            content: ''
-            right: 0
-            position: absolute
-          
-          span:after, span:before
-            background: none repeat scroll 0 0 rgba(#666, .3)
-            margin: -10px 0 0
-          
-          span:before
-            border-radius: 2px
-            height: 13px
-            //margin-top: -8px
-            width: 16px
-
-          span:after
-            background: none repeat scroll 0 0 transparent    
-            border-color: rgba(#666, .3) transparent transparent rgba(#666, .3)
-            border-right: 2px solid transparent
-            border-style: solid
-            border-width: 2px
-            right: 8px
-            margin-top: 3px   
-
-
-
+          content: "\25BC"
+          bottom: -6px
+          left: 1px
+          font-size: 7px
+          -webkit-transform: rotate(20deg)
+          -moz-transform: rotate(20deg)
 
   &.point_in_list_margin
-    width: 172px
-    height: 129px
+    width: 148px
+    height: 121px
     cursor: move
     @include curl-shadow
-    padding-bottom: 5px
     margin-bottom: 18px
-
+    padding: 5px 5px 8px 16px
+    color: black
 
     &:hover
       background: image-url('paper.png') repeat left top transparent
@@ -141,30 +123,15 @@
       &.con
         background-color: $con_point_expanded
 
-
-    &:hover .triangle
-      //display: block
-
-    .triangle
-      position: absolute
-      top: 0
-      right: -1px
-      width: 0
-      height: 0
-      line-height: 0
-      border-top-color:  #d8d8d8
-      border-right-color: #d8d8d8
-      border-bottom-color: rgba(#888, .3)
-      border-left-color: rgba(#888, .3)
-      display: none
-      border-width: 7px
-      border-style: solid
-      box-shadow: -1px 1px 1px rgba(#aaa,.1)
+      > .body .nutshell
+        //opacity: 1
 
 
     &.pro
       background-color: $pro_point_light
       border-right: none
+      padding-left: 11px
+      padding-right: 10px
       //border-color: $pro_point_dark
 
     &.con
@@ -176,43 +143,62 @@
       display: none
 
     .bullet_point
-      left: 5px
-      top: 8px
+      left: -10px
+      top: -2px
       color: rgba(#4C4C4C, .5)
 
     > .body 
-      padding: 10px 10px 3px 16px
+      
+      //padding: 0
 
       .nutshell
         font-size: 11px
-        opacity: .7
+        opacity: .8
         color: black
+        width: 148px
 
-      .operations        
+    .operations        
+      bottom: 0px
+      .edit, .remove
+        display: none
 
-        .edit, .remove
-          display: none
+      > div, >div > div
+                  
+        a.point_operation, 
+        button.point_operation,
+        input.point_operation 
+          color: #555
+          &:hover
+            color: black
+        
+        .editpoint:after, &.remove:after
+          color: #555
 
-        > div, >div > div
-                    
-          a.point_operation, 
-          button.point_operation,
-          input.point_operation 
-            color: #444
-            &:hover
-              color: black
+        .comment_count
+          color: #444
+          background-color: rgba(#999,.4)  
+          &:after
+            color: rgba(#999,.4) 
+
 
   &.point_in_list_board,
   &.point_in_list_self
       
-    width: 255px
+    //width: 255px
     border-color: transparent
     box-shadow: none
-      
-    .body
-      padding: 3px 5px 3px 13px
+    color: #EEEEEE
+
+    .bullet_point
+      left: -10px
+      top: -2px
+
+    > .body
+      //padding: 3px 5px 3px 13px
             
-    .operations        
+
+
+    .operations
       bottom: -3px
 
       > div, >div > div
@@ -222,9 +208,12 @@
         button.point_operation,
         input.point_operation 
           @include linkify
-          color: #777
+          color: #aaa
           &:hover
-            color: #C1C1C1                
+            color: #e1e1e1                
+
+        .editpoint:after, &.remove:after
+          color: #aaa
 
         .deletepointformproper
           position: absolute
@@ -237,110 +226,110 @@
             vertical-align: middle
 
 
+        &.read_more
+          .comment_count
+            color: #bbb
+            background-color: rgba(#999,.4)  
+            &:after
+              color: rgba(#999,.4)  
+
+
   &.point_in_list_board
+    
     width: 310px
+    .nutshell
+      width: 310px
 
-    .scores
-      float: right
-      width: 120px
-      
-      ul       
-        margin: 10px 0 0 0
-        @include nude-list
-        li
-          cursor: pointer
-          color: #ddd
-          padding: 1px 5px
-          background-color: #4B4D4E
-          float: left
-          margin-right: 5px
-          font-size: 10px
-          
-          &:hover
-            background-color: black
-            color: white
+    > .body .operations
+      .bullet
+        display: none
 
+  &.point_in_list_self
+    width: 232px
+    .nutshell
+      width: 232px
 
 .point_in_list.expanded
-  border-color: #444
-  box-shadow: 0px 1px 2px rgba(black, .4)
   z-index: 1001
   position: absolute
+  border-radius: 5px
 
-  .body
-    overflow: visible
+  min-height: 111px
+
+  > .body
 
     .avatar
-      margin-right: 15px
       width: 58px
-      margin-top: 5px
-      box-shadow: 0px 1px 2px rgba(black, .2)
+      top: 3px
       position: absolute
+      left: -75px
 
-    .operations
-      display: none
+    .full
+      //opacity: 0
 
-  .extra
-    position: absolute
-    top: -1px
-    
-    
-    padding: 100px 0 20px 0
-    background: inherit
+    .nutshell
+      padding-bottom: 0
+      position: relative
+
+  .operations
+    display: none
+
+  .less.point_text_toggle
+    display: none
+
+  .extra    
     color: black
-    z-index: -1
-    border: 1px solid transparent
     display: block
-    min-height: 125px
 
-    .less.point_text_toggle
-      display: none
+    //> *
+    //  visibility: hidden
 
-    &.animation_state-extra_expand
-      padding-top: 130px
+  &.animation_state-expanded
+    width: 590px
+    padding-right: 90px
+    padding-left: 90px
+
+    > .body
+      .full
+        padding-top: 10px
+    .extra
+      visibility: visible
+      opacity: 1        
+
+  &.animation_state-finished
+    box-shadow: 0px 1px 2px rgba(black, .4)
+    border-radius: 5px
+
+    > .body
+
+      .nutshell
+
+      .full
+        //display: block
+
+    > .less
       display: block
-      border-color: #444    
-      box-shadow: 0px 1px 2px rgba(black, .4) 
-
-    > *
-      visibility: hidden
-
-  .body > .nutshell
-    
-    &.animation_state-nutshell_spill
-      font-size: 20px
-      width: 650px
-
+      position: absolute
+      color: #424242
+      right: 5px
 
   &.pro
-    border-radius: 5px 0 0 5px
-    
+    //border-right: 5px solid transparent
     .nutshell
-      left: 16px
-
-    .extra
-      border-radius: 0 5px 5px 5px
-
-    &:after
-      right: -2px
+      //left: 0px
 
   &.con
-    border-radius: 0 5px 5px 0px
+    //border-left: 5px solid transparent
 
     .nutshell
-      right: 10px
-
-    .body .avatar
-      left: -569px
-
-    .extra
-      border-radius: 5px 0 5px 5px
-
-    &:after
-      left: 0px
+      //right: 0px
 
   &.point_in_list_self, &.point_in_list_board
-    background: image-url('chalk/chalkboard.jpg') repeat top left #333
+    background: image-url('chalk/chalkboard.jpg') repeat top left #414141
+    padding-top: 10px
+    padding-bottom: 10px
+    margin-top: -10px
+    border-color: #414141
 
     .remove
       display: none
@@ -348,112 +337,88 @@
     .extra, body > .nutshell, &.animation_state-finished .toggle.less
       color: #EDEDED
 
-    .extra.animation_state-extra_expand
-      width: 630px
-      border: 5px solid white
-      border-radius: 5px
-      top: -10px
-      padding-right: 40px
-      padding-left: 80px
+    &.animation_state-expanded
+
+      .full, .nested_user, .link a
+        color: #f1f1f1
+        opacity: .9
+
+      .link
+        padding-bottom: 5px
+
+
+    &.animation_state-finished
+      border-color: white
+      .link
+        opacity: .9
+        .domain
+          opacity: .2
+        
+      .nutshell
+        color: white
+        //opacity: .9
 
     .toggle.less
       top: 0
 
     &.pro 
       .avatar
-        left: -60px
+        //left: 0px
 
-      .nutshell.animation_state-nutshell_spill
-
-      .extra.animation_state-extra_expand
-        left: -75px
+      &.animation_state-expanded
+        margin-left: -90px
 
     &.con 
       .avatar
-        left: -335px
-
-      .nutshell.animation_state-nutshell_spill
-        left: -265px
+        //left: 0px
       
-      .extra.animation_state-extra_expand
-        left: -350px
+      &.animation_state-expanded
+        margin-left: -380px
+
+        > .body .nutshell
+          //left: 445px
+
 
       .extra .less
-        right: 6px
+        right: 0px
 
 
   &.point_in_list_margin
     background: image-url('paper.png') repeat left top transparent
     cursor: auto
     opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
+    height: auto
     
-    .body > .nutshell
+    &.animation_state-expanded
+      padding-left: 90px
+
+    > .body .nutshell
       color: black
     
-    &:hover
-      .triangle
-        display: none
-
     &:after, &:before
       box-shadow: none
 
     .include
       display: none
 
-    .extra
-      width: 0px
-
-    &:after
-      content: ''
-      top: 0
-      width: 5px
-      height: 133px
-      position: absolute
-      background: inherit
-    
     .toggle.less
-      top: 5px
-
-    .extra.animation_state-extra_expand
-      width: 488px
+      top: 0px
 
     &.pro 
       background-color: $pro_point_expanded
-      .nutshell.animation_state-nutshell_spill
-        left: 100px
-      .extra.animation_state-extra_expand
-        left: 172px
-        padding-right: 80px
-        padding-left: 40px
+
+      &.animation_state-expanded
+        margin-left: -79px
 
     &.con 
       background-color: $con_point_expanded  
-      .nutshell.animation_state-nutshell_spill
-        left: -496px
-      
-      .extra.animation_state-extra_expand
-        left: -608px
-        padding-right: 40px
-        padding-left: 80px
 
+      &.animation_state-expanded
+        margin-left: -601px
+
+      > .body
+        .avatar
+          //left: -592px
+      
       .extra .less
-        right: -164px
-
-
-  &.animation_state-finished
-    .nutshell
-      font-family: Georgia, Times, "Times New Roman", serif
-      font-size: 22px
-    .extra
-   
-      > *
-        visibility: visible
-      
-      .less
-        display: block
-        position: absolute
-        color: #424242
-        right: 5px
-
-
-  
+        //right: 0px

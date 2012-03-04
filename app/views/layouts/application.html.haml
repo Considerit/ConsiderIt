@@ -27,7 +27,7 @@
     = csrf_meta_tag
     
     = stylesheet_link_tag 'application' 
-    = stylesheet_link_tag current_theme_stylesheet_path('considerit.theme')
+    -# = stylesheet_link_tag current_theme_stylesheet_path('considerit.theme')
     
     /[if IE]
       /= javascript_include_tag "svg", :"data-path" => "/javascripts/"
@@ -65,3 +65,4 @@
       $j(document).ready(function(){
         ConsiderIt.init();     
       });   
+    = render :partial => "reflect/templates", :layout => false

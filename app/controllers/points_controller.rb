@@ -3,7 +3,9 @@ class PointsController < ApplicationController
 
   respond_to :json
   
-  POINTS_PER_PAGE = 4
+  POINTS_PER_PAGE_MARGIN = 3
+  POINTS_PER_PAGE_RESULTS = 4
+
   ########
   ##
   # handles calls from:
@@ -46,7 +48,7 @@ class PointsController < ApplicationController
       qry = qry.joins(:inclusions).where(:inclusions => { :user_id => user_points_id})    
     elsif @bucket == 'margin'
       group_name = 'margin'
-      qry = qry.not_included_by(current_user, session[@proposal.id][:included_points].keys).ranked_persuasiveness  
+      qry = qry.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).ranked_persuasiveness  
     else
       ## specific voter segment...
       @bucket = @bucket.to_i
@@ -66,11 +68,15 @@ class PointsController < ApplicationController
       @pro_points = qry.pros.paginate( :page => @page, :per_page => 50 )
       points = @con_points + @pro_points
     elsif pros_and_cons
-      @con_points = qry.cons.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
-      @pro_points = qry.pros.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
+      @con_points = qry.cons.paginate( :page => @page, :per_page => POINTS_PER_PAGE_RESULTS )
+      @pro_points = qry.pros.paginate( :page => @page, :per_page => POINTS_PER_PAGE_RESULTS )
       points = @con_points + @pro_points
-    else
-      points = qry.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
+    else 
+      points = qry.paginate( :page => @page, :per_page => @bucket == 'margin' ? POINTS_PER_PAGE_MARGIN : POINTS_PER_PAGE_RESULTS )
+    
+      points.each do |pt|
+        pp pt
+      end
     end
     
     if group_name == 'user'
@@ -131,6 +137,12 @@ class PointsController < ApplicationController
     @user = current_user
 
     params[:point][:proposal_id] = params[:proposal_id]   
+
+    if params[:point][:nutshell].length > 140
+      params[:point][:text] << params[:point][:nutshell][140..-1]
+      params[:point][:nutshell] = params[:point][:nutshell][0..140]
+    end
+
     if current_user
       params[:point][:user_id] = current_user.id
     else
@@ -187,7 +199,9 @@ class PointsController < ApplicationController
 
   def show
     point = Point.find(params[:id])
-    point_details = render_to_string :partial => "points/details", :locals => { :point => point }
+    @proposal = Proposal.find(params[:proposal_id])
+    origin = params[:origin]
+    point_details = render_to_string :partial => "points/details", :locals => { :point => point, :light_background => origin == 'margin' }
     render :json => { :details => point_details }
   end
 

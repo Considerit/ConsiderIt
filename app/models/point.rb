@@ -33,8 +33,12 @@ class Point < ActiveRecord::Base
       order("points.score_stance_group_#{stance_bucket} DESC")
   }
   
-  scope :not_included_by, proc {|user, included_points| 
-    chain = !user.nil? ? joins(:inclusions.outer, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NULL") : nil
+  scope :not_included_by, proc {|user, included_points, deleted_points| 
+    #chain = !user.nil? ? joins(:inclusions.outer, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NULL") : nil
+    additional = (deleted_points && deleted_points.length > 0) ? " OR points.id IN (?)" : ""
+
+    chain = user.nil? ? nil : joins("LEFT OUTER JOIN inclusions ON points.id = inclusions.point_id AND inclusions.user_id = #{user.id}").where(
+      "inclusions.user_id IS NULL" + additional, deleted_points)
 
     if included_points.length > 0
       chain = chain.nil? ? where("points.id NOT IN (?)", included_points) : chain.where("points.id NOT IN (?)", included_points)
@@ -42,11 +46,12 @@ class Point < ActiveRecord::Base
     chain
   }
   
-  def self.included_by_stored(user, proposal)
+  def self.included_by_stored(user, proposal, deleted_points)
     if user
+      additional = (deleted_points && deleted_points.length > 0) ? " AND points.id NOT IN (?)" : ""
       Point.
         joins(:inclusions, "AND inclusions.user_id = #{user.id} AND points.proposal_id = #{proposal.id}").
-        where("inclusions.user_id IS NOT NULL")
+        where("inclusions.user_id IS NOT NULL" + additional, deleted_points)
     else
       proposal.points.where(:id => -1) #null set
     end

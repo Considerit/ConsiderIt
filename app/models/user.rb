@@ -24,7 +24,14 @@ class User < ActiveRecord::Base
 
   has_attached_file :avatar, 
       :default_url => "#{ENV['RAILS_RELATIVE_URL_ROOT'] || ''}/assets/:attachment/:style_default-profile-pic.png",   
-      :styles => { :tab => "100x62#", :large => "200x200#", :midsmall => "70x70#", :small => "50x50#", :thumb => "35x35#"}
+      :styles => { 
+        :golden_horizontal => "100x62#", 
+        :golden_vertical => "62x100#", 
+        :medium => "70x70#", 
+        :medium_dark => "70x70#",
+        :small => "50x50#"
+      }
+
       #:path => ":rails_root/public/images/:attachment/uploaded/:id/:style_:basename.:extension",
       #:url => "/images/:attachment/uploaded/:id/:style_:basename.:extension"
 

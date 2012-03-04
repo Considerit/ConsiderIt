@@ -1,3 +1,5 @@
+- skip_text = current_user && @position.published ? "Discard changes" : "No, just show me the results..."
+
 .stance.position_statement.hide
   = label_tag :explanation, "Optional review that summarizes your thoughts"
   = f.text_area :explanation
@@ -6,7 +8,7 @@
 =f.hidden_field :proposal_id, :value=>@proposal.id
 =f.hidden_field :position_id, :value => @position.id              
 =f.submit "Save!", :class => "submit important"
-= link_to "No, just show me the results...", proposal_path(@proposal, :redirect => 'false'), :class => "skip_save"
+= link_to skip_text, proposal_position_path(@proposal, @position, :redirect => 'false'), :method => :delete, :class => "skip_save"
 //= link_to "discard your #{@position.published ? 'changes' : 'position'}", proposal_position_path(@proposal, @position), :method => :delete
 
 %ul

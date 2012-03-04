@@ -1,17 +1,2 @@
-%a.toggle.less.hide.point_text_toggle
-  x
 
-.point_text.full
-
-  .details
-    .the_details      
-      - if point.text 
-        = h simple_format(point.text.gsub(/\n/,"<p></p>"))
-
-  .link
-    - if point.point_links.count > 0
-      %ul
-        - point.point_links.each_with_index do |pl, idx|
-          = render :partial => 'point_links/show', :locals => { :point_link => pl, :idx => idx }
-
-= render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :commentable => point, :context => 'point' }
+= render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :commentable => point, :context => 'point', :light_background => light_background }

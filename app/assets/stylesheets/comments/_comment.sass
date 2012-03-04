@@ -1,31 +1,114 @@
 li.comment, li.new_comment
   position: relative
-  margin-top: 8px
+  margin: 8px 0 25px 0
     
   .comment_body
     width: 100%
-    padding: 5px
     
     .body_row
-            
-      .comment_text
-        border-radius: 5px
-        position: relative
-        color: #272727
-        padding: 8px
-
-      .username
-        display: inline-block
-        font-size: 10pt
-        vertical-align: top
-        font-weight: bold
-        color: #666
-        padding-bottom: 4px
-
 
       .avatar
-        max-width: 70px
-        display: inline-block
-        margin: 0 10px 4px 0
+        position: absolute
+        left: -75px
+        width: 58px
+        top: 3px
+            
+      .comment_text
+        opacity: .8
+        
+        border-radius: 5px
+        position: relative
+        font-size: 10pt
+
+        p
+          margin-bottom: 6px
+
+          br
+            margin-bottom: 6px
+
+        .username
+          display: inline-block
+          vertical-align: top
+          font-style: italic
+
+li.new_comment
+  a.login_link
+    font-weight: bold
 
 
+
+li.point_in_list_margin
+  a.login_link
+    color: #333
+
+li.point_in_list_self, li.point_in_list_board
+  .comment_body .body_row
+    .comment_text
+      color: #EDEDED
+
+  a.login_link
+    color: #ddd
+
+
+.reflected
+  
+  li.point_in_list_margin
+    a.user, 
+    .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main .bullet_text
+      color: #777
+
+    button.button_as_link,       
+    .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer a, 
+    .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer a
+      color: #333
+
+    .button.button_as_link, .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer a, .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer a
+      &:hover
+        color: #444
+
+    .rf_clarification
+      color: #777
+      span
+        color: #999
+        font-variant: small-caps
+      a.user
+        color: #777
+
+    .response_prompt
+      color: black
+      background-color: #ccc
+
+
+  li.point_in_list_self, li.point_in_list_board
+    a.user, 
+    .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main .bullet_text
+      color: #aaa
+
+    button.button_as_link,       
+    .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer a, 
+    .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer a
+      color: #aaa
+
+    button.button_as_link, .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer a, .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer a
+
+      &:hover
+        color: #ddd
+    
+
+
+    .new_bullet
+
+    .rf_clarification
+      color: #aaa
+      span
+        color: #999
+        font-variant: small-caps
+      a.user
+        color: #aaa
+
+    .response_prompt
+      color: #222
+      background-color: #777
+
+      .rf_dialog .submit_footer a
+        color: #888

@@ -2,16 +2,9 @@
   
   .id.hide
     = point.id
-    
-  .bullet_point
-    &#8226;
-    //- if point.is_pro
-    //  +
-    //- else 
-    //  &#x2013;
-
-  - if origin == 'margin'
-    .triangle 
+  
+  %a.toggle.less.hide.point_text_toggle
+    x
 
   .body
 
@@ -19,7 +12,13 @@
       = render :partial => "inclusions/new", :locals => { :point => point }
 
     - if !point.hide_name && point.user
-      = image_tag point.user.avatar.url(:midsmall), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
+      = image_tag point.user.avatar.url(origin == 'margin' ? :medium_dark : :medium), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
+    - else
+      // necessary for animation to work properly
+      .avatar 
+
+    .bullet_point
+      &#8226;
           
     .point_text.nutshell 
 
@@ -27,7 +26,7 @@
         = h point.nutshell
       - else
         = h point.text.length > 137 ? point.text[0,137] : point.text
-
+      
       %span.nested_user
         \- 
         - if point.hide_name
@@ -37,39 +36,53 @@
         - else
           unknown
 
-    .operations
+    .point_text.full
 
-      - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
+      .details
+        - if point.text && point.text.length > 0 
+          = h simple_format(point.text.gsub(/\n/,"<p></p>"))
 
-      - if point_creator
-        .edit
+      .link
+        -# if point.point_links.count > 0
+        %ul
+          - point.point_links.each_with_index do |pl, idx|
+            = render :partial => 'point_links/show', :locals => { :point_link => pl, :idx => idx }
 
-          %a.editpoint.point_operation
-            edit
-          = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
-          .bullet
-            &#8226;
+      .nested_user
+        \- 
+        - if point.hide_name
+          anonymous
+        - elsif point.user
+          = point.user.name
+        - else
+          unknown
 
-      .remove
-                  
-        -if point_creator
-          = render :partial => "points/delete", :locals => { :point => point } 
-        -else
-          = render :partial => "inclusions/delete", :locals => { :point => point }
+  .operations
 
-      .read_more
-        - if origin != 'margin'
-          .bullet
-            &#8226;      
-        %a.toggle.more.point_text_toggle.point_operation
-          read more
-          .comment_count
-            #{point.comments.count}
-          .comment_icon
-            %span
+    - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
+
+    - if point_creator
+      .edit
+
+        %a.editpoint.point_operation
+          edit
+        = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
+
+    .remove
+                
+      -if point_creator
+        = render :partial => "points/delete", :locals => { :point => point } 
+      -else
+        = render :partial => "inclusions/delete", :locals => { :point => point }
+
+    .read_more
+      %a.toggle.more.point_text_toggle.point_operation
+        read more
+        .comment_count
+          #{point.comments.count}
+
 
   .extra  
     .ajax_loading
-
     
   .clear

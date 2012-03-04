@@ -1,3 +1,5 @@
+- light_background ||= false
+
 %li.comment{ :id=>"comment-#{comment.id}" }
   
   .comment_body
@@ -11,7 +13,7 @@
           - else
             .avatar
               - if comment.user.avatar
-                = image_tag comment.user.avatar.url(:midsmall), :alt => "#{h comment.user.name}'s profile picture"
+                = image_tag comment.user.avatar.url(light_background ? :medium_dark : :medium), :alt => "#{h comment.user.name}'s profile picture"
             .username
               = h comment.user.name
         .text.comment_text    
@@ -26,12 +28,12 @@
         .text.comment_text   
           .body
             - if comment.user.avatar
-              = image_tag comment.user.avatar.url(:small), :alt => "#{h comment.user.name}'s profile picture", :class => 'avatar', :align => 'left'
-            .username.exclude_from_reflect 
-              = h comment.user.name
-            %br
+              = image_tag comment.user.avatar.url(light_background ? :medium_dark : :medium), :alt => "#{h comment.user.name}'s profile picture", :class => 'avatar'
 
             = h simple_format(comment.body)
+
+            .username.exclude_from_reflect 
+              &ndash; #{h comment.user.name}
 
         .clear
           

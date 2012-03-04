@@ -38,21 +38,31 @@
   &:before, &:after
     content: ""
     position: absolute
-    width: 170px
+    width: 165px
     height: 100px
     z-index: -1
     box-shadow: 0 14px 2px 0 rgba(black,0.3)
-    bottom: 14px
+    bottom: 12px
 
   &:before
     -webkit-transform: rotate(-5deg) skewX(-5deg)
     -moz-transform: rotate(-5deg) skewX(-5deg)
-    left: 1px
 
   &:after
     -webkit-transform: rotate(5deg) skewX(5deg)
     -moz-transform: rotate(5deg) skewX(5deg)
-    right: 1px
+
+  &.pro
+    &:after
+      right: 1px
+    &:before
+      left: -4px
+
+  &.con
+    &:after
+      right: -3px
+    &:before
+      left: 1px
 
 @mixin inset-text
   text-shadow: rgba(white, .4) -1px -1px

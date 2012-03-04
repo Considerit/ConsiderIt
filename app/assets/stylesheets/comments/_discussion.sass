@@ -1,3 +1,31 @@
 .discuss
+  position: relative
+  width: 660px
   .discussion_header
-    @include heading
+    font-size: 14pt
+    margin: 35px 0 10px 0
+
+  &:after
+    // content: ''
+    // position: absolute
+    // height: 50px
+    // left: -100px
+    // width: 800px
+    // top: -10px
+    // z-index: 1
+    // opacity: .6
+
+.point_in_list_margin
+  .discuss
+    &:after
+      //background: image-url('prompt_background_margin.png') repeat-x top left
+
+    .discussion_header
+      color: #333
+
+.point_in_list_self, .point_in_list_board
+  .discuss 
+    &:after
+      //background: image-url('prompt_background.png') repeat-x top left
+    .discussion_header
+      @include chalk

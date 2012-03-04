@@ -14,36 +14,38 @@
       /   - else
       /     unknown
 
-      .point-title-group
-        = f.text_area :nutshell, :title => '(required) Summarize your point in 140 characters', :cols => 24, :class => "point-title has_example is_counted"
+      .point-title-group.inlined
+        = f.label :nutshell, 'summarize your point...'
+        = f.text_area :nutshell, :title => 'Summarize your point', :cols => 24, :class => "point-title is_counted"
         %span.count
           140
         .clear
 
-      .point-description-group
-        = f.text_area :text, :title => "(optional) write a longer description of your point", :cols => 24, :class => "point-description has_example is_counted"
+      .point-description-group.inlined
+        = f.label :text, 'add additional details...'
+        = f.text_area :text, :title => "Write a longer description (optional)", :cols => 24, :class => "point-description is_counted"
         %span.count
           2000
         .clear
 
-      .point_link_block
+      .point_link_block.fl
         .point_link_prompt
 
           = f.fields_for :point_links do |builder|
             = render :partial => 'point_links/point_link_fields', :locals => { :f => builder }
 
-          = link_to_add_fields "Add a link to a website", f, :point_links, 'point_links/point_link_fields', ''
+          = link_to_add_fields "link to a website", f, :point_links, 'point_links/point_link_fields', ''
 
 
-      .hide_name.add_qtip{:title => 'We encourage you not to hide your name. Signing your point with your name lends it more weight to other participants.'}
+      .hide_name.fr.add_qtip{:title => 'We encourage you not to hide your name. Signing your point with your name lends it more weight to other participants.'}
         = f.check_box :hide_name
-        = f.label :hide_name, 'Hide your name from other users'
-
-      - if @user
-        .point-pledge
-          %p.note
-            %strong.alert
-              Remember your pledge!
+        = f.label :hide_name, 'hide your name'
+      .cl
+      //- if @user
+      //  .point-pledge
+      //     %p.note
+      //       %strong.alert
+      //         Remember your pledge!
 
       .point-submit
         = f.submit 'Done', :class => "submit_new_point #{is_pro ? 'pro' : 'con'}"

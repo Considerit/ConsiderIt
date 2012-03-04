@@ -53,7 +53,7 @@ class Reflect::ReflectResponseController < ApplicationController
   protected
 
   def get_current_bullet
-    bullet_rev = ReflectBulletRevision.find_by_bullet_id(params[:bullet_id])
+    bullet_rev = Reflect::ReflectBulletRevision.find_by_bullet_id(params[:bullet_id])
     if bullet_rev
       bullet_obj = bullet_rev.bullet
     else

@@ -3,8 +3,30 @@
 
 
 - proposal_stance_data.reverse.each_with_index do |bucket_percentile, index| 
-  .bar{ :style => "height: #{bucket_percentile/height_scaler * 100}\%; left: #{-7*index}px", :id => "bucket-#{6-index}"}  
+
+  - user_position = @position && @position.published && @position.stance_bucket == 6 - index
+
+  -if user_position
+    .personal_position.update
+      .arrow
+        &#8630
+      You 
+      %span
+        = surround '(', ')' do
+          %a{ :href => "#{edit_proposal_position_path(@proposal, @position)}"} update
+
+  .bar{ :style => "#{bucket_percentile == 0 ? '' : 'min-height: 12px;'} height: #{bucket_percentile/height_scaler * 100}\%; left: #{-7*index}px", :id => "bucket-#{6-index}"}
+
     .close
       x
 
     .border_cover
+
+    %ul.participants
+      - @positions.each do |position|
+        - if position.stance_bucket == 6 - index && position.user && !position.user.avatar_file_name
+          = render :partial => "positions/statement/block", :locals => { :position => position }
+      - @positions.each do |position|
+        - if position.stance_bucket == 6 - index && position.user && position.user.avatar_file_name
+          = render :partial => "positions/statement/block", :locals => { :position => position }
+      %li.clear

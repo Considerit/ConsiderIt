@@ -19,30 +19,22 @@
       
       .pre
         - update = @position && @position.published
-        %a.personal_position{ :href => "#{ update ? edit_proposal_position_path(@proposal, @position) : new_proposal_position_path(@proposal)}"}
-          -if update
-            //.you_slider
-            //  = image_tag "slider.png", :title => "This is where you stand on #{@proposal.designator}."
+        - if !update
+          %a.personal_position{ :href => "#{ update ? edit_proposal_position_path(@proposal, @position) : new_proposal_position_path(@proposal)}", :class => "contribute"}
             
-            You #{@position.stance_name_adverb}
-            %br 
-            %span
-              update stance
-          
-          -else
-            You haven't spoken yet
+            You have yet to
             %br
             %span
               contribute a position
 
         .action
-          Click a bar to learn more
+          Click a bar to filter results ^
 
       .histogram_arrow
         .support
-          support
+          supporters
         .oppose
-          oppose
+          opposers
 
       .histogram
         .viz
@@ -52,8 +44,8 @@
 
       .explore#ranked_points
 
-        .participant_container
-          = render :partial => "proposals/participants"
+        // .participant_container
+        //   = render :partial => "proposals/participants"
        
         = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => 'all', :pro_points => @pro_points, :con_points => @con_points }
 

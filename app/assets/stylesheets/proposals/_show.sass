@@ -21,11 +21,15 @@
             z-index: 50
                       
           .action
-            left: 63px
+            left: 629px
+            top: 222px
+            @include chalk
 
-          .personal_position
+          .personal_position.contribute
+            color: #666
+            display: block
             right: 0px
-            left: 828px
+            left: 866px
             padding: 5px
             background: image-url('paper.png') repeat top left #f1f1f1
             border-radius: 5px
@@ -33,11 +37,11 @@
             border-bottom: 1px solid #999
             border-top: 1px solid white
             box-shadow: 0px 1px 2px #aaa
-            color: #666
-            display: block
             opacity: .75
+
             &:hover
               opacity: 1
+
 
             span
               text-decoration: underline
@@ -45,11 +49,12 @@
         .histogram_arrow
           z-index: 0
           position: absolute
-          width: 654px
-          left: 163px
+          width: 765px
+          left: 99px
           height: 16px
           border-radius: 5px
-          top: 160px
+          top: 178px
+          font-family: Copperplate, Georgia, Serif
 
           // background-color: #f1f1f1
           // box-shadow: 1px 2px 3px rgba(black, .1)     
@@ -64,8 +69,7 @@
           .support, .oppose
             position: absolute
             color: #888
-            font-size: 11pt
-            top: -3px
+            font-size: 13pt
 
           .support
             left: -40px
@@ -85,23 +89,57 @@
             height: $histogram_height
             position: relative
             width: $histogram_width + 100
-            left: 5px
+            left: -19px
             top: -3px
+
+            .personal_position.update
+              color: #666
+              display: none
+              position: absolute
+              top: -15px 
+              width: 150px
+              margin-top: -10px
+              margin-left: 10px
+              //left: 25%
+
+              .arrow
+                display: none
+                font-size: 18pt
+                opacity: .6
+                position: absolute
+                left: -18px
+              span
+                font-size: 8pt
+                padding-left: 2px
+                vertical-align: top
+
+                a
+                  text-decoration: underline
+                  color: inherit
+                  opacity: .8
+                  &:hover
+                    opacity: 1
             .bar
               cursor: pointer
-              background-color: #888
+              background-color: black
               width: $histogram_bar_width
               display: inline-block
-              border: 3px solid #666
+              border: 3px solid black
               border-bottom: none
               position: relative
               bottom: 0
+              margin: 0px 4px
+              box-shadow: 0px 1px 2px black
+              z-index: 0
 
               &:hover
-                background-color: #666
-                border-color: #333
+                background: image-url("chalk/chalkboard.jpg") repeat left top #333
+                border-color: #414141
                 z-index: 40
-                              
+                .participants .view_statement 
+                  img
+                    opacity: 1         
+
               &.selected
                 background: image-url("chalk/chalkboard.jpg") repeat left top #333
                 box-shadow: 0px 1px 2px black
@@ -146,8 +184,124 @@
                   border-top-right-radius: 6px
                   border-top-left-radius: 6px
 
+                .participants .view_statement 
+                  img
+                    opacity: 1
+
+                  &:hover
+                    // img
+                    // .username
+                    //   display: block                
+
               .close, .border_cover
                 display: none
+
+        .participants
+          background-color: transparent
+          position: absolute
+          z-index: 1000
+          //width: $histogram_width
+          //height: $participants_height
+          margin: auto
+          bottom: 0px
+
+          li.statement
+            background-color: inherit
+            margin: auto
+            float: left
+
+            // &:hover
+            //   .view_statement .avatar .username
+            //     display: block
+
+            &.with_explanation 
+              .view_statement
+                .overlay
+                  display: none
+                  box-shadow: inset 0 0 1px rgba(yellow, 0.25)
+                  width: 100%
+                  height: 100%
+                  z-index: 1
+                  top: 0
+                  left: 0
+                  background: transparent
+                  position: absolute
+                  z-index: 3
+
+                > img
+                  position: relative
+
+              .username
+                margin-left: -150px
+                width: 300px
+
+                &:after
+                  left: 138px
+
+            &.no_explanation 
+              .username
+                margin-left: -75px
+                width: 150px
+
+                &:after
+                  left: 62px
+
+
+            .view_statement
+              text-align: center  
+              color: #333
+              position: relative
+              line-height: 0
+              display: block
+              cursor: pointer
+
+              img
+                display: none
+                max-height: 50px
+                max-width: 50px
+                opacity: .65
+              
+              .username
+                font-size: 10pt
+                color: black
+                background-color: white
+                position: absolute
+                line-height: normal
+                white-space: nowrap
+                display: none
+                z-index: 2
+                top: 100%
+                margin-top: 14px
+                border-radius: 5px
+                padding: 2px 5px
+                left: 50%
+                border: 1px solid #414141
+                box-shadow: 0px 1px 2px #666
+                &:after
+                  content: "\25B2"
+                  position: absolute
+                  padding: 0 4px 0
+                  top: -15px
+                  color: white
+                  z-index: 5
+
+                blockquote.explanation
+                  white-space: normal
+                  padding: 5px 0 0 0 
+                  font-style: italic
+                  font-size: 9pt
+
+                  p
+                    margin-bottom: 6px
+
+                a.readmore
+                  text-decoration: underline
+                  color: white
+                  opacity: .8
+                  font-size: 9pt
+                  &:hover
+                    opacity: 1
+
         
       &.ranked_points
         position: relative
@@ -161,7 +315,7 @@
             opacity: .7
 
           .pro_con_list
-            border: 3px solid #666
+            border: 3px solid black
             border-radius: 5px
             box-shadow: 0 2px 4px #666
             &.segmented
@@ -180,185 +334,11 @@
 
 
         .participant_connection
-          padding: $participants_height + 35 0 10px 0
+          padding-top: 12px
           @include chalk
           text-align: center
+          font-size: 14pt
+          height: 48px
 
           .group_name
-            display: inline-block
-                  
-        .participant_container
-          padding: 0 5px
-          clear: both
-          position: absolute
-          left: 50%
-          margin-left: -$histogram_width/2
-          top: 18px
-
-          .participants
-            background-color: transparent
-            position: relative
-            z-index: 1000
-            width: $histogram_width
-            height: $participants_height
-            margin: auto
-
-            .position_statement
-              position: absolute
-              z-index: 1001
-              width: 735px
-              top: -14px
-              left: 0px
-
-              .wrapper
-                position: relative
-                z-index: 100
-                a.close
-                  float: right
-                  margin-right: 10px
-                  margin-top: 8px
-                  color: black
-                  font-weight: bold
-                  font-size: 8pt
-
-                .textblock
-                  padding: 20px 100px
-                  > .username
-                    font-weight: bold
-                    font-size: 18pt
-                  .stance
-                    font-weight: bold
-                    font-size: 12pt
-
-                    .stance_name
-                      text-transform: capitalize
-
-                  .prose
-                    margin-top: 10px
-
-                  .important_points
-                    a
-                      color: black
-                      text-decoration: underline
-
-                    .group 
-                      display: none
-
-                    .point_list_footer
-                      display: none
-
-                    .point_in_list .discuss
-                      display: none
-                    .operations
-                      display: none
-                    .pro_con_list
-                      width: 692px
-                      position: relative
-                      left: -87px
-                      margin-top: 10px
-
-            li.statement
-              background-color: inherit
-              margin: auto
-              float: left
-
-              &.active
-                z-index: 1002
-                position: relative
-                .view_statement .avatar .username
-                  display: none
-              &:hover
-                .view_statement .avatar .username
-                  display: block
-
-              &.with_explanation 
-                .view_statement
-                  .overlay
-                    box-shadow: inset 0 0 1px rgba(yellow, 0.25)
-                    width: 100%
-                    height: 100%
-                    z-index: 1
-                    top: 0
-                    left: 0
-                    display: block
-                    background: transparent
-                    position: absolute
-                    z-index: 3
-
-                  > img
-                    position: relative
-
-                .username
-                  margin-left: -150px
-                  width: 300px
-
-                  &:after
-                    left: 138px
-
-              &.no_explanation 
-                .username
-                  margin-left: -75px
-                  width: 150px
-
-                  &:after
-                    left: 62px
-
-
-              .view_statement
-                text-align: center  
-                color: #333
-                position: relative
-                line-height: 0
-                display: block
-                cursor: pointer
-
-                img
-                  display: none
-                  max-height: 50px
-                  max-width: 50px
-
-                &:hover .username
-                  display: block
-                
-                .username
-                  font-size: 10pt
-                  color: white
-                  background-color: rgba(black, .9)
-                  position: absolute
-                  line-height: normal
-                  white-space: nowrap
-                  display: none
-                  z-index: 2
-                  top: 100%
-                  margin-top: 14px
-                  border-radius: 5px
-                  padding: 2px 5px
-                  left: 50%
-
-
-
-
-                  &:after
-                    content: "\25B2"
-                    position: absolute
-                    padding: 0 4px 0
-                    top: -15px
-                    color: rgba(black, .9)
-
-                  blockquote.explanation
-                    white-space: normal
-                    padding: 5px 0 0 0 
-                    font-style: italic
-                    font-size: 9pt
-
-                    p
-                      margin-bottom: 6px
-
-                  a.readmore
-                    text-decoration: underline
-                    color: white
-                    opacity: .8
-                    font-size: 9pt
-                    &:hover
-                      opacity: 1
-
+            display: block

@@ -67,7 +67,12 @@ ConsiderIt = {
     });    
 
 
-    ConsiderIt.positions.update_participants_block('all');
+    var update_position = $j('.personal_position.update');
+    update_position
+      .show()
+      .css(update_position.next('.bar').position());
+
+    ConsiderIt.positions.initialize_participants_block();
 
     // $j('.proposals.vertical').infiniteCarousel({
     //   speed: 1500,
@@ -596,39 +601,13 @@ ConsiderIt = {
 
     // Toggle position statement clicked
 
-    $j("body").delegate(".statement a, .position_statement a.close", 'click', function(event){
-      var user_id = $j.trim($j(this).parent().find('.userid').text()),
-          prompt = $j("#user-" + user_id + " a").find('.read_statement'),
-          closing = !$j(this).hasClass('.view_statement') && $j(this).find('.username:visible').length == 0,
-          position_statement = $j("#user-" + user_id + "-full"),
-          statement = $j("#user-" + user_id);
-
-      if ( closing ) {
-        statement.removeClass('active');
-        position_statement.children('.discuss').slideUp();
-        hide_lightbox();
-      } else {
-        $j('.position_statement a.close:visible').trigger('click');
-        statement.addClass('active');
-
-        show_lightbox();
-      }
-
-      position_statement.slideToggle('slow', function(){
-        if (!closing) { 
-          position_statement.children('.discuss').slideDown('slow');
-        }
-      });
-
-      if ( !closing ) {
-        ConsiderIt.positions.stance_group_clicked('user-' + user_id);
-      } else if ( event.which ) { // don't want to do anything if triggered programmatically
-
-      }
-
-
+    $j(".bar").delegate("&.selected .view_statement", 'mouseenter', function(event){
+      $j(this).children('.username').show();
     });    
 
+    $j(".bar").delegate("&.selected .view_statement", 'mouseout', function(event){
+      $j(this).children('.username').hide();
+    });    
     //////////////
     //HISTOGRAM
     //////////////
@@ -641,6 +620,8 @@ ConsiderIt = {
       $j(this)
         .addClass('selected')
         .siblings().removeClass('selected');
+
+      $j('.pre > .action').hide();
 
       $j('.vizbase, .pro_con_list')
         .addClass('segmented');
@@ -655,7 +636,7 @@ ConsiderIt = {
         } else {
           $stored.show();            
         }         
-        ConsiderIt.positions.update_participants_block(bucket);
+        //ConsiderIt.positions.update_participants_block(bucket);
         $j('.full_column', $stored).infiniteCarousel({'operation': 'refresh'});
       };
 
@@ -679,8 +660,10 @@ ConsiderIt = {
       
       $j('.vizbase, .pro_con_list')
         .removeClass('segmented');
+
+      $j('.view_statement .username:visible', this).hide();
       
-      ConsiderIt.positions.update_participants_block('all');
+      //ConsiderIt.positions.update_participants_block('all');
       $j(this).removeClass('selected');
     });
         
@@ -707,6 +690,35 @@ ConsiderIt = {
   },
 
   positions : {
+
+    initialize_participants_block : function( ) {
+
+      var cur_low = null;
+      for ( var bucket = 0; bucket<= 6; bucket+=1 ) {
+        var container = $j('#bucket-' + bucket + '.bar'),
+            p = $j('> .participants', container),
+            participants = $j('> .statement img', p),            
+            dim = get_tile_size(container.width(), container.height(), participants.length);
+        
+        if ( participants.length > 0 ) {
+          cur_low = cur_low ? Math.min(dim, cur_low) : dim;
+        }
+      }
+
+      for ( var bucket = 0; bucket<= 6; bucket+=1 ) {
+        var container = $j('#bucket-' + bucket + '.bar'),
+            p = $j('> .participants', container),
+            participants = $j('> .statement img', p);
+
+        var per_row = Math.floor( container.width() / cur_low);
+        for ( var i = 0; i < per_row - participants.length % per_row; i+=1 ) {
+          p.prepend('<li style="visibility:hidden; float: right; height:' + cur_low + 'px; width:'+cur_low+'px;">')
+        }
+        participants
+          .css({'width': cur_low, 'height': cur_low})
+          .show();
+      }
+    },
 
     update_participants_block : function( bucket ) {
       var p = $j('.participants'),

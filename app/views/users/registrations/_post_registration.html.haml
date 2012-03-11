@@ -1,0 +1,80 @@
+- requires_pledge = true
+- missing_information = !current_user.name || !current_user.avatar_file_name || !current_user.email || current_user.email.length == 0
+
+- if requires_pledge || missing_information
+  #post_signup_form
+
+    .primary
+      %h2
+        Welcome!
+
+      #site_registration
+
+        - if missing_information
+          %h3
+            Let us know a little more about yourself
+
+        = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put) do |f|
+        
+          %ul
+            //%li
+            //  = devise_error_messages!
+
+            - if !current_user.name
+              %li.name_field.inlined
+                = f.label :name, 'First and last name'
+                = f.text_field :name, :title => 'first and last name', :required => true
+
+
+            - if !current_user.email || current_user.email.length == 0
+              %li.email_field.inlined
+                = f.label :email, 'Email address'
+                = f.text_field :email, :title => 'Email address'
+                .sub
+                  Optional. Used to notify you if, e.g. someone comments on a point you authored. 
+
+
+            //   %span.add_qtip{ :title => 'You stand behind your opinions, don’t you? When possible, we believe it is best to avoid anonymity.'}
+            //     why?
+
+            - if !current_user.avatar_file_name
+              %li.avatar_field.inlined
+                = f.file_field :avatar, :title => 'Upload a profile picture', :class => 'proxied'
+                %input.inputfileproxy{ :type => 'button', :value => 'Upload a profile picture' }
+                .selected_file
+
+            - if requires_pledge
+              = render :partial => "users/registrations/pledge", :locals => { :f => f }  
+            
+            = f.hidden_field :registration_complete, :value => true
+
+            %li.submit_footer
+              = f.submit requires_pledge ? "Yes, I will uphold these principles" : "Done"
+
+              %a.cancel
+                No, I cannot
+
+    - if missing_information
+      .secondary
+        %h3
+          Why give info?
+
+        %hr.ledge.top
+        %hr.ledge.bottom
+        
+        %ul
+          - if !current_user.name
+            %li    
+              Signing your name gives additional weight to your voice.
+
+            %li
+              You will still have the option of posting anonymously.
+
+          - if !current_user.email || current_user.email.length == 0 
+            %li
+              Email lets us notify you if someone comments on your point.
+
+          - if !current_user.avatar_file_name
+            %li
+              Adding a picture humanizes your words.
+

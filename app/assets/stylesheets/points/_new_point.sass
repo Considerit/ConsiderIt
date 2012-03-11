@@ -10,7 +10,7 @@
   .newpointbutton 
     
     button
-      background-color: inherit
+      background-color: transparent
       color: white
       font-size: 20px
       width: 240px
@@ -25,18 +25,10 @@
       &:hover
         opacity: 1
 
-
-      // &.pro
-      //   background-color: rgba($pro_point_light, .5)
-      //   border: 2px solid lighten($pro_point_light, 10%)
-          
-      // &.con
-      //   background-color: rgba($con_point_light, .5)
-      //   border: 2px solid lighten($con_point_light, 10%)
-  
 .pointform
-  background-image: -moz-linear-gradient(center top , rgba(255, 255, 255, 0) 13%, rgba(255, 255, 255, 0.03) 100%)
-  border-radius: 5px
+  +complex-gradient(rgba(white, 0), rgba(white, 0.03), 13%, 100%, center top)
+
+  +border-radius(5px)
   padding: 5px 15px
   position: relative
   left: -10px

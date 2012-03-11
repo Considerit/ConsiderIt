@@ -20,13 +20,17 @@ ConsiderIt::Application.routes.draw do
       :registrations => "users/registrations",
       :passwords => "users/passwords",
       :confirmations => "users/confirmations"
-    }, :path => ENV.fetch('RAILS_RELATIVE_URL_ROOT', '')
+    } do 
+
+      match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
+
+    end
+    #, :path => ENV.fetch('RAILS_RELATIVE_URL_ROOT', '')
 
     themes_for_rails # themes_for_rails gem routes 
 
     #match "/theme" => "theme#set", :via => :post
     match "/home/domain" => "home#set_domain", :via => :post
-    match "/home/pledge" => "home#take_pledge", :via => :post
     match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|help/ } 
 
     match '/home/study/:category' => "home#study", :via => :post  

@@ -1,39 +1,46 @@
 #update_registration_form
   #site_registration
-    %h2
-      Edit Profile
 
-    = form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :multipart => true, :method => :put }) do |f|
+    .primary
+      %h2
+        Preferences
 
-      %ul
-        %li
-          = f.label :avatar, "Your picture"          
-          = f.file_field :avatar
+      = form_for(:user, :as => :user, :url => registration_path(:user), :method => :put, :html => { :multipart => true }) do |f|
 
-        - if !current_user.email
+        %ul
           %li
-            = f.label :email, "Email address"
-            = f.email_field
+            = f.label :avatar, "Your picture"          
+            = f.file_field :avatar, :title => 'Upload a profile picture'
 
-        %li
-          = f.check_box :notification_author
-          = f.label :notification_author, 'Email me when someone comments on a pro or con I wrote.'
+          - if !current_user.email
+            %li
+              = f.label :email, "Email address"
+              = f.email_field
 
-        %li
-          = f.check_box :notification_commenter
-          = f.label :notification_commenter, 'Email me when someone comments on a pro or con that I also commented on.'
+        .notifications
+          %h3
+            Email notifications
 
-        %li
-          = f.check_box :notification_reflector
-          = f.label :notification_commenter, 'Email me when someone summarizes a comment I wrote.'
+          %ul
+            %li
+              = f.check_box :notification_author
+              = f.label :notification_author, 'When someone comments on a point I wrote.'
 
-        %li
-          = f.check_box :notification_responder
-          = f.label :notification_commenter, 'Email me when a commenter responds to a summary I wrote.'
+            %li
+              = f.check_box :notification_commenter
+              = f.label :notification_commenter, 'When someone comments on a point that I also commented on.'
+
+            %li
+              = f.check_box :notification_reflector
+              = f.label :notification_reflector, 'When someone summarizes a comment I wrote.'
+
+            %li
+              = f.check_box :notification_responder
+              = f.label :notification_responder, 'When a commenter responds to a summary I wrote.'
 
 
-      .submit
-        = f.submit "Update"
+        .submit_footer
+          = f.submit "Update"
 
-        %a.cancel
-          cancel
+          %a.cancel
+            cancel

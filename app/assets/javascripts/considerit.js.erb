@@ -8,7 +8,6 @@ $j = jQuery.noConflict();
 
 ConsiderIt = {
   study : false,
-  subdirectory: '',//'/blogademia',
   init : function() {
 
     ConsiderIt.delegators();
@@ -207,15 +206,61 @@ ConsiderIt = {
           if($j(this).val() == "") {
             $j(this).prev("label").removeClass("has-text").removeClass("focus");
           }
-        });
+        })
 
     /////////////
     // ACCOUNTS
     /////////////
 
+      .on('click', '.inputfileproxy', function(){
+          $j(this).siblings('input["file"]').trigger('click');
+        })
+      .on('change', '.avatar_field input[type="file"]', function(){
+          $j(this).siblings('.selected_file').text($j(this).val());
+        })
+      .on('click', 'input.proxy', function() {
+          var email = $j('#user_email'), password = $j('#user_password'), $me = $j(this);
+          if ( email.val().length == 0 || password.val == 0 ) {
+            return;            
+          } else {
+            $j.post('<%= Rails.application.routes.url_helpers.users_check_login_info_path %>', {
+                'user' : {
+                  'email' : email.val(),
+                  'password' : password.val()
+                }
+              }, function(data){
+
+              if ( data.valid ) {
+                $me.siblings('input[type="submit"]').trigger('click');
+              } else {
+                $j('#site_registration .password_field')
+                  .append("<a class='error' href='<%= Rails.application.routes.url_helpers.new_user_password_path %>'>Forgot your password?</a>");
+                return;
+              }
+
+            });
+          }
+        })
+      .on('click', '#post_signup_form a.cancel', function(){
+        $j.ajax({
+          type: 'DELETE',
+          url: "<%= Rails.application.routes.url_helpers.user_registration_path %>",
+          data: {},
+          success: function(data){
+            location.reload(true);
+          }, error: function(data){
+            location.reload(true);
+          }
+
+          });
+        });
+      // .on('click', '#messages .confirmation_required form', function(){
+      //     $j(this).parents('.message').append('<span> [done]</span>');
+      //   })
+
     $j(document).delegate('#confirmation_sent button#go', 'click', function(){
-        $j('#pledge_dialog').dialog('close');
-      });
+      $j('#post_signup_dialog').dialog('close');
+    });
 
     $j(document).delegate('#site_registration a.cancel', 'click', function(){
       $j('.user_dialog, #settings_dialog').dialog('close');
@@ -432,7 +477,7 @@ ConsiderIt = {
 
               if ( !details_loaded ) {
                 var proposal_id = $j('#proposal_id').text();
-                $j.get('/proposals/' + proposal_id + '/points/' + point_id, {'origin' : is_margin ? 'margin' : 'self'}, function(data){
+                $j.get("<%= Rails.application.routes.url_helpers.proposals_path %>" + '/' + proposal_id + '/points/' + point_id, {'origin' : is_margin ? 'margin' : 'self'}, function(data){
                   $j('.extra', real_point)
                     .html(data.details)
                     .find('textarea').autoResize({extraSpace:0});
@@ -640,13 +685,13 @@ ConsiderIt = {
         $j('.full_column', $stored).infiniteCarousel({'operation': 'refresh'});
       };
 
-      if( $stored.length > 0 ) {
-        mouseover_callback();
-      } else {
-        $j('.results_narrative, #ranked_points').addClass('loading');
-        $j.get(ConsiderIt.subdirectory + "/proposals/" + $j('#proposal_id').text() + "/points", { bucket: bucket },
-          mouseover_callback);
-      }
+      // if( $stored.length > 0 ) {
+      mouseover_callback();
+      // } else {
+      //   $j('.results_narrative, #ranked_points').addClass('loading');
+      //   $j.get(ConsiderIt.subdirectory + "/proposals/" + $j('#proposal_id').text() + "/points", { bucket: bucket },
+      //     mouseover_callback);
+      // }
 
       $j('.position_statement:visible a.close').trigger('click');
 
@@ -711,12 +756,13 @@ ConsiderIt = {
             participants = $j('> .statement img', p);
 
         var per_row = Math.floor( container.width() / cur_low);
-        for ( var i = 0; i < per_row - participants.length % per_row; i+=1 ) {
+        for ( var i = 0; participants.length % per_row != 0 && i < per_row - participants.length % per_row; i+=1 ) {
           p.prepend('<li style="visibility:hidden; float: right; height:' + cur_low + 'px; width:'+cur_low+'px;">')
         }
         participants
           .css({'width': cur_low, 'height': cur_low})
           .show();
+        //container.css('height', 'auto');
       }
     },
 
@@ -774,37 +820,6 @@ ConsiderIt = {
       if (e.keyCode == 27) {
         $j('.point_in_list.expanded .toggle.less:visible').trigger('click');
       }
-    },
-
-    stance_group_clicked : function(bucket) {
-
-
-      var proposal_id = $j('#proposal_id').text(),
-          position_id = $j('#position_id').text(),
-          nest = '.domain_'+bucket,
-          $stored = $j(nest);
-
-      // update position statements
-      if ( bucket.toString().substring(0,4) == 'user' ){
-        if( $stored.length > 0 ) {
-          $stored.fadeIn();
-        } else {
-          $j.get(ConsiderIt.subdirectory + "/proposals/" + proposal_id + "/points", { bucket: bucket },
-            function(data){
-              $j('.position_statement:visible .important_points').append(data['points']);
-          } );
-        }
-      } 
-
-    
-      //if (ConsiderIt.study){
-      //  $j.post('/home/study/3', {
-      //    position_id: position_id,
-      //    proposal_id: proposal_id,
-      //    detail1: bucket
-      //  });  
-      //}
-                  
     },
     
     set_stance : function(bucket, dontadjust) {

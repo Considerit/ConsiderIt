@@ -10,13 +10,20 @@ gem "haml"
 gem 'sass'
 
 # https://github.com/plataformatec/devise
-gem 'devise', '1.4.7'
+gem 'devise'#, "~>1.5"
 
 # https://github.com/plataformatec/devise/wiki/OmniAuth:-Overview
-gem "oa-oauth", :require => "omniauth/oauth"
-gem 'oa-openid', :require => 'omniauth/openid'
+# gem "oa-oauth", :require => "omniauth/oauth"
+# gem 'oa-openid', :require => 'omniauth/openid'
 
-gem 'twitter', "~> 1.7"
+gem "omniauth"
+gem 'omniauth-openid'
+gem 'omniauth-oauth'
+gem 'omniauth-twitter' 
+gem 'omniauth-facebook'
+
+
+gem 'twitter'#, "~> 1.7"
 
 # https://github.com/sferik/rails_admin/
 gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git' #, :branch => 'rails-3.0'
@@ -39,9 +46,6 @@ gem 'yamler'
 
 # https://github.com/elight/acts_as_commentable_with_threading
 # gem 'acts_as_commentable_with_threading'
-
-# https://github.com/documentcloud/jammit/
-# gem 'jammit'
 
 # https://github.com/indirect/jquery-rails
 gem 'jquery-rails'

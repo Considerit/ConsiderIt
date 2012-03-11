@@ -16,7 +16,7 @@
 
       .point-title-group.inlined
         = f.label :nutshell, 'summarize your point...'
-        = f.text_area :nutshell, :title => 'Summarize your point', :cols => 24, :class => "point-title is_counted"
+        = f.text_area :nutshell, :title => 'Summarize your point', :required => true, :cols => 24, :class => "point-title is_counted"
         %span.count
           140
         .clear

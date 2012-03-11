@@ -33,7 +33,7 @@
     %ul.fr
       %li
         %a.settings
-          Edit profile
+          Preferences
       - if current_user.admin?
         %li
           = link_to 'Admin', admin_dashboard_path, :class => 'admin'
@@ -46,14 +46,14 @@
 
 #settings_dialog
 
-- if !current_user.pledge_taken
-  #pledge_dialog
-    = render :partial => "users/sessions/pledge"
+- if !current_user.registration_complete
+  #post_signup_dialog
+    = render :partial => "users/registrations/post_registration"
 
 
 :javascript
   $j(document).ready(function() {
-    $j("#pledge_dialog").dialog({
+    $j("#post_signup_dialog").dialog({
       bgiframe: true, 
       autoOpen: true, 
       modal: true,
@@ -81,10 +81,15 @@
     $j('#nav-user .triangle')
       .hover(
         function(){
-          $j(this).find('.hide').slideDown();
+          $j(this).find('.hide')
+            .stop(true,false)
+            .css('height', '')
+            .slideDown();
         },
         function(){
-          $j(this).find('.hide').slideUp();        
+          $j(this).find('.hide')
+          .stop(true,false)
+          .slideUp();        
         });
 
     $j("#progressbar").each(function(){

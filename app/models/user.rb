@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   devise :omniauthable, :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :trackable, :validatable
          
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :notification_author, :notification_commenter
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :notification_author, :notification_commenter, :registration_complete
 
   attr_accessor :avatar_url
   before_validation :download_remote_image, :if => :avatar_url_provided?
@@ -25,8 +25,8 @@ class User < ActiveRecord::Base
   has_attached_file :avatar, 
       :default_url => "#{ENV['RAILS_RELATIVE_URL_ROOT'] || ''}/assets/:attachment/:style_default-profile-pic.png",   
       :styles => { 
-        :golden_horizontal => "100x62#", 
-        :golden_vertical => "62x100#", 
+        #:golden_horizontal => "100x62#", 
+        #:golden_vertical => "62x100#", 
         :medium => "70x70#", 
         :medium_dark => "70x70#",
         :small => "50x50#"
@@ -47,43 +47,41 @@ class User < ActiveRecord::Base
   end
 
   def self.find_for_third_party_auth(access_token, signed_in_resource=nil)
-    case access_token['provider']
+    case access_token.provider
       when 'twitter'
-        user = User.find_by_twitter_uid(access_token['uid'])
+        user = User.find_by_twitter_uid(access_token.uid)
       else
-        user = User.find_by_email(access_token['user_info']['email'])
+        user = User.find_by_email(access_token.info.email)
     end
 
     if not user
       user = User.new do |u|
         u.password = Devise.friendly_token[0,20]
                 
-        case access_token['provider']
+        case access_token.provider
           when 'google'
-            u.name = access_token['user_info']['name']
-            u.google_uid = access_token['uid']
-            u.email = access_token['user_info']['email']          
+            u.name = access_token.info.name
+            u.google_uid = access_token.uid
+            u.email = access_token.info.email
           when 'yahoo'
-            u.name = access_token['user_info']['name']
-            u.yahoo_uid = access_token['uid']
-            u.email = access_token['user_info']['email']          
+            u.name = access_token.info.name
+            u.yahoo_uid = access_token.uid
+            u.email = access_token.info.email
           when 'twitter'
-            u.name = access_token['user_info']['name']
-            u.twitter_uid = access_token['uid']
-            u.bio = access_token['user_info']['description']
-            u.url = access_token['user_info']['urls']['Website'] ? access_token['user_info']['urls']['Website'] : access_token['user_info']['urls']['Twitter']
-            u.twitter_handle = access_token['user_info']['nickname']
-
-            u.avatar_url = access_token['user_info']['image']
-
+            u.name = access_token.info.name
+            u.twitter_uid = access_token.uid
+            u.bio = access_token.info.description
+            u.url = access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter
+            u.twitter_handle = access_token.info.nickname
+            u.avatar_url = access_token.info.image
           when 'facebook'
-            u.name = access_token['user_info']['name']
-            u.email = access_token['user_info']['email']
-            u.facebook_uid = access_token['uid']
-            u.url = access_token['user_info']['urls']['Website'] ? access_token['user_info']['urls']['Website'] : access_token['user_info']['urls']['Twitter']
-            u.avatar_url = 'http://graph.facebook.com/' + access_token['uid'] + '/picture?type=large'
+            u.name = access_token.info.name
+            u.email = access_token.info.email
+            u.facebook_uid = access_token.uid
+            u.url = access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter
+            u.avatar_url = 'http://graph.facebook.com/' + access_token.uid + '/picture?type=large'
           else
-            raise 'Not a supported provider'
+            raise 'Unsupported provider'
         end
       end
       user.skip_confirmation!

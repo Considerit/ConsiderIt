@@ -20,23 +20,14 @@
   right: 0
   border-bottom-right-radius: 5px
   border-bottom-left-radius: 5px
-  background-color: rgb(0, 0, 0)
-  background-color: rgba(0, 0, 0, .15)
+  +rgba(black, .15)
 
   padding: 10px 15px
 
-  *, a
+  a
     color: #969696
     font-weight: bold
-
-  a.register_link
     font-size: 14px
-
-  .login_separator
-    font-size: 10px
-
-  a.login_link
-    font-size: 12px
 
   > li
     display: inline-block
@@ -53,18 +44,19 @@
         z-index: 99
         position: absolute
         color: #666
-        right: 0
-        width: 135px
-        background-color: rgba(0, 0, 0, 0.2)
-        /* For IE 8*/
-        -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#22000000, endColorstr=#22000000)"
-                
+        right: -19px
+        width: 150px
+        +main_background                
+        background-color: #650000
 
         .avatar
           padding: 2px 0 0px 15px
           a
             padding: 0
             margin: 0
+            img
+              width: 35px
+              height: 35px
         ul
           margin-left: 0
           li a

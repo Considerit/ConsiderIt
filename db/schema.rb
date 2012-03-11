@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120114194923) do
+ActiveRecord::Schema.define(:version => 20120311010113) do
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",    :default => 0
@@ -359,12 +359,14 @@ ActiveRecord::Schema.define(:version => 20120114194923) do
     t.string   "openid_uid"
     t.string   "twitter_uid"
     t.string   "twitter_handle"
-    t.boolean  "pledge_taken",                          :default => false
+    t.boolean  "registration_complete",                 :default => false
     t.integer  "domain_id"
     t.boolean  "notification_commenter",                :default => true
     t.boolean  "notification_author",                   :default => true
     t.boolean  "notification_reflector",                :default => true
     t.boolean  "notification_responder",                :default => true
+    t.string   "unconfirmed_email"
+    t.datetime "reset_password_sent_at"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"

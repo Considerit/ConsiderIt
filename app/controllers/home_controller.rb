@@ -27,20 +27,6 @@ class HomeController < ApplicationController
     redirect_to request.referrer
   end
 
-  def take_pledge
-    current_user.pledge_taken = true
-    current_user.save
-    
-    @third_party_account = current_user.facebook_uid || current_user.twitter_uid || current_user.yahoo_uid || current_user.google_uid
-    if @third_party_account
-      flash[:notice] = "Welcome to the LVG community!"
-    end
-
-    response = {:html => render_to_string(:partial => "users/sessions/confirmation_sent")}
-    render :json => response.to_json
-
-  end
-
   def study
     category = params[:category]
     sd = StudyData.create!({

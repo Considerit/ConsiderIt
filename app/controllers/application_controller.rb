@@ -4,8 +4,10 @@ class ApplicationController < ActionController::Base
 
   def render(*args)
     #@theme = theme_resolver
-    if args
+    if args && args.first.respond_to?('has_key?')
       args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
+    else
+      args.append({:layout => false}) if request.xhr?
     end
     @domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil
     super

@@ -1,2 +1,12 @@
-- flash.each do |key, value|
-  = content_tag :div, value, :class => "flash #{key}" unless value.blank?
+#messages
+  - if current_user && current_user.name && current_user.confirmation_token && current_user.confirmation_token.length > 0
+
+    .message.confirmation_required
+      Hi #{current_user.first_name}. In order for your vote to count, you need to confirm your account. Check your email for instructions. Can't find it? Look in your junk folder or have it 
+      = form_for :user, :remote => true, :url => user_confirmation_path do |f|
+        = f.hidden_field :email, :val => current_user.unconfirmed_email || current_user.email
+        = f.submit 'resent'  
+
+  - flash.each do |key, value|
+    = content_tag :div, value, :class => "flash #{key}" unless value.blank?
+

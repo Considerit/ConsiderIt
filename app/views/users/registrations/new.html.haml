@@ -1,112 +1,89 @@
 
 #registration_form
 
-  .primary.fr
-    %h2.sub_follows
+  .primary
+    %h2
       - if @context == 'position_submit'
-        To save your position, join LVG!
+        Sign in to save your position!
       - else
-        Join the Living Voters Guide
-    .sub
-      already have an account? 
-      %a#login_instead
-        Log in
+        Sign in
 
     #third_party
 
       %h3
-        Use your account from:
+        One-click sign in with your account from...
 
       - ['facebook', 'twitter', 'google', 'yahoo'].each do |provider|
         %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',500, 500)" }
           = image_tag("#{provider}.png")
 
       .fineprint
-        We won't post to your news feed or share your info.
+        We won't post to your account or share your info without permission.
 
     .divider
+      &mdash; or &mdash;
 
     #site_registration
-      
-      %h3
-        Or, sign up the old-fashioned way!
 
-      = form_for(resource, :as => resource_name, :url => registration_path( resource_name), :html => { :multipart => true }) do |f|
+      = form_for(:user, :as => :user, :url => user_registration_path, :html => { :multipart => true }) do |f|
       
         %ul
           %li
             = devise_error_messages!
-          %li.name_field
-            = f.text_field :name, :class => 'has_example', :title => 'first and last name'
 
-            %span.add_qtip{ :title => 'You stand behind your opinions, don’t you? When possible, we believe it is best to avoid anonymity.'}
-              why?
+
+          // %li.name_field
+          //   = f.text_field :name, :class => 'has_example', :title => 'first and last name'
+
+          //   %span.add_qtip{ :title => 'You stand behind your opinions, don’t you? When possible, we believe it is best to avoid anonymity.'}
+          //     why?
             
-          %li.email_field.has_example
-            = f.email_field :email, :class => 'has_example', :title => 'email address'
 
-            %span.add_qtip{ :title => 'Your email is never shown to other users and we promise not to share your information with third parties. Your email is only used to confirm your account and to send notifications of relevant events, like someone replying to a comment you left.'}
-              why?
 
-          %li.password_field
-            = f.password_field :password, :class => 'has_example', :title => 'password'
+          %li.email_field.inlined
 
-            %span
-              password
+            //{ :title => 'Your email is never shown to other users and we promise not to share your information with third parties. Your email is only used to confirm your account and to send notifications of relevant events, such as when someone replys to a comment you left.'}
+
+            = f.label :email, 'Email address'
+            = f.email_field :email, :title => 'email address', :required => true
+
+          %li.password_field.inlined
+            = f.label :password
+            = f.password_field :password, :title => 'password', :required => true
 
           -# %li.avatar_field
             -#= f.file_field :avatar, :class => 'has_example', :title => 'profile picture'
         
-        .submit_footer
-          = f.submit "Join"
+          %li.submit_footer
+            %input.proxy{ :type => 'button', :value => 'sign in' }
 
-          %a.cancel
-            cancel
+            = f.submit "sign in"
 
-    .divider
+            %a.cancel
+              x
 
     #acknowledgment
-      By signing up, you acknowledge that you have read, agree to and were bored by the 
+      Signing up acknowledges that you were bored by and agree to the 
       %a
         Terms of Use.
 
-  .secondary.fr
+  .secondary
     %h3
-      Why join LVG?
+      Why Sign In?
+
+    %hr.ledge.top
+    %hr.ledge.bottom
     
     %ul
 
       %li    
-        %strong
-          Your vote will count. 
-        We will tally your support or opposition in the totals.
+        Your vote will count in the totals.
 
       %li
-        %strong
-          Share your pros and cons
-        for other people to consider.
+        Share your points for other people to consider.
         
       %li
-        %strong
-          Save your position
-        to create your personal voters guide.
-      
-      %li
-        %strong
-          Explore the most important points
-        for users who support, oppose or are neutral on the issue.
-
-      %li
-        %strong 
-          Discuss with others. 
-        Comment on pros and cons, or the issue broadly. 
-  
-  .clear
-
-:javascript
-  $j('a#login_instead').click(function(){
-      $j('#registration_form').load('#{new_user_session_path(:third_party=>false)}');
-  });
+        Comment on the points others have added.  
 
 
 

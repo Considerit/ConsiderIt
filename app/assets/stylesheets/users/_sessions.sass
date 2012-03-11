@@ -18,109 +18,187 @@
   
 .ui-widget-content
 
-  #login_form,
   #registration_form,
   #update_registration_form,
-  #pledge_form,
+  #post_signup_form,
   #confirmation_sent
+    background: image-url('wall_texture.png') repeat top left white
+    +border-radius(5px)
+    +box-shadow(0,1px,2px,rgba(black,.5))
+    padding: 8px
 
     > ul > li
       display: inline-block
-
-    h2
-      font-size: 24px
-      color: #333
-
-    .sub
-      font-size: 13px
-      color: #999
-
-      a
-        color: inherit
-        text-decoration: underline
-
-
-    h3
-      margin: 15px 0 8px 0
     
     .primary
-      width: 375px
-      background-color: white
-      padding: 20px 25px
-      border: 3px solid black
+      text-align: center
+      display: inline-block
+      width: 464px
+      background: image-url('chalk/chalkboard.jpg') repeat top left #414141
+      padding: 0 25px 15px 25px
+      +box-shadow(0,1px,3px,rgba(black,.5))
+      +border_radius(5px)
+      +chalk
+
+      h1,h2,h3
+        font-family: inherit
+
+      h2
+        font-size: 18pt
+        padding: 20px 0 32px 0
+        background: image-url('chalk/point_header_back.png') no-repeat scroll 125px -20px transparent
 
       #third_party
 
+        h3
+          font-weight: normal
+          font-size: 13pt
+
         a
-          margin: 2px 2px
+          margin: 10px 8px 8px 8px
+          display: inline-block
+
+        .fineprint
+          font-size: 9pt
+          color: #BDBDBD
 
       #site_registration
-        ul li span
-          color: #696969
-          font-size: 10px
-          display: inline-block
-          margin-top: 10px
-          cursor: help
-
-        li.email_field label
-          padding-right: 30px
-        li.password_field label
-          padding-right: 6px
-        
-        li label
-          color: #696969
-          display: inline-block
-          height: 30px
-          padding-top: 8px
+        ul li 
+          margin: 0 2px
+          span
+            color: #696969
+            font-size: 10px
+            display: inline-block
+            margin-top: 10px
+            cursor: help
 
         .submit_footer
-          margin-top: 10px
+          display: inline-block
+          +main_font
 
-          a.cancel
-            display: inline-block
-            padding: 5px 0 0 5px
-            font-size: 12px
-            color: #696969
-        
+          input,button
+            background-color: #434343
+            background-color: rgba(#888, .2)
+            color: #888
+
+            &:hover
+              background-color: #777
+              background-color: rgba(white, .2)
+              color: white              
+
+
         #user_new > a
           color: #696969
           font-size: 12px
           margin-top: 8px
           display: block
 
-      .fineprint
-        margin-top: 2px
-        font-size: 13px
-        color: #999
+        .inlined
+          border-color: #4B4B4B
+          border-color: rgba(#888, .3)
+          background-color: #434343
+          background-color: rgba(#888, .2)
+          //width: 168px
+          display: inline-block
+
+          &.email_field
+            width: 205px
+            margin-bottom: 10px
+
+          &.password_field
+            width: 128px
+
+            .error
+              position: absolute
+              bottom: -17px
+              +main_font
+              color: #cc4444
+              font-size: 8pt
+              left: 0
+              width: 150px
+              text-align: left
+
+
+          &.name_field, &.avatar_field
+            width: 175px
+
+          &.avatar_field
+            background-color: transparent
+            border-color: transparent
+
+            #user_avatar
+              position: absolute
+
+            input[type="button"]
+              +linear-gradient(rgba(white, .8), rgba(#777, .6))
+              border-radius: 12px
+              border: 1px solid
+              border-top-color: #ddd
+              border-bottom-color: #333
+              border-left: none
+              border-right: none
+              color: #444
+              padding: 2px 11px
+              cursor: pointer
+
+            .selected_file
+              position: absolute
+              z-index: 9999
+              top: 32px
+              right: 20px
+              color: #777
+              color: rgba(white, .4)
+              +main_font
+              font-size: 9pt
+
+          input, label
+            +main_font
+            font-size: 10pt
+
+          input
+            z-index: 9999
+            color: #888
 
       .divider
-        margin: 10px 0
-        border: 1px solid #e1e1e1
+        margin: 30px 0
 
       #acknowledgment
-        color: #262626
-        font-size: 12px
+        font-size: 8pt
+        margin-top: 20px
 
         a
           text-decoration: underline
+          color: inherit
 
     .secondary
-      background-color: #ddd
-      margin-top: 35px
-      padding: 10px 15px 10px 25px
-          
-      width: 225px
+      display: inline-block
+      padding: 0
+      margin: 0px 0 0 20px
+      vertical-align: top
+
+      h3
+        +fancy_font
+        font-size: 13pt
+        padding-bottom: 0
+        margin-bottom: 0
+        text-align: center
+        color: #636363
+
       ul
         margin-left: 0
+        margin-top: 10px
         li
-          font-size: 14px
-          padding: 5px 0 10px 0 
+          font-size: 9pt
+          padding: 10px
           color: #535353
+          color: rgba(#333, .65)
+          background-color: #FEFED0
+          margin-bottom: 10px
+          width: 95px
+          height: 70px
+          +box-shadow(0,1px,2px,rgba(black,.4))
 
-          strong
-            color: #2C2C2C
-  
-    &#pledge_form, &#confirmation_sent
+    &#confirmation_sent
       p 
         color: #696969   
         strong
@@ -139,6 +217,103 @@
         color: #696969
         text-decoration: underline
 
-    &#confirmation_sent button #go, &#pledge_form button, &#registration_form .primary, &#registration_form .secondary
+    &#confirmation_sent button #go, 
+    &#pledge_form button, 
+    &#registration_form .primary, 
+    &#registration_form .secondary
       button#go
+        +border-radius(5px)
+
+
+  #registration_form
+    .submit_footer
+      input[type="submit"]
+        position: absolute
+        visibility: hidden
+
+      input[type="button"]
         border-radius: 5px
+        border: 1px solid #4B4B4B
+        cursor: pointer
+        border-color: rgba(#888, .3)
+        padding: 3px 8px
+
+      a.cancel
+        display: inline-block
+        position: absolute
+        font-size: 12px
+        color: white
+        background: #333
+        background: rgba(black, .4)
+        +border-radius(50px)
+        top: 0
+        right: 0
+        z-index: 9999
+        height: 20px
+        width: 20px
+
+
+  #post_signup_form
+    .primary
+      height: 316px
+
+      #site_registration
+        .inlined.email_field
+          width: 300px
+
+          .sub
+            font-size: 7.5pt
+            position: absolute
+            width: 390px
+            +main_font
+            bottom: -18px
+            left: -38px
+            color: rgba(white, .3)
+            text-align: center
+
+        h3
+          margin: 3px 0 10px 0
+          font-weight: normal
+
+        #pledge
+          margin: 33px 0 0px 0
+          ol 
+            margin: auto
+            //width: 310px
+
+            li
+              font-size: 9pt
+              //text-align: left
+              list-style-type: decimal
+
+    .submit_footer
+      padding-top: 24px
+
+      a.cancel
+        color: #aaa
+        color: rgba(white, .4)
+        font-size: 9pt
+        display: block
+        padding-top: 5px
+        font-weight: bold
+
+  #update_registration_form
+
+    .notifications
+      h3
+        margin-top: 15px
+      li
+        font-size: 10pt
+        +main_font
+        text-align: left
+
+        label
+          padding: 1px 4px
+          display: inline-block
+
+    .submit_footer
+      margin-top: 15px
+      .cancel
+        color: inherit
+        +main_font
+        font-size: 10pt

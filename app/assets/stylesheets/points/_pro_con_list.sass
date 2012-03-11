@@ -10,7 +10,7 @@
   border-right-color: #222
   border-left-color: #777
   border-bottom-color: #222
-  box-shadow: 1px 2px 4px rgba(black, .7)
+  +box-shadow(1px, 2px, 4px, black, .7)
   
   display: none
   &.domain_all, &.domain_self
@@ -53,7 +53,7 @@
     width: $pro_con_list_static_width
     margin: auto
     border-top: none
-    box-shadow: none
+    +box-shadow-remove
 
     .full_column
       
@@ -107,7 +107,8 @@
       position: absolute
       left: 0
       top: 227px
-      margin: auto      
+      margin: auto
+      color: #aaa      
       color: rgba(#aaa, .8)
       width: 570px
       font-size: 13px

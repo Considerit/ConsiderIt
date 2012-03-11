@@ -1,10 +1,6 @@
 @mixin heading
   font-family: Georgia, Times, "Times New Roman", serif
 
-@mixin chalk
-  font-family: 'Chelsea Market', sans-serif
-  color: #ddd
-
 @mixin nude-list
   list-style: none outside none
 
@@ -17,22 +13,17 @@
     text-outline: none
 
 @mixin flip-horizontal
-  -moz-transform: scaleX(-1)
-  -o-transform: scaleX(-1)
-  -webkit-transform: scaleX(-1)
-  transform: scaleX(-1)
-  filter: FlipH
-  -ms-filter: "FlipH"
+  +scaleX(-1)
+  +filter(FlipH)
 
 @mixin linkify 
   background-color: transparent
   color: inherit
   border: none
   cursor: pointer
-    
 
 @mixin curl-shadow
-  box-shadow: 0 1px 1px 0 rgba(black,0.2)
+  +box-shadow(0, 1px, 1px, black, 0.2)
   position: relative
 
   &:before, &:after
@@ -41,16 +32,14 @@
     width: 165px
     height: 100px
     z-index: -1
-    box-shadow: 0 14px 2px 0 rgba(black,0.3)
+    +box-shadow(0, 14px, 2px, black, 0.3)
     bottom: 12px
 
   &:before
-    -webkit-transform: rotate(-5deg) skewX(-5deg)
-    -moz-transform: rotate(-5deg) skewX(-5deg)
+    +transform(-5,-5)
 
   &:after
-    -webkit-transform: rotate(5deg) skewX(5deg)
-    -moz-transform: rotate(5deg) skewX(5deg)
+    +transform(5,5)
 
   &.pro
     &:after
@@ -69,3 +58,16 @@
 
 @mixin outset-text
   text-shadow: rgba(black, .1) 1px 1px
+
+=main_background
+  background: image-url('spots.png') repeat left top #890000
+
+=main_font
+  font-family: 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
+
+=chalk
+  font-family: 'Chelsea Market', sans-serif
+  color: #ddd
+  
+=fancy_font
+  font-family: Copperplate, "Copperplate Gothic Light", Georgia, serif

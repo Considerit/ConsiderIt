@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/sferik/rails_admin.git
-  revision: 93f3fcbd6a132e93076521a92495b2de49d64a11
+  revision: 97dfdcac9ffa5c4071ae55ddb4dd3325295cf179
   specs:
     rails_admin (0.0.1)
       bbenezech-nested_form (~> 0.0.5)
@@ -77,10 +77,11 @@ GEM
       execjs
     coffee-script-source (1.2.0)
     daemons (1.0.10)
-    devise (1.4.7)
+    devise (2.0.4)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.0.3)
-      warden (~> 1.0.3)
+      railties (~> 3.1)
+      warden (~> 1.1.1)
     erubis (2.7.0)
     execjs (1.3.0)
       multi_json (~> 1.0)
@@ -88,15 +89,13 @@ GEM
       addressable (~> 2.2)
       multipart-post (~> 1.1)
       rack (~> 1.1)
-    faraday_middleware (0.7.0)
-      faraday (~> 0.7.3)
     fastercsv (1.5.4)
-    formtastic (2.1.0)
+    formtastic (2.1.1)
       actionpack (~> 3.0)
     gem_plugin (0.2.3)
     haml (3.1.4)
     has_scope (0.5.1)
-    hashie (1.1.0)
+    hashie (1.2.0)
     hike (1.2.1)
     hpricot (0.8.6)
     i18n (0.6.0)
@@ -104,15 +103,15 @@ GEM
       has_scope (~> 0.5.0)
       responders (~> 0.6.0)
     journey (1.0.3)
-    jquery-rails (2.0.0)
-      railties (>= 3.2.0.beta, < 5.0)
+    jquery-rails (2.0.1)
+      railties (>= 3.2.0, < 5.0)
       thor (~> 0.14)
     json (1.6.5)
     kaminari (0.13.0)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
       railties (>= 3.0.0)
-    mail (2.4.1)
+    mail (2.4.3)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -125,26 +124,29 @@ GEM
     mongrel (1.2.0.pre2)
       daemons (~> 1.0.10)
       gem_plugin (~> 0.2.3)
-    multi_json (1.0.4)
-    multi_xml (0.4.1)
+    multi_json (1.1.0)
     multipart-post (1.1.5)
     mysql2 (0.3.11)
-    oa-core (0.3.2)
-    oa-oauth (0.3.2)
-      faraday (~> 0.7.3)
-      multi_json (~> 1.0.0)
-      multi_xml (~> 0.4.0)
-      oa-core (= 0.3.2)
-      oauth (~> 0.4.0)
-      oauth2 (~> 0.5.0)
-    oa-openid (0.3.2)
-      oa-core (= 0.3.2)
-      rack-openid (~> 1.3.1)
-      ruby-openid-apps-discovery (~> 1.2.0)
     oauth (0.4.5)
     oauth2 (0.5.2)
       faraday (~> 0.7)
       multi_json (~> 1.0)
+    omniauth (1.0.3)
+      hashie (~> 1.2)
+      rack
+    omniauth-facebook (1.2.0)
+      omniauth-oauth2 (~> 1.0.0)
+    omniauth-oauth (1.0.1)
+      oauth
+      omniauth (~> 1.0)
+    omniauth-oauth2 (1.0.0)
+      oauth2 (~> 0.5.0)
+      omniauth (~> 1.0)
+    omniauth-openid (1.0.1)
+      omniauth (~> 1.0)
+      rack-openid (~> 1.3.1)
+    omniauth-twitter (0.0.8)
+      omniauth-oauth (~> 1.0)
     orm_adapter (0.0.6)
     paperclip (2.7.0)
       activerecord (>= 2.3.0)
@@ -155,12 +157,12 @@ GEM
       activerecord (~> 3.0)
     polyglot (0.3.3)
     rack (1.4.1)
-    rack-cache (1.1)
+    rack-cache (1.2)
       rack (>= 0.4)
     rack-openid (1.3.1)
       rack (>= 1.1.0)
       ruby-openid (>= 2.1.8)
-    rack-pjax (0.5.7)
+    rack-pjax (0.5.8)
       hpricot (~> 0.8.6)
       rack (~> 1.3)
     rack-ssl (1.3.2)
@@ -175,8 +177,8 @@ GEM
       activesupport (= 3.2.1)
       bundler (~> 1.0)
       railties (= 3.2.1)
-    rails3_acts_as_paranoid (0.1.3)
-      activerecord (~> 3.0)
+    rails3_acts_as_paranoid (0.2.0)
+      activerecord (~> 3.2)
     railties (3.2.1)
       actionpack (= 3.2.1)
       activesupport (= 3.2.1)
@@ -191,8 +193,6 @@ GEM
     responders (0.6.5)
     rmagick (2.13.1)
     ruby-openid (2.1.8)
-    ruby-openid-apps-discovery (1.2.0)
-      ruby-openid (>= 2.1.7)
     sass (3.1.15)
     sass-rails (3.2.4)
       railties (~> 3.2.0)
@@ -210,18 +210,16 @@ GEM
     treetop (1.4.10)
       polyglot
       polyglot (>= 0.3.1)
-    twitter (1.7.2)
-      faraday (~> 0.7.4)
-      faraday_middleware (~> 0.7.0)
-      hashie (~> 1.1.0)
-      multi_json (~> 1.0.0)
-      multi_xml (~> 0.4.0)
-      simple_oauth (~> 0.1.5)
-    tzinfo (0.3.31)
+    twitter (2.1.0)
+      activesupport (>= 2.3.9, < 4)
+      faraday (~> 0.7)
+      multi_json (~> 1.0)
+      simple_oauth (~> 0.1)
+    tzinfo (0.3.32)
     uglifier (1.2.3)
       execjs (>= 0.3.0)
       multi_json (>= 1.0.2)
-    warden (1.0.6)
+    warden (1.1.1)
       rack (>= 1.0)
     whenever (0.7.3)
       activesupport (>= 2.3.4)
@@ -236,14 +234,17 @@ DEPENDENCIES
   activeadmin
   acts_as_versioned
   coffee-rails (~> 3.2.1)
-  devise (= 1.4.7)
+  devise
   haml
   jquery-rails
   meta_search (>= 1.1.0.pre)
   mongrel (= 1.2.0.pre2)
   mysql2
-  oa-oauth
-  oa-openid
+  omniauth
+  omniauth-facebook
+  omniauth-oauth
+  omniauth-openid
+  omniauth-twitter
   paperclip
   rails (= 3.2.1)
   rails3_acts_as_paranoid
@@ -252,7 +253,7 @@ DEPENDENCIES
   sass
   sass-rails (~> 3.2.3)
   themes_for_rails (= 0.5.0.pre)
-  twitter (~> 1.7)
+  twitter
   uglifier
   whenever
   will_paginate

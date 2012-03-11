@@ -22,9 +22,10 @@ en:
       updated: 'Your password was changed successfully. You are now signed in.'
     confirmations:
       send_instructions: 'You will receive an email with instructions about how to confirm your account in a few minutes.'
-      confirmed: 'Your account was successfully confirmed. You are now signed in.'
+      confirmed: ''
+      not_confirmed: "Thanks for letting us know that you didn\'t register here."
     registrations:
-      signed_up: ''
+      signed_up: ""
       updated: ''
       destroyed: 'Bye! Your account was successfully cancelled. We hope to see you again soon.'
     unlocks:

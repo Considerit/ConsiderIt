@@ -20,6 +20,7 @@ $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,600italic,800,300italic|Chelsea+Market)
 
 @import "mixins"
+@import "css3_mixins"
 @import "carousel"
 
 @import "points/show"
@@ -45,6 +46,7 @@ $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 @import "shared/footer"
 @import "shared/header"
 @import "shared/carousel"
+@import "shared/messages"
 
 @import "users/sessions"
 
@@ -87,13 +89,13 @@ table
 html
   min-height: 100%
   height: 100%
-  background: image-url('spots.png') repeat left top #890000
+  +main_background
   position: relative
   z-index: 0
 
 body
   color: #222
-  font-family: 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
+  +main_font
   font-size: 14px
   position: relative
   z-index: 1
@@ -110,7 +112,7 @@ body
     top: 300px
     border-top: 1px solid #919191
     border-bottom: 1px solid #111
-    box-shadow: 0px 1px 2px #444
+    +box-shadow(0px, 1px, 2px, #444)
     max-height: 1400px
   &:before
     z-index: 2
@@ -131,10 +133,10 @@ body
     &#content   
       padding-top: 65px
       background-color: white    
-      box-shadow: 1px 2px 5px #000000
+      +box-shadow(1px, 2px, 5px, #000000)
       position: relative
       z-index: 5
-      border-radius: 5px
+      +border-radius(5px)
 
        
       &:after
@@ -208,33 +210,22 @@ input[type="submit"]
   padding: 3px 10px
   font-size: 14px
   cursor: pointer
-  border-radius: 5px
+  +border-radius(5px)
 
   &:focus
     background-color: gray
     border-color: gray
   
   &.important
-    -moz-box-shadow: 1px 1px 2px rgba(0, 0, 0, .8)
-    -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .8)
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, .8)
+    +box-shadow(1px, 1px, 2px, black, .8)
     color: white
 
-    background: #45484d /* Old browsers */
-    background: -moz-linear-gradient(top,  #45484d 0%, #000000 100%) /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#45484d), color-stop(100%,#000000)) /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  #45484d 0%,#000000 100%) /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  #45484d 0%,#000000 100%) /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  #45484d 0%,#000000 100%) /* IE10+ */
-    background: linear-gradient(top,  #45484d 0%,#000000 100%) /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=0 ) /* IE6-9 */
-
+    +linear-gradient(#45484d, #000)
 
 button.gray,
 input[type="submit"].gray  
   background-color: #999
-  background-image: webkit-gradient(linear, left bottom, left top, color-stop(0.07, rgb(119,119,119)), color-stop(1, rgb(204,204,204)))
-  background-image: -moz-linear-gradient(center bottom, rgb(119,119,119) 7%, rgb(204,204,204) 100%)
+  +linear-gradient(#777, #ddd)
   color: #272727
   font-size: 12px
   padding: 3px 15px
@@ -242,6 +233,9 @@ input[type="submit"].gray
   &:hover
     opacity: 1
 
+input[type="file"].proxied
+  visibility: hidden
+input.inputfileproxy
 
 .loading .ajax_loading
   display: block
@@ -263,7 +257,7 @@ input[type="submit"].gray
   left: -6px
   border: 1px solid
   border-color: white #BBB #999
-  box-shadow: 0px 1px 2px rgba(black, .4)
+  +box-shadow(0px, 1px, 2px, black, .4)
 
   &.single
     width: 1006px
@@ -311,7 +305,7 @@ input[type="submit"].gray
         top: 4px
         border: 1px solid
         border-color: white #BBB #999
-        box-shadow: 0px 1px 2px rgba(black, .4)
+        +box-shadow(0px, 1px, 2px, black, .4)
 
       &:after
         right: -16px
@@ -343,12 +337,13 @@ hr.ledge
   border: none
   height: 1px
   &.top
-    background-color: rgba(white, .15)
+    +rgba(white, .15)
   &.bottom
-    background-color: rgba(black, .15)
+    +rgba(black, .15)
 
 .inlined
   padding: 3px 5px
+  border: 1px solid #888
   border: 1px solid rgba(black, .5)
   position: relative
 
@@ -373,4 +368,10 @@ hr.ledge
 
     &.has-text
       opacity: 0
+      visibility: hidden
 
+.ui-widget-overlay
+  position: fixed
+  background-color: white
+  opacity: .8
+  +opacity(80)

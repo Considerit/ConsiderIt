@@ -1,15 +1,8 @@
-%a.register_link
-  Create an account
+%a.signin_link
+  Sign In
 
-%span.login_separator
-  or
 
-%a.login_link
-  Login
-
-#register_dialog.user_dialog
-
-#login_dialog.user_dialog
+#signin_dialog.user_dialog
 
 :javascript
   $j(document).ready(function(){
@@ -18,18 +11,13 @@
       modal: true,
       draggable: false,
       dialogClass: 'alert',
-      width: 775
+      width: 725,
+      resizable: false,
+      position: ['center', 'middle']
     });
 
-    $j('.login_link').click(function(){
-      $j('#login_dialog')
-        .load("#{new_user_session_path(:third_party=>false)}")
-        .dialog('open');
-      return false;
-    });
-
-    $j('.register_link').click(function(){
-      $j('#register_dialog')
+    $j('.signin_link').click(function(){
+      $j('#signin_dialog')
         .load("#{new_user_registration_path(:third_party=>false, :context=>"header")}")
         .dialog('open');
       return false;

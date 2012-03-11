@@ -51,6 +51,8 @@ Devise.setup do |config|
   # The realm used in Http Basic Authentication. "Application" by default.
   # config.http_authentication_realm = "Application"
 
+  config.reset_password_within = 1.days
+
   # ==> Configuration for :database_authenticatable
   # For bcrypt, this is the cost for hashing the password and defaults to 10. If
   # using other encryptors, it sets how many times you want the password re-encrypted.
@@ -66,10 +68,12 @@ Devise.setup do |config|
   # You can use this to let your user access some features of your application
   # without confirming the account, but blocking it after a certain period
   # (ie 2 days).
-  config.confirm_within = 2.months
+  config.allow_unconfirmed_access_for = 2.days
 
   # Defines which key will be used when confirming an account
   # config.confirmation_keys = [ :email ]
+
+  config.reconfirmable = true
 
   # ==> Configuration for :rememberable
   # The time the user will be remembered without asking for credentials again.
@@ -182,11 +186,13 @@ Devise.setup do |config|
     twitter_config.oauth_token_secret = ENV['TWITTER_OAUTH_TOKEN_SECRET']
   end
 
-  config.omniauth :facebook, ENV['FB_ID'], ENV['FB_SECRET'], {:scope => 'email'}
-  config.omniauth :open_id, OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo'
-  config.omniauth :open_id, OpenID::Store::Filesystem.new('./tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id'
+  config.omniauth :facebook, ENV['FB_ID'], ENV['FB_SECRET'], {:scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook}
 
-  config.omniauth :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
+  config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo', :require => 'omniauth-openid'
+  config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'
+
+  config.omniauth :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET'], :strategy_class => OmniAuth::Strategies::Twitter
+
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

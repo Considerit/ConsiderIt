@@ -1,4 +1,5 @@
 @import "theme_colors"
+@import "css3_mixins"
 
 .powered_by
   padding-top: 5px
@@ -17,7 +18,7 @@
     position: absolute
     font-size: 10px
     color: white
-    top: -71px
+    top: -16px
     left: 150px
       
   #home
@@ -71,10 +72,10 @@
       #console
         background-color: black
         padding: 0 10px
-        border-radius: 5px 
+        +border-radius(5px)
 
         .nav a
-          border-radius: 5px 
+          +border-radius(5px)
 
       .frame
         height: 292px
@@ -184,8 +185,8 @@
 
 #home
   #follow
-    left: 40px
-    top: 290px
+    left: 29px
+    top: 376px
 
 #follow
   position: absolute

@@ -29,7 +29,8 @@ class User < ActiveRecord::Base
         #:golden_vertical => "62x100#", 
         :medium => "70x70#", 
         :medium_dark => "70x70#",
-        :small => "50x50#"
+        :small => "50x50#",
+        :thumb => "35x35#"
       }
 
       #:path => ":rails_root/public/images/:attachment/uploaded/:id/:style_:basename.:extension",

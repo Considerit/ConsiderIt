@@ -2,101 +2,44 @@
 
   = render :partial => "home/follow"
 
+  .head.single
+    %h3.banner
+      Washington State's citizen powered voters guide
 
   #value 
-    %h1 
-      Washington state's
-      %br
-      citizen-powered voters guide
 
-      .subheader
-        %h2 
-          Your forum for the 2011 election
-          %ul
-            %li
-              By the people.
-            %li
-              For the people.
-        
-        %h2
-          By thinking together, we can build a better Washington.
+    .people
+      - get_users(88).each do |user|
+        .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
 
-      
-  #tutorial
-    #help_link
-      Confused? 
-      =link_to "Read the tutorial", '/home/help'
-    #console
-      .frame
-        .what
-          %iframe{ :src => "http://player.vimeo.com/video/30497537?title=0&byline=0&portrait=0", :width => "400", :height => "225", :frameborder => "0", :webkitAllowFullScreen => true, :allowFullScreen => true }
-
-        .how.hide
-          %iframe{ :src => "http://player.vimeo.com/video/31315280?title=0&byline=0&portrait=0", :width => "400", :height => "225", :frameborder => "0", :webkitAllowFullScreen => true, :allowFullScreen => true }
-
-        .who.hide
-          .explanation
-            The Living Voters Guide is 
-            %strong 
-              a free and non-partisan service 
-            provided by Seattle City Club and the University of Washington. 
-
-          %ul.images
-
-            %li.first
-              = link_to theme_image_tag('cityclub.jpg'), 'http://www.seattlecityclub.org/', :target => '_blank'
-            %li.last
-              = link_to theme_image_tag('uw_logo.jpg'), 'http://engage.cs.washington.edu/', :target => '_blank'
-            .clear
-
-          .explanation
-            We designed and developed the #{link_to 'open source LVG platform', 'home/considerit'} with the support of the National Science Foundation, under grant IIS 0966929. 
-
-          .questions
-            Send questions and feedback to #{mail_to 'info@livingvotersguide.org'}.
-        
-      .nav
+    .subheader
+      %h2 
         %ul
-          %li
-            %a.what.selected
-              What is the LVG?
-          %li
-            %a.how
-              How do I use the LVG?
+          %li.first
+            By the people
+          %li.second
+            For the people
+      
+      %h2.valueprop
+        We are a better Washington when we think together. 
 
-  :javascript
-    $j('#tutorial').delegate('.nav ul a', 'click', function(){
-      if ( !$j(this).hasClass('selected')){
-        $j(this).parent().siblings('li').find('a').removeClass('selected');
-        var cls = $j(this).attr('class');
-        $j(this).addClass('selected');
-        $j(this).parents('.nav').siblings('.frame').find('> div')
-          .hide().filter('.' + cls).show();
-      }
-    });
-
-  .clear
-
-        
 
 
 #active_proposals
   %h2.get_started
-    Get started
-    .subheader
-      by clicking any of the ballot measures below.
+    Start participating by clicking a ballot measure. Or watch a 
+    %a.video
+      video tutorial.
   
   = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false }
 
   - if @domain
     #zipcode_entered
-      %span.greeting
-        Hello, citizen!
       %span.unlocked
         - if (cnt = @domain.domain_maps.count) == 0
           According to our records, the #{@domain.name} area does not have any local measures on the ballot. 
         - else
-          In the list above, you can now access #{cnt} #{@domain.name} area #{cnt==1 ? 'measure' : 'measures'} likely to be on your ballot.
+          You can now access #{cnt} #{@domain.name} area #{cnt==1 ? 'measure' : 'measures'} likely to be on your ballot.
       .reset
         Is #{@domain.identifier} not your zip code? 
         %a 
@@ -112,12 +55,12 @@
         &#x25b2;
 
       .prompt
-        %strong
-          Enter your ZIP code 
-        to unlock your local measures. 
+        Unlock your local measures. 
       .zipform
         = form_tag '/home/domain', :id => 'domain' do
-          = text_field_tag "domain", '', :title => 'your zip code', :class => 'has_example'
+          %span.inlined
+            = label_tag :domain, 'zip code'
+            = text_field_tag :domain, '', :title => 'your zip code'
           = submit_tag 'Set', :class => 'gray'
       .clear
 
@@ -132,3 +75,31 @@
          */
         }
       });
+
+:javascript
+  var logo_cell = $j('.logo_cell'),
+      logo = $j('img', logo_cell);
+    logo.hide()
+      .attr('src', "#{theme_image_path('logo_large.png')}");
+    logo_cell
+      .css({'top': '-16px', 'left': '376px'})
+      .find('a')
+        .removeAttr('href');
+
+    logo.show();      
+
+  $j('body').on('click', '#active_proposals a.video', function() { 
+    video_window(450, 550, 'home/videos#console', 'LVG videos');
+  });
+
+
+/ :javascript
+/   $j('#tutorial').delegate('.nav ul a', 'click', function(){
+/     if ( !$j(this).hasClass('selected')){
+/       $j(this).parent().siblings('li').find('a').removeClass('selected');
+/       var cls = $j(this).attr('class');
+/       $j(this).addClass('selected');
+/       $j(this).parents('.nav').siblings('.frame').find('> div')
+/         .hide().filter('.' + cls).show();
+/     }
+/   });

@@ -1,6 +1,3 @@
-@mixin heading
-  font-family: Georgia, Times, "Times New Roman", serif
-
 @mixin nude-list
   list-style: none outside none
 
@@ -53,8 +50,8 @@
     &:before
       left: 1px
 
-@mixin inset-text
-  text-shadow: rgba(white, .4) -1px -1px
+@mixin inset-text($transparency:.4)
+  text-shadow: rgba(white, $transparency) -1px -1px
 
 @mixin outset-text
   text-shadow: rgba(black, .1) 1px 1px
@@ -62,12 +59,21 @@
 =main_background
   background: image-url('spots.png') repeat left top #890000
 
+=chalkboard
+  background: image-url("chalk/chalkboard.jpg") repeat left top #414141    
+
+= wall($bground_color:#ccc)
+  background: image-url('wall_texture.png') repeat scroll 0 0 $bground_color
+
+=heading
+  font-family: Georgia, Times, "Times New Roman", serif
+
 =main_font
   font-family: 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
 
 =chalk
   font-family: 'Chelsea Market', sans-serif
   color: #ddd
-  
+
 =fancy_font
   font-family: Copperplate, "Copperplate Gothic Light", Georgia, serif

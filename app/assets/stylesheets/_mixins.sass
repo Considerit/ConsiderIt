@@ -1,7 +1,7 @@
-@mixin nude-list
+=nude-list
   list-style: none outside none
 
-@mixin like-link
+=like-link
   background-color: transparent
   border: none
   cursor: pointer
@@ -9,17 +9,17 @@
     font-weight: bold
     text-outline: none
 
-@mixin flip-horizontal
+=flip-horizontal
   +scaleX(-1)
   +filter(FlipH)
 
-@mixin linkify 
+=linkify 
   background-color: transparent
   color: inherit
   border: none
   cursor: pointer
 
-@mixin curl-shadow
+=curl-shadow
   +box-shadow(0, 1px, 1px, black, 0.2)
   position: relative
 
@@ -50,10 +50,10 @@
     &:before
       left: 1px
 
-@mixin inset-text($transparency:.4)
+=inset-text($transparency:.4)
   text-shadow: rgba(white, $transparency) -1px -1px
 
-@mixin outset-text
+=outset-text
   text-shadow: rgba(black, .1) 1px 1px
 
 =main_background
@@ -62,7 +62,7 @@
 =chalkboard
   background: image-url("chalk/chalkboard.jpg") repeat left top #414141    
 
-= wall($bground_color:#ccc)
+=wall($bground_color:#ccc)
   background: image-url('wall_texture.png') repeat scroll 0 0 $bground_color
 
 =heading
@@ -77,3 +77,6 @@
 
 =fancy_font
   font-family: Copperplate, "Copperplate Gothic Light", Georgia, serif
+
+=signature_font
+  font-family: "Lobster", Georgia, serif

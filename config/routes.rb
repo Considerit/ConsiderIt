@@ -31,7 +31,7 @@ ConsiderIt::Application.routes.draw do
 
     #match "/theme" => "theme#set", :via => :post
     match "/home/domain" => "home#set_domain", :via => :post
-    match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|help/ } 
+    match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|videos|help/ } 
 
     match '/home/study/:category' => "home#study", :via => :post  
     match '/admin/dashboard' => "admin/dashboard#index", :via => :get, :module => :admin

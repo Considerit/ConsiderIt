@@ -1,111 +1,137 @@
-#wrap #footer
-  color: white
-  width: $content_width + 30px
-  padding: 15px 0
+#wrap 
 
-  p.credit
-    margin: 0
-    float: right
-    font-size: 11px
+  &:before
+    // content: ''
+    // width: 100%
+    // height: 35px
+    // position: absolute
+    // left: 0
+    // background-color: #585858
+    // bottom: 0px
+    // border-top: 1px solid #444
+    // //border-bottom: 1px solid #333
+    // +box-shadow(0px, 0px, 3px, rgba(black, .3))
+    // +linear-gradient(#555,#666)
+    // z-index: -1
 
-  
-  .sitemap
-    &.bordernone:hover
-      border-bottom: none
+  #footer
+    +inset-text(.3)
+    padding: 15px 0
+    position: relative
+    width: $content_width + 30px  
+    //width: 100%
+
+    > div
+      display: block
+      color: black
       
-    ul.nav
-      padding-left: 8px
-      
-    background-color: #E6E6E6
-    color: black
-    a:hover
-      text-decoration: underline
-     
-    td
-      padding: 20px
-      font-size: 12px
-      height: 100%
-      vertical-align: top
+      vertical-align: middle
+      text-align: center
 
-      li
-        @include nude-list
-            
-      &.promote
-        width: 190px
-        height: 160px
-        color: white
-        margin: 0 auto
-        background-color: #555
-        position: relative
-        padding: 10px
+      .label
+        
+        font-variant: small-caps
+        text-transform: lowercase
+        +heading
+        font-size: 13pt
+        color: #555
+        color: rgba(black, .6)
+        margin-top: 24px
 
-        #follow
+      .body
+        font-size: 9pt  
+        padding-top: 10px        
+        a
+          color: black
+          text-decoration: underline
+        
+        .ledge
+          width: 855px
+          &.top
+            margin-top: 17px
+
+      &.contact
+        //height: 100px
+        form, span
+          display: inline-block
           position: relative
-          margin: auto
-          width: 165px
+          margin-left: 8px
 
-          > span
-            display: inline-block
+          &.facebook, &.twitter
+            iframe
+              position: absolute
+              left: 0
+              top: 0
+              z-index: 0
+
+            img
+              position: relative
+              top: 1px
+              left: -2px
+              height: 11px
 
             &.facebook
-              float: left
-            &.twitter
-              float: right
-
-        img
-          display: block
-          margin: auto
-
-        h4
-          padding-left: 5px
-          text-transform: capitalize
-        ul.nav
-          padding-left: 0
-          > li
-            padding-left: 17px
-            text-transform: capitalize          
-        a
-          color: white
-
-      &.guides
-        width: 225px
-
-        &.partners
-          width: auto
-          padding: 0px 0 0 0 
-          margin-left: 70px
-          background-color: #888
-          display: inline-block
-          img
-            width: 180px
-        
-
-      &.learn
-        width: 405px        
-      
-        .powered
-          padding-top: 30px
-          font-size: 14px
+              margin-right: 30px
+              //top: 4px
+              .wrapper
+                width: 44px
           
-        
-      &.last
-        margin-right: 0
-        float: right        
-      
-  
-      h4
-        margin-bottom: 9px
-        font-size: 20px
-        
-        &.later
-          margin-top: 9px
+            &.twitter
+              .wrapper
+                width: 66px
 
-    &:after
-      content: "."
-      display: block
-      height: 0
-      clear: both
-      visibility: hidden
-    
+          input[type="button"], input[type="submit"], .wrapper
+            font-size: 8pt
+            height: 20px
+            padding: 2px 20px
+            
+            +chalkboard
+            +chalk
+            border: none
+            border-top: 1px solid #ccc
+            border-bottom: 1px solid #111
+            +box-shadow(0px, 1px, 2px, rgba(black, .3))
+            +border-radius(5px) 
+            cursor: pointer
+            text-shadow: none
+
+            &.wrapper
+              pointer-events: none
+              position: relative
+              z-index: 1
+              height: 16px
+              padding: 2px 0 0 0
+              vertical-align: top
+              padding-left: 4px
+
+
+
+      &.link_list
+        a
+          padding-right: 22px
+          white-space: nowrap
+
+    // &:after
+    //   content: "."
+    //   display: block
+    //   height: 0
+    //   clear: both
+    //   visibility: hidden
+      
+    .powered_by
+      margin-top: 12px
+      color: #555
+      color: rgba(black, .6)
+      text-align: center
+      +inset-text
+      font-size: 10pt
+      font-variant: small-caps
+      text-transform: lowercase
+      font-weight: bold
+
+      a
+        color: inherit
+        text-decoration: underline
+
 
       

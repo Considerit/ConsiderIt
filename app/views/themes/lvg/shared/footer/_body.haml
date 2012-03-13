@@ -48,10 +48,10 @@
 
   .body
     - APP_CONFIG['footer']['resources'].each do |resource_block|
+      - links = resource_block['items']
 
-      - resource_block['items'].each do |resource|
-        = link_to "#{resource['anchor']}", "#{resource['link']}", :target => "_blank", :title => "#{resource['title']}"        
-
+      - links.each do |link|
+        #{link_to(link['anchor'] , link['link'], :target => "_blank", :title => link['title'])}#{link == links.last ? '' : ', '}
 
 .link_list
 
@@ -59,14 +59,15 @@
     More resources
 
   .body
-    = link_to "About the initiative process", "http://www.ncsl.org/default.aspx?tabid=16600", :target => "_blank"
-    
-    = link_to "Stats \& history of WA ballot measures", "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :target => "_blank"
-    = link_to "Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :target => "_blank"
-    
-    -if @domain && @domain.name == 'Seattle'
-      = link_to "King County Libraries infoVote 2011", "http://www.kcls.org/infovote/", :target => "_blank"
 
+    - links = [ ["About the initiative process", "http://www.ncsl.org/default.aspx?tabid=16600"], ["Stats \& history of WA ballot measures", "http://www.sos.wa.gov/elections/initiatives/statistics.aspx"], ["Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf"] ]
+
+    -if @domain && @domain.name == 'Seattle'
+      - links.push(["King County Libraries infoVote 2011", "http://www.kcls.org/infovote/"])
+
+    - links.each do |link|
+      #{link_to(link[0] , link[1], :target => "_blank")}#{link == links.last ? '' : ', '}
+      
     %hr.ledge.top
     %hr.ledge.bottom
 

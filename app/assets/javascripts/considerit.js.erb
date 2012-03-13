@@ -49,14 +49,14 @@ ConsiderIt = {
       });
     }); 
 
-    $j('#intro .proposals.horizontal').infiniteCarousel({
-      speed: 1500,
-      vertical: false,
-      total_items: 5,
-      items_per_page: 5,
-      loading_from_ajax: false,
-      dim: 680
-    });
+    // $j('#intro .proposals.horizontal').infiniteCarousel({
+    //   speed: 1500,
+    //   vertical: false,
+    //   total_items: 8,
+    //   items_per_page: 8,
+    //   loading_from_ajax: false,
+    //   dim: 900
+    // });
 
     $j('.proposal_prompt .proposals.horizontal').infiniteCarousel({
       speed: 1500,
@@ -427,7 +427,7 @@ ConsiderIt = {
       real_point
         .addClass('expanded')
         .css({
-          'top': placeholder.offset().top - $j('#content').offset().top,
+          'top': placeholder.offset().top, //- $j('#content').offset().top,
           'left': placeholder.offset().left 
         });
 
@@ -979,6 +979,23 @@ function login(provider_url, width, height) {
 
   if (window.focus)
     newwindow.focus();
+
+  return false;
+}
+
+function video_window(width, height, link, title) {
+  var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+      screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+      outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+      outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+      left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
+      top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
+      features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=no');
+
+      var tos = window.open(link, title, features);
+
+  if (tos.focus)
+    tos.focus();
 
   return false;
 }

@@ -19,15 +19,18 @@
 // proposals/blocks/item
 
 li.proposal_item
-  @include nude-list
-  
+  +nude-list
   background-color: #D0D0D0
+  +linear-gradient(#D0D0D0, #888)
+  +box-shadow(0,1px,5px,rgba(black, .4))
+  border-bottom: 1px solid #666
+  border-top: 1px solid white
   position: relative
   color: black
   float: left 
   padding: 0      
-
   +border-radius(5px)
+  opacity: .8
 
   &.finished .completion
     display: block
@@ -37,8 +40,9 @@ li.proposal_item
     
 
   &:hover, &.active
-    background-color: black
-    color: white    
+    //background-color: black
+    //color: white    
+    opacity: 1
 
   > a
     color: inherit
@@ -51,14 +55,12 @@ li.proposal_item
     .number
           
     .designation
-      text-transform: uppercase      
+      //text-transform: uppercase      
       letter-spacing: 0px
 
     .short_name
 
   &.blocks    
-    border: 1px solid #D0D0D0
-    border-bottom: 1px solid #848484
     margin: 0 5px 5px 0
 
     > a 
@@ -71,9 +73,8 @@ li.proposal_item
         letter-spacing: -3px
                 
       .designation
-        
-        font-size: 8px
-        line-height: 15px
+        font-size: 7pt
+        //line-height: 15px
 
       .short_name
         width: 100%

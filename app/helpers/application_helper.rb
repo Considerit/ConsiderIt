@@ -21,6 +21,7 @@ module ApplicationHelper
     # that can be queried here instead
     proposals += Proposal.where(:domain_short => 'WA state').order(:designator)
     return proposals
+
   end
 
   def has_stance(proposal)

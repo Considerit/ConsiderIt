@@ -17,7 +17,7 @@ $con_point_expanded: #FEEFF2
 $pro_point_dark: darken($pro_point_light, 30%) //#1C3B1D
 $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,600italic,800,300italic|Chelsea+Market)
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,600italic,800,300italic|Chelsea+Market|Lobster)
 
 @import "mixins"
 @import "css3_mixins"
@@ -117,7 +117,7 @@ body
     position: absolute
     left: 0
     background-color: #767676
-    top: 300px
+    top: 266px
     border-top: 1px solid #919191
     border-bottom: 1px solid #555
     +box-shadow(0px, 1px, 2px, rgba(black, .3))
@@ -161,7 +161,7 @@ body
     &#content   
       padding-top: 65px
       background-color: white    
-      +box-shadow(1px, 2px, 5px, #000000)
+      +box-shadow(0px, 0px, 4px, rgba(black, .7))
       position: relative
       z-index: 5
       +border-radius(5px)
@@ -253,7 +253,7 @@ input[type="submit"]
 button.gray,
 input[type="submit"].gray  
   background-color: #999
-  +linear-gradient(#777, #ddd)
+  +linear-gradient(#999, #ddd)
   color: #272727
   font-size: 12px
   padding: 3px 15px

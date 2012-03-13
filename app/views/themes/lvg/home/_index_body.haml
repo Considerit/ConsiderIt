@@ -44,9 +44,9 @@
           %ul.images
 
             %li.first
-              = link_to image_tag('cityclub.jpg'), 'http://www.seattlecityclub.org/', :target => '_blank'
+              = link_to theme_image_tag('cityclub.jpg'), 'http://www.seattlecityclub.org/', :target => '_blank'
             %li.last
-              = link_to image_tag('uw_logo.jpg'), 'http://engage.cs.washington.edu/', :target => '_blank'
+              = link_to theme_image_tag('uw_logo.jpg'), 'http://engage.cs.washington.edu/', :target => '_blank'
             .clear
 
           .explanation
@@ -63,9 +63,7 @@
           %li
             %a.how
               How do I use the LVG?
-          %li
-            %a.who
-              Who are we?
+
   :javascript
     $j('#tutorial').delegate('.nav ul a', 'click', function(){
       if ( !$j(this).hasClass('selected')){

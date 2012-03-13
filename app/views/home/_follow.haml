@@ -11,12 +11,12 @@
           = image_tag "facebook_button.png", :alt => "Facebook logo"
 
 
-  - if APP_CONFIG['socmedia']['twitter']['include_follow']
-    %span.twitter
-      - if true
-        %a.twitter-follow-button{:href => "https://twitter.com/lvguide", "data-show-count".intern => "false", "data-width".intern => "70px"}
-          Follow
-        %script{:src => "//platform.twitter.com/widgets.js", :type => "text/javascript"}
-      - else
-        %a.twitter_page{ :href => "#{APP_CONFIG['socmedia']['twitter']['twitter_page']}", :target => "_blank", :title => "Follow us on Twitter" }
-          = image_tag "Twitter_button.png", :alt => "Twitter logo"
+  // - if APP_CONFIG['socmedia']['twitter']['include_follow']
+  //   %span.twitter
+  //     - if true
+  //       %a.twitter-follow-button{:href => "https://twitter.com/lvguide", "data-show-count".intern => "false", "data-width".intern => "70px"}
+  //         Follow
+  //       %script{:src => "//platform.twitter.com/widgets.js", :type => "text/javascript"}
+  //     - else
+  //       %a.twitter_page{ :href => "#{APP_CONFIG['socmedia']['twitter']['twitter_page']}", :target => "_blank", :title => "Follow us on Twitter" }
+  //         = image_tag "Twitter_button.png", :alt => "Twitter logo"

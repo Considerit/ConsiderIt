@@ -29,11 +29,12 @@ under the AGPL.
 Here are installation instructions, along with some hints in case of
 problems (mostly Macintosh-specific).
 
+
 * Manage ruby / rails installs with
   [RVM](https://rvm.beginrescueend.com/gemsets/).  After installing
-  rvm, install ruby 1.92:
+  rvm, install ruby 1.93:
 
-          rvm install 1.9.2
+          rvm install 1.9.3
 
   Good mac install
   directions
@@ -51,30 +52,20 @@ problems (mostly Macintosh-specific).
   If this doesn't work, try downloading and saving the script,
   and running it directly as a shell script.
   After you're done, check that you have the correct version of ruby
-  (should be 1.9.2):
+  (should be 1.9.3):
 
           ruby -v
 
   Set this as the default in RVM so you don't have to switch each time
   you open a new shell:
 
-          rvm --default use 1.9.2
-
-* Install a SQL database if needed.  We've been using 
-  [MySQL](http://dev.mysql.com/downloads/).
+          rvm --default use 1.9.3
 
 * Clone from git repository into your workspace using the following command.
   Note that you will have to set up your ssh keys with github first
   (see [github linux setup](http://help.github.com/linux-set-up-git/)).
 
           git clone git@github.com:tkriplean/ConsiderIt.git
-
-* Install [ImageMagick](http://www.imagemagick.org/script/index.php).
-  For the Macintosh the recommended technique is to use
-  [MacPorts](http://www.macports.org/).  This involves building from
-  source and takes a while -- no dmg file, unfortunately.  However,
-  this has worked fine on various Macs, so you probably won't have
-  any trouble.
 
 * Go into the ConsiderIt directory:
 
@@ -84,9 +75,15 @@ problems (mostly Macintosh-specific).
   you first cd into the directory, RVM should recognize this and ask
   if you trust it.  You should say yes.
 
-* Install Ruby and activate it:
-		rvm install 1.9.3-head
-		rvm use 1.9.3-head
+* Install a SQL database if needed.  We've been using 
+  [MySQL](http://dev.mysql.com/downloads/).
+
+* Install [ImageMagick](http://www.imagemagick.org/script/index.php).
+  For the Macintosh the recommended technique is to use
+  [MacPorts](http://www.macports.org/).  This involves building from
+  source and takes a while -- no dmg file, unfortunately.  However,
+  this has worked fine on various Macs, so you probably won't have
+  any trouble.
 
 * Install gems.  First deal with the problematic <tt>mysql</tt> gem
   (at least it's problematic on the mac and ubuntu 11.04); and then install everything

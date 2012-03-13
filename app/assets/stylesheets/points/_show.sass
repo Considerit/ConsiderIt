@@ -70,7 +70,7 @@
         font-size: 11px
         padding: 0
         margin: 0
-        font-family: georgia, times, seriff
+        +heading
         font-weight: bold
 
       .editpoint:after, &.remove:after
@@ -294,6 +294,8 @@
     > .body
       .full
         padding-top: 10px
+        opacity: .8
+     
     .extra
       visibility: visible
       opacity: 1        
@@ -327,7 +329,7 @@
       //right: 0px
 
   &.point_in_list_self, &.point_in_list_board
-    background: image-url('chalk/chalkboard.jpg') repeat top left #414141
+    +chalkboard
     padding-top: 10px
     padding-bottom: 10px
     margin-top: -10px

@@ -28,7 +28,7 @@
       $j = jQuery.noConflict();
 
       var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', '#{GOOGLE_ANALYTICS}']);
+      _gaq.push(['_setAccount', '#{APP_CONFIG[:analytics][:google]}']);
       _gaq.push(['_trackPageview']);
 
   %body

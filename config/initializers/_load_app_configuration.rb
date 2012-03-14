@@ -59,7 +59,3 @@ config = Configuration.load_yaml("config/local_environment.yml")
 
 APP_CONFIG = config.merge(
   Configuration.load_yaml("config/applications/#{config.application_name}.yml", :hash => Rails.env, :inherit => :default_to)
-
-
-# Save the configuration in a global, accessible from the application.
-LocalConfig = OPTIONS.merge _local_config

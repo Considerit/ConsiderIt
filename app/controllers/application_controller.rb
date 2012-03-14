@@ -17,7 +17,7 @@ private
   def theme_resolver
 
     if !session.has_key?('user_theme')
-      session["user_theme"] = APP_CONFIG['theme']
+      session["user_theme"] = APP_CONFIG[:application_name]
     end
     session["user_theme"]
   end

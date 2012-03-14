@@ -180,18 +180,19 @@ Devise.setup do |config|
   # up on your models and hooks.
 
   Twitter.configure do |twitter_config|
-    twitter_config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
-    twitter_config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
-    twitter_config.oauth_token = ENV['TWITTER_OAUTH_TOKEN']
-    twitter_config.oauth_token_secret = ENV['TWITTER_OAUTH_TOKEN_SECRET']
+    # twitter_config.consumer_key = APP_CONFIG[:authentication][:twitter][:consumer_key]
+    # twitter_config.consumer_secret = APP_CONFIG[:authentication][:twitter][:consumer_secret]
+    # twitter_config.oauth_token = APP_CONFIG[:authentication][:twitter][:oauth_token]
+    # twitter_config.oauth_token_secret = APP_CONFIG[:authentication][:twitter][:oauth_token_secret]
+    twitter_config = APP_CONFIG[:authentication][:twitter]
   end
 
-  config.omniauth :facebook, ENV['FB_ID'], ENV['FB_SECRET'], {:scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook}
+  config.omniauth :facebook, APP_CONFIG[:authentication][:facebook][:app_id], APP_CONFIG[:authentication][:facebook][:app_secret], {:scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook}
 
   config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo', :require => 'omniauth-openid'
   config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'
 
-  config.omniauth :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET'], :strategy_class => OmniAuth::Strategies::Twitter
+  config.omniauth :twitter, APP_CONFIG[:authentication][:twitter][:consumer_key], APP_CONFIG[:authentication][:twitter][:consumer_secret], :strategy_class => OmniAuth::Strategies::Twitter
 
 
   # ==> Warden configuration

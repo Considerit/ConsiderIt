@@ -17,7 +17,7 @@ $con_point_expanded: #FEEFF2
 $pro_point_dark: darken($pro_point_light, 30%) //#1C3B1D
 $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,600italic,800,300italic|Chelsea+Market|Lobster)
+//@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,600italic,800,300italic|Chelsea+Market|Lobster)
 
 @import "mixins"
 @import "css3_mixins"
@@ -377,6 +377,9 @@ hr.ledge
   border: 1px solid #888
   border: 1px solid rgba(black, .5)
   position: relative
+
+  input, textarea
+    background: image-url('trans.png') repeat top left transparent
 
   label + input, label + textarea
     background-color: transparent

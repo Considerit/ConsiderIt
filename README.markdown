@@ -182,7 +182,7 @@ problems (mostly Macintosh-specific).
 * (optional) Deployment
     * When creating app on heroku, specify 1.9.2 stack: http://devcenter.heroku.com/articles/stack
     * You can have multiple remote sites for git, such as github and heroku: http://devcenter.heroku.com/articles/git
-
+    * When deploying in production mode, you need to precompile the assets, such as with '> rake assets:precompile -e production'
 
 * More Troubleshooting.  If you are still having trouble with rails
   or with the mysql interface, try making a trivial test application

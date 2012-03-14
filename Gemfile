@@ -4,7 +4,7 @@ gem 'rails', '~>3.2'
 
 gem "mysql2" #, "~> 0.2.7"
 
-gem 'mongrel', '1.2.0.pre2'
+gem 'thin'
 
 gem "haml"
 gem 'sass'

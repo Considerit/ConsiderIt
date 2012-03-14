@@ -90,13 +90,19 @@ $useIEFilters: 0
   
 =rgba($hex, $alpha, $ie: $useIEFilters)
   @if $ie == 1
-    $hexopac: "#" + ceil($alpha * 255 / 16 * 10) + $hex
+    $iehex: $hex
+    @if $iehex == black
+      $iehex: '000000'
+    @if $iehex == white
+      $iehex: 'ffffff'
+
+    $hexopac: "#" + ceil($alpha * 255 / 16 * 10) + $iehex
     background-color: none
     filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#{$hexopac}',EndColorStr='#{$hexopac}}')
     -ms-filter: quote(progid:DXImageTransform.Microsoft.gradient(startColorStr='#{$hexopac}',EndColorStr='#{$hexopac}'))
   @else
     background-color: $hex
-    background-color: rgba(red($hex), green($hex), blue($hex), $alpha)
+  background-color: rgba(red($hex), green($hex), blue($hex), $alpha)
 
 =transform($rotate_deg, $skew_deg:-1)
   @if $skew_deg == -1

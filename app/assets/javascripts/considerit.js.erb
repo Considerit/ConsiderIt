@@ -260,41 +260,49 @@ ConsiderIt = {
       //     $j(this).parents('.message').append('<span> [done]</span>');
       //   })
 
-    $j(document).delegate('#confirmation_sent button#go', 'click', function(){
-      $j('#post_signup_dialog').dialog('close');
-    });
+    $j(document)
+      .delegate('#confirmation_sent button#go', 'click', function(){
+        $j('#post_signup_dialog').dialog('close');
+      })
 
-    $j(document).delegate('#site_registration a.cancel', 'click', function(){
-      $j('.user_dialog, #settings_dialog').dialog('close');
-    });
+      .delegate('#site_registration a.cancel', 'click', function(){
+        $j('.user_dialog, #settings_dialog').dialog('close');
+      })
 
-    $j(document).delegate('#acknowledgment a', 'click', function(){
-      show_tos(500, 700);  
-    });
+      .delegate('#acknowledgment a', 'click', function(){
+        show_tos(500, 700);  
+      })
 
-    $j(document).delegate('#zipcode_entered .reset a', 'click', function(){
-      $j(this).siblings('.resetform').show();
-    });
+      .delegate('#zipcode_entered .reset a', 'click', function(){
+        $j(this).siblings('.resetform').show();
+      });
 
     //////////////
     // PROPOSALS
     //////////////
-    $j(document).delegate('.proposal_prompt a.show_proposal_description', 'click', function(){
-      $j('.proposal_prompt').removeClass('hiding');
-      $j(this).remove();
-    });
-
-    $j(document).delegate('.description_wrapper .prompt a', 'click', function(){
-      if($j(this).hasClass('hidden')){
-        $j(this).parents('.prompt').filter(":first").siblings('.full').slideDown();
-        $j(this).text('hide');
-      } else {
-        $j(this).parents('.prompt').filter(":first").siblings('.full').slideUp();
-        $j(this).text('show');
-      }
-      $j(this).toggleClass('hidden');
-
-    });
+    $j(document)
+      .delegate('.proposal_prompt a.show_proposal_description', 'click', function(){
+        $j('.proposal_prompt').removeClass('hiding');
+        $j(this).remove();
+      })
+      .delegate('.description_wrapper .prompt a', 'click', function(){
+        if($j(this).hasClass('hidden')){
+          $j(this).parents('.prompt').filter(":first").siblings('.full').slideDown();
+          $j(this).text('hide');
+        } else {
+          $j(this).parents('.prompt').filter(":first").siblings('.full').slideUp();
+          $j(this).text('show');
+        }
+        $j(this).toggleClass('hidden');
+      })
+      .delegate('.proposal_menu', 'hover', function(event){
+        var $target = $j(this).children('ul');
+        if ( event.type == 'mouseenter' ) {
+          $target.slideDown();
+        } else {
+          $target.slideUp();
+        }
+      });
             
     //////////////
     // POINTS

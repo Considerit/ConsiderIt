@@ -44,21 +44,15 @@
 .link_list
 
   %h3.label
-    Other WA voter guides
+    More resources
 
   .body
+
     - APP_CONFIG[:footer][:resources].each do |resource_block|
       - links = resource_block['items']
 
       - links.each do |link|
-        #{link_to(link['anchor'] , link['link'], :target => "_blank", :title => link['title'])}#{link == links.last ? '' : ', '}
-
-.link_list
-
-  %h3.label
-    More resources
-
-  .body
+        #{link_to(link['anchor'] , link['link'], :target => "_blank", :title => link['title'])}#{', '}
 
     - links = [ ["About the initiative process", "http://www.ncsl.org/default.aspx?tabid=16600"], ["Stats \& history of WA ballot measures", "http://www.sos.wa.gov/elections/initiatives/statistics.aspx"], ["Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf"] ]
 

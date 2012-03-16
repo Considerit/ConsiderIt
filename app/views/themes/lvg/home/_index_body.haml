@@ -2,31 +2,45 @@
 
   = render :partial => "home/follow"
 
-  .head.single
-    %h3.banner
-      Washington State's citizen powered voters guide
-
-  #value 
-
-    .people
-      - get_users(88).each do |user|
+  #people
+    - users = get_users(100)
+    .row
+      - users[0..24].each do |user|
+        .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+    .row
+      - users[25..49].each do |user|
         .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
 
-    .subheader
-      %ul
-        %li.first
-          By the people
-        %li.second
-          For the people
-      
-      %h2.valueprop
-        We are a better Washington when we think together. 
+    // .row.fl
+    //   - users[26..30].each do |user|
+    //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+    // .row.fr
+    //   - users[35..39].each do |user|
+    //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+    // .clear    
 
+    .row
+      - users[50..74].each do |user|
+        .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+    .row
+      - users[75..99].each do |user|
+        .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+
+  #logo
+    = image_tag current_theme_image_path "logo_large.png"
+
+  #value 
+  
+    .first
+      A voters guide written by the people. For the people.
+
+    .valueprop
+      We are a better Washington when we think together. 
 
 
 #active_proposals
   %h2.get_started
-    Start participating by clicking a ballot measure. Or watch a 
+    Get started by clicking a ballot measure below. Or watch a 
     %a.video
       video tutorial.
   
@@ -50,11 +64,11 @@
                 
   - else
     #zipcode_entry
-      .triangle
-        &#x25b2;
+      //.triangle
+      //  &#x25b2;
 
       .prompt
-        Unlock your local measures. 
+        Unlock your local measures:
       .zipform
         = form_tag '/home/domain', :id => 'domain' do
           %span.inlined
@@ -76,16 +90,7 @@
       });
 
 :javascript
-  var logo_cell = $j('.logo_cell'),
-      logo = $j('img', logo_cell);
-    logo.hide()
-      .attr('src', "#{theme_image_path('logo_large.png')}");
-    logo_cell
-      .css({'top': '-16px', 'left': '387px'})
-      .find('a')
-        .removeAttr('href');
-
-    logo.show();      
+  var logo_cell = $j('#masthead .logo_cell').hide();
 
   $j('body').on('click', '#active_proposals a.video', function() { 
     video_window(450, 550, 'home/videos#console', 'LVG videos');

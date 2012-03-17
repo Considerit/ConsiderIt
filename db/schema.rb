@@ -45,22 +45,6 @@ ActiveRecord::Schema.define(:version => 20120311010113) do
 
   add_index "domains", ["identifier"], :name => "index_domains_on_identifier"
 
-  create_table "inclusion_versions", :force => true do |t|
-    t.integer  "inclusion_id"
-    t.integer  "version"
-    t.integer  "option_id"
-    t.integer  "position_id"
-    t.integer  "point_id"
-    t.integer  "user_id"
-    t.integer  "session_id"
-    t.boolean  "included_as_pro"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.datetime "deleted_at"
-  end
-
-  add_index "inclusion_versions", ["inclusion_id"], :name => "index_inclusion_versions_on_inclusion_id"
-
   create_table "inclusions", :force => true do |t|
     t.integer  "proposal_id"
     t.integer  "position_id"
@@ -113,39 +97,6 @@ ActiveRecord::Schema.define(:version => 20120311010113) do
     t.datetime "updated_at"
   end
 
-  create_table "point_versions", :force => true do |t|
-    t.integer  "point_id"
-    t.integer  "version"
-    t.integer  "option_id"
-    t.integer  "position_id"
-    t.integer  "user_id"
-    t.integer  "session_id"
-    t.text     "nutshell"
-    t.text     "text"
-    t.boolean  "is_pro"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "num_inclusions"
-    t.integer  "unique_listings"
-    t.float    "score"
-    t.float    "attention"
-    t.float    "persuasiveness"
-    t.float    "appeal"
-    t.float    "score_stance_group_0"
-    t.float    "score_stance_group_1"
-    t.float    "score_stance_group_2"
-    t.float    "score_stance_group_3"
-    t.float    "score_stance_group_4"
-    t.float    "score_stance_group_5"
-    t.float    "score_stance_group_6"
-    t.datetime "deleted_at"
-    t.boolean  "published",            :default => true
-    t.boolean  "hide_name",            :default => false
-    t.boolean  "share",                :default => true
-    t.boolean  "passes_moderation"
-  end
-
-  add_index "point_versions", ["point_id"], :name => "index_point_versions_on_point_id"
 
   create_table "points", :force => true do |t|
     t.integer  "proposal_id"
@@ -180,26 +131,6 @@ ActiveRecord::Schema.define(:version => 20120311010113) do
 
   add_index "points", ["is_pro"], :name => "index_points_on_is_pro"
   add_index "points", ["proposal_id"], :name => "index_points_on_option_id"
-
-  create_table "position_versions", :force => true do |t|
-    t.integer  "position_id"
-    t.integer  "version"
-    t.integer  "option_id"
-    t.integer  "user_id"
-    t.integer  "session_id"
-    t.text     "explanation"
-    t.float    "stance"
-    t.integer  "stance_bucket"
-    t.boolean  "published",                         :default => false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.datetime "deleted_at"
-    t.boolean  "notification_includer"
-    t.boolean  "notification_proposal_subscriber"
-    t.boolean  "notification_statement_subscriber"
-  end
-
-  add_index "position_versions", ["position_id"], :name => "index_position_versions_on_position_id"
 
   create_table "positions", :force => true do |t|
     t.integer  "proposal_id"

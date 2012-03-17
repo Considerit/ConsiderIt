@@ -1,4 +1,6 @@
 class Inclusion < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :point
   belongs_to :user
   belongs_to :position

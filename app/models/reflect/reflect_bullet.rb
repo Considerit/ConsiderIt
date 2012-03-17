@@ -1,4 +1,6 @@
 class Reflect::ReflectBullet < ActiveRecord::Base
+  has_paper_trail
+
   belongs_to :comment
 
   has_many :revisions, :class_name => 'ReflectBulletRevision', :foreign_key => 'bullet_id'  

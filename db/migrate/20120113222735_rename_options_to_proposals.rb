@@ -12,7 +12,6 @@ class RenameOptionsToProposals < ActiveRecord::Migration
   	rename_column :domain_maps, :option_id, :proposal_id
 
     rename_column :positions, :notification_option_subscriber, :notification_proposal_subscriber
-    rename_column :position_versions, :notification_option_subscriber, :notification_proposal_subscriber
 
   end
 

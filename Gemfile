@@ -55,6 +55,7 @@ gem 'jquery-rails'
 # https://github.com/goncalossilva/rails3_acts_as_paranoid
 #gem 'rails3_acts_as_paranoid'
 #gem 'acts_as_versioned'
+gem 'paper_trail'
 
 # https://github.com/ernie/meta_where
 # will not be updates for Rails 3.1, check out https://github.com/ernie/squeel instead

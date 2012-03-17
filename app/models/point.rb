@@ -2,7 +2,8 @@
 class Point < ActiveRecord::Base
   
   is_commentable
-
+  has_paper_trail
+  
   belongs_to :user
   belongs_to :proposal
   belongs_to :position

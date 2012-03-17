@@ -1,3 +1,4 @@
+#TODO: this file should be removed
 class AddUnconfirmedEmailToDevise < ActiveRecord::Migration
   def change
     begin

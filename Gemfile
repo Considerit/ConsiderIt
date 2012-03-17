@@ -23,6 +23,7 @@ gem 'omniauth-twitter'
 gem 'omniauth-facebook'
 
 
+
 gem 'twitter'#, "~> 1.7"
 
 # https://github.com/sferik/rails_admin/
@@ -52,8 +53,8 @@ gem 'jquery-rails'
 
 # http://ward.vandewege.net/blog/2011/04/acts_as_paranoid-and-acts_as_versioned-on-rails-3/
 # https://github.com/goncalossilva/rails3_acts_as_paranoid
-gem 'rails3_acts_as_paranoid'
-gem 'acts_as_versioned'
+#gem 'rails3_acts_as_paranoid'
+#gem 'acts_as_versioned'
 
 # https://github.com/ernie/meta_where
 # will not be updates for Rails 3.1, check out https://github.com/ernie/squeel instead

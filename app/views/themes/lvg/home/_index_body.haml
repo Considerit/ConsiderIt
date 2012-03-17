@@ -4,27 +4,28 @@
 
   #people
     - users = get_users(100)
-    .row
-      - users[0..24].each do |user|
-        .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-    .row
-      - users[25..49].each do |user|
-        .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+    - if users
+      .row
+        - users[0..24].each do |user|
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      .row
+        - users[25..49].each do |user|
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
 
-    // .row.fl
-    //   - users[26..30].each do |user|
-    //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-    // .row.fr
-    //   - users[35..39].each do |user|
-    //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-    // .clear    
+      // .row.fl
+      //   - users[26..30].each do |user|
+      //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      // .row.fr
+      //   - users[35..39].each do |user|
+      //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      // .clear    
 
-    .row
-      - users[50..74].each do |user|
-        .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-    .row
-      - users[75..99].each do |user|
-        .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      .row
+        - users[50..74].each do |user|
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      .row
+        - users[75..99].each do |user|
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
 
   #logo
     = image_tag current_theme_image_path "logo_large.png"

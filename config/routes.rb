@@ -1,6 +1,7 @@
 ConsiderIt::Application.routes.draw do
   
-  scope ENV['RAILS_RELATIVE_URL_ROOT'] || '/' do
+  #scope ENV['RAILS_RELATIVE_URL_ROOT'] || '/' do
+  scope '/' do
     resources :point_links
 
     root :to => "home#index"

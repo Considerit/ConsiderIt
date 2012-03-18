@@ -3,7 +3,6 @@ class ApplicationController < ActionController::Base
   theme :theme_resolver
 
   def render(*args)
-    #@theme = theme_resolver
     if args && args.first.respond_to?('has_key?')
       args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
     else
@@ -14,8 +13,8 @@ class ApplicationController < ActionController::Base
   end
     
 private
-  def theme_resolver
 
+  def theme_resolver
     if !session.has_key?('user_theme')
       session["user_theme"] = APP_CONFIG[:application_name]
     end

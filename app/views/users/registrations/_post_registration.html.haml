@@ -14,7 +14,7 @@
           %h3
             Let us know a little more about yourself
 
-        = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put) do |f|
+        = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put, :class => 'html5') do |f|
         
           %ul
             //%li
@@ -22,14 +22,12 @@
 
             - if !current_user.name
               %li.name_field.inlined
-                = f.label :name, 'First and last name'
-                = f.text_field :name, :title => 'first and last name', :required => true
+                = f.text_field :name, :placeholder => 'First and last name', :title => 'first and last name', :required => true
 
 
             - if !current_user.email || current_user.email.length == 0
               %li.email_field.inlined
-                = f.label :email, 'Email address'
-                = f.text_field :email, :title => 'Email address'
+                = f.text_field :email, :placeholder => 'Email address', :title => 'Email address'
                 .sub
                   Optional. Used to notify you if, e.g. someone comments on a point you authored. 
 

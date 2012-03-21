@@ -73,8 +73,7 @@
       .zipform
         = form_tag '/home/domain', :id => 'domain' do
           %span.inlined
-            = label_tag :domain, 'zip code'
-            = text_field_tag :domain, '', :title => 'your zip code'
+            = text_field_tag :domain, '', :placeholder => 'zip code', :title => 'your zip code'
           = submit_tag 'Set', :class => 'gray'
       .clear
 

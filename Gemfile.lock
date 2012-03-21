@@ -66,6 +66,7 @@ GEM
       sass (>= 3.1)
     builder (3.0.0)
     chronic (0.6.7)
+    client_side_validations (3.1.4)
     cocaine (0.2.1)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
@@ -235,6 +236,7 @@ PLATFORMS
 
 DEPENDENCIES
   activeadmin
+  client_side_validations
   coffee-rails (~> 3.2.1)
   devise
   haml

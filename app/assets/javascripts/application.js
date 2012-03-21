@@ -7,5 +7,7 @@
 //= require jquery.example.min.js
 //= require jquery.jcarousel.min.js
 //= require jquery.autoresize.js
+//= require jquery.html5form.js
+//= require jquery.inline_labels.js
 //= require javascripts/reflect.considerit.js
 //= require considerit

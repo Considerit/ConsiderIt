@@ -1,6 +1,6 @@
 .pointform{ :class => "#{action}pointform" }
 
-  = form_for [@proposal, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'}"}, :remote => true do |f|
+  = form_for [@proposal, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'} html5"}, :remote => true do |f|
 
     .form_proper
       =f.hidden_field :is_pro, :id => "point-current-is_pro", :value => is_pro
@@ -15,15 +15,13 @@
       /     unknown
 
       .point-title-group.inlined
-        = f.label :nutshell, 'summarize your point...'
-        = f.text_area :nutshell, :title => 'Summarize your point', :required => true, :cols => 24, :class => "point-title is_counted"
+        = f.text_field :nutshell, :placeholder => 'Summarize your point', :title => 'Summarize your point', :required => true, :cols => 24, :class => "point-title is_counted"
         %span.count
           140
         .clear
 
       .point-description-group.inlined
-        = f.label :text, 'add additional details...'
-        = f.text_area :text, :title => "Write a longer description (optional)", :cols => 24, :class => "point-description is_counted"
+        = f.text_field :text, :placeholder => 'add additional details...', :title => "Write a longer description (optional)", :cols => 24, :class => "point-description is_counted"
         %span.count
           2000
         .clear

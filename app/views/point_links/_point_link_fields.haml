@@ -5,12 +5,10 @@
     
     .fields
       .url.inlined
-        = f.label :url, 'http://...'
-        = f.text_field :url, :class => 'url', :title => 'http://...'
+        = f.text_field :url, :class => 'url', :placeholder => 'http://...', :title => 'http://...'
 
       .description.inlined
-        = f.label :description, 'brief description'
-        = f.text_field :description, :class => 'description', :title => 'A brief description'
+        = f.text_field :description, :class => 'description', :placeholder => 'A brief description', :title => 'A brief description'
 
 
     .submit_block

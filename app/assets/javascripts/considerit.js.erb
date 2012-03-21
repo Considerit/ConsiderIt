@@ -101,7 +101,6 @@ ConsiderIt = {
         
   },
   per_request : function() {
-
     $j('.point_in_list_margin.pro').draggable({
       helper: 'clone',
       cursor: 'move'
@@ -176,6 +175,9 @@ ConsiderIt = {
       });
     });   
 
+    $j('form.html5:not(.html5formified)').html5form();
+    $j('[placeholder]').inlined_labels();
+
     // $j('.participant_carousel .vertical_carousel').infiniteCarousel({
     //   speed: 1500,
     //   vertical: true,
@@ -192,28 +194,10 @@ ConsiderIt = {
 
   delegators : function() {
 
-
-    /////////////
-    // GENERAL
-    /////////////
-
-    $j("body") 
-      .on('focus', '.inlined label + input, .inlined label + textarea', function () {
-          $j(this).prev("label").addClass("focus");
-        })
-      .on('keypress', '.inlined label + input, .inlined label + textarea', function () {
-          $j(this).prev("label").addClass("has-text").removeClass("focus");
-        })
-      .on('blur', '.inlined label + input, .inlined label + textarea', function () {
-          if($j(this).val() == "") {
-            $j(this).prev("label").removeClass("has-text").removeClass("focus");
-          }
-        })
-
     /////////////
     // ACCOUNTS
     /////////////
-
+    $j("body") 
       .on('click', '.inputfileproxy', function(){
           $j(this).siblings('input["file"]').trigger('click');
         })
@@ -298,9 +282,9 @@ ConsiderIt = {
       .delegate('.proposal_menu', 'hover', function(event){
         var $target = $j(this).children('ul');
         if ( event.type == 'mouseenter' ) {
-          $target.slideDown();
+          $target.slideDown('fast', 'linear');
         } else {
-          $target.slideUp();
+          $target.slideUp('fast', 'linear');
         }
       });
             
@@ -341,7 +325,7 @@ ConsiderIt = {
       $j(this).fadeOut(100, function(){
         $j(this).parents('.newpoint').filter(":first").find('.pointform')
           .fadeIn('fast')
-          .find('.point-title-group textarea')
+          .find('.point-title-group input')
             .focus(); 
 
       });  
@@ -668,7 +652,7 @@ ConsiderIt = {
     //////////////
 
     $j('.histogram').delegate('.bar:not(.selected)', 'click', function(){
-      
+
       var bucket = $j(this).attr('id').substring(7),
           $stored = $j('.domain_'+bucket);
 
@@ -682,8 +666,6 @@ ConsiderIt = {
         .addClass('segmented');
 
       var mouseover_callback = function(data){
-        $j('#ranked_points .pro_con_list, .statements').hide();
-
         if(data) {
           $j('.results_narrative, #ranked_points').removeClass('loading');
           $j('#ranked_points').append(data['points']);
@@ -691,10 +673,13 @@ ConsiderIt = {
         } else {
           $stored.show();            
         }         
+        $j('#ranked_points .pro_con_list:not(.domain_' + bucket + '), .statements').hide();
+
         //ConsiderIt.positions.update_participants_block(bucket);
         $j('.full_column', $stored).infiniteCarousel({'operation': 'refresh'});
       };
 
+      //return;
       // if( $stored.length > 0 ) {
       mouseover_callback();
       // } else {

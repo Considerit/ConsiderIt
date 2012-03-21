@@ -35,9 +35,7 @@
   top: -7px
   width: 230px
   input
-    color: #EEEEEE
-
-  .inlined
+    color: #EEEEEE  
     border-color: #666
 
   display: none
@@ -51,16 +49,20 @@
       p.note
         color: #C1C1C1
 
-      textarea, textarea:focus
-        background-color: transparent
-        margin-left: 0px        
-        font-size: 13px
-        //width: 215px
-        color: #e1e1e1
-        height: 20px
-      label
+      input[type="text"], label
         font-size: 13px
 
+      input[type="text"], input[type="text"]:focus
+        background-color: transparent
+        margin-left: 0px        
+        //width: 215px
+        height: 20px
+        color: #e1e1e1
+        width: 95%
+        border: 1px inset #555
+        
+      label
+        color: #aaa
       .count
         color: #888
         position: absolute

@@ -11,6 +11,8 @@ class Point < ActiveRecord::Base
   has_many :point_listings, :dependent => :destroy
   has_many :point_links, :dependent => :destroy
   
+  validates :nutshell, :presence => true, :length => {:minimum => 3, :maximum => 140 }
+
   accepts_nested_attributes_for :point_links, :reject_if => lambda { |pl| pl[:url].blank? }, :allow_destroy => true
 
   #acts_as_paranoid_versioned :if_changed => [:nutshell, :text, :user_id, :is_pro, :position_id]

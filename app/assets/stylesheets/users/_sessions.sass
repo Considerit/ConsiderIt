@@ -49,6 +49,7 @@
         background: image-url('chalk/point_header_back.png') no-repeat scroll 125px -20px transparent
 
       #third_party
+        height: 83px
 
         h3
           font-weight: normal
@@ -79,6 +80,7 @@
           input,button
             background-color: #434343
             background-color: rgba(#888, .2)
+            border: 1px outset #666
             color: #888
 
             &:hover
@@ -93,33 +95,39 @@
           margin-top: 8px
           display: block
 
-        .inlined
-          border-color: #4B4B4B
-          border-color: rgba(#888, .3)
-          background-color: #434343
-          background-color: rgba(#888, .2)
-          //width: 168px
+        li
           display: inline-block
+          input
+            background-color: transparent
+            border: 1px inset #555
+            //width: 168px
+            display: inline-block
 
-          &.email_field
+          input, label
+            +main_font
+            font-size: 10pt
+            z-index: 9999
+            color: #888
+
+
+          &.email_field input
             width: 205px
-            margin-bottom: 10px
 
-          &.password_field
+          &.password_field input
             width: 128px
 
-            .error
-              position: absolute
-              bottom: -17px
-              +main_font
-              color: #cc4444
-              font-size: 8pt
-              left: 0
-              width: 150px
-              text-align: left
+          .error
+            position: absolute
+            bottom: -17px
+            +main_font
+            color: #cc4444
+            font-size: 8pt
+            left: 0
+            width: 150px
+            text-align: left
 
 
-          &.name_field, &.avatar_field
+          &.name_field input, &.avatar_field input
             width: 175px
 
           &.avatar_field
@@ -151,20 +159,13 @@
               +main_font
               font-size: 9pt
 
-          input, label
-            +main_font
-            font-size: 10pt
-
-          input
-            z-index: 9999
-            color: #888
 
       .divider
         margin: 30px 0
 
       #acknowledgment
         font-size: 8pt
-        margin-top: 20px
+        margin-top: 30px
 
         a
           text-decoration: underline
@@ -257,7 +258,7 @@
       height: 316px
 
       #site_registration
-        .inlined.email_field
+        .email_field
           width: 300px
 
           .sub

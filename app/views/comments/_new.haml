@@ -7,7 +7,7 @@
           = image_tag current_user.avatar.url(:medium), :alt => "your profile picture", :class => "avatar"
 
         .text    
-          = form_for :comment, :remote => true, :url => proposal_comments_path(@proposal) do |f|
+          = form_for :comment, :remote => true, :url => proposal_comments_path(@proposal), :class => 'html5' do |f|
             = f.hidden_field :proposal_id, :value=>@proposal.id
             
             - if context == 'point'
@@ -17,9 +17,8 @@
                             
             %ul.form
                
-              %li.body.inlined
-                = f.label :body, 'Type your comment here...'
-                = f.text_area :body, :id => "comment_body", :class => ' is_counted', :title => 'Type your comment here...'
+              %li.body
+                = f.text_area :body, :id => "comment_body", :class => ' is_counted', :placeholder => 'Type your comment here...', :title => 'Type your comment here...'
                 %span.count
                   1000
 

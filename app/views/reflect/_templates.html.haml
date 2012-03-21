@@ -199,8 +199,7 @@
                 <div class="inlined">
                   <input type="radio" class="response_maybe" id="accurate-maybe-<%=this.bullet_id %>" name="accurate-<%=this.bullet_id %>" value="1" <% if(this.sig == "1"){ %> CHECKED <% } %>>
 
-                  <label for="accurate-maybe-<%=this.bullet_id %>" class="response_maybe">Perhaps, but I should clarify...</label>
-                  <textarea class="new_response_text" title="Clarify your point to help <%=this.summarizer %> and others better understand your message."><% if(this.text) %><%= this.text %></textarea>
+                  <textarea class="new_response_text" placeholder="Perhaps, but I should clarify..." title="Clarify your point to help <%=this.summarizer %> and others better understand your message."><% if(this.text) %><%= this.text %></textarea>
                   <span class="count">140</span>              
                 </div>
               </li>

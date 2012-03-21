@@ -25,7 +25,7 @@
 
     #site_registration
 
-      = form_for(:user, :as => :user, :url => user_registration_path, :html => { :multipart => true }) do |f|
+      = form_for(resource, :as => :user, :url => user_registration_path, :html => { :multipart => true, :class => 'html5' }) do |f|
       
         %ul
           %li
@@ -40,16 +40,14 @@
             
 
 
-          %li.email_field.inlined
+          %li.email_field
 
             //{ :title => 'Your email is never shown to other users and we promise not to share your information with third parties. Your email is only used to confirm your account and to send notifications of relevant events, such as when someone replys to a comment you left.'}
 
-            = f.label :email, 'Email address'
-            = f.email_field :email, :title => 'email address', :required => true
+            = f.email_field :email, :title => 'email address', :placeholder => 'Email address', :required => true
 
-          %li.password_field.inlined
-            = f.label :password
-            = f.password_field :password, :title => 'password', :required => true
+          %li.password_field
+            = f.password_field :password, :title => 'password', :placeholder => 'Password', :required => true
 
           -# %li.avatar_field
             -#= f.file_field :avatar, :class => 'has_example', :title => 'profile picture'

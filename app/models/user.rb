@@ -15,7 +15,12 @@ class User < ActiveRecord::Base
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
   devise :omniauthable, :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :trackable, :validatable
-         
+
+  #with_options :unless => :third_party_authenticated? do
+  #  validates :email, :presence => true, :format => email_regexp
+  #  validates :password, :presence => true
+  #end
+
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :notification_author, :notification_commenter, :registration_complete
 
   attr_accessor :avatar_url
@@ -34,6 +39,16 @@ class User < ActiveRecord::Base
 
       #:path => ":rails_root/public/images/:attachment/uploaded/:id/:style_:basename.:extension",
       #:url => "/images/:attachment/uploaded/:id/:style_:basename.:extension"
+
+  def third_party_authenticated?
+    t.string   "facebook_uid"
+    t.string   "google_uid"
+    t.string   "yahoo_uid"
+    t.string   "openid_uid"
+    t.string   "twitter_uid"
+
+    self.facebook_uid || self.google_uid || self.yahoo_uid || self.openid_uid || self.twitter_uid
+  end
 
   def avatar_url_provided?
     !self.avatar_url.blank?

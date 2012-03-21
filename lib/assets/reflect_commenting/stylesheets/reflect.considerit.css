@@ -29,9 +29,6 @@
 		padding:0;
 		height: 16px;
 		font-size: 8pt;
-} .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined label {
-		padding-left:0;
-		font-size: 8pt;
 } .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined .count {
 	position: absolute;
 	bottom: -15px;

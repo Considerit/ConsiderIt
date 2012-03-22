@@ -48,10 +48,10 @@
 
   });
 
-- entity = @proposal.entity || 'Proposal'
+- entity = @proposal.entity || 'proposal'
 - slider_prompt = @proposal.slider_prompt || "What is your initial opinion?"
 - considerations_prompt = @proposal.considerations_prompt || "What are the most important factors in your decision?"
-- statement_prompt = @proposal.statement_prompt || "What are your overall thoughts on this paper?"
+- statement_prompt = @proposal.statement_prompt || "Any final thoughts on this #{entity}?"
 
 = render :partial => "proposals/blocks/menu"
 

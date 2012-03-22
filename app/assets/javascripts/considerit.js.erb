@@ -29,7 +29,8 @@ ConsiderIt = {
     });
 
     $j('.pointform textarea').autoResize({extraSpace: 0});
-
+    $j('textarea#statement').autoResize({extraSpace: 5});
+    
     $j("#points_other_pro, #points_other_con").each(function(){
       $j(this).infiniteCarousel({
         speed: 1000,
@@ -509,7 +510,7 @@ ConsiderIt = {
 
       $j(document)
         .unbind('click', close_point_click)
-        .unbind('keypress', close_point_key);
+        .unbind('keyup', close_point_key);
 
       //real_point.css({'height': 'auto'})
       real_point.find('.extra, > .body .full').fadeOut(500);
@@ -647,9 +648,22 @@ ConsiderIt = {
     $j(".bar").delegate("&.selected .view_statement", 'mouseout', function(event){
       $j(this).children('.username').hide();
     });    
+
     //////////////
     //HISTOGRAM
     //////////////
+
+    var close_bar_click = function(e){
+      if ( !$j(e.target).is('.bar.selected') && $j(e.target).parents('.bar.selected').length == 0 && $j('.point_in_list.expanded').length == 0 && !$j(e.target).hasClass('pro_con_list') && $j(e.target).parents('.pro_con_list').length == 0 ) {
+        $j('.bar.selected').trigger('click');
+      }
+    };
+
+    var close_bar_key = function(e) { 
+      if (e.keyCode == 27 && $j('.point_in_list.expanded').length == 0 && $j('body > .ui-widget-overlay').length == 0) {
+        $j('.bar.selected').trigger('click');
+      }
+    };
 
     $j('.histogram').delegate('.bar:not(.selected)', 'click', function(){
 
@@ -672,23 +686,18 @@ ConsiderIt = {
           $j('.statements').filter(":first").after(data['participants']);            
         } else {
           $stored.show();            
-        }         
+        }
         $j('#ranked_points .pro_con_list:not(.domain_' + bucket + '), .statements').hide();
 
         //ConsiderIt.positions.update_participants_block(bucket);
         $j('.full_column', $stored).infiniteCarousel({'operation': 'refresh'});
       };
 
-      //return;
-      // if( $stored.length > 0 ) {
       mouseover_callback();
-      // } else {
-      //   $j('.results_narrative, #ranked_points').addClass('loading');
-      //   $j.get(ConsiderIt.subdirectory + "/proposals/" + $j('#proposal_id').text() + "/points", { bucket: bucket },
-      //     mouseover_callback);
-      // }
 
-      $j('.position_statement:visible a.close').trigger('click');
+      $j(document)
+        .click(close_bar_click)
+        .keyup(close_bar_key);
 
     });
 
@@ -705,6 +714,11 @@ ConsiderIt = {
       
       //ConsiderIt.positions.update_participants_block('all');
       $j(this).removeClass('selected');
+
+      $j(document)
+        .unbind('click', close_bar_click)
+        .unbind('keyup', close_bar_key);
+
     });
         
     $j('body').delegate(".position_statement .important_points .show, .position_statement .important_points .hide", 'click', function(){

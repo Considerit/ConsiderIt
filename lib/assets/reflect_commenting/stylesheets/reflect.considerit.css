@@ -26,9 +26,10 @@
 } .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined {
 	margin-left: 20px;
 } .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined textarea {
-		padding:0;
+		padding: 0 5px;
 		height: 16px;
 		font-size: 8pt;
+		width: 96%;
 } .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined .count {
 	position: absolute;
 	bottom: -15px;
@@ -253,6 +254,8 @@ button.button_as_link {
 	font-size: 175%;
 	left: -14px;
 	color: white;
+} .reflected .point_in_list_margin .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions .arrow {
+	color: black;
 }
 
 .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions {

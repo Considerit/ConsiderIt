@@ -50,6 +50,13 @@
     &:before
       left: 1px
 
+// Browsers render the inset colors so differently...
+=inset-border($base_color)
+  border-top-color: darken($base_color, 10%)
+  border-left-color: darken($base_color, 10%)
+  border-bottom-color: lighten($base_color, 10%)
+  border-right-color: lighten($base_color, 10%)
+
 =inset-text($transparency:.4)
   text-shadow: rgba(white, $transparency) -1px -1px
 

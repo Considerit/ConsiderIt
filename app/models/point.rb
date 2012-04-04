@@ -16,6 +16,7 @@ class Point < ActiveRecord::Base
   accepts_nested_attributes_for :point_links, :reject_if => lambda { |pl| pl[:url].blank? }, :allow_destroy => true
 
   #acts_as_paranoid_versioned :if_changed => [:nutshell, :text, :user_id, :is_pro, :position_id]
+  acts_as_tenant(:account)
 
   cattr_reader :per_page
   @@per_page = 4  

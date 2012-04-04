@@ -9,6 +9,7 @@ class Position < ActiveRecord::Base
   is_commentable
   
   #acts_as_paranoid_versioned
+  acts_as_tenant(:account)
   
   default_scope where( :published => true )
   scope :published, where( :published => true )

@@ -1,5 +1,8 @@
 class ApplicationController < ActionController::Base
   #protect_from_forgery
+  set_current_tenant_through_filter
+  before_filter :get_current_tenant
+
   theme :theme_resolver
 
   def render(*args)
@@ -13,6 +16,13 @@ class ApplicationController < ActionController::Base
   end
     
 private
+
+  def get_current_tenant
+    if Account.count > 0
+      current_account = Account.find(1)
+      set_current_tenant(current_account)
+    end
+  end
 
   def theme_resolver
     if !session.has_key?('user_theme')

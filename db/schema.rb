@@ -11,7 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120317183951) do
+ActiveRecord::Schema.define(:version => 20120404215927) do
+
+  create_table "accounts", :force => true do |t|
+    t.string   "identifier"
+    t.string   "theme"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",    :default => 0
@@ -176,6 +183,7 @@ ActiveRecord::Schema.define(:version => 20120317183951) do
     t.boolean  "hide_name",            :default => false
     t.boolean  "share",                :default => true
     t.boolean  "passes_moderation"
+    t.integer  "account_id"
   end
 
   add_index "points", ["is_pro"], :name => "index_points_on_is_pro"
@@ -216,6 +224,7 @@ ActiveRecord::Schema.define(:version => 20120317183951) do
     t.boolean  "notification_includer"
     t.boolean  "notification_proposal_subscriber"
     t.boolean  "notification_statement_subscriber"
+    t.integer  "account_id"
   end
 
   add_index "positions", ["proposal_id"], :name => "index_positions_on_option_id"
@@ -245,6 +254,7 @@ ActiveRecord::Schema.define(:version => 20120317183951) do
     t.string   "entity"
     t.string   "discussion_mode"
     t.boolean  "enable_position_statement"
+    t.integer  "account_id"
   end
 
   create_table "rails_admin_histories", :force => true do |t|

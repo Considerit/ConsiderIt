@@ -24,6 +24,9 @@ gem 'omniauth-facebook'
 
 gem 'twitter'#, "~> 1.7"
 
+# https://github.com/ErwinM/acts_as_tenant
+gem 'acts_as_tenant'
+
 # https://github.com/sferik/rails_admin/
 gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git' #, :branch => 'rails-3.0'
 

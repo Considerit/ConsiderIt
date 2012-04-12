@@ -11,16 +11,18 @@ module ApplicationHelper
   def get_proposals
     proposals = []
     #TODO: do a join here instead???
-    if session.has_key?(:domain)
-      domain = Domain.find(session[:domain])
-      domain.domain_maps.each do |dm|
-        proposals.push(dm.proposal)
-      end
-    end
+    #if session.has_key?(:domain)
+    #  domain = Domain.find(session[:domain])
+    #  domain.domain_maps.each do |dm|
+    #    proposals.push(dm.proposal)
+    #  end
+    #end
     #TODO: add a "show_all, :integer" field to Option 
     # that can be queried here instead
-    proposals += Proposal.where(:domain_short => 'WA state').order(:designator)
-    return proposals
+    #proposals += Proposal.where(:domain_short => 'WA state').order(:designator)
+    
+
+    return Proposal.all
 
   end
 

@@ -154,9 +154,9 @@ protected
     # This is an edge case. We should allow users to delete a point before it is published/included by others, which should further
     # relegate this issue to an insignificant edge case. 
     @pro_points = @proposal.points.includes(:point_links, :user).pros.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
-                    ranked_persuasiveness.paginate(:page => 1, :per_page => POINTS_PER_PAGE)    
+                    ranked_persuasiveness.page( 1 ).per( POINTS_PER_PAGE )    
     @con_points = @proposal.points.includes(:point_links, :user).cons.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
-                    ranked_persuasiveness.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
+                    ranked_persuasiveness.page( 1 ).per( POINTS_PER_PAGE )
 
     #TODO: bulk insert...
     PointListing.transaction do

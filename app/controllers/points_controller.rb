@@ -64,19 +64,16 @@ class PointsController < ApplicationController
     end
 
     if group_name == 'user'
-      @con_points = qry.cons.paginate( :page => @page, :per_page => 50 )
-      @pro_points = qry.pros.paginate( :page => @page, :per_page => 50 )
+      @con_points = qry.cons.page( @page ).per( 50 )
+      @pro_points = qry.pros.page( @page ).per( 50 )
       points = @con_points + @pro_points
     elsif pros_and_cons
-      @con_points = qry.cons.paginate( :page => @page, :per_page => POINTS_PER_PAGE_RESULTS )
-      @pro_points = qry.pros.paginate( :page => @page, :per_page => POINTS_PER_PAGE_RESULTS )
+      @con_points = qry.cons.page( @page ).per( POINTS_PER_PAGE_RESULTS )
+      @pro_points = qry.pros.page( @page ).per( POINTS_PER_PAGE_RESULTS )
       points = @con_points + @pro_points
     else 
-      points = qry.paginate( :page => @page, :per_page => @bucket == 'margin' ? POINTS_PER_PAGE_MARGIN : POINTS_PER_PAGE_RESULTS )
+      points = qry.page( @page ).per( @bucket == 'margin' ? POINTS_PER_PAGE_MARGIN : POINTS_PER_PAGE_RESULTS )
     
-      points.each do |pt|
-        pp pt
-      end
     end
     
     if group_name == 'user'

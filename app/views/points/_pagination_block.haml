@@ -1,6 +1,6 @@
 -# if points && points.length > 0 && points.respond_to?(:previous_page)
 
-- has_items = points && points.length > 0 && points.respond_to?(:previous_page)
+- has_items = points && points.length > 0 # && points.respond_to?(:previous_page)
 
 - if show_both_arrows || is_before_list
   .arrow
@@ -8,14 +8,15 @@
       &#9650;
 
 .paginate
+
   %span.curr_first
-    = has_items ? points.offset + 1 : 0 
+    = has_items ? points.offset_value + 1 : 0 
   \– 
   %span.curr_last
-    = has_items ? [points.offset + points.per_page, points.total_entries].min : 0
+    = has_items ? [points.offset_value + points.length, points.total_count].min : 0
   of
   %span.total
-    = has_items ? points.total_entries : 0
+    = has_items ? points.total_count : 0
     
   //#{is_pro ? "pros" : "cons"}
 

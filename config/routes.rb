@@ -1,5 +1,5 @@
 ConsiderIt::Application.routes.draw do
-  
+    
   resources :point_links
 
   root :to => "home#index"
@@ -20,11 +20,8 @@ ConsiderIt::Application.routes.draw do
     :passwords => "users/passwords",
     :confirmations => "users/confirmations"
   } do 
-
     match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
-
   end
-  #, :path => ENV.fetch('RAILS_RELATIVE_URL_ROOT', '')
 
   themes_for_rails # themes_for_rails gem routes 
 
@@ -44,5 +41,8 @@ ConsiderIt::Application.routes.draw do
     match "/response_update" => 'reflect_response#update', :via => :post
     match "/response_delete" => 'reflect_response#destroy', :via => :post              
   end
+
+  ActiveAdmin.routes(self)
+
 
 end

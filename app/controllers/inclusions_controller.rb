@@ -26,7 +26,7 @@ class InclusionsController < ApplicationController
     session[@proposal.id][:included_points][params[:point_id]] = 1
 
     candidate_next_points = candidate_next_points.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys)
-    points = candidate_next_points.ranked_persuasiveness.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
+    points = candidate_next_points.ranked_persuasiveness.page( @page ).per( POINTS_PER_PAGE )
     next_point = points.last
     
     if next_point
@@ -41,7 +41,7 @@ class InclusionsController < ApplicationController
 
     rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :origin => 'margin', :point => next_point }) : nil
         
-    response = { :new_point => rendered_next_point, :total_remaining => points.total_entries } 
+    response = { :new_point => rendered_next_point, :total_remaining => points.total_count } 
     
     render :json => response.to_json
   end
@@ -72,15 +72,10 @@ class InclusionsController < ApplicationController
       current_user, 
       session[@proposal.id][:included_points].keys, 
       session[@proposal.id][:deleted_points].keys
-    ).ranked_persuasiveness.paginate( :page => @page, :per_page => POINTS_PER_PAGE )
-
-    points.each do |pt| 
-      pp pt
-    end
-    pp points.total_entries
+    ).ranked_persuasiveness.page( @page ).per( POINTS_PER_PAGE )
     
     render :json => { 
-      :total_remaining => points.total_entries 
+      :total_remaining => points.total_count 
     }.to_json
   end
 end

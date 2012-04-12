@@ -12,7 +12,6 @@ class Comment < ActiveRecord::Base
   has_many :reflect_bullets, :dependent => :destroy
   has_many :reflect_bullet_revisions, :dependent => :destroy
 
-
   # Helper class method that allows you to build a comment
   # by passing a commentable object, a user_id, and comment text
   # example in readme

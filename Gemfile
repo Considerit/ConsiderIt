@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 gem 'rails', '~>3.2'
 
-gem "mysql2" #, "~> 0.2.7"
+gem "mysql2"
 
 gem 'thin'
 
@@ -10,11 +10,7 @@ gem "haml"
 gem 'sass'
 
 # https://github.com/plataformatec/devise
-gem 'devise'#, "~>1.5"
-
-# https://github.com/plataformatec/devise/wiki/OmniAuth:-Overview
-# gem "oa-oauth", :require => "omniauth/oauth"
-# gem 'oa-openid', :require => 'omniauth/openid'
+gem 'devise'
 
 gem "omniauth"
 gem 'omniauth-openid'
@@ -22,14 +18,16 @@ gem 'omniauth-oauth'
 gem 'omniauth-twitter' 
 gem 'omniauth-facebook'
 
-gem 'twitter'#, "~> 1.7"
+gem 'twitter'
 
 # https://github.com/ErwinM/acts_as_tenant
 gem 'acts_as_tenant'
 
 # https://github.com/sferik/rails_admin/
-gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git' #, :branch => 'rails-3.0'
+# gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git' #, :branch => 'rails-3.0'
 
+# https://github.com/gregbell/active_admin
+gem "formtastic", "~> 2.1.1"
 gem 'activeadmin'
 gem 'meta_search',    '>= 1.1.0.pre'
 
@@ -37,8 +35,11 @@ gem 'meta_search',    '>= 1.1.0.pre'
 gem 'rmagick'
 gem 'paperclip'
 
+# https://github.com/amatsuda/kaminari
+gem 'kaminari'
+
 # https://github.com/mislav/will_paginate
-gem 'will_paginate' #, '3.0.pre'
+#gem 'will_paginate'
 
 # https://github.com/javan/whenever
 gem 'whenever'
@@ -46,18 +47,10 @@ gem 'whenever'
 # https://github.com/markbates/yamler
 gem 'yamler'
 
-# https://github.com/elight/acts_as_commentable_with_threading
-# gem 'acts_as_commentable_with_threading'
-
 # https://github.com/indirect/jquery-rails
 gem 'jquery-rails'
 
-
 gem 'paper_trail'
-
-# https://github.com/ernie/meta_where
-# will not be updates for Rails 3.1, check out https://github.com/ernie/squeel instead
-# gem "meta_where"
 
 # https://github.com/lucasefe/themes_for_rails
 gem "themes_for_rails", '0.5.0.pre'

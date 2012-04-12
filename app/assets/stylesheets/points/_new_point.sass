@@ -37,6 +37,8 @@
   input
     color: #EEEEEE  
     border-color: #666
+    &[type="text"]
+      display: block
 
   display: none
   //margin-top: -55px
@@ -49,10 +51,10 @@
       p.note
         color: #C1C1C1
 
-      input[type="text"], label
+      input[type="text"], textarea, label
         font-size: 13px
 
-      input[type="text"], input[type="text"]:focus
+      input[type="text"], input[type="text"]:focus, textarea, textarea:focus
         background-color: transparent
         margin-left: 0px        
         //width: 215px

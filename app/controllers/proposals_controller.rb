@@ -19,14 +19,14 @@ class ProposalsController < ApplicationController
       return
     end
 
-    @pro_points = @proposal.points.includes(:point_links, :user).pros.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
-    @con_points = @proposal.points.includes(:point_links, :user).cons.ranked_overall.paginate(:page => 1, :per_page => POINTS_PER_PAGE)
+    @pro_points = @proposal.points.includes(:point_links, :user).pros.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
+    @con_points = @proposal.points.includes(:point_links, :user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
 
     @segments = Array.new(7)
     (0..6).each do |bucket|
       qry = @proposal.points.includes(:point_links, :user).ranked_for_stance_segment(bucket)
-      @segments[bucket] = [qry.pros.paginate( :page => 1, :per_page => POINTS_PER_PAGE ),
-        qry.cons.paginate( :page => 1, :per_page => POINTS_PER_PAGE )]
+      @segments[bucket] = [qry.pros.page( 1 ).per( POINTS_PER_PAGE ),
+        qry.cons.page( 1 ).per( POINTS_PER_PAGE )]
     end
 
 

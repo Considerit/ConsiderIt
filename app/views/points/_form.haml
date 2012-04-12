@@ -15,13 +15,13 @@
       /     unknown
 
       .point-title-group.inlined
-        = f.text_field :nutshell, :placeholder => 'Summarize your point', :title => 'Summarize your point', :required => true, :cols => 24, :class => "point-title is_counted"
+        = f.text_area :nutshell, :placeholder => 'Summarize your point', :title => 'Summarize your point', :required => true, :cols => 24, :class => "point-title is_counted"
         %span.count
           140
         .clear
 
       .point-description-group.inlined
-        = f.text_field :text, :placeholder => 'add additional details...', :title => "Write a longer description (optional)", :cols => 24, :class => "point-description is_counted"
+        = f.text_area :text, :placeholder => 'add additional details...', :title => "Write a longer description (optional)", :cols => 24, :class => "point-description is_counted"
         %span.count
           2000
         .clear

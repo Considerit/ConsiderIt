@@ -16,7 +16,8 @@
 
   .description_wrapper
     .proposal_name
-      #{@proposal.name.html_safe}
+      - if @proposal.name
+        #{@proposal.name.html_safe}
 
     .full_text
       - for i in @proposal.format_description

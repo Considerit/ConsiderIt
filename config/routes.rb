@@ -4,7 +4,7 @@ ConsiderIt::Application.routes.draw do
 
   root :to => "home#index"
   
-  resources :proposals, :only => [:show, :index] do
+  resources :proposals, :only => [:show, :index, :create, :edit, :update] do
     resources :positions, :only => [:new, :edit, :create, :update, :show, :destroy]
     resources :points, :only => [:index, :create, :update, :destroy, :show] do 
       resources :inclusions, :only => [:create] 

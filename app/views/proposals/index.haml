@@ -5,5 +5,5 @@
     - @proposals.each do |opt|
 
       %li
-        %a{ :href => "#{proposal_path(opt)}", :title => "#{opt.domain} #{opt.category} #{opt.designator} #{opt.name}"}
+        %a{ :href => "#{proposal_path(opt.long_id)}", :title => "#{opt.domain} #{opt.category} #{opt.designator} #{opt.name}"}
           #{opt.domain} #{opt.category} #{opt.designator} #{opt.name} 

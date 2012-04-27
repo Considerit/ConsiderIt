@@ -3,16 +3,18 @@ ConsiderIt::Application.routes.draw do
   resources :point_links
 
   root :to => "home#index"
-  
-  resources :proposals, :only => [:show, :index, :create, :edit, :update] do
-    resources :positions, :only => [:new, :edit, :create, :update, :show, :destroy]
+
+  resources :proposals, :only => [:index, :create]
+  resource :proposal, :path => '/:long_id', :long_id => /[a-z\d]{10}/, :only => [:show, :edit, :update] do
+    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :show, :destroy], :path_names => {:new => 'respond'}
     resources :points, :only => [:index, :create, :update, :destroy, :show] do 
       resources :inclusions, :only => [:create] 
     end
     resources :point_similarities, :module => :admin
     resources :comments, :only => [:index, :create]
   end
-
+  
+  
   devise_for :users, :controllers => { 
     :omniauth_callbacks => "users/omniauth_callbacks", 
     :sessions => "users/sessions", 
@@ -30,7 +32,7 @@ ConsiderIt::Application.routes.draw do
   match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|videos|help/ } 
 
   match '/home/study/:category' => "home#study", :via => :post  
-  match '/admin/dashboard' => "admin/dashboard#index", :via => :get, :module => :admin
+  match '/admin/dashboard' => "admin/dashboard#index", :via => :get, :module => :admin  
 
   namespace :reflect do
     match "/data" => "reflect_bullet#index", :via => :get
@@ -43,6 +45,10 @@ ConsiderIt::Application.routes.draw do
   end
 
   ActiveAdmin.routes(self)
+
+
+
+  match '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
 
 
 end

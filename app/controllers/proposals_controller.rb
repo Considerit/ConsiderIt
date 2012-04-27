@@ -63,4 +63,17 @@ class ProposalsController < ApplicationController
 
   end
 
+  def create
+    @proposal = Proposal.create!(params[:proposal])
+    redirect_to proposal_path(@proposal)
+  end
+
+  def edit
+
+  end
+
+  def update
+
+  end
+
 end

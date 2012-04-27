@@ -22,7 +22,8 @@ class ProposalsController < ApplicationController
       redirect_to root_path
     end
 
-    @is_admin = request.session_options[:id] == @proposal.session_id || current_user && current_user.id == @proposal.user_id || params.has_key?(:admin_id)
+    # TODO: this is replicated in positions_controller...DRY it up...
+    @is_admin = request.session_options[:id] == @proposal.session_id || current_user && (current_user.id == @proposal.user_id || current_user.is_admin?) || params.has_key?(:admin_id)
       
     #@title = "#{@proposal.category} #{@proposal.designator} #{@proposal.short_name}"
     @title = "#{@proposal.short_name}"
@@ -32,7 +33,7 @@ class ProposalsController < ApplicationController
     @positions = @proposal.positions.includes(:user).published
 
     if !@position && (!params.has_key? :redirect || params[:redirect] == 'true' )
-      redirect_to(new_proposal_position_path(@proposal))
+      redirect_to(new_proposal_position_path(@proposal.long_id))
       return
     end
 
@@ -83,7 +84,6 @@ class ProposalsController < ApplicationController
   def create
 
     # TODO: handle possibility of name collisions
-    params[:proposal][:session_id] = request.session_options[:id]
     params[:proposal][:long_id] = SecureRandom.hex(5)
     params[:proposal][:admin_id] = SecureRandom.hex(6)
 

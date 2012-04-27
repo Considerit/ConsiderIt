@@ -1,6 +1,6 @@
 %li{ :id => "proposal_item-#{proposal.id}", :class => "proposal_item horizontal #{has_stance(proposal) ? 'finished' : 'not-finished'} #{proposal==@proposal ? 'active' : 'not-active'} #{style} #{proposal.domain_short != 'WA State' ? 'local' : ''}" }
 
-  %a{ :href => proposal_path(proposal), :title => "Think through proposal #{proposal.category} #{proposal.designator}"}
+  %a{ :href => proposal_path(proposal.long_id), :title => "Think through proposal #{proposal.category} #{proposal.designator}"}
 
     - if style == 'vertical'
       .short_name

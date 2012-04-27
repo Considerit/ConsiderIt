@@ -7,7 +7,7 @@
           = image_tag current_user.avatar.url(:medium), :alt => "your profile picture", :class => "avatar"
 
         .text    
-          = form_for :comment, :remote => true, :url => proposal_comments_path(@proposal), :class => 'html5' do |f|
+          = form_for :comment, :remote => true, :url => proposal_comments_path(@proposal.long_id), :class => 'html5' do |f|
             = f.hidden_field :proposal_id, :value=>@proposal.id
             
             - if context == 'point'

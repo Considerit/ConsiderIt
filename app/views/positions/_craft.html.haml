@@ -82,7 +82,7 @@
             = render :partial => "positions/submit", :locals => { :f => f }
 
         - else
-          = form_for :position, :url => proposal_positions_path(@proposal), :remote => true do |f|
+          = form_for :position, :url => proposal_positions_path(@proposal.long_id), :remote => true do |f|
             = render :partial => "positions/submit", :locals => { :f => f }
 
             #position_save_login_trigger.user_dialog

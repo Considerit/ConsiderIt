@@ -5,8 +5,25 @@ class ProposalsController < ApplicationController
   
   def show
     @user = current_user
-    @proposal = Proposal.find(params[:id])
-    
+
+    if params.has_key?(:id)
+      @proposal = Proposal.find(params[:id])
+    elsif params.has_key?(:long_id)
+      @proposal = Proposal.find_by_long_id(params[:long_id])
+    elsif params.has_key?(:admin_id)
+      @proposal = Proposal.find_by_admin_id(params[:admin_id])
+    else
+      raise 'Error'
+      redirect_to root_path
+      return
+    end
+
+    if !@proposal
+      redirect_to root_path
+    end
+
+    @is_admin = request.session_options[:id] == @proposal.session_id || current_user && current_user.id == @proposal.user_id || params.has_key?(:admin_id)
+      
     #@title = "#{@proposal.category} #{@proposal.designator} #{@proposal.short_name}"
     @title = "#{@proposal.short_name}"
     @keywords = "#{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
@@ -52,20 +69,30 @@ class ProposalsController < ApplicationController
     
   end
 
-  def index
-    headers['Content-Type'] = 'application/xml'
+  # def index
+  #   headers['Content-Type'] = 'application/xml'
 
-    @proposals = Proposal.all
-    respond_to do |format|
-      format.xml {  } # sitemap is a named scope
-      format.html {  }
-    end
+  #   @proposals = Proposal.all
+  #   respond_to do |format|
+  #     format.xml {  } # sitemap is a named scope
+  #     format.html {  }
+  #   end
 
-  end
+  # end
 
   def create
+
+    # TODO: handle possibility of name collisions
+    params[:proposal][:session_id] = request.session_options[:id]
+    params[:proposal][:long_id] = SecureRandom.hex(5)
+    params[:proposal][:admin_id] = SecureRandom.hex(6)
+
+    if current_user
+      params[:proposal][:user_id] = current_user.id
+    end
+
     @proposal = Proposal.create!(params[:proposal])
-    redirect_to proposal_path(@proposal)
+    redirect_to proposal_path(@proposal.long_id)
   end
 
   def edit

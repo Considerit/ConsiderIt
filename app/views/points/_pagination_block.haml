@@ -23,6 +23,6 @@
 - if show_both_arrows || !is_before_list
   
   .arrow
-    = button_to '&#9660;'.html_safe,  proposal_points_path(@proposal, :pros_only => is_pro, :cons_only => !is_pro, :page => page + 1, :bucket => bucket), :remote => true, :method => 'get', :id => "paginate_points-#{origin}-#{page + 1}-#{is_pro}", :class => 'forward ajax'
+    = button_to '&#9660;'.html_safe,  proposal_points_path(@proposal.long_id, :pros_only => is_pro, :cons_only => !is_pro, :page => page + 1, :bucket => bucket), :remote => true, :method => 'get', :id => "paginate_points-#{origin}-#{page + 1}-#{is_pro}", :class => 'forward ajax'
     %button.forward.not_ajax
       &#9660;

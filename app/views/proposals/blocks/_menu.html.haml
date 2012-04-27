@@ -9,5 +9,5 @@
       - proposals.each do |proposal|
         - if proposal != @proposal
           %li
-            %a{ :href => proposal_path(proposal) }
+            %a{ :href => proposal_path(proposal.long_id) }
               #{proposal.short_name} &ndash; #{proposal.domain_short} #{proposal.designator}

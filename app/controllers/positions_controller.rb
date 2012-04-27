@@ -75,7 +75,7 @@ class PositionsController < ApplicationController
       @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
     end
     
-    redirect_to(proposal_path(@position.proposal, :redirect => 'false'))
+    redirect_to(proposal_path(@position.proposal.long_id, :redirect => 'false'))
     session.delete('reify_activities')
     session.delete('position_to_be_published')
     session[@proposal.id] = {
@@ -87,7 +87,15 @@ class PositionsController < ApplicationController
   
 protected
   def handle_new_edit(is_new)
-    @proposal = Proposal.find(params[:proposal_id])
+    if params.has_key? :proposal_id
+      @proposal = Proposal.find(params[:proposal_id])
+    elsif params.has_key? :long_id
+      @proposal = Proposal.find_by_long_id(params[:long_id])
+    elsif 
+      raise 'Error'
+      redirect_to root_path
+      return
+    end
     @user = current_user
 
     @title = "#{@proposal.name}"

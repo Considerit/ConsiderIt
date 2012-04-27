@@ -8,6 +8,11 @@ module ApplicationHelper
     return domains
   end
 
+  def get_host
+    port_string = request.port != 80 ? ':' + request.port.to_s : '' 
+    "http://help.#{request.host}#{port_string}"
+  end
+
   def get_proposals
     proposals = []
     #TODO: do a join here instead???

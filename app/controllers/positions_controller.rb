@@ -96,6 +96,15 @@ protected
       redirect_to root_path
       return
     end
+
+    if @proposal.session_id.nil?
+      @proposal.session_id = request.session_options[:id]
+      @proposal.save
+    end
+
+    # TODO: this is replicated in proposals_controller...DRY it up...
+    @is_admin = request.session_options[:id] == @proposal.session_id || current_user && (current_user.id == @proposal.user_id || current_user.is_admin?) || params.has_key?(:admin_id)
+
     @user = current_user
 
     @title = "#{@proposal.name}"

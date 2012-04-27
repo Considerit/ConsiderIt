@@ -1,0 +1,10 @@
+#home
+
+#active_proposals
+  
+  = render :partial => "proposals/new"
+  = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false }
+
+
+:javascript
+  var logo_cell = $j('#masthead .logo_cell').hide();

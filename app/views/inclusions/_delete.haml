@@ -1,5 +1,5 @@
 .judgepointform{ :id => "judgepointform_#{point.id}" }
 
-  = form_for :inclusion, :remote => true, :url => proposal_point_inclusions_path(@proposal, point, :page => @page, :delete => true) do |f| 
+  = form_for :inclusion, :remote => true, :url => proposal_point_inclusions_path(@proposal.long_id, point, :page => @page, :delete => true) do |f| 
        
     %input{:class => 'point_operation', :type => 'submit', :value => "#{ current_user && point.user_id == current_user.id ? 'delete' : 'remove'}", :name => "judge", :title => 'Click to remove this point from your list'}

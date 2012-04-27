@@ -22,7 +22,7 @@
       .pre
         - update = @position && @position.published
         - if !update
-          %a.personal_position{ :href => "#{ update ? edit_proposal_position_path(@proposal, @position) : new_proposal_position_path(@proposal)}", :class => "contribute"}
+          %a.personal_position{ :href => "#{ update ? edit_proposal_position_path(@proposal.long_id, @position) : new_proposal_position_path(@proposal.long_id)}", :class => "contribute"}
             
             You have yet to
             %br

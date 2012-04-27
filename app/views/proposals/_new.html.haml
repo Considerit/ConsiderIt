@@ -1,0 +1,4 @@
+= form_for :proposal, :url => {:controller => :proposals, :action => :create} do |f|
+  = f.text_area :description, :placeholder => 'Type the issue'
+  = f.submit
+    

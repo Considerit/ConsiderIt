@@ -42,6 +42,11 @@ class User < ActiveRecord::Base
       #:path => ":rails_root/public/images/:attachment/uploaded/:id/:style_:basename.:extension",
       #:url => "/images/:attachment/uploaded/:id/:style_:basename.:extension"
 
+
+  def is_admin?
+    #TODO: scope this based on current_tenant
+    return admin
+  end
   def third_party_authenticated?
     t.string   "facebook_uid"
     t.string   "google_uid"

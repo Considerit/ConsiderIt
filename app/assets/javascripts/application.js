@@ -10,4 +10,5 @@
 //= require jquery.html5form.js
 //= require jquery.inline_labels.js
 //= require javascripts/reflect.considerit.js
+//= require ZeroClipboard.js
 //= require considerit

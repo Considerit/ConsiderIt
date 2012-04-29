@@ -5,15 +5,16 @@ ConsiderIt::Application.routes.draw do
   root :to => "home#index"
 
   resources :proposals, :only => [:index, :create]
-  resource :proposal, :path => '/:long_id', :long_id => /[a-z\d]{10}/, :only => [:show, :edit, :update] do
-    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :show, :destroy], :path_names => {:new => 'respond'}
+  resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d]{10}/, :only => [:show]
+  resource :proposal, :path => '/:long_id', :long_id => /[a-z\d]{10}/, :only => [:edit, :update], :path_names => {:show => 'results'} do
+    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :show, :destroy], :path_names => {:new => ''}
     resources :points, :only => [:index, :create, :update, :destroy, :show] do 
       resources :inclusions, :only => [:create] 
     end
     resources :point_similarities, :module => :admin
     resources :comments, :only => [:index, :create]
   end
-  
+
   
   devise_for :users, :controllers => { 
     :omniauth_callbacks => "users/omniauth_callbacks", 

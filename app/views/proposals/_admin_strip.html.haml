@@ -1,7 +1,94 @@
 #admin_strip
 
-  #links
-    Email, share, or tweet this link:
-    = link_to "#{get_host}/#{@proposal.long_id}"
-    Admin link: 
-    = link_to "#{get_host}/#{@proposal.admin_id}"
+  #content
+    #links
+      %span
+        Email, share, or tweet this link:
+      .link
+        %span
+          #{get_host}/#{@proposal.long_id}&nbsp;&nbsp;
+
+        #copy_container
+          #copy_link
+            Copy
+
+
+    #more_options
+      %a.show
+        %span.hiding.label
+          More options &blacktriangledown;
+        %span.showing.hide.label
+          Hide more options
+
+      .more
+        #links
+          %span
+            Link to administer this page: 
+          .link
+            %span
+              #{get_host}/#{@proposal.admin_id}
+            #copy_admin_container
+              #copy_admin_link
+                Copy       
+          .email_links
+            %button
+              Email me these links
+
+        .options
+          .option
+            .switch
+              .on{:class => "#{@proposal.require_login ? 'selected' : ''}"}
+                yes
+              .off{:class => "#{!@proposal.require_login ? 'selected' : ''}"}
+                no
+            .label
+              Require participants to login?
+              
+          .option
+            .switch
+              .on{:class => "#{@proposal.email_creator_per_position ? 'selected' : ''}"}
+                yes
+              .off{:class => "#{!@proposal.email_creator_per_position ? 'selected' : ''}"}
+                no
+
+            .label
+              Receive an email whenever someone responds?
+
+
+
+:javascript
+  ZeroClipboard.setMoviePath( '/zeroclipboard/ZeroClipboard.swf' );
+
+  var clip = new ZeroClipboard.Client();
+  clip.setText( "#{get_host}/#{@proposal.long_id}" );
+  clip.glue( 'copy_container', 'copy_link' );
+
+  var clip2 = new ZeroClipboard.Client();
+  clip2.setText( "#{get_host}/#{@proposal.admin_id}" );
+  clip2.glue( 'copy_admin_container', 'copy_admin_link' );
+
+  $j('#more_options').on('click', 'a.show', function(){
+    $j(this).siblings('.more').slideToggle();
+    $j(this).find('.label').toggle();
+  });
+
+  $j('#admin_strip').on('click', '.link span', function(){
+    selectElementText(this);
+  });
+
+  $j('#more_options .more').hide();
+  function selectElementText(el, win) {
+    win = win || window;
+    var doc = win.document, sel, range;
+    if (win.getSelection && doc.createRange) {
+        sel = win.getSelection();
+        range = doc.createRange();
+        range.selectNodeContents(el);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (doc.body.createTextRange) {
+        range = doc.body.createTextRange();
+        range.moveToElementText(el);
+        range.select();
+    }
+  }

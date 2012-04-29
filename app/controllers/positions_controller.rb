@@ -68,14 +68,14 @@ class PositionsController < ApplicationController
   end
 
   def destroy
-    @proposal = Proposal.find(params[:proposal_id])
+    @proposal = Proposal.find_by_long_id(params[:long_id])
     if current_user
       @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
     else
       @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
     end
     
-    redirect_to(proposal_path(@position.proposal.long_id, :redirect => 'false'))
+    redirect_to(proposal_path(@position.proposal.long_id))
     session.delete('reify_activities')
     session.delete('position_to_be_published')
     session[@proposal.id] = {

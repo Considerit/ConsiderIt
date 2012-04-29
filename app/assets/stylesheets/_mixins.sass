@@ -67,7 +67,16 @@
   background: image-url('spots.png') repeat left top $background_color
 
 =chalkboard
-  background: image-url("chalk/chalkboard.jpg") repeat left top #414141    
+  background: image-url("chalk/chalkboard.jpg") repeat left top #414141   
+
+=chalkboard-with-frame 
+  +chalkboard
+
+  border: 6px solid
+  border-color: #bbb #222 #222 #777  
+  border-top-width: 10px
+  +border-image(image-url('chalk/board-border.jpg'), 8, 5, 6, 5, repeat)
+
 
 =wall($bground_color:#ccc)
   background: image-url('wall_texture.png') repeat scroll 0 0 $bground_color

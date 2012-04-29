@@ -1,4 +1,4 @@
-- prompt ||= "Proposed: #{@proposal.domain} #{@proposal.category} #{@proposal.designator}"
+- prompt ||= @proposal.name ? @proposal.name : 'Help consider this, please.'
 
 .proposal_prompt{ :class => "#{hide_initially ? 'hiding' : ''}"}
 

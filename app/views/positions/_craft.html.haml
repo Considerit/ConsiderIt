@@ -49,8 +49,8 @@
   });
 
 - entity = @proposal.entity || 'proposal'
-- slider_prompt = @proposal.slider_prompt || "What is your initial opinion?"
-- considerations_prompt = @proposal.considerations_prompt || "What are the most important factors in your decision?"
+- slider_prompt = @proposal.slider_prompt || "What is your conclusion?"
+- considerations_prompt = @proposal.considerations_prompt || "perspective"
 - statement_prompt = @proposal.statement_prompt || "Any concluding remarks?"
 
 = render :partial => "proposals/blocks/menu"
@@ -63,12 +63,16 @@
   
   %ol.user_opinion
 
-    = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
+    - if false
+      = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
 
     = render :partial => "positions/considerations", :locals => { :number => 2, :prompt => considerations_prompt }
 
-    = render :partial => "positions/slider", :locals => { :id => 2, :number => 3, :prompt => "Update your opinion, if it has changed." }
-    
+    - if false
+      = render :partial => "positions/slider", :locals => { :id => 2, :number => 3, :prompt => "Update your opinion, if it has changed." }
+    - else
+      = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
+
     - if @proposal.enable_position_statement
       = render :partial => "positions/statement/create", :locals => { :number => 4, :prompt => statement_prompt}
 

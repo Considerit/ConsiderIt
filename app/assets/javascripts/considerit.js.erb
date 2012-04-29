@@ -289,6 +289,11 @@ ConsiderIt = {
         } else {
           $target.slideUp('fast', 'linear');
         }
+      })
+      .on('blur', 'input.my_name', function(){
+        if ( $j(this).val().length > 3 ) {
+          $j(this).addClass('hidden_edit');
+        }
       });
             
     //////////////

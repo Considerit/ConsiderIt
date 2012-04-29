@@ -4,14 +4,9 @@
   margin: auto
   position: relative
 
-  +chalkboard                                
-  border: 3px solid
-  border-top-color: #bbb
-  border-right-color: #222
-  border-left-color: #777
-  border-bottom-color: #222
-  +box-shadow(1px, 2px, 4px, black, .7)
-  
+  +chalkboard-with-frame                            
+  +box-shadow(0px, 3px, 3px, black, .6)
+
   display: none
   &.domain_all, &.domain_self
     display: block
@@ -111,20 +106,32 @@
       color: #aaa      
       color: rgba(#aaa, .8)
       width: 570px
-      font-size: 13px
+      font-size: 12px
       text-align: center
 
       .prompt
-        width: 200px
-        margin: 51px auto 0 auto
+        width: 100px
+        margin: 41px auto 0 auto
         display: inline-block
+        position: relative
+        font-weight: bold
+        color: #ccc
+        color: rgba(white, .65)
+
+        &.pros
+          text-align: left
+          left: -171px
+        &.cons
+          text-align: right
+          right: -173px
 
       .drop_instruction
         position: absolute
+        top: -137px
         &.right
-          left: 0
+          left: -3px
         &.left
-          right: 0
+          right: -12px
 
 
 

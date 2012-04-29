@@ -1,13 +1,14 @@
-- proposals = get_proposals
-- if proposals.count > 1
-  .proposal_menu
-    .prompt
-      Consider a different proposal
-      = image_tag "user_settings_triangle.png", :class => 'triangle_img'
+- if false
+  - proposals = get_proposals
+  - if proposals.count > 1
+    .proposal_menu
+      .prompt
+        Consider a different proposal
+        = image_tag "user_settings_triangle.png", :class => 'triangle_img'
 
-    %ul.hide
-      - proposals.each do |proposal|
-        - if proposal != @proposal
-          %li
-            %a{ :href => proposal_path(proposal.long_id) }
-              #{proposal.short_name} &ndash; #{proposal.domain_short} #{proposal.designator}
+      %ul.hide
+        - proposals.each do |proposal|
+          - if proposal != @proposal
+            %li
+              %a{ :href => proposal_path(proposal.long_id) }
+                #{proposal.short_name} &ndash; #{proposal.domain_short} #{proposal.designator}

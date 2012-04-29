@@ -32,10 +32,10 @@ class ProposalsController < ApplicationController
     @position = current_user ? current_user.positions.where(:proposal_id => @proposal.id).first : nil
     @positions = @proposal.positions.includes(:user).published
 
-    if !@position && (!params.has_key? :redirect || params[:redirect] == 'true' )
-      redirect_to(new_proposal_position_path(@proposal.long_id))
-      return
-    end
+    # if !@position && (!params.has_key? :redirect || params[:redirect] == 'true' )
+    #   redirect_to(new_proposal_position_path(@proposal.long_id))
+    #   return
+    # end
 
     @pro_points = @proposal.points.includes(:point_links, :user).pros.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
     @con_points = @proposal.points.includes(:point_links, :user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )

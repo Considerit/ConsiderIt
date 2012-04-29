@@ -1,13 +1,92 @@
+#admin_strip, #more_options .more
+  background-color: #222
+
+#admin_strip, #admin_strip a
+  color: #BEBEBE
+
 #admin_strip
-  background-color: black
+  
   padding: 10px 20px
   z-index: 100
   position: relative
-  color: #BEBEBE
+  
+  font-weight: bold
 
-  #links
+  #content
+    width: 980px
     margin: auto
-    text-align: center
-    width: 99%
-    a
-      color: white
+    position: relative
+
+    > div 
+      display: inline-block
+
+    #links
+      margin: auto
+
+      .link, #copy_container
+        background-color: #333
+
+      .link
+        border: 1px solid
+        border-color: #555 black black #555
+        display: inline-block
+        font-weight: normal
+        padding: 5px 10px
+        margin-left: 5px
+
+        span
+          padding-right: 5px
+
+        #copy_container, #copy_admin_container
+          position: relative
+          width: 60px
+          border-left: 1px solid #4a4a4a
+          margin: auto
+          display: inline-block
+
+          #copy_link, #copy_admin_link
+            font-weight: bold
+            text-align: center
+
+          &:hover
+            color: white
+
+    #more_options
+      margin-left: 40px
+      
+
+      a
+        
+      .more
+        position: absolute
+        z-index: 5
+        padding: 2px 16px 10px 16px
+        width: 100%
+        left: 0
+        margin-top: 8px
+
+
+        .options
+          margin-top: 20px
+          .option
+            .switch
+              display: inline-block
+              margin-right: 10px
+              .on, .off
+                display: inline-block
+                font-size: 9pt
+                &.selected
+                  color: white
+                  font-size: 11pt
+                &:hover
+                  background-color: blue
+                  cursor: pointer
+
+              .on
+              .off
+
+
+
+            .label
+              color: white
+              display: inline-block

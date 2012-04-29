@@ -31,11 +31,13 @@ $useIEFilters: 0
 
 // might be 0 or 1. disabled by default.
 
-=border-image($path, $offsets, $repeats)
-  -moz-border-image: $path $offsets $repeats
-  -o-border-image: $path $offsets $repeats
-  -webkit-border-image: $path $offsets $repeats
-  border-image: $path $offsets $repeats
+source slice width outset repeat
+
+=border-image($path, $top, $right, $bottom, $left, $repeats:stretch)
+  -moz-border-image: $path $top $right $bottom $left $repeats
+  -o-border-image: $path $top $right $bottom $left $repeats
+  -webkit-border-image: $path $top $right $bottom $left $repeats
+  border-image: $path $top $right $bottom $left $repeats
 
 =border-radius($values)
   -moz-border-radius: $values

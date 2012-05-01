@@ -1,0 +1,187 @@
+@import 'mixins'
+@import 'css3_mixins'
+//@import "reset_styling"
+
+body
+  background: none
+  &:after, &:before
+    content: none
+
+.logo_cell
+  display: none
+
+html
+  background: image-url('rejectme/images/background.jpg') repeat top left black
+  &.homepage
+    background: image-url('rejectme/images/et_tu.jpg') no-repeat fixed bottom left black
+
+  body 
+    #wrap
+      
+      > div#content
+        background-color: transparent
+        border: none
+        +box-shadow(0,0,0,transparent)
+
+#wrap > #content, #intro
+  min-height: 700px
+
+h1.improve, h1.improve a
+  color: #A05047
+  font-size: 32pt
+  +main-font
+
+  .subheader
+    color: #aaa
+    font-size: 12pt
+    position: relative
+    top: -35px
+
+
+#wrap #masthead 
+  height: 100px
+  margin-top: 0
+  width: 100%
+  //background: image-url('rejectme/images/header_back.jpg') no-repeat top center black
+
+  .logo_block
+    position: relative
+    top: 0px
+    text-align: center
+    margin: auto
+    background-color: #666
+    background-color: rgba(black, .5)
+    width: 100%
+    height: 100px
+
+  #nav-user
+    top: 10px
+    right: 25px
+    a
+      color: #666
+
+
+.homepage body #wrap
+  #masthead
+    margin-top: 0
+    height: 0
+    .logo_block
+      display: none
+
+  #intro
+    margin: 0 25px
+    padding-top: 0
+    #home
+      color: white
+
+
+
+      p
+        width: 500px
+        margin-bottom: 5px
+      h2
+        +main-font
+        color: #A05047
+        font-size: 12pt
+        margin-bottom: 15px
+        .subheader
+          font-weight: normal
+          font-size: 11pt
+          position: relative
+          top: -3px
+          color: white
+
+  #nav-user
+    top: 0
+    a
+      color: #a6a6a6
+
+
+
+.pro_con_list
+  +border-image(none,0,0,0,0)
+  border-width: 3px
+  +box-shadow(0,1px,3px,rgba(black,.5))
+
+  &.dynamic 
+    min-height: 500px
+
+    .full_column
+      min-height: 500px
+
+.proposal_prompt
+  background: image-url('considerthis/images/proposal_back.jpg') repeat top left white
+  width: 600px
+  margin: auto  
+  min-height: 150px
+  +box-shadow(0px, 1px, 2px, rgba(black,.4))
+  margin-bottom: 20px
+
+  .author
+    color: #777
+    font-style: italic
+
+  .description_wrapper .full_text, 
+  .description_wrapper .long_description, 
+  .description_wrapper .additional
+    font-size: 13pt
+    color: #6E6E6E
+    color: rgba(black, .5)
+  .pic
+    position: absolute
+    width: 100px
+    left: -50px
+    top: 25px
+
+  .head 
+    margin-bottom: 0px
+    background: none
+    border: none
+    +box-shadow(0,0,0, transparent)
+
+    &.single, &.double
+      width: auto
+      left: auto
+
+    &:after, &:before, h3.banner.double::before, h3.banner.double::after
+      content: none
+
+.head
+  h3.banner
+    +main-font
+    font-weight: bold
+    color: #4F4F4F
+    color: rgba(black, .60)
+    text-shadow: none
+
+#craft_position > .user_opinion
+  background: none
+  border: none
+  +box-shadow(0,0,0,transparent)
+
+
+.slider_table 
+  .slider_container .ui-slider
+    background: none
+    background-color: #7D7D7E
+    background-color: rgba(black, .25)
+    +box-shadow(0,0,0,transparent)
+    border-radius: 15px
+    width: 450px
+
+  td.slider_label
+    +main-font
+    font-weight: bold
+    div
+      color: #808080
+      color: rgba(black, .35)
+
+.head
+  margin-bottom: 0px
+
+#craft_position #submitstance .rest .stanceform form 
+  a, label
+    color: #444
+
+#admin_strip
+  display: none

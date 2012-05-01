@@ -4,7 +4,9 @@
   .primary
     %h2
       - if @context == 'position_submit'
-        Sign in to save your position!
+        Sign in to save your position
+      - elsif @context == 'proposal_submit'
+        Sign in to create a new proposal
       - else
         Sign in
 

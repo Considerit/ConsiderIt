@@ -1,9 +1,8 @@
-- proposal_stance_data = stance_fractions(@proposal)
+
+
 
 - if proposal_stance_data.length > 0
-  - pp proposal_stance_data
-  - height_scaler = proposal_stance_data.sum > 0? proposal_stance_data.max : 1
-
+  - height_scaler = has_position ? proposal_stance_data.max : 1
 
   - proposal_stance_data.reverse.each_with_index do |bucket_percentile, index| 
 
@@ -18,7 +17,8 @@
           = surround '(', ')' do
             %a{ :href => "#{edit_proposal_position_path(@proposal.long_id, @position)}"} update
 
-    .bar{ :style => "#{bucket_percentile == 0 ? '' : 'min-height: 12px;'} height: #{bucket_percentile/height_scaler * 100}\%; left: #{-7*index}px", :id => "bucket-#{6-index}"}
+
+    .bar{ :style => "#{bucket_percentile == 0 ? '' : 'min-height: 12px;'} height: #{bucket_percentile/height_scaler * 100}\%; left: #{-7*index}px", :id => "bucket-#{6-index}", :class => "#{bucket_percentile == 0 ? 'empty' : 'has_votes'}"}
 
       .close
         x

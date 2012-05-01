@@ -44,7 +44,7 @@ class PositionsController < ApplicationController
   end
   
   def update
-    @proposal = Proposal.find(params[:proposal_id])
+    @proposal = Proposal.find_by_long_id(params[:long_id])
     @position = current_user.positions.unscoped.find(params[:id])
     
     (stance, bucket) = get_stance_val_from_params(params)

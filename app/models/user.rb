@@ -22,7 +22,7 @@ class User < ActiveRecord::Base
   #  validates :password, :presence => true
   #end
 
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :notification_author, :notification_commenter, :registration_complete
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :notification_author, :notification_commenter, :notification_reflector, :notification_responder, :registration_complete
 
   attr_accessor :avatar_url
   before_validation :download_remote_image, :if => :avatar_url_provided?

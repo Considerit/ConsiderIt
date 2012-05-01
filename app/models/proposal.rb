@@ -21,5 +21,22 @@ class Proposal < ActiveRecord::Base
   def to_param
     long_id
   end
+
+  def title(max_len = 140)
+    if name
+      my_title = name
+    elsif description
+      my_title = description
+    else
+      raise 'Name and description nil'
+    end
+
+    if my_title.length > 140
+      "#{my_title}..."
+    else
+      my_title
+    end
+    
+  end
   
 end

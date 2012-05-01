@@ -23,17 +23,19 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     @user = User.find_for_third_party_auth(env["omniauth.auth"], current_user)
     
     if @user.persisted?
+      
+      @user.skip_confirmation!
       sign_in @user, :event => :authentication
       if session.has_key?('position_to_be_published')
         session['reify_activities'] = true 
       end
 
-    if @user && session.has_key?(:domain) && session[:domain] && session[:domain] != @user.domain_id
-      @user.domain_id = session[:domain]
-      @user.save
-    elsif @user && @user.domain_id
-      session[:domain] = current_user.domain_id
-    end
+      if @user && session.has_key?(:domain) && session[:domain] && session[:domain] != @user.domain_id
+        @user.domain_id = session[:domain]
+        @user.save
+      elsif @user && @user.domain_id
+        session[:domain] = current_user.domain_id
+      end
 
     else
       session["devise.third_party"] = env["omniauth.auth"]

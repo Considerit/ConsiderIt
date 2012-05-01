@@ -1,0 +1,18 @@
+#masthead.header
+      
+  -# = render :partial => "shared/available_themes"
+
+  .logo_block
+    %h1.improve
+      %a{:href => root_path}
+        Reject me<br>
+        %span.subheader
+          ideas for improving HCI peer review
+
+  %ul#nav-user
+    - if user_signed_in?
+      = render :partial => "shared/header/logged_in_head"
+      
+    - else
+      = render :partial => "shared/header/logged_out_head"
+        

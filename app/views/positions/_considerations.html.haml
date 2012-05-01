@@ -1,3 +1,6 @@
+
+- has_other_points = @pro_points.length + @con_points.length > 0
+
 %li.considerations.step   
   .head
     %h3.banner.double
@@ -5,7 +8,7 @@
       - name = current_user ? current_user.name : nil
       - if current_user
         %span.my_name
-          name
+          #{current_user.name}'s #{prompt}
       - else
         = succeed "'s " do
           %input.my_name{ :class => "#{name ? 'has_name' : 'no_name'}", :type => 'text', :placeholder => 'Type your name'}<>
@@ -15,28 +18,30 @@
   .rest         
     #points 
 
-      .points_other#points_other_pro
+      - if has_other_points
+        .points_other#points_other_pro
 
-        .heading
-          .lead
-            Pros by other users
-          = render :partial => 'shared/ledge'
-          .sublead
-            drag important pros into your list
-        .clear
 
-        = render :partial => "points/column", :locals => { :points => @pro_points, :is_pro => true, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
+          .heading
+            .lead
+              Pros by other users
+            = render :partial => 'shared/ledge'
+            .sublead
+              drag important pros into your list
+          .clear
 
-      .points_other#points_other_con
+          = render :partial => "points/column", :locals => { :points => @pro_points, :is_pro => true, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
-        .heading
-          .lead
-            Cons by other users
-          = render :partial => 'shared/ledge'
-          .sublead
-            drag important cons into your list
-        .clear
-        
-        = render :partial => "points/column", :locals => { :points => @con_points, :is_pro => false, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
+        .points_other#points_other_con
 
-      = render :partial => "points/pro_con_list", :locals => { :pro_points => @included_pros, :con_points => @included_cons, :dynamic => true }
+          .heading
+            .lead
+              Cons by other users
+            = render :partial => 'shared/ledge'
+            .sublead
+              drag important cons into your list
+          .clear
+          
+          = render :partial => "points/column", :locals => { :points => @con_points, :is_pro => false, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
+
+      = render :partial => "points/pro_con_list", :locals => { :pro_points => @included_pros, :con_points => @included_cons, :dynamic => true, :has_other_points => has_other_points }

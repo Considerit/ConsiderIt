@@ -82,6 +82,26 @@
             left: -39px
             top: -3px
 
+            &.empty
+              height: 125px
+              left: 0
+              width: auto
+            .empty_explanation
+              width: 420px
+              margin: auto
+              color: #666
+              position: relative
+              top: 30px
+              line-height: normal
+              text-align: center
+
+              a
+                display: block
+                font-weight: bold
+                color: #333
+                text-decoration: underline
+
+
             .personal_position.update
               color: #666
               display: none
@@ -111,17 +131,22 @@
                     opacity: 1
             .bar
               cursor: pointer
-              background-color: #222
               width: $histogram_bar_width
               display: inline-block
-              border: 3px solid #222
-              border-bottom: none
               position: relative
               bottom: 6px
               margin: 0px 4px
-              +box-shadow(0px, 1px, 2px, black)
               z-index: 0
-              padding: 3px
+
+              &.has_votes
+                border: 3px solid #222  
+                padding: 3px                            
+                +box-shadow(0px, 1px, 2px, black)
+                border-bottom: none
+                background-color: #222
+  
+
+              &.empty
 
               &:hover
                 +chalkboard

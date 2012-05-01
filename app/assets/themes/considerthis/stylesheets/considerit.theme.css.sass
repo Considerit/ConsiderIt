@@ -1,50 +1,8 @@
 @import "mixins"
 @import "css3_mixins"
+@import "reset_styling"
 
 
-/////////////////////
-/////  RESET  ///////
-/////////////////////
-body
-  background: none
-  &:after, &:before
-    content: none
-
-  #wrap 
-    #masthead
-      margin-top: 30px  
-
-    > div#content  
-      background-color: transparent
-      border: none
-      +box-shadow(0,0,0, transparent)
-
-  #craft_position 
-    > .user_opinion
-      background: none
-      +box-shadow(0,0,0, transparent)
-      border: none
-
-.head
-  background: none
-  border: none
-  +box-shadow(0,0,0, transparent)
-
-  &.single, &.double
-    width: auto
-    left: auto
-
-  &:after, &:before, h3.banner.double::before, h3.banner.double::after
-    content: none
-
-
-
-#nav-user, .logo_cell
-  display: none
-
-/////////////////////
-///  END RESET  ////
-/////////////////////
 
 html
   background-image: image-url('considerthis/images/concrete_wall.png')

@@ -4,6 +4,10 @@
   //for IE7 compatability
   protovis_stance_has_been_rendered = false;
 
+- proposal_stance_data = stance_fractions(@proposal)
+- has_position = proposal_stance_data.sum > 0
+- update = @position && @position.published
+
 = render :partial => "proposals/blocks/menu"
 
 #explore_proposal
@@ -13,15 +17,15 @@
     - if @position
       = @position.id
 
-  = render :partial => "proposals/description", :locals => {:hide_initially => true, :prompt => "What people think about #{@proposal.category} #{@proposal.designator}"}
+  = render :partial => "proposals/description_results", :locals => {:hide_initially => true, :prompt => "What people think about #{@proposal.category} #{@proposal.designator}"}
   
   %ol    
                 
     %li.breakdown
       
       .pre
-        - update = @position && @position.published
-        - if !update
+        
+        - if !update && has_position
           %a.personal_position{ :href => "#{ update ? edit_proposal_position_path(@proposal.long_id, @position) : new_proposal_position_path(@proposal.long_id)}", :class => "contribute"}
             
             You have yet to
@@ -29,18 +33,31 @@
             %span
               contribute a position
 
-        .action
-          Click a bar to filter results ^
+        - if has_position
+          .action
+            Click a bar to filter results ^
 
-      .histogram_arrow
-        .support
-          support
-        .oppose
-          oppose
+      - if has_position
+        .histogram_arrow
+          .support
+            support
+          .oppose
+            oppose
+
 
       .histogram
-        .viz
-          = render :partial => "proposals/stance_histogram"
+        .viz{ :class => "#{ has_position ? '' : 'empty'}"}
+          - if !has_position
+            .empty_explanation
+              No one has said what they think about this proposal yet! When they do, this area will become an interactive bar graph. 
+
+              %a{ :href => "#{ update ? edit_proposal_position_path(@proposal.long_id, @position) : new_proposal_position_path(@proposal.long_id)}", :class => "contribute"}
+                
+                You should contribute your perspective.
+
+            .bar{ :style => "visibility: hidden; border: none; margin: 0; padding: 0; width: 0; height: 100%; left: 0px"}
+          - else        
+            = render :partial => "proposals/stance_histogram", :locals => { :proposal_stance_data => proposal_stance_data, :has_position => has_position}
 
     %li.ranked_points
 

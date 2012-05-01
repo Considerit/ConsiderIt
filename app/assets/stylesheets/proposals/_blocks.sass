@@ -1,3 +1,41 @@
+// proposals/list_output/menu
+.proposal_list
+  margin-top: 10px
+
+// proposals/list_output/item
+
+.proposal_list_item
+  padding: 5px 0
+  a
+    display: block
+    position: relative
+    min-height: 50px
+    color: white
+    opacity: .9
+    width: 450px
+    &:hover
+      opacity: 1
+
+    .avatar
+      opacity: 1
+      position: absolute
+      left: 0
+    .title, .prompt
+      margin-left: 55px
+    .title
+      .body
+        font-weight: bold
+      .user_name
+        font-style: italic
+
+    .prompt
+      text-decoration: underline
+      font-weight: bold
+      color: #bbb
+      font-size: 10pt
+
+
+
 // proposals/blocks/menu
 .proposal_menu
   position: absolute

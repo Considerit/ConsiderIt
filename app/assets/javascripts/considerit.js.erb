@@ -736,14 +736,14 @@ ConsiderIt = {
     //PROPOSAL
     //////////////
 
-    $j('.proposal_prompt').on('click', '.head a.show_details', function(){
-      $j('.proposal_prompt').find('.pic, .description_wrapper').slideDown('slow');
+    $j('.proposal_results_description').on('click', '.head a.show_details', function(){
+      $j('.proposal_results_description').find('.pic, .description_wrapper').slideDown('slow');
       $j(this).hide();
       $j(this).siblings('a').show();
     });
 
-    $j('.proposal_prompt').on('click', '.head a.hide_details', function(){
-      $j('.proposal_prompt').find('.pic, .description_wrapper').slideUp('slow');
+    $j('.proposal_results_description').on('click', '.head a.hide_details', function(){
+      $j('.proposal_results_description').find('.pic, .description_wrapper').slideUp('slow');
       $j(this).hide();
       $j(this).siblings('a').show();
     });

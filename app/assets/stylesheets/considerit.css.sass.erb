@@ -36,6 +36,7 @@ $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 @import "proposals/show"
 @import "proposals/description"
 @import "proposals/admin_strip"
+@import "proposals/create"
 
 @import "positions/craft"
 @import "positions/slider"
@@ -286,41 +287,7 @@ input.inputfileproxy
 .head
   text-align: center
   margin-bottom: 20px
-  background: image-url('banner.png') repeat left top white
   padding: 10px 10px 10px 0px
-  width: 978px
-  position: relative
-  left: -6px
-  border: 1px solid
-  border-color: white #BBB #999
-  +box-shadow(0px, 1px, 2px, black, .4)
-
-  &.single
-    width: 1006px
-    left: -19px
-    &:before
-      right: -19px
-    &:after
-      left: -19px
-
-  &:before, &:after
-    background: image-url('banner-ribbon.png') repeat left top transparent
-    content: ''
-    height: 58px
-    position: absolute
-    width: 21px
-    z-index: -2
-    border: 1px solid
-    border-color: white #BBB #999
-    top: 9px
-  &:after
-    left: -33px
-    border-left: none
-
-  &:before
-    right: -33px
-    border-left: none
-    @include flip-horizontal
     
   h3.banner
     font-size: 32px
@@ -330,24 +297,6 @@ input.inputfileproxy
     font-weight: normal
     @include inset-text
 
-    &.double
-      &:before, &:after
-        background: image-url('banner.png') repeat left top white
-        content: ''   
-        height: 58px
-        position: absolute
-        width: 20px
-        z-index: -1
-        top: 4px
-        border: 1px solid
-        border-color: white #BBB #999
-        +box-shadow(0px, 1px, 2px, black, .4)
-
-      &:after
-        right: -16px
-      &:before
-        left: -16px
-        
     a
       text-decoration: underline
 

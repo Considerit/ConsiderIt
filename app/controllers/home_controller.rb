@@ -3,6 +3,7 @@ class HomeController < ApplicationController
   respond_to :json, :html
 
   def index
+    render :layout=> 'home'
   end
 
   def show

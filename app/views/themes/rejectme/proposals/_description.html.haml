@@ -1,0 +1,38 @@
+- prompt ||= @proposal.name ? @proposal.name : 'Help consider this, please.'
+
+.proposal_prompt{ :class => "#{hide_initially ? 'hiding' : ''}"}
+
+  - if hide_initially
+    .head
+      Results for
+
+  .head.single
+    %h3.banner
+      - if hide_initially
+        #{@proposal.title}
+      - else
+        =prompt      
+
+    - if hide_initially
+      %a.show_details
+        show details
+      %a.hide_details.hide
+        hide details
+
+  .pic
+    = image_tag @proposal.user.avatar.url(:medium), :class => 'avatar'
+
+  .description_wrapper
+    .proposal_name
+      - if @proposal.name
+        #{@proposal.name.html_safe}
+
+    .full_text
+      - for i in @proposal.format_description
+        %p= h i.html_safe
+
+    .author
+      &ndash; #{@proposal.user.name}
+
+
+  .clear

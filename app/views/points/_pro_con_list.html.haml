@@ -37,6 +37,6 @@
 
   .clear
 
-  - if dynamic && (pro_points.length + con_points.length) == 0
+  - if dynamic && has_other_points && (pro_points.length + con_points.length) == 0
     = render :partial => "points/drop_target"
     

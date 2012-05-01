@@ -1,0 +1,20 @@
+%li{ :id => "proposal_list_item-#{proposal.id}", :class => "proposal_list_item #{has_stance(proposal) ? 'finished' : 'not-finished'}" }
+
+  %a{ :href => new_proposal_position_path(proposal.long_id), :title => "Deliberate on this proposal"}
+
+    - if proposal.user
+      = image_tag proposal.user.avatar.url(:small), :class => 'avatar'
+    - else
+      = image_tag 'avatars/small_default-profile-pic.png', :class => 'avatar'
+
+    .title
+      %span.body
+        = proposal.title
+      %span.user_name
+        &ndash;
+        = proposal.user.name
+    .prompt
+      Read more and comment
+
+  .completion.hide
+    &#x2713;

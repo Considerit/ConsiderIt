@@ -51,7 +51,7 @@
 - entity = @proposal.entity || 'proposal'
 - slider_prompt = @proposal.slider_prompt || "What is your conclusion?"
 - considerations_prompt = @proposal.considerations_prompt || "perspective"
-- statement_prompt = @proposal.statement_prompt || "Any concluding remarks?"
+- statement_prompt = @proposal.statement_prompt || "Any final remarks?"
 
 = render :partial => "proposals/blocks/menu"
 
@@ -73,7 +73,7 @@
     - else
       = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
 
-    - if @proposal.enable_position_statement
+    - if true || @proposal.enable_position_statement
       = render :partial => "positions/statement/create", :locals => { :number => 4, :prompt => statement_prompt}
 
   #submitstance

@@ -1,0 +1,33 @@
+.new_proposal
+  .prompt
+    color: #ccc
+    font-weight: bold
+    font-size: 13pt
+    padding: 5px 10px
+    +border-radius(5px)
+    border: 1px solid #777
+    width: 200px
+    cursor: pointer
+    background-color: #222
+    &:hover
+      color: white
+      background-color: black
+
+  form.new_proposal_form
+    .avatar
+      position: absolute
+      left: 15px
+    label
+      color: gray
+    #proposal_description
+      height: 40px
+      margin-left: 55px
+
+    input[type="submit"]
+      position: relative
+      top: -18px
+      font-weight: bold
+      background-color: #aaa
+      background-color: rgba(white, .4)
+      border: 1px solid #ddd
+      padding: 5px 8px

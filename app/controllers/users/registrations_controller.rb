@@ -8,7 +8,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def create
     
-
     #if the user already exists...(equiv of user/sign_in)
     user = User.find_by_email(params[:user][:email])
     if user

@@ -3,21 +3,21 @@
 
     // INITIALIZE SLIDERS
     var params = { 
-      min: -1.0, 
-      max: 1.0, 
-      value: #{-1 * @position.stance}, 
+      min: 0.0, 
+      max: 2.0, 
+      value: #{-1 * @position.stance + 1}, 
       step: .015,
       slide: function(event, ui) {
-        $j('.slider:not(#' + $j(event.currentTarget).attr('id') +')').each(function(){
-          if ( ui.value != $j(this).slider('value') ) {
-            $j(this).slider("option", "value", ui.value);
-            ConsiderIt.positions.set_slider_value(ui.value);
-          }
-        });
+        // $j('.slider:not(#' + $j(event.currentTarget).attr('id') +')').each(function(){
+        //  if ( ui.value != $j(this).slider('value') ) {
+        //     $j(this).slider("option", "value", ui.value);
+        //     ConsiderIt.positions.set_slider_value(ui.value);            
+        //   }
+        // });
+        ConsiderIt.positions.set_slider_value(ui.value);
       },
       change: function(event, ui) {
-        value = ui.value
-        ConsiderIt.positions.set_slider_value(value);
+        ConsiderIt.positions.set_slider_value(ui.value);
       },
       stop: function(event, ui){
         //if (ConsiderIt && ConsiderIt.study) {
@@ -32,7 +32,7 @@
     };
 
     $j(".slider").slider(params);
-    ConsiderIt.positions.set_slider_value(#{-1 * @position.stance});
+    ConsiderIt.positions.set_slider_value(#{-1 * @position.stance + 1});
       
     // Study delegators for point expansions
     //if (ConsiderIt && ConsiderIt.study) {
@@ -56,10 +56,16 @@
 = render :partial => "proposals/blocks/menu"
 
 #craft_position
+  - if @is_admin
+    .edit_page
+      %a
+        Edit this page
+        = image_tag 'edit_page.png'
+
   #proposal_id.hide
     = @proposal.id
 
-  = render :partial => "proposals/description", :locals => { :hide_initially => false }
+  = render :partial => "proposals/description"
   
   %ol.user_opinion
 

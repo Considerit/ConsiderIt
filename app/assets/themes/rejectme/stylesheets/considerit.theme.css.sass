@@ -1,6 +1,7 @@
 @import 'mixins'
 @import 'css3_mixins'
 //@import "reset_styling"
+@import 'paper_proposal'
 
 body
   background: none
@@ -97,10 +98,9 @@ h1.improve, h1.improve a
     a
       color: #a6a6a6
 
-
-
 .pro_con_list
   +border-image(none,0,0,0,0)
+  -moz-border-image: none
   border-width: 3px
   +box-shadow(0,1px,3px,rgba(black,.5))
 
@@ -111,28 +111,6 @@ h1.improve, h1.improve a
       min-height: 500px
 
 .proposal_prompt
-  background: image-url('considerthis/images/proposal_back.jpg') repeat top left white
-  width: 600px
-  margin: auto  
-  min-height: 150px
-  +box-shadow(0px, 1px, 2px, rgba(black,.4))
-  margin-bottom: 20px
-
-  .author
-    color: #777
-    font-style: italic
-
-  .description_wrapper .full_text, 
-  .description_wrapper .long_description, 
-  .description_wrapper .additional
-    font-size: 13pt
-    color: #6E6E6E
-    color: rgba(black, .5)
-  .pic
-    position: absolute
-    width: 100px
-    left: -50px
-    top: 25px
 
   .head 
     margin-bottom: 0px

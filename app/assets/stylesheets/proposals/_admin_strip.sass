@@ -1,3 +1,52 @@
+.edit_page
+  position: absolute
+  right: 15px
+  top: 0px
+
+  a
+    font-size: 13pt
+    color: #222
+    font-weight: bold
+  img
+    height: 23px
+    vertical-align: top
+
+.unobtrusive_edit_form
+  .unobtrusive_edit
+    position: relative
+    line-height: 0px
+    textarea
+      width: 100%
+      text-align: inherit
+      color: inherit
+      resize: none
+
+    .save_block
+      display: none
+      position: absolute
+      z-index: 3
+      right: -70px
+      top: 0
+      height: 100%
+      width: 70px
+
+      input[type="submit"]
+        height: 100%
+      
+      .updated
+        position: relative
+        font-size: 10pt
+        top: 50%
+        margin-top: -6px
+        left: 4px
+
+  &.explicit_edit_mode .unobtrusive_edit
+
+  &.implicit_edit_mode .unobtrusive_edit
+    textarea
+      border-color: transparent
+      background-color: transparent
+
 #admin_strip, #more_options .more
   background-color: #222
 

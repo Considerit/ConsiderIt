@@ -1,49 +1,28 @@
 - prompt ||= @proposal.name ? @proposal.name : 'Help consider this, please.'
 
-.proposal_prompt{ :class => "#{hide_initially ? 'hiding' : ''}"}
-
-  / = render :partial => "proposals/blocks/strip", :locals => { :style => 'menu', :hide_initially => hide_initially }
+.proposal_prompt
 
   .head.single
-    %h3.banner=prompt
-    - if hide_initially
-      %a.show_details
-        show details
-      %a.hide_details.hide
-        hide details
+    %h3.banner
+      - if @is_admin
+        - @proposal.name = prompt
+        = render :partial => 'positions/admin_make_editable', :locals => { :field => :name}
+      - else
+        = prompt
 
   .pic
+    = image_tag @proposal.user.avatar.url(:medium), :class => 'avatar'
 
   .description_wrapper
-    .proposal_name
-      - if @proposal.name
-        #{@proposal.name.html_safe}
 
     .full_text
-      - for i in @proposal.format_description
-        %p= h i.html_safe
-    
-    - if @proposal.long_description && @proposal.long_description.strip != ''
-      .long_description
-        .prompt
-          Long Description
-          %a.hidden
-            show
-        .full.hide
-          = @proposal.long_description.html_safe
+      - if @is_admin
+        = render :partial => 'positions/admin_make_editable', :locals => { :field => :description}
+      - else
+        = @proposal.description
 
-    - if @proposal.additional_details && @proposal.additional_details.strip != ''
-      .additional
-        .prompt
-          Fiscal impact statement
-          %a.hidden
-            show
-        .full.hide
-          = @proposal.additional_details.html_safe
+    .author
+      &ndash; #{@proposal.user.name}
 
-    - if @proposal.url && @proposal.url.strip != ''
-      #full_desc_block
-        #{'...'}or read the 
-        =link_to "official measure", @proposal.url, :title => "Visit the official listing on the state's website", :target => '_blank'
 
   .clear

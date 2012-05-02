@@ -14,7 +14,7 @@ body
 html
   background: image-url('rejectme/images/background.jpg') repeat top left black
   &.homepage
-    background: image-url('rejectme/images/et_tu.jpg') no-repeat fixed bottom left black
+    background: image-url('rejectme/images/et_tu.jpg') no-repeat fixed top left black
 
   body 
     #wrap
@@ -30,7 +30,7 @@ html
 h1.improve, h1.improve a
   color: #A05047
   font-size: 32pt
-  +main-font
+  +heading
 
   .subheader
     color: #aaa
@@ -73,30 +73,69 @@ h1.improve, h1.improve a
     margin: 0 25px
     padding-top: 0
     #home
-      color: white
+      color: #eee
+      > hr
+        color: #A05047
+        border-color: #A05047
+        background-color: #A05047
+        width: 500px
+        position: relative
+        margin: 0
+        border-style: solid
+        margin-bottom: 3px
+        &:after
+          content: ''
+          position: absolute
+          background-image: image-url('rejectme/images/dagger.png')
+          width: 60px
+          height: 15px
+          right: -27px
+          top: -8px
 
+      .proposal_list_item a
+        color: #eee
+        opacity: 1
+        padding: 8px 0
 
+        &:hover
+          color: #A05047
+          //text-shadow: 1px 1px white
+
+          .prompt
+            color: #A05047
+
+        .body
+          font-weight: normal
+          font-size: 13pt
+          line-height: 12pt
+        .user_name
+          font-size: 10pt
+        .prompt
+          font-weight: normal
 
       p
         width: 500px
         margin-bottom: 5px
       h2
-        +main-font
+        +heading
         color: #A05047
         font-size: 18pt
         margin-bottom: 15px
         margin-top: 10px
-        .subheader
-          font-weight: normal
-          font-size: 11pt
-          position: relative
-          top: -3px
-          color: white
+
 
   #nav-user
     top: 0
     a
       color: #a6a6a6
+
+.new_proposal .prompt
+  opacity: 1
+  color: #eee
+  font-weight: normal
+
+  &:hover
+    background-color: #A05047
 
 .pro_con_list
   +border-image(none,0,0,0,0)

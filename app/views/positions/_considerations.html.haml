@@ -4,17 +4,22 @@
 %li.considerations.step   
   .head
     %h3.banner.double
-    
-      - name = current_user ? current_user.name : nil
-      - if current_user
-        %span.my_name
-          #{current_user.name}'s #{prompt}
-      - else
-        = succeed "'s " do
-          %input.my_name{ :class => "#{name ? 'has_name' : 'no_name'}", :type => 'text', :placeholder => 'Type your name'}<>
-            = name ? name : ''
-        = prompt
-    
+      .considerations_prompt
+        - name = current_user ? current_user.name : nil
+        - if current_user
+          %span.my_name
+            #{current_user.name}'s 
+
+        - else
+          = succeed "'s " do
+            %input.my_name{ :class => "#{name ? 'has_name' : 'no_name'}", :type => 'text', :placeholder => 'Type your name'}<>
+              = name ? name : ''
+
+        - if false && @is_admin
+          - @proposal.considerations_prompt = prompt
+          = render :partial => 'positions/admin_make_editable', :locals => { :field => :considerations_prompt, :noresize => true}
+        - else
+          = prompt    
   .rest         
     #points 
 

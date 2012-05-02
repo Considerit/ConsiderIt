@@ -1,10 +1,15 @@
-- poles = @proposal.poles || 'Support/Oppose'
-- support_pole, oppose_pole = poles.split('/')
+- support_pole = @proposal.slider_left || 'Support'
+- oppose_pole = @proposal.slider_right || 'Oppose'
 
 %li.gut.step.slide
   .head
     %h3.banner.double
-      = prompt
+
+      - if @is_admin
+        - @proposal.slider_prompt = prompt
+        = render :partial => 'positions/admin_make_editable', :locals => { :field => :slider_prompt}
+      - else
+        = prompt
   
   // TODO: this should probably be named "stance", not "position"
   .rest.position
@@ -13,12 +18,21 @@
       %tr
         %td.slider_label.left
           %div
-            = support_pole
+            - if @is_admin
+              - @proposal.slider_left = support_pole
+              = render :partial => 'positions/admin_make_editable', :locals => { :field => :slider_left, :noresize => true}
+            - else
+              = support_pole
+
         %td.slider_container
           %div.slider{:id => "slider#{id}"}
         %td.slider_label.right
           %div
-            = oppose_pole
+            - if @is_admin
+              - @proposal.slider_right = oppose_pole
+              = render :partial => 'positions/admin_make_editable', :locals => { :field => :slider_right, :noresize => true}
+            - else
+              = oppose_pole
       %tr
         %td
         %td

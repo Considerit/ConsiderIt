@@ -14,6 +14,9 @@ ConsiderIt = {
 
     ConsiderIt.delegators();
 
+    ConsiderIt.update_unobtrusive_edit_heights($j(".unobtrusive_edit textarea"));
+
+
     ConsiderIt.per_request();
 
     $j(document).ajaxComplete(function(e, xhr, settings) {
@@ -28,7 +31,7 @@ ConsiderIt = {
         return false;
     });
 
-    $j('.pointform textarea, .pointform input[type="text"]').autoResize({extraSpace: 0, maxWidth: 'original'});
+    $j('.autoResize, .pointform textarea, .pointform input[type="text"]').autoResize({extraSpace: 0, maxWidth: 'original'});
     $j('textarea#statement').autoResize({extraSpace: 5});
     
     $j("#points_other_pro, #points_other_con").each(function(){
@@ -294,6 +297,39 @@ ConsiderIt = {
         if ( $j(this).val().length > 3 ) {
           $j(this).addClass('hidden_edit');
         }
+      })
+      .on('click', '.edit_page a', function(){
+        $j(this).toggleClass('edit_mode');
+        $j('.unobtrusive_edit_form').toggleClass('implicit_edit_mode explicit_edit_mode');
+        if ($j(this).hasClass('edit_mode')) {
+          $j('.unobtrusive_edit_form textarea:first').focus();
+        } else {
+          $j('.unobtrusive_edit_form textarea').blur();
+        }
+      })      
+      .on('keyup', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(){
+        var save_block = $j(this).siblings('.save_block');
+        save_block.find('input').show();
+        save_block.find('.updated').hide();
+      })
+      .delegate('.unobtrusive_edit_form', 'ajax:success', function(data, response, xhr){
+        var save_block = $j(this).find('.save_block');
+        save_block.find('input').hide();
+        save_block.find('.updated').show().delay(1200).fadeOut(); 
+      })
+      .on('focus', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(){
+        var save_block = $j(this).siblings('.save_block');
+        save_block.show();
+      })      
+      .on('blur', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(e){
+        var save_block = $j(this).siblings('.save_block');
+        save_block
+          .find('.updated').hide();
+        //if ( !$j(e.target).hasClass('.save_block') && !$j(e.target).parents('.save_block').length > 0 ) {
+        //  save_block.hide();
+        //}
+
+
       });
             
     //////////////
@@ -813,8 +849,8 @@ ConsiderIt = {
 
     set_slider_value : function(new_value){
         
-      var supporting = new_value > 0,
-        size = new_value * 50;
+      var supporting = new_value > 1,
+        size = (new_value - 1) * 50;
       if ( supporting ) {
         $j( '.slider_table .right').css('font-size', 100 + 1.5 * size + '%');
         $j( '.slider_table .left').css('font-size', 100 - size + '%');
@@ -823,7 +859,8 @@ ConsiderIt = {
         $j( '.slider_table .left').css('font-size', 100 - 1.5 * size + '%');
       }
       
-      $j('#stance-value').val( new_value );  
+      $j('#stance-value').val( new_value - 1 );  
+      ConsiderIt.update_unobtrusive_edit_heights($j(".slider_label .unobtrusive_edit textarea"));
     },
     
     close_segment_click : function(e){
@@ -862,6 +899,14 @@ ConsiderIt = {
       }
     }  
     
+  },
+
+  update_unobtrusive_edit_heights : function (els) {
+    els.each(function(){
+        var lineHeight = parseFloat($j(this).css("line-height"));
+        var lines = $j(this).attr("rows")*1 || $j(this).prop("rows")*1;
+        $j(this).css("height", lines*lineHeight);
+    });    
   },
 
   update_carousel_heights: function(){

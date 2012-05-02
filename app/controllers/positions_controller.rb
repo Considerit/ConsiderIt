@@ -102,8 +102,8 @@ protected
       @proposal.save
     end
 
-    # TODO: this is replicated in proposals_controller...DRY it up...
-    @is_admin = request.session_options[:id] == @proposal.session_id || current_user && (current_user.id == @proposal.user_id || current_user.is_admin?) || params.has_key?(:admin_id)
+    @is_admin = @proposal.has_admin_privilege(current_user, request.session_options[:id], params)
+
 
     @user = current_user
 

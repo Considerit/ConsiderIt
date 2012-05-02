@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120427191910) do
+ActiveRecord::Schema.define(:version => 20120501200933) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -287,7 +287,6 @@ ActiveRecord::Schema.define(:version => 20120427191910) do
     t.string   "domain_short"
     t.text     "long_description",           :limit => 2147483647
     t.text     "additional_details",         :limit => 2147483647
-    t.string   "poles"
     t.string   "slider_prompt"
     t.string   "considerations_prompt"
     t.string   "statement_prompt"
@@ -302,6 +301,8 @@ ActiveRecord::Schema.define(:version => 20120427191910) do
     t.string   "long_id"
     t.string   "admin_id"
     t.integer  "user_id"
+    t.string   "slider_right"
+    t.string   "slider_left"
   end
 
   add_index "proposals", ["admin_id"], :name => "index_proposals_on_admin_id", :unique => true

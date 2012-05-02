@@ -21,7 +21,36 @@
     left: -50px
     top: 25px
 
+    img
+      position: relative
+      z-index: 1
+      +box-shadow(0,0,2px, rgba(black,.2))
+
+    &:after, &:before
+      position: absolute
+      display: block
+      z-index: -1
+      content: ''
+
+    &:after
+      background: image-url('tape.png') no-repeat top left transparent
+      width: 53px
+      height: 23px
+      right: 14px
+      top: -16px
+      z-index: 3
+
+    &:before
+      background: image-url('pic_background.png') no-repeat top left transparent
+      width: 50px
+      height: 45px
+      left: -10px
+      bottom: -5px
+
+
+
   .author
     color: #777
     font-style: italic
     padding-left: 10px
+

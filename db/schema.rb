@@ -11,21 +11,20 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120501200933) do
+ActiveRecord::Schema.define(:version => 20120502224151) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
     t.string   "theme"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
-    t.string   "appearance_base_color"
-    t.string   "appearance_style"
+    t.datetime "created_at",                                                  :null => false
+    t.datetime "updated_at",                                                  :null => false
     t.string   "app_title"
     t.string   "app_notification_email"
-    t.integer  "app_creation_permission"
+    t.integer  "app_proposal_creation_permission"
     t.string   "socmedia_facebook_page"
     t.string   "socmedia_twitter_page"
     t.string   "analytics_google"
+    t.boolean  "app_require_registration_for_perspective", :default => false
   end
 
   create_table "active_admin_comments", :force => true do |t|

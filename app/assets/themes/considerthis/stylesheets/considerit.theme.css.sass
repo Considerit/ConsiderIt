@@ -1,7 +1,7 @@
 @import "mixins"
 @import "css3_mixins"
 @import "reset_styling"
-
+@import "paper_proposal"
 
 
 html
@@ -11,24 +11,6 @@ html
   body #wrap > div#content
     //border: 1px solid rgba(blue, .3)
 
-.proposal_prompt
-  background: image-url('considerthis/images/proposal_back.jpg') repeat top left white
-  width: 600px
-  margin: auto  
-  min-height: 150px
-  +box-shadow(0px, 1px, 2px, rgba(black,.4))
-
-  .description_wrapper .full_text, 
-  .description_wrapper .long_description, 
-  .description_wrapper .additional
-    font-size: 13pt
-    color: #6E6E6E
-    color: rgba(black, .5)
-  .pic
-    position: absolute
-    width: 100px
-    left: -50px
-    top: 25px
 
 .head 
   margin-bottom: 0px
@@ -79,12 +61,6 @@ html
       color: #808080
       color: rgba(black, .35)
 
-.considerations .head h3.banner 
-  .my_name
-    &.no_name
-      width: 270px
-      color: #4F4F4F
-      color: rgba(black, .6)
 
 input.hidden_edit
   background-color: transparent

@@ -38,11 +38,12 @@
             Click a bar to filter results ^
 
       - if has_position
+
         .histogram_arrow
           .support
-            support
+            = @proposal.slider_left || 'Support'
           .oppose
-            oppose
+            = @proposal.slider_right || 'Oppose'
 
 
       .histogram

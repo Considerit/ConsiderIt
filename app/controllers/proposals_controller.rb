@@ -2,6 +2,8 @@ class ProposalsController < ApplicationController
   protect_from_forgery
 
   POINTS_PER_PAGE = 4
+
+  respond_to :json, :html
   
   def show
     @user = current_user
@@ -22,9 +24,8 @@ class ProposalsController < ApplicationController
       redirect_to root_path
     end
 
-    # TODO: this is replicated in positions_controller...DRY it up...
-    @is_admin = request.session_options[:id] == @proposal.session_id || current_user && (current_user.id == @proposal.user_id || current_user.is_admin?) || params.has_key?(:admin_id)
-      
+    @is_admin = @proposal.has_admin_privilege(current_user, request.session_options[:id], params)
+
     #@title = "#{@proposal.category} #{@proposal.designator} #{@proposal.short_name}"
     @title = "#{@proposal.short_name}"
     @keywords = "#{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
@@ -100,7 +101,17 @@ class ProposalsController < ApplicationController
   end
 
   def update
-
+    # TODO: this edit will fail for those who do not have an account & whose session timed out, but try to edit following admin_id link
+    @proposal = Proposal.find_by_long_id(params[:long_id])
+    if @proposal.has_admin_privilege(current_user, request.session_options[:id], params)
+      @proposal.update_attributes!(params[:proposal])
+      response = {
+        :success => true
+      }
+      render :json => response.to_json
+      return
+    end
+    raise 'Permission to update this proposal denied'  
   end
 
 end

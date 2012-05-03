@@ -1,6 +1,21 @@
-@import "theme_colors"
 @import "css3_mixins"
 @import "mixins"
+
+$primary_button_background_color: #082872
+
+$background_color: #890000
+
+//$dark_header_background: #710000
+
+button,
+input[type="submit"]
+  background-color: gray
+  border: none
+  color: white
+  &.important
+    //background-color: $primary_button_background_color    
+
+    
 
 body:after, #nav-user > li.triangle .hide
   +main_background

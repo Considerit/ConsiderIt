@@ -44,21 +44,6 @@ development:
     resources:
       - title: WA State Voter Guides
         items:
-          - anchor: League of Women Voters of Gr. Seattle
-            link: http://sites.google.com/site/wavoter/ballot
-            title: Voters Guide by the League of Women Voters
-          - anchor: Progressive Voters Guide
-            link: http://waballotguide.com/
-            title: Voters Guide by Fuse
-          - anchor: Washington Policy Center
-            link: http://www.washingtonpolicy.org/research/ballot-measures/new
-            title: Voters Guide by the Washington Policy Center
-          - anchor: Washington Secretary of State
-            link: http://wei.secstate.wa.gov/osos/en/Pages/OnlineVotersGuide.aspx
-            title: Voters Guide by the Secretary of State
-          - anchor: TVW Video Voters Guide
-            link: http://www.tvw.org/elections/2010videovotersguide.cfm
-            title: A video Voters Guide by TVW
       
          
   

@@ -14,22 +14,22 @@
   .body
 
     
-    - if APP_CONFIG[:socmedia][:facebook][:include_follow]
+    - if current_tenant.socmedia_facebook_page
       %span.facebook
 
         .wrapper
           = image_tag 'fb_f.png'
           Like
 
-        %iframe{:src => "//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.facebook.com%2Fpages%2FLiving-Voters-Guide%2F157151824312366&send=false&layout=button_count&width=100&show_faces=false&action=like&colorscheme=light&font=lucida+grande", :scrolling => "no", :frameborder => "0", :style => "border:none; overflow:hidden; width:90px;", :allowTransparency => "true"}
+        %iframe{:src => "//www.facebook.com/plugins/like.php?href=#{current_tenant.socmedia_facebook_page}&send=false&layout=button_count&width=100&show_faces=false&action=like&colorscheme=light&font=lucida+grande", :scrolling => "no", :frameborder => "0", :style => "border:none; overflow:hidden; width:90px;", :allowTransparency => "true"}
 
 
-    - if APP_CONFIG[:socmedia][:twitter][:include_follow]
+    - if current_tenant.socmedia_twitter_page
       %span.twitter
         .wrapper
           = image_tag 'twitter_bird.png'
           Follow
-        %a.twitter-follow-button{:href => "https://twitter.com/lvguide", "data-show-count".intern => "false", "data-width".intern => "90px", "data-show-screen-name".intern => "true"}
+        %a.twitter-follow-button{:href => "#{current_tenant.socmedia_twitter_page.gsub('http:','https:')}", "data-show-count".intern => "false", "data-width".intern => "90px", "data-show-screen-name".intern => "true"}
         %script{:src => "//platform.twitter.com/widgets.js", :type => "text/javascript"}
 
     %form.email
@@ -48,11 +48,10 @@
 
   .body
 
-    - APP_CONFIG[:footer][:resources].each do |resource_block|
-      - links = resource_block['items']
+    - links = [{:anchor=>'League of Women Voters of Gr. Seattle',:link=>'http://sites.google.com/site/wavoter/ballot', :title=>'Voters Guide by the League of Women Voters'},  {:anchor=>'Progressive Voters Guide', :link=>'http://waballotguide.com/', :title=>'Voters Guide by Fuse'}, {:anchor=>'Washington Policy Center', :link=>'http://www.washingtonpolicy.org/research/ballot-measures/new', :title=>'Voters Guide by the Washington Policy Center'}, {:anchor=>'Washington Secretary of State', :link=>'http://wei.secstate.wa.gov/osos/en/Pages/OnlineVotersGuide.aspx', :title=>'Voters Guide by the Secretary of State'}, {:anchor=>'TVW Video Voters Guide', :link=>'http://www.tvw.org/elections/2010videovotersguide.cfm', :title=>'A video Voters Guide by TVW'} ]
 
-      - links.each do |link|
-        #{link_to(link['anchor'] , link['link'], :target => "_blank", :title => link['title'])}#{', '}
+    - links.each do |link|
+      #{link_to(link['anchor'] , link['link'], :target => "_blank", :title => link['title'])}#{', '}
 
     - links = [ ["About the initiative process", "http://www.ncsl.org/default.aspx?tabid=16600"], ["Stats \& history of WA ballot measures", "http://www.sos.wa.gov/elections/initiatives/statistics.aspx"], ["Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf"] ]
 

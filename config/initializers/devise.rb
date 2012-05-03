@@ -7,7 +7,7 @@ Devise.setup do |config|
   config.mailer_sender = "info@livingvotersguide.org"
 
   # Configure the class responsible to send e-mails.
-  # config.mailer = "Devise::Mailer"
+  config.mailer = "UserMailer"
 
   # ==> ORM configuration
   # Load and configure the ORM. Supports :active_record (default) and
@@ -180,13 +180,13 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
 
-  Twitter.configure do |twitter_config|
-    # twitter_config.consumer_key = APP_CONFIG[:authentication][:twitter][:consumer_key]
-    # twitter_config.consumer_secret = APP_CONFIG[:authentication][:twitter][:consumer_secret]
-    # twitter_config.oauth_token = APP_CONFIG[:authentication][:twitter][:oauth_token]
-    # twitter_config.oauth_token_secret = APP_CONFIG[:authentication][:twitter][:oauth_token_secret]
-    twitter_config = APP_CONFIG[:authentication][:twitter]
-  end
+  # Twitter.configure do |twitter_config|
+  #   # twitter_config.consumer_key = APP_CONFIG[:authentication][:twitter][:consumer_key]
+  #   # twitter_config.consumer_secret = APP_CONFIG[:authentication][:twitter][:consumer_secret]
+  #   # twitter_config.oauth_token = APP_CONFIG[:authentication][:twitter][:oauth_token]
+  #   # twitter_config.oauth_token_secret = APP_CONFIG[:authentication][:twitter][:oauth_token_secret]
+  #   twitter_config = APP_CONFIG[:authentication][:twitter]
+  # end
 
 
   FACEBOOK_SETUP_PROC = lambda do |env| 

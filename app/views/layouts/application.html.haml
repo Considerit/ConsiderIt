@@ -37,7 +37,6 @@
 
 
       - if current_tenant.analytics_google && current_tenant.analytics_google != ''
-
         var _gaq_account = _gaq_account || [];
         _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
         _gaq_account.push(['_trackPageview']);
@@ -61,5 +60,5 @@
       $j(document).ready(function(){
         ConsiderIt.init();     
       });   
-      
+
     = render :partial => "reflect/templates", :layout => false

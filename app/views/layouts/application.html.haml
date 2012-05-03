@@ -25,13 +25,22 @@
       = stylesheet_link_tag 'ie'
     
     = javascript_include_tag 'application'
-      
+
     :javascript
       $j = jQuery.noConflict();
 
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-      _gaq.push(['_trackPageview']);
+      - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+        _gaq.push(['_setDomainName', "#{get_root_domain}]);
+        _gaq.push(['_trackPageview']);
+
+
+      - if current_tenant.analytics_google && current_tenant.analytics_google != ''
+
+        var _gaq_account = _gaq_account || [];
+        _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+        _gaq_account.push(['_trackPageview']);
 
   %body
     #lightbox
@@ -52,4 +61,5 @@
       $j(document).ready(function(){
         ConsiderIt.init();     
       });   
+      
     = render :partial => "reflect/templates", :layout => false

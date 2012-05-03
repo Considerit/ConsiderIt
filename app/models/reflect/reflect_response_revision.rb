@@ -10,13 +10,29 @@ class Reflect::ReflectResponseRevision < ActiveRecord::Base
   def notify_parties
     message_sent_to = {}
     bulleter = bullet_revision.user
-    
-    if bulleter.notification_responder && bulleter.email.length > 0
+    position = get_position_for_user(bullet_revision.comment, bulleter)
+
+    if bulleter.notification_author && bulleter.email.length > 0
       UserMailer.your_reflection_was_responded_to(bulleter, self, bullet_revision, bullet_revision.comment, current_tenant.app_notification_email)
       message_sent_to[bulleter.id]
     end
 
     return message_sent_to
   end  
+
+  def get_position_for_user(comment, user)
+    obj = comment.root_object
+    commentable_type = comment.commentable_type
+
+    if commentable_type == 'Point' 
+      user.positions.find(obj.proposal_id)
+    elsif commentable_type == 'Position'
+      if user.id == obj.user_id
+        obj
+      else
+        user.positions.find(obj.id)
+      end
+    end
+  end    
     
 end

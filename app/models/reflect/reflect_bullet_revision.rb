@@ -13,11 +13,30 @@ class Reflect::ReflectBulletRevision < ActiveRecord::Base
     message_sent_to = {}
     bulleter = user
     
-    if commenter.id != bulleter.id && commenter.notification_reflector && commenter.email.length > 0
+    position = get_position_for_user(comment, commenter)
+
+    if commenter.id != bulleter.id && position.notification_author && commenter.email.length > 0
       UserMailer.someone_reflected_your_point(commenter, self, comment, current_tenant.app_notification_email)
       message_sent_to[commenter.id]
     end
 
     return message_sent_to
   end
+
+  private
+    def get_position_for_user(comment, user)
+      obj = comment.root_object
+      commentable_type = comment.commentable_type
+
+      if commentable_type == 'Point' 
+        user.positions.find(obj.proposal_id)
+      elsif commentable_type == 'Position'
+        if user.id == obj.user_id
+          obj
+        else
+          user.positions.find(obj.id)
+        end
+      end
+    end  
+
 end

@@ -10,12 +10,12 @@
       Hi #{@user.name},
     
     %p
-      #{@position.user.name} contributed a new review for #{@position.proposal.category} #{@position.proposal.designator}.
+      #{@position.user.name} contributed a new perspective for "#{@point.proposal.title}".
 
     %p 
       Visit the 
       %a{ :href => "#{proposal_url(@position.proposal)}" }
-        #{@point.proposal.category} #{@point.proposal.designator} page
+        "#{@point.proposal.title}" page
       to read and comment on it.
 
     %p

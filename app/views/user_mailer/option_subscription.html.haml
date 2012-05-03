@@ -10,7 +10,7 @@
       Hi #{@user.name},
     
     %p
-      #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for #{@point.proposal.category} #{@point.proposal.designator}:
+      #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
 
     %blockquote
       #{@point.nutshell}
@@ -18,7 +18,7 @@
     %p 
       Visit the 
       %a{ :href => "#{proposal_url(@point.proposal)}" }
-        #{@point.proposal.category} #{@point.proposal.designator} page
+        "#{@point.proposal.title}" page
       to read the details, comment on this point and/or include it in your pro/con list. 
 
     %p

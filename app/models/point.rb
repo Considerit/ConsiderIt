@@ -194,7 +194,7 @@ class Point < ActiveRecord::Base
         position_taker = pos.user
         if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
           if position_taker.email && position_taker.email.length > 0
-            UserMailer.proposal_subscription(position_taker, self).deliver
+            UserMailer.proposal_subscription(position_taker, self, current_tenant.).deliver
           end
           message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to proposal']
         end

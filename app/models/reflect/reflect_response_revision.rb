@@ -16,7 +16,7 @@ class Reflect::ReflectResponseRevision < ActiveRecord::Base
     pp bulleter.notification_responder
     
     if bulleter.notification_responder && bulleter.email.length > 0
-      UserMailer.your_reflection_was_responded_to(bulleter, self, bullet_revision, bullet_revision.comment)
+      UserMailer.your_reflection_was_responded_to(bulleter, self, bullet_revision, bullet_revision.comment, current_tenant.app_notification_email)
       message_sent_to[bulleter.id]
     end
 

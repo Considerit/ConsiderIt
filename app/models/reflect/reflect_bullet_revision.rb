@@ -14,7 +14,7 @@ class Reflect::ReflectBulletRevision < ActiveRecord::Base
     bulleter = user
     
     if commenter.id != bulleter.id && commenter.notification_reflector && commenter.email.length > 0
-      UserMailer.someone_reflected_your_point(commenter, self, comment)
+      UserMailer.someone_reflected_your_point(commenter, self, comment, current_tenant.app_notification_email)
       message_sent_to[commenter.id]
     end
 

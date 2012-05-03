@@ -31,7 +31,7 @@
 
       - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
         var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+        _gaq.push(['_setAccount', "#{APP_CONFIG[:analytics][:google]}"]);
         _gaq.push(['_setDomainName', "#{get_root_domain}]);
         _gaq.push(['_trackPageview']);
 

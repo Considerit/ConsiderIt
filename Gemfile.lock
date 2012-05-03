@@ -89,6 +89,7 @@ GEM
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
       railties (>= 3.0.0)
+    libv8 (3.3.10.4)
     mail (2.4.4)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
@@ -179,6 +180,8 @@ GEM
       tilt (~> 1.1, != 1.3.0)
     themes_for_rails (0.5.0.pre)
       rails (>= 3.0.0)
+    therubyracer (0.10.1)
+      libv8 (~> 3.3.10)
     thin (1.3.1)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
@@ -229,6 +232,7 @@ DEPENDENCIES
   rmagick
   sass-rails (~> 3.2.3)
   themes_for_rails (= 0.5.0.pre)
+  therubyracer
   thin
   twitter
   uglifier

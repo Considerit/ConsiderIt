@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120503185151) do
+ActiveRecord::Schema.define(:version => 20120503201741) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -263,15 +263,16 @@ ActiveRecord::Schema.define(:version => 20120503185151) do
     t.text     "explanation"
     t.float    "stance"
     t.integer  "stance_bucket"
-    t.boolean  "published",                         :default => false
+    t.boolean  "published",                           :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "version"
-    t.boolean  "notification_includer"
-    t.boolean  "notification_proposal_subscriber"
-    t.boolean  "notification_statement_subscriber"
+    t.boolean  "notification_demonstrated_interest",  :default => true
+    t.boolean  "notification_point_subscriber"
+    t.boolean  "notification_perspective_subscriber"
     t.integer  "account_id"
+    t.boolean  "notification_author",                 :default => true
   end
 
   add_index "positions", ["proposal_id"], :name => "index_positions_on_option_id"
@@ -428,10 +429,6 @@ ActiveRecord::Schema.define(:version => 20120503185151) do
     t.string   "twitter_handle"
     t.boolean  "registration_complete",                 :default => false
     t.integer  "domain_id"
-    t.boolean  "notification_commenter",                :default => true
-    t.boolean  "notification_author",                   :default => true
-    t.boolean  "notification_reflector",                :default => true
-    t.boolean  "notification_responder",                :default => true
     t.string   "unconfirmed_email"
     t.datetime "reset_password_sent_at"
   end

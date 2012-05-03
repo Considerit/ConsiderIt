@@ -36,11 +36,14 @@ class Comment < ActiveRecord::Base
     message_sent_to = {}
 
     begin
-      obj = root_object()
+      obj = root_object
 
       # notify creator of root object
       author = obj.user
-      if author.id != user_id && author.notification_author && author.email.length > 0
+      author_position = get_position_for_user_and_obj(author, obj, commentable_type)
+
+
+      if author.id != user_id && author_position.notification_author && author.email.length > 0
         if author.email && author.email.length > 0
           if commentable_type == 'Point'
             UserMailer.someone_discussed_your_point(author, obj, self, current_tenant.app_notification_email).deliver
@@ -53,12 +56,13 @@ class Comment < ActiveRecord::Base
       # notifications for other derivative notifications
       message_sent_to[author.id] = [author.name, 'point discussed']
 
-
       # For all other participants in the discussion...
       obj.comments.each do |comment|
         recipient = comment.user
+        recipient_position = get_position_for_user_and_obj(recipient, obj, commentable_type)
+
         if !message_sent_to.has_key?(recipient.id) \
-          && recipient.notification_commenter \
+          && recipient_position.notification_demonstrated_interest \
           && recipient.id != user_id 
 
           if recipient.email && recipient.email.length > 0   
@@ -71,7 +75,7 @@ class Comment < ActiveRecord::Base
       if commentable_type == 'Point'
         point = obj
         point.inclusions.each do |inclusion|
-          if inclusion.user.positions.find(inclusion.proposal.id).notification_includer
+          if inclusion.user.positions.find(inclusion.proposal_id).notification_demonstrated_interest
             includer = inclusion.user
             if !message_sent_to.has_key?(includer.id) && includer.id == user_id
               if includer.email && includer.email.length > 0
@@ -88,5 +92,18 @@ class Comment < ActiveRecord::Base
 
     return message_sent_to
   end
+
+  private
+    def get_position_for_user_and_obj(user,obj,commentable_type)
+      if commentable_type == 'Point' 
+        user.positions.find(obj.proposal_id)
+      elsif commentable_type == 'Position'
+        if user.id == obj.user_id
+          obj
+        else
+          user.positions.find(obj.id)
+        end
+      end
+    end
 
 end

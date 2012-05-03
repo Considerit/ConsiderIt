@@ -93,11 +93,11 @@ class ProposalsController < ApplicationController
     end
 
     @proposal = Proposal.create!(params[:proposal])
-    redirect_to proposal_path(@proposal.long_id)
+    redirect_to new_proposal_position_path(@proposal.long_id)
   end
 
   def edit
-
+    
   end
 
   def update

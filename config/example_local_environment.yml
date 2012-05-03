@@ -1,16 +1,6 @@
 default:
 
-  application_name: ''
-
-  authentication:
-    twitter:
-      consumer_key: ''
-      consumer_secret: ''
-      oauth_token: ''
-      oauth_token_secret: ''
-    facebook:
-      app_id: ''
-      app_secret: ''
+  host: ''
 
   analytics:
     google: ''

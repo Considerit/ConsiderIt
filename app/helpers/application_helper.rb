@@ -13,6 +13,12 @@ module ApplicationHelper
     "http://#{request.host}#{port_string}"
   end
 
+  def get_root_domain
+    reversed_host = request.host_with_port.reverse
+    first_dot = reversed_host.index('.')
+    request.host_with_port[-reversed_host.index('.', first_dot + 1)..reversed_host.length]
+  end
+
   def get_proposals
     proposals = []
     #TODO: do a join here instead???

@@ -24,12 +24,12 @@
         %iframe{:src => "//www.facebook.com/plugins/like.php?href=#{current_tenant.socmedia_facebook_page}&send=false&layout=button_count&width=100&show_faces=false&action=like&colorscheme=light&font=lucida+grande", :scrolling => "no", :frameborder => "0", :style => "border:none; overflow:hidden; width:90px;", :allowTransparency => "true"}
 
 
-    - if current_tenant.socmedia_twitter_page
+    - if current_tenant.socmedia_twitter_account
       %span.twitter
         .wrapper
           = image_tag 'twitter_bird.png'
           Follow
-        %a.twitter-follow-button{:href => "#{current_tenant.socmedia_twitter_page.gsub('http:','https:')}", "data-show-count".intern => "false", "data-width".intern => "90px", "data-show-screen-name".intern => "true"}
+        %a.twitter-follow-button{:href => "https://twitter.com/#{socmedia_twitter_account}", "data-show-count".intern => "false", "data-width".intern => "90px", "data-show-screen-name".intern => "true"}
         %script{:src => "//platform.twitter.com/widgets.js", :type => "text/javascript"}
 
     %form.email

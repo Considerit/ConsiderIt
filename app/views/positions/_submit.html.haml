@@ -13,14 +13,18 @@
 
 %ul
   %li
-    = f.check_box :notification_proposal_subscriber
-    = f.label :notification_proposal_subscriber, 'Notify me if a new pro or con is added'
-
-  - if @proposal.enable_position_statement
-    %li
-      = f.check_box :notification_statement_subscriber
-      = f.label :notification_statement_subscriber, 'Notify me if a new review is added'
+    = f.check_box :notification_author
+    = f.label :notification_author, 'when someone comments on a point I wrote here'
 
   %li
-    = f.check_box :notification_includer
-    = f.label :notification_includer, 'Notify me of new comments on points in my list'
+    = f.check_box :notification_demonstrated_interest
+    = f.label :notification_demonstrated_interest, 'when someone else comments on a pro or con i added or commented on'
+
+  %li
+    = f.check_box :notification_point_subscriber
+    = f.label :notification_point_subscriber, 'when a new pro or con is added'
+
+  %li
+    = f.check_box :notification_perspective_subscriber
+    = f.label :notification_perspective_subscriber, 'when a new perspective is added'
+

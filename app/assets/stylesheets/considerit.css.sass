@@ -18,8 +18,6 @@ $con_point_expanded: #FEEFF2
 $pro_point_dark: darken($pro_point_light, 30%) //#1C3B1D
 $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 
-@import "<%= APP_CONFIG[:application_name] %>/stylesheets/theme_colors"
-
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,600italic,800,300italic|Chelsea+Market|Lobster)
 @import "mixins"
 @import "css3_mixins"
@@ -53,6 +51,19 @@ $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 @import "shared/messages"
 
 @import "users/sessions"
+
+
+$primary_button_background_color: #082872
+$background_color: #890000
+
+button,
+input[type="submit"]
+  background-color: gray
+  border: none
+  color: white
+  &.important
+    //background-color: $primary_button_background_color    
+
 
 // *
 //   margin: 0

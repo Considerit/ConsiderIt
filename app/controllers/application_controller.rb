@@ -44,7 +44,12 @@ private
   end
 
   def authenticate_admin_user!
-    current_user && current_user.admin
+    if ! (current_user && current_user.is_admin?)
+      #raise 'YOU DO NOT HAVE ADMIN PRIVILEGES'
+      redirect_to root_path
+      return false
+    end
+    true
   end
 
   def current_admin_user

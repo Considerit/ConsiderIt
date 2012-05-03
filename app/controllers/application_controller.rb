@@ -13,30 +13,22 @@ class ApplicationController < ActionController::Base
       args.append({:layout => false}) if request.xhr?
     end
     @domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil
+    @theme = current_tenant.theme
     super
   end
     
 private
 
   def get_current_tenant
-    # Don't set tenant if there are none entered in the db...
-    # This supports single tenant installs.
-    if Account.count > 0 
-      current_account = Account.find_by_identifier(request.subdomain)
-      if current_account.nil?
-        current_account = Account.find(1)
-      end
-
-      set_current_tenant(current_account)
-    end
+    current_account = Account.find_by_identifier(request.subdomain)
+    set_current_tenant(current_account)
   end
 
   def theme_resolver
     if !session.has_key?('user_theme') || Rails.env == 'development'
-      session["user_theme"] = current_tenant ? current_tenant.theme : APP_CONFIG[:application_name]
+      session["user_theme"] = current_tenant.theme
     end
     
-
     set_theme(session["user_theme"])
   end
 

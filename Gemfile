@@ -7,7 +7,7 @@ gem "mysql2"
 gem 'thin'
 
 gem "haml"
-gem 'sass'
+gem 'sass-rails',   "~> 3.2.3"
 
 # https://github.com/plataformatec/devise
 gem 'devise'

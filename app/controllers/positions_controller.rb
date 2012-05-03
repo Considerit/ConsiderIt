@@ -128,8 +128,11 @@ protected
         #resolve by combining positions, taking stance from newly submitted...
         prev_pos.stance = @position.stance
         prev_pos.stance_bucket = @position.stance_bucket
-        prev_pos.notification_includer = @position.notification_includer
-        prev_pos.notification_proposal_subscriber = @position.notification_proposal_subscriber
+        prev_pos.notification_author = @position.notification_author
+        prev_pos.notification_demonstrated_interest = @position.notification_demonstrated_interest
+        prev_pos.notification_perspective_subscriber = @position.notification_perspective_subscriber
+        prev_pos.notification_point_subscriber = @position.notification_point_subscriber
+        
         save_actions(prev_pos)
         prev_pos.save
         @position.point_listings.update_all({:user_id => current_user.id, :position_id => prev_pos.id})

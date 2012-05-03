@@ -17,28 +17,6 @@
               = f.label :email, "Email address"
               = f.email_field
 
-        .notifications
-          %h3
-            Email notifications
-
-          %ul
-            %li
-              = f.check_box :notification_author
-              = f.label :notification_author, 'When someone comments on a point I wrote.'
-
-            %li
-              = f.check_box :notification_commenter
-              = f.label :notification_commenter, 'When someone comments on a point that I also commented on.'
-
-            %li
-              = f.check_box :notification_reflector
-              = f.label :notification_reflector, 'When someone summarizes a comment I wrote.'
-
-            %li
-              = f.check_box :notification_responder
-              = f.label :notification_responder, 'When a commenter responds to a summary I wrote.'
-
-
         .submit_footer
           = f.submit "Update"
 

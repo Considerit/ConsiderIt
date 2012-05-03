@@ -1,5 +1,6 @@
 # Use this hook to configure devise mailer, warden hooks and so forth. The first
 # four configuration values can also be set straight in your models.
+
 Devise.setup do |config|
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in DeviseMailer.
@@ -187,12 +188,36 @@ Devise.setup do |config|
     twitter_config = APP_CONFIG[:authentication][:twitter]
   end
 
-  config.omniauth :facebook, APP_CONFIG[:authentication][:facebook][:app_id], APP_CONFIG[:authentication][:facebook][:app_secret], {:scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook}
+
+  FACEBOOK_SETUP_PROC = lambda do |env| 
+    request = Rack::Request.new(env)
+    current_tenant = ApplicationController.find_current_tenant(request)
+    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_id
+    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret
+  end
+
+
+  FACEBOOK_SETUP_PROC = lambda do |env| 
+    request = Rack::Request.new(env)
+    current_tenant = ApplicationController.find_current_tenant(request)
+    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_id
+    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret
+  end  
+
+  config.omniauth :facebook, :setup => FACEBOOK_SETUP_PROC, :scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook
 
   config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo', :require => 'omniauth-openid'
   config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'
 
-  config.omniauth :twitter, APP_CONFIG[:authentication][:twitter][:consumer_key], APP_CONFIG[:authentication][:twitter][:consumer_secret], :strategy_class => OmniAuth::Strategies::Twitter
+
+  TWITTER_SETUP_PROC = lambda do |env| 
+    request = Rack::Request.new(env)
+    current_tenant = ApplicationController.find_current_tenant(request)
+    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_twitter_consumer_key
+    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_twitter_consumer_secret
+  end  
+
+  config.omniauth :twitter, :setup => TWITTER_SETUP_PROC, :strategy_class => OmniAuth::Strategies::Twitter
 
 
   # ==> Warden configuration

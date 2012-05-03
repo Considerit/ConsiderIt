@@ -196,7 +196,7 @@ Devise.setup do |config|
     env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret
   end
 
-  config.omniauth :facebook, :setup => FACEBOOK_SETUP_PROC, :scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook
+  config.omniauth :facebook, :setup => FACEBOOK_SETUP_PROC, :scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook, :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
 
   config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo', :require => 'omniauth-openid'
   config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'

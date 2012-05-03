@@ -16,12 +16,19 @@ class ApplicationController < ActionController::Base
     @theme = current_tenant.theme
     super
   end
-    
+
+  def self.find_current_tenant(rq)
+
+    Account.find_by_identifier(rq.session[:user_theme])
+  end
+
 private
 
-  def get_current_tenant
-    current_account = Account.find_by_identifier(request.subdomain)
+  def get_current_tenant(rq = nil)
+    rq ||= request
+    current_account = Account.find_by_identifier(rq.subdomain)
     set_current_tenant(current_account)
+    current_account
   end
 
   def theme_resolver

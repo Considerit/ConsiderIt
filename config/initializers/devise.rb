@@ -196,14 +196,6 @@ Devise.setup do |config|
     env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret
   end
 
-
-  FACEBOOK_SETUP_PROC = lambda do |env| 
-    request = Rack::Request.new(env)
-    current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_id
-    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret
-  end  
-
   config.omniauth :facebook, :setup => FACEBOOK_SETUP_PROC, :scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook
 
   config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo', :require => 'omniauth-openid'
@@ -213,8 +205,8 @@ Devise.setup do |config|
   TWITTER_SETUP_PROC = lambda do |env| 
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_twitter_consumer_key
-    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_twitter_consumer_secret
+    env['omniauth.strategy'].options[:consumer_key] = current_tenant.socmedia_twitter_consumer_key
+    env['omniauth.strategy'].options[:consumer_secret] = current_tenant.socmedia_twitter_consumer_secret
   end  
 
   config.omniauth :twitter, :setup => TWITTER_SETUP_PROC, :strategy_class => OmniAuth::Strategies::Twitter

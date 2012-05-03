@@ -10,10 +10,6 @@ class Reflect::ReflectResponseRevision < ActiveRecord::Base
   def notify_parties
     message_sent_to = {}
     bulleter = bullet_revision.user
-    pp 'notifying parties'
-
-    pp bulleter.email
-    pp bulleter.notification_responder
     
     if bulleter.notification_responder && bulleter.email.length > 0
       UserMailer.your_reflection_was_responded_to(bulleter, self, bullet_revision, bullet_revision.comment, current_tenant.app_notification_email)

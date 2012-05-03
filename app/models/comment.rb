@@ -43,9 +43,9 @@ class Comment < ActiveRecord::Base
       if author.id != user_id && author.notification_author && author.email.length > 0
         if author.email && author.email.length > 0
           if commentable_type == 'Point'
-            UserMailer.someone_discussed_your_point(author, obj, self).deliver
+            UserMailer.someone_discussed_your_point(author, obj, self, current_tenant.app_notification_email).deliver
           elsif commentable_type == 'Position'
-            UserMailer.someone_discussed_your_position(author, obj, self).deliver
+            UserMailer.someone_discussed_your_position(author, obj, self, current_tenant.app_notification_email).deliver
           end
         end
       end
@@ -62,7 +62,7 @@ class Comment < ActiveRecord::Base
           && recipient.id != user_id 
 
           if recipient.email && recipient.email.length > 0   
-            UserMailer.someone_commented_on_thread(recipient, obj, self).deliver
+            UserMailer.someone_commented_on_thread(recipient, obj, self, current_tenant.app_notification_email).deliver
           end
           message_sent_to[recipient.id] = [recipient.name, 'same discussion']
         end
@@ -75,7 +75,7 @@ class Comment < ActiveRecord::Base
             includer = inclusion.user
             if !message_sent_to.has_key?(includer.id) && includer.id == user_id
               if includer.email && includer.email.length > 0
-                UserMailer.someone_commented_on_an_included_point(includer, point, self).deliver
+                UserMailer.someone_commented_on_an_included_point(includer, point, self, current_tenant.app_notification_email).deliver
               end
               message_sent_to[recipient.id] = [recipient.name, 'comment on included point']
             end

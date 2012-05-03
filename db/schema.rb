@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120503023759) do
+ActiveRecord::Schema.define(:version => 20120503185151) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -25,12 +25,13 @@ ActiveRecord::Schema.define(:version => 20120503023759) do
     t.string   "socmedia_twitter_account"
     t.string   "analytics_google"
     t.boolean  "app_require_registration_for_perspective", :default => false
-    t.string   "socmedia_facebook_id"
+    t.string   "socmedia_facebook_client"
     t.string   "socmedia_facebook_secret"
     t.string   "socmedia_twitter_consumer_key"
     t.string   "socmedia_twitter_consumer_secret"
     t.string   "socmedia_twitter_oauth_token"
     t.string   "socmedia_twitter_oauth_token_secret"
+    t.boolean  "requires_civility_pledge_on_registration", :default => false
   end
 
   create_table "active_admin_comments", :force => true do |t|

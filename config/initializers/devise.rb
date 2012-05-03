@@ -192,7 +192,7 @@ Devise.setup do |config|
   FACEBOOK_SETUP_PROC = lambda do |env| 
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_id
+    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_client
     env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret
   end
 

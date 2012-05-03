@@ -7,7 +7,7 @@
 =f.hidden_field :stance, :id => "stance-value", :value=>0.0
 =f.hidden_field :proposal_id, :value=>@proposal.id
 =f.hidden_field :position_id, :value => @position.id              
-=f.submit "Save!", :class => "submit important"
+=f.submit "Save your perspective!", :class => "submit important"
 = link_to skip_text, proposal_position_path(@proposal.long_id, @position), :method => :delete, :class => "skip_save"
 //= link_to "discard your #{@position.published ? 'changes' : 'position'}", proposal_position_path(@proposal, @position), :method => :delete
 

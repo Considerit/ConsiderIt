@@ -17,7 +17,7 @@
 (function($){
   // is an input blank
   $.fn.isEmpty = function() {
-    return $(this)[0].value === '';
+    return $.trim($(this)[0].value) === '';
   };
 
   // return top/left offset for element

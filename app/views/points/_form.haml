@@ -1,6 +1,6 @@
 .pointform{ :class => "#{action}pointform" }
 
-  = form_for [@proposal, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'} html5"}, :remote => true do |f|
+  = form_for [@proposal, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'} "}, :remote => true do |f|
 
     .form_proper
       =f.hidden_field :is_pro, :id => "point-current-is_pro", :value => is_pro

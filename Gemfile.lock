@@ -4,6 +4,8 @@ GEM
     actionmailer (3.2.3)
       actionpack (= 3.2.3)
       mail (~> 2.4.4)
+    actionmailer-with-request (0.3.0)
+      rails (>= 3)
     actionpack (3.2.3)
       activemodel (= 3.2.3)
       activesupport (= 3.2.3)
@@ -211,6 +213,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  actionmailer-with-request
   activeadmin
   acts_as_tenant
   coffee-rails (~> 3.2.1)

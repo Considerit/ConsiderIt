@@ -20,6 +20,7 @@ ConsiderIt = {
     ConsiderIt.per_request();
 
     $j(document).ajaxComplete(function(e, xhr, settings) {
+
       if ( settings.url.indexOf('reflect') == -1 ) {
         ConsiderIt.per_request();
       }
@@ -181,7 +182,6 @@ ConsiderIt = {
       });
     });   
 
-    $j('form.html5:not(.html5formified)').html5form();
     $j('[placeholder]').inlined_labels();
 
     // $j('.participant_carousel .vertical_carousel').infiniteCarousel({
@@ -195,6 +195,7 @@ ConsiderIt = {
     // });
 
     ConsiderIt.update_carousel_heights();
+    $j('form.html5:not(.html5formified)').html5form();
 
   },
 
@@ -398,7 +399,8 @@ ConsiderIt = {
     });
 
     // Create callback
-    $j('.pro_con_list.dynamic').delegate('.newpoint .newpointform form', 'ajax:success', function(data, response, xhr){
+
+    $j('.pro_con_list.dynamic').on('ajax:success', '.newpoint .newpointform form', function(data, response, xhr){
       $j(this).parents('.full_column').filter(":first").find('.point_list').filter(":first").append(response['new_point']);
       $j(this).find('textarea').val('');
       $j(this).find('.point-title-group .count').html(140);
@@ -509,13 +511,12 @@ ConsiderIt = {
 
           real_point.addClass('animation_state-finished', 'fast', 'easeInQuad', function(){
             
-
             full.slideDown(function(){
 
-
               if ( !details_loaded ) {
-                var proposal_id = $j('#proposal_id').text();
-                $j.get("<%= Rails.application.routes.url_helpers.proposals_path %>" + '/' + proposal_id + '/points/' + point_id, {'origin' : is_margin ? 'margin' : 'self'}, function(data){
+                var proposal_id = $j.trim($j('#proposal_long_id').text());
+
+                $j.get('/' + proposal_id + '/points/' + point_id, {'origin' : is_margin ? 'margin' : 'self'}, function(data){
                   $j('.extra', real_point)
                     .html(data.details)
                     .find('textarea').autoResize({extraSpace:0});
@@ -593,7 +594,7 @@ ConsiderIt = {
     //////////////
 
     // Include in list
-    $j(document).delegate('.include .judgepointform form', 'ajax:success', function(data, response, xhr){
+    $j('.include').on('ajax:success', '.judgepointform form', function(data, response, xhr){
       var included_point = $j(this).parents('.point_in_list_margin'), 
           replacement_point = $j(response['new_point']);
     

@@ -12,7 +12,7 @@ class InclusionsController < ApplicationController
       return
     end
 
-    @proposal = Proposal.find(params[:proposal_id])
+    @proposal = Proposal.find_by_long_id(params[:long_id])
     @point = Point.find(params[:point_id])
 
     if (current_user && (!session[@proposal.id][:deleted_points].has_key?(@point.id) && current_user.inclusions.where( :point_id => @point.id ).first)) || session[@proposal.id][:included_points].has_key?(params[:point_id])
@@ -51,13 +51,10 @@ class InclusionsController < ApplicationController
   #cannot just route here in normal REST fashion because for unregistered users, 
   # we do not save the inclusion and hence do not have an ID for the inclusion
   def destroy(params)
-    @proposal = Proposal.find(params[:proposal_id])
+    @proposal = Proposal.find_by_long_id(params[:long_id])
     @point = Point.find(params[:point_id])
 
-    pp session[@proposal.id][:included_points]
     session[@proposal.id][:included_points].delete(params[:point_id])    
-    pp session[@proposal.id][:included_points]
-    pp session[@proposal.id][:deleted_points]
     if current_user
       @inc = current_user.inclusions.where(:point_id => @point.id).first
       if @inc

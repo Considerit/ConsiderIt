@@ -38,7 +38,7 @@ class PositionsController < ApplicationController
     end
 
     respond_with(@proposal, @position) do |format|
-      format.html { redirect_to(@proposal) }
+      format.html { redirect_to(  proposal_path(@proposal.long_id)  ) }
       format.js { render :json => { :result => 'successful' }.to_json }
     end
   end
@@ -59,7 +59,7 @@ class PositionsController < ApplicationController
     save_actions(@position)
     
     respond_with(@proposal, @position) do |format|
-      format.html { redirect_to(@proposal) }
+      format.html { redirect_to(  proposal_path(@proposal.long_id) ) }
     end
   end
   
@@ -147,7 +147,7 @@ protected
 
       session.delete('reify_activities')
       session.delete('position_to_be_published')  
-      redirect_to(@proposal)
+      redirect_to( proposal_path(@proposal.long_id))
       return
     end
 

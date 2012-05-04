@@ -124,7 +124,7 @@ class PointsController < ApplicationController
   end
   
   def create
-    @proposal = Proposal.find(params[:proposal_id])
+    @proposal = Proposal.find_by_long_id(params[:long_id])
     if current_user
       @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
     else
@@ -133,7 +133,7 @@ class PointsController < ApplicationController
 
     @user = current_user
 
-    params[:point][:proposal_id] = params[:proposal_id]   
+    params[:point][:proposal_id] = @proposal.id   
 
     if params[:point][:nutshell].length > 140
       params[:point][:text] << params[:point][:nutshell][140..-1]
@@ -174,7 +174,7 @@ class PointsController < ApplicationController
 
   # TODO: server-side permissions check for this operation
   def update
-    @proposal = Proposal.find(params[:proposal_id])
+    @proposal = Proposal.find_by_long_id(params[:long_id])
     if current_user
       @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
     else
@@ -186,7 +186,7 @@ class PointsController < ApplicationController
     @point.update_attributes!(params[:point])
     @point.save
 
-    new_point = render_to_string :partial => "points/show", :locals => { :context => 'self', :point => @point, :static => false }
+    new_point = render_to_string :partial => "points/show", :locals => { :origin => 'self', :point => @point, :static => false }
     response = {
       :new_point => new_point
     }
@@ -196,7 +196,7 @@ class PointsController < ApplicationController
 
   def show
     point = Point.find(params[:id])
-    @proposal = Proposal.find(params[:proposal_id])
+    @proposal = Proposal.find_by_long_id(params[:long_id])
     origin = params[:origin]
     point_details = render_to_string :partial => "points/details", :locals => { :point => point, :light_background => origin == 'margin' }
     render :json => { :details => point_details }

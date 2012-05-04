@@ -22,6 +22,10 @@ class ApplicationController < ActionController::Base
     Account.find_by_identifier(rq.session[:user_theme])
   end
 
+  def default_url_options
+    {:host => request.host_with_port}
+  end
+
 private
 
   def get_current_tenant(rq = nil)

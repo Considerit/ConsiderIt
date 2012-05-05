@@ -62,10 +62,6 @@ class PositionsController < ApplicationController
       format.html { redirect_to(  proposal_path(@proposal.long_id) ) }
     end
   end
-  
-  def show
-    
-  end
 
   def destroy
     @proposal = Proposal.find_by_long_id(params[:long_id])

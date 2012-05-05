@@ -1,7 +1,7 @@
 - origin = dynamic ? 'self' : 'board'
 - bucket ||= origin
 
-.pro_con_list{ :class => " #{dynamic ? 'dynamic' : 'static'} domain_#{bucket}"}
+.pro_con_list{ :class => " #{dynamic ? 'dynamic' : 'static'} domain_#{bucket} #{has_other_points ? 'has_other_points' : 'no_other_points' }"}
 
   - if !dynamic
     .participant_connection      

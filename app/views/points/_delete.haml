@@ -1,14 +1,5 @@
 .deletepointform
-  %a.delete_point.point_operation
-    delete
 
-  = form_for point, :remote => true, :url => proposal_point_path(@proposal.long_id, point), :html => { :method => :delete, :class => 'deletepointformproper hide' } do |f| 
-    %span.prompt
-      Are you sure?
-    %a.cancel
-      no
-
-    %input{:class => 'delete_point point_operation', :type => 'submit', :value => "yes", :name => "delete", :title => 'Click to permanently delete this point'}
-
+  = link_to "delete", proposal_point_path(@proposal.long_id, point), :remote => true, :confirm => "Are you sure?", :method=>:delete, :class => 'point_operation'
 
   

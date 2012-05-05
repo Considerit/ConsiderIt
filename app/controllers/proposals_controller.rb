@@ -47,7 +47,7 @@ class ProposalsController < ApplicationController
       @segments[bucket] = [qry.pros.page( 1 ).per( POINTS_PER_PAGE ),
         qry.cons.page( 1 ).per( POINTS_PER_PAGE )]
     end
-
+    @results_page = true
 
     #PointListing.transaction do
     #  (@pro_points + @con_points).each do |pnt|

@@ -12,10 +12,10 @@
       .personal_position.update
         .arrow
           &#8630
-        You 
+
         %span
-          = surround '(', ')' do
-            %a{ :href => "#{edit_proposal_position_path(@proposal.long_id, @position)}"} update
+          = surround '', '' do
+            %a{ :href => "#{edit_proposal_position_path(@proposal.long_id, @position)}"} update your perspective
 
 
     .bar{ :style => "#{bucket_percentile == 0 ? '' : 'min-height: 12px;'} height: #{bucket_percentile/height_scaler * 100}\%; left: #{-7*index}px", :id => "bucket-#{6-index}", :class => "#{bucket_percentile == 0 ? 'empty' : 'has_votes'}"}

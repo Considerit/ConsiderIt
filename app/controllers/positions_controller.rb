@@ -14,7 +14,7 @@ class PositionsController < ApplicationController
   end
 
   def create
-    @proposal = Proposal.find(params[:proposal_id])
+    @proposal = Proposal.find_by_long_id(params[:long_id])
 
     (stance, bucket) = get_stance_val_from_params(params)
 

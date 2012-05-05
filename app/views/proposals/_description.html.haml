@@ -9,9 +9,10 @@
         = render :partial => 'positions/admin_make_editable', :locals => { :field => :name}
       - else
         = prompt
-
-  .pic
-    = image_tag @proposal.user.avatar.url(:medium), :class => 'avatar'
+  
+  - if @proposal.user.avatar_file_name
+    .pic
+      = image_tag @proposal.user.avatar.url(:medium), :class => 'avatar'
 
   .description_wrapper
 

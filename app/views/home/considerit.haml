@@ -1,22 +1,23 @@
 #static.considerit
-  %h2 ConsiderIt
-
   %p 
     %a{:href=>"http://engage.cs.washington.edu/considerit/", :target=>"_blank"}
       ConsiderIt
     is an open source deliberation platform written in Ruby on Rails and licensed under the 
-    %a{:href=>"http://www.gnu.org/licenses/agpl.html", :target=>'_blank'}
-      AGPL. 
+    = succeed '.' do 
+      %a{:href=>"http://www.gnu.org/licenses/agpl.html", :target=>'_blank'}<>
+        AGPL
     The code is accessible at this
-    %a{:href=>'https://github.com/tkriplean/ConsiderIt', :target=>'_blank'}
-      Github repository.
+    = succeed '.' do
+      %a{:href=>'https://github.com/tkriplean/ConsiderIt', :target=>'_blank'}<>
+        Github repository
 
   %p 
-    ConsiderIt helps individuals make sense of complex issues through the collaborative creation of pro/con lists. ConsiderIt makes it easy to endorse points made by others who share your views, or to add new points of your own. 
+    ConsiderIt helps individuals make sense of complex issues and find common ground in unexpected places. Decision makers can easily learn the most salient reasons people support or oppose their proposals.
 
-  %p
-    ConsiderIt also helps create common ground among people with different views. ConsiderIt prioritizes the pro and con points that are endorsed by people from across the decision spectrum, decreasing polarization and helping decision-makers move towards solutions with broad appeal. 
+  %p 
+    The ConsiderIt project is lead by 
+    =link_to 'Travis Kriplean', 'http://twitter.com/#!/hotvig'
 
-  %p
-    The considerations surfaced through ConsiderIt can also be useful for decision-makers in organizations, enabling them to identify the pro and con points that matter most to their users, readers or constituents. 
-
+    and was originally funded through a National Science Foundation grant. You can read more about it at 
+    = succeed '.' do
+      = link_to 'http://crowdresearch.org/blog/?p=2443'

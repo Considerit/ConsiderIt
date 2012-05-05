@@ -25,6 +25,9 @@ html
         +box-shadow(0,0,0,transparent)
         padding-top: 35px
 
+.message
+  top: -35px
+
 #wrap > #content, #intro
   min-height: 700px
 
@@ -216,3 +219,23 @@ h1.improve a
   color: #aaa
   color: rgba(white, .6)
   text-shadow: 1px 1px black
+
+#explore_proposal > ol li.breakdown .histogram_arrow .support, 
+#explore_proposal > ol li.breakdown .histogram_arrow .oppose
+  color: #444
+  color: rgba(black,.6)
+  font-family: inherit
+  font-weight: bold
+  text-transform: lowercase
+  font-variant: small-caps
+
+#explore_proposal > ol li.breakdown .histogram .viz .personal_position.update
+  color: #333
+  width: 200px
+  text-align: center
+  a
+    font-size: 11pt
+
+#explore_proposal > ol li.breakdown .histogram .viz
+  line-height: normal
+

@@ -74,7 +74,9 @@ ConsiderIt = {
     if ( update_position.length > 0 ) {
       update_position
         .show()
-        .css(update_position.next('.bar').position());
+        .css({
+          top: update_position.next('.bar').position().top - 13,
+          left: update_position.next('.bar').position().left - 59});
     }
 
     ConsiderIt.positions.initialize_participants_block();
@@ -244,7 +246,7 @@ ConsiderIt = {
 
           });
         });
-      // .on('click', '#messages .confirmation_required form', function(){
+      // .on('click', '.confirmation_required form', function(){
       //     $j(this).parents('.message').append('<span> [done]</span>');
       //   })
 
@@ -326,8 +328,6 @@ ConsiderIt = {
         //if ( !$j(e.target).hasClass('.save_block') && !$j(e.target).parents('.save_block').length > 0 ) {
         //  save_block.hide();
         //}
-
-
       });
             
     //////////////

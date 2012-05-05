@@ -113,7 +113,7 @@ class Reflect::ReflectResponseController < ApplicationController
     
     new_rev.save
     if modify
-      new_rev.notify_parties
+      new_rev.notify_parties(current_tenant)
     end
 
     return {:insert_id => response_obj.id, :rev_id => new_rev.id, :u => user.name, :sig => signal}.to_json

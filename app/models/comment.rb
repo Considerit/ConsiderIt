@@ -32,7 +32,7 @@ class Comment < ActiveRecord::Base
     commentable_type.constantize.find(commentable_id)
   end
 
-  def notify_parties
+  def notify_parties(current_tenant)
     message_sent_to = {}
 
     begin
@@ -42,13 +42,12 @@ class Comment < ActiveRecord::Base
       author = obj.user
       author_position = get_position_for_user_and_obj(author, obj, commentable_type)
 
-
       if author.id != user_id && author_position.notification_author && author.email.length > 0
         if author.email && author.email.length > 0
           if commentable_type == 'Point'
-            UserMailer.someone_discussed_your_point(author, obj, self, current_tenant.app_notification_email).deliver
+            UserMailer.someone_discussed_your_point(author, obj, self, current_tenant.contact_email).deliver
           elsif commentable_type == 'Position'
-            UserMailer.someone_discussed_your_position(author, obj, self, current_tenant.app_notification_email).deliver
+            UserMailer.someone_discussed_your_position(author, obj, self, current_tenant.contact_email).deliver
           end
         end
       end
@@ -66,7 +65,7 @@ class Comment < ActiveRecord::Base
           && recipient.id != user_id 
 
           if recipient.email && recipient.email.length > 0   
-            UserMailer.someone_commented_on_thread(recipient, obj, self, current_tenant.app_notification_email).deliver
+            UserMailer.someone_commented_on_thread(recipient, obj, self, current_tenant.contact_email).deliver
           end
           message_sent_to[recipient.id] = [recipient.name, 'same discussion']
         end
@@ -79,7 +78,7 @@ class Comment < ActiveRecord::Base
             includer = inclusion.user
             if !message_sent_to.has_key?(includer.id) && includer.id == user_id
               if includer.email && includer.email.length > 0
-                UserMailer.someone_commented_on_an_included_point(includer, point, self, current_tenant.app_notification_email).deliver
+                UserMailer.someone_commented_on_an_included_point(includer, point, self, current_tenant.contact_email).deliver
               end
               message_sent_to[recipient.id] = [recipient.name, 'comment on included point']
             end
@@ -87,7 +86,6 @@ class Comment < ActiveRecord::Base
         end
       end
     rescue
-
     end
 
     return message_sent_to
@@ -96,7 +94,7 @@ class Comment < ActiveRecord::Base
   private
     def get_position_for_user_and_obj(user,obj,commentable_type)
       if commentable_type == 'Point' 
-        user.positions.find(obj.proposal_id)
+        user.positions.find(obj.position_id)
       elsif commentable_type == 'Position'
         if user.id == obj.user_id
           obj

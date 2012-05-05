@@ -66,6 +66,8 @@
 
       label
         color: #aaa
+        min-width: 150px
+
       .count
         color: #888
         position: absolute
@@ -77,8 +79,6 @@
 
       .point-title-group, .point-description-group
         margin-bottom: 8px
-        .point-title
-        .point-description
 
       .point-pledge
         float: left
@@ -119,3 +119,15 @@
           letter-spacing: 0
           text-transform: inherit
           margin-left: 3px
+
+
+
+  &.editpointform
+    +chalkboard
+    border: 2px solid white
+    padding-top: 15px
+    padding-bottom: 15px
+    top: 30px
+    left: 22px
+    z-index: 100
+    

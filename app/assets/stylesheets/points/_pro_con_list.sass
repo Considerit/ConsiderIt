@@ -87,12 +87,21 @@
   // for pro/con lists that can have new points added to them
   &.dynamic
     width: 570px
-    min-height: 700px
+
+    &.no_other_points
+      min-height: 500px
+
+      .full_column
+        min-height: 500px
+
+    &.has_other_points
+      min-height: 700px
+      .full_column
+        min-height: 670px
 
     .full_column
       width: 240px
       border: 2px solid transparent
-      min-height: 670px
 
     .hovered
       border-color: #777

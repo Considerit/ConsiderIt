@@ -149,8 +149,8 @@ class Reflect::ReflectBulletController < ApplicationController
     end
     
     new_rev.save
-    if modify
-      new_rev.notify_parties
+    if !modify
+      new_rev.notify_parties(current_tenant)
     end
     
     if params.key?(:highlights)

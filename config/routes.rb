@@ -7,7 +7,7 @@ ConsiderIt::Application.routes.draw do
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d]{10}/, :only => [:show, :edit, :update]
   resource :proposal, :path => '/:long_id', :long_id => /[a-z\d]{10}/, :only => [], :path_names => {:show => 'results'} do
-    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :show, :destroy], :path_names => {:new => ''}
+    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :destroy], :path_names => {:new => ''}
     resources :points, :only => [:index, :create, :update, :destroy, :show] do 
       resources :inclusions, :only => [:create] 
     end

@@ -2,7 +2,6 @@ class PointLinksController < ApplicationController
   def create
     @proposal = Proposal.find(params[:proposal_id])
 
-    pp params
     params[:point_link][:proposal_id] = @proposal.id
     @point_link = PointLink.new(params[:point_link])
 

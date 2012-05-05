@@ -27,20 +27,23 @@ html
 #wrap > #content, #intro
   min-height: 700px
 
+
 h1.improve, h1.improve a
   color: #A05047
   font-size: 32pt
-  +heading
-
+  font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif
+  display: block
   .subheader
     color: #aaa
     font-size: 12pt
     position: relative
-    top: -35px
+    top: -27px
 
+h1.improve a
+  padding: 9px 0 0 0
 
 #wrap #masthead 
-  height: 100px
+  //height: 100px
   margin-top: 0
   width: 100%
   //background: image-url('rejectme/images/header_back.jpg') no-repeat top center black
@@ -51,15 +54,14 @@ h1.improve, h1.improve a
     text-align: center
     margin: auto
     background-color: #666
-    background-color: rgba(black, .5)
+    background-color: rgba(black, .65)
     width: 100%
-    height: 100px
 
   #nav-user
     top: 10px
     right: 25px
     a
-      color: #666
+      color: #aaa
 
 
 .homepage body #wrap
@@ -117,7 +119,7 @@ h1.improve, h1.improve a
         width: 500px
         margin-bottom: 5px
       h2
-        +heading
+        font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif
         color: #A05047
         font-size: 18pt
         margin-bottom: 15px
@@ -143,11 +145,6 @@ h1.improve, h1.improve a
   border-width: 3px
   +box-shadow(0,1px,3px,rgba(black,.5))
 
-  &.dynamic 
-    min-height: 500px
-
-    .full_column
-      min-height: 500px
 
 .proposal_prompt
 

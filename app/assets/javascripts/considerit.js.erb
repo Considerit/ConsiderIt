@@ -5,9 +5,6 @@ var ConsiderIt; //global namespace for ConsiderIt js methods
 $j = jQuery.noConflict();
 
 
-
-
-
 ConsiderIt = {
   study : false,
   init : function() {
@@ -415,16 +412,9 @@ ConsiderIt = {
       hide_lightbox(); 
     });
 
-    // Delete confirmation prompt
-    $j('.pro_con_list.dynamic').delegate('a.delete_point', 'click', function(){
-      $j(this).siblings('form').show();  
-    });
-    $j('.pro_con_list.dynamic').delegate('.deletepointform a.cancel', 'click', function(){
-      $j(this).parents('form').hide();  
-    });
 
     // Delete callback
-    $j('.pro_con_list.dynamic').delegate('.deletepointform form', 'ajax:success', function(data, response, xhr){
+    $j('.pro_con_list.dynamic').delegate('.deletepointform a', 'ajax:success', function(data, response, xhr){
       $j(this).parents('.point_in_list').filter(":first").fadeOut();
     });
 
@@ -467,7 +457,8 @@ ConsiderIt = {
         .css({
           'top': placeholder.offset().top, //- $j('#content').offset().top,
           'left': placeholder.offset().left 
-        });
+        })
+        .find('.operations').hide();
 
       //start complex animation...
       var body = real_point.find('> .body'),

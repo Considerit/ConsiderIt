@@ -1,4 +1,4 @@
-- skip_text = current_user && @position.published ? "Discard changes" : "No, just show me the results..."
+- skip_text = current_user && @position.published ? "Discard changes" : "No, just show me results..."
 
 .stance.position_statement.hide
   = label_tag :explanation, "Optional review that summarizes your thoughts"
@@ -6,25 +6,31 @@
    
 =f.hidden_field :stance, :id => "stance-value", :value=>0.0
 =f.hidden_field :proposal_id, :value=>@proposal.id
-=f.hidden_field :position_id, :value => @position.id              
+=f.hidden_field :position_id, :value => @position.id
+
+
 =f.submit "Save your perspective!", :class => "submit important"
 = link_to skip_text, proposal_position_path(@proposal.long_id, @position), :method => :delete, :class => "skip_save"
 //= link_to "discard your #{@position.published ? 'changes' : 'position'}", proposal_position_path(@proposal, @position), :method => :delete
 
-%ul
-  %li
-    = f.check_box :notification_author
-    = f.label :notification_author, 'when someone comments on a point I wrote here'
+.notifications
+  %fieldset
+    %legend
+      Keep me updated. Email me when&hellip;
+    %ul
+      %li
+        = f.check_box :notification_author
+        = f.label :notification_author, 'someone comments on a point I wrote here'
 
-  %li
-    = f.check_box :notification_demonstrated_interest
-    = f.label :notification_demonstrated_interest, 'when someone else comments on a pro or con i added or commented on'
+      %li
+        = f.check_box :notification_demonstrated_interest
+        = f.label :notification_demonstrated_interest, 'someone comments on a pro or con i added or commented on'
 
-  %li
-    = f.check_box :notification_point_subscriber
-    = f.label :notification_point_subscriber, 'when a new pro or con is added'
+      %li
+        = f.check_box :notification_point_subscriber
+        = f.label :notification_point_subscriber, 'a new pro or con is added'
 
-  %li
-    = f.check_box :notification_perspective_subscriber
-    = f.label :notification_perspective_subscriber, 'when a new perspective is added'
+      %li
+        = f.check_box :notification_perspective_subscriber
+        = f.label :notification_perspective_subscriber, 'a new perspective is added'
 

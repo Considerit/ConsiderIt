@@ -17,7 +17,7 @@ class PointsController < ApplicationController
   #     
   #########
   def index
-    @proposal = Proposal.find(params[:proposal_id])
+    @proposal = Proposal.find_by_long_id(params[:long_id])
     @user = current_user
 
     if current_user

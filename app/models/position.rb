@@ -14,7 +14,7 @@ class Position < ActiveRecord::Base
   default_scope where( :published => true )
   scope :published, where( :published => true )
 
-  def notify_parties
+  def notify_parties(current_tenant)
     message_sent_to = {}
     begin
       #email anyone who subscribes to reviews for the proposal
@@ -22,7 +22,7 @@ class Position < ActiveRecord::Base
         position_taker = pos.user
         if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
           if position_taker.email && position_taker.email.length > 0
-            UserMailer.position_subscription(position_taker, self, current_tenant.app_notification_email).deliver
+            UserMailer.position_subscription(position_taker, self, current_tenant.contact_email).deliver
           end
           message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to position']
         end

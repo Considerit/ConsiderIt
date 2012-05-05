@@ -7,6 +7,7 @@
 - proposal_stance_data = stance_fractions(@proposal)
 - has_position = proposal_stance_data.sum > 0
 - update = @position && @position.published
+- has_other_points = @pro_points.length + @con_points.length > 0
 
 = render :partial => "proposals/blocks/menu"
 
@@ -66,10 +67,10 @@
         // .participant_container
         //   = render :partial => "proposals/participants"
        
-        = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => 'all', :pro_points => @pro_points, :con_points => @con_points }
+        = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => 'all', :pro_points => @pro_points, :con_points => @con_points, :has_other_points => has_other_points }
 
         - @segments.each_with_index do |(pros,cons), bucket| 
-          = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => bucket, :pro_points => pros, :con_points => cons}
+          = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => bucket, :pro_points => pros, :con_points => cons, :has_other_points => pros.length + cons.length > 0}
 
     %li.clear
  

@@ -3,7 +3,7 @@
     %button.back
   .carousel{ :name => "proposals" }
     %ul
-      - get_proposals.each do |proposal|
+      - get_proposals_by_rank.each do |proposal|
         = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
     .clear
   .paginate.last

@@ -10,7 +10,7 @@
       - else
         = prompt
   
-  - if @proposal.user.avatar_file_name
+  - if @proposal.user && @proposal.user.avatar_file_name
     .pic
       = image_tag @proposal.user.avatar.url(:medium), :class => 'avatar'
 

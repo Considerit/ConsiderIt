@@ -37,6 +37,26 @@ module ApplicationHelper
 
   end
 
+  def get_proposals_by_rank
+    proposals = Proposal.order("score desc")
+    proposals
+  end
+
+  def get_proposals_by_domain
+    proposals = []
+    #TODO: do a join here instead???
+    if session.has_key?(:domain)
+     domain = Domain.find(session[:domain])
+     domain.domain_maps.each do |dm|
+       proposals.push(dm.proposal)
+     end
+    end
+    # TODO: add a "show_all, :integer" field to Option 
+    # that can be queried here instead
+    proposals += Proposal.where(:domain => 'all').order(:designator)
+    proposals
+  end
+
   def has_stance(proposal)
     return current_user && current_user.positions.where(:proposal_id => proposal.id).count > 0
   end

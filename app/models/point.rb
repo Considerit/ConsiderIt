@@ -1,4 +1,3 @@
-
 class Point < ActiveRecord::Base
   
   is_commentable
@@ -136,53 +135,55 @@ class Point < ActiveRecord::Base
       num_listings_per_point[row.pnt.to_i] = row.cnt.to_i
     end
 
-    Proposal.all.each do |proposal|
-      Point.transaction do        
-        proposal.points.each do |pnt|
-          pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
-          pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
-          pnt.update_absolute_score
+    Account.all.each do |accnt|
+
+      Proposal.where("account_id = ?", accnt.id).each do |proposal|
+        Point.transaction do        
+          proposal.points.each do |pnt|
+            pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
+            pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
+            pnt.update_absolute_score
+          end
         end
-      end
-      
-      # Point ranking across the metrics is done separately for pros and cons,
-      # fixed on a particular Proposal
-      point_groups = [
-        proposal.points.pros.select([:id, :appeal, :attention, :persuasiveness]).all,
-        proposal.points.cons.select([:id, :appeal, :attention, :persuasiveness]).all
-      ]
-
-      point_groups.each do |group|        
-        relative_scores = {}
         
-        group.each {|pnt| relative_scores[pnt.id] = []}
+        # Point ranking across the metrics is done separately for pros and cons,
+        # fixed on a particular Proposal
+        point_groups = [
+          proposal.points.pros.all,
+          proposal.points.cons.all
+        ]
 
-        [:appeal.to_s, :attention.to_s, :persuasiveness.to_s].each do |metric|
+        point_groups.each do |group|        
+          relative_scores = {}
           
-          # descending sort of points by current metric
-          group.sort! {|x,y| y.attributes[metric] <=> x.attributes[metric]}
-          
-          # now we'll compute the relative percentile ranking for the metric for each point (1=highest, 0 lowest)
-          cur_val = nil
-          rank = nil
-          group.each_with_index do |pnt, idx|
-            if !cur_val || pnt.attributes[metric] < cur_val
-              rank = idx.to_f
-              cur_val = pnt.attributes[metric]
+          group.each {|pnt| relative_scores[pnt.id] = []}
+
+          [:appeal.to_s, :attention.to_s, :persuasiveness.to_s].each do |metric|
+            
+            # descending sort of points by current metric
+            group.sort! {|x,y| y.attributes[metric] <=> x.attributes[metric]}
+            
+            # now we'll compute the relative percentile ranking for the metric for each point (1=highest, 0 lowest)
+            cur_val = nil
+            rank = nil
+            group.each_with_index do |pnt, idx|
+              if !cur_val || pnt.attributes[metric] < cur_val
+                rank = idx.to_f
+                cur_val = pnt.attributes[metric]
+              end
+              relative_scores[pnt.id].push( 1 - rank / group.length )
             end
-            relative_scores[pnt.id].push( 1 - rank / group.length )
           end
-        end
-        
-        Point.transaction do
-          group.each do |pnt|
-            pnt.score = relative_scores[pnt.id].inject(:+) / relative_scores[pnt.id].length          
-            pnt.save
+          
+          Point.transaction do
+            group.each do |pnt|
+              attrs = {:score => relative_scores[pnt.id].inject(:+) / relative_scores[pnt.id].length}
+              pnt.update_attributes(attrs)
+            end
           end
+                              
         end
-                            
       end
-
     end
   end
   

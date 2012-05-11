@@ -22,7 +22,7 @@ class Position < ActiveRecord::Base
         position_taker = pos.user
         if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
           if position_taker.email && position_taker.email.length > 0
-            UserMailer.position_subscription(position_taker, self, current_tenant.contact_email).deliver
+            UserMailer.delay.position_subscription(position_taker, self, current_tenant.contact_email, current_tenant.app_title)#.deliver
           end
           message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to position']
         end

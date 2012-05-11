@@ -11,6 +11,7 @@ env :MAILTO, '""'
 
 every 5.minutes do
   rake "cache:points"
+  rake "cache:proposals"
 end
 
 # Learn more: http://github.com/javan/whenever

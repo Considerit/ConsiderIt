@@ -6,7 +6,9 @@ Hi #{@user.name},
 "#{@comment.body}"
 
 
-Go to #{proposal_url(@point.proposal)} to respond. 
+Respond at
+= succeed '.' do
+  = proposal_point_url(@point.proposal.long_id, @point)}
 
 
 Thanks!

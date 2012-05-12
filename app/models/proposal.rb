@@ -80,6 +80,6 @@ class Proposal < ActiveRecord::Base
   end
 
   def has_admin_privilege(candidate_user, this_session_id, params)
-    this_session_id == @session_id || candidate_user && (candidate_user.id == user_id || candidate_user.is_admin?) || (params.has_key?(:admin_id) && params[:admin_id] == admin_id)
+    this_session_id == session_id || candidate_user && (candidate_user.id == user_id || candidate_user.is_admin?) || (params.has_key?(:admin_id) && params[:admin_id] == admin_id)
   end
 end

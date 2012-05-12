@@ -16,10 +16,9 @@
       #{@bullet.text}
 
     %p 
-      Go
-      %a{ :href => "#{proposal_url(@comment.root_object.proposal)}" }
-        here
-      to verify whether the summary is accurate, and clarify your point if necessary. 
+      Verify whether the summary is accurate and clarify if necessary for other readers at
+      = succeed '.' do
+        = proposal_point_url(@point.proposal.long_id, @point)}    
 
     %p
       Thanks!

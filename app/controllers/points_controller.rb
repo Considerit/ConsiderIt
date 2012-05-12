@@ -1,7 +1,7 @@
 class PointsController < ApplicationController
   protect_from_forgery
 
-  respond_to :json
+  respond_to :json, :html
   
   POINTS_PER_PAGE_MARGIN = 3
   POINTS_PER_PAGE_RESULTS = 4
@@ -195,11 +195,17 @@ class PointsController < ApplicationController
   end
 
   def show
-    point = Point.find(params[:id])
+    @point = Point.find(params[:id])
     @proposal = Proposal.find_by_long_id(params[:long_id])
-    origin = params[:origin]
-    point_details = render_to_string :partial => "points/details", :locals => { :point => point, :light_background => origin == 'margin' }
-    render :json => { :details => point_details }
+
+    if request.xhr?
+      origin = params[:origin]
+      point_details = render_to_string :partial => "points/details", :locals => { :point => @point, :light_background => origin == 'margin' }
+      render :json => { :details => point_details }        
+    else
+      render
+    end
+
   end
 
   def destroy

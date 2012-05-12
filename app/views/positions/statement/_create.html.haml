@@ -3,7 +3,7 @@
     %h3.banner.double
       - if @is_admin
         - @proposal.statement_prompt = prompt
-        = render :partial => 'positions/admin_make_editable', :locals => { :field => :statement_prompt}
+        = render :partial => 'proposals/admin_make_editable', :locals => { :field => :statement_prompt}
       - else
         = prompt
   

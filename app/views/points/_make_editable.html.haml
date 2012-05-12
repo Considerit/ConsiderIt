@@ -1,0 +1,15 @@
+- point #the point to be edited
+- field #the field to be updated
+- field_type ||= 'text_area'
+- noresize ||= false
+
+= form_for point, :url => proposal_point_path(@proposal.long_id, point), :remote => true, :html => {:class => 'unobtrusive_edit_form implicit_edit_mode'} do |f|
+
+  .unobtrusive_edit
+    - if field_type == 'text_area'
+      = f.text_area field, :rows => 1, :class => "#{noresize ? '' : 'autoResize'}"
+
+    .save_block
+      = f.submit 'save', :class => 'hide'
+      .updated.hide
+        updated

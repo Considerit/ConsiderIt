@@ -6,9 +6,9 @@ Hi #{@user.name},
 
 "#{@point.nutshell}"
 
-
-Visit the "#{@point.proposal.title}" page [#{proposal_url(@point.proposal)}] to read the details, comment on this point and/or include it in your pro/con list. 
-
+Respond at
+= succeed '.' do
+  = proposal_point_url(@point.proposal.long_id, @point)}
 
 Thanks!
 

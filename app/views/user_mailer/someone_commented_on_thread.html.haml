@@ -16,11 +16,10 @@
       %blockquote
         #{@comment.body}
 
-      %p 
-        Visit the 
-        %a{ :href => "#{proposal_url(@point.proposal)}" }
-          "#{@point.proposal.title}" page
-        to respond. 
+      %p
+        Respond at
+        = succeed '.' do
+          = proposal_point_url(@point.proposal.long_id, @point)}
 
     - elsif @position
       %p

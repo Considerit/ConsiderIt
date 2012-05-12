@@ -1,4 +1,5 @@
 - point = @point
+- point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
 .point{ :id => "point-#{point.id}", :class => "point #{point.is_pro ? 'pro' : 'con'}" }
 
@@ -10,7 +11,6 @@
     = link_to "#{point.proposal.title}", proposal_path(point.proposal.long_id) 
 
   .operations
-    - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
     - if point_creator
       .edit
@@ -31,16 +31,28 @@
 
     %h3.point_text.nutshell 
 
+
       - if point.nutshell.length > 0
-        = h point.nutshell
+        - nutshell = h point.nutshell
       - else
-        = h point.text.length > 137 ? point.text[0,137] : point.text
-      
+        - nutshell = h point.text.length > 137 ? point.text[0,137] : point.text
+
+      - if point_creator
+        = render :partial => 'points/make_editable', :locals => { :point => point, :field => :nutshell }
+      - else
+        = nutshell
+
     .point_text.full
 
       .details
         - if point.text && point.text.length > 0 
-          = h simple_format(point.text.gsub(/\n/,"<p></p>"))
+          - full_text = h simple_format(point.text.gsub(/\n/,"<br>"))
+
+          - if point_creator
+            = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text }
+
+          - else
+            = full_text
 
       .link
         -# if point.point_links.count > 0

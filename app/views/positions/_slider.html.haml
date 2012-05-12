@@ -7,7 +7,7 @@
 
       - if @is_admin
         - @proposal.slider_prompt = prompt
-        = render :partial => 'positions/admin_make_editable', :locals => { :field => :slider_prompt}
+        = render :partial => 'proposals/admin_make_editable', :locals => { :field => :slider_prompt}
       - else
         = prompt
   
@@ -20,7 +20,7 @@
           %div
             - if @is_admin
               - @proposal.slider_left = support_pole
-              = render :partial => 'positions/admin_make_editable', :locals => { :field => :slider_left, :noresize => true}
+              = render :partial => 'proposals/admin_make_editable', :locals => { :field => :slider_left, :noresize => true}
             - else
               = support_pole
 
@@ -30,7 +30,7 @@
           %div
             - if @is_admin
               - @proposal.slider_right = oppose_pole
-              = render :partial => 'positions/admin_make_editable', :locals => { :field => :slider_right, :noresize => true}
+              = render :partial => 'proposals/admin_make_editable', :locals => { :field => :slider_right, :noresize => true}
             - else
               = oppose_pole
       %tr

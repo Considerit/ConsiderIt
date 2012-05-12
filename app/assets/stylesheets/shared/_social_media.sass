@@ -1,0 +1,48 @@
+.contact
+  //height: 100px
+  form, span
+    display: inline-block
+    position: relative
+    margin-left: 8px
+
+    &.facebook, &.twitter
+      iframe
+        position: absolute
+        left: 0
+        top: 0
+        z-index: 0
+
+      img
+        position: relative
+        top: -1px
+        left: -2px
+        height: 11px
+
+      &.facebook
+        margin-right: 30px
+        //top: 4px
+        .wrapper
+          width: 44px
+    
+      &.twitter
+        .wrapper
+          width: 110px
+
+    input[type="button"], input[type="submit"], .wrapper
+      font-size: 8pt
+      height: 20px
+      padding: 2px 20px      
+      +box-shadow(0px, 1px, 2px, rgba(black, .3))
+      +border-radius(5px) 
+      cursor: pointer
+      text-shadow: none
+
+    .wrapper
+      //pointer-events: none
+      position: relative
+      z-index: 10
+      height: 16px
+      padding: 2px 0 0 0
+      vertical-align: top
+      padding-left: 4px
+      color: #ccc

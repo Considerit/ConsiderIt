@@ -1,0 +1,8 @@
+- if current_tenant.socmedia_twitter_account
+  .contact
+    %span.twitter
+      .wrapper
+        = image_tag 'twitter_bird.png'
+        Follow
+      %a.twitter-follow-button{:href => "https://twitter.com/#{current_tenant.socmedia_twitter_account}", "data-show-count".intern => "false", "data-width".intern => "90px", "data-show-screen-name".intern => "true"}
+      %script{:src => "//platform.twitter.com/widgets.js", :type => "text/javascript"}

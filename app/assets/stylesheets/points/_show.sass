@@ -110,13 +110,13 @@
     height: 121px
     cursor: move
     +box-shadow(0px, 2px, 2px, black, 0.8)
-    @include curl-shadow
+    +curl-shadow
     margin-bottom: 18px
     padding: 5px 5px 8px 16px
     color: black
 
     &:hover
-      background: image-url('paper.png') repeat left top transparent
+      +paper
 
       &.pro
         background-color: $pro_point_expanded
@@ -256,9 +256,10 @@
 .point_in_list.expanded
   z-index: 1001
   position: absolute
-  +border-radius(5px)
-
   min-height: 111px
+
+  &:after, &:before
+    content: none
 
   > .body
 
@@ -304,7 +305,6 @@
 
   &.animation_state-finished
     +box-shadow(0px, 1px, 2px, black, .4)
-    +border-radius(5px)
 
     > .body
 
@@ -390,7 +390,7 @@
 
 
   &.point_in_list_margin
-    background: image-url('paper.png') repeat left top transparent
+    +paper
     cursor: auto
     opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
     height: auto
@@ -428,3 +428,84 @@
       
       .extra .less
         //right: 0px
+
+.point
+  +paper
+  +curl-shadow
+  padding: 30px 30px
+  width: 800px
+  min-height: 450px
+  margin: auto
+  +box-shadow(0px,1px,5px,rgba(black,.4)) 
+  &.pro
+    background-color: $pro_point_expanded
+  &.con
+    background-color: $con_point_expanded
+
+  &, a
+    +main_font
+    color: #333
+  a
+    text-decoration: underline
+    opacity: 1
+    &:hover
+      color: black
+
+  .meta
+    position: absolute  
+    top: -25px
+
+  .operations
+    position: absolute
+    right: 10px
+    top: 5px
+
+  .body
+    position: relative
+
+    .pic
+      position: absolute
+      left: 0px
+      top: 5px
+
+      img
+        position: relative
+        z-index: 1
+        +box-shadow(0,0,2px, rgba(black,.2))
+
+      &:after, &:before
+        position: absolute
+        display: block
+        z-index: 1
+        content: ''
+
+      &:after
+        background: image-url('tape.png') no-repeat top left transparent
+        width: 53px
+        height: 23px
+        right: 14px
+        top: -16px
+        z-index: 3
+
+      &:before
+        background: image-url('pic_background.png') no-repeat top left transparent
+        width: 50px
+        height: 45px
+        left: -10px
+        bottom: -5px
+
+    .nutshell, .full, .nested_user
+      margin-left: 82px
+
+    h3.nutshell
+      font-size: 22pt
+      padding-bottom: 10px
+
+    .nested_user
+      font-style: italic
+      padding: 10px 0
+
+
+
+  .discuss
+    left: 82px

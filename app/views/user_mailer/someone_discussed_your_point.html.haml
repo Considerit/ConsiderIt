@@ -16,10 +16,9 @@
       #{@comment.body}
 
     %p 
-      Go 
-      %a{ :href => "#{proposal_url(@point.proposal)}" }
-        here
-      to respond. 
+      Respond at
+      = succeed '.' do
+        = proposal_point_url(@point.proposal.long_id, @point)}    
 
     %p
       Thanks!

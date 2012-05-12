@@ -5,7 +5,7 @@
   .head.single
     %h3.banner
       - if @is_admin
-        = render :partial => 'positions/admin_make_editable', :locals => { :field => :name, :label => prompt}
+        = render :partial => 'proposals/admin_make_editable', :locals => { :field => :name, :label => prompt}
       - else
         prompt
 

@@ -17,7 +17,7 @@
 
         - if false && @is_admin
           - @proposal.considerations_prompt = prompt
-          = render :partial => 'positions/admin_make_editable', :locals => { :field => :considerations_prompt, :noresize => true}
+          = render :partial => 'proposals/admin_make_editable', :locals => { :field => :considerations_prompt, :noresize => true}
         - else
           = prompt    
   .rest         

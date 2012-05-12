@@ -10,7 +10,10 @@ Hi #{@user.name},
 - elsif @response.signal == 0
   do not believe that your point was a summary of what they said.
 
-Go to #{proposal_url(@comment.root_object.proposal)} to continue the conversation.
+Continue the conversation at
+= succeed '.' do
+  = proposal_point_url(@point.proposal.long_id, @point)}    
+
 
 
 Thanks!

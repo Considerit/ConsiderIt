@@ -9,6 +9,8 @@
   %h2
     How can we improve HCI peer review?  
 
+  = render :partial => "shared/social_media/twitter_follow", :locals => { :call => 'Follow new proposals'}
+
   = render :partial => "proposals/new"
   = render :partial => "proposals/list_output/list", :locals => { :style => 'blocks', :hide_initially => false }
 

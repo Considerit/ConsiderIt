@@ -440,8 +440,8 @@ ConsiderIt = {
       placeholder
         .attr('id', real_point.attr('id'))
         .height(real_point.height())
-        .addClass(real_point.attr('class'));
-        //.css('visibility', 'hidden');
+        .addClass(real_point.attr('class'))
+        .css('visibility', 'hidden');
 
       //close other open points...
       $j('.point_in_list.expanded .toggle.less:visible').trigger('click');

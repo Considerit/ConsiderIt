@@ -37,6 +37,7 @@ class PositionsController < ApplicationController
       session['position_to_be_published'] = @position.id
     end
 
+    
     respond_with(@proposal, @position) do |format|
       format.html { redirect_to(  proposal_path(@proposal.long_id)  ) }
       format.js { render :json => { :result => 'successful' }.to_json }

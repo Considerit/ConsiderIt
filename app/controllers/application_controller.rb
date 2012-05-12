@@ -18,8 +18,11 @@ class ApplicationController < ActionController::Base
   end
 
   def self.find_current_tenant(rq)
-
-    Account.find_by_identifier(rq.session[:user_theme])
+    tenant = Account.find_by_identifier(rq.session[:user_theme])
+    if tenant.nil?
+      tenant = Account.find(7)
+    end
+    tenant
   end
 
   def default_url_options
@@ -31,6 +34,9 @@ private
   def get_current_tenant(rq = nil)
     rq ||= request
     current_account = Account.find_by_identifier(rq.subdomain)
+    if current_account.nil?
+      current_account = Account.find(7)
+    end    
     set_current_tenant(current_account)
     current_account
   end

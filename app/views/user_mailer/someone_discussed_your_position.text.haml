@@ -1,12 +1,12 @@
 Hi #{@user.name},
     
-#{@comment.user.name} commented on your review of #{@point.proposal.category} #{@point.proposal.designator}. The comment says:
+#{@comment.user.name} commented on your review of "#{@point.proposal.title}". The comment says:
 
 
 "#{@comment.body}"
 
 
-Go to #{proposal_url(@position.proposal)} to respond. 
+Go to #{proposal_url(@position.proposal, :host => @host)} to respond. 
 
 
 Thanks!

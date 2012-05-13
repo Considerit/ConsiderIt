@@ -4,44 +4,49 @@ class UserMailer < ActionMailer::Base
   def proposal_subscription(user, pnt, options)
     @user = user
     @point = pnt
+    @host = options[:host]
     email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:host => options[:host], :from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new #{@point.is_pro ? 'pro' : 'con'} point for \"#{@point.proposal.title}\"")
+    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new #{@point.is_pro ? 'pro' : 'con'} point for \"#{@point.proposal.title}\"")
   end
 
   def position_subscription(user, position, options)
     @user = user
     @position = position
+    @host = options[:host]
     email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:host => options[:host], :from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new review #{@point.proposal.category} for \"#{@point.proposal.title}\"")
+    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new review #{@point.proposal.category} for \"#{@point.proposal.title}\"")
   end  
 
   def someone_discussed_your_point(user, pnt, comment, options)
     @user = user
     @point = pnt
     @comment = comment
+    @host = options[:host]
     email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:host => options[:host], :from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote")
+    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote")
   end
 
   def someone_discussed_your_position(user, position, comment, options)
     @user = user
     @position = position
     @comment = comment
+    @host = options[:host]
     email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:host => options[:host], :from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on your review")
+    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on your review")
   end  
 
   def someone_commented_on_thread(user, obj, comment, options)
     @user = user
     @comment = comment
+    @host = options[:host]
     email_with_name = "#{@user.name} <#{@user.email}>"
 
     if obj.commentable_type == 'Point'
       @point = obj
-      mail(:host => options[:host], :from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} also commented on #{@point.user.name}'s #{@point.is_pro ? 'pro' : 'con'} point")
+      mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} also commented on #{@point.user.name}'s #{@point.is_pro ? 'pro' : 'con'} point")
     elsif obj.commentable_type == 'Position'
       @position = obj
-      mail(:host => options[:host], :from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} also commented on #{@position.user.name}'s review")
+      mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} also commented on #{@position.user.name}'s review")
     end
   end
 
@@ -49,17 +54,19 @@ class UserMailer < ActionMailer::Base
     @user = user
     @point = pnt
     @comment = comment
+    @host = options[:host]
     email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:host => options[:host], :from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote")
+    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote")
   end
 
   def someone_reflected_your_point(user, bullet, comment, options)
     @user = user
     @bullet = bullet
     @comment = comment
+    @host = options[:host]
     email_with_name = "#{@user.name} <#{@user.email}>"
         
-    mail(:host => options[:host], :from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@bullet.user.name} summarized your comment")
+    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@bullet.user.name} summarized your comment")
   end
 
   def your_reflection_was_responded_to(user, response, bullet, comment, options)
@@ -67,8 +74,9 @@ class UserMailer < ActionMailer::Base
     @bullet = bullet
     @comment = comment
     @response = response
+    @host = options[:host]
     email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:host => options[:host], :from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} responded to your summary")
+    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} responded to your summary")
   end
 
   ######### DEVISE MAILERS

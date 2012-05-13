@@ -216,20 +216,25 @@ protected
     actions[:written_points].each do |pnt_id|
       pnt = Point.unscoped.find( pnt_id )
 
-      if pnt.user_id.nil?
-        pnt.user_id = position.user_id
-        pnt.published = 1
-        pnt.notify_parties(current_tenant)
-      end
+      notify_parties = pnt.user_id.nil?
+      pnt.user_id = position.user_id
+      pnt.published = 1
+      
       pnt.position_id = position.id
       pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001})
+      pnt.update_absolute_score
+
+      if notify_parties
+        pnt.notify_parties(current_tenant)
+      end
+
       #Inclusion.create!( { 
       #  :point_id => pnt_id,
       #  :user_id => position.user_id,
       #  :position_id => position.id,
       #  :proposal_id => position.proposal_id
       #} )      
-      pnt.update_absolute_score
+
     end
     actions[:written_points] = []
 

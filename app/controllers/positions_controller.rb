@@ -25,7 +25,7 @@ class PositionsController < ApplicationController
       :published => !current_user.nil? 
     })
 
-    @position = Position.unscoped.find(params[:position][:position_id])
+    @position = Position.find(params[:position][:position_id])
     params[:position].delete(:position_id)
     @position.update_attributes(params[:position])
     @position.save
@@ -46,7 +46,7 @@ class PositionsController < ApplicationController
   
   def update
     @proposal = Proposal.find_by_long_id(params[:long_id])
-    @position = current_user.positions.unscoped.find(params[:id])
+    @position = current_user.positions.find(params[:id])
     
     (stance, bucket) = get_stance_val_from_params(params)
 
@@ -67,9 +67,9 @@ class PositionsController < ApplicationController
   def destroy
     @proposal = Proposal.find_by_long_id(params[:long_id])
     if current_user
-      @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
+      @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 
     else
-      @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
+      @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     end
     
     redirect_to(proposal_path(@position.proposal.long_id))
@@ -118,9 +118,9 @@ protected
     # When we are redirected back to the position page after a user creates their account, 
     # we should save their actions and redirect to results page
     if session.has_key?('reify_activities') && session['reify_activities']
-      @position = Position.unscoped.find(session['position_to_be_published'])
+      @position = Position.find(session['position_to_be_published'])
       # check to see if this user already had a previous position
-      prev_pos = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first
+      prev_pos = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last
       if prev_pos
         #resolve by combining positions, taking stance from newly submitted...
         prev_pos.stance = @position.stance
@@ -150,15 +150,16 @@ protected
 
     if is_new
       if current_user
-        @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
+        @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 
       else
-        @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
+        @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
       end
       if @position.nil?
-        @position = Position.unscoped.create!( 
+        @position = Position.create!( 
           :stance => 0.0, 
           :proposal_id => @proposal.id, 
-          :user_id => @user ? @user.id : nil
+          :user_id => @user ? @user.id : nil,
+          :account_id => current_tenant.id
         )
         session["position-#{@proposal.id}"] = @position.id
       end

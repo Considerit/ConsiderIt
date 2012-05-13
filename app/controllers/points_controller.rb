@@ -21,9 +21,9 @@ class PointsController < ApplicationController
     @user = current_user
 
     if current_user
-      @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
+      @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 
     else
-      @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
+      @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     end
     
     qry = @proposal.points
@@ -126,14 +126,17 @@ class PointsController < ApplicationController
   def create
     @proposal = Proposal.find_by_long_id(params[:long_id])
     if current_user
-      @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
+      @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 
     else
-      @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
+      @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     end
 
     @user = current_user
 
     params[:point][:proposal_id] = @proposal.id   
+    # if @position
+    #   params[:point][:position_id] = @position.id
+    # end
 
     if params[:point][:nutshell].length > 140
       params[:point][:text] << params[:point][:nutshell][140..-1]
@@ -176,9 +179,9 @@ class PointsController < ApplicationController
   def update
     @proposal = Proposal.find_by_long_id(params[:long_id])
     if current_user
-      @position = Position.unscoped.where(:proposal_id => @proposal.id, :user_id => current_user.id).first 
+      @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 
     else
-      @position = session.has_key?("position-#{@proposal.id}") ? Position.unscoped.find(session["position-#{@proposal.id}"]) : nil
+      @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     end
     @user = current_user
     @point = Point.unscoped.find(params[:id])

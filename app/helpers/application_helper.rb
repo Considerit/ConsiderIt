@@ -58,7 +58,7 @@ module ApplicationHelper
   end
 
   def has_stance(proposal)
-    return current_user && current_user.positions.where(:proposal_id => proposal.id).count > 0
+    return current_user && current_user.positions.published.where(:proposal_id => proposal.id).count > 0
   end
 
 

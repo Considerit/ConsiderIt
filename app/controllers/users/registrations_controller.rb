@@ -56,7 +56,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def update
-    pp params
     current_user.update_attributes(params[:user])
     current_user.save
     redirect_to request.referer

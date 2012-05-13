@@ -21,7 +21,7 @@ class CommentsController < ApplicationController
 
         #@comment.point_id = params[:comment][:point_id].to_i
       elsif params[:comment].key?(:position_id)
-        position = Position.find(params[:comment][:position_id])
+        position = Position.published.find(params[:comment][:position_id])
         @comment = Comment.build_from(position, @user_who_commented.id, params[:comment][:body] )
       end
 

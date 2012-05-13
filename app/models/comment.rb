@@ -75,7 +75,7 @@ class Comment < ActiveRecord::Base
       if commentable_type == 'Point'
         point = obj
         point.inclusions.each do |inclusion|
-          if inclusion.user.positions.find(inclusion.proposal_id).notification_demonstrated_interest
+          if inclusion.user.positions.published.find(inclusion.proposal_id).notification_demonstrated_interest
             includer = inclusion.user
             if !message_sent_to.has_key?(includer.id) && includer.id == user_id
               if includer.email && includer.email.length > 0
@@ -96,12 +96,12 @@ class Comment < ActiveRecord::Base
     def get_position_for_user_and_obj(user,obj,commentable_type)
       begin
         if commentable_type == 'Point' 
-          user.positions.find(obj.position_id)
+          user.positions.published.find(obj.position_id)
         elsif commentable_type == 'Position'
           if user.id == obj.user_id
             obj
           else
-            user.positions.find(obj.id)
+            user.positions.published.find(obj.id)
           end
         end
       rescue

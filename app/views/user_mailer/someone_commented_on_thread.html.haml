@@ -19,14 +19,14 @@
       %p
         Respond at
         = succeed '.' do
-          = proposal_point_url(@point.proposal.long_id, @point)
+          = proposal_point_url(@point.proposal.long_id, @point, :host => @host)
 
     - elsif @position
       %p
         #{@comment.user.name} also commented on #{@position.user.name}'s review.
       %p 
         Go 
-        %a{ :href => "#{proposal_url(@position.proposal)}" }
+        %a{ :href => "#{proposal_url(@position.proposal, :host => @host)}" }
           here
         to read and respond. 
 

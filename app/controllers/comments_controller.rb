@@ -33,7 +33,7 @@ class CommentsController < ApplicationController
     if !existing.nil? || @comment.save
 
       if existing.nil?
-        @comment.notify_parties(current_tenant)
+        @comment.notify_parties(current_tenant, default_url_options)
       end
 
       new_comment = render_to_string :partial => "comments/comment", :locals => { :comment => @comment } 

@@ -187,7 +187,7 @@ class Point < ActiveRecord::Base
     end
   end
   
-  def notify_parties(current_tenant)
+  def notify_parties(current_tenant, options)
     message_sent_to = {}
     begin
       #email anyone who subscribes to points for the proposal
@@ -195,7 +195,7 @@ class Point < ActiveRecord::Base
         position_taker = pos.user
         if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
           if position_taker.email && position_taker.email.length > 0
-            UserMailer.delay.proposal_subscription(position_taker, self, current_tenant.contact_email, current_tenant.app_title)#.deliver
+            UserMailer.delay.proposal_subscription(position_taker, self, options)#.deliver
           end
           message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to proposal']
         end

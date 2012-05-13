@@ -42,7 +42,7 @@ class Comment < ActiveRecord::Base
       author = obj.user
       author_position = get_position_for_user_and_obj(author, obj, commentable_type)
 
-      if author.id != user_id && author_position.notification_author && author.email.length > 0
+      if author.id != user_id && author_position && author_position.notification_author && author.email.length > 0
         if author.email && author.email.length > 0
           if commentable_type == 'Point'
             UserMailer.delay.someone_discussed_your_point(author, obj, self, current_tenant.contact_email, current_tenant.app_title)#.deliver
@@ -61,6 +61,7 @@ class Comment < ActiveRecord::Base
         recipient_position = get_position_for_user_and_obj(recipient, obj, commentable_type)
 
         if !message_sent_to.has_key?(recipient.id) \
+          && recipient_position
           && recipient_position.notification_demonstrated_interest \
           && recipient.id != user_id 
 
@@ -93,14 +94,18 @@ class Comment < ActiveRecord::Base
 
   private
     def get_position_for_user_and_obj(user,obj,commentable_type)
-      if commentable_type == 'Point' 
-        user.positions.find(obj.position_id)
-      elsif commentable_type == 'Position'
-        if user.id == obj.user_id
-          obj
-        else
-          user.positions.find(obj.id)
+      begin
+        if commentable_type == 'Point' 
+          user.positions.find(obj.position_id).last
+        elsif commentable_type == 'Position'
+          if user.id == obj.user_id
+            obj
+          else
+            user.positions.find(obj.id)
+          end
         end
+      rescue
+        nil
       end
     end
 

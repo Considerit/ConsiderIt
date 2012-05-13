@@ -26,10 +26,11 @@ class ApplicationController < ActionController::Base
   end
 
   def default_url_options
+    
     {:host => request.host_with_port,
      :from => current_tenant.contact_email,
      :app_title => current_tenant.app_title
-   }
+    }
   end
 
 private

@@ -30,7 +30,7 @@ class ProposalsController < ApplicationController
     @title = "#{@proposal.short_name}"
     @keywords = "#{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
 
-    @position = current_user ? current_user.positions.where(:proposal_id => @proposal.id).first : nil
+    @position = current_user ? current_user.positions.published.where(:proposal_id => @proposal.id).first : nil
     @positions = @proposal.positions.includes(:user).published
 
     # if !@position && (!params.has_key? :redirect || params[:redirect] == 'true' )

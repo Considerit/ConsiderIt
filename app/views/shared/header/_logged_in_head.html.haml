@@ -2,7 +2,7 @@
 %li.progress
   #progressbar
   .text_progress
-    #{current_user.positions.count}/#{get_proposals.length} measures considered
+    #{current_user.positions.published.count}/#{get_proposals.length} measures considered
 
 
   -# = image_tag "user_settings_triangle.png", :class => 'triangle_img'

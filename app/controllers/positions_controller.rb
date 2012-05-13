@@ -225,7 +225,7 @@ protected
       pnt.update_absolute_score
 
       if notify_parties
-        pnt.notify_parties(current_tenant)
+        pnt.notify_parties(current_tenant, default_url_options)
       end
 
       #Inclusion.create!( { 

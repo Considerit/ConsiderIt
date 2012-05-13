@@ -150,7 +150,7 @@ class Reflect::ReflectBulletController < ApplicationController
     
     new_rev.save
     if !modify
-      new_rev.notify_parties(current_tenant)
+      new_rev.notify_parties(current_tenant, default_url_options)
     end
     
     if params.key?(:highlights)

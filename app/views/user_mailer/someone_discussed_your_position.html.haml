@@ -10,14 +10,14 @@
       Hi #{@user.name},
     
     %p
-      #{@comment.user.name} commented on your review of #{@point.proposal.category} #{@point.proposal.designator}. The comment says:
+      #{@comment.user.name} commented on your review of "#{@point.proposal.title}". The comment says:
 
     %blockquote
       #{@comment.body}
 
     %p 
       Go
-      %a{ :href => "#{proposal_url(@position.proposal)}" }
+      %a{ :href => "#{proposal_url(@position.proposal, :host => @host)}" }
         here
       to respond. 
 

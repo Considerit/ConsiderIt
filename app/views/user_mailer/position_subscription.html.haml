@@ -14,7 +14,7 @@
 
     %p 
       Visit the 
-      %a{ :href => "#{proposal_url(@position.proposal)}" }
+      %a{ :href => "#{proposal_url(@position.proposal), :host => @host}" }
         "#{@point.proposal.title}" page
       to read and comment on it.
 

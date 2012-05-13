@@ -61,7 +61,7 @@ class Comment < ActiveRecord::Base
         recipient_position = get_position_for_user_and_obj(recipient, obj, commentable_type)
 
         if !message_sent_to.has_key?(recipient.id) \
-          && recipient_position
+          && recipient_position \
           && recipient_position.notification_demonstrated_interest \
           && recipient.id != user_id 
 

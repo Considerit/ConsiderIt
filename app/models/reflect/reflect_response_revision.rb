@@ -7,13 +7,13 @@ class Reflect::ReflectResponseRevision < ActiveRecord::Base
   
   default_scope where( :active => true )
 
-  def notify_parties(current_tenant)
+  def notify_parties(current_tenant, options)
     message_sent_to = {}
     bulleter = bullet_revision.user
     position = get_position_for_user(bullet_revision.comment, bulleter)
 
     if bulleter.notification_author && bulleter.email.length > 0
-      UserMailer.delay.your_reflection_was_responded_to(bulleter, self, bullet_revision, bullet_revision.comment, current_tenant.contact_email, current_tenant.app_title)
+      UserMailer.delay.your_reflection_was_responded_to(bulleter, self, bullet_revision, bullet_revision.comment, options)
       message_sent_to[bulleter.id]
     end
 

@@ -17,7 +17,7 @@
 
     %p 
       Visit the 
-      %a{ :href => "#{proposal_url(@point.proposal)}" }
+      %a{ :href => "#{proposal_url(@point.proposal, :host => @host)}" }
         "#{@point.proposal.title}" page
       to read the details, comment on this point and/or include it in your pro/con list. 
 

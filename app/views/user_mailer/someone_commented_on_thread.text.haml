@@ -9,12 +9,12 @@ Hi #{@user.name},
   
   Respond at
   = succeed '.' do
-    = proposal_point_url(@point.proposal.long_id, @point)
+    = proposal_point_url(@point.proposal.long_id, @point, :host => @host)
 
 - elsif @position
   #{@comment.user.name} also commented on #{@position.user.name}'s review.
 
-  Go to #{proposal_url(@position.proposal)}" } to read and respond. 
+  Go to #{proposal_url(@position.proposal, :host => @host)}" } to read and respond. 
 
 
 Thanks!

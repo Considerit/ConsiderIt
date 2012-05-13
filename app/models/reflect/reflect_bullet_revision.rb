@@ -8,14 +8,14 @@ class Reflect::ReflectBulletRevision < ActiveRecord::Base
   
   default_scope where( :active => true )
 
-  def notify_parties(current_tenant)
+  def notify_parties(current_tenant, options)
     commenter = comment.user
     message_sent_to = {}
     bulleter = user
     position = get_position_for_user(comment, commenter)
 
     if commenter.id != bulleter.id && position.notification_author && commenter.email.length > 0
-      UserMailer.delay.someone_reflected_your_point(commenter, self, comment, current_tenant.contact_email, current_tenant.app_title)
+      UserMailer.delay.someone_reflected_your_point(commenter, self, comment, options)
       message_sent_to[commenter.id]
     end
 

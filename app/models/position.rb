@@ -11,14 +11,14 @@ class Position < ActiveRecord::Base
   #acts_as_paranoid_versioned
   acts_as_tenant(:account)
   
-  default_scope where( :published => true )
+  #default_scope where( :published => true )
   scope :published, where( :published => true )
 
   def notify_parties(current_tenant, options)
     message_sent_to = {}
     begin
       #email anyone who subscribes to reviews for the proposal
-      proposal.positions.where(:notification_perspective_subscriber => true).each do |pos|
+      proposal.positions.published.where(:notification_perspective_subscriber => true).each do |pos|
         position_taker = pos.user
         if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
           if position_taker.email && position_taker.email.length > 0

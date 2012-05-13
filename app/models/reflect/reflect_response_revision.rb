@@ -25,12 +25,12 @@ class Reflect::ReflectResponseRevision < ActiveRecord::Base
     commentable_type = comment.commentable_type
 
     if commentable_type == 'Point' 
-      user.positions.find(obj.position_id)
+      user.positions.published.find(obj.position_id)
     elsif commentable_type == 'Position'
       if user.id == obj.user_id
         obj
       else
-        user.positions.find(obj.id)
+        user.positions.published.find(obj.id)
       end
     end
   end    

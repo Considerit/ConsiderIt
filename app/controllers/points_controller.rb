@@ -184,7 +184,7 @@ class PointsController < ApplicationController
       @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     end
     @user = current_user
-    @point = Point.unscoped.find(params[:id])
+    @point = Point.unscoped.where(:account_id => current_tenant.id).find(params[:id])
 
     @point.update_attributes!(params[:point])
     @point.save
@@ -198,7 +198,7 @@ class PointsController < ApplicationController
   end
 
   def show
-    @point = Point.find(params[:id])
+    @point = Point.unscoped.where(:account_id => current_tenant.id).find(params[:id])
     @proposal = Proposal.find_by_long_id(params[:long_id])
 
     if request.xhr?

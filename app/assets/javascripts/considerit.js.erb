@@ -585,7 +585,7 @@ ConsiderIt = {
     //////////////
 
     // Include in list
-    $j('.include').on('ajax:success', '.judgepointform form', function(data, response, xhr){
+    $j(document).on('ajax:success', '.include .judgepointform form', function(data, response, xhr){
       var included_point = $j(this).parents('.point_in_list_margin'), 
           replacement_point = $j(response['new_point']);
     

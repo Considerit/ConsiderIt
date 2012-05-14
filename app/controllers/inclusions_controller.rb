@@ -15,7 +15,10 @@ class InclusionsController < ApplicationController
     @proposal = Proposal.find_by_long_id(params[:long_id])
     @point = Point.find(params[:point_id])
 
-    if (current_user && (!session[@proposal.id][:deleted_points].has_key?(@point.id) && current_user.inclusions.where( :point_id => @point.id ).first)) || session[@proposal.id][:included_points].has_key?(params[:point_id])
+    if (current_user \
+        && (!session[@proposal.id][:deleted_points].has_key?(@point.id) \
+        && current_user.inclusions.where( :point_id => @point.id ).count > 0)) \
+       || session[@proposal.id][:included_points].has_key?(params[:point_id])
       render :json => { :success => false }.to_json
       return
     end

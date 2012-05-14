@@ -30,6 +30,7 @@ class User < ActiveRecord::Base
 
   has_attached_file :avatar, 
       :default_url => "#{ENV['RAILS_RELATIVE_URL_ROOT'] || ''}/assets/:attachment/:style_default-profile-pic.png",
+      :path => ":rails_root/public/system/:attachment/:id/:style/:filename",
       :url => "/system/:attachment/:id/:style/:filename",   
       :styles => { 
         #:golden_horizontal => "100x62#", 
@@ -38,10 +39,6 @@ class User < ActiveRecord::Base
         :medium_dark => "70x70#",
         :small => "50x50#"
       }
-
-      #:path => ":rails_root/public/images/:attachment/uploaded/:id/:style_:basename.:extension",
-      #:url => "/images/:attachment/uploaded/:id/:style_:basename.:extension"
-
 
   def is_admin?
     #TODO: scope this based on current_tenant

@@ -70,11 +70,11 @@
       
     .powered_by
       margin-top: 12px
-      color: #555
-      color: rgba(black, .6)
+      color: #ccc
+      color: rgba(#ccc, .9)
       text-align: center
-      +inset-text
-      font-size: 10pt
+      +text-outline(rgba(black,.5))
+      font-size: 12pt
       font-variant: small-caps
       text-transform: lowercase
       font-weight: bold
@@ -83,5 +83,14 @@
         color: inherit
         text-decoration: underline
 
+    .report_problems
+      +text-outline(rgba(black,.5))
+      font-size: 8pt
+      color: #ccc
+      font-weight: bold
+      text-transform: lowercase
+      a
+        color: inherit
+        text-decoration: underline
 
       

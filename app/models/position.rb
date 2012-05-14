@@ -4,6 +4,7 @@ class Position < ActiveRecord::Base
   has_many :inclusions
   has_many :points
   has_many :point_listings
+  has_many :comments, :as => :commentable, :dependent => :destroy
 
   has_paper_trail  
   is_commentable

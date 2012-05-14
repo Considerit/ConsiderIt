@@ -3,9 +3,9 @@ class Reflect::ReflectBullet < ActiveRecord::Base
 
   belongs_to :comment
 
-  has_many :revisions, :class_name => 'ReflectBulletRevision', :foreign_key => 'bullet_id'  
-  has_many :responses, :class_name => 'ReflectResponseRevision', :foreign_key => 'bullet_id'
-  has_many :highlights, :class_name => 'ReflectHighlight', :foreign_key => 'bullet_id'
+  has_many :revisions, :class_name => 'ReflectBulletRevision', :foreign_key => 'bullet_id', :dependent => :destroy  
+  has_many :responses, :class_name => 'ReflectResponseRevision', :foreign_key => 'bullet_id', :dependent => :destroy
+  has_many :highlights, :class_name => 'ReflectHighlight', :foreign_key => 'bullet_id', :dependent => :destroy
   
   def response
     if responses.count > 0

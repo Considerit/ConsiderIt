@@ -101,6 +101,9 @@ protected
 
     @is_admin = @proposal.has_admin_privilege(current_user, request.session_options[:id], params)
 
+    if @is_admin
+      @deletable = ProposalsController.deletable(@proposal, current_user)
+    end
 
     @user = current_user
 

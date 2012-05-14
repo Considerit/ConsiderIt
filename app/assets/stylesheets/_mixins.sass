@@ -127,6 +127,9 @@
     border-left: none
     @include flip-horizontal
 
+=text-outline($color, $size:1px)
+  text-shadow: -$size 0 $color, 0 $size $color, $size 0 $color, 0 0  -$size $color
+
 =banner-single
   +banner
   width: 1006px

@@ -61,6 +61,10 @@
       %a
         Edit this proposal
         = image_tag 'edit_page.png'
+    - if @deletable
+      .delete_proposal
+        = link_to "Delete this proposal", proposal_path(@proposal.long_id), :confirm => "Are you sure?", :method=>:delete
+
 
   #proposal_id.hide
     = @proposal.id

@@ -115,4 +115,20 @@ class ProposalsController < ApplicationController
     raise 'Permission to update this proposal denied'  
   end
 
+  def destroy
+    @proposal = Proposal.find_by_long_id(params[:long_id])
+    if ProposalsController.deletable(@proposal, current_user)
+      @proposal.destroy
+    end
+
+    redirect_to root_path
+  end
+
+  def self.deletable(proposal, user)
+    user.is_admin? || (user.id == proposal.user_id && \
+      (proposal.positions.published.count == 0 \
+        || (proposal.positions.published.count == 1 && proposal.positions.published.first.user_id == user.id) \
+      ))
+  end
+
 end

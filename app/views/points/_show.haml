@@ -1,3 +1,5 @@
+- has_details = point.text && point.text.length > 0
+
 %li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'}" }
   
   .id.hide
@@ -39,7 +41,7 @@
     .point_text.full
 
       .details
-        - if point.text && point.text.length > 0 
+        - if has_details 
           = h simple_format(point.text.gsub(/\n/,"<p></p>"))
 
       .link
@@ -61,6 +63,14 @@
 
     - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
+    .read_more
+      - num_comments = point.comments.count
+      %a.toggle.more.point_text_toggle.point_operation
+        %span.triangle
+          &#9654; 
+        #{has_details ? 'details & ' : ''} discussion#{num_comments > 0 ? "(" + point.comments.count.to_s + ")" : ''}          
+
+
     - if point_creator
       .edit
 
@@ -74,12 +84,6 @@
         = render :partial => "points/delete", :locals => { :point => point } 
       -else
         = render :partial => "inclusions/delete", :locals => { :point => point }
-
-    .read_more
-      %a.toggle.more.point_text_toggle.point_operation
-        read more
-        .comment_count
-          #{point.comments.count}
 
 
   .extra  

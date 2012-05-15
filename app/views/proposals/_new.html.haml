@@ -4,10 +4,10 @@
     .full
       = form_for :proposal, :url => {:controller => :proposals, :action => :create}, :html => {:class => 'new_proposal_form'} do |f|
         = image_tag current_user.avatar.url(:small), :class => 'avatar'
-        = f.text_area :description, :placeholder => 'Summarize your proposal. You can edit it later.'
+        = f.text_area :description, :placeholder => 'Summarize your proposal. You can edit it and add a detailed description next.'
         = f.submit 'Save'
   .prompt
-    + Propose an idea
+    + Propose a new idea
     
     - if !current_user
       #login_trigger.user_dialog

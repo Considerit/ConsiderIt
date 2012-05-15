@@ -25,8 +25,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
         session[:domain] = current_user.domain_id
       end
 
-      respond_with user, :location => redirect_location(resource_name, user)
-
+      #respond_with user, :location => session[:return_to] || redirect_location(resource_name, user)
+      redirect_to request.referer
+      
     else #otherwise create new user...
       resource = build_resource
       if resource.save

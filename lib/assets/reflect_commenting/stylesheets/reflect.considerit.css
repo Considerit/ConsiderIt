@@ -1,16 +1,18 @@
 .rf_evaluation {
 	display: none;
 }
-
+.rf_toggle_paginate {
+	font-size: 8pt;
+}
 .reflected .response_prompt {
 	opacity: 1;
 	cursor: pointer;
 	font-size: 9pt;
-	opacity: .65;
 	width: 92%;
 	padding: 6px 9px;
 	border-color: black;
 	border-radius: 5px;
+	position: relative;
 }.reflected .response_prompt .prompt {
 	font-size: 9pt;
 	color: #222;
@@ -21,8 +23,8 @@
 	color: black;
 } .reflected input.response_maybe {
 	position: absolute;
-	left: -21px;
-	top: 5px;
+	left: -20px;
+	top: 4px;
 } .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined {
 	margin-left: 20px;
 } .reflected .rf_comment .rf_comment_wrapper .response_eval .inlined textarea {
@@ -69,7 +71,7 @@
 }
 .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet {
 	padding: 0 0 6px 0px;
-	opacity: .8;
+	
 } .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet:hover {
 }
 

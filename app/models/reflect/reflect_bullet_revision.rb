@@ -14,7 +14,7 @@ class Reflect::ReflectBulletRevision < ActiveRecord::Base
     bulleter = user
     position = get_position_for_user(comment, commenter)
 
-    if commenter.id != bulleter.id && position.notification_author && commenter.email.length > 0
+    if commenter.id != bulleter.id && position && position.notification_author && commenter.email.length > 0
       UserMailer.delay.someone_reflected_your_point(commenter, self, comment, options)
       message_sent_to[commenter.id]
     end
@@ -27,14 +27,18 @@ class Reflect::ReflectBulletRevision < ActiveRecord::Base
       obj = comment.root_object
       commentable_type = comment.commentable_type
 
-      if commentable_type == 'Point' 
-        user.positions.published.find(obj.position_id)
-      elsif commentable_type == 'Position'
-        if user.id == obj.user_id
-          obj
-        else
-          user.positions.published.find(obj.id)
+      begin
+        if commentable_type == 'Point' 
+          user.positions.published.find(obj.position_id)
+        elsif commentable_type == 'Position'
+          if user.id == obj.user_id
+            obj
+          else
+            user.positions.published.find(obj.id)
+          end
         end
+      rescue
+        nil
       end
     end  
 

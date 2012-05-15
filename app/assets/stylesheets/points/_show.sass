@@ -56,7 +56,7 @@
     opacity: 0
     display: none
     text-align: right
-    right: 10px
+    left: 0px
     bottom: 4px
 
     > div, > div > div
@@ -73,7 +73,7 @@
         +heading
         font-weight: bold
 
-      .editpoint:after, &.remove:after
+      .editpoint:before, &.remove:before
         content: '\2022'
         font-size: 8px
         position: relative
@@ -86,6 +86,9 @@
         font-size: 11px
         &.hide
           padding: 3px 10px
+
+      .triangle
+        font-size: 7pt
 
       .comment_count
         display: inline-block
@@ -142,7 +145,8 @@
     .include
       display: none
 
-    .bullet_point
+    .body > .bullet_point 
+      display: none
       left: -10px
       top: 0px
       color: #666
@@ -160,6 +164,7 @@
 
     .operations        
       bottom: 0px
+      left: 10px
       .edit, .remove
         display: none
 
@@ -201,8 +206,6 @@
 
     .operations
       bottom: -3px
-      left: 0
-      right: auto
 
       > div, >div > div
                       

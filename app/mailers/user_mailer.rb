@@ -64,8 +64,14 @@ class UserMailer < ActionMailer::Base
     @bullet = bullet
     @comment = comment
     @host = options[:host]
+
+    if comment.commentable_type == 'Point' 
+      @url = proposal_point_url(comment.root_object.proposal.long_id, comment.root_object, :host => @host)
+    elsif comment.commentable_type == 'Position' 
+      raise 'Need to implement position statement homepage'
+    end   
+
     email_with_name = "#{@user.name} <#{@user.email}>"
-        
     mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@bullet.user.name} summarized your comment")
   end
 
@@ -75,6 +81,13 @@ class UserMailer < ActionMailer::Base
     @comment = comment
     @response = response
     @host = options[:host]
+
+    if comment.commentable_type == 'Point' 
+      @url = proposal_point_url(comment.root_object.proposal.long_id, comment.root_object, :host => @host)
+    elsif comment.commentable_type == 'Position' 
+      raise 'Need to implement position statement homepage'
+    end   
+
     email_with_name = "#{@user.name} <#{@user.email}>"
     mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} responded to your summary")
   end

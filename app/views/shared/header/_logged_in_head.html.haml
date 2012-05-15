@@ -19,7 +19,7 @@
 
 
 %li.triangle
-  %a.settings
+  %a.settings{ :user => current_user.id }
     = current_user.name
   = image_tag "user_settings_triangle.png", :class => 'triangle_img'
   

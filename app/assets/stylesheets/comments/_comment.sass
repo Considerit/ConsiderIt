@@ -52,7 +52,16 @@ li.point_in_list_self, li.point_in_list_board
 
 .reflected
   
+  .response_prompt
+    .prompt
+
   li.point_in_list_margin
+    .rf_toggle_paginate
+      color: #555
+      a
+        text-decoration: underline
+        color: #555
+
     a.user, 
     .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main .bullet_text
       color: #777
@@ -84,6 +93,12 @@ li.point_in_list_self, li.point_in_list_board
     .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main .bullet_text
       color: #aaa
 
+    .rf_toggle_paginate
+      color: #aaa
+      a
+        text-decoration: underline
+        color: #aaa
+
     button.button_as_link,       
     .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer a, 
     .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer a
@@ -107,8 +122,17 @@ li.point_in_list_self, li.point_in_list_board
         color: #aaa
 
     .response_prompt
-      color: #222
-      background-color: #777
+      color: #ccc
+      background-color: #555
+      border-color: #ccc
+
+      ul.response_eval > li label
+        color: white
+
+      .prompt, .action_call, .floating_arrow
+        color: #ccc
+
 
       .rf_dialog .submit_footer a
-        color: #888
+        color: #ccc
+

@@ -193,7 +193,7 @@
            <span class="prompt"><%= this.response_prompt %></span>
            <span class="action_call">click to answer</span>
            <ul class="response_eval">
-              <li><input type="radio" id="accurate-yes-<%=this.bullet_id %>" name="accurate-<%=this.bullet_id %>" value="2" <% if(this.sig == "2"){ %> CHECKED <% } %>><label for="accurate-yes-<%=this.bullet_id %>" class="response_yes">Yes.</label></li>
+              <li><input type="radio" class="response_field" id="accurate-yes-<%=this.bullet_id %>" name="accurate-<%=this.bullet_id %>" value="2" <% if(this.sig == "2"){ %> CHECKED <% } %>><label for="accurate-yes-<%=this.bullet_id %>" class="response_yes">Yes.</label></li>
               <li>
 
                 <div class="inlined">
@@ -203,7 +203,7 @@
                   <span class="count">140</span>              
                 </div>
               </li>
-              <li><input type="radio" id="accurate-no-<%=this.bullet_id %>" name="accurate-<%=this.bullet_id %>" value="0" <% if(this.sig == "0"){ %> CHECKED <% } %>><label for="accurate-no-<%=this.bullet_id %>" class="response_no">Huh? This isn&#39;t a summary.</label></li>
+              <li><input type="radio" class="response_field" id="accurate-no-<%=this.bullet_id %>" name="accurate-<%=this.bullet_id %>" value="0" <% if(this.sig == "0"){ %> CHECKED <% } %>><label for="accurate-no-<%=this.bullet_id %>" class="response_no">Huh? This isn&#39;t a summary.</label></li>
 
               <li>
                 <div class="rf_dialog">

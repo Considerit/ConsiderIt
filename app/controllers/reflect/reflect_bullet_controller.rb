@@ -34,7 +34,8 @@ class Reflect::ReflectBulletController < ApplicationController
         :txt => db_bullet_rev.text,
         :rev => db_bullet_rev.id.to_s,
         :highlights => highlights,
-        :response => res
+        :response => res,
+        :uid => db_bullet_rev.user_id
       }
 
       if !data.key?(db_bullet.comment_id.to_s)

@@ -24,7 +24,7 @@
           
     - else
       .body_row
-        .user
+        .user{ :user => comment.user.id }
         .text.comment_text   
           .body
             - if comment.user.avatar

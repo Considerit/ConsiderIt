@@ -96,12 +96,12 @@ class Comment < ActiveRecord::Base
     def get_position_for_user_and_obj(user,obj,commentable_type)
       begin
         if commentable_type == 'Point' 
-          user.positions.published.find(obj.position_id)
+          user.positions.published.find_by_proposal_id(obj.proposal_id)
         elsif commentable_type == 'Position'
           if user.id == obj.user_id
             obj
           else
-            user.positions.published.find(obj.id)
+            user.positions.published.find_by_proposal_id(obj.proposal_id)
           end
         end
       rescue

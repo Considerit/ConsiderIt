@@ -16,10 +16,11 @@
       #{@point.nutshell}
 
     %p 
-      Visit the 
-      %a{ :href => "#{proposal_url(@point.proposal, :host => @host)}" }
-        "#{@point.proposal.title}" page
-      to read the details, comment on this point and/or include it in your pro/con list. 
+
+      Check it out at
+      = succeeds ', ' do
+        %a{ :href => "#{link_to proposal_point_url(@point.proposal.long_id, @point, :host => @host)}"}
+      or visit the #{link_to 'proposal page', proposal_url(@point.proposal, :host => @host)}. 
 
     %p
       Thanks!

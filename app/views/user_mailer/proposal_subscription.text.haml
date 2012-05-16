@@ -7,7 +7,7 @@ Hi #{@user.name},
 "#{@point.nutshell}"
 
 
-Visit the "#{@point.proposal.title}" page [#{proposal_url(@point.proposal, :host => @host)}] to read the details, comment on this point and/or include it in your pro/con list. 
+Check it out at #{proposal_point_url(@point.proposal.long_id, @point, :host => @host)}, or visit the proposal page at #{proposal_url(@point.proposal, :host => @host)}. 
 
 
 Thanks!

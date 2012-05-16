@@ -4,7 +4,14 @@
 
   .logo_cell
     %a.logo_home{ :href => root_path, :title => ""}
-      = image_tag current_theme_image_path "logo.png"
+      %img{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);" }
+
+      :javascript
+        function no_image(source) {
+          $j(this).parents('.logo_cell').remove();
+        }
+
+
         
   %ul#nav-user
     - if user_signed_in?

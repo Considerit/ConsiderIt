@@ -105,92 +105,25 @@ table
   border-collapse: separate  
 
 html
-  //min-height: 100%
-  //height: 100%
-  //position: relative
-  //z-index: 0
-  background-color: #bbb
-  +wall(#777)
-  background-attachment: fixed
 
-body
-  color: #222
-  +main_font
-  font-size: 14px
+  body
+    color: #222
+    +main_font
+    font-size: 14px
 
-  &:after
-    +main_background
-    content: ''
-    width: 100%
-    height: 300px
-    position: fixed
-    top: 0
-    left: 0
-    z-index: 1
 
-  &:before
-    content: ''
-    width: 100%
-    height: 100px
-    position: fixed
-    left: 0
-    background-color: #767676
-    top: 280px
-    border-top: 1px solid #919191
-    border-bottom: 1px solid #555
-    +box-shadow(0px, 1px, 2px, rgba(black, .3))
-    +linear-gradient(#888,#777)
-    z-index: 2
-
-  //position: relative
-  //z-index: 1
-
-  // &:after, &:before
-  //   content: ''
-  //   height: 100%
-  //   position: absolute
-  //   width: 100%
-
-  // &:after
-  //   z-index: 1
-  //   background-color: #767676
-  //   top: 300px
-  //   border-top: 1px solid #919191
-  //   border-bottom: 1px solid #111
-  //   +box-shadow(0px, 1px, 2px, #444)
-    //max-height: 1400px
-
-  // &:before
-  //   z-index: 2
-  //   top: 400px
-  //   background-color: #bbb
-  //   max-height: 1200px
-
-#wrap
-  position: relative
-  z-index: 4
-
-  > div
-    width: $content_width
-    margin: 0 auto
-    padding: 10px 15px
-    position: relative    
-
-    &#content   
-      padding-top: 65px
-      background-color: white    
-      +box-shadow(0px, 0px, 4px, rgba(black, .7))
+    #wrap
       position: relative
-      z-index: 5
-      +border-radius(5px)
+      
+      > div
+        width: $content_width
+        margin: 0 auto
+        padding: 10px 15px
+        position: relative    
 
-       
-      &:after
-        content: "."
-        display: block
-        height: 0
-        clear: both
-        visibility: hidden
+        &#content   
+          position: relative
+           
 
 h2.sub_follows
   margin-bottom: 0px
@@ -221,28 +154,9 @@ dl
 
 dd
   margin-left: 18px
-  
-label
-  //letter-spacing: -1px
-  //text-transform: capitalize
 
 input, textarea
   padding: 3px 5px
-  //vertical-align: top
-
-// input[type="text"], input[type="password"], input[type="email"], textarea
-//   border: 1px solid #7E7E7E
-//   color: #333
-//   font-size: 14px
-//   vertical-align: top
-//   margin: 3px 2px
-//   box-shadow: none
-
-//   &.blur, &.example
-//     color: #999
-//   &:focus
-//     background-color: #eee  
-//     border-color: black
 
 
 button, a

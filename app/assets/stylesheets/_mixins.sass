@@ -63,9 +63,6 @@
 =outset-text
   text-shadow: rgba(black, .1) 1px 1px
 
-=main_background
-  background: image-url('spots.png') repeat left top $background_color
-
 =chalkboard
   background: image-url("chalk/chalkboard.jpg") repeat left top #414141   
 
@@ -100,62 +97,8 @@
 =paper
   background: image-url('paper.png') repeat left top transparent
 
-=banner
-  background: image-url('banner.png') repeat left top white
-  width: 978px
-  position: relative
-  left: -6px
-  border: 1px solid
-  border-color: white #BBB #999
-  +box-shadow(0px, 1px, 2px, black, .4)
-  &:before, &:after
-    background: image-url('banner-ribbon.png') repeat left top transparent
-    content: ''
-    height: 58px
-    position: absolute
-    width: 21px
-    z-index: -2
-    border: 1px solid
-    border-color: white #BBB #999
-    top: 9px
-  &:after
-    left: -33px
-    border-left: none
-
-  &:before
-    right: -33px
-    border-left: none
-    @include flip-horizontal
-
 =text-outline($color, $size:1px)
   text-shadow: -$size 0 $color, 0 $size $color, $size 0 $color, 0 0  -$size $color
 
-=banner-single
-  +banner
-  width: 1006px
-  left: -19px
-  &:before
-    right: -19px
-  &:after
-    left: -19px
 
-=banner-double
-  +banner
 
-  .banner
-    &:before, &:after
-    background: image-url('banner.png') repeat left top white
-    content: ''   
-    height: 58px
-    position: absolute
-    width: 20px
-    z-index: -1
-    top: 4px
-    border: 1px solid
-    border-color: white #BBB #999
-    +box-shadow(0px, 1px, 2px, black, .4)
-
-    &:after
-      right: -16px
-    &:before
-      left: -16px

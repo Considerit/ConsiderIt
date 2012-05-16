@@ -2,11 +2,7 @@
 @import 'css3_mixins'
 //@import "reset_styling"
 @import 'paper_proposal'
-
-body
-  background: none
-  &:after, &:before
-    content: none
+@import 'homepage'
 
 .logo_cell
   display: none
@@ -16,13 +12,11 @@ html
   &.homepage
     background: image-url('rejectme/images/et_tu.jpg') no-repeat fixed top left black
 
-  body 
-    #wrap
-      
+  body
+
+    #wrap  
+
       > div#content
-        background-color: transparent
-        border: none
-        +box-shadow(0,0,0,transparent)
         padding-top: 35px
 
 .message
@@ -30,21 +24,6 @@ html
 
 #wrap > #content, #intro
   min-height: 700px
-
-
-h1.improve, h1.improve a
-  color: #A05047
-  font-size: 32pt
-  font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif
-  display: block
-  .subheader
-    color: #ccc
-    font-size: 12pt
-    position: relative
-    top: -27px
-
-h1.improve a
-  padding: 9px 0 0 0
 
 #wrap #masthead 
   //height: 100px
@@ -66,91 +45,6 @@ h1.improve a
     right: 25px
     a
       color: #aaa
-
-
-.homepage body #wrap
-  #masthead
-    margin-top: 0
-    height: 0
-    .logo_block
-      display: none
-
-  #intro
-    margin: 0 25px
-    padding-top: 0
-    #home
-      position: relative
-      color: #eee
-      > hr
-        color: #A05047
-        border-color: #A05047
-        background-color: #A05047
-        width: 500px
-        position: relative
-        margin: 0
-        border-style: solid
-        margin-bottom: 3px
-        &:after
-          content: ''
-          position: absolute
-          background-image: image-url('rejectme/images/dagger.png')
-          width: 60px
-          height: 15px
-          right: -27px
-          top: -8px
-
-      .proposal_list_item a
-        color: #eee
-        opacity: 1
-        padding: 8px 0
-
-        &:hover
-          color: #A05047
-          //text-shadow: 1px 1px white
-
-          .prompt
-            color: #A05047
-
-        .body
-          font-weight: normal
-          font-size: 13pt
-          line-height: 12pt
-        .user_name
-          font-size: 10pt
-        .prompt
-          font-weight: normal
-
-      p
-        width: 500px
-        margin-bottom: 5px
-
-      h2
-        font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif
-        color: #A05047
-        font-size: 18pt
-        margin-bottom: 15px
-        margin-top: 10px
-      h3
-        position: relative
-        top: -2px
-        font-weight: normal
-        margin-bottom: 15px
-        +main-font
-        font-size: 9pt
-
-
-  #nav-user
-    top: 0
-    a
-      color: #a6a6a6
-
-.new_proposal .prompt
-  opacity: 1
-  color: #eee
-  font-weight: normal
-
-  &:hover
-    background-color: #A05047
 
 .pro_con_list
   +border-image(none,0,0,0,0)
@@ -175,6 +69,8 @@ h1.improve a
       content: none
 
 .head
+  margin-bottom: 0px
+
   h3.banner
     +main-font
     font-weight: bold
@@ -182,38 +78,31 @@ h1.improve a
     color: rgba(black, .60)
     text-shadow: none
 
-#craft_position > .user_opinion
-  background: none
-  border: none
-  +box-shadow(0,0,0,transparent)
+#craft_position 
 
-.slider_table 
-  .slider_container .ui-slider
-    background: none
-    background-color: #7D7D7E
-    background-color: rgba(black, .25)
-    +box-shadow(0,0,0,transparent)
-    border-radius: 15px
-    width: 450px
+  #submitstance .rest .stanceform form 
+    a, label
+      color: #444
 
-  td.slider_label
-    +main-font
-    font-weight: bold
-    div
-      color: #808080
-      color: rgba(black, .35)
+  .slider_table 
+    .slider_container .ui-slider
+      background: none
+      background-color: #7D7D7E
+      background-color: rgba(black, .25)
+      +box-shadow(0,0,0,transparent)
+      border-radius: 15px
+      width: 450px
 
-.head
-  margin-bottom: 0px
+    td.slider_label
+      +main-font
+      font-weight: bold
+      div
+        color: #808080
+        color: rgba(black, .35)
 
-#craft_position #submitstance .rest .stanceform form 
-  a, label
-    color: #444
 
-#admin_strip #content
-  width: auto 
-  #more_options
-    display: none
+#admin_strip #content #more_options
+  display: none
 
 
 #wrap #static
@@ -228,40 +117,23 @@ h1.improve a
     text-decoration: underline
 
 
-#explore_proposal > ol li.breakdown .histogram_arrow .support, 
-#explore_proposal > ol li.breakdown .histogram_arrow .oppose
-  color: #444
-  color: rgba(black,.6)
-  font-family: inherit
-  font-weight: bold
-  text-transform: lowercase
-  font-variant: small-caps
-
-#explore_proposal > ol li.breakdown .histogram .viz .personal_position.update
-  color: #333
-  width: 200px
-  text-align: center
-  a
-    font-size: 11pt
-
-#explore_proposal > ol li.breakdown .histogram .viz
-  line-height: normal
-
-
-.contact
-  position: relative
-  .twitter
-    position: absolute
-    left: 323px
-    top: -17px
-
-    .wrapper
+#explore_proposal > ol li.breakdown 
+  .histogram_arrow 
+    .support, .oppose
+      color: #444
+      color: rgba(black,.6)
+      font-family: inherit
       font-weight: bold
-      opacity: 1
-      color: #aaa
-      &:hover
-        color: white
+      text-transform: lowercase
+      font-variant: small-caps
+
+  .histogram .viz 
+    line-height: normal
+    .personal_position.update
+      color: #333
+      width: 200px
+      text-align: center
+      a
+        font-size: 11pt
 
 
-#home .new_proposal form.new_proposal_form .avatar
-  left: 0

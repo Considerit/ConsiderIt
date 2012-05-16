@@ -50,8 +50,9 @@
     #wrap
 
       = render :partial => "shared/header/container"
-      = render :partial => "shared/flash_messages"
-      = yield
+      #content
+        = render :partial => "shared/flash_messages"
+        = yield
 
       = render :partial => "shared/footer/container"         
 

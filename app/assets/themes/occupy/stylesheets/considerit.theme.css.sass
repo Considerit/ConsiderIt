@@ -4,3 +4,56 @@
 @import 'paper_proposal'
 @import 'homepage'
 
+
+
+html
+  background: image-url('occupy/images/background.jpg') repeat top left black
+  &.homepage
+    background: image-url('occupy/images/tempcheck.jpg') no-repeat fixed top left black
+
+  body
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif
+    #wrap  
+
+      > div#content
+        padding-top: 35px
+        padding-bottom: 45px
+
+#nav-user
+  top: -16px
+  right: 118px
+  a
+    color: #333
+
+#wrap > #content, #intro
+  min-height: 600px
+
+.logo_cell
+  display: none
+
+#wrap #masthead
+  margin-top: 10px
+
+#wrap #footer
+  position: fixed
+  bottom: 0
+  background-color: black
+  padding: 10px 0
+  width: 100%
+  text-align: center
+  z-index: 9999
+
+  .powered_by
+    margin-top: 0
+    font-size: 10pt
+    display: inline-block
+
+  .report_problems
+    font-size: 10pt
+    display: inline-block
+
+#admin_strip #content #more_options
+  display: none
+
+#onav_bar
+  text-align: center

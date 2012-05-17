@@ -1,3 +1,5 @@
+- prompt ||= 'Propose a new idea'
+
 .new_proposal
 
   - if current_user
@@ -7,7 +9,7 @@
         = f.text_area :description, :placeholder => 'Summarize your proposal. You can edit it and add a detailed description next.'
         = f.submit 'Save'
   .prompt
-    + Propose a new idea
+    + #{prompt}
     
     - if !current_user
       #login_trigger.user_dialog

@@ -10,11 +10,11 @@
     
     &.left
       text-align: right
-      padding-right: 20px
+      //padding-right: 20px
 
     &.right
       text-align: left
-      padding-left: 10px
+      //padding-left: 20px
 
     +boxy_border
 
@@ -27,12 +27,15 @@
     
     .slider
       margin: 10px
-    
+
     .ui-slider
-      width: 600px
       background: none
-      +complex-gradient(#aaa, #6a6a6a, 0%, 100%, center top, 1)
-      +box-shadow(1px, 2px, 3px, black, .4)
+      background-color: #7D7D7E
+      background-color: rgba(black, .25)
+      +box-shadow(0,0,0,transparent)
+      border-radius: 15px
+      width: 450px
+
 
       border: none
       height: 16px

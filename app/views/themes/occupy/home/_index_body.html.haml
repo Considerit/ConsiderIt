@@ -1,0 +1,12 @@
+#home
+  -# = render :partial => "shared/social_media/twitter_follow", :locals => { :call => 'Follow new proposals'}
+
+  #main_content
+    = render :partial => "proposals/new", :locals => { :prompt => 'Add new proposal'}
+
+    = render :partial => "proposals/list_output/list", :locals => { :style => 'blocks', :hide_initially => false }
+
+  #navigation
+    = render :partial => "proposals/navigation/filters"    
+    = render :partial => "proposals/navigation/tags"
+

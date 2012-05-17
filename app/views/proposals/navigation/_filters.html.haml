@@ -1,0 +1,13 @@
+
+- ranks = [ { :name => 'trending', :selected => true}, { :name => 'contested', :selected => false}, { :name => 'active', :selected => false}]
+
+.header
+  Sort by
+
+%ul.filters.ranks
+  - ranks.each do |rank|
+    %li.tag.filter{ :class => "#{rank.has_key?(:selected) && rank[:selected] ? 'selected' : ''}"}
+      %a
+        = rank[:name]
+
+.thumb

@@ -1,0 +1,7 @@
+- tags = ['#interoccupy', '#ows', '#occupyboston', '#occupywallst', '#seattle']
+
+%ul.filters.tags
+  - tags.each do |tag|
+    %li.tag.filter
+      %a
+        = tag

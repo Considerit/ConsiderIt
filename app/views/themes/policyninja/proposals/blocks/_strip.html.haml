@@ -1,0 +1,12 @@
+.proposals{ :class => "#{style} horizontal" }
+  .paginate.first
+    %button.back
+  .carousel{ :name => "proposals" }
+    %ul
+      - get_proposals_by_rank.where(:domain_short => 'WA State').each do |proposal|
+        = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+    .clear
+  .paginate.last
+    %button.forward.not_ajax
+  .clear
+

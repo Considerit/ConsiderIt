@@ -1,0 +1,185 @@
+@import "css3_mixins"
+@import "mixins"
+@import "theme_mixins"
+@import "homepage"
+@import "paper_proposal"
+
+$primary_button_background_color: #082872
+
+$background_color: #e6e6e6
+
+//$dark_header_background: #710000
+
+
+#wrap #masthead .logo_cell
+  img 
+    width: 320px
+
+html
+
+#footer, #zipcode_entry, .new_proposal
+  display: none
+
+button,
+input[type="submit"]
+  background-color: gray
+  border: none
+  color: white
+  &.important
+    //background-color: $primary_button_background_color    
+
+html
+  background-color: #bbb
+  +main_background
+  background-attachment: fixed
+
+  &.homepage
+
+  body
+    background: none
+    &:after, &:before
+      content: none
+
+    #wrap 
+      z-index: 4
+
+      > div#content  
+        padding-top: 65px
+        position: relative
+        z-index: 5
+
+        &:after
+          content: "."
+          display: block
+          height: 0
+          clear: both
+          visibility: hidden
+
+      #masthead
+        z-index: 10
+
+  body
+    &:after
+      +main_background
+      content: ''
+      width: 100%
+      height: 300px
+      top: 0
+      left: 0
+      z-index: 1
+
+#nav-user > li.triangle .hide
+  +main_background
+
+#craft_position
+
+  > .user_opinion
+    @include nude-list
+    +wall
+    +box-shadow(0, 4px, 7px, black, 0.5)
+    +border-radius(5px)
+    border: 1px solid
+    border-color: white #c1c1c1 #bbb #c1c1c1
+    padding: 12px 0
+
+
+.proposal_prompt
+
+  .pic
+    background-image: image-url('policyninja/images/hawaii.png')
+    width: 175px
+    height: 185px
+    left: -111px
+    top: -100px
+    display: none
+
+    &:after, &:before
+      content: none
+
+#home
+  #follow
+    right: 14px
+    top: 143px
+    z-index: 10
+    position: absolute
+
+#follow
+  position: absolute
+
+
+#static.aboutus
+  .desc
+    img.horizontal_ad
+      padding-top: 30px
+      width: 100%
+
+#help 
+  width: 600px
+  margin: auto
+  ul
+    padding: 0 10px 0 10px
+    li
+      list-style: disc inside none
+
+
+
+.contact
+  //height: 100px
+  form, span
+    display: inline-block
+    position: relative
+    margin-left: 8px
+
+    &.facebook, &.twitter
+      iframe
+        position: absolute
+        left: 0
+        top: 0
+        z-index: 0
+
+      img
+        position: relative
+        top: 1px
+        left: -2px
+        height: 11px
+
+      &.facebook
+        margin-right: 30px
+        //top: 4px
+        .wrapper
+          width: 44px
+    
+      &.twitter
+        .wrapper
+          width: 66px
+
+    input[type="button"], input[type="submit"], .wrapper
+      font-size: 8pt
+      height: 20px
+      padding: 2px 20px
+      
+      +chalkboard
+      +chalk
+      border: none
+      border-top: 1px solid #ccc
+      border-bottom: 1px solid #111
+      +box-shadow(0px, 1px, 2px, rgba(black, .3))
+      +border-radius(5px) 
+      cursor: pointer
+      text-shadow: none
+
+      &.wrapper
+        pointer-events: none
+        position: relative
+        z-index: 1
+        height: 16px
+        padding: 2px 0 0 0
+        vertical-align: top
+        padding-left: 4px
+
+
+.slider_table .slider_container .ui-slider
+  width: 600px
+  background: none
+  +complex-gradient(#aaa, #6a6a6a, 0%, 100%, center top, 1)
+  +box-shadow(1px, 2px, 3px, black, .4)

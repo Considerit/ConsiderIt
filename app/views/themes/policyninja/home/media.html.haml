@@ -1,0 +1,166 @@
+#static.aboutus
+
+  %table
+    %tr
+      
+      %td.desc
+        %h2
+          Media      
+        %p
+          The purpose of the Living Voters Guide (http://www.livingvotersguide.org) is to bring together 
+          Washington voters to discuss and explore their positions on the statewide ballot measures for 2010. 
+          Unlike traditional voters’ guides issued by governments, advocacy groups, and other organizations, 
+          it is co-created solely by its participants. It will evolve continuously throughout the election 
+          season as Washingtonians from across the state consider the tradeoffs for each measure. 
+
+        %h2
+          Contact us
+                      
+        %p
+          Please send all media inquiries to
+          %strong
+            = mail_to "info@livingvotersguide.org", 'info@livingvotersguide.org', :encode => 'hex'
+
+        %h3 Buttons
+        %p 
+          Feel free to add a Living Voters Guide button to your site. There is also a high-resolution 
+          version suitable for print publications.
+          %ul 
+            %li
+              = image_tag current_theme_image_path 'LVGlogo_sm_white.png'
+            
+              %ul
+                %li
+                  Small (
+                  = link_to "white", current_theme_image_path('LVGlogo_sm_white.png'), :target => "_blank", :title => 'LVG Button: small, white background'
+                  ,
+                  = link_to "transparent", current_theme_image_path('LVGlogo_sm_transparent.png'), :target => "_blank", :title => 'LVG Button: small, transparent background'
+                  )
+                %li
+                  Medium (
+                  = link_to "white", current_theme_image_path('LVGlogo_med_white.png'), :target => "_blank", :title => 'LVG Button: medium, white background'
+                  ,
+                  = link_to "transparent", current_theme_image_path('LVGlogo_med_transparent.png'), :target => "_blank", :title => 'LVG Button: small, transparent background'
+                  )
+                %li
+                  Large (
+                  = link_to "transparent", current_theme_image_path('LVGlogo_lg_transparent.png'), :target => "_blank", :title => 'LVG Button: large, transparent background'
+                  )
+
+              %a{ :href => "#{current_theme_image_path('lvg_fb_image_leaderboard.png')}" }
+
+                = image_tag current_theme_image_path('lvg_fb_image_leaderboard.png'), :class => 'horizontal_ad'
+
+      %td.list
+        %h2
+          Stories
+        %ul
+
+          %li
+            %a{ :href => "http://www.washington.edu/news/articles/living-voters-guide-updated-for-november-election", :target => "_blank"}
+              Living Voters Guide updated for November election
+            .loc
+              UW Today, 10/26/11   
+
+          %li
+            %a{ :href => "http://blogs.sos.wa.gov/FromOurCorner/index.php/2011/10/cityclub-uw-offer-living-voters-guide/", :target => "_blank"}
+              CityClub, UW offer Living Voters Guide
+            .loc
+              Secretary of State blog, 10/13/11   
+
+          %li
+            %a{ :href => "http://www.spokesman.com/stories/2011/oct/09/guest-opinion-a-guide-of-by-and-for-voters/", :target => "_blank"}
+              A guide of, by and for voters
+            .loc
+              The Spokesman, 10/9/11   
+
+          %li
+            %a{ :href => "http://news.cs.washington.edu/2011/10/06/the-living-voters-guide-a-citizen-generated-guide-to-the-washington-state-2011-election/", :target => "_blank"}
+              The Living Voters Guide: A citizen-generated guide to the Washington State 2011 election
+            .loc
+              Computer Science & Engineering News, 10/6/11   
+
+          %li
+            %a{ :href => "http://www.seattle24x7.com/community/e-city/2011/10/05/2011-living-voters-guide-wants-you/", :target => "_blank"}
+              2011 Living Voters Guide Wants You!
+            .loc
+              Seattle 24x7, 10/5/11   
+
+          %li
+            %a{ :href => "http://seattletimes.nwsource.com/html/politicsnorthwest/2016416220_votersguide.html", :target => "_blank"}
+              City Club, UW launch Living Voters Guide
+            .loc
+              Seattle Times, 10/5/11
+
+          %li
+            %a{ :href => "http://dailyuw.com/2010/10/20/uw-project-offers-new-online-discussion-platform-s/", :target => "_blank"}
+              UW project offers new online discussion platform for state initiatives
+            .loc
+              The UW Daily, 10/20/10   
+
+
+
+
+          %li
+            %a{ :href => "http://dailyuw.com/2010/10/20/uw-project-offers-new-online-discussion-platform-s/", :target => "_blank"}
+              UW project offers new online discussion platform for state initiatives
+            .loc
+              The UW Daily, 10/20/10   
+          %li
+            %a{ :href => "http://weeklybrew.blogspot.com/2010/10/democracy-and-legos-1052010.html", :target => "_blank"}
+              Democracy and Legos!
+            .loc
+              The Weekly Brew, 10/6/10               
+          %li
+            %a{ :href => "http://shelftalk.spl.org/2010/10/05/crowdsourcing-or-cloudsourcing-politics-%E2%80%93-seattle-style/", :target => "_blank"}
+              Crowdsourcing or Cloudsourcing Politics – Seattle Style
+            .loc
+              Shelf Talk, Seattle Public Library, 10/5/10               
+          %li
+            %a{ :href => "http://www.mynorthwest.com/category/local_news_articles/20101005/Site-hopes-to-capture-the-wisdom-of-Washingtonians-on-ballot-measures/", :target => "_blank"}
+              Site hopes to capture the wisdom of Washingtonians on ballot measures
+            .loc
+              KIRO Radio, MyNorthwest.com, 10/5/10 
+          %li
+            %a{ :href => "http://uwnews.org/article.asp?articleID=60616", :target => "_blank"}
+              'Living Voters Guide' invites Washington voters to hash out ballot initiatives 
+            .loc
+              UW News, 10/4/10               
+
+                      
+          %li
+            %a{ :href => "http://legalinformatics.wordpress.com/2010/09/29/crowdsourcing-ballot-initiative-voters-guides-living-voters-guides/", :target => "_blank"}
+              Crowdsourcing Ballot Initiative Voters’ Guides: Living Voters’ Guides
+            .loc
+              Legal Informatics Blog, 9/29/10 
+
+          %li
+            %a{ :href => "http://www.bessettepitney.net/2010/09/civic-life-and-deliberation.html", :target => "_blank"}
+              Civic Life and Deliberation
+            .loc
+              John Pitney, 9/28/10
+
+          %li
+            %a{ :href => "http://socialcapitalreview.org/living-voters-guide-stokes-debate-on-wa-ballot-measures/", :target => "_blank"}
+              Living Voters Guide Stokes Debate On WA Ballot Measures
+            .loc
+              Social Capital Review, 9/27/10
+
+          %li
+            %a{ :href => "http://blogs.bellinghamherald.com/politics/election/seattle-developers-unveil-living-voters-guide/", :target => "_blank"}
+              Seattle developers unveil ‘Living Voters Guide’
+            .loc
+              Politics Blog @ The Bellingham Herald, 9/27/10
+          %li
+            %a{ :href => "http://seattletimes.nwsource.com/html/opinion/2013012215_guest28douglas.html?prmid=op_ed", :target => "_blank"}
+              New voters guide will heal rifts through voter education and dialogue
+            .loc
+              Seattle Times op-ed, 9/27/10
+
+          %li
+            %a{ :href => "http://wanewscouncil.org/2010/09/24/seattle-developers-release-new-open-source-tool-to-combat-ballot-fatigue/", :target => "_blank"}
+              Seattle developers release new open source tool to combat ballot fatigue
+            .loc
+              WA News Council, 9/24/10          
+
+                        

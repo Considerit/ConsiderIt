@@ -10,9 +10,11 @@
     .title
       %span.body
         = proposal.title
-      %span.user_name
-        &ndash;
-        = proposal.user.name
+
+      - if proposal.user
+        %span.user_name
+          &ndash;
+          = proposal.user.name
     .prompt
       Read more and comment
 

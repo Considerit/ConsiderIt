@@ -1,0 +1,115 @@
+#home
+  
+  = render :partial => "home/follow"
+
+  #people
+    - users = get_users(105)
+    - if users && users.length > 75
+      .row
+        - users[0..16].each do |user|
+          - pp user.avatar
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      .row
+        - users[17..33].each do |user|
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+
+      // .row.fl
+      //   - users[26..30].each do |user|
+      //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      // .row.fr
+      //   - users[35..39].each do |user|
+      //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      // .clear    
+
+      .row
+        - users[34..50].each do |user|
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      .row
+        - users[51..67].each do |user|
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      .row
+        - users[68..84].each do |user|
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+      .row
+        - users[85..101].each do |user|
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+
+  #value 
+  
+    .first
+      A voters guide written by the people, for the people.
+
+    .valueprop
+      We are a better Hawaii when we think together. 
+
+
+#active_proposals
+  %h2.get_started
+    Get started by clicking a ballot measure below. Or watch a 
+    %a.video
+      video tutorial.
+
+  = theme_image_tag 'shadow-big.png', :style => "margin-top: 4px"
+  
+  = render :partial => "proposals/new"
+  = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false }
+
+  - if @domain
+    #zipcode_entered
+      %span.unlocked
+        - if (cnt = @domain.domain_maps.count) == 0
+          According to our records, the #{@domain.name} area does not have any local measures on the ballot. 
+        - else
+          You can now access #{cnt} #{@domain.name} area #{cnt==1 ? 'measure' : 'measures'} likely to be on your ballot.
+      .reset
+        %a     
+          Change your zip code.
+
+        .resetform.hide
+          = form_tag '/home/domain', :id => 'domain' do
+            = text_field_tag "domain", '', :title => 'your zip code', :class => 'has_example'
+            = submit_tag 'Change your zipcode', :class => 'gray'
+                
+  - else
+    #zipcode_entry
+      //.triangle
+      //  &#x25b2;
+
+      .prompt
+        Unlock your local measures:
+      .zipform
+        = form_tag '/home/domain', :id => 'domain' do
+          %span.inlined
+            = text_field_tag :domain, '', :placeholder => 'zip code', :title => 'your zip code'
+          = submit_tag 'Set', :class => 'gray'
+      .clear
+
+    :javascript
+
+      $j("input#domain").autocomplete({
+        source: #{get_available_domains()},
+        select: function(event, ui){
+         /*$j.post("#{home_domain_path}", { domain: ui.item.value }, function(data){
+          $j('#domain').append(data);
+         });
+         */
+        }
+      });
+
+:javascript
+
+  $j('body').on('click', '#active_proposals a.video', function() { 
+    video_window(450, 550, 'home/videos#console', 'LVG videos');
+  });
+
+
+/ :javascript
+/   $j('#tutorial').delegate('.nav ul a', 'click', function(){
+/     if ( !$j(this).hasClass('selected')){
+/       $j(this).parent().siblings('li').find('a').removeClass('selected');
+/       var cls = $j(this).attr('class');
+/       $j(this).addClass('selected');
+/       $j(this).parents('.nav').siblings('.frame').find('> div')
+/         .hide().filter('.' + cls).show();
+/     }
+/   });

@@ -12,6 +12,8 @@ $background_color: #e6e6e6
 
 
 #wrap #masthead .logo_cell
+  left: 118px
+  top: -99px  
   img 
     width: 320px
 
@@ -44,7 +46,7 @@ html
       z-index: 4
 
       > div#content  
-        padding-top: 65px
+        padding-top: 10px
         position: relative
         z-index: 5
 
@@ -75,11 +77,11 @@ html
 
   > .user_opinion
     @include nude-list
-    +wall
-    +box-shadow(0, 4px, 7px, black, 0.5)
-    +border-radius(5px)
-    border: 1px solid
-    border-color: white #c1c1c1 #bbb #c1c1c1
+    //+wall
+    //+box-shadow(0, 4px, 7px, black, 0.5)
+    //+border-radius(5px)
+    //border: 1px solid
+    //border-color: white #c1c1c1 #bbb #c1c1c1
     padding: 12px 0
 
 
@@ -179,7 +181,3 @@ html
 
 
 .slider_table .slider_container .ui-slider
-  width: 600px
-  background: none
-  +complex-gradient(#aaa, #6a6a6a, 0%, 100%, center top, 1)
-  +box-shadow(1px, 2px, 3px, black, .4)

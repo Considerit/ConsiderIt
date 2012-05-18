@@ -1,0 +1,68 @@
+
+.about
+
+  %h3.label
+    Stay in touch
+
+  .body
+    The Living Voters Guide is a free and non-partisan service provided by #{link_to 'Seattle City Club', 'www.seattlecityclub.org/', :target => '_blank'} and the #{link_to 'University of Washington', 'http://engage.cs.washington.edu/', :target => '_blank'}. We designed and developed the software with the support of the National Science Foundation, under grant IIS 0966929.
+
+
+
+.contact
+
+  .body
+
+    
+    - if current_tenant.socmedia_facebook_page
+      %span.facebook
+
+        .wrapper
+          = image_tag 'fb_f.png'
+          Like
+
+        %iframe{:src => "//www.facebook.com/plugins/like.php?href=#{current_tenant.socmedia_facebook_page}&send=false&layout=button_count&width=100&show_faces=false&action=like&colorscheme=light&font=lucida+grande", :scrolling => "no", :frameborder => "0", :style => "border:none; overflow:hidden; width:90px;", :allowTransparency => "true"}
+
+
+    - if current_tenant.socmedia_twitter_account
+      %span.twitter
+        .wrapper
+          = image_tag 'twitter_bird.png'
+          Follow
+        %a.twitter-follow-button{:href => "https://twitter.com/#{current_tenant.socmedia_twitter_account}", "data-show-count".intern => "false", "data-width".intern => "90px", "data-show-screen-name".intern => "true"}
+        %script{:src => "//platform.twitter.com/widgets.js", :type => "text/javascript"}
+
+    %form.email
+      %input{ :type => 'button', :value => 'Email questions & comments', :title => 'Send emails to info@livingvotersguide.org', :onclick => "parent.location='mailto:info@livingvotersguide.org?subject=I have a question or comment about the Living Voters Guide'"}
+
+    //%form.donate{ :action => "https://www.paypal.com/cgi-bin/webscr", :method => "post", :target => '_blank'}
+    //  %input{ :type => "hidden", :name => "cmd", :value => "_s-xclick"}
+    //  %input{ :type => "hidden", :name => "encrypted", :value => "-----BEGIN PKCS7-----MIIHNwYJKoZIhvcNAQcEoIIHKDCCByQCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYARV8OnLVU3FAYZBYQ8RqpxNqtXMtojYb2fwpdj8S7PK9NoByOVDghUlZA6Qyf89SaQlZ2X1bOVE71PeGipLZNxJdg+BmDhdi5IUK2Id7yMC4b4Nkh8JORfoUFH7/XUdBzN+4D7ZulnynmZgb4xu/d/+C9sd7CC5pDvH6p1UCPLSTELMAkGBSsOAwIaBQAwgbQGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQIb/33Aj+E4IGAgZC3a5WI8pwf4RkuYh1qc/Ov0AUf1io+Ymhx2H34UwJ/n3iNqB7CZdd96hRfqqQKuoSAiCHUT7JseRGkbVSU0SI91Y7O0JFgT/XTGQe7TiEqrsZZOc8KSj9EuwPlAT8xXU1OYZKZqmJp2YBl1HIjJ9hXWpn3SZEztADBcyy3osYFD6kWqGAfhcB/FUVSEliDN9egggOHMIIDgzCCAuygAwIBAgIBADANBgkqhkiG9w0BAQUFADCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wHhcNMDQwMjEzMTAxMzE1WhcNMzUwMjEzMTAxMzE1WjCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMFHTt38RMxLXJyO2SmS+Ndl72T7oKJ4u4uw+6awntALWh03PewmIJuzbALScsTS4sZoS1fKciBGoh11gIfHzylvkdNe/hJl66/RGqrj5rFb08sAABNTzDTiqqNpJeBsYs/c2aiGozptX2RlnBktH+SUNpAajW724Nv2Wvhif6sFAgMBAAGjge4wgeswHQYDVR0OBBYEFJaffLvGbxe9WT9S1wob7BDWZJRrMIG7BgNVHSMEgbMwgbCAFJaffLvGbxe9WT9S1wob7BDWZJRroYGUpIGRMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbYIBADAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4GBAIFfOlaagFrl71+jq6OKidbWFSE+Q4FqROvdgIONth+8kSK//Y/4ihuE4Ymvzn5ceE3S/iBSQQMjyvb+s2TWbQYDwcp129OPIbD9epdr4tJOUNiSojw7BHwYRiPh58S1xGlFgHFXwrEBb3dgNbMUa+u4qectsMAXpVHnD9wIyfmHMYIBmjCCAZYCAQEwgZQwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tAgEAMAkGBSsOAwIaBQCgXTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0xMjAzMTIyMTA4MzFaMCMGCSqGSIb3DQEJBDEWBBSLTIdATTL8iMjbQXz7V5jpYyWLFjANBgkqhkiG9w0BAQEFAASBgCmlaCGl1S6nCxDdLtb01Iv8PNUeddN/0ZS+Eqn2PfUk/RtMUC0/nyDzRCrrEK6Mw6ULs3t1R0sHCs8e5/iuc+7JPVk3jqceIAbv5QiJ9sVclos3DwACt0AM+WhnzMKnpBHEtOQHbaEH59H7I5a6kiDvvPeuSpFy7U82xHlRHspP-----END PKCS7-----"}
+    //  %input{ :type => "submit", :alt => "PayPal - The safer, easier way to pay online!", :value => 'Donate via Paypal'}
+        
+
+.link_list
+
+  %h3.label
+    More resources
+
+  .body
+
+    - links = [{:anchor=>'League of Women Voters of Gr. Seattle',:link=>'http://sites.google.com/site/wavoter/ballot', :title=>'Voters Guide by the League of Women Voters'},  {:anchor=>'Progressive Voters Guide', :link=>'http://waballotguide.com/', :title=>'Voters Guide by Fuse'}, {:anchor=>'Washington Policy Center', :link=>'http://www.washingtonpolicy.org/research/ballot-measures/new', :title=>'Voters Guide by the Washington Policy Center'}, {:anchor=>'Washington Secretary of State', :link=>'http://wei.secstate.wa.gov/osos/en/Pages/OnlineVotersGuide.aspx', :title=>'Voters Guide by the Secretary of State'}, {:anchor=>'TVW Video Voters Guide', :link=>'http://www.tvw.org/elections/2010videovotersguide.cfm', :title=>'A video Voters Guide by TVW'} ]
+
+    - links.each do |link|
+      #{link_to(link['anchor'] , link['link'], :target => "_blank", :title => link['title'])}#{', '}
+
+    - links = [ ["About the initiative process", "http://www.ncsl.org/default.aspx?tabid=16600"], ["Stats \& history of WA ballot measures", "http://www.sos.wa.gov/elections/initiatives/statistics.aspx"], ["Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf"] ]
+
+    -if @domain && @domain.name == 'Seattle'
+      - links.push(["King County Libraries infoVote 2011", "http://www.kcls.org/infovote/"])
+
+    - links.each do |link|
+      #{link_to(link[0] , link[1], :target => "_blank")}#{link == links.last ? '' : ', '}
+      
+    %hr.ledge.top
+    %hr.ledge.bottom
+
+
+

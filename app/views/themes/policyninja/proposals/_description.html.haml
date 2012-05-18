@@ -1,0 +1,46 @@
+- prompt ||= @proposal.name ? @proposal.name : 'Help consider this, please.'
+
+.proposal_prompt
+
+  .head.single
+    %h3.banner
+      - if @is_admin
+        = render :partial => 'proposals/admin_make_editable', :locals => { :field => :name, :label => prompt}
+      - else
+        prompt
+
+  .pic
+
+  .description_wrapper
+    .proposal_name
+      - if @proposal.name
+        #{@proposal.name.html_safe}
+
+    .full_text
+      - for i in @proposal.format_description
+        %p= h i.html_safe
+    
+    - if @proposal.long_description && @proposal.long_description.strip != ''
+      .long_description
+        .prompt
+          Long Description
+          %a.hidden
+            show
+        .full.hide
+          = @proposal.long_description.html_safe
+
+    - if @proposal.additional_details && @proposal.additional_details.strip != ''
+      .additional
+        .prompt
+          Fiscal impact statement
+          %a.hidden
+            show
+        .full.hide
+          = @proposal.additional_details.html_safe
+
+    - if @proposal.url && @proposal.url.strip != ''
+      #full_desc_block
+        #{'...'}or read the 
+        =link_to "official measure", @proposal.url, :title => "Visit the official listing on the state's website", :target => '_blank'
+
+  .clear

@@ -13,7 +13,8 @@
       hide details
 
   .pic.hide
-    = image_tag @proposal.user.avatar.url(:medium), :class => 'avatar'
+    - if @proposal.user
+      = image_tag @proposal.user.avatar.url(:medium), :class => 'avatar'
 
   .description_wrapper.hide
     .proposal_name
@@ -25,7 +26,8 @@
         %p= h i.html_safe
 
     .author
-      &ndash; #{@proposal.user.name}
+      - if @proposal.user
+        &ndash; #{@proposal.user.name}
 
 
   .clear

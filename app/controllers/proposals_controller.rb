@@ -129,7 +129,7 @@ class ProposalsController < ApplicationController
     if user.nil?
       return false
     end
-    if user.is_admin? || (user.id == proposal.user_id && \
+    user.is_admin? || (user.id == proposal.user_id && \
       (proposal.positions.published.count == 0 \
         || (proposal.positions.published.count == 1 && proposal.positions.published.first.user_id == user.id) \
       ))

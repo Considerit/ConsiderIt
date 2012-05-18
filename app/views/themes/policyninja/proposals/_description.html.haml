@@ -7,14 +7,11 @@
       - if @is_admin
         = render :partial => 'proposals/admin_make_editable', :locals => { :field => :name, :label => prompt}
       - else
-        prompt
+        = prompt
 
   .pic
 
   .description_wrapper
-    .proposal_name
-      - if @proposal.name
-        #{@proposal.name.html_safe}
 
     .full_text
       - for i in @proposal.format_description

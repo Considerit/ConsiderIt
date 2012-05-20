@@ -93,6 +93,7 @@ class ProposalsController < ApplicationController
     end
 
     @proposal = Proposal.create!(params[:proposal])
+    @proposal.track!
     redirect_to new_proposal_position_path(@proposal.long_id)
     
   end

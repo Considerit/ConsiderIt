@@ -1,5 +1,6 @@
 class Comment < ActiveRecord::Base
   is_reflectable
+  is_trackable
   has_paper_trail  
   
   #acts_as_nested_set :scope => [:commentable_id, :commentable_type]
@@ -11,6 +12,8 @@ class Comment < ActiveRecord::Base
 
   has_many :reflect_bullets, :class_name => 'Reflect::ReflectBullet', :dependent => :destroy
   has_many :reflect_bullet_revisions, :class_name => 'Reflect::ReflectBulletRevision', :dependent => :destroy
+
+  acts_as_tenant(:account)
 
   # Helper class method that allows you to build a comment
   # by passing a commentable object, a user_id, and comment text

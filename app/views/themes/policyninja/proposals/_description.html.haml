@@ -1,5 +1,5 @@
 - prompt ||= @proposal.name ? @proposal.name : 'Help consider this, please.'
-
+- prompt = prompt.gsub(/Washington/, 'Hawaii')
 .proposal_prompt
 
   .head.single
@@ -15,7 +15,7 @@
 
     .full_text
       - for i in @proposal.format_description
-        %p= h i.html_safe
+        %p= h i.html_safe.gsub(/Washington/, 'Hawaii')
     
     - if @proposal.long_description && @proposal.long_description.strip != ''
       .long_description

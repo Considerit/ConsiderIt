@@ -31,7 +31,7 @@ class PositionsController < ApplicationController
     @position.save
 
     if !current_user.nil?
-      save_actions(@position)
+      save_actions(@position)      
     else
       # stash until after user registration
       session['position_to_be_published'] = @position.id
@@ -56,6 +56,7 @@ class PositionsController < ApplicationController
     @position.stance_bucket = bucket
     @position.published = 1
     @position.save
+    @position.track!
 
     save_actions(@position)
     
@@ -207,12 +208,15 @@ protected
     actions[:included_points].each do |point_id, value|
 
       if Inclusion.where( :position_id => position.id ).where( :point_id => point_id).where( :user_id => position.user_id ).count == 0
-        Inclusion.create!( { 
+        inc = Inclusion.create!( { 
           :point_id => point_id,
           :user_id => position.user_id,
           :position_id => position.id,
           :proposal_id => position.proposal_id
-        } )      
+        } ) 
+        if !actions[:written_points].include?(point_id) 
+          inc.track!
+        end
       end
     end
     actions[:included_points] = {}
@@ -232,12 +236,7 @@ protected
         pnt.notify_parties(current_tenant, default_url_options)
       end
 
-      #Inclusion.create!( { 
-      #  :point_id => pnt_id,
-      #  :user_id => position.user_id,
-      #  :position_id => position.id,
-      #  :proposal_id => position.proposal_id
-      #} )      
+      pnt.track!
 
     end
     actions[:written_points] = []

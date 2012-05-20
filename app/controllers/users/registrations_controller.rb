@@ -33,6 +33,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if resource.save
         if resource.active_for_authentication?
           sign_in(resource_name, resource)
+          current_user.track!
           if current_user && session[:domain] != current_user.domain_id
             current_user.domain_id = session[:domain]
             current_user.save

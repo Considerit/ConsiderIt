@@ -11,16 +11,16 @@ class User < ActiveRecord::Base
   has_many :proposals
 
   belongs_to :domain
+  acts_as_tenant(:account)
+  is_trackable
   
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
   devise :omniauthable, :database_authenticatable, :registerable, :confirmable,
-         :recoverable, :rememberable, :trackable, :validatable
+         :recoverable, :rememberable, :trackable
 
-  #with_options :unless => :third_party_authenticated? do
-  #  validates :email, :presence => true, :format => email_regexp
-  #  validates :password, :presence => true
-  #end
+
+  validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete
 
@@ -45,12 +45,6 @@ class User < ActiveRecord::Base
     return admin
   end
   def third_party_authenticated?
-    t.string   "facebook_uid"
-    t.string   "google_uid"
-    t.string   "yahoo_uid"
-    t.string   "openid_uid"
-    t.string   "twitter_uid"
-
     self.facebook_uid || self.google_uid || self.yahoo_uid || self.openid_uid || self.twitter_uid
   end
 
@@ -105,6 +99,7 @@ class User < ActiveRecord::Base
       end
       user.skip_confirmation!
       user.save
+      user.track!
     end
 
     user

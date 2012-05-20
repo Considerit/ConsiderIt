@@ -8,8 +8,8 @@ class Position < ActiveRecord::Base
 
   has_paper_trail  
   is_commentable
-  
-  #acts_as_paranoid_versioned
+  is_trackable
+
   acts_as_tenant(:account)
   
   #default_scope where( :published => true )
@@ -72,24 +72,24 @@ class Position < ActiveRecord::Base
   end    
 
 
-  def stance_long
+  def stance_name_singular
     case stance_bucket
       when 0
-        return "This paper definitely should not be accepted"
+        return "strongly opposes"
       when 1
-        return "This paper is not CHI material"
+        return "opposes"
       when 2
-        return "I'm borderline, but leaning against its acceptance"
+        return "weakly opposes"
       when 3
-        return "I would not argue for or against this paper"
+        return "is neutral about"
       when 4
-        return "I'm borderline, but leaning for its acceptance"
+        return "weakly supports"
       when 5
-        return "This paper is solid CHI material"
+        return "supports"
       when 6
-        return "This paper definitely should be accepted"
+        return "strongly supports"
     end
-  end    
+  end   
 
 end
 

@@ -8,6 +8,7 @@ class Proposal < ActiveRecord::Base
   belongs_to :user
   
   acts_as_tenant(:account)
+  is_trackable
   
   def format_description
     return self.description.split('\n')

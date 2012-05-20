@@ -61,14 +61,14 @@ class Activity < ActiveRecord::Base
     when 'Position'
       ""
     when 'Inclusion'
-      "The point states \"#{obj.point.nutshell}\". #{obj.point.inclusions.count} other people have included this point."
+      "The point states \"#{obj.point.nutshell}\". #{obj.point.inclusions.count - 1} others have included this point."
     when 'Reflect::ReflectBulletRevision'
       "#{user ? user.name : 'Anonymous'} believes that #{obj.comment.user.name} said \"#{obj.text}\"."
     when 'Comment'
       #TODO: handle commentable
       "#{user.name} commented on an {item} by #{obj.root_object.hide_name || !obj.root_object.user ? '[hidden]' : obj.root_object.user.name} for \"#{obj.root_object.proposal.title}\""      
     when 'User'
-      "#{obj.account.users.where('id < ' + action_id.to_s).count} other people have joined."      
+      "#{obj.account.users.where('created_at < ' + created_at.to_s).count} other people have joined."      
     else
       raise "Don't know about this"
     end

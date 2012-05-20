@@ -14,4 +14,9 @@ every 5.minutes do
   rake "cache:proposals"
 end
 
+# backup database
+every 1.week do
+  command "backup perform --trigger my_backup"
+end
+
 # Learn more: http://github.com/javan/whenever

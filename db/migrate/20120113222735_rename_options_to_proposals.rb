@@ -13,6 +13,7 @@ class RenameOptionsToProposals < ActiveRecord::Migration
 
     rename_column :positions, :notification_option_subscriber, :notification_proposal_subscriber
 
+    remove_column :comments, :option_id
   end
 
 end

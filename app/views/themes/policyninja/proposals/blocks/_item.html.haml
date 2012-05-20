@@ -1,0 +1,28 @@
+%li{ :id => "proposal_item-#{proposal.id}", :class => "proposal_item horizontal #{has_stance(proposal) ? 'finished' : 'not-finished'} #{proposal==@proposal ? 'active' : 'not-active'} #{style} #{proposal.domain_short != 'WA State' ? 'local' : ''}" }
+
+  %a{ :href => new_proposal_position_path(proposal.long_id), :title => "Think through proposal #{proposal.category} #{proposal.designator}"}
+
+    - if style == 'vertical'
+      .short_name
+        = proposal.short_name
+
+      .number
+        = proposal.designator
+
+    - else
+
+      .designation
+        =proposal.domain_short.gsub(/WA State/, 'Hawaii')
+
+      .number
+        = proposal.designator
+                              
+      .short_name
+        = proposal.short_name
+      
+      - if proposal==@proposal && hide_initially
+        %a.show_proposal_description
+          show details
+
+  .completion.hide
+    &#x2713;

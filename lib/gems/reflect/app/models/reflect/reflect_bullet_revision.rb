@@ -16,7 +16,7 @@ class Reflect::ReflectBulletRevision < ActiveRecord::Base
     bulleter = user
     position = get_position_for_user(comment, commenter)
 
-    if commenter.id != bulleter.id && position && position.notification_author && commenter.email.length > 0
+    if (!bulleter || commenter.id != bulleter.id) && position && position.notification_author && commenter.email.length > 0
       UserMailer.delay.someone_reflected_your_point(commenter, self, comment, options)
       message_sent_to[commenter.id]
     end

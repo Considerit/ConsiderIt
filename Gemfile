@@ -63,6 +63,10 @@ gem 'actionmailer-with-request'
 #https://github.com/meskyanichi/backup
 gem 'backup'
 
+
+#custom gems
+gem "reflect", :path => "lib/gems/reflect"
+
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:

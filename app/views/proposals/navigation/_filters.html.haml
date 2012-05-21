@@ -1,5 +1,5 @@
 
-- ranks = [ { :name => 'trending', :selected => true}, { :name => 'contested', :selected => false}, { :name => 'active', :selected => false}]
+- ranks = [ { :name => 'provocative', :selected => true}, { :name => 'activity', :selected => false}, { :name => 'trending', :selected => false}, { :name => 'contested', :selected => false}]
 
 .header
   Sort by
@@ -7,7 +7,6 @@
 %ul.filters.ranks
   - ranks.each do |rank|
     %li.tag.filter{ :class => "#{rank.has_key?(:selected) && rank[:selected] ? 'selected' : ''}"}
-      %a
-        = rank[:name]
+      = link_to rank[:name], proposals_path(:metric => rank[:name]), :remote => true
 
 .thumb

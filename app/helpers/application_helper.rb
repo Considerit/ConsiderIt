@@ -37,8 +37,8 @@ module ApplicationHelper
 
   end
 
-  def get_proposals_by_rank
-    proposals = Proposal.order("score desc")
+  def get_proposals_by_rank(metric = 'activity')
+    proposals = Proposal.order("#{metric} desc")
     proposals
   end
 

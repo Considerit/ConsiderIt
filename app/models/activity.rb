@@ -34,7 +34,6 @@ class Activity < ActiveRecord::Base
         "New proposal added"
       end
     when 'Point'
-      pp obj
       "#{user.name} wrote a new point for \"#{obj.proposal.title}\""
     when 'Position'
       "#{user.name} #{obj.stance_name_singular} \"#{obj.proposal.title}\""

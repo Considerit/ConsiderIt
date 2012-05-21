@@ -55,7 +55,18 @@ class Proposal < ActiveRecord::Base
     self.num_supporters = positions.published.where("stance_bucket > ?", 3).count
     self.num_opposers = positions.published.where("stance_bucket < ?", 3).count
 
-    self.num_views = 1
+    provocative = num_perspectives.to_f / (num_perspectives + num_unpublished_positions)
+
+    latest_positions = positions.published.where(:created_at => 1.week.ago.beginning_of_week.advance(:days => -1)..1.week.ago.end_of_week).order('created_at DESC')    
+    late_perspectives = latest_positions.count
+    late_supporters = latest_positions.where("stance_bucket > ?", 3).count
+    self.trending = late_perspectives == 0 ? 0 : Math.log2(late_supporters + 1) * late_supporters.to_f / late_perspectives
+
+    self.activity = Math.log2(num_perspectives + 1) * Math.log2(num_comments + num_points + num_inclusions + 1)      
+
+    polarization = num_perspectives == 0 ? 1 : num_supporters.to_f / num_perspectives - 0.5
+    self.contested = -4 * polarization ** 2 + 1
+
     self.save
 
   end
@@ -72,20 +83,10 @@ class Proposal < ActiveRecord::Base
 
     Proposal.all.each do |p|
       p.update_metrics
-
-      p.provocative = p.num_perspectives.to_f / (p.num_perspectives + p.num_unpublished_positions)
-      p.trending = 0 #support * %support, last 20% of activities)
-      p.activity = Math.log2(p.num_perspectives + 1) * Math.log2(p.num_comments + p.num_points + p.num_inclusions + 1)
-      
-      polarization = p.num_perspectives == 0 ? 1 : p.num_supporters.to_f / p.num_perspectives - 0.5
-      p.contested = -4 * polarization ** 2 + 1
-
       p.save
     end
 
     true
-    #update the relative metrics of each proposal
-
   end
 
   def has_admin_privilege(candidate_user, this_session_id, params)

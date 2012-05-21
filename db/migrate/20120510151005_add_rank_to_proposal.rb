@@ -17,7 +17,5 @@ class AddRankToProposal < ActiveRecord::Migration
     add_column :proposals, :num_supporters, :integer
     add_column :proposals, :num_opposers, :integer
 
-    add_column :proposals, :num_views, :integer
-
   end
 end

@@ -1,7 +1,7 @@
 .proposal_list
   .infinite_scroll{ :name => "proposals" }
     %ul
-      - get_proposals_by_rank.each do |proposal|
+      - proposals.each do |proposal|
         = render :partial => "proposals/list_output/item", :locals => { :proposal => proposal, :show_full_text => false, :hide_initially => hide_initially }
     .clear
 

@@ -16,6 +16,10 @@
 
   = render :partial => "proposals/new"
 
+  #navigation
+    = render :partial => "proposals/navigation/filters"    
+    
   = render :partial => "proposals/list_output/list", :locals => { :proposals => get_proposals_by_rank, :style => 'blocks', :hide_initially => false }
+
 
 

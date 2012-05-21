@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120519204439) do
+ActiveRecord::Schema.define(:version => 20120520232234) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -353,10 +353,10 @@ ActiveRecord::Schema.define(:version => 20120519204439) do
     t.integer  "user_id"
     t.string   "slider_right"
     t.string   "slider_left"
-    t.float    "score"
+    t.float    "trending"
     t.float    "activity"
-    t.float    "persuasiveness"
-    t.float    "devisiveness"
+    t.float    "provocative"
+    t.float    "contested"
     t.integer  "num_points"
     t.integer  "num_pros"
     t.integer  "num_cons"
@@ -366,6 +366,7 @@ ActiveRecord::Schema.define(:version => 20120519204439) do
     t.integer  "num_supporters"
     t.integer  "num_opposers"
     t.integer  "num_views"
+    t.integer  "num_unpublished_positions"
   end
 
   add_index "proposals", ["account_id"], :name => "index_proposals_on_account_id"

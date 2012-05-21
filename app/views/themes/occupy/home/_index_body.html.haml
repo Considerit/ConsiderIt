@@ -4,7 +4,7 @@
   #main_content
     = render :partial => "proposals/new", :locals => { :prompt => 'Add new proposal'}
 
-    = render :partial => "proposals/list_output/list", :locals => { :style => 'blocks', :hide_initially => false }
+    = render :partial => "proposals/list_output/list", :locals => { :proposals => get_proposals_by_rank, :style => 'blocks', :hide_initially => false }
 
   #navigation
     = render :partial => "proposals/navigation/filters"    

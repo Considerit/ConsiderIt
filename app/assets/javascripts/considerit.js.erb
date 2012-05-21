@@ -328,6 +328,10 @@ ConsiderIt = {
         //if ( !$j(e.target).hasClass('.save_block') && !$j(e.target).parents('.save_block').length > 0 ) {
         //  save_block.hide();
         //}
+      })
+      .on('ajax:success', '.tag.filter a', function(event, data){
+        $j('.proposal_list').replaceWith($j(data.proposals));
+        $j(this).parent().addClass('selected').siblings().removeClass('selected');
       });
             
     //////////////

@@ -5,6 +5,13 @@ class ProposalsController < ApplicationController
 
   respond_to :json, :html
   
+  def index
+    params[:metric] ||= 'activity'
+    proposals = render_to_string :partial => "proposals/list_output/list", :locals => { 
+      :proposals => Proposal.order("#{params[:metric]} desc").limit(100), :style => 'blocks', :hide_initially => false }
+    render :json => {:proposals => proposals}.to_json
+  end
+
   def show
     @user = current_user
 

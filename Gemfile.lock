@@ -1,3 +1,8 @@
+PATH
+  remote: lib/gems/reflect
+  specs:
+    reflect (0.0.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -244,6 +249,7 @@ DEPENDENCIES
   paper_trail
   paperclip
   rails (~> 3.2)
+  reflect!
   rmagick
   sass-rails (~> 3.2.3)
   themes_for_rails (= 0.5.0.pre)

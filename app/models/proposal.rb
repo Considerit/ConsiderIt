@@ -50,9 +50,10 @@ class Proposal < ActiveRecord::Base
       self.num_comments += pnt.comments.count
       self.num_inclusions += pnt.inclusions.count
     end
-    self.num_perspectives = positions.count
-    self.num_supporters = positions.where("stance_bucket > ?", 3).count
-    self.num_opposers = positions.where("stance_bucket < ?", 3).count
+    self.num_perspectives = positions.published.count
+    self.num_unpublished_positions = positions.where(:published, false)
+    self.num_supporters = positions.published.where("stance_bucket > ?", 3).count
+    self.num_opposers = positions.published.where("stance_bucket < ?", 3).count
 
     self.num_views = 1
     self.save
@@ -69,15 +70,22 @@ class Proposal < ActiveRecord::Base
   def self.update_scores
     # for now, order by activity; later, incorporate trending    
 
-    Proposal.order(:score).each do |p|
+    Proposal.all.each do |p|
       p.update_metrics
-      p.score = (p.num_points + p.num_comments + p.num_inclusions) * Math.log2(p.num_perspectives + 1)  
+
+      p.provocative = p.num_perspectives.to_f / (p.num_perspectives + p.num_unpublished_positions)
+      p.trending = 0 #support * %support, last 20% of activities)
+      p.activity = Math.log2(p.num_perspectives + 1) * Math.log2(p.num_comments + p.num_points + p.num_inclusions + 1)
+      
+      polarization = p.num_perspectives == 0 ? 1 : p.num_supporters.to_f / p.num_perspectives - 0.5
+      p.contested = -4 * polarization ** 2 + 1
+
       p.save
     end
 
     true
     #update the relative metrics of each proposal
-    #Account.all do |acnt|
+
   end
 
   def has_admin_privilege(candidate_user, this_session_id, params)

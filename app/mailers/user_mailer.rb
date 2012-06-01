@@ -1,7 +1,12 @@
 class UserMailer < ActionMailer::Base
+  ActionMailer::Base.delivery_method = :mailhopper  
   include Devise::Mailers::Helpers
 
-  def proposal_subscription(user, pnt, options)
+  #### DISCUSSION LEVEL ####
+
+  #### PROPOSAL LEVEL ####
+
+  def proposal_new_point_for_position_takers(user, pnt, options)
     @user = user
     @point = pnt
     @host = options[:host]
@@ -9,13 +14,19 @@ class UserMailer < ActionMailer::Base
     mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new #{@point.is_pro ? 'pro' : 'con'} point for \"#{@point.proposal.title}\"")
   end
 
-  def position_subscription(user, position, options)
+  def proposal_milestone_reached(user, proposal, next_aggregate, options )
     @user = user
-    @position = position
+    @proposal = proposal
+    @next_aggregate = next_aggregate
     @host = options[:host]
     email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new review #{@point.proposal.category} for \"#{@point.proposal.title}\"")
-  end  
+
+    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] Update on \"#{@proposal.title}\"")
+
+  end
+
+
+  #### POINT LEVEL ####
 
   def someone_discussed_your_point(user, pnt, comment, options)
     @user = user
@@ -23,17 +34,9 @@ class UserMailer < ActionMailer::Base
     @comment = comment
     @host = options[:host]
     email_with_name = "#{@user.name} <#{@user.email}>"
+    pp options
     mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote")
   end
-
-  def someone_discussed_your_position(user, position, comment, options)
-    @user = user
-    @position = position
-    @comment = comment
-    @host = options[:host]
-    email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on your review")
-  end  
 
   def someone_commented_on_thread(user, obj, comment, options)
     @user = user
@@ -58,6 +61,8 @@ class UserMailer < ActionMailer::Base
     email_with_name = "#{@user.name} <#{@user.email}>"
     mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote")
   end
+
+  #### COMMENT LEVEL ####
 
   def someone_reflected_your_point(user, bullet, comment, options)
     @user = user
@@ -91,6 +96,19 @@ class UserMailer < ActionMailer::Base
     email_with_name = "#{@user.name} <#{@user.email}>"
     mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} responded to your summary")
   end
+
+
+  #### POSITION LEVEL ####
+
+  def someone_discussed_your_position(user, position, comment, options)
+    @user = user
+    @position = position
+    @comment = comment
+    @host = options[:host]
+    email_with_name = "#{@user.name} <#{@user.email}>"
+    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on your review")
+  end  
+
 
   ######### DEVISE MAILERS
   def confirmation_instructions(record, from_email = "no-reply@#{APP_CONFIG[:host]}")

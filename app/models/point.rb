@@ -2,6 +2,7 @@ class Point < ActiveRecord::Base
   
   is_commentable
   is_trackable
+  acts_as_followable
   
   has_paper_trail
   
@@ -22,7 +23,9 @@ class Point < ActiveRecord::Base
   cattr_reader :per_page
   @@per_page = 4  
 
+  scope :published, where( :published => true )
   default_scope where( :published => true )  
+  
   scope :pros, where( :is_pro => true )
   scope :cons, where( :is_pro => false )
   scope :ranked_overall, 
@@ -189,23 +192,23 @@ class Point < ActiveRecord::Base
     end
   end
   
-  def notify_parties(current_tenant, options)
-    message_sent_to = {}
-    begin
-      #email anyone who subscribes to points for the proposal
-      proposal.positions.published.where(:notification_point_subscriber => true).each do |pos|
-        position_taker = pos.user
-        if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
-          if position_taker.email && position_taker.email.length > 0
-            UserMailer.delay.proposal_subscription(position_taker, self, options)#.deliver
-          end
-          message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to proposal']
-        end
-      end
-    rescue
-    end
-    return message_sent_to
-  end
+  # def notify_parties(current_tenant, options)
+  #   message_sent_to = {}
+  #   begin
+  #     #email anyone who subscribes to points for the proposal
+  #     proposal.positions.published.where(:notification_point_subscriber => true).each do |pos|
+  #       position_taker = pos.user
+  #       if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
+  #         if position_taker.email && position_taker.email.length > 0
+  #           UserMailer.delay.proposal_subscription(position_taker, self, options)#.deliver
+  #         end
+  #         message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to proposal']
+  #       end
+  #     end
+  #   rescue
+  #   end
+  #   return message_sent_to
+  # end
 
 protected
   def entropy

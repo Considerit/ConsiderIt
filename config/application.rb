@@ -49,6 +49,8 @@ module ConsiderIt
     config.assets.enabled = true
 
     config.assets.version = '1.0'
+
+    config.action_mailer.delivery_method = :mailhopper
     
   end
 end

@@ -672,6 +672,16 @@ ConsiderIt = {
         $j(this).find('textarea, .the_subject input').val("");
       }
 
+      console.log(response)
+      if ( response['is_following'] ) {
+        console.log('finding')
+        var commentable = $j(this).parents('.commentable:first');
+        commentable.find('.follow').hide();
+        commentable.find('.unfollow').show();
+        console.log(commentable)
+      }
+
+
     });
 
     //////////////

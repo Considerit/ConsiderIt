@@ -1,4 +1,4 @@
-
+- people_bars ||= false
 
 
 - if proposal_stance_data.length > 0
@@ -8,7 +8,7 @@
 
     - user_position = @position && @position.published && @position.stance_bucket == 6 - index
 
-    -if user_position
+    - if user_position
       .personal_position.update
         .arrow
           &#8630
@@ -17,7 +17,6 @@
           = surround '', '' do
             %a{ :href => "#{edit_proposal_position_path(@proposal.long_id, @position)}"} update your perspective
 
-
     .bar{ :style => "#{bucket_percentile == 0 ? '' : 'min-height: 12px;'} height: #{bucket_percentile/height_scaler * 100}\%; left: #{-7*index}px", :id => "bucket-#{6-index}", :class => "#{bucket_percentile == 0 ? 'empty' : 'has_votes'}"}
 
       .close
@@ -25,11 +24,13 @@
 
       .border_cover
 
-      %ul.participants
-        - @positions.each do |position|
-          - if position.stance_bucket == 6 - index && position.user && !position.user.avatar_file_name
-            = render :partial => "positions/statement/block", :locals => { :position => position }
-        - @positions.each do |position|
-          - if position.stance_bucket == 6 - index && position.user && position.user.avatar_file_name
-            = render :partial => "positions/statement/block", :locals => { :position => position }
-        %li.clear
+
+      - if people_bars
+        %ul.participants
+          - @positions.each do |position|
+            - if position.stance_bucket == 6 - index && position.user && !position.user.avatar_file_name
+              = render :partial => "positions/statement/block", :locals => { :position => position }
+          - @positions.each do |position|
+            - if position.stance_bucket == 6 - index && position.user && position.user.avatar_file_name
+              = render :partial => "positions/statement/block", :locals => { :position => position }
+          %li.clear

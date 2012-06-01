@@ -1,0 +1,15 @@
+// NOTE: if you want to use the nested form, you must include in your 
+// controller something like 
+//    @position.follows.build, where @position is the followable 
+// object the form is building. 
+
+- prompt ||= "Follow this #{followable.class.name}"
+- parent_form
+- followable
+
+= parent_form.fields_for :follows do |follow_fields|
+  = follow_fields.hidden_field :followable_id, :value => followable.id
+  = follow_fields.hidden_field :followable_type, :value => followable.class.name
+  = follow_fields.hidden_field :user_id, :value => current_user ? current_user.id : nil
+  = follow_fields.check_box :follow
+  = follow_fields.label :follow, prompt

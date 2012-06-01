@@ -4,11 +4,27 @@ ConsiderIt::Application.routes.draw do
 
   root :to => "home#index"
 
+  match "/follow" => "accounts#follow"
+  match "/unfollow" => "accounts#unfollow"
+
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-z\d]{10}/, :only => [], :path_names => {:show => 'results'} do
-    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :destroy], :path_names => {:new => ''}
+    member do
+      post 'follow'
+      post 'unfollow'
+    end    
+    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :destroy], :path_names => {:new => ''} do 
+      member do
+        post 'follow'
+        post 'unfollow'
+      end
+    end
     resources :points, :only => [:index, :create, :update, :destroy, :show] do 
+      member do
+        post 'follow' 
+        post 'unfollow'
+      end
       resources :inclusions, :only => [:create] 
     end
     #resources :point_similarities, :module => :admin
@@ -22,7 +38,9 @@ ConsiderIt::Application.routes.draw do
     :registrations => "users/registrations",
     :passwords => "users/passwords",
     :confirmations => "users/confirmations"
-  } do 
+  } 
+
+  devise_scope :user do 
     match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
   end
 

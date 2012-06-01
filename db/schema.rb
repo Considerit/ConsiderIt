@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120520232234) do
+ActiveRecord::Schema.define(:version => 20120531212945) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -32,6 +32,8 @@ ActiveRecord::Schema.define(:version => 20120520232234) do
     t.string   "socmedia_twitter_oauth_token"
     t.string   "socmedia_twitter_oauth_token_secret"
     t.boolean  "requires_civility_pledge_on_registration", :default => false
+    t.integer  "followable_last_notification_milestone"
+    t.datetime "followable_last_notification"
   end
 
   create_table "active_admin_comments", :force => true do |t|
@@ -132,6 +134,30 @@ ActiveRecord::Schema.define(:version => 20120520232234) do
 
   add_index "domains", ["account_id"], :name => "index_domains_on_account_id"
   add_index "domains", ["identifier"], :name => "index_domains_on_identifier"
+
+  create_table "emails", :force => true do |t|
+    t.string   "from_address",                           :null => false
+    t.string   "reply_to_address"
+    t.string   "subject"
+    t.text     "to_address"
+    t.text     "cc_address"
+    t.text     "bcc_address"
+    t.text     "content",          :limit => 2147483647
+    t.datetime "sent_at"
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+  end
+
+  create_table "follows", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "followable_id"
+    t.string   "followable_type"
+    t.boolean  "follow",          :default => true
+    t.boolean  "explicit",        :default => false
+    t.integer  "account_id"
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+  end
 
   create_table "inclusion_versions", :force => true do |t|
     t.integer  "inclusion_id"
@@ -267,11 +293,13 @@ ActiveRecord::Schema.define(:version => 20120520232234) do
     t.float    "score_stance_group_6"
     t.datetime "deleted_at"
     t.integer  "version"
-    t.boolean  "published",            :default => true
-    t.boolean  "hide_name",            :default => false
-    t.boolean  "share",                :default => true
+    t.boolean  "published",                              :default => true
+    t.boolean  "hide_name",                              :default => false
+    t.boolean  "share",                                  :default => true
     t.boolean  "passes_moderation"
     t.integer  "account_id"
+    t.integer  "followable_last_notification_milestone"
+    t.datetime "followable_last_notification"
   end
 
   add_index "points", ["account_id"], :name => "index_points_on_account_id"
@@ -305,16 +333,18 @@ ActiveRecord::Schema.define(:version => 20120520232234) do
     t.text     "explanation"
     t.float    "stance"
     t.integer  "stance_bucket"
-    t.boolean  "published",                           :default => false
+    t.boolean  "published",                              :default => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
     t.integer  "version"
-    t.boolean  "notification_demonstrated_interest",  :default => true
+    t.boolean  "notification_demonstrated_interest",     :default => true
     t.boolean  "notification_point_subscriber"
     t.boolean  "notification_perspective_subscriber"
     t.integer  "account_id"
-    t.boolean  "notification_author",                 :default => true
+    t.boolean  "notification_author",                    :default => true
+    t.integer  "followable_last_notification_milestone"
+    t.datetime "followable_last_notification"
   end
 
   add_index "positions", ["account_id"], :name => "index_positions_on_account_id"
@@ -335,8 +365,8 @@ ActiveRecord::Schema.define(:version => 20120520232234) do
     t.datetime "updated_at"
     t.string   "domain"
     t.string   "domain_short"
-    t.text     "long_description",           :limit => 2147483647
-    t.text     "additional_details",         :limit => 2147483647
+    t.text     "long_description",                       :limit => 2147483647
+    t.text     "additional_details",                     :limit => 2147483647
     t.string   "slider_prompt"
     t.string   "considerations_prompt"
     t.string   "statement_prompt"
@@ -346,8 +376,8 @@ ActiveRecord::Schema.define(:version => 20120520232234) do
     t.boolean  "enable_position_statement"
     t.integer  "account_id"
     t.string   "session_id"
-    t.boolean  "require_login",                                    :default => false
-    t.boolean  "email_creator_per_position",                       :default => false
+    t.boolean  "require_login",                                                :default => false
+    t.boolean  "email_creator_per_position",                                   :default => false
     t.string   "long_id"
     t.string   "admin_id"
     t.integer  "user_id"
@@ -367,6 +397,8 @@ ActiveRecord::Schema.define(:version => 20120520232234) do
     t.integer  "num_opposers"
     t.integer  "num_views"
     t.integer  "num_unpublished_positions"
+    t.integer  "followable_last_notification_milestone"
+    t.datetime "followable_last_notification"
   end
 
   add_index "proposals", ["account_id"], :name => "index_proposals_on_account_id"

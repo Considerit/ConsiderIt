@@ -113,7 +113,12 @@ class Reflect::ReflectResponseController < ApplicationController
     
     new_rev.save
     if modify
-      new_rev.notify_parties(current_tenant, default_url_options)
+      ActiveSupport::Notifications.instrument("response_to_bullet_on_a_comment", 
+        :response => new_rev, 
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )      
+      #new_rev.notify_parties(current_tenant, mail_options)
     end
 
     return {:insert_id => response_obj.id, :rev_id => new_rev.id, :u => user.name, :sig => signal}.to_json

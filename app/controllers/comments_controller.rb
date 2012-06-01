@@ -10,35 +10,40 @@ class CommentsController < ApplicationController
   def create
     @proposal = Proposal.find(params[:comment][:proposal_id])
     @user_who_commented = current_user
-    
+    commentable_type = params[:comment][:commentable_type]
+
+
     existing = Comment.find_by_body(params[:comment][:body])
+    commentable = commentable_type.constantize.find(params[:comment][:commentable_id])
 
     if existing.nil?
-  
-      if params[:comment].key?(:point_id)
-        point = Point.find(params[:comment][:point_id])
-        @comment = Comment.build_from(point, @user_who_commented.id, params[:comment][:body] )
-
-        #@comment.point_id = params[:comment][:point_id].to_i
-      elsif params[:comment].key?(:position_id)
-        position = Position.published.find(params[:comment][:position_id])
-        @comment = Comment.build_from(position, @user_who_commented.id, params[:comment][:body] )
-      end
-
+      @comment = Comment.build_from(commentable, @user_who_commented.id, params[:comment][:body] )
     else
       @comment = existing
     end
 
-
     if !existing.nil? || @comment.save
 
       if existing.nil?
-        @comment.notify_parties(current_tenant, default_url_options)
+
+        ActiveSupport::Notifications.instrument("new_comment_on_#{commentable_type}", 
+          :commentable => commentable,
+          :comment => @comment, 
+          :current_tenant => current_tenant,
+          :mail_options => mail_options
+        )
+
+        #@comment.notify_parties(current_tenant, mail_options)
         @comment.track!
+        if commentable.respond_to? :follow!
+          commentable.follow!(current_user, :follow => true, :explicit => false)
+        end
       end
 
+      follows = commentable.follows.where(:user_id => current_user.id).first
+
       new_comment = render_to_string :partial => "comments/comment", :locals => { :comment => @comment } 
-      response = { :new_point => new_comment, :comment_id => @comment.id }
+      response = { :new_point => new_comment, :comment_id => @comment.id, :is_following => follows && follows.follow }
 
       #if existing.nil? && grounded_in_point
       #  response[:rerendered_ranked_point] = render_to_string :partial => "points/ranked_list", :locals => { :point => point }

@@ -61,7 +61,5 @@ def recursive_symbolize_keys! hash
 end
 
 APP_CONFIG = Configuration.load_yaml "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to
-# APP_CONFIG = config.merge(
-  # Configuration.load_yaml("config/applications/#{config['application_name']}.yml", :hash => Rails.env, :inherit => :default_to))
 
 recursive_symbolize_keys! APP_CONFIG

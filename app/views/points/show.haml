@@ -1,7 +1,7 @@
 - point = @point
 - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
-.point{ :id => "point-#{point.id}", :class => "point #{point.is_pro ? 'pro' : 'con'}" }
+.point{ :id => "point-#{point.id}", :class => "point #{point.is_pro ? 'pro' : 'con'} commentable" }
 
   .id.hide
     = point.id
@@ -18,6 +18,8 @@
         %a.editpoint.point_operation
           edit this point
         = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
+
+    = render :partial => 'acts_as_followable/follow', :locals => {:followable => point, :obj => [@proposal, point]}
 
   .body
 

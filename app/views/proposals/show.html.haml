@@ -1,10 +1,4 @@
-:javascript
-  proposal_stance_data = #{stance_fractions(@proposal)};
-  proposal_id = #{@proposal.id};
-  //for IE7 compatability
-  protovis_stance_has_been_rendered = false;
-
-- proposal_stance_data = stance_fractions(@proposal)
+- proposal_stance_data = @proposal.stance_fractions
 - has_position = proposal_stance_data.sum > 0
 - update = @position && @position.published
 - has_other_points = @pro_points.length + @con_points.length > 0
@@ -58,7 +52,7 @@
 
             .bar{ :style => "visibility: hidden; border: none; margin: 0; padding: 0; width: 0; height: 100%; left: 0px"}
           - else        
-            = render :partial => "proposals/stance_histogram", :locals => { :proposal_stance_data => proposal_stance_data, :has_position => has_position}
+            = render :partial => "proposals/stance_histogram", :locals => { :proposal_stance_data => proposal_stance_data, :has_position => has_position, :people_bars => true}
 
     %li.ranked_points
 

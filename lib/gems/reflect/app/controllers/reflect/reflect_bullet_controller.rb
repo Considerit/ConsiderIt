@@ -151,7 +151,12 @@ class Reflect::ReflectBulletController < ApplicationController
     
     new_rev.save
     if !modify
-      new_rev.notify_parties(current_tenant, default_url_options)
+      ActiveSupport::Notifications.instrument("new_bullet_on_a_comment", 
+        :bullet => new_rev, 
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )
+      #new_rev.notify_parties(current_tenant, mail_options)
       new_rev.track!
     end
     

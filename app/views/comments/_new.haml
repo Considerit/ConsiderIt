@@ -10,10 +10,8 @@
           = form_for :comment, :remote => true, :url => proposal_comments_path(@proposal.long_id), :class => 'html5' do |f|
             = f.hidden_field :proposal_id, :value=>@proposal.id
             
-            - if context == 'point'
-              = f.hidden_field :point_id, :value => commentable.id
-            - elsif context == 'position'
-              = f.hidden_field :position_id, :value => commentable.id
+            = f.hidden_field :commentable_id, :value => commentable.id
+            = f.hidden_field :commentable_type, :value => commentable.class.name
                             
             %ul.form
                

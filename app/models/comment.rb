@@ -35,81 +35,81 @@ class Comment < ActiveRecord::Base
     commentable_type.constantize.find(commentable_id)
   end
 
-  def notify_parties(current_tenant, options)
-    message_sent_to = {}
+  # def notify_parties(current_tenant, options)
+  #   message_sent_to = {}
 
-    begin
-      obj = root_object
+  #   begin
+  #     obj = root_object
 
-      # notify creator of root object
-      author = obj.user
-      author_position = get_position_for_user_and_obj(author, obj, commentable_type)
+  #     # notify creator of root object
+  #     author = obj.user
+  #     author_position = get_position_for_user_and_obj(author, obj, commentable_type)
 
-      if author.id != user_id && author_position && author_position.notification_author && author.email.length > 0
-        if author.email && author.email.length > 0
-          if commentable_type == 'Point'
-            UserMailer.delay.someone_discussed_your_point(author, obj, self, options)#.deliver
-          elsif commentable_type == 'Position'
-            UserMailer.delay.someone_discussed_your_position(author, obj, self, options)#.deliver
-          end
-        end
-      end
-      # if they don't want to get comments for their own stuff, then they also don't want  
-      # notifications for other derivative notifications
-      message_sent_to[author.id] = [author.name, 'point discussed']
+  #     if author.id != user_id && author_position && author_position.notification_author && author.email.length > 0
+  #       if author.email && author.email.length > 0
+  #         if commentable_type == 'Point'
+  #           UserMailer.delay.someone_discussed_your_point(author, obj, self, options)#.deliver
+  #         elsif commentable_type == 'Position'
+  #           UserMailer.delay.someone_discussed_your_position(author, obj, self, options)#.deliver
+  #         end
+  #       end
+  #     end
+  #     # if they don't want to get comments for their own stuff, then they also don't want  
+  #     # notifications for other derivative notifications
+  #     message_sent_to[author.id] = [author.name, 'point discussed']
 
-      # For all other participants in the discussion...
-      obj.comments.each do |comment|
-        recipient = comment.user
-        recipient_position = get_position_for_user_and_obj(recipient, obj, commentable_type)
+  #     # For all other participants in the discussion...
+  #     obj.comments.each do |comment|
+  #       recipient = comment.user
+  #       recipient_position = get_position_for_user_and_obj(recipient, obj, commentable_type)
 
-        if !message_sent_to.has_key?(recipient.id) \
-          && recipient_position \
-          && recipient_position.notification_demonstrated_interest \
-          && recipient.id != user_id 
+  #       if !message_sent_to.has_key?(recipient.id) \
+  #         && recipient_position \
+  #         && recipient_position.notification_demonstrated_interest \
+  #         && recipient.id != user_id 
 
-          if recipient.email && recipient.email.length > 0   
-            UserMailer.delay.someone_commented_on_thread(recipient, obj, self, options)#.deliver
-          end
-          message_sent_to[recipient.id] = [recipient.name, 'same discussion']
-        end
-      end
+  #         if recipient.email && recipient.email.length > 0   
+  #           UserMailer.delay.someone_commented_on_thread(recipient, obj, self, options)#.deliver
+  #         end
+  #         message_sent_to[recipient.id] = [recipient.name, 'same discussion']
+  #       end
+  #     end
 
-      if commentable_type == 'Point'
-        point = obj
-        point.inclusions.each do |inclusion|
-          if inclusion.user.positions.published.find(inclusion.proposal_id).notification_demonstrated_interest
-            includer = inclusion.user
-            if !message_sent_to.has_key?(includer.id) && includer.id == user_id
-              if includer.email && includer.email.length > 0
-                UserMailer.delay.someone_commented_on_an_included_point(includer, point, self, options)#.deliver
-              end
-              message_sent_to[recipient.id] = [recipient.name, 'comment on included point']
-            end
-          end
-        end
-      end
-    rescue
-    end
+  #     if commentable_type == 'Point'
+  #       point = obj
+  #       point.inclusions.each do |inclusion|
+  #         if inclusion.user.positions.published.find(inclusion.proposal_id).notification_demonstrated_interest
+  #           includer = inclusion.user
+  #           if !message_sent_to.has_key?(includer.id) && includer.id == user_id
+  #             if includer.email && includer.email.length > 0
+  #               UserMailer.delay.someone_commented_on_an_included_point(includer, point, self, options)#.deliver
+  #             end
+  #             message_sent_to[recipient.id] = [recipient.name, 'comment on included point']
+  #           end
+  #         end
+  #       end
+  #     end
+  #   rescue
+  #   end
 
-    return message_sent_to
-  end
+  #   return message_sent_to
+  # end
 
-  private
-    def get_position_for_user_and_obj(user,obj,commentable_type)
-      begin
-        if commentable_type == 'Point' 
-          user.positions.published.find_by_proposal_id(obj.proposal_id)
-        elsif commentable_type == 'Position'
-          if user.id == obj.user_id
-            obj
-          else
-            user.positions.published.find_by_proposal_id(obj.proposal_id)
-          end
-        end
-      rescue
-        nil
-      end
-    end
+  # private
+  #   def get_position_for_user_and_obj(user,obj,commentable_type)
+  #     begin
+  #       if commentable_type == 'Point' 
+  #         user.positions.published.find_by_proposal_id(obj.proposal_id)
+  #       elsif commentable_type == 'Position'
+  #         if user.id == obj.user_id
+  #           obj
+  #         else
+  #           user.positions.published.find_by_proposal_id(obj.proposal_id)
+  #         end
+  #       end
+  #     rescue
+  #       nil
+  #     end
+  #   end
 
 end

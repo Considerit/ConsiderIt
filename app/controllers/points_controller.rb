@@ -1,4 +1,6 @@
 class PointsController < ApplicationController
+  include ActsAsFollowable::ControllerMethods
+
   protect_from_forgery
 
   respond_to :json, :html
@@ -162,10 +164,10 @@ class PointsController < ApplicationController
       :context => 7 # own point has been seen
     )
 
-    if @point.published
-      @point.update_absolute_score
-      @point.notify_parties(current_tenant, default_url_options)
-    end
+    #if @point.published
+    #  @point.update_absolute_score
+    #  @point.notify_parties(current_tenant, mail_options)
+    #end
     
     new_point = render_to_string :partial => "points/show", :locals => { :origin => 'self', :point => @point, :static => false }
     response = {

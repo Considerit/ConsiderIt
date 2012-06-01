@@ -7,7 +7,6 @@
     - if users && users.length > 75
       .row
         - users[0..16].each do |user|
-          - pp user.avatar
           .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
       .row
         - users[17..33].each do |user|

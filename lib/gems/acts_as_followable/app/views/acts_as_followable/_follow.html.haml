@@ -1,0 +1,20 @@
+-# TODO: substitute for signin form if not current_user
+- prompt ||= "Follow this #{followable.class.name}"
+- unfollow_prompt ||= "Unfollow this #{followable.class.name}"
+
+- if current_user
+  - existing_follows = followable.follows.where(:user_id => current_user.id).first
+  - already_follows = !existing_follows.nil? && existing_follows.follow
+
+  .follow{ :class => "#{already_follows ? 'hide' : ''}"}
+    = form_for obj, :url => { :action => "follow" }, :as => :follow, :method => :post, :remote => true do |f|
+      = f.hidden_field :followable_id, :value => followable.id
+      = f.hidden_field :followable_type, :value => followable.class.name
+      = f.submit prompt
+
+  .unfollow{ :class => "#{already_follows ? '' : 'hide'}"}
+    = form_for obj, :url => { :action => "unfollow" }, :as => :follow, :method => :post, :remote => true do |f|
+      = f.hidden_field :followable_id, :value => followable.id
+      = f.hidden_field :followable_type, :value => followable.class.name    
+      = f.submit unfollow_prompt
+

@@ -1,18 +1,12 @@
 class PositionsController < ApplicationController
+  include ActsAsFollowable::ControllerMethods
+
   protect_from_forgery
 
   respond_to :html
 
   POINTS_PER_PAGE = 3
   
-  def new
-    handle_new_edit(true)
-  end
-
-  def edit
-    handle_new_edit(false)
-  end
-
   def create
     @proposal = Proposal.find_by_long_id(params[:long_id])
 
@@ -32,12 +26,14 @@ class PositionsController < ApplicationController
 
     if !current_user.nil?
       save_actions(@position)      
+      @position.follow!(current_user, :follow => true, :explicit => false)
+      @proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
     else
       # stash until after user registration
       session['position_to_be_published'] = @position.id
+      session['position_to_be_published_extras'] = { :follow_proposal => params[:follow_proposal] }
     end
 
-    
     respond_with(@proposal, @position) do |format|
       format.html { redirect_to(  proposal_path(@proposal.long_id)  ) }
       format.js { render :json => { :result => 'successful' }.to_json }
@@ -47,7 +43,8 @@ class PositionsController < ApplicationController
   def update
     @proposal = Proposal.find_by_long_id(params[:long_id])
     @position = current_user.positions.find(params[:id])
-    
+    already_published = @position.published
+
     (stance, bucket) = get_stance_val_from_params(params)
 
     params[:position].delete(:position_id)
@@ -57,6 +54,13 @@ class PositionsController < ApplicationController
     @position.published = 1
     @position.save
     @position.track!
+    ActiveSupport::Notifications.instrument("published_new_position", 
+      :position => @position,
+      :current_tenant => current_tenant,
+      :mail_options => mail_options
+    ) unless already_published
+
+    @proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
 
     save_actions(@position)
     
@@ -76,15 +80,26 @@ class PositionsController < ApplicationController
     redirect_to(proposal_path(@position.proposal.long_id))
     session.delete('reify_activities')
     session.delete('position_to_be_published')
+    session.delete('position_to_be_published_extras')
+
     session[@proposal.id] = {
         :included_points => {},
         :deleted_points => {},
         :written_points => []
       }
   end
-  
+
+  def new
+    handle_new_edit(true)
+  end
+
+  def edit
+    handle_new_edit(false)
+  end
+
 protected
   def handle_new_edit(is_new)
+
     if params.has_key? :proposal_id
       @proposal = Proposal.find(params[:proposal_id])
     elsif params.has_key? :long_id
@@ -129,10 +144,11 @@ protected
         #resolve by combining positions, taking stance from newly submitted...
         prev_pos.stance = @position.stance
         prev_pos.stance_bucket = @position.stance_bucket
-        prev_pos.notification_author = @position.notification_author
-        prev_pos.notification_demonstrated_interest = @position.notification_demonstrated_interest
-        prev_pos.notification_perspective_subscriber = @position.notification_perspective_subscriber
-        prev_pos.notification_point_subscriber = @position.notification_point_subscriber
+
+        # prev_pos.notification_author = @position.notification_author
+        # prev_pos.notification_demonstrated_interest = @position.notification_demonstrated_interest
+        # prev_pos.notification_perspective_subscriber = @position.notification_perspective_subscriber
+        # prev_pos.notification_point_subscriber = @position.notification_point_subscriber
         
         save_actions(prev_pos)
         prev_pos.save
@@ -142,7 +158,8 @@ protected
         @position.published = true
         @position.user_id = current_user.id
         @position.save
-        @position.point_listings.update_all({:user_id => current_user.id})        
+        @position.point_listings.update_all({:user_id => current_user.id})
+        @position.follow!(current_user, :follow => session['position_to_be_published_extras'][:follow_proposal] == 'true', :explicit => false)        
         save_actions(@position)
       end
 
@@ -170,6 +187,7 @@ protected
     else
       @position = Position.find( params[:id] )
     end
+
 
     #TODO: Right now, if you write an unpublished point, then remove it from your list, you will never be able to include it because
     # the following code does not select the unpublished points by the current user or that are stored in session['written_points'].
@@ -207,7 +225,7 @@ protected
 
     actions[:included_points].each do |point_id, value|
 
-      if Inclusion.where( :position_id => position.id ).where( :point_id => point_id).where( :user_id => position.user_id ).count == 0
+      if Inclusion.where( :position_id => position.id, :point_id => point_id, :user_id => position.user_id ).count == 0
         inc = Inclusion.create!( { 
           :point_id => point_id,
           :user_id => position.user_id,
@@ -215,7 +233,9 @@ protected
           :proposal_id => position.proposal_id
         } ) 
         if !actions[:written_points].include?(point_id) 
+          pnt = Point.find(point_id)
           inc.track!
+          pnt.follow!(current_user, :follow => true, :explicit => false)
         end
       end
     end
@@ -224,7 +244,7 @@ protected
     actions[:written_points].each do |pnt_id|
       pnt = Point.unscoped.find( pnt_id )
 
-      notify_parties = pnt.user_id.nil?
+      previously_unpublished = pnt.user_id.nil?
       pnt.user_id = position.user_id
       pnt.published = 1
       
@@ -232,11 +252,17 @@ protected
       pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001})
       pnt.update_absolute_score
 
-      if notify_parties
-        pnt.notify_parties(current_tenant, default_url_options)
-      end
-
       pnt.track!
+      pnt.follow!(current_user, :follow => true, :explicit => false)
+
+      if previously_unpublished
+        ActiveSupport::Notifications.instrument("new_published_Point", 
+          :point => pnt,
+          :current_tenant => current_tenant,
+          :mail_options => mail_options
+        )        
+        #pnt.notify_parties(current_tenant, mail_options)
+      end
 
     end
     actions[:written_points] = []

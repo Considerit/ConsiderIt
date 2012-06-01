@@ -5,9 +5,12 @@ class Proposal < ActiveRecord::Base
   has_many :point_listings, :dependent => :destroy
   has_many :point_similarities, :dependent => :destroy
   has_many :domain_maps
+
   belongs_to :user
   
   acts_as_tenant(:account)
+  acts_as_followable
+  
   is_trackable
   
   def format_description
@@ -40,6 +43,18 @@ class Proposal < ActiveRecord::Base
     
   end
 
+  def stance_fractions
+    distribution = Array.new(7,0)
+    positions.published.select('COUNT(*) AS cnt, stance_bucket').group(:stance_bucket).each do |row|
+      distribution[row.stance_bucket.to_i] = row.cnt.to_i
+    end      
+    total = distribution.inject(:+).to_f
+    if total > 0     
+      distribution.collect! { |stance_count| 100 * stance_count / total }
+    end
+    return distribution
+  end
+
   def update_metrics
     self.num_points = points.count
     self.num_pros = points.pros.count
@@ -51,7 +66,7 @@ class Proposal < ActiveRecord::Base
       self.num_inclusions += pnt.inclusions.count
     end
     self.num_perspectives = positions.published.count
-    self.num_unpublished_positions = positions.where(:published, false)
+    self.num_unpublished_positions = positions.where(:published => false)
     self.num_supporters = positions.published.where("stance_bucket > ?", 3).count
     self.num_opposers = positions.published.where("stance_bucket < ?", 3).count
 

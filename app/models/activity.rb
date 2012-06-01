@@ -5,20 +5,23 @@ class Activity < ActiveRecord::Base
   belongs_to :user
 
   def self.build_from!(object)
-    if !object.account_id.nil?
-      a = self.new
-      a.action_id = object.id 
-      a.action_type = object.class.name 
-      if object.class.name != 'User'
-        a.user_id = object.user_id
-      end
-      a.account_id = object.account_id
-      a.created_at = object.created_at
-      a.save
-      a
-    else
-      nil
+    return nil if object.account_id.nil?
+
+    existing = Account.find(object.account_id).activities.where(:action_type => object.class.name, :action_id => object.id, :user_id => object.user_id).first
+    if existing
+      existing.destroy
     end
+
+    a = self.new
+    a.action_id = object.id 
+    a.action_type = object.class.name 
+    if object.class.name != 'User'
+      a.user_id = object.user_id
+    end
+    a.account_id = object.account_id
+    a.created_at = object.created_at
+    a.save
+    a
   end
 
   def obj

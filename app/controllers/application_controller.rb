@@ -25,10 +25,9 @@ class ApplicationController < ActionController::Base
     tenant
   end
 
-  def default_url_options
-    
+  def mail_options
     {:host => request.host_with_port,
-     :from => current_tenant.contact_email,
+     :from => current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email],
      :app_title => current_tenant.app_title
     }
   end

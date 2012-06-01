@@ -1,0 +1,614 @@
+# Logfile created on 2012-05-11 00:58:23 -0500 by logger.rb/31641
+2012-05-11T00:58:23-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Starting job worker
+2012-05-11T01:16:59-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with NoMethodError: undefined method `session' for nil:NilClass - 0 failed attempts
+2012-05-11T01:16:59-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with NoMethodError: undefined method `session' for nil:NilClass - 1 failed attempts
+2012-05-11T01:16:59-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 6.5813 j/s, 2 failed ...
+2012-05-11T01:17:24-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with NoMethodError: undefined method `session' for nil:NilClass - 2 failed attempts
+2012-05-11T01:17:24-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with NoMethodError: undefined method `session' for nil:NilClass - 3 failed attempts
+2012-05-11T01:17:24-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 72.7352 j/s, 2 failed ...
+2012-05-11T01:21:50-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with NoMethodError: undefined method `session' for nil:NilClass - 4 failed attempts
+2012-05-11T01:21:50-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with NoMethodError: undefined method `session' for nil:NilClass - 5 failed attempts
+2012-05-11T01:21:50-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 5.3969 j/s, 2 failed ...
+2012-05-11T01:36:15-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 0 failed attempts
+2012-05-11T01:36:15-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 1 failed attempts
+2012-05-11T01:36:15-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 64.3376 j/s, 2 failed ...
+2012-05-11T01:36:40-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 2 failed attempts
+2012-05-11T01:36:40-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 3 failed attempts
+2012-05-11T01:36:40-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 33.5357 j/s, 2 failed ...
+2012-05-11T01:41:01-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 4 failed attempts
+2012-05-11T01:41:01-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 5 failed attempts
+2012-05-11T01:41:01-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 19.7070 j/s, 2 failed ...
+2012-05-11T01:41:41-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 0 failed attempts
+2012-05-11T01:41:41-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 1 failed attempts
+2012-05-11T01:41:41-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 61.6751 j/s, 2 failed ...
+2012-05-11T01:42:06-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 2 failed attempts
+2012-05-11T01:42:06-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 3 failed attempts
+2012-05-11T01:42:06-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 76.2980 j/s, 2 failed ...
+2012-05-11T01:42:36-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 0 failed attempts
+2012-05-11T01:42:36-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 1 failed attempts
+2012-05-11T01:42:36-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 19.4862 j/s, 2 failed ...
+2012-05-11T01:43:01-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 2 failed attempts
+2012-05-11T01:43:01-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 3 failed attempts
+2012-05-11T01:43:01-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 32.9717 j/s, 2 failed ...
+2012-05-11T01:47:26-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 4 failed attempts
+2012-05-11T01:47:26-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 5 failed attempts
+2012-05-11T01:47:26-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 5.3376 j/s, 2 failed ...
+2012-05-11T02:03:02-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 0 failed attempts
+2012-05-11T02:03:02-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 1 failed attempts
+2012-05-11T02:03:02-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 72.5242 j/s, 2 failed ...
+2012-05-11T02:03:27-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 2 failed attempts
+2012-05-11T02:03:27-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (5 for 4) - 3 failed attempts
+2012-05-11T02:03:27-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] 2 jobs processed at 73.6594 j/s, 2 failed ...
+2012-05-11T02:06:04-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:85261)] Exiting...
+2012-05-11T02:06:18-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] Starting job worker
+2012-05-11T02:07:04-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] Class#someone_discussed_your_point failed with SocketError: getaddrinfo: nodename nor servname provided, or not known - 0 failed attempts
+2012-05-11T02:07:04-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] Class#someone_discussed_your_point failed with SocketError: getaddrinfo: nodename nor servname provided, or not known - 1 failed attempts
+2012-05-11T02:07:04-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] 2 jobs processed at 0.3421 j/s, 2 failed ...
+2012-05-11T02:07:29-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] Class#someone_discussed_your_point failed with SocketError: getaddrinfo: nodename nor servname provided, or not known - 2 failed attempts
+2012-05-11T02:07:29-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] Class#someone_discussed_your_point failed with SocketError: getaddrinfo: nodename nor servname provided, or not known - 3 failed attempts
+2012-05-11T02:07:29-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] 2 jobs processed at 10.7054 j/s, 2 failed ...
+2012-05-11T02:09:16-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] Class#someone_discussed_your_point completed after 6.8103
+2012-05-11T02:09:16-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] 1 jobs processed at 0.1396 j/s, 0 failed ...
+2012-05-11T02:11:55-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] Class#someone_discussed_your_point completed after 3.5081
+2012-05-11T02:11:55-0500: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:87913)] 1 jobs processed at 0.2584 j/s, 0 failed ...
+2012-05-12T15:36:00-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Starting job worker
+2012-05-12T15:36:05-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription completed after 4.6116
+2012-05-12T15:36:05-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ActionView::Template::Error: /Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:21: syntax error, unexpected '}', expecting ')'
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined, expecting ')'
+...aml_temp);_hamlout.push_text("\n    </p>\n    <p>\n      Tha...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unknown regexp option - p
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...  <p>\n      Thanks!\n    </p>\n    <p>\n      p.s. We apolo...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...    Thanks!\n    </p>\n    <p>\n      p.s. We apologize if t...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected keyword_and
+...taining a personal attack), and block the offending commente...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...ding commenter if appropriate.\n    </p>\n    <hr />\n    <p...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...opriate.\n    </p>\n    <hr />\n    <p>\n      To unsubscrib...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...n    </p>\n    <hr />\n    <p>\n      To unsubscribe to thes...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected tIDENTIFIER, expecting keyword_do or '{' or '('
+...be to these messages, visit the link above, and modify your ...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected keyword_and
+...ages, visit the link above, and modify your review by desele...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...x near the bottom of the page.\n    </p>\n  </body>\n</html>...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unknown regexp options - bdy
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...the page.\n    </p>\n  </body>\n</html>\n", -3, false);::Ham...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unterminated regexp meets end of file
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $end, expecting ')' - 0 failed attempts
+2012-05-12T15:36:05-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ActionView::Template::Error: /Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:21: syntax error, unexpected '}', expecting ')'
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined, expecting ')'
+...aml_temp);_hamlout.push_text("\n    </p>\n    <p>\n      Tha...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unknown regexp option - p
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...  <p>\n      Thanks!\n    </p>\n    <p>\n      p.s. We apolo...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...    Thanks!\n    </p>\n    <p>\n      p.s. We apologize if t...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected keyword_and
+...taining a personal attack), and block the offending commente...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...ding commenter if appropriate.\n    </p>\n    <hr />\n    <p...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...opriate.\n    </p>\n    <hr />\n    <p>\n      To unsubscrib...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...n    </p>\n    <hr />\n    <p>\n      To unsubscribe to thes...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected tIDENTIFIER, expecting keyword_do or '{' or '('
+...be to these messages, visit the link above, and modify your ...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected keyword_and
+...ages, visit the link above, and modify your review by desele...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...x near the bottom of the page.\n    </p>\n  </body>\n</html>...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unknown regexp options - bdy
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...the page.\n    </p>\n  </body>\n</html>\n", -3, false);::Ham...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unterminated regexp meets end of file
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $end, expecting ')' - 1 failed attempts
+2012-05-12T15:36:05-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 3 jobs processed at 0.5966 j/s, 2 failed ...
+2012-05-12T15:36:30-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ActionView::Template::Error: /Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:21: syntax error, unexpected '}', expecting ')'
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined, expecting ')'
+...aml_temp);_hamlout.push_text("\n    </p>\n    <p>\n      Tha...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unknown regexp option - p
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...  <p>\n      Thanks!\n    </p>\n    <p>\n      p.s. We apolo...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...    Thanks!\n    </p>\n    <p>\n      p.s. We apologize if t...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected keyword_and
+...taining a personal attack), and block the offending commente...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...ding commenter if appropriate.\n    </p>\n    <hr />\n    <p...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...opriate.\n    </p>\n    <hr />\n    <p>\n      To unsubscrib...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...n    </p>\n    <hr />\n    <p>\n      To unsubscribe to thes...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected tIDENTIFIER, expecting keyword_do or '{' or '('
+...be to these messages, visit the link above, and modify your ...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected keyword_and
+...ages, visit the link above, and modify your review by desele...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...x near the bottom of the page.\n    </p>\n  </body>\n</html>...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unknown regexp options - bdy
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...the page.\n    </p>\n  </body>\n</html>\n", -3, false);::Ham...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unterminated regexp meets end of file
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $end, expecting ')' - 2 failed attempts
+2012-05-12T15:36:30-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ActionView::Template::Error: /Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:21: syntax error, unexpected '}', expecting ')'
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined, expecting ')'
+...aml_temp);_hamlout.push_text("\n    </p>\n    <p>\n      Tha...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unknown regexp option - p
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...  <p>\n      Thanks!\n    </p>\n    <p>\n      p.s. We apolo...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...    Thanks!\n    </p>\n    <p>\n      p.s. We apologize if t...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected keyword_and
+...taining a personal attack), and block the offending commente...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...ding commenter if appropriate.\n    </p>\n    <hr />\n    <p...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...opriate.\n    </p>\n    <hr />\n    <p>\n      To unsubscrib...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...n    </p>\n    <hr />\n    <p>\n      To unsubscribe to thes...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected tIDENTIFIER, expecting keyword_do or '{' or '('
+...be to these messages, visit the link above, and modify your ...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected keyword_and
+...ages, visit the link above, and modify your review by desele...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...x near the bottom of the page.\n    </p>\n  </body>\n</html>...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unknown regexp options - bdy
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $undefined
+...the page.\n    </p>\n  </body>\n</html>\n", -3, false);::Ham...
+...                               ^
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: unterminated regexp meets end of file
+/Users/travis/Documents/considerit_20/lvg2/ConsiderIt/app/views/user_mailer/someone_discussed_your_point.html.haml:23: syntax error, unexpected $end, expecting ')' - 3 failed attempts
+2012-05-12T15:36:30-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 14.1847 j/s, 2 failed ...
+2012-05-12T15:40:58-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point completed after 2.9329
+2012-05-12T15:40:58-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 1 jobs processed at 0.3362 j/s, 0 failed ...
+2012-05-13T15:36:25-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 0 failed attempts
+2012-05-13T15:36:25-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 1 failed attempts
+2012-05-13T15:36:25-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 15.7518 j/s, 2 failed ...
+2012-05-13T15:36:50-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 2 failed attempts
+2012-05-13T15:36:50-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 3 failed attempts
+2012-05-13T15:36:50-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 36.0757 j/s, 2 failed ...
+2012-05-13T15:41:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 4 failed attempts
+2012-05-13T15:41:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 5 failed attempts
+2012-05-13T15:41:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 5.4703 j/s, 2 failed ...
+2012-05-13T16:02:57-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 6 failed attempts
+2012-05-13T16:02:57-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 7 failed attempts
+2012-05-13T16:02:57-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 5.3613 j/s, 2 failed ...
+2012-05-13T17:11:19-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 8 failed attempts
+2012-05-13T17:11:19-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 9 failed attempts
+2012-05-13T17:11:19-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 37.1726 j/s, 2 failed ...
+2012-05-13T19:58:04-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 10 failed attempts
+2012-05-13T19:58:04-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 11 failed attempts
+2012-05-13T19:58:04-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 5.3793 j/s, 2 failed ...
+2012-05-14T01:43:45-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 12 failed attempts
+2012-05-14T01:43:45-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 13 failed attempts
+2012-05-14T01:43:45-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 5.2986 j/s, 2 failed ...
+2012-05-14T12:24:09-0700: [Worker(delayed_job host:newcomp-1.dyn.cs.washington.edu pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 14 failed attempts
+2012-05-14T12:24:09-0700: [Worker(delayed_job host:newcomp-1.dyn.cs.washington.edu pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 15 failed attempts
+2012-05-14T12:24:09-0700: [Worker(delayed_job host:newcomp-1.dyn.cs.washington.edu pid:19304)] 2 jobs processed at 30.1341 j/s, 2 failed ...
+2012-05-14T19:26:26-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 0 failed attempts
+2012-05-14T19:26:26-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 1 failed attempts
+2012-05-14T19:26:26-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 34.4721 j/s, 2 failed ...
+2012-05-14T19:26:51-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 2 failed attempts
+2012-05-14T19:26:51-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 3 failed attempts
+2012-05-14T19:26:51-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 36.6153 j/s, 2 failed ...
+2012-05-14T19:26:56-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 0 failed attempts
+2012-05-14T19:26:56-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 1 failed attempts
+2012-05-14T19:26:56-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 74.4962 j/s, 2 failed ...
+2012-05-14T19:27:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 2 failed attempts
+2012-05-14T19:27:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 3 failed attempts
+2012-05-14T19:27:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 29.6029 j/s, 2 failed ...
+2012-05-14T19:31:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 4 failed attempts
+2012-05-14T19:31:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 5 failed attempts
+2012-05-14T19:31:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 21.0520 j/s, 2 failed ...
+2012-05-14T19:31:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 4 failed attempts
+2012-05-14T19:31:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 5 failed attempts
+2012-05-14T19:31:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 32.4365 j/s, 2 failed ...
+2012-05-14T19:52:57-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 6 failed attempts
+2012-05-14T19:52:57-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 7 failed attempts
+2012-05-14T19:52:57-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 10.4636 j/s, 2 failed ...
+2012-05-14T19:53:27-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 6 failed attempts
+2012-05-14T19:53:27-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 7 failed attempts
+2012-05-14T19:53:27-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 29.3518 j/s, 2 failed ...
+2012-05-14T21:01:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 8 failed attempts
+2012-05-14T21:01:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 9 failed attempts
+2012-05-14T21:01:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 33.9207 j/s, 2 failed ...
+2012-05-14T21:01:50-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 8 failed attempts
+2012-05-14T21:01:50-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 9 failed attempts
+2012-05-14T21:01:50-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 31.2735 j/s, 2 failed ...
+2012-05-14T23:48:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 10 failed attempts
+2012-05-14T23:48:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 11 failed attempts
+2012-05-14T23:48:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 34.2360 j/s, 2 failed ...
+2012-05-14T23:48:36-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 10 failed attempts
+2012-05-14T23:48:36-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 11 failed attempts
+2012-05-14T23:48:36-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 79.5577 j/s, 2 failed ...
+2012-05-15T05:33:51-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 12 failed attempts
+2012-05-15T05:33:51-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 13 failed attempts
+2012-05-15T05:33:51-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 34.9022 j/s, 2 failed ...
+2012-05-15T05:34:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 12 failed attempts
+2012-05-15T05:34:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#someone_discussed_your_point failed with ArgumentError: wrong number of arguments (4 for 5) - 13 failed attempts
+2012-05-15T05:34:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 76.7312 j/s, 2 failed ...
+2012-05-15T06:36:34-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 16 failed attempts
+2012-05-15T06:36:34-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Class#proposal_subscription failed with ArgumentError: wrong number of arguments (3 for 4) - 17 failed attempts
+2012-05-15T06:36:34-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] 2 jobs processed at 5.3308 j/s, 2 failed ...
+2012-05-15T14:20:18-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:19304)] Exiting...
+2012-05-15T14:20:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:31271)] Starting job worker
+2012-05-15T15:32:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:31271)] Exiting...
+2012-05-15T15:32:55-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Starting job worker
+2012-05-15T15:35:18-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Class#someone_discussed_your_point completed after 17.8597
+2012-05-15T15:35:18-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] 1 jobs processed at 0.0559 j/s, 0 failed ...
+2012-05-15T15:37:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Class#someone_discussed_your_point completed after 3.7739
+2012-05-15T15:37:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] 1 jobs processed at 0.2646 j/s, 0 failed ...
+2012-05-15T15:52:23-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Class#someone_reflected_your_point failed with ActionView::Template::Error: undefined method `proposal' for nil:NilClass - 0 failed attempts
+2012-05-15T15:52:23-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Class#someone_reflected_your_point failed with ActionView::Template::Error: undefined method `proposal' for nil:NilClass - 1 failed attempts
+2012-05-15T15:52:23-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] 2 jobs processed at 16.4459 j/s, 2 failed ...
+2012-05-15T15:52:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Class#someone_reflected_your_point failed with ActionView::Template::Error: undefined method `proposal' for nil:NilClass - 2 failed attempts
+2012-05-15T15:52:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Class#someone_reflected_your_point failed with ActionView::Template::Error: undefined method `proposal' for nil:NilClass - 3 failed attempts
+2012-05-15T15:52:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] 2 jobs processed at 34.0188 j/s, 2 failed ...
+2012-05-15T15:57:13-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Class#someone_reflected_your_point failed with ActionView::Template::Error: undefined method `proposal' for nil:NilClass - 4 failed attempts
+2012-05-15T15:57:13-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Class#someone_reflected_your_point failed with ActionView::Template::Error: undefined method `proposal' for nil:NilClass - 5 failed attempts
+2012-05-15T15:57:13-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] 2 jobs processed at 4.3139 j/s, 2 failed ...
+2012-05-15T16:06:01-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Class#someone_reflected_your_point completed after 2.7455
+2012-05-15T16:06:01-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] 1 jobs processed at 0.3634 j/s, 0 failed ...
+2012-05-15T16:12:09-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Class#someone_reflected_your_point completed after 2.6497
+2012-05-15T16:12:09-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] 1 jobs processed at 0.3725 j/s, 0 failed ...
+2012-05-15T16:13:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:33718)] Exiting...
+2012-05-15T16:13:22-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Starting job worker
+2012-05-15T16:14:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_reflected_your_point completed after 4.0797
+2012-05-15T16:14:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 1 jobs processed at 0.2406 j/s, 0 failed ...
+2012-05-15T16:30:55-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription completed after 2.7266
+2012-05-15T16:30:55-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 1 jobs processed at 0.3659 j/s, 0 failed ...
+2012-05-15T16:39:18-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription completed after 2.3029
+2012-05-15T16:39:18-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 1 jobs processed at 0.4330 j/s, 0 failed ...
+2012-05-15T17:04:05-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_discussed_your_point failed with Timeout::Error: execution expired - 0 failed attempts
+2012-05-15T17:04:05-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x00000129210e60> - 0 failed attempts
+2012-05-15T17:04:05-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x00000128393fb8> - 0 failed attempts
+2012-05-15T17:04:07-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_discussed_your_point completed after 2.2202
+2012-05-15T17:04:07-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x00000128665188> - 1 failed attempts
+2012-05-15T17:04:07-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x00000128477268> - 1 failed attempts
+2012-05-15T17:04:07-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 6 jobs processed at 0.1630 j/s, 5 failed ...
+2012-05-15T17:04:32-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x000001014d5560> - 2 failed attempts
+2012-05-15T17:04:33-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x000001290a79c0> - 2 failed attempts
+2012-05-15T17:04:33-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x000001294880a8> - 3 failed attempts
+2012-05-15T17:04:33-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x000001295166a0> - 3 failed attempts
+2012-05-15T17:04:33-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 4 jobs processed at 18.8285 j/s, 4 failed ...
+2012-05-15T17:08:58-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x000001284a18d8> - 4 failed attempts
+2012-05-15T17:08:58-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x000001284bb260> - 4 failed attempts
+2012-05-15T17:08:58-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x0000012844ce78> - 5 failed attempts
+2012-05-15T17:08:58-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x0000012864bcd8> - 5 failed attempts
+2012-05-15T17:08:58-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 4 jobs processed at 22.4200 j/s, 4 failed ...
+2012-05-15T17:30:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x00000128457c60> - 6 failed attempts
+2012-05-15T17:30:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x0000012865c830> - 6 failed attempts
+2012-05-15T17:30:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x00000128696b70> - 7 failed attempts
+2012-05-15T17:30:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x00000101588638> - 7 failed attempts
+2012-05-15T17:30:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 4 jobs processed at 16.9856 j/s, 4 failed ...
+2012-05-15T18:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x0000012839fcc8> - 8 failed attempts
+2012-05-15T18:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x000001293c9ba8> - 8 failed attempts
+2012-05-15T18:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x0000012813c378> - 9 failed attempts
+2012-05-15T18:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x000001013f44c0> - 9 failed attempts
+2012-05-15T18:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 4 jobs processed at 6.8930 j/s, 4 failed ...
+2012-05-15T21:25:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x00000129300578> - 10 failed attempts
+2012-05-15T21:25:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x0000012906c758> - 10 failed attempts
+2012-05-15T21:25:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x0000012838f1e8> - 11 failed attempts
+2012-05-15T21:25:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x000001287c3b88> - 11 failed attempts
+2012-05-15T21:25:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 4 jobs processed at 17.9017 j/s, 4 failed ...
+2012-05-16T03:11:33-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x000001027c6098> - 12 failed attempts
+2012-05-16T03:11:33-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x00000129525380> - 12 failed attempts
+2012-05-16T03:11:33-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x000001283ef278> - 13 failed attempts
+2012-05-16T03:11:33-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x000001280f8768> - 13 failed attempts
+2012-05-16T03:11:33-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 4 jobs processed at 14.2765 j/s, 4 failed ...
+2012-05-16T13:51:58-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x000001292b1bd0> - 14 failed attempts
+2012-05-16T13:51:58-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x0000012837c9d0> - 14 failed attempts
+2012-05-16T13:51:58-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x00000129513b30> - 15 failed attempts
+2012-05-16T13:51:58-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x00000129044a78> - 15 failed attempts
+2012-05-16T13:51:58-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] 4 jobs processed at 18.0838 j/s, 4 failed ...
+2012-05-17T09:01:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x000001280b31e0> - 16 failed attempts
+2012-05-17T09:01:23-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x00000100d94080> - 16 failed attempts
+2012-05-17T09:01:23-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x000001293028f0> - 17 failed attempts
+2012-05-17T09:01:23-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ActionView::Template::Error: undefined method `succeeds' for #<#<Class:0x000001016de0c8>:0x00000129066fb0> - 17 failed attempts
+2012-05-17T09:01:23-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 4 jobs processed at 1.4466 j/s, 4 failed ...
+2012-05-18T14:26:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x0000012906c230> - 18 failed attempts
+2012-05-18T14:26:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with SocketError: getaddrinfo: nodename nor servname provided, or not known - 18 failed attempts
+2012-05-18T14:26:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x0000012947c910> - 19 failed attempts
+2012-05-18T14:26:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with SocketError: getaddrinfo: nodename nor servname provided, or not known - 19 failed attempts
+2012-05-18T14:26:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 4 jobs processed at 1.6861 j/s, 4 failed ...
+2012-05-19T18:59:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-19T18:59:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-19T18:59:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-19T18:59:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-19T18:59:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-19T18:59:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-19T18:59:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 6 jobs processed at 7.2097 j/s, 6 failed ...
+2012-05-19T18:59:41-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-19T18:59:41-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-19T18:59:41-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-19T18:59:41-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-19T18:59:42-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-19T18:59:42-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-19T18:59:42-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 6 jobs processed at 7.4968 j/s, 6 failed ...
+2012-05-19T19:00:52-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-19T19:00:52-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-19T19:00:52-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 9.5245 j/s, 2 failed ...
+2012-05-19T19:01:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-19T19:01:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-19T19:01:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 7.7005 j/s, 2 failed ...
+2012-05-19T19:04:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 4 failed attempts
+2012-05-19T19:04:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 4 failed attempts
+2012-05-19T19:04:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 4 failed attempts
+2012-05-19T19:04:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 5 failed attempts
+2012-05-19T19:04:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 5 failed attempts
+2012-05-19T19:04:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 5 failed attempts
+2012-05-19T19:04:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 6 jobs processed at 7.1520 j/s, 6 failed ...
+2012-05-19T19:05:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 4 failed attempts
+2012-05-19T19:05:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 5 failed attempts
+2012-05-19T19:05:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 10.5154 j/s, 2 failed ...
+2012-05-19T19:17:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-19T19:17:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-19T19:17:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 13.9225 j/s, 2 failed ...
+2012-05-19T19:17:49-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-19T19:17:49-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-19T19:17:49-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 13.2571 j/s, 2 failed ...
+2012-05-19T19:22:14-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 4 failed attempts
+2012-05-19T19:22:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 5 failed attempts
+2012-05-19T19:22:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 15.7515 j/s, 2 failed ...
+2012-05-19T19:25:45-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 6 failed attempts
+2012-05-19T19:25:45-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 6 failed attempts
+2012-05-19T19:25:45-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 6 failed attempts
+2012-05-19T19:25:45-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 7 failed attempts
+2012-05-19T19:25:45-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 7 failed attempts
+2012-05-19T19:25:45-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 7 failed attempts
+2012-05-19T19:25:45-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 6 jobs processed at 12.5544 j/s, 6 failed ...
+2012-05-19T19:27:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 6 failed attempts
+2012-05-19T19:27:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 7 failed attempts
+2012-05-19T19:27:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 7.5893 j/s, 2 failed ...
+2012-05-19T19:31:19-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_reflected_your_point completed after 3.1291
+2012-05-19T19:31:19-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 1 jobs processed at 0.3183 j/s, 0 failed ...
+2012-05-19T19:32:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_discussed_your_point completed after 2.7141
+2012-05-19T19:32:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 1 jobs processed at 0.3676 j/s, 0 failed ...
+2012-05-19T19:43:57-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 6 failed attempts
+2012-05-19T19:43:57-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 7 failed attempts
+2012-05-19T19:43:57-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 15.9084 j/s, 2 failed ...
+2012-05-19T20:34:09-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 8 failed attempts
+2012-05-19T20:34:09-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 8 failed attempts
+2012-05-19T20:34:09-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 8 failed attempts
+2012-05-19T20:34:09-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 9 failed attempts
+2012-05-19T20:34:09-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 9 failed attempts
+2012-05-19T20:34:09-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 9 failed attempts
+2012-05-19T20:34:09-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 6 jobs processed at 10.8982 j/s, 6 failed ...
+2012-05-19T20:35:44-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 8 failed attempts
+2012-05-19T20:35:44-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 9 failed attempts
+2012-05-19T20:35:44-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 14.1329 j/s, 2 failed ...
+2012-05-19T20:52:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 8 failed attempts
+2012-05-19T20:52:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 9 failed attempts
+2012-05-19T20:52:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 17.7633 j/s, 2 failed ...
+2012-05-19T23:20:54-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 10 failed attempts
+2012-05-19T23:20:54-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 10 failed attempts
+2012-05-19T23:20:54-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 10 failed attempts
+2012-05-19T23:20:54-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 11 failed attempts
+2012-05-19T23:20:54-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 11 failed attempts
+2012-05-19T23:20:55-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 11 failed attempts
+2012-05-19T23:20:55-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 6 jobs processed at 12.5676 j/s, 6 failed ...
+2012-05-19T23:22:30-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 10 failed attempts
+2012-05-19T23:22:30-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 11 failed attempts
+2012-05-19T23:22:30-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 14.7501 j/s, 2 failed ...
+2012-05-19T23:39:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 10 failed attempts
+2012-05-19T23:39:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 11 failed attempts
+2012-05-19T23:39:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 4.4360 j/s, 2 failed ...
+2012-05-20T05:06:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 12 failed attempts
+2012-05-20T05:06:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 12 failed attempts
+2012-05-20T05:06:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 12 failed attempts
+2012-05-20T05:06:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 13 failed attempts
+2012-05-20T05:06:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 13 failed attempts
+2012-05-20T05:06:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 13 failed attempts
+2012-05-20T05:06:39-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 6 jobs processed at 14.0784 j/s, 6 failed ...
+2012-05-20T05:08:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 12 failed attempts
+2012-05-20T05:08:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 13 failed attempts
+2012-05-20T05:08:15-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 10.1240 j/s, 2 failed ...
+2012-05-20T05:24:50-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 12 failed attempts
+2012-05-20T05:24:50-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 13 failed attempts
+2012-05-20T05:24:50-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 11.0899 j/s, 2 failed ...
+2012-05-20T10:53:04-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x0000012aa957d8> - 20 failed attempts
+2012-05-20T10:53:08-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription completed after 3.9795
+2012-05-20T10:53:08-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x00000128431b78> - 21 failed attempts
+2012-05-20T10:53:08-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 3 jobs processed at 0.6469 j/s, 2 failed ...
+2012-05-20T15:47:01-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 14 failed attempts
+2012-05-20T15:47:01-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 14 failed attempts
+2012-05-20T15:47:01-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 14 failed attempts
+2012-05-20T15:47:01-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 15 failed attempts
+2012-05-20T15:47:01-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 15 failed attempts
+2012-05-20T15:47:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 15 failed attempts
+2012-05-20T15:47:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 6 jobs processed at 11.3670 j/s, 6 failed ...
+2012-05-20T15:48:37-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 14 failed attempts
+2012-05-20T15:48:37-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 15 failed attempts
+2012-05-20T15:48:37-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 10.2529 j/s, 2 failed ...
+2012-05-20T16:05:13-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 14 failed attempts
+2012-05-20T16:05:13-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 15 failed attempts
+2012-05-20T16:05:13-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 10.9818 j/s, 2 failed ...
+2012-05-21T09:59:25-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 16 failed attempts
+2012-05-21T09:59:25-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 16 failed attempts
+2012-05-21T09:59:25-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 16 failed attempts
+2012-05-21T09:59:25-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 17 failed attempts
+2012-05-21T09:59:25-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 17 failed attempts
+2012-05-21T09:59:25-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 17 failed attempts
+2012-05-21T09:59:25-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] 6 jobs processed at 9.2658 j/s, 6 failed ...
+2012-05-21T10:01:00-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 16 failed attempts
+2012-05-21T10:01:00-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 17 failed attempts
+2012-05-21T10:01:00-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] 2 jobs processed at 11.4264 j/s, 2 failed ...
+2012-05-21T10:17:36-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 16 failed attempts
+2012-05-21T10:17:36-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 17 failed attempts
+2012-05-21T10:17:36-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] 2 jobs processed at 11.2853 j/s, 2 failed ...
+2012-05-21T13:00:06-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 0 failed attempts
+2012-05-21T13:00:06-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 1 failed attempts
+2012-05-21T13:00:06-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] 2 jobs processed at 37.5700 j/s, 2 failed ...
+2012-05-21T13:00:31-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 2 failed attempts
+2012-05-21T13:00:31-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 3 failed attempts
+2012-05-21T13:00:31-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] 2 jobs processed at 19.4212 j/s, 2 failed ...
+2012-05-21T13:04:56-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 4 failed attempts
+2012-05-21T13:04:56-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 5 failed attempts
+2012-05-21T13:04:56-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] 2 jobs processed at 22.7136 j/s, 2 failed ...
+2012-05-21T13:26:37-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 6 failed attempts
+2012-05-21T13:26:37-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 7 failed attempts
+2012-05-21T13:26:37-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] 2 jobs processed at 6.2759 j/s, 2 failed ...
+2012-05-21T14:34:59-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 8 failed attempts
+2012-05-21T14:34:59-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 9 failed attempts
+2012-05-21T14:34:59-0700: [Worker(delayed_job host:newcomp.dyn.cs.washington.edu pid:35247)] 2 jobs processed at 23.7209 j/s, 2 failed ...
+2012-05-21T17:21:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 10 failed attempts
+2012-05-21T17:21:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 11 failed attempts
+2012-05-21T17:21:48-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 22.9426 j/s, 2 failed ...
+2012-05-21T23:07:30-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 12 failed attempts
+2012-05-21T23:07:30-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 13 failed attempts
+2012-05-21T23:07:30-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 41.8086 j/s, 2 failed ...
+2012-05-22T09:47:54-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 14 failed attempts
+2012-05-22T09:47:54-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 15 failed attempts
+2012-05-22T09:47:54-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 13.5756 j/s, 2 failed ...
+2012-05-22T15:23:05-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 18 failed attempts
+2012-05-22T15:23:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 18 failed attempts
+2012-05-22T15:23:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 18 failed attempts
+2012-05-22T15:23:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 18 failed attempts
+2012-05-22T15:23:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 19 failed attempts
+2012-05-22T15:23:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 19 failed attempts
+2012-05-22T15:23:06-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 19 failed attempts
+2012-05-22T15:23:07-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 19 failed attempts
+2012-05-22T15:23:07-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 8 jobs processed at 1.5878 j/s, 8 failed ...
+2012-05-22T15:27:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 18 failed attempts
+2012-05-22T15:27:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 19 failed attempts
+2012-05-22T15:27:17-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 3.3200 j/s, 2 failed ...
+2012-05-23T03:57:31-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x00000128291958> - 22 failed attempts
+2012-05-23T03:57:31-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_commented_on_thread failed with NoMethodError: undefined method `commentable_type' for #<Point:0x0000012975ea20> - 23 failed attempts
+2012-05-23T03:57:31-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 3.8322 j/s, 2 failed ...
+2012-05-23T04:00:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 16 failed attempts
+2012-05-23T04:00:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] Class#someone_reflected_your_point failed with NoMethodError: undefined method `name' for nil:NilClass - 17 failed attempts
+2012-05-23T04:00:16-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:35247)] 2 jobs processed at 29.2560 j/s, 2 failed ...
+2012-05-31T13:39:01-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Starting job worker
+2012-05-31T13:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:39:02-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:39:03-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:39:04-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:39:04-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] 18 jobs processed at 8.1595 j/s, 18 failed ...
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#proposal_subscription failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:39:24-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:39:25-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:39:25-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:39:25-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:39:25-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:39:25-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:39:25-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:39:25-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] 18 jobs processed at 13.2884 j/s, 18 failed ...
+2012-05-31T13:41:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:41:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:41:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:41:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:41:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:41:20-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:41:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:41:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:41:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:41:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:41:21-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] 10 jobs processed at 12.6045 j/s, 10 failed ...
+2012-05-31T13:41:41-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:41:41-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:41:41-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] 2 jobs processed at 9.0975 j/s, 2 failed ...
+2012-05-31T13:41:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:41:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:41:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:41:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:41:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:41:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:41:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:41:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:41:46-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] 8 jobs processed at 15.1505 j/s, 8 failed ...
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 0 failed attempts
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+
+
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 1 failed attempts
+2012-05-31T13:42:12-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] 10 jobs processed at 12.1355 j/s, 10 failed ...
+2012-05-31T13:42:37-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:42:37-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:42:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:42:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:42:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 2 failed attempts
+2012-05-31T13:42:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:42:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:42:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:42:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_commented_on_an_included_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:42:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] Class#someone_discussed_your_point failed with ArgumentError: A sender (Return-Path, Sender or From) required to send a message - 3 failed attempts
+2012-05-31T13:42:38-0700: [Worker(delayed_job host:Travis-Kripleans-MacBook-Pro.local pid:55897)] 10 jobs processed at 13.7590 j/s, 10 failed ...

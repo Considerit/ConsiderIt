@@ -14,7 +14,14 @@
 //= link_to "discard your #{@position.published ? 'changes' : 'position'}", proposal_position_path(@proposal, @position), :method => :delete
 
 .notifications
-  %fieldset
+  -#= render :partial => 'acts_as_followable/as_nested_form', :locals => { :parent_form => f, :followable => @proposal, :prompt => 'Follow updates to this proposal' }
+
+  - following_proposal = current_user ? @proposal.follows.where(:user_id => current_user.id).first : nil
+
+  = check_box_tag :follow_proposal, 'true', following_proposal && following_proposal.follow
+  = label_tag :follow_proposal, 'Follow this proposal'
+
+  %fieldset.hide
     %legend
       Keep me updated. Email me when&hellip;
     %ul

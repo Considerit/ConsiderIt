@@ -1,4 +1,6 @@
 class ProposalsController < ApplicationController
+  include ActsAsFollowable::ControllerMethods
+
   protect_from_forgery
 
   POINTS_PER_PAGE = 4
@@ -101,6 +103,9 @@ class ProposalsController < ApplicationController
 
     @proposal = Proposal.create!(params[:proposal])
     @proposal.track!
+
+    @proposal.follow!(current_user, :follow => true, :explicit => false)
+
     redirect_to new_proposal_position_path(@proposal.long_id)
     
   end

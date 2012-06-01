@@ -1,4 +1,9 @@
 PATH
+  remote: lib/gems/acts_as_followable
+  specs:
+    acts_as_followable (0.0.1)
+
+PATH
   remote: lib/gems/reflect
   specs:
     reflect (0.0.1)
@@ -70,6 +75,9 @@ GEM
     delayed_job_active_record (0.3.2)
       activerecord (> 2.1.0)
       delayed_job (~> 3.0.0)
+    delayed_mailhopper (0.0.7)
+      delayed_job
+      mailhopper (>= 0.0.1)
     devise (2.0.4)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.0.3)
@@ -107,6 +115,8 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    mailhopper (0.2.0)
+      rails (>= 3.1.0)
     meta_search (1.1.3)
       actionpack (~> 3.1)
       activerecord (~> 3.1)
@@ -229,16 +239,19 @@ PLATFORMS
 DEPENDENCIES
   actionmailer-with-request
   activeadmin
+  acts_as_followable!
   acts_as_tenant
   backup
   coffee-rails (~> 3.2.1)
   daemons
   delayed_job_active_record
+  delayed_mailhopper
   devise
   formtastic (~> 2.1.1)
   haml
   jquery-rails
   kaminari
+  mailhopper
   meta_search (>= 1.1.0.pre)
   mysql2
   omniauth

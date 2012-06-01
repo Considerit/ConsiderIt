@@ -46,6 +46,12 @@ gem 'whenever'
 gem 'delayed_job_active_record'
 gem "daemons"
 
+# https://github.com/cerebris/mailhopper
+gem 'mailhopper'
+
+# https://github.com/cerebris/delayed_mailhopper
+gem 'delayed_mailhopper'
+
 # https://github.com/markbates/yamler
 gem 'yamler'
 
@@ -66,6 +72,7 @@ gem 'backup'
 
 #custom gems
 gem "reflect", :path => "lib/gems/reflect"
+gem "acts_as_followable", :path => "lib/gems/acts_as_followable"
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

@@ -9,29 +9,12 @@ class Position < ActiveRecord::Base
   has_paper_trail  
   is_commentable
   is_trackable
+  acts_as_followable
 
   acts_as_tenant(:account)
   
   #default_scope where( :published => true )
   scope :published, where( :published => true )
-
-  def notify_parties(current_tenant, options)
-    message_sent_to = {}
-    begin
-      #email anyone who subscribes to reviews for the proposal
-      proposal.positions.published.where(:notification_perspective_subscriber => true).each do |pos|
-        position_taker = pos.user
-        if position_taker.id != user_id && !message_sent_to.has_key?(position_taker.id)
-          if position_taker.email && position_taker.email.length > 0
-            UserMailer.delay.position_subscription(position_taker, self, options)#.deliver
-          end
-          message_sent_to[position_taker.id] = [position_taker.name, 'subscribed to position']
-        end
-      end
-    rescue
-    end
-    return message_sent_to
-  end
     
   def stance_name
     case stance_bucket

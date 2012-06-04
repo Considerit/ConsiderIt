@@ -12,7 +12,6 @@ class CommentsController < ApplicationController
     @user_who_commented = current_user
     commentable_type = params[:comment][:commentable_type]
 
-
     existing = Comment.find_by_body(params[:comment][:body])
     commentable = commentable_type.constantize.find(params[:comment][:commentable_id])
 
@@ -35,6 +34,7 @@ class CommentsController < ApplicationController
 
         #@comment.notify_parties(current_tenant, mail_options)
         @comment.track!
+        @comment.follow!(current_user, :follow => true, :explicit => false)
         if commentable.respond_to? :follow!
           commentable.follow!(current_user, :follow => true, :explicit => false)
         end

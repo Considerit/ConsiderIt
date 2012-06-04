@@ -8,3 +8,9 @@ Mailhopper::Base.setup do |config|
     end
   end
 end
+
+PremailerRails.config = {
+  :preserve_styles => false,
+  :remove_ids      => true,
+  :remove_classes => true
+}

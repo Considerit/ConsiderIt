@@ -1,0 +1,24 @@
+!!! Strict
+%html(xmlns="http://www.w3.org/1999/xhtml")
+  %head{ :profile => "http://gmpg.org/xfn/1" }
+    = stylesheet_link_tag 'email' 
+
+  %body
+    #content
+      #inner
+        %table
+          %tr#header
+            %td
+              .title
+                = @options ? @options[:app_title] : ''
+          %tr#body
+            %td
+              = yield
+          %tr#footer
+            %td
+              %table
+                %tr
+                  %td
+                    #{@options[:app_title]} is powered by #{link_to 'Chalkboard.It', 'http://chalkboard.it', :target => '_blank'}
+                  %td
+                    = yield :footer

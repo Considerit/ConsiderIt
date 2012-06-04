@@ -121,4 +121,10 @@ class User < ActiveRecord::Base
     return split[0]  
   end
       
+  def self.add_token
+    User.where(:unique_token => nil).each do |u|
+      u.unique_token = SecureRandom.hex(10)
+      u.save
+    end
+  end      
 end

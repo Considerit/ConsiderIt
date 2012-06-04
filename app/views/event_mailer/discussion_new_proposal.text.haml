@@ -1,0 +1,21 @@
+Hi #{@user.first_name},
+
+= "\r\n"
+- if @proposal.user_id
+  #{@proposal.user.name} has proposed that:
+- else
+  A new proposal has been added: 
+
+= "\r\n"
+"#{@proposal.title}"
+
+= "\r\n"
+To think through this proposal, visit #{new_proposal_position_url(@proposal.long_id, :host => @host)}
+
+= "\r\n"
+\----
+
+To unsubscribe to new proposal updates: #{unfollow_url(:host => @host, :u => @user.id, :i => @options[:current_tenant].id, :m => 'Account', :t => ApplicationController.token_for_action(@user.id, @options[:current_tenant], 'unfollow'))}
+
+= "\r\n"
+#{@options[:app_title]} is powered by http://chalkboard.it

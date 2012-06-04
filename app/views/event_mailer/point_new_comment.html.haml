@@ -1,0 +1,40 @@
+%p.head
+  #{@user.first_name}, 
+
+  - if @notification_type == 'your point'
+    #{@comment.user.name} commented on your #{@point.is_pro ? 'pro' : 'con'} point. 
+
+  - elsif @notification_type == 'participant'
+    #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you also commented on. 
+
+  - elsif @notification_type == 'included point'
+
+    #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you follow.
+
+  - elsif @notification_type == 'lurker'
+
+    #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you follow.
+
+%p 
+  The new comment: 
+  .object
+    &ldquo;#{link_to @comment.body, proposal_point_url(@proposal.long_id, @point, :anchor => "comment-#{@comment.id}", :host => @host)}&rdquo;
+
+%p 
+  The #{@point.is_pro ? 'pro' : 'con'} point:
+  .object
+    &ldquo;#{link_to @point.nutshell, proposal_point_url(@proposal.long_id, @point, :host => @host)}&rdquo;
+
+%p 
+  The proposal: 
+  .object
+    &ldquo;#{link_to @proposal.title, proposal_url(@proposal.long_id, :host => @host)}&rdquo;
+
+.action_call
+  .rest
+    .call
+      = link_to 'Read and discuss further', proposal_point_url(@proposal.long_id, @point, :anchor => "comment-#{@comment.id}", :host => @host)
+
+= content_for :footer do
+  = link_to 'Unsubscribe', unfollow_proposal_point_url(@proposal.long_id, @point, :host => @host, :u => @user.id, :i => @point.id, :m => 'Point', :t => ApplicationController.token_for_action(@user.id, @point, 'unfollow') )
+  to this point.

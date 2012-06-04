@@ -1,0 +1,28 @@
+Hi #{@user.first_name},
+
+= "\r\n"
+- if @notification_type == 'your comment'
+  #{@bullet.user ? @bullet.user.name : 'Anonymous'} summarized your comment "#{@comment.body}". #{@bullet.user ? @bullet.user.first_name : 'Anonymous'} believes you meant:
+- elsif @notification_type == 'other summarizer'
+  #{@bullet.user ? @bullet.user.name : 'Anonymous'} summarized #{@comment.user.name}'s comment "#{@comment.body}". #{@bullet.user ? @bullet.user.first_name : 'Anonymous'} believes #{@comment.user.first_name} meant:
+
+= "\r\n"
+"#{@bullet.text}"
+
+= "\r\n"
+- if @notification_type == 'your comment'
+  Verify whether the summary is accurate and clarify if necessary for other readers at #{@url}
+
+- elsif @notification_type == 'other summarizer'
+  Discuss further at #{@url}
+
+= "\r\n"  
+Thanks!
+
+= "\r\n"
+\----
+
+To unsubscribe to this comment: #{unfollow_proposal_comment_url(@proposal.long_id, @comment, :host => @host, :u => @user.id, :i => @comment.id, :m => 'Comment', :t => ApplicationController.token_for_action(@user.id, @comment, 'unfollow'))}
+
+= "\r\n"
+#{@options[:app_title]} is powered by http://chalkboard.it

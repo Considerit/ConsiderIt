@@ -158,6 +158,10 @@ class Reflect::ReflectBulletController < ApplicationController
       )
       #new_rev.notify_parties(current_tenant, mail_options)
       new_rev.track!
+      comment = Comment.find(comment_id)
+      if comment.respond_to? :follow!
+        comment.follow!(user, :follow => true, :explicit => false)
+      end
     end
     
     if params.key?(:highlights)

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120531212945) do
+ActiveRecord::Schema.define(:version => 20120603165745) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -81,12 +81,12 @@ ActiveRecord::Schema.define(:version => 20120531212945) do
   add_index "admin_users", ["reset_password_token"], :name => "index_admin_users_on_reset_password_token", :unique => true
 
   create_table "comments", :force => true do |t|
-    t.integer  "commentable_id",    :default => 0
-    t.string   "commentable_type",  :default => ""
-    t.string   "title",             :default => ""
+    t.integer  "commentable_id",                         :default => 0
+    t.string   "commentable_type",                       :default => ""
+    t.string   "title",                                  :default => ""
     t.text     "body"
-    t.string   "subject",           :default => ""
-    t.integer  "user_id",           :default => 0,  :null => false
+    t.string   "subject",                                :default => ""
+    t.integer  "user_id",                                :default => 0,  :null => false
     t.integer  "parent_id"
     t.integer  "lft"
     t.integer  "rgt"
@@ -96,6 +96,8 @@ ActiveRecord::Schema.define(:version => 20120531212945) do
     t.integer  "option_id"
     t.boolean  "passes_moderation"
     t.integer  "account_id"
+    t.integer  "followable_last_notification_milestone", :default => 0
+    t.datetime "followable_last_notification"
   end
 
   add_index "comments", ["account_id"], :name => "index_comments_on_account_id"
@@ -537,6 +539,7 @@ ActiveRecord::Schema.define(:version => 20120531212945) do
     t.string   "unconfirmed_email"
     t.datetime "reset_password_sent_at"
     t.integer  "account_id"
+    t.string   "unique_token"
   end
 
   add_index "users", ["account_id"], :name => "index_users_on_account_id"

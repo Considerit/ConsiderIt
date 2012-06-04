@@ -60,6 +60,15 @@ class PositionsController < ApplicationController
       :mail_options => mail_options
     ) unless already_published
 
+    # send out notification of a new proposal only after first position is made on it
+    if !already_published && @proposal.positions.published.count == 1
+      ActiveSupport::Notifications.instrument("new_published_proposal", 
+        :proposal => commentable,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )
+    end
+
     @proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
 
     save_actions(@position)

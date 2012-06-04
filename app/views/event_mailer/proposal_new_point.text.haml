@@ -1,0 +1,28 @@
+Hi #{@user.first_name},
+= "\r\n"
+
+- if @notification_type == 'your proposal'
+
+  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for your proposal "#{@point.proposal.title}":
+
+- elsif @notification_type == 'position submitter'
+
+  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
+
+- elsif @notification_type == 'lurker'
+
+  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
+
+= "\r\n"
+"#{@point.nutshell}"
+= "\r\n"
+
+Read and discuss further: #{proposal_point_url(@proposal.long_id, @point, :host => @host)}
+= "\r\n"
+
+\----
+
+To unsubscribe to this proposal: #{unfollow_proposal_url(@proposal.long_id, :host => @host, :u => @user.id, :i => @proposal.id, :m => 'Proposal', :t => ApplicationController.token_for_action(@user.id, @proposal, 'unfollow') )}
+
+= "\r\n"
+#{@options[:app_title]} is powered by http://chalkboard.it

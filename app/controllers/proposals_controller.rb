@@ -104,6 +104,7 @@ class ProposalsController < ApplicationController
     @proposal = Proposal.create!(params[:proposal])
     @proposal.track!
 
+    current_tenant.follow!(current_user, :follow => true, :explicit => false)
     @proposal.follow!(current_user, :follow => true, :explicit => false)
 
     redirect_to new_proposal_position_path(@proposal.long_id)

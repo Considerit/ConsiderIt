@@ -1,5 +1,3 @@
-
-
 namespace :notifications do
 
   task :migrate_to_follow_messaging_system => :environment do
@@ -14,6 +12,7 @@ namespace :notifications do
     Comment.all.each do |o|
       begin
         commentable = o.root_object
+        o.follow!(o.user, :follow => true, :explicit => false)
         if commentable.respond_to?(:follow!) && (!commentable.respond_to?(:published) || commentable.published)
           commentable.follow!(o.user, :follow => true, :explicit => false)
         end

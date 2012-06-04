@@ -7,13 +7,13 @@
   - already_follows = !existing_follows.nil? && existing_follows.follow
 
   .follow{ :class => "#{already_follows ? 'hide' : ''}"}
-    = form_for obj, :url => { :action => "follow" }, :as => :follow, :method => :post, :remote => true do |f|
+    = form_for obj, :url => { :action => "follow" }, :as => :follow, :method => :get, :remote => true do |f|
       = f.hidden_field :followable_id, :value => followable.id
       = f.hidden_field :followable_type, :value => followable.class.name
       = f.submit prompt
 
   .unfollow{ :class => "#{already_follows ? '' : 'hide'}"}
-    = form_for obj, :url => { :action => "unfollow" }, :as => :follow, :method => :post, :remote => true do |f|
+    = form_for obj, :url => { :action => "unfollow" }, :as => :follow, :method => :get, :remote => true do |f|
       = f.hidden_field :followable_id, :value => followable.id
       = f.hidden_field :followable_type, :value => followable.class.name    
       = f.submit unfollow_prompt

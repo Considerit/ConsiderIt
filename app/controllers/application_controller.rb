@@ -1,3 +1,5 @@
+require 'digest/md5'
+
 class ApplicationController < ActionController::Base
   #protect_from_forgery
   set_current_tenant_through_filter
@@ -28,9 +30,15 @@ class ApplicationController < ActionController::Base
   def mail_options
     {:host => request.host_with_port,
      :from => current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email],
-     :app_title => current_tenant.app_title
+     :app_title => current_tenant.app_title,
+     :current_tenant => current_tenant
     }
   end
+
+def self.token_for_action(user_id, object, action)
+  user = User.find(user_id.to_i)
+  Digest::MD5.hexdigest("#{user.unique_token}#{object.id}#{object.class.name}#{action}")
+end
 
 private
 

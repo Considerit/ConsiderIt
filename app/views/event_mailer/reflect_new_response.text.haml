@@ -1,0 +1,39 @@
+Hi #{@user.first_name},
+
+= "\r\n"
+- if @notification_type == 'your bullet'
+  #{@comment.user.name} responded to your summary of their comment. #{@comment.user.first_name}  
+  - if @response.signal == 1
+    does not feel the summary is completely accurate, and clarified their original point: 
+    = "\r\n"
+    "#{@response.text}"
+  - elsif @response.signal == 2
+    verified that you heard them accurately.
+  - elsif @response.signal == 0
+    does not believe that your point is a summary of what they said.
+- elsif @notification_type == 'other summarizer'
+  #{@comment.user.name} responded #{@bullet.user ? @bullet.user.name : 'Anonymous'}'s summary of their comment. #{@comment.user.first_name}  
+  - if @response.signal == 1
+    does not feel the summary is completely accurate, and clarified their original point: 
+    = "\r\n"
+    "#{@response.text}"
+  - elsif @response.signal == 2
+    verified that #{@bullet.user ? @bullet.user.first_name : 'Anonymous'} heard them accurately.
+  - elsif @response.signal == 0
+    does not believe that #{@bullet.user ? @bullet.user.first_name : 'Anonymous'}'s point is a summary of what they said.
+
+= "\r\n"
+Continue the conversation at
+= succeed '.' do
+  = @url
+
+= "\r\n"  
+Thanks!
+
+= "\r\n"
+\----
+
+To unsubscribe to this comment: #{unfollow_proposal_comment_url(@proposal.long_id, @comment, :host => @host, :u => @user.id, :i => @comment.id, :m => 'Comment', :t => ApplicationController.token_for_action(@user.id, @comment, 'unfollow'))}
+
+= "\r\n"
+#{@options[:app_title]} is powered by http://chalkboard.it

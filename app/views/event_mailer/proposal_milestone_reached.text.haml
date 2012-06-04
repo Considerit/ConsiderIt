@@ -1,0 +1,88 @@
+- num_positions = @proposal.positions.published.count
+- stance_breakdown = @proposal.stance_fractions
+- barheight = 100
+
+#{num_positions} people have now weighed in on#{@proposal.user_id ? ' ' + @proposal.user.name + "'s proposal" : '' } "#{@proposal.title}" 
+
+= "\r\n"
+Explore & discuss further at #{proposal_url(@proposal.long_id, :host => @host)} 
+
+= "\r\n"
+Summary: 
+= "\r\n"
+
+- height_scaler = stance_breakdown.max
+- user_position = @user.positions.published.where(:proposal_id => @proposal.id).first
+
+- if num_positions < 10
+
+  - users = @proposal.positions.published.where(:stance_bucket => 6).map {|x| x.user.short_name}.compact
+  - users += @proposal.positions.published.where(:stance_bucket => 5).map {|x| x.user.short_name}.compact
+  
+
+  Support: #{users.join(', ')}
+
+  - users = @proposal.positions.published.where(:stance_bucket => 4).map {|x| x.user.short_name}.compact
+
+  Lean support: #{users.join(', ')}
+  
+  - users = @proposal.positions.published.where(:stance_bucket => 3).map {|x| x.user.short_name}.compact
+  Neutral: #{users.join(', ')}
+
+  - users = @proposal.positions.published.where(:stance_bucket => 2).map {|x| x.user.short_name}.compact
+  Lean oppose: #{users.join(', ')}
+
+  - users = @proposal.positions.published.where(:stance_bucket => 1).map {|x| x.user.short_name}.compact
+  - users += @proposal.positions.published.where(:stance_bucket => 0).map {|x| x.user.short_name}.compact
+  Oppose: #{users.join(', ')}
+
+
+- else
+  
+  Support: #{@proposal.positions.published.where('stance_bucket >= 5').count}
+  Lean support: #{@proposal.positions.published.where(:stance_bucket => 4).count}
+  Neutral: #{@proposal.positions.published.where(:stance_bucket => 3).count}
+  Lean oppose: #{@proposal.positions.published.where(:stance_bucket => 2).count}
+  Oppose: #{@proposal.positions.published.where('stance_bucket <=1').count}
+
+- notable_points = @proposal.notable_points
+- if notable_points
+
+  = "\r\n"
+  *****************************
+  Most important to supporters 
+  *****************************
+  "#{notable_points[:important_for_supporters].nutshell}"
+
+  \- #{notable_points[:important_for_supporters].user.name}
+
+  = "\r\n"
+  *****************************
+  Most important to opposers 
+  *****************************
+
+  "#{notable_points[:important_for_opposers].nutshell}"
+
+  \- #{notable_points[:important_for_opposers].user.name}
+
+  = "\r\n"
+  *****************************
+  Common ground for supporters and opposers
+  *****************************
+
+  "#{notable_points[:common].nutshell}"
+
+  \- #{notable_points[:common].user.name}        
+
+
+= "\r\n"
+
+(The next update will be sent after #{@next_aggregate} people have weighed in.)
+
+= "\r\n"
+\----
+
+To unsubscribe to this proposal: #{unfollow_proposal_url(@proposal.long_id, :host => @host, :u => @user.id, :i => @proposal.id, :m => 'Proposal', :t => ApplicationController.token_for_action(@user.id, @proposal, 'unfollow') )}
+
+= "\r\n"
+#{@options[:app_title]} is powered by http://chalkboard.it

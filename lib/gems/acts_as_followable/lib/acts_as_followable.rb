@@ -60,11 +60,22 @@ module ActsAsFollowable
     end
 
     def unfollow
-      followable_type = params[:follow][:followable_type]
-      followable_id = params[:follow][:followable_id]
-      obj_to_follow = followable_type.constantize.find(followable_id)
-      obj_to_follow.follow!(current_user, :follow => false, :explicit => true)
-      render :json => {:success => true}.to_json
+      if params.has_key? :t
+        followable_id = params[:i]
+        followable_type = params[:m]
+        obj_to_follow = followable_type.constantize.find(followable_id)
+        if params[:t] == ApplicationController.token_for_action(params[:u], obj_to_follow, 'unfollow')
+          obj_to_follow.follow!(current_user, :follow => false, :explicit => true)
+        end
+        #TODO: get the model's path to redirect to
+        redirect_to root_path    
+      else
+        followable_type = params[:follow][:followable_type]
+        followable_id = params[:follow][:followable_id]
+        obj_to_follow = followable_type.constantize.find(followable_id)
+        obj_to_follow.follow!(current_user, :follow => false, :explicit => true)
+        render :json => {:success => true}.to_json
+      end
     end 
 
   end

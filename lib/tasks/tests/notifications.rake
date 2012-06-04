@@ -1,0 +1,111 @@
+namespace :test do
+  desc "Generate all emails"
+  task :send_all_emails, [:account_id, :user_id, :host] => :environment do |t, args|
+    if !args[:user_id] || !args[:account_id]
+      raise 'supply proper parameters'
+    end
+
+    account = Account.find(args[:account_id])
+    user = User.find(args[:user_id])
+
+    from = args[:from] || account.contact_email
+    host = args[:host] || "#{account.identifier}.testing.dev:8888"
+    app_title = account.app_title
+
+    mail_options = {:host => host, :from => from, :app_title => app_title, :current_tenant => account}
+
+    ###### Discussion level ######
+    proposal = get_proposal_with_no_positions(account)
+    pp "****************"
+    pp "discussion_new_proposal"
+    pp "Proposal: #{proposal.id}"
+    email = EventMailer.discussion_new_proposal(user, proposal, mail_options, '').deliver!
+    
+    ###### Proposal level ######
+    proposal = get_proposal_with_positions(account)
+    pp "****************"
+    pp "proposal_milestone_reached"
+    pp "Proposal: #{proposal.id}"
+    email = EventMailer.proposal_milestone_reached(user, proposal, 100, mail_options).deliver!
+
+    notification_types = ['your proposal', 'position submitter', 'lurker']
+    notification_types.each do |nt|
+      proposal = get_proposal_with_points(account)
+      point = proposal.points.sample
+      pp "****************"
+      pp "proposal_new_point"
+      pp "Proposal: #{proposal.id}"
+      pp "Point: #{point.id}" 
+      pp "Notification_type: #{nt}"     
+      email = EventMailer.proposal_new_point(user, point, mail_options, nt).deliver!
+    end
+
+    ###### Point level ######
+    notification_types = ['your point', 'participant', 'included point', 'lurker']
+    notification_types.each do |nt|
+      comment = account.comments.where('commentable_type' => 'Point').sample
+      point = comment.root_object
+      pp "****************"
+      pp "point_new_comment"
+      pp "Comment: #{comment.id}"
+      pp "Point: #{point.id}"
+      pp "Notification_type: #{nt}"
+      email = EventMailer.point_new_comment(user, point, comment, mail_options, nt).deliver!
+    end
+
+    ###### Comment level ######
+    notification_types = ['your comment', 'other summarizer']
+    notification_types.each do |nt|
+      bullet = account.reflect_bullets.sample
+      bullet_rev = bullet.revisions.last
+
+      comment = bullet_rev.comment
+      pp "****************"
+      pp "reflect_new_bullet"
+      pp "Comment: #{comment.id}"
+      pp "Bullet: #{bullet.id}" 
+      pp "Notification_type: #{nt}"     
+      email = EventMailer.reflect_new_bullet(user, bullet_rev, comment, mail_options, nt).deliver!
+    end
+
+    notification_types = ['your bullet', 'other summarizer']
+    notification_types.each do |nt|
+      response = account.reflect_responses.sample
+      if response
+        response_rev = response.revisions.last
+        bullet = response.bullet
+        bullet_rev = bullet.revisions.last
+        comment = bullet_rev.comment
+
+        pp "****************"
+        pp "reflect_new_response"
+        pp "Comment: #{comment.id}"
+        pp "Bullet: #{bullet.id}" 
+        pp "Notification_type: #{nt}"     
+        email = EventMailer.reflect_new_response(user, response_rev, bullet_rev, comment, mail_options, nt).deliver!
+      end
+    end
+
+
+  end
+
+
+  def get_proposal_with_points(account)
+    account.points.sample.proposal
+  end
+
+  def get_proposal_with_no_positions(account)
+    proposal = nil
+    i = 0
+    until proposal && (proposal.positions.count == 0 || i > 50)
+      proposal = account.proposals.sample
+      i += 1
+    end
+    proposal
+  end
+
+  def get_proposal_with_positions(account)
+    account.positions.published.sample.proposal
+  end
+
+end

@@ -69,6 +69,9 @@ gem 'actionmailer-with-request'
 #https://github.com/meskyanichi/backup
 gem 'backup'
 
+# https://github.com/fphilipe/premailer-rails3
+gem 'hpricot'
+gem 'premailer-rails3'
 
 #custom gems
 gem "reflect", :path => "lib/gems/reflect"

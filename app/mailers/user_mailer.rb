@@ -1,114 +1,7 @@
 class UserMailer < ActionMailer::Base
   ActionMailer::Base.delivery_method = :mailhopper  
+  layout 'email'
   include Devise::Mailers::Helpers
-
-  #### DISCUSSION LEVEL ####
-
-  #### PROPOSAL LEVEL ####
-
-  def proposal_new_point_for_position_takers(user, pnt, options)
-    @user = user
-    @point = pnt
-    @host = options[:host]
-    email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new #{@point.is_pro ? 'pro' : 'con'} point for \"#{@point.proposal.title}\"")
-  end
-
-  def proposal_milestone_reached(user, proposal, next_aggregate, options )
-    @user = user
-    @proposal = proposal
-    @next_aggregate = next_aggregate
-    @host = options[:host]
-    email_with_name = "#{@user.name} <#{@user.email}>"
-
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] Update on \"#{@proposal.title}\"")
-
-  end
-
-
-  #### POINT LEVEL ####
-
-  def someone_discussed_your_point(user, pnt, comment, options)
-    @user = user
-    @point = pnt
-    @comment = comment
-    @host = options[:host]
-    email_with_name = "#{@user.name} <#{@user.email}>"
-    pp options
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote")
-  end
-
-  def someone_commented_on_thread(user, obj, comment, options)
-    @user = user
-    @comment = comment
-    @host = options[:host]
-    email_with_name = "#{@user.name} <#{@user.email}>"
-
-    if obj.commentable_type == 'Point'
-      @point = obj
-      mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} also commented on #{@point.user.name}'s #{@point.is_pro ? 'pro' : 'con'} point")
-    elsif obj.commentable_type == 'Position'
-      @position = obj
-      mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} also commented on #{@position.user.name}'s review")
-    end
-  end
-
-  def someone_commented_on_an_included_point(user, pnt, comment, options)
-    @user = user
-    @point = pnt
-    @comment = comment
-    @host = options[:host]
-    email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote")
-  end
-
-  #### COMMENT LEVEL ####
-
-  def someone_reflected_your_point(user, bullet, comment, options)
-    @user = user
-    @bullet = bullet
-    @comment = comment
-    @host = options[:host]
-
-    if comment.commentable_type == 'Point' 
-      @url = proposal_point_url(comment.root_object.proposal.long_id, comment.root_object, :host => @host)
-    elsif comment.commentable_type == 'Position' 
-      raise 'Need to implement position statement homepage'
-    end   
-
-    email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@bullet.user.name} summarized your comment")
-  end
-
-  def your_reflection_was_responded_to(user, response, bullet, comment, options)
-    @user = user
-    @bullet = bullet
-    @comment = comment
-    @response = response
-    @host = options[:host]
-
-    if comment.commentable_type == 'Point' 
-      @url = proposal_point_url(comment.root_object.proposal.long_id, comment.root_object, :host => @host)
-    elsif comment.commentable_type == 'Position' 
-      raise 'Need to implement position statement homepage'
-    end   
-
-    email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{@comment.user.name} responded to your summary")
-  end
-
-
-  #### POSITION LEVEL ####
-
-  def someone_discussed_your_position(user, position, comment, options)
-    @user = user
-    @position = position
-    @comment = comment
-    @host = options[:host]
-    email_with_name = "#{@user.name} <#{@user.email}>"
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] new comment on your review")
-  end  
-
 
   ######### DEVISE MAILERS
   def confirmation_instructions(record, from_email = "no-reply@#{APP_CONFIG[:host]}")
@@ -118,11 +11,6 @@ class UserMailer < ActionMailer::Base
   def reset_password_instructions(record, from_email = "no-reply@#{APP_CONFIG[:host]}")
     devise_mail(record, :reset_password_instructions, from_email)
   end
-
-  private
-    def current_tenant
-      ApplicationController.find_current_tenant(request)
-    end
 
 end
 

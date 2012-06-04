@@ -1,0 +1,34 @@
+%p.head
+  #{@user.first_name},
+
+  - if @notification_type == 'your proposal'
+
+    #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for your proposal.
+
+  - elsif @notification_type == 'position submitter'
+
+    #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point on a proposal you follow. 
+
+  - elsif @notification_type == 'lurker'
+
+    #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point on a proposal you follow. 
+
+%p 
+  The new point:
+  .object
+    &ldquo;#{link_to @point.nutshell, proposal_point_url(@proposal.long_id, @point, :host => @host)}&rdquo;
+
+%p 
+  The proposal: 
+
+  .object
+    &ldquo;#{link_to @proposal.title, proposal_url(@proposal.long_id, :host => @host)}&rdquo;
+
+.action_call
+  .rest
+    .call
+      = link_to 'Read and discuss further', proposal_point_url(@proposal.long_id, @point, :host => @host)
+
+= content_for :footer do
+  = link_to 'Unsubscribe', unfollow_proposal_url(@proposal.long_id, :host => @host, :u => @user.id, :i => @proposal.id, :m => 'Proposal', :t => ApplicationController.token_for_action(@user.id, @proposal, 'unfollow') )
+  to this proposal.  

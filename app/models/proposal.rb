@@ -10,9 +10,12 @@ class Proposal < ActiveRecord::Base
   
   acts_as_tenant(:account)
   acts_as_followable
-  
+  acts_as_taggable
+
   is_trackable
   
+  before_save :extract_tags
+
   def format_description
     return self.description.split('\n')
   end
@@ -102,6 +105,10 @@ class Proposal < ActiveRecord::Base
 
     self.save
 
+  end
+
+  def extract_tags
+    self.tag_list = description.split.find_all{|word| /^#.+/.match word}
   end
 
   def self.add_long_id

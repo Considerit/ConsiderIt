@@ -8,10 +8,24 @@ class ProposalsController < ApplicationController
   respond_to :json, :html
   
   def index
-    params[:metric] ||= 'activity'
+    filter_by_metric = params.has_key? :metric
+    filter_by_tag = params.has_key? :tag
+
+    session[:filters] ||= {:tag => nil, :metric => 'activity'}
+
+    if filter_by_tag
+      # if the user has clicked on the selected tag, then unselect
+      session[:filters][:tag] = session[:filters][:tag] == params[:tag] ? nil : params[:tag]
+    elsif filter_by_metric
+      session[:filters][:metric] = params[:metric]
+    end
+
+    proposal_list = session[:filters][:tag] ? Proposal.tagged_with(session[:filters][:tag]) : Proposal
+    proposal_list = proposal_list.order("#{session[:filters][:metric]} DESC").limit(100)
+
     proposals = render_to_string :partial => "proposals/list_output/list", :locals => { 
-      :proposals => Proposal.order("#{params[:metric]} desc").limit(100), :style => 'blocks', :hide_initially => false }
-    render :json => {:proposals => proposals}.to_json
+      :proposals => proposal_list, :style => 'blocks', :hide_initially => false }
+    render :json => {:proposals => proposals, :current_tag => session[:filters][:tag], :current_metric => session[:filters][:metric]}.to_json
   end
 
   def show
@@ -101,6 +115,9 @@ class ProposalsController < ApplicationController
       params[:proposal][:user_id] = current_user.id
     end
 
+    if current_tenant.default_hashtags
+      params[:proposal][:description] += " #{current_tenant.default_hashtags}"
+    end
     @proposal = Proposal.create!(params[:proposal])
     @proposal.track!
 

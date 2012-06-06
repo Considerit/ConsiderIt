@@ -73,6 +73,9 @@ gem 'backup'
 gem 'hpricot'
 gem 'premailer-rails3'
 
+# https://github.com/bradphelan/rocket_tag
+gem 'acts-as-taggable-on'
+
 #custom gems
 gem "reflect", :path => "lib/gems/reflect"
 gem "acts_as_followable", :path => "lib/gems/acts_as_followable"

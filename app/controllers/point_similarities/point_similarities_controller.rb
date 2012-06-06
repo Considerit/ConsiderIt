@@ -164,7 +164,7 @@ class Admin::PointSimilaritiesController < ApplicationController
     if params[:commit] == 'Next >>'
       if last.id > @comparison.id
         comp_next = current_user.point_similarities
-          .where(:proposal_id => @proposal.id),
+          .where(:proposal_id => @proposal.id)
           .where('id > ?', @comparison.id)
           .order('id')
           .first

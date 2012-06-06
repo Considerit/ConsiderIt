@@ -119,7 +119,9 @@
     .after
       The next update will be sent after #{@next_aggregate} people have weighed in.
 
-
+.host
+  #{@host}
+  
 = content_for :footer do
   = link_to 'Unsubscribe', unfollow_proposal_url(@proposal.long_id, :host => @host, :u => @user.id, :i => @proposal.id, :m => 'Proposal', :t => ApplicationController.token_for_action(@user.id, @proposal, 'unfollow') )
   to this proposal.

@@ -19,7 +19,7 @@
           edit this point
         = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
 
-    = render :partial => 'acts_as_followable/follow', :locals => {:followable => point, :obj => [@proposal, point]}
+    = render :partial => 'acts_as_followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
 
   .body
 

@@ -11,23 +11,25 @@ class Users::RegistrationsController < Devise::RegistrationsController
     #if the user already exists...(equiv of user/sign_in)
     user = User.find_by_email(params[:user][:email])
     if user
+      if user.valid_password?(params[:user][:password])
+        #clean_up_passwords(user)
+        sign_in(resource_name, user)
+        if session.has_key?('position_to_be_published')
+          session['reify_activities'] = true 
+        end    
 
-      clean_up_passwords(user)
-      sign_in(resource_name, user)
-      if session.has_key?('position_to_be_published')
-        session['reify_activities'] = true 
-      end    
+        if current_user && session.has_key?(:domain) && session[:domain] && session[:domain] != current_user.domain_id
+          current_user.domain_id = session[:domain]
+          current_user.save
+        elsif current_user && current_user.domain_id
+          session[:domain] = current_user.domain_id
+        end
 
-      if current_user && session.has_key?(:domain) && session[:domain] && session[:domain] != current_user.domain_id
-        current_user.domain_id = session[:domain]
-        current_user.save
-      elsif current_user && current_user.domain_id
-        session[:domain] = current_user.domain_id
+        #respond_with user, :location => session[:return_to] || redirect_location(resource_name, user)
+        redirect_to request.referer
+      else
+        redirect_to root_path, :notice => 'Incorrect password'
       end
-
-      #respond_with user, :location => session[:return_to] || redirect_location(resource_name, user)
-      redirect_to request.referer
-      
     else #otherwise create new user...
       resource = build_resource
       if resource.save

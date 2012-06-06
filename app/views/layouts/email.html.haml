@@ -9,8 +9,12 @@
         %table
           %tr#header
             %td
-              .title
-                = @options ? @options[:app_title] : ''
+              - if @options
+                .title
+                  #{@options[:app_title]}
+              - else
+                = yield :title
+
           %tr#body
             %td
               = yield
@@ -19,6 +23,11 @@
               %table
                 %tr
                   %td
-                    #{@options[:app_title]} is powered by #{link_to 'Chalkboard.It', 'http://chalkboard.it', :target => '_blank'}
+                    - if @options
+                      #{@options[:app_title]} is powered by #{link_to 'Chalkboard.It', 'http://chalkboard.it', :target => '_blank'}
+
+                    - else
+                      = yield :powered_by
+
                   %td
                     = yield :footer

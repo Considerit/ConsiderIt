@@ -209,7 +209,7 @@ ConsiderIt = {
       .on('change', '.avatar_field input[type="file"]', function(){
           $j(this).siblings('.selected_file').text($j(this).val());
         })
-      .on('click', 'input.proxy', function() {
+      .on('click', '.proxy', function() {
           var email = $j('#user_email'), password = $j('#user_password'), $me = $j(this);
           if ( email.val().length == 0 || password.val == 0 ) {
             return;            

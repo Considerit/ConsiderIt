@@ -1,22 +1,31 @@
-
-.message
+.flash_messages
   position: relative
-  z-index: 1
-  background-color: #FFFABA
-  background-color: rgba(#FFFABA, .5)
-  border: 1px solid #FFE800
-  color: #666
-  font-size: 8pt
-  padding: 3px 21px
-  text-align: center
-  width: 700px
-  margin: auto
+  top: -81px
+  padding-left: 137px
+  .message
+    position: absolute
+    z-index: 999
+    background-color: #FFF8BD
+    border: 2px solid #D7C63A
+    color: #4D4A33
+    font-size: 9pt
+    padding: 3px 41px 3px 10px
+    text-align: center
 
-  form
-    display: inline-block
-    input
-      background-color: transparent
-      font-size: inherit
-      color: inherit
-      text-decoration: underline
-      padding: 0
+    .close
+      position: absolute
+      right: 0
+      top: 0
+      button
+        background-color: #E9DF63
+        color: #4D4A33
+        padding: 0 4px 2px 4px
+
+    form
+      display: inline-block
+      input
+        background-color: transparent
+        font-size: inherit
+        color: inherit
+        text-decoration: underline
+        padding: 0

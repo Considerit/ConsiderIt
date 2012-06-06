@@ -100,5 +100,14 @@
 =text-outline($color, $size:1px)
   text-shadow: -$size 0 $color, 0 $size $color, $size 0 $color, 0 0  -$size $color
 
+=subtle_button
+  background-color: rgba(128, 128, 128, .1)
+  font-weight: normal
+  font-size: 11pt
+  color: #888
+  border: 1px solid rgba(128, 128, 128, .2)
 
+  &:hover
+    background-color: rgba(128, 128, 128, .2)  
+    border: 1px solid rgba(128, 128, 128, .3)
 

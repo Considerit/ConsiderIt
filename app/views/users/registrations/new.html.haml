@@ -55,9 +55,10 @@
             -#= f.file_field :avatar, :class => 'has_example', :title => 'profile picture'
         
           %li.submit_footer
-            %input.proxy{ :type => 'button', :value => 'sign in' }
-
-            = f.submit "sign in"
+            .proxy
+              sign in
+              
+            = f.submit "sign in", :class => 'hide'
 
             %a.cancel
               x

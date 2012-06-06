@@ -59,7 +59,7 @@ ActiveSupport::Notifications.subscribe("published_new_position") do |*args|
   proposal = position.proposal
 
   # do not send summary mail if one was already sent today
-  if proposal.followable_last_notification.at(x) === DateTime.now
+  if proposal.followable_last_notification === DateTime.now
     return
   end
 
@@ -158,7 +158,6 @@ ActiveSupport::Notifications.subscribe("new_comment_on_Point") do |*args|
 
     # if follower is a participant in the discussion
     elsif commenters.include? follow.user_id
-      EventMailer.someone_commented_on_thread(follow.user, commentable, comment, mail_options, 'participant').deliver!
       notification_type = 'participant'
 
     # if follower included the point
@@ -170,7 +169,7 @@ ActiveSupport::Notifications.subscribe("new_comment_on_Point") do |*args|
       notification_type = 'lurker'
     end
 
-    EventMailer.someone_commented_on_an_included_point(follow.user, commentable, comment, mail_options, notification_type).deliver!
+    EventMailer.point_new_comment(follow.user, commentable, comment, mail_options, notification_type).deliver!
   end
 
 end
@@ -271,5 +270,22 @@ ActiveSupport::Notifications.subscribe("response_to_bullet_on_a_comment") do |*a
     EventMailer.reflect_new_response(follow.user, response, bullet, bullet.comment, mail_options, notification_type).deliver!
 
   end
+
+end
+
+##########################
+### USERS ###
+####################
+
+
+ActiveSupport::Notifications.subscribe("first_position_by_new_user") do |*args|
+  data = args.last
+  user = data[:user]
+  proposal = data[:proposal]
+  current_tenant = data[:current_tenant]
+  mail_options = data[:mail_options]
+
+
+  UserMailer.confirmation_instructions(user, proposal, mail_options).deliver!
 
 end

@@ -155,7 +155,7 @@
             if(value==undefined){
               return true;
             }
-            if($(this).val().search(/[\w-\.]{3,}@([\w-]{2,}\.)*([\w-]{2,}\.)[\w-]{2,4}/i)){
+            if($(this).val().search(/[\w-\.]{3,}@([\w-]{1,}\.)*([\w-]{2,}\.)[\w-]{2,4}/i)){
               emailError=$(this);
               return false;
             }

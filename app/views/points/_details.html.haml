@@ -1,3 +1,3 @@
-= render :partial => 'acts_as_followable/follow', :locals => {:followable => point, :obj => [@proposal, point]}
+= render :partial => 'acts_as_followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
     
 = render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :commentable => point, :context => 'point', :light_background => light_background }

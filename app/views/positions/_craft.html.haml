@@ -114,7 +114,11 @@
 
               $j('.stanceform input.submit').click(function(){
                 $j('#position_save_login_trigger')
-                  .load("#{new_user_registration_path(:third_party=>false, :context=>"position_submit")}")
+                  .load("#{new_user_registration_path(:third_party=>false, :context=>"position_submit")}", function(){
+                    if ($j('.notifications input[type="checkbox"]').prop("checked")) {
+                      $j('#site_registration .email_field #user_email').val($j('.notifications .email input').val());
+                    }
+                  })
                   .dialog('open');
                 return true;
               });

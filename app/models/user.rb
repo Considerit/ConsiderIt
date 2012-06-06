@@ -40,6 +40,11 @@ class User < ActiveRecord::Base
         :small => "50x50#"
       }
 
+  def send_on_create_confirmation_instructions
+    #don't deliver confirmation instructions. We will wait for them to submit a position. 
+    #self.devise_mailer.confirmation_instructions(self).deliver
+  end
+
   def is_admin?
     #TODO: scope this based on current_tenant
     return admin
@@ -110,7 +115,11 @@ class User < ActiveRecord::Base
   end   
   
   def first_name
-    name.split(' ')[0]  
+    if name
+      name.split(' ')[0]  
+    else 
+      "#{account.app_title} participant"
+    end
   end
 
   def short_name

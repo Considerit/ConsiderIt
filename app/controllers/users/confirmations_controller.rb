@@ -1,8 +1,12 @@
 class Users::ConfirmationsController < Devise::ConfirmationsController
-  
+
   # POST /resource/confirmation
   def create
-    self.resource = resource_class.send_confirmation_instructions(params[resource_name], current_tenant.contact_email)
+    user = User.find_by_email(params[:user][:email])
+    proposal = Proposal.find_by_id(params[:proposal_id])
+
+    UserMailer.confirmation_instructions(user, proposal, mail_options).deliver!
+    #self.resource = User.send_confirmation_instructions()
 
     # if successfully_sent?(resource)
     #   respond_with({}, :location => after_resending_confirmation_instructions_path_for(resource_name))
@@ -10,7 +14,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
     #   respond_with(resource)
     # end
 
-    render :json => { :success => successfully_sent?(resource) }    
+    render :json => { :success => true }    
   end
 
   # GET /resource/confirmation?confirmation_token=abcdef
@@ -32,6 +36,6 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
     else
       respond_with_navigational(resource.errors, :status => :unprocessable_entity){ render :new }
     end
-  end
+  end  
 
 end

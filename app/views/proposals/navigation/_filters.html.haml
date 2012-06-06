@@ -5,7 +5,7 @@
 
 %ul.filters.ranks
   - ranks.each do |rank|
-    %li.tag.filter{ :class => "#{rank.has_key?(:selected) && rank[:selected] ? 'selected' : ''}"}
+    %li.filter.metric{ :class => "#{rank.has_key?(:selected) && rank[:selected] ? 'selected' : ''}"}
       = link_to rank[:name], proposals_path(:metric => rank[:name]), :remote => true
 
 .thumb

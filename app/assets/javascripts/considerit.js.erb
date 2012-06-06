@@ -329,11 +329,21 @@ ConsiderIt = {
         //  save_block.hide();
         //}
       })
-      .on('ajax:success', '.tag.filter a', function(event, data){
+      .on('ajax:success', '.filter a', function(event, data){
         $j('.proposal_list').replaceWith($j(data.proposals));
-        $j(this).parent().addClass('selected').siblings().removeClass('selected');
+
+
+        if ($j(this).parent().is('.tag.selected') ){
+          $j(this).parent().removeClass('selected').siblings().removeClass('selected');
+        } else{
+          $j(this).parent()
+            .addClass('selected')
+            .siblings() 
+              .removeClass('selected');          
+        }
+
       });
-            
+
     //////////////
     // POINTS
     //////////////

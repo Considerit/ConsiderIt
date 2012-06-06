@@ -8,7 +8,7 @@ en:
   devise:
     failure:
       unauthenticated: 'You need to sign in or sign up before continuing.'
-      unconfirmed: 'You have to confirm your account before continuing.'
+      unconfirmed: 'Please confirm your account before continuing.'
       locked: 'Your account is locked.'
       invalid: 'Invalid email or password.'
       invalid_token: 'Invalid authentication token.'

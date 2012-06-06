@@ -25,6 +25,7 @@ class PositionsController < ApplicationController
     @position.save
 
     if !current_user.nil?
+      # I don't think this is ever reached
       save_actions(@position)      
       @position.follow!(current_user, :follow => true, :explicit => false)
       @proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
@@ -54,20 +55,8 @@ class PositionsController < ApplicationController
     @position.published = 1
     @position.save
     @position.track!
-    ActiveSupport::Notifications.instrument("published_new_position", 
-      :position => @position,
-      :current_tenant => current_tenant,
-      :mail_options => mail_options
-    ) unless already_published
 
-    # send out notification of a new proposal only after first position is made on it
-    if !already_published && @proposal.positions.published.count == 1
-      ActiveSupport::Notifications.instrument("new_published_proposal", 
-        :proposal => commentable,
-        :current_tenant => current_tenant,
-        :mail_options => mail_options
-      )
-    end
+    alert_new_published_position(@proposal, @position) unless already_published
 
     @proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
 
@@ -153,11 +142,6 @@ protected
         #resolve by combining positions, taking stance from newly submitted...
         prev_pos.stance = @position.stance
         prev_pos.stance_bucket = @position.stance_bucket
-
-        # prev_pos.notification_author = @position.notification_author
-        # prev_pos.notification_demonstrated_interest = @position.notification_demonstrated_interest
-        # prev_pos.notification_perspective_subscriber = @position.notification_perspective_subscriber
-        # prev_pos.notification_point_subscriber = @position.notification_point_subscriber
         
         save_actions(prev_pos)
         prev_pos.save
@@ -170,6 +154,7 @@ protected
         @position.point_listings.update_all({:user_id => current_user.id})
         @position.follow!(current_user, :follow => session['position_to_be_published_extras'][:follow_proposal] == 'true', :explicit => false)        
         save_actions(@position)
+        alert_new_published_position(@proposal, @position) 
       end
 
       session.delete('reify_activities')
@@ -253,7 +238,6 @@ protected
     actions[:written_points].each do |pnt_id|
       pnt = Point.unscoped.find( pnt_id )
 
-      previously_unpublished = pnt.user_id.nil?
       pnt.user_id = position.user_id
       pnt.published = 1
       
@@ -264,14 +248,11 @@ protected
       pnt.track!
       pnt.follow!(current_user, :follow => true, :explicit => false)
 
-      if previously_unpublished
-        ActiveSupport::Notifications.instrument("new_published_Point", 
-          :point => pnt,
-          :current_tenant => current_tenant,
-          :mail_options => mail_options
-        )        
-        #pnt.notify_parties(current_tenant, mail_options)
-      end
+      ActiveSupport::Notifications.instrument("new_published_Point", 
+        :point => pnt,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )        
 
     end
     actions[:written_points] = []
@@ -282,6 +263,34 @@ protected
       end
     end
     actions[:deleted_points] = {}
+  end
+
+  def alert_new_published_position ( proposal, position )
+    ActiveSupport::Notifications.instrument("published_new_position", 
+      :position => position,
+      :current_tenant => current_tenant,
+      :mail_options => mail_options
+    )
+
+    # send out notification of a new proposal only after first position is made on it
+    if proposal.positions.published.count == 1
+      ActiveSupport::Notifications.instrument("new_published_proposal", 
+        :proposal => proposal,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )
+    end
+
+    # send out confirmation email if user is not yet confirmed
+    if !current_user.confirmed? && current_user.positions.published.count == 1
+      ActiveSupport::Notifications.instrument("first_position_by_new_user", 
+        :user => current_user,
+        :proposal => proposal,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )
+    end
+
   end
 
   def get_stance_val_from_params( params )

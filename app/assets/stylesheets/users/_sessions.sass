@@ -77,16 +77,20 @@
           display: inline-block
           +main_font
 
-          input,button
+          input,button,.proxy
             background-color: #434343
             background-color: rgba(#888, .2)
             border: 1px outset #666
             color: #888
+            +border-radius(5px)
+            padding: 3px 5px
 
             &:hover
               background-color: #777
               background-color: rgba(white, .2)
-              color: white              
+              color: white  
+              cursor: pointer
+
 
 
         #user_new > a
@@ -119,11 +123,12 @@
 
           .error
             position: absolute
-            bottom: -17px
+            //bottom: -17px
             +main_font
             color: #cc4444
             font-size: 8pt
-            left: 0
+            //left: 0
+            right: 37%
             width: 150px
             text-align: left
 

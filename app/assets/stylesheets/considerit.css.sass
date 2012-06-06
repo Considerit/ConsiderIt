@@ -65,6 +65,11 @@ input[type="submit"]
   &.important
     //background-color: $primary_button_background_color    
 
+input[type=checkbox], input[type=radio]
+  vertical-align: middle
+  position: relative
+  bottom: 2px
+
 
 // *
 //   margin: 0
@@ -183,6 +188,9 @@ input[type="submit"]
     +linear-gradient(#45484d, #222)
     &:hover
       background-color: black
+
+  &.subtle
+    +subtle_button  
 
 button.gray,
 input[type="submit"].gray  

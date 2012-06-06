@@ -8,7 +8,6 @@
 =f.hidden_field :proposal_id, :value=>@proposal.id
 =f.hidden_field :position_id, :value => @position.id
 
-
 =f.submit "Save your perspective!", :class => "submit important"
 = link_to skip_text, proposal_position_path(@proposal.long_id, @position), :method => :delete, :class => "skip_save"
 //= link_to "discard your #{@position.published ? 'changes' : 'position'}", proposal_position_path(@proposal, @position), :method => :delete
@@ -18,26 +17,22 @@
 
   - following_proposal = current_user ? @proposal.follows.where(:user_id => current_user.id).first : nil
 
-  = check_box_tag :follow_proposal, 'true', following_proposal && following_proposal.follow
-  = label_tag :follow_proposal, 'Follow this proposal'
+  = label_tag :follow_proposal, '', :title => 'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.' do
+    
+    = check_box_tag :follow_proposal, 'true', following_proposal && following_proposal.follow
 
-  %fieldset.hide
-    %legend
-      Keep me updated. Email me when&hellip;
-    %ul
-      %li
-        = f.check_box :notification_author
-        = f.label :notification_author, 'someone comments on a point I wrote here'
+    %span
+      Follow this proposal.
+    .sub
+      alerts for new points and periodic summaries
 
-      %li
-        = f.check_box :notification_demonstrated_interest
-        = f.label :notification_demonstrated_interest, 'someone comments on a pro or con I added or commented on'
+  - if @user.nil?
+    .email{ :class => "#{following_proposal && following_proposal.follow ? '' : 'hide'}"}
+      
+      = text_field_tag :email, '', :placeholder => 'your email address'
 
-      %li
-        = f.check_box :notification_point_subscriber
-        = f.label :notification_point_subscriber, 'a new pro or con is added'
-
-      %li
-        = f.check_box :notification_perspective_subscriber
-        = f.label :notification_perspective_subscriber, 'a new perspective is added'
-
+    :javascript
+      $j('.notifications input[type="checkbox"]').change(function(e){
+        $j('.notifications .email').fadeToggle();
+        $j('.notifications .email input').focus();
+      })

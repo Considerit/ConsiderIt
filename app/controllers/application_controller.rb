@@ -15,7 +15,12 @@ class ApplicationController < ActionController::Base
       args.append({:layout => false}) if request.xhr?
     end
     @domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil
-    @theme = current_tenant.theme
+    if current_tenant.host.nil?
+      current_tenant.host = request.host
+      current_tenant.host_with_port = request.host_with_port
+      current_tenant.save
+    end
+
     super
   end
 
@@ -29,6 +34,7 @@ class ApplicationController < ActionController::Base
 
   def mail_options
     {:host => request.host,
+     :host_with_port => request.host_with_port,
      :from => current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email],
      :app_title => current_tenant.app_title,
      :current_tenant => current_tenant

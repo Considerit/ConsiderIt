@@ -13,4 +13,5 @@ class Account < ActiveRecord::Base
   has_many :reflect_responses, :class_name => 'Reflect::ReflectResponse'
 
   acts_as_followable
+
 end

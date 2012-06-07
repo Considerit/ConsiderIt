@@ -76,6 +76,9 @@ gem 'premailer-rails3'
 # https://github.com/bradphelan/rocket_tag
 gem 'acts-as-taggable-on'
 
+# https://github.com/philnash/bitly
+gem 'bitly'
+
 #custom gems
 gem "reflect", :path => "lib/gems/reflect"
 gem "acts_as_followable", :path => "lib/gems/acts_as_followable"

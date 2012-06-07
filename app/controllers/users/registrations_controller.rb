@@ -60,7 +60,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def update
+    current_user.skip_confirmation!
     current_user.update_attributes(params[:user])
+    current_user.skip_confirmation!
     current_user.save
     redirect_to request.referer
   end

@@ -25,7 +25,17 @@ ActiveSupport::Notifications.subscribe("new_published_proposal") do |*args|
     end
 
   end
+  msg = new_published_proposal_tweet(proposal)
+  post_to_twitter_client(current_tenant, msg)
 
+end
+
+def new_published_proposal_tweet(proposal)
+  proposal_link = Rails.application.routes.url_helpers.new_proposal_position_url(proposal.long_id, :host => proposal.account.host_with_port)
+  proposal_link = shorten_link(proposal_link)
+
+  space_for_body = 140 - proposal_link.length - 23
+  "New proposal: \"#{proposal.title_with_hashtags(space_for_body)} [...]\" #{proposal_link}"
 end
 
 
@@ -83,7 +93,21 @@ ActiveSupport::Notifications.subscribe("published_new_position") do |*args|
     proposal.followable_last_notification = DateTime.now
     proposal.save
 
+    if positions.count > 10 #only send tweets for milestones past 10 positions
+      msg = new_proposal_milestone_tweet(proposal)
+      post_to_twitter_client(current_tenant, msg)
+    end
+
   end
+end
+
+def new_proposal_milestone_tweet(proposal)
+  proposal_link = Rails.application.routes.url_helpers.new_proposal_position_url(proposal.long_id, :host => proposal.account.host_with_port)
+  proposal_link = shorten_link(proposal_link)
+
+  lead = "Milestone: #{proposal.positions.count} positions for "
+  space_for_body = 140 - proposal_link.length - lead.length - 9
+  "#{lead}\"#{proposal.title_with_hashtags(space_for_body)} [...]\" #{proposal_link}"
 end
 
 ActiveSupport::Notifications.subscribe("new_published_Point") do |*args|
@@ -288,4 +312,42 @@ ActiveSupport::Notifications.subscribe("first_position_by_new_user") do |*args|
 
   UserMailer.confirmation_instructions(user, proposal, mail_options).deliver!
 
+end
+
+
+
+##########################
+### Twitter
+##########################
+
+def shorten_link(link)
+  shortened_link = ''
+  if link
+    bitly_client = Bitly.new(APP_CONFIG[:bitly][:user_name], APP_CONFIG[:bitly][:api_key])
+    shortened_link = bitly_client.shorten(link).short_url
+  end
+  shortened_link
+end
+
+def post_to_twitter_client(account, msg)
+  if account.tweet_notifications
+
+    twitter_client = Twitter::Client.new(
+      :consumer_key => account.socmedia_twitter_consumer_key,
+      :consumer_secret => account.socmedia_twitter_consumer_secret,
+      :oauth_token => account.socmedia_twitter_oauth_token,
+      :oauth_token_secret => account.socmedia_twitter_oauth_token_secret
+    )
+    begin
+      twitter_client.update(msg)
+      logger.info "Sent tweet: #{msg}"
+      pp "Sent tweet: #{msg}"
+    rescue
+      pp "Could not send tweet: #{msg}"
+      begin
+        logger.error "Could not send tweet: #{msg}"
+      rescue
+      end
+    end
+  end
 end

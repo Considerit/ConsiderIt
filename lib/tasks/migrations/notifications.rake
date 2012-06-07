@@ -1,5 +1,18 @@
 namespace :notifications do
 
+  task :send_out_base_tweets => :environment do
+    Account.where(:tweet_notifications => true).each do |account|
+      account.proposals.order(:created_at).each do |prop|
+        if prop.positions.published.count > 0
+          pp 'POSTING TO TWITTER'
+          msg = new_published_proposal_tweet(prop)
+          pp msg
+          post_to_twitter_client(account, msg)
+        end
+      end
+    end
+  end
+
   task :migrate_to_follow_messaging_system => :environment do
 
     # logger = Logger.new(STDOUT)

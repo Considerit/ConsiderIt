@@ -110,12 +110,13 @@ class ProposalsController < ApplicationController
     # TODO: handle possibility of name collisions
     params[:proposal][:long_id] = SecureRandom.hex(5)
     params[:proposal][:admin_id] = SecureRandom.hex(6)
+    params[:proposal][:description] ||= ''
 
     if current_user
       params[:proposal][:user_id] = current_user.id
     end
 
-    if current_tenant.default_hashtags
+    if current_tenant.default_hashtags && params[:proposal][:description].index('#').nil?
       params[:proposal][:description] += " #{current_tenant.default_hashtags}"
     end
     @proposal = Proposal.create!(params[:proposal])

@@ -5,6 +5,10 @@ default:
   analytics:
     google: ''
 
+  bitly: 
+    user_name: ''
+    api_key: ''
+
 development: 
   default_to: default
 

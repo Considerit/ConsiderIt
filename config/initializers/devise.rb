@@ -74,7 +74,7 @@ Devise.setup do |config|
   # Defines which key will be used when confirming an account
   # config.confirmation_keys = [ :email ]
 
-  config.reconfirmable = true
+  config.reconfirmable = false
 
   # ==> Configuration for :rememberable
   # The time the user will be remembered without asking for credentials again.
@@ -189,6 +189,7 @@ Devise.setup do |config|
   # end
 
 
+
   FACEBOOK_SETUP_PROC = lambda do |env| 
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
@@ -207,6 +208,7 @@ Devise.setup do |config|
     current_tenant = ApplicationController.find_current_tenant(request)
     env['omniauth.strategy'].options[:consumer_key] = current_tenant.socmedia_twitter_consumer_key
     env['omniauth.strategy'].options[:consumer_secret] = current_tenant.socmedia_twitter_consumer_secret
+    
   end  
 
   config.omniauth :twitter, :setup => TWITTER_SETUP_PROC, :strategy_class => OmniAuth::Strategies::Twitter

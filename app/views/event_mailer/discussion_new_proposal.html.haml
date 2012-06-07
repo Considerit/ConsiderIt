@@ -2,12 +2,12 @@
   #{@user.first_name}, a new proposal has been added#{@proposal.user_id ? " by " + @proposal.user.name : ''}.
 
 .object
-  &ldquo;#{link_to @proposal.title, new_proposal_position_url(@proposal.long_id, :host => @host)}&rdquo;
+  &ldquo;#{link_to @proposal.title, @url}&rdquo;
 
 .action_call
   .rest
     .call
-      = link_to 'Think through this proposal', new_proposal_position_url(@proposal.long_id, :host => @host)
+      = link_to 'Think through this proposal', @url
 
 = content_for :footer do
   = link_to 'Unsubscribe', unfollow_url(:host => @host, :u => @user.id, :i => @options[:current_tenant].id, :m => 'Account', :t => ApplicationController.token_for_action(@user.id, @options[:current_tenant], 'unfollow') )

@@ -46,6 +46,42 @@ class Proposal < ActiveRecord::Base
     
   end
 
+  def title_with_hashtags(max_len = 140)
+
+    def str_without_overlapping_tags(mystr, tags)
+      tags.each do |tag|
+        mystr << " #{tag}" unless mystr.index(tag)
+      end
+      mystr
+    end
+
+    def str_without_breaking_word(mystr, max_length)
+      idx = mystr.rindex(' ')
+      if mystr.length <= max_length
+        mystr
+      elsif idx
+        mystr = mystr[0..max_length+1]
+        mystr[0..idx]
+      else
+        ''
+      end
+    end
+
+    if name
+      my_title = name
+    elsif description
+      my_title = description
+    else
+      raise 'Name and description nil'
+    end
+
+    tags = get_tags
+
+    candidate = str_without_breaking_word(my_title, max_len - tags.join(' ').length - 1)
+    str_without_overlapping_tags(candidate, tags)  
+
+  end
+
   def notable_points
     opposers = points.order('score_stance_group_0 + score_stance_group_1 + score_stance_group_2 DESC').limit(1).first
     supporters = points.order('score_stance_group_6 + score_stance_group_5 + score_stance_group_4 DESC').limit(1).first
@@ -97,6 +133,9 @@ class Proposal < ActiveRecord::Base
     late_perspectives = latest_positions.count
     late_supporters = latest_positions.where("stance_bucket > ?", 3).count
     self.trending = late_perspectives == 0 ? 0 : Math.log2(late_supporters + 1) * late_supporters.to_f / late_perspectives
+    
+    # combining provocative and trending for now...
+    self.trending = ( self.trending + provocative ) / 2
 
     self.activity = Math.log2(num_perspectives + 1) * Math.log2(num_comments + num_points + num_inclusions + 1)      
 
@@ -107,8 +146,12 @@ class Proposal < ActiveRecord::Base
 
   end
 
+  def get_tags
+    description.split.find_all{|word| /^#.+/.match word}
+  end
+
   def extract_tags
-    self.tag_list = description.split.find_all{|word| /^#.+/.match word}
+    self.tag_list = get_tags
   end
 
   def self.add_long_id
@@ -132,4 +175,25 @@ class Proposal < ActiveRecord::Base
   def has_admin_privilege(candidate_user, this_session_id, params)
     (session_id && this_session_id == session_id) || (!candidate_user.nil? && (candidate_user.id == user_id || candidate_user.is_admin?)) || (params.has_key?(:admin_id) && params[:admin_id] == admin_id)
   end
+
+
+  ### FOR TESTING ONLY
+  def self.title_with_hashtags(tags, my_title, max_len = 140)
+
+    def self.str_without_overlapping_tags(mystr, tags)
+      tags.split(' ').each do |tag|
+        mystr << " #{tag}" unless mystr.index(tag)
+      end
+      mystr
+    end
+
+    def self.str_without_breaking_word(mystr, max_length)
+      mystr = mystr[0..max_length+1]
+      mystr[0..mystr.rindex(' ')]
+    end
+
+    candidate = str_without_breaking_word(my_title, max_len - tags.length + 1)
+    str_without_overlapping_tags(candidate, tags)  
+
+  end  
 end

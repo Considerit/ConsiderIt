@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120606205648) do
+ActiveRecord::Schema.define(:version => 20120607225535) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -35,6 +35,9 @@ ActiveRecord::Schema.define(:version => 20120606205648) do
     t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
     t.string   "default_hashtags"
+    t.boolean  "tweet_notifications",                      :default => false
+    t.string   "host"
+    t.string   "host_with_port"
   end
 
   create_table "active_admin_comments", :force => true do |t|

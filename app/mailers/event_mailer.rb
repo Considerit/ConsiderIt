@@ -9,6 +9,8 @@ class EventMailer < ActionMailer::Base
     @proposal = proposal
     @host = options[:host]
     @options = options
+    @url = new_proposal_position_url(@proposal.long_id, :host => @host)
+
     email_with_name = "#{@user.name} <#{@user.email}>"
 
     subject = "new proposal \"#{@proposal.title}\""

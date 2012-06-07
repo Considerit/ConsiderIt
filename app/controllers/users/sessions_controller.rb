@@ -8,7 +8,7 @@ class Users::SessionsController < Devise::SessionsController
     if ( params[:third_party] )
     	case params[:provider]
 	    	when 'twitter'
-	    		redirect_to user_omniauth_authorize_path(:twitter).to_s
+	    		redirect_to user_omniauth_authorize_path(:twitter, :x_auth_access_type => "read").to_s
 	    	when 'facebook'
 	    		redirect_to user_omniauth_authorize_path(:facebook).to_s
 	    	when 'google'

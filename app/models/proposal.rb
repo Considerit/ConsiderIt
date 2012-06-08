@@ -80,7 +80,7 @@ class Proposal < ActiveRecord::Base
     tags = get_tags
 
     candidate = str_without_breaking_word(my_title, max_len - tags.join(' ').length - 1)
-    str_without_overlapping_tags(candidate, tags)  
+    str_without_overlapping_tags(candidate.strip!, tags)  
 
   end
 

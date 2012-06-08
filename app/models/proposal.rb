@@ -56,14 +56,16 @@ class Proposal < ActiveRecord::Base
     end
 
     def str_without_breaking_word(mystr, max_length)
-      idx = mystr.rindex(' ')
       if mystr.length <= max_length
         mystr
-      elsif idx
-        mystr = mystr[0..max_length+1]
-        mystr[0..idx]
       else
-        ''
+        mystr = mystr[0..max_length+1]        
+        idx = mystr.rindex(' ')
+        if idx
+          mystr[0..idx]
+        else
+          ''
+        end
       end
     end
 
@@ -177,6 +179,7 @@ class Proposal < ActiveRecord::Base
   end
 
 
+
   ### FOR TESTING ONLY
   def self.title_with_hashtags(tags, my_title, max_len = 140)
 
@@ -188,8 +191,18 @@ class Proposal < ActiveRecord::Base
     end
 
     def self.str_without_breaking_word(mystr, max_length)
-      mystr = mystr[0..max_length+1]
-      mystr[0..mystr.rindex(' ')]
+      
+      if mystr.length <= max_length
+        mystr
+      else
+        mystr = mystr[0..max_length+1]        
+        idx = mystr.rindex(' ')
+        if idx
+          mystr[0..idx]
+        else
+          ''
+        end
+      end
     end
 
     candidate = str_without_breaking_word(my_title, max_len - tags.length + 1)

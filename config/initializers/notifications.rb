@@ -340,14 +340,14 @@ def post_to_twitter_client(account, msg)
     )
     begin
       twitter_client.update(msg)
-      logger.info "Sent tweet: #{msg}"
+      #logger.info "Sent tweet: #{msg}"
       pp "Sent tweet: #{msg}"
     rescue
       pp "Could not send tweet: #{msg}"
-      begin
-        logger.error "Could not send tweet: #{msg}"
-      rescue
-      end
+      #begin
+        #logger.error "Could not send tweet: #{msg}"
+      #rescue
+      #end
     end
   end
 end

@@ -22,7 +22,7 @@
     .head
       a
         color: #444
-        font-size: 8pt
+        +font-size(-4)
         position: absolute
         top: 26px
         right: 15px
@@ -48,20 +48,20 @@
       
     .proposal_name
       margin-bottom: 5px
-      font-size: 18px
+      +font-size(1)
       padding-bottom: 5px
       color: #272727
 
     .full_text, .long_description, .additional
-      font-size: 13pt
+      +font-size(1)
     
     .long_description, .additional
       .prompt
         font-weight: 600
-        font-size: 14px
+        +font-size(-1)
         color: #272727
         a
-          font-size: 11px
+          +font-size(-4)
           font-weight: normal
           text-decoration: underline
           color: inherit

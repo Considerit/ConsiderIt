@@ -59,10 +59,10 @@
 
         .body
           font-weight: normal
-          font-size: 13pt
-          line-height: 12pt
+          +font-size(1)
+
         .user_name
-          font-size: 10pt
+          +font-size(-2)
         .prompt
           font-weight: normal
 
@@ -73,7 +73,7 @@
       h2
         font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif
         color: #A05047
-        font-size: 18pt
+        +font-size(3)
         margin-bottom: 15px
         margin-top: 10px
       h3
@@ -82,7 +82,7 @@
         font-weight: normal
         margin-bottom: 15px
         +main-font
-        font-size: 9pt
+        +font-size(-3)
 
 
   #nav-user
@@ -107,12 +107,12 @@
 
 h1.improve, h1.improve a
   color: #A05047
-  font-size: 32pt
+  +font-size(5)
   font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif
   display: block
   .subheader
     color: #ccc
-    font-size: 12pt
+    +font-size(0)
     position: relative
     top: -27px
 

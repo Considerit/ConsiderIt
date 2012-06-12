@@ -2,7 +2,7 @@
   position: relative
   width: 660px
   .discussion_header
-    font-size: 14pt
+    +font-size(1)
     margin: 35px 0 10px 0
 
   &:after
@@ -28,4 +28,4 @@
     &:after
       //background: image-url('prompt_background.png') repeat-x top left
     .discussion_header
-      @include chalk
+      +chalk

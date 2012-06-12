@@ -12,17 +12,17 @@
       &.desc
         width: 50%
         padding-right: 50px
-        font-size: 16px
+        +font-size(0)
           
       &.list
         width: 50%
         
         > ul
-          @include nude-list
+          +nude-list
           > li
             padding-bottom: 5px
           ul.people
-            @include nude-list
+            +nude-list
   &.tos
     width: 400px
 

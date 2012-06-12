@@ -28,12 +28,12 @@
         display: block
 
   .paginate, .arrow
-    font-size: 12px
+    +font-size(-3)
     font-weight: bold
 
 
     input[type="submit"].forward, button.back, button.forward
-      @include linkify
+      +linkify
       background-repeat: no-repeat
       display: inline-block
       background-color: transparent

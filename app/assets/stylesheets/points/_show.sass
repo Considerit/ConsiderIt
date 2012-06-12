@@ -1,6 +1,6 @@
 
 .point_in_list
-  @include nude-list
+  +nude-list
   position: relative
   margin-bottom: 8px
   background-repeat: no-repeat
@@ -21,8 +21,11 @@
     .nested_user
       font-style: italic
 
+    .point_text
+      +hyphenate
+
     .point_text.nutshell
-      font-size: 13px
+      +font-size(-2)
       color: #eee
       padding-bottom: 17px
 
@@ -32,10 +35,10 @@
 
     .point_text.full
       display: none
-      font-size: 12pt
+      +font-size(0)
 
       > .nested_user
-        font-size: 12pt
+        +font-size(0)
 
       p
         margin-bottom: 8px
@@ -44,7 +47,7 @@
         ul
           li 
             padding: 2px 0
-            font-size: 12pt
+            +font-size(0)
             a
               text-decoration: underline
 
@@ -67,7 +70,7 @@
       a.point_operation, 
       button.point_operation,
       input.point_operation 
-        font-size: 11px
+        +font-size(-4)
         padding: 0
         margin: 0
         +heading
@@ -75,7 +78,7 @@
 
       .editpoint:before, &.remove:before
         content: '\2022'
-        font-size: 8px
+        +font-size(-6)
         position: relative
         right: 1px
         color: #e1e1e1
@@ -83,16 +86,16 @@
     .read_more
       a.toggle_more, a.toggle
         display: inline-block
-        font-size: 11px
+        +font-size(-4)
         &.hide
           padding: 3px 10px
 
       .triangle
-        font-size: 7pt
+        +font-size(-5)
 
       .comment_count
         display: inline-block
-        font-size: 10px
+        +font-size(-4)
         height: 14px
         padding: 0 5px
         text-align: center
@@ -105,7 +108,7 @@
           content: "\25BC"
           bottom: -6px
           left: 1px
-          font-size: 7px
+          +font-size(-7)
           +transform(20)
 
   &.point_in_list_margin
@@ -157,7 +160,7 @@
       //padding: 0
 
       .nutshell
-        font-size: 11px
+        +font-size(-4)
         opacity: .8
         color: black
         width: 148px
@@ -213,7 +216,7 @@
         a.point_operation, 
         button.point_operation,
         input.point_operation 
-          @include linkify
+          +linkify
           color: #aaa
           &:hover
             color: #e1e1e1                
@@ -503,7 +506,7 @@
       margin-left: 82px
 
     h3.nutshell
-      font-size: 18pt
+      +font-size(3)
       padding-bottom: 10px
       padding-right: 130px
       font-weight: normal

@@ -33,13 +33,13 @@
         font-variant: small-caps
         text-transform: lowercase
         +heading
-        font-size: 13pt
+        +font-size(1)
         color: #555
         color: rgba(black, .6)
         margin-top: 24px
 
       .body
-        font-size: 9pt  
+        +font-size(-3)
         padding-top: 10px        
         a
           color: black
@@ -73,7 +73,7 @@
       color: #ccc
       color: rgba(#ccc, .9)
       text-align: center
-      font-size: 12pt
+      +font-size(0)
       font-weight: bold
 
       a
@@ -81,7 +81,7 @@
         text-decoration: underline
 
     .report_problems
-      font-size: 8pt
+      +font-size(-4)
       color: #ccc
       font-weight: bold
       a

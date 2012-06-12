@@ -1,7 +1,7 @@
 #craft_position
 
   > .user_opinion
-    @include nude-list
+    +nude-list
     padding: 12px 0
       
     li
@@ -49,15 +49,15 @@
                 text-align: center
 
                 .lead
-                  @include inset-text
-                  font-size: 17px
+                  +inset-text
+                  +font-size(1)
                   color: #555
                   font-variant: small-caps
                   line-height: 12px
                   +fancy_font
 
                 .sublead
-                  font-size: 10px
+                  +font-size(-4)
               
               .point_list
                 z-index: 100
@@ -130,7 +130,7 @@
             height: 75px
             border: none
             padding: 0
-            font-size: 24pt
+            +font-size(5)
             opacity: .9
             border: 1px outset
 
@@ -145,7 +145,7 @@
           
           a
             display: inline-block
-            font-size: 11pt
+            +font-size(-1)
             color: #999                
             font-weight: bold
             text-decoration: underline
@@ -163,7 +163,7 @@
 
           .notifications
             margin-top: 8px
-            font-size: 13pt
+            +font-size(0)
             font-weight: bold
             
             > label
@@ -171,7 +171,7 @@
               span
                 padding-left: 3px
               .sub
-                font-size: 9pt
+                +font-size(-3)
                 color: #999
                 position: relative
                 top: -2px

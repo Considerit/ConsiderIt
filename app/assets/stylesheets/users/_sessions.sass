@@ -44,7 +44,7 @@
         font-family: inherit
 
       h2
-        font-size: 18pt
+        +font-size(3)
         padding: 20px 0 32px 0
         background: image-url('chalk/point_header_back.png') no-repeat scroll 125px -20px transparent
 
@@ -53,14 +53,14 @@
 
         h3
           font-weight: normal
-          font-size: 13pt
+          +font-size(1)
 
         a
           margin: 10px 8px 8px 8px
           display: inline-block
 
         .fineprint
-          font-size: 9pt
+          +font-size(-3)
           color: #BDBDBD
 
       #site_registration
@@ -68,7 +68,7 @@
           margin: 0 2px
           span
             color: #696969
-            font-size: 10px
+            +font-size(-4)
             display: inline-block
             margin-top: 10px
             cursor: help
@@ -95,7 +95,7 @@
 
         #user_new > a
           color: #696969
-          font-size: 12px
+          +font-size(-3)
           margin-top: 8px
           display: block
 
@@ -110,7 +110,7 @@
 
           input, label
             +main_font
-            font-size: 10pt
+            +font-size(-2)
             z-index: 9999
             color: #888
 
@@ -126,7 +126,7 @@
             //bottom: -17px
             +main_font
             color: #cc4444
-            font-size: 8pt
+            +font-size(-4)
             //left: 0
             right: 37%
             width: 150px
@@ -163,14 +163,14 @@
               color: #777
               color: rgba(white, .4)
               +main_font
-              font-size: 9pt
+              +font-size(-3)
 
 
       .divider
         margin: 30px 0
 
       #acknowledgment
-        font-size: 8pt
+        +font-size(-4)
         margin-top: 30px
 
         a
@@ -185,7 +185,7 @@
 
       h3
         +fancy_font
-        font-size: 13pt
+        +font-size(1)
         padding-bottom: 0
         margin-bottom: 0
         text-align: center
@@ -195,7 +195,7 @@
         margin-left: 0
         margin-top: 10px
         li
-          font-size: 9pt
+          +font-size(-3)
           padding: 10px
           color: #535353
           color: rgba(#333, .65)
@@ -212,7 +212,7 @@
           color: #333        
 
       h2
-        font-size: 24px
+        +font-size(3)
         color: #333
         margin-bottom: 8px
 
@@ -248,7 +248,7 @@
       a.cancel
         display: inline-block
         position: absolute
-        font-size: 12px
+        +font-size(-3)
         color: white
         +rgba(black, .4, 1)
         +border-radius(50px)
@@ -268,7 +268,7 @@
           width: 300px
 
           .sub
-            font-size: 7.5pt
+            +font-size(-4)
             position: absolute
             width: 390px
             +main_font
@@ -288,7 +288,7 @@
             //width: 310px
 
             li
-              font-size: 9pt
+              +font-size(-3)
               //text-align: left
               list-style-type: decimal
 
@@ -298,7 +298,7 @@
       a.cancel
         color: #aaa
         color: rgba(white, .4)
-        font-size: 9pt
+        +font-size(-3)
         display: block
         padding-top: 5px
         font-weight: bold
@@ -309,7 +309,7 @@
       h3
         margin-top: 15px
       li
-        font-size: 10pt
+        +font-size(-2)
         +main_font
         text-align: left
 
@@ -322,4 +322,4 @@
       .cancel
         color: inherit
         +main_font
-        font-size: 10pt
+        +font-size(-2)

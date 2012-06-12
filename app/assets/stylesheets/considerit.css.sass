@@ -20,7 +20,6 @@ $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,600italic,800,300italic|Chelsea+Market|Lobster)
 @import "mixins"
-@import "css3_mixins"
 @import "carousel"
 
 @import "points/show"
@@ -77,13 +76,13 @@ input[type=checkbox], input[type=radio]
 
 h1, h2, h3, h4, h5, h6
   font-weight: bold
-  @include heading
+  +heading
 
 strong
   font-weight: bold
   
 h1
-  font-size: 28px
+  +font-size(4)
 
 
 
@@ -114,8 +113,10 @@ html
   body
     color: #222
     +main_font
-    font-size: 14px
 
+    // 12pt/16px default font, for traditional browsers
+    font-size: 100%
+    line-height: 1.2
 
     #wrap
       position: relative
@@ -173,7 +174,7 @@ button,
 input[type="submit"]
   color: white
   padding: 3px 10px
-  font-size: 14px
+  +font-size(-1)
   cursor: pointer
   +border-radius(5px)
 
@@ -197,7 +198,7 @@ input[type="submit"].gray
   background-color: #999
   +linear-gradient(#999, #ddd)
   color: #272727
-  font-size: 12px
+  +font-size(-3)
   padding: 3px 15px
   opacity: .9
   +box-shadow(0, 1px, 2px, rgba(black, .5))
@@ -225,12 +226,12 @@ input.inputfileproxy
   padding: 10px 10px 10px 0px
     
   h3.banner
-    font-size: 32px
+    +font-size(5)
     margin-bottom: 0px
     text-align: center
     color: #555
     font-weight: normal
-    @include inset-text
+    +inset-text
 
     a
       text-decoration: underline

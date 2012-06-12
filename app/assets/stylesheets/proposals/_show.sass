@@ -1,7 +1,7 @@
 #explore_proposal
 
   > ol
-    @include nude-list  
+    +nude-list  
     position: relative
 
     li
@@ -16,14 +16,14 @@
           .action, .personal_position
             top: 20px
             position: absolute
-            font-size: 8pt
+            +font-size(-4)
             color: #999
             z-index: 50
                       
           .action
             left: 629px
             top: 222px
-            @include chalk
+            +chalk
 
           .personal_position.contribute
             color: #666
@@ -60,7 +60,7 @@
           .support, .oppose
             position: absolute
             color: #888
-            font-size: 13pt
+            +font-size(1)
 
           .support
             left: -6px
@@ -115,12 +115,12 @@
 
               .arrow
                 display: none
-                font-size: 18pt
+                +font-size(3)
                 opacity: .6
                 position: absolute
                 left: -18px
               span
-                font-size: 8pt
+                +font-size(-4)
                 padding-left: 2px
                 vertical-align: top
 
@@ -179,7 +179,7 @@
                   left: -20px
                   
                 &:after
-                  @include flip-horizontal
+                  +flip-horizontal
                   right: -20px
                 .close
                   display: block
@@ -283,7 +283,7 @@
                 +opacity(35)
               
               .username
-                font-size: 10pt
+                +font-size(-2)
                 color: black
                 background-color: white
                 position: absolute
@@ -310,7 +310,7 @@
                   white-space: normal
                   padding: 5px 0 0 0 
                   font-style: italic
-                  font-size: 9pt
+                  +font-size(-3)
 
                   p
                     margin-bottom: 6px
@@ -319,7 +319,7 @@
                   text-decoration: underline
                   color: white
                   opacity: .8
-                  font-size: 9pt
+                  +font-size(-3)
                   &:hover
                     opacity: 1
 
@@ -356,9 +356,9 @@
 
         .participant_connection
           padding-top: 12px
-          @include chalk
+          +chalk
           text-align: center
-          font-size: 14pt
+          +font-size(1)
           height: 48px
 
           .group_name

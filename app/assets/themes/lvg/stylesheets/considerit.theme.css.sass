@@ -1,4 +1,3 @@
-@import "css3_mixins"
 @import "mixins"
 @import "ribbon_banners"
 @import "theme_mixins"
@@ -84,7 +83,7 @@ html
 #craft_position
 
   > .user_opinion
-    @include nude-list
+    +nude-list
     +wall
     +box-shadow(0, 4px, 7px, black, 0.5)
     +border-radius(5px)
@@ -158,7 +157,7 @@ html
           width: 66px
 
     input[type="button"], input[type="submit"], .wrapper
-      font-size: 8pt
+      +font-size(-4)
       height: 20px
       padding: 2px 20px
       

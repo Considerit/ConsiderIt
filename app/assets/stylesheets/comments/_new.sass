@@ -2,8 +2,8 @@
 
 li.new_comment
   width: 400px
-  @include nude-list
-  font-size: 14px
+  +nude-list
+  +font-size(-1)
     
   li.body
     textarea
@@ -25,21 +25,21 @@ li.new_comment
     .body_row
       .user
         max-width: 70px
-        font-size: 10px
+        +font-size(-4)
       .text
 
         form
           .point-pledge
-            font-size: 9pt
+            +font-size(-3)
 
           ul.form
             li.body.inlined
               width: 360px
 
               label
-                font-size: 10pt
+                +font-size(-2)                
               textarea
-                font-size: 10pt
+                +font-size(-2)
                 height: 40px
                 margin: 0
               .count
@@ -47,13 +47,13 @@ li.new_comment
                 display: block
                 position: absolute
                 right: 0
-                font-size: 9pt
+                +font-size(-3)
                 bottom: -18px
 
             .comment_submit
             
             a.cancel
-              font-size: 10px
+              +font-size(-4)
               margin-left: 10px
               padding-top: 16px 
               float: left

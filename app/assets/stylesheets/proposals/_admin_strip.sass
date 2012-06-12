@@ -3,7 +3,7 @@
   right: 15px
 
   a
-    font-size: 13pt
+    +font-size(1)
     color: #222
     font-weight: bold
   img
@@ -42,7 +42,7 @@
       
       .updated
         position: relative
-        font-size: 10pt
+        +font-size(-2)
         top: 50%
         margin-top: -6px
         left: 4px
@@ -131,10 +131,10 @@
               margin-right: 10px
               .on, .off
                 display: inline-block
-                font-size: 9pt
+                +font-size(-3)
                 &.selected
                   color: white
-                  font-size: 11pt
+                  +font-size(-1)
                 &:hover
                   background-color: blue
                   cursor: pointer

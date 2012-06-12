@@ -35,7 +35,7 @@ blockquote
 #content
   max-width: 600px
   font-family: "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
-  font-size: 11pt
+  +font-size(-1)
 
   //background-color: #F5F5F5
 
@@ -66,7 +66,7 @@ blockquote
 
         table
           td
-            font-size: 9pt
+            +font-size(-3)
             padding: 10px 5px 10px 0        
             border-top: 1px solid #bbbbbb
             text-align: center
@@ -100,7 +100,7 @@ blockquote
 
             .after
               color: #aaaaaa
-              font-size: 10pt
+              +font-size(-2)
 
           &.prominent
 
@@ -116,19 +116,19 @@ blockquote
 
 
         p.intro .object
-          font-size: 15pt
+          +font-size(2)
           font-weight: bold
 
         .object
           a
             color: #555555
             text-decoration: underline
-            font-size: 12pt
+            +font-size(0)
           .user_name
             font-style: italic
             color: #777777
             font-weight: bold
-            font-size: 10pt
+            +font-size(-2)            
             display: block
 
         .notable_point  

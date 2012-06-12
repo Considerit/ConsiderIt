@@ -12,7 +12,7 @@
     button
       background-color: transparent
       color: white
-      font-size: 20px
+      +font-size(2)
       width: 240px
       //height: 40px
       border: none
@@ -52,7 +52,7 @@
         color: #C1C1C1
 
       input[type="text"], textarea, label
-        font-size: 13px
+        +font-size(-2)
 
       input[type="text"], input[type="text"]:focus, textarea, textarea:focus
         background-color: transparent
@@ -71,7 +71,7 @@
       .count
         color: #888
         position: absolute
-        font-size: 10px
+        +font-size(-4)
         right: 2px
         bottom: -7px
         z-index: 1
@@ -104,7 +104,7 @@
         a
           color: #C1C1C1
           padding: 5px
-          font-size: 12px
+          +font-size(-3)
           opacity: .8
           &:hover
             opacity: 1
@@ -114,7 +114,7 @@
         //margin: 8px 0 12px 4px
 
         label
-          font-size: 12px
+          +font-size(-3)
           color: #C1C1C1
           letter-spacing: 0
           text-transform: inherit

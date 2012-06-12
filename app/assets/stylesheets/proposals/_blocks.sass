@@ -25,7 +25,7 @@
     .title
       .body
         font-weight: bold
-        font-size: 13pt
+        +font-size(1)
       .user_name
         font-style: italic
 
@@ -33,7 +33,7 @@
       text-decoration: underline
       font-weight: bold
       color: #bbb
-      font-size: 10pt
+      +font-size(-2)
 
     .user_name
       white-space: nowrap
@@ -143,20 +143,18 @@ li.proposal_item
       min-width: 90px
 
       .number
-        font-size: 40px   
-        line-height: 40px 
+        +font-size(5)  
         letter-spacing: -3px
                 
       .designation
-        font-size: 7pt
+        +font-size(-5)
         //line-height: 15px
 
       .short_name
         width: 100%
         letter-spacing: -1px
         text-transform: capitalize
-        font-size: 12px
-        line-height: 12px
+        +font-size(-3)
 
   &.menu
 
@@ -171,13 +169,11 @@ li.proposal_item
         width: 70px
 
       .number
-        font-size: 20px   
-        line-height: 20px 
+        +font-size(2) 
         letter-spacing: -2px
                           
       .designation
-        font-size: 8px
-        line-height: 15px
+        +font-size(-6)
         text-transform: uppercase
       
       .short_name

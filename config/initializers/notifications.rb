@@ -35,7 +35,7 @@ def new_published_proposal_tweet(proposal)
   proposal_link = shorten_link(proposal_link)
 
   space_for_body = 140 - proposal_link.length - 23
-  "New proposal: \"#{proposal.title_with_hashtags(space_for_body)} [...]\" #{proposal_link}"
+  "New proposal: \"#{proposal.title_with_hashtags(space_for_body)} ...\" #{proposal_link}"
 end
 
 
@@ -102,12 +102,12 @@ ActiveSupport::Notifications.subscribe("published_new_position") do |*args|
 end
 
 def new_proposal_milestone_tweet(proposal)
-  proposal_link = Rails.application.routes.url_helpers.new_proposal_position_url(proposal.long_id, :host => proposal.account.host_with_port)
+  proposal_link = Rails.application.routes.url_helpers.proposal_url(proposal.long_id, :host => proposal.account.host_with_port)
   proposal_link = shorten_link(proposal_link)
 
   lead = "Milestone: #{proposal.positions.count} positions for "
   space_for_body = 140 - proposal_link.length - lead.length - 9
-  "#{lead}\"#{proposal.title_with_hashtags(space_for_body)} [...]\" #{proposal_link}"
+  "#{lead}\"#{proposal.title_with_hashtags(space_for_body)} ...\" #{proposal_link}"
 end
 
 ActiveSupport::Notifications.subscribe("new_published_Point") do |*args|

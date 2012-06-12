@@ -1,3 +1,6 @@
+@import "mixins/css3_mixins"
+@import "mixins/fonts"
+
 =nude-list
   list-style: none outside none
 
@@ -103,7 +106,7 @@
 =subtle_button
   background-color: rgba(128, 128, 128, .1)
   font-weight: normal
-  font-size: 11pt
+  +font-size(-1)
   color: #888
   border: 1px solid rgba(128, 128, 128, .2)
 

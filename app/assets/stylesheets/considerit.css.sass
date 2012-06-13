@@ -5,7 +5,6 @@ $histogram_bar_width: 80px
 $histogram_width: $histogram_bar_width * 7 + 38
 $histogram_height: 200px
 
-$gutter_color: #B4B4B4
 $link_color: #0342A1
 $header_color: #a6a6a6
 
@@ -52,17 +51,6 @@ $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 
 @import "users/sessions"
 
-
-$primary_button_background_color: #082872
-$background_color: #890000
-
-button,
-input[type="submit"]
-  background-color: gray
-  border: none
-  color: white
-  &.important
-    //background-color: $primary_button_background_color    
 
 input[type=checkbox], input[type=radio]
   vertical-align: middle
@@ -172,6 +160,8 @@ button, a
 
 button,
 input[type="submit"]
+  background-color: gray
+  border: none
   color: white
   padding: 3px 10px
   +font-size(-1)

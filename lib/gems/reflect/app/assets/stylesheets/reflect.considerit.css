@@ -15,12 +15,9 @@
 	position: relative;
 }.reflected .response_prompt .prompt {
 	font-size: 9pt;
-	color: #222;
 }.reflected .response_prompt .action_call {
 	font-size: 8pt;
-	color: #444;
 } .reflected .response_prompt .floating_arrow {
-	color: black;
 } .reflected input.response_maybe {
 	position: absolute;
 	left: -20px;
@@ -43,13 +40,11 @@
 	position: absolute;	
 }
 .reflected .response_prompt .rf_dialog .submit_footer a {
-	color: #aaa;
 	font-size: 8pt;
 }
 .reflected .response_prompt ul.response_eval > li label {
 	letter-spacing: 0;
 	text-transform: none;
-	color: black;
 }
 
 .reflected .rf_comment_wrapper .rf_comment_text_wrapper {
@@ -255,14 +250,11 @@ button.button_as_link {
 .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions .arrow {
 	font-size: 175%;
 	left: -14px;
-	color: white;
 } .reflected .point_in_list_margin .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions .arrow {
-	color: black;
 }
 
 .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .rf_dialog .connect_directions {
 	font-size: 11pt;
-	color: #333;
 }
 
 

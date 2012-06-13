@@ -17,7 +17,7 @@ a.user {
   white-space: nowrap;
   font-style: italic;
   font-size: 90%;
-  color: #aaa; }
+}
 
 button.button_as_link {
   background-color: none;
@@ -26,9 +26,7 @@ button.button_as_link {
   text-align: left;
   cursor: pointer;
   padding: 0;
-  color: #aaa; 
   } button.button_as_link:hover {
-    color: black;
   }
 
 .submit a {
@@ -67,11 +65,9 @@ button.button_as_link {
       color: inherit;
       background-color: inherit; }
     .reflected .rf_comment_wrapper .rf_comment_text_wrapper .rf_comment_text .sentence.highlight {
-      background-color: #b5d5ff;
-      color: black; }
+      background-color: #b5d5ff;}
       .reflected .rf_comment_wrapper .rf_comment_text_wrapper .rf_comment_text .sentence.highlight:hover {
-        background-color: #b5d5ff;
-        color: black; }
+        background-color: #b5d5ff;}
   .reflected .rf_comment_wrapper .rf_comment_text_wrapper .rf_comment_author {
     display: none; }
 
@@ -90,14 +86,11 @@ button.button_as_link {
     margin-bottom: 10px; }
     .reflected .rf_comment_wrapper .rf_comment_summary .reflect_header .rf_title {
       border-bottom: 1px dotted #777777;
-      width: 100%;
-      color: #7d7d7d; }
+      width: 100%;}
     .reflected .rf_comment_wrapper .rf_comment_summary .reflect_header .rf_toggle_paginate {
-      color: #7d7d7d;
       font-size: 70%;
       float: right; }
       .reflected .rf_comment_wrapper .rf_comment_summary .reflect_header .rf_toggle_paginate a {
-        color: #7d7d7d;
         text-decoration: underline; }
         .reflected .rf_comment_wrapper .rf_comment_summary .reflect_header .rf_toggle_paginate a:hover {
           cursor: pointer; }
@@ -127,12 +120,12 @@ button.button_as_link {
       .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .rf_evaluation, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .bullet_main .bullet_meta {
         display: none; }
       .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet:hover .bullet_point {
-        color: #66a8ff; }
+        }
       .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_point {
         position: absolute;
         left: -4px;
         font-size: 14px;
-        color: #777777; }
+        }
       .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.full_bullet .bullet_main {
         float: left; }
       .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main {
@@ -156,10 +149,9 @@ button.button_as_link {
           text-transform: lowercase;
           padding-bottom: 2px;
           padding-left: 8px;
-          position: relative;
-          color: #7d7d7d; }
+          position: relative;}
           .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main .bullet_meta a {
-            color: #7d7d7d; }
+            }
           .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet .bullet_main .bullet_meta .bullet_operation {
             cursor: pointer;
             padding-right: 2px; }
@@ -205,7 +197,7 @@ button.button_as_link {
         width: 100%;
         padding-bottom: 5px; }
         .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer a, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer a {
-          color: #7d7d7d; }
+          }
           .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer a:hover, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer a:hover {
             background-color: inherit;}
         .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li {
@@ -213,8 +205,7 @@ button.button_as_link {
           .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.submit a, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.submit a {
             padding-right: 15px; }
           .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.count, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.count {
-            padding: 0 20px 0 0px;
-            color: #7d7d7d; }
+            padding: 0 20px 0 0px;}
           .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.be_neutral, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.be_neutral {
             font-size: 90%; }
             .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.connect .submit_footer li.be_neutral .big_word, .reflected .rf_comment_wrapper .rf_comment_summary ul.bullet_list li.bullet.modify .submit_footer li.be_neutral .big_word {
@@ -254,7 +245,6 @@ button.button_as_link {
         height: 16px;
         background-position: 20px 20px;
         margin: 5px 0 0 3px;
-        color: #414141;
         letter-spacing: 8px;
         font-family: symbol; }
     .reflected .bullet .rf_evaluation .badges .rf_rating .rf_selector_container {
@@ -283,18 +273,16 @@ button.button_as_link {
   .reflected .bullet .rf_response .rf_response_symbol {
     opacity: 1; }
     .reflected .bullet .rf_response .rf_response_symbol.confirmed {
-      color: #666666; }
+      }
     .reflected .bullet .rf_response .rf_response_symbol.not {
-      color: #666666; }
+       }
 
 .rate_bullet.anon .rate_bullet_dialog .flag:hover .rating_votes .me {
   display: none; }
 
 .rate_bullet.anon .rate_bullet_dialog .flag, .rate_bullet.self .rate_bullet_dialog .flag {
-  color: #777777;
   cursor: default; }
   .rate_bullet.anon .rate_bullet_dialog .flag:hover, .rate_bullet.self .rate_bullet_dialog .flag:hover {
-    color: #777777;
     background-color: #efefef;
     cursor: default; }
     .rate_bullet.anon .rate_bullet_dialog .flag:hover .label, .rate_bullet.self .rate_bullet_dialog .flag:hover .label {
@@ -316,14 +304,11 @@ button.button_as_link {
   padding-top: 5px; }
 .rate_bullet .rate_bullet_dialog .rate_header {
   padding: 5px 10px 5px 10px;
-  color: #777777;
   font-weight: bold; }
 .rate_bullet .rate_bullet_dialog .flag {
   padding: 5px 10px 5px 10px;
-  cursor: pointer;
-  color: black; }
+  cursor: pointer;}
   .rate_bullet .rate_bullet_dialog .flag.selected, .rate_bullet .rate_bullet_dialog .flag:hover {
-    color: white;
     background-color: #006666; }
     .rate_bullet .rate_bullet_dialog .flag.selected .rating_class.zen, .rate_bullet .rate_bullet_dialog .flag:hover .rating_class.zen {
       background-position: 0px -100px; }
@@ -369,8 +354,7 @@ button.button_as_link {
   background-color: #efefef;
   position: relative;
   padding: 3px 5px;
-  font-size: 85%;
-  color: #222222; }
+  font-size: 85%;}
   .reflected .rf_clarification span {
     color: #006666;
     padding-right: 4px;
@@ -384,7 +368,6 @@ button.button_as_link {
   position: absolute;
   padding: 12px 18px;
   margin: 10px 0 0 8px;
-  color: #414141;
   width: 85%; }
   .reflected .response_prompt .floating_arrow {
     position: absolute;
@@ -402,13 +385,11 @@ button.button_as_link {
       padding: 4px 0 0px 0px; }
       .reflected .response_prompt ul.response_eval > li label {
         font-size: 86%;
-        padding-left: 5px;
-        color: #777777; }
+        padding-left: 5px;}
   .reflected .response_prompt .rf_dialog {
     position: relative; }
     .reflected .response_prompt .rf_dialog .count {
-      float: right;
-      color: #aaaaaa; }
+      float: right;}
     .reflected .response_prompt .rf_dialog .new_bullet_text_wrap {
       padding: 4px 0 0 21px; }
       .reflected .response_prompt .rf_dialog .new_bullet_text_wrap textarea.new_response_text {
@@ -421,7 +402,7 @@ button.button_as_link {
       width: 100%;
       padding-top: 5px; }
       .reflected .response_prompt .rf_dialog .submit_footer a {
-        color: #777777; }
+        }
         .reflected .response_prompt .rf_dialog .submit_footer a:hover {
           background-color: inherit;
           color: inherit; }
@@ -438,7 +419,6 @@ button.button_as_link {
 
 .reflected .qtip-content .signature {
   padding: 0px 0 0 10px;
-  color: #777777;
   text-align: right; }
 
 .reflected .too_many_chars {

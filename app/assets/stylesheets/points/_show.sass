@@ -26,7 +26,6 @@
 
     .point_text.nutshell
       +font-size(-2)
-      color: #eee
       padding-bottom: 17px
 
       > .nested_user
@@ -81,7 +80,6 @@
         +font-size(-6)
         position: relative
         right: 1px
-        color: #e1e1e1
 
     .read_more
       a.toggle_more, a.toggle
@@ -92,24 +90,6 @@
 
       .triangle
         +font-size(-5)
-
-      .comment_count
-        display: inline-block
-        +font-size(-4)
-        height: 14px
-        padding: 0 5px
-        text-align: center
-        +border-radius(5px)
-        position: relative
-        vertical-align: top
-
-        &:after
-          position: absolute
-          content: "\25BC"
-          bottom: -6px
-          left: 1px
-          +font-size(-7)
-          +transform(20)
 
   &.point_in_list_margin
     width: 148px
@@ -151,8 +131,6 @@
       display: none
       left: -10px
       top: 0px
-      color: #666
-      color: rgba(#4C4C4C, .5)
 
     > .body 
       
@@ -160,8 +138,6 @@
 
       .nutshell
         +font-size(-4)
-        opacity: .8
-        color: black
         width: 148px
 
     .operations        
@@ -172,23 +148,6 @@
 
       > div, >div > div
                   
-        a.point_operation, 
-        button.point_operation,
-        input.point_operation 
-          color: #555
-          &:hover
-            color: black
-        
-        .editpoint:after, &.remove:after
-          color: #555
-
-        .comment_count
-          color: #444
-          +rgba(#999,.4)  
-          &:after
-            color: #444
-            color: rgba(#999,.4) 
-
 
   &.point_in_list_board,
   &.point_in_list_self
@@ -200,11 +159,6 @@
       left: -10px
       top: 0px
 
-    > .body
-      //padding: 3px 5px 3px 13px
-            
-
-
     .operations
       bottom: -3px
 
@@ -215,12 +169,6 @@
         button.point_operation,
         input.point_operation 
           +linkify
-          color: #aaa
-          &:hover
-            color: #e1e1e1                
-
-        .editpoint:after, &.remove:after
-          color: #aaa
 
         .deletepointformproper
           position: absolute
@@ -231,16 +179,6 @@
           
           > *
             vertical-align: middle
-
-
-        &.read_more
-          .comment_count
-            color: #bbb
-            +rgba(#999,.4)  
-            &:after
-              color: #bbb
-              color: rgba(#999,.4)  
-
 
   &.point_in_list_board
     
@@ -287,11 +225,7 @@
     display: none
 
   .extra    
-    color: black
     display: block
-
-    //> *
-    //  visibility: hidden
 
   &.animation_state-expanded
     width: 590px
@@ -301,7 +235,7 @@
     > .body
       .full
         padding-top: 10px
-        opacity: .8
+        opacity: 1
      
     .extra
       visibility: visible
@@ -314,25 +248,10 @@
 
       .nutshell
 
-      .full
-        //display: block
-
     > .less
       display: block
       position: absolute
-      color: #444
       right: 5px
-
-  &.pro
-    //border-right: 5px solid transparent
-    .nutshell
-      //left: 0px
-
-  &.con
-    //border-left: 5px solid transparent
-
-    .nutshell
-      //right: 0px
 
   &.point_in_list_self, &.point_in_list_board
     +chalkboard
@@ -345,13 +264,11 @@
       display: none
 
     .extra, &.animation_state-finished .toggle.less
-      color: #EEE
 
     &.animation_state-expanded
 
       .full, .nested_user, .link a
-        color: #f1f1f1
-        opacity: .9
+        opacity: 1
 
       .link
         padding-bottom: 5px
@@ -360,13 +277,10 @@
     &.animation_state-finished
       border-color: white
       .link
-        opacity: .9
+        opacity: 1
         .domain
           opacity: .2
         
-      .nutshell
-        color: white
-        //opacity: .9
 
     .toggle.less
       top: 0
@@ -401,9 +315,6 @@
     
     &.animation_state-expanded
       padding-left: 90px
-
-    > .body .nutshell
-      color: black
     
     &:after, &:before
       +box-shadow-remove
@@ -448,12 +359,10 @@
 
   &, a
     +main_font
-    color: #333
+
   a
     text-decoration: underline
     opacity: 1
-    &:hover
-      color: black
 
   .meta
     position: absolute  

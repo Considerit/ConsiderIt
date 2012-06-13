@@ -249,9 +249,6 @@ ConsiderIt = {
       //   })
 
     $j(document)
-      .delegate('#confirmation_sent button#go', 'click', function(){
-        $j('#post_signup_dialog').dialog('close');
-      })
 
       .delegate('#site_registration a.cancel', 'click', function(){
         $j('.user_dialog, #settings_dialog').dialog('close');

@@ -1,0 +1,12 @@
+@function gray($amt, $opacity: 1)
+  @return hsl(0, 0, $amt)
+
+=gray-color($amt, $opacity: 1)
+  color: hsl(0, 0, $amt)
+  @if $opacity != 1
+    color: hsla(0, 0, $amt, $opacity)
+
+
+=yellow-postit
+  background-color: #FEFED0
+  +gray-color(30%, .8)

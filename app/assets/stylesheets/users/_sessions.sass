@@ -20,8 +20,7 @@
 
   #registration_form,
   #update_registration_form,
-  #post_signup_form,
-  #confirmation_sent
+  #post_signup_form
     +wall(white)
     +border-radius(5px)
     +box-shadow(0,1px,2px,rgba(black,.5))
@@ -61,17 +60,11 @@
 
         .fineprint
           +font-size(-3)
-          color: #BDBDBD
+          color: #BBB
 
       #site_registration
         ul li 
           margin: 0 2px
-          span
-            color: #696969
-            +font-size(-4)
-            display: inline-block
-            margin-top: 10px
-            cursor: help
 
         .submit_footer
           display: inline-block
@@ -90,14 +83,6 @@
               background-color: rgba(white, .2)
               color: white  
               cursor: pointer
-
-
-
-        #user_new > a
-          color: #696969
-          +font-size(-3)
-          margin-top: 8px
-          display: block
 
         li
           display: inline-block
@@ -189,42 +174,20 @@
         padding-bottom: 0
         margin-bottom: 0
         text-align: center
-        color: #636363
+        color: #666
 
       ul
         margin-left: 0
         margin-top: 10px
         li
           +font-size(-3)
+          +yellow-postit
+          +box-shadow(0,1px,2px,rgba(black,.4))
           padding: 10px
-          color: #535353
-          color: rgba(#333, .65)
-          background-color: #FEFED0
           margin-bottom: 10px
           width: 95px
           height: 70px
-          +box-shadow(0,1px,2px,rgba(black,.4))
 
-    &#confirmation_sent
-      p 
-        color: #696969   
-        strong
-          color: #333        
-
-      h2
-        +font-size(3)
-        color: #333
-        margin-bottom: 8px
-
-      #pledge
-        margin-bottom: 12px
-        display: block
-
-      a.cancel
-        color: #696969
-        text-decoration: underline
-
-    &#confirmation_sent button #go, 
     &#pledge_form button, 
     &#registration_form .primary, 
     &#registration_form .secondary

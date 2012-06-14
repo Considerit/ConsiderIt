@@ -31,8 +31,8 @@
     +font-size(-3)
     font-weight: bold
 
-
     input[type="submit"].forward, button.back, button.forward
+      +font-size(2)
       background-color: transparent
       border: none
       cursor: pointer
@@ -43,3 +43,7 @@
       z-index: 1000
       padding: 0
       text-align: center
+
+      opacity: .6
+      &:hover
+        opacity: 1

@@ -37,12 +37,14 @@
           height: 16px
           +border-radius(5px)
           top: 178px
-          +fancy_font
+          //+heading
+          text-transform: lowercase
+          font-variant: small-caps
 
           .support, .oppose
             position: absolute
-            color: #888
             +font-size(1)
+            font-weight: 600
 
           .support
             left: -6px
@@ -71,7 +73,6 @@
             .empty_explanation
               width: 420px
               margin: auto
-              color: #666
               position: relative
               top: 30px
               line-height: normal
@@ -80,12 +81,10 @@
               a
                 display: block
                 font-weight: bold
-                color: #333
                 text-decoration: underline
 
 
             .personal_position.update
-              color: #666
               display: none
               position: absolute
               top: -15px 

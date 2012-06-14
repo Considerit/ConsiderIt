@@ -89,7 +89,6 @@ ConsiderIt = {
     //   dim: 250
     // });
 
-    
 
     if( $j('#intro').length == 0 ){
       //$j('#masthead').append('<a class="home" href="/">home</a>');
@@ -119,7 +118,7 @@ ConsiderIt = {
     });
 
     $j('#points_on_board_con').droppable( {
-      hoverClass: 'hovered',
+      hoverClass: 'drop_pending',
       drop: function( event, ui ) {
         var draggable = ui.draggable;
         $j('.inclusion_submit', draggable).trigger('click');
@@ -128,7 +127,7 @@ ConsiderIt = {
     } );
 
     $j('#points_on_board_pro').droppable( {
-      hoverClass: 'hovered',
+      hoverClass: 'drop_pending',
       drop: function( event, ui ) {
         var draggable = ui.draggable;
         $j('.inclusion_submit', draggable).trigger('click');

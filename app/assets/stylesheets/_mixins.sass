@@ -18,12 +18,6 @@
   +scaleX(-1)
   +filter(FlipH)
 
-=linkify 
-  background-color: transparent
-  color: inherit
-  border: none
-  cursor: pointer
-
 =curl-shadow
   +box-shadow(0, 1px, 1px, black, 0.2)
   position: relative
@@ -68,18 +62,6 @@
 =outset-text
   text-shadow: rgba(black, .1) 1px 1px
 
-=chalkboard
-  background: image-url("chalk/chalkboard.jpg") repeat left top #414141   
-
-=chalkboard-with-frame 
-  +chalkboard
-
-  border: 10px solid
-  border-color: #bbb #222 #222 #777  
-  border-top-width: 11px
-  +border-image(image-url('chalk/board-border-bold.jpg'), 11, 10, 10, 10, repeat)
-
-
 =wall($bground_color:#ccc)
   background: image-url('wall_texture.png') repeat scroll 0 0 $bground_color
 
@@ -98,20 +80,31 @@
 =signature_font
   font-family: "Lobster", Georgia, serif
 
-=paper
-  background: image-url('paper.png') repeat left top transparent
-
 =text-outline($color, $size:1px)
   text-shadow: -$size 0 $color, 0 $size $color, $size 0 $color, 0 0  -$size $color
 
-=subtle_button
-  background-color: rgba(128, 128, 128, .1)
-  font-weight: normal
-  +font-size(-1)
-  color: #888
-  border: 1px solid rgba(128, 128, 128, .2)
+
+=button($text_color: hsl(0,0,80%), $bground_color: hsl(0,0,45%), $darken_amt: 10%)
+  $bottom_color: darken($bground_color, $darken_amt)
+  $border_color: darken($bottom_color, 20%)
+  +border-radius(5px)
+  +box-shadow-straight('0 1px 0 rgba(255,255,255,0.3) inset, 0 1px 3px rgba(0,0,0,0.3)')    
+
+  display: inline-block
+  font-weight: bold
+  position: relative
+  text-decoration: none
+  +transition(all 0.4s linear)
+  zoom: 1
+  border: 1px solid darken($bottom_color, 5%)
+  text-shadow: 0 -1px 0 $border_color
+  background: $bground_color
+  +complex-gradient(opacify($bground_color, .9), opacify($bottom_color, .9), $from_stop : 0%, $to_stop: 100%)
+  padding: 3px 10px
+  color: $text_color
 
   &:hover
-    background-color: rgba(128, 128, 128, .2)  
-    border: 1px solid rgba(128, 128, 128, .3)
-
+    +box-shadow-straight('0 1px 2px rgba(255,255,255,0.5) inset, 0 1px 5px rgba(0,0,0,0.5)')    
+    +complex-gradient($bground_color, $bottom_color, $from_stop : 0%, $to_stop: 75%)
+    border-color: $border_color
+    color: lighten($text-color, 20%)

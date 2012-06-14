@@ -9,20 +9,10 @@ $background_color: #890000
 
 //$dark_header_background: #710000
 
-button,
-input[type="submit"]
-  background-color: gray
-  border: none
-  color: white
-  &.important
-    //background-color: $primary_button_background_color    
-
 html
   background-color: #bbb
   +wall(#777)
-  background-attachment: fixed
-
-  &.homepage
+  //background-attachment: fixed
 
   body
     background: none
@@ -56,7 +46,7 @@ html
       content: ''
       width: 100%
       height: 300px
-      position: fixed
+      position: absolute
       top: 0
       left: 0
       z-index: 1
@@ -65,7 +55,7 @@ html
       content: ''
       width: 100%
       height: 100px
-      position: fixed
+      position: absolute
       left: 0
       background-color: #767676
       top: 280px

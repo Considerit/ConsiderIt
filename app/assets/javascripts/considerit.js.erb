@@ -144,14 +144,6 @@ ConsiderIt = {
       }
     });
 
-    $j('.add_qtip').each(function(){
-      if(!$j(this).data('qtip')) {
-        $j(this).qtip({ 
-          style: { name: 'cream', tip: true }, 
-          position: {corner: { target: 'bottomMiddle', tooltip: 'topMiddle' } }
-        });
-      }
-    });
 
     $j('.new_comment .is_counted, .pro_con_list .is_counted').each(function(){
       if( !$j(this).data('has_noblecount') ){        

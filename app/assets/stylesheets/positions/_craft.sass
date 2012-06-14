@@ -20,8 +20,6 @@
         .my_name
           &.no_name
             width: 270px
-            color: #444
-            color: rgba(black, .6)
 
         .rest
           padding: 8px
@@ -47,13 +45,12 @@
 
                 .lead
                   +inset-text
-                  +fancy_font
-                  +font-size(1)
-                  color: #555
-                  font-variant: small-caps
+                  +heading
+                  +font-size(-2)
+                  text-transform: uppercase
 
                 .sublead
-                  +font-size(-4)
+                  +font-size(-5)
               
               .point_list
                 z-index: 100
@@ -61,19 +58,12 @@
 
               .point_list_footer
                 width: 172px
-                //.forward
-                //  background-image: image-url('arrow-down.png')
-                
-                //.back
-                //  background-image: image-url('arrow-up.png')
                 
                 .arrow
-                  color: #777
 
                 .paginate
                   font-weight: normal
-                  color: #666                 
-                      
+                  padding-top: 5px
               .carousel
                 padding: 5px 3px
               
@@ -130,12 +120,9 @@
           a
             display: inline-block
             +font-size(-1)
-            color: #999                
             font-weight: bold
             text-decoration: underline
             margin-top: 30px
-            &:hover
-              color: #272727
             
             &.skip_save
               position: absolute
@@ -151,15 +138,11 @@
             
             
             > label
-              color: #666
               font-weight: bold
               span
                 padding-left: 3px
               .sub
                 +font-size(-3)
-                color: #999
-                position: relative
-                top: -2px
                 font-weight: normal
 
             .email

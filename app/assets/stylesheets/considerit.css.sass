@@ -22,7 +22,7 @@ $header_color: #a6a6a6
 @import "proposals/blocks"
 @import "proposals/show"
 @import "proposals/description"
-@import "proposals/admin_strip"
+@import "proposals/admin"
 @import "proposals/create"
 
 @import "positions/craft"
@@ -48,19 +48,40 @@ $header_color: #a6a6a6
 /// TODO: these maybe should be defined per theme ////
 //////////////////////////////////////////////////////
 
-.point_in_list_margin, .point
+#site_registration .primary, #registration_form .primary, #post_signup_dialog .primary
+  +on_chalkboard
+
+
+.pro_con_list, 
+.point_in_list_self.expanded, .point_in_list_board.expanded,
+  +on_chalkboard
+
+.point_in_list_margin, #content .point
   +on_post_it
   &.pro
     +green_post_it
   &.con
     +red_post_it
 
-.pro_con_list, 
-.point_in_list_self.expanded, .point_in_list_board.expanded,
-#site_registration .primary, #registration_form .primary, #post_signup_dialog .primary
-  +on_chalkboard
+// this should probably be overridden per theme
+=on_background
+  color: #444
+
+  h1, h2, h3
+    color: #222
+
+  a, input, button
+    color: #444  
+    +transition(all 0.4s linear)
+
+    &:hover
+      color: #000    
+
+html body
+  +on_background
 
 /////////////
+
 
 
 //////////////////////////////////////////////////////
@@ -152,27 +173,25 @@ strong
 table
   border-collapse: separate  
 
-html
+body, input, button
+  +main_font
 
-  body
-    color: #222
-    +main_font
+body
+  // 12pt/16px default font, for traditional browsers
+  font-size: 100%
+  line-height: 1.2
 
-    // 12pt/16px default font, for traditional browsers
-    font-size: 100%
-    line-height: 1.2
+  #wrap
+    position: relative
+    
+    > div
+      width: $content_width
+      margin: 0 auto
+      padding: 10px 15px
+      position: relative    
 
-    #wrap
-      position: relative
-      
-      > div
-        width: $content_width
-        margin: 0 auto
-        padding: 10px 15px
-        position: relative    
-
-        &#content   
-          position: relative
+      &#content   
+        position: relative
            
 
 h2.sub_follows
@@ -223,7 +242,6 @@ dd
     +font-size(5)
     margin-bottom: 0px
     text-align: center
-    color: #555
     font-weight: normal
     +inset-text
 

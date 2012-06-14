@@ -25,12 +25,13 @@
       +hyphenate
 
     .point_text.nutshell
-      +font-size(-2)
+      +font-size(-1)
       padding-bottom: 17px
 
       > .nested_user
         white-space: nowrap
         display: inline-block
+        +font-size(-2)
 
     .point_text.full
       display: none
@@ -408,6 +409,7 @@
 
 
 
-
-.follow, .unfollow
-  margin-top: 5px 
+.point, .point_in_list 
+  .follow, .unfollow
+    margin-top: 5px 
+    +font-size(-2)

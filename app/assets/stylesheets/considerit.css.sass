@@ -73,9 +73,10 @@ $header_color: #a6a6a6
 // subtle button
 // linkified button
 
-.button_proxy, button, input[type="submit"]
+.button, .button_proxy, button, input[type="submit"]
   outline: none
   cursor: pointer
+  text-align: center
 
   &.button
     +button
@@ -135,17 +136,9 @@ h1, h2, h3, h4, h5, h6
 
 strong
   font-weight: bold
-  
-h1
-  +font-size(4)
-
-
 
 .clear
   clear: both
-
-.center
-  text-align: center
 
 .fl
   float: left
@@ -153,12 +146,8 @@ h1
 .fr
   float: right
 
-.italic
-  font-style: italic
-
 .hide
   display: none
-
 
 table
   border-collapse: separate  
@@ -216,8 +205,6 @@ dl
 dd
   margin-left: 18px
 
-
-
 .loading .ajax_loading
   display: block
 
@@ -242,9 +229,6 @@ dd
 
     a
       text-decoration: underline
-
-.add_qtip
-  cursor: help
 
 #lightbox
   background: transparent

@@ -51,11 +51,9 @@
           %li.password_field
             = f.password_field :password, :title => 'password', :placeholder => 'Password', :required => true
 
-          -# %li.avatar_field
-            -#= f.file_field :avatar, :class => 'has_example', :title => 'profile picture'
-        
+
           %li.submit_footer
-            .proxy
+            .proxy.button_proxy.button
               sign in
               
             = f.submit "sign in", :class => 'hide'

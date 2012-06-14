@@ -11,13 +11,12 @@
       modal: true,
       draggable: false,
       dialogClass: 'alert',
-      width: 725,
+      width: 800,
       resizable: false,
       position: ['center', 'middle']
     });
 
     $j(document).on('click', '.signin_link', function(){
-      console.log('here')
       $j('#signin_dialog')
         .load("#{new_user_registration_path(:third_party=>false, :context=>"header")}")
         .dialog('open');

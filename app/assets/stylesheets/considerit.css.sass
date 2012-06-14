@@ -5,17 +5,8 @@ $histogram_bar_width: 80px
 $histogram_width: $histogram_bar_width * 7 + 38
 $histogram_height: 200px
 
-$link_color: #0342A1
 $header_color: #a6a6a6
 
-$pro_point_light: #E4F6CE //#2A8956 
-$con_point_light: #FEDFE3 //#9E4D50 
-
-$pro_point_expanded: #F5FEEE
-$con_point_expanded: #FEEFF2
-
-$pro_point_dark: darken($pro_point_light, 30%) //#1C3B1D
-$con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,600italic,800,300italic|Chelsea+Market|Lobster)
 @import "mixins"
@@ -59,21 +50,84 @@ $con_point_dark: darken($con_point_light, 30%) //#3B1D1D
 
 .point_in_list_margin, .point
   +on_post_it
+  &.pro
+    +green_post_it
+  &.con
+    +red_post_it
 
-.pro_con_list, .point_in_list_self.expanded, .point_in_list_board.expanded
+.pro_con_list, 
+.point_in_list_self.expanded, .point_in_list_board.expanded,
+#site_registration .primary, #registration_form .primary, #post_signup_dialog .primary
   +on_chalkboard
 
 /////////////
 
+
+//////////////////////////////////////////////////////
+/////////////// Base styles for input ////////////////
+//////////////////////////////////////////////////////
+
+
+//// SUBMIT styles
+// juicy button
+// subtle button
+// linkified button
+
+.button_proxy, button, input[type="submit"]
+  outline: none
+  cursor: pointer
+
+  &.button
+    +button
+
+  &.linkified
+    background-color: transparent
+    border: none
+    text-decoration: underline
+
+//// TEXT INPUT styles
+
+
+input[type="text"], input[type="email"], input[type="password"], textarea
+  padding: 3px 5px
+  color: #333
+
+input[type="file"].proxied
+  visibility: hidden
+
 input[type=checkbox], input[type=radio]
-  vertical-align: middle
+  //vertical-align: middle
+  //position: relative
+  //bottom: 2px
+
+.inlined
   position: relative
-  bottom: 2px
 
+label.inline
+  opacity: 1
+  &.focus
+    opacity: .65
 
-// *
-//   margin: 0
-//   padding: 0
+  text-align: left
+  position: absolute !important
+  cursor: text !important
+  visibility: hidden !important
+  overflow: hidden !important
+  padding: 0 !important
+  margin: 0 !important
+  border: 0 !important
+
+  &.empty
+    visibility: visible !important
+
+input.hidden_edit
+  background-color: transparent
+  border: none
+  width: auto
+  text-align: right
+  padding-right: none
+
+/////////////
 
 h1, h2, h3, h4, h5, h6
   font-weight: bold
@@ -139,7 +193,7 @@ p
   margin-bottom: 18px
 
 a
-  color: $link_color
+  color: inherit
   outline: none
   cursor: pointer  
   text-decoration: none
@@ -162,60 +216,7 @@ dl
 dd
   margin-left: 18px
 
-textarea
-  color: #333
 
-input, textarea
-  padding: 3px 5px
-
-
-button, a
-  //opacity: .9
-  //&:hover
-  //  opacity: 1
-
-button,
-input[type="submit"]
-  background-color: gray
-  border: none
-  color: white
-  padding: 3px 10px
-  +font-size(-1)
-  cursor: pointer
-  +border-radius(5px)
-
-  &:focus
-    background-color: gray
-    border-color: gray
-  
-  &.important
-    +box-shadow(1px, 1px, 2px, black, .8)
-    color: white
-
-    +linear-gradient(#45484d, #222)
-    &:hover
-      background-color: black
-
-  &.subtle
-    +subtle_button  
-
-button.gray,
-input[type="submit"].gray  
-  background-color: #999
-  +linear-gradient(#999, #ddd)
-  color: #272727
-  +font-size(-3)
-  padding: 3px 15px
-  //opacity: .9
-  +box-shadow(0, 1px, 2px, rgba(black, .5))
-  border-top: 1px solid #ccc
-  border-bottom: 1px solid #666
-  //&:hover
-  //  opacity: 1
-
-input[type="file"].proxied
-  visibility: hidden
-input.inputfileproxy
 
 .loading .ajax_loading
   display: block
@@ -276,29 +277,4 @@ hr.ledge
   opacity: .8
   +opacity(80)
 
-.inlined
-  position: relative
 
-label.inline
-  opacity: 1
-  &.focus
-    opacity: .65
-
-  text-align: left
-  position: absolute !important
-  cursor: text !important
-  visibility: hidden !important
-  overflow: hidden !important
-  padding: 0 !important
-  margin: 0 !important
-  border: 0 !important
-
-  &.empty
-    visibility: visible !important
-
-input.hidden_edit
-  background-color: transparent
-  border: none
-  width: auto
-  text-align: right
-  padding-right: none

@@ -56,6 +56,25 @@ source slice width outset repeat
     filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=#{$x}, OffY=#{$y}, Color='#{$iecolor}')
     -ms-filter: quote(progid:DXImageTransform.Microsoft.dropshadow(OffX=#{$x}, OffY=#{$y}, Color='#{$iecolor}'))
 
+=box-shadow-straight($value)
+  $value: unquote($value)
+  -moz-box-shadow: $value
+  -webkit-box-shadow: $value
+  box-shadow: $value
+
+=inset-box-shadow($x, $y, $offset, $hex, $opacity: 1, $ie: $useIEFilters)
+  -moz-box-shadow: $x $y $offset $hex inset
+  -webkit-box-shadow: $x $y $offset $hex inset
+  @if $opacity != 1
+    box-shadow: $x $y $offset rgba($hex, $opacity) inset
+  @else
+    box-shadow: $x $y $offset $hex inset
+  @if $ie == 1
+    $iecolor: "#" + red($hex) + green($hex) + blue($hex)
+    filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=#{$x}, OffY=#{$y}, Color='#{$iecolor}')
+    -ms-filter: quote(progid:DXImageTransform.Microsoft.dropshadow(OffX=#{$x}, OffY=#{$y}, Color='#{$iecolor}'))
+
+
 =box-shadow-remove($ie: $useIEFilters)
   -moz-box-shadow: none
   -webkit-box-shadow: none

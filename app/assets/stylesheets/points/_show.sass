@@ -66,9 +66,7 @@
       &.pointform
         display: none
         
-      a.point_operation, 
-      button.point_operation,
-      input.point_operation 
+      a.point_operation
         +font-size(-4)
         padding: 0
         margin: 0
@@ -101,26 +99,19 @@
     padding: 5px 5px 8px 16px
 
     &:hover
-      +paper
-
-      &.pro
-        background-color: $pro_point_expanded
-      &.con
-        background-color: $con_point_expanded
+      +on_paper
 
       > .body .nutshell
         //opacity: 1
 
 
     &.pro
-      background-color: $pro_point_light
       border-right: none
       padding-left: 11px
       padding-right: 10px
       //border-color: $pro_point_dark
 
     &.con
-      background-color: $con_point_light
       border-left: none
       //border-color: $con_point_dark
 
@@ -162,13 +153,7 @@
     .operations
       bottom: -3px
 
-      > div, >div > div
-                      
-        a.cancel,
-        a.point_operation, 
-        button.point_operation,
-        input.point_operation 
-          +linkify
+      > div, >div > div                      
 
         .deletepointformproper
           position: absolute
@@ -308,7 +293,7 @@
 
 
   &.point_in_list_margin
-    +paper
+    +on_paper
     cursor: auto
     opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
     height: auto
@@ -326,14 +311,10 @@
       top: 0px
 
     &.pro 
-      background-color: $pro_point_expanded
-
       &.animation_state-expanded
         margin-left: -79px
 
     &.con 
-      background-color: $con_point_expanded  
-
       &.animation_state-expanded
         margin-left: -601px
 
@@ -345,17 +326,13 @@
         //right: 0px
 
 .point
-  +paper
+  +on_paper
   +curl-shadow
   padding: 30px 30px
   width: 800px
   min-height: 450px
   margin: auto
   +box-shadow(0px,1px,5px,rgba(black,.4)) 
-  &.pro
-    background-color: $pro_point_expanded
-  &.con
-    background-color: $con_point_expanded
 
   &, a
     +main_font
@@ -434,5 +411,3 @@
 
 .follow, .unfollow
   margin-top: 5px 
-  form input[type="submit"]
-    +subtle_button

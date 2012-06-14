@@ -1,6 +1,20 @@
+=colored_post_it($color)
+  background-color: $color
+
+  .button
+    color: #888
+    +button(darken(desaturate($color, 60%), 35%), desaturate($color, 20%))
+    &:hover
+      color: #333
+
+=red_post_it
+  +colored_post_it(hsl(352, 94%, 94%))
+
+=green_post_it
+  +colored_post_it(hsl(87, 69%, 89%))
+
 =on_post_it
   color: #555
-  
   h1, h2, h3
     color: #333
 
@@ -8,7 +22,7 @@
     color: #555  
     
     &:hover
-      color: #000
+      color: #000  
 
 =on_chalkboard
   color: #ddd
@@ -21,3 +35,19 @@
     
     &:hover
       color: #fff
+
+=on_paper
+  background-image: image-url('paper.png') 
+  background-repeat: repeat 
+  background-position: left top
+
+=chalkboard
+  background: image-url("chalk/chalkboard.jpg") repeat left top #414141   
+
+=chalkboard-with-frame 
+  +chalkboard
+
+  border: 10px solid
+  border-color: #bbb #222 #222 #777  
+  border-top-width: 11px
+  +border-image(image-url('chalk/board-border-bold.jpg'), 11, 10, 10, 10, repeat)

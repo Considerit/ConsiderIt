@@ -7,7 +7,7 @@
         = f.hidden_field :email, :val => current_user.unconfirmed_email || current_user.email
         = hidden_field_tag :proposal_id, @proposal.id
         = f.submit 'resent'
-      %span.close.subtle
+      %span.close.button
         = button_tag 'x'
 
     :javascript
@@ -29,5 +29,5 @@
             = f.hidden_field :email, :val => current_user ? current_user.unconfirmed_email || current_user.email : @email
             = f.submit 'resent'
 
-      %span.close.subtle
+      %span.close.button
         = button_tag 'x'

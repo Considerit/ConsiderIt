@@ -217,55 +217,7 @@ button.button_as_link {
   top: -4px;
   width: 40px;
   float: right; }
-  .reflected .bullet .rf_evaluation .badges .rf_rating {
-    height: 22px;
-    float: right; }
-    .reflected .bullet .rf_evaluation .badges .rf_rating li {
-      float: left; }
-    .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container {
-      height: 20px;
-      width: 23px;
-      opacity: 0.4; }
-      .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container.zen div, .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container.gold div, .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container.graffiti div, .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container.sun div, .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container.troll div {
-        margin-top: inherit;
-        margin: 3px auto; }
-      .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container.zen div {
-        background-position: 0px -45px; }
-      .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container.gold div {
-        background-position: -16px -45px; }
-      .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container.graffiti div {
-        background-position: -32px -45px; }
-      .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container.sun div {
-        background-position: -48px -45px; }
-      .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container.troll div {
-        background-position: -64px -45px; }
-      .reflected .bullet .rf_evaluation .badges .rf_rating .rf_gallery_container div {
-        background-image: url("/media/reflect_sprite.png");
-        width: 16px;
-        height: 16px;
-        background-position: 20px 20px;
-        margin: 5px 0 0 3px;
-        letter-spacing: 8px;
-        font-family: symbol; }
-    .reflected .bullet .rf_evaluation .badges .rf_rating .rf_selector_container {
-      height: 20px;
-      width: 10px;
-      opacity: 0;
-      padding: 3px;
-      clear: none; }
-      .reflected .bullet .rf_evaluation .badges .rf_rating .rf_selector_container:hover {
-        opacity: 0.6; }
-      .reflected .bullet .rf_evaluation .badges .rf_rating .rf_selector_container .rf_selector {
-        background-image: url("/media/reflect_sprite.png");
-        background-position: 0px 0px;
-        width: 11px;
-        height: 9px;
-        margin: 5px auto;
-        cursor: pointer; }
-      .reflected .bullet .rf_evaluation .badges .rf_rating .rf_selector_container:hover .rf_selector {
-        background-position: 0px -9px; }
-  .reflected .bullet .rf_evaluation:hover .rf_rating .rf_selector_container {
-    opacity: 0.6; }
+
 
 .reflected .bullet .rf_response {
   padding: 3px;

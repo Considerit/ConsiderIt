@@ -40,7 +40,7 @@
               - if !current_user.avatar_file_name
                 %li.avatar_field.inlined
                   = f.file_field :avatar, :title => 'Upload a profile picture', :class => 'proxied'
-                  %input.inputfileproxy{ :type => 'button', :value => 'Upload a profile picture' }
+                  %input.inputfileproxy.button_proxy.button{ :type => 'button', :value => 'Upload a profile picture' }
                   .selected_file
 
               - if requires_pledge
@@ -52,12 +52,12 @@
 
               %li.submit_footer
                 - if requires_pledge
-                  = f.submit "Yes, I will uphold these principles"
+                  = f.submit "Yes, I will uphold these principles", :class => "button"
                   %a.cancel
                     No, I cannot
 
                 - else
-                  = f.submit "Done"
+                  = f.submit "Done", :class => "button"
                   %a.cancel
                     cancel
 

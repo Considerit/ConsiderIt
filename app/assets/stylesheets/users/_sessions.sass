@@ -1,11 +1,14 @@
 
+#signin_dialog, #settings_dialog, #post_signup_dialog
+  overflow: hidden
+
 #user_edit
   label
     text-transform: none
     letter-spacing: 0
   h2
     margin-bottom: 5px
-    
+      
 #update_registration_form
   background-color: white
   padding: 15px 25px
@@ -32,7 +35,7 @@
     .primary
       text-align: center
       display: inline-block
-      width: 472px
+      width: 515px
       +chalkboard
       padding: 0 25px 15px 25px
       +box-shadow(0,1px,3px,rgba(black,.5))
@@ -60,7 +63,6 @@
 
         .fineprint
           +font-size(-3)
-          color: #BBB
 
       #site_registration
         ul li 
@@ -68,25 +70,12 @@
 
         .submit_footer
           display: inline-block
-          +main_font
-
-          input,button,.proxy
-            background-color: #434343
-            background-color: rgba(#888, .2)
-            border: 1px outset #666
-            color: #888
-            +border-radius(5px)
-            padding: 3px 5px
-
-            &:hover
-              background-color: #777
-              background-color: rgba(white, .2)
-              color: white  
-              cursor: pointer
+          +main_font          
 
         li
           display: inline-block
-          input
+
+          input[type="text"], input[type="email"], input[type="password"]
             background-color: transparent
             border: 1px solid
             +inset-border(#414141)
@@ -95,9 +84,7 @@
 
           input, label
             +main_font
-            +font-size(-2)
             z-index: 9999
-            color: #888
 
 
           &.email_field input
@@ -110,7 +97,6 @@
             position: absolute
             //bottom: -17px
             +main_font
-            color: #cc4444
             +font-size(-4)
             //left: 0
             right: 37%
@@ -129,24 +115,13 @@
               position: absolute
 
             input[type="button"]
-              +linear-gradient(rgba(white, .8), rgba(#777, .6))
-              border-radius: 12px
-              border: 1px solid
-              border-top-color: #ddd
-              border-bottom-color: #333
-              border-left: none
-              border-right: none
-              color: #444
-              padding: 2px 11px
-              cursor: pointer
+              +font-size(-3)
 
             .selected_file
               position: absolute
               z-index: 9999
               top: 32px
               right: 20px
-              color: #777
-              color: rgba(white, .4)
               +main_font
               +font-size(-3)
 
@@ -174,7 +149,6 @@
         padding-bottom: 0
         margin-bottom: 0
         text-align: center
-        color: #666
 
       ul
         margin-left: 0
@@ -201,20 +175,13 @@
         position: absolute
         visibility: hidden
 
-      input[type="button"]
-        border-radius: 5px
-        border: 1px solid #4B4B4B
-        cursor: pointer
-        border-color: rgba(#888, .3)
-        padding: 3px 8px
-
       a.cancel
         display: inline-block
         position: absolute
-        +font-size(-3)
-        color: white
+        +font-size(-2)
         +rgba(black, .4, 1)
         +border-radius(50px)
+        font-weight: bold
         top: 0
         right: 0
         z-index: 9999
@@ -237,7 +204,6 @@
             +main_font
             bottom: -18px
             left: -38px
-            color: rgba(white, .3)
             text-align: center
 
         h3
@@ -256,11 +222,9 @@
               list-style-type: decimal
 
     .submit_footer
-      padding-top: 24px
+      padding-top: 48px
 
       a.cancel
-        color: #aaa
-        color: rgba(white, .4)
         +font-size(-3)
         display: block
         padding-top: 5px

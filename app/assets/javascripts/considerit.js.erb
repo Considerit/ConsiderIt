@@ -206,7 +206,8 @@ ConsiderIt = {
           $j(this).siblings('input["file"]').trigger('click');
         })
       .on('change', '.avatar_field input[type="file"]', function(){
-          $j(this).siblings('.selected_file').text($j(this).val());
+          var mfile = $j(this).val().split('\\').pop();
+          $j(this).siblings('.selected_file').text(mfile);
         })
       .on('click', '.proxy', function() {
           var email = $j('#user_email'), password = $j('#user_password'), $me = $j(this);
@@ -372,10 +373,10 @@ ConsiderIt = {
     });
 
     // new button clicked
-    $j('.pro_con_list.dynamic').delegate('.newpoint .newpointbutton button', 'click', function(){
+    $j('.pro_con_list.dynamic').delegate('.newpoint .newpointbutton a.write_new', 'click', function(){
       $j('.droppable').fadeOut();
       $j(this).fadeOut(100, function(){
-        $j(this).parents('.newpoint').filter(":first").find('.pointform')
+        $j(this).parents('.newpoint').find('.pointform')
           .fadeIn('fast')
           .find('.point-title-group input')
             .focus(); 
@@ -388,21 +389,21 @@ ConsiderIt = {
     $j('.pro_con_list.dynamic').delegate('a.editpoint', 'click', function(){
       $j('.droppable').fadeOut();
       $j(this).fadeOut(function(){
-        $j(this).parents('.edit').filter(":first").find('.pointform').fadeIn('fast');    
+        $j(this).parents('.edit').find('.pointform').fadeIn('fast');    
       });  
       //show_lightbox();
     });
 
     // new/edit point cancel clicked
     $j('.pro_con_list.dynamic').delegate('.new_point_cancel', 'click', function(){
-      var form = $j(this).parents('.pointform').filter(":first");
-        form.find('.point_link_form').remove();
-        form
-          .fadeOut(function(){
-            $j(this).parents('.newpoint').find('.write_new').fadeIn();  //hide_lightbox();
-            $j('.droppable').fadeIn();
-          })
-          .find('textarea').val('');
+      var form = $j(this).parents('.pointform');
+      form.find('.point_link_form').remove();
+      form
+        .fadeOut(function(){
+          $j(this).parents('.newpoint').find('.write_new').fadeIn();  //hide_lightbox();
+          $j('.droppable').fadeIn();
+        })
+        .find('textarea').val('');
     });
 
     // Create callback
@@ -635,14 +636,14 @@ ConsiderIt = {
     });
 
     // Remove from list
-    $j(document).delegate('.remove .judgepointform form', 'ajax:success', function(data, response, xhr){
-      var old_point = $j(this).parents('.point_in_list_self').filter(":first"),
-        other_point_list = old_point.hasClass('pro') ? $j('#points_other_pro .point_list') : $j('#points_other_con .point_list'),
-        carousel = other_point_list.parents('.infiniteCarousel').filter(":first");
+    $j(document).delegate('.remove .judgepointform a', 'ajax:success', function(data, response, xhr){
+      var old_point = $j(this).parents('.point_in_list_self'),
+        margin_point_list = old_point.hasClass('pro') ? $j('#points_other_pro .point_list') : $j('#points_other_con .point_list'),
+        carousel = margin_point_list.parents('.infiniteCarousel');
 
       old_point.fadeOut('slow', function(){
         old_point = old_point.detach(); 
-        other_point_list.append(old_point);
+        margin_point_list.append(old_point);
         old_point
           .removeClass('point_in_list_self')
           .addClass('point_in_list_margin')
@@ -678,13 +679,10 @@ ConsiderIt = {
         $j(this).find('textarea, .the_subject input').val("");
       }
 
-      console.log(response)
       if ( response['is_following'] ) {
-        console.log('finding')
         var commentable = $j(this).parents('.commentable:first');
         commentable.find('.follow').hide();
         commentable.find('.unfollow').show();
-        console.log(commentable)
       }
 
 

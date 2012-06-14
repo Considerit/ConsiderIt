@@ -67,7 +67,7 @@
         .resetform.hide
           = form_tag '/home/domain', :id => 'domain' do
             = text_field_tag "domain", '', :title => 'your zip code', :class => 'has_example'
-            = submit_tag 'Change your zipcode', :class => 'gray'
+            = submit_tag 'Change your zipcode', :class => 'button'
                 
   - else
     #zipcode_entry
@@ -80,7 +80,7 @@
         = form_tag '/home/domain', :id => 'domain' do
           %span.inlined
             = text_field_tag :domain, '', :placeholder => 'zip code', :title => 'your zip code'
-          = submit_tag 'Set', :class => 'gray'
+          = submit_tag 'Set', :class => 'button'
       .clear
 
     :javascript

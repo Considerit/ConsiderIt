@@ -55,9 +55,17 @@
 
 #admin_strip, #more_options .more
   background-color: #222
-
-#admin_strip, #admin_strip a
   color: #CCC
+
+  h1, h2, h3
+    color: #333
+
+  a, input, button
+    color: #CCC  
+    
+    &:hover
+      color: #EEE
+
 
 #admin_strip
   
@@ -77,7 +85,7 @@
 
     #links
       margin: auto
-      width: 650px
+      width: 850px
       display: block
       .link, #copy_container
         background-color: #333
@@ -109,10 +117,7 @@
 
     #more_options
       margin-left: 40px
-      
-
-      a
-        
+              
       .more
         position: absolute
         z-index: 5
@@ -140,8 +145,6 @@
 
               .on
               .off
-
-
 
             .label
               color: white

@@ -8,7 +8,7 @@
         = image_tag current_user.avatar.url(:small), :class => 'avatar'
         = f.text_area :description, :placeholder => 'Summarize your proposal. You can edit it and add a detailed description next.'
         = f.submit 'Save'
-  .prompt
+  %button.prompt.button
     + #{prompt}
     
     - if !current_user

@@ -4,8 +4,10 @@
   +font-size(2)
       
   td.slider_label 
+    +transition(all .4s linear)
     > div
       width: 250px
+
     
     &.left
       text-align: right
@@ -18,7 +20,7 @@
     &.center
       text-align: center
       +font-size(-3)
-      
+
     +boxy_border
 
   .slider_container

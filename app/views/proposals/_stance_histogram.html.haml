@@ -1,36 +1,47 @@
+
+
 - people_bars ||= false
+- barheight = 180
+
+-# stance_breakdown = @proposal.stance_fractions
+- if stance_breakdown.length > 0
+  - height_scaler = has_position ? stance_breakdown.max : 1
+  - user_position = @position && @position.published ? @position : nil
+
+  .histogram
+    %table
+      %tr
+        %td.support
+          = @proposal.slider_left || 'Support'
+
+        - stance_breakdown.reverse.each_with_index do |bucket_percentile, index| 
+          - height = bucket_percentile/height_scaler
+
+          %td.bar_cell
+            - if user_position && user_position.stance_bucket == 6 - index
+              .personal_position.update
+                #{link_to 'Your position', edit_proposal_position_url(@proposal.long_id, user_position)} &blacktriangledown;
+
+            .bar.empty{ :style => "height: #{barheight - height * barheight}px;"}
+
+            .bar.full{ :style => "height: #{height * barheight}px;", :id => "bucket-#{6-index}"}
+              .close
+                x
+
+              .border_cover
+
+              - if people_bars
+                %ul.people_bar
+                  - @positions.each do |position|
+                    - if position.stance_bucket == 6 - index && position.user && !position.user.avatar_file_name
+                      = render :partial => "positions/statement/block", :locals => { :position => position }
+                  - @positions.each do |position|
+                    - if position.stance_bucket == 6 - index && position.user && position.user.avatar_file_name
+                      = render :partial => "positions/statement/block", :locals => { :position => position }
+                  %li.clear
+
+        %td.oppose
+          = @proposal.slider_right || 'Oppose'
 
 
-- if proposal_stance_data.length > 0
-  - height_scaler = has_position ? proposal_stance_data.max : 1
-
-  - proposal_stance_data.reverse.each_with_index do |bucket_percentile, index| 
-
-    - user_position = @position && @position.published && @position.stance_bucket == 6 - index
-
-    - if user_position
-      .personal_position.update
-        .arrow
-          &#8630
-
-        %span
-          = surround '', '' do
-            %a{ :href => "#{edit_proposal_position_path(@proposal.long_id, @position)}"} update your perspective
-
-    .bar{ :style => "#{bucket_percentile == 0 ? '' : 'min-height: 12px;'} height: #{bucket_percentile/height_scaler * 100}\%; left: #{-7*index}px", :id => "bucket-#{6-index}", :class => "#{bucket_percentile == 0 ? 'empty' : 'has_votes'}"}
-
-      .close
-        x
-
-      .border_cover
-
-
-      - if people_bars
-        %ul.participants
-          - @positions.each do |position|
-            - if position.stance_bucket == 6 - index && position.user && !position.user.avatar_file_name
-              = render :partial => "positions/statement/block", :locals => { :position => position }
-          - @positions.each do |position|
-            - if position.stance_bucket == 6 - index && position.user && position.user.avatar_file_name
-              = render :partial => "positions/statement/block", :locals => { :position => position }
-          %li.clear
+                  

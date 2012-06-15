@@ -9,7 +9,7 @@ $background_color: #e6e6e6
 
 //$dark_header_background: #710000
 
-#admin_strip
+#admin_strip #content #more_options
   display: none
 
 #explore_proposal
@@ -21,7 +21,7 @@ $background_color: #e6e6e6
   img 
     width: 320px
 
-#footer, #zipcode_entry, .new_proposal
+#footer, #zipcode_entry
   display: none
 
 .pro_con_list
@@ -96,14 +96,14 @@ html
 .proposal_prompt
 
   .pic
-    background-image: image-url('policyninja/images/hawaii.png')
-    width: 175px
-    height: 185px
-    left: -111px
-    top: -100px
-    display: none
+    //background-image: image-url('policyninja/images/hawaii.png')
+    //width: 175px
+    //height: 185px
+    //left: -111px
+    //top: -100px
+    //display: none
 
-    &:after, &:before
+    //&:after, &:before
       content: none
 
 #home
@@ -187,5 +187,16 @@ html
         vertical-align: top
         padding-left: 4px
 
-
-.slider_table .slider_container .ui-slider
+.new_proposal
+  .prompt
+    //color: #ccc
+    //font-weight: bold
+    +font-size(3)
+    padding: 10px 18px
+    //+border-radius(5px)
+    //border: 1px solid #777
+    //width: 200px
+    //cursor: pointer
+    //background-color: #222
+    display: block
+    margin: auto

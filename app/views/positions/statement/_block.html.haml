@@ -6,21 +6,13 @@
     .view_statement
       - if position.user.avatar
         = image_tag position.user.avatar.url(:small), :alt => "#{h position.user.name}'s profile picture"
-        .overlay
-      .username
+
+      .details
         = h position.user.name    
 
         - if has_explanation
           %blockquote.explanation
             = simple_format position.explanation
 
-          %a.readmore
-            discuss
-
       .userid.hide
         #{position.user_id}
-
-
-    // .full_position_details.hide
-    //  = render :partial => "positions/statement/show", :locals => { :position => position }
-  

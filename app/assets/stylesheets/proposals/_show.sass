@@ -1,3 +1,5 @@
+@import 'proposals/histogram'
+
 #explore_proposal
 
   > ol
@@ -7,305 +9,38 @@
     li
 
       &.breakdown
-        padding-bottom: 0
-        margin: auto
-        width: $histogram_width
 
 
-        .pre 
-          .action, .personal_position
-            top: 20px
-            position: absolute
-            +font-size(-4)
-            z-index: 50
-                      
-          .action
-            left: 629px
-            top: 222px
-            +chalk
 
-          .personal_position.contribute
-            right: 0px
-            left: 866px
-            +font-size(0)
-                
-        .histogram_arrow
-          z-index: 0
-          position: absolute
-          width: 792px
-          left: 85px
-          height: 16px
-          +border-radius(5px)
-          top: 178px
-          //+heading
-          text-transform: lowercase
-          font-variant: small-caps
-
-          .support, .oppose
-            position: absolute
-            +font-size(1)
-            font-weight: 600
-
-          .support
-            left: -6px
-          
-          .oppose
-            right: -20px
-
-
-        .histogram
-          padding: 0px
-          position: relative
-          z-index: 1
-
-          .viz
-            line-height: 0
-            height: $histogram_height
-            position: relative
-            width: $histogram_width + 150
-            left: -39px
-            top: -3px
-
-            &.empty
-              height: 125px
-              left: 0
-              width: auto
-            .empty_explanation
-              width: 420px
-              margin: auto
-              position: relative
-              top: 30px
-              line-height: normal
-              text-align: center
-
-              a
-                display: block
-                font-weight: bold
-                text-decoration: underline
-
-
-            .personal_position.update
-              display: none
-              position: absolute
-              top: -15px 
-              width: 150px
-              margin-top: -10px
-              margin-left: 10px
-              //left: 25%
-
-              .arrow
-                display: none
-                +font-size(3)
-                opacity: .6
-                position: absolute
-                left: -18px
-              span
-                +font-size(-4)
-                padding-left: 2px
-                vertical-align: top
-
-                a
-                  text-decoration: underline
-                  color: inherit
-                  opacity: .8
-                  &:hover
-                    opacity: 1
-            .bar
-              cursor: pointer
-              width: $histogram_bar_width
-              display: inline-block
-              position: relative
-              bottom: 6px
-              margin: 0px 4px
-              z-index: 0
-
-              &.has_votes
-                border: 3px solid #222  
-                padding: 3px                            
-                +box-shadow(0px, 1px, 2px, black)
-                border-bottom: none
-                background-color: #222
-  
-
-              &.empty
-
-              &:hover
-                +chalkboard
-                border-color: #414141
-                z-index: 40
-                .participants .view_statement 
-                  img
-                    opacity: 1
-                    +opacity(100)         
-
-              &.selected
-                +chalkboard
-                +box-shadow(0px, 1px, 2px, black)
-                z-index: 60
-                border-color: black
-                border-top-left-radius: 8px 
-                border-top-right-radius: 8px
-
-                &:after, &:before
-                  content: ''
-                  position: absolute
-                  width: 21px
-                  height: 25px
-                  z-index: 90
-                  bottom: 0
-                  //background: image-url("bar_selected_left.png") no-repeat left top transparent
-
-                &:before
-                  left: -20px
-                  
-                &:after
-                  +flip-horizontal
-                  right: -20px
-                .close
-                  display: block
-                  position: absolute
-                  right: 5px
-                  top: 5px
-                  color: #ccc
-                  z-index: 1
-                  &:hover
-                    color: white
-                      
-                .border_cover
-                  display: block
-                  height: 5px
-                  width: $histogram_bar_width + 8
-                  left: -1px
-                  position: absolute
-                  +chalkboard
-                  bottom: -4px
-                  border-top-right-radius: 6px
-                  border-top-left-radius: 6px
-
-                .participants .view_statement 
-                  img
-                    opacity: 1
-                    +opacity(100)
-
-                  &:hover
-                    // img
-                    // .username
-                    //   display: block                
-
-              .close, .border_cover
-                display: none
-
-        .participants
-          background-color: transparent
-          position: absolute
-          z-index: 1000
-          font-size: 0
-          //width: $histogram_width
-          //height: $participants_height
+        .personal_position.contribute
+          +font-size(0)
+          z-index: 50
           margin: auto
-          bottom: 0px
+          display: block
+          width: 300px
 
-          li.statement
-            background-color: inherit
-            margin: auto
-            display: inline-block
+        .empty_explanation
+          width: 540px
+          text-align: center
+          +font-size(1)
+          margin: 1em auto
 
-            // &:hover
-            //   .view_statement .avatar .username
-            //     display: block
-
-            &.with_explanation 
-              .view_statement
-                .overlay
-                  display: none
-                  box-shadow: inset, 0, 0, 1px, rgba(yellow, 0.25)
-                  width: 100%
-                  height: 100%
-                  z-index: 1
-                  top: 0
-                  left: 0
-                  background: transparent
-                  position: absolute
-                  z-index: 3
-
-                > img
-                  position: relative
-
-              .username
-                margin-left: -250px
-                width: 500px
-
-                &:after
-                  left: 238px
-
-            &.no_explanation 
-              .username
-                margin-left: -75px
-                width: 150px
-
-                &:after
-                  left: 62px
-
-
-            .view_statement
-              text-align: center  
-              color: #333
-              position: relative
-              line-height: 0
-              display: block
-              cursor: pointer
-
-              img
-                display: none
-                max-height: 50px
-                max-width: 50px
-                opacity: .35
-                +opacity(35)
-              
-              .username
-                +font-size(-2)
-                color: black
-                background-color: white
-                position: absolute
-                line-height: normal
-                white-space: nowrap
-                display: none
-                z-index: 2
-                top: 100%
-                margin-top: 14px
-                +border-radius(5px)
-                padding: 2px 5px
-                left: 50%
-                border: 1px solid #414141
-                +box-shadow(0px, 1px, 2px, #666)
-                &:after
-                  content: "\25B2"
-                  position: absolute
-                  padding: 0 4px 0
-                  top: -15px
-                  color: white
-                  z-index: 5
-
-                blockquote.explanation
-                  white-space: normal
-                  padding: 5px 0 0 0 
-                  font-style: italic
-                  +font-size(-3)
-
-                  p
-                    margin-bottom: 6px
-
-                a.readmore
-                  text-decoration: underline
-                  color: white
-                  opacity: .8
-                  +font-size(-3)
-                  &:hover
-                    opacity: 1
-
+          a
+            display: block
+            font-weight: bold
+            text-decoration: underline
         
       &.ranked_points
         position: relative
+
+        .action
+          position: absolute
+          +font-size(-4)
+          z-index: 50
+          left: 645px
+          top: 8px
+          +chalk
+          color: #e1e1e1
 
         .explore#ranked_points
           position: relative

@@ -114,8 +114,7 @@ class PointsController < ApplicationController
         
     #TODO: refactor to make the logic behind these calls easier to follow & explicit
     if pros_and_cons
-      resp = { :points => render_to_string(:partial => "points/pro_con_list", :locals => { :bucket => @bucket, :dynamic => false, :pro_points => @pro_points, :con_points => @con_points}),
-               :participants => render_to_string(:partial => "proposals/participants")   }
+      resp = { :points => render_to_string(:partial => "points/pro_con_list", :locals => { :bucket => @bucket, :dynamic => false, :pro_points => @pro_points, :con_points => @con_points})   }
     
     else
       origin = group_name == 'margin' ? 'margin' : 'board'

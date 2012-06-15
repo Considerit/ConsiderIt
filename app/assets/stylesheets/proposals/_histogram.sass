@@ -1,0 +1,170 @@
+$histogram_bar_width: 100px
+
+.histogram 
+  margin: 35px auto 0px auto
+  position: relative
+
+  table
+    padding: 0px
+    color: #272727
+    border-spacing: 2px 0px
+    margin: auto
+
+    td.support, td.oppose
+      color: #888
+      +font-size(0)
+      vertical-align: bottom
+
+      &.support
+        padding-right: 8px
+
+      &.oppose
+        padding-left: 8px
+
+    td.bar_cell
+      width: $histogram_bar_width
+      position: relative
+
+      .bar.full 
+        +transition(all 0.4s linear)
+        &, a
+          color: #ccc
+        a:hover
+          color: white
+
+        border: 3px solid #222  
+        padding: 3px                            
+        +box-shadow(0px, 1px, 2px, black)
+
+        border-bottom: none
+        background-color: #222
+        cursor: pointer
+        z-index: 0
+        position: relative
+
+        .close, .border_cover
+          display: none
+          position: absolute
+
+        &:hover, &.selected
+          .people_bar .view_statement img
+            opacity: 1 
+
+        &:hover
+          +chalkboard
+          border-color: #414141
+          z-index: 40
+
+        &.selected
+          +chalkboard
+          +box-shadow(0px, 1px, 2px, black)
+          z-index: 60
+          border-color: black
+          border-top-left-radius: 8px 
+          border-top-right-radius: 8px
+
+          .close
+            display: block
+            right: 5px
+            top: 5px
+            z-index: 1
+
+          .border_cover
+            display: block
+            height: 5px
+            width: $histogram_bar_width - 2
+            left: -2px
+            +chalkboard
+            bottom: -4px
+            border-top-right-radius: 6px
+            border-top-left-radius: 6px
+
+      .personal_position.update
+        top: -5px
+        position: absolute
+        +font-size(-4)
+        z-index: 50
+        //left: 50%
+        margin-left: 10px
+        a
+          font-weight: bold
+          text-decoration: underline
+        
+
+.people_bar
+  background-color: transparent
+  position: absolute
+  z-index: 1000
+  font-size: 0
+
+  color: #222
+
+  margin: auto
+  bottom: 0px
+
+  li.statement
+    background-color: inherit
+    margin: auto
+    display: inline-block
+
+    &.with_explanation 
+
+      .details
+        margin-left: -200px
+        width: 400px
+
+        &:after
+          left: 200px - 12
+
+    &.no_explanation 
+      .details
+        margin-left: -75px
+        width: 150px
+
+        &:after
+          left: 62px
+
+
+    .view_statement
+      text-align: center  
+      position: relative
+      display: block
+      cursor: pointer
+
+
+      img
+        max-height: 50px
+        max-width: 50px
+        opacity: .35
+        position: relative
+      
+      .details
+        //don't use +font-size here because of the earlier 0% declaration
+        font-size: 14px
+        background-color: white
+        position: absolute
+        white-space: nowrap
+        display: none
+        z-index: 2
+        top: 100%
+        margin-top: 14px
+        +border-radius(5px)
+        padding: 2px 5px
+        left: 50%
+        border: 1px solid #414141
+        +box-shadow(0px, 1px, 2px, #666)
+        &:after
+          content: "\25B2"
+          position: absolute
+          padding: 0 4px 0
+          top: -15px
+          color: white
+          z-index: 5
+
+        blockquote.explanation
+          white-space: normal
+          padding: 5px 0 0 0 
+          font-style: italic
+
+          p
+            margin-bottom: 6px

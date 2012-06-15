@@ -1,10 +1,6 @@
 $content_width: 980px
 $pro_con_list_static_width: 730px
 
-$histogram_bar_width: 80px
-$histogram_width: $histogram_bar_width * 7 + 38
-$histogram_height: 200px
-
 $header_color: #a6a6a6
 
 
@@ -90,9 +86,6 @@ html body
 
 
 //// SUBMIT styles
-// juicy button
-// subtle button
-// linkified button
 
 .button, .button_proxy, button, input[type="submit"]
   outline: none
@@ -100,7 +93,7 @@ html body
   text-align: center
 
   &.button
-    +button
+    +button($text_color: hsl(0,0,85%), $bground_color: hsl(0,0,35%))
 
   &.linkified
     background-color: transparent

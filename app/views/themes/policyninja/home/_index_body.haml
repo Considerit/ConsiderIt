@@ -50,50 +50,21 @@
 
   = theme_image_tag 'shadow-big.png', :style => "margin-top: 4px"
   
-  = render :partial => "proposals/new"
   = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false }
 
-  - if @domain
-    #zipcode_entered
-      %span.unlocked
-        - if (cnt = @domain.domain_maps.count) == 0
-          According to our records, the #{@domain.name} area does not have any local measures on the ballot. 
-        - else
-          You can now access #{cnt} #{@domain.name} area #{cnt==1 ? 'measure' : 'measures'} likely to be on your ballot.
-      .reset
-        %a     
-          Change your zip code.
+  = render :partial => "proposals/new", :locals => { :prompt => 'Add new'}
 
-        .resetform.hide
-          = form_tag '/home/domain', :id => 'domain' do
-            = text_field_tag "domain", '', :title => 'your zip code', :class => 'has_example'
-            = submit_tag 'Change your zipcode', :class => 'button'
-                
-  - else
-    #zipcode_entry
-      //.triangle
-      //  &#x25b2;
+  :javascript
 
-      .prompt
-        Unlock your local measures:
-      .zipform
-        = form_tag '/home/domain', :id => 'domain' do
-          %span.inlined
-            = text_field_tag :domain, '', :placeholder => 'zip code', :title => 'your zip code'
-          = submit_tag 'Set', :class => 'button'
-      .clear
-
-    :javascript
-
-      $j("input#domain").autocomplete({
-        source: #{get_available_domains()},
-        select: function(event, ui){
-         /*$j.post("#{home_domain_path}", { domain: ui.item.value }, function(data){
-          $j('#domain').append(data);
-         });
-         */
-        }
-      });
+    $j("input#domain").autocomplete({
+      source: #{get_available_domains()},
+      select: function(event, ui){
+       /*$j.post("#{home_domain_path}", { domain: ui.item.value }, function(data){
+        $j('#domain').append(data);
+       });
+       */
+      }
+    });
 
 :javascript
   

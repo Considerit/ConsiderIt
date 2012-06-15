@@ -9,13 +9,19 @@
       - else
         = prompt
 
-  .pic
+  - if @proposal.user && @proposal.user.avatar_file_name
+    .pic
+      = image_tag @proposal.user.avatar.url(:medium), :class => 'avatar'
 
   .description_wrapper
 
     .full_text
-      - for i in @proposal.format_description
-        %p= h i.html_safe.gsub(/Washington/, 'Hawaii')
+      - if @is_admin
+        = render :partial => 'proposals/admin_make_editable', :locals => { :field => :description, :label => prompt}
+      - else
+
+        - for i in @proposal.format_description
+          %p= h i.html_safe.gsub(/Washington/, 'Hawaii')
     
     - if @proposal.long_description && @proposal.long_description.strip != ''
       .long_description

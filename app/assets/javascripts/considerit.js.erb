@@ -69,14 +69,6 @@ ConsiderIt = {
     });    
 
 
-    var update_position = $j('.personal_position.update');
-    if ( update_position.length > 0 ) {
-      update_position
-        .show()
-        .css({
-          top: update_position.next('.bar').position().top - 13,
-          left: update_position.next('.bar').position().left - 59});
-    }
 
     ConsiderIt.positions.initialize_participants_block();
 
@@ -686,11 +678,11 @@ ConsiderIt = {
     // Toggle position statement clicked
 
     $j(".bar").delegate("&.selected .view_statement", 'mouseenter', function(event){
-      $j(this).children('.username').show();
+      $j(this).children('.details').show();
     });    
 
     $j(".bar").delegate("&.selected .view_statement", 'mouseout', function(event){
-      $j(this).children('.username').hide();
+      $j(this).children('.details').hide();
     });    
 
     //////////////
@@ -714,13 +706,13 @@ ConsiderIt = {
       var bucket = $j(this).attr('id').substring(7),
           $stored = $j('.domain_'+bucket);
 
-      $j(this)
-        .addClass('selected')
-        .siblings().removeClass('selected');
+      $j('.bar.selected').removeClass('selected');
+      $j(this).addClass('selected');
 
-      $j('.pre > .action').hide();
 
-      $j('.vizbase, .pro_con_list')
+      $j('.ranked_points .action').hide();
+
+      $j('.pro_con_list')
         .addClass('segmented');
 
       var mouseover_callback = function(data){
@@ -751,10 +743,10 @@ ConsiderIt = {
         .show()
         .siblings('.pro_con_list').hide();
       
-      $j('.vizbase, .pro_con_list')
+      $j('.pro_con_list')
         .removeClass('segmented');
 
-      $j('.view_statement .username:visible', this).hide();
+      $j('.view_statement .details:visible', this).hide();
       
       //ConsiderIt.positions.update_participants_block('all');
       $j(this).removeClass('selected');
@@ -794,7 +786,7 @@ ConsiderIt = {
       var cur_low = null;
       for ( var bucket = 0; bucket<= 6; bucket+=1 ) {
         var container = $j('#bucket-' + bucket + '.bar'),
-            p = $j('> .participants', container),
+            p = $j('> .people_bar', container),
             participants = $j('> .statement img', p),            
             dim = get_tile_size(container.width(), container.height(), participants.length);
         
@@ -805,10 +797,11 @@ ConsiderIt = {
 
       for ( var bucket = 0; bucket<= 6; bucket+=1 ) {
         var container = $j('#bucket-' + bucket + '.bar'),
-            p = $j('> .participants', container),
+            p = $j('> .people_bar', container),
             participants = $j('> .statement img', p);
 
-        var per_row = Math.floor( container.width() / cur_low);
+        var per_row = Math.floor( container.outerWidth() / cur_low);
+        console.log(container.outerWidth())
         for ( var i = 0; participants.length % per_row != 0 && i < per_row - participants.length % per_row; i+=1 ) {
           p.prepend('<li style="visibility:hidden; float: right; height:' + cur_low + 'px; width:'+cur_low+'px;">')
         }
@@ -820,7 +813,7 @@ ConsiderIt = {
     },
 
     update_participants_block : function( bucket ) {
-      var p = $j('.participants'),
+      var p = $j('.people_bar'),
           dim = p.data('participant_img_dim_'+bucket),
           participants = $j('> .statement', p),
           show_participants = bucket == 'all' ? participants.find('img') : participants.filter('.bucket-'+bucket).find('img'),

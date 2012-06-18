@@ -1,0 +1,19 @@
+#nameplate
+  .inner
+    - name = current_user ? current_user.name : nil
+    - if current_user
+      %span.my_name
+        #{current_user.name}'s 
+
+    - else
+      = succeed "'s " do
+        %input.my_name{ :class => "#{name ? 'has_name' : 'no_name'}", :type => 'text', :placeholder => 'type your name here'}<>
+          = name ? name : ''
+
+
+    - if false && @is_admin
+      - @proposal.considerations_prompt = prompt
+      = render :partial => 'proposals/admin_make_editable', :locals => { :field => :considerations_prompt, :noresize => true}
+    - else
+      %span.prompt
+        = prompt    

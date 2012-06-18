@@ -49,9 +49,10 @@
   });
 
 - entity = @proposal.entity || 'proposal'
-- slider_prompt = @proposal.slider_prompt || "What is your conclusion?"
-- considerations_prompt = @proposal.considerations_prompt || "perspective"
+- slider_prompt = @proposal.slider_prompt || "What is your overall opinion?"
+- considerations_prompt = @proposal.considerations_prompt || "Perspective"
 - statement_prompt = @proposal.statement_prompt || "Any final remarks?"
+- has_other_points = @pro_points.length + @con_points.length > 0
 
 = render :partial => "proposals/blocks/menu"
 
@@ -73,20 +74,60 @@
 
   = render :partial => "proposals/description"
   
-  %ol.user_opinion
 
-    - if false
-      = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
 
-    = render :partial => "positions/considerations", :locals => { :number => 2, :prompt => considerations_prompt }
+  = render :partial => "positions/nameplate", :locals => { :prompt => considerations_prompt}
 
-    - if false
-      = render :partial => "positions/slider", :locals => { :id => 2, :number => 3, :prompt => "Update your opinion, if it has changed." }
-    - else
-      = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
+  .user_opinion
 
-    - if true || @proposal.enable_position_statement
-      = render :partial => "positions/statement/create", :locals => { :number => 4, :prompt => statement_prompt}
+
+    %table
+      %tr
+        %td.corkboard
+          - if has_other_points
+
+            .points_other#points_other_pro
+
+
+              .heading
+                .lead
+                  Pros by other users
+                = render :partial => 'shared/ledge'
+                .sublead
+                  drag good ones to your list
+              .clear
+
+              = render :partial => "points/column", :locals => { :points => @pro_points, :is_pro => true, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
+
+        
+        %td.slate
+
+          - if true
+            = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
+
+          = render :partial => "points/pro_con_list", :locals => { :pro_points => @included_pros, :con_points => @included_cons, :dynamic => true, :has_other_points => has_other_points }
+
+          - if false
+            = render :partial => "positions/slider", :locals => { :id => 2, :number => 3, :prompt => "Update your opinion, if it has changed." }
+          - elsif false
+            = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
+
+          - if true || @proposal.enable_position_statement
+            = render :partial => "positions/statement/create", :locals => { :number => 4, :prompt => statement_prompt}
+
+        %td.corkboard
+          - if has_other_points
+            .points_other#points_other_con
+
+              .heading
+                .lead
+                  Cons by other users
+                = render :partial => 'shared/ledge'
+                .sublead
+                  drag good ones to your list
+              .clear
+              
+              = render :partial => "points/column", :locals => { :points => @con_points, :is_pro => false, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }          
 
   #submitstance
     .rest

@@ -1,99 +1,161 @@
 #craft_position
 
+  #nameplate
+
+    &, input, a, textarea
+      color: #666
+      +heading
+      //text-shadow: rgba(255, 255, 255, 0.4) -1px -1px
+      text-align: center
+
+    +font-size(3)
+    //margin: 40px auto 10px auto
+    //border-style: solid
+    //border-width: 5px 7px 5px 7px
+    //border-color: #bbb #222 #222 #777  
+    //+border-image(image-url('nameplate.png'), 5, 7, 5, 7, stretch)
+    border-bottom: 1px solid #ccc
+    background-color: transparent
+    width: 400px
+    //+border-radius(3px)
+    z-index: 300
+    position: relative
+    top: 1.4em
+    margin: auto 
+    border-width: 0 22px 6px 22px
+    background-color: transparent
+    +border-image(image-url('nameplate_border.png'), 0,22,6,22,stretch)
+
+    .inner
+      background: image-url('nameplate.jpg') repeat left top
+      //+box-shadow-straight('-2px -2px 10px rgba(0,0,0,.25) inset, 2px 2px 10px white inset, 0px 4px 8px rgba(0,0,0,.3)')
+
+      //background-color: black
+      label
+        text-align: right
+        color: #888
+      .my_name
+
+        &.no_name
+          //width: 185px
+          margin: 1px 0
+          background-color: #e1e1e1
+          background-color: rgba(white, .7)
+          border: 1px inset #ddd
+          text-align: right
+          padding: 0 0 inherit inherit
+
+          &.hidden_edit
+            background-color: inherit
+            border: none
+
   > .user_opinion
     +nude-list
-    padding: 12px 0
-      
+    +wood-frame
+    width: 1000px
+    position: relative
+    left: -30px
+
+    > table
+      table-layout: fixed
+
+    td.slate  
+      //padding: 12px 0
+      +chalkboard 
+      width: 620px
+      border: 2px solid hsl(37, 43%, 33%)
+      border-top: none
+
+    td.corkboard
+      +corkboard
+      +on_corkboard
+      width: 190px
+
+      .points_other
+        vertical-align: top
+        padding: 150px 5px 0 5px
+        position: absolute
+        top: 0
+
+
+
+        &#points_other_con
+          .heading
+            float: right
+
+        .heading
+          width: 172px
+          padding: 0 3px 10px 3px
+          text-align: center
+          opacity: .8
+          .lead
+            +heading
+            +font-size(0)
+            text-transform: uppercase
+            letter-spacing: -1px
+
+          .sublead
+            +font-size(-3)
+            position: relative
+            top: -3px
+          .ledge
+            display: none
+        
+        .point_list
+          z-index: 100
+          width: 172px
+
+        .point_list_footer
+          width: 172px
+          
+          .arrow
+
+          .paginate
+            font-weight: normal
+            padding-top: 5px
+        .carousel
+          padding: 5px 3px
+        
+          
+        &#points_other_pro 
+          left: 0
+          .carousel
+            width: 530px
+          .point_list_footer
+            padding-right: 20px
+
+
+        &#points_other_con 
+          right: 0
+          h3
+            margin-left: 360px
+          .carousel
+            width: 530px
+            .point_list
+              float: right
+          .point_list_footer
+            position: relative
+            left: 361px
+
     li
       &.step
-        margin-bottom: 30px
+        margin-bottom: 2em
         //padding-bottom: 25px          
 
       &.slide
-
+        margin-top: 2em
+        .head
+          display: none
         .position
           margin: auto
           margin-top: 10px
-    
-      &.considerations
-
-        .my_name
-          &.no_name
-            width: 270px
-
-        .rest
-          padding: 8px
-                
-          #points
-            width: 100%
-            position: relative
-            
-            .points_other
-              vertical-align: top
-              padding-top: 80px
-              position: absolute
-              top: 0
-
-              &#points_other_con
-                .heading
-                  float: right
-
-              .heading
-                width: 172px
-                padding: 0 3px 10px 3px
-                text-align: center
-
-                .lead
-                  +inset-text
-                  +heading
-                  +font-size(-2)
-                  text-transform: uppercase
-
-                .sublead
-                  +font-size(-5)
-              
-              .point_list
-                z-index: 100
-                width: 172px
-
-              .point_list_footer
-                width: 172px
-                
-                .arrow
-
-                .paginate
-                  font-weight: normal
-                  padding-top: 5px
-              .carousel
-                padding: 5px 3px
-              
-                
-              &#points_other_pro 
-                left: 0
-                .carousel
-                  width: 530px
-                .point_list_footer
-                  padding-right: 20px
-
-
-              &#points_other_con 
-                right: 0
-                h3
-                  margin-left: 360px
-                .carousel
-                  width: 530px
-                  .point_list
-                    float: right
-                .point_list_footer
-                  position: relative
-                  left: 361px
                   
       &.statement
         textarea
           display: block
           height: 60px
           margin: auto
-          width: 572px
+          width: 450px
 
   #submitstance
     margin: 20px 0px 10px 0px

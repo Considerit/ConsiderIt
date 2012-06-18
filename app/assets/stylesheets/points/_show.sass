@@ -2,9 +2,9 @@
 .point_in_list
   +nude-list
   position: relative
-  margin-bottom: 8px
+  
   background-repeat: no-repeat
-  border: 5px solid transparent
+  //border: 5px solid transparent
 
   > .extra
     visibility: hidden
@@ -19,14 +19,13 @@
       display: none
 
     .nested_user
-      font-style: italic
+      //font-style: italic
+      text-transform: uppercase
 
     .point_text
       +hyphenate
 
     .point_text.nutshell
-      +font-size(-1)
-      padding-bottom: 17px
 
       > .nested_user
         white-space: nowrap
@@ -59,8 +58,7 @@
     opacity: 0
     display: none
     text-align: right
-    left: 0px
-    bottom: 4px
+
 
     > div, > div > div
       display: inline-block
@@ -71,7 +69,7 @@
         +font-size(-4)
         padding: 0
         margin: 0
-        +heading
+        //+heading
         font-weight: bold
 
       .editpoint:before, &.remove:before
@@ -96,7 +94,7 @@
     cursor: move
     +box-shadow(0px, 2px, 2px, black, 0.8)
     +curl-shadow
-    margin-bottom: 18px
+    margin-bottom: 1em
     padding: 5px 5px 8px 16px
 
     &:hover
@@ -146,14 +144,19 @@
       
     //width: 255px
     border-color: transparent
+    margin-bottom: 1em
 
     .bullet_point
       left: -10px
       top: 0px
 
-    .operations
-      bottom: -3px
+    .body > .nutshell
+      +font-size(-2)
+      margin-bottom: 0px
 
+    .operations
+      bottom: -1em
+      left: 0
       > div, >div > div                      
 
         .deletepointformproper
@@ -177,9 +180,9 @@
         display: none
 
   &.point_in_list_self
-    width: 232px
+    //width: 232px
     .nutshell
-      width: 232px
+      //width: 232px
 
 .point_in_list.expanded
   z-index: 1001

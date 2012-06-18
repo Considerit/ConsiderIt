@@ -8,27 +8,31 @@
       color: #333
 
 =red_post_it
-  +colored_post_it(hsl(352, 94%, 94%))
-
+  //+colored_post_it(hsl(352, 94%, 94%))
+  //+colored_post_it(hsl(360,41%,63%))
+  +colored_post_it(hsl(357, 100%, 86%))
 =green_post_it
-  +colored_post_it(hsl(87, 69%, 89%))
+  //+colored_post_it(hsl(87, 69%, 89%))
+  //+colored_post_it(hsl(84,35%,54%))
+  +colored_post_it(hsl(79, 48%, 75%))
 
 =on_post_it
-  color: #555
+  color: #333
   h1, h2, h3
-    color: #333
+    color: #111
 
   a, input, button
-    color: #555  
+    color: #333  
     
     &:hover
       color: #000  
 
 =on_chalkboard
   color: #ddd
+  font-family: "Patua One", 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
   
   h1, h2, h3
-    color: #eee
+    color: #ddd
 
   a, input, button
     color: #ddd  
@@ -36,18 +40,38 @@
     &:hover
       color: #fff
 
+  textarea, input[type="text"], input[type="email"], input[type="password"]
+    background-color: #414141
+    background-color: transparent
+    border: 1px solid
+    +inset-border(#414141)
+    display: inline-block
+    color: #ddd
+
 =on_paper
   background-image: image-url('paper.png') 
   background-repeat: repeat 
   background-position: left top
 
+=on_corkboard
+  color: hsl(30, 40%, 18%)
+
+=wood-frame
+  border-style: solid
+  border-width: 19px 21px 28px 21px
+  border-width: 22px 26px 33px 26px
+  border-color: #bbb #222 #222 #777  
+  +border-image(image-url('chalk/chalkboard_frame.png'), 17, 21, 28, 21, stretch)
+
 =chalkboard
   background: image-url("chalk/chalkboard.jpg") repeat left top #414141   
 
-=chalkboard-with-frame 
-  +chalkboard
+=corkboard
+  background: image-url("chalk/corkboard.jpg") repeat left top #b2925a
 
-  border: 10px solid
-  border-color: #bbb #222 #222 #777  
-  border-top-width: 11px
-  +border-image(image-url('chalk/board-border-bold.jpg'), 11, 10, 10, 10, repeat)
+=chalkboard-with-frame 
+  +wood-frame
+
+  > .slate
+    +chalkboard
+

@@ -4,22 +4,23 @@
   +font-size(2)
       
   td.slider_label 
-    +transition(all .4s linear)
+    +transition(all .1s linear)
     > div
-      width: 250px
+      width: 110px
 
     
     &.left
       text-align: right
-      //padding-right: 20px
+      padding-right: 10px
 
     &.right
       text-align: left
-      //padding-left: 20px
+      padding-left: 10px
 
     &.center
       text-align: center
       +font-size(-3)
+      display: none
 
     +boxy_border
 
@@ -35,11 +36,11 @@
 
     .ui-slider
       background: none
-      background-color: #7D7D7D
-      background-color: rgba(black, .25)
+      background-color: #666
+      background-color: rgba(black, .15)
       +box-shadow(0,0,0,transparent)
       border-radius: 15px
-      width: 450px
+      width: 360px
 
 
       border: none
@@ -49,8 +50,8 @@
         border: none
         +border-radius(0px)
         top: -.2em
-        height: 32px
-        width: 28px
+        height: 38px
+        width: 39px
         +transition(none)
 
         &:hover

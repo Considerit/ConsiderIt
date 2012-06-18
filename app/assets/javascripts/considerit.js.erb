@@ -38,7 +38,7 @@ ConsiderIt = {
         total_items: parseInt($j(this).find('.total').filter(":first").text()),
         items_per_page: 3,
         loading_from_ajax: true, 
-        dim: 750,
+        dim: 550,
         resetSizePerPage: true,
         total_items_callback: function($carousel){
           if ($carousel.find('.total').filter(":first").length > 0) {
@@ -81,10 +81,6 @@ ConsiderIt = {
     //   dim: 250
     // });
 
-
-    if( $j('#intro').length == 0 ){
-      //$j('#masthead').append('<a class="home" href="/">home</a>');
-    }
 
     //ConsiderIt.points.create.initialize_counters('.newpointform, .editpointform');
 
@@ -276,6 +272,8 @@ ConsiderIt = {
         if ( $j(this).val().length > 3 ) {
           $j(this).addClass('hidden_edit');
           $j(this).autoGrowInput();
+          var prompt = $j(this).parents('#nameplate');
+          prompt.width( prompt.find('.my_name').outerWidth() + prompt.find('.prompt').outerWidth() + 40);
         }
       })
       .on('click', '.edit_page a', function(){
@@ -554,8 +552,6 @@ ConsiderIt = {
           real_point.removeClass('animation_state-expanded', 1000, 'easeInOutQuad', function(){        
             //nutshell.css({ 'display': '', 'position': '' });
 
-            real_point.find('.bullet_point').show();
-
             real_point
               .css({'left':'','top':'','height':''})
               .removeClass('expanded');
@@ -563,6 +559,8 @@ ConsiderIt = {
 
             if ( real_point.hasClass('point_in_list_margin') ) {
               real_point.draggable( "enable" );
+            } else {
+              real_point.find('.bullet_point').show();
             }
             real_point.find('>.body .nutshell .nested_user').fadeIn();
             //placeholder.remove();
@@ -843,17 +841,11 @@ ConsiderIt = {
 
     set_slider_value : function(new_value){
         
-      var supporting = new_value > 1,
-        size = (new_value - 1) * 50;
-      if ( supporting ) {
-        $j( '.slider_table .right').css('font-size', 100 + 1.5 * size + '%');
-        $j( '.slider_table .left').css('font-size', 100 - size + '%');
-      } else {
-        $j( '.slider_table .right').css('font-size', 100 + size + '%');
-        $j( '.slider_table .left').css('font-size', 100 - 1.5 * size + '%');
-      }
+      var max_effect = 40, base = 85, value = new_value - 1;
+      $j( '.slider_table .right').css('font-size', base + max_effect * value + '%' )
+      $j( '.slider_table .left').css('font-size', base - max_effect * value + '%')
       
-      $j('#stance-value').val( new_value - 1 );  
+      $j('#stance-value').val( value );  
       ConsiderIt.update_unobtrusive_edit_heights($j(".slider_label .unobtrusive_edit textarea"));
     },
     

@@ -3,40 +3,41 @@
 
 .pro_con_list{ :class => " #{dynamic ? 'dynamic' : 'static'} domain_#{bucket} #{has_other_points ? 'has_other_points' : 'no_other_points' }"}
 
-  - if !dynamic
-    .participant_connection      
-      Most popular factors
-      - if bucket != 'all'
-        .group_name
-          for #{stance_name(bucket)}  
+  .slate
+    - if !dynamic
+      .participant_connection      
+        Most popular factors
+        - if bucket != 'all'
+          .group_name
+            for #{stance_name(bucket)}  
 
-      .ajax_loading
- 
-  .full_column.pro_column#points_on_board_pro
-    .pro_con_list_header.pro_header
-      .inner
-        Pros
+        .ajax_loading
+   
+    %table
+      %tr.point_columns
+        %td.full_column.pro_column#points_on_board_pro
+          .pro_con_list_header.pro_header
+            .inner
+              Pros
 
-    = render :partial => "points/column", :locals => { :points => pro_points, :is_pro => true, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
+          = render :partial => "points/column", :locals => { :points => pro_points, :is_pro => true, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
-    - if dynamic
+          - if dynamic
 
-      = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_on_board_pro' }
+            = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_on_board_pro' }
 
 
-  .full_column.con_column#points_on_board_con 
-    .pro_con_list_header.con_header
-      .inner
-        Cons
+        %td.full_column.con_column#points_on_board_con 
+          .pro_con_list_header.con_header
+            .inner
+              Cons
 
-    = render :partial => "points/column", :locals => { :points => con_points, :is_pro => false, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
+          = render :partial => "points/column", :locals => { :points => con_points, :is_pro => false, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
-    - if dynamic
+          - if dynamic
 
-      = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_on_board_con' }
+            = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_on_board_con' }
 
-  .clear
-
-  - if dynamic && has_other_points && (pro_points.length + con_points.length) == 0
-    = render :partial => "points/drop_target"
-    
+    - if dynamic && has_other_points && (pro_points.length + con_points.length) == 0
+      = render :partial => "points/drop_target"
+      

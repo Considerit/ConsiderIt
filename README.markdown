@@ -161,7 +161,6 @@ problems (mostly Macintosh-specific).
 
           rake db:create
           rake db:migrate
-          rake db:seed
   
   On Ubuntu 11.04 create fails with an error saying that it cannot find the 
   Javascript runtime. If you get this error install node.js from 

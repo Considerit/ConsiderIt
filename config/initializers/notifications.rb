@@ -25,9 +25,10 @@ ActiveSupport::Notifications.subscribe("new_published_proposal") do |*args|
     end
 
   end
-  msg = new_published_proposal_tweet(proposal)
-  post_to_twitter_client(current_tenant, msg)
-
+  if current_tenant.tweet_notifications
+    msg = new_published_proposal_tweet(proposal)
+    post_to_twitter_client(current_tenant, msg)
+  end
 end
 
 def new_published_proposal_tweet(proposal)
@@ -322,7 +323,7 @@ end
 
 def shorten_link(link)
   shortened_link = ''
-  if link
+  if link && APP_CONFIG.has_key? :bitly
     bitly_client = Bitly.new(APP_CONFIG[:bitly][:user_name], APP_CONFIG[:bitly][:api_key])
     shortened_link = bitly_client.shorten(link).short_url
   end

@@ -24,19 +24,22 @@ class Point < ActiveRecord::Base
   @@per_page = 4  
 
   scope :published, where( :published => true )
-  default_scope where( :published => true )  
+  #default_scope where( :published => true )  
   
   scope :pros, where( :is_pro => true )
   scope :cons, where( :is_pro => false )
   scope :ranked_overall, 
     # where( "points.score > 0" ).
+    published.
     order( "points.score DESC" )
   
   scope :ranked_persuasiveness, 
-    # where( "points.persuasiveness > 0"). 
+    # where( "points.persuasiveness > 0").
+    published. 
     order( "points.persuasiveness DESC" )
     
   scope :ranked_for_stance_segment, proc {|stance_bucket|
+      published.
       where("points.score_stance_group_#{stance_bucket} > 0").
       order("points.score_stance_group_#{stance_bucket} DESC")
   }
@@ -45,7 +48,7 @@ class Point < ActiveRecord::Base
     #chain = !user.nil? ? joins(:inclusions.outer, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NULL") : nil
     additional = (deleted_points && deleted_points.length > 0) ? " OR points.id IN (?)" : ""
 
-    chain = user.nil? ? nil : joins("LEFT OUTER JOIN inclusions ON points.id = inclusions.point_id AND inclusions.user_id = #{user.id}").where(
+    chain = user.nil? ? nil : published.joins("LEFT OUTER JOIN inclusions ON points.id = inclusions.point_id AND inclusions.user_id = #{user.id}").where(
       "inclusions.user_id IS NULL" + additional, deleted_points)
 
     if included_points.length > 0
@@ -57,7 +60,7 @@ class Point < ActiveRecord::Base
   def self.included_by_stored(user, proposal, deleted_points)
     if user
       additional = (deleted_points && deleted_points.length > 0) ? " AND points.id NOT IN (?)" : ""
-      Point.
+      Point.published.
         joins(:inclusions, "AND inclusions.user_id = #{user.id} AND points.proposal_id = #{proposal.id}").
         where("inclusions.user_id IS NOT NULL" + additional, deleted_points)
     else
@@ -67,9 +70,9 @@ class Point < ActiveRecord::Base
 
   def self.included_by_unstored(included_points, proposal)
     if included_points.length > 0
-      proposal.points.unscoped.where("points.id IN (?)", included_points)
+      proposal.points.where("points.id IN (?)", included_points)
     else
-      proposal.points.where(:id => -1) #null set
+      proposal.points.published.where(:id => -1) #null set
     end
   end
 
@@ -144,7 +147,7 @@ class Point < ActiveRecord::Base
 
       Proposal.where("account_id = ?", accnt.id).each do |proposal|
         Point.transaction do        
-          proposal.points.each do |pnt|
+          proposal.points.published.each do |pnt|
             pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
             pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
             pnt.update_absolute_score
@@ -154,8 +157,8 @@ class Point < ActiveRecord::Base
         # Point ranking across the metrics is done separately for pros and cons,
         # fixed on a particular Proposal
         point_groups = [
-          proposal.points.pros.all,
-          proposal.points.cons.all
+          proposal.points.published.pros.all,
+          proposal.points.published.cons.all
         ]
 
         point_groups.each do |group|        

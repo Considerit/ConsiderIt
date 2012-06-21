@@ -28,7 +28,7 @@ class PointsController < ApplicationController
       @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     end
     
-    qry = @proposal.points
+    qry = @proposal.published.points
     pros_and_cons = false
     if ( params.key?(:cons_only) && params[:cons_only] == 'true'  )
       qry = qry.cons
@@ -158,6 +158,7 @@ class PointsController < ApplicationController
     PointListing.create!(
       :proposal => @proposal,
       :position => @position,
+      :account => current_tenant,
       :point => @point,
       :user => @user,
       :context => 7 # own point has been seen
@@ -185,7 +186,7 @@ class PointsController < ApplicationController
       @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     end
     @user = current_user
-    @point = Point.unscoped.where(:account_id => current_tenant.id).find(params[:id])
+    @point = Point.find(params[:id])
 
     @point.update_attributes!(params[:point])
     @point.save
@@ -199,7 +200,7 @@ class PointsController < ApplicationController
   end
 
   def show
-    @point = Point.unscoped.where(:account_id => current_tenant.id).find(params[:id])
+    @point = Point.find(params[:id])
     @proposal = Proposal.find_by_long_id(params[:long_id])
 
     if request.xhr?
@@ -214,7 +215,7 @@ class PointsController < ApplicationController
 
   def destroy
     # TODO: server-side permissions check for this operation
-    @point = Point.unscoped.find(params[:id])
+    @point = Point.find(params[:id])
     session[@point.proposal_id][:written_points].delete(@point.id)
     session[@point.proposal_id][:included_points].delete(@point.id)  
 

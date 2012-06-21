@@ -3,8 +3,6 @@
   vertical-align: top
   margin: auto
   position: relative
-
-  > .slate
                    
   //+box-shadow(0px, 5px, 3px, black, .6)
 
@@ -16,38 +14,36 @@
 
   > div
     position: relative
-    padding: 0px 5px      
+    //padding: 0px 5px      
   
   .full_column
     position: relative
     z-index: 1
     vertical-align: top
 
-    //width: 50%
+    width: 50%
     
 
     .pro_con_list_header   
       //height: 120px 
       //background: transparent image-url("chalk/point_header_back.png") no-repeat scroll top center
-      margin-bottom: 1em
+      margin-bottom: $vertical_baseline
+      height: 3 * $vertical_baseline
 
       .inner
         +heading
         text-transform: uppercase
         font-weight: bold
-        //+font-size(5)
         font-size: 2.5em
         text-align: center
         position: relative
-        //top: 35px
-        //left: -6px
 
         &:after
           content: ''
           position: absolute
           width: 138px
           height: 10px
-          bottom: 0
+          bottom: -3px
           left: 50%
           margin-left: -69px
 
@@ -56,17 +52,13 @@
       &.con_header .inner:after
         background: image-url("chalk/underline2.png") no-repeat top center
 
-    &#points_on_board_pro
-      //float: left
-      padding: 0 1em 0 2em
+    &#points_on_board_pro > *
+      padding-left: $grid_major - $chalkboard_border_width
+      padding-right: 35px
 
-    &#points_on_board_con
-      //float: right
-      padding: 0 2em 0 1em
-      //padding-right: 25px
-
-
-
+    &#points_on_board_con > *
+      padding-right: $grid_major - $chalkboard_border_width
+      padding-left: 35px
 
   // for pro/con lists that can't have new points added to them
   &.static
@@ -78,25 +70,30 @@
 
     > .slate
       min-height: 550px
-      +chalkboard  
+      +chalkboard 
+
+      > table
+        width: $pro_con_list_static_width
+ 
 
     .full_column
       
       &#points_on_board_pro
-        padding: 0 5px 0 35px
+        //padding: 0 5px 0 35px
 
       &#points_on_board_con
-        padding-right: 30px
+        //padding-right: 30px
 
       .pro_con_list_header
-        background-position: center -23px 
+        //background-position: center -23px 
         .inner
-          top: 6px
+          //top: 6px
 
       .carousel
-        top: -50px
+        //top: -50px
         position: relative
-        padding-left: 6px
+        width: 310px
+        //padding-left: 6px
         
         ul.point_list
           top: 0
@@ -105,10 +102,13 @@
   // for pro/con lists that can have new points added to them
   &.dynamic
     //width: 620px
+    padding-top: 2em
 
-
-    > .slate tr.point_columns
-      height: 600px
+    > .slate
+      > table
+        width: 100% 
+        tr.point_columns
+          height: 625px
 
     //&.no_other_points > .slate
     //  min-height: 500px
@@ -131,7 +131,7 @@
     .droppable
       position: absolute
       left: 0
-      top: 227px
+      top: 168px
       margin: auto
       width: 100%
       +font-size(-3)

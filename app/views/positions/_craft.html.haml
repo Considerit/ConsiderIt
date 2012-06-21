@@ -75,57 +75,52 @@
   = render :partial => "proposals/description"
   
 
-
-  = render :partial => "positions/nameplate", :locals => { :prompt => considerations_prompt}
-
   .user_opinion
-
 
     %table
       %tr
-        %td.corkboard
+        %td.margin
           - if has_other_points
 
+            .heading
+              .lead
+                Pros by other users
+              = render :partial => 'shared/ledge'
+              .sublead
+                drag good ones to your list
+
             .points_other#points_other_pro
-
-
-              .heading
-                .lead
-                  Pros by other users
-                = render :partial => 'shared/ledge'
-                .sublead
-                  drag good ones to your list
-              .clear
-
               = render :partial => "points/column", :locals => { :points => @pro_points, :is_pro => true, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
         
         %td.slate
 
-          - if true
+          = render :partial => "positions/nameplate", :locals => { :prompt => considerations_prompt}
+
+          - if false
             = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
 
           = render :partial => "points/pro_con_list", :locals => { :pro_points => @included_pros, :con_points => @included_cons, :dynamic => true, :has_other_points => has_other_points }
 
           - if false
             = render :partial => "positions/slider", :locals => { :id => 2, :number => 3, :prompt => "Update your opinion, if it has changed." }
-          - elsif false
+          - else
             = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
 
           - if true || @proposal.enable_position_statement
             = render :partial => "positions/statement/create", :locals => { :number => 4, :prompt => statement_prompt}
 
-        %td.corkboard
+        %td.margin
           - if has_other_points
-            .points_other#points_other_con
 
-              .heading
-                .lead
-                  Cons by other users
-                = render :partial => 'shared/ledge'
-                .sublead
-                  drag good ones to your list
-              .clear
+            .heading
+              .lead
+                Cons by other users
+              = render :partial => 'shared/ledge'
+              .sublead
+                drag good ones to your list
+
+            .points_other#points_other_con
               
               = render :partial => "points/column", :locals => { :points => @con_points, :is_pro => false, :origin => 'margin', :enable_pagination => true, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }          
 

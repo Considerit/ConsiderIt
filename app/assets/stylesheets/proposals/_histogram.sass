@@ -1,4 +1,4 @@
-$histogram_bar_width: 100px
+
 
 .histogram 
   margin: 35px auto 0px auto
@@ -7,19 +7,19 @@ $histogram_bar_width: 100px
   table
     padding: 0px
     color: #272727
-    border-spacing: 2px 0px
+    border-spacing: 3px 0px
     margin: auto
 
     td.support, td.oppose
       color: #888
       +font-size(0)
       vertical-align: bottom
-
+      width: 2 * $grid_major
       &.support
-        padding-right: 8px
+        text-align: left
 
       &.oppose
-        padding-left: 8px
+        text-align: right
 
     td.bar_cell
       width: $histogram_bar_width
@@ -137,6 +137,10 @@ $histogram_bar_width: 100px
         max-width: 50px
         opacity: .35
         position: relative
+        +transition
+
+        &.author_of_hovered_point
+          opacity: 1
       
       .details
         //don't use +font-size here because of the earlier 0% declaration

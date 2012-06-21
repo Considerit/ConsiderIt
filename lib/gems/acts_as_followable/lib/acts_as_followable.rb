@@ -23,6 +23,10 @@ module ActsAsFollowable
       end
 
       def follow!(user, params)
+        if user.nil?
+          return
+        end
+
         follow = params[:follow]
         explicit = params[:explicit]
 

@@ -13,7 +13,7 @@ class InclusionsController < ApplicationController
     end
 
     @proposal = Proposal.find_by_long_id(params[:long_id])
-    @point = Point.find(params[:point_id])
+    @point = Point.published.find(params[:point_id])
 
     if (current_user \
         && (!session[@proposal.id][:deleted_points].has_key?(@point.id) \
@@ -24,7 +24,7 @@ class InclusionsController < ApplicationController
     end
 
     @page = params[:page].to_i
-    candidate_next_points = @point.is_pro ? @proposal.points.pros : @proposal.points.cons
+    candidate_next_points = @point.is_pro ? @proposal.points.published.pros : @proposal.points.published.cons
 
     session[@proposal.id][:included_points][params[:point_id]] = 1
 
@@ -66,7 +66,7 @@ class InclusionsController < ApplicationController
     end
 
     @page = params[:page].to_i
-    candidate_next_points = @point.is_pro ? @proposal.points.pros : @proposal.points.cons
+    candidate_next_points = @point.is_pro ? @proposal.points.published.pros : @proposal.points.published.cons
     
     points = candidate_next_points.not_included_by(
       current_user, 

@@ -31,7 +31,7 @@ namespace :test do
     notification_types = ['your proposal', 'position submitter', 'lurker']
     notification_types.each do |nt|
       proposal = get_proposal_with_points(account)
-      point = proposal.points.sample
+      point = proposal.points.published.sample
       pp "****************"
       pp "proposal_new_point"
       pp "Proposal: #{proposal.id}"
@@ -91,7 +91,7 @@ namespace :test do
 
 
   def get_proposal_with_points(account)
-    account.points.sample.proposal
+    account.points.published.sample.proposal
   end
 
   def get_proposal_with_no_positions(account)

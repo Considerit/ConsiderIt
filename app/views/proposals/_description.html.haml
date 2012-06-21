@@ -21,7 +21,7 @@
       - if @is_admin
         = render :partial => 'proposals/admin_make_editable', :locals => { :field => :description}
       - else
-        = @proposal.description
+        = h simple_format(@proposal.description)
 
     - if @proposal.user
       .author

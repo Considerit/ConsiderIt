@@ -1,5 +1,8 @@
 =colored_post_it($color)
-  background-color: $color
+  //background-color: $color
+  background: image-url('yellow_postit.png') no-repeat top left transparent
+  &.expanded
+    background: image-url('yellow_postit_no_shadow.png') repeat top left transparent
 
   .button
     color: #888
@@ -11,10 +14,13 @@
   //+colored_post_it(hsl(352, 94%, 94%))
   //+colored_post_it(hsl(360,41%,63%))
   +colored_post_it(hsl(357, 100%, 86%))
+  //background-color: #e8e37d
+  
 =green_post_it
   //+colored_post_it(hsl(87, 69%, 89%))
   //+colored_post_it(hsl(84,35%,54%))
   +colored_post_it(hsl(79, 48%, 75%))
+  //background-color: #e8e37d
 
 =on_post_it
   color: #333
@@ -29,7 +35,7 @@
 
 =on_chalkboard
   color: #ddd
-  font-family: "Patua One", 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
+  font-family: 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
   
   h1, h2, h3
     color: #ddd
@@ -57,17 +63,17 @@
   color: hsl(30, 40%, 18%)
 
 =wood-frame
-  border-style: solid
-  border-width: 19px 21px 28px 21px
-  border-width: 22px 26px 33px 26px
-  border-color: #bbb #222 #222 #777  
-  +border-image(image-url('chalk/chalkboard_frame.png'), 17, 21, 28, 21, stretch)
+  //border-style: solid
+  //border-width: 19px 21px 28px 21px
+  //border-width: 22px 26px 33px 26px
+  //border-color: #bbb #222 #222 #777  
+  //+border-image(image-url('chalk/chalkboard_frame.png'), 17, 21, 28, 21, stretch)
 
 =chalkboard
   background: image-url("chalk/chalkboard.jpg") repeat left top #414141   
 
 =corkboard
-  background: image-url("chalk/corkboard.jpg") repeat left top #b2925a
+  //background: image-url("chalk/corkboard.jpg") repeat left top #b2925a
 
 =chalkboard-with-frame 
   +wood-frame

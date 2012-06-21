@@ -1,11 +1,10 @@
 .proposal_prompt
   background: image-url('chalkboardit/images/proposal_back.jpg') repeat top left white
-  width: 600px
-  margin: auto  
+  width: $grid_major * 10
+  margin: 0 auto 2 * $vertical_baseline auto
   min-height: 150px
   +box-shadow(0px, 1px, 2px, rgba(black,.4))
-  margin-bottom: 20px
-  padding: 5px 20px 20px 50px
+  padding: 5px $grid_major $vertical_baseline $grid_major
 
   .description_wrapper
     margin-left: 0

@@ -1,7 +1,3 @@
-$content_width: 980px
-$pro_con_list_static_width: 730px
-$header_color: #a6a6a6
-
 
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,600italic,800,300italic|Patua+One|Chelsea+Market|Lobster)
 @import "mixins"
@@ -172,7 +168,7 @@ body, input, button
 body
   // 12pt/16px default font, for traditional browsers
   font-size: 100%
-  line-height: 1.2
+  line-height: 1.3
 
   #wrap
     position: relative
@@ -180,7 +176,7 @@ body
     > div
       width: $content_width
       margin: 0 auto
-      padding: 10px 15px
+      padding: $vertical_baseline 0
       position: relative    
 
       &#content   
@@ -229,7 +225,7 @@ dd
 
 .head
   text-align: center
-  padding: 10px 10px 10px 0px
+  padding: $vertical_baseline $grid_xs
     
   h3.banner
     +font-size(5)

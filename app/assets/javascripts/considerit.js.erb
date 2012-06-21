@@ -7,6 +7,16 @@ $j = jQuery.noConflict();
 
 ConsiderIt = {
   study : false,
+  draggable_options : {
+      helper: 'clone',
+      cursor: 'move',
+      start: function(evt, ui){
+        $j(this).parents('.points_other').css('z-index', 100);
+      }, stop: function(evt, ui) {
+        $j(this).parents('.points_other').css('z-index', '');
+      }
+      //snap: '#drop-pro'
+    },
   init : function() {
 
     ConsiderIt.delegators();
@@ -93,17 +103,10 @@ ConsiderIt = {
         
   },
   per_request : function() {
-    $j('.point_in_list_margin.pro').draggable({
-      helper: 'clone',
-      cursor: 'move'
-      //snap: '#drop-pro'
-    });
+    
+    $j('.point_in_list_margin.pro').draggable(ConsiderIt.draggable_options);
 
-    $j('.point_in_list_margin.con').draggable({
-      helper: 'clone',
-      cursor: 'move'
-      //snap: '#drop-con'
-    });
+    $j('.point_in_list_margin.con').draggable(ConsiderIt.draggable_options);
 
     $j('#points_on_board_con').droppable( {
       hoverClass: 'drop_pending',
@@ -337,8 +340,15 @@ ConsiderIt = {
           el.stop(true, false)
             .fadeOut('fast');
         }
+
+        if ( $j(this).hasClass('point_in_list_board')) {
+          $j('#user-' + $j(this).attr('user') + ' .view_statement img').toggleClass('author_of_hovered_point');
+        }
+
+
       }
     });
+
 
     // mouseover read more button
     $j('.point_in_list_margin').delegate('.point_text_toggle.more:not(.expanded)', 'hover', function(event){
@@ -598,10 +608,7 @@ ConsiderIt = {
            ? included_point.replaceWith(replacement_point) 
            : included_point.detach();
 
-        replacement_point.draggable({
-          helper: 'clone',
-          cursor: 'move'
-        });
+        replacement_point.draggable(ConsiderIt.draggable_options);
         user_point_list.append(included_point);
         included_point
           .removeClass('point_in_list_margin')
@@ -628,10 +635,7 @@ ConsiderIt = {
         old_point
           .removeClass('point_in_list_self')
           .addClass('point_in_list_margin')
-          .draggable({
-            helper: 'clone',
-            cursor: 'move'
-          })
+          .draggable(ConsiderIt.draggable_options)
           .fadeIn('slow', function(){
             carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
           });
@@ -723,7 +727,6 @@ ConsiderIt = {
         }
         $j('#ranked_points .pro_con_list:not(.domain_' + bucket + '), .statements').hide();
 
-        //ConsiderIt.positions.update_participants_block(bucket);
         $j('.full_column', $stored).infiniteCarousel({'operation': 'refresh'});
       };
 
@@ -746,7 +749,6 @@ ConsiderIt = {
 
       $j('.view_statement .details:visible', this).hide();
       
-      //ConsiderIt.positions.update_participants_block('all');
       $j(this).removeClass('selected');
 
       $j(document)
@@ -798,8 +800,7 @@ ConsiderIt = {
             p = $j('> .people_bar', container),
             participants = $j('> .statement img', p);
 
-        var per_row = Math.floor( container.outerWidth() / cur_low);
-        console.log(container.outerWidth())
+        var per_row = Math.floor( container.width() / cur_low);
         for ( var i = 0; participants.length % per_row != 0 && i < per_row - participants.length % per_row; i+=1 ) {
           p.prepend('<li style="visibility:hidden; float: right; height:' + cur_low + 'px; width:'+cur_low+'px;">')
         }
@@ -808,35 +809,6 @@ ConsiderIt = {
           .show();
         //container.css('height', 'auto');
       }
-    },
-
-    update_participants_block : function( bucket ) {
-      var p = $j('.people_bar'),
-          dim = p.data('participant_img_dim_'+bucket),
-          participants = $j('> .statement', p),
-          show_participants = bucket == 'all' ? participants.find('img') : participants.filter('.bucket-'+bucket).find('img'),
-          hide_participants = bucket == 'all' ? null : participants.filter(':not(.bucket-'+bucket+')').find('img');
-
-      if ( !dim ) {
-        dim = get_tile_size(610, 80, show_participants.length)
-        p.data('participant_img_dim_'+bucket, dim);
-      }
-
-      if (hide_participants) hide_participants.hide();
-      show_participants
-        .css({'width': dim, 'height': dim})
-        .show();
-
-
-
-      // if ( from_all ){
-      //   show_participants.animate({width: dim + 'px', height: dim + 'px'});                
-      // } else {
-      //   show_participants.css({width: dim + 'px', height: dim + 'px'});                
-      // }
-
-
-      
     },
 
     set_slider_value : function(new_value){

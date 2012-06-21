@@ -3,5 +3,20 @@
 
 
 html
-  background-image: image-url('chalkboardit/images/tiled_wall.jpg')
+  background-image: image-url('chalkboardit/images/tiled_wall2.jpg')
   background-color: #E9F3FB
+
+
+
+#grid
+  position: absolute
+  width: 100%
+  height: 100%
+  top: 0
+  left: 0
+  background: image-url('golden_grid.png') repeat top left transparent
+  display: none
+
+  &:hover
+    background: image-url('golden_grid.png') repeat top left transparent
+    z-index: 1000

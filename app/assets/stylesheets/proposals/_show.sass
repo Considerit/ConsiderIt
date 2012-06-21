@@ -10,14 +10,12 @@
 
       &.breakdown
 
-
-
         .personal_position.contribute
           +font-size(0)
           z-index: 50
           margin: auto
           display: block
-          width: 300px
+          width: 6 * $grid_major
 
         .empty_explanation
           width: 540px
@@ -29,7 +27,7 @@
             display: block
             font-weight: bold
             text-decoration: underline
-        
+
       &.ranked_points
         position: relative
 
@@ -45,7 +43,7 @@
         .explore#ranked_points
           position: relative
           margin: 0
-          padding: 0 10px
+          //padding: 0 10px
 
           &.loading
             opacity: .7
@@ -61,7 +59,7 @@
               display: none
 
             .full_column
-              min-width: 326px
+              //min-width: 326px
             
 
         .participant_connection

@@ -1,0 +1,29 @@
+- num_majors = 22
+
+%style(type="text/css") 
+  :sass
+    table.grid
+      display: none
+      height: 10px
+      .xs
+        width: 18px
+        height: 10px
+
+      .minor
+        width: 30px
+        height: 10px
+        background-color: rgba(green, .4)
+
+%table.grid
+  %td
+    .xs
+  - (1..num_majors).each do |i|
+    %td
+      .minor
+    %td
+      .xs
+  %td
+    .xs
+
+
+#grid

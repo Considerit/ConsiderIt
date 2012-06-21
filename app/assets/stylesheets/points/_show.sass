@@ -89,25 +89,17 @@
         +font-size(-5)
 
   &.point_in_list_margin
-    width: 148px
-    height: 121px
+    //width: 148px
+    width: 174px
+    height: 160px
     cursor: move
-    +box-shadow(0px, 2px, 2px, black, 0.8)
-    +curl-shadow
-    margin-bottom: 1em
-    padding: 5px 5px 8px 16px
-
-    &:hover
-      +on_paper
-
-      > .body .nutshell
-        //opacity: 1
-
+    //+curl-shadow
+    //margin-bottom: 1em
+    padding: 0 9px $vertical_baseline 9px
+    margin: 0 9px 
 
     &.pro
       border-right: none
-      padding-left: 11px
-      padding-right: 10px
       //border-color: $pro_point_dark
 
     &.con
@@ -123,16 +115,16 @@
       top: 0px
 
     > .body 
-      
-      //padding: 0
+      padding: $vertical_baseline $grid_xs
 
       .nutshell
+
         +font-size(-4)
-        width: 148px
+        //width: 148px
 
     .operations        
-      bottom: 0px
-      left: 10px
+      bottom: 23px
+      left: 20px
       .edit, .remove
         display: none
 
@@ -144,7 +136,7 @@
       
     //width: 255px
     border-color: transparent
-    margin-bottom: 1em
+    padding-bottom: $vertical_baseline
 
     .bullet_point
       left: -10px
@@ -155,7 +147,7 @@
       margin-bottom: 0px
 
     .operations
-      bottom: -1em
+      bottom: 0
       left: 0
       > div, >div > div                      
 
@@ -180,9 +172,11 @@
         display: none
 
   &.point_in_list_self
-    //width: 232px
+    width: $grid_major * 5
     .nutshell
       //width: 232px
+
+
 
 .point_in_list.expanded
   z-index: 1001
@@ -297,7 +291,7 @@
 
 
   &.point_in_list_margin
-    +on_paper
+    //+on_paper
     cursor: auto
     opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
     height: auto
@@ -330,7 +324,7 @@
         //right: 0px
 
 .point
-  +on_paper
+  //+on_paper
   +curl-shadow
   padding: 30px 30px
   width: 800px

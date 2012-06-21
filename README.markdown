@@ -161,7 +161,6 @@ problems (mostly Macintosh-specific).
 
           rake db:create
           rake db:migrate
-          rake db:seed
   
   On Ubuntu 11.04 create fails with an error saying that it cannot find the 
   Javascript runtime. If you get this error install node.js from 
@@ -205,29 +204,3 @@ problems (mostly Macintosh-specific).
   install" again and start up rails -- if things still work then you
   know that rails and the mysql gem are OK and the problem is
   elsewhere.
-
-* Updating Measures.  Prior to launch, you can edit the measures
-  information by editing the file <tt>ConsiderIt/db/seeds.lvg2.root.rb</tt>.
-  After editing the file, you need to rebuild the database.  To do this
-  execute
-
-          rake db:drop
-          rake db:create
-          rake db:migrate
-          rake db:seed
-
-  The file <tt>ConsiderIt/db/seeds.lvg2.root.rb</tt> was generated
-  from the file <tt>ConsiderIt/lib/tasks/measures.csv</tt> (a big
-  spreadsheet of all the measures), using <tt>rake
-  admin:regen_seeds</tt>.  However, the <tt>seeds.lvg2.root.rb</tt>
-  file has since then been edited by hand, so the link with the
-  <tt>csv</tt> file is broken -- if you want to make changes, just
-  edit the seeds file.
-
-  **Caution!** Once people have added login information, points, and
-  so forth to a running deployment, don't use <tt>rake db:seed</tt> on
-  the production system since that will reset the database.  Instead,
-  test all the changes on a test version, using the commands above,
-  then (painful) make the needed edits to the database on the
-  production version to bring it into correspondence with the seeds
-  file.

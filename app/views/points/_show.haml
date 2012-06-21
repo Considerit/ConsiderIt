@@ -1,6 +1,6 @@
 - has_details = point.text && point.text.length > 0
 
-%li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable" }
+%li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable", :user => point.hide_name ? nil : point.user_id }
   
   .id.hide
     = point.id

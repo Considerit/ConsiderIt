@@ -28,7 +28,7 @@ class PointsController < ApplicationController
       @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     end
     
-    qry = @proposal.published.points
+    qry = @proposal.points.published
     pros_and_cons = false
     if ( params.key?(:cons_only) && params[:cons_only] == 'true'  )
       qry = qry.cons

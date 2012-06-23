@@ -53,8 +53,11 @@
       border-color: transparent
       background-color: transparent
 
+
+
+
 #admin_strip, #more_options .more
-  background-color: #222
+  //background-color: #222
   color: #CCC
 
   h1, h2, h3
@@ -68,34 +71,42 @@
 
 
 #admin_strip
+  position: absolute
+  width: 600px
+  left: 50%
+  margin-left: -300px
+  text-align: center
+  display: inline-block
   
-  padding: 10px 20px
+  //padding: 10px 20px
   z-index: 100
-  position: relative
+  //position: relative
   
   font-weight: bold
 
   #content
-    width: 980px
-    margin: auto
-    position: relative
+    //width: 980px
+    //margin: auto
+    //position: relative
 
     > div 
       display: inline-block
 
     #links
       margin: auto
-      width: 850px
+      //width: 850px
       display: block
       .link, #copy_container
-        background-color: #333
+        background-color: #222
+        background-color: rgba(black, .3)
+        margin: 8px 0 
 
       .link
         border: 1px solid
         border-color: #555 black black #555
         display: inline-block
         font-weight: normal
-        padding: 5px 10px
+        padding: 1px 5px
         margin-left: 5px
 
         span

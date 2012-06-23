@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
     else
       args.append({:layout => false}) if request.xhr?
     end
-    @domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil
+    @domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil    
     if current_tenant.host.nil?
       current_tenant.host = request.host
       current_tenant.host_with_port = request.host_with_port

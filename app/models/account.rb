@@ -14,4 +14,8 @@ class Account < ActiveRecord::Base
 
   acts_as_followable
 
+  def host_without_subdomain
+    host_with_port.split('.')[-2, 2].join('.')
+  end
+
 end

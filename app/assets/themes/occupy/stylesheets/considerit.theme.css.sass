@@ -10,32 +10,43 @@ html
     background: image-url('occupy/images/tempcheck.jpg') no-repeat fixed top left black
 
   body
-    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif
+    //font-family: Arial, "Helvetica Neue", Helvetica, sans-serif
     #wrap  
 
       > div#content
-        padding-top: 35px
+        //padding-top: 35px
         padding-bottom: 45px
 
-#nav-user
-  top: -16px
-  right: 118px
-  a
-    color: #333
+//#nav-user
+//  top: -16px
+//  right: 118px
+//  a
+//    color: #333
 
 #wrap > #content, #intro
-  min-height: 600px
+  //min-height: 600px
 
-.logo_cell
-  display: none
+//.logo_cell
+//  display: none
 
-#wrap #masthead
-  margin-top: 10px
+#wrap #masthead 
+  background-color: rgba(black, .3)
+  +chalkboard
+
+  #nav-user
+    padding: 4px 15px
+
+  .logo_cell
+    position: absolute
+    top: 2px
 
 #wrap #footer
   position: fixed
   bottom: 0
-  background-color: black
+  +chalkboard
+  border: 3px solid #ddd
+  border-right: none
+  border-left: none
   padding: 10px 0
   width: 100%
   text-align: center
@@ -46,6 +57,10 @@ html
     +font-size(-2)
     display: inline-block
 
+    img
+      width: 125px
+      vertical-align: middle
+
   .report_problems
     +font-size(-2)
     display: inline-block
@@ -53,5 +68,5 @@ html
 #admin_strip #content #more_options
   display: none
 
-#onav_bar
+#onav_wrapper #onav_bar
   text-align: center

@@ -1,22 +1,15 @@
-.homepage #onav_wrapper
-  position: relative
-  top: 4px
-  
-  #onav_bar
-    left: 30px
+
 
 .homepage body #wrap
   color: white
 
   #masthead
     margin-top: 0
-    height: 100px
-    padding-top: 20px
+    background: none
 
     .logo_cell
-      display: block
-      top: 21px
-      right: 38px
+      display: none
+      //margin-left: 122px
 
   #masthead,#content
     width: 500px
@@ -25,7 +18,7 @@
     background-color: rgba(black, .65)
     padding-left: 50px
     padding: 0
-    padding-top: 10px
+    padding-top: 1em
   #content
     height: 100%
     padding-bottom: 45px
@@ -34,12 +27,16 @@
       position: relative
 
   #nav-user
+    display: none
     top: 0px
     right: -147px
     color: #eee
     a
       color: #eee
 
+.big_logo
+  margin-left: 122px
+  display: inline-block
 .homepage #wrap #footer
   padding-left: 160px
   text-align: left
@@ -50,14 +47,18 @@ $main_content_width:300px
 
 .new_proposal 
   .prompt
-    color: #eee
+    color: hsl(50, 0%, 75%)
     background-color: rgba(black, .5)
-    width: $main_content_width - 20 - 6
+    width: 100%
     text-align: center
-    border-color: #bbb
-    border-width: 3px
+    border-color: hsl(50, 0%, 50%)
+    border-width: 2px
+    background-image: none
     &:hover
       background-color: rgba(black, .95)
+      background-image: none
+      border-color: hsl(50, 100%, 48%)
+      color:  hsl(50, 100%, 48%)
 
   form.new_proposal_form 
     #proposal_description
@@ -85,9 +86,9 @@ $main_content_width:300px
     background-color: rgba(black, .65)
     opacity: 1
     border: 3px solid
-    border-color: #888
-    border-color: rgba(white, .5)
+    border-color: hsl(50, 0%, 50%)
     text-align: center
+    color: hsl(50, 0%, 75%)
 
     &:hover
       color: white
@@ -111,9 +112,10 @@ $main_content_width:300px
 #navigation
   width: 137px
   position: absolute
-  top: 120px
+  top: 143px
   left: 00px
   text-align: right
+  padding: 0 3px
 
   .header
     color: #888
@@ -129,6 +131,9 @@ $main_content_width:300px
       opacity: 1
       color: #ccc
       display: inline-block
+      word-wrap: break-word
+      width: 100%
+      padding-left: 0
       &:hover
         color: white
 
@@ -144,7 +149,13 @@ $main_content_width:300px
 
     &.ranks
 
-
+.attribution
+  position: fixed
+  bottom: 50px
+  right: 50px
+  +font-size(-4)
+  font-weight: bold
+  color: #ccc
 
 
 

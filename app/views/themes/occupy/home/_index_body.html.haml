@@ -1,6 +1,11 @@
 #home
   -# = render :partial => "shared/social_media/twitter_follow", :locals => { :call => 'Follow new proposals'}
 
+  %img.big_logo{ :src => current_theme_image_path("logo_big.png"), :onerror => "no_image(this);" }
+
+  .attribution
+    photo by Joeff Davis
+
   #main_content
     = render :partial => "proposals/new", :locals => { :prompt => 'Add new proposal'}
 

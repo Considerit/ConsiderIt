@@ -22,9 +22,12 @@ html
     background: image-url('golden_grid.png') repeat top left transparent
     z-index: 1000
 
-#wrap #masthead .logo_cell
-  left: 247px
-  top: -14px
+#wrap #masthead 
+  background-color: rgba(black, .3)
+  +chalkboard
+
+  .logo_cell
+    padding-top: 6px
 
   img
     width: 200px

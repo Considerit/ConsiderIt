@@ -1,4 +1,4 @@
-- ranks = [ { :name => 'activity', :selected => false}, { :name => 'trending', :selected => false}, { :name => 'contested', :selected => false}]
+- ranks = [ { :name => 'activity', :selected => true, :title => 'Proposals that get more people to take a stance, write pros and cons, and discuss are ordered higher'}, { :name => 'trending', :selected => false, :title => 'Proposals that have recently been getting more attention and support are ordered higher.'}, { :name => 'contested', :selected => false, :title => 'Proposals where there are lots of strong supporters and opposers are ordered higher.'}]
 
 .header
   sort by
@@ -6,6 +6,6 @@
 %ul.filters.ranks
   - ranks.each do |rank|
     %li.filter.metric{ :class => "#{rank.has_key?(:selected) && rank[:selected] ? 'selected' : ''}"}
-      = link_to rank[:name], proposals_path(:metric => rank[:name]), :remote => true
+      = link_to rank[:name], proposals_path(:metric => rank[:name]), :remote => true, :title => rank[:title]
 
 .thumb

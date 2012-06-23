@@ -1,22 +1,25 @@
 #masthead.header
       
   -# = render :partial => "shared/available_themes"
+  .inner
+    .logo_cell
+      %a.logo_home{ :href => root_path, :title => ""}
+        %img{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);" }
 
-  .logo_cell
-    %a.logo_home{ :href => root_path, :title => ""}
-      %img{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);" }
+        :javascript
+          function no_image(source) {
+            $j(this).parents('.logo_cell').remove();
+          }
 
-      :javascript
-        function no_image(source) {
-          $j(this).parents('.logo_cell').remove();
-        }
-
-
+    - if @proposal && @is_admin
+      = render :partial => "proposals/admin_strip"
+          
+    %ul#nav-user
+      - if user_signed_in?
+        = render :partial => "shared/header/logged_in_head"
         
-  %ul#nav-user
-    - if user_signed_in?
-      = render :partial => "shared/header/logged_in_head"
-      
-    - else
-      = render :partial => "shared/header/logged_out_head"
-        
+      - else
+        = render :partial => "shared/header/logged_out_head"
+
+    .clear
+          

@@ -4,7 +4,7 @@
   %img.big_logo{ :src => current_theme_image_path("logo_big.png"), :onerror => "no_image(this);" }
 
   .attribution
-    photo by Joeff Davis
+    photo by #{link_to 'Joeff Davis', 'http://www.joeff.com/', :target => '_blank'}
 
   #main_content
     = render :partial => "proposals/new", :locals => { :prompt => 'Add new proposal'}

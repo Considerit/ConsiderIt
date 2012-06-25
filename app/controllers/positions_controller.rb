@@ -142,10 +142,10 @@ protected
         #resolve by combining positions, taking stance from newly submitted...
         prev_pos.stance = @position.stance
         prev_pos.stance_bucket = @position.stance_bucket
-        
-        save_actions(prev_pos)
         prev_pos.save
-        @position.point_listings.update_all({:user_id => current_user.id, :position_id => prev_pos.id})
+        save_actions(prev_pos)
+        
+        prev_pos.subsume(@position)
         @position.destroy
       else
         @position.published = true

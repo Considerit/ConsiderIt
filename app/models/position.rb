@@ -16,6 +16,14 @@ class Position < ActiveRecord::Base
   #default_scope where( :published => true )
   scope :published, where( :published => true )
     
+
+  def subsume( subsumed_position )
+    @position.point_listings.update_all({:user_id => user_id, :position_id => subsumed_position.id})
+    @position.points.update_all({:user_id => user_id, :position_id => subsumed_position.id})
+    @position.inclusions.update_all({:user_id => user_id, :position_id => subsumed_position.id})
+    @position.comments.update_all({:position_id => subsumed_position.id})
+  end
+
   def stance_name
     case stance_bucket
       when 0

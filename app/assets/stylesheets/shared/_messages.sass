@@ -1,13 +1,15 @@
 .flash_messages
-  position: relative
-  top: -81px
-  padding-left: 137px
+  //position: relative
+  //top: -81px
+  //padding-left: 137px
   .message
-    position: absolute
+    //position: absolute
     z-index: 999
-    background-color: #FFF8BD
-    border: 2px solid #D7C63A
-    color: #4D4A33
+    +chalkboard
+    +on_chalkboard    
+    border: 1px solid hsl(50, 100%, 30%)
+    border-width: 2px 0
+    //color: #4D4A33
     +font-size(-3)
     padding: 3px 41px 3px 10px
     text-align: center
@@ -20,6 +22,8 @@
         //background-color: #E9DF63
         //color: #4D4A33
         padding: 0 4px 2px 4px
+        background: none
+        border: none
 
     form
       display: inline-block
@@ -29,3 +33,4 @@
         color: inherit
         text-decoration: underline
         padding: 0
+        border: none

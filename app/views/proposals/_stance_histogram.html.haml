@@ -18,13 +18,15 @@
           - height = bucket_percentile/height_scaler
 
           %td.bar_cell
-            - if user_position && user_position.stance_bucket == 6 - index
-              .personal_position.update
-                #{link_to 'Your position', edit_proposal_position_url(@proposal.long_id, user_position)} &blacktriangledown;
 
             .bar.empty{ :style => "height: #{barheight - height * barheight}px;"}
 
-            .bar.full{ :style => "height: #{height * barheight}px;", :id => "bucket-#{6-index}"}
+
+            .bar.full{ :style => "height: #{height * barheight}px;", :id => "bucket-#{6-index}", :class => "#{bucket_percentile == 0 ? 'noone' : 'some'}"}
+              - if user_position && user_position.stance_bucket == 6 - index
+                .personal_position.update
+                  #{link_to 'Your position', edit_proposal_position_url(@proposal.long_id, user_position)} &blacktriangledown;
+
               .close
                 x
 

@@ -49,10 +49,10 @@
     #lightbox
 
     #wrap
+      = render :partial => "shared/flash_messages"
 
       = render :partial => "shared/header/container"
       #content
-        = render :partial => "shared/flash_messages"
         = yield
 
       = render :partial => "shared/footer/container"         

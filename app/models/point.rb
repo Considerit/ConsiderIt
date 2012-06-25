@@ -123,7 +123,7 @@ class Point < ActiveRecord::Base
   end
   
   def define_persuasiveness
-    if self.unique_listings > 1
+    if self.unique_listings && self.unique_listings > 1
       self.persuasiveness = self.num_inclusions.to_f / self.unique_listings 
     else
       self.persuasiveness = 1.0 #privilige those points that haven't been shown...

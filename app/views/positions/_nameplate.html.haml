@@ -1,9 +1,9 @@
 #nameplate
   .inner
-    - name = current_user ? current_user.name : nil
+    - name = current_user ? current_user.username : nil
     - if current_user
       %span.my_name
-        #{current_user.name}'s 
+        #{name}'s 
 
     - else
       = succeed "'s " do

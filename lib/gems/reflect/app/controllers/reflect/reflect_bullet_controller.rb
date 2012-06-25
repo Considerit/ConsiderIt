@@ -17,7 +17,7 @@ class Reflect::ReflectBulletController < ApplicationController
          :id => response.response_id.to_s,
          :rev => response.id.to_s,
          :ts => response.created_at.to_s,
-         :u => response.user.name,
+         :u => response.user.username,
          :sig => response.signal.to_s,
          :txt => response.text
       }
@@ -30,7 +30,7 @@ class Reflect::ReflectBulletController < ApplicationController
       bullet = {
         :id => db_bullet_rev.bullet_id.to_s,
         :ts => db_bullet_rev.created_at.to_s,
-        :u => db_bullet_rev.user.nil? ? 'Anonymous' : db_bullet_rev.user.name,
+        :u => db_bullet_rev.user.nil? ? 'Anonymous' : db_bullet_rev.user.username,
         :txt => db_bullet_rev.text,
         :rev => db_bullet_rev.id.to_s,
         :highlights => highlights,
@@ -175,7 +175,7 @@ class Reflect::ReflectBulletController < ApplicationController
       end
     end
     
-    return {:insert_id => bullet_obj.id, :rev_id => new_rev.id, :u => user.nil? ? 'Anonymous' : user.name}.to_json
+    return {:insert_id => bullet_obj.id, :rev_id => new_rev.id, :u => user.nil? ? 'Anonymous' : user.username}.to_json
 
   end
 

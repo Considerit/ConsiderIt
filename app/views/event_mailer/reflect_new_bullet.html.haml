@@ -2,9 +2,9 @@
   #{@user.first_name},
 
   - if @notification_type == 'your comment'
-    #{@bullet.user ? @bullet.user.name : 'Anonymous'} summarized your comment. 
+    #{@bullet.user ? @bullet.user.username : 'Anonymous'} summarized your comment. 
   - elsif @notification_type == 'other summarizer'
-    #{@bullet.user ? @bullet.user.name : 'Anonymous'} also summarized #{@comment.user.name}'s comment.
+    #{@bullet.user ? @bullet.user.username : 'Anonymous'} also summarized #{@comment.user.username}'s comment.
 
 %p 
   The summary: 

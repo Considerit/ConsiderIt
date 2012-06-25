@@ -87,7 +87,7 @@ ActiveSupport::Notifications.subscribe("published_new_position") do |*args|
     pp "Notification for Proposal '#{proposal.title}', because #{positions.count} >= #{threshhold_for_next_notification}. Setting next milestone for #{next_milestone} (#{fib(next_milestone)})}"
 
     proposal.follows.where(:follow => true).where("user_id != #{position.user_id}").each do |follow|
-      pp "\t Notifying #{follow.user.name}"
+      pp "\t Notifying #{follow.user.username}"
       EventMailer.proposal_milestone_reached(follow.user, proposal, fib(next_milestone), mail_options).deliver!
     end
     proposal.followable_last_notification_milestone = next_milestone

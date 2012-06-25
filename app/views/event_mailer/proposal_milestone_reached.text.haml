@@ -2,7 +2,7 @@
 - stance_breakdown = @proposal.stance_fractions
 - barheight = 100
 
-#{num_positions} people have now weighed in on#{@proposal.user_id ? ' ' + @proposal.user.name + "'s proposal" : '' } "#{@proposal.title}" 
+#{num_positions} people have now weighed in on#{@proposal.user_id ? ' ' + @proposal.user.username + "'s proposal" : '' } "#{@proposal.title}" 
 
 = "\r\n"
 Explore & discuss further at #{proposal_url(@proposal.long_id, :host => @host)} 
@@ -54,7 +54,7 @@ Summary:
   *****************************
   "#{notable_points[:important_for_supporters].nutshell}"
 
-  \- #{notable_points[:important_for_supporters].user.name}
+  \- #{notable_points[:important_for_supporters].user.username}
 
   = "\r\n"
   *****************************
@@ -63,7 +63,7 @@ Summary:
 
   "#{notable_points[:important_for_opposers].nutshell}"
 
-  \- #{notable_points[:important_for_opposers].user.name}
+  \- #{notable_points[:important_for_opposers].user.username}
 
   = "\r\n"
   *****************************
@@ -72,7 +72,7 @@ Summary:
 
   "#{notable_points[:common].nutshell}"
 
-  \- #{notable_points[:common].user.name}        
+  \- #{notable_points[:common].user.username}        
 
 
 = "\r\n"

@@ -2,9 +2,9 @@ Hi #{@user.first_name},
 
 = "\r\n"
 - if @notification_type == 'your comment'
-  #{@bullet.user ? @bullet.user.name : 'Anonymous'} summarized your comment "#{@comment.body}". #{@bullet.user ? @bullet.user.first_name : 'Anonymous'} believes you meant:
+  #{@bullet.user ? @bullet.user.username : 'Anonymous'} summarized your comment "#{@comment.body}". #{@bullet.user ? @bullet.user.first_name : 'Anonymous'} believes you meant:
 - elsif @notification_type == 'other summarizer'
-  #{@bullet.user ? @bullet.user.name : 'Anonymous'} summarized #{@comment.user.name}'s comment "#{@comment.body}". #{@bullet.user ? @bullet.user.first_name : 'Anonymous'} believes #{@comment.user.first_name} meant:
+  #{@bullet.user ? @bullet.user.username : 'Anonymous'} summarized #{@comment.user.username}'s comment "#{@comment.body}". #{@bullet.user ? @bullet.user.first_name : 'Anonymous'} believes #{@comment.user.first_name} meant:
 
 = "\r\n"
 "#{@bullet.text}"

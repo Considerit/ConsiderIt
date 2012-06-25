@@ -113,9 +113,13 @@ class User < ActiveRecord::Base
   def email_required? 
     twitter_uid.nil?
   end   
+
+  def username
+    name || email
+  end
   
   def first_name
-    if name
+    if username
       name.split(' ')[0]  
     else 
       "#{account.app_title} participant"
@@ -123,7 +127,7 @@ class User < ActiveRecord::Base
   end
 
   def short_name
-    split = name.split(' ')
+    split = username.split(' ')
     if split.length > 1
       return "#{split[0][0]}. #{split[-1]}"
     end

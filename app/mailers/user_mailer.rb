@@ -9,7 +9,7 @@ class UserMailer < ActionMailer::Base
     @proposal = proposal
     @host = options[:host]
     @options = options
-    email_with_name = "#{@user.name} <#{@user.email}>"
+    email_with_name = "#{@user.username} <#{@user.email}>"
 
     subject = "please confirm your email"
     

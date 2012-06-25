@@ -18,10 +18,10 @@ class Position < ActiveRecord::Base
     
 
   def subsume( subsumed_position )
-    @position.point_listings.update_all({:user_id => user_id, :position_id => subsumed_position.id})
-    @position.points.update_all({:user_id => user_id, :position_id => subsumed_position.id})
-    @position.inclusions.update_all({:user_id => user_id, :position_id => subsumed_position.id})
-    @position.comments.update_all({:position_id => subsumed_position.id})
+    subsumed_position.point_listings.update_all({:user_id => user_id, :position_id => id})
+    subsumed_position.points.update_all({:user_id => user_id, :position_id => id})
+    subsumed_position.inclusions.update_all({:user_id => user_id, :position_id => id})
+    subsumed_position.comments.update_all({:commentable_id => id})
   end
 
   def stance_name

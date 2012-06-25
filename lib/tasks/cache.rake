@@ -3,6 +3,7 @@ namespace :cache do
   task :points => :environment do
     begin
       Point.update_relative_scores()
+      Rails.logger.info "Updated point scores"
     rescue
       Rails.logger.info "Could not update point scores"
     end    
@@ -11,6 +12,7 @@ namespace :cache do
   task :proposals => :environment do
     begin
       Proposal.update_scores
+      Rails.logger.info "Updated proposal scores"
     rescue
       Rails.logger.info "Could not update proposal scores"
     end

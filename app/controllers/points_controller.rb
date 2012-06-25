@@ -214,7 +214,9 @@ class PointsController < ApplicationController
   end
 
   def destroy
-    # TODO: server-side permissions check for this operation
+    if (current_user.nil? && !@point.user_id.nil?) || (current_user && !current_user.is_admin? && current_user.id != @point.user_id)
+      return
+    end
     @point = Point.find(params[:id])
     session[@point.proposal_id][:written_points].delete(@point.id)
     session[@point.proposal_id][:included_points].delete(@point.id)  

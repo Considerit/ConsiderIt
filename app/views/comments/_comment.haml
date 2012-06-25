@@ -13,9 +13,9 @@
           - else
             .avatar
               - if comment.user.avatar
-                = image_tag comment.user.avatar.url(light_background ? :medium_dark : :medium), :alt => "#{h comment.user.name}'s profile picture"
+                = image_tag comment.user.avatar.url(light_background ? :medium_dark : :medium), :alt => "#{h comment.user.username}'s profile picture"
             .username
-              = h comment.user.name
+              = h comment.user.username
         .text.comment_text    
               
           .body  
@@ -28,12 +28,12 @@
         .text.comment_text   
           .body
             - if comment.user.avatar
-              = image_tag comment.user.avatar.url(light_background ? :medium_dark : :medium), :alt => "#{h comment.user.name}'s profile picture", :class => 'avatar'
+              = image_tag comment.user.avatar.url(light_background ? :medium_dark : :medium), :alt => "#{h comment.user.username}'s profile picture", :class => 'avatar'
 
             = h simple_format(comment.body)
 
             .username.exclude_from_reflect 
-              &ndash; #{h comment.user.name}
+              &ndash; #{h comment.user.username}
 
         .clear
           

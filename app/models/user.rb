@@ -115,12 +115,12 @@ class User < ActiveRecord::Base
   end   
 
   def username
-    name || email
+    name || email.split('@')[0]
   end
   
   def first_name
     if username
-      name.split(' ')[0]  
+      username.split(' ')[0]  
     else 
       "#{account.app_title} participant"
     end

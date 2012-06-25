@@ -121,7 +121,7 @@ class Reflect::ReflectResponseController < ApplicationController
       #new_rev.notify_parties(current_tenant, mail_options)
     end
 
-    return {:insert_id => response_obj.id, :rev_id => new_rev.id, :u => user.name, :sig => signal}.to_json
+    return {:insert_id => response_obj.id, :rev_id => new_rev.id, :u => user.username, :sig => signal}.to_json
 
   end
 

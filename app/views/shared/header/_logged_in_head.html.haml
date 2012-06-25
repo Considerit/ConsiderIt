@@ -20,7 +20,7 @@
 
 %li.triangle
   %a.settings{ :user => current_user.id }
-    = current_user.name
+    = current_user.username
   = image_tag "user_settings_triangle.png", :class => 'triangle_img'
   
 
@@ -29,7 +29,7 @@
   .hide
     .avatar.fl
       %a.settings
-        = image_tag current_user.avatar.url(:small), :alt => "#{h current_user.name}'s profile picture"
+        = image_tag current_user.avatar.url(:small), :alt => "#{h current_user.username}'s profile picture"
     %ul.fr
       %li
         %a.settings

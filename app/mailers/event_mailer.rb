@@ -11,7 +11,7 @@ class EventMailer < ActionMailer::Base
     @options = options
     @url = new_proposal_position_url(@proposal.long_id, :host => @host)
 
-    email_with_name = "#{@user.name} <#{@user.email}>"
+    email_with_name = "#{@user.username} <#{@user.email}>"
 
     subject = "new proposal \"#{@proposal.title}\""
     
@@ -27,7 +27,7 @@ class EventMailer < ActionMailer::Base
     @next_aggregate = next_aggregate
     @host = options[:host]
     @options = options
-    email_with_name = "#{@user.name} <#{@user.email}>"
+    email_with_name = "#{@user.username} <#{@user.email}>"
 
     subject = "update on \"#{@proposal.title}\""
     mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
@@ -41,7 +41,7 @@ class EventMailer < ActionMailer::Base
     @host = options[:host]
     @proposal = @point.proposal
     @options = options
-    email_with_name = "#{@user.name} <#{@user.email}>"
+    email_with_name = "#{@user.username} <#{@user.email}>"
 
     if notification_type == 'your proposal'
       subject = "new #{@point.is_pro ? 'pro' : 'con'} point for your proposal \"#{@point.proposal.title}\""
@@ -66,14 +66,14 @@ class EventMailer < ActionMailer::Base
     if notification_type == 'your point'
       subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote"
     elsif notification_type == 'participant'
-      subject = "#{@comment.user.name} commented on a discussion in which you participated"
+      subject = "#{@comment.user.username} commented on a discussion in which you participated"
     elsif notification_type == 'included point'
       subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you follow"
     elsif notification_type == 'lurker'
       subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you follow"
     end
 
-    email_with_name = "#{@user.name} <#{@user.email}>"
+    email_with_name = "#{@user.username} <#{@user.email}>"
     mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
@@ -94,12 +94,12 @@ class EventMailer < ActionMailer::Base
     end   
 
     if notification_type == 'your comment'
-      subject = "#{@bullet.user ? @bullet.user.name : 'Anonymous'} summarized your comment"
+      subject = "#{@bullet.user ? @bullet.user.username : 'Anonymous'} summarized your comment"
     elsif notification_type == 'other summarizer'
-      subject = "#{@bullet.user ? @bullet.user.name : 'Anonymous'} summarized a comment you also summarized"
+      subject = "#{@bullet.user ? @bullet.user.username : 'Anonymous'} summarized a comment you also summarized"
     end
 
-    email_with_name = "#{@user.name} <#{@user.email}>"
+    email_with_name = "#{@user.username} <#{@user.email}>"
     mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
@@ -119,12 +119,12 @@ class EventMailer < ActionMailer::Base
     end   
 
     if notification_type == 'your bullet'
-      subject = "#{@comment.user.name} responded to your summary"
+      subject = "#{@comment.user.username} responded to your summary"
     elsif notification_type == 'other summarizer'
-      subject = "#{@comment.user.name} responded to a summary of their comment"
+      subject = "#{@comment.user.username} responded to a summary of their comment"
     end
 
-    email_with_name = "#{@user.name} <#{@user.email}>"
+    email_with_name = "#{@user.username} <#{@user.email}>"
     mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
   end
 

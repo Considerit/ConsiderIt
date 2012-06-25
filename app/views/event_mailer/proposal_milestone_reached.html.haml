@@ -9,7 +9,7 @@
   people have now weighed in on 
   - if @proposal.user_id
     = surround ' ', '\'s proposal '  do 
-      %span.user_name=@proposal.user.name 
+      %span.user_name=@proposal.user.username 
   %span.object
     "#{link_to @proposal.title, proposal_url(@proposal.long_id, :host => @host)}"
 
@@ -93,7 +93,7 @@
         .object
           &ldquo;#{link_to notable_points[:important_for_supporters].nutshell, proposal_point_url(@proposal.long_id, notable_points[:important_for_supporters], :host => @host)}&rdquo;
           .user_name
-            &ndash; #{notable_points[:important_for_supporters].user.name}
+            &ndash; #{notable_points[:important_for_supporters].user.username}
 
       %td.notable_point.opposer{:valign => 'top'}          
         .notable_header
@@ -101,7 +101,7 @@
         .object
           &ldquo;#{link_to notable_points[:important_for_opposers].nutshell, proposal_point_url(@proposal.long_id, notable_points[:important_for_opposers], :host => @host)}&rdquo;
           .user_name
-            &ndash; #{notable_points[:important_for_opposers].user.name}
+            &ndash; #{notable_points[:important_for_opposers].user.username}
 
     %tr
       %td.notable_point.common{:colspan => 2}
@@ -110,7 +110,7 @@
         .object
           &ldquo;#{link_to notable_points[:common].nutshell, proposal_point_url(@proposal.long_id, notable_points[:common], :host => @host)}&rdquo;
           .user_name
-            &ndash; #{notable_points[:common].user.name}        
+            &ndash; #{notable_points[:common].user.username}        
 
 .action_call.prominent
   .rest

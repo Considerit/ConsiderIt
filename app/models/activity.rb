@@ -33,21 +33,21 @@ class Activity < ActiveRecord::Base
     case action_type
     when 'Proposal'
       if user
-        "#{user.name} contributed a new proposal"
+        "#{user.username} contributed a new proposal"
       else
         "New proposal added"
       end
     when 'Point'
-      "#{user.name} wrote a new point for \"#{obj.proposal.title}\""
+      "#{user.username} wrote a new point for \"#{obj.proposal.title}\""
     when 'Position'
-      "#{user.name} #{obj.stance_name_singular} \"#{obj.proposal.title}\""
+      "#{user.username} #{obj.stance_name_singular} \"#{obj.proposal.title}\""
     when 'Inclusion'
-      "#{user.name} included a point by #{obj.point.hide_name || !obj.point.user ? '[hidden]' : obj.point.user.name} for \"#{obj.proposal.title}\""
+      "#{user.username} included a point by #{obj.point.hide_name || !obj.point.user ? '[hidden]' : obj.point.user.username} for \"#{obj.proposal.title}\""
     when 'Reflect::ReflectBulletRevision'
-      "#{user ? user.name : 'Anonymous'} summarized a comment by #{obj.comment.user.name}"
+      "#{user ? user.username : 'Anonymous'} summarized a comment by #{obj.comment.user.username}"
     when 'Comment'
       #TODO: handle commentable type
-      "#{user ? user.name : 'Anonymous'} commented on an {item} by #{obj.root_object.user.name} for \"#{obj.root_object.proposal.title}\""      
+      "#{user ? user.username : 'Anonymous'} commented on an {item} by #{obj.root_object.user.username} for \"#{obj.root_object.proposal.title}\""      
     when 'User'
       "Welcome to #{obj.name}!"      
     else
@@ -66,10 +66,10 @@ class Activity < ActiveRecord::Base
     when 'Inclusion'
       "The point states \"#{obj.point.nutshell}\". #{obj.point.inclusions.count - 1} others have included this point."
     when 'Reflect::ReflectBulletRevision'
-      "#{user ? user.name : 'Anonymous'} believes that #{obj.comment.user.name} said \"#{obj.text}\"."
+      "#{user ? user.username : 'Anonymous'} believes that #{obj.comment.user.username} said \"#{obj.text}\"."
     when 'Comment'
       #TODO: handle commentable
-      "#{user.name} commented on an {item} by #{obj.root_object.hide_name || !obj.root_object.user ? '[hidden]' : obj.root_object.user.name} for \"#{obj.root_object.proposal.title}\""      
+      "#{user.username} commented on an {item} by #{obj.root_object.hide_name || !obj.root_object.user ? '[hidden]' : obj.root_object.user.username} for \"#{obj.root_object.proposal.title}\""      
     when 'User'
       "#{obj.account.users.where('created_at < ' + created_at.to_s).count} other people have joined."      
     else

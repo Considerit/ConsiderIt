@@ -78,9 +78,6 @@ class Point < ActiveRecord::Base
 
 
   def update_absolute_score
-    if self.num_inclusions.nil?
-      self.num_inclusions = self.inclusions.count
-    end
 
     define_appeal
     define_attention
@@ -126,7 +123,7 @@ class Point < ActiveRecord::Base
   end
   
   def define_persuasiveness
-    if self.unique_listings && self.unique_listings > 0
+    if self.unique_listings > 1
       self.persuasiveness = self.num_inclusions.to_f / self.unique_listings 
     else
       self.persuasiveness = 1.0 #privilige those points that haven't been shown...
@@ -137,10 +134,10 @@ class Point < ActiveRecord::Base
   # update their relative scores. Very computationally
   # expensive, so should only be called periodically by cron job
   def self.update_relative_scores
-    #num_inclusions_per_point = {}
-    #Inclusion.select("COUNT(*) AS cnt, point_id AS pnt").group(:point_id).each do |row|
-    #  num_inclusions_per_point[row.pnt.to_i] = row.cnt.to_i
-    #end
+    num_inclusions_per_point = {}
+    Inclusion.select("COUNT(*) AS cnt, point_id AS pnt").group(:point_id).each do |row|
+      num_inclusions_per_point[row.pnt.to_i] = row.cnt.to_i
+    end
 
     num_listings_per_point = {}
     PointListing.select("COUNT(distinct user_id) AS cnt, point_id AS pnt").group(:point_id).each do |row|
@@ -149,14 +146,8 @@ class Point < ActiveRecord::Base
 
     Account.all.each do |accnt|
 
-      Proposal.where("account_id = ?", accnt.id).each do |proposal|
-        Point.transaction do        
-          proposal.points.published.each do |pnt|
-            #pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
-            pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
-            pnt.update_absolute_score
-          end
-        end
+      accnt.proposals.each do |proposal|
+
         
         # Point ranking across the metrics is done separately for pros and cons,
         # fixed on a particular Proposal
@@ -167,9 +158,19 @@ class Point < ActiveRecord::Base
 
         point_groups.each do |group|        
           relative_scores = {}
-          
-          group.each {|pnt| relative_scores[pnt.id] = []}
 
+          Point.transaction do
+            group.each do |pnt|
+              pnt.update_attributes( { 
+                :num_inclusions => num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0,
+                :unique_listings => num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
+              })
+
+              pnt.update_absolute_score
+              relative_scores[pnt.id] = []
+            end
+          end
+          
           [:appeal.to_s, :attention.to_s, :persuasiveness.to_s].each do |metric|
             
             # descending sort of points by current metric

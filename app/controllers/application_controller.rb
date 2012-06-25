@@ -25,7 +25,8 @@ class ApplicationController < ActionController::Base
   end
 
   def self.find_current_tenant(rq)
-    tenant = Account.find_by_identifier(rq.session[:user_theme])
+
+    tenant = Account.find_by_identifier(rq.session[:user_account_identifier])
     if tenant.nil?
       tenant = Account.find(7)
     end
@@ -52,9 +53,10 @@ private
     rq ||= request
     current_account = Account.find_by_identifier(rq.subdomain)
     if current_account.nil?
-      current_account = Account.find(7)
+      current_account = Account.find(1)
     end    
     set_current_tenant(current_account)
+    session["user_account_identifier"] = current_tenant.identifier
     current_account
   end
 

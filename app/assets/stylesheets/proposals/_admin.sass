@@ -13,9 +13,9 @@
     top: 0
 
 .edit_page
-  top: 0px
+  top: $vertical_baseline
 .delete_proposal
-  top: 25px
+  top: $vertical_baseline * 3
 
 .unobtrusive_edit_form
   .unobtrusive_edit
@@ -99,15 +99,16 @@
       .link, #copy_container
         background-color: #222
         background-color: rgba(black, .3)
-        margin: 8px 0 
+        margin: 5px 0 
 
       .link
         border: 1px solid
         border-color: #555 black black #555
         display: inline-block
         font-weight: normal
-        padding: 1px 5px
+        padding: 5px 5px
         margin-left: 5px
+        +font-size(0)
 
         span
           padding-right: 5px

@@ -55,6 +55,9 @@
           border-color: #414141
           z-index: 40
 
+        &.noone
+          display: none
+          
         &.selected
           +chalkboard
           +box-shadow(0px, 1px, 2px, black)
@@ -66,7 +69,7 @@
           .close
             display: block
             right: 5px
-            top: 5px
+            top: -2px
             z-index: 1
 
           .border_cover
@@ -80,12 +83,13 @@
             border-top-left-radius: 6px
 
       .personal_position.update
-        top: -18px
+        top: -24px
         position: absolute
         +font-size(-4)
+        +on_background
         z-index: 50
         //left: 50%
-        margin-left: 10px
+        //margin-left: 10px
         a
           font-weight: bold
           text-decoration: underline

@@ -1,6 +1,6 @@
 class Position < ActiveRecord::Base
   belongs_to :user
-  belongs_to :proposal  
+  belongs_to :proposal, :touch => true 
   has_many :inclusions
   has_many :points
   has_many :point_listings

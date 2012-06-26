@@ -39,7 +39,7 @@ class Proposal < ActiveRecord::Base
     end
 
     if my_title.length > 140
-      "#{my_title}..."
+      "#{my_title[0..140]}..."
     else
       my_title
     end

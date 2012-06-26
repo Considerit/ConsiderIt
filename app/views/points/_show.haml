@@ -1,92 +1,110 @@
-- has_details = point.text && point.text.length > 0
+-# TODO: Cache this partial as per http://broadcastingadam.com/2011/05/advanced_caching_in_rails/
 
-%li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable", :user => point.hide_name ? nil : point.user_id }
-  
-  .id.hide
-    = point.id
-  
-  %a.toggle.less.hide.point_text_toggle
-    x
+- point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
-  .body
+= cache [point, point.user_id, point_creator, origin] do
 
-    .include.hide
-      = render :partial => "inclusions/new", :locals => { :point => point }
+  - has_details = point.text && point.text.length > 0
 
-    - if !point.hide_name && point.user
-      = image_tag point.user.avatar.url(origin == 'margin' ? :medium_dark : :medium), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
-    - else
-      // necessary for animation to work properly
-      .avatar 
-
-    .bullet_point
-      &#8226;
-          
-    %p.point_text.nutshell 
-
-      - if point.nutshell.length > 0
-        = h point.nutshell
-      - else
-        = h point.text.length > 137 ? point.text[0,137] : point.text
-      
-      %span.nested_user
-        \- 
-        - if point.hide_name
-          anonymous
-        - elsif point.user
-          = point.user.username
-        - else
-          unknown
-
-    .point_text.full
-
-      .details
-        - if has_details 
-          = h simple_format(point.text.gsub(/\n/,"<p></p>"))
-
-      .link
-        -# if point.point_links.count > 0
-        %ul
-          - point.point_links.each_with_index do |pl, idx|
-            = render :partial => 'point_links/show', :locals => { :point_link => pl, :idx => idx }
-
-      .nested_user
-        \- 
-        - if point.hide_name
-          anonymous
-        - elsif point.user
-          = point.user.username
-        - else
-          unknown
-
-  .operations
-
-    - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
-
-    .read_more
-      - num_comments = point.comments.count
-      %a.toggle.more.point_text_toggle.point_operation
-        %span.triangle
-          &#9654; 
-        #{has_details ? 'details & ' : ''} discussion#{num_comments > 0 ? "(" + point.comments.count.to_s + ")" : ''}          
-
-
-    - if point_creator
-      .edit
-
-        %a.editpoint.point_operation
-          edit
-        = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
-
-    .remove
-                
-      -if point_creator
-        = render :partial => "points/delete", :locals => { :point => point } 
-      -else
-        = render :partial => "inclusions/delete", :locals => { :point => point }
-
-
-  .extra  
-    .ajax_loading
+  %li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable", :user => point.hide_name ? nil : point.user_id }
     
-  .clear
+    .id.hide
+      = point.id
+    
+    %a.toggle.less.hide.point_text_toggle
+      x
+
+    .body
+
+      - if origin != 'board'
+        .include.hide
+
+          .judgepointform{ :id => "judgepointform_#{point.id}" }
+            = form_for :inclusion, :remote => true, :url => proposal_point_inclusions_path(@proposal.long_id, point, :page => @page) do |f|
+              =f.hidden_field :proposal_id, :value=>@proposal.id
+              =f.hidden_field :point_id, :value=>point.id
+              =f.submit :class => 'inclusion_submit', :type => 'submit', :value => "", :name => "judge", :title => 'Click to add this point to your list. You can remove it later if you want.'
+
+          -# = render :partial => "inclusions/new", :locals => { :point => point }
+
+      - if !point.hide_name && point.user
+        = image_tag point.user.avatar.url(origin == 'margin' ? :medium_dark : :medium), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
+      - else
+        // necessary for animation to work properly
+        .avatar 
+
+      .bullet_point
+        &#8226;
+            
+      %p.point_text.nutshell 
+
+        - if point.nutshell.length > 0
+          = h point.nutshell
+        - else
+          = h point.text.length > 137 ? point.text[0,137] : point.text
+        
+        %span.nested_user
+          \- 
+          - if point.hide_name
+            anonymous
+          - elsif point.user
+            = point.user.username
+          - else
+            unknown
+
+      .point_text.full
+
+        .details
+          - if has_details 
+            = h simple_format(point.text.gsub(/\n/,"<p></p>"))
+
+        .link
+          -# if point.point_links.count > 0
+          %ul
+            - point.point_links.each_with_index do |pl, idx|
+              = render :partial => 'point_links/show', :locals => { :point_link => pl, :idx => idx }
+
+        .nested_user
+          \- 
+          - if point.hide_name
+            anonymous
+          - elsif point.user
+            = point.user.username
+          - else
+            unknown
+
+    .operations
+
+
+      .read_more
+        - num_comments = point.comments.count
+        %a.toggle.more.point_text_toggle.point_operation
+          %span.triangle
+            &#9654; 
+          #{has_details ? 'details & ' : ''} discussion#{num_comments > 0 ? "(" + point.comments.count.to_s + ")" : ''}          
+
+
+      - if point_creator
+        .edit
+
+          %a.editpoint.point_operation
+            edit
+          = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
+
+      .remove
+                  
+        -if point_creator
+          = render :partial => "points/delete", :locals => { :point => point } 
+        -elsif origin != 'board'
+          .judgepointform{ :id => "judgepointform_#{point.id}" }
+
+            = link_to "remove", proposal_point_inclusions_path(@proposal.long_id, point, :page => @page, :delete => true), :remote => true, :method=>:post, :class => 'point_operation', :title => 'Click to remove this point from your list'
+
+
+          -#= render :partial => "inclusions/delete", :locals => { :point => point }
+
+
+    .extra  
+      .ajax_loading
+      
+    .clear

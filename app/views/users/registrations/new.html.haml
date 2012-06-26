@@ -16,7 +16,7 @@
         One-click sign in with your account from...
 
       - ['facebook', 'twitter', 'google'].each do |provider|
-        %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',500, 500)" }
+        %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',900, 500)" }
           = image_tag("#{provider}.png")
 
       .fineprint

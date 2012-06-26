@@ -1,7 +1,7 @@
 class Inclusion < ActiveRecord::Base
   has_paper_trail
   is_trackable
-  belongs_to :point
+  belongs_to :point, :touch => true
   belongs_to :user
   belongs_to :position
   belongs_to :proposal

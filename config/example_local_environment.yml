@@ -9,6 +9,8 @@ default:
     user_name: ''
     api_key: ''
 
+  new_relic: ''
+
 development: 
   default_to: default
 

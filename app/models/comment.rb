@@ -9,7 +9,7 @@ class Comment < ActiveRecord::Base
   validates_presence_of :user
     
   belongs_to :user
-  belongs_to :commentable, :polymorphic=>true
+  belongs_to :commentable, :polymorphic=>true, :touch => true
 
   has_many :reflect_bullets, :class_name => 'Reflect::ReflectBullet', :dependent => :destroy
   has_many :reflect_bullet_revisions, :class_name => 'Reflect::ReflectBulletRevision', :dependent => :destroy

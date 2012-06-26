@@ -1,7 +1,7 @@
 require 'uri'
 
 class PointLink < ActiveRecord::Base
-  belongs_to :point
+  belongs_to :point, :touch => true
   belongs_to :user
   belongs_to :proposal  
 

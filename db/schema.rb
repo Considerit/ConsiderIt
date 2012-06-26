@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120607225535) do
+ActiveRecord::Schema.define(:version => 20120626035402) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -308,6 +308,7 @@ ActiveRecord::Schema.define(:version => 20120607225535) do
     t.datetime "followable_last_notification"
   end
 
+  add_index "points", ["account_id", "proposal_id", "published", "is_pro"], :name => "select_published_pros_or_cons"
   add_index "points", ["account_id"], :name => "index_points_on_account_id"
   add_index "points", ["is_pro"], :name => "index_points_on_is_pro"
   add_index "points", ["proposal_id"], :name => "index_points_on_option_id"
@@ -353,6 +354,7 @@ ActiveRecord::Schema.define(:version => 20120607225535) do
     t.datetime "followable_last_notification"
   end
 
+  add_index "positions", ["account_id", "proposal_id", "published"], :name => "index_positions_on_account_id_and_proposal_id_and_published"
   add_index "positions", ["account_id"], :name => "index_positions_on_account_id"
   add_index "positions", ["proposal_id"], :name => "index_positions_on_option_id"
   add_index "positions", ["published"], :name => "index_positions_on_published"
@@ -407,6 +409,7 @@ ActiveRecord::Schema.define(:version => 20120607225535) do
     t.datetime "followable_last_notification"
   end
 
+  add_index "proposals", ["account_id", "id"], :name => "select_proposal"
   add_index "proposals", ["account_id"], :name => "index_proposals_on_account_id"
   add_index "proposals", ["admin_id"], :name => "index_proposals_on_admin_id", :unique => true
   add_index "proposals", ["long_id"], :name => "index_proposals_on_long_id", :unique => true
@@ -565,6 +568,7 @@ ActiveRecord::Schema.define(:version => 20120607225535) do
     t.string   "unique_token"
   end
 
+  add_index "users", ["account_id", "id"], :name => "select_user"
   add_index "users", ["account_id"], :name => "index_users_on_account_id"
   add_index "users", ["email"], :name => "index_users_on_email"
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true

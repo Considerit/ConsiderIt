@@ -34,9 +34,10 @@ class ApplicationController < ActionController::Base
   end
 
   def mail_options
+
     {:host => request.host,
      :host_with_port => request.host_with_port,
-     :from => "\"#{current_tenant.app_title}\" <#{current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email]}>",
+     :from => current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email],
      :app_title => current_tenant.app_title,
      :current_tenant => current_tenant
     }

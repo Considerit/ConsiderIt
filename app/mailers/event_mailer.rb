@@ -1,6 +1,9 @@
+require 'mail'
+
 class EventMailer < ActionMailer::Base
   ActionMailer::Base.delivery_method = :mailhopper  
   layout 'email'
+
 
   #### DISCUSSION LEVEL ####
   def discussion_new_proposal(user, proposal, options, notification_type = '')
@@ -14,8 +17,9 @@ class EventMailer < ActionMailer::Base
     email_with_name = "#{@user.username} <#{@user.email}>"
 
     subject = "new proposal \"#{@proposal.title}\""
-    
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    from = format_email(options[:from], options[:app_title])
+
+    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
 
   end
 
@@ -28,9 +32,10 @@ class EventMailer < ActionMailer::Base
     @host = options[:host]
     @options = options
     email_with_name = "#{@user.username} <#{@user.email}>"
+    from = format_email(options[:from], options[:app_title])
 
     subject = "update on \"#{@proposal.title}\""
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
 
   end
 
@@ -42,6 +47,7 @@ class EventMailer < ActionMailer::Base
     @proposal = @point.proposal
     @options = options
     email_with_name = "#{@user.username} <#{@user.email}>"
+    from = format_email(options[:from], options[:app_title])
 
     if notification_type == 'your proposal'
       subject = "new #{@point.is_pro ? 'pro' : 'con'} point for your proposal \"#{@point.proposal.title}\""
@@ -49,7 +55,7 @@ class EventMailer < ActionMailer::Base
       subject = "new #{@point.is_pro ? 'pro' : 'con'} point for \"#{@point.proposal.title}\""
     end
 
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
   #### POINT LEVEL ####
@@ -62,6 +68,7 @@ class EventMailer < ActionMailer::Base
     @proposal = @point.proposal
     @host = options[:host]
     @options = options
+    from = format_email(options[:from], options[:app_title])
 
     if notification_type == 'your point'
       subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote"
@@ -74,7 +81,7 @@ class EventMailer < ActionMailer::Base
     end
 
     email_with_name = "#{@user.username} <#{@user.email}>"
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
   #### COMMENT LEVEL ####
@@ -98,9 +105,10 @@ class EventMailer < ActionMailer::Base
     elsif notification_type == 'other summarizer'
       subject = "#{@bullet.user ? @bullet.user.username : 'Anonymous'} summarized a comment you also summarized"
     end
+    from = format_email(options[:from], options[:app_title])
 
     email_with_name = "#{@user.username} <#{@user.email}>"
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
   def reflect_new_response(user, response, bullet, comment, options, notification_type)
@@ -123,9 +131,10 @@ class EventMailer < ActionMailer::Base
     elsif notification_type == 'other summarizer'
       subject = "#{@comment.user.username} responded to a summary of their comment"
     end
+    from = format_email(options[:from], options[:app_title])
 
     email_with_name = "#{@user.username} <#{@user.email}>"
-    mail(:from => options[:from], :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
 
@@ -136,4 +145,13 @@ class EventMailer < ActionMailer::Base
       ApplicationController.find_current_tenant(request)
     end
 
+    def format_email(addr, name = nil)
+      address = Mail::Address.new addr # ex: "john@example.com"
+      if name
+        address.display_name = name # ex: "John Doe"
+      end
+      # Set the From or Reply-To header to the following:
+      address.format # returns "John Doe <john@example.com>"
+
+    end
 end

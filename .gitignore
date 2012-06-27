@@ -14,3 +14,4 @@ public/images/old
 public/cache/
 public/system/avatars
 *.bk
+config/newrelic.yml

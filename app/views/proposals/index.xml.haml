@@ -1,4 +1,4 @@
-- base_url = "http://#{request.host_with_port}"
+- base_url = "#{request.protocol}#{request.host_with_port}"
 !!! XML
 %urlset{:xmlns => "http://www.sitemaps.org/schemas/sitemap/0.9"}
   - for proposal in @proposals

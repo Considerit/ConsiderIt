@@ -51,6 +51,8 @@ module ConsiderIt
     config.assets.version = '1.0'
 
     config.action_mailer.delivery_method = :mailhopper
+
+    config.force_ssl = true
     
   end
 end

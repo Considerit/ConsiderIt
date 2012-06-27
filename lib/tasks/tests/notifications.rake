@@ -1,9 +1,9 @@
 namespace :test do
 
   # example: rake test:send_all_emails[1,6] --trace
-  
+
   desc "Generate all emails"
-  task :send_all_emails, [:account_id, :user_id, :host] => :environment do |t, args|
+  task :send_all_emails, [:account_id, :user_id, :host, :from] => :environment do |t, args|
     if !args[:user_id] || !args[:account_id]
       raise 'supply proper parameters'
     end
@@ -12,7 +12,7 @@ namespace :test do
     user = User.find(args[:user_id])
 
     from = args[:from] || account.contact_email
-    host = args[:host] || "#{account.identifier}.testing.dev:8888"
+    host = args[:host] || "#{account.identifier}.testing.dev"
     app_title = account.app_title
 
     mail_options = {:host => host, :from => from, :app_title => app_title, :current_tenant => account}
@@ -22,14 +22,18 @@ namespace :test do
     pp "****************"
     pp "discussion_new_proposal"
     pp "Proposal: #{proposal.id}"
-    email = EventMailer.discussion_new_proposal(user, proposal, mail_options, '').deliver!
-    
+    if proposal
+      email = EventMailer.discussion_new_proposal(user, proposal, mail_options, '').deliver!
+    end
+
     ###### Proposal level ######
     proposal = get_proposal_with_positions(account)
     pp "****************"
     pp "proposal_milestone_reached"
     pp "Proposal: #{proposal.id}"
-    email = EventMailer.proposal_milestone_reached(user, proposal, 100, mail_options).deliver!
+    if proposal
+      email = EventMailer.proposal_milestone_reached(user, proposal, 100, mail_options).deliver!
+    end
 
     notification_types = ['your proposal', 'position submitter', 'lurker']
     notification_types.each do |nt|
@@ -40,7 +44,9 @@ namespace :test do
       pp "Proposal: #{proposal.id}"
       pp "Point: #{point.id}" 
       pp "Notification_type: #{nt}"     
-      email = EventMailer.proposal_new_point(user, point, mail_options, nt).deliver!
+      if proposal && point
+        email = EventMailer.proposal_new_point(user, point, mail_options, nt).deliver!
+      end
     end
 
     ###### Point level ######
@@ -53,7 +59,9 @@ namespace :test do
       pp "Comment: #{comment.id}"
       pp "Point: #{point.id}"
       pp "Notification_type: #{nt}"
-      email = EventMailer.point_new_comment(user, point, comment, mail_options, nt).deliver!
+      if comment && point
+        email = EventMailer.point_new_comment(user, point, comment, mail_options, nt).deliver!
+      end
     end
 
     ###### Comment level ######
@@ -67,8 +75,10 @@ namespace :test do
       pp "reflect_new_bullet"
       pp "Comment: #{comment.id}"
       pp "Bullet: #{bullet.id}" 
-      pp "Notification_type: #{nt}"     
-      email = EventMailer.reflect_new_bullet(user, bullet_rev, comment, mail_options, nt).deliver!
+      pp "Notification_type: #{nt}"   
+      if bullet && bullet_rev && comment   
+        email = EventMailer.reflect_new_bullet(user, bullet_rev, comment, mail_options, nt).deliver!
+      end
     end
 
     notification_types = ['your bullet', 'other summarizer']
@@ -84,8 +94,10 @@ namespace :test do
         pp "reflect_new_response"
         pp "Comment: #{comment.id}"
         pp "Bullet: #{bullet.id}" 
-        pp "Notification_type: #{nt}"     
-        email = EventMailer.reflect_new_response(user, response_rev, bullet_rev, comment, mail_options, nt).deliver!
+        pp "Notification_type: #{nt}"    
+        if response_rev && bullet && bullet_rev && comment   
+          email = EventMailer.reflect_new_response(user, response_rev, bullet_rev, comment, mail_options, nt).deliver!
+        end
       end
     end
 

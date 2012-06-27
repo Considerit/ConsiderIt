@@ -1,4 +1,7 @@
 namespace :test do
+
+  # example: rake test:send_all_emails[1,6] --trace
+  
   desc "Generate all emails"
   task :send_all_emails, [:account_id, :user_id, :host] => :environment do |t, args|
     if !args[:user_id] || !args[:account_id]

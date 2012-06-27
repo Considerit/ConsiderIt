@@ -16,7 +16,7 @@ class PointLink < ActiveRecord::Base
   end
 
   def safe_url
-    if url.start_with? 'http://'
+    if url.start_with?('http://') || url.start_with?( 'https://')
       url
     else
       'http://' + url

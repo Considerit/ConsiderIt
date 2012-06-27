@@ -6,7 +6,7 @@
 env :MAILTO, '""' 
 env :PATH, ENV['PATH']
 
-set :output, ':path/log/cron_log.log'
+set :output, 'log/cron_log.log'
 
 job_type :envcommand, 'cd :path && RAILS_ENV=:environment :task'
 
@@ -19,7 +19,7 @@ end
 
 # backup database
 every :week do
-  command 'backup perform --trigger my_backup'
+  envcommand 'backup perform --trigger my_backup'
 end
 
 every :reboot do

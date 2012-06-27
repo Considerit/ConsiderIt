@@ -18,8 +18,7 @@ namespace :cache do
     end
   end
   
-  task :all => [:points, :proposals] do
-    Rails.logger.info "**** RAKE *****\nUpdated cache\n***********"
-  end
 
 end
+
+task :compute_metrics => ["cache:points", "cache:proposals"]

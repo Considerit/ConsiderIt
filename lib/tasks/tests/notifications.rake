@@ -38,6 +38,8 @@ namespace :test do
     notification_types = ['your proposal', 'position submitter', 'lurker']
     notification_types.each do |nt|
       proposal = get_proposal_with_points(account)
+      next if proposal.nil?
+
       point = proposal.points.published.sample
       pp "****************"
       pp "proposal_new_point"
@@ -53,6 +55,8 @@ namespace :test do
     notification_types = ['your point', 'participant', 'included point', 'lurker']
     notification_types.each do |nt|
       comment = account.comments.where('commentable_type' => 'Point').sample
+      next if comment.nil?
+
       point = comment.root_object
       pp "****************"
       pp "point_new_comment"
@@ -68,6 +72,7 @@ namespace :test do
     notification_types = ['your comment', 'other summarizer']
     notification_types.each do |nt|
       bullet = account.reflect_bullets.sample
+      next if bullet.nil?
       bullet_rev = bullet.revisions.last
 
       comment = bullet_rev.comment

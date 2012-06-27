@@ -6,20 +6,20 @@
 env :MAILTO, '""' 
 env :PATH, ENV['PATH']
 
-set :output, ":path/log/cron_log.log"
+set :output, ':path/log/cron_log.log'
 
 job_type :envcommand, 'cd :path && RAILS_ENV=:environment :task'
 
 # on some systems, need to source rvm before running standard rake command
-#job_type :rake, "source ~/.rvm/scripts/rvm; cd :path && RAILS_ENV=:environment bundle exec rake :task --silent :output"
+#job_type :rake, 'source ~/.rvm/scripts/rvm; cd :path && RAILS_ENV=:environment bundle exec rake :task --silent :output'
 
 every 5.minutes do
-  rake "compute_metrics"
+  rake 'compute_metrics'
 end
 
 # backup database
 every :week do
-  command "backup perform --trigger my_backup"
+  command 'backup perform --trigger my_backup'
 end
 
 every :reboot do

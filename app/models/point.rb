@@ -4,7 +4,7 @@ class Point < ActiveRecord::Base
   is_trackable
   acts_as_followable
   
-  has_paper_trail
+  has_paper_trail :only => [:hide_name, :published, :is_pro, :text, :nutshell, :user_id]  
   
   belongs_to :user
   belongs_to :proposal
@@ -85,7 +85,7 @@ class Point < ActiveRecord::Base
     
     define_segment_scores
     
-    save
+    save(:validate => false)
   end
   
   def define_segment_scores
@@ -146,14 +146,14 @@ class Point < ActiveRecord::Base
 
     Account.all.each do |accnt|
 
-      accnt.proposals.each do |proposal|
+      accnt.proposals.select(:id).each do |proposal|
 
         
         # Point ranking across the metrics is done separately for pros and cons,
         # fixed on a particular Proposal
         point_groups = [
-          proposal.points.published.pros.all,
-          proposal.points.published.cons.all
+          proposal.points.published.pros.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").all,
+          proposal.points.published.cons.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").all
         ]
 
         point_groups.each do |group|        
@@ -161,11 +161,8 @@ class Point < ActiveRecord::Base
 
           Point.transaction do
             group.each do |pnt|
-              pnt.update_attributes( { 
-                :num_inclusions => num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0,
-                :unique_listings => num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
-              })
-
+              pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
+              pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
               pnt.update_absolute_score
               relative_scores[pnt.id] = []
             end
@@ -190,14 +187,14 @@ class Point < ActiveRecord::Base
           
           Point.transaction do
             group.each do |pnt|
-              attrs = {:score => relative_scores[pnt.id].inject(:+) / relative_scores[pnt.id].length}
-              pnt.update_attributes(attrs)
+              pnt.score = relative_scores[pnt.id].inject(:+) / relative_scores[pnt.id].length
+              pnt.save(:validate => false)
             end
           end
                               
         end
       end
-    end
+    end    
   end
   
 

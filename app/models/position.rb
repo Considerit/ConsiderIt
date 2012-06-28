@@ -6,7 +6,7 @@ class Position < ActiveRecord::Base
   has_many :point_listings
   has_many :comments, :as => :commentable, :dependent => :destroy
 
-  has_paper_trail  
+  has_paper_trail
   is_commentable
   is_trackable
   acts_as_followable

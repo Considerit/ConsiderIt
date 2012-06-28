@@ -1,7 +1,7 @@
 class Comment < ActiveRecord::Base
   is_reflectable
   is_trackable
-  has_paper_trail  
+  has_paper_trail :only => [:title, :body, :subject, :user_id]  
   acts_as_followable
   
   #acts_as_nested_set :scope => [:commentable_id, :commentable_type]

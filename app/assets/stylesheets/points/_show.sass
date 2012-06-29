@@ -332,6 +332,7 @@
   margin: auto
   +box-shadow(0px,1px,5px,rgba(black,.4)) 
 
+
   &, a
     +main_font
 
@@ -363,13 +364,13 @@
         z-index: 1
         +box-shadow(0,0,2px, rgba(black,.2))
 
-      &:after, &:before
+      &.has_pic:after, &.has_pic:before
         position: absolute
         display: block
         z-index: 1
         content: ''
 
-      &:after
+      &.has_pic:after
         background: image-url('tape.png') no-repeat top left transparent
         width: 53px
         height: 23px
@@ -377,7 +378,7 @@
         top: -16px
         z-index: 3
 
-      &:before
+      &.has_pic:before
         background: image-url('pic_background.png') no-repeat top left transparent
         width: 50px
         height: 45px

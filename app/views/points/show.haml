@@ -22,9 +22,9 @@
     = render :partial => 'acts_as_followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
 
   .body
-
-    .pic
-      - if @point.user && @point.user.avatar_file_name && !point.hide_name
+    - has_pic = @point.user && @point.user.avatar_file_name && !point.hide_name
+    .pic{ :class => "#{has_pic ? 'has_pic' : ''}"}
+      - if has_pic
         = image_tag @point.user.avatar.url(:medium), :class => 'avatar' 
       - else
         - # necessary for animation

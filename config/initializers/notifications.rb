@@ -331,32 +331,32 @@ def shorten_link(link)
 end
 
 def post_to_twitter_client(account, msg)
-  _post_to_twitter_client(msg,
-    account.socmedia_twitter_consumer_key, 
-    account.socmedia_twitter_consumer_secret, 
-    account.socmedia_twitter_oauth_token, 
-    account.socmedia_twitter_oauth_token_secret).delay
+  if account.tweet_notifications
+    _post_to_twitter_client(msg,
+      account.socmedia_twitter_consumer_key, 
+      account.socmedia_twitter_consumer_secret, 
+      account.socmedia_twitter_oauth_token, 
+      account.socmedia_twitter_oauth_token_secret).delay
+  end
 end
 
 def _post_to_twitter_client(msg, consumer_key, secret, token, token_secret)
-  if account.tweet_notifications
-
-    twitter_client = Twitter::Client.new(
-      :consumer_key => consumer_key,
-      :consumer_secret => secret,
-      :oauth_token => token,
-      :oauth_token_secret => token_secret
-    )
-    begin
-      twitter_client.update(msg)
-      #logger.info "Sent tweet: #{msg}"
-      pp "Sent tweet: #{msg}"
-    rescue
-      pp "Could not send tweet: #{msg}"
-      #begin
-        #logger.error "Could not send tweet: #{msg}"
-      #rescue
-      #end
-    end
+  
+  twitter_client = Twitter::Client.new(
+    :consumer_key => consumer_key,
+    :consumer_secret => secret,
+    :oauth_token => token,
+    :oauth_token_secret => token_secret
+  )
+  begin
+    twitter_client.update(msg)
+    #logger.info "Sent tweet: #{msg}"
+    pp "Sent tweet: #{msg}"
+  rescue
+    pp "Could not send tweet: #{msg}"
+    #begin
+      #logger.error "Could not send tweet: #{msg}"
+    #rescue
+    #end
   end
 end

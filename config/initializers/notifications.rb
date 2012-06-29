@@ -335,7 +335,7 @@ def post_to_twitter_client(account, msg)
     account.socmedia_twitter_consumer_key, 
     account.socmedia_twitter_consumer_secret, 
     account.socmedia_twitter_oauth_token, 
-    account.socmedia_twitter_oauth_token_secret)
+    account.socmedia_twitter_oauth_token_secret).delay
 end
 
 def post_to_twitter_client(msg, consumer_key, secret, token, token_secret)
@@ -360,4 +360,3 @@ def post_to_twitter_client(msg, consumer_key, secret, token, token_secret)
     end
   end
 end
-handle_asynchronously :_post_to_twitter_client

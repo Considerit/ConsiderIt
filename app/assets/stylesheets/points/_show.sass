@@ -183,6 +183,7 @@
   position: absolute
   min-height: 111px
 
+
   &:after, &:before
     content: none
 
@@ -211,9 +212,8 @@
     display: block
 
   &.animation_state-expanded
-    width: 590px
-    padding-right: 90px
-    padding-left: 90px
+    padding-right: 104px
+    padding-left: 104px
 
     > .body
       .full
@@ -248,8 +248,8 @@
 
     .extra, &.animation_state-finished .toggle.less
 
-    &.animation_state-expanded
-
+    &.animation_state-expanded  
+      width: 590px
       .full, .nested_user, .link a
         opacity: 1
 
@@ -295,9 +295,11 @@
     cursor: auto
     opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
     height: auto
+    width: 156px
     
     &.animation_state-expanded
       padding-left: 90px
+      width: 590px
     
     &:after, &:before
       +box-shadow-remove

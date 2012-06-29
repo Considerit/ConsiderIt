@@ -461,16 +461,8 @@ ConsiderIt = {
 
       real_point.after(placeholder);
 
-      real_point = real_point.detach();
-      $j('body').append(real_point);
 
-      real_point
-        .addClass('expanded')
-        .css({
-          'top': placeholder.offset().top, //- $j('#content').offset().top,
-          'left': placeholder.offset().left 
-        })
-        .find('.operations').hide();
+
 
       //start complex animation...
       var body = real_point.find('> .body'),
@@ -488,14 +480,28 @@ ConsiderIt = {
         },
         'container': placeholder.parent()
       });
+      nutshell.css('width', nutshell.width());
 
       nutshell_animate_props = {
         'width': '650px',
         'font-size': '12pt'
       }
 
+      var real_left = nutshell.offset().left, real_top = nutshell.offset().top - $j(document).scrollTop();
+
+      real_point = real_point.detach();
+      $j('body').append(real_point);      
+      real_point
+        .addClass('expanded')
+        .css({
+          'top': placeholder.offset().top, //- $j('#content').offset().top,
+          'left': placeholder.offset().left
+          //'width': parseInt(real_point.css('width')) - parseInt(real_point.css('margin-right')) - parseInt(real_point.css('margin-left'))
+        })
+        //.find('.operations').hide();
+
       if ( !is_pro ) {
-        nutshell.css({'left': nutshell.offset().left, 'top': nutshell.offset().top - $j(document).scrollTop(), 'position': 'fixed'});
+        nutshell.css({'left': real_left, 'top': real_top, 'position': 'fixed'});
 
         if ( is_margin ) {
           nutshell_animate_props['left'] = '-=522px';
@@ -573,7 +579,7 @@ ConsiderIt = {
             //nutshell.css({ 'display': '', 'position': '' });
 
             real_point
-              .css({'left':'','top':'','height':''})
+              .css({'left':'','top':'','height':'', 'width': ''})
               .removeClass('expanded');
             placeholder.replaceWith(real_point);
 

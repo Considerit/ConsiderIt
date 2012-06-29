@@ -14,7 +14,7 @@ ConsiderIt::Application.routes.draw do
     member do
       get 'follow'
       get 'unfollow'
-    end    
+    end
 
     resources :positions, :path => '', :only => [:new, :edit, :create, :update, :destroy], :path_names => {:new => ''} do 
       member do

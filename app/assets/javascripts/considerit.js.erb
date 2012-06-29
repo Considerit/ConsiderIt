@@ -339,7 +339,7 @@ ConsiderIt = {
         if ( event.type === 'mouseenter' ) {
           el.stop(true, false)
             .fadeTo('slow', 1.0, 'easeInQuart');
-        } else {
+        } else if (!$j(this).hasClass('edit_mode')) {
           el.stop(true, false)
             .fadeOut('fast');
         }
@@ -383,7 +383,9 @@ ConsiderIt = {
     $j('.pro_con_list.dynamic').delegate('a.editpoint', 'click', function(){
       $j('.droppable').fadeOut();
       $j(this).fadeOut(function(){
-        $j(this).parents('.edit').find('.pointform').fadeIn('fast');    
+        var $point_form = $j(this).parents('.edit').find('.pointform');
+        $j(this).parents('.point_in_list').addClass('edit_mode');
+        $point_form.fadeIn('fast');    
       });  
       //show_lightbox();
     });
@@ -398,6 +400,8 @@ ConsiderIt = {
           $j('.droppable').fadeIn();
         })
         .find('textarea').val('');
+      $j(this).parents('.point_in_list').removeClass('edit_mode');
+
     });
 
     // Create callback

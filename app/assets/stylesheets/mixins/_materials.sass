@@ -1,8 +1,10 @@
-=colored_post_it($color)
+=colored_post_it($repeated, $color)
   //background-color: $color
-  background: image-url('yellow_postit.png') no-repeat top left transparent
-  &.expanded
-    background: image-url('yellow_postit_no_shadow.png') repeat top left transparent
+  @if $repeated == 0
+    background: image-url('yellow_postit.png') no-repeat top left transparent
+
+  @else
+    background: image-url('yellow_postit_no_shadow.png') repeat top left transparent  
 
   .button
     color: #888
@@ -10,16 +12,16 @@
     &:hover
       color: #333
 
-=red_post_it
+=red_post_it($repeated: 0)
   //+colored_post_it(hsl(352, 94%, 94%))
   //+colored_post_it(hsl(360,41%,63%))
-  +colored_post_it(hsl(357, 100%, 86%))
+  +colored_post_it($repeated, hsl(357, 100%, 86%))
   //background-color: #e8e37d
   
-=green_post_it
+=green_post_it($repeated: 0)
   //+colored_post_it(hsl(87, 69%, 89%))
   //+colored_post_it(hsl(84,35%,54%))
-  +colored_post_it(hsl(79, 48%, 75%))
+  +colored_post_it($repeated, hsl(79, 48%, 75%))
   //background-color: #e8e37d
 
 =on_post_it

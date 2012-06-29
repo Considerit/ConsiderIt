@@ -1,4 +1,4 @@
-# ConsiderIt
+# ConsiderIt & ChalkboardIt
 
 ConsiderIt is an open source deliberation platform that allows people
 to collaboratively create pro/con lists of the key points around any

@@ -2,12 +2,9 @@
 
 ConsiderIt is an open source deliberation platform that allows people
 to collaboratively create pro/con lists of the key points around any
-complex issue.
+complex issue. The creator and maintainer is [Travis Kriplean](http://abstract.cs.washington.edu/~travis/). 
 
-ConsiderIt works by drawing on the wisdom of crowds to generate a set
-of key considerations for decision-making: helping organizations
-identify the pro and con points that matter most to their users,
-readers or constituents.
+To see ConsiderIt in action, check out [ChalkboardIt](https://chalkboard.it). ChalkboardIt is the main hosted deployment of ConsiderIt. 
 
 ConsiderIt helps individuals make sense of complex issues by letting
 them create pro/con lists of the key points that matter to
@@ -21,7 +18,9 @@ polarization and helping decision-makers move towards solutions with
 broad appeal.
 
 ConsiderIt is an open source Ruby on Rails project. It is licensed
-under the AGPL.
+under the [AGPL](http://www.gnu.org/licenses/agpl-3.0.html). This means 
+that you need to include a link to the code repository if you use this code 
+at all. 
 
 
 ## Installation

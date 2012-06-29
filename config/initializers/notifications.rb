@@ -331,13 +331,21 @@ def shorten_link(link)
 end
 
 def post_to_twitter_client(account, msg)
+  _post_to_twitter_client(msg,
+    account.socmedia_twitter_consumer_key, 
+    account.socmedia_twitter_consumer_secret, 
+    account.socmedia_twitter_oauth_token, 
+    account.socmedia_twitter_oauth_token_secret)
+end
+
+def post_to_twitter_client(msg, consumer_key, secret, token, token_secret)
   if account.tweet_notifications
 
     twitter_client = Twitter::Client.new(
-      :consumer_key => account.socmedia_twitter_consumer_key,
-      :consumer_secret => account.socmedia_twitter_consumer_secret,
-      :oauth_token => account.socmedia_twitter_oauth_token,
-      :oauth_token_secret => account.socmedia_twitter_oauth_token_secret
+      :consumer_key => consumer_key,
+      :consumer_secret => secret,
+      :oauth_token => token,
+      :oauth_token_secret => token_secret
     )
     begin
       twitter_client.update(msg)
@@ -352,3 +360,4 @@ def post_to_twitter_client(account, msg)
     end
   end
 end
+handle_asynchronously :_post_to_twitter_client

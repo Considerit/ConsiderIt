@@ -861,8 +861,10 @@ ConsiderIt = {
 
   update_unobtrusive_edit_heights : function (els) {
     els.each(function(){
-        var lineHeight = parseFloat($j(this).css("line-height"));
+        var lineHeight = parseFloat($j(this).css("line-height")) || parseFloat($j(this).css("font-size")) * 1.25;
+        console.log(lineHeight);
         var lines = $j(this).attr("rows")*1 || $j(this).prop("rows")*1;
+        console.log(lines);
         $j(this).css("height", lines*lineHeight);
     });    
   },

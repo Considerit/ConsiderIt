@@ -18,7 +18,7 @@
         %td.full_column.pro_column#points_on_board_pro
           .pro_con_list_header.pro_header
             .inner
-              Pros
+              = image_tag 'chalk/pros.png'
 
           = render :partial => "points/column", :locals => { :points => pro_points, :is_pro => true, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
@@ -30,7 +30,7 @@
         %td.full_column.con_column#points_on_board_con 
           .pro_con_list_header.con_header
             .inner
-              Cons
+              = image_tag 'chalk/cons.png'
 
           = render :partial => "points/column", :locals => { :points => con_points, :is_pro => false, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 

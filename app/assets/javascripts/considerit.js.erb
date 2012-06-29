@@ -277,6 +277,9 @@ ConsiderIt = {
           $j(this).autoGrowInput();
           var prompt = $j(this).parents('#nameplate');
           prompt.width( prompt.find('.my_name').outerWidth() + prompt.find('.prompt').outerWidth() + 40);
+
+          //update the username of all points written by this user
+          $j('.point_in_list.added_by_me').find('.nested_user .unknown').text($j(this).val());
         }
       })
       .on('click', '.edit_page a', function(){
@@ -400,7 +403,14 @@ ConsiderIt = {
     // Create callback
 
     $j('.pro_con_list.dynamic').on('ajax:success', '.newpoint .newpointform form', function(data, response, xhr){
-      $j(this).parents('.full_column').filter(":first").find('.point_list').filter(":first").append(response['new_point']);
+      var $new_point = $j(response['new_point']);
+      $new_point.addClass('added_by_me');
+      if ($new_point.find('.nested_user .unknown').length > 0 && $j('#nameplate input.my_name.hidden_edit').length > 0){
+        var nameplate_name = $j('#nameplate input.my_name.hidden_edit').val();
+        $new_point.find('.nested_user .unknown').text(nameplate_name);
+      }
+
+      $j(this).parents('.full_column').filter(":first").find('.point_list').filter(":first").append($new_point);
       $j(this).find('textarea').val('');
       $j(this).find('.point-title-group .count').html(140);
       $j(this).find('.point-description-group .count').html(2000);

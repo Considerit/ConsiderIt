@@ -3,8 +3,8 @@ class HomeController < ApplicationController
   respond_to :json, :html
 
   caches_action :index, :cache_path => proc {|c|
-    proposal = current_tenant.proposals.order('updated_at DESC').limit(1).first
-    {:tag => "is_logged_in-#{current_user ? current_user.id : '-1'}-#{proposal.updated_at.to_i}"}
+    updated_at = current_tenant.proposals.count > 0 ? current_tenant.proposals.order('updated_at DESC').limit(1).first.updated_at.to_i : 0
+    {:tag => "is_logged_in-#{current_user ? current_user.id : '-1'}-#{updated_at}"}
   }
 
   def index

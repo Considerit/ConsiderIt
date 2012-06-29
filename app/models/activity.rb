@@ -26,10 +26,17 @@ class Activity < ActiveRecord::Base
   end
 
   def obj
-    action_type.constantize.find(action_id)
+    begin
+      return action_type.constantize.find(action_id)
+    rescue
+    end
+    return nil
+
   end  
 
   def title
+    this_obj = obj
+    return 'Could not find Object' if !this_obj
     case action_type
     when 'Proposal'
       if user
@@ -38,40 +45,43 @@ class Activity < ActiveRecord::Base
         "New proposal added"
       end
     when 'Point'
-      "#{user.username} wrote a new point for \"#{obj.proposal.title}\""
+      "#{user ? user.username : 'Anonymous'} wrote a new point for \"#{this_obj.proposal.title}\""
     when 'Position'
-      "#{user.username} #{obj.stance_name_singular} \"#{obj.proposal.title}\""
+      "#{user ? user.username : 'Anonymous'} #{this_obj.stance_name_singular} \"#{this_obj.proposal.title}\""
     when 'Inclusion'
-      "#{user.username} included a point by #{obj.point.hide_name || !obj.point.user ? '[hidden]' : obj.point.user.username} for \"#{obj.proposal.title}\""
+      "#{user ? user.username : 'Anonymous'} included a point by #{this_obj.point.hide_name || !this_obj.point.user ? '[hidden]' : this_obj.point.user.username} for \"#{this_obj.proposal.title}\""
     when 'Reflect::ReflectBulletRevision'
-      "#{user ? user.username : 'Anonymous'} summarized a comment by #{obj.comment.user.username}"
+      "#{user ? user.username : 'Anonymous'} summarized a comment by #{this_obj.comment.user.username}"
     when 'Comment'
       #TODO: handle commentable type
-      "#{user ? user.username : 'Anonymous'} commented on an {item} by #{obj.root_object.user.username} for \"#{obj.root_object.proposal.title}\""      
+      "#{user ? user.username : 'Anonymous'} commented on an {item} by #{this_obj.root_object.user.username} for \"#{this_obj.root_object.proposal.title}\""      
     when 'User'
-      "Welcome to #{obj.name}!"      
+      "Welcome to #{this_obj.name}!"      
     else
       raise "Don't know about this"
     end
   end
 
   def description
+    this_obj = obj
+    return 'Could not find Object' if !this_obj
+
     case action_type
     when 'Proposal'
-      "\"#{obj.title}\"."
+      "\"#{this_obj.title}\"."
     when 'Point'
-      "\"#{obj.nutshell}\"."
+      "\"#{this_obj.nutshell}\"."
     when 'Position'
       ""
     when 'Inclusion'
-      "The point states \"#{obj.point.nutshell}\". #{obj.point.inclusions.count - 1} others have included this point."
+      "The point states \"#{this_obj.point.nutshell}\". #{this_obj.point.inclusions.count - 1} others have included this point."
     when 'Reflect::ReflectBulletRevision'
-      "#{user ? user.username : 'Anonymous'} believes that #{obj.comment.user.username} said \"#{obj.text}\"."
+      "#{user ? user.username : 'Anonymous'} believes that #{this_obj.comment.user.username} said \"#{this_obj.text}\"."
     when 'Comment'
       #TODO: handle commentable
-      "#{user.username} commented on an {item} by #{obj.root_object.hide_name || !obj.root_object.user ? '[hidden]' : obj.root_object.user.username} for \"#{obj.root_object.proposal.title}\""      
+      "#{user.username} commented on an {item} by #{this_obj.root_object.hide_name || !this_obj.root_object.user ? '[hidden]' : this_obj.root_object.user.username} for \"#{this_obj.root_object.proposal.title}\""      
     when 'User'
-      "#{obj.account.users.where('created_at < ' + created_at.to_s).count} other people have joined."      
+      "#{this_obj.account.users.where('created_at < \' ' + created_at.to_s + '\'').count } other people have joined."      
     else
       raise "Don't know about this"
     end

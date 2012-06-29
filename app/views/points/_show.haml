@@ -6,7 +6,7 @@
 
   - has_details = point.text && point.text.length > 0
 
-  %li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable", :user => point.hide_name ? nil : point.user_id }
+  %li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable #{point_creator ? 'added_by_me' : ''}", :user => point.hide_name ? nil : point.user_id }
     
     .id.hide
       = point.id
@@ -50,7 +50,8 @@
           - elsif point.user
             = point.user.username
           - else
-            unknown
+            %span.unknown
+              unknown
 
       .point_text.full
 

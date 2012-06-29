@@ -7,7 +7,7 @@
 
     - else
       = succeed "'s " do
-        %input.my_name{ :class => "#{name ? 'has_name' : 'no_name'}", :type => 'text', :placeholder => 'type your name here'}<>
+        %input.my_name.no_name{:type => 'text', :placeholder => 'type your name here'}<>
           = name ? name : ''
 
 

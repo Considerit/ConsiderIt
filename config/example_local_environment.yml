@@ -1,7 +1,5 @@
 default:
 
-  host: ''
-
   analytics:
     google: ''
 

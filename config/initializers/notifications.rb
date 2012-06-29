@@ -338,7 +338,7 @@ def post_to_twitter_client(account, msg)
     account.socmedia_twitter_oauth_token_secret).delay
 end
 
-def post_to_twitter_client(msg, consumer_key, secret, token, token_secret)
+def _post_to_twitter_client(msg, consumer_key, secret, token, token_secret)
   if account.tweet_notifications
 
     twitter_client = Twitter::Client.new(

@@ -336,7 +336,7 @@ def post_to_twitter_client(account, msg)
       account.socmedia_twitter_consumer_key, 
       account.socmedia_twitter_consumer_secret, 
       account.socmedia_twitter_oauth_token, 
-      account.socmedia_twitter_oauth_token_secret).delay
+      account.socmedia_twitter_oauth_token_secret)#.delay
   end
 end
 

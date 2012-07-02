@@ -79,7 +79,7 @@
       .clear
 
     :javascript
-      $j(document).ready(function{
+      $j(document).ready(function(){
         $j("input#domain").autocomplete({
           source: #{get_available_domains()},
           select: function(event, ui){
@@ -92,7 +92,7 @@
       });
 
 :javascript
-  $j(document).ready(function{
+  $j(document).ready(function(){
     var logo_cell = $j('#masthead .logo_cell').hide();
 
     $j('body').on('click', '#active_proposals a.video', function() { 

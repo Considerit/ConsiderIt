@@ -7,10 +7,12 @@
         %img{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);" }
 
         :javascript
-          function no_image(source) {
-            $j(this).parents('.logo_cell').remove();
-          }
-
+          $j(document).ready(function(){
+            function no_image(source) {
+              $j(this).parents('.logo_cell').remove();
+            }
+          });
+          
     - if @proposal && @is_admin
       = render :partial => "proposals/admin_strip"
           

@@ -16,20 +16,21 @@
 
 
 :javascript
-  var user = #{current_user ? current_user.id : 'null'};
-  $j(document)
-    .on('click', '.new_proposal .prompt', function(){
-      if ( user ) {
-        $j(this).parent().children().toggle();
-        $j('.new_proposal .full #proposal_description').focus();
-      } else {
-        $j('#login_trigger')
-          .load("#{new_user_registration_path(:third_party=>false, :context=>"proposal_submit")}")
-          .dialog('open');      
-      }
-    });
-
   $j(document).ready(function(){
+
+    var user = #{current_user ? current_user.id : 'null'};
+    $j(document)
+      .on('click', '.new_proposal .prompt', function(){
+        if ( user ) {
+          $j(this).parent().children().toggle();
+          $j('.new_proposal .full #proposal_description').focus();
+        } else {
+          $j('#login_trigger')
+            .load("#{new_user_registration_path(:third_party=>false, :context=>"proposal_submit")}")
+            .dialog('open');      
+        }
+      });
+
     //$j('#proposal_description').inlined_labels();
     $j('.new_proposal .full').hide();
   });

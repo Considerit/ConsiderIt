@@ -10,10 +10,11 @@ ConsiderIt::Application.configure do
   config.whiny_nils = true
 
   # Do not compress assets
-  config.assets.compress = false
+  config.assets.compress = true #false
    
   # Expands the lines which load the assets
-  config.assets.debug = true
+  config.assets.debug = false #true
+  config.assets.compile = true
 
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true

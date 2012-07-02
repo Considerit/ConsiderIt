@@ -32,7 +32,9 @@
       = text_field_tag :email, '', :placeholder => 'your email address'
 
     :javascript
-      $j('.notifications input[type="checkbox"]').change(function(e){
-        $j('.notifications .email').fadeToggle();
-        $j('.notifications .email input').focus();
-      })
+      $j(document).ready(function(){
+        $j('.notifications input[type="checkbox"]').change(function(e){
+          $j('.notifications .email').fadeToggle();
+          $j('.notifications .email input').focus();
+        })
+      });

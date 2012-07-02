@@ -79,24 +79,26 @@
       .clear
 
     :javascript
-
-      $j("input#domain").autocomplete({
-        source: #{get_available_domains()},
-        select: function(event, ui){
-         /*$j.post("#{home_domain_path}", { domain: ui.item.value }, function(data){
-          $j('#domain').append(data);
-         });
-         */
-        }
+      $j(document).ready(function{
+        $j("input#domain").autocomplete({
+          source: #{get_available_domains()},
+          select: function(event, ui){
+           /*$j.post("#{home_domain_path}", { domain: ui.item.value }, function(data){
+            $j('#domain').append(data);
+           });
+           */
+          }
+        });
       });
 
 :javascript
-  var logo_cell = $j('#masthead .logo_cell').hide();
+  $j(document).ready(function{
+    var logo_cell = $j('#masthead .logo_cell').hide();
 
-  $j('body').on('click', '#active_proposals a.video', function() { 
-    video_window(450, 550, 'home/videos#console', 'LVG videos');
+    $j('body').on('click', '#active_proposals a.video', function() { 
+      video_window(450, 550, 'home/videos#console', 'LVG videos');
+    });
   });
-
 
 / :javascript
 /   $j('#tutorial').delegate('.nav ul a', 'click', function(){

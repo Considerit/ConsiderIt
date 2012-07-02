@@ -50,15 +50,17 @@
     %li.clear
  
 :javascript
-  $j('.proposal_item').each(function(){
-    var proposal_id = $j(this).attr('id').substring(14);
-    
-    if (proposal_id == #{@proposal.id}){
-      $j(this).addClass('active');
-      $j(this).children('a').addClass('active');
-    }
+  $j(document).ready(function{
+    $j('.proposal_item').each(function(){
+      var proposal_id = $j(this).attr('id').substring(14);
+      
+      if (proposal_id == #{@proposal.id}){
+        $j(this).addClass('active');
+        $j(this).children('a').addClass('active');
+      }
+    });
   });
-
+  
 - if @position
 
   //if (ConsiderIt && ConsiderIt.study) {

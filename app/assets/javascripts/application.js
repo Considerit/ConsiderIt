@@ -12,3 +12,6 @@
 //= require javascripts/acts_as_followable.js
 //= require ZeroClipboard.js
 //= require considerit
+
+//http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
+(function($,d){$.each(readyQ,function(i,f){$(f)});$.each(bindReadyQ,function(i,f){$(d).bind("ready",f)})})(jQuery,document)

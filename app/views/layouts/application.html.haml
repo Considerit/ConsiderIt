@@ -24,10 +24,17 @@
     /[if lte IE 8]
       = stylesheet_link_tag 'ie'
 
-    = javascript_include_tag 'application'
+    = javascript_include_tag 'application', :async => true
+
 
     :javascript
-      $j = jQuery.noConflict();
+      //http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
+      (function(w,d,u){w.readyQ=[];w.bindReadyQ=[];function p(x,y){if(x=="ready"){w.bindReadyQ.push(y);}else{w.readyQ.push(x);}};var a={ready:p,bind:p};w.$j=w.jQuery=function(f){if(f===d||f===u){return a}else{p(f)}}})(window,document)
+
+      $j(document).ready(function(){
+        ConsiderIt.init();     
+      });   
+
       
     - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
       :javascript
@@ -41,26 +48,19 @@
       :javascript
         var _gaq_account = _gaq_account || [];
         _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-        _gaq_account.push(['_setDomainName', ".#{get_root_domain}"]);
         _gaq_account.push(['_trackPageview']);
 
   %body
     #lightbox
-  
+
     #wrap
       = render :partial => "shared/flash_messages"
-
       = render :partial => "shared/header/container"
       #content
-        = render :partial => "shared/grid"
-
         = yield
 
       = render :partial => "shared/footer/container"         
 
-    :javascript
-      $j(document).ready(function(){
-        ConsiderIt.init();     
-      });   
-
     = render :partial => "reflect/templates", :layout => false
+      
+

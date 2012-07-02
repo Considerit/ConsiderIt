@@ -55,7 +55,7 @@
   .clear
 
 :javascript
-  $j(document).ready(function{
+  $j(document).ready(function(){
     $j('a#register_instead').click(function(){
       $j('#login_form').load('#{new_user_registration_path(:third_party=>false)}');
     });

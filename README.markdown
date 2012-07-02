@@ -1,14 +1,12 @@
 # ConsiderIt & ChalkboardIt
 
-ConsiderIt is an open source deliberation platform that allows people
-to collaboratively create pro/con lists of the key points around any
-complex issue. The creator and maintainer is [Travis Kriplean](http://abstract.cs.washington.edu/~travis/). 
+ConsiderIt is an open source deliberation platform. The creator and maintainer is [Travis Kriplean](http://abstract.cs.washington.edu/~travis/). 
 
-To see ConsiderIt in action, check out [ChalkboardIt](https://chalkboard.it). ChalkboardIt is the primary hosted deployment of ConsiderIt. 
+To see ConsiderIt in action, check out [ChalkboardIt](https://chalkboard.it). ChalkboardIt is the primary hosted deployment of ConsiderIt. ConsiderIt was first created to support the [Living Voters Guide](http://livingvotersguide.org), a citizen-powered voters guide for WA state.
 
 ConsiderIt helps individuals make sense of complex issues by letting
-them create pro/con lists of the key points that matter to
-them. ConsiderIt makes it easy to endorse points made by others who
+them create pro/con lists of the key points that they consider the crux of the issue. 
+ConsiderIt makes it easy to endorse points made by others who
 share your views, or to add new points of your own.
 
 ConsiderIt also helps create common ground among people with different

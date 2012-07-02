@@ -58,38 +58,40 @@
 
 
 :javascript
-  ZeroClipboard.setMoviePath( '/zeroclipboard/ZeroClipboard.swf' );
+  $j(document).ready(function(){
+    ZeroClipboard.setMoviePath( '/zeroclipboard/ZeroClipboard.swf' );
 
-  var clip = new ZeroClipboard.Client();
-  clip.setText( "#{get_host}/#{@proposal.long_id}" );
-  clip.glue( 'copy_container', 'copy_link' );
+    var clip = new ZeroClipboard.Client();
+    clip.setText( "#{get_host}/#{@proposal.long_id}" );
+    clip.glue( 'copy_container', 'copy_link' );
 
-  var clip2 = new ZeroClipboard.Client();
-  clip2.setText( "#{get_host}/#{@proposal.admin_id}" );
-  clip2.glue( 'copy_admin_container', 'copy_admin_link' );
+    var clip2 = new ZeroClipboard.Client();
+    clip2.setText( "#{get_host}/#{@proposal.admin_id}" );
+    clip2.glue( 'copy_admin_container', 'copy_admin_link' );
 
-  $j('#more_options').on('click', 'a.show', function(){
-    $j(this).siblings('.more').slideToggle();
-    $j(this).find('.label').toggle();
-  });
+    $j('#more_options').on('click', 'a.show', function(){
+      $j(this).siblings('.more').slideToggle();
+      $j(this).find('.label').toggle();
+    });
 
-  $j('#admin_strip').on('click', '.link span', function(){
-    selectElementText(this);
-  });
+    $j('#admin_strip').on('click', '.link span', function(){
+      selectElementText(this);
+    });
 
-  $j('#more_options .more').hide();
-  function selectElementText(el, win) {
-    win = win || window;
-    var doc = win.document, sel, range;
-    if (win.getSelection && doc.createRange) {
-        sel = win.getSelection();
-        range = doc.createRange();
-        range.selectNodeContents(el);
-        sel.removeAllRanges();
-        sel.addRange(range);
-    } else if (doc.body.createTextRange) {
-        range = doc.body.createTextRange();
-        range.moveToElementText(el);
-        range.select();
+    $j('#more_options .more').hide();
+    function selectElementText(el, win) {
+      win = win || window;
+      var doc = win.document, sel, range;
+      if (win.getSelection && doc.createRange) {
+          sel = win.getSelection();
+          range = doc.createRange();
+          range.selectNodeContents(el);
+          sel.removeAllRanges();
+          sel.addRange(range);
+      } else if (doc.body.createTextRange) {
+          range = doc.body.createTextRange();
+          range.moveToElementText(el);
+          range.select();
+      }
     }
-  }
+  });

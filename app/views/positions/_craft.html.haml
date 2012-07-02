@@ -140,27 +140,31 @@
             #position_save_login_trigger.user_dialog
 
             :javascript
-              $j('#position_save_login_trigger').dialog({
-                autoOpen: false,
-                modal: true,
-                draggable: false,
-                dialogClass: 'alert',
-                width: 775
+              $j(document).ready(function(){
+                $j('#position_save_login_trigger').dialog({
+                  autoOpen: false,
+                  modal: true,
+                  draggable: false,
+                  dialogClass: 'alert',
+                  width: 775
+                });
+
+                $j('.stanceform input.submit').click(function(){
+                  $j('#position_save_login_trigger')
+                    .load("#{new_user_registration_path(:third_party=>false, :context=>"position_submit")}", function(){
+                      if ($j('.notifications input[type="checkbox"]').prop("checked")) {
+                        $j('#site_registration .email_field #user_email').val($j('.notifications .email input').val());
+                      }
+                    })
+                    .dialog('open');
+                  return true;
+                });
               });
 
-              $j('.stanceform input.submit').click(function(){
-                $j('#position_save_login_trigger')
-                  .load("#{new_user_registration_path(:third_party=>false, :context=>"position_submit")}", function(){
-                    if ($j('.notifications input[type="checkbox"]').prop("checked")) {
-                      $j('#site_registration .email_field #user_email').val($j('.notifications .email input').val());
-                    }
-                  })
-                  .dialog('open');
-                return true;
-              });
-                  
   :javascript
-    $j('li.statement.step textarea').change(function(){
-      var statement = $j(this).val();
-      $j('form .stance.position_statement textarea').val(statement);
-    });  
+    $j(document).ready(function(){
+      $j('li.statement.step textarea').change(function(){
+        var statement = $j(this).val();
+        $j('form .stance.position_statement textarea').val(statement);
+      });  
+    });

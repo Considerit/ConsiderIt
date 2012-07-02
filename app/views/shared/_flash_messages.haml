@@ -11,13 +11,14 @@
         = button_tag 'x'
 
     :javascript
-      $j('.message.confirmation_required .close').click(function(){
-        $j('.message.confirmation_required').fadeOut().remove();
-      });  
-      $j('.message.confirmation_required').on('ajax:success', 'form', function(){
-        $j('.message.confirmation_required').text('Confirmation sent! ')
-      });
-
+      $j(document).ready(function{
+        $j('.message.confirmation_required .close').click(function(){
+          $j('.message.confirmation_required').fadeOut().remove();
+        });  
+        $j('.message.confirmation_required').on('ajax:success', 'form', function(){
+          $j('.message.confirmation_required').text('Confirmation sent! ')
+        });
+      })
 
   - flash.each do |key, value|
     - unless value.blank?

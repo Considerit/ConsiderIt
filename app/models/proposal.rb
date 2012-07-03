@@ -38,8 +38,8 @@ class Proposal < ActiveRecord::Base
       raise 'Name and description nil'
     end
 
-    if my_title.length > 140
-      "#{my_title[0..140]}..."
+    if my_title.length > max_len
+      "#{my_title[0..max_len]}..."
     else
       my_title
     end

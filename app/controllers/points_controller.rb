@@ -139,7 +139,7 @@ class PointsController < ApplicationController
     #   params[:point][:position_id] = @position.id
     # end
 
-    if params[:point][:nutshell].length > 140
+    if params[:point][:nutshell].length > 140 
       params[:point][:text] << params[:point][:nutshell][140..-1]
       params[:point][:nutshell] = params[:point][:nutshell][0..140]
     end

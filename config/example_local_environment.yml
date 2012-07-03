@@ -9,6 +9,11 @@ default:
 
   new_relic: ''
 
+  aws:
+    access_key_id: ''
+    secret_access_key: ''
+    fog_directory: ''
+    
 development: 
   default_to: default
 

@@ -53,6 +53,16 @@ ConsiderIt::Application.configure do
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # config.action_controller.asset_host = "//#{APP_CONFIG[:aws][:fog_directory]}.s3.amazonaws.com"
 
+  # Enable S3 storage for Paperclip
+  #Paperclip::Attachment.default_options.merge!({
+  #  :storage => :s3,
+  #  :bucket => APP_CONFIG[:aws][:fog_directory],
+  #  :s3_credentials => {
+  #    :access_key_id => APP_CONFIG[:aws][:access_key_id],
+  #    :secret_access_key => APP_CONFIG[:aws][:secret_access_key]]
+  #  }
+  #})
+
   # Disable delivery errors, bad email addresses will be ignored
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default_url_options = { :address => 'localhost' }
@@ -68,4 +78,6 @@ ConsiderIt::Application.configure do
 
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
+
+
 end

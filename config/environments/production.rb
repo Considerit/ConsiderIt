@@ -63,7 +63,7 @@ ConsiderIt::Application.configure do
   # Enable S3/Cloudfront storage for Paperclip
   #Paperclip::Attachment.default_options.merge!({
   #  :path => "system/:attachment/:id/:style/:filename",
-  #  :url => ":s3_alias_url",   
+  #  :url => "/system/:attachment/:id/:style/:filename",   
   #  :default_url => ":attachment/:style_default-profile-pic.png",
   #  :storage => :s3,
   #  :bucket => APP_CONFIG[:aws][:fog_directory],

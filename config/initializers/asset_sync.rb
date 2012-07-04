@@ -6,7 +6,7 @@ if defined?(AssetSync)
     config.fog_directory = APP_CONFIG.has_key?(:aws) ? APP_CONFIG[:aws][:fog_directory] : ''
     
     # Increase upload performance by configuring your region
-    config.fog_region = 'us-west-2'
+    #config.fog_region = 'us-west-2'
     #
     # Don't delete files from the store
     # config.existing_remote_files = "keep"

@@ -20,3 +20,7 @@
       background-color: black;
       border-radius: 0px;
 }
+
+.ui-dialog .ui-dialog-content { 
+  overflow: hidden;
+}

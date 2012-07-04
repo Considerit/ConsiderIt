@@ -67,7 +67,7 @@ gem "themes_for_rails"
 gem 'actionmailer-with-request'
 
 #https://github.com/meskyanichi/backup
-gem 'backup'
+gem 'backup', "~>3.0.24"
 
 # https://github.com/fphilipe/premailer-rails3
 gem 'hpricot'

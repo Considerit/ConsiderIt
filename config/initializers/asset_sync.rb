@@ -1,4 +1,4 @@
-defined?(AssetSync) do
+if defined?(AssetSync)
   AssetSync.configure do |config|
     config.fog_provider = 'AWS'
     config.aws_access_key_id = APP_CONFIG.has_key?(:aws) ? APP_CONFIG[:aws][:access_key_id] : ''

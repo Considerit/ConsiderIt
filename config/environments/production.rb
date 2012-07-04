@@ -51,7 +51,7 @@ ConsiderIt::Application.configure do
   config.serve_static_assets = true
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
-  # config.action_controller.asset_host = "//#{APP_CONFIG[:aws][:fog_directory]}.s3.amazonaws.com"
+  # config.action_controller.asset_host = "//#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net"
 
   # Enable FS storage for Paperclip
   # Paperclip::Attachment.default_options.merge!({
@@ -63,7 +63,7 @@ ConsiderIt::Application.configure do
   # Enable S3/Cloudfront storage for Paperclip
   #Paperclip::Attachment.default_options.merge!({
   #  :path => "system/:attachment/:id/:style/:filename",
-  #  :url => "/system/:attachment/:id/:style/:filename",   
+  #  :url => ":s3_alias_url",   
   #  :default_url => ":attachment/:style_default-profile-pic.png",
   #  :storage => :s3,
   #  :bucket => APP_CONFIG[:aws][:fog_directory],

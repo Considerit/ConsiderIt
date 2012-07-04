@@ -13,7 +13,8 @@ default:
     access_key_id: ''
     secret_access_key: ''
     fog_directory: ''
-    
+    cloudfront: ''
+
 development: 
   default_to: default
 

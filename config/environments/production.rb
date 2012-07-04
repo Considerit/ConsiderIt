@@ -68,6 +68,8 @@ ConsiderIt::Application.configure do
   #  :storage => :s3,
   #  :bucket => APP_CONFIG[:aws][:fog_directory],
   #  :s3_host_alias => "#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net",
+  #  :s3_protocol => "https",
+  #  :s3_headers => {'Expires' => 1.year.from_now.httpdate},
   #  :s3_credentials => {
   #    :access_key_id => APP_CONFIG[:aws][:access_key_id],
   #    :secret_access_key => APP_CONFIG[:aws][:secret_access_key]

@@ -34,6 +34,7 @@ gem 'meta_search',    '>= 1.1.0.pre'
 
 # https://github.com/thoughtbot/paperclip
 gem 'rmagick'
+gem 'aws-sdk'
 gem 'paperclip'
 
 # https://github.com/amatsuda/kaminari

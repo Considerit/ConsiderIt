@@ -112,7 +112,11 @@ class User < ActiveRecord::Base
   end   
 
   def username
-    name || email.split('@')[0]
+    name ? 
+      name
+      : email ? 
+        email.split('@')[0]
+        : 'Unknown'
   end
   
   def first_name

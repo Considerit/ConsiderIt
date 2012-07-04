@@ -29,9 +29,6 @@ class User < ActiveRecord::Base
   validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
 
   has_attached_file :avatar, 
-      :default_url => "#{ENV['RAILS_RELATIVE_URL_ROOT'] || ''}/assets/:attachment/:style_default-profile-pic.png",
-      :path => ":rails_root/public/system/:attachment/:id/:style/:filename",
-      :url => "/system/:attachment/:id/:style/:filename",   
       :styles => { 
         #:golden_horizontal => "100x62#", 
         #:golden_vertical => "62x100#", 

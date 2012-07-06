@@ -28,6 +28,8 @@ class ProposalsController < ApplicationController
     render :json => {:proposals => proposals, :current_tag => session[:filters][:tag], :current_metric => session[:filters][:metric]}.to_json
   end
 
+
+  # Shows the proposal. If it is a json request, it will just return the voter segments
   def show
     @user = current_user
  
@@ -48,29 +50,37 @@ class ProposalsController < ApplicationController
     end
 
     @is_admin = @proposal.has_admin_privilege(current_user, request.session_options[:id], params)
-
-    #@title = "#{@proposal.category} #{@proposal.designator} #{@proposal.short_name}"
-    @title = "#{@proposal.short_name}"
-    @keywords = "#{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
-
     @position = current_user ? current_user.positions.published.where(:proposal_id => @proposal.id).first : nil
-    @positions = @proposal.positions.published.includes(:user)
 
-    # if !@position && (!params.has_key? :redirect || params[:redirect] == 'true' )
-    #   redirect_to(new_proposal_position_path(@proposal.long_id))
-    #   return
-    # end
-
-    @pro_points = @proposal.points.published.includes(:user).pros.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
-    @con_points = @proposal.points.published.includes(:user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
-
-    @segments = Array.new(7)
-    (0..6).each do |bucket|
-      qry = @proposal.points.published.includes(:user).ranked_for_stance_segment(bucket)
-      @segments[bucket] = [qry.pros.page( 1 ).per( POINTS_PER_PAGE ),
-        qry.cons.page( 1 ).per( POINTS_PER_PAGE )]
-    end
     @results_page = true
+    @page = 1
+
+    if request.xhr?
+      @segments = Array.new(7)
+      (0..6).each do |bucket|
+        qry = @proposal.points.published.includes(:user).ranked_for_stance_segment(bucket)
+        @segments[bucket] = [qry.pros.page( 1 ).per( POINTS_PER_PAGE ),
+          qry.cons.page( 1 ).per( POINTS_PER_PAGE )]
+      end
+
+      segments = render_to_string :partial => 'proposals/segment_positions'
+    
+      response = {
+        :segments => segments,
+        :success => true
+      }
+      render :json => response.to_json
+
+    else
+      #@title = "#{@proposal.category} #{@proposal.designator} #{@proposal.short_name}"
+      @title = "#{@proposal.short_name}"
+      @keywords = "#{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"      
+      @positions = @proposal.positions.published.includes(:user)
+      @pro_points = @proposal.points.published.includes(:user).pros.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
+      @con_points = @proposal.points.published.includes(:user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
+
+    end
+
 
     #PointListing.transaction do
     #  (@pro_points + @con_points).each do |pnt|
@@ -84,7 +94,6 @@ class ProposalsController < ApplicationController
     #  end
     #end
 
-    @page = 1
         
     #Point.update_relative_scores
 

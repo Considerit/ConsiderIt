@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120626035402) do
+ActiveRecord::Schema.define(:version => 20120706175951) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -39,6 +39,8 @@ ActiveRecord::Schema.define(:version => 20120626035402) do
     t.string   "host"
     t.string   "host_with_port"
   end
+
+  add_index "accounts", ["identifier"], :name => "index_accounts_on_identifier"
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -104,6 +106,7 @@ ActiveRecord::Schema.define(:version => 20120626035402) do
     t.datetime "followable_last_notification"
   end
 
+  add_index "comments", ["account_id", "commentable_id", "commentable_type"], :name => "select_comments_on_commentable"
   add_index "comments", ["account_id"], :name => "index_comments_on_account_id"
   add_index "comments", ["commentable_id"], :name => "index_comments_on_commentable_id"
   add_index "comments", ["user_id"], :name => "index_comments_on_user_id"
@@ -211,6 +214,7 @@ ActiveRecord::Schema.define(:version => 20120626035402) do
     t.integer  "account_id"
   end
 
+  add_index "point_links", ["account_id", "point_id"], :name => "select_links_for_this_point"
   add_index "point_links", ["account_id"], :name => "index_point_links_on_account_id"
 
   create_table "point_listings", :force => true do |t|
@@ -354,7 +358,7 @@ ActiveRecord::Schema.define(:version => 20120626035402) do
     t.datetime "followable_last_notification"
   end
 
-  add_index "positions", ["account_id", "proposal_id", "published"], :name => "index_positions_on_account_id_and_proposal_id_and_published"
+  add_index "positions", ["account_id", "proposal_id", "published"], :name => "select_published_positions"
   add_index "positions", ["account_id"], :name => "index_positions_on_account_id"
   add_index "positions", ["proposal_id"], :name => "index_positions_on_option_id"
   add_index "positions", ["published"], :name => "index_positions_on_published"
@@ -410,6 +414,7 @@ ActiveRecord::Schema.define(:version => 20120626035402) do
   end
 
   add_index "proposals", ["account_id", "id"], :name => "select_proposal"
+  add_index "proposals", ["account_id", "long_id"], :name => "select_proposal_by_long_id"
   add_index "proposals", ["account_id"], :name => "index_proposals_on_account_id"
   add_index "proposals", ["admin_id"], :name => "index_proposals_on_admin_id", :unique => true
   add_index "proposals", ["long_id"], :name => "index_proposals_on_long_id", :unique => true

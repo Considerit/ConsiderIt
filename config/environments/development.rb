@@ -15,8 +15,6 @@ ConsiderIt::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
   
-  #config.assets.compile = true
-
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
   # config.action_view.debug_rjs             = true
@@ -32,8 +30,7 @@ ConsiderIt::Application.configure do
   config.action_dispatch.best_standards_support = :builtin
   
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
-  config.action_mailer.perform_deliveries = true 
-  #config.action_mailer.delivery_method = :mailhopper  
+  config.action_mailer.perform_deliveries = false 
 
   ActionMailer::Base.smtp_settings = {
     :address              => "smtp.gmail.com",
@@ -48,12 +45,6 @@ ConsiderIt::Application.configure do
   #Sass::Plugin.options[:debug_info] = true
 
   Paperclip.options[:command_path] = "/opt/local/bin/"
-
-  Paperclip::Attachment.default_options.merge!({
-    :path => ":rails_root/public/system/:attachment/:id/:style/:filename",
-    :url => "/system/:attachment/:id/:style/:filename",   
-    :default_url => "#{ENV['RAILS_RELATIVE_URL_ROOT'] || ''}/assets/:attachment/:style_default-profile-pic.png",
-  })
 
 
 end

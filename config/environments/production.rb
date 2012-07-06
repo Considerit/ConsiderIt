@@ -44,7 +44,7 @@ ConsiderIt::Application.configure do
   # config.logger = SyslogLogger.new
 
   # Use a different cache store in production
-  # config.cache_store = :mem_cache_store
+  config.cache_store = :dalli_store, { :expires_in => 1.day, :compress => true }
 
   # Disable Rails's static asset server
   # In production, Apache or nginx will already do this
@@ -52,13 +52,6 @@ ConsiderIt::Application.configure do
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # config.action_controller.asset_host = "//#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net"
-
-  # Enable FS storage for Paperclip
-  # Paperclip::Attachment.default_options.merge!({
-  #   :path => ":rails_root/public/system/:attachment/:id/:style/:filename",
-  #   :url => "/system/:attachment/:id/:style/:filename",   
-  #   :default_url => "#{ENV['RAILS_RELATIVE_URL_ROOT'] || ''}/assets/:attachment/:style_default-profile-pic.png",
-  # })
 
   # Enable S3/Cloudfront storage for Paperclip
   #Paperclip::Attachment.default_options.merge!({

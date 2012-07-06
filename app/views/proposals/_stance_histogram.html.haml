@@ -1,15 +1,17 @@
 = cache [@proposal, 'histogram'] do
 
-  - people_bars ||= false
+  - people_bars ||= true
   - barheight = 180
 
   -# stance_breakdown = @proposal.stance_fractions
   - if stance_breakdown.length > 0
     - height_scaler = has_position ? stance_breakdown.max : 1
     - user_position = @position && @position.published ? @position : nil
-    - positions = Hash.new{|h,k| h[k] = [] }
-    - @positions.each do |position|
-      - positions[position.stance_bucket].push(position)
+
+    - if people_bars
+      - positions = Hash.new{|h,k| h[k] = [] }
+      - @positions.each do |position|
+        - positions[position.stance_bucket].push(position)
 
     .histogram
       %table
@@ -36,7 +38,7 @@
                 .border_cover
 
                 - if people_bars
-                  %ul.people_bar
+                  %ul.people_bar.hide
                     = render :partial => "positions/statement/block", :locals => { :positions => positions[6-index] }
                     %li.clear
 

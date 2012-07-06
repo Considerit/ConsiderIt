@@ -78,7 +78,13 @@ ConsiderIt = {
       dim: 720
     });    
 
+    var results_page = $j('#explore_proposal').length > 0;
 
+    if (results_page) {
+      $j.get('/' + $j.trim($j('#proposal_long_id').text()) + '/results', function(data){
+        $j('.explore#ranked_points').append( $j(data['segments']))
+      });
+    }
 
     ConsiderIt.positions.initialize_participants_block();
 
@@ -825,10 +831,11 @@ ConsiderIt = {
           p.prepend('<li style="visibility:hidden; float: right; height:' + cur_low + 'px; width:'+cur_low+'px;">')
         }
         participants
-          .css({'width': cur_low, 'height': cur_low})
-          .show();
+          .css({'width': cur_low, 'height': cur_low});
         //container.css('height', 'auto');
       }
+
+      $j('.people_bar').show();
     },
 
     set_slider_value : function(new_value){
@@ -1133,3 +1140,6 @@ $.fn.autoGrowInput = function(o) {
 
 };
 })(jQuery);
+
+//http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
+(function($,d){$.each(readyQ,function(i,f){$(f)});$.each(bindReadyQ,function(i,f){$(d).bind("ready",f)})})(jQuery,document)

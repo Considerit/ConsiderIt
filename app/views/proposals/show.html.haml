@@ -32,7 +32,7 @@
 
         .bar{ :style => "visibility: hidden; border: none; margin: 0; padding: 0; width: 0; height: 100%; left: 0px"}
       - else        
-        = render :partial => "proposals/stance_histogram", :locals => { :stance_breakdown => proposal_stance_data, :has_position => has_position, :people_bars => true}
+        = render :partial => "proposals/stance_histogram", :locals => { :stance_breakdown => proposal_stance_data, :has_position => has_position}
 
     %li.ranked_points
 
@@ -44,8 +44,6 @@
 
         = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => 'all', :pro_points => @pro_points, :con_points => @con_points, :has_other_points => has_other_points }
 
-        - @segments.each_with_index do |(pros,cons), bucket| 
-          = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => bucket, :pro_points => pros, :con_points => cons, :has_other_points => pros.length + cons.length > 0}
 
     %li.clear
  

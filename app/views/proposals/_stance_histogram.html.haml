@@ -37,7 +37,7 @@
 
                 .border_cover
 
-                - if people_bars
+                - if people_bars && positions[6-index].length > 0
                   %ul.people_bar.hide
                     = render :partial => "positions/statement/block", :locals => { :positions => positions[6-index] }
                     %li.clear

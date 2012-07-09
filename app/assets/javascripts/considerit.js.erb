@@ -80,7 +80,7 @@ ConsiderIt = {
 
     var results_page = $j('#explore_proposal').length > 0;
 
-    if (results_page) {
+    if (results_page && $j('.point_in_list').length > 0 ) {
       $j.get('/' + $j.trim($j('#proposal_long_id').text()) + '/results', function(data){
         $j('.explore#ranked_points').append( $j(data['segments']))
       });

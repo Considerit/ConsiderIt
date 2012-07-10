@@ -4,7 +4,7 @@ class HomeController < ApplicationController
 
   caches_action :index, :cache_path => proc {|c|
     updated_at = current_tenant.proposals.count > 0 ? current_tenant.proposals.order('updated_at DESC').limit(1).first.updated_at.to_i : 0
-    {:tag => "is_logged_in-#{current_user ? current_user.id : '-1'}-#{updated_at}"}
+    {:tag => "is_logged_in-#{current_user ? "#{current_user.id}-#{current_user.registration_complete}"  : '-1'}-#{updated_at}"}
   }
 
   def index

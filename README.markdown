@@ -1,6 +1,6 @@
 # ConsiderIt & ChalkboardIt
 
-ConsiderIt is an open source deliberation platform. The creator and maintainer is [Travis Kriplean](http://abstract.cs.washington.edu/~travis/). 
+ConsiderIt is an open source deliberation platform. The creator and maintainer is [Travis Kriplean](<tkriplean@gmail.com>). 
 
 To see ConsiderIt in action, check out [ChalkboardIt](https://chalkboard.it). ChalkboardIt is the primary hosted deployment of ConsiderIt. ConsiderIt was first created to support the [Living Voters Guide](http://livingvotersguide.org), a citizen-powered voters guide for WA state.
 
@@ -10,21 +10,30 @@ ConsiderIt makes it easy to endorse points made by others who
 share your views, or to add new points of your own.
 
 ConsiderIt also helps create common ground among people with different
-views.  ConsiderIt prioritizes the pro and con points that are
+views. ConsiderIt prioritizes the pro and con points that are
 endorsed by people from across the decision spectrum, decreasing
 polarization and helping decision-makers move towards solutions with
 broad appeal.
 
-ConsiderIt is an open source Ruby on Rails project. It is licensed
-under the [AGPL](http://www.gnu.org/licenses/agpl-3.0.html). This means 
-that you need to include a link to the code repository if you use this code 
-at all. 
+ConsiderIt is open source for non-commercial use, under the AGPL license. [More details about licensing](#licensing). 
 
+## <a id="licensing"></a>Licensing
+
+### Non-commercial use of ConsiderIt
+
+ConsiderIt is licensed under the open source [AGPL](http://www.gnu.org/licenses/agpl-3.0.html) license for non-commercial use. In addition to the normal stipulations of the GPL, the AGPL adds the requirement that if you use ConsiderIt as part of a website, you must include a link to your source code, even if you haven't redistributed it per se. If this is problematic for you for some reason, we will most likely be quite happy to simply have a "powered by ChalkboardIt" link in the footer of your webpage. [Contact us](<tkriplean@gmail.com>) to discuss it.
+
+###Commercial use of ConsiderIt
+
+For use of ConsiderIt in a commercial context, an agreement can be struck with us. Commercial use covers non-profits who create a revenue stream based on use of a product that includes ConsiderIt, even when that non-profit is also releasing their code under an open source license. [Contact us](<tkriplean@gmail.com>) if you are interested.
+
+###Use of ConsiderIt in a closed-source proprietary product
+
+I am open to selling an alternate license that waives the AGPL conditions so that ConsiderIt can be incorporated into a closed-source proprietary product, or even for vendors who wish to repackage ConsiderIt under a different name and add additional value through closed modules. [Contact us](<tkriplean@gmail.com>) to discuss this possibility. 
 
 ## Installation
 
-Here are installation instructions, along with some hints in case of
-problems (mostly Macintosh-specific).
+Here are installation instructions, along with some hints in case of problems (mostly Macintosh-specific).
 
 
 * Manage ruby / rails installs with

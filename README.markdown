@@ -25,11 +25,11 @@ ConsiderIt is licensed under the open source [AGPL](http://www.gnu.org/licenses/
 
 ###Commercial use of ConsiderIt
 
-For use of ConsiderIt in a commercial context, an agreement can be struck with us. Commercial use covers non-profits who create a revenue stream based on use of a product that includes ConsiderIt, even when that non-profit is also releasing their code under an open source license. [Contact us](<tkriplean@gmail.com>) if you are interested.
+For use of ConsiderIt in a commercial context, an agreement can be struck with us. Commercial use covers non-profits who create a revenue stream based on use of a product that includes ConsiderIt. [Contact us](<tkriplean@gmail.com>) if you are interested.
 
 ###Use of ConsiderIt in a closed-source proprietary product
 
-I am open to selling an alternate license that waives the AGPL conditions so that ConsiderIt can be incorporated into a closed-source proprietary product, or even for vendors who wish to repackage ConsiderIt under a different name and add additional value through closed modules. [Contact us](<tkriplean@gmail.com>) to discuss this possibility. 
+We are open to selling an alternate license that waives the AGPL conditions so that ConsiderIt can be incorporated into a closed-source proprietary product, or even for vendors who wish to repackage ConsiderIt under a different name and add additional value through closed modules. [Contact us](<tkriplean@gmail.com>) to discuss this possibility. 
 
 ## Installation
 

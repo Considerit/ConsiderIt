@@ -1,3 +1,10 @@
+//*********************************************
+// For the ConsiderIt project.
+// Copyright (C) 2010 - 2012 by Travis Kriplean.
+// Licensed under the AGPL for non-commercial use.
+// See https://github.com/tkriplean/ConsiderIt/ for details.
+//*********************************************
+
 %li{ :id => "proposal_item-#{proposal.id}", :class => "proposal_item horizontal #{has_stance(proposal) ? 'finished' : 'not-finished'} #{proposal==@proposal ? 'active' : 'not-active'} #{style} #{proposal.domain_short != 'WA State' ? 'local' : ''}" }
 
   %a{ :href => new_proposal_position_path(proposal.long_id), :title => "Think through proposal #{proposal.category} #{proposal.designator}"}

@@ -1,3 +1,9 @@
+#*********************************************
+# For the ConsiderIt project.
+# Copyright (C) 2010 - 2012 by Travis Kriplean.
+# Licensed under the AGPL for non-commercial use.
+# See https://github.com/tkriplean/ConsiderIt/ for details.
+#*********************************************
 
 
 class Users::SessionsController < Devise::SessionsController
@@ -22,24 +28,6 @@ class Users::SessionsController < Devise::SessionsController
     end
     super
   end
-
-  # POST /resource/sign_in
-  # def create
-  #   #set_flash_message(:notice, :signed_in) if is_navigational_format?
-  #   sign_in(resource_name, resource)
-  #   if session.has_key?('position_to_be_published')
-  #     session['reify_activities'] = true 
-  #   end    
-
-  #   if current_user && session.has_key?(:domain) && session[:domain] && session[:domain] != current_user.domain_id
-  #     current_user.domain_id = session[:domain]
-  #     current_user.save
-  #   elsif current_user && current_user.domain_id
-  #     session[:domain] = current_user.domain_id
-  #   end
-
-  #   respond_with resource, :location => redirect_location(resource_name, resource)
-  # end
 
 end
 

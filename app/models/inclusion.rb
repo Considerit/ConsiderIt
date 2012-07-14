@@ -1,3 +1,10 @@
+#*********************************************
+# For the ConsiderIt project.
+# Copyright (C) 2010 - 2012 by Travis Kriplean.
+# Licensed under the AGPL for non-commercial use.
+# See https://github.com/tkriplean/ConsiderIt/ for details.
+#*********************************************
+
 class Inclusion < ActiveRecord::Base
   has_paper_trail :only => [:point_id, :user_id, :included_as_pro]  
   is_trackable

@@ -1,3 +1,10 @@
+//*********************************************
+// For the ConsiderIt project.
+// Copyright (C) 2010 - 2012 by Travis Kriplean.
+// Licensed under the AGPL for non-commercial use.
+// See https://github.com/tkriplean/ConsiderIt/ for details.
+//*********************************************
+
 .judgepointform{ :id => "judgepointform_#{point.id}" }
 
   = link_to "#{ current_user && point.user_id == current_user.id ? 'delete' : 'remove'}", proposal_point_inclusions_path(@proposal.long_id, point, :page => @page, :delete => true), :remote => true, :method=>:post, :class => 'point_operation', :title => 'Click to remove this point from your list'

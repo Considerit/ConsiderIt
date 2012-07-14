@@ -1,7 +1,9 @@
-# Use this file to easily define all of your cron jobs.
-#
-# It's helpful, but not entirely necessary to understand cron before proceeding.
-# http://en.wikipedia.org/wiki/Cron
+#*********************************************
+# For the ConsiderIt project.
+# Copyright (C) 2010 - 2012 by Travis Kriplean.
+# Licensed under the AGPL for non-commercial use.
+# See https://github.com/tkriplean/ConsiderIt/ for details.
+#*********************************************
 
 env :MAILTO, '""' 
 env :PATH, ENV['PATH']

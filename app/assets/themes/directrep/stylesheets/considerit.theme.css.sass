@@ -1,10 +1,47 @@
 @import "mixins"
 @import "homepage"
+@import "paper_proposal"
 
 html 
   background-image: none
   background-color: #e4e4e4
   position: relative
+  +wall(#bbc)
+
+#admin_strip #content 
+  #more_options
+    display: none
+  #links
+    display: none
+
+.logo_cell
+  float: none
+  z-index: -1
+  position: absolute
+  left: 0
+
+#nav-user
+  top: -5px
 
 
+body #wrap > div#content
+  padding-top: 10em
 
+
+#flag
+  position: relative
+  .planks
+    position: absolute
+    z-index: -1
+    top: 0
+    width: 100%
+    .plank
+      +wall(#390000)
+      background-image: image-url('directrep/images/red_wall.png')
+      width: 100%
+      height: 35px
+      margin-bottom: 35px
+
+      &.short
+        width: 688px
+        margin-left: 385px

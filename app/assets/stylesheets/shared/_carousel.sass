@@ -9,19 +9,24 @@
     cursor: pointer
 
 .horizontal
+  position: relative
   .paginate
     width: 20px
     height: 20px
     display: inline-block
-
+    position: absolute
+    top: 50%
+    margin-top: -10px
     &.first
-      float: left
-      .back
-        background-image: image-url('arrow-prev.png')
+      //float: left
+      //.back
+      //  background-image: image-url('arrow-prev.png')
+      left: 0
     &.last
-      float: right
-      .forward
-        background-image: image-url('arrow-next.png')
+      right: 0
+      //float: right
+      //.forward
+      //  background-image: image-url('arrow-next.png')
 
     .forward 
       text-align: right
@@ -30,7 +35,8 @@
 
   .carousel
     height: 90px
-    float: left
-    padding: 3px
+    //float: left
+    margin: 3px 20px
+
 
   

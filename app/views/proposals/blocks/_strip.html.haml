@@ -10,6 +10,7 @@
 .proposals{ :class => "#{style} horizontal" }
   .paginate.first
     %button.back
+      &#9664;
   .carousel{ :name => "proposals" }
     %ul
       - get_proposals_by_rank.each do |proposal|
@@ -17,5 +18,6 @@
     .clear
   .paginate.last
     %button.forward.not_ajax
+      &#9654;
   .clear
 

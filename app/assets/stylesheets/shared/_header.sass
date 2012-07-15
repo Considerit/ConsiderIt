@@ -1,6 +1,11 @@
 #wrap
   #masthead
-
+    height: $vertical_baseline * 3
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    
     .inner
       width: $content_width
       //margin-top: $vertical_baseline * 2
@@ -10,10 +15,10 @@
       margin: auto
 
       .logo_cell
-        //position: absolute
-        //top: -56px
+        position: absolute
+        left: 0px
         z-index: 6
-        float: left
+        //float: left
         a
           overflow: hidden
           opacity: 1
@@ -23,7 +28,9 @@
   //position: absolute
   //top: -80px
   //right: 0
-  float: right
+  position: absolute
+  z-index: 7
+  right: 0
   border-bottom-right-radius: 5px
   border-bottom-left-radius: 5px
 

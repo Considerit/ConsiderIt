@@ -1,2 +1,70 @@
 .logo_cell
   display: none
+
+.homepage body
+  #content
+    height: 700px 
+
+  font-family: 'Lucida Grande', 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
+
+  #paper
+    width: 745px
+    height: 517px
+    top: 190px
+    left: 50%
+    margin-left: -373px
+    position: absolute
+
+    &.phil
+      background: image-url('directrep/images/phil.png') no-repeat 0 0 
+
+    .subheader
+      position: absolute
+      top: 50px
+      left: 41px
+      left: 41px
+      +font-size(1)
+
+      a
+        text-decoration: underline
+        font-weight: bold
+
+    #proposals
+      position: absolute
+      bottom: 30px
+      left: 15px
+      .horizontal .carousel
+        height: 150px
+
+        li.proposal_item
+          width: 210px
+          height: 150px
+          +font-size(-2)
+          +linear-gradient(#002266, #001133)
+          color: #e1e1e1
+          margin: 0 5px
+          position: relative
+          > a
+            text-align: left
+            color: #e1e1e1
+
+          .title
+
+          .prompt
+            margin-top: $vertical_baseline
+            border-bottom: 1px dotted #555
+            font-variant: small-caps
+            display: inline-block
+            position: absolute
+            bottom: 10px
+
+      .new_proposal
+        position: absolute
+        bottom: -67px
+        left: 20px
+        .avatar
+          left: 0px
+        form input[type="submit"]
+          position: absolute
+          top: 5px
+          right: -65px

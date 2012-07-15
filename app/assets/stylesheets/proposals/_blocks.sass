@@ -88,10 +88,6 @@
 .proposals
   margin: 15px auto
 
-  &.blocks
-    .paginate
-      margin-top: 30px
-
   &.menu
     position: absolute
     top: -119px
@@ -116,6 +112,7 @@ li.proposal_item
   padding: 0      
   +border-radius(5px)
   opacity: .8
+  +transition
   
   width: 225px
 
@@ -132,7 +129,7 @@ li.proposal_item
     opacity: 1
 
   > a
-    padding: $vertical_baseline $grid_minor
+    padding: $vertical_baseline $grid_xs
     color: inherit
     margin: auto
     display: inline-block
@@ -150,8 +147,9 @@ li.proposal_item
     .short_name
 
     .user_name
-      text-decoration: italic
+      font-style: italic
       white-space: nowrap
+      font-weight: normal
 
 
   &.blocks    

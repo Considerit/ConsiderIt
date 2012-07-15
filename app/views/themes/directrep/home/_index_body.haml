@@ -1,4 +1,13 @@
+//*********************************************
+// For the ConsiderIt project.
+// Copyright (C) 2010 - 2012 by Travis Kriplean.
+// Licensed under the AGPL for non-commercial use.
+// See https://github.com/tkriplean/ConsiderIt/ for details.
+//*********************************************
+
 - phil = true
+- style = 'horizontal'
+- hide_initially = false
 
 #home
   #flag
@@ -13,10 +22,10 @@
           %a{:href => 'http://www.phildoddsforcongress.com', :title => 'Phil Dodd\'s candidate website'} elect me
         as U.S. House Representative of Florida District 3
 
-    #proposals
-      - get_proposals.each do |proposal|
-        = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
 
+    #proposals
+
+      = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false, :prompt => 'Vote on this proposal' }
 
       - if current_user && current_user.is_admin?
         = render :partial => "proposals/new", :locals => { :prompt => 'Add new proposal'}

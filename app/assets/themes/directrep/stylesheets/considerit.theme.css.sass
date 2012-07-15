@@ -1,0 +1,34 @@
+@import "mixins"
+@import "homepage"
+
+html 
+  background-image: none
+  background-color: #e4e4e4
+  position: relative
+
+.homepage body
+  #content
+    height: 700px 
+
+  font-family: 'Lucida Grande', 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
+
+  #paper
+    width: 745px
+    height: 517px
+    top: 190px
+    left: 50%
+    margin-left: -373px
+    position: absolute
+
+    &.phil
+      background: image-url('directrep/images/phil.png') no-repeat 0 0 
+
+    .subheader
+      position: absolute
+      top: 50px
+      left: 41px
+      +font-size(1)
+
+      a
+        text-decoration: underline
+        font-weight: bold

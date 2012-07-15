@@ -1,0 +1,23 @@
+- phil = true
+
+#home
+  #flag
+    = image_tag current_theme_image_path("flag.png")
+
+  #paper{ :class => phil ? 'phil' : 'jeremy' }
+
+    - if phil
+      .subheader
+        &hellip;if you 
+        = succeed ' ' do
+          %a{:href => 'http://www.phildoddsforcongress.com', :title => 'Phil Dodd\'s candidate website'} elect me
+        as U.S. House Representative of Florida District 3
+
+    #proposals
+      - get_proposals.each do |proposal|
+        = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+
+
+      - if current_user && current_user.is_admin?
+        = render :partial => "proposals/new", :locals => { :prompt => 'Add new proposal'}
+

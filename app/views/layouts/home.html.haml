@@ -37,7 +37,7 @@
         ConsiderIt.init();     
       });   
 
-    = javascript_include_tag 'application', :async => true
+    = javascript_include_tag 'application', :async =>  Rails.env.production?
 
       
     - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''

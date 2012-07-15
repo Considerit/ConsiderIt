@@ -1,6 +1,11 @@
 #home
   -# = render :partial => "shared/social_media/twitter_follow", :locals => { :call => 'Follow new proposals'}
 
+  :javascript
+    function no_image(source) {
+      $j(this).parents('.logo_cell').remove();
+    }
+
   %img.big_logo{ :src => current_theme_image_path("logo_big.png"), :onerror => "no_image(this);" }
 
   .attribution

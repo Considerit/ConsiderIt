@@ -11,14 +11,11 @@
   .inner
     .logo_cell
       %a.logo_home{ :href => root_path, :title => ""}
-        %img{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);" }
-
         :javascript
-          $j(document).ready(function(){
-            function no_image(source) {
-              $j(this).parents('.logo_cell').remove();
-            }
-          });
+          function no_image(source) {
+            $j(this).parents('.logo_cell').remove();
+          }
+        %img{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);" }
           
     - if @proposal && @is_admin
       = render :partial => "proposals/admin_strip"

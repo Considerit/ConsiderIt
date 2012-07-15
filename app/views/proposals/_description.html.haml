@@ -9,6 +9,17 @@
 
 .proposal_prompt
 
+  - if @is_admin
+    .proposal_admin_operations
+      .edit_page
+        %a
+          Edit proposal
+          = image_tag 'edit_page.png'
+      - if @deletable
+        .delete_proposal
+          = link_to "Delete proposal", proposal_path(@proposal.long_id), :confirm => "Are you sure?", :method=>:delete
+
+
   .head.single
     %h3.banner
       - if @is_admin

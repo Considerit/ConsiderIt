@@ -1,21 +1,22 @@
-.edit_page, .delete_proposal
+.proposal_admin_operations
   position: absolute
-  right: 15px
-
-  a
-    +font-size(1)
-    font-weight: bold
-  img
-    height: 23px
-    vertical-align: top
-    position: absolute
-    right: -30px
-    top: 0
-
-.edit_page
+  width: 170px
+  right: -200px
   top: $vertical_baseline
-.delete_proposal
-  top: $vertical_baseline * 3
+
+  .edit_page, .delete_proposal
+    a
+      +font-size(1)
+      font-weight: bold
+    img
+      height: 23px
+      vertical-align: top
+      position: absolute
+      right: -30px
+      top: 0
+  
+  .delete_proposal
+    margin-top: $vertical_baseline 
 
 .unobtrusive_edit_form
   .unobtrusive_edit

@@ -32,3 +32,28 @@ html
       a
         text-decoration: underline
         font-weight: bold
+
+    #proposals
+      position: absolute
+      bottom: 35px
+      left: 20px
+      .horizontal .carousel
+        height: 150px
+
+        li.proposal_item
+          width: 225px
+          height: 150px
+          +font-size(-2)
+          > a
+            text-align: left
+
+      .new_proposal
+        position: absolute
+        bottom: -70px
+        .avatar
+          left: 0px
+        form input[type="submit"]
+          position: absolute
+          top: 5px
+          right: -65px
+

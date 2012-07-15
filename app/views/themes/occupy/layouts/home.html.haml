@@ -30,7 +30,7 @@
         ConsiderIt.init();     
       });   
 
-    = javascript_include_tag 'application', :async => true
+    = theme_javascript_include_tag 'application', :async => Rails.env.production?
     = javascript_include_tag 'https://nav.occupy.net/occupynet_nav.js'
 
       

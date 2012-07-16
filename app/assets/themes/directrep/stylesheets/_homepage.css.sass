@@ -25,7 +25,6 @@
       position: absolute
       top: 50px
       left: 41px
-      left: 41px
       +font-size(1)
 
       a
@@ -34,26 +33,36 @@
 
     #proposals
       position: absolute
-      bottom: 30px
+      bottom: 13px
       left: 15px
       .horizontal .carousel
-        height: 150px
+        height: 11 * $vertical_baseline
 
         li.proposal_item
           width: 210px
-          height: 150px
-          +font-size(-2)
+          height: 10 * $vertical_baseline
           +linear-gradient(#002266, #001133)
+          opacity: 1
           color: #e1e1e1
           margin: 0 5px
           position: relative
+          +transition
+
+          &:hover
+            +linear-gradient(#6B0000, #390000)
+            a, .prompt
+              color: white
+              
           > a
             text-align: left
             color: #e1e1e1
+            height: 10 * $vertical_baseline
+            +font-size(-2)
 
           .title
 
           .prompt
+            +font-size(-2)
             margin-top: $vertical_baseline
             border-bottom: 1px dotted #555
             font-variant: small-caps
@@ -63,7 +72,7 @@
 
       .new_proposal
         position: absolute
-        bottom: -67px
+        bottom: -47px
         left: 20px
         .avatar
           left: 0px

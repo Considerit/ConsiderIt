@@ -1,7 +1,7 @@
 @import "mixins"
 @import "homepage"
 @import "paper_proposal"
-@import url(https://fonts.googleapis.com/css?family=Alfa+Slab+One)
+//@import url(https://fonts.googleapis.com/css?family=Alfa+Slab+One)
 
 
 html 
@@ -48,6 +48,79 @@ body #wrap > div#content
         width: 688px
         margin-left: 385px
 
-=heading
-  font-family: "Alfa Slab One", "Patua One", Georgia, Times, "Times New Roman", serif 
-  letter-spacing: -1px
+#wrap #footer
+  margin-top: 4 * $vertical_baseline
+  +chalkboard
+  width: 100%
+  .footer_wrapper
+    position: relative
+    width: 738px
+
+    > div
+      color: #e1e1e1
+
+      &.powered_by, &.report_problems
+        position: absolute
+        margin-top: 0
+        right: 0
+      &.powered_by
+        text-transform: lowercase
+        +font-size(-2)
+        top: -11px
+        img
+          position: relative
+          top: 8px
+
+      &.report_problems
+        top: $vertical_baseline * 3
+
+      &#other_candidates
+        text-align: left
+        font-variant: small-caps
+        .heading
+          +heading
+          letter-spacing: normal
+          display: none
+
+
+        .candidate_list
+          padding-left: 50px
+          .candidate
+            padding: 0 $grid_xs
+            width: 125px
+            position: relative
+            a
+              color: #e1e1e1
+              &:hover
+                color: white
+                .mugshot            
+                  opacity: 1
+            .mugshot, .name, .district, .direct_rep
+              text-align: center
+              +transition
+
+            .mugshot
+              opacity: .75
+
+            .name_block
+              position: absolute
+              bottom: -25px
+              left: 0
+              width: 150px
+
+              text-align: center
+              > span
+                text-shadow: 0 -1px 2px #313131
+
+              .name
+                font-weight: bold
+              .district
+                +font-size(-1)
+                text-transform: lowercase
+                position: relative
+                top: -5px                
+              .directrep
+                +font-size(-2)
+                position: relative
+                text-transform: lowercase
+                top: -10px

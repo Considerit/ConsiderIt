@@ -1,0 +1,25 @@
+- candidate = 'phildodds'
+
+- candidates = [{:identifier => 'phildodds', :name => 'Phil Dodds', :district => 'Florida HR3', :mug => 'phildodds.png'}, {:identifier => 'jeremyhansen', :name => 'Jeremy Hansen', :district => 'Vermont Senate', :mug => 'jeremyhansen.png'}]
+
+#other_candidates
+  .heading
+    &#9733; Another DIRECTREP Candidate &#9733;
+
+  %ul.candidate_list
+    - candidates.each do |cnd|
+      - unless candidate == cnd[:identifier]
+        %li.candidate
+          %a{ :href => "http://#{cnd[:identifier]}.#{get_root_domain}" }
+            
+            %img.mugshot{ :src => current_theme_image_path(cnd[:mug]), :onerror => "no_image(this);" }
+
+            %span.name_block
+              %span.name
+                &#9733;#{cnd[:name]}&#9733;
+              %br
+              %span.district
+                = cnd[:district]
+              %br
+              %span.directrep
+                DirectRep Candidate

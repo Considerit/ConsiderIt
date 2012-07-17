@@ -56,7 +56,8 @@
 
           %li.password_field
             = f.password_field :password, :title => 'password', :placeholder => 'Password', :required => true
-
+            %a.hide.error{ :href => "#{new_user_password_path}" }
+              Forgot your password?
 
           %li.submit_footer
             .proxy.button_proxy.button

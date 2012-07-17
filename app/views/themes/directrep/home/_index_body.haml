@@ -35,7 +35,8 @@
         = succeed ' ' do
           %a{:href => 'http://vermontelection.org/', :title => 'Jeremy Hansen\'s candidate website'} elect me 
           as Vermont State Senator for Washington County
-
+      = render :partial => "home/follow"
+      
     #proposals
 
       = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false, :prompt => 'Vote on this proposal' }

@@ -25,8 +25,8 @@
       },
       change: function(event, ui) {
         ConsiderIt.positions.set_slider_value(ui.value);
-      },
-      stop: function(event, ui){
+      }
+      //stop: function(event, ui){
         //if (ConsiderIt && ConsiderIt.study) {
         //  $j.post('/home/study/2', {
         //    position_id: #{@position.id},
@@ -35,7 +35,7 @@
         //    fval: ui.value
         //  });   
         //}
-      }
+      //}
     };
 
     $j(".slider").slider(params);

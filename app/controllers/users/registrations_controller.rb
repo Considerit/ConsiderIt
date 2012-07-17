@@ -67,9 +67,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def update
-    current_user.skip_confirmation!
+    # not using skip confirmation because it sets confirmed_at on additional info provisioning...not sure why it was enabled
+    #current_user.skip_confirmation!
     current_user.update_attributes(params[:user])
-    current_user.skip_confirmation!
+    #current_user.skip_confirmation!
     current_user.save
     redirect_to request.referer
   end

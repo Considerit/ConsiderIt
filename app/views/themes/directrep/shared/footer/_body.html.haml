@@ -1,5 +1,3 @@
-- candidate = 'phildodds'
-
 - candidates = [{:identifier => 'phildodds', :name => 'Phil Dodds', :district => 'Florida HR3', :mug => 'phildodds.png'}, {:identifier => 'jeremyhansen', :name => 'Jeremy Hansen', :district => 'Vermont Senate', :mug => 'jeremyhansen.png'}]
 
 #other_candidates
@@ -8,12 +6,8 @@
 
   %ul.candidate_list
     - candidates.each do |cnd|
-      //- unless candidate == cnd[:identifier]
       %li.candidate.fl
         %a{ :href => "http://#{cnd[:identifier]}.#{get_root_domain}" }
-          
-          //%img.mugshot{ :src => current_theme_image_path(cnd[:mug]), :onerror => "no_image(this);" }
-
           %span.name_block
             .name
               &#9733;#{cnd[:name]}&#9733;

@@ -85,18 +85,22 @@
           &.email_field input
             width: 205px
 
-          &.password_field input
-            width: 128px
+          &.password_field 
+            position: relative
+            input
+              width: 128px
 
-          .error
-            position: absolute
-            //bottom: -17px
-            +main_font
-            +font-size(-4)
-            //left: 0
-            right: 37%
-            width: 150px
-            text-align: left
+            .error
+              position: absolute
+              //bottom: -17px
+              +main_font
+              +font-size(-4)
+              //left: 0
+              left: 0
+              width: 150px
+              text-align: left
+              bottom: -1.5em
+              text-decoration: underline
 
 
           &.name_field input, &.avatar_field input

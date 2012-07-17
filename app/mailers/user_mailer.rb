@@ -26,7 +26,7 @@ class UserMailer < ActionMailer::Base
 
   end
 
-  def reset_password_instructions(user)
+  def reset_password_instructions(user, options)
     @user = user
     @host = options[:host]
     @options = options

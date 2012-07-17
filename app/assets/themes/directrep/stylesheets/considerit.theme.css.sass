@@ -52,6 +52,7 @@ body #wrap > div#content
   margin-top: 4 * $vertical_baseline
   +chalkboard
   width: 100%
+  height: 3 * $vertical_baseline
   .footer_wrapper
     position: relative
     width: 738px
@@ -66,12 +67,13 @@ body #wrap > div#content
       &.powered_by
         text-transform: lowercase
         +font-size(-2)
-        top: -11px
+        top: -5px
         img
           position: relative
           top: 8px
 
       &.report_problems
+        display: none
         top: $vertical_baseline * 3
 
       &#other_candidates
@@ -84,11 +86,12 @@ body #wrap > div#content
 
 
         .candidate_list
-          padding-left: 50px
+
           .candidate
             padding: 0 $grid_xs
-            width: 125px
+            //width: 125px
             position: relative
+
             a
               color: #e1e1e1
               &:hover
@@ -96,6 +99,7 @@ body #wrap > div#content
                 .mugshot            
                   opacity: 1
             .mugshot, .name, .district, .direct_rep
+              text-transform: uppercase
               text-align: center
               +transition
 
@@ -103,24 +107,25 @@ body #wrap > div#content
               opacity: .75
 
             .name_block
-              position: absolute
-              bottom: -25px
-              left: 0
+              //position: absolute
+              //bottom: -25px
+              //left: 0
               width: 150px
 
               text-align: center
-              > span
-                text-shadow: 0 -1px 2px #313131
+              //> span
+                //text-shadow: 0 -1px 2px #313131
 
               .name
                 font-weight: bold
+
               .district
-                +font-size(-1)
-                text-transform: lowercase
-                position: relative
-                top: -10px                
+                +font-size(-4)
+                text-transform: uppercase
+                //position: relative
+                //top: -10px                
               .directrep
-                +font-size(-1)
-                position: relative
-                text-transform: lowercase
-                top: -5px
+                +font-size(-4)
+                //position: relative
+                text-transform: uppercase
+                //top: -5px

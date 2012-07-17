@@ -5,7 +5,7 @@
 // See https://github.com/tkriplean/ConsiderIt/ for details.
 //*********************************************
 
-- phil = true
+- phil = current_tenant.identifier.include?('phil') || current_tenant.identifier.include?('dodds')
 - style = 'horizontal'
 - hide_initially = false
 
@@ -23,13 +23,18 @@
 
   #paper{ :class => phil ? 'phil' : 'jeremy' }
 
-    - if phil
-      .subheader
+    .subheader
+
+      - if phil
         &hellip;if you 
         = succeed ' ' do
           %a{:href => 'http://www.phildoddsforcongress.com', :title => 'Phil Dodd\'s candidate website'} elect me
         as U.S. House Representative of Florida District 3
-
+      - else
+        &hellip;if you 
+        = succeed ' ' do
+          %a{:href => 'http://vermontelection.org/', :title => 'Jeremy Hansen\'s candidate website'} elect me 
+          as Vermont State Senator for Washington County
 
     #proposals
 

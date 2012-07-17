@@ -62,7 +62,8 @@ class ProposalsController < ApplicationController
     @results_page = true
     @page = 1
 
-    if request.xhr?
+    pp !!request.xhr?
+    if !!request.xhr?
       @segments = Array.new(7)
       (0..6).each do |bucket|
         qry = @proposal.points.published.includes(:user).ranked_for_stance_segment(bucket)

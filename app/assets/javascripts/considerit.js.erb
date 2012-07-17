@@ -201,14 +201,15 @@ ConsiderIt = {
               if ( data.valid ) {
                 $me.siblings('input[type="submit"]').trigger('click');
               } else {
-                $j('#site_registration .password_field')
-                  .append("<a class='error' href='<%= Rails.application.routes.url_helpers.new_user_password_path %>'>Forgot your password?</a>");
-                return;
+                $j('#site_registration .password_field .error').css({'color': 'red', 'font-weight':'bold'});
               }
 
             });
           }
         })
+      .on('focus', 'input#user_password', function(){
+        $j(this).siblings('.error').show();
+      })
       .on('click', '#post_signup_form a.cancel', function(){
         $j.ajax({
           type: 'DELETE',

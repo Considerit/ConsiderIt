@@ -95,15 +95,15 @@ class PointsController < ApplicationController
       context = 6 # pagination requested on proposals page
     end
     
-    StudyData.create!({
-      :category => 4,
-      :user => current_user,
-      :session_id => request.session_options[:id],
-      :position => @position,
-      :proposal => @proposal,
-      :detail1 => @bucket,
-      :ival => context
-    })
+    # StudyData.create!({
+    #   :category => 4,
+    #   :user => current_user,
+    #   :session_id => request.session_options[:id],
+    #   :position => @position,
+    #   :proposal => @proposal,
+    #   :detail1 => @bucket,
+    #   :ival => context
+    # })
 
     if context
       PointListing.transaction do

@@ -1,22 +1,13 @@
-
-
 class Users::PasswordsController < Devise::PasswordsController
 
   # POST /resource/password
   def create
-    self.resource = resource_class.send_reset_password_instructions(params[resource_name])
-
-    if successfully_sent?(resource)
-      respond_with({}, :location => after_sending_reset_password_instructions_path_for(resource_name))
-    else
-      respond_with(resource)
-    end
+    user = User.find_by_email(params[:user][:email])
+    UserMailer.reset_password_instructions(user, mail_options).deliver!
+    
+    respond_with({}, :location => root_path)
+    
   end
 
-  protected
-    # The path used after sending reset password instructions
-    def after_sending_reset_password_instructions_path_for(resource_name)
-      root_path
-    end
 end
 

@@ -23,7 +23,8 @@
           $j('.message.confirmation_required').fadeOut().remove();
         });  
         $j('.message.confirmation_required').on('ajax:success', 'form', function(){
-          $j('.message.confirmation_required').text('Confirmation sent! ')
+          $j('.message.confirmation_required').text('Confirmation sent! ');
+          $j('.message.confirmation_required').delay(2200).fadeOut();
         });
       })
 

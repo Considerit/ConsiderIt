@@ -5,13 +5,12 @@
 
 
 html
-  background: image-url('occupy/images/background.jpg') repeat top left black
-  &.homepage
-    background: image-url('occupy/images/tempcheck.jpg') no-repeat fixed top left black
-
   body
-    //font-family: Arial, "Helvetica Neue", Helvetica, sans-serif
+
     #wrap  
+      background: image-url('occupy/images/background.jpg') repeat top left black
+      &.homepage
+        background: image-url('occupy/images/tempcheck.jpg') no-repeat fixed top left black
 
       > div#content
         //padding-top: 35px
@@ -32,6 +31,7 @@ html
 #wrap #masthead 
   background-color: rgba(black, .3)
   +chalkboard
+  position: relative
   //border-bottom: 1px solid hsl(50, 100%, 48%)
 
   #nav-user

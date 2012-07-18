@@ -32,8 +32,6 @@
               =f.hidden_field :point_id, :value=>point.id
               =f.submit :class => 'inclusion_submit', :type => 'submit', :value => "", :name => "judge", :title => 'Click to add this point to your list. You can remove it later if you want.'
 
-          -# = render :partial => "inclusions/new", :locals => { :point => point }
-
       - if !point.hide_name && point.user
         = image_tag point.user.avatar.url(origin == 'margin' ? :medium_dark : :medium), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
       - else
@@ -107,10 +105,6 @@
           .judgepointform{ :id => "judgepointform_#{point.id}" }
 
             = link_to "remove", proposal_point_inclusions_path(@proposal.long_id, point, :page => @page, :delete => true, :authenticity_token => form_authenticity_token), :remote => true, :method=>:post, :class => 'point_operation', :title => 'Click to remove this point from your list'
-
-
-          -#= render :partial => "inclusions/delete", :locals => { :point => point }
-
 
     .extra  
       .ajax_loading

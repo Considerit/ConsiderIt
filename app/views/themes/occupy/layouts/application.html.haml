@@ -50,7 +50,7 @@
         _gaq_account.push(['_trackPageview']);
 
   %body
-    #wrap
+    #wrap{ :class => @current_page}
       = render :partial => "shared/flash_messages"
 
       = render :partial => "shared/header/container"

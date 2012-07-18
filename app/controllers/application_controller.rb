@@ -11,8 +11,6 @@ class ApplicationController < ActionController::Base
   #protect_from_forgery
   set_current_tenant_through_filter
   before_filter :get_current_tenant
-
-  #theme :theme_resolver
   before_filter :theme_resolver
 
   def render(*args)
@@ -22,6 +20,7 @@ class ApplicationController < ActionController::Base
       args.append({:layout => false}) if request.xhr?
     end
     @domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil    
+    @current_page = request.fullpath == '/' ? 'homepage' : ''
     if current_tenant.host.nil?
       current_tenant.host = request.host
       current_tenant.host_with_port = request.host_with_port
@@ -32,16 +31,14 @@ class ApplicationController < ActionController::Base
   end
 
   def self.find_current_tenant(rq)
-
     tenant = Account.find_by_identifier(rq.session[:user_account_identifier])
     if tenant.nil?
-      tenant = Account.find(7)
+      tenant = Account.find(1)
     end
     tenant
   end
 
   def mail_options
-
     {:host => request.host,
      :host_with_port => request.host_with_port,
      :from => current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email],

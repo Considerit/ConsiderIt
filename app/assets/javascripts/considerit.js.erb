@@ -947,30 +947,6 @@ ConsiderIt = {
 
 // TODO: integrate better into code
 
-function show_lightbox(callback){
-  $j('#lightbox').css({
-    'background' : '#000000',
-    'z-index' : 1000
-  });
-  if ( !$j.browser.msie ) {
-
-    $j('#lightbox').fadeIn('slow', callback);
-  } else {
-    
-  }
-}
-
-function hide_lightbox(callback){
-  if ( !$j.browser.msie ) {
-    $j('#lightbox').fadeOut('slow', callback);
-  } else {
-    $j('#lightbox').css({
-      'background' : 'transparent',
-      'z-index' : -100
-    });    
-  }
-}
-
 // FROM: https://github.com/ryanb/complex-form-examples/blob/master/public/javascripts/application.js
 function remove_fields(link) {
   jQuery(link).parents('.point_link_form').remove();

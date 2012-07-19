@@ -9,6 +9,8 @@ ConsiderIt is licensed under the open source AGPL license for *non-commercial us
 
 For commercial use and/or for closed/proprietary use, you must contact the copyright holder (tkriplean@gmail.com) to come to an agreement on ConsiderIt's use. 
 
+Forks of this project must adhere to these terms. 
+
 ==================================
 GNU AFFERO GENERAL PUBLIC LICENSE
 ==================================

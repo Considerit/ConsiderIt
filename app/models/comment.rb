@@ -18,9 +18,6 @@ class Comment < ActiveRecord::Base
   belongs_to :user
   belongs_to :commentable, :polymorphic=>true, :touch => true
 
-  has_many :reflect_bullets, :class_name => 'Reflect::ReflectBullet', :dependent => :destroy
-  has_many :reflect_bullet_revisions, :class_name => 'Reflect::ReflectBulletRevision', :dependent => :destroy
-
   acts_as_tenant(:account)
 
   # Helper class method that allows you to build a comment

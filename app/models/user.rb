@@ -26,7 +26,6 @@ class User < ActiveRecord::Base
   devise :omniauthable, :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :trackable
 
-
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete
@@ -37,8 +36,6 @@ class User < ActiveRecord::Base
 
   has_attached_file :avatar, 
       :styles => { 
-        #:golden_horizontal => "100x62#", 
-        #:golden_vertical => "62x100#", 
         :medium => "70x70#", 
         :medium_dark => "70x70#",
         :small => "50x50#"
@@ -138,10 +135,4 @@ class User < ActiveRecord::Base
     return split[0]  
   end
       
-  def self.add_token
-    User.where(:unique_token => nil).each do |u|
-      u.unique_token = SecureRandom.hex(10)
-      u.save
-    end
-  end      
 end

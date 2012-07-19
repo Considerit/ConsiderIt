@@ -185,35 +185,4 @@ class Proposal < ActiveRecord::Base
     (session_id && this_session_id == session_id) || (!candidate_user.nil? && (candidate_user.id == user_id || candidate_user.is_admin?)) || (params.has_key?(:admin_id) && params[:admin_id] == admin_id)
   end
 
-
-
-  ### FOR TESTING ONLY
-  def self.title_with_hashtags(tags, my_title, max_len = 140)
-
-    def self.str_without_overlapping_tags(mystr, tags)
-      tags.split(' ').each do |tag|
-        mystr << " #{tag}" unless mystr.index(tag)
-      end
-      mystr
-    end
-
-    def self.str_without_breaking_word(mystr, max_length)
-      
-      if mystr.length <= max_length
-        mystr
-      else
-        mystr = mystr[0..max_length+1]        
-        idx = mystr.rindex(' ')
-        if idx
-          mystr[0..idx]
-        else
-          ''
-        end
-      end
-    end
-
-    candidate = str_without_breaking_word(my_title, max_len - tags.length + 1)
-    str_without_overlapping_tags(candidate, tags)  
-
-  end  
 end

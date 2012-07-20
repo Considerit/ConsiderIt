@@ -10,7 +10,7 @@ body #wrap.homepage
 
   #paper
     width: 755px
-    height: 517px
+    height: 538px
     top: 160px
     left: 50%
     margin-left: -373px
@@ -35,9 +35,20 @@ body #wrap.homepage
       position: relative
       top: 5px
 
+    #elect
+      position: absolute
+      bottom: 24px
+      left: 40px
+      a
+        text-decoration: underline
+      .label
+        font-weight: bold
+      .star
+        +font-size(-3)
+
     #proposals
       position: absolute
-      bottom: 13px
+      bottom: 35px
       left: 15px
       .horizontal .carousel
         height: 11 * $vertical_baseline
@@ -76,7 +87,7 @@ body #wrap.homepage
 
       .new_proposal
         position: absolute
-        bottom: -47px
+        bottom: -70px
         left: 20px
         .avatar
           left: 0px

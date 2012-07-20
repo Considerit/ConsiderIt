@@ -1,4 +1,4 @@
-- candidates = [{:identifier => 'phildodds', :name => 'Phil Dodds', :district => 'Florida HR3', :mug => 'phildodds.png'}, {:identifier => 'jeremyhansen', :name => 'Jeremy Hansen', :district => 'Vermont Senate', :mug => 'jeremyhansen.png'}]
+- candidates = [{:identifier => 'dodds', :name => 'Phil Dodds', :district => 'Florida HR3', :mug => 'phildodds.png'}, {:identifier => 'hansen', :name => 'Jeremy Hansen', :district => 'Vermont Senate', :mug => 'jeremyhansen.png'}]
 
 #other_candidates
   .heading
@@ -18,3 +18,12 @@
             .district
               = cnd[:district]
     %li.clear
+
+- phil = current_tenant.identifier.include?('phil') || current_tenant.identifier.include?('dodds')
+
+.paid_for
+  Paid for by 
+  - if phil
+    Philip Dodds for Congress
+  - else
+    Hansen for Washington County

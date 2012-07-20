@@ -52,7 +52,14 @@ body #wrap > div#content
   margin-top: 4 * $vertical_baseline
   +chalkboard
   width: 100%
-  height: 3 * $vertical_baseline
+  height: 4 * $vertical_baseline
+  .paid_for
+    +font-size(-4)
+    text-align: center
+    text-transform: lowercase
+    font-variant: small-caps
+    padding-top: 10px
+
   .footer_wrapper
     position: relative
     width: 738px
@@ -60,21 +67,29 @@ body #wrap > div#content
     > div
       color: #e1e1e1
 
-      &.powered_by, &.report_problems
+      &.powered_by
         position: absolute
         margin-top: 0
         right: 0
-      &.powered_by
-        text-transform: lowercase
         +font-size(-2)
         top: -5px
+
+        .power
+          position: absolute
+        .power
+          top: 5px
+          left: -85px
         img
           position: relative
-          top: 8px
+          //top: 8px
+          display: block
+          padding-bottom: 5px
+
+        .paid_for
+          //padding-top: 10px
 
       &.report_problems
         display: none
-        top: $vertical_baseline * 3
 
       &#other_candidates
         text-align: left

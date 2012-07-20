@@ -44,3 +44,51 @@
       - if current_user && current_user.is_admin?
         = render :partial => "proposals/new", :locals => { :prompt => 'Add new proposal'}
 
+    #elect
+      - if phil
+        %span.label
+          Help elect Phil to make this happen!
+        %span.star
+          &#9733;
+        = succeed ' ' do
+          %a{ :href => 'http://www.phildoddsforcongress.com/'} website
+        %span.star
+          &#9733;
+        = succeed ' ' do
+          %a{ :href => 'https://phildoddsforcongress.nationbuilder.com/donate_to_democracy' } donate    
+        %span.star
+          &#9733;
+        = succeed ' ' do
+          %a{ :href => 'http://www.phildoddsforcongress.com/volunteer' }volunteer
+        %span.star
+          &#9733;
+        = succeed ' ' do
+          %a{ :href => 'http://www.facebook.com/PhilDoddsForCongress' }facebook
+        %span.star
+          &#9733;
+
+      - else
+        %span.label
+          Help elect Jeremy to make this happen!
+        %span.star
+          &#9733;
+        = succeed ' ' do
+          %a{ :href => 'http://vermontelection.org/'} website
+        %span.star
+          &#9733;
+        = succeed ' ' do
+
+          %a{ :href => 'https://www.paypal.com/us/cgi-bin/webscr?cmd=_flow&SESSION=-tzqJXQYrfOPdNiZMbl6Wsu-OS2UBnF_U6b3r7t1stnoSF5Roo_CFIOF93G&dispatch=5885d80a13c0db1f8e263663d3faee8d7283e7f0184a5674430f290db9e9c846' } donate    
+        %span.star
+          &#9733;  
+        = succeed ' ' do
+
+          %a{ :href => 'mailto:jeremy@vermontelection.org?subject="I want to volunteer"' } volunteer
+        %span.star
+          &#9733;
+           
+        = succeed ' ' do
+          %a{ :href => 'http://www.facebook.com/jeremyhansen2012' } facebook
+        %span.star
+          &#9733;
+

@@ -20,11 +20,11 @@
       - @positions.each do |position|
         - positions[position.stance_bucket].push(position)
 
-    .histogram
+    #histogram
       %table
         %tr
           %td.support
-            = @proposal.slider_left || 'Support'
+            = @proposal.slider_left || 'Supporters'
 
           - stance_breakdown.reverse.each_with_index do |bucket_percentile, index| 
             - height = bucket_percentile/height_scaler
@@ -32,12 +32,17 @@
             %td.bar_cell
 
               .bar.empty{ :style => "height: #{barheight - height * barheight}px;"}
-
-
-              .bar.full{ :style => "height: #{height * barheight}px;", :id => "bucket-#{6-index}", :class => "#{bucket_percentile == 0 ? 'noone' : 'some'}"}
                 - if user_position && user_position.stance_bucket == 6 - index
                   .personal_position.update
-                    #{link_to 'Your position', edit_proposal_position_url(@proposal.long_id, user_position)} &blacktriangledown;
+                    .label
+                      You
+                      .arrow
+                        &#10553;
+                    .revise
+                      #{link_to 'Revise', edit_proposal_position_url(@proposal.long_id, user_position)} 
+
+
+              .bar.full{ :style => "height: #{height * barheight}px;", :bucket => "#{6-index}", :id => "bucket-#{6-index}", :class => "#{bucket_percentile == 0 ? 'noone' : 'some'}"}
 
                 .close
                   x
@@ -50,7 +55,7 @@
                     %li.clear
 
           %td.oppose
-            = @proposal.slider_right || 'Oppose'
+            = @proposal.slider_right || 'Opposers'
 
-
+      #axis_arrow
                   

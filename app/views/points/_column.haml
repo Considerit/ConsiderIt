@@ -30,7 +30,6 @@
 // Should both the prev and next arrows show up in each pagination block?
 - show_both_arrows ||= false
 
-
 - if enable_pagination && paginate_before
   .point_list_footer
     = render :partial => "points/pagination_block", :locals => { :points => points, :is_pro => is_pro, :bucket => bucket, :page => page - 1, :origin => origin, :is_before_list => true, :show_both_arrows => show_both_arrows} 
@@ -40,8 +39,7 @@
 
   %ul.point_list 
     - if points
-      - points.each do |point|
-        = render :partial => "points/show", :locals => { :origin => origin, :point => point } 
+      = render :partial => "points/show", :collection => points, :as => :point, :locals => { :origin => origin } 
 
 - if enable_pagination && paginate_after
 

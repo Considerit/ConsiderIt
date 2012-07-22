@@ -6,10 +6,8 @@
 //*********************************************
 
 - if position.user
-  .position_statement.hide{:id=>"user-#{position.user_id}-full", :class => "commentable"}
+  .position_statement.hide{:id=>"user-#{position.user_id}-full", :user => "#{position.user_id}", :class => "commentable"}
     .wrapper
-      .userid.hide
-        #{position.user_id}
       %a.close
         close
         

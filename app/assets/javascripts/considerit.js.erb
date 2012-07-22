@@ -25,6 +25,7 @@ ConsiderIt = {
       //snap: '#drop-pro'
     },
   init : function() {
+    ConsiderIt.results_page = $j('#explore_proposal').length > 0;
 
     ConsiderIt.delegators();
 
@@ -67,11 +68,23 @@ ConsiderIt = {
       });
     }); 
 
-    var results_page = $j('#explore_proposal').length > 0;
 
-    if (results_page  ) {
+    if ( ConsiderIt.results_page ) {
       $j.get('/' + $j.trim($j('#proposal_long_id').text()) + '/results', function(data){
-        $j('.explore#ranked_points').append( $j(data['segments']))
+        var $segments = $j(data['segments']);
+        $j('.explore#ranked_points').append($segments);
+        //$segments.each(function(){
+        //  $j('.full_column', $j(this)).infiniteCarousel({'operation': 'refresh'});
+        //});
+
+      });
+
+      $j('#histogram').delay(500).animate({'top': '0px'}, 'slow', function(){
+        $j('.support,.oppose', $j(this)).delay(100).css('visibility', 'visible');
+        $j('.thanks').delay(1500).fadeOut(function(){
+          $j(this).siblings('.results_prompt').fadeIn();
+            
+        });
       });
     }
 
@@ -149,7 +162,7 @@ ConsiderIt = {
         total_items: parseInt($j(this).find('.total').filter(":first").text()),
         items_per_page: 4,
         loading_from_ajax: true, 
-        dim: 700,
+        dim: 500,
         resetSizePerPage: true,
         total_items_callback: function($carousel){
           return parseInt($carousel.find('.total').filter(":first").text());
@@ -329,7 +342,7 @@ ConsiderIt = {
     //////////////
 
     // mouseover a point
-    $j('.point_list').delegate('.point_in_list:not(.expanded)', 'hover', function( event ) {
+    $j(document).delegate('.point_in_list:not(.expanded)', 'hover', function( event ) {
       if ( $j('.point_in_list.expanded').length == 0 ){
         var el = $j(this).find('.operations');
         if ( event.type === 'mouseenter' ) {
@@ -634,8 +647,6 @@ ConsiderIt = {
             carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
           })
           .draggable( "destroy" );
-
-        
       });
     });
 
@@ -692,20 +703,22 @@ ConsiderIt = {
     //////////////
     // POSITIONS
     //////////////
+    var $histogram = $j('#histogram');
 
     // Toggle position statement clicked
 
-    $j(".bar").delegate("&.selected .view_statement", 'mouseenter', function(event){
+    $histogram.delegate(".bar.hard_select .view_statement", 'mouseenter', function(event){
       $j(this).children('.details').show();
     });    
 
-    $j(".bar").delegate("&.selected .view_statement", 'mouseout', function(event){
+    $histogram.delegate(".bar.hard_select .view_statement", 'mouseout', function(event){
       $j(this).children('.details').hide();
     });    
 
     //////////////
     //HISTOGRAM
     //////////////
+
 
     var close_bar_click = function(e){
       if ( !$j(e.target).is('.bar.selected') && $j(e.target).parents('.bar.selected').length == 0 && $j('.point_in_list.expanded').length == 0 && !$j(e.target).hasClass('pro_con_list') && $j(e.target).parents('.pro_con_list').length == 0 ) {
@@ -719,61 +732,61 @@ ConsiderIt = {
       }
     };
 
-    $j('.histogram').delegate('.bar:not(.selected)', 'click', function(){
+    function select_bar($bar, hard_select) {
+      var bucket = $bar.attr('bucket'),
+          $stored = $j('#domain_'+bucket);
 
-      var bucket = $j(this).attr('id').substring(7),
-          $stored = $j('.domain_'+bucket);
+      $j('.bar.selected', $histogram).removeClass('selected hard_select soft_select');
+      $bar.addClass('selected ' + (hard_select ? 'hard_select' : 'soft_select'));
 
-      $j('.bar.selected').removeClass('selected');
-      $j(this).addClass('selected');
-
-
-      $j('.ranked_points .action').hide();
-
-      $j('.pro_con_list')
-        .addClass('segmented');
-
-      var mouseover_callback = function(data){
-        if(data) {
-          $j('.results_narrative, #ranked_points').removeClass('loading');
-          $j('#ranked_points').append(data['points']);
-          $j('.statements').filter(":first").after(data['participants']);            
-        } else {
-          $stored.show();            
-        }
-        $j('#ranked_points .pro_con_list:not(.domain_' + bucket + '), .statements').hide();
-
-        $j('.full_column', $stored).infiniteCarousel({'operation': 'refresh'});
-      };
-
-      mouseover_callback();
-
+      $stored.show();            
+      $j('#ranked_points .pro_con_list:not(#domain_' + bucket + '), .statements').hide();
+      var $col = $j('.full_column', $stored);
+      if ( !$col.data('carousel_initialized') ) {
+        $col.infiniteCarousel({'operation': 'refresh'});
+        $col.data('carousel_initialized', true);
+      }
       $j(document)
         .click(close_bar_click)
         .keyup(close_bar_key);
+    }
 
+    $histogram.delegate('.bar.full:not(.hard_select)', 'click', function(){
+      select_bar($j(this), true);
+    });
+    
+    $histogram.delegate('.bar.full:not(.selected)', 'mouseover', function(){
+      if ( $j('.bar.hard_select', $histogram).length > 0) { return; }
+      select_bar($j(this), false);
     });
 
-    $j('.histogram').delegate('.bar.selected', 'click', function(){
-      
-      $j('.domain_all')
+    function deselect_bars($selected_bar) {
+      $j('#domain_all')
         .show()
         .siblings('.pro_con_list').hide();
       
-      $j('.pro_con_list')
-        .removeClass('segmented');
+      //$j('.pro_con_list')
+      //  .removeClass('segmented');
 
-      $j('.view_statement .details:visible', this).hide();
+      $j('.view_statement .details:visible', $selected_bar).hide();
       
-      $j(this).removeClass('selected');
+      $selected_bar.removeClass('selected hard_select soft_select');
 
       $j(document)
         .unbind('click', close_bar_click)
         .unbind('keyup', close_bar_key);
+    }
 
+    $histogram.delegate('.bar.selected:not(.soft_select)', 'click', function(){
+      deselect_bars($j(this));
     });
+    $histogram.delegate('.bar.full.soft_select', 'mouseleave', function(e){
+      var $selected_bar = $j('.bar.selected', $histogram);
+      if ( $selected_bar.length == 0 ) { return; }
+      deselect_bars($selected_bar);        
+    });    
         
-    $j('body').delegate(".position_statement .important_points .show, .position_statement .important_points .hide", 'click', function(){
+    $histogram.delegate(".position_statement .important_points .show, .position_statement .important_points .hide", 'click', function(){
       $j(this).parent().children().fadeToggle(); 
     });
 

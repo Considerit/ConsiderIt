@@ -13,11 +13,8 @@
 
   - has_details = point.text && point.text.length > 0
 
-  %li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable #{point_creator ? 'added_by_me' : ''}", :user => point.hide_name ? nil : point.user_id }
-    
-    .id.hide
-      = point.id
-    
+  %li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable #{point_creator ? 'added_by_me' : ''}", :point => point.id,  :user => point.hide_name ? nil : point.user_id }
+        
     %a.toggle.less.hide.point_text_toggle
       x
 
@@ -49,7 +46,6 @@
           = h point.text.length > 137 ? point.text[0,137] : point.text
         
         %span.nested_user
-          \- 
           - if point.hide_name
             anonymous
           - elsif point.user
@@ -65,13 +61,11 @@
             = h simple_format(point.text.gsub(/\n/,"<p></p>"))
 
         .link
-          -# if point.point_links.count > 0
-          %ul
-            - point.point_links.each_with_index do |pl, idx|
-              = render :partial => 'point_links/show', :locals => { :point_link => pl, :idx => idx }
+          - if point.point_link_count > 0
+            %ul
+              = render :partial => 'point_links/show', :collection => point.point_links, :as => :point_link
 
         .nested_user
-          \- 
           - if point.hide_name
             anonymous
           - elsif point.user
@@ -83,11 +77,11 @@
 
 
       .read_more
-        - num_comments = point.comments.count
+        - num_comments = point.comment_count
         %a.toggle.more.point_text_toggle.point_operation
           %span.triangle
             &#9654; 
-          #{has_details ? 'details & ' : ''} discussion#{num_comments > 0 ? "(" + point.comments.count.to_s + ")" : ''}          
+          #{has_details ? 'details & ' : ''} discussion#{num_comments > 0 ? "(" + num_comments.to_s + ")" : ''}          
 
 
       - if point_creator

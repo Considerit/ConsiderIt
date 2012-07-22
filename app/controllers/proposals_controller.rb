@@ -62,7 +62,6 @@ class ProposalsController < ApplicationController
     @results_page = true
     @page = 1
 
-    pp !!request.xhr?
     if !!request.xhr?
       @segments = Array.new(7)
       (0..6).each do |bucket|

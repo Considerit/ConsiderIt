@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120706175951) do
+ActiveRecord::Schema.define(:version => 20120722021003) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -310,6 +310,8 @@ ActiveRecord::Schema.define(:version => 20120706175951) do
     t.integer  "account_id"
     t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
+    t.integer  "comment_count",                          :default => 0
+    t.integer  "point_link_count",                       :default => 0
   end
 
   add_index "points", ["account_id", "proposal_id", "published", "is_pro"], :name => "select_published_pros_or_cons"
@@ -358,7 +360,7 @@ ActiveRecord::Schema.define(:version => 20120706175951) do
     t.datetime "followable_last_notification"
   end
 
-  add_index "positions", ["account_id", "proposal_id", "published"], :name => "select_published_positions"
+  add_index "positions", ["account_id", "proposal_id", "published"], :name => "index_positions_on_account_id_and_proposal_id_and_published"
   add_index "positions", ["account_id"], :name => "index_positions_on_account_id"
   add_index "positions", ["proposal_id"], :name => "index_positions_on_option_id"
   add_index "positions", ["published"], :name => "index_positions_on_published"

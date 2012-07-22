@@ -8,3 +8,15 @@
 =yellow-postit
   background-color: #FEFED0
   +gray-color(30%, .8)
+
+=grayscale
+  //FF 3.5+
+  filter: url('/filters.svg#grayscale')
+  // IE6-9
+  filter: gray
+  // Google Chrome & Safari 6+ 
+  -webkit-filter: grayscale(1)
+
+=grayscale_off
+  filter: none
+  -webkit-filter: grayscale(0)

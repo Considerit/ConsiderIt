@@ -8,11 +8,8 @@
 - point = @point
 - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
-.point{ :id => "point-#{point.id}", :class => "point #{point.is_pro ? 'pro' : 'con'} commentable", :user => point.hide_name ? nil : point.user_id }
+.point{ :id => "point-#{point.id}", :class => "point #{point.is_pro ? 'pro' : 'con'} commentable", :point => point.id, :user => point.hide_name ? nil : point.user_id }
 
-  .id.hide
-    = point.id
-  
   .meta
     #{point.is_pro ? 'A point in favor of ' : 'A point against '} 
     = link_to "#{point.proposal.title}", proposal_path(point.proposal.long_id) 
@@ -64,10 +61,10 @@
             = full_text
 
       .link
-        -# if point.point_links.count > 0
-        %ul
-          - point.point_links.each_with_index do |pl, idx|
-            = render :partial => 'point_links/show', :locals => { :point_link => pl, :idx => idx }
+        - if point.point_link_count > 0
+          %ul
+            = render :partial => 'point_links/show', :collection => point.point_links, :as => :point_link
+
 
     .nested_user
       \- 
@@ -79,6 +76,6 @@
         unknown
 
   .extra  
-    = render :partial => 'comments/discussion', :locals => { :comments => point.comments.count > 0 ? point.comments : [], :commentable => point, :context => 'point', :light_background => false }
+    = render :partial => 'comments/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :light_background => false }
     
   .clear

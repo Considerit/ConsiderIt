@@ -8,7 +8,7 @@
 - origin = dynamic ? 'self' : 'board'
 - bucket ||= origin
 
-.pro_con_list{ :class => " #{dynamic ? 'dynamic' : 'static'} domain_#{bucket} #{has_other_points ? 'has_other_points' : 'no_other_points' }"}
+.pro_con_list{ :id => "domain_#{bucket}", :class => " #{dynamic ? 'dynamic' : 'static'} #{has_other_points ? 'has_other_points' : 'no_other_points' }"}
 
   .slate
     - if !dynamic

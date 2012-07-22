@@ -1,8 +1,9 @@
 
 
-.histogram 
+#histogram 
   margin: 35px auto 0px auto
   position: relative
+  top: 190px
 
   table
     padding: 0px
@@ -11,20 +12,28 @@
     margin: auto
 
     td.support, td.oppose
-      color: #888
+      color: #313131
       +font-size(0)
       vertical-align: bottom
-      width: 2 * $grid_major
+      width: 3 * $grid_major
+      visibility: hidden
+      text-transform: uppercase
+      +heading
+      +transition
       &.support
-        text-align: left
+        padding-right: $grid_minor
+        text-align: right
 
       &.oppose
-        text-align: right
+        padding-left: $grid_minor
+        text-align: left
 
     td.bar_cell
       width: $histogram_bar_width
       position: relative
 
+      .bar.empty
+        position: relative
       .bar.full 
         +transition(all 0.4s linear)
         &, a
@@ -33,7 +42,7 @@
           color: white
 
         border: 3px solid #222  
-        padding: 3px                            
+        padding: 0px                            
         +box-shadow(0px, 1px, 2px, black)
 
         border-bottom: none
@@ -46,14 +55,31 @@
           display: none
           position: absolute
 
-        &:hover, &.selected
-          .people_bar .view_statement img
-            opacity: 1 
+
+        &.hard_select .people_bar .view_statement img
+          opacity: .8
+          +transition
+          &.default.no_explanation
+            opacity: .35         
+          &.with_explanation
+            +grayscale_off
+            opacity: 1
+
+        &.soft_select .people_bar .view_statement img
+          opacity: .6
+          &.default.no_explanation
+            opacity: .35
+          &.with_explanation
+            opacity: .9
+            +grayscale_off
 
         &:hover
           +chalkboard
           border-color: #414141
           z-index: 40
+          img.with_explanation
+            +grayscale_off
+            opacity: .6
 
         &.noone
           display: none
@@ -63,36 +89,56 @@
           +box-shadow(0px, 1px, 2px, black)
           z-index: 60
           border-color: black
-          border-top-left-radius: 8px 
-          border-top-right-radius: 8px
-
-          .close
-            display: block
-            right: 5px
-            top: -2px
-            z-index: 1
 
           .border_cover
             display: block
             height: 5px
-            width: $histogram_bar_width - 2
+            width: $histogram_bar_width - 3
             left: -2px
             +chalkboard
             bottom: -4px
             border-top-right-radius: 6px
             border-top-left-radius: 6px
 
+          &.hard_select
+            border-top-left-radius: 10px 
+            border-top-right-radius: 10px
+            .close
+              display: block
+              right: 5px
+              top: -2px
+              z-index: 1
+              +font-size(-3)
+              color: #999
+
       .personal_position.update
-        top: -24px
+        bottom: 0
+        left: 30px
         position: absolute
-        +font-size(-4)
         +on_background
         z-index: 50
         //left: 50%
         //margin-left: 10px
-        a
-          font-weight: bold
-          text-decoration: underline
+
+        .label
+          +font-size(-1)
+          position: relative
+          margin-left: 4px
+          .arrow
+            position: absolute
+            +font-size(2)
+            font-weight: bold
+            left: -25px
+            top: 8px
+
+        .revise 
+          position: relative
+          top: -2px
+          a
+            text-transform: lowercase
+            font-weight: bold
+            text-decoration: underline
+            +font-size(-2)
         
 
 .people_bar
@@ -141,38 +187,54 @@
         max-width: 50px
         opacity: .35
         position: relative
-        +transition
+        +grayscale
 
         &.author_of_hovered_point
           opacity: 1
       
       .details
         //don't use +font-size here because of the earlier 0% declaration
-        font-size: 14px
-        background-color: white
+        font-size: 16px
+        background-color: black
+        color: #e1e1e1
         position: absolute
-        white-space: nowrap
         display: none
         z-index: 2
         top: 100%
+        left: 50%
         margin-top: 14px
         +border-radius(5px)
-        padding: 2px 5px
-        left: 50%
-        border: 1px solid #414141
-        +box-shadow(0px, 1px, 2px, #666)
+        padding: 5px $grid_xs
+        +box-shadow(0px, 1px, 2px, #313131)
+
+        .position_author_name
+          +font-size(0)
+          font-weight: bold
+          white-space: nowrap
+
         &:after
           content: "\25B2"
           position: absolute
           padding: 0 4px 0
-          top: -15px
-          color: white
+          top: -13px
+          color: black
           z-index: 5
 
         blockquote.explanation
-          white-space: normal
           padding: 5px 0 0 0 
-          font-style: italic
+          +font-size(-1)
 
           p
             margin-bottom: 6px
+            text-align: left
+
+#axis_arrow
+  height: 1 * $vertical_baseline
+  background-color: transparent
+  background-color: rgba(black, .15)
+  width: $content_width - 4 * $grid_major - 5 * $grid_minor
+  position: absolute
+  bottom: 0
+  z-index: -1
+  border-radius: 8px
+  margin-left: 2 * $grid_major + 2.5 * $grid_minor

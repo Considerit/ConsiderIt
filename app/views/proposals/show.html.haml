@@ -12,16 +12,19 @@
 
 = render :partial => "proposals/blocks/menu"
 
+= render :partial => "proposals/description"
+
+
 #explore_proposal
   #proposal_id.hide
     = @proposal.id
   #proposal_long_id.hide
     = @proposal.long_id
 
-  = render :partial => "proposals/description_results", :locals => {:hide_initially => true, :prompt => "What people think about #{@proposal.category} #{@proposal.designator}"}
+  -# = render :partial => "proposals/description_results", :locals => {:hide_initially => true, :prompt => "What people think about #{@proposal.category} #{@proposal.designator}"}
   
   %ol    
-                
+
     %li.breakdown
               
       - if !update && has_position
@@ -38,7 +41,19 @@
             You should contribute your perspective.
 
         .bar{ :style => "visibility: hidden; border: none; margin: 0; padding: 0; width: 0; height: 100%; left: 0px"}
-      - else        
+      - else
+        - if @position        
+          %h3.banner.thanks
+            Thanks for your contribution, #{current_user.first_name}.
+          %h3.banner.results_prompt
+            Now explore the overall results!
+        - else
+          %h3.banner.thanks
+            Don't forget to contribute your own position!
+          %h3.banner.results_prompt
+            Explore the overall results
+
+
         = render :partial => "proposals/stance_histogram", :locals => { :stance_breakdown => proposal_stance_data, :has_position => has_position}
 
     %li.ranked_points

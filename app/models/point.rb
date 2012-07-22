@@ -85,6 +85,8 @@ class Point < ActiveRecord::Base
 
 
   def update_absolute_score
+    self.comment_count = comments.count
+    self.point_link_count = point_links.count
 
     define_appeal
     define_attention

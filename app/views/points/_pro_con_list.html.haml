@@ -7,8 +7,10 @@
 
 - origin = dynamic ? 'self' : 'board'
 - bucket ||= origin
+- has_other_points ||= false
+- total_points = points[:pros].length + points[:cons].length
 
-.pro_con_list{ :id => "domain_#{bucket}", :class => " #{dynamic ? 'dynamic' : 'static'} #{has_other_points ? 'has_other_points' : 'no_other_points' }"}
+.pro_con_list{ :id => "domain_#{bucket}", :class => " #{dynamic ? 'dynamic' : 'static'} #{has_other_points ? 'has_other_points' : 'no_other_points' } #{total_points == 0 ? 'empty' : ''}"}
 
   .slate
     - if !dynamic
@@ -23,28 +25,37 @@
     %table
       %tr.point_columns
         %td.full_column.pro_column#points_on_board_pro
-          .pro_con_list_header.pro_header
-            .inner
-              = image_tag 'chalk/pros.png'
+          .inner_wrapper
+            .pro_con_list_header.pro_header
+              .inner
+                = image_tag 'chalk/pros.png'
 
-          = render :partial => "points/column", :locals => { :points => pro_points, :is_pro => true, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
+            = render :partial => "points/column", :locals => { :points => points[:pros], :is_pro => true, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
-          - if dynamic
+            - if dynamic
+              - if has_other_points 
+                = render :partial => "points/drop_target", :locals => { :side => :left }
 
-            = render :partial => "points/new", :locals => { :point => nil, :is_pro => true, :sel => '#points_on_board_pro' }
+              = render :partial => "points/new", :locals => { :is_pro => true, :sel => '#points_on_board_pro' }
+
 
 
         %td.full_column.con_column#points_on_board_con 
-          .pro_con_list_header.con_header
-            .inner
-              = image_tag 'chalk/cons.png'
+          .inner_wrapper
+            .pro_con_list_header.con_header
+              .inner
+                = image_tag 'chalk/cons.png'
 
-          = render :partial => "points/column", :locals => { :points => con_points, :is_pro => false, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
+            = render :partial => "points/column", :locals => { :points => points[:cons], :is_pro => false, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
-          - if dynamic
+            - if dynamic
+              - if has_other_points 
+                = render :partial => "points/drop_target", :locals => { :side => :right }
 
-            = render :partial => "points/new", :locals => { :point => nil, :is_pro => false, :sel => '#points_on_board_con' }
+              = render :partial => "points/new", :locals => { :is_pro => false, :sel => '#points_on_board_con' }
 
-    - if dynamic && has_other_points && (pro_points.length + con_points.length) == 0
-      = render :partial => "points/drop_target"
+
+
+    -# if dynamic && has_other_points && (points[:pros].length + points[:cons].length) == 0
+      -#= render :partial => "points/drop_target"
       

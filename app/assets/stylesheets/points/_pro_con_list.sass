@@ -38,27 +38,13 @@
         text-align: center
         position: relative
 
-        //&:after
-        //  content: ''
-        //  position: absolute
-        //  width: 138px
-        //  height: 10px
-        //  bottom: -3px
-        //  left: 50%
-        //  margin-left: -69px
-
-      //&.pro_header .inner:after
-      //  background: image-url("chalk/underline1.png") no-repeat top center
-      //&.con_header .inner:after
-      //  background: image-url("chalk/underline2.png") no-repeat top center
-
     &#points_on_board_pro > *
-      padding-left: $grid_major - $chalkboard_border_width
-      padding-right: 35px
+      margin-left: $grid_major - $chalkboard_border_width
+      margin-right: 35px
 
     &#points_on_board_con > *
-      padding-right: $grid_major - $chalkboard_border_width
-      padding-left: 35px
+      margin-right: $grid_major - $chalkboard_border_width
+      margin-left: 35px
 
   // for pro/con lists that can't have new points added to them
   &.static
@@ -110,6 +96,17 @@
         tr.point_columns
           height: 625px
 
+    #inclusion_learned
+      position: absolute
+      +font-size(3)
+      width: 225px
+      text-align: center
+      left: 50%
+      margin-left: -150px
+      top: 250px
+      color: #99965c
+      font-weight: bold
+
     &.no_other_points > .slate > table tr.point_columns
       height: 300px
       
@@ -123,43 +120,68 @@
     //  .full_column
     //    min-height: 600px
 
+    &.empty
+      .full_column
+        &.drop_pending
+          //border-color: transparent      
+
+          .droppable, .droppable .prompt
+            border-color: $yellow_postit
+            color: $yellow_postit
+
+        .droppable
+          position: absolute
+          //left: 0
+          top: 10 * $vertical_baseline
+          margin: auto
+          width: 100%
+          +font-size(-3)
+          text-align: center
+          border: 2px dashed #99965c
+          height: 160px
+          width: 175px
+          padding: 0
+          display: block
+
+          .prompt
+            //width: 100px
+            //margin: 111px auto 0 auto
+            display: inline-block
+            //position: relative
+            font-weight: bold
+            +font-size(0)
+            padding: $vertical_baseline $grid_xs
+            text-align: left
+            color: #99965c
+            line-height: 1.3
+
+    &.point_edit_mode .full_column .droppable, &.point_edit_mode .full_column.empty .droppable
+      display: none
+
     .full_column
       //width: 250px
-      border: 2px solid transparent
+      //border: 2px solid transparent
 
       &.drop_pending
-        border-color: #777
+        //border-color: #777
+        .droppable
+          display: block
 
-    .droppable
-      position: absolute
-      left: 0
-      top: 168px
-      margin: auto
-      width: 100%
-      +font-size(-3)
-      text-align: center
+      .droppable
+        display: none
+        width: 240px
+        height: 75px
+        border: 2px dashed #e1e1e1
+        margin: $vertical_baseline 0
 
-      .prompt
-        width: 100px
-        margin: 111px auto 0 auto
-        display: inline-block
-        position: relative
-        font-weight: bold
+        .prompt
+          display: none
 
-        &.pros
-          text-align: left
-          left: -200px
-        &.cons
-          text-align: right
-          right: -200px
+        &.dropping_in_progress
+          display: block
+          
 
-      .drop_instruction
-        position: absolute
-        top: -70px
-        &.right
-          left: 0px
-        &.left
-          right: 0px
+
 
 
 

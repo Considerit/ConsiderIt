@@ -6,15 +6,14 @@
 //*********************************************
 
 .droppable
+  - if side == :left
   
-  = image_tag 'drop_instruction_right.png', :class => 'drop_instruction right'
-  
-  .prompt.pros
-    Drag good pros into your list
+    .prompt.pros
+      Drag & drop pros you think are important onto your list
 
-  .prompt.cons
-    Drag good cons into your list
+  - if side == :right
+    .prompt.cons
+      Drag & drop cons you think are important onto your list
 
-  = image_tag 'drop_instruction_left.png', :class => 'drop_instruction left'
   
   .clear

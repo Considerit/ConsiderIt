@@ -6,4 +6,4 @@
 //*********************************************
 
 - @segments.each_with_index do |(pros,cons), bucket| 
-  = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => bucket, :pro_points => pros, :con_points => cons, :has_other_points => pros.length + cons.length > 0}
+  = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => bucket, :points => {:pros => pros, :cons => cons} }

@@ -26,8 +26,10 @@
           +font-size(0)
           z-index: 50
           margin: auto
-          display: block
+          //display: block
           width: 6 * $grid_major
+          text-decoration: underline
+          font-weight: bold
 
         .empty_explanation
           width: 540px
@@ -84,3 +86,9 @@
 
           .group_name
             display: block
+
+#other_proposals
+  margin-top: 4 * $vertical_baseline
+  h3
+    text-align: center
+    +font-size(2)

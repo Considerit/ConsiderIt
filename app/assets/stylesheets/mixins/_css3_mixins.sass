@@ -117,7 +117,15 @@ source slice width outset repeat
   -webkit-hyphens: auto
   hyphens: auto
   hyphenate: auto
-
+ 
+=hyphenate_remove
+  -ms-word-break: none
+  word-break: none
+  word-break: none
+  -moz-hyphens: none
+  -webkit-hyphens: none
+  hyphens: none
+  hyphenate: none
 
 =rgba($hex, $alpha, $ie: $useIEFilters)
   @if $ie == 1
@@ -172,12 +180,12 @@ source slice width outset repeat
   -ms-filter: "#{$command}"
 
 
-=transition($value: all 0.4s linear)
-  -moz-transition: $value
-  -o-transition: $value
-  -ms-transition: $value
-  -webkit-transition: $value
-  transition: $value
+=transition($value: 'all 0.4s linear')
+  -moz-transition: #{$value}
+  -o-transition: #{$value}
+  -ms-transition: #{$value}
+  -webkit-transition: #{$value}
+  transition: #{$value}
 
 =opacity($value)
   -moz-opacity: \.#{$value}

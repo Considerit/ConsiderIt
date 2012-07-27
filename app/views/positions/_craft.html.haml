@@ -60,6 +60,7 @@
 - considerations_prompt = @proposal.considerations_prompt || "Perspective"
 - statement_prompt = @proposal.statement_prompt || "Any final remarks?"
 - has_other_points = @pro_points.length + @con_points.length > 0
+- points = { :pros => @included_pros, :cons => @included_cons }
 
 = render :partial => "proposals/blocks/menu"
 
@@ -98,7 +99,7 @@
           - if false
             = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
 
-          = render :partial => "points/pro_con_list", :locals => { :pro_points => @included_pros, :con_points => @included_cons, :dynamic => true, :has_other_points => has_other_points }
+          = render :partial => "points/pro_con_list", :locals => { :points => points, :dynamic => true, :has_other_points => has_other_points }
 
           - if false
             = render :partial => "positions/slider", :locals => { :id => 2, :number => 3, :prompt => "Update your opinion, if it has changed." }

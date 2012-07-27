@@ -43,7 +43,7 @@ class PositionsController < ApplicationController
     end
 
     respond_with(@proposal, @position) do |format|
-      format.html { redirect_to(  proposal_path(@proposal.long_id)  ) }
+      format.html { redirect_to(  proposal_path(@proposal.long_id, :anchor => 'explore_proposal')  ) }
       format.js { render :json => { :result => 'successful' }.to_json }
     end
   end
@@ -70,7 +70,7 @@ class PositionsController < ApplicationController
     save_actions(@position)
     
     respond_with(@proposal, @position) do |format|
-      format.html { redirect_to(  proposal_path(@proposal.long_id) ) }
+      format.html { redirect_to(  proposal_path(@proposal.long_id, :anchor => 'explore_proposal') ) }
     end
   end
 
@@ -82,7 +82,7 @@ class PositionsController < ApplicationController
       @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     end
     
-    redirect_to(proposal_path(@position.proposal.long_id))
+    redirect_to(proposal_path(@position.proposal.long_id, :anchor => 'explore_proposal'))
     session.delete('reify_activities')
     session.delete('position_to_be_published')
     session.delete('position_to_be_published_extras')
@@ -166,7 +166,7 @@ protected
 
       session.delete('reify_activities')
       session.delete('position_to_be_published')  
-      redirect_to( proposal_path(@proposal.long_id))
+      redirect_to( proposal_path(@proposal.long_id, :anchor => 'explore_proposal'))
       return
     end
 
@@ -200,18 +200,26 @@ protected
                     ranked_persuasiveness.page( 1 ).per( POINTS_PER_PAGE )
 
     #TODO: bulk insert...
-    PointListing.transaction do
+    #PointListing.transaction do
 
+
+      point_listings = []
       (@pro_points + @con_points).each do |pnt|
-        PointListing.create!(
-          :proposal => @proposal,
-          :position => @position,
-          :point => pnt,
-          :user => @user,
-          :context => 1
-        )
+        point_listings.push("(#{@proposal.id}, #{@position.id}, #{pnt.id}, #{@user ? @user.id : 'NULL'}, 1)")
+        #PointListing.create!(
+        #  :proposal => @proposal,
+        #  :position => @position,
+        #  :point => pnt,
+        #  :user => @user,
+        #  :context => 1
+        #)
       end
-    end
+    qry = "INSERT INTO point_listings 
+            (proposal_id, position_id, point_id, user_id, context) 
+            VALUES #{point_listings.join(',')}"
+
+    #end
+    ActiveRecord::Base.connection.execute qry
     
     @included_pros = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:point_links, :user).where(:is_pro => true) + 
                      Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => true)

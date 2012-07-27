@@ -50,48 +50,5 @@ body #wrap.homepage
       position: absolute
       bottom: 35px
       left: 15px
-      .horizontal .carousel
-        height: 11 * $vertical_baseline
 
-        li.proposal_item
-          width: 210px
-          height: 10 * $vertical_baseline
-          +linear-gradient(#002266, #001133)
-          opacity: 1
-          color: #e1e1e1
-          margin: 0 5px
-          position: relative
-          +transition
 
-          &:hover
-            +linear-gradient(#6B0000, #390000)
-            a, .prompt
-              color: white
-
-          > a
-            text-align: left
-            color: #e1e1e1
-            height: 10 * $vertical_baseline
-            +font-size(-2)
-
-          .title
-
-          .prompt
-            +font-size(-2)
-            margin-top: $vertical_baseline
-            border-bottom: 1px dotted #555
-            font-variant: small-caps
-            display: inline-block
-            position: absolute
-            bottom: 10px
-
-      .new_proposal
-        position: absolute
-        bottom: -70px
-        left: 20px
-        .avatar
-          left: 0px
-        form input[type="submit"]
-          position: absolute
-          top: 5px
-          right: -65px

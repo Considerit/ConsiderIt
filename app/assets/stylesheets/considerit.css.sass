@@ -45,7 +45,7 @@
 
 .user_opinion .slate,
 .pro_con_list, 
-.point_in_list_self.expanded, .point_in_list_board.expanded,
+.point_in_list_self#expanded, .point_in_list_board#expanded,
   +on_chalkboard
 
 .point_in_list_margin
@@ -55,7 +55,7 @@
   &.con
     +red_post_it
 
-.point_in_list_margin.expanded, #content .point
+.point_in_list#expanded, #content .point
   +on_post_it
   &.pro
     +green_post_it($repeated: 1)
@@ -71,7 +71,7 @@
 
   a, input, button
     color: #444  
-    +transition(all 0.4s linear)
+    +transition
 
     &:hover
       color: #000    

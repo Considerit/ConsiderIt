@@ -25,9 +25,9 @@
     .point_text
       +hyphenate
 
-    .point_text.nutshell
+    .nutshell
 
-      > .nested_user
+      .nested_user
         white-space: nowrap
         display: inline-block
         +font-size(-2)
@@ -55,12 +55,9 @@
 
   .operations   
     position: absolute
-    opacity: 0
-    display: none
     text-align: right
 
-
-    > div, > div > div
+    > div
       display: inline-block
       &.pointform
         display: none
@@ -69,7 +66,6 @@
         +font-size(-4)
         padding: 0
         margin: 0
-        //+heading
         font-weight: bold
 
       .editpoint:before, &.remove:before
@@ -78,15 +74,9 @@
         position: relative
         right: 1px
 
-    .read_more
-      a.toggle_more, a.toggle
+      a.toggle
         display: inline-block
-        +font-size(-4)
-        &.hide
-          padding: 3px 10px
 
-      .triangle
-        +font-size(-5)
 
   &.point_in_list_margin
     //width: 148px
@@ -112,7 +102,7 @@
     .body > .bullet_point 
       display: none
       left: -10px
-      top: 0px
+      top: 1px
 
     > .body 
       padding: $vertical_baseline $grid_xs
@@ -124,19 +114,20 @@
 
     .operations        
       bottom: 23px
-      left: 20px
+      left: $grid_xs + 9px
+      a
+        color: darken(desaturate($yellow_postit, 20%), 30%)
+
       .edit, .remove
         display: none
-
-      > div, >div > div
                   
 
-  &.point_in_list_board,
-  &.point_in_list_self
+  &.point_in_list_board, &.point_in_list_self
       
     //width: 255px
     border-color: transparent
     padding-bottom: $vertical_baseline
+    cursor: pointer
 
     .bullet_point
       left: -10px
@@ -146,23 +137,16 @@
       +font-size(-2)
       margin-bottom: 0px
 
+    &:hover .operations
+      display: block
     .operations
+      +transition
       bottom: 0
       left: 0
-      > div, >div > div                      
+      display: none
 
-        .deletepointformproper
-          position: absolute
-          left: -17px
-          padding: 3px
-          width: 150px
-          margin-left: 35px
-          
-          > *
-            vertical-align: middle
 
   &.point_in_list_board
-    
     width: 310px
     .nutshell
       width: 310px
@@ -173,157 +157,79 @@
 
   &.point_in_list_self
     width: $grid_major * 5
-    .nutshell
-      //width: 232px
+
+  
+  //everything related to hovering over a point
+
+  &:hover
+    &.point_in_list_margin
+      .operations a
+        color: darken(desaturate($yellow_postit, 100%), 70%)
+
+    &.point_in_list_self, &.point_in_list_board
 
 
-
-.point_in_list.expanded
+.point_in_list#expanded
+  opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
   z-index: 1001
   position: absolute
-  min-height: 111px
+  width: 882px - 2 * $grid_major - 2 * $grid_minor
+  height: auto
+  min-height: 550px
+  padding: $vertical_baseline 2 * $grid_major + 2 * $grid_minor
+  +box-shadow(0px, 6px, 12px, black, .75)
+  +transition('all .25s')
+  cursor: auto
+  margin: 0 $grid_xs/2
 
-
-  &:after, &:before
-    content: none
+  &.point_in_list_self, &.point_in_list_board
+    +transition(none)
 
   > .body
-
+    padding: $vertical_baseline $grid_xs
+    .point_text
+      +hyphenate_remove
+      display: block
+    .bullet_point, .nutshell .nested_user
+      display: none
     .avatar
       width: 58px
-      top: 3px
+      //top: 3px
       position: absolute
-      left: -75px
+      left: -60px
+      display: block
 
-    .full
-      //opacity: 0
+    .details
+      +font-size(1)
 
     .nutshell
-      padding-bottom: 0
-      position: relative
+      width: auto
+      +font-size(3)
+      margin-bottom: $vertical_baseline
+
+      .details_indicator
+        display: none
+    .nested_user
+      padding-top: $vertical_baseline
 
   .operations
     display: none
 
   .less.point_text_toggle
-    display: none
+    display: block
+    position: absolute
+    right: 5px
+    top: 0
 
   .extra    
+    padding: $vertical_baseline $grid_xs
     display: block
+    visibility: visible
+    opacity: 1  
 
-  &.animation_state-expanded
-    padding-right: 104px
-    padding-left: 104px
+    .discuss
+      width: 750px
 
-    > .body
-      .full
-        padding-top: 10px
-        opacity: 1
-     
-    .extra
-      visibility: visible
-      opacity: 1        
-
-  &.animation_state-finished
-    +box-shadow(0px, 1px, 2px, black, .4)
-
-    > .body
-
-      .nutshell
-
-    > .less
-      display: block
-      position: absolute
-      right: 5px
-
-  &.point_in_list_self, &.point_in_list_board
-    +chalkboard
-    padding-top: 10px
-    padding-bottom: 10px
-    margin-top: -10px
-    border-color: #414141
-
-    .remove
-      display: none
-
-    .extra, &.animation_state-finished .toggle.less
-
-    &.animation_state-expanded  
-      width: 590px
-      .full, .nested_user, .link a
-        opacity: 1
-
-      .link
-        padding-bottom: 5px
-
-
-    &.animation_state-finished
-      border-color: white
-      .link
-        opacity: 1
-        .domain
-          opacity: .2
-        
-
-    .toggle.less
-      top: 0
-
-    &.pro 
-      .avatar
-        //left: 0px
-
-      &.animation_state-expanded
-        margin-left: -90px
-
-    &.con 
-      .avatar
-        //left: 0px
-      
-      &.animation_state-expanded
-        margin-left: -380px
-
-        > .body .nutshell
-          //left: 445px
-
-
-      .extra .less
-        right: 0px
-
-
-  &.point_in_list_margin
-    //+on_paper
-    cursor: auto
-    opacity: 1 // prevents jquery .ui-state-disabled from making it translucent
-    height: auto
-    width: 156px
-    
-    &.animation_state-expanded
-      padding-left: 90px
-      width: 590px
-    
-    &:after, &:before
-      +box-shadow-remove
-
-    .include
-      display: none
-
-    .toggle.less
-      top: 0px
-
-    &.pro 
-      &.animation_state-expanded
-        margin-left: -79px
-
-    &.con 
-      &.animation_state-expanded
-        margin-left: -601px
-
-      > .body
-        .avatar
-          //left: -592px
-      
-      .extra .less
-        //right: 0px
 
 .point
   //+on_paper

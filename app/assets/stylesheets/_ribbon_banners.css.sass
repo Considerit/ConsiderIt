@@ -1,8 +1,8 @@
 =banner
   background: image-url('banner.png') repeat left top white
-  width: 978px
+  //width: 978px
   position: relative
-  left: -6px
+  left: -4px
   border: 1px solid
   border-color: white #BBB #999
   +box-shadow(0px, 1px, 2px, black, .4)
@@ -27,11 +27,11 @@
 
 =banner-single
   +banner
-  width: 1006px
-  left: -19px
+  width: $content_width + 8px - $grid_xs * 2
+  //left: -19px
   &:before
     border-width: 1px 0 
-    right: -19px
+    right: -17px
   &:after
     left: -19px
     border-width: 1px 0 

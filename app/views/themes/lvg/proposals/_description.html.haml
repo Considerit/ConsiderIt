@@ -39,5 +39,10 @@
       #full_desc_block
         #{'...'}or read the 
         =link_to "official measure", @proposal.url, :title => "Visit the official listing on the state's website", :target => '_blank'
-
   .clear
+
+  - if !@results_page
+    .head.single
+      %h3.banner
+        Should this pass? What are the most important factors to you?
+

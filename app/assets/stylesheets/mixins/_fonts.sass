@@ -20,10 +20,10 @@ $lheights: 8px 9.3px 10.7px 12px 13.3px 14.7px 16px 18.7px 21.3px 24px 28px 32px
   @if $fontsize > 1em
     line-height: 1em
   @else
-    line-height: $vertical_baseline/$fontsize
+    line-height: ($vertical_baseline) / $fontsize
 
 =heading
-  +chalk
+  font-family: "Patua One", Georgia, Times, "Times New Roman", serif
   letter-spacing: -1px
 
 =main_font

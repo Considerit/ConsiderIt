@@ -16,7 +16,8 @@
       +font-size(0)
       vertical-align: bottom
       width: 3 * $grid_major
-      visibility: hidden
+      //visibility: hidden
+      display: none
       text-transform: uppercase
       +heading
       +transition
@@ -35,7 +36,7 @@
       .bar.empty
         position: relative
       .bar.full 
-        +transition(all 0.4s linear)
+        +transition
         &, a
           color: #ccc
         a:hover
@@ -117,6 +118,7 @@
         position: absolute
         +on_background
         z-index: 50
+        display: none
         //left: 50%
         //margin-left: 10px
 
@@ -238,3 +240,4 @@
   z-index: -1
   border-radius: 8px
   margin-left: 2 * $grid_major + 2.5 * $grid_minor
+  display: none

@@ -8,6 +8,9 @@
 
 .pointform{ :class => "#{action}pointform" }
 
+  .blah
+    = point.nutshell
+
   = form_for [@proposal, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'} "}, :remote => true do |f|
 
     .form_proper

@@ -8,7 +8,7 @@
 - proposal_stance_data = @proposal.stance_fractions
 - has_position = proposal_stance_data.sum > 0
 - update = @position && @position.published
-- has_other_points = @pro_points.length + @con_points.length > 0
+- render_other_proposals_menu ||= true
 
 = render :partial => "proposals/blocks/menu"
 
@@ -27,10 +27,10 @@
 
     %li.breakdown
               
-      - if !update && has_position
-        %a.button.personal_position{ :href => "#{ update ? edit_proposal_position_path(@proposal.long_id, @position) : new_proposal_position_path(@proposal.long_id)}", :class => "contribute"}
+      / - if !update && has_position
+      /   %a.button.personal_position{ :href => "#{ update ? edit_proposal_position_path(@proposal.long_id, @position) : new_proposal_position_path(@proposal.long_id)}", :class => "contribute"}
           
-          Contribute your thoughts
+      /     Contribute your thoughts
 
       - if !has_position
         .empty_explanation
@@ -42,16 +42,20 @@
 
         .bar{ :style => "visibility: hidden; border: none; margin: 0; padding: 0; width: 0; height: 100%; left: 0px"}
       - else
-        - if @position        
-          %h3.banner.thanks
-            Thanks for your contribution, #{current_user.first_name}.
-          %h3.banner.results_prompt
-            Now explore the overall results!
-        - else
-          %h3.banner.thanks
-            Don't forget to contribute your own position!
-          %h3.banner.results_prompt
-            Explore the overall results
+        .head.single
+          - if @position        
+            %h3.banner.thanks
+              Thanks for your contribution, #{current_user.first_name}.
+            %h3.single.banner.results_prompt
+              Now explore the overall results!
+          - else
+            %h3.banner.thanks
+              Explore the overall results
+            %h3.banner.results_prompt
+              Don't forget to 
+              = succeed '!' do 
+                %a.personal_position{ :href => "#{ update ? edit_proposal_position_path(@proposal.long_id, @position) : new_proposal_position_path(@proposal.long_id)}", :class => "contribute"} contribute your own position
+            
 
 
         = render :partial => "proposals/stance_histogram", :locals => { :stance_breakdown => proposal_stance_data, :has_position => has_position}
@@ -64,11 +68,23 @@
           .action
             Click a bar to filter results ^
 
-        = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => 'all', :pro_points => @pro_points, :con_points => @con_points, :has_other_points => has_other_points }
+        = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => 'all', :points => {:pros => @pro_points, :cons => @con_points} }
 
 
     %li.clear
  
+
+- if render_other_proposals_menu
+  #other_proposals
+    %h3
+      Done with this one? Weigh in on these other proposals. Or visit the 
+      = succeed '.' do 
+        %a{:href => '/', :title => 'homepage'} homepage
+
+    = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false, :prompt => 'Vote on this proposal' }
+
+
+
 :javascript
   $j(document).ready(function(){
     $j('.proposal_item').each(function(){

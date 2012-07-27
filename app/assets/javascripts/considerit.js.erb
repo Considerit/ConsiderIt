@@ -19,8 +19,17 @@ ConsiderIt = {
       cursor: 'move',
       start: function(evt, ui){
         $j(this).parents('.points_other').css('z-index', 100);
+        $j(this).addClass('noclick');
+        $j(this).css('visibility', 'hidden');
       }, stop: function(evt, ui) {
         $j(this).parents('.points_other').css('z-index', '');
+        $j(this).removeClass('noclick');
+      }, revert: function(valid) {
+        if (!valid){
+          //$j(this).parents('.points_other').css('z-index', '');
+          //$j(this).removeClass('noclick');        
+          $j(this).css('visibility', ''); 
+        }
       }
       //snap: '#drop-pro'
     },
@@ -73,17 +82,13 @@ ConsiderIt = {
       $j.get('/' + $j.trim($j('#proposal_long_id').text()) + '/results', function(data){
         var $segments = $j(data['segments']);
         $j('.explore#ranked_points').append($segments);
-        //$segments.each(function(){
-        //  $j('.full_column', $j(this)).infiniteCarousel({'operation': 'refresh'});
-        //});
 
-      });
+        $j('.thanks').fadeOut(function(){
+          $j(this).siblings('.results_prompt').fadeIn();                
 
-      $j('#histogram').delay(500).animate({'top': '0px'}, 'slow', function(){
-        $j('.support,.oppose', $j(this)).delay(100).css('visibility', 'visible');
-        $j('.thanks').delay(1500).fadeOut(function(){
-          $j(this).siblings('.results_prompt').fadeIn();
-            
+          $j('#histogram').animate({'top': '0px'}, 'slow', function(){
+            $j('.support,.oppose,#axis_arrow,.personal_position.update', $j(this)).delay(100).fadeIn();
+          });
         });
       });
     }
@@ -120,6 +125,7 @@ ConsiderIt = {
       hoverClass: 'drop_pending',
       drop: function( event, ui ) {
         var draggable = ui.draggable;
+        $j('#points_on_board_con .droppable').addClass('dropping_in_progress');
         $j('.inclusion_submit', draggable).trigger('click');
       },
       accept: '.con'
@@ -129,6 +135,7 @@ ConsiderIt = {
       hoverClass: 'drop_pending',
       drop: function( event, ui ) {
         var draggable = ui.draggable;
+        $j('#points_on_board_pro .droppable').addClass('dropping_in_progress');
         $j('.inclusion_submit', draggable).trigger('click');
       },
       accept: '.pro'
@@ -342,17 +349,8 @@ ConsiderIt = {
     //////////////
 
     // mouseover a point
-    $j(document).delegate('.point_in_list:not(.expanded)', 'hover', function( event ) {
+    $j(document).delegate('.point_in_list:not(#expanded)', 'hover', function( event ) {
       if ( $j('.point_in_list.expanded').length == 0 ){
-        var el = $j(this).find('.operations');
-        if ( event.type === 'mouseenter' ) {
-          el.stop(true, false)
-            .fadeTo('slow', 1.0, 'easeInQuart');
-        } else if (!$j(this).hasClass('edit_mode')) {
-          el.stop(true, false)
-            .fadeOut('fast');
-        }
-
         if ( $j(this).hasClass('point_in_list_board')) {
           $j('#user-' + $j(this).attr('user') + ' .view_statement img').toggleClass('author_of_hovered_point');
         }
@@ -363,13 +361,13 @@ ConsiderIt = {
 
 
     // mouseover read more button
-    $j('.point_in_list_margin').delegate('.point_text_toggle.more:not(.expanded)', 'hover', function(event){
-      if ( $j('.point_in_list.expanded').length == 0 ){
+    $j('.point_in_list_margin').delegate('.point_text_toggle.more:not(#expanded)', 'hover', function(event){
+      if ( $j('.point_in_list#expanded').length == 0 ){
         var parent = $j(this).parents('.point_in_list_margin');
         if ( event.type === 'mouseenter' ) {
           parent.draggable( "disable" );
           parent.removeClass('ui-draggable-disabled ui-state-disabled');
-        } else if ( !parent.hasClass('expanded') ) {
+        } else if ( !parent.is('#expanded') ) {
           parent.draggable( "enable" );
         }
       }
@@ -377,7 +375,9 @@ ConsiderIt = {
 
     // new button clicked
     $j('.pro_con_list.dynamic').delegate('.newpoint .newpointbutton a.write_new', 'click', function(){
-      $j('.droppable').fadeOut();
+      //$j('.droppable').fadeOut();
+
+      $j('.pro_con_list.dynamic').addClass('point_edit_mode');
       $j(this).fadeOut(100, function(){
         $j(this).parents('.newpoint').find('.pointform')
           .fadeIn('fast')
@@ -390,7 +390,8 @@ ConsiderIt = {
 
     // edit point clicked
     $j('.pro_con_list.dynamic').delegate('a.editpoint', 'click', function(){
-      $j('.droppable').fadeOut();
+      //$j('.droppable').fadeOut();
+      $j('.pro_con_list.dynamic').addClass('point_edit_mode');      
       $j(this).fadeOut(function(){
         var $point_form = $j(this).parents('.edit').find('.pointform');
         $j(this).parents('.point_in_list').addClass('edit_mode');
@@ -402,15 +403,17 @@ ConsiderIt = {
     // new/edit point cancel clicked
     $j('.pro_con_list.dynamic').delegate('.new_point_cancel', 'click', function(){
       var form = $j(this).parents('.pointform');
-      form.find('.point_link_form').remove();
       form
         .fadeOut(function(){
-          $j(this).parents('.newpoint').find('.write_new').fadeIn();  //hide_lightbox();
-          $j('.droppable').fadeIn();
-        })
-        .find('textarea').val('');
-      $j(this).parents('.point_in_list').removeClass('edit_mode');
+          $j(this).parents('.newpoint').find('.write_new').fadeIn(); 
+          form.find('.point_link_form').remove();
+          $j('.pro_con_list.dynamic').removeClass('point_edit_mode');  
+          form.find('textarea').val('').trigger('keydown');
+          form.find('label.inline').addClass('empty');
 
+          //$j('.droppable').fadeIn();
+        });
+        $j(this).parents('.point_in_list').removeClass('edit_mode');
     });
 
     // Create callback
@@ -439,26 +442,26 @@ ConsiderIt = {
 
 
     // Delete callback
-    $j('.pro_con_list.dynamic').delegate('.deletepointform a', 'ajax:success', function(data, response, xhr){
+    $j('.pro_con_list.dynamic').delegate('a.delete_point', 'ajax:success', function(data, response, xhr){
       $j(this).parents('.point_in_list').filter(":first").fadeOut();
     });
 
     var close_point_click = function(e){
-      if ( !$j(e.target).hasClass('expanded') && $j(e.target).parents('.point_in_list.expanded').length == 0  && $j('body > .ui-widget-overlay').length == 0 && $j(e.target).filter(':visible').length > 0) {
-        $j('.point_in_list.expanded .toggle.less:visible').trigger('click');
+      if ( !$j(e.target).is('#expanded') && $j(e.target).parents('.point_in_list#expanded').length == 0  && $j('body > .ui-widget-overlay').length == 0 && $j(e.target).filter(':visible').length > 0) {
+        $j('.point_in_list#expanded .toggle.less:visible').trigger('click');
+
       }
     };
 
     var close_point_key = function(e) { 
       if (e.keyCode == 27 && $j('body > .ui-widget-overlay').length == 0) {
-        $j('.point_in_list.expanded .toggle.less:visible').trigger('click');
+        $j('.point_in_list#expanded .toggle.less:visible').trigger('click');
       }
     };
 
     // Toggle point details ON
-    $j(document).delegate('.point_in_list .toggle.more', 'click', function(){
-      var real_point = $j(this).parents('.point_in_list'),
-          point_id = real_point.attr('id').substring(6);  
+    $j(document).delegate('.point_in_list:not(.noclick):not(#expanded)', 'click', function(){
+      var real_point = $j(this), point_id = real_point.attr('point');
           
       real_point.draggable( "disable" );
 
@@ -470,144 +473,97 @@ ConsiderIt = {
         .css('visibility', 'hidden');
 
       //close other open points...
-      $j('.point_in_list.expanded .toggle.less:visible').trigger('click');
+      $j('#expanded .toggle.less:visible').trigger('click');
 
       real_point.after(placeholder);
 
-
-
-
-      //start complex animation...
       var body = real_point.find('> .body'),
           full = body.find('> .full'),
-          nutshell = real_point.find('.nutshell'),
           extra = real_point.find('.extra'),
           is_pro = real_point.hasClass('pro'),
           is_margin = real_point.hasClass('point_in_list_margin'),
           details_loaded = extra.find('> .ajax_loading').length == 0;
-      
+
+      if ( !details_loaded ) {
+        var proposal_id = $j.trim($j('#proposal_long_id').text());
+
+        $j.get('/' + proposal_id + '/points/' + point_id, {'origin' : is_margin ? 'margin' : 'self'}, function(data){
+          $j('.extra', real_point)
+            .html(data.details)
+            .find('textarea').autoResize({extraSpace:0});    
+        });
+      }
+
+
       real_point.data({
-        'nutshell': {
-          'width': nutshell.css('width'),
-          'font-size': nutshell.css('font-size')
-        },
         'container': placeholder.parent()
       });
-      nutshell.css('width', nutshell.width());
-
-      nutshell_animate_props = {
-        'width': '650px',
-        'font-size': '12pt'
-      }
-
-      var real_left = nutshell.offset().left, real_top = nutshell.offset().top - $j(document).scrollTop();
 
       real_point = real_point.detach();
-      $j('body').append(real_point);      
+      $j('body').append(real_point);    
+
       real_point
-        .addClass('expanded')
         .css({
-          'top': placeholder.offset().top, //- $j('#content').offset().top,
-          'left': placeholder.offset().left
-          //'width': parseInt(real_point.css('width')) - parseInt(real_point.css('margin-right')) - parseInt(real_point.css('margin-left'))
-        })
-        //.find('.operations').hide();
+          'top': placeholder.offset().top,
+          'left': placeholder.offset().left,
+          'background-image': 'none'
+          //'visibility' : 'hidden'
+        });
 
-      if ( !is_pro ) {
-        nutshell.css({'left': real_left, 'top': real_top, 'position': 'fixed'});
+      if (real_point.is('.point_in_list_margin') ) {
 
-        if ( is_margin ) {
-          nutshell_animate_props['left'] = '-=522px';
-        } else {
-          nutshell_animate_props['left'] = '-=290px';
-        }
+        var $hidden = real_point.children();
+        $hidden.css('visibility', 'hidden');
       }
+      real_point.offset(); // forces Chrome to execute proper animation
 
-      real_point.find('.bullet_point, .nutshell .nested_user').fadeOut();
-      real_point.find('.toggle.more').hide();
-      real_point.addClass('animation_state-expanded', 'slow', 'easeInOutQuad', function(){
-        real_point.find('.avatar').fadeIn('slow');
-        nutshell.animate(nutshell_animate_props, 
-          {'duration': 'slow', 'easing': 'easeInOutQuad', 'complete': function(){
-          $j(this).css({'left': '', 'top': '', 'position': ''});
-
-          real_point.addClass('animation_state-finished', 'fast', 'easeInQuad', function(){
-            
-            full.slideDown(function(){
-
-              if ( !details_loaded ) {
-                var proposal_id = $j.trim($j('#proposal_long_id').text());
-
-                $j.get('/' + proposal_id + '/points/' + point_id, {'origin' : is_margin ? 'margin' : 'self'}, function(data){
-                  $j('.extra', real_point)
-                    .html(data.details)
-                    .find('textarea').autoResize({extraSpace:0});
-                  
-                  //real_point.animate(5000, {'height': '+=' + extra.height()}, function(){
-                    //real_point.css('height', '');
-                  //});      
-                  //extra.slideDown(5000);
-                });
-              } else {
-                //real_point.animate(5000, {'height': '+=' + extra.height()}, function(){
-                  //real_point.css('height', '');
-                //});      
-                extra.slideDown();
-              }
-            });
-          });
-        }});
-
-        $j(document)
-          .click(close_point_click)
-          .keyup(close_point_key);
-      });
+      var top = $j('.slate:visible').offset().top + 100, 
+          left = ConsiderIt.results_page ? $j('.slate:visible').offset().left - 136 : $j('.margin:first').offset().left + 9;
 
 
-      
+      real_point
+        .attr('id', 'expanded')
+        .css({
+          'top': top, 'left': left,
+          'background-image': ''
+          //'visibility': ''
+        });
+
+      if (real_point.is('.point_in_list_margin') ) {
+        setTimeout(function(){$hidden.css('visibility', 'visible');},300);
+      }
+      $j(document)
+        .click(close_point_click)
+        .keyup(close_point_key);
+
     });
 
     // Toggle point details OFF
-    $j(document).delegate('.point_in_list .toggle.less', 'click', function(){
-
-      var real_point = $j(this).parents('.point_in_list'), 
-          placeholder = $j('#' + real_point.attr('id'), real_point.data('container')),
-          nutshell = real_point.find('.nutshell');
+    $j(document).delegate('#expanded .toggle.less', 'click', function(){
+      var real_point = $j(this).parents('#expanded'), 
+          placeholder = $j('#point-' + real_point.attr('point'), real_point.data('container'));
 
       $j(document)
         .unbind('click', close_point_click)
         .unbind('keyup', close_point_key);
 
-      //real_point.css({'height': 'auto'})
-      real_point.find('.extra, > .body .full').fadeOut(500);
+      real_point
+        .css({'left':'','top':'','height':'', 'width': ''})
+        .attr('id', placeholder.attr('id'));
+      placeholder.replaceWith(real_point);
 
-      real_point.find('> .body .avatar').fadeOut( 600, function(){
-        if ( real_point.hasClass('animation_state-finished')) { 
-          real_point.removeClass('animation_state-finished');
+      if ( real_point.hasClass('point_in_list_margin') ) {
+        real_point.draggable( "enable" );
+      } 
 
-          nutshell.animate(real_point.data('nutshell'), 1000, 'easeInOutQuad', function(){
-            nutshell.css({'width': '', 'font-size': ''});
-          }); 
-          real_point.removeClass('animation_state-expanded', 1000, 'easeInOutQuad', function(){        
-            //nutshell.css({ 'display': '', 'position': '' });
+      real_point
+        .css({'left':'','top':'','height':'', 'width': ''})
+        .attr('id', placeholder.attr('id'));
+      placeholder.replaceWith(real_point);
 
-            real_point
-              .css({'left':'','top':'','height':'', 'width': ''})
-              .removeClass('expanded');
-            placeholder.replaceWith(real_point);
-
-            if ( real_point.hasClass('point_in_list_margin') ) {
-              real_point.draggable( "enable" );
-            } else {
-              real_point.find('.bullet_point').show();
-            }
-            real_point.find('>.body .nutshell .nested_user').fadeIn();
-            //placeholder.remove();
-            real_point.find('.operations').hide().find('.more').show();
-
-          }); 
-        }       
-      });
+      if ( real_point.hasClass('point_in_list_margin') ) {
+        real_point.draggable( "enable" );
+      }
 
     });
 
@@ -616,9 +572,10 @@ ConsiderIt = {
     //////////////
 
     // Include in list
-    $j(document).on('ajax:success', '.include .judgepointform form', function(data, response, xhr){
+    $j(document).on('ajax:success', '.include form', function(data, response, xhr){
       var included_point = $j(this).parents('.point_in_list_margin'), 
-          replacement_point = $j(response['new_point']);
+          replacement_point = $j(response['new_point']),
+          $list = $j('.pro_con_list');
     
       if ( included_point.hasClass('pro') ) {
         var user_point_list = $j('#points_on_board_pro .point_list');
@@ -631,39 +588,53 @@ ConsiderIt = {
       var carousel = other_point_list.parents('.infiniteCarousel').filter(":first"),
           replacement_point_already_in_list = other_point_list.find('#' + replacement_point.attr('id')).length > 0;
 
-      included_point.fadeOut('slow', function() {
-        // only use replacement point if it doesn't already exist in the list
-        included_point = replacement_point && replacement_point.length > 0 && !replacement_point_already_in_list
-           ? included_point.replaceWith(replacement_point) 
-           : included_point.detach();
+      if ($list.is('.empty')){
+        var $learned = $j('<div>').attr('id','inclusion_learned').text('Good. Add as many as you wish!');             
+        $j('.pro_con_list')
+          .removeClass('empty');
+        $learned.hide();
+        $list.append($learned);
+        $learned.delay(600).fadeIn().delay(2500).fadeOut();
 
-        replacement_point.draggable(ConsiderIt.draggable_options);
-        user_point_list.append(included_point);
-        included_point
-          .removeClass('point_in_list_margin')
-          .addClass('point_in_list_self')
-          .fadeIn('slow', function(){
-            $j('.pro_con_list .droppable').fadeOut('slow').remove();
-            carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
-          })
-          .draggable( "destroy" );
-      });
+      }
+
+
+      included_point.hide(); 
+      // only use replacement point if it doesn't already exist in the list
+      included_point = replacement_point && replacement_point.length > 0 && !replacement_point_already_in_list
+         ? included_point.replaceWith(replacement_point) 
+         : included_point.detach();
+
+      replacement_point.draggable(ConsiderIt.draggable_options);
+      user_point_list.append(included_point);
+
+      $j('.droppable', user_point_list.parents('.full_column')).removeClass('dropping_in_progress');
+
+      included_point
+        .toggleClass('point_in_list_margin point_in_list_self')
+        .css('visibility', '')
+        .fadeIn(function(){
+          carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
+
+        })
+        .draggable( "destroy" );
+
     });
 
     // Remove from list
-    $j(document).delegate('.remove .judgepointform a', 'ajax:success', function(data, response, xhr){
+    $j(document).delegate('.remove a', 'ajax:success', function(data, response, xhr){
       var old_point = $j(this).parents('.point_in_list_self'),
         margin_point_list = old_point.hasClass('pro') ? $j('#points_other_pro .point_list') : $j('#points_other_con .point_list'),
         carousel = margin_point_list.parents('.infiniteCarousel');
 
-      old_point.fadeOut('slow', function(){
+      old_point.fadeOut(function(){
         old_point = old_point.detach(); 
         margin_point_list.append(old_point);
         old_point
           .removeClass('point_in_list_self')
           .addClass('point_in_list_margin')
           .draggable(ConsiderIt.draggable_options)
-          .fadeIn('slow', function(){
+          .fadeIn(function(){
             carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
           });
 
@@ -721,13 +692,13 @@ ConsiderIt = {
 
 
     var close_bar_click = function(e){
-      if ( !$j(e.target).is('.bar.selected') && $j(e.target).parents('.bar.selected').length == 0 && $j('.point_in_list.expanded').length == 0 && !$j(e.target).hasClass('pro_con_list') && $j(e.target).parents('.pro_con_list').length == 0 ) {
+      if ( !$j(e.target).is('.bar.selected') && $j(e.target).parents('.bar.selected').length == 0 && $j('.point_in_list#expanded').length == 0 && !$j(e.target).hasClass('pro_con_list') && $j(e.target).parents('.pro_con_list').length == 0 ) {
         $j('.bar.selected').trigger('click');
       }
     };
 
     var close_bar_key = function(e) { 
-      if (e.keyCode == 27 && $j('.point_in_list.expanded').length == 0 && $j('body > .ui-widget-overlay').length == 0) {
+      if (e.keyCode == 27 && $j('.point_in_list#expanded').length == 0 && $j('body > .ui-widget-overlay').length == 0) {
         $j('.bar.selected').trigger('click');
       }
     };
@@ -794,17 +765,6 @@ ConsiderIt = {
     //PROPOSAL
     //////////////
 
-    $j('.proposal_results_description').on('click', '.head a.show_details', function(){
-      $j('.proposal_results_description').find('.pic, .description_wrapper').slideDown('slow');
-      $j(this).hide();
-      $j(this).siblings('a').show();
-    });
-
-    $j('.proposal_results_description').on('click', '.head a.hide_details', function(){
-      $j('.proposal_results_description').find('.pic, .description_wrapper').slideUp('slow');
-      $j(this).hide();
-      $j(this).siblings('a').show();
-    });
 
   },
 
@@ -852,14 +812,14 @@ ConsiderIt = {
     },
     
     close_segment_click : function(e){
-      if ( $j(e.target).parents('.point_in_list.expanded').length == 0  && $j('body > .ui-widget-overlay').length == 0) {
-        $j('.point_in_list.expanded .toggle.less:visible').trigger('click');
+      if ( $j(e.target).parents('.point_in_list#expanded').length == 0  && $j('body > .ui-widget-overlay').length == 0) {
+        $j('.point_in_list#expanded .toggle.less:visible').trigger('click');
       }
     },
 
     close_segment_key : function(e) { 
       if (e.keyCode == 27) {
-        $j('.point_in_list.expanded .toggle.less:visible').trigger('click');
+        $j('.point_in_list#expanded .toggle.less:visible').trigger('click');
       }
     },
     

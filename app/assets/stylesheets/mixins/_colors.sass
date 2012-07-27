@@ -20,3 +20,11 @@
 =grayscale_off
   filter: none
   -webkit-filter: grayscale(0)
+
+=grayscale_hover
+  +grayscale
+  &:hover
+    +grayscale_off
+
+
+$yellow_postit: #f5eea0

@@ -1,6 +1,6 @@
 
 $j(document).ready(function(){
-  $j('.homepage #proposals .proposals').infiniteCarousel({
+  $j('.proposals').infiniteCarousel({
     speed: 1500,
     vertical: false,
     total_items: 3,

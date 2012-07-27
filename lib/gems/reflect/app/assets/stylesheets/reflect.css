@@ -34,7 +34,7 @@ button.button_as_link {
   .submit a[disabled=true] {
     cursor: default; }
 
-[disabled=true] {
+.rf_comment [disabled=true] {
   opacity: 0.3; }
 
 

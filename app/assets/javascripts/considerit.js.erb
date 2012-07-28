@@ -104,7 +104,6 @@ ConsiderIt = {
     //   dim: 250
     // });
 
-
     //ConsiderIt.points.create.initialize_counters('.newpointform, .editpointform');
 
     // google analytics
@@ -693,10 +692,6 @@ ConsiderIt = {
       $j(this).children('.details').hide();
     });    
 
-    //////////////
-    //HISTOGRAM
-    //////////////
-
 
     var close_bar_click = function(e){
       if ( !$j(e.target).is('.bar.selected') && $j(e.target).parents('.bar.selected').length == 0 && $j('.point_in_list#expanded').length == 0 && !$j(e.target).hasClass('pro_con_list') && $j(e.target).parents('.pro_con_list').length == 0 ) {
@@ -771,7 +766,13 @@ ConsiderIt = {
     //////////////
     //PROPOSAL
     //////////////
+    $j('#ranked_points').delegate(".point_filter", 'ajax:success', function(data, response, xhr){
+      //$j(this).siblings.removeClass('selected');
+      //$j(this).addClass('selected');
+      // TODO: store, don't replace
+      $j(this).parents('#domain_all').replaceWith($j(response.points));
 
+    });
 
   },
 

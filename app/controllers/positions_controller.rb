@@ -243,6 +243,7 @@ protected
         } ) 
         if !actions[:written_points].include?(point_id) 
           pnt = Point.find(point_id)
+          pnt.update_absolute_score
           inc.track!
           pnt.follow!(current_user, :follow => true, :explicit => false)
         end
@@ -263,6 +264,7 @@ protected
       pnt.track!
       pnt.follow!(current_user, :follow => true, :explicit => false)
 
+      #TODO: aggregate these into one email
       ActiveSupport::Notifications.instrument("new_published_Point", 
         :point => pnt,
         :current_tenant => current_tenant,
@@ -275,6 +277,7 @@ protected
     actions[:deleted_points].each do |point_id, value|
       current_user.inclusions.where(:point_id => point_id).each do |inc|
         inc.destroy
+        inc.point.update_absolute_score
       end
     end
     actions[:deleted_points] = {}

@@ -39,6 +39,22 @@ class Point < ActiveRecord::Base
     # where( "points.score > 0" ).
     published.
     order( "points.score DESC" )
+
+  scope :ranked_popularity, 
+    # where( "points.score > 0" ).
+    published.
+    order( "points.attention DESC" )
+
+  scope :ranked_unify, 
+    # where( "points.score > 0" ).
+    published.
+    order( "points.appeal DESC" )
+
+  scope :ranked_divisive, 
+    # where( "points.score > 0" ).
+    published.
+    order( "points.appeal ASC" )
+
   
   scope :ranked_persuasiveness, 
     # where( "points.persuasiveness > 0").

@@ -42,7 +42,7 @@
                       #{link_to 'Revise', edit_proposal_position_url(@proposal.long_id, user_position)} 
 
 
-              .bar.full{ :style => "height: #{height * barheight}px;", :bucket => "#{6-index}", :id => "bucket-#{6-index}", :class => "#{bucket_percentile == 0 ? 'noone' : 'some'}"}
+              .bar.full{ :style => "height: #{height * barheight}px;", :bucket => "#{6-index}", :id => "bucket-#{6-index}", :class => "#{bucket_percentile == 0 ? 'noone' : 'some'}", :title => 'Click to lock in place'}
 
                 .close
                   x

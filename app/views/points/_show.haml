@@ -9,11 +9,11 @@
 
 - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
-= cache [point, point.user_id, point_creator, origin] do
+= cache [point, point.user_id, point_creator, origin, Digest::MD5.hexdigest(point.includers)] do
 
   - has_details = point.text && point.text.length > 0
 
-  %li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable #{point_creator ? 'added_by_me' : ''}", :point => point.id,  :user => point.hide_name ? nil : point.user_id }
+  %li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable #{point_creator ? 'added_by_me' : ''}", :point => point.id,  :user => point.hide_name ? nil : point.user_id, :includers => point.includers }
         
     %a.toggle.less.hide.point_text_toggle
       x

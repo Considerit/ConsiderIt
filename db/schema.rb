@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120722021003) do
+ActiveRecord::Schema.define(:version => 20120727232701) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -312,6 +312,7 @@ ActiveRecord::Schema.define(:version => 20120722021003) do
     t.datetime "followable_last_notification"
     t.integer  "comment_count",                          :default => 0
     t.integer  "point_link_count",                       :default => 0
+    t.string   "includers"
   end
 
   add_index "points", ["account_id", "proposal_id", "published", "is_pro"], :name => "select_published_pros_or_cons"

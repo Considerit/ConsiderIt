@@ -352,10 +352,16 @@ ConsiderIt = {
     $j(document).delegate('.point_in_list:not(#expanded)', 'hover', function( event ) {
       if ( $j('.point_in_list.expanded').length == 0 ){
         if ( $j(this).hasClass('point_in_list_board')) {
+          var $histogram = $j('#histogram');
+          $histogram.toggleClass('hovering_over_point');
+          var includers = $j.parseJSON($j(this).attr('includers')), selector = [];
+          
+          for ( var i = 0; i < includers.length; i+=1 ) {
+            selector.push('#user-' + includers[i] + ' .view_statement img');
+          }
+          $j(selector.join(','), $histogram).toggleClass('includer_of_hovered_point');
           $j('#user-' + $j(this).attr('user') + ' .view_statement img').toggleClass('author_of_hovered_point');
         }
-
-
       }
     });
 
@@ -564,6 +570,7 @@ ConsiderIt = {
       if ( real_point.hasClass('point_in_list_margin') ) {
         real_point.draggable( "enable" );
       }
+      real_point.trigger('mouseleave');
 
     });
 

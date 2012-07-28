@@ -230,6 +230,26 @@
             margin-bottom: 6px
             text-align: left
 
+// hovering over a point
+#histogram.hovering_over_point  
+  table td.bar_cell .bar.full 
+    //background-color: transparent
+
+    .people_bar
+
+      li.statement
+        .view_statement
+          img
+            visibility: hidden
+            &.author_of_hovered_point
+              opacity: 1
+              visibility: visible 
+              +grayscale_off
+            &.includer_of_hovered_point
+              opacity: 1
+              visibility: visible
+              +grayscale_off
+
 #axis_arrow
   height: 1 * $vertical_baseline
   background-color: transparent

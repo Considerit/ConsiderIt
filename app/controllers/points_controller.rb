@@ -46,10 +46,22 @@ class PointsController < ApplicationController
     end
 
     @bucket = params[:bucket]
+    @filter = params.key?(:filter) ? params[:filter] : nil
     @positions = @proposal.positions.published
     if @bucket == 'all' || @bucket == ''
+      @filter ||= 'popularity'
       group_name = 'all'
-      qry = qry.ranked_overall
+      case @filter
+      when 'popularity'
+        qry = qry.ranked_overall
+      when 'unify'
+        qry = qry.ranked_unify
+      when 'divisive'
+        qry = qry.ranked_divisive
+      else
+        raise 'Unrecognized sort filter'
+      end
+
     elsif @bucket[0..3] == 'user'
       group_name = 'user'
       user_points_id = @bucket[5..@bucket.length].to_i
@@ -122,7 +134,6 @@ class PointsController < ApplicationController
     #TODO: refactor to make the logic behind these calls easier to follow & explicit
     if pros_and_cons
       resp = { :points => render_to_string(:partial => "points/pro_con_list", :locals => { :bucket => @bucket, :dynamic => false, :points => {:pros => @pro_points, :cons => @con_points} })   }
-    
     else
       origin = group_name == 'margin' ? 'margin' : 'board'
       resp = { :points => render_to_string(:partial => "points/column", :locals => { :points => points, :is_pro => params.key?(:pros_only), :origin => origin, :bucket => @bucket, :enable_pagination => false, :page => @page }) }

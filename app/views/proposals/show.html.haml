@@ -8,7 +8,7 @@
 - proposal_stance_data = @proposal.stance_fractions
 - has_position = proposal_stance_data.sum > 0
 - update = @position && @position.published
-- render_other_proposals_menu ||= true
+- render_other_proposals_menu ||= current_tenant.theme != 'chalkboardit'
 
 = render :partial => "proposals/blocks/menu"
 

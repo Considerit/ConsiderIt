@@ -87,6 +87,22 @@
           .group_name
             display: block
 
+          .filters
+            +font-size(-5)
+            text-transform: lowercase
+            font-variant: small-caps
+
+            .label
+              color: #999
+            a
+              padding: 0 $grid_xs / 2
+              &:hover
+                cursor: pointer
+              &.selected
+                background-color: #666
+                background-color: rgba(white, .1)
+                +border-radius(5px)
+
 #other_proposals
   margin-top: 4 * $vertical_baseline
   h3

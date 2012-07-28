@@ -9,16 +9,25 @@
 - bucket ||= origin
 - has_other_points ||= false
 - total_points = points[:pros].length + points[:cons].length
-
+- @filter ||= 'popularity'
 .pro_con_list{ :id => "domain_#{bucket}", :class => " #{dynamic ? 'dynamic' : 'static'} #{has_other_points ? 'has_other_points' : 'no_other_points' } #{total_points == 0 ? 'empty' : ''}"}
 
   .slate
     - if !dynamic
-      .participant_connection      
-        Most popular factors
-        - if bucket != 'all'
+      .participant_connection    
+        - if bucket != 'all'  
+          Most important factors
           .group_name
             for #{stance_name(bucket)}  
+
+        - else
+          All Factors
+          .filters
+            %span.label
+              order by 
+
+            - [{:name => 'popularity', :label => 'Popularity', :selected => @filter == 'popularity'}, {:name => 'unify', :label => 'Most unifying', :selected => @filter == 'unify'}, {:name => 'divisive', :label => 'Most Divisive', :selected => @filter == 'divisive'}].each do |filter|
+              = link_to filter[:label], proposal_points_path(@proposal.long_id, :filter => filter[:name], :page => 1, :bucket => 'all'), :remote => true, :title => "Order by #{filter[:label]}", :class => "#{filter[:selected] ? 'selected' : ''} point_filter", :id => "point_filter-#{filter[:name]}"
 
         .ajax_loading
    

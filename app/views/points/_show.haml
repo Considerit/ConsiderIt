@@ -9,7 +9,7 @@
 
 - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
 
-= cache [point, point.user_id, point_creator, origin, Digest::MD5.hexdigest(point.includers)] do
+= cache [point, point.user_id, point_creator, origin, Digest::MD5.hexdigest(point.includers || '')] do
 
   - has_details = point.text && point.text.length > 0
 

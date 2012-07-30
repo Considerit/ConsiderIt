@@ -169,7 +169,7 @@ class PointsController < ApplicationController
     end
 
     @point = Point.create!(params[:point])
-    @point.point_link_count = @point.point_link.count
+    @point.point_link_count = @point.point_links.count
     @point.save
 
     session[@proposal.id][:written_points].push(@point.id)

@@ -384,7 +384,8 @@ ConsiderIt = {
 
       $j('.pro_con_list.dynamic').addClass('point_edit_mode');
       $j(this).fadeOut(100, function(){
-        $j(this).parents('.newpoint').find('.pointform')
+        $j('.newpoint').hide();
+        $j(this).parents('.newpoint').show().find('.pointform')
           .fadeIn('fast')
           .find('.point-title-group input')
             .focus(); 
@@ -415,6 +416,7 @@ ConsiderIt = {
           $j('.pro_con_list.dynamic').removeClass('point_edit_mode');  
           form.find('textarea').val('').trigger('keydown');
           form.find('label.inline').addClass('empty');
+          $j('.newpoint').fadeIn();
 
           //$j('.droppable').fadeIn();
         });

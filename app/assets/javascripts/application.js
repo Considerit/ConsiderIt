@@ -5,6 +5,7 @@
 //= require jquery.noblecount.min.js
 //= require jquery.example.min.js
 //= require jquery.jcarousel.min.js
+//= require jquery.dynamic_list.min.js
 //= require jquery.autoresize.js
 //= require jquery.html5form.js
 //= require jquery.inline_labels.js

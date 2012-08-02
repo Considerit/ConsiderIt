@@ -7,6 +7,7 @@
 
 var ConsiderIt; //global namespace for ConsiderIt js methods
 
+
 (function($) {
 
 $j = jQuery.noConflict();
@@ -116,9 +117,9 @@ ConsiderIt = {
   },
   per_request : function() {
     
-    $j('.point_in_list_margin.pro').draggable(ConsiderIt.draggable_options);
+    //$j('.point_in_list_margin.pro').draggable(ConsiderIt.draggable_options);
 
-    $j('.point_in_list_margin.con').draggable(ConsiderIt.draggable_options);
+    $j('.point_in_list_margin').draggable(ConsiderIt.draggable_options);
 
     $j('#points_on_board_con').droppable( {
       hoverClass: 'drop_pending',
@@ -140,6 +141,7 @@ ConsiderIt = {
       accept: '.pro'
     } );      
            
+
     $j('.has_example').each(function(){
       if($j(this).val() == '') {
         $j(this).example(function() {
@@ -189,6 +191,7 @@ ConsiderIt = {
     // });
 
     ConsiderIt.update_carousel_heights();
+
     $j('form.html5:not(.html5formified)').html5form();
   },
 
@@ -437,6 +440,7 @@ ConsiderIt = {
       $j(this).find('.point-description-group .count').html(2000);
       
       $j(this).find('.new_point_cancel').trigger('click');
+
     });
 
     // Update callback
@@ -595,12 +599,12 @@ ConsiderIt = {
           replacement_point_already_in_list = other_point_list.find('#' + replacement_point.attr('id')).length > 0;
 
       if ($list.is('.empty')){
-        var $learned = $j('<div>').attr('id','inclusion_learned').text('Good. Add as many as you wish!');             
+        //var $learned = $j('<div>').attr('id','inclusion_learned').text('Good. Add as many as you wish!');             
         $j('.pro_con_list')
           .removeClass('empty');
-        $learned.hide();
-        $list.append($learned);
-        $learned.delay(600).fadeIn().delay(2500).fadeOut();
+        //$learned.hide();
+        //$list.append($learned);
+        //$learned.delay(600).fadeIn().delay(2500).fadeOut();
 
       }
 

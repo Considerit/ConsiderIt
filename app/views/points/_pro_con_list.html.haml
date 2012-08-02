@@ -42,12 +42,9 @@
             = render :partial => "points/column", :locals => { :points => points[:pros], :is_pro => true, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
             - if dynamic
+              = render :partial => "points/new", :locals => { :is_pro => true, :sel => '#points_on_board_pro' }
               - if has_other_points 
                 = render :partial => "points/drop_target", :locals => { :side => :left }
-
-              = render :partial => "points/new", :locals => { :is_pro => true, :sel => '#points_on_board_pro' }
-
-
 
         %td.full_column.con_column#points_on_board_con 
           .inner_wrapper
@@ -58,10 +55,9 @@
             = render :partial => "points/column", :locals => { :points => points[:cons], :is_pro => false, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
             - if dynamic
+              = render :partial => "points/new", :locals => { :is_pro => false, :sel => '#points_on_board_con' }
               - if has_other_points 
                 = render :partial => "points/drop_target", :locals => { :side => :right }
-
-              = render :partial => "points/new", :locals => { :is_pro => false, :sel => '#points_on_board_con' }
 
 
 

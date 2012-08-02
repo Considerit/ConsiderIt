@@ -49,6 +49,10 @@
           leftOffset = el[0].tagName == "TEXTAREA" ? 0 : 2,
           hidden_parent = el.is(":visible") ? null : el.parents(':hidden:last');
 
+      if ( hidden_parent ) {
+        console.log(hidden_parent.attr('class'))
+        console.log(el);
+      }
       if( el.data('inlined') ) return;
       el.data('inlined', true);
 
@@ -74,6 +78,7 @@
 
       if( hidden_parent ) {
         hidden_parent.hide();
+        hidden_parent.css('display', '');
       }
 
 

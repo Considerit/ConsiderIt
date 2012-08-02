@@ -60,7 +60,7 @@ ConsiderIt = {
     $j('textarea#statement').autoResize({extraSpace: 5});
     
     $j("#points_other_pro, #points_other_con").each(function(){
-      $j(this).infiniteCarousel({
+      $j(this).dynamicList({
         speed: 1000,
         vertical: true,
         total_items: parseInt($j(this).find('.total').filter(":first").text()),
@@ -164,7 +164,7 @@ ConsiderIt = {
     });  
 
     $j("#ranked_points .full_column").each(function(){
-      $j(this).infiniteCarousel({
+      $j(this).dynamicList({
         speed: 1000,
         vertical: true,
         total_items: parseInt($j(this).find('.total').filter(":first").text()),
@@ -190,7 +190,7 @@ ConsiderIt = {
     //   resetSizePerPage: false
     // });
 
-    ConsiderIt.update_carousel_heights();
+    //ConsiderIt.update_carousel_heights();
 
     $j('form.html5:not(.html5formified)').html5form();
   },
@@ -595,8 +595,8 @@ ConsiderIt = {
         var other_point_list = $j('#points_other_con .point_list');
       }
 
-      var carousel = other_point_list.parents('.infiniteCarousel').filter(":first"),
-          replacement_point_already_in_list = other_point_list.find('#' + replacement_point.attr('id')).length > 0;
+      var carousel = other_point_list.parents('.dynamicList').filter(":first"),
+          replacement_point_already_in_list = other_point_list.find('[point="' + replacement_point.attr('point') + '"]').length > 0;
 
       if ($list.is('.empty')){
         //var $learned = $j('<div>').attr('id','inclusion_learned').text('Good. Add as many as you wish!');             
@@ -616,6 +616,7 @@ ConsiderIt = {
          : included_point.detach();
 
       replacement_point.draggable(ConsiderIt.draggable_options);
+
       user_point_list.append(included_point);
 
       $j('.droppable', user_point_list.parents('.full_column')).removeClass('dropping_in_progress');
@@ -624,7 +625,7 @@ ConsiderIt = {
         .toggleClass('point_in_list_margin point_in_list_self')
         .css('visibility', '')
         .fadeIn(function(){
-          carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
+          carousel.dynamicList({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
 
         })
         .draggable( "destroy" );
@@ -635,7 +636,7 @@ ConsiderIt = {
     $j(document).delegate('.remove a', 'ajax:success', function(data, response, xhr){
       var old_point = $j(this).parents('.point_in_list_self'),
         margin_point_list = old_point.hasClass('pro') ? $j('#points_other_pro .point_list') : $j('#points_other_con .point_list'),
-        carousel = margin_point_list.parents('.infiniteCarousel');
+        carousel = margin_point_list.parents('.dynamicList');
 
       old_point.fadeOut(function(){
         old_point = old_point.detach(); 
@@ -644,9 +645,9 @@ ConsiderIt = {
           .removeClass('point_in_list_self')
           .addClass('point_in_list_margin')
           .draggable(ConsiderIt.draggable_options)
-          .fadeIn(function(){
-            carousel.infiniteCarousel({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
-          });
+          //.fadeIn(function(){
+            carousel.dynamicList({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
+          //});
 
       });
     });
@@ -720,7 +721,7 @@ ConsiderIt = {
       $j('#ranked_points .pro_con_list:not(#domain_' + bucket + '), .statements').hide();
       var $col = $j('.full_column', $stored);
       if ( !$col.data('carousel_initialized') ) {
-        $col.infiniteCarousel({'operation': 'refresh'});
+        $col.dynamicList({'operation': 'refresh'});
         $col.data('carousel_initialized', true);
       }
       $j(document)
@@ -869,11 +870,11 @@ ConsiderIt = {
     });    
   },
 
-  update_carousel_heights: function(){
-    $j('.points_other .point_list').css({
-      'height': $j('.pro_con_list').height()
-    })
-  },
+  //update_carousel_heights: function(){
+    // $j('.points_other .point_list').css({
+    //   'height': $j('.pro_con_list').height()
+    // })
+  //},
   noblecount :  {
     positive_count : function( t_obj, char_area, c_settings, char_rem ) {
       

@@ -1,9 +1,10 @@
-//*********************************************
-// For the ConsiderIt project.
-// Copyright (C) 2010 - 2012 by Travis Kriplean.
-// Licensed under the AGPL for non-commercial use.
-// See https://github.com/tkriplean/ConsiderIt/ for details.
-//*********************************************
+-#*********************************************
+  For the ConsiderIt project.
+  Copyright (C) 2010 - 2012, University of Washington
+  Author: Travis Kriplean
+  Licensed under the AGPL
+  See https://github.com/tkriplean/ConsiderIt/ for details.
+  *********************************************
 
 
 // Parameters
@@ -40,7 +41,7 @@
   %ul.point_list 
     - if points
       = render :partial => "points/show", :collection => points, :as => :point, :locals => { :origin => origin } 
-
+  .clear
 - if enable_pagination && paginate_after
 
   .point_list_footer

@@ -199,28 +199,28 @@ protected
     @con_points = @proposal.points.published.includes(:point_links, :user).cons.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
                     ranked_persuasiveness.page( 1 ).per( POINTS_PER_PAGE )
 
-    #TODO: bulk insert...
     #PointListing.transaction do
 
 
-      point_listings = []
-      (@pro_points + @con_points).each do |pnt|
-        point_listings.push("(#{@proposal.id}, #{@position.id}, #{pnt.id}, #{@user ? @user.id : 'NULL'}, 1)")
-        #PointListing.create!(
-        #  :proposal => @proposal,
-        #  :position => @position,
-        #  :point => pnt,
-        #  :user => @user,
-        #  :context => 1
-        #)
-      end
-    qry = "INSERT INTO point_listings 
-            (proposal_id, position_id, point_id, user_id, context) 
-            VALUES #{point_listings.join(',')}"
+    point_listings = []
+    (@pro_points + @con_points).each do |pnt|
+      point_listings.push("(#{@proposal.id}, #{@position.id}, #{pnt.id}, #{@user ? @user.id : 'NULL'}, 1)")
+      #PointListing.create!(
+      #  :proposal => @proposal,
+      #  :position => @position,
+      #  :point => pnt,
+      #  :user => @user,
+      #  :context => 1
+      #)
+    end
+    if point_listings.length > 0
+      qry = "INSERT INTO point_listings 
+              (proposal_id, position_id, point_id, user_id, context) 
+              VALUES #{point_listings.join(',')}"
 
-    #end
-    ActiveRecord::Base.connection.execute qry
-    
+      ActiveRecord::Base.connection.execute qry
+    end
+        
     @included_pros = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:point_links, :user).where(:is_pro => true) + 
                      Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => true)
     @included_cons = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:point_links, :user).where(:is_pro => false) + 

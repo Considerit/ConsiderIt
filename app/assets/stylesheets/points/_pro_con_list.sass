@@ -121,63 +121,64 @@
     //    min-height: 600px
 
     &.empty
-      .full_column
-        &.drop_pending
-          //border-color: transparent      
-
-          .droppable, .droppable .prompt
-            border-color: $yellow_postit
-            color: $yellow_postit
-
-        .droppable
-          position: absolute
-          //left: 0
-          top: 10 * $vertical_baseline
-          margin: auto
-          width: 100%
-          +font-size(-3)
-          text-align: center
-          border: 2px dashed #99965c
-          height: 160px
-          width: 175px
-          padding: 0
-          display: block
-
-          .prompt
-            //width: 100px
-            //margin: 111px auto 0 auto
-            display: inline-block
-            //position: relative
-            font-weight: bold
-            +font-size(0)
-            padding: $vertical_baseline $grid_xs
-            text-align: left
-            color: #99965c
-            line-height: 1.3
-
-    &.point_edit_mode .full_column .droppable, &.point_edit_mode .full_column.empty .droppable
-      display: none
-
     .full_column
+      &.drop_pending
+        //border-color: transparent      
+
+        .droppable, .droppable .prompt
+          border-color: $yellow_postit
+          color: $yellow_postit
+
+      .droppable
+        //position: absolute
+        //left: 0
+        //top: 10 * $vertical_baseline
+        margin: auto
+        margin-top: 4 * $vertical_baseline
+        width: 100%
+        +font-size(-3)
+        text-align: center
+        border: 2px dashed #99965c
+        height: 160px
+        width: 175px
+        padding: 0
+        display: block
+
+        .prompt
+          //width: 100px
+          //margin: 111px auto 0 auto
+          display: inline-block
+          //position: relative
+          font-weight: bold
+          +font-size(0)
+          padding: $vertical_baseline $grid_xs
+          text-align: left
+          color: #99965c
+          line-height: 1.3
+
+    //&.point_edit_mode .full_column .droppable, &.point_edit_mode .full_column.empty .droppable
+    //  display: none
+
+    //.full_column
       //width: 250px
       //border: 2px solid transparent
 
-      &.drop_pending
+    //  &.drop_pending
         //border-color: #777
-        .droppable
-          display: block
+    //    .droppable
+    //      display: block
 
-      .droppable
+    //  .droppable
         display: none
         width: 240px
         height: 75px
         border: 2px dashed #e1e1e1
         margin: $vertical_baseline 0
 
-        .prompt
+    //    .prompt
           display: none
 
-        &.dropping_in_progress
+    //    &.dropping_in_progress
           display: block
           
 

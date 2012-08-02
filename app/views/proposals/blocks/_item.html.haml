@@ -6,8 +6,9 @@
 //*********************************************
 
 - prompt ||= 'Read more and comment'
+- completed = has_stance(proposal)
 
-%li{ :id => "proposal_item-#{proposal.id}", :class => "proposal_item horizontal #{has_stance(proposal) ? 'finished' : 'not-finished'}" }
+%li{ :id => "proposal_item-#{proposal.id}", :class => "proposal_item horizontal #{completed ? 'finished' : 'not-finished'}" }
 
   %a{ :href => new_proposal_position_path(proposal.long_id), :title => "Think through this proposal"}
 
@@ -21,7 +22,10 @@
           = proposal.user.username
 
     .prompt
-      = prompt
+      - if !completed
+        = prompt
+      - else
+        Update your position
     
     - if proposal==@proposal && hide_initially
       %a.show_proposal_description

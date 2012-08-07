@@ -127,7 +127,7 @@ var RLANG = {
 			keydownCallback: false, // function
 			execCommandCallback: false, // function
 		
-			path: '/assets/',
+			path: '/redactor/',
 			css: 'style.css',
 			focus: false,
 			resize: true,

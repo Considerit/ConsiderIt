@@ -468,7 +468,11 @@ ConsiderIt = {
 
     // Delete callback
     $j('.pro_con_list.dynamic').delegate('a.delete_point', 'ajax:success', function(data, response, xhr){
-      $j(this).parents('.point_in_list').filter(":first").fadeOut();
+      var $deleted_point = $j(this).parents('.point_in_list').filter(":first");
+      if ($deleted_point.is('#expanded')){
+        unexpand_point($deleted_point);
+      }           
+      $deleted_point.fadeOut();
     });
 
     var close_point_click = function(e){

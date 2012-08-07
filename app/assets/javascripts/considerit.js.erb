@@ -584,16 +584,7 @@ ConsiderIt = {
         $point.draggable( "enable" );
       } 
 
-      $point
-        .css({'left':'','top':'','height':'', 'width': ''})
-        .attr('id', placeholder.attr('id'));
-      placeholder.replaceWith($point);
-
-      if ( $point.hasClass('point_in_list_margin') ) {
-        $point.draggable( "enable" );
-      }
       $point.trigger('mouseleave');
-
 
     };
     $j(document).delegate('#expanded .toggle.less', 'click', function(){

@@ -77,7 +77,6 @@
         hidden_parent.css('display', '');
       }
 
-
       el.before(label);
       el.attr('placeholder', '');
 

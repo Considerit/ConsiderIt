@@ -13,7 +13,7 @@
       %h2
         Preferences
 
-      = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put, :html => { :multipart => true, :class => 'html5' }) do |f|
+      = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put, :html => { :multipart => true }) do |f|
 
         %ul
           %li

@@ -36,6 +36,7 @@ ConsiderIt = {
     },
   init : function() {
     ConsiderIt.results_page = $j('#explore_proposal').length > 0;
+    ConsiderIt.point_page = $j('.point').length > 0;
 
     ConsiderIt.delegators();
 
@@ -56,7 +57,9 @@ ConsiderIt = {
         return false;
     });
 
-    $j('.autoResize, .pointform textarea, .pointform input[type="text"]').autoResize({extraSpace: 10, maxWidth: 'original'});
+    $j('.autoResize, .pointform textarea.point-title, .pointform input[type="text"]').autoResize({extraSpace: 10, maxWidth: 'original'});
+    //$j('.pointform > form').validateOnBlur();
+
     $j('textarea#statement').autoResize({extraSpace: 5});
     
     $j("#points_other_pro, #points_other_con").each(function(){
@@ -96,6 +99,11 @@ ConsiderIt = {
 
     ConsiderIt.positions.initialize_participants_block();
 
+    if ( ConsiderIt.point_page ) {
+      $j('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');            
+      $j(".unobtrusive_edit textarea").trigger('keyup');      
+    }
+
     // $j('.proposals.vertical').infiniteCarousel({
     //   speed: 1500,
     //   vertical: true,
@@ -116,7 +124,6 @@ ConsiderIt = {
         
   },
   per_request : function() {
-    
     //$j('.point_in_list_margin.pro').draggable(ConsiderIt.draggable_options);
 
     $j('.point_in_list_margin').draggable(ConsiderIt.draggable_options);
@@ -140,7 +147,6 @@ ConsiderIt = {
       },
       accept: '.pro'
     } );      
-           
 
     $j('.has_example').each(function(){
       if($j(this).val() == '') {
@@ -149,7 +155,6 @@ ConsiderIt = {
         });
       }
     });
-
 
     $j('.new_comment .is_counted, .pro_con_list .is_counted').each(function(){
       if( !$j(this).data('has_noblecount') ){        
@@ -192,7 +197,23 @@ ConsiderIt = {
 
     //ConsiderIt.update_carousel_heights();
 
-    $j('form.html5:not(.html5formified)').html5form();
+    //$j('form.html5:not(.html5formified)').html5form();
+    $j('form').h5Validate({errorClass : 'error'});
+
+    $j('.pointform .wysiwyg').redactor({
+      buttons: ['formatting', 'bold', 'italic', 'unorderedlist', 'orderedlist', 'link', 'fullscreen'],
+      autoresize: true,
+      inline_label: 'Add details and links (optional)',
+      css: 'chalkboard.css'
+    });
+
+    $j('.unobtrusive_edit_form .wysiwyg').redactor({
+      buttons: ['formatting', 'bold', 'italic', 'unorderedlist', 'orderedlist', 'link', 'fullscreen'],
+      autoresize: true,
+      inline_label: 'Add details and links (optional)',
+      css: 'postit.css'
+    });
+
   },
 
   delegators : function() {
@@ -210,7 +231,7 @@ ConsiderIt = {
         })
       .on('click', '.proxy', function() {
           var email = $j('#user_email'), password = $j('#user_password'), $me = $j(this);
-          if ( email.val().length == 0 || password.val == 0 ) {
+          if ( email.val().length == 0 || password.val().length == 0 || email.is('.error') || password.is('.error') ) {
             return;            
           } else {
             $j.post('<%= Rails.application.routes.url_helpers.users_check_login_info_path %>', {
@@ -221,16 +242,16 @@ ConsiderIt = {
               }, function(data){
 
               if ( data.valid ) {
-                $me.siblings('input[type="submit"]').trigger('click');
+                //$me.siblings('input[type="submit"]').trigger('click');
               } else {
-                $j('#site_registration .password_field .error').css({'color': 'red', 'font-weight':'bold'});
+                $j('#site_registration .password_field .forget_password_prompt').css({'color': 'red', 'font-weight':'bold'});
               }
 
             });
           }
         })
       .on('focus', 'input#user_password', function(){
-        $j(this).siblings('.error').show();
+        $j(this).siblings('.forget_password_prompt').show();
       })
       .on('click', '#post_signup_form a.cancel', function(){
         $j.ajax({
@@ -318,6 +339,9 @@ ConsiderIt = {
         var save_block = $j(this).find('.save_block');
         save_block.find('input').hide();
         save_block.find('.updated').show().delay(1200).fadeOut(); 
+        if ( $j(this).attr('sync_with') ){
+          $j($j(this).attr('sync_with')).text($j(this).find('textarea').val());
+        }
       })
       .on('focus', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(){
         var save_block = $j(this).siblings('.save_block');
@@ -387,23 +411,15 @@ ConsiderIt = {
 
       $j('.pro_con_list.dynamic').addClass('point_edit_mode');
       $j(this).fadeOut(100, function(){
-        $j('.newpoint').hide();
-        $j(this).parents('.newpoint').show().find('.pointform')
-          .fadeIn('fast')
-          .find('.point-title-group input')
-            .focus(); 
+        //$j('.newpoint').hide();
+        $j(this).parents('.newpoint').find('.pointform')
+          .fadeIn('fast', function(){
+            $j(this).find('iframe').focus().contents().trigger('keyup').find('#page');            
+            $j(this).find('input,textarea').trigger('keyup');
+            $j(this).find('.point-title').focus(); 
 
-      });  
-    });
+          })
 
-    // edit point clicked
-    $j('.pro_con_list.dynamic').delegate('a.editpoint', 'click', function(){
-      //$j('.droppable').fadeOut();
-      $j('.pro_con_list.dynamic').addClass('point_edit_mode');      
-      $j(this).fadeOut(function(){
-        var $point_form = $j(this).parents('.edit').find('.pointform');
-        $j(this).parents('.point_in_list').addClass('edit_mode');
-        $point_form.fadeIn('fast');    
       });  
     });
 
@@ -413,7 +429,7 @@ ConsiderIt = {
       form
         .fadeOut(function(){
           $j(this).parents('.newpoint').find('.write_new').fadeIn(); 
-          form.find('.point_link_form').remove();
+          //form.find('.point_link_form').remove();
           $j('.pro_con_list.dynamic').removeClass('point_edit_mode');  
           form.find('textarea').val('').trigger('keydown');
           form.find('label.inline').addClass('empty');
@@ -437,7 +453,7 @@ ConsiderIt = {
       $j(this).parents('.full_column').filter(":first").find('.point_list').filter(":first").append($new_point);
       $j(this).find('textarea').val('');
       $j(this).find('.point-title-group .count').html(140);
-      $j(this).find('.point-description-group .count').html(2000);
+      //$j(this).find('.point-description-group .count').html(2000);
       
       $j(this).find('.new_point_cancel').trigger('click');
 
@@ -508,13 +524,10 @@ ConsiderIt = {
         'container': placeholder.parent()
       });
 
-      real_point = real_point.detach();
-      $j('body').append(real_point);    
-
       real_point
         .css({
-          'top': placeholder.offset().top,
-          'left': placeholder.offset().left,
+          'top': placeholder.position().top,
+          'left': placeholder.position().left,
           'background-image': 'none'
           //'visibility' : 'hidden'
         });
@@ -526,9 +539,9 @@ ConsiderIt = {
       }
       real_point.offset(); // forces Chrome to execute proper animation
 
-      var top = $j('.slate:visible').offset().top + 100, 
+      var top = $j('.slate:visible').offset().top - placeholder.parents('.point_list').offset().top, 
           left = ConsiderIt.results_page ? $j('.slate:visible').offset().left - 136 : $j('.margin:first').offset().left + 9;
-
+      left -= placeholder.parents('.point_list').offset().left
 
       real_point
         .attr('id', 'expanded')
@@ -539,42 +552,49 @@ ConsiderIt = {
         });
 
       if (real_point.is('.point_in_list_margin') ) {
-        setTimeout(function(){$hidden.css('visibility', 'visible');},300);
+        setTimeout(function(){$hidden.css('visibility', '');},300);
       }
       $j(document)
         .click(close_point_click)
         .keyup(close_point_key);
 
+      real_point.find('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');            
+      real_point.find(".unobtrusive_edit textarea").trigger('keyup');
+
     });
 
     // Toggle point details OFF
-    $j(document).delegate('#expanded .toggle.less', 'click', function(){
-      var real_point = $j(this).parents('#expanded'), 
-          placeholder = $j('#point-' + real_point.attr('point'), real_point.data('container'));
+    var unexpand_point = function($point) {
+      var placeholder = $j('#point-' + $point.attr('point'), $point.data('container'));
 
       $j(document)
         .unbind('click', close_point_click)
         .unbind('keyup', close_point_key);
 
-      real_point
+      $point
         .css({'left':'','top':'','height':'', 'width': ''})
         .attr('id', placeholder.attr('id'));
-      placeholder.replaceWith(real_point);
+      //placeholder.after($point);
+      placeholder.remove();
 
-      if ( real_point.hasClass('point_in_list_margin') ) {
-        real_point.draggable( "enable" );
+      if ( $point.hasClass('point_in_list_margin') ) {
+        $point.draggable( "enable" );
       } 
 
-      real_point
+      $point
         .css({'left':'','top':'','height':'', 'width': ''})
         .attr('id', placeholder.attr('id'));
-      placeholder.replaceWith(real_point);
+      placeholder.replaceWith($point);
 
-      if ( real_point.hasClass('point_in_list_margin') ) {
-        real_point.draggable( "enable" );
+      if ( $point.hasClass('point_in_list_margin') ) {
+        $point.draggable( "enable" );
       }
-      real_point.trigger('mouseleave');
+      $point.trigger('mouseleave');
 
+
+    };
+    $j(document).delegate('#expanded .toggle.less', 'click', function(){
+      unexpand_point($j(this).parents('#expanded'));
     });
 
     //////////////
@@ -586,6 +606,10 @@ ConsiderIt = {
       var included_point = $j(this).parents('.point_in_list_margin'), 
           replacement_point = $j(response['new_point']),
           $list = $j('.pro_con_list');
+
+      if (included_point.is('#expanded')){
+        unexpand_point(included_point);
+      }           
     
       if ( included_point.hasClass('pro') ) {
         var user_point_list = $j('#points_on_board_pro .point_list');
@@ -633,11 +657,15 @@ ConsiderIt = {
     });
 
     // Remove from list
-    $j(document).delegate('.remove a', 'ajax:success', function(data, response, xhr){
+    $j(document).delegate('.uninclude_point_form', 'ajax:success', function(data, response, xhr){
+
       var old_point = $j(this).parents('.point_in_list_self'),
         margin_point_list = old_point.hasClass('pro') ? $j('#points_other_pro .point_list') : $j('#points_other_con .point_list'),
         carousel = margin_point_list.parents('.dynamicList');
 
+      if (old_point.is('#expanded')){
+        unexpand_point(old_point);
+      } 
       old_point.fadeOut(function(){
         old_point = old_point.detach(); 
         margin_point_list.append(old_point);
@@ -648,7 +676,6 @@ ConsiderIt = {
           //.fadeIn(function(){
             carousel.dynamicList({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
           //});
-
       });
     });
 
@@ -690,11 +717,15 @@ ConsiderIt = {
     // Toggle position statement clicked
 
     $histogram.delegate(".bar.hard_select .view_statement", 'mouseenter', function(event){
-      $j(this).children('.details').show();
+      if ( $j('#expanded').length == 0 ) {
+        $j(this).children('.details').show();
+      }
     });    
 
     $histogram.delegate(".bar.hard_select .view_statement", 'mouseout', function(event){
-      $j(this).children('.details').hide();
+      if ( $j('#expanded').length == 0 ) {      
+        $j(this).children('.details').hide();
+      }
     });    
 
 

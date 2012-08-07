@@ -9,10 +9,7 @@
 
 .pointform{ :class => "#{action}pointform" }
 
-  .blah
-    = point.nutshell
-
-  = form_for [@proposal, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'} "}, :remote => true do |f|
+  = form_for [@proposal, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'}"}, :remote => true do |f|
 
     .form_proper
       =f.hidden_field :is_pro, :id => "point-current-is_pro", :value => is_pro
@@ -27,40 +24,40 @@
       /     unknown
 
       .point-title-group.inlined
-        = f.text_area :nutshell, :placeholder => 'Summarize your point', :title => 'Summarize your point', :required => true, :cols => 24, :class => "point-title is_counted"
+        = f.text_area :nutshell, :placeholder => 'Summarize your point (required)', :cols => 24, :class => "point-title is_counted", :required=>true, :maxlength => 140
         %span.count
           140
         .clear
 
-      .point-description-group.inlined
-        = f.text_area :text, :placeholder => 'add additional details...', :title => "Write a longer description (optional)", :cols => 24, :class => "point-description is_counted"
-        %span.count
-          2000
+      .point-description-group
+        = f.text_area :text, :title => "Write a longer description (optional)", :cols => 24, :class => "point-description wysiwyg"
         .clear
 
-      .point_link_block.fl
-        .point_link_prompt
+      -#
+        .point_link_block.fl
+          .point_link_prompt
 
-          = f.fields_for :point_links do |builder|
-            = render :partial => 'point_links/point_link_fields', :locals => { :f => builder }
+            = f.fields_for :point_links do |builder|
+              = render :partial => 'point_links/point_link_fields', :locals => { :f => builder }
 
-          = link_to_add_fields "link to a website", f, :point_links, 'point_links/point_link_fields', ''
+            = link_to_add_fields "link to a website", f, :point_links, 'point_links/point_link_fields', ''
 
 
-      .hide_name.fr{:title => 'We encourage you not to hide your name. Signing your point with your name lends it more weight to other participants.'}
+      .hide_name.fl{:title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'}
         = f.check_box :hide_name
-        = f.label :hide_name, 'hide your name'
-      .cl
+        = f.label :hide_name, 'conceal your name'
+
       //- if @user
       //  .point-pledge
       //     %p.note
       //       %strong.alert
       //         Remember your pledge!
 
-      .point-submit
-        = f.submit 'Done', :class => "linkified #{is_pro ? 'pro' : 'con'}"
+      .point-submit.fr
+        = f.submit 'Done', :class => "button #{is_pro ? 'pro' : 'con'}"
         
       .point-cancel
         %a.new_point_cancel
           cancel
     .clear
+

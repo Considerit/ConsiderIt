@@ -764,11 +764,13 @@ ConsiderIt = {
     }
 
     $histogram.delegate('.bar.full:not(.hard_select)', 'click', function(){
-      select_bar($j(this), true);
+      if ( $j('#expanded').length == 0 ) {
+        select_bar($j(this), true);
+      }
     });
     
     $histogram.delegate('.bar.full:not(.selected)', 'mouseover', function(){
-      if ( $j('.bar.hard_select', $histogram).length > 0) { return; }
+      if ( $j('#expanded').length > 0 || $j('.bar.hard_select', $histogram).length > 0) { return; }
       select_bar($j(this), false);
     });
 

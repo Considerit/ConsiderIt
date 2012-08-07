@@ -560,6 +560,9 @@ ConsiderIt = {
 
       real_point.find('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');            
       real_point.find(".unobtrusive_edit textarea").trigger('keyup');
+      $j('html, body').animate({
+        scrollTop: $j('.slate:visible').offset().top - 20
+      }, 1000);
 
     });
 

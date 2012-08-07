@@ -9,7 +9,7 @@
 @import "points/column"
 @import "points/pro_con_list"
 
-@import "point_links/point_links"
+//@import "point_links/point_links"
 
 @import "proposals/blocks"
 @import "proposals/show"
@@ -43,9 +43,7 @@
   +on_chalkboard
 
 
-.user_opinion .slate,
-.pro_con_list, 
-.point_in_list_self#expanded, .point_in_list_board#expanded,
+.user_opinion .slate, .pro_con_list
   +on_chalkboard
 
 .point_in_list_margin
@@ -122,9 +120,11 @@ input[type=checkbox], input[type=radio]
   position: relative
 
 label.inline
-  opacity: 1
+  //opacity: 1
+  color: inherit
   &.focus
-    opacity: .65
+    color: #777
+    //opacity: .65
 
   text-align: left
   position: absolute !important
@@ -154,6 +154,9 @@ h1, h2, h3, h4, h5, h6
 strong
   font-weight: bold
 
+em
+  font-style: italic
+
 .clear
   clear: both
 
@@ -171,6 +174,7 @@ table
 
 body, input, button
   +main_font
+
 
 body
   // 12pt/16px default font, for traditional browsers
@@ -248,9 +252,11 @@ hr.ledge
   border: none
   height: 1px
   &.top
-    +rgba(white, .15)
+    background-color: #ccc
+    background-color: rgba(white, .15)
   &.bottom
-    +rgba(black, .15)
+    background-color: #666
+    background-color: rgba(black, .15)
 
 
  
@@ -259,5 +265,4 @@ hr.ledge
   background-color: white
   opacity: .8
   +opacity(80)
-
 

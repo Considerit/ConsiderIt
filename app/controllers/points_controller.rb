@@ -169,8 +169,8 @@ class PointsController < ApplicationController
     end
 
     @point = Point.create!(params[:point])
-    @point.point_link_count = @point.point_links.count
-    @point.save
+    #@point.point_link_count = @point.point_links.count
+    #@point.save
 
     session[@proposal.id][:written_points].push(@point.id)
     session[@proposal.id][:included_points][@point.id] = 1    
@@ -209,8 +209,8 @@ class PointsController < ApplicationController
     @point = Point.find(params[:id])
 
     @point.update_attributes!(params[:point])
-    @point.point_link_count = @point.point_links.count
-    @point.save
+    #@point.point_link_count = @point.point_links.count
+    #@point.save
 
     new_point = render_to_string :partial => "points/show", :locals => { :origin => 'self', :point => @point, :static => false }
     response = {
@@ -226,7 +226,7 @@ class PointsController < ApplicationController
 
     if request.xhr?
       origin = params[:origin]
-      point_details = render_to_string :partial => "points/details", :locals => { :point => @point, :light_background => origin == 'margin' }
+      point_details = render_to_string :partial => "points/details", :locals => { :point => @point, :origin => origin, :light_background => origin == 'margin' }
       render :json => { :details => point_details }        
     else
       render

@@ -14,7 +14,7 @@ class User < ActiveRecord::Base
   has_many :point_listings, :dependent => :destroy
   has_many :point_similarities, :dependent => :destroy
   has_many :comments, :dependent => :destroy
-  has_many :point_links, :dependent => :destroy
+  #has_many :point_links, :dependent => :destroy
   has_many :proposals
 
   belongs_to :domain

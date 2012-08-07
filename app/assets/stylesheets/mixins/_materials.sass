@@ -1,5 +1,13 @@
+$yellow_postit_color: hsl(57, 76%, 75%)
+
+=post_it_button
+  color: #888
+  +button(darken(desaturate($yellow_postit_color, 60%), 35%), desaturate($yellow_postit_color, 20%))
+  &:hover
+    color: #333
+
 =colored_post_it($repeated, $color)
-  $color: hsl(57, 76%, 75%)
+  $color: $yellow_postit_color 
   //background-color: $color
   @if $repeated == 0
     background: image-url('yellow_postit.png') no-repeat top left transparent
@@ -8,10 +16,7 @@
     background: image-url('yellow_postit_no_shadow.png') repeat top left transparent  
 
   .button
-    color: #888
-    +button(darken(desaturate($color, 60%), 35%), desaturate($color, 20%))
-    &:hover
-      color: #333
+    +post_it_button
 
 =red_post_it($repeated: 0)
   //+colored_post_it(hsl(352, 94%, 94%))
@@ -34,7 +39,27 @@
     color: #333  
     
     &:hover
-      color: #000  
+      color: #333  
+
+  .unobtrusive_edit_form .unobtrusive_edit .save_block input[type="submit"]
+    border-color: #777
+    font-weight: normal
+    +post_it_button  
+
+  
+  input, textarea
+    +inset-border(#666)
+    background-color: white
+    border: 1px solid
+    display: inline-block
+    color: #333
+
+    &.error 
+      //border: 1px solid #993333 !important
+      border-color: red
+      &:focus
+        +inset-border(#666)
+        //border: inherit !important
 
 =on_chalkboard
   color: #ddd
@@ -50,12 +75,17 @@
       color: #fff
 
   textarea, input[type="text"], input[type="email"], input[type="password"]
-    background-color: #414141
     background-color: transparent
     border: 1px solid
     +inset-border(#414141)
     display: inline-block
     color: #ddd
+
+    &.error 
+      border-color: #883333
+      &:focus
+        +inset-border(#414141)
+
 
 =on_paper
   background-image: image-url('paper.png') 

@@ -8,75 +8,59 @@
 
 - point = @point
 - point_creator = (current_user && point.user_id == current_user.id) || point.published == false
+- has_details = point.text && point.text.length > 0
 
-.point{ :id => "point-#{point.id}", :class => "point #{point.is_pro ? 'pro' : 'con'} commentable", :point => point.id, :user => point.hide_name ? nil : point.user_id }
+.pointwrapper
+  .point{ :id => "point-#{point.id}", :class => "point #{point.is_pro ? 'pro' : 'con'} commentable #{point_creator ? 'added_by_me' : ''}", :point => point.id, :user => point.hide_name ? nil : point.user_id, :includers => point.includers }
 
-  .meta
-    #{point.is_pro ? 'A point in favor of ' : 'A point against '} 
-    = link_to "#{point.proposal.title}", proposal_path(point.proposal.long_id) 
+    %ul.header
+      %li.type.first
+        = "#{point.is_pro ? 'Pro' : 'Con'}" 
+      %li.proposal
+        = link_to "#{point.proposal.title.length > 70 ? "#{point.proposal.title[0..70]}..." : point.proposal.title}", proposal_path(point.proposal.long_id)
 
-  .operations
-
-    - if point_creator
-      .edit
-
-        %a.editpoint.point_operation
-          edit this point
-        = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
-
-    = render :partial => 'acts_as_followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
-
-  .body
-    - has_pic = @point.user && @point.user.avatar_file_name && !point.hide_name
-    .pic{ :class => "#{has_pic ? 'has_pic' : ''}"}
-      - if has_pic
-        = image_tag @point.user.avatar.url(:medium), :class => 'avatar' 
-      - else
-        - # necessary for animation
-        .avatar 
-      
-
-    %h3.point_text.nutshell 
-
-
-      - if point.nutshell.length > 0
-        - nutshell = h point.nutshell
-      - else
-        - nutshell = h point.text.length > 137 ? point.text[0,137] : point.text
+    .body
+      - if !point.hide_name && point.user
+        = image_tag point.user.avatar.url(true ? :medium_dark : :medium), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
 
       - if point_creator
-        = render :partial => 'points/make_editable', :locals => { :point => point, :field => :nutshell }
+        %h3.point_text.nutshell.nutshell_edit
+          = render :partial => 'points/make_editable', :locals => { :point => point, :field => :nutshell, :sync_with => "#expanded .point_text.nutshell span.text", :validations => {:required => true, :maxlength => 140} }
       - else
-        = nutshell
+        %h3.point_text.nutshell 
+          = point.nutshell
 
-    .point_text.full
+      .point_text.full
 
-      .details
-        - if point.text && point.text.length > 0 
-          - full_text = h simple_format(point.text.gsub(/\n/,"<br>"))
+        .details
+          - if has_details 
+            - full_text = simple_format(point.text.gsub(/\r\n/,""))
 
-          - if point_creator
-            = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text }
+            - if point_creator
+              = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => true }
 
-          - else
-            = full_text
+            - else
+              = full_text
 
-      .link
-        - if point.point_link_count > 0
-          %ul
-            = render :partial => 'point_links/show', :collection => point.point_links, :as => :point_link
+        -#.link
+          - if point.point_link_count > 0
+            %ul
+              = render :partial => 'point_links/show', :collection => point.point_links, :as => :point_link
 
 
-    .nested_user
-      \- 
-      - if point.hide_name
-        anonymous
-      - elsif point.user
-        = point.user.username
-      - else
-        unknown
+      .nested_user
+        - if point.hide_name
+          anonymous
+        - elsif point.user
+          = point.user.username
+        - else
+          unknown
 
-  .extra  
-    = render :partial => 'comments/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :light_background => false }
-    
-  .clear
+    .point_operations
+      - if point.published
+        = render :partial => 'acts_as_followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
+
+    .extra  
+      = render :partial => 'comments/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :light_background => false }
+      
+    .clear

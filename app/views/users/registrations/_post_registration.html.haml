@@ -24,7 +24,7 @@
             %h3
               Let others know a little more about yourself!
 
-          = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put, :class => 'html5') do |f|
+          = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put) do |f|
           
             %ul
               //%li

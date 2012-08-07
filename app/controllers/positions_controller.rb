@@ -194,9 +194,9 @@ protected
     # the following code does not select the unpublished points by the current user or that are stored in session['written_points'].
     # This is an edge case. We should allow users to delete a point before it is published/included by others, which should further
     # relegate this issue to an insignificant edge case. 
-    @pro_points = @proposal.points.published.includes(:point_links, :user).pros.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
+    @pro_points = @proposal.points.published.includes(:user).pros.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
                     ranked_persuasiveness.page( 1 ).per( POINTS_PER_PAGE )    
-    @con_points = @proposal.points.published.includes(:point_links, :user).cons.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
+    @con_points = @proposal.points.published.includes(:user).cons.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
                     ranked_persuasiveness.page( 1 ).per( POINTS_PER_PAGE )
 
     #PointListing.transaction do
@@ -221,9 +221,9 @@ protected
       ActiveRecord::Base.connection.execute qry
     end
         
-    @included_pros = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:point_links, :user).where(:is_pro => true) + 
+    @included_pros = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:user).where(:is_pro => true) + 
                      Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => true)
-    @included_cons = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:point_links, :user).where(:is_pro => false) + 
+    @included_cons = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:user).where(:is_pro => false) + 
                      Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => false)
 
     @page = 1

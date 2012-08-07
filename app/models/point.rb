@@ -18,12 +18,12 @@ class Point < ActiveRecord::Base
   belongs_to :position
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
-  has_many :point_links, :dependent => :destroy
+  #has_many :point_links, :dependent => :destroy
   has_many :comments, :as => :commentable, :dependent => :destroy
   
   validates :nutshell, :presence => true, :length => {:minimum => 3, :maximum => 140 }
 
-  accepts_nested_attributes_for :point_links, :reject_if => lambda { |pl| pl[:url].blank? }, :allow_destroy => true
+  #accepts_nested_attributes_for :point_links, :reject_if => lambda { |pl| pl[:url].blank? }, :allow_destroy => true
 
   acts_as_tenant(:account)
 
@@ -102,7 +102,7 @@ class Point < ActiveRecord::Base
 
   def update_absolute_score
     self.comment_count = comments.count
-    self.point_link_count = point_links.count
+    #self.point_link_count = point_links.count
     self.includers = self.inclusions(:select => [:user_id]).map {|x| x.user_id}.compact.to_s
 
     define_appeal

@@ -11,6 +11,7 @@
     position: relative
     top: 0
     left: -10px
+    +font-size(2)
 
   .newpointbutton 
     
@@ -24,15 +25,15 @@
       text-align: left
       text-decoration: underline
       margin-left: -10px
+      font-weight: bold
 
 .pointform
-  +complex-gradient(rgba(white, 0), rgba(white, 0.03), 13%, 100%, center top)
-
+  //+complex-gradient(rgba(white, 0), rgba(white, 0.03), 13%, 100%, center top)
   +border-radius(5px)
   //padding: 5px 0 0 10px
   position: relative
   //left: -10px
-  top: -22px
+  top: -29px
   //width: 230px
 
   display: none
@@ -46,23 +47,27 @@
       input[type="text"], textarea, label
         +font-size(-2)
 
-      input[type="text"], input[type="text"]:focus, textarea, textarea:focus
+      input[type="text"], input[type="text"]:focus, textarea.point-title, textarea.point-title:focus
         //background-color: transparent
         margin-left: 0px        
         //width: 215px
-        height: 2em
-        width: 97%
+        height: $vertical_baseline * 3
+        width: 95%
         //border: 1px solid
         //+inset-border(#414141)
 
+      .wysiwyg .redactor_box
+        border: 1px solid
+        border-color: #272727 #5a5a5a #5a5a5a #272727
+      
       label
         min-width: 150px
 
       .count
         position: absolute
         +font-size(-4)
-        right: 2px
-        bottom: -7px
+        right: -24px
+        bottom: 0
         z-index: 1
         +chalkboard
 
@@ -75,18 +80,21 @@
 
       .point-submit
         float: right
-        margin: 4px 0 0 0
+        margin: 0
         font-weight: bold
 
         input
           text-decoration: none
+          padding: 0 10px
 
       .point-cancel
-        float: right
+        position: absolute
+        bottom: 0
+        right: -45px
         padding: 5px
         a
           padding: 5px
-          +font-size(-3)
+          +font-size(-4)
 
       .hide_name
         
@@ -113,4 +121,10 @@
     position: absolute
 
 
-    
+
+#expanded .unobtrusive_edit_form 
+  .redactor_box, #point_nutshell
+    border: 1px solid
+    border-color: #cca
+    background-color: transparent
+

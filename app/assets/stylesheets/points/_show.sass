@@ -6,6 +6,9 @@
   background-repeat: no-repeat
   //border: 5px solid transparent
 
+  > .header
+    display: none
+
   > .extra
     visibility: hidden
     display: none
@@ -31,6 +34,9 @@
         white-space: nowrap
         display: inline-block
         +font-size(-2)
+
+      &.nutshell_edit
+        display: none
 
     .point_text.full
       display: none
@@ -97,7 +103,7 @@
       //border-color: $con_point_dark
 
     .include
-      display: none
+      //display: none
 
     .body > .bullet_point 
       display: none
@@ -178,12 +184,11 @@
   min-height: 550px
   padding: $vertical_baseline 2 * $grid_major + 2 * $grid_minor
   +box-shadow(0px, 6px, 12px, black, .75)
-  +transition('all .25s')
   cursor: auto
   margin: 0 $grid_xs/2
 
-  &.point_in_list_self, &.point_in_list_board
-    +transition(none)
+  &.point_in_list_margin
+    +transition('all .25s')
 
   > .body
     padding: $vertical_baseline $grid_xs
@@ -197,20 +202,31 @@
       //top: 3px
       position: absolute
       left: -60px
+      top: $vertical_baseline * 1.25
       display: block
 
     .details
       +font-size(1)
+      a
+        text-decoration: underline
 
     .nutshell
       width: auto
       +font-size(3)
+      font-weight: bold
       margin-bottom: $vertical_baseline
+      display: none
+      &.nutshell_edit, &.reader
+        display: block
+      &.nutshell_edit textarea
+        width: 98%
 
       .details_indicator
         display: none
     .nested_user
       padding-top: $vertical_baseline
+      text-transform: none
+      font-style: italic
 
   .operations
     display: none
@@ -231,15 +247,18 @@
       width: 750px
 
 
+.pointwrapper
+  padding: 4 * $vertical_baseline 0
+
 .point
   //+on_paper
   +curl-shadow
-  padding: 30px 30px
-  width: 800px
-  min-height: 450px
   margin: auto
   +box-shadow(0px,1px,5px,rgba(black,.4)) 
-
+  width: 882px - 2 * $grid_major - 2 * $grid_minor
+  height: auto
+  min-height: 550px
+  padding: $vertical_baseline 2 * $grid_major + 2 * $grid_minor
 
   &, a
     +main_font
@@ -248,30 +267,18 @@
     text-decoration: underline
     opacity: 1
 
-  .meta
-    position: absolute  
-    top: -25px
+  > .header
+    //margin-left: $grid_major + $grid_minor
 
-  .operations
-    position: absolute
-    z-index: 100
-    right: 10px
-
-    .edit
-      display: none
-
-  .body
+  > .body
+    padding: $vertical_baseline $grid_xs
     position: relative
 
-    .pic
+    .avatar
       position: absolute
-      left: 0px
-      top: 5px
-
-      img
-        position: relative
-        z-index: 1
-        +box-shadow(0,0,2px, rgba(black,.2))
+      left: -63px
+      top: 1.35 * $vertical_baseline
+      z-index: 1
 
       &.has_pic:after, &.has_pic:before
         position: absolute
@@ -295,13 +302,20 @@
         bottom: -5px
 
     .nutshell, .full, .nested_user
-      margin-left: 82px
+      //margin-left: 82px
 
     h3.nutshell
       +font-size(3)
-      padding-bottom: 10px
-      padding-right: 130px
-      font-weight: normal
+      //padding-right: 130px
+
+      width: auto
+      font-weight: bold
+      margin-bottom: $vertical_baseline
+
+      &.nutshell_edit textarea
+        width: 98%
+
+
     .full
       width: 600px
 
@@ -310,13 +324,62 @@
       padding: 10px 0
 
 
+  > .extra
+    padding: 0 $grid_xs
+    .discuss
+      //left: 82px
 
-  .discuss
-    left: 82px
+  .point_operations
+    //margin-left: $grid_major + $grid_minor
 
+.point, .point_in_list
 
+  &.point, &#expanded 
+    .header
+      margin: 0 $grid_xs
+      display: block
+      font-variant: small-caps
+      +font-size(-1)
+      text-transform: lowercase
+      li
+        position: relative
+        padding-right: $grid_xs
+        display: inline-block
+        &:after
+          content: '\2022'
+          position: absolute
+          left: -14px
+          top: 0
+        &.first:after
+          content: ''
 
-.point, .point_in_list 
+      .type
+        
+      .permalink
+        text-decoration: underline
+
+    .point_operations
+      display: block
+
+  &.point_in_list_margin
+    .point_operations .remove
+      display: none
+
+  &.point_in_list_self
+    .point_operations .include
+      display: none
+
+  .point_operations 
+    display: none
+    padding: 0 $grid_xs
+    > div
+      display: inline-block
+      padding-right: $grid_xs
+      .button
+
+      &.hide
+        display: none
+
   .follow, .unfollow
     margin: 0 0 $vertical_baseline 0 
-    +font-size(-2)
+    //+font-size(-2)

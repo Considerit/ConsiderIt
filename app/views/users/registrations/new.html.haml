@@ -23,7 +23,7 @@
         One-click sign in with your account from...
 
       - ['facebook', 'twitter', 'google'].each do |provider|
-        %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',900, 500)" }
+        %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',900, 500)", :id => provider }
           = image_tag("#{provider}.png")
 
       .fineprint
@@ -34,7 +34,7 @@
 
     #site_registration
 
-      = form_for(resource, :as => :user, :url => user_registration_path, :html => { :multipart => true, :class => 'html5' }) do |f|
+      = form_for(resource, :as => :user, :url => user_registration_path, :html => { :multipart => true }) do |f|
       
         %ul
           %li
@@ -53,11 +53,11 @@
 
             //{ :title => 'Your email is never shown to other users and we promise not to share your information with third parties. Your email is only used to confirm your account and to send notifications of relevant events, such as when someone replys to a comment you left.'}
 
-            = f.email_field :email, :title => 'email address', :placeholder => 'Email address', :required => true
+            = f.email_field :email, :title => 'email address', :placeholder => 'Email address', :required => true, :class =>"h5-email"
 
           %li.password_field
             = f.password_field :password, :title => 'password', :placeholder => 'Password', :required => true
-            %a.hide.error{ :href => "#{new_user_password_path}" }
+            %a.hide.forget_password_prompt{ :href => "#{new_user_password_path}" }
               Forgot your password?
 
           %li.submit_footer

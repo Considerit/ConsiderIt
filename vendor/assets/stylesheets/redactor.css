@@ -66,6 +66,10 @@ body .redactor_box_fullscreen {
 	position: absolute;
 	left: -1px;
 	top: -22px;
+	overflow: hidden;	
+	height: 20px;
+	border-bottom: 1px solid #bbb;
+	width: 101%;
 	margin: 0 !important;
 	padding: 0 !important;
 	line-height: 0 !important;
@@ -76,16 +80,9 @@ body .redactor_box_fullscreen {
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#666), color-stop(100%,#888));
 	background: -webkit-linear-gradient(top,  #666 0%,#888 100%);
 	background: -o-linear-gradient(top,  #666 0%,#888 100%);
-	background: -ms-linear-gradient(top,  #666 0%,#888 100%);
-
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666', endColorstr='#888',GradientType=0 );
+	background: -ms-linear-gradient(top,  #666 0%,#888 100%);	
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#666', endColorstr='#888')"; /* IE8+ */   
 	background: linear-gradient(top,  #666 0%,#888 100%);
-
-	overflow: hidden;	
-	height: 20px;
-	border-bottom: 1px solid #bbb;
-	width: 101%;
 }
 .redactor_toolbar li {
 	float: left !important;

@@ -814,7 +814,7 @@ var RLANG = {
 			this.$box = $('<div class="redactor_box"></div>');
 	
 			// frame
-			this.$frame = $('<iframe frameborder="0" scrolling="auto" style="height: ' + this.height + ';" class="redactor_frame"></iframe>');
+			this.$frame = $('<iframe allowTransparency="true" frameborder="0" scrolling="auto" style="height: ' + this.height + ';" class="redactor_frame"></iframe>');
 			// hide textarea
 			this.$el.css('width', '100%').hide();
 

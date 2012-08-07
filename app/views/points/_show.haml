@@ -19,38 +19,35 @@
     %a.toggle.less.hide.point_text_toggle
       x
 
+    %ul.header
+      %li.type.first
+        = "#{point.is_pro ? 'Pro' : 'Con'}" 
+      %li.proposal
+        = "#{point.proposal.title.length > 70 ? "#{point.proposal.title[0..70]}..." : point.proposal.title}"
+      %li.permalink
+        = link_to( 'permalink', proposal_point_path(@proposal,point) )
+
     .body
-
-      - if origin != 'board'
-        .include.hide
-
-          = form_for :inclusion, :remote => true, :url => proposal_point_inclusions_path(@proposal.long_id, point, :page => @page) do |f|
-            =f.hidden_field :proposal_id, :value=>@proposal.id
-            =f.hidden_field :point_id, :value=>point.id
-            =f.submit :class => 'inclusion_submit', :type => 'submit', :value => "", :name => "judge", :title => 'Click to add this point to your list. You can remove it later if you want.'
 
       - if !point.hide_name && point.user
         = image_tag point.user.avatar.url(true ? :medium_dark : :medium), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
-      - else
-        // necessary for animation to work properly
-        .avatar 
 
       .bullet_point
         &#8226;
             
-      %p.point_text.nutshell 
+      %p.point_text.nutshell{:class => "#{point_creator ? 'author' : 'reader'}"}
+        %span.text
+          - if point.nutshell.length > 140
+            = point.nutshell[0,140]
+            - point.text = point.nutshell[140, point.nutshell.length] + point.text
+          - elsif point.nutshell.length > 0
+            = point.nutshell
+          - else
+            = point.text.length > 137 ? point.text[0,137] : point.text
 
-        - if point.nutshell.length > 140
-          = h point.nutshell[0,140]
-          - point.text = point.nutshell[140, point.nutshell.length] + point.text
-        - elsif point.nutshell.length > 0
-          = h point.nutshell
-        - else
-          = h point.text.length > 137 ? point.text[0,137] : point.text
-
-        - if has_details
-          %span.details_indicator
-            (&#8230;)
+          - if has_details
+            %span.details_indicator
+              (&#8230;)
         
         %span.nested_user
           - if point.hide_name
@@ -60,14 +57,25 @@
           - else
             %span.unknown
               unknown
+      
+      - if point_creator
+        .point_text.nutshell.nutshell_edit
+          = render :partial => 'points/make_editable', :locals => { :point => point, :field => :nutshell, :sync_with => "#expanded .point_text.nutshell span.text", :validations => {:required => true, :maxlength => 140} }
 
       .point_text.full
 
         .details
           - if has_details 
-            = h simple_format(point.text.gsub(/\n/,"<p></p>"))
+            - full_text = simple_format(point.text.gsub(/\r\n/,""))
 
-        .link
+            - if point_creator
+              = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => true }
+
+            - else
+              = full_text
+
+
+        -#.link
           - if point.point_link_count > 0
             %ul
               = render :partial => 'point_links/show', :collection => point.point_links, :as => :point_link
@@ -96,21 +104,34 @@
 
           //#{has_details ? 'details & ' : ''} discussion#{num_comments > 0 ? "(" + num_comments.to_s + ")" : ''}          
 
-
       - if point_creator
         .edit
 
           %a.editpoint.point_operation
             edit
-          = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
+          -# = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
 
-      .remove
-                  
-        -if point_creator
-          = render :partial => "points/delete", :locals => { :point => point } 
-        -elsif origin != 'board'
+    .point_operations
+      - if point.published
+        = render :partial => 'acts_as_followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
 
-          = link_to "remove", proposal_point_inclusions_path(@proposal.long_id, point, :page => @page, :delete => true, :authenticity_token => form_authenticity_token), :remote => true, :method=>:post, :class => 'point_operation', :title => 'Click to remove this point from your list'
+      .remove            
+        - if point_creator
+
+          = link_to "Delete this point", proposal_point_path(@proposal.long_id, point, :authenticity_token => form_authenticity_token), :remote => true, :confirm => "Are you sure?", :method=>:delete, :class => 'button point_operation delete_point'
+
+
+        - elsif !@results_page
+
+          = form_for [@proposal, point], :remote => true, :url => proposal_point_inclusions_path(@proposal.long_id, point, :page => @page, :delete => true),  :method=>:post, :html => {:class => 'uninclude_point_form'} do |f|
+            = f.submit 'Remove from your pro/con list', :class => 'button point_operation uninclude_point', :title => 'Remove this point from your pro/con list'
+
+      .include
+        - if !@results_page
+
+          = form_for [@proposal, point], :remote => true, :method => :post, :url => proposal_point_inclusions_path(@proposal.long_id, point, :page => @page) do |f|
+            = f.submit 'Add to your pro/con list', :class => 'button inclusion_submit', :title => 'Add this point to your pro/con list.'
+
 
     .extra  
       .ajax_loading

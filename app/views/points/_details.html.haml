@@ -6,6 +6,5 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
-= render :partial => 'acts_as_followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
-    
 = render :partial => 'comments/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :light_background => light_background }
+

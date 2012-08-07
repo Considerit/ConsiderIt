@@ -8,7 +8,7 @@
 
 
 $scale: .43em .5em .5833em .6667em .75em .8333em .9167em 1em 1.1667em 1.3333em 1.5em 1.75em 2em 3em 4em 5em 6em
-$lheights: 8px 9.3px 10.7px 12px 13.3px 14.7px 16px 18.7px 21.3px 24px 28px 32px 48px 64px 80px 90px
+
 =font-size($size:0)
   // for 12pt/16px base, these work out to:
   //     -6    -5     -4   -3     -2     -1    0      1      2    3    4    5    6    7    8    9
@@ -17,10 +17,7 @@ $lheights: 8px 9.3px 10.7px 12px 13.3px 14.7px 16px 18.7px 21.3px 24px 28px 32px
 
   $fontsize: nth($scale, $size + 8)
   font-size: $fontsize
-  @if $fontsize > 1em
-    line-height: 1em
-  @else
-    line-height: ($vertical_baseline) / $fontsize
+  line-height: ($vertical_baseline) / $fontsize * ceil( $fontsize / $vertical_baseline )
 
 =heading
   font-family: "Patua One", Georgia, Times, "Times New Roman", serif

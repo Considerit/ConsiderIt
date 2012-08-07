@@ -82,7 +82,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     user = User.find_by_email(email)
     email_in_use = !user.nil?
 
-    render :json => { :valid => !email_in_use || user.valid_password?(password) }
+    render :json => { :valid => !email_in_use && user.valid_password?(password) }
   end
 
 end

@@ -71,14 +71,17 @@ body .redactor_box_fullscreen {
 	line-height: 0 !important;
 	list-style: none;
 	font-size: 0;
-	background: #f2f2f2;
+	background: #777;
 	background: -moz-linear-gradient(top,  #666 0%, #888 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#666), color-stop(100%,#888));
 	background: -webkit-linear-gradient(top,  #666 0%,#888 100%);
 	background: -o-linear-gradient(top,  #666 0%,#888 100%);
 	background: -ms-linear-gradient(top,  #666 0%,#888 100%);
-	background: linear-gradient(top,  #666 0%,#888 100%);
+
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#666', endColorstr='#888',GradientType=0 );
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#666', endColorstr='#888')"; /* IE8+ */   
+	background: linear-gradient(top,  #666 0%,#888 100%);
+
 	overflow: hidden;	
 	height: 20px;
 	border-bottom: 1px solid #bbb;

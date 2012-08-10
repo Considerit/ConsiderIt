@@ -52,7 +52,7 @@ module ConsiderIt
 
     config.action_mailer.delivery_method = :mailhopper
 
-    config.force_ssl = true
+    config.force_ssl = false
     
     # Enable FS storage for Paperclip
     Paperclip::Attachment.default_options.merge!({

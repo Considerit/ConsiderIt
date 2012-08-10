@@ -23,7 +23,11 @@ module ApplicationHelper
   def get_root_domain
     reversed_host = request.host_with_port.reverse
     first_dot = reversed_host.index('.')
-    request.host_with_port[-reversed_host.index('.', first_dot + 1)..reversed_host.length]
+    if first_dot
+      request.host_with_port[-reversed_host.index('.', first_dot + 1)..reversed_host.length]
+    else
+      request.host_with_port
+    end
   end
 
   def get_proposals

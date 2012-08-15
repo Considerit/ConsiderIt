@@ -1,8 +1,8 @@
 #home
   
-  = render :partial => "home/follow"
+  -#= render :partial => "home/follow"
 
-  #people
+  -##people
     - users = get_users(105)
     - if users && users.length > 75
       .row
@@ -36,23 +36,19 @@
   #value 
   
     .first
-      A voters guide written by the people, for the people.
+      Tell us what you think about the legislation we are considering
 
-    .valueprop
-      We are a better Hawaii when we think together. 
-
+  = theme_image_tag 'shadow-big.png', :style => "margin-top: 4px"
 
 #active_proposals
   %h2.get_started
-    Get started by clicking a ballot measure below. Or watch a 
-    %a.video
-      video tutorial.
+    Get started by clicking a bill below.
 
-  = theme_image_tag 'shadow-big.png', :style => "margin-top: 4px"
   
   = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false }
 
-  = render :partial => "proposals/new", :locals => { :prompt => 'Add new'}
+  - if current_user
+    = render :partial => "proposals/new", :locals => { :prompt => 'Add new'}
 
   :javascript
 

@@ -16,7 +16,7 @@
           function no_image(source) {
             $j(this).parents('.logo_cell').remove();
           }
-        %img{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);", :title => "Go back to the homepage" }
+        %img#header_logo{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);", :title => "Go back to the homepage" }
           
     - if @proposal && @is_admin
       = render :partial => "proposals/admin_strip"

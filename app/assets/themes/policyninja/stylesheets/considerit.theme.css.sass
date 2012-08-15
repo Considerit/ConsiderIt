@@ -14,21 +14,18 @@ $background_color: #e6e6e6
 
 #explore_proposal
 //  margin-top: 60px
-#wrap #masthead .logo_cell
-  left: 50%
-  top: -115px  
-  margin-left: -193px
+#wrap #masthead .inner .logo_cell
+  left: 220px
+  top: 33px  
+  //margin-left: -193px
   img 
-    width: 320px
+    width: 60px
 
 #footer, #zipcode_entry
   display: none
 
 .pro_con_list
-  +border-image(none,0,0,0,0)
-  -moz-border-image: none
-  border-width: 6px
-  +box-shadow(0,1px,3px,rgba(black,.5))
+
 
 button,
 input[type="submit"]
@@ -131,7 +128,10 @@ html
     li
       list-style: disc inside none
 
-
+.proposals
+  
+li.proposal_item
+  width: 132px
 
 .contact
   //height: 100px

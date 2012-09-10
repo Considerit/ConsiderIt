@@ -28,11 +28,12 @@ class User < ActiveRecord::Base
 
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :facebook_uid, :avatar_file_name, :avatar_content_type, :avatar_file_size, :avatar_updated_at, :avatar_remote_url, :last_sign_in_ip, :current_sign_in_ip, :last_sign_in_at, :current_sign_in_at, :sign_in_count, :created_at
 
   attr_accessor :avatar_url
   before_validation :download_remote_image, :if => :avatar_url_provided?
   validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
+  after_create :add_token
 
   has_attached_file :avatar, 
       :styles => { 
@@ -59,6 +60,7 @@ class User < ActiveRecord::Base
   end
 
   def download_remote_image
+    avatar_url ||= avatar_remote_url
     io = open(URI.parse(avatar_url))
     def io.original_filename; base_uri.path.split('/').last; end
     self.avatar = io.original_filename.blank? ? nil : io
@@ -134,5 +136,16 @@ class User < ActiveRecord::Base
     end
     return split[0]  
   end
+
+  def add_token
+    self.unique_token = SecureRandom.hex(10)
+    self.save
+  end
+
+  def self.add_token
+    User.where(:unique_token => nil).each do |u|
+      u.unique_token
+    end
+  end     
       
 end

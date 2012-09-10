@@ -242,7 +242,7 @@ ConsiderIt = {
               }, function(data){
 
               if ( data.valid ) {
-                //$me.siblings('input[type="submit"]').trigger('click');
+                $me.siblings('input[type="submit"]').trigger('click');
               } else {
                 $j('#site_registration .password_field .forget_password_prompt').css({'color': 'red', 'font-weight':'bold'});
               }

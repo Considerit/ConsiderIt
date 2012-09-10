@@ -32,8 +32,8 @@ module Reflect
   module Reflectable
     def is_reflectable
       #has_many :reflect_bullets, :as=>:reflectable, :dependent=>:destroy
-      has_many :reflect_bullets, :as=>:reflectable, :class_name => 'Reflect::ReflectBullet', :dependent => :destroy
-      has_many :reflect_bullet_revisions, :class_name => 'Reflect::ReflectBulletRevision', :dependent => :destroy
+      has_many :reflect_bullets, :as=>:comment, :class_name => 'Reflect::ReflectBullet', :dependent => :destroy
+      has_many :reflect_bullet_revisions, :as=>:comment, :class_name => 'Reflect::ReflectBulletRevision', :dependent => :destroy
 
       include InstanceMethods
     end

@@ -163,10 +163,14 @@ class Proposal < ActiveRecord::Base
     self.tag_list = get_tags
   end
 
+  def add_long_id
+    self.long_id = SecureRandom.hex(5)
+    self.save
+  end
+
   def self.add_long_id
     Proposal.where(:long_id => nil).each do |p|
-      p.long_id = SecureRandom.hex(5)
-      p.save
+      p.add_long_id
     end
   end
 

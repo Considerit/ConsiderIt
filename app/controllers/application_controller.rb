@@ -21,6 +21,14 @@ class ApplicationController < ActionController::Base
     end
     @domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil    
     @current_page = request.fullpath == '/' ? 'homepage' : ''
+
+    puts 'referrer'
+    puts request.env["HTTP_REFERER"]
+    puts request.referer
+    puts '****'
+
+    if !current_user && 
+
     if current_tenant.host.nil?
       current_tenant.host = request.host
       current_tenant.host_with_port = request.host_with_port

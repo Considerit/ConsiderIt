@@ -53,7 +53,7 @@ class Point < ActiveRecord::Base
   scope :ranked_divisive, 
     # where( "points.score > 0" ).
     published.
-    order( "points.appeal ASC" )
+    order( "points.divisiveness DESC" )
 
   
   scope :ranked_persuasiveness, 
@@ -141,7 +141,14 @@ class Point < ActiveRecord::Base
   end
 
   def define_appeal
-    self.appeal = entropy
+    e = entropy
+    if e.nil? or self.num_inclusions.nil?
+      self.appeal = 0
+      self.divisiveness = 0
+    else
+      self.appeal = e * self.num_inclusions
+      self.divisiveness = (1 - e) * self.num_inclusions      
+    end
   end
   
   def define_attention

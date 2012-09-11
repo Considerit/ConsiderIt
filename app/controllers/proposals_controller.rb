@@ -87,21 +87,7 @@ class ProposalsController < ApplicationController
       @con_points = @proposal.points.published.includes(:user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
 
     end
-
-
-    #PointListing.transaction do
-    #  (@pro_points + @con_points).each do |pnt|
-    #    PointListing.create!(
-    #      :proposal => @proposal,
-    #      :position => @position,
-    #      :point => pnt,
-    #      :user => @user,
-    #      :context => 4
-    #    )
-    #  end
-    #end
-
-        
+ 
     #Point.update_relative_scores
 
     #@comments = @proposal.root_comments

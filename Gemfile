@@ -93,7 +93,6 @@ gem 'dalli'
 group :development, :test do
   # gem 'ruby-debug19', :require => 'ruby-debug'
   # gem 'heroku'
-  gem 'pg'
 end
 
 gem 'newrelic_rpm'

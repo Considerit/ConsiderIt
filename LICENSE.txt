@@ -1,15 +1,14 @@
 ConsiderIt
  * http://www.chalkboard.it
- * Copyright (C) 2010-2012, Travis Kriplean
+ * Author: Travis Kriplean (tkriplean@gmail.com)
+ * Copyright (C) 2010-2012 University of Washington
  * Licensed under the AGPL v3 for non-commercial use.
  * Options available for commercial and/or proprietary use
  * Last updated: July 7th, 2012
 
 ConsiderIt is licensed under the open source AGPL license for *non-commercial use*. The full text of the AGPL is included below. 
 
-For commercial use and/or for closed/proprietary use, you must contact the copyright holder (tkriplean@gmail.com) to come to an agreement on ConsiderIt's use. 
-
-Forks of this project must adhere to these terms. 
+For commercial use and/or for closed/proprietary use, contact tkriplean@gmail.com to come to an agreement on ConsiderIt's use. 
 
 ==================================
 GNU AFFERO GENERAL PUBLIC LICENSE

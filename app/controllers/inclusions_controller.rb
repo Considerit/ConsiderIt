@@ -40,13 +40,7 @@ class InclusionsController < ApplicationController
     next_point = points.last
     
     if next_point
-      PointListing.create!(
-        :proposal => @proposal,
-        :position => @position,
-        :point => next_point,
-        :user => current_user,
-        :context => 3 #replaced included point
-      )
+      session[@proposal.id][:viewed_points][next_point.id] = 3
     end
 
     rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :origin => 'margin', :point => next_point }) : nil

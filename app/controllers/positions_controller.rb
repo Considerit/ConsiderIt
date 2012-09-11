@@ -90,7 +90,8 @@ class PositionsController < ApplicationController
     session[@proposal.id] = {
         :included_points => {},
         :deleted_points => {},
-        :written_points => []
+        :written_points => [],
+        :viewed_points => []
       }
   end
 
@@ -136,7 +137,8 @@ protected
       session[@proposal.id] = {
         :included_points => {},
         :deleted_points => {},
-        :written_points => []
+        :written_points => [],
+        :viewed_points => []
       }
     end
     # When we are redirected back to the position page after a user creates their account, 
@@ -199,26 +201,8 @@ protected
     @con_points = @proposal.points.published.includes(:user).cons.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
                     ranked_persuasiveness.page( 1 ).per( POINTS_PER_PAGE )
 
-    #PointListing.transaction do
-
-
-    point_listings = []
     (@pro_points + @con_points).each do |pnt|
-      point_listings.push("(#{@proposal.id}, #{@position.id}, #{pnt.id}, #{@user ? @user.id : 'NULL'}, 1)")
-      #PointListing.create!(
-      #  :proposal => @proposal,
-      #  :position => @position,
-      #  :point => pnt,
-      #  :user => @user,
-      #  :context => 1
-      #)
-    end
-    if point_listings.length > 0
-      qry = "INSERT INTO point_listings 
-              (proposal_id, position_id, point_id, user_id, context) 
-              VALUES #{point_listings.join(',')}"
-
-      ActiveRecord::Base.connection.execute qry
+      session[@proposal.id][:viewed_points][pnt.id] = 1
     end
         
     @included_pros = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:user).where(:is_pro => true) + 
@@ -232,20 +216,21 @@ protected
   def save_actions ( position )
     actions = session[position.proposal_id]
 
-    actions[:included_points].each do |point_id, value|
-
-      if Inclusion.where( :position_id => position.id, :point_id => point_id, :user_id => position.user_id ).count == 0
-        inc = Inclusion.create!( { 
-          :point_id => point_id,
-          :user_id => position.user_id,
-          :position_id => position.id,
-          :proposal_id => position.proposal_id
-        } ) 
-        if !actions[:written_points].include?(point_id) 
-          pnt = Point.find(point_id)
-          pnt.update_absolute_score
-          inc.track!
-          pnt.follow!(current_user, :follow => true, :explicit => false)
+    Inclusion.transaction do
+      actions[:included_points].each do |point_id, value|
+        if Inclusion.where( :position_id => position.id, :point_id => point_id, :user_id => position.user_id ).count == 0
+          inc = Inclusion.create!( { 
+            :point_id => point_id,
+            :user_id => position.user_id,
+            :position_id => position.id,
+            :proposal_id => position.proposal_id
+          } )
+          if !actions[:written_points].include?(point_id) 
+            pnt = Point.find(point_id)
+            pnt.update_absolute_score
+            inc.track!
+            pnt.follow!(current_user, :follow => true, :explicit => false)
+          end
         end
       end
     end
@@ -281,6 +266,20 @@ protected
       end
     end
     actions[:deleted_points] = {}
+
+    point_listings = []
+    actions[:viewed_points].to_set.each do |point_id, context|
+      point_listings.push("(#{position.proposal_id}, #{position.id}, #{point_id}, #{position.user_id}, #{context})")
+    end
+    if point_listings.length > 0
+      qry = "INSERT INTO point_listings 
+              (proposal_id, position_id, point_id, user_id, context) 
+              VALUES #{point_listings.join(',')}"
+
+      ActiveRecord::Base.connection.execute qry
+    end
+
+    actions[:viewed_points] = {}
   end
 
   def alert_new_published_position ( proposal, position )

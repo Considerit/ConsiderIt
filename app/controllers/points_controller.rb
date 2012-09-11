@@ -118,17 +118,9 @@ class PointsController < ApplicationController
     # })
 
     if context
-      PointListing.transaction do
-        points.each do |pnt|
-          PointListing.create!(
-            :proposal => @proposal,
-            :position => @position,
-            :point => pnt,
-            :user => @user,
-            :context => context
-          )
-        end          
-      end
+      points.each do |pnt|
+        session[@proposal.id][:viewed_points][pnt.id] = context
+      end          
     end
         
     #TODO: refactor to make the logic behind these calls easier to follow & explicit
@@ -174,15 +166,7 @@ class PointsController < ApplicationController
 
     session[@proposal.id][:written_points].push(@point.id)
     session[@proposal.id][:included_points][@point.id] = 1    
-
-    PointListing.create!(
-      :proposal => @proposal,
-      :position => @position,
-      :account => current_tenant,
-      :point => @point,
-      :user => @user,
-      :context => 7 # own point has been seen
-    )
+    session[@proposal.id][:viewed_points][@point.id] = 7 # own point has been seen
 
     #if @point.published
     #  @point.update_absolute_score

@@ -222,5 +222,29 @@ namespace :data do
       u.download_remote_image
       u.save
     end
+
+    require 'net/scp'
+    conn = PG.connect( dbname: 'considerit-production', user: 'postgres', password: 'postgres' ) 
+    user = ''
+    passwrd = ''
+    host = ''
+    local = '/Users/travis/Desktop/avatars/'    
+    Net::SCP.start(host, user, :password => passwrd) do |scp|
+      User.where('id > 449 AND avatar_remote_url IS NULL AND avatar_file_name is NOT NULL').each do |u|
+        pp u.email
+        em = u.email[0..-7]
+        conn.exec( "SELECT * from users where lower(email)=lower('#{em}')" ) do |result| 
+          user = result[0]
+          puts sprintf("%i\t%s\t%s", u.id, u.email, u.avatar_file_name)
+          loc = '/projects/engage2/lvg/code/considerit/public/images/avatars/uploaded/' + user['id'] + '/original_' + u.avatar_file_name
+          # download a file to an in-memory buffer
+          fname = local + u.avatar_file_name
+          scp.download!(loc, fname)          
+          io = open(fname)
+          u.avatar = io
+          u.save
+        end
+      end
+    end
   end
 end

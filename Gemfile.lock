@@ -202,7 +202,6 @@ GEM
       activesupport (>= 3.0.0)
       cocaine (>= 0.0.2)
       mime-types
-    pg (0.14.1)
     polyamorous (0.5.0)
       activerecord (~> 3.0)
     polyglot (0.3.3)
@@ -319,7 +318,6 @@ DEPENDENCIES
   omniauth-twitter
   paper_trail
   paperclip
-  pg
   premailer-rails3
   rails (~> 3.2)
   reflect!

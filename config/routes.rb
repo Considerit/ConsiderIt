@@ -67,7 +67,7 @@ ConsiderIt::Application.routes.draw do
   match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|videos|help/ } 
 
   match '/home/study/:category' => "home#study", :via => :post  
-  match '/admin/dashboard' => "admin/dashboard#index", :via => :get, :module => :admin  
+  #match '/admin' => "admin/dashboard#index", :via => :get, :module => :admin  
 
   #ActiveAdmin.routes(self)
    # Feel free to change '/admin' to any namespace you need.

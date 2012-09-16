@@ -24,17 +24,22 @@ gem 'twitter'
 # https://github.com/ErwinM/acts_as_tenant
 gem 'acts_as_tenant'
 
-# https://github.com/sferik/rails_admin/
-# gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git' #, :branch => 'rails-3.0'
-
-
 # https://github.com/gregbell/active_admin
 #gem "formtastic", "~> 2.1.1"
 #gem 'activeadmin'
 #gem 'meta_search',    '>= 1.1.0.pre'
 
+# https://github.com/sferik/rails_admin/
+# gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git' #, :branch => 'rails-3.0'
+
 # https://github.com/sferik/rails_admin
 gem 'rails_admin'
+
+#https://github.com/ryanb/cancan
+gem 'cancan'
+
+#http://rubydoc.info/gems/role_model/0.7.1/frames
+gem 'role_model'
 
 # https://github.com/thoughtbot/paperclip
 gem 'rmagick'

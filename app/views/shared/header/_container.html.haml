@@ -18,7 +18,7 @@
           }
         %img#header_logo{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);", :title => "Go back to the homepage" }
           
-    - if @proposal && @is_admin
+    - if @proposal && @can_update
       = render :partial => "proposals/admin_strip"
           
     %ul#nav-user

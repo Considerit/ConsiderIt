@@ -29,6 +29,7 @@ class PositionsController < ApplicationController
     @position = Position.find(params[:position][:position_id])
     params[:position].delete(:position_id)
     @position.update_attributes(params[:position])
+    authorize! :create, @position
     @position.save
 
     if !current_user.nil?
@@ -60,6 +61,9 @@ class PositionsController < ApplicationController
     @position.stance = stance
     @position.stance_bucket = bucket
     @position.published = 1
+
+    authorize! :update, @position
+
     @position.save
     @position.track!
 
@@ -74,6 +78,7 @@ class PositionsController < ApplicationController
     end
   end
 
+  #the destroy method here only discards the current changes to the position
   def destroy
     @proposal = Proposal.find_by_long_id(params[:long_id])
     if current_user
@@ -81,6 +86,8 @@ class PositionsController < ApplicationController
     else
       @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     end
+
+    authorize! :destroy, @position
     
     redirect_to(proposal_path(@position.proposal.long_id, :anchor => 'explore_proposal'))
     session.delete('reify_activities')
@@ -122,10 +129,6 @@ protected
     end
 
     @is_admin = @proposal.has_admin_privilege(current_user, request.session_options[:id], params)
-
-    if @is_admin
-      @deletable = ProposalsController.deletable(@proposal, current_user)
-    end
 
     @user = current_user
 
@@ -202,7 +205,7 @@ protected
                     ranked_persuasiveness.page( 1 ).per( POINTS_PER_PAGE )
 
     (@pro_points + @con_points).each do |pnt|
-      session[@proposal.id][:viewed_points][pnt.id] = 1
+      session[@proposal.id][:viewed_points].push( [pnt.id, 1] )
     end
         
     @included_pros = Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).includes(:user).where(:is_pro => true) + 
@@ -254,7 +257,7 @@ protected
         :point => pnt,
         :current_tenant => current_tenant,
         :mail_options => mail_options
-      )        
+      )
 
     end
     actions[:written_points] = []
@@ -279,7 +282,7 @@ protected
       ActiveRecord::Base.connection.execute qry
     end
 
-    actions[:viewed_points] = {}
+    actions[:viewed_points] = []
   end
 
   def alert_new_published_position ( proposal, position )

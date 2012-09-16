@@ -10,7 +10,6 @@ namespace :tenants do
       end
 
       accnt.points.each do |pnt|
-        pnt.point_links.update_all(:account_id => accnt.id)
         pnt.comments.update_all(:account_id => accnt.id)        
         pnt.comments.each do |comment|
           comment.reflect_bullets.update_all(:account_id => accnt.id)
@@ -33,7 +32,7 @@ namespace :tenants do
     tables = [Proposal,Point,Comment,Reflect::ReflectBulletRevision,Inclusion,Position]
     tables_to_update = [
       'proposals', 'positions', 'points', 'inclusions', 'reflect_bullet_revisions', 'reflect_response_revisions',
-      'point_links', 'point_listings', 'comments', 'activities']
+      'point_listings', 'comments', 'activities']
 
     User.all.each do |u|
       accounts = []

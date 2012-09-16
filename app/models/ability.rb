@@ -39,19 +39,18 @@ class Ability
     end
 
     if user.has_role? :superadmin
-        can :manage, :all
+      can :manage, :all
     end
 
     #Proposal
     can :read, Proposal#, :published => 1
-    can [:read, :update], Proposal, :user_id => user.id
 
-    can [:create, :update], Proposal do |prop|
-      (session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)
+    can [:read, :create, :update], Proposal do |prop|
+      (!user.id.nil? && user.id == prop.user_id) || (session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)
     end
 
     can [:destroy], Proposal do |prop|
-      ((session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)) && \
+      ((!user.id.nil? && user.id == prop.user_id) || (session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)) && \
         (prop.positions.published.count == 0 || (prop.positions.published.count == 1 && prop.positions.published.first.user_id == user.id))
     end
 
@@ -59,9 +58,11 @@ class Ability
     can [:create, :update, :destroy], Position, :user_id => user.id
 
     #Point
-    can :read, Point, :published => 1
+    can :read, Point, :published => true
     can :create, Point
-    can [:read, :update], Point, :user_id => user.id
+    can [:read, :update], Point do |pnt|
+      (!pnt.published && user.id.nil? && pnt.user_id.nil?) || (user.id = pnt.user_id)
+    end
     can :destroy, Point do |pnt|
       ((user.id.nil? && pnt.user_id.nil?) || (user.id = pnt.user_id)) && pnt.inclusions.count < 2
     end

@@ -8,7 +8,7 @@
 
 %li.new_comment
   
-  - if current_user
+  - if can? :create, Comment
     .comment_body
       .body_row
         .user

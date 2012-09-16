@@ -128,8 +128,9 @@ protected
       @proposal.save
     end
 
-    @is_admin = @proposal.has_admin_privilege(current_user, request.session_options[:id], params)
-
+    @can_update = can? :update, @proposal
+    @can_destroy = can? :destroy, @proposal
+    
     @user = current_user
 
     @title = "#{@proposal.name}"

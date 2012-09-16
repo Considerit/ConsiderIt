@@ -4,7 +4,7 @@
 
   .head.single
     %h3.banner
-      - if @is_admin
+      - if @can_update
         = render :partial => 'proposals/admin_make_editable', :locals => { :field => :name, :label => prompt}
       - else
         = prompt
@@ -16,7 +16,7 @@
   .description_wrapper
 
     .full_text
-      - if @is_admin
+      - if @can_update
         = render :partial => 'proposals/admin_make_editable', :locals => { :field => :description, :label => prompt}
       - else
 

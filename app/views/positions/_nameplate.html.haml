@@ -19,7 +19,7 @@
           = name ? name : ''
 
 
-    - if false && @is_admin
+    - if false && @can_update
       - @proposal.considerations_prompt = prompt
       = render :partial => 'proposals/admin_make_editable', :locals => { :field => :considerations_prompt, :noresize => true}
     - else

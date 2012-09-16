@@ -58,7 +58,9 @@ class ProposalsController < ApplicationController
       redirect_to root_path
     end
 
-    @is_admin = @proposal.has_admin_privilege(current_user, request.session_options[:id], params)
+    @can_update = can? :update, @proposal
+    @can_destroy = can? :destroy, @proposal
+
     @position = current_user ? current_user.positions.published.where(:proposal_id => @proposal.id).first : nil
 
     @results_page = true

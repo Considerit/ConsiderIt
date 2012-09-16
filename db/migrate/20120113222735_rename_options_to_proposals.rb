@@ -4,7 +4,6 @@ class RenameOptionsToProposals < ActiveRecord::Migration
 
   	rename_column :inclusions, :option_id, :proposal_id
   	rename_column :points, :option_id, :proposal_id
-  	rename_column :point_links, :option_id, :proposal_id
   	rename_column :point_listings, :option_id, :proposal_id
   	rename_column :point_similarities, :option_id, :proposal_id
   	rename_column :positions, :option_id, :proposal_id

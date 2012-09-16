@@ -33,16 +33,6 @@
         = f.text_area :text, :title => "Write a longer description (optional)", :cols => 24, :class => "point-description wysiwyg"
         .clear
 
-      -#
-        .point_link_block.fl
-          .point_link_prompt
-
-            = f.fields_for :point_links do |builder|
-              = render :partial => 'point_links/point_link_fields', :locals => { :f => builder }
-
-            = link_to_add_fields "link to a website", f, :point_links, 'point_links/point_link_fields', ''
-
-
       .hide_name.fl{:title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'}
         = f.check_box :hide_name
         = f.label :hide_name, 'conceal your name'

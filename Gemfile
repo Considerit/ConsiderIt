@@ -27,10 +27,14 @@ gem 'acts_as_tenant'
 # https://github.com/sferik/rails_admin/
 # gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git' #, :branch => 'rails-3.0'
 
+
 # https://github.com/gregbell/active_admin
-gem "formtastic", "~> 2.1.1"
-gem 'activeadmin'
-gem 'meta_search',    '>= 1.1.0.pre'
+#gem "formtastic", "~> 2.1.1"
+#gem 'activeadmin'
+#gem 'meta_search',    '>= 1.1.0.pre'
+
+# https://github.com/sferik/rails_admin
+gem 'rails_admin'
 
 # https://github.com/thoughtbot/paperclip
 gem 'rmagick'
@@ -80,12 +84,13 @@ gem 'acts-as-taggable-on'
 # https://github.com/philnash/bitly
 gem 'bitly'
 
+# https://github.com/mperham/dalli/
+gem 'dalli'
+
 #custom gems
 gem "reflect", :path => "lib/gems/reflect"
 gem "acts_as_followable", :path => "lib/gems/acts_as_followable"
 
-# https://github.com/mperham/dalli/
-gem 'dalli'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

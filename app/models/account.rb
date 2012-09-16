@@ -19,7 +19,7 @@ class Account < ActiveRecord::Base
   has_many :reflect_bullets, :class_name => 'Reflect::ReflectBullet'
   has_many :reflect_responses, :class_name => 'Reflect::ReflectResponse'
 
-  acts_as_followable
+  is_followable
 
   def host_without_subdomain
     host_with_port.split('.')[-2, 2].join('.')

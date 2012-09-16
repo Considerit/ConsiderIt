@@ -6,6 +6,6 @@
 #*********************************************
 
 class AccountsController < ApplicationController
-  include ActsAsFollowable::ControllerMethods
+  #include ActsAsFollowable::ControllerMethods
 
 end

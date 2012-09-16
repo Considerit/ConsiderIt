@@ -1,7 +1,7 @@
 class Reflect::ReflectBullet < ActiveRecord::Base
   has_paper_trail
 
-  belongs_to :comment
+  belongs_to :comment, :class_name => 'Commentable::Comment'
 
   has_many :revisions, :class_name => 'ReflectBulletRevision', :foreign_key => 'bullet_id', :dependent => :destroy  
   has_many :responses, :class_name => 'ReflectResponseRevision', :foreign_key => 'bullet_id', :dependent => :destroy

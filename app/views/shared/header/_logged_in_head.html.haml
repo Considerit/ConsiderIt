@@ -43,7 +43,7 @@
           Preferences
       - if current_user.admin?
         %li
-          = link_to 'Admin', admin_dashboard_path, :class => 'admin'
+          = link_to 'Admin', rails_admin_path, :class => 'admin'
       %li
         = link_to 'Log Out', destroy_user_session_path, :class => 'logout'
     .clear

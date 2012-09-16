@@ -13,13 +13,14 @@ RailsAdmin.config do |config|
   # config.audit_with :history, User
 
   # Or with a PaperTrail: (you need to install it first)
-  # config.audit_with :paper_trail, User
+  config.audit_with :paper_trail, User
 
   # Set the admin name here (optional second array element will appear in a beautiful RailsAdmin red ©)
   config.main_app_name = ['Consider It', 'Admin']
   # or for a dynamic name:
   # config.main_app_name = Proc.new { |controller| [Rails.application.engine_name.titleize, controller.params['action'].titleize] }
 
+  config.authorize_with :cancan
 
   #  ==> Global show view settings
   # Display empty fields in show views

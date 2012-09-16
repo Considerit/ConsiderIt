@@ -1,4 +1,4 @@
-require 'pg'
+#require 'pg'
 require 'pp'
 
 namespace :data do

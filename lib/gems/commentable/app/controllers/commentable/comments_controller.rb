@@ -5,23 +5,23 @@
 # See https://github.com/tkriplean/ConsiderIt/ for details.
 #*********************************************
 
-class CommentsController < ApplicationController
+
+class Commentable::CommentsController < ApplicationController
   protect_from_forgery
 
   respond_to :json
 
   def create
-    authorize! :create, Comment
-    
+    authorize! :create, Commentable::Comment
     @proposal = Proposal.find(params[:comment][:proposal_id])
     @user_who_commented = current_user
     commentable_type = params[:comment][:commentable_type]
 
-    existing = Comment.find_by_body(params[:comment][:body])
+    existing = Commentable::Comment.find_by_body(params[:comment][:body])
     commentable = commentable_type.constantize.find(params[:comment][:commentable_id])
 
     if existing.nil?
-      @comment = Comment.build_from(commentable, @user_who_commented.id, params[:comment][:body] )
+      @comment = Commentable::Comment.build_from(commentable, @user_who_commented.id, params[:comment][:body] )
     else
       @comment = existing
     end
@@ -47,7 +47,7 @@ class CommentsController < ApplicationController
 
       follows = commentable.follows.where(:user_id => current_user.id).first
 
-      new_comment = render_to_string :partial => "comments/comment", :locals => { :comment => @comment } 
+      new_comment = render_to_string :partial => "commentable/comment", :locals => { :comment => @comment } 
       response = { :new_point => new_comment, :comment_id => @comment.id, :is_following => follows && follows.follow }
 
       #if existing.nil? && grounded_in_point

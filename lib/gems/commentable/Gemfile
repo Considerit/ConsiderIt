@@ -1,4 +1,8 @@
 source "http://rubygems.org"
 
-# Specify your gem's dependencies in reflect.gemspec
 gemspec
+gem 'paper_trail'
+gem "reflect", :path => "lib/gems/reflect"
+gem "followable", :path => "lib/gems/followable"
+gem "trackable", :path => "lib/gems/trackable"
+gem 'acts_as_tenant'

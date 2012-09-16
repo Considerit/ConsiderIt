@@ -11,38 +11,16 @@ ConsiderIt::Application.routes.draw do
 
   root :to => "home#index"
 
-  match "/follow" => "accounts#follow"
-  match "/unfollow" => "accounts#unfollow"
-
   resources :proposals, :only => [:index, :create]
-  resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d]{10}/, :only => [:show, :edit, :update, :destroy] do
-  end
+  resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-z\d]{10}/, :only => [], :path_names => {:show => 'results'} do
-    member do
-      get 'follow'
-      get 'unfollow'
-    end
 
-    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :destroy], :path_names => {:new => ''} do 
-      member do
-        get 'follow'
-        get 'unfollow'
-      end
-    end
+    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :destroy], :path_names => {:new => ''} 
     resources :points, :only => [:index, :create, :update, :destroy, :show] do 
-      member do
-        get 'follow' 
-        get 'unfollow'
-      end
       resources :inclusions, :only => [:create] 
     end
     #resources :point_similarities, :module => :admin
-    resources :comments, :only => [:index, :create] do 
-      member do
-        get 'follow'
-        get 'unfollow'
-      end
-    end
+    resources :comments, :only => [:index, :create]
   end
 
   
@@ -52,13 +30,14 @@ ConsiderIt::Application.routes.draw do
     :registrations => "users/registrations",
     :passwords => "users/passwords",
     :confirmations => "users/confirmations"
-  } 
+  }
 
   devise_scope :user do 
     match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
   end
 
   themes_for_rails # themes_for_rails gem routes 
+  followable_routes # followable gem routes
 
   match "/feed" => "activities#feed"
 

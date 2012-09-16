@@ -9,7 +9,7 @@ class Point < ActiveRecord::Base
   
   is_commentable
   is_trackable
-  acts_as_followable
+  is_followable
   
   has_paper_trail :only => [:hide_name, :published, :is_pro, :text, :nutshell, :user_id]  
   

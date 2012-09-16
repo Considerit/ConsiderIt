@@ -16,7 +16,7 @@ class Position < ActiveRecord::Base
   has_paper_trail
   is_commentable
   is_trackable
-  acts_as_followable
+  is_followable
 
   acts_as_tenant(:account)
   

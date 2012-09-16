@@ -1,12 +1,12 @@
 PATH
-  remote: lib/gems/acts_as_followable
-  specs:
-    acts_as_followable (0.0.1)
-
-PATH
   remote: lib/gems/commentable
   specs:
     commentable (0.0.1)
+
+PATH
+  remote: lib/gems/followable
+  specs:
+    followable (0.0.1)
 
 PATH
   remote: lib/gems/reflect
@@ -294,7 +294,6 @@ PLATFORMS
 DEPENDENCIES
   actionmailer-with-request
   acts-as-taggable-on
-  acts_as_followable!
   acts_as_tenant
   asset_sync
   aws-sdk
@@ -308,6 +307,7 @@ DEPENDENCIES
   delayed_job_active_record
   delayed_mailhopper
   devise
+  followable!
   haml
   hpricot
   jquery-rails

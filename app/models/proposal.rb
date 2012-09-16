@@ -16,10 +16,10 @@ class Proposal < ActiveRecord::Base
   belongs_to :user
   
   acts_as_tenant(:account)
-  acts_as_followable
   acts_as_taggable
 
   is_trackable
+  is_followable
   
   before_save :extract_tags
 

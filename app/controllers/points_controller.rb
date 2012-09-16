@@ -6,7 +6,7 @@
 #*********************************************
 
 class PointsController < ApplicationController
-  include ActsAsFollowable::ControllerMethods
+  #include ActsAsFollowable::ControllerMethods
 
   protect_from_forgery
 

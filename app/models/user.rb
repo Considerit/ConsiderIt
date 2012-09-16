@@ -6,8 +6,11 @@
 #*********************************************
 
 require 'open-uri'
+require 'role_model'
 
 class User < ActiveRecord::Base
+  include RoleModel
+
   has_many :points, :dependent => :destroy
   has_many :positions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
@@ -27,12 +30,15 @@ class User < ActiveRecord::Base
 
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :facebook_uid, :avatar_file_name, :avatar_content_type, :avatar_file_size, :avatar_updated_at, :avatar_remote_url, :last_sign_in_ip, :current_sign_in_ip, :last_sign_in_at, :current_sign_in_at, :sign_in_count, :created_at
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask
 
   attr_accessor :avatar_url
+
   before_validation :download_remote_image, :if => :avatar_url_provided?
   validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
   after_create :add_token
+
+  roles :superadmin, :admin, :analyst, :moderator, :manager, :evaluator
 
   has_attached_file :avatar, 
       :styles => { 
@@ -47,9 +53,9 @@ class User < ActiveRecord::Base
   end
 
   def is_admin?
-    #TODO: scope this based on current_tenant
-    return admin
+    has_any_role? :admin, :superadmin
   end
+
   def third_party_authenticated?
     self.facebook_uid || self.google_uid || self.yahoo_uid || self.openid_uid || self.twitter_uid
   end

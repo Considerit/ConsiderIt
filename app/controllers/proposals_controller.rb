@@ -52,6 +52,8 @@ class ProposalsController < ApplicationController
       return
     end
 
+    authorize! :read, @proposal
+
     if !@proposal
       redirect_to root_path
     end
@@ -109,7 +111,7 @@ class ProposalsController < ApplicationController
 
   def create
 
-    # TODO: handle possibility of name collisions
+    # TODO: handle remote possibility of name collisions?
     params[:proposal][:long_id] = SecureRandom.hex(5)
     params[:proposal][:admin_id] = SecureRandom.hex(6)
     params[:proposal][:description] ||= ''
@@ -121,7 +123,9 @@ class ProposalsController < ApplicationController
     if current_tenant.default_hashtags && params[:proposal][:description].index('#').nil?
       params[:proposal][:description] += " #{current_tenant.default_hashtags}"
     end
-    @proposal = Proposal.create!(params[:proposal])
+    @proposal = Proposal.create(params[:proposal])
+    authorize! :create, @proposal
+    @proposal.save
     @proposal.track!
 
     current_tenant.follow!(current_user, :follow => true, :explicit => false)
@@ -131,42 +135,23 @@ class ProposalsController < ApplicationController
     
   end
 
-  def edit
-    
-  end
-
   def update
     # TODO: this edit will fail for those who do not have an account & whose session timed out, but try to edit following admin_id link
     @proposal = Proposal.find_by_long_id(params[:long_id])
-    if @proposal.has_admin_privilege(current_user, request.session_options[:id], params)
-      @proposal.update_attributes!(params[:proposal])
-      response = {
-        :success => true
-      }
-      render :json => response.to_json
-      return
-    end
-    raise 'Permission to update this proposal denied'  
+    authorize! :update, @proposal
+
+    @proposal.update_attributes!(params[:proposal])
+    response = {
+      :success => true
+    }
+    render :json => response.to_json
   end
 
   def destroy
     @proposal = Proposal.find_by_long_id(params[:long_id])
-    if ProposalsController.deletable(@proposal, current_user)
-      @proposal.destroy
-    end
-
+    authorize! :destroy, @proposal
+    @proposal.destroy
     redirect_to root_path
-  end
-
-  def self.deletable(proposal, user)
-    #TODO: need to let users who are not logged in but just created a poll delete
-    if user.nil?
-      return false
-    end
-    user.is_admin? || (user.id == proposal.user_id && \
-      (proposal.positions.published.count == 0 \
-        || (proposal.positions.published.count == 1 && proposal.positions.published.first.user_id == user.id) \
-      ))
   end
 
 end

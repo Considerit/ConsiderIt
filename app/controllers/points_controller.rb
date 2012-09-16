@@ -119,7 +119,7 @@ class PointsController < ApplicationController
 
     if context
       points.each do |pnt|
-        session[@proposal.id][:viewed_points][pnt.id] = context
+        session[@proposal.id][:viewed_points].push([pnt.id, context])
       end          
     end
         
@@ -162,9 +162,11 @@ class PointsController < ApplicationController
 
     @point = Point.create!(params[:point])
 
+    authorize! :create, @point
+
     session[@proposal.id][:written_points].push(@point.id)
     session[@proposal.id][:included_points][@point.id] = 1    
-    session[@proposal.id][:viewed_points][@point.id] = 7 # own point has been seen
+    session[@proposal.id][:viewed_points].push([@point.id, 7]) # own point has been seen
 
     #if @point.published
     #  @point.update_absolute_score
@@ -179,30 +181,10 @@ class PointsController < ApplicationController
 
   end
 
-  # TODO: server-side permissions check for this operation
-  def update
-    @proposal = Proposal.find_by_long_id(params[:long_id])
-    if current_user
-      @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 
-    else
-      @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
-    end
-    @user = current_user
-    @point = Point.find(params[:id])
-
-    @point.update_attributes!(params[:point])
-
-    new_point = render_to_string :partial => "points/show", :locals => { :origin => 'self', :point => @point, :static => false }
-    response = {
-      :new_point => new_point
-    }
-    render :json => response.to_json
-
-  end
-
   def show
     @point = Point.find(params[:id])
     @proposal = Proposal.find_by_long_id(params[:long_id])
+    authorize! :read, @point
 
     if request.xhr?
       origin = params[:origin]
@@ -214,12 +196,31 @@ class PointsController < ApplicationController
 
   end
 
+  def update
+    @proposal = Proposal.find_by_long_id(params[:long_id])
+    if current_user
+      @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 
+    else
+      @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
+    end
+    @user = current_user
+    @point = Point.find(params[:id])
+    authorize! :update, @point
+
+    @point.update_attributes!(params[:point])
+
+    new_point = render_to_string :partial => "points/show", :locals => { :origin => 'self', :point => @point, :static => false }
+    response = {
+      :new_point => new_point
+    }
+    render :json => response.to_json
+
+  end
+
   def destroy
     @point = Point.find(params[:id])
     
-    if (current_user.nil? && !@point.user_id.nil?) || (current_user && !current_user.is_admin? && current_user.id != @point.user_id)
-      return
-    end
+    authorize! :destroy, @point
     
     session[@point.proposal_id][:written_points].delete(@point.id)
     session[@point.proposal_id][:included_points].delete(@point.id)  

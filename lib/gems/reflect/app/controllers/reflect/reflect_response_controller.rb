@@ -69,7 +69,7 @@ class Reflect::ReflectResponseController < ApplicationController
     if current_user.nil?
       userLevel = -1
     else
-      userLevel = user.admin ? 1 : 0
+      userLevel = user.is_admin? ? 1 : 0
     end
                     
     denied =    ( # only admins and response authors can delete responses

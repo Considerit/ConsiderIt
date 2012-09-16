@@ -13,7 +13,8 @@ class InclusionsController < ApplicationController
   POINTS_PER_PAGE = 4
   
   def create
-    
+    authorize! :create, Inclusion
+
     if params.has_key?(:delete) && params[:delete]
       destroy(params)
       return
@@ -22,6 +23,8 @@ class InclusionsController < ApplicationController
     @proposal = Proposal.find_by_long_id(params[:long_id])
     @point = Point.published.find(params[:point_id])
 
+    # don't include a point that has already been included ...
+    # not going though CanCan because of session query requirement
     if (current_user \
         && (!session[@proposal.id][:deleted_points].has_key?(@point.id) \
         && current_user.inclusions.where( :point_id => @point.id ).count > 0)) \
@@ -40,7 +43,7 @@ class InclusionsController < ApplicationController
     next_point = points.last
     
     if next_point
-      session[@proposal.id][:viewed_points][next_point.id] = 3
+      session[@proposal.id][:viewed_points].push([next_point.id, 3])
     end
 
     rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :origin => 'margin', :point => next_point }) : nil
@@ -65,6 +68,8 @@ class InclusionsController < ApplicationController
         session[@proposal.id][:deleted_points][@point.id] = 1
       end
     end
+
+    authorize! :destroy, @inc
 
     @page = params[:page].to_i
     candidate_next_points = @point.is_pro ? @proposal.points.published.pros : @proposal.points.published.cons

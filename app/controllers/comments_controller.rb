@@ -10,11 +10,9 @@ class CommentsController < ApplicationController
 
   respond_to :json
 
-  def index
-    
-  end
-
   def create
+    authorize! :create, Comment
+    
     @proposal = Proposal.find(params[:comment][:proposal_id])
     @user_who_commented = current_user
     commentable_type = params[:comment][:commentable_type]
@@ -61,8 +59,3 @@ class CommentsController < ApplicationController
   end
 
 end
-
-
-
-
-

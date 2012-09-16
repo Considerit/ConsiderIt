@@ -1,7 +1,7 @@
 class Ability
   include CanCan::Ability
 
-  def initialize(user)
+  def initialize(user, session_id=nil, params=nil)
     # Define abilities for the passed in user here. For example:
     #
     #   user ||= User.new # guest user (not logged in)
@@ -25,16 +25,54 @@ class Ability
     #
     # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
 
+    user ||= User.new # guest user (not logged in)
+
     user_facing_models = [User, Point, Position, Inclusion, Proposal]
-    
-    can :read, user_facing_models                   # allow everyone to read everything
-    if user && user.admin?
+        
+    #Rails_admin
+    if user.is_admin?
       can :access, :rails_admin       # only allow admin users to access Rails Admin
       can :dashboard                  # allow access to dashboard
       can :manage, user_facing_models
 
-
+      can [:create, :update, :destroy, :read], :all
     end
 
+    if user.has_role? :superadmin
+        can :manage, :all
+    end
+
+    #Proposal
+    can :read, Proposal#, :published => 1
+    can [:read, :update], Proposal, :user_id => user.id
+
+    can [:create, :update], Proposal do |prop|
+      (session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)
+    end
+
+    can [:destroy], Proposal do |prop|
+      ((session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)) && \
+        (prop.positions.published.count == 0 || (prop.positions.published.count == 1 && prop.positions.published.first.user_id == user.id))
+    end
+
+    #Position
+    can [:create, :update, :destroy], Position, :user_id => user.id
+
+    #Point
+    can :read, Point, :published => 1
+    can :create, Point
+    can [:read, :update], Point, :user_id => user.id
+    can :destroy, Point do |pnt|
+      ((user.id.nil? && pnt.user_id.nil?) || (user.id = pnt.user_id)) && pnt.inclusions.count < 2
+    end
+
+    #Inclusion
+    can :create, Inclusion
+    can :destroy, Inclusion, :user_id => user.id
+
+    #Comment
+    if !user.id.nil?
+      can :create, Comment
+    end
   end
 end

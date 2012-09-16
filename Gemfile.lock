@@ -64,6 +64,7 @@ GEM
       oauth2 (>= 0.1.1)
     bootstrap-sass (2.1.0.0)
     builder (3.0.0)
+    cancan (1.6.8)
     chronic (0.6.7)
     cocaine (0.2.1)
     coffee-rails (3.2.2)
@@ -235,6 +236,7 @@ GEM
       json (~> 1.4)
     remotipart (1.0.2)
     rmagick (2.13.1)
+    role_model (0.7.1)
     ruby-hmac (0.4.0)
     ruby-openid (2.1.8)
     sass (3.1.20)
@@ -288,6 +290,7 @@ DEPENDENCIES
   aws-sdk
   backup (~> 3.0.24)
   bitly
+  cancan
   coffee-rails (~> 3.2.1)
   daemons
   dalli
@@ -313,6 +316,7 @@ DEPENDENCIES
   rails_admin
   reflect!
   rmagick
+  role_model
   sass-rails (~> 3.2.3)
   themes_for_rails
   therubyracer

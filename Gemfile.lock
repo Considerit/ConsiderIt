@@ -26,17 +26,6 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.1.3)
-    activeadmin (0.4.4)
-      bourbon (>= 1.0.0)
-      devise (>= 1.1.2)
-      fastercsv
-      formtastic (~> 2.1.1)
-      inherited_resources (>= 1.3.1)
-      jquery-rails (>= 1.0.0)
-      kaminari (>= 0.13.0)
-      meta_search (>= 0.9.2)
-      rails (>= 3.0.0)
-      sass (>= 3.1.0)
     activemodel (3.2.6)
       activesupport (= 3.2.6)
       builder (~> 3.0.0)
@@ -67,13 +56,13 @@ GEM
     backup (3.0.24)
       open4 (~> 1.3.0)
       thor (~> 0.14.6)
+    bbenezech-nested_form (0.0.6)
     bcrypt-ruby (3.0.1)
     bitly (0.6.2)
       crack (>= 0.1.4)
       httparty (>= 0.7.6)
       oauth2 (>= 0.1.1)
-    bourbon (2.1.1)
-      sass (>= 3.1)
+    bootstrap-sass (2.1.0.0)
     builder (3.0.0)
     chronic (0.6.7)
     cocaine (0.2.1)
@@ -110,7 +99,6 @@ GEM
       multi_json (~> 1.0)
     faraday (0.8.1)
       multipart-post (~> 1.1)
-    fastercsv (1.5.5)
     fog (1.4.0)
       builder
       excon (~> 0.14.0)
@@ -122,10 +110,7 @@ GEM
       nokogiri (~> 1.5.0)
       ruby-hmac
     formatador (0.2.3)
-    formtastic (2.1.1)
-      actionpack (~> 3.0)
     haml (3.1.6)
-    has_scope (0.5.1)
     hashie (1.2.0)
     hike (1.2.1)
     hpricot (0.8.6)
@@ -135,13 +120,13 @@ GEM
       multi_xml
     httpauth (0.1)
     i18n (0.6.0)
-    inherited_resources (1.3.1)
-      has_scope (~> 0.5.0)
-      responders (~> 0.6)
     journey (1.0.4)
     jquery-rails (2.0.2)
       railties (>= 3.2.0, < 5.0)
       thor (~> 0.14)
+    jquery-ui-rails (1.1.1)
+      jquery-rails
+      railties (>= 3.1.0)
     json (1.7.3)
     kaminari (0.13.0)
       actionpack (>= 3.0.0)
@@ -154,11 +139,6 @@ GEM
       treetop (~> 1.4.8)
     mailhopper (0.2.0)
       rails (>= 3.1.0)
-    meta_search (1.1.3)
-      actionpack (~> 3.1)
-      activerecord (~> 3.1)
-      activesupport (~> 3.1)
-      polyamorous (~> 0.5.0)
     mime-types (1.19)
     multi_json (1.3.6)
     multi_xml (0.5.1)
@@ -202,8 +182,6 @@ GEM
       activesupport (>= 3.0.0)
       cocaine (>= 0.0.2)
       mime-types
-    polyamorous (0.5.0)
-      activerecord (~> 3.0)
     polyglot (0.3.3)
     premailer (1.7.3)
       css_parser (>= 1.1.9)
@@ -217,6 +195,9 @@ GEM
     rack-openid (1.3.1)
       rack (>= 1.1.0)
       ruby-openid (>= 2.1.8)
+    rack-pjax (0.6.0)
+      nokogiri (~> 1.5)
+      rack (~> 1.3)
     rack-ssl (1.3.2)
       rack
     rack-test (0.6.1)
@@ -229,6 +210,19 @@ GEM
       activesupport (= 3.2.6)
       bundler (~> 1.0)
       railties (= 3.2.6)
+    rails_admin (0.0.5)
+      bbenezech-nested_form (~> 0.0.6)
+      bootstrap-sass (~> 2.0, >= 2.0.3)
+      builder (~> 3.0)
+      coffee-rails (~> 3.1)
+      haml (~> 3.1)
+      jquery-rails (>= 1.0.17)
+      jquery-ui-rails (>= 0.5, < 2)
+      kaminari (~> 0.12)
+      rack-pjax (~> 0.5)
+      rails (~> 3.1)
+      remotipart (~> 1.0)
+      sass-rails (~> 3.1)
     railties (3.2.6)
       actionpack (= 3.2.6)
       activesupport (= 3.2.6)
@@ -239,8 +233,7 @@ GEM
     rake (0.9.2.2)
     rdoc (3.12)
       json (~> 1.4)
-    responders (0.9.1)
-      railties (~> 3.1)
+    remotipart (1.0.2)
     rmagick (2.13.1)
     ruby-hmac (0.4.0)
     ruby-openid (2.1.8)
@@ -288,7 +281,6 @@ PLATFORMS
 
 DEPENDENCIES
   actionmailer-with-request
-  activeadmin
   acts-as-taggable-on
   acts_as_followable!
   acts_as_tenant
@@ -302,13 +294,11 @@ DEPENDENCIES
   delayed_job_active_record
   delayed_mailhopper
   devise
-  formtastic (~> 2.1.1)
   haml
   hpricot
   jquery-rails
   kaminari
   mailhopper
-  meta_search (>= 1.1.0.pre)
   mysql2
   newrelic_rpm
   omniauth
@@ -320,6 +310,7 @@ DEPENDENCIES
   paperclip
   premailer-rails3
   rails (~> 3.2)
+  rails_admin
   reflect!
   rmagick
   sass-rails (~> 3.2.3)

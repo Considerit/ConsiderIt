@@ -73,7 +73,7 @@ class Ability
 
       #Comment
       if !user.id.nil?
-        can :create, Comment
+        can :create, Commentable::Comment
       end
     end
   end

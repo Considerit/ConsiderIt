@@ -16,7 +16,7 @@ module Commentable
 
   module Commentable
     def is_commentable
-      has_many :comments, :as=>:commentable, :dependent=>:destroy
+      has_many :comments, :as=>:commentable, :class_name => 'Commentable::Comment', :dependent=>:destroy
       include InstanceMethods
     end
     module InstanceMethods
@@ -29,3 +29,4 @@ module Commentable
 end
 
 ActiveRecord::Base.extend Commentable::Commentable
+require 'commentable/routes'

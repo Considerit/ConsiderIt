@@ -8,14 +8,14 @@
 
 %li.new_comment
   
-  - if can? :create, Comment
+  - if can? :create, Commentable::Comment
     .comment_body
       .body_row
         .user
           = image_tag current_user.avatar.url(:medium), :alt => "your profile picture", :class => "avatar"
 
         .text    
-          = form_for :comment, :remote => true, :url => proposal_comments_path(@proposal.long_id) do |f|
+          = form_for :comment, :remote => true, :url => comments_path do |f|
             = f.hidden_field :proposal_id, :value=>@proposal.id
             
             = f.hidden_field :commentable_id, :value => commentable.id

@@ -20,7 +20,7 @@ ConsiderIt::Application.routes.draw do
       resources :inclusions, :only => [:create] 
     end
     #resources :point_similarities, :module => :admin
-    resources :comments, :only => [:index, :create]
+    
   end
 
   
@@ -38,7 +38,8 @@ ConsiderIt::Application.routes.draw do
 
   themes_for_rails # themes_for_rails gem routes 
   followable_routes # followable gem routes
-
+  commentable_routes
+  
   match "/feed" => "activities#feed"
 
   #match "/theme" => "theme#set", :via => :post

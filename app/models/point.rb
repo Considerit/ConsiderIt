@@ -18,7 +18,6 @@ class Point < ActiveRecord::Base
   belongs_to :position
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
-  has_many :comments, :as => :commentable, :dependent => :destroy
   
   validates :nutshell, :presence => true, :length => {:minimum => 3, :maximum => 140 }
 

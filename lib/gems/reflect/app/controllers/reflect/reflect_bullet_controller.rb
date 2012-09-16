@@ -89,7 +89,7 @@ class Reflect::ReflectBulletController < ApplicationController
   
   def has_permission?(verb, user, cur_bullet= nil, bullet_rev = nil)
     
-    comment = Comment.find(params[:comment_id])
+    comment = Commentable::Comment.find(params[:comment_id])
     commentAuthor = comment.user
 
     if bullet_rev.nil?
@@ -158,7 +158,7 @@ class Reflect::ReflectBulletController < ApplicationController
       )
       #new_rev.notify_parties(current_tenant, mail_options)
       new_rev.track!
-      comment = Comment.find(comment_id)
+      comment = Commentable::Comment.find(comment_id)
       if comment.respond_to? :follow!
         comment.follow!(user, :follow => true, :explicit => false)
       end

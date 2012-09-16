@@ -1,5 +1,5 @@
 class Reflect::ReflectBulletRevision < ActiveRecord::Base
-  belongs_to :comment
+  belongs_to :comment, :class_name => 'Commentable::Comment'
   belongs_to :user
   is_trackable
   belongs_to :bullet, :class_name => 'Reflect::ReflectBullet', :foreign_key => 'bullet_id' 

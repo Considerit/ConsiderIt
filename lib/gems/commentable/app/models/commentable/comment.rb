@@ -5,7 +5,7 @@
 # See https://github.com/tkriplean/ConsiderIt/ for details.
 #*********************************************
 
-class Comment < ActiveRecord::Base
+class Commentable::Comment < ActiveRecord::Base
   is_reflectable
   is_trackable
   is_followable

@@ -95,6 +95,8 @@ gem 'dalli'
 #custom gems
 gem "reflect", :path => "lib/gems/reflect"
 gem "acts_as_followable", :path => "lib/gems/acts_as_followable"
+gem "trackable", :path => "lib/gems/trackable"
+gem "commentable", :path => "lib/gems/commentable"
 
 
 # Bundle gems for the local environment. Make sure to

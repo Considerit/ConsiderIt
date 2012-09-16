@@ -4,9 +4,19 @@ PATH
     acts_as_followable (0.0.1)
 
 PATH
+  remote: lib/gems/commentable
+  specs:
+    commentable (0.0.1)
+
+PATH
   remote: lib/gems/reflect
   specs:
     reflect (0.0.1)
+
+PATH
+  remote: lib/gems/trackable
+  specs:
+    trackable (0.0.1)
 
 GEM
   remote: http://rubygems.org/
@@ -292,6 +302,7 @@ DEPENDENCIES
   bitly
   cancan
   coffee-rails (~> 3.2.1)
+  commentable!
   daemons
   dalli
   delayed_job_active_record
@@ -321,6 +332,7 @@ DEPENDENCIES
   themes_for_rails
   therubyracer
   thin
+  trackable!
   twitter
   uglifier
   whenever

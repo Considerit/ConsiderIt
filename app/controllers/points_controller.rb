@@ -28,7 +28,7 @@ class PointsController < ApplicationController
   def index
     @proposal = Proposal.find_by_long_id(params[:long_id])
     @user = current_user
-
+    
     if current_user
       @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 
     else

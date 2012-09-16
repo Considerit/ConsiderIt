@@ -10,20 +10,20 @@
 
 .proposal_prompt
 
-  - if @is_admin
+  - if @can_update
     .proposal_admin_operations
       .edit_page
         %a
           Edit proposal
           = image_tag 'edit_page.png'
-      - if @deletable
+      - if @can_destroy
         .delete_proposal
           = link_to "Delete proposal", proposal_path(@proposal.long_id, :authenticity_token => form_authenticity_token), :confirm => "Are you sure?", :method=>:delete
 
 
   .head.single
     %h3.banner
-      - if @is_admin
+      - if @can_update
         - @proposal.name = prompt
         = render :partial => 'proposals/admin_make_editable', :locals => { :field => :name}
 
@@ -37,7 +37,7 @@
   .description_wrapper
 
     .full_text
-      - if @is_admin
+      - if @can_update
         = render :partial => 'proposals/admin_make_editable', :locals => { :field => :description}
       - else
         = h simple_format(@proposal.description)

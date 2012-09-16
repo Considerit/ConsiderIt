@@ -25,10 +25,15 @@ class Ability
     #
     # See the wiki for details: https://github.com/ryanb/cancan/wiki/Defining-Abilities
 
-    can :read, :all                   # allow everyone to read everything
+    user_facing_models = [User, Point, Position, Inclusion, Proposal]
+    
+    can :read, user_facing_models                   # allow everyone to read everything
     if user && user.admin?
       can :access, :rails_admin       # only allow admin users to access Rails Admin
       can :dashboard                  # allow access to dashboard
+      can :manage, user_facing_models
+
+
     end
 
   end

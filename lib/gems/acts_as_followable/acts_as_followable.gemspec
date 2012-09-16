@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.summary     = "TODO: Summary of ActsAsFollowable."
   s.description = "TODO: Description of ActsAsFollowable."
 
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files       = `git ls-files`.split("\n")
   s.test_files = Dir["test/**/*"]
 
 end

@@ -7,7 +7,7 @@
 
 ConsiderIt::Application.routes.draw do
     
-  resources :point_links
+  mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
 
   root :to => "home#index"
 
@@ -69,8 +69,8 @@ ConsiderIt::Application.routes.draw do
   match '/home/study/:category' => "home#study", :via => :post  
   match '/admin/dashboard' => "admin/dashboard#index", :via => :get, :module => :admin  
 
-  ActiveAdmin.routes(self)
-
+  #ActiveAdmin.routes(self)
+   # Feel free to change '/admin' to any namespace you need.
 
 
   match '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/

@@ -381,12 +381,18 @@ ConsiderIt = {
           var $histogram = $j('#histogram');
           $histogram.toggleClass('hovering_over_point');
           var includers = $j.parseJSON($j(this).attr('includers')), selector = [];
-          
           for ( var i = 0; i < includers.length; i+=1 ) {
             selector.push('#user-' + includers[i] + ' .view_statement img');
           }
-          $j(selector.join(','), $histogram).toggleClass('includer_of_hovered_point');
-          $j('#user-' + $j(this).attr('user') + ' .view_statement img').toggleClass('author_of_hovered_point');
+          
+          if (event.type == 'mouseenter') {
+            $j(selector.join(','), $histogram).addClass('includer_of_hovered_point');
+            $j('#user-' + $j(this).attr('user') + ' .view_statement img').addClass('author_of_hovered_point');            
+          } else {
+            $j(selector.join(','), $histogram).removeClass('includer_of_hovered_point');
+            $j('#user-' + $j(this).attr('user') + ' .view_statement img').removeClass('author_of_hovered_point');                        
+          }
+
         }
       }
     });

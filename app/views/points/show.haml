@@ -42,11 +42,6 @@
             - else
               = full_text
 
-        -#.link
-          - if point.point_link_count > 0
-            %ul
-              = render :partial => 'point_links/show', :collection => point.point_links, :as => :point_link
-
 
       .nested_user
         - if point.hide_name

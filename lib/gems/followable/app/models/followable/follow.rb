@@ -5,7 +5,7 @@
 # See https://github.com/tkriplean/ConsiderIt/ for details.
 #*********************************************
 
-class ActsAsFollowable::Follow < ActiveRecord::Base
+class Followable::Follow < ActiveRecord::Base
 
   belongs_to :followable, :polymorphic=>true
   belongs_to :user

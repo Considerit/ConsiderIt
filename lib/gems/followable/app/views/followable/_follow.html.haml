@@ -11,18 +11,19 @@
 - title ||= "Get email notifications about this #{followable.class.name.downcase}"
 
 - if current_user
+  - #existing_follows = Followable::Follow.where(:followable_type => followable.class.name, :followable_id => followable.id, :user_id => current_user.id).first
+
   - existing_follows = followable.follows.where(:user_id => current_user.id).first
   - already_follows = !existing_follows.nil? && existing_follows.follow
-  - follow_path = obj.kind_of?(Array) ? obj.map{|x| x.class.to_s.singularize.downcase}.join('_') : obj.class.to_s.singularize.downcase 
-  - follow_path_params = obj
+
   .follow{ :class => "#{already_follows ? 'hide' : ''}"}
-    = form_for obj, :url => send("follow_#{follow_path}_path",*follow_path_params), :as => :follow, :method => :get, :remote => true do |f|
+    = form_for :follows, :url => follow_path, :as => :follow, :method => :get, :remote => true do |f|
       = f.hidden_field :followable_id, :value => followable.id
       = f.hidden_field :followable_type, :value => followable.class.name
       = f.submit prompt, :title => title, :class => 'button'
 
   .unfollow{ :class => "#{already_follows ? '' : 'hide'}"}
-    = form_for obj, :url => send("unfollow_#{follow_path}_path",*follow_path_params), :as => :follow, :method => :get, :remote => true do |f|
+    = form_for :follows, :url => unfollow_path, :as => :follow, :method => :get, :remote => true do |f|
       = f.hidden_field :followable_id, :value => followable.id
       = f.hidden_field :followable_type, :value => followable.class.name    
       = f.submit unfollow_prompt, :class => 'button'

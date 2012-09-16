@@ -41,7 +41,7 @@
       %li
         %a.settings
           Preferences
-      - if current_user.admin?
+      - if current_user.is_admin?
         %li
           = link_to 'Admin', rails_admin_path, :class => 'admin'
       %li

@@ -9,6 +9,11 @@ PATH
     followable (0.0.1)
 
 PATH
+  remote: lib/gems/moderatable
+  specs:
+    moderatable (0.0.1)
+
+PATH
   remote: lib/gems/reflect
   specs:
     reflect (0.0.1)
@@ -313,6 +318,7 @@ DEPENDENCIES
   jquery-rails
   kaminari
   mailhopper
+  moderatable!
   mysql2
   newrelic_rpm
   omniauth

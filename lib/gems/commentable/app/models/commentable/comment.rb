@@ -9,6 +9,7 @@ class Commentable::Comment < ActiveRecord::Base
   is_reflectable
   is_trackable
   is_followable
+  is_moderatable :text_fields => [:body]
 
   has_paper_trail :only => [:title, :body, :subject, :user_id]  
   

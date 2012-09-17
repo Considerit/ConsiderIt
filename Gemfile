@@ -97,6 +97,7 @@ gem "reflect", :path => "lib/gems/reflect"
 gem "followable", :path => "lib/gems/followable"
 gem "trackable", :path => "lib/gems/trackable"
 gem "commentable", :path => "lib/gems/commentable"
+gem "moderatable", :path => "lib/gems/moderatable"
 
 
 # Bundle gems for the local environment. Make sure to

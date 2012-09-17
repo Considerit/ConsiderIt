@@ -1,0 +1,100 @@
+-#*********************************************
+  For the ConsiderIt project.
+  Copyright (C) 2010 - 2012, University of Washington
+  Author: Travis Kriplean
+  Licensed under the AGPL
+  See https://github.com/tkriplean/ConsiderIt/ for details.
+  *********************************************
+
+#moderate
+  #header
+    %table
+      %tr
+        %td
+          %h1
+            Moderation Interface
+          .subheader
+            Fail posts with personal attacks, or wildly offtopic/inappropriate material.
+
+        %td
+          = check_box_tag 'hide_moderated', :checked => false
+          = label_tag 'hide_moderated', 'hide moderated'
+
+  #tabs
+    - @classes_to_moderate.each_with_index do |mc, idx|  
+      %a{:class => 'inactive', :class_name => mc.name}
+        %span.name
+          = mc.name.split('::').last
+        -#= surround '(', ')' do
+          = mc.all.count - @existing_moderations[mc.name].length    
+
+  
+  - @classes_to_moderate.each do |mc|
+    %div{:id => "moderate_#{mc.name}", :class_name => mc.name, :class => 'moderation_block'}
+
+      %table.table.table-condensed.table-striped
+        %thead
+          %tr
+            - mc.text_fields.each do |tf|
+              %th.header
+                = tf
+            %th.header
+              
+        %tbody
+          - mc.all.each do |obj|
+            - if obj.respond_to?(:published) && !obj.published
+              - next
+            %tr.moderation_row{:class => @existing_moderations[mc.name].has_key?(obj.id)? 'moderated' : 'not_moderated'}
+
+              - mc.text_fields.each do |tf|
+                %td
+                  = obj.read_attribute(tf)
+              %td.submit_col
+
+                = form_for :moderate, :url => moderate_create_path, :method => :get, :remote => true do |f|
+                  = f.hidden_field :moderatable_id, :value => obj.id
+                  = f.hidden_field :moderatable_type, :value => obj.class.name
+                  = f.hidden_field :moderation_status, :value => @existing_moderations[mc.name].has_key?(obj.id) ? @existing_moderations[mc.name][obj.id].status : nil
+
+
+                  %button.pass{:class => @existing_moderations[mc.name].has_key?(obj.id) && @existing_moderations[mc.name][obj.id].status == 1 ? 'selected' : ''}
+                    Pass
+                  %button.fail{:class => @existing_moderations[mc.name].has_key?(obj.id) && @existing_moderations[mc.name][obj.id].status == 0 ? 'selected' : ''}
+                    Fail
+
+                  = f.submit 'done', :class => 'hide'
+
+
+:javascript
+  $j('#moderate .table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, height: 700 });
+
+  $j('#moderate #tabs').on('click', 'a.inactive', function(){
+    var cls = $j(this).attr('class_name');
+    $j(this).siblings('.active').toggleClass('active inactive');
+    $j(this).toggleClass('active inactive');
+    $j('#moderate .moderation_block').hide();
+    $j('#moderate .moderation_block[class_name="' + cls + '"]').show();
+  });
+
+  $j('#moderate #tabs a:first').trigger('click');
+
+  $j('#moderate #header #hide_moderated').click(function(){
+    $j('#moderate .moderation_block').toggleClass('hide_moderated');
+  });
+
+  if($j('#moderate #header #hide_moderated:checked').length > 0) {
+    $j('#moderate .moderation_block').toggleClass('hide_moderated');
+  }
+  
+  $j('#moderate').on('ajax:success', '.moderation_row form', function(event, data){
+      $j(this).parents('.moderation_row').toggleClass('moderated not_moderated');
+  }); 
+
+  $j('#moderate').on('click', '.moderation_row button', function(){
+    $j(this).addClass('selected'); 
+    $j(this).siblings('button').removeClass('selected');    
+    $j(this).parents('form:first').find('#moderate_moderation_status').value($j(this).hasClass('pass') ? 1 : 0);
+    $j(this).parents('form:first').find('input[type="submit"]').trigger('click');
+
+  });
+

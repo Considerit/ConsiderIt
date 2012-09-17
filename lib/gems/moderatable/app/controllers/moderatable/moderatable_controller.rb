@@ -20,7 +20,7 @@ class Moderatable::ModeratableController < ApplicationController
   def create
     authorize! :create, Moderatable::Moderation
 
-    params[:moderate][:status] = Moderatable::Moderation.STATUSES.index(params[:moderate].delete(:moderation_status))
+    #params[:moderate][:status] = Moderatable::Moderation.STATUSES.index(params[:moderate].delete(:moderation_status))
     params[:moderate][:user_id] = current_user.id
 
     moderation = Moderatable::Moderation.where(:moderatable_type => params[:moderate][:moderatable_type], :moderatable_id => params[:moderate][:moderatable_id], :user_id => current_user.id).first

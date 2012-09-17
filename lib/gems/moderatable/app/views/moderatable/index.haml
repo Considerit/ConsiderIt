@@ -44,7 +44,7 @@
           - mc.all.each do |obj|
             - if obj.respond_to?(:published) && !obj.published
               - next
-            %tr.moderation_row{:class => @existing_moderations[mc.name].has_key?(obj.id)? 'moderated' : 'not_moderated'}
+            %tr.moderation_row{:class => @existing_moderations[mc.name].has_key?(obj.id)? "moderated #{@existing_moderations[mc.name][obj.id].status == 1 ? 'passed' : 'failed'}" : 'not_moderated'}
 
               - mc.text_fields.each do |tf|
                 %td
@@ -54,7 +54,7 @@
                 = form_for :moderate, :url => moderate_create_path, :method => :get, :remote => true do |f|
                   = f.hidden_field :moderatable_id, :value => obj.id
                   = f.hidden_field :moderatable_type, :value => obj.class.name
-                  = f.hidden_field :moderation_status, :value => @existing_moderations[mc.name].has_key?(obj.id) ? @existing_moderations[mc.name][obj.id].status : nil
+                  = f.hidden_field :status, :value => @existing_moderations[mc.name].has_key?(obj.id) ? @existing_moderations[mc.name][obj.id].status : nil
 
 
                   %button.pass{:class => @existing_moderations[mc.name].has_key?(obj.id) && @existing_moderations[mc.name][obj.id].status == 1 ? 'selected' : ''}
@@ -87,13 +87,16 @@
   }
   
   $j('#moderate').on('ajax:success', '.moderation_row form', function(event, data){
-      $j(this).parents('.moderation_row').toggleClass('moderated not_moderated');
+      //$j(this).parents('.moderation_row').toggleClass('moderated not_moderated');
   }); 
 
   $j('#moderate').on('click', '.moderation_row button', function(){
     $j(this).addClass('selected'); 
-    $j(this).siblings('button').removeClass('selected');    
-    $j(this).parents('form:first').find('#moderate_moderation_status').value($j(this).hasClass('pass') ? 1 : 0);
+    $j(this).siblings('button').removeClass('selected');
+    $j(this).parents('.moderation_row').addClass($j(this).hasClass('pass') ? 'passed' : 'failed');
+    $j(this).parents('form:first').removeClass('not_moderated');    
+    $j(this).parents('form:first').find('#moderate_status').val($j(this).hasClass('pass') ? 1 : 0);
+
     $j(this).parents('form:first').find('input[type="submit"]').trigger('click');
 
   });

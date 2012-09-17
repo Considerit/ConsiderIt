@@ -1,0 +1,112 @@
+
+#moderate
+  font-size: 75%
+  padding: 50px
+
+  #header
+    margin-bottom: 20px
+    
+    td
+      padding: 8px
+      vertical-align: bottom
+
+
+    h1
+      font-size: 200%
+
+    .subheader
+
+  #tabs
+    margin-left: 15px
+    a 
+      font-size: 145%
+      padding: 5px 10px
+      margin-right: 16px
+      display: inline-block
+      position: relative
+      top: 1px
+
+      cursor: pointer
+      border-radius: 8px 8px 0 0
+      border: 1px solid #ddd
+      &.active
+        border-bottom-color: white
+        background-color: transparent
+      &.inactive
+        color: #666
+        background-color: #ddd
+
+      .name
+        font-weight: bold
+
+
+  .moderation_block
+    border: 1px solid #ddd
+    border-radius: 8px
+    padding: 0 16px
+
+    &.hide_moderated
+      .moderation_row.moderated
+        display: none
+
+    .moderation_row
+      &.moderated
+        background-color: #eed
+        td
+          background-color: #eed
+
+
+      .submit_col
+        padding-right: 20px
+        min-width: 150px
+
+
+      button
+        display: inline-block
+        margin: 2px 5px
+        padding: 2px 8px
+        cursor: pointer
+        color: #888
+        background-color: #efefef
+        border: 1px solid
+        border-radius: 5px
+        border-color: white #ccc #ccc white
+        box-shadow: 0px 1px 2px rgba(0,0,0,.4)
+
+        &.selected
+          border-color: #ccc white white #ccc
+          box-shadow: inset 0px 1px 6px rgba(0, 0, 0, .2)
+
+
+  .table, .fht-table
+    width: 95%
+
+    td
+      max-width: 400px
+      overflow: hidden
+      border-top: 1px solid #ddd
+      line-height: 20px
+      padding: 8px
+      text-align: left
+      vertical-align: top
+    th
+      text-transform: capitalize
+      font-size: 125%
+      font-weight: bold
+      padding: 8px 8px 1px 8px
+      border-bottom: 1px solid #ddd
+
+  .table-condensed 
+    td
+      padding: 4px 5px
+
+  .table-striped tbody tr:nth-child(2n+1) 
+    td
+      background-color: #eee
+
+
+  .fht-table-wrapper .fht-fixed-body .fht-tbody, .fht-table-wrapper .fht-tbody
+    overflow-x: hidden
+
+
+

@@ -36,9 +36,10 @@ ConsiderIt::Application.routes.draw do
     match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
   end
 
-  themes_for_rails # themes_for_rails gem routes 
-  followable_routes # followable gem routes
+  themes_for_rails 
+  followable_routes
   commentable_routes
+  moderatable_routes
   
   match "/feed" => "activities#feed"
 

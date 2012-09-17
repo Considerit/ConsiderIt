@@ -43,7 +43,13 @@
           Preferences
       - if current_user.is_admin?
         %li
-          = link_to 'Admin', rails_admin_path, :class => 'admin'
+          = link_to 'Manage', rails_admin_path, :class => 'admin'
+      - if current_user.is_admin? || current_user.has_role?(:moderator)
+        %li
+          = link_to 'Moderate', moderate_path, :class => 'moderate'
+      - if current_user.is_admin? || current_user.has_role?(:developer)
+        %li
+          = link_to 'Tune', '/newrelic', :target => "_blank"
       %li
         = link_to 'Log Out', destroy_user_session_path, :class => 'logout'
     .clear

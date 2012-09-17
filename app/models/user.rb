@@ -38,7 +38,7 @@ class User < ActiveRecord::Base
   validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
   after_create :add_token
 
-  roles :superadmin, :admin, :analyst, :moderator, :manager, :evaluator
+  roles :superadmin, :admin, :analyst, :moderator, :manager, :evaluator, :developer
 
   has_attached_file :avatar, 
       :styles => { 

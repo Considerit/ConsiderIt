@@ -34,12 +34,16 @@ class Ability
     if user.has_role? :superadmin
       can :manage, :all
     end
+
+    if user.has_role? :moderator
+      can [:index, :create], Moderatable::Moderation
+    end
+
     #Rails_admin
     if user.is_admin?
       can :access, :rails_admin       # only allow admin users to access Rails Admin
       can :dashboard                  # allow access to dashboard
       can :manage, user_facing_models
-
       can [:index, :create, :update, :destroy, :read], :all
     else
       #Proposal

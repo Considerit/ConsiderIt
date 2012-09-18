@@ -42,7 +42,7 @@ namespace :alerts do
           end
         end
         moderators.each do |user|
-          AlertMailer.content_to_moderate(user, accnt)
+          AlertMailer.content_to_moderate(user, accnt).deliver!
         end
       end
     end

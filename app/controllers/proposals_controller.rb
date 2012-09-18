@@ -69,7 +69,7 @@ class ProposalsController < ApplicationController
     if !!request.xhr?
       @segments = Array.new(7)
       (0..6).each do |bucket|
-        qry = @proposal.points.published.includes(:user).ranked_for_stance_segment(bucket)
+        qry = @proposal.points.viewable.includes(:user).ranked_for_stance_segment(bucket)
         @segments[bucket] = [qry.pros.page( 1 ).per( POINTS_PER_PAGE ),
           qry.cons.page( 1 ).per( POINTS_PER_PAGE )]
       end
@@ -87,8 +87,8 @@ class ProposalsController < ApplicationController
       @title = "#{@proposal.short_name}"
       @keywords = "#{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"      
       @positions = @proposal.positions.published.includes(:user)
-      @pro_points = @proposal.points.published.includes(:user).pros.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
-      @con_points = @proposal.points.published.includes(:user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
+      @pro_points = @proposal.points.viewable.includes(:user).pros.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
+      @con_points = @proposal.points.viewable.includes(:user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
 
     end
  

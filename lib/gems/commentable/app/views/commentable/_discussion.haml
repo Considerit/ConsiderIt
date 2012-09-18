@@ -11,7 +11,6 @@
     Discussion
 
   %ul.comment_section
-    - pp comments
     = render :partial => "commentable/comment", :collection => comments, :as => :comment, :locals => { :light_background => light_background }
     
     = render :partial => "commentable/new", :locals => { :commentable => commentable, :context => context, :comments => comments }

@@ -26,6 +26,8 @@ class ApplicationController < ActionController::Base
       current_tenant.host = request.host
       current_tenant.host_with_port = request.host_with_port
       current_tenant.save
+    else
+      pp current_tenant.host
     end
 
     super

@@ -23,6 +23,8 @@ class Proposal < ActiveRecord::Base
   
   before_save :extract_tags
 
+  scope :active, where( :active => true )
+
   def format_description
     return self.description.split('\n')
   end
@@ -177,7 +179,7 @@ class Proposal < ActiveRecord::Base
   def self.update_scores
     # for now, order by activity; later, incorporate trending    
 
-    Proposal.all.each do |p|
+    Proposal.active.each do |p|
       p.update_metrics
       p.save
     end

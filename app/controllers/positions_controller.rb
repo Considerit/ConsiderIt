@@ -200,9 +200,9 @@ protected
     # the following code does not select the unpublished points by the current user or that are stored in session['written_points'].
     # This is an edge case. We should allow users to delete a point before it is published/included by others, which should further
     # relegate this issue to an insignificant edge case. 
-    @pro_points = @proposal.points.published.includes(:user).pros.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
+    @pro_points = @proposal.points.viewable.includes(:user).pros.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
                     ranked_persuasiveness.page( 1 ).per( POINTS_PER_PAGE )    
-    @con_points = @proposal.points.published.includes(:user).cons.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
+    @con_points = @proposal.points.viewable.includes(:user).cons.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys).
                     ranked_persuasiveness.page( 1 ).per( POINTS_PER_PAGE )
 
     (@pro_points + @con_points).each do |pnt|

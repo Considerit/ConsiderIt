@@ -6,11 +6,16 @@
 #*********************************************
 
 class Moderatable::Moderation < ActiveRecord::Base
+  class_attribute :classes_to_moderate
+  self.classes_to_moderate = [Point, Commentable::Comment]
+
   class_attribute :STATUSES
   self.STATUSES = %w(fails passes)
 
   belongs_to :moderatable, :polymorphic=>true
   belongs_to :user
+  
+  acts_as_tenant(:account)
 
   def self.build_from(obj, user_id, status)
     c = self.new

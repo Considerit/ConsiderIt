@@ -10,7 +10,9 @@ class Point < ActiveRecord::Base
   is_commentable
   is_trackable
   is_followable
-  is_moderatable :text_fields => [:nutshell, :text]
+  is_moderatable :text_fields => [:nutshell, :text], :moderatable_objects => lambda {
+    Point.joins(:proposal).published.where(:proposals => {:active => true})
+  }
   
   has_paper_trail :only => [:hide_name, :published, :is_pro, :text, :nutshell, :user_id]  
   
@@ -28,6 +30,7 @@ class Point < ActiveRecord::Base
   @@per_page = 4  
 
   scope :published, where( :published => true )
+  scope :viewable, where( 'published=1 AND (moderation_status IS NULL OR moderation_status=1)')
   #default_scope where( :published => true )  
   
   scope :pros, where( :is_pro => true )
@@ -164,6 +167,7 @@ class Point < ActiveRecord::Base
   # expensive, so should only be called periodically by cron job
   def self.update_relative_scores
     num_inclusions_per_point = {}
+
     Inclusion.select("COUNT(*) AS cnt, point_id AS pnt").group(:point_id).each do |row|
       num_inclusions_per_point[row.pnt.to_i] = row.cnt.to_i
     end
@@ -175,14 +179,14 @@ class Point < ActiveRecord::Base
 
     Account.all.each do |accnt|
 
-      accnt.proposals.select(:id).each do |proposal|
+      accnt.proposals.active.select(:id).each do |proposal|
 
         
         # Point ranking across the metrics is done separately for pros and cons,
         # fixed on a particular Proposal
         point_groups = [
-          proposal.points.published.pros.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").all,
-          proposal.points.published.cons.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").all
+          proposal.points.viewable.pros.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").all,
+          proposal.points.viewable.cons.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").all
         ]
 
         point_groups.each do |group|        

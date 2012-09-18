@@ -62,7 +62,7 @@ class Ability
       can [:create, :update, :destroy], Position, :user_id => user.id
 
       #Point
-      can :read, Point, :published => true
+      can :read, Point, :published => true, :moderation_status => 1
       can :create, Point
       can [:read, :update], Point do |pnt|
         (!pnt.published && user.id.nil? && pnt.user_id.nil?) || (user.id = pnt.user_id)

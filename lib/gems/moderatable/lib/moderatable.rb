@@ -24,6 +24,9 @@ module Moderatable
       class_attribute :text_fields
       self.text_fields = options[:text_fields]
 
+      class_attribute :moderatable_objects
+      self.moderatable_objects = options[:moderatable_objects]
+
       include InstanceMethods
     end
     module InstanceMethods

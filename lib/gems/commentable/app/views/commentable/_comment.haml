@@ -6,42 +6,22 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
-- light_background ||= false
-
 %li.comment{ :id=>"comment-#{comment.id}" }
   
   .comment_body
-    - if comment.violation || comment.user.nil?
-      .body_row
-        .user
-          - if comment.user.nil?
-            .avatar
-            .username
-              Account was deleted
-          - else
-            .avatar
-              - if comment.user.avatar
-                = image_tag comment.user.avatar.url(true ? :medium_dark : :medium), :alt => "#{h comment.user.username}'s profile picture"
-            .username
-              = h comment.user.username
-        .text.comment_text    
-              
-          .body  
-            This comment has been removed because it violates one or more of our community rules, such as containing advertising or other inappropriate material.
-        .clear
-          
-    - else
-      .body_row
-        .user{ :user => comment.user.id }
-        .text.comment_text   
-          .body
-            - if comment.user.avatar
-              = image_tag comment.user.avatar.url(true ? :medium_dark : :medium), :alt => "#{h comment.user.username}'s profile picture", :class => 'avatar'
+    .body_row
+      .user{ :user => comment.user.id }
+      .text.comment_text   
+        .body
+          - if comment.user.avatar
+            = image_tag comment.user.avatar.url(true ? :medium_dark : :medium), :alt => "#{h comment.user.username}'s profile picture", :class => 'avatar'
 
+          - if comment.moderation_status == 0
+            This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.
+          - else
             = h simple_format(comment.body)
 
-            .username.exclude_from_reflect 
-              &ndash; #{h comment.user.username}
+          .username.exclude_from_reflect 
+            &ndash; #{h comment.user.username}
 
-        .clear
-          
+      .clear

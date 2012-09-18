@@ -9,7 +9,9 @@ class Commentable::Comment < ActiveRecord::Base
   is_reflectable
   is_trackable
   is_followable
-  is_moderatable :text_fields => [:body]
+  is_moderatable :text_fields => [:body], :moderatable_objects => lambda {
+    Commentable::Comment.where('id > -1') #tacked on this where in order to enable chaining
+  }
 
   has_paper_trail :only => [:title, :body, :subject, :user_id]  
   

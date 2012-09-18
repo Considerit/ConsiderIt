@@ -41,10 +41,10 @@
             %th.header
               
         %tbody
-          - mc.all.each do |obj|
-            - if obj.respond_to?(:published) && !obj.published
-              - next
-            %tr.moderation_row{:class => @existing_moderations[mc.name].has_key?(obj.id)? "moderated #{@existing_moderations[mc.name][obj.id].status == 1 ? 'passed' : 'failed'}" : 'not_moderated'}
+          - @objs_to_moderate[mc.name].each do |obj|
+            - existing_moderation = @existing_moderations[mc.name].has_key?(obj.id)
+
+            %tr.moderation_row{:class => existing_moderation ? "moderated #{@existing_moderations[mc.name][obj.id].status == 1 ? 'passed' : 'failed'}" : 'not_moderated'}
 
               - mc.text_fields.each do |tf|
                 %td
@@ -54,15 +54,19 @@
                 = form_for :moderate, :url => moderate_create_path, :method => :get, :remote => true do |f|
                   = f.hidden_field :moderatable_id, :value => obj.id
                   = f.hidden_field :moderatable_type, :value => obj.class.name
-                  = f.hidden_field :status, :value => @existing_moderations[mc.name].has_key?(obj.id) ? @existing_moderations[mc.name][obj.id].status : nil
+                  = f.hidden_field :status, :value => existing_moderation ? @existing_moderations[mc.name][obj.id].status : nil
 
 
-                  %button.pass{:class => @existing_moderations[mc.name].has_key?(obj.id) && @existing_moderations[mc.name][obj.id].status == 1 ? 'selected' : ''}
+                  %button.pass{:class => existing_moderation && @existing_moderations[mc.name][obj.id].status == 1 ? 'selected' : ''}
                     Pass
-                  %button.fail{:class => @existing_moderations[mc.name].has_key?(obj.id) && @existing_moderations[mc.name][obj.id].status == 0 ? 'selected' : ''}
+                  %button.fail{:class => existing_moderation && @existing_moderations[mc.name][obj.id].status == 0 ? 'selected' : ''}
                     Fail
 
                   = f.submit 'done', :class => 'hide'
+
+                  - if existing_moderation && @existing_moderations[mc.name][obj.id].user_id != current_user.id
+                    .by
+                      Moderated by #{@existing_moderations[mc.name][obj.id].user.name}
 
 
 :javascript
@@ -93,7 +97,7 @@
   $j('#moderate').on('click', '.moderation_row button', function(){
     $j(this).addClass('selected'); 
     $j(this).siblings('button').removeClass('selected');
-    $j(this).parents('.moderation_row').addClass($j(this).hasClass('pass') ? 'passed' : 'failed');
+    $j(this).parents('.moderation_row').removeClass('passed failed').addClass($j(this).hasClass('pass') ? 'passed' : 'failed');
     $j(this).parents('form:first').removeClass('not_moderated');    
     $j(this).parents('form:first').find('#moderate_status').val($j(this).hasClass('pass') ? 1 : 0);
 

@@ -34,7 +34,7 @@ class InclusionsController < ApplicationController
     end
 
     @page = params[:page].to_i
-    candidate_next_points = @point.is_pro ? @proposal.points.published.pros : @proposal.points.published.cons
+    candidate_next_points = @point.is_pro ? @proposal.points.viewable.pros : @proposal.points.viewable.cons
 
     session[@proposal.id][:included_points][params[:point_id]] = 1
 
@@ -72,7 +72,7 @@ class InclusionsController < ApplicationController
     authorize! :destroy, @inc
 
     @page = params[:page].to_i
-    candidate_next_points = @point.is_pro ? @proposal.points.published.pros : @proposal.points.published.cons
+    candidate_next_points = @point.is_pro ? @proposal.points.viewable.pros : @proposal.points.viewable.cons
     
     points = candidate_next_points.not_included_by(
       current_user, 

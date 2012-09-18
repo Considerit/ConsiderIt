@@ -19,6 +19,11 @@ every 5.minutes do
   rake 'compute_metrics'
 end
 
+every 12.hours do
+  rake 'alerts:check_moderation'
+end
+
+#TODO: check to make sure this is working
 # backup database
 every :week do
   envcommand 'backup perform --trigger my_backup'

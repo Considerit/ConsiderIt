@@ -4,6 +4,7 @@ class CreateModerationTable < ActiveRecord::Migration
     create_table :moderations do |t|
 
       t.references :user
+      t.references :account
       t.references :moderatable, :polymorphic => true
       t.integer :status
 

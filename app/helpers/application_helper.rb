@@ -44,12 +44,12 @@ module ApplicationHelper
     #proposals += Proposal.where(:domain_short => 'WA state').order(:designator)
     
 
-    return Proposal.all
+    return Proposal.active
 
   end
 
   def get_proposals_by_rank(metric = 'activity')
-    proposals = Proposal.order("#{metric} desc")
+    proposals = Proposal.active.order("#{metric} desc")
     proposals
   end
 
@@ -59,12 +59,12 @@ module ApplicationHelper
     if session.has_key?(:domain)
      domain = Domain.find(session[:domain])
      domain.domain_maps.each do |dm|
-       proposals.push(dm.proposal)
+       proposals.push(dm.proposal) if dm.proposal.active
      end
     end
     # TODO: add a "show_all, :integer" field to Option 
     # that can be queried here instead
-    proposals += Proposal.where(:domain => 'all').order(:designator)
+    proposals += Proposal.active.where(:domain => 'all').order(:designator)
     proposals
   end
 

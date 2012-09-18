@@ -25,8 +25,8 @@
       %a{:class => 'inactive', :class_name => mc.name}
         %span.name
           = mc.name.split('::').last
-        -#= surround '(', ')' do
-          = mc.all.count - @existing_moderations[mc.name].length    
+        = surround '(', ')' do
+          = @objs_to_moderate[mc.name].length - @existing_moderations[mc.name].length
 
   
   - @classes_to_moderate.each do |mc|

@@ -4,7 +4,6 @@ class Moderatable::ModeratableController < ApplicationController
   def index
     authorize! :index, Moderatable::Moderation
     @classes_to_moderate = Moderatable::Moderation.classes_to_moderate
-    @classes_to_moderate.each
 
     @existing_moderations = {}
     @objs_to_moderate = {}
@@ -26,7 +25,7 @@ class Moderatable::ModeratableController < ApplicationController
     #params[:moderate][:status] = Moderatable::Moderation.STATUSES.index(params[:moderate].delete(:moderation_status))
     params[:moderate][:user_id] = current_user.id
     params[:moderate][:account_id] = current_tenant.id
-    
+
     moderation = Moderatable::Moderation.where(:moderatable_type => params[:moderate][:moderatable_type], :moderatable_id => params[:moderate][:moderatable_id], :user_id => current_user.id).first
     
     if moderation

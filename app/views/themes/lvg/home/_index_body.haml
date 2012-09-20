@@ -3,47 +3,38 @@
   = render :partial => "home/follow"
 
   #people
-    - users = get_users(100)
-    - if users && users.length > 75
-      .row
-        - users[0..24].each do |user|
-          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-      .row
-        - users[25..49].each do |user|
-          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-
-      // .row.fl
-      //   - users[26..30].each do |user|
-      //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-      // .row.fr
-      //   - users[35..39].each do |user|
-      //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-      // .clear    
-
-      .row
-        - users[50..74].each do |user|
-          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-      .row
-        - users[75..99].each do |user|
-          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+    - rows = 5
+    - users_per_row = 30
+    - users = get_users(rows * users_per_row)
+    - if users && users.length > 0.75 * rows * users_per_row
+      - (0..rows-1).each do |row|
+        .row{:row => row}
+          - users[row*users_per_row..(row+1)*users_per_row-1].each do |user|
+            .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
 
   #logo
     = image_tag current_theme_image_path "logo_large.png"
 
-  #value 
-  
-    .first
-      A voters guide written by the people, for the people.
+  #background
 
-    .valueprop
-      We are a better Washington when we think together. 
+  #value   
+    .fl
+      By the people. 
+    .fr
+      For the people.
 
+
+       
 
 #active_proposals
-  %h2.get_started
-    Get started by clicking a ballot measure below. Or watch a 
-    %a.video
-      video tutorial.
+  .banner
+    %h1#tagline
+      A guide springing from the minds of #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} voters
+
+    %h2.get_started
+      Get started by clicking a ballot measure below. Or watch a 
+      %a.video
+        video tutorial.
   
   -# = render :partial => "proposals/new"
   = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false }
@@ -93,11 +84,37 @@
 
 :javascript
   $j(document).ready(function(){
-    var logo_cell = $j('#masthead .logo_cell').hide();
+    //var logo_cell = $j('#masthead .logo_cell').hide();
 
     $j('body').on('click', '#active_proposals a.video', function() { 
       video_window(450, 550, 'home/videos#console', 'LVG videos');
     });
+  });
+
+  $j('#people').on('hover', '.img', function(e){
+    
+    if(e.type == 'mouseenter') {
+      var to_hover = [];
+      var idx = $j(this).index();
+      var area = 2;
+
+      var row = parseInt($j(this).parent().attr('row'));
+
+      var first = Math.max(row-area,0);
+      var rows = $j('#people').children().slice(first, row + area + 1);
+
+      for (var i = 0; i < rows.length; i+=1) {
+        first = Math.max(idx-area,0);
+        to_hover.push.apply(to_hover, $j(rows[i]).children().slice(first, idx+area+1));
+      }
+
+
+      $j(to_hover).addClass('hovered');
+
+    } else {
+      $j(this).parent().parent().find('.img.hovered').removeClass('hovered');
+    }
+
   });
 
 / :javascript

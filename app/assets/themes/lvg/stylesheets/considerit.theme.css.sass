@@ -226,13 +226,21 @@ html
       display: inline-block
       text-align: center
       width: 160px
+      +linear-gradient(desaturate($background_color, 30%), $background_color)
 
       .number
         +font-size(4)
 
+      &:hover
+        +linear-gradient(lighten($background_color, 15%), $background_color)
+
+
       > a
         width: 100%
         padding: $vertical_baseline 0
+        color: #ddd
+        &:hover
+          color: white
 
 
   li.proposal_item.local

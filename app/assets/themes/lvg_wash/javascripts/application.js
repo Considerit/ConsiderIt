@@ -1,0 +1,4 @@
+/*
+*= require lvg/javascripts/application
+*/
+

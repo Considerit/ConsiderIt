@@ -77,7 +77,13 @@ private
       session["user_theme"] = current_tenant.theme
     end
     
+    if !current_tenant.inherited_themes.nil?
+      current_tenant.inherited_themes.split(':').each do |parent_theme|
+        add_theme_view_path_for(parent_theme)
+      end
+    end
     set_theme(session["user_theme"])
+
   end
 
   def store_location(path)

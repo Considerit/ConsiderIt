@@ -70,38 +70,41 @@
 
 
 :javascript
-  $j('#moderate .table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, height: 700 });
+  $j(document).ready(function(){
 
-  $j('#moderate #tabs').on('click', 'a.inactive', function(){
-    var cls = $j(this).attr('class_name');
-    $j(this).siblings('.active').toggleClass('active inactive');
-    $j(this).toggleClass('active inactive');
-    $j('#moderate .moderation_block').hide();
-    $j('#moderate .moderation_block[class_name="' + cls + '"]').show();
-  });
+    $j('#moderate .table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, height: 700 });
 
-  $j('#moderate #tabs a:first').trigger('click');
+    $j('#moderate #tabs').on('click', 'a.inactive', function(){
+      var cls = $j(this).attr('class_name');
+      $j(this).siblings('.active').toggleClass('active inactive');
+      $j(this).toggleClass('active inactive');
+      $j('#moderate .moderation_block').hide();
+      $j('#moderate .moderation_block[class_name="' + cls + '"]').show();
+    });
 
-  $j('#moderate #header #hide_moderated').click(function(){
-    $j('#moderate .moderation_block').toggleClass('hide_moderated');
-  });
+    $j('#moderate #tabs a:first').trigger('click');
 
-  if($j('#moderate #header #hide_moderated:checked').length > 0) {
-    $j('#moderate .moderation_block').toggleClass('hide_moderated');
-  }
-  
-  $j('#moderate').on('ajax:success', '.moderation_row form', function(event, data){
-      //$j(this).parents('.moderation_row').toggleClass('moderated not_moderated');
-  }); 
+    $j('#moderate #header #hide_moderated').click(function(){
+      $j('#moderate .moderation_block').toggleClass('hide_moderated');
+    });
 
-  $j('#moderate').on('click', '.moderation_row button', function(){
-    $j(this).addClass('selected'); 
-    $j(this).siblings('button').removeClass('selected');
-    $j(this).parents('.moderation_row').removeClass('passed failed').addClass($j(this).hasClass('pass') ? 'passed' : 'failed');
-    $j(this).parents('form:first').removeClass('not_moderated');    
-    $j(this).parents('form:first').find('#moderate_status').val($j(this).hasClass('pass') ? 1 : 0);
+    if($j('#moderate #header #hide_moderated:checked').length > 0) {
+      $j('#moderate .moderation_block').toggleClass('hide_moderated');
+    }
+    
+    $j('#moderate').on('ajax:success', '.moderation_row form', function(event, data){
+        //$j(this).parents('.moderation_row').toggleClass('moderated not_moderated');
+    }); 
 
-    $j(this).parents('form:first').find('input[type="submit"]').trigger('click');
+    $j('#moderate').on('click', '.moderation_row button', function(){
+      $j(this).addClass('selected'); 
+      $j(this).siblings('button').removeClass('selected');
+      $j(this).parents('.moderation_row').removeClass('passed failed').addClass($j(this).hasClass('pass') ? 'passed' : 'failed');
+      $j(this).parents('form:first').removeClass('not_moderated');    
+      $j(this).parents('form:first').find('#moderate_status').val($j(this).hasClass('pass') ? 1 : 0);
 
+      $j(this).parents('form:first').find('input[type="submit"]').trigger('click');
+
+    });
   });
 

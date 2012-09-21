@@ -1,6 +1,6 @@
 require 'date'
 
-class Admin::AnalyticsController < ApplicationController
+class AnalyticsController < ApplicationController
   
   def index
     @series = []

@@ -1,59 +1,90 @@
+- is_cali = current_tenant.identifier == 'cali'
 
-%table
-  %tr
-    %th.powered
-      Powered by 
-    %th{:colspan => 2}
-      Brought to you by
-    %th{:colspan => 3}
-      Stay in touch
-  %tr
-    %td
-      = link_to image_tag('directrep/images/chalkboardit.png'), 'http://chalkboard.it', :target => '_blank', :title => 'Powered by Chalkboard It'
-    %td
-      = link_to image_tag('lvg/images/cityclub.jpg', :class => 'cityclub'), 'http://www.seattlecityclub.org/', :target => '_blank', :title => 'Brought to you by Seattle City Club'
-    %td
-      = link_to image_tag('lvg/images/UW_logo_small.png', :class => 'uw'), 'http://www.washington.edu/', :target => '_blank', :title => 'Brought to you by University of Washington'
-    %td.contact
-      - if current_tenant.socmedia_facebook_page
-        %span.facebook
+#footer_segments
+  #service
 
-          %iframe{:src => "//www.facebook.com/plugins/like.php?href=#{current_tenant.socmedia_facebook_page}&send=false&layout=button_count&width=100&show_faces=false&action=like&colorscheme=light&font=lucida+grande", :scrolling => "no", :frameborder => "0", :style => "border:none; overflow:hidden; width:90px;", :allowTransparency => "true"}
-    %td.contact
-      - if current_tenant.socmedia_twitter_account
-        %span.twitter
+    %h3.what
+      A free, non-partisan service
 
-          %a.twitter-follow-button{:href => "https://twitter.com/#{current_tenant.socmedia_twitter_account}", "data-show-count".intern => "false", "data-width".intern => "90px", "data-show-screen-name".intern => "true"}
-          %script{:src => "//platform.twitter.com/widgets.js", :type => "text/javascript"}
-    %td.contact
-      %form.email
-        %input{ :type => 'button', :value => 'Email us', :title => 'Send emails to info@livingvotersguide.org', :onclick => "parent.location='mailto:info@livingvotersguide.org?subject=I have a question or comment about the Living Voters Guide'"}
+    .who.line
+      by
+      - if is_cali
+        #{link_to 'City Club', "http://www.seattlecityclub.org"}
+      - else
+        #{link_to 'Seattle City Club', "http://www.seattlecityclub.org"} and #{link_to "U. of Washington", "http://www.washington.edu"}
 
-    //%form.donate{ :action => "https://www.paypal.com/cgi-bin/webscr", :method => "post", :target => '_blank'}
-    //  %input{ :type => "hidden", :name => "cmd", :value => "_s-xclick"}
-    //  %input{ :type => "hidden", :name => "encrypted", :value => "-----BEGIN PKCS7-----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-----END PKCS7-----"}
-    //  %input{ :type => "submit", :alt => "PayPal - The safer, easier way to pay online!", :value => 'Donate via Paypal'}
+    .when.line
+      - if !is_cali
+        See measures from 
+        %a.old.lvg2010
+          2010
+        &bull;
+        %a.old.lvg2011
+          2011
 
-  %tr
-    %th{:colspan => 6}
-      More Election Info
-  %tr
-    %td{:colspan => 6}
+    .where.line
+      - if is_cali
+        Also in #{link_to 'Washington', 'https://wash.livingvotersguide.org'}.
+      - else
+        Now in #{link_to 'California', 'https://cali.livingvotersguide.org'}!     
 
+  #powered
+    %h3
+      Powered by #{link_to "ConsiderIt", "https://github.com/tkriplean/ConsiderIt"}
 
-      - links = [{:anchor=>'League of Women Voters of Gr. Seattle',:link=>'http://sites.google.com/site/wavoter/ballot', :title=>'Voters Guide by the League of Women Voters'},  {:anchor=>'Progressive Voters Guide', :link=>'http://waballotguide.com/', :title=>'Voters Guide by Fuse'}, {:anchor=>'Washington Policy Center', :link=>'http://www.washingtonpolicy.org/research/ballot-measures/new', :title=>'Voters Guide by the Washington Policy Center'}, {:anchor=>'Washington Secretary of State', :link=>'http://wei.secstate.wa.gov/osos/en/Pages/OnlineVotersGuide.aspx', :title=>'Voters Guide by the Secretary of State'}, {:anchor=>'TVW Video Voters Guide', :link=>'http://www.tvw.org/elections/2010videovotersguide.cfm', :title=>'A video Voters Guide by TVW'} ]
+    %span.use_considerit.line
+      Contact #{link_to 'Travis','mailto:tkriplean@gmail.com?subject=I am interested in using ConsiderIt'} if you want to use this technology in your organization.
 
-      - links.each do |link|
-        #{link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:title])}#{', '}
+  #contact
+    .contact
+      %h3
+        Contact us
 
-      - links = [ ["About the initiative process", "http://www.ncsl.org/default.aspx?tabid=16600"], ["Stats \& history of WA ballot measures", "http://www.sos.wa.gov/elections/initiatives/statistics.aspx"], ["Filing an initiative in WA (PDF)", "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf"] ]
+      .line
+        %span
+          #{link_to 'email', 'mailto:info@livingvotersguide.org?subject=I have a question or comment about the Living Voters Guide'},
+        
+        - if current_tenant.socmedia_facebook_page
+          %span
+            -#= link_to image_tag( 'facebook.png'), current_tenant.socmedia_facebook_page
+            #{link_to 'Facebook', current_tenant.socmedia_facebook_page},
 
-      -if @domain && @domain.name == 'Seattle'
-        - links.push(["King County Libraries infoVote 2011", "http://www.kcls.org/infovote/"])
-
-      - links.each do |link|
-        #{link_to(link[0] , link[1], :target => "_blank")}#{link == links.last ? '' : ', '}
+        - if current_tenant.socmedia_twitter_account
+          %span
+            -#= link_to image_tag( 'twitter.png'), "https://twitter.com/#{current_tenant.socmedia_twitter_account}"
+            #{link_to 'Twitter', "https://twitter.com/#{current_tenant.socmedia_twitter_account}"},
       
+        %span
+          = link_to 'Donate', 'https://www.seattlecityclub.org/civicrm/contribute/transact?reset=1&id=10'
+    
+    .partners
+      %h3
+        Partners & funders
+
+      - if !is_cali
+        .partner.line
+          = link_to 'Seattle Public Library', 'http://www.spl.org'
+
+      .partner.line
+        = link_to "Whitman Institute", "http://www.thewhitmaninstitute.org/"
+
+      .partner.line
+        = link_to "National Science Foundation", "http://www.nsf.gov"
+
+  #voter_info
+    %h3
+      Information for voters
+    - if !is_cali
+
+      - links = [{:anchor=>'League of Women Voters of Gr. Seattle',:link=>'http://sites.google.com/site/wavoter/ballot', :title=>'Voters Guide by the League of Women Voters'},  {:anchor=>'Progressive Voters Guide', :link=>'http://waballotguide.com/', :title=>'Voters Guide by Fuse'}, {:anchor=>'Washington Policy Center', :link=>'http://www.washingtonpolicy.org/research/ballot-measures/new', :title=>'Voters Guide by the Washington Policy Center'}, {:anchor=>'Washington Secretary of State', :link=>'http://wei.secstate.wa.gov/osos/en/Pages/OnlineVotersGuide.aspx', :title=>'Voters Guide by the Secretary of State'}, {:anchor=>'TVW Video Voters Guide', :link=>'http://www.tvw.org/elections/2010videovotersguide.cfm', :title=>'A video Voters Guide by TVW'}, {:anchor => "About the initiative process", :link => "http://www.ncsl.org/default.aspx?tabid=16600", :title => 'About the initiative process'}, {:anchor => "History of WA ballot measures", :link => "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :title => 'History of WA ballot measures'}, {:anchor => "Filing an initiative in WA", :link => "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :title => 'Filing an initiative in WA'} ]
+    - else
+      - links = []
+
+
+    - links.each do |link|
+      .line
+        = link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:title])
+
 
 
 

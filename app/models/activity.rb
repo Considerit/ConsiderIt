@@ -62,6 +62,10 @@ class Activity < ActiveRecord::Base
     when 'Comment'
       #TODO: handle commentable type
       "#{user ? user.username : 'Anonymous'} commented on an {item} by #{this_obj.root_object.user.username} for \"#{this_obj.root_object.proposal.title}\""      
+    when 'Commentable::Comment'
+      #TODO: handle commentable type
+      "#{user ? user.username : 'Anonymous'} commented on an {item} by #{this_obj.root_object.user.username} for \"#{this_obj.root_object.proposal.title}\""      
+
     when 'User'
       "Welcome to #{this_obj.name}!"      
     else

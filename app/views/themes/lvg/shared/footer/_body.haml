@@ -28,6 +28,9 @@
       - else
         Now in #{link_to 'California', 'https://cali.livingvotersguide.org'}!     
 
+    .help.line
+      = link_to 'Donate', 'https://www.seattlecityclub.org/civicrm/contribute/transact?reset=1&id=10'        
+
   #powered
     %h3
       Powered by #{link_to "ConsiderIt", "https://github.com/tkriplean/ConsiderIt"}
@@ -54,8 +57,7 @@
             -#= link_to image_tag( 'twitter.png'), "https://twitter.com/#{current_tenant.socmedia_twitter_account}"
             #{link_to 'Twitter', "https://twitter.com/#{current_tenant.socmedia_twitter_account}"},
       
-        %span
-          = link_to 'Donate', 'https://www.seattlecityclub.org/civicrm/contribute/transact?reset=1&id=10'
+        
     
     .partners
       %h3

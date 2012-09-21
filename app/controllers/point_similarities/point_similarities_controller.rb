@@ -1,4 +1,4 @@
-class Admin::PointSimilaritiesController < ApplicationController
+class PointSimilaritiesController < ApplicationController
   
   def index
     @user = current_user

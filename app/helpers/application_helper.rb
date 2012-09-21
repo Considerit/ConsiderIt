@@ -22,8 +22,8 @@ module ApplicationHelper
 
   def get_root_domain
     reversed_host = request.host_with_port.reverse
-    first_dot = reversed_host.index('.')
-    if first_dot
+    if reversed_host.count(':') > 1
+      first_dot = reversed_host.index('.')
       request.host_with_port[-reversed_host.index('.', first_dot + 1)..reversed_host.length]
     else
       request.host_with_port

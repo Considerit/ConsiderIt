@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
   has_many :point_similarities, :dependent => :destroy
-  has_many :comments, :dependent => :destroy
+  #has_many :comments, :dependent => :destroy, :class_name => 'Commentable::Comment'
   has_many :proposals
 
   belongs_to :domain

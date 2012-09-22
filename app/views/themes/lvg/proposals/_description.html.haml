@@ -9,7 +9,7 @@
       - else
         = prompt
 
-  .pic
+  = image_tag "lvg/images/states/#{current_tenant.identifier}.png", :class => "pic"
 
   .description_wrapper
 
@@ -25,6 +25,29 @@
             show
         .full.hide
           = @proposal.long_description.html_safe
+
+    - if current_tenant.identifier == 'cali'
+      .long_description
+        .prompt
+          Sec. of State's overview
+          %a.hidden
+            show
+        .full.hide
+          #prop_overview
+
+          :javascript
+            var myPDF = new PDFObject({
+              url: "#{@proposal.url}",
+              id: "proposal_overview",
+              width: "700px",
+              height: "500px",
+              pdfOpenParams: {
+                navpanes: 1,
+                statusbar: 0,
+                view: "FitH",
+                pagemode: "thumbs"
+              }
+            }).embed("prop_overview");
 
     - if @proposal.additional_details && @proposal.additional_details.strip != ''
       .additional

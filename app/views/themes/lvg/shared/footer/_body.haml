@@ -15,7 +15,7 @@
 
     .when.line
       - if !is_cali
-        See measures from 
+        See results from 
         %a.old.lvg2010
           2010
         &bull;
@@ -45,7 +45,7 @@
 
       .line
         %span
-          #{link_to 'email', 'mailto:info@livingvotersguide.org?subject=I have a question or comment about the Living Voters Guide'},
+          #{link_to 'Email', 'mailto:info@livingvotersguide.org?subject=I have a question or comment about the Living Voters Guide'},
         
         - if current_tenant.socmedia_facebook_page
           %span
@@ -78,7 +78,7 @@
       Information for voters
     - if !is_cali
 
-      - links = [{:anchor=>'League of Women Voters of Gr. Seattle',:link=>'http://sites.google.com/site/wavoter/ballot', :title=>'Voters Guide by the League of Women Voters'},  {:anchor=>'Progressive Voters Guide', :link=>'http://waballotguide.com/', :title=>'Voters Guide by Fuse'}, {:anchor=>'Washington Policy Center', :link=>'http://www.washingtonpolicy.org/research/ballot-measures/new', :title=>'Voters Guide by the Washington Policy Center'}, {:anchor=>'Washington Secretary of State', :link=>'http://wei.secstate.wa.gov/osos/en/Pages/OnlineVotersGuide.aspx', :title=>'Voters Guide by the Secretary of State'}, {:anchor=>'TVW Video Voters Guide', :link=>'http://www.tvw.org/elections/2010videovotersguide.cfm', :title=>'A video Voters Guide by TVW'}, {:anchor => "About the initiative process", :link => "http://www.ncsl.org/default.aspx?tabid=16600", :title => 'About the initiative process'}, {:anchor => "History of WA ballot measures", :link => "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :title => 'History of WA ballot measures'}, {:anchor => "Filing an initiative in WA", :link => "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :title => 'Filing an initiative in WA'} ]
+      - links = [{:anchor=>'League of Women Voters of Gr. Seattle',:link=>'http://sites.google.com/site/wavoter/ballot', :title=>'Voters Guide by the League of Women Voters'},  {:anchor=>'Progressive Voters Guide', :link=>'http://waballotguide.com/', :title=>'Voters Guide by Fuse'}, {:anchor=>'Washington Policy Center', :link=>'http://www.washingtonpolicy.org/research/ballot-measures/new', :title=>'Voters Guide by the Washington Policy Center'}, {:anchor=>'Washington Secretary of State', :link=>'http://wei.secstate.wa.gov/osos/en/Pages/OnlineVotersGuide.aspx', :title=>'Voters Guide by the Secretary of State'}, {:anchor=>'TVW Video Voters Guide', :link=>'http://www.tvw.org/2012-video-voters-guide-general-election', :title=>'A video Voters Guide by TVW'}, {:anchor => "About the initiative process", :link => "http://www.ncsl.org/default.aspx?tabid=16600", :title => 'About the initiative process'}, {:anchor => "History of WA ballot measures", :link => "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :title => 'History of WA ballot measures'}, {:anchor => "Filing an initiative in WA", :link => "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :title => 'Filing an initiative in WA'} ]
     - else
       - links = []
 

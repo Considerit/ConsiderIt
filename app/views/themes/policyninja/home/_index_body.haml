@@ -3,7 +3,7 @@
   -#= render :partial => "home/follow"
 
   -##people
-    - users = get_users(105)
+    - users = get_users_with_picts(105)
     - if users && users.length > 75
       .row
         - users[0..16].each do |user|

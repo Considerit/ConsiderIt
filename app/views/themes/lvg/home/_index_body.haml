@@ -5,12 +5,11 @@
   #people
     - rows = 5
     - users_per_row = 30
-    - users = get_users(rows * users_per_row)
-    - if users && users.length > 0.75 * rows * users_per_row
-      - (0..rows-1).each do |row|
-        .row{:row => row}
-          - users[row*users_per_row..(row+1)*users_per_row-1].each do |user|
-            .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
+    - users = get_users_with_picts(rows * users_per_row)
+    - (0..rows-1).each do |row|
+      .row{:row => row}
+        - users[row*users_per_row..(row+1)*users_per_row-1].each do |user|
+          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
 
   #logo
     = image_tag current_theme_image_path "logo_large.png"
@@ -32,9 +31,11 @@
       A guide springing from the minds of #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} voters
 
     %h2.get_started
-      Get started by clicking a ballot measure below. Or watch a 
-      %a.video
-        video tutorial.
+      Get started by clicking a ballot measure below. Please share with family &amp; friends!
+
+      -#Or watch a 
+        %a.video
+          video tutorial.
   
   -# = render :partial => "proposals/new"
   = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false }

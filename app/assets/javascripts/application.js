@@ -16,3 +16,4 @@
 //= require ZeroClipboard.js
 //= require considerit
 //= require javascripts/moderatable.js
+//= require pdfobject.js

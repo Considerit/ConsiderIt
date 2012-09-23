@@ -22,10 +22,9 @@
 #active_proposals
   .banner
     %h1#tagline
-      - if current_tenant.identifier == 'cali'
-        A living tapestry of California Voters' considerations
-      - else
-        A guide springing from the minds of Washington voters
+      -# A living tapestry of California Voters' considerations
+      
+      A guide springing from the minds of #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} voters
 
     %h2.get_started
       Click a ballot measure below to get started. Please share with family &amp; friends!

@@ -16,7 +16,7 @@
 =f.hidden_field :proposal_id, :value=>@proposal.id
 =f.hidden_field :position_id, :value => @position.id
 
-=f.submit "Save your perspective!", :class => "submit button"
+=f.submit "Save your perspective!", :class => "submit button", :disable => "#{!@proposal.active}"
 = link_to skip_text, proposal_position_path(@proposal.long_id, @position, :authenticity_token => form_authenticity_token), :method => :delete, :class => "skip_save"
 //= link_to "discard your #{@position.published ? 'changes' : 'position'}", proposal_position_path(@proposal, @position), :method => :delete
 

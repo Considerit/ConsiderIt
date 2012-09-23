@@ -17,16 +17,7 @@
   #logo
     = image_tag current_theme_image_path "logo_large.png"
 
-  #background
 
-  #value   
-    .fl
-      By the people. 
-    .fr
-      For the people.
-
-
-       
 
 #active_proposals
   .banner
@@ -84,6 +75,14 @@
       } else {
         $j(this).parent().parent().find('.img.hovered').removeClass('hovered');
       }
+
+    });
+
+    $j('a.old').click(function(){
+      var is2010 = $j(this).hasClass('lvg2010'),
+          $el = is2010 ? $j('#o2010') : $j('#o2011');
+
+      $el.fadeToggle();
 
     });
     

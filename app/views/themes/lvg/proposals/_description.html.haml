@@ -50,18 +50,20 @@
           #prop_overview
 
           :javascript
-            var myPDF = new PDFObject({
-              url: "lvg/measures/#{@proposal.designator}-title-summ-analysis.pdf",
-              id: "proposal_overview",
-              width: "860px",
-              height: "500px",
-              pdfOpenParams: {
-                navpanes: 1,
-                statusbar: 0,
-                view: "FitH",
-                pagemode: "thumbs"
-              }
-            }).embed("prop_overview");
+            $j(document).ready(function(){          
+              var myPDF = new PDFObject({
+                url: "lvg/measures/#{@proposal.designator}-title-summ-analysis.pdf",
+                id: "proposal_overview",
+                width: "860px",
+                height: "500px",
+                pdfOpenParams: {
+                  navpanes: 1,
+                  statusbar: 0,
+                  view: "FitH",
+                  pagemode: "thumbs"
+                }
+              }).embed("prop_overview");
+            });
 
 
     - elsif @proposal.url && @proposal.url.strip != ''

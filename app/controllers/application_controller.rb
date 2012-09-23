@@ -19,16 +19,16 @@ class ApplicationController < ActionController::Base
     else
       args.append({:layout => false}) if request.xhr?
     end
-    @domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil    
+    #@domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil    
     @current_page = request.fullpath == '/' ? 'homepage' : ''
 
     if current_tenant.host.nil?
       current_tenant.host = request.host
       current_tenant.host_with_port = request.host_with_port
       current_tenant.save
-    else
-      pp current_tenant.host
     end
+
+    @host_with_port = request.host_with_port
 
     super
   end

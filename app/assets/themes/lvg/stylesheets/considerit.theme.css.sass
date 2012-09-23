@@ -53,9 +53,10 @@ html
         +border-radius(2px)
         background-color: white    
         +box-shadow(0px, 1px, 2px, rgba(black, .7))
+        padding-top: $vertical_baseline
 
         position: relative
-        z-index: 5
+        z-index: 26
 
         &:after
           content: "."
@@ -64,19 +65,25 @@ html
           clear: both
           visibility: hidden
 
+
       #masthead
-        z-index: 10
-        height: $vertical_baseline * 3
+        z-index: 27
+        height: $vertical_baseline * 2
 
         .inner .logo_cell
-          left: $grid_xs
-          top: 6px
+          left: 0
+          top: 13px
+          img
+            width: 170px
+
         #nav-user 
           > li.triangle .hide
             +main_background
 
       #footer
         padding: 0 0 $vertical_baseline 0
+        +wall(#777)
+        z-index: 25
 
         #footer_segments
           color: #555
@@ -154,14 +161,15 @@ html
         top: 7 * $vertical_baseline
 
 .proposal_prompt
-  padding-top: 2 * $vertical_baseline
+  
 
   //margin-bottom: $vertical_baseline * 2
 
   .pic
-    display: inline-block
+    display: none
+    //display: inline-block
     width: 264px
-    margin: 0 $grid_xs $vertical_baseline $grid_xs
+    margin: $vertical_baseline $grid_xs $vertical_baseline $grid_xs
 
   .action_prompt
     +font-size(-1)
@@ -240,10 +248,22 @@ html
   //+box-shadow(1px, 2px, 3px, black, .4)
 
 .proposal_prompt .description_wrapper 
-  margin-left: 300px
-  width: 500px
+  //margin-left: 300px
+  
+  margin: $vertical_baseline auto
+  width: 648px
+
+  .name
+    +font-size(1)
+    line-height: 1.2
+    margin-bottom: $vertical_baseline
+
   .full_text, .long_description, .additional
-    +font-size(-1)
+    +font-size(0)
+    line-height: 1.4
+
+    .full
+      padding: $vertical_baseline 0
 
 
 .proposals.horizontal
@@ -286,4 +306,11 @@ html
 h1,h2,h3,h4,h5,h6, .pro_con_list .full_column .pro_con_list_header .inner, #craft_position #nameplate, #craft_position #nameplate input, #craft_position #nameplate a, #craft_position #nameplate textarea, #craft_position > .user_opinion td.margin .heading .lead, #histogram table td.support, #histogram table td.oppose, #wrap #footer > div .label
   font-family: Georgia, Times, "Times New Roman", serif
 
+#admin_strip
+  display: none
 
+.head
+
+  h3.banner.name
+    width: 800px
+    margin: 0 auto    

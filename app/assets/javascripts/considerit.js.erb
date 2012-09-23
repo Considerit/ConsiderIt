@@ -292,15 +292,28 @@ ConsiderIt = {
         $j('.proposal_prompt').removeClass('hiding');
         $j(this).remove();
       })
-      .delegate('.description_wrapper .prompt a', 'click', function(){
-        if($j(this).hasClass('hidden')){
-          $j(this).parents('.prompt').filter(":first").siblings('.full').slideDown();
-          $j(this).text('hide');
+      .delegate('.description_wrapper a.hidden, .description_wrapper a.showing', 'click', function(){
+        var $block = $j(this).parents('.extra:first'),
+            $full_text = $block.find('.full'), 
+            show = $j(this).hasClass('hidden');
+
+        if (show) {
+          $full_text.slideDown();
+          $block.find('a.hidden')
+            .text('hide')
+            .toggleClass('hidden showing');
         } else {
-          $j(this).parents('.prompt').filter(":first").siblings('.full').slideUp();
-          $j(this).text('show');
+          $full_text.slideUp(1000);
+          $block.find('a.showing')
+            .text('show')
+            .toggleClass('hidden showing');      
+
+          $j('html, body').animate({
+            scrollTop: 0
+          }, 1000);
+
         }
-        $j(this).toggleClass('hidden');
+
       })
       .delegate('.proposal_menu', 'hover', function(event){
         var $target = $j(this).children('ul');

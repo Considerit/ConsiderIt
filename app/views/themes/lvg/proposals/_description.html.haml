@@ -1,45 +1,59 @@
-- prompt ||= @proposal.name ? @proposal.name : 'Help consider this, please.'
+- prompt = "#{@proposal.category} #{@proposal.designator} : #{@proposal.short_name}"
 
 .proposal_prompt
 
   .head.single
-    %h3.banner
-      - if @can_update
-        = render :partial => 'proposals/admin_make_editable', :locals => { :field => :name, :label => prompt}
-      - else
-        = prompt
+    %h3.banner.name
+      = prompt
 
-  = image_tag "lvg/images/states/#{current_tenant.identifier}.png", :class => "pic"
+  //= image_tag "lvg/images/states/#{current_tenant.identifier}.png", :class => "pic"
 
   .description_wrapper
-
+    %h3.name
+      #{@proposal.name}
     .full_text
       - for i in @proposal.format_description
         %p= h i.html_safe
     
     - if @proposal.long_description && @proposal.long_description.strip != ''
-      .long_description
+      .long_description.extra
         .prompt
           Long Description
           %a.hidden
             show
         .full.hide
           = @proposal.long_description.html_safe
+          %a.hidden
+            show
+
+    - if @proposal.additional_details && @proposal.additional_details.strip != ''
+      .additional.extra
+        .prompt
+          Fiscal impact statement
+          %a.hidden
+            show
+        .full.hide
+          = @proposal.additional_details.html_safe
+          %a.hidden
+            show
 
     - if current_tenant.identifier == 'cali'
-      .long_description
+      .long_description.extra
         .prompt
           Sec. of State's overview
           %a.hidden
             show
         .full.hide
+
+          = link_to 'PDF from Secretary of State', "#{@proposal.url}", :target => "_blank", :id=>"sos_link"
+
           #prop_overview
 
           :javascript
             var myPDF = new PDFObject({
-              url: "#{@proposal.url}",
+              url: "lvg/measures/#{@proposal.designator}-title-summ-analysis.pdf",
               id: "proposal_overview",
-              width: "700px",
+              width: "860px",
               height: "500px",
               pdfOpenParams: {
                 navpanes: 1,
@@ -49,19 +63,10 @@
               }
             }).embed("prop_overview");
 
-    - if @proposal.additional_details && @proposal.additional_details.strip != ''
-      .additional
-        .prompt
-          Fiscal impact statement
-          %a.hidden
-            show
-        .full.hide
-          = @proposal.additional_details.html_safe
 
-    - if @proposal.url && @proposal.url.strip != ''
+    - elsif @proposal.url && @proposal.url.strip != ''
       #full_desc_block
-        #{'...'}or read the 
-        =link_to "official measure", @proposal.url, :title => "Visit the official listing on the state's website", :target => '_blank'
+        =link_to "From the Secretary of State", @proposal.url, :title => "Visit the official listing on the state's website", :target => '_blank'
   .clear
 
   - if !@results_page

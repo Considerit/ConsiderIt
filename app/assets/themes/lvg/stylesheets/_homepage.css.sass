@@ -7,8 +7,14 @@ html body #wrap.homepage
   &:after, &:before
     position: absolute
 
-.homepage #masthead .logo_cell
+.homepage .logo_cell
   display: none
+
+html body #wrap.homepage > div#content
+  padding-top: 0
+
+html body #wrap.homepage > div#masthead
+  height: $vertical_baseline * 3
 
 #intro 
 
@@ -20,7 +26,8 @@ html body #wrap.homepage
 
   #home
     #follow
-      top: 215px
+      top: 220px
+      right: 0px
 
     #people
       width: $people_width
@@ -90,19 +97,19 @@ html body #wrap.homepage
     //border-bottom: 1px solid #111
     //padding: 12px 30px
     position: relative
-    margin: 0 0 0 0
+    margin: 0 0 $vertical_baseline * 2 0
 
     .banner
 
       h1#tagline
         font-weight: bold
-        +font-size(4)
+        +font-size(5)
         color: #333
         text-align: center
         //+banner-single
         +main_font
         line-height: 1.3
-        padding: $vertical_baseline/2 $grid_xs
+        padding: $vertical_baseline/2 $grid_xs 0 $grid_xs
         letter-spacing: 0
         +outset-text
 
@@ -124,6 +131,14 @@ html body #wrap.homepage
 
       li.proposal_item
         opacity: .9
+
+    #coming_soon
+      .prompt
+        +font-size(0)
+        color: #777
+        font-weight: normal
+        +outset-text
+        text-align: center
 
     #zipcode_entered
       color: #777
@@ -153,7 +168,6 @@ html body #wrap.homepage
       //left: 50%
       width: 360px
       //margin-left: -225px
-      margin: 10px auto
 
 
       .triangle

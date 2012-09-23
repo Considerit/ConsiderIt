@@ -44,23 +44,33 @@
   .description_wrapper
     margin-left: 60px
 
-    .full_text, .long_description, .additional
+    .full_text, .extra
       +font-size(1)
     
-    .long_description, .additional
+    .extra
       .prompt
         font-weight: bold
         +font-size(-1)
 
-        a
-          +font-size(-4)
-          font-weight: normal
-          text-decoration: underline
-          color: inherit
+      a.hidden, a.showing
+        +font-size(-4)
+        font-weight: normal
+        text-decoration: underline
+        color: inherit
+
+      a#sos_link
+        text-decoration: underline
+        padding-bottom: $vertical_baseline
+        display: inline-block
+
+      object
+        margin-left: -100px
       
       table
         display: block
         margin-left: -50px
+        margin-bottom: 1em
+        border: none
 
         p 
           margin-bottom: 0
@@ -70,6 +80,7 @@
 
           td
             padding: 5px 10px
+            border: none
       ul
         li
           list-style-type: disc

@@ -2,10 +2,13 @@
 
   = render :partial => "home/follow"
 
-  #people
+  #people  
     - rows = 5
     - users_per_row = 30
-    - users = get_users_with_picts(rows * users_per_row)
+
+    - pics = User.unscoped.where('avatar_file_name IS NOT NULL')
+    - users = pics.sample( [rows * users_per_row, pics.count].min )
+
     - (0..rows-1).each do |row|
       .row{:row => row}
         - users[row*users_per_row..(row+1)*users_per_row-1].each do |user|
@@ -28,10 +31,13 @@
 #active_proposals
   .banner
     %h1#tagline
-      A guide springing from the minds of #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} voters
+      - if current_tenant.identifier == 'cali'
+        A living tapestry of California Voters' considerations
+      - else
+        A guide springing from the minds of Washington voters
 
     %h2.get_started
-      Get started by clicking a ballot measure below. Please share with family &amp; friends!
+      Click a ballot measure below to get started. Please share with family &amp; friends!
 
       -#Or watch a 
         %a.video
@@ -40,48 +46,12 @@
   -# = render :partial => "proposals/new"
   = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false }
 
-  - if @domain
-    #zipcode_entered
-      %span.unlocked
-        - if (cnt = @domain.domain_maps.count) == 0
-          According to our records, the #{@domain.name} area does not have any local measures on the ballot. 
-        - else
-          You can now access #{cnt} #{@domain.name} area #{cnt==1 ? 'measure' : 'measures'} likely to be on your ballot.
-      .reset
-        %a     
-          Change your zip code.
+  -# = render :partial => "home/unlock_local"
+  - if current_tenant.identifier == 'wash'
 
-        .resetform.hide
-          = form_tag '/home/domain', :id => 'domain' do
-            = text_field_tag "domain", '', :title => 'your zip code', :class => 'has_example'
-            = submit_tag 'Change your zipcode', :class => 'button'
-                
-  - else
-    #zipcode_entry
-      //.triangle
-      //  &#x25b2;
-
+    #coming_soon
       .prompt
-        Unlock your local measures:
-      .zipform
-        = form_tag '/home/domain', :id => 'domain' do
-          %span.inlined
-            = text_field_tag :domain, '', :placeholder => 'zip code', :title => 'your zip code'
-          = submit_tag 'Set', :class => 'button'
-      .clear
-
-    :javascript
-      $j(document).ready(function(){
-        $j("input#domain").autocomplete({
-          source: #{get_available_domains()},
-          select: function(event, ui){
-           /*$j.post("#{home_domain_path}", { domain: ui.item.value }, function(data){
-            $j('#domain').append(data);
-           });
-           */
-          }
-        });
-      });
+        Coming soon: Local measures &amp; fact-checking by Seattle Public Library!
 
 :javascript
   $j(document).ready(function(){

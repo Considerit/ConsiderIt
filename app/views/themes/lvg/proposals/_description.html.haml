@@ -9,7 +9,7 @@
   //= image_tag "lvg/images/states/#{current_tenant.identifier}.png", :class => "pic"
 
   .description_wrapper
-    %h3.name
+    .name
       #{@proposal.name}
     .full_text
       - for i in @proposal.format_description

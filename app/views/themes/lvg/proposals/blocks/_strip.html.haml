@@ -5,19 +5,20 @@
         = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
     .clear
 
-    .old#o2010
-      %h3
-        Ballot measures from 2010
-      %ul
-        - get_proposals_by_rank.where(:active => false).where('id < 324 AND id > 314').each do |proposal|
-          = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+    - if !@results_page
+      .old#o2010
+        %h3
+          Ballot measures from 2010
+        %ul
+          - get_proposals_by_rank.where(:active => false).where('id < 324 AND id > 314').each do |proposal|
+            = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
 
-    .old#o2011
-      %h3 
-        Ballot measures from 2011
-      %ul
-        - get_proposals_by_rank.where(:active => false).where('id < 6').each do |proposal|
-          = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+      .old#o2011
+        %h3 
+          Ballot measures from 2011
+        %ul
+          - get_proposals_by_rank.where(:active => false).where('id < 6').each do |proposal|
+            = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
 
   .clear
 

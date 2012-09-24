@@ -155,6 +155,7 @@ protected
         #resolve by combining positions, taking stance from newly submitted...
         prev_pos.stance = @position.stance
         prev_pos.stance_bucket = @position.stance_bucket
+        prev_pos.explanation = @position.explanation
         prev_pos.published = true
         prev_pos.save
         save_actions(prev_pos)

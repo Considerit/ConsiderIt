@@ -51,10 +51,12 @@
             %h3.banner.thanks
               Explore the overall results
             %h3.banner.results_prompt
-              Don't forget to 
-              = succeed '!' do 
-                %a.personal_position{ :href => "#{ update ? edit_proposal_position_path(@proposal.long_id, @position) : new_proposal_position_path(@proposal.long_id)}", :class => "contribute"} contribute your own position
-            
+              - if @proposal.active
+                Don't forget to 
+                = succeed '!' do 
+                  %a.personal_position{ :href => "#{ update ? edit_proposal_position_path(@proposal.long_id, @position) : new_proposal_position_path(@proposal.long_id)}", :class => "contribute"} contribute your own position
+              - else
+                Explore the overall results            
 
 
         = render :partial => "proposals/stance_histogram", :locals => { :stance_breakdown => proposal_stance_data, :has_position => has_position}

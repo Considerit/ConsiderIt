@@ -1,4 +1,5 @@
 - candidates = [{:identifier => 'dodds', :name => 'Phil Dodds', :district => 'Florida HR3', :mug => 'phildodds.png'}, {:identifier => 'hansen', :name => 'Jeremy Hansen', :district => 'Vermont Senate', :mug => 'jeremyhansen.png'}]
+- phil = current_tenant.identifier.include?('phil') || current_tenant.identifier.include?('dodds')
 
 #other_candidates
   .heading
@@ -7,7 +8,7 @@
   %ul.candidate_list
     - candidates.each do |cnd|
       %li.candidate.fl
-        %a{ :href => "http://#{cnd[:identifier]}.#{get_root_domain}" }
+        %a{ :href => "http://#{current_tenant.host_with_port.gsub(phil ? 'dodds' : 'hansen', cnd[:identifier])}" }
           %span.name_block
             .name
               &#9733;#{cnd[:name]}&#9733;
@@ -19,7 +20,6 @@
               = cnd[:district]
     %li.clear
 
-- phil = current_tenant.identifier.include?('phil') || current_tenant.identifier.include?('dodds')
 
 .paid_for
   Paid for by 

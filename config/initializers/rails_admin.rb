@@ -53,6 +53,17 @@ RailsAdmin.config do |config|
   #   end
   # end
   #
+
+  classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Commentable::Comment', 'Moderatable::Moderation', 'Reflect::ReflectBullet', 'Reflect::ReflectBulletRevision', 'Reflect::ReflectHighlight', 'Reflect::ReflectResponse', 'Reflect::ReflectResponseRevision'] do |cls|
+    config.model cls do
+      edit do
+        exclude_fields :account_id
+      end
+    end
+  end
+
+
+
   #  ==> Model specific configuration
   # Keep in mind that *all* configuration blocks are optional.
   # RailsAdmin will try his best to provide the best defaults for each section, for each field.

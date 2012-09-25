@@ -90,7 +90,7 @@ Summary:
 = "\r\n"
 \----
 
-To unsubscribe to this proposal: #{unfollow_proposal_url(@proposal.long_id, :host => @host, :u => @user.id, :i => @proposal.id, :m => 'Proposal', :t => ApplicationController.token_for_action(@user.id, @proposal, 'unfollow') )}
+To unsubscribe to this proposal: #{unfollow_url(:host => @host, :u => @user.id, :i => @proposal.id, :m => 'Proposal', :t => ApplicationController.token_for_action(@user.id, @proposal, 'unfollow') )}
 
 = "\r\n"
 #{@options[:app_title]} is powered by http://chalkboard.it

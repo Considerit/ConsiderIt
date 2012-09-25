@@ -10,22 +10,20 @@
 - missing_information = !current_user.name || !current_user.avatar_file_name || !current_user.email || current_user.email.length == 0
 
 - if requires_pledge || missing_information
-  #post_signup_dialog
+  #post_signup_dialog.hide
 
     #post_signup_form
 
       .primary
         %h2
-          Welcome!
+          Welcome! Last registration step.
 
         #site_registration
 
-          - if missing_information
-            %h3
-              Let others know a little more about yourself!
-
           = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put) do |f|
-          
+            - if @proposal
+              =f.hidden_field :proposal_id, :value=>@proposal.id
+
             %ul
               //%li
               //  = devise_error_messages!

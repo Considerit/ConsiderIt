@@ -12,8 +12,21 @@ class ApplicationController < ActionController::Base
   set_current_tenant_through_filter
   before_filter :get_current_tenant
   before_filter :theme_resolver
+  before_filter :print_session
+
+  def print_session
+    if params.has_key?('authenticity_token')
+      puts session
+      puts "PARAMS AUTH TOKEN: #{params[:authenticity_token]}"
+      puts "SESSIO AUTH TOKEN: #{session[:_csrf_token]}}"
+    end
+  end
 
   def render(*args)
+    puts "referrer = #{request.referer}"
+    if !session.has_key?(:referer)
+      session[:referer] = request.referer      
+    end
     if args && args.first.respond_to?('has_key?')
       args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
     else

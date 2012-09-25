@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120920003840) do
+ActiveRecord::Schema.define(:version => 20120925175840) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -331,8 +331,8 @@ ActiveRecord::Schema.define(:version => 20120920003840) do
   add_index "proposals", ["account_id", "id"], :name => "select_proposal"
   add_index "proposals", ["account_id", "long_id"], :name => "select_proposal_by_long_id"
   add_index "proposals", ["account_id"], :name => "index_proposals_on_account_id"
-  add_index "proposals", ["admin_id"], :name => "index_proposals_on_admin_id"
-  add_index "proposals", ["long_id"], :name => "index_proposals_on_long_id"
+  add_index "proposals", ["admin_id"], :name => "index_proposals_on_admin_id", :unique => true
+  add_index "proposals", ["long_id"], :name => "index_proposals_on_long_id", :unique => true
 
   create_table "rails_admin_histories", :force => true do |t|
     t.string   "message"
@@ -472,11 +472,12 @@ ActiveRecord::Schema.define(:version => 20120920003840) do
     t.boolean  "registration_complete",                :default => false
     t.integer  "domain_id"
     t.integer  "roles_mask",                           :default => 0
+    t.text     "referrer"
   end
 
   add_index "users", ["account_id"], :name => "account_id"
   add_index "users", ["email"], :name => "index_users_on_email"
-  add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token"
+  add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 
   create_table "versions", :force => true do |t|
     t.string   "item_type",  :null => false

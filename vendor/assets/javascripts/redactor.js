@@ -464,7 +464,7 @@ var RLANG = {
 				link:
 				{ 
 					title: RLANG.link,
-					func: 'showLink',
+					func: 'showLink'
 					/*dropdown:
 					{
 						link:

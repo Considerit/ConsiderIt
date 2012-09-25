@@ -28,7 +28,7 @@
           2011
 
       .where.line
-        Now in #{link_to 'California', "https://#{@host_with_port.gsub('wash','cali')}"}!     
+        Now in #{link_to 'California', "https://#{current_tenant.host_with_port.gsub('wash','cali')}"}!     
 
     .help.line
       = link_to 'Donate', 'https://www.seattlecityclub.org/civicrm/contribute/transact?reset=1&id=10'        
@@ -67,7 +67,7 @@
 
       - if !is_cali
         .partner.line
-          = link_to 'Seattle Public Library', 'http://www.spl.org'
+          = link_to 'The Seattle Public Library', 'http://www.spl.org'
 
       - else
 

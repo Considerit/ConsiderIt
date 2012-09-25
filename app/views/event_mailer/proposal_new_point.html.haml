@@ -38,5 +38,5 @@
       = link_to 'Read and discuss further', proposal_point_url(@proposal.long_id, @point, :host => @host)
 
 = content_for :footer do
-  = link_to 'Unsubscribe', unfollow_proposal_url(@proposal.long_id, :host => @host, :u => @user.id, :i => @proposal.id, :m => 'Proposal', :t => ApplicationController.token_for_action(@user.id, @proposal, 'unfollow') )
+  = link_to 'Unsubscribe', unfollow_url(:host => @host, :u => @user.id, :i => @proposal.id, :m => 'Proposal', :t => ApplicationController.token_for_action(@user.id, @proposal, 'unfollow') )
   to this proposal.  

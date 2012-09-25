@@ -188,7 +188,7 @@ class PointsController < ApplicationController
 
     if request.xhr?
       origin = params[:origin]
-      point_details = render_to_string :partial => "points/details", :locals => { :point => @point, :origin => origin, :light_background => origin == 'margin' }
+      point_details = render_to_string :partial => "points/details", :locals => { :point => @point, :origin => origin}
       render :json => { :details => point_details }        
     else
       render

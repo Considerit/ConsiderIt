@@ -41,7 +41,7 @@ Thanks!
 = "\r\n"
 \----
 
-To unsubscribe to this comment: #{unfollow_proposal_comment_url(@proposal.long_id, @comment, :host => @host, :u => @user.id, :i => @comment.id, :m => 'Comment', :t => ApplicationController.token_for_action(@user.id, @comment, 'unfollow'))}
+To unsubscribe to this comment: #{unfollow_url(:host => @host, :u => @user.id, :i => @comment.id, :m => 'Comment', :t => ApplicationController.token_for_action(@user.id, @comment, 'unfollow'))}
 
 = "\r\n"
 #{@options[:app_title]} is powered by http://chalkboard.it

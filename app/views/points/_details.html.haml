@@ -6,5 +6,5 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
-= render :partial => 'commentable/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :light_background => light_background }
+= render :partial => 'commentable/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :enable_new_comments => point.proposal.active }
 

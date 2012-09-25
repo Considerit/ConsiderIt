@@ -56,6 +56,6 @@
         = render :partial => 'followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
 
     .extra  
-      = render :partial => 'commentable/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :light_background => false }
+      = render :partial => 'commentable/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :enable_new_comments => point.proposal.active }
       
     .clear

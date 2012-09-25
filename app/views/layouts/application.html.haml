@@ -9,7 +9,8 @@
 !!! Strict
 %html{html_attrs}
   %head{ :profile => "http://gmpg.org/xfn/1" }
-    
+    = csrf_meta_tags
+
     %title
       = "#{@title && @title != '' ? @title + " - " : ''}#{current_tenant.app_title}"
           
@@ -22,7 +23,6 @@
 
     %meta{ :name => "google-site-verification", :content => "" }
       
-    = csrf_meta_tag
 
     = theme_stylesheet_link_tag 'application'
     

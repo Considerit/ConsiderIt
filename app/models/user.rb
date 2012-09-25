@@ -65,10 +65,8 @@ class User < ActiveRecord::Base
   end
 
   def download_remote_image
-    if avatar_url.nil?
-     avatar_url = avatar_remote_url
-    end
-    io = open(URI.parse(avatar_url))
+    self.avatar_url = self.avatar_remote_url if avatar_url.nil?
+    io = open(URI.parse(self.avatar_url))
     def io.original_filename; base_uri.path.split('/').last; end
     self.avatar = io.original_filename.blank? ? nil : io
     self.avatar_remote_url = avatar_url

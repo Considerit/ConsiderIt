@@ -4,7 +4,7 @@ ConsiderIt helps large groups of people make decisions. Each person crafts a pro
 
 [ChalkboardIt](http://chalkboard.it) is the primary hosted deployment of ConsiderIt. ConsiderIt was initially created to support the [Living Voters Guide](http://livingvotersguide.org), a citizen-powered voters guide for WA state.
 
-ConsiderIt is open source, under the AGPL license. [More details about licensing](#licensing). The University of Washington are the copyright holders.
+ConsiderIt is open source, under the AGPL license. [More details about licensing](#licensing). The University of Washington is the copyright holder.
 
 The creator and maintainer is [Travis Kriplean](<tkriplean@gmail.com>). 
 

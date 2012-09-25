@@ -4,23 +4,9 @@ ConsiderIt helps large groups of people make decisions. Each person crafts a pro
 
 [ChalkboardIt](http://chalkboard.it) is the primary hosted deployment of ConsiderIt. ConsiderIt was initially created to support the [Living Voters Guide](http://livingvotersguide.org), a citizen-powered voters guide for WA state.
 
-ConsiderIt is open source for non-commercial use, under the AGPL license. [More details about licensing](#licensing). 
+ConsiderIt is open source, under the AGPL license. [More details about licensing](#licensing). 
 
 The creator and maintainer is [Travis Kriplean](<tkriplean@gmail.com>). 
-
-## <a id="licensing"></a>Licensing
-
-### Non-commercial use of ConsiderIt
-
-ConsiderIt is licensed under the open source [AGPL](http://www.gnu.org/licenses/agpl-3.0.html) license for non-commercial use. In addition to the normal stipulations of the GPL, the AGPL adds the requirement that if you use ConsiderIt as part of a website, you must include a link to your source code, even if you haven't redistributed it per se. If this is problematic for you for some reason, we will most likely be quite happy to simply have a "powered by ChalkboardIt" link in the footer of your webpage. [Contact us](<tkriplean@gmail.com>) to discuss it.
-
-###Commercial use of ConsiderIt
-
-For use of ConsiderIt in a commercial context, an agreement can be struck with us. Commercial use covers non-profits who create a revenue stream based on use of a product that includes ConsiderIt. [Contact us](<tkriplean@gmail.com>) if you are interested.
-
-###Use of ConsiderIt in a closed-source proprietary product
-
-We are open to selling an alternate license that waives the AGPL conditions so that ConsiderIt can be incorporated into a closed-source proprietary product, or even for vendors who wish to repackage ConsiderIt under a different name and add additional value through closed modules. [Contact us](<tkriplean@gmail.com>) to discuss this possibility. 
 
 ## Installation
 

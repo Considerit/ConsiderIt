@@ -39,6 +39,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       end
     else #otherwise create new user...
       resource = build_resource
+      resource.referer = session[:referer] if session.has_key?(:referer)
       if resource.save
         if resource.active_for_authentication?
           sign_in(resource_name, resource)
@@ -73,9 +74,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
     #current_user.skip_confirmation!
     current_user.save
 
-    if params[:proposal_id]
+    if params[:user].has_key?(:proposal_id)
       # this is for caching purposes, particularly the histogram
-      @proposal.find_by_id(params[:proposal_id]).touch
+      Proposal.find_by_id(params[:user].delete(:proposal_id)).touch
     end
     redirect_to request.referer
   end

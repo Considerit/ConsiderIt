@@ -20,7 +20,7 @@
 
         #site_registration
 
-          = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put) do |f|
+          = form_for(current_user, :as => :user, :url => registration_path(current_user), :method => :put) do |f|
             - if @proposal
               =f.hidden_field :proposal_id, :value=>@proposal.id
 

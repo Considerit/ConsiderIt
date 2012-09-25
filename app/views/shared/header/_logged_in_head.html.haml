@@ -6,24 +6,6 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
-%li.progress
-  #progressbar
-  .text_progress
-    #{current_user.positions.published.count}/#{get_proposals.length} measures considered
-
-
-  -# = image_tag "user_settings_triangle.png", :class => 'triangle_img'
-  
-  .spacing
-
-  -#
-    .hide
-      %ul.fr
-        %li
-          %a
-            View your personal voters guide
-      .clear
-
 
 %li.triangle
   %a.settings{ :user => current_user.id }

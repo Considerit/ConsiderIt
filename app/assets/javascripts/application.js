@@ -17,5 +17,5 @@
 //= require considerit
 //= require javascripts/moderatable.js
 //= require pdfobject.js
-//= require 'sevenup.min'
-//= require 'sevenup_black.min'
+//= require sevenup.min
+//= require sevenup_black.min

@@ -37,7 +37,7 @@
       display: inline-block
       width: 515px
       +chalkboard
-      padding: 0 25px 15px 25px
+      padding: $vertical_baseline $grid_xs
       +box-shadow(0,1px,3px,rgba(black,.5))
       +border_radius(5px)
       +on_chalkboard
@@ -47,7 +47,9 @@
 
       h2
         +font-size(3)
-        padding: 20px 0 32px 0
+        padding-bottom: $vertical_baseline
+
+        //padding: 20px 0 32px 0
         //background: image-url('chalk/point_header_back.png') no-repeat scroll 125px -20px transparent
 
       #third_party
@@ -103,26 +105,7 @@
               text-decoration: underline
 
 
-          &.name_field input, &.avatar_field input
-            width: 225px
 
-          &.avatar_field
-            background-color: transparent
-            border-color: transparent
-
-            #user_avatar
-              position: absolute
-
-            input[type="button"]
-              +font-size(-3)
-
-            .selected_file
-              position: absolute
-              z-index: 9999
-              top: 32px
-              right: 20px
-              +main_font
-              +font-size(-3)
 
 
       .divider
@@ -193,24 +176,52 @@
       height: 316px
 
       #site_registration
-        .email_field
-          width: 300px
+        li
+          &.name_field input, &.avatar_field input, &.email_field input
+            width: 225px
 
-          .sub
-            +font-size(-4)
-            position: absolute
-            width: 390px
-            +main_font
-            bottom: -18px
-            left: -38px
-            text-align: center
+
+          &.email_field
+            //width: 300px
+            display: inline-block
+            margin-bottom: 2 * $vertical_baseline
+            .sub
+              +font-size(-5)
+              position: absolute
+              width: 225px
+              +main_font
+              bottom: -30px
+              left: 0px
+              text-align: left
+              line-height: 1.2
+              padding-left: 7px
+
+          &.avatar_field
+            background-color: transparent
+            border-color: transparent
+
+            #user_avatar
+              position: absolute
+
+            input[type="button"]
+              +font-size(-3)
+
+            .selected_file
+              position: absolute
+              z-index: 9999
+              top: 32px
+              right: 20px
+              +main_font
+              +font-size(-3)
+
+
 
         h3
           margin: 3px 0 10px 0
           font-weight: normal
 
         #pledge
-          margin: 33px 0 0px 0
+          margin: $vertical_baseline * 2 0 0px 0
           ol 
             margin: auto
             //width: 310px
@@ -220,8 +231,10 @@
               //text-align: left
               list-style-type: decimal
 
+
+
     .submit_footer
-      padding-top: 48px
+      padding-top: $vertical_baseline
 
       a.cancel
         +font-size(-3)

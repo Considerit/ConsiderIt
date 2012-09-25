@@ -72,6 +72,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
     current_user.update_attributes(params[:user])
     #current_user.skip_confirmation!
     current_user.save
+
+    if params[:proposal_id]
+      # this is for caching purposes, particularly the histogram
+      @proposal.find_by_id(params[:proposal_id]).touch
+    end
     redirect_to request.referer
   end
 

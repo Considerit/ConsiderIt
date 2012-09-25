@@ -106,7 +106,7 @@ namespace :admin do
   end
 
   task :sanitize_measure_html do 
-      measure = 1185
+      measure = 1240
       f = File.new("lib/tasks/lvg/measures/#{measure}.html")
 
       html = f.read

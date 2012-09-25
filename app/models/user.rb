@@ -65,11 +65,14 @@ class User < ActiveRecord::Base
   end
 
   def download_remote_image
-    avatar_url ||= avatar_remote_url
+    if avatar_url.nil?
+     avatar_url = avatar_remote_url
+    end
     io = open(URI.parse(avatar_url))
     def io.original_filename; base_uri.path.split('/').last; end
     self.avatar = io.original_filename.blank? ? nil : io
     self.avatar_remote_url = avatar_url
+
   end
 
   def self.find_for_third_party_auth(access_token, signed_in_resource=nil)

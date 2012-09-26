@@ -186,6 +186,8 @@ class PointsController < ApplicationController
     @proposal = Proposal.find_by_long_id(params[:long_id])
     authorize! :read, @point
 
+    pp current_user
+
     if request.xhr?
       origin = params[:origin]
       point_details = render_to_string :partial => "points/details", :locals => { :point => @point, :origin => origin}

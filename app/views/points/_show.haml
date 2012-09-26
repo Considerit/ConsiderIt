@@ -65,14 +65,11 @@
       .point_text.full
 
         .details
-          - if has_details 
-            - full_text = simple_format(point.text.gsub(/\r\n/,""))
-
-            - if point_creator
-              = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => true }
-
-            - else
-              = full_text
+          - if point_creator
+            = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => true }        
+          
+          - elsif has_details 
+            = simple_format(point.text.gsub(/\r\n/,""))
 
         .nested_user
           - if point.hide_name
@@ -98,16 +95,16 @@
 
           //#{has_details ? 'details & ' : ''} discussion#{num_comments > 0 ? "(" + num_comments.to_s + ")" : ''}          
 
-      - if point_creator
-        .edit
-
-          %a.editpoint.point_operation
-            edit
-          -# = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
-
     .point_operations
       - if point.published
         = render :partial => 'followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
+
+      - if point_creator
+        .edit
+
+          %a.editpoint.point_operation.button
+            Edit this point
+          -# = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
 
       .remove            
         - if point_creator

@@ -301,10 +301,16 @@
         left: -10px
         bottom: -5px
 
+    .details
+      +font-size(1)
+      a
+        text-decoration: underline
+
+
     .nutshell, .full, .nested_user
       //margin-left: 82px
 
-    h3.nutshell
+    .nutshell
       +font-size(3)
       //padding-right: 130px
 
@@ -333,6 +339,27 @@
     //margin-left: $grid_major + $grid_minor
 
 .point, .point_in_list
+
+  .nutshell_edit .save_block
+    +font-size(-3)      
+
+  .unobtrusive_edit_form 
+    .redactor_box, #point_nutshell
+      background-color: transparent
+      border: 1px solid transparent
+
+    .save_block
+      display: none
+      width: 85px
+
+
+  &.edit_state
+
+    .unobtrusive_edit_form 
+      .redactor_box, #point_nutshell
+        border-color: #cca
+      .save_block
+        display: block
 
   &.point, &#expanded 
     .header
@@ -375,10 +402,10 @@
     > div
       display: inline-block
       padding-right: $grid_xs
-      .button
 
       &.hide
         display: none
+
 
   .follow, .unfollow
     margin: 0 0 $vertical_baseline 0 

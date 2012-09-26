@@ -67,10 +67,19 @@ class ApplicationController < ActionController::Base
     }
   end
 
-def self.token_for_action(user_id, object, action)
-  user = User.find(user_id.to_i)
-  Digest::MD5.hexdigest("#{user.unique_token}#{object.id}#{object.class.name}#{action}")
-end
+  def self.token_for_action(user_id, object, action)
+    user = User.find(user_id.to_i)
+    Digest::MD5.hexdigest("#{user.unique_token}#{object.id}#{object.class.name}#{action}")
+  end
+
+  def self.reset_user_activities(session, proposal)
+    session[proposal.id] = {
+      :included_points => {},
+      :deleted_points => {},
+      :written_points => [],
+      :viewed_points => []
+    }
+  end
 
 private
 

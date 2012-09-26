@@ -117,6 +117,7 @@ class PointsController < ApplicationController
     #   :ival => context
     # })
 
+    ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
     if context
       points.each do |pnt|
         session[@proposal.id][:viewed_points].push([pnt.id, context])

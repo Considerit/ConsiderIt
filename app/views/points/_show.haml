@@ -107,7 +107,7 @@
           -# = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
 
       .remove            
-        - if point_creator
+        - if (current_user && point.user_id == current_user.id) || point.published == false
 
           = link_to "Delete this point", proposal_point_path(@proposal.long_id, point, :authenticity_token => form_authenticity_token), :remote => true, :confirm => "Are you sure?", :method=>:delete, :class => 'button point_operation delete_point'
 

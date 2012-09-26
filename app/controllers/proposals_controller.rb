@@ -85,7 +85,9 @@ class ProposalsController < ApplicationController
     else
       #@title = "#{@proposal.category} #{@proposal.designator} #{@proposal.short_name}"
       @title = "#{@proposal.short_name}"
-      @keywords = "#{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"      
+      @keywords = "#{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
+      @description = "Explore the opinions of citizen participants for #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
+      
       @positions = @proposal.positions.published.includes(:user)
       @pro_points = @proposal.points.viewable.includes(:user).pros.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
       @con_points = @proposal.points.viewable.includes(:user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )

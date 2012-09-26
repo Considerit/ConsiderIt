@@ -59,9 +59,7 @@ class Ability
       end
 
       #Position
-      can [:create, :update, :destroy], Position, :user_id => user.id do |pos|
-        pos.proposal.active
-      end
+      can [:create, :update, :destroy], Position, :user_id => user.id
 
       #Point
       can :read, Point, :published => true, :moderation_status => 1

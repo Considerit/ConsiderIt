@@ -99,6 +99,8 @@ gem "trackable", :path => "lib/gems/trackable"
 gem "commentable", :path => "lib/gems/commentable"
 gem "moderatable", :path => "lib/gems/moderatable"
 
+gem 'sitemap_generator'
+
 #gem 'spatial_adapter',   :git => 'git://github.com/AdamFerguson/spatial_adapter.git'
 
 # Bundle gems for the local environment. Make sure to

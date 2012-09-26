@@ -50,9 +50,6 @@ ConsiderIt::Application.routes.draw do
   match '/home/study/:category' => "home#study", :via => :post  
   #match '/admin' => "admin/dashboard#index", :via => :get, :module => :admin  
 
-  #ActiveAdmin.routes(self)
-   # Feel free to change '/admin' to any namespace you need.
-
 
   match '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
 

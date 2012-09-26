@@ -21,7 +21,7 @@
 
     .body
       - if !point.hide_name && point.user
-        = image_tag point.user.avatar.url(true ? :medium_dark : :medium), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
+        = image_tag point.user.avatar.url(:medium), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
 
       - if point_creator
         .point_text.nutshell.nutshell_edit

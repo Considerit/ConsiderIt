@@ -134,8 +134,8 @@ protected
     @user = current_user
 
     @title = "#{@proposal.name}"
-    @keywords = "#{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
-    @description = "Learn more and put your best arguments forward about #{@proposal.domain} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the 2011 election!"
+    @keywords = "#{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
+    @description = "Hear and engage fellow citizens about #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
 
     if !session.has_key?(@proposal.id)
       session[@proposal.id] = {

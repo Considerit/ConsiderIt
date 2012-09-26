@@ -94,12 +94,8 @@ class PositionsController < ApplicationController
     session.delete('position_to_be_published')
     session.delete('position_to_be_published_extras')
 
-    session[@proposal.id] = {
-        :included_points => {},
-        :deleted_points => {},
-        :written_points => [],
-        :viewed_points => []
-      }
+    ApplicationController.reset_user_activities(session, @proposal)
+
   end
 
   def new
@@ -137,14 +133,7 @@ protected
     @keywords = "#{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
     @description = "Hear and engage fellow citizens about #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
 
-    if !session.has_key?(@proposal.id)
-      session[@proposal.id] = {
-        :included_points => {},
-        :deleted_points => {},
-        :written_points => [],
-        :viewed_points => []
-      }
-    end
+    ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
     # When we are redirected back to the position page after a user creates their account, 
     # we should save their actions and redirect to results page
     if session.has_key?('reify_activities') && session['reify_activities']

@@ -14,7 +14,7 @@
       .text.comment_text   
         .body
           - if comment.user.avatar
-            = image_tag comment.user.avatar.url(true ? :medium_dark : :medium), :alt => "#{h comment.user.username}'s profile picture", :class => 'avatar'
+            = image_tag comment.user.avatar.url(:medium), :alt => "#{h comment.user.username}'s profile picture", :class => 'avatar'
 
           - if comment.moderation_status == 0
             This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.

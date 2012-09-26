@@ -59,7 +59,9 @@ class Ability
       end
 
       #Position
-      can [:create, :update, :destroy], Position, :user_id => user.id
+      can [:create, :update, :destroy], Position do |pos|
+        (!pos.published && user.id.nil? && pos.user_id.nil?) || (user.id == pos.user_id)
+      end
 
       #Point
       can :read, Point do |pnt|

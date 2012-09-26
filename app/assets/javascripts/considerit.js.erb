@@ -478,6 +478,12 @@ ConsiderIt = {
 
     });
 
+    // edit point
+    $j(document).on('click', 'a.editpoint', function(e){
+      var point = $j(this).parents('.point_in_list,.point');
+      point.toggleClass('edit_state');
+    });
+
     // Update callback
     $j('.pro_con_list.dynamic').delegate('.editpointform form', 'ajax:success', function(data, response, xhr){
       $j(this).parents('.point_in_list').filter(":first").replaceWith(response['new_point']);

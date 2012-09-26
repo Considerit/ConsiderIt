@@ -67,10 +67,10 @@ class Ability
         pnt.proposal.active
       end
       can [:read, :update], Point do |pnt|
-        (!pnt.published && user.id.nil? && pnt.user_id.nil?) || (user.id = pnt.user_id)
+        (!pnt.published && user.id.nil? && pnt.user_id.nil?) || (user.id == pnt.user_id)
       end 
       can :destroy, Point do |pnt|
-        ((user.id.nil? && pnt.user_id.nil?) || (user.id = pnt.user_id)) && pnt.inclusions.count < 2
+        ((user.id.nil? && pnt.user_id.nil?) || (user.id == pnt.user_id)) && pnt.inclusions.count < 2
       end
 
       #Inclusion

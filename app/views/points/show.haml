@@ -24,23 +24,20 @@
         = image_tag point.user.avatar.url(true ? :medium_dark : :medium), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
 
       - if point_creator
-        %h3.point_text.nutshell.nutshell_edit
+        .point_text.nutshell.nutshell_edit
           = render :partial => 'points/make_editable', :locals => { :point => point, :field => :nutshell, :sync_with => "#expanded .point_text.nutshell span.text", :validations => {:required => true, :maxlength => 140} }
       - else
-        %h3.point_text.nutshell 
+        .point_text.nutshell 
           = point.nutshell
 
       .point_text.full
 
         .details
-          - if has_details 
-            - full_text = simple_format(point.text.gsub(/\r\n/,""))
-
-            - if point_creator
-              = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => true }
-
-            - else
-              = full_text
+          - if point_creator
+            = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => true }        
+          
+          - elsif has_details 
+            = simple_format(point.text.gsub(/\r\n/,""))
 
 
       .nested_user
@@ -55,6 +52,12 @@
       - if point.published
         = render :partial => 'followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
 
+      - if point_creator
+        .edit
+
+          %a.editpoint.point_operation.button
+            Edit this point
+            
     .extra  
       = render :partial => 'commentable/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :enable_new_comments => point.proposal.active }
       

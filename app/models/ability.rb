@@ -62,7 +62,9 @@ class Ability
       can [:create, :update, :destroy], Position, :user_id => user.id
 
       #Point
-      can :read, Point, :published => true, :moderation_status => 1
+      can :read, Point do |pnt|
+        pnt.published && pnt.moderation_status != 0
+      end
       can :create, Point do |pnt|
         pnt.proposal.active
       end

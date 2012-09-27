@@ -23,6 +23,8 @@ class InclusionsController < ApplicationController
     @proposal = Proposal.find_by_long_id(params[:long_id])
     @point = Point.published.find(params[:point_id])
 
+    ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
+
     # don't include a point that has already been included ...
     # not going though CanCan because of session query requirement
     if (current_user \

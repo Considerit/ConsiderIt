@@ -538,17 +538,6 @@ ConsiderIt = {
           is_margin = real_point.hasClass('point_in_list_margin'),
           details_loaded = extra.find('> .ajax_loading').length == 0;
 
-      if ( !details_loaded ) {
-        var proposal_id = $j.trim($j('#proposal_long_id').text());
-
-        $j.get('/' + proposal_id + '/points/' + point_id, {'origin' : is_margin ? 'margin' : 'self'}, function(data){
-          $j('.extra', real_point)
-            .html(data.details)
-            .find('textarea').autoResize({extraSpace:0});    
-        });
-      }
-
-
       real_point.data({
         'container': placeholder.parent()
       });
@@ -587,11 +576,28 @@ ConsiderIt = {
         .click(close_point_click)
         .keyup(close_point_key);
 
-      real_point.find('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');            
-      real_point.find(".unobtrusive_edit textarea").trigger('keyup');
       $j('html, body').animate({
         scrollTop: $j('.slate:visible').offset().top - 20
       }, 1000);
+
+      if ( !details_loaded ) {
+        var proposal_id = $j.trim($j('#proposal_long_id').text());
+
+        $j.get('/' + proposal_id + '/points/' + point_id, {'origin' : is_margin ? 'margin' : 'self'}, function(data){
+          $j('.extra', real_point)
+            .html(data.details)
+            .find('textarea').autoResize({extraSpace:0});    
+
+          real_point.find('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');   
+          real_point.find(".unobtrusive_edit textarea").trigger('keyup');
+
+        });
+      } else{
+        setTimeout(function(){
+          real_point.find('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');   
+          real_point.find(".unobtrusive_edit textarea").trigger('keyup');        
+        }, 1000);
+      }
 
     });
 

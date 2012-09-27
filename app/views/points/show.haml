@@ -19,9 +19,10 @@
       %li.proposal
         = link_to "#{point.proposal.title.length > 70 ? "#{point.proposal.title[0..70]}..." : point.proposal.title}", proposal_path(point.proposal.long_id)
 
+    - if !point.hide_name && point.user
+      = image_tag point.user.avatar.url(:medium), :class => 'avatar author', :alt => "#{h point.user}'s profile picture"
+
     .body
-      - if !point.hide_name && point.user
-        = image_tag point.user.avatar.url(:medium), :class => 'avatar', :alt => "#{h point.user}'s profile picture"
 
       - if point_creator
         .point_text.nutshell.nutshell_edit

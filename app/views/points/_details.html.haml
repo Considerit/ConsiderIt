@@ -6,5 +6,65 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
+- point_creator = can? :update, @point#(current_user && point.user_id == current_user.id) || point.published == false
+
+.body.expanded_body
+  - if point_creator
+    .point_text.nutshell.nutshell_edit
+      = render :partial => 'points/make_editable', :locals => { :point => point, :field => :nutshell, :sync_with => "#expanded .point_text.nutshell span.text", :validations => {:required => true, :maxlength => 140} }
+  - else
+
+    %p.point_text.nutshell.reader
+      %span.text
+        = point.nutshell
+
+  .point_text.full
+
+    .details
+      - if point_creator
+        = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => true }        
+
+      - elsif point.text && point.text.length > 0 
+        = simple_format(point.text.gsub(/\r\n/,""))
+
+    .nested_user
+      - if point.hide_name
+        anonymous
+      - elsif point.user
+        = point.user.username
+      - else
+        unknown
+
+
+.point_operations
+  - if point.published
+    = render :partial => 'followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
+
+  - if point_creator
+    .edit
+
+      %a.editpoint.point_operation.button
+        Edit this point
+      -# = render :partial => 'points/form', :locals => {:point => point, :is_pro => point.is_pro, :action => 'edit' }
+
+  .remove            
+    - if (current_user && point.user_id == current_user.id) || point.published == false
+
+      = link_to "Delete this point", proposal_point_path(@proposal.long_id, point, :authenticity_token => form_authenticity_token), :remote => true, :confirm => "Are you sure?", :method=>:delete, :class => 'button point_operation delete_point'
+
+
+    - elsif !@results_page
+
+      = form_for [@proposal, point], :remote => true, :url => proposal_point_inclusions_path(@proposal.long_id, point, :page => @page, :delete => true),  :method=>:post, :html => {:class => 'uninclude_point_form'} do |f|
+        = f.submit 'Remove from your pro/con list', :class => 'button point_operation uninclude_point', :title => 'Remove this point from your pro/con list'
+
+  .include
+    - if !@results_page
+
+      = form_for [@proposal, point], :remote => true, :method => :post, :url => proposal_point_inclusions_path(@proposal.long_id, point, :page => @page) do |f|
+        = f.submit 'Add to your pro/con list', :class => 'button inclusion_submit', :title => 'Add this point to your pro/con list.'
+
+
+
 = render :partial => 'commentable/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :enable_new_comments => point.proposal.active }
 

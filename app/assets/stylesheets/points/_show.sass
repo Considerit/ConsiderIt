@@ -13,13 +13,13 @@
     visibility: hidden
     display: none
 
-  > .body
+  .avatar.author
+    display: none
+
+  .body
     vertical-align: top
     //padding: 3px 10px 3px 10px
     position: relative
-
-    .avatar
-      display: none
 
     .nested_user
       //font-style: italic
@@ -110,7 +110,7 @@
       left: -10px
       top: 1px
 
-    > .body 
+    .body 
       padding: $vertical_baseline $grid_xs
 
       .nutshell
@@ -157,7 +157,7 @@
     .nutshell
       width: 310px
 
-    > .body .operations
+    .body .operations
       .bullet
         display: none
 
@@ -190,20 +190,26 @@
   &.point_in_list_margin
     +transition('all .25s')
 
-  > .body
-    padding: $vertical_baseline $grid_xs
+  .avatar.author
+    width: 58px
+    //top: 3px
+    position: absolute
+    left: 100px
+    top: $vertical_baseline * 3.75
+    display: block
+
+  > .body, .extra > .body
+    &.compact_body
+      display: none
+    &.expanded_body
+      padding-bottom: $vertical_baseline
+
+    padding: $vertical_baseline $grid_xs 0 $grid_xs
     .point_text
       //+hyphenate_remove
       display: block
     .bullet_point, .nutshell .nested_user
       display: none
-    .avatar
-      width: 58px
-      //top: 3px
-      position: absolute
-      left: -60px
-      top: $vertical_baseline * 1.25
-      display: block
 
     .details
       +font-size(1)
@@ -214,7 +220,7 @@
       width: auto
       +font-size(3)
       font-weight: bold
-      margin-bottom: $vertical_baseline
+      //margin-bottom: $vertical_baseline
       display: none
       &.nutshell_edit, &.reader
         display: block
@@ -237,14 +243,14 @@
     right: 5px
     top: 0
 
-  .extra    
-    padding: $vertical_baseline $grid_xs
+  .extra
     display: block
     visibility: visible
     opacity: 1  
 
     .discuss
       width: 750px
+      padding: $vertical_baseline $grid_xs
 
 
 .pointwrapper
@@ -270,36 +276,38 @@
   > .header
     //margin-left: $grid_major + $grid_minor
 
-  > .body
+  .avatar.author
+    position: absolute
+    left: 86px
+    top: $vertical_baseline * 3.75
+    z-index: 1
+
+    &.has_pic:after, &.has_pic:before
+      position: absolute
+      display: block
+      z-index: 1
+      content: ''
+
+    &.has_pic:after
+      background: image-url('tape.png') no-repeat top left transparent
+      width: 53px
+      height: 23px
+      right: 14px
+      top: -16px
+      z-index: 3
+
+    &.has_pic:before
+      background: image-url('pic_background.png') no-repeat top left transparent
+      width: 50px
+      height: 45px
+      left: -10px
+      bottom: -5px
+
+  .body
     padding: $vertical_baseline $grid_xs
     position: relative
 
-    .avatar
-      position: absolute
-      left: -63px
-      top: 1.35 * $vertical_baseline
-      z-index: 1
 
-      &.has_pic:after, &.has_pic:before
-        position: absolute
-        display: block
-        z-index: 1
-        content: ''
-
-      &.has_pic:after
-        background: image-url('tape.png') no-repeat top left transparent
-        width: 53px
-        height: 23px
-        right: 14px
-        top: -16px
-        z-index: 3
-
-      &.has_pic:before
-        background: image-url('pic_background.png') no-repeat top left transparent
-        width: 50px
-        height: 45px
-        left: -10px
-        bottom: -5px
 
     .details
       +font-size(1)
@@ -410,3 +418,7 @@
   .follow, .unfollow
     margin: 0 0 $vertical_baseline 0 
     //+font-size(-2)
+
+#explore_proposal #expanded 
+  .include, .remove
+    display: none

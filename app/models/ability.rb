@@ -79,7 +79,9 @@ class Ability
 
       #Inclusion
       can :create, Inclusion
-      can :destroy, Inclusion, :user_id => user.id
+      can :destroy, Inclusion do |inc|
+        inc.nil? || inc.position.nil? || !inc.position.published || inc.position.user_id == inc.user_id
+      end
 
       #Comment
       if !user.id.nil?

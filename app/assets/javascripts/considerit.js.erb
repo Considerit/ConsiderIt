@@ -708,7 +708,6 @@ ConsiderIt = {
 
     // post new comment
     $j(document).delegate('.new_comment form', 'ajax:success', function(data, response, xhr){
-        
       var new_point = response['new_point'],
       $parent = $j(this).parents('.comment').filter(":first");
       //because we cloned the point in order to show an expanded version when the point in the list 

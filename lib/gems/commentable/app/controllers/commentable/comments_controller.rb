@@ -22,6 +22,10 @@ class Commentable::CommentsController < ApplicationController
 
     if existing.nil?
       @comment = Commentable::Comment.build_from(commentable, @user_who_commented.id, params[:comment][:body] )
+      if commentable_type == 'Point'
+        commentable.comment_count = commentable.comments.count
+        commentable.save
+      end
     else
       @comment = existing
     end

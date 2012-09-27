@@ -110,6 +110,8 @@ GEM
       warden (~> 1.2.1)
     erubis (2.7.0)
     eventmachine (0.12.10)
+    exception_notification (2.6.1)
+      actionmailer (>= 3.0.4)
     excon (0.14.2)
     execjs (1.4.0)
       multi_json (~> 1.0)
@@ -314,6 +316,7 @@ DEPENDENCIES
   delayed_job_active_record
   delayed_mailhopper
   devise
+  exception_notification
   followable!
   haml
   hpricot

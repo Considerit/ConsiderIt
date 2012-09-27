@@ -100,7 +100,7 @@
       $j(this).addClass('selected'); 
       $j(this).siblings('button').removeClass('selected');
       $j(this).parents('.moderation_row').removeClass('passed failed').addClass($j(this).hasClass('pass') ? 'passed' : 'failed');
-      $j(this).parents('form:first').removeClass('not_moderated');    
+      $j(this).parents('form:first, .moderation_row').removeClass('not_moderated').addClass('moderated');    
       $j(this).parents('form:first').find('#moderate_status').val($j(this).hasClass('pass') ? 1 : 0);
 
       $j(this).parents('form:first').find('input[type="submit"]').trigger('click');

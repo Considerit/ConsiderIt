@@ -85,5 +85,10 @@ ConsiderIt::Application.configure do
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
 
+  # Exception Notification
+  config.middleware.use ExceptionNotifier,
+    :email_prefix => "[Website Error] ",
+    :sender_address => '"Notifier" ',
+    :exception_recipients => ['you@yourdomain.com']
 
 end

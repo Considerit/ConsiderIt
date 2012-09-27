@@ -111,6 +111,10 @@ group :development, :test do
   # gem 'heroku'
 end
 
+group :production do
+  gem 'exception_notification'
+end
+
 gem 'newrelic_rpm'
 
 group :assets do

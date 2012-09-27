@@ -26,6 +26,8 @@ class PointsController < ApplicationController
   #     
   #########
   def index
+
+
     @proposal = Proposal.find_by_long_id(params[:long_id])
     @user = current_user
     
@@ -46,6 +48,11 @@ class PointsController < ApplicationController
     end
 
     @bucket = params[:bucket]
+    if !@bucket
+      redirect_to root_path
+      return
+    end
+
     @filter = params.key?(:filter) ? params[:filter] : nil
     @positions = @proposal.positions.published
     if @bucket == 'all' || @bucket == ''

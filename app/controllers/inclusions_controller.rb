@@ -69,7 +69,7 @@ class InclusionsController < ApplicationController
       end
     end
 
-    authorize! :destroy, @inc
+    authorize! :destroy, @inc || Inclusion.new
 
     @page = params[:page].to_i
     candidate_next_points = @point.is_pro ? @proposal.points.viewable.pros : @proposal.points.viewable.cons

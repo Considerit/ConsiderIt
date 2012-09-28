@@ -10,17 +10,8 @@ require 'digest/md5'
 class ApplicationController < ActionController::Base
   #protect_from_forgery
   set_current_tenant_through_filter
-  before_filter :get_current_tenant
+  prepend_before_filter :get_current_tenant
   before_filter :theme_resolver
-  before_filter :print_session
-
-  def print_session
-    if params.has_key?('authenticity_token')
-      puts session
-      puts "PARAMS AUTH TOKEN: #{params[:authenticity_token]}"
-      puts "SESSIO AUTH TOKEN: #{session[:_csrf_token]}}"
-    end
-  end
 
   def render(*args)
     puts "referrer = #{request.referer}"
@@ -86,9 +77,13 @@ private
   def get_current_tenant(rq = nil)
     rq ||= request
     current_account = Account.find_by_identifier(rq.subdomain)
+    pp current_account
+    pp rq.subdomain
+
     if current_account.nil?
       current_account = Account.find(1)
     end    
+
     set_current_tenant(current_account)
     session["user_account_identifier"] = current_tenant.identifier
     current_account

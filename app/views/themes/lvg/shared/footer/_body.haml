@@ -86,8 +86,9 @@
       .partner.line
         = link_to "National Science Foundation", "http://www.nsf.gov"
 
-      .partner.line
-        = link_to "The Whitman Institute", "http://www.thewhitmaninstitute.org/"
+      - if is_cali
+        .partner.line
+          = link_to "The Whitman Institute", "http://www.thewhitmaninstitute.org/"
 
 
   #voter_info
@@ -95,7 +96,7 @@
       Information for voters
     - if !is_cali
 
-      - links = [{:anchor=>'League of Women Voters of Gr. Seattle',:link=>'http://www.lwvwa.org/positions.html#positions', :title=>'Voters Guide by the League of Women Voters'},  {:anchor=>'Progressive Voters Guide', :link=>'http://progressivevotersguide.com/', :title=>'Voters Guide by Fuse'}, {:anchor=>'Washington Policy Center', :link=>'http://www.myelectionresource.com', :title=>'Voters Guide by the Washington Policy Center'}, {:anchor=>'Washington Secretary of State', :link=>'http://wei.secstate.wa.gov/osos/en/Pages/OnlineVotersGuide.aspx', :title=>'Voters Guide by the Secretary of State'}, {:anchor=>'TVW Video Voters Guide', :link=>'http://www.tvw.org/2012-video-voters-guide-general-election', :title=>'A video Voters Guide by TVW'}, {:anchor => "About the initiative process", :link => "http://www.ncsl.org/default.aspx?tabid=16600", :title => 'About the initiative process'}, {:anchor => "History of WA ballot measures", :link => "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :title => 'History of WA ballot measures'}, {:anchor => "Filing an initiative in WA", :link => "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :title => 'Filing an initiative in WA'} ]
+      - links = [{:anchor=>'League of Women Voters of Gr. Seattle',:link=>'http://www.lwvwa.org/positions.html#positions', :title=>'Voters Guide by the League of Women Voters'},  {:anchor=>'Progressive Voters Guide', :link=>'http://progressivevotersguide.com/', :title=>'Voters Guide by Fuse'}, {:anchor=>'Washington Policy Center', :link=>'http://www.myelectionresource.com', :title=>'Voters Guide by the Washington Policy Center'}, {:anchor=>'Washington Secretary of State', :link=>'https://wei.sos.wa.gov/agency/osos/en/press_and_research/PreviousElections/2012/General-Election/Pages/Online-Voters-Guide.aspx', :title=>'Voters Guide by the Secretary of State'}, {:anchor=>'TVW Video Voters Guide', :link=>'http://www.tvw.org/2012-video-voters-guide-general-election', :title=>'A video Voters Guide by TVW'}, {:anchor => "About the initiative process", :link => "http://www.ncsl.org/default.aspx?tabid=16600", :title => 'About the initiative process'}, {:anchor => "History of WA ballot measures", :link => "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :title => 'History of WA ballot measures'}, {:anchor => "Filing an initiative in WA", :link => "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :title => 'Filing an initiative in WA'} ]
     - else
       - links = [ {:anchor=>'California Online Voter Guide',:link=>'http://www.calvoter.org/covg', :title=>'California Online Voter Guide'}, {:anchor=>'SmartVoter',:link=>'http://www.smartvoter.org/', :title=>'SmartVoter by League of Women\'s Voters of California'}, {:anchor=>'Maplight\'s Voter Guide',:link=>'http://maplight.org/voter', :title=>'Voters guide by the non-partisan Maplight group'}, {:anchor=>'Official guide by Sec. of State',:link=>'http://voterguide.sos.ca.gov/', :title=>'The definitive guide by the Secretary of State'}, {:anchor=>'Easy Voter Guide',:link=>'http://www.easyvoterguide.org/', :title=>'Succinct summaries by League of Women Voters'}, {:anchor=>'County Election Offices Roster',:link=>'http://www.calvoter.org/voter/government/ceo.html', :title=>'Get your questions answered about voting'}, {:anchor=>'California Choices',:link=>'http://www.californiachoices.org/ballot-measures-2012-6', :title=>'Comprehensive resource for all state propositions'}]
 

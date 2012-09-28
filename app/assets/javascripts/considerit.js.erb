@@ -133,7 +133,7 @@ ConsiderIt = {
       drop: function( event, ui ) {
         var draggable = ui.draggable;
         $j('#points_on_board_con .droppable').addClass('dropping_in_progress');
-        $j('.inclusion_submit', draggable).trigger('click');
+        $j('.inclusion_submit.compact', draggable).trigger('click');
       },
       accept: '.con'
     } );
@@ -143,7 +143,7 @@ ConsiderIt = {
       drop: function( event, ui ) {
         var draggable = ui.draggable;
         $j('#points_on_board_pro .droppable').addClass('dropping_in_progress');
-        $j('.inclusion_submit', draggable).trigger('click');
+        $j('.inclusion_submit.compact', draggable).trigger('click');
       },
       accept: '.pro'
     } );      
@@ -232,7 +232,7 @@ ConsiderIt = {
       .on('click', '.proxy', function() {
           var email = $j('#user_email'), password = $j('#user_password'), $me = $j(this);
           if ( email.val().length == 0 || password.val().length == 0 || email.is('.error') || password.is('.error') ) {
-            return;            
+            return;
           } else {
             $j.post('<%= Rails.application.routes.url_helpers.users_check_login_info_path %>', {
                 'user' : {

@@ -73,6 +73,11 @@
 
           //#{has_details ? 'details & ' : ''} discussion#{num_comments > 0 ? "(" + num_comments.to_s + ")" : ''}          
 
+      .include.hide
+        - if !@results_page
+
+          = form_for [@proposal, point], :remote => true, :method => :post, :url => proposal_point_inclusions_path(@proposal.long_id, point, :page => @page), :html => {:class => 'hide'} do |f|
+            = f.submit '', :class => 'button inclusion_submit compact', :title => 'Add this point to your pro/con list.'
 
 
     .extra  

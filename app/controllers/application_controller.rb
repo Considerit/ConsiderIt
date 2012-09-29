@@ -14,7 +14,6 @@ class ApplicationController < ActionController::Base
   before_filter :theme_resolver
 
   def render(*args)
-    puts "referrer = #{request.referer}"
     if !session.has_key?(:referer)
       session[:referer] = request.referer      
     end
@@ -77,8 +76,6 @@ private
   def get_current_tenant(rq = nil)
     rq ||= request
     current_account = Account.find_by_identifier(rq.subdomain)
-    pp current_account
-    pp rq.subdomain
 
     if current_account.nil?
       current_account = Account.find(1)

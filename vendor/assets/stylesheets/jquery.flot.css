@@ -1,0 +1,11 @@
+#analytics{
+  padding: 8em 2em; }
+
+  .placeholder{
+
+  }
+    h3 {font-size: 125%;padding-bottom: 1em;}
+    .main, .cumulative{display: inline-block;}
+      .main{margin-right: 2em;}
+      .graph {width:450px;height:200px;}
+      .overview {margin-left: 12px;width:438px;height:50px;}

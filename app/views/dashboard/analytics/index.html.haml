@@ -1,0 +1,98 @@
+-#*********************************************
+  For the ConsiderIt project.
+  Copyright (C) 2010 - 2012, University of Washington
+  Author: Travis Kriplean
+  Licensed under the AGPL
+  See https://github.com/tkriplean/ConsiderIt/ for details.
+  *********************************************
+
+-#= javascript_include_tag "highstock"
+-#= javascript_include_tag "exporting"
+
+= javascript_include_tag "jquery.flot.js"
+= javascript_include_tag "jquery.flot.selection.js"
+= stylesheet_link_tag 'jquery.flot'
+
+#analytics
+  :javascript
+    analytics_data = #{@series.to_json};
+    analytics_plots = [];
+    analytics_options = {
+          xaxis: { mode: "time", tickLength: 5 },
+          selection: { mode: "x" },
+    };    
+  - @series.each do |s|
+
+    .placeholder{ :id => "placeholder-#{s[:title]}" }
+      %h3
+        = s[:title]
+      .main
+        .graph
+
+        .overview
+
+      .cumulative
+        .graph
+
+        .overview
+
+    - [:main, :cumulative].each do |style|
+      :javascript
+        analytics_plots.#{s[:title]} = [];
+
+        $j(function () {
+          var d = #{s[style][:data].to_json};
+          
+
+          
+          var plot = $j.plot($j("#placeholder-#{s[:title]} .#{style.to_s} .graph"), [d], analytics_options);
+
+          var overview = $j.plot($j("#placeholder-#{s[:title]} .#{style.to_s} .overview"), [d], {
+              series: {
+                  lines: { show: true, lineWidth: 1 },
+                  shadowSize: 0
+              },
+              xaxis: { ticks: [], mode: "time" },
+              yaxis: { ticks: [], min: 0, autoscaleMargin: 0.1 },
+              selection: { mode: "x" }
+          });
+          analytics_plots.#{s[:title]}.push([plot,overview]);
+
+
+        });
+
+  // now connect the two
+  :javascript
+    $j(function () {
+      $j(".graph").bind("plotselected", function (event, ranges) {
+          // do the zooming
+          var new_options = $j.extend(true, {}, analytics_options, {
+                              xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
+                            });
+
+          for ( var i = 0; i < analytics_data.length; i+=1){
+            var s = analytics_data[i];
+            $j.plot($j("#placeholder-" + s.title + " .main .graph"), [s.main.data], new_options);
+            $j.plot($j("#placeholder-" + s.title + " .cumulative .graph"), [s.cumulative.data], new_options);
+
+            // don't fire event on the overview to prevent eternal loop
+            analytics_plots[s.title][0][1].setSelection(ranges, true);
+            analytics_plots[s.title][1][1].setSelection(ranges, true);
+
+          }
+
+      });
+      
+      $j(".overview").bind("plotselected", function (event, ranges) {
+        for ( var i = 0; i < analytics_data.length; i+=1){
+          var s = analytics_data[i];
+          analytics_plots[s.title][0][0].setSelection(ranges);
+          analytics_plots[s.title][1][0].setSelection(ranges);
+        }
+
+
+      });
+    });
+
+
+  

@@ -12,9 +12,9 @@
     .name
       #{@proposal.name}
     .full_text
-      - for i in @proposal.format_description
-        %p= h i.html_safe
-    
+      %p        
+        = @proposal.description.html_safe
+
     - if @proposal.long_description && @proposal.long_description.strip != ''
       .long_description.extra
         .prompt

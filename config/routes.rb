@@ -48,8 +48,9 @@ ConsiderIt::Application.routes.draw do
   match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|videos|help/ } 
 
   match '/home/study/:category' => "home#study", :via => :post  
-  #match '/admin' => "admin/dashboard#index", :via => :get, :module => :admin  
-
+  scope :module => "dashboard" do
+    match '/dashboard/analytics' => "analytics#index", :via => :get
+  end
 
   match '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
 

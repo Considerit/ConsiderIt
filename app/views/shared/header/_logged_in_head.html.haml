@@ -31,7 +31,7 @@
           = link_to 'Moderate', moderate_path, :class => 'moderate'
       - if current_user.is_admin? || current_user.has_role?(:analyst)
         %li
-          = link_to 'Analyize', dashboard_analytics_path, :class => 'analyize'
+          = link_to 'Analyze', dashboard_analytics_path, :class => 'analyze'
       - if Rails.env.development?
         %li
           = link_to 'Tune', '/newrelic', :target => "_blank"

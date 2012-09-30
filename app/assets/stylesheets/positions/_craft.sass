@@ -173,21 +173,6 @@
             padding: $vertical_baseline * .5 $grid_xs * 5
             +font-size(5)
           
-          a
-            display: inline-block
-            +font-size(0)
-            font-weight: bold
-            text-decoration: underline
-            margin-top: $vertical_baseline * 2
-            
-            &.skip_save
-              position: absolute
-              top: 0
-              left: 482px
-              width: 264px
-
-
-
           .notifications
             margin-top: 8px
             +font-size(0)
@@ -204,3 +189,15 @@
             .email
               input
                 //color: #555
+        a
+          display: inline-block
+          +font-size(0)
+          font-weight: bold
+          text-decoration: underline
+          margin-top: $vertical_baseline * 2
+          
+          &.skip_save
+            position: absolute
+            top: 0
+            right: 0px
+            width: 264px

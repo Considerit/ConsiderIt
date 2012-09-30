@@ -6,7 +6,7 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
-- skip_text = current_user && @position.published ? "Discard changes" : "No, just show me the results..."
+
 
 .stance.position_statement.hide
   = label_tag :explanation, "Optional statement that summarizes your thoughts"
@@ -19,7 +19,7 @@
 - if @proposal.active   
   =f.submit "Save your perspective!", :class => "submit button"
 
-= link_to skip_text, proposal_position_path(@proposal.long_id, @position, :authenticity_token => form_authenticity_token), :method => :delete, :class => "skip_save"
+
 //= link_to "discard your #{@position.published ? 'changes' : 'position'}", proposal_position_path(@proposal, @position), :method => :delete
 
 .notifications

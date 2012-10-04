@@ -23,16 +23,47 @@ end
 
 task :compute_metrics => ["cache:points", "cache:proposals"]
 
+
+remaining = @objs_to_moderate[mc.name].length - @existing_moderations[mc.name].length
+
+
+
+
 namespace :alerts do
-  #TODO: do this in a way that doesn't effectively resend the same email
   task :check_moderation => :environment do
     Account.all.each do |accnt|
       ApplicationController.set_current_tenant_to(accnt)
-      # check if any outstanding moderations (just look at counts using unique ids)
+
+      # Find out how many objects need to be moderated
+      # this section is horribly coded and inefficient ... TODO fix
       content_to_moderate = 0
       Moderatable::Moderation.classes_to_moderate.each do |mc|
-        content_to_moderate += mc.moderatable_objects.call.where(:account_id => accnt.id).count - Moderatable::Moderation.select('DISTINCT (moderatable_type, moderatable_id)').where(:moderatable_type => mc.name, :account_id => accnt.id).count
+        existing = {}
+        objs_to_moderate = {}
+        if mc == Commentable::Comment
+          comments = []
+          mc.moderatable_objects.call.each do |comment|
+            if comment.commentable_type != 'Point' || comment.root_object.proposal.active 
+              comments.push(comment)
+            end
+          end
+          objs_to_moderate = comments.map{|x| x.id}.compact
+          records = Moderatable::Moderation.where(:moderatable_type => mc.name)
+          if objs_to_moderate.length > 0
+            records = records.where("moderatable_id in (#{objs_to_moderate.join(',')})")
+          end
+        else
+          objs_to_moderate = mc.moderatable_objects.call
+          records = Moderatable::Moderation.where(:moderatable_type => mc.name)
+        end
+        records.each do |mod|
+          existing[mod.moderatable_id] = mod
+        end
+
+        content_to_moderate += objs_to_moderate.length - existing.length
       end
+      #######
+
       if content_to_moderate > 0
         # send to all users with moderator status
         moderators = []

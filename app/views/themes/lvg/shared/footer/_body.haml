@@ -17,18 +17,10 @@
     - else
 
       .who.line
-        by #{link_to 'CityClub', "http://www.seattlecityclub.org"} and #{link_to "U. of Washington", "http://www.washington.edu"}
-
-      .when.line
-        Results from 
-        %a.old.lvg2010.off
-          2010
-        &bull;
-        %a.old.lvg2011.off
-          2011
+        by #{link_to 'CityClub', "http://www.seattlecityclub.org"} and #{link_to "UW Engage", "http://engage.cs.washington.edu"}
 
       .where.line
-        Now in #{link_to 'California', "https://#{current_tenant.host_with_port.gsub('wash','cali')}"}!     
+        Now in #{link_to 'California', "https://#{current_tenant.host_with_port.gsub('wash','cali')}"}
 
     .help.line
       = link_to 'Donate', 'https://www.seattlecityclub.org/civicrm/contribute/transact?reset=1&id=10'        
@@ -38,7 +30,7 @@
       Powered by #{link_to "ConsiderIt", "https://github.com/tkriplean/ConsiderIt"}
 
     %span.use_considerit.line
-      Contact #{link_to 'Travis','mailto:tkriplean@gmail.com?subject=I am interested in using ConsiderIt'} if you want to use this technology in your organization.
+      Contact #{link_to 'us','mailto:info@livingvotersguide.org?subject=I am interested in using ConsiderIt'} to use this technology in your organization.
 
   #contact
     .contact
@@ -59,13 +51,25 @@
             -#= link_to image_tag( 'twitter.png'), "https://twitter.com/#{current_tenant.socmedia_twitter_account}"
             #{link_to 'Twitter', "https://twitter.com/#{current_tenant.socmedia_twitter_account}"}
       
-        
+    .past
+      %h3
+        Past results
+
+      .line        
+        %a.old.lvg2010.off
+          2010
+        &bull;
+        %a.old.lvg2011.off
+          2011    
     
     .partners
       %h3
         Partners & funders
 
       - if !is_cali
+        .partner.line
+          = link_to "Center for Comm & Civic Engagement", "http://ccce.com.washington.edu/"
+
         .partner.line
           = link_to 'The Seattle Public Library', 'http://www.spl.org'
 

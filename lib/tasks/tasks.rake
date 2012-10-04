@@ -23,12 +23,6 @@ end
 
 task :compute_metrics => ["cache:points", "cache:proposals"]
 
-
-remaining = @objs_to_moderate[mc.name].length - @existing_moderations[mc.name].length
-
-
-
-
 namespace :alerts do
   task :check_moderation => :environment do
     Account.all.each do |accnt|

@@ -94,9 +94,9 @@ ActiveSupport::Notifications.subscribe("published_new_position") do |*args|
     proposal.followable_last_notification = DateTime.now
     proposal.save
 
-    if positions.count > 10 #only send tweets for milestones past 10 positions
+    if current_tenant.tweet_notifications && positions.count > 10 #only send tweets for milestones past 10 positions
       msg = new_proposal_milestone_tweet(proposal)
-      post_to_twitter_client(current_tenant, msg)
+      post_to_twitter_client(current_tenant, msg) 
     end
 
   end

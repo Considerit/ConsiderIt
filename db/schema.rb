@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120925175840) do
+ActiveRecord::Schema.define(:version => 20121006181944) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -68,6 +68,30 @@ ActiveRecord::Schema.define(:version => 20120925175840) do
   end
 
   add_index "activities", ["account_id"], :name => "index_activities_on_account_id"
+
+  create_table "assessments", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "account_id"
+    t.integer  "assessable_id"
+    t.string   "assessable_type"
+    t.boolean  "qualifies"
+    t.string   "qualifies_reason"
+    t.integer  "overall_verdict"
+    t.boolean  "complete",         :default => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
+  end
+
+  create_table "claims", :force => true do |t|
+    t.integer  "assessment_id"
+    t.integer  "account_id"
+    t.string   "result"
+    t.string   "claim"
+    t.integer  "verdict"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+    t.string   "notes"
+  end
 
   create_table "comments", :force => true do |t|
     t.integer  "commentable_id",                         :default => 0
@@ -406,6 +430,15 @@ ActiveRecord::Schema.define(:version => 20120925175840) do
 
   add_index "reflect_responses", ["account_id"], :name => "index_reflect_responses_on_account_id"
 
+  create_table "requests", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "assessment_id"
+    t.integer  "account_id"
+    t.string   "suggestion"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false
     t.text     "data"
@@ -472,7 +505,7 @@ ActiveRecord::Schema.define(:version => 20120925175840) do
     t.boolean  "registration_complete",                :default => false
     t.integer  "domain_id"
     t.integer  "roles_mask",                           :default => 0
-    t.text     "referrer"
+    t.text     "referer"
   end
 
   add_index "users", ["account_id"], :name => "account_id"

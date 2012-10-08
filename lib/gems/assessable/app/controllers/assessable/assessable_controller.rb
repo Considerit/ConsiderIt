@@ -21,11 +21,19 @@ class Assessable::AssessableController < ApplicationController
   end
 
   def create_claim
-    params[:claim][:account_id] = current_tenant.id
-    params[:claim][:assessment_id] = params[:assessment_id]
     @assessment = Assessable::Assessment.find(params[:assessment_id])
-    claim = Assessable::Claim.create!(params[:claim])
+
+    if params[:claim].has_key?(:copy) && params[:claim][:copy]
+      copyable_attributes = Assessable::Claim.find(params[:claim][:copy_id]).attributes
+      copyable_attributes[:assessment_id] = @assessment.id
+      claim = Assessable::Claim.create!(copyable_attributes)
+    else
+      params[:claim][:account_id] = current_tenant.id
+      params[:claim][:assessment_id] = params[:assessment_id]
+      claim = Assessable::Claim.create!(params[:claim])
+    end
     redirect_to edit_assessment_path(@assessment)
+
   end
 
   def update_claim

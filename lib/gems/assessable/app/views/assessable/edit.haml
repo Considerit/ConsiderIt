@@ -104,7 +104,26 @@
           .submit_block
             = f.submit 'Add'
             %a.cancel
-              cancel        
+              cancel
+
+        #other_claims.hide
+          - other_claims = Assessable::Claim.all.map {|clm| [ clm.claim, clm.id ] if clm.assessment_id != @assessment.id && clm.assessment.root_object.proposal_id == assessable.proposal_id }.compact
+
+          .options
+
+            = form_for :claim, :url => assessment_create_claim_path(@assessment), :html => {:class => 'hide'} do |f|
+              = f.hidden_field :copy, :value => true
+
+              = f.label :copy_id, '...or copy a claim from a different pro/con point'
+              .block
+                = f.select :copy_id, other_claims
+
+                = f.submit 'Copy this claim'
+
+
+
+
+
 
   #sidebar
     %h3
@@ -127,7 +146,7 @@
         $claim.find('.autoResize').trigger('keyup');
       })
       .on('click', '#evaluate .add_claim, #evaluate .add_claim_form .cancel', function(){
-        $j(this).parents('#evaluate').find('.add_claim, .add_claim_form form').toggleClass('hide');
+        $j(this).parents('#evaluate').find('.add_claim, .add_claim_form form, .add_claim_form #other_claims').toggleClass('hide');
         $j('.add_claim_form').find('.autoResize').trigger('keyup');
 
       });

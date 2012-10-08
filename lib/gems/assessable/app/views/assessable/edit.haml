@@ -35,7 +35,12 @@
               %button.answer
                 #{clm.verdict.nil? ? 'Answer' :'Edit'}
 
-              // TODO: add delete claim button here
+              - if !@assessment.complete
+                .destroy
+                  = form_for [@assessment, clm], :method => :delete, :url => assessment_destroy_claim_path(@assessment, clm) do |f|
+                    = f.submit 'Delete'
+
+                // TODO: add delete claim button here
           
           .closed
 

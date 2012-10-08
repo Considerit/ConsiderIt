@@ -26,7 +26,6 @@ class Assessable::AssessableController < ApplicationController
     @assessment = Assessable::Assessment.find(params[:assessment_id])
     claim = Assessable::Claim.create!(params[:claim])
     redirect_to edit_assessment_path(@assessment)
-
   end
 
   def update_claim
@@ -44,6 +43,15 @@ class Assessable::AssessableController < ApplicationController
     end
   end
 
+  def destroy_claim
+    claim = Assessable::Claim.find(params[:id])
+    redirect_to edit_assessment_path(claim.assessment)
+
+    if !claim.assessment.complete
+      claim.destroy
+    end
+  end
+
   def update
     redirect_to assessment_index_path
     assessment = Assessable::Assessment.find(params[:assessment][:id])
@@ -56,7 +64,11 @@ class Assessable::AssessableController < ApplicationController
     assessment.save
 
     if !complete && assessment.complete
-      #TODO: if fact-check is being completed, instrument notification to appropriate parties
+      ActiveSupport::Notifications.instrument("assessment_completed", 
+        :assessment => assessment,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )
     end
 
 
@@ -76,8 +88,14 @@ class Assessable::AssessableController < ApplicationController
     request = Assessable::Request.new(params[:request])
     assessment = Assessable::Assessment.where(:assessable_type => assessable_type, :assessable_id => assessable_id).first
     if !assessment
-      #TODO: instrument event so notification can be sent out
       assessment = Assessable::Assessment.create!({:account_id => current_tenant.id, :assessable_type => assessable_type, :assessable_id => assessable_id})
+
+      ActiveSupport::Notifications.instrument("new_assessment_request", 
+        :assessment => assessment,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )
+
     end
     request.assessment = assessment
     request.save
@@ -85,5 +103,61 @@ class Assessable::AssessableController < ApplicationController
     render :json => {:success => true}.to_json
   end
 
+
+end
+
+ActiveSupport::Notifications.subscribe("new_assessment_request") do |*args|
+  data = args.last
+  assessment = data[:assessment]
+  current_tenant = data[:current_tenant]
+  mail_options = data[:mail_options]
+  assessable = assessment.root_object
+
+  # send to all users with moderator status
+  evaluators = []
+  accnt.users.where('roles_mask > 0').each do |u|
+    if u.has_any_role? :evaluator, :admin, :superadmin
+      evaluators.push(u)
+    end
+  end
+  evaluators.each do |user|
+    AlertMailer.content_to_assess(assessment, user, accnt).deliver!
+  end
+
+end
+
+ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
+  data = args.last
+  assessment = data[:assessment]
+  current_tenant = data[:current_tenant]
+  mail_options = data[:mail_options]
+
+  assessable = assessment.root_object
+
+  commenters = assessable.comments.select(:user_id).uniq.map {|x| x.user_id }
+  includers = assessable.inclusions.select(:user_id).uniq.map {|x| x.user_id }
+
+
+  assessable.follows.where(:follow => true).each do |follow|
+
+    if !follow.user.email || follow.user.email.length == 0
+      next
+
+    # if follower is author of point
+    elsif follow.user_id == assessable.user_id
+      notification_type = 'your point'
+
+    # if follower is a participant in the discussion
+    elsif commenters.include? assessable.user_id
+      notification_type = 'participant'
+
+    # if follower included the point
+    elsif includers.include? follow.user_id
+      notification_type = 'included point'
+    end
+
+    EventMailer.point_new_assessment(follow.user, assessable, assessment, mail_options, notification_type).deliver!
+
+  end
 
 end

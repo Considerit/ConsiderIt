@@ -81,12 +81,21 @@
       %button.add_claim
         + Add a claim to check
 
-      .complete.hide
-        = form_for :assessment, :method => :put, :url => assessment_path(@assessment) do |f|
-          = f.hidden_field :complete, :value => true
-          = f.hidden_field :id, :value => @assessment.id
-          = f.hidden_field :user_id, :value => current_user.id
-          = f.submit "#{@assessment.claims.count == 0 ? 'There are no verifiable claims' : 'Complete fact check'}"
+      - if @assessment.reviewable && current_user.id != @assessment.user_id
+        .complete.hide
+          = form_for :assessment, :method => :put, :url => assessment_path(@assessment) do |f|
+            = f.hidden_field :complete, :value => true
+            = f.hidden_field :id, :value => @assessment.id
+            = f.submit "#{@assessment.claims.count == 0 ? 'Correct, there are no verifiable claims, publish it' : 'Publish fact check'}"
+
+      - if !@assessment.reviewable
+        .review.hide
+          = form_for :assessment, :method => :put, :url => assessment_path(@assessment) do |f|
+            = f.hidden_field :reviewable, :value => true
+            = f.hidden_field :id, :value => @assessment.id
+            = f.hidden_field :user_id, :value => current_user.id
+            = f.submit "#{@assessment.claims.count == 0 ? 'There are no verifiable claims' : 'Submit for review'}"
+
 
       .add_claim_form
         = form_for :claim, :url => assessment_create_claim_path(@assessment), :html => {:class => 'hide'} do |f|
@@ -127,7 +136,7 @@
         num_answered_claims = #{@assessment.claims.where('verdict IS NOT NULL').count};
 
     if ( num_claims > 0 && num_answered_claims != num_claims ) {
-      $j('#evaluate .complete').hide();
+      $j('#evaluate .complete, #evaluate .review').hide();
     }
 
 

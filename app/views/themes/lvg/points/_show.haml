@@ -80,7 +80,7 @@
             = f.submit '', :class => 'button inclusion_submit compact', :title => 'Add this point to your pro/con list.'
 
 
-    - if current_tenant.identifier == 'wash' && @proposal.active && point.assessment && point.assessment.complete
+    - if current_tenant.identifier == 'wash'  && point.assessment && point.assessment.complete
       - assessment = point.assessment
       .verdict_summary
 

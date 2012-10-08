@@ -314,5 +314,198 @@ h1,h2,h3,h4,h5,h6, .pro_con_list .full_column .pro_con_list_header .inner, #craf
     width: 800px
     margin: 0 auto    
 
-#moderate
+#moderate, #assess, #edit_assessment
   margin-top: 5em
+
+
+// requesting fact check
+#expanded .assessment, .assessment
+
+  .request_form
+    +box-shadow(0, 1px, 2px, black, 0.2)
+    border-radius: 5px
+    padding: $vertical_baseline $grid_xs
+    background-color: #FEFFCC
+    color: #777
+    width: 550px
+    margin-top: $vertical_baseline
+
+    strong
+      color: #555
+
+    .ask
+      +font-size(2)
+    p
+      +font-size(-2)
+      a
+        text-decoration: underline
+
+    .subheader
+      +font-size(-4)
+      font-weight: normal
+      color: #777
+
+    textarea
+      height: 3em
+
+    a
+      color: #777
+
+    .cancel
+      +font-size(-2)
+
+  a.signin_link
+    font-weight: bold
+
+
+// verdict on point in margin
+.point_in_list_board, .point_in_list_self
+  .verdict_summary
+    display: none
+
+.point_in_list_margin, .point_in_list_board:hover, .point_in_list_self:hover
+  
+
+  &.point_in_list_margin
+    .verdict_summary .assessment
+      color: #CBBE31
+      right: 10px
+      bottom: 20px
+
+  &.point_in_list_board, &.point_in_list_self
+    .verdict_summary .assessment
+      //color: #CBBE31
+      right: 0px
+      bottom: 0px
+
+
+  .verdict_summary 
+    display: block
+    .assessment
+      text-align: right
+      position: absolute
+      z-index: 10
+
+      .assessment_details
+        display: none
+        position: absolute
+        +font-size(-2)
+        width: 175px
+        padding: $vertical_baseline/2 $grid_xs
+        text-align: left
+
+      .wrap
+        padding: 2px 10px
+
+      &:hover
+        cursor: pointer
+        color: black
+
+        &.truth
+          .wrap, .assessment_details
+            background-color: #cfc
+
+        &.unverified
+          .wrap, .assessment_details
+            background-color: #ccf
+
+        &.questionable
+          .wrap, .assessment_details
+            background-color: #fcc
+
+
+        .assessment_details
+          display: inline-block
+          right: 0
+
+          strong
+            display: block
+            padding-top: $vertical_baseline
+
+#expanded .verdict_summary
+  display: none
+
+
+// fact checking
+.fact_check
+  #assessment_details
+    width: 100%
+    +on_paper
+    padding: $vertical_baseline $grid_minor
+    +box-shadow(0, 1px, 2px, black, 0.2)
+    +font-size(-2)
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace
+    color: #777
+    margin-top: $vertical_baseline
+
+    .meta
+      display: inline-block
+      width: 15%
+      margin-right: $grid_xs
+      text-align: left
+      vertical-align: top
+
+    .main
+      display: inline-block
+      width: 80%
+      h1
+        +font-size(3)
+        padding-bottom: $vertical_baseline
+        color: #555
+
+      .explanation
+        .signature
+          font-style: italic
+
+      a 
+        text-decoration: underline
+        color: #777
+
+      .claims
+        .claim
+          .verdict, .main
+            display: inline-block
+          .verdict
+            width: 3%
+            vertical-align: top
+          .main
+            width: 93%
+            .summary
+              font-weight: bold
+              .claim_verdict
+                font-style: italic
+            .details
+
+
+// /home/fact_check
+#fact_check
+  padding: 3 * $vertical_baseline $grid_xs $vertical_baseline $grid_xs
+
+  .spl_logo
+    display: inline-block
+    width: 30%
+    vertical-align: top
+    text-align: right
+    padding-top: 0 * $vertical_baseline
+
+    img
+      width: 150px
+
+  .statement
+    //padding: 3 * $vertical_baseline $grid_minor $vertical_baseline $grid_minor
+    //+on_paper
+    //+box-shadow(0, 1px, 2px, black, 0.2)
+    display: inline-block
+    width: 55%
+
+    h3
+      padding-bottom: $vertical_baseline
+
+    li
+      list-style: disc outside
+      margin-left: $grid_xs
+      padding-bottom: $vertical_baseline
+      //display: inline-block
+
+
+

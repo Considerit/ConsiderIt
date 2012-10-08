@@ -1,0 +1,77 @@
+-#*********************************************
+  For the ConsiderIt project.
+  Copyright (C) 2010 - 2012, University of Washington
+  Author: Travis Kriplean
+  Licensed under the AGPL
+  See https://github.com/tkriplean/ConsiderIt/ for details.
+  *********************************************
+
+- point = @point
+- point_creator = can? :update, @point# (current_user && point.user_id == current_user.id) || point.published == false
+- has_details = point.text && point.text.length > 0
+
+.pointwrapper
+  .point{ :id => "point-#{point.id}", :class => "point #{point.is_pro ? 'pro' : 'con'} commentable #{point_creator ? 'added_by_me' : ''}", :point => point.id, :user => point.hide_name ? nil : point.user_id, :includers => point.includers }
+
+    %ul.header
+      %li.type.first
+        = "#{point.is_pro ? 'Pro' : 'Con'}" 
+      %li.proposal
+        = link_to "#{point.proposal.title.length > 70 ? "#{point.proposal.title[0..70]}..." : point.proposal.title}", proposal_path(point.proposal.long_id)
+
+    - if !point.hide_name && point.user
+      = image_tag point.user.avatar.url(:medium), :class => 'avatar author', :alt => "#{h point.user}'s profile picture"
+
+    .body
+
+      - if point_creator
+        .point_text.nutshell.nutshell_edit
+          = render :partial => 'points/make_editable', :locals => { :point => point, :field => :nutshell, :sync_with => "#expanded .point_text.nutshell span.text", :validations => {:required => true, :maxlength => 140} }
+      - else
+        .point_text.nutshell 
+          = point.nutshell
+
+      .point_text.full
+
+        .details
+          - if point_creator
+            = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => true }        
+          
+          - elsif has_details 
+            = simple_format(point.text.gsub(/\r\n/,""))
+
+
+      .nested_user
+        - if point.hide_name
+          anonymous
+        - elsif point.user
+          = point.user.username
+        - else
+          unknown
+
+    .point_operations
+      - if point.published
+        = render :partial => 'followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
+
+      - if point_creator
+        .edit
+
+          %a.editpoint.point_operation.button
+            Edit this point
+
+      - if current_tenant.identifier == 'wash' #&& @proposal.active
+        .fact_check
+
+          - if point.assessment && point.assessment.complete
+            .assessment
+              = render :partial => 'assessable/show', :locals => { :assessable => point }
+
+          - else
+            .request_assessment
+              = render :partial => 'assessable/new_request', :locals => { :assessable => point }
+
+            
+    .extra  
+      = render :partial => 'commentable/discussion', :locals => { :comments => point.comment_count > 0 ? point.comments : [], :commentable => point, :context => 'point', :enable_new_comments => point.proposal.active }
+      
+    .clear

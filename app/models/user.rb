@@ -135,6 +135,10 @@ class User < ActiveRecord::Base
     username.split(' ')[0]
   end
 
+  def last_name
+    username.split(' ').last
+  end
+
   def short_name
     split = username.split(' ')
     if split.length > 1

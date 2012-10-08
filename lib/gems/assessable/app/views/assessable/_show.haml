@@ -1,0 +1,50 @@
+#assessment_details
+  .meta
+    .line
+      = assessable.is_pro ? 'Pro' : 'Con'
+    .line
+      #{assessable.id}.#{assessable.proposal.designator}
+    .line
+      #{assessable.user.last_name}
+
+  .main
+    %h1
+      Librarian's Fact Check
+
+    %ul.claims
+      - assessable.assessment.claims.each do |clm|
+        %li.claim
+          .verdict
+            - if clm.verdict == 2
+              &#10003;
+            - elsif clm.verdict == 1
+              &hellip;
+            - else
+              ?
+          .main
+            .summary
+              %span.claim_desc
+                = clm.claim
+              %span.claim_verdict
+                #{Assessable::Claim.format_verdict(clm.verdict)}.
+
+            .details
+              = simple_format(clm.result)
+
+    %p.explanation
+      - num_requests = assessable.assessment.requests.count
+
+      - if assessable.assessment.overall_verdict > -1
+        
+        Prepared in response to #{num_requests} #{num_requests == 1 ? 'request' : 'requests'}. We hope that this information will be useful to this discussion!
+
+      - else 
+        This point does not make any verifiable claims.
+
+      .signature
+        .line
+          Sincerly, 
+        .line
+          The Seattle Public Library
+      .process
+        = link_to 'Read about the fact-checking process', '/home/fact_check', :target => '_blank' 

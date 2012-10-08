@@ -1,0 +1,117 @@
+-#*********************************************
+  For the ConsiderIt project.
+  Copyright (C) 2010 - 2012, University of Washington
+  Author: Travis Kriplean
+  Licensed under the AGPL
+  See https://github.com/tkriplean/ConsiderIt/ for details.
+  *********************************************
+
+-# TODO: Cache this partial as per http://broadcastingadam.com/2011/05/advanced_caching_in_rails/
+
+- point_creator = can? :update, @point#(current_user && point.user_id == current_user.id) || point.published == false
+
+= cache [point, point.user_id, point_creator, origin, point.comment_count, Digest::MD5.hexdigest(point.includers || '')] do
+
+  - has_details = point.text && point.text.length > 0
+
+  %li.point_in_list{ :id => "point-#{point.id}", :class => "point_in_list_#{origin} point_in_list #{point.is_pro ? 'pro' : 'con'} commentable #{point_creator ? 'added_by_me' : ''}", :point => point.id,  :user => point.hide_name ? nil : point.user_id, :includers => point.includers }
+        
+    %a.toggle.less.hide.point_text_toggle
+      x
+
+    %ul.header
+      %li.type.first
+        = "#{point.is_pro ? 'Pro' : 'Con'}" 
+      %li.proposal
+        = "#{point.proposal.title.length > 70 ? "#{point.proposal.title[0..70]}..." : point.proposal.title}"
+      %li.permalink
+        = link_to( 'permalink', proposal_point_path(@proposal,point) )
+
+    - if !point.hide_name && point.user
+      = image_tag point.user.avatar.url(:medium), :class => 'avatar author', :alt => "#{h point.user}'s profile picture"
+
+    .body.compact_body
+
+      .bullet_point
+        &#8226;
+            
+      %p.point_text.nutshell{:class => "#{point_creator ? 'author' : 'reader'}"}
+        %span.text
+          - if point.nutshell.length > 140
+            = point.nutshell[0,140]
+            - point.text = point.nutshell[140, point.nutshell.length] + point.text
+          - elsif point.nutshell.length > 0
+            = point.nutshell
+          - else
+            = point.text.length > 137 ? point.text[0,137] : point.text
+
+          - if has_details
+            %span.details_indicator
+              (&#8230;)
+        
+        %span.nested_user
+          - if point.hide_name
+            anonymous
+          - elsif point.user
+            = point.user.username
+          - else
+            %span.unknown
+              unknown
+
+    .operations
+
+      .read_more
+        - num_comments = point.comment_count
+        %a.toggle.more.point_text_toggle.point_operation
+
+          //- if has_details
+          //  &#8230;
+          
+          #{ num_comments == 1 ? "1 comment" : "#{num_comments} comments"}
+          
+          //#{ num_comments == 1 ? "1 comment" : num_comments > 1 ? "#{num_comments} comments" : has_details ? "more" : "0 comments"}
+
+          //#{has_details ? 'details & ' : ''} discussion#{num_comments > 0 ? "(" + num_comments.to_s + ")" : ''}          
+
+      .include.hide
+        - if !@results_page
+
+          = form_for [@proposal, point], :remote => true, :method => :post, :url => proposal_point_inclusions_path(@proposal.long_id, point, :page => @page), :html => {:class => 'hide'} do |f|
+            = f.submit '', :class => 'button inclusion_submit compact', :title => 'Add this point to your pro/con list.'
+
+    - if current_tenant.identifier == 'wash' && point.assessment && point.assessment.complete
+      - assessment = point.assessment
+      .verdict_summary
+
+        - if assessment.overall_verdict == 2
+          .assessment.truth
+            .wrap
+              &#10003;
+            .assessment_details
+              This point makes accurate factual claims.
+
+              %strong
+                Click to learn more
+
+        - elsif assessment.overall_verdict == 1
+          .assessment.unverified
+            .wrap
+              &hellip;
+            .assessment_details
+              This point makes some unverifiable claims.
+
+              %strong
+                Click to learn more
+
+        - elsif assessment.overall_verdict == 0
+          .assessment.questionable
+            .wrap
+              ?
+            .assessment_details
+              This point makes some questionable claims.                
+              %strong
+                Click to learn more
+    .extra  
+      .ajax_loading
+      
+    .clear

@@ -13,6 +13,10 @@ class Point < ActiveRecord::Base
   is_moderatable :text_fields => [:nutshell, :text], :moderatable_objects => lambda {
     Point.joins(:proposal).published.where(:proposals => {:active => true})
   }
+
+  is_assessable :text_fields => [:nutshell, :text], :assessable_objects => lambda {
+    Point.joins(:proposal).published.where(:proposals => {:active => true})
+  }
   
   has_paper_trail :only => [:hide_name, :published, :is_pro, :text, :nutshell, :user_id]  
   
@@ -99,6 +103,13 @@ class Point < ActiveRecord::Base
     end
   end
 
+  def short_desc
+    if nutshell.length > 0
+      return text && text.length > 0 ? nutshell + '...' : nutshell
+    else
+      return text && text.length > 0 ? text[(0..140)] : ''
+    end
+  end
 
   def update_absolute_score
     self.comment_count = comments.count

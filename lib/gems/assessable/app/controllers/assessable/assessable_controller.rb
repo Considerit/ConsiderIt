@@ -115,13 +115,13 @@ ActiveSupport::Notifications.subscribe("new_assessment_request") do |*args|
 
   # send to all users with moderator status
   evaluators = []
-  accnt.users.where('roles_mask > 0').each do |u|
+  current_tenant.users.where('roles_mask > 0').each do |u|
     if u.has_any_role? :evaluator, :admin, :superadmin
       evaluators.push(u)
     end
   end
   evaluators.each do |user|
-    AlertMailer.content_to_assess(assessment, user, accnt).deliver!
+    AlertMailer.content_to_assess(assessment, user, current_tenant).deliver!
   end
 
 end

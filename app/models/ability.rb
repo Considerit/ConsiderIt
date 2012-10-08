@@ -30,13 +30,25 @@ class Ability
     user_facing_models = [User, Point, Position, Inclusion, Proposal]
         
 
-
     if user.has_role? :superadmin
       can :manage, :all
     end
 
     if user.has_role? :moderator
       can [:index, :create], Moderatable::Moderation
+    end
+
+    if user.has_role? :evaluator
+      can [:index, :create, :update], Assessable::Assessment
+      can [:index, :create, :update], Assessable::Claim
+      can [:index, :create, :update], Assessable::Request      
+    end
+
+    if !user.id.nil?
+      can :create, Assessable::Request do |req|
+        assessment = req.assessment
+        assessment.requests.where(:user_id => req.user_id).count < 2
+      end     
     end
 
     #Rails_admin

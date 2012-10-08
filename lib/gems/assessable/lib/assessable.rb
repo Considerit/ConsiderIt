@@ -19,7 +19,13 @@ module Assessable
 
   module Assessable
     def is_assessable(options = {})
-      has_many :assessments, :as => :assessable, :class_name => 'Assessable::Assessment', :dependent => :destroy
+      has_one :assessment, :as => :assessable, :class_name => 'Assessable::Assessment', :dependent => :destroy
+      
+      class_attribute :text_fields
+      self.text_fields = options[:text_fields]
+
+      class_attribute :assessable_objects
+      self.assessable_objects = options[:assessable_objects]
       
       include InstanceMethods
     end
@@ -33,5 +39,7 @@ module Assessable
 
 end
 
-ActiveRecord::Base.extend Assessable::Assessment
+ActiveRecord::Base.extend Assessable::Assessable
+
+
 require 'assessable/routes'

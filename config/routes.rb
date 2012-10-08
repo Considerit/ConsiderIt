@@ -8,6 +8,11 @@
 ConsiderIt::Application.routes.draw do
     
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
+  themes_for_rails 
+  followable_routes
+  commentable_routes
+  moderatable_routes
+  assessable_routes
 
   root :to => "home#index"
 
@@ -35,17 +40,12 @@ ConsiderIt::Application.routes.draw do
   devise_scope :user do 
     match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
   end
-
-  themes_for_rails 
-  followable_routes
-  commentable_routes
-  moderatable_routes
   
   match "/feed" => "activities#feed"
 
   #match "/theme" => "theme#set", :via => :post
   match "/home/domain" => "home#set_domain", :via => :post
-  match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|videos|help/ } 
+  match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|videos|help|fact_check/ } 
 
   match '/home/study/:category' => "home#study", :via => :post  
   scope :module => "dashboard" do

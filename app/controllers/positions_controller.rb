@@ -119,6 +119,10 @@ protected
       return
     end
 
+    if @proposal.nil?
+      redirect_to root_path
+    end
+
     if @proposal.session_id.nil?
       @proposal.session_id = request.session_options[:id]
       @proposal.save

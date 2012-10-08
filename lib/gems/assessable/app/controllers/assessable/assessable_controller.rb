@@ -97,8 +97,14 @@ class Assessable::AssessableController < ApplicationController
       )
 
     end
+
     request.assessment = assessment
     request.save
+
+    begin      
+      assessment.root_object.follow!(current_user, :follow => true, :explicit => false)
+    rescue
+    end
 
     render :json => {:success => true}.to_json
   end

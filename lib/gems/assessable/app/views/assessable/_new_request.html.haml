@@ -1,0 +1,41 @@
+- already_requested_assessment = assessable.assessment && assessable.assessment.requests.where(:user_id => current_user.id).count > 0
+
+.assessment
+  - if !already_requested_assessment
+
+    %a.button.point_operation
+      Ask a librarian to fact check this point
+
+  .already_requested{ :class => "#{already_requested_assessment ? '' : 'hide'}"}
+    Your fact check request has been registered.
+
+  - if !already_requested_assessment
+    .request_form.hide
+      = form_for :request, :url => assessment_index_path, :method => :post, :remote => true do |f|
+        = f.hidden_field :assessable_id, :value => assessable.id
+        = f.hidden_field :assessable_type, :value => assessable.class.name
+
+        %strong.ask
+          Ask a librarian to fact check this point
+
+        %p
+          Fact-checking performed by librarians at The Seattle Public Library. Only falsifiable statements can be checked. See the #{link_to 'guidelines', '/home/fact_check', :target => "_blank"} for more details.
+
+        %strong
+          Which claims do wish to have fact checked?
+          .subheader
+            Please link to reliable information that is helpful for verfiying the claim, if available.
+
+        = f.text_area :suggestion
+
+        - if current_user
+          .submit_block
+            = f.submit 'Submit your request', :class => 'button hide'
+            %a.cancel
+              cancel
+        - else
+          .login
+            You must 
+            %a.signin_link
+              sign in
+            to leave a comment.

@@ -1,4 +1,9 @@
 PATH
+  remote: lib/gems/assessable
+  specs:
+    assessable (0.0.1)
+
+PATH
   remote: lib/gems/commentable
   specs:
     commentable (0.0.1)
@@ -304,6 +309,7 @@ DEPENDENCIES
   actionmailer-with-request
   acts-as-taggable-on
   acts_as_tenant
+  assessable!
   asset_sync
   aws-sdk
   backup (~> 3.0.24)

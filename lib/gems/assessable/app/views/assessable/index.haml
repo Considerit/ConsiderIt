@@ -45,6 +45,8 @@
             
       %tbody
         - @assessments.each do |obj|
+          - if obj.requests.count == 0
+            - next
 
           %tr.assessment_row{:class => obj.complete ? "completed" : "incomplete"}
 

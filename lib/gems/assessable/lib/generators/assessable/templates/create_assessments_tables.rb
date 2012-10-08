@@ -11,6 +11,7 @@ class CreateAssessmentsTables < ActiveRecord::Migration
       t.string :qualifies_reason
       t.integer :overall_verdict
 
+      t.boolean :reviewable, :default => false
       t.boolean :complete, :default => false
 
       t.timestamps

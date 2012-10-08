@@ -69,7 +69,7 @@
                   = f.submit 'I\'ll do it', :class => 'take_responsibility'
 
             %td
-              = obj.complete ? 'complete' : 'incomplete'
+              = obj.complete ? 'complete' : obj.reviewable ? 'reviewable' : 'incomplete'
             %td
               = Assessable::Claim.format_verdict(obj.overall_verdict)
             %td

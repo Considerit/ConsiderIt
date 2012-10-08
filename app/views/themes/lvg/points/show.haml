@@ -59,7 +59,7 @@
           %a.editpoint.point_operation.button
             Edit this point
 
-      - if current_tenant.identifier == 'wash' #&& @proposal.active
+      - if current_tenant.identifier == 'wash' && @proposal.active
         .fact_check
 
           - if point.assessment && point.assessment.complete

@@ -45,22 +45,18 @@
           %span
             -#= link_to image_tag( 'facebook.png'), current_tenant.socmedia_facebook_page
             #{link_to 'Facebook', current_tenant.socmedia_facebook_page},
-
-        - if current_tenant.socmedia_twitter_account
-          %span
-            -#= link_to image_tag( 'twitter.png'), "https://twitter.com/#{current_tenant.socmedia_twitter_account}"
-            #{link_to 'Twitter', "https://twitter.com/#{current_tenant.socmedia_twitter_account}"}
       
-    .past
-      %h3
-        Past results
+    - if !is_cali
+      .past
+        %h3
+          Past results
 
-      .line        
-        %a.old.lvg2010.off
-          2010
-        &bull;
-        %a.old.lvg2011.off
-          2011    
+        .line        
+          %a.old.lvg2010.off
+            2010
+          &bull;
+          %a.old.lvg2011.off
+            2011    
     
     .partners
       %h3
@@ -82,10 +78,13 @@
           = link_to "Unruh Institute of Politics, USC", "http://dornsife.usc.edu/unruh/"
 
         .partner.line
+          = link_to "Cal Humanities", "www.calhum.org"
+
+        .partner.line
           = link_to "California Voter Foundation", "http://www.calvoter.org/"
 
         .partner.line
-          = link_to "University of Washington", "http://www.washington.edu"
+          = link_to "Engage group, U. Washington", "http://www.engage.cs.washington.edu"
 
       .partner.line
         = link_to "National Science Foundation", "http://www.nsf.gov"

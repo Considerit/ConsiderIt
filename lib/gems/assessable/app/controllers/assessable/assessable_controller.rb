@@ -9,61 +9,81 @@ class Assessable::AssessableController < ApplicationController
     
     authorize! :index, Assessable::Assessment
 
-    @classes_to_moderate = Assessable::Assessment.classes_to_moderate
-
-    @existing_moderations = {}
-    @objs_to_moderate = {}
-    @classes_to_moderate.each do |mc|
-      
-      @existing_moderations[mc.name] = {}
-      if mc == Commentable::Comment
-        comments = []
-        mc.assessable_objects.call.each do |comment|
-          if comment.commentable_type != 'Point' || comment.root_object.proposal.active 
-            comments.push(comment)
-          end
-        end
-        @objs_to_moderate[mc.name] = comments
-        objs = @objs_to_moderate[mc.name].map{|x| x.id}.compact
-        records = Assessable::Assessment.where(:assessable_type => mc.name)
-        if objs.length > 0
-          records = records.where("assessable_id in (#{objs.join(',')})")
-        end
-        records = records.includes(:user)
-      else
-        @objs_to_moderate[mc.name] = mc.assessable_objects.call
-        records = Assessable::Assessment.where(:assessable_type => mc.name).includes(:user)
-      end
-      records.each do |mod|
-        @existing_moderations[mc.name][mod.assessable_id] = mod unless @existing_moderations[mc.name].has_key?(mod.assessable_id) && @existing_moderations[mc.name][mod.assessable_id].user_id == current_user.id
-      end
-    end
+    @assessments = Assessable::Assessment.order(:complete)
 
     render 'assessable/index'
   end
 
-  # create a new moderation
-  def create
-    authorize! :create, Assessable::Assessment
+  def edit
+    @assessment = Assessable::Assessment.find(params[:id])
 
-    #params[:moderate][:status] = Assessable::Assessment.STATUSES.index(params[:moderate].delete(:moderation_status))
-    params[:moderate][:user_id] = current_user.id
-    params[:moderate][:account_id] = current_tenant.id
+    render 'assessable/edit'
+  end
 
-    moderation = Assessable::Assessment.where(:assessable_type => params[:moderate][:assessable_type], :assessable_id => params[:moderate][:assessable_id], :user_id => current_user.id).first
-    
-    if moderation
-      moderation.status = params[:moderate][:status]
-      moderation.save
-    else
-      moderation = Assessable::Assessment.create!(params[:moderate])
+  def create_claim
+    params[:claim][:account_id] = current_tenant.id
+    params[:claim][:assessment_id] = params[:assessment_id]
+    @assessment = Assessable::Assessment.find(params[:assessment_id])
+    claim = Assessable::Claim.create!(params[:claim])
+    redirect_to edit_assessment_path(@assessment)
+
+  end
+
+  def update_claim
+    claim = Assessable::Claim.find(params[:id])
+    if params[:assessable_claim].has_key? :verdict
+      verdict = params[:assessable_claim][:verdict]
+      params[:assessable_claim][:verdict] = Assessable::Claim.translate(verdict)
+    end 
+    claim.update_attributes(params[:assessable_claim])
+    redirect_to edit_assessment_path(claim.assessment)
+
+    if claim.assessment.complete
+      claim.assessment.update_overall_verdict
+      claim.assessment.save
+    end
+  end
+
+  def update
+    redirect_to assessment_index_path
+    assessment = Assessable::Assessment.find(params[:assessment][:id])
+    complete = assessment.complete
+    assessment.update_attributes(params[:assessment])
+    if assessment.complete
+      assessment.update_overall_verdict
     end
 
-    assessable = moderation.root_object
-    assessable.moderation_status = moderation.status
-    assessable.save
+    assessment.save
+
+    if !complete && assessment.complete
+      #TODO: if fact-check is being completed, instrument notification to appropriate parties
+    end
+
+
+  end
+
+  ### User facing
+  # create a new assessment request
+  def create
+    authorize! :create, Assessable::Request
+
+    params[:request][:user_id] = current_user.id
+    params[:request][:account_id] = current_tenant.id
+
+    assessable_type = params[:request].delete(:assessable_type)
+    assessable_id = params[:request].delete(:assessable_id)
+
+    request = Assessable::Request.new(params[:request])
+    assessment = Assessable::Assessment.where(:assessable_type => assessable_type, :assessable_id => assessable_id).first
+    if !assessment
+      #TODO: instrument event so notification can be sent out
+      assessment = Assessable::Assessment.create!({:account_id => current_tenant.id, :assessable_type => assessable_type, :assessable_id => assessable_id})
+    end
+    request.assessment = assessment
+    request.save
 
     render :json => {:success => true}.to_json
   end
+
 
 end

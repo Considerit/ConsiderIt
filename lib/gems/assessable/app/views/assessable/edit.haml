@@ -1,0 +1,130 @@
+- assessable = @assessment.root_object
+
+#edit_assessment
+  .back
+    = link_to 'back to fact-checking index', assessment_index_path
+
+  %h1
+    Conduct a fact check
+
+  #main
+
+    #to_be_checked
+      %p
+        %strong
+          I-#{assessable.proposal.designator}
+        #{assessable.is_pro ? 'Pro' : 'Con'} point
+
+      %p.text
+        = assessable.nutshell
+
+      - if assessable.text && assessable.text.length > 0
+
+        %p.text
+          = simple_format(assessable.text.gsub(/\r\n/,""))
+
+    %ul#claims
+      - @assessment.claims.each do |clm|
+        %li.claim{:id=>clm.id}
+          .heading
+            .statement
+              = clm.claim
+
+            .actions
+              
+              %button.answer
+                #{clm.verdict.nil? ? 'Answer' :'Edit'}
+
+              // TODO: add delete claim button here
+          
+          .closed
+
+            .body
+              - if !clm.verdict.nil?
+                = simple_format("<strong>#{Assessable::Claim.format_verdict(clm.verdict)}. </strong>" + clm.result)
+
+            - if !clm.notes.nil?
+              .notes
+                = simple_format('<strong>Private notes. </strong>' + clm.notes)
+
+          .open.hide
+            = form_for [@assessment, clm], :url => assessment_update_claim_path(@assessment, clm) do |f|
+
+              .radio_block
+                = f.radio_button :verdict, 'verified', :value => '2', :checked => "#{clm.verdict == 2 ? 'checked' : ''}"
+                = f.label :verdict, 'verified', :value => 'verified'
+
+                = f.radio_button :verdict, 'unverifiable', :value => '1', :checked => "#{clm.verdict == 1 ? 'checked' : ''}"
+                = f.label :verdict, 'unverifiable', :value => 'unverifiable'
+
+                = f.radio_button :verdict, 'questionable', :value => '0', :checked => "#{clm.verdict == 0 ? 'checked' : ''}"
+                = f.label :verdict, 'questionable', :value => 'questionable'
+
+              .assessment_block
+                = f.label :result, 'The assessment'
+                = f.text_area :result, :class => 'autoResize'
+
+              .private_note_block
+                = f.label :notes, 'Private notes'
+                = f.text_area :notes, :class => 'autoResize'
+
+              = f.submit
+              %a.cancel
+                cancel
+
+    #evaluate
+      %button.add_claim
+        + Add a claim to check
+
+      .complete.hide
+        = form_for :assessment, :method => :put, :url => assessment_path(@assessment) do |f|
+          = f.hidden_field :complete, :value => true
+          = f.hidden_field :id, :value => @assessment.id
+          = f.hidden_field :user_id, :value => current_user.id
+          = f.submit "#{@assessment.claims.count == 0 ? 'There are no verifiable claims' : 'Complete fact check'}"
+
+      .add_claim_form
+        = form_for :claim, :url => assessment_create_claim_path(@assessment), :html => {:class => 'hide'} do |f|
+          = f.label :claim, 'Type a verifiable claim that the above point makes that you will check'
+          = f.text_area :claim, :class => 'autoResize'
+          .submit_block
+            = f.submit 'Add'
+            %a.cancel
+              cancel        
+
+  #sidebar
+    %h3
+      Suggestions by requesters...
+
+    - @assessment.requests.each do |rq|
+      .request
+        .body
+          = rq.suggestion
+        .user
+          &ndash; #{rq.user.name}
+
+
+:javascript
+  $j(document).ready(function(){
+    $j('#edit_assessment')
+      .on('click', '.actions .answer, .open .cancel', function(){
+        var $claim = $j(this).parents('.claim');
+        $claim.find('.open, .closed, .head .answer').toggleClass('hide');
+        $claim.find('.autoResize').trigger('keyup');
+      })
+      .on('click', '#evaluate .add_claim, #evaluate .add_claim_form .cancel', function(){
+        $j(this).parents('#evaluate').find('.add_claim, .add_claim_form form').toggleClass('hide');
+        $j('.add_claim_form').find('.autoResize').trigger('keyup');
+
+      });
+
+    var num_claims = #{@assessment.claims.count}, 
+        num_answered_claims = #{@assessment.claims.where('verdict IS NOT NULL').count};
+
+    if ( num_claims > 0 && num_answered_claims != num_claims ) {
+      $j('#evaluate .complete').hide();
+    }
+
+
+  });
+

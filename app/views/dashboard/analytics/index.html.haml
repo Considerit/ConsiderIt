@@ -38,9 +38,11 @@
 
     - [:main, :cumulative].each do |style|
       :javascript
+
         analytics_plots.#{s[:title]} = [];
 
-        $j(function () {
+
+        $j(document).ready(function () {
           var d = #{s[style][:data].to_json};
           
 
@@ -63,7 +65,7 @@
 
   // now connect the two
   :javascript
-    $j(function () {
+    $j(document).ready(function () {
       $j(".graph").bind("plotselected", function (event, ranges) {
           // do the zooming
           var new_options = $j.extend(true, {}, analytics_options, {

@@ -1,5 +1,5 @@
 
-#moderate
+#assess
   font-size: 75%
   padding: 50px
 
@@ -16,49 +16,27 @@
 
     .subheader
 
-  #tabs
-    margin-left: 15px
-    a 
-      font-size: 145%
-      padding: 5px 10px
-      margin-right: 8px
-      display: inline-block
-      position: relative
-      top: 1px
 
-      cursor: pointer
-      border-radius: 8px 8px 0 0
-      border: 1px solid #ddd
-      &.active
-        border-bottom-color: white
-        background-color: transparent
-      &.inactive
-        color: #666
-        background-color: #f1f1f1
-
-      .name
-        font-weight: bold
-
-
-  .moderation_block
+  .assessment_block
     border: 1px solid #ddd
     border-radius: 8px
     padding: 0 16px
 
-    &.hide_moderated
-      .moderation_row.moderated
+    &.hide_completed
+      .assessment_row.completed
         display: none
 
-    .moderation_row
-      &.passed
-        background-color: #efe
-        td
-          background-color: #efe
+    .assessment_row
+      &.complete
+        opacity: .7
+        //background-color: #efe
+        //td
+        //  background-color: #efe
 
-      &.failed
-        background-color: #fee
+      &.incomplete
+        background-color: #ffe
         td
-          background-color: #fee
+          background-color: #ffe
 
 
       .submit_col
@@ -66,35 +44,24 @@
         min-width: 150px
 
 
-      button
-        display: inline-block
-        margin: 2px 5px
-        padding: 2px 8px
-        cursor: pointer
-        color: #888
-        background-color: #efefef
-        border: 1px solid
-        border-radius: 5px
-        border-color: white #ccc #ccc white
-        box-shadow: 0px 1px 2px rgba(0,0,0,.4)
 
-        &.selected
-          border-color: #ccc white white #ccc
-          box-shadow: inset 0px 1px 6px rgba(0, 0, 0, .2)
 
 
   .table, .fht-table
     width: 95%
 
     td
-      max-width: 400px
+      max-width: 200px
       overflow: hidden
       border-top: 1px solid #ddd
       line-height: 20px
       padding: 8px
       text-align: left
       vertical-align: top
+
+
     th
+      max-width: 200px
       text-transform: capitalize
       font-size: 125%
       font-weight: bold
@@ -113,5 +80,127 @@
   .fht-table-wrapper .fht-fixed-body .fht-tbody, .fht-table-wrapper .fht-tbody
     overflow-x: hidden
 
+#edit_assessment
+  padding: 50px
 
+  .back
+    padding-bottom: 1em
+    font-size: 70%
+    a
+      text-decoration: underline
+
+  h1
+    font-size: 200%
+
+  #main
+    width: 65%
+    display: inline-block
+    margin: 1em 1em
+
+
+    #to_be_checked
+      padding: 1em 1em
+      border: 3px solid #eee
+      margin-bottom: 1em
+
+    #claims
+      margin-bottom: 1em
+
+      li.claim
+        padding: .5em 1em
+        background-color: #eee
+        margin: .5em 0
+        border: 1px solid #ddd
+
+        .heading
+          .statement
+            width: 75%
+            display: inline-block
+            text-align: left
+
+          .actions
+            display: inline-block
+            width: 20%
+            text-align: right
+
+        .closed
+          font-size: 80%
+
+          .body
+
+          .notes
+
+        .open
+          padding-left: 1em
+          font-size: 80%
+          .assessment_block, .private_note_block
+            label
+              display: block
+              font-weight: bold
+              padding-top: 1em
+
+          .radio_block
+            margin-top: 1em
+            label
+              padding-right: 1em
+
+
+
+
+
+      p 
+        margin-bottom: 4px
+
+    #evaluate
+      > *
+        display: inline-block
+
+      .add_claim_form
+        margin-top: 1em        
+
+        textarea
+          width: 100%
+          display: block
+
+        label
+          font-size: 80%
+        .submit_block
+          text-align: right
+
+
+
+  #sidebar
+    width: 25%
+    display: inline-block
+    background-color: #bbb
+    padding: 1em
+    vertical-align: top
+    margin-top: 1em
+
+    h3
+      padding-bottom: 1em
+
+    .request
+      margin-bottom: 1em
+      .body
+      .user
+        font-style: italic
+
+#assess, #edit_assessment
+  button, input[type="submit"]
+    display: inline-block
+    margin: 2px 5px
+    padding: 2px 8px
+    cursor: pointer
+    background-color: #efefef
+    border: 1px solid
+    border-radius: 5px
+    border-color: white #ccc #ccc white
+    box-shadow: 0px 1px 2px rgba(0,0,0,.4)
+    font-size: 1em
+    color: #555
+
+    &.selected, &:hover
+      border-color: #ccc white white #ccc
+      box-shadow: inset 0px 1px 4px rgba(0, 0, 0, .2)
 

@@ -14,7 +14,7 @@ module Assessable
     end
 
     def create_assessable_table
-      migration_template "create_assessment_tables.rb", "db/migrate/create_assessment_tables.rb"
+      migration_template "create_assessments_tables.rb", "db/migrate/create_assessments_tables.rb"
     end
   end
 end

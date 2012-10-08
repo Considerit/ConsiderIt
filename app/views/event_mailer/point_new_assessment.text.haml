@@ -1,0 +1,30 @@
+Hi #{@user.first_name}, 
+= "\r\n"
+- if @notification_type == 'your point'
+  One or more participants requested that your #{@point.is_pro ? 'pro' : 'con'} point be fact checked. The Seattle Public Library has done so. We hope that the additional information is helpful!
+
+- else
+  A #{@point.is_pro ? 'pro' : 'con'} point that you follow has been fact checked by The Seattle Public Library. 
+
+= "\r\n"
+
+The result of the fact-check:
+- @assessment.claims.each do |clm|
+  
+  * Claim: "#{clm.claim}"; Conclusion: #{Assessable::Claim.format_verdict(clm.verdict)}.
+  = "\r\n"
+
+The original #{@point.is_pro ? 'pro' : 'con'} point says:
+= "\r\n"
+"#{@point.nutshell + @point.text}"
+
+= "\r\n"
+Read and discuss further at #{proposal_point_url(@proposal.long_id, @point, :host => @host)}
+
+= "\r\n"
+\----
+
+To unsubscribe to this point: #{unfollow_url(:host => @host, :u => @user.id, :i => @point.id, :m => 'Point', :t => ApplicationController.token_for_action(@user.id, @point, 'unfollow'))}
+
+= "\r\n"
+#{@options[:app_title]} is powered by http://chalkboard.it

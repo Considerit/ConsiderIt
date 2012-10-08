@@ -1,0 +1,10 @@
+%p.head
+  #{@user.first_name}, someone has requested a fact check of a point for #{@tenant.app_title}. 
+
+.action_call
+  .rest
+    .call
+      = link_to 'Help fact check it', @url
+
+= content_for :footer do
+  You are receiving this email because our records indicate that you are an eligible fact-checker.

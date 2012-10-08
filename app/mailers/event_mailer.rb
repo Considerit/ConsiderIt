@@ -83,8 +83,28 @@ class EventMailer < ActionMailer::Base
       subject = "#{@comment.user.username} commented on a discussion in which you participated"
     elsif notification_type == 'included point'
       subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you follow"
-    elsif notification_type == 'lurker'
+    else
       subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you follow"
+    end
+
+    email_with_name = "#{@user.username} <#{@user.email}>"
+    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+  end
+
+  def point_new_assessment(user, pnt, assessment, options, notification_type)
+    @notification_type = notification_type
+    @user = user
+    @point = pnt
+    @assessment = assessment
+    @proposal = @point.proposal
+    @host = options[:host]
+    @options = options
+    from = format_email(options[:from], options[:app_title])
+
+    if notification_type == 'your point'
+      subject = "a point you wrote has been fact-checked"
+    else
+      subject = "a point you follow has been fact-checked"
     end
 
     email_with_name = "#{@user.username} <#{@user.email}>"

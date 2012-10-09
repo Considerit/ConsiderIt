@@ -78,7 +78,7 @@ class Ability
 
       #Point
       can :read, Point do |pnt|
-        (pnt.published && !pnt.moderation_status.nil? && pnt.moderation_status != 0) || (!pnt.published && user.id.nil? && pnt.user_id.nil?) || (user.id == pnt.user_id)
+        (pnt.published && (pnt.moderation_status.nil? || pnt.moderation_status != 0)) || (!pnt.published && user.id.nil? && pnt.user_id.nil?) || (user.id == pnt.user_id)
       end
       can :create, Point do |pnt|
         pnt.proposal.active

@@ -80,14 +80,14 @@
         + Add a claim to check
 
       - if @assessment.reviewable && current_user.id != @assessment.user_id
-        .complete.hide
+        .complete
           = form_for :assessment, :method => :put, :url => assessment_path(@assessment) do |f|
             = f.hidden_field :complete, :value => true
             = f.hidden_field :id, :value => @assessment.id
             = f.submit "#{@assessment.claims.count == 0 ? 'Correct, there are no verifiable claims, publish it' : 'Publish fact check'}"
 
       - if !@assessment.reviewable
-        .review.hide
+        .review
           = form_for :assessment, :method => :put, :url => assessment_path(@assessment) do |f|
             = f.hidden_field :reviewable, :value => true
             = f.hidden_field :id, :value => @assessment.id

@@ -1,0 +1,34 @@
+#forgot_password
+  %h2
+    Sign in
+
+  = form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f|
+    %div
+      = f.label :email 
+      %br
+
+      = f.email_field :email, :autofocus => true
+
+    %div
+      = f.label :password
+      %br
+      = f.password_field :password
+
+    %div
+      = f.submit "Sign in", :class => 'button'
+
+  %br
+  %br
+  #registration_form
+    .primary
+      #third_party
+        %h3
+          One-click sign in with your account from...
+
+        - ['facebook', 'twitter', 'google'].each do |provider|
+          %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',900, 500)", :id => provider }
+            = image_tag("#{provider}.png")
+
+        .fineprint
+          We won't post to your account or share your info without permission.
+

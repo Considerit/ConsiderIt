@@ -108,19 +108,17 @@ class PositionsController < ApplicationController
 
 protected
   def handle_new_edit(is_new)
+    @proposal = nil
 
     if params.has_key? :proposal_id
       @proposal = Proposal.find(params[:proposal_id])
     elsif params.has_key? :long_id
       @proposal = Proposal.find_by_long_id(params[:long_id])
-    elsif 
-      raise 'Error'
-      redirect_to root_path
-      return
     end
 
     if @proposal.nil?
       redirect_to root_path
+      return
     end
 
     if @proposal.session_id.nil?

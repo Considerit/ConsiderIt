@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121008214222) do
+ActiveRecord::Schema.define(:version => 20121009164535) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -472,12 +472,12 @@ ActiveRecord::Schema.define(:version => 20121008214222) do
   create_table "users", :force => true do |t|
     t.integer  "account_id"
     t.string   "unique_token"
-    t.string   "email",                                :default => ""
+    t.string   "email",                                 :default => ""
     t.string   "unconfirmed_email"
-    t.string   "encrypted_password",    :limit => 128, :default => ""
+    t.string   "encrypted_password",     :limit => 128, :default => ""
     t.string   "reset_password_token"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                        :default => 0
+    t.integer  "sign_in_count",                         :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -488,7 +488,7 @@ ActiveRecord::Schema.define(:version => 20121008214222) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "sessions"
-    t.boolean  "admin",                                :default => false
+    t.boolean  "admin",                                 :default => false
     t.string   "avatar_file_name"
     t.string   "avatar_content_type"
     t.integer  "avatar_file_size"
@@ -503,10 +503,11 @@ ActiveRecord::Schema.define(:version => 20121008214222) do
     t.string   "openid_uid"
     t.string   "twitter_uid"
     t.string   "twitter_handle"
-    t.boolean  "registration_complete",                :default => false
+    t.boolean  "registration_complete",                 :default => false
     t.integer  "domain_id"
-    t.integer  "roles_mask",                           :default => 0
+    t.integer  "roles_mask",                            :default => 0
     t.text     "referer"
+    t.datetime "reset_password_sent_at"
   end
 
   add_index "users", ["account_id"], :name => "account_id"

@@ -40,8 +40,6 @@
                   = form_for [@assessment, clm], :method => :delete, :url => assessment_destroy_claim_path(@assessment, clm) do |f|
                     = f.submit 'Delete'
 
-                // TODO: add delete claim button here
-          
           .closed
 
             .body
@@ -56,8 +54,8 @@
             = form_for [@assessment, clm], :url => assessment_update_claim_path(@assessment, clm) do |f|
 
               .radio_block
-                = f.radio_button :verdict, 'verified', :value => '2', :checked => "#{clm.verdict == 2 ? 'checked' : ''}"
-                = f.label :verdict, 'verified', :value => 'verified'
+                = f.radio_button :verdict, 'accurate', :value => '2', :checked => "#{clm.verdict == 2 ? 'checked' : ''}"
+                = f.label :verdict, 'accurate', :value => 'accurate'
 
                 = f.radio_button :verdict, 'unverifiable', :value => '1', :checked => "#{clm.verdict == 1 ? 'checked' : ''}"
                 = f.label :verdict, 'unverifiable', :value => 'unverifiable'

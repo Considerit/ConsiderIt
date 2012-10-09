@@ -24,7 +24,7 @@ class Assessable::Claim < ActiveRecord::Base
 
   def self.format_verdict(verdict)
     if verdict == 2
-      'Verified'
+      'Accurate'
     elsif verdict == 1
       'Unverifiable'
     elsif verdict == 0
@@ -37,7 +37,7 @@ class Assessable::Claim < ActiveRecord::Base
   end
 
   def self.translate(verdict)
-    if verdict == 'verified'
+    if verdict == 'accurate'
       2
     elsif verdict == 'unverifiable'
       1

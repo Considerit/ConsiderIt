@@ -12,8 +12,12 @@ class UserMailer < ActionMailer::Base
   layout 'email'
   include Devise::Mailers::Helpers
 
+
+
   ######### DEVISE MAILERS
   def confirmation_instructions(user, proposal, options)
+    generate_reset_password_token!(user) if (user.reset_password_token.nil? || !user.reset_password_period_valid?)
+
     @user = user
     @proposal = proposal
     @host = options[:host]
@@ -27,6 +31,7 @@ class UserMailer < ActionMailer::Base
   end
 
   def reset_password_instructions(user, options)
+    generate_reset_password_token!(user) if (user.reset_password_token.nil? || !user.reset_password_period_valid?)
     @user = user
     @host = options[:host]
     @options = options
@@ -48,5 +53,10 @@ class UserMailer < ActionMailer::Base
 
     end
 
+    def generate_reset_password_token!(user)
+      user.reset_password_token = User.reset_password_token
+      user.reset_password_sent_at = Time.now.utc
+      user.save
+    end
 end
 

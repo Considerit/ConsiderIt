@@ -18,26 +18,24 @@
       %span.close
         = button_tag 'x'
 
-    :javascript
-      $j(document).ready(function(){
-        $j('.message.confirmation_required .close').click(function(){
-          $j('.message.confirmation_required').fadeOut().remove();
-        });  
-        $j('.message.confirmation_required').on('ajax:success', 'form', function(){
-          $j('.message.confirmation_required').text('Confirmation sent! ');
-          $j('.message.confirmation_required').delay(2200).fadeOut();
-        });
-      })
+
 
   - flash.each do |key, value|
     - unless value.blank?
-      %span.message.flash{ :class => "#{key}" }
+      .message.flash{ :class => "#{key}" }
         - resend_confirmation_instructions = value.index( '{{confirmation_resend_instructions}}')
         #{value.gsub('{{confirmation_resend_instructions}}', '')}
-        - if resend_confirmation_instructions && current_user
-          = form_for :user, :remote => true, :url => user_confirmation_path do |f|
-            = f.hidden_field :email, :val => current_user ? current_user.unconfirmed_email || current_user.email : @email
-            = f.submit 'resent'
 
-      %span.close
-        = button_tag 'x'
+        %span.close
+          = button_tag 'x'
+
+  :javascript
+    $j(document).ready(function(){
+      $j('.message .close').click(function(){
+        $j('.message').fadeOut().remove();
+      });  
+      $j('.message.confirmation_required').on('ajax:success', 'form', function(){
+        $j('.message.confirmation_required').text('Confirmation sent! ');
+        $j('.message.confirmation_required').delay(2200).fadeOut();
+      });
+    })

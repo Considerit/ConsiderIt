@@ -15,9 +15,20 @@ class HomeController < ApplicationController
   }
 
   def index
-    @title = "2012 #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} Election"
-    @keywords = "voters guide 2012 ballot #{current_tenant.identifier == 'cali' ? 'california san francisco los angeles san diego riverside irvine sacramento' : 'washington state wa seattle tacoma spokane yakima vancouver'} election pamphlet ballot measures propositions"
-    @description = "#{current_tenant.identifier == 'cali' ? 'California\'s' : 'Washington\'s'} citizen-powered voters guide. Engage with your virtual neighbors about the 2012 election. Experience a better democracy."
+    # TODO: move this to config somehow
+    if current_tenant.app_title == 'Living Voters Guide'
+      @title = "2012 #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} Election"
+      @keywords = "voters guide 2012 ballot #{current_tenant.identifier == 'cali' ? 'california san francisco los angeles san diego riverside irvine sacramento' : 'washington state wa seattle tacoma spokane yakima vancouver'} election pamphlet ballot measures propositions"
+      @description = "#{current_tenant.identifier == 'cali' ? 'California\'s' : 'Washington\'s'} citizen-powered voters guide. Engage with your virtual neighbors about the 2012 election. Experience a better democracy."
+    elsif current_tenant.app_title == 'Office of Hawaiian Affairs'
+      @title = "Educate. Deliberate. Advocate."
+      @keywords = "Educate, Deliberate, Advocate, hawaii, office of hawaiian affairs, oha"
+      @description = "Help us think through the issues we are considering"
+    else
+      @title = current_tenant.app_title
+      @keywords = "#{current_tenant.app_title} deliberate decide"
+      @description = "Discuss issues at #{current_tenant.app_title}"
+    end
   end
 
   def show

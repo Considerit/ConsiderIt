@@ -32,7 +32,7 @@
       - if current_user.is_admin? || current_user.has_role?(:analyst)
         %li
           = link_to 'Analyze', dashboard_analytics_path, :class => 'analyze'
-      - if current_user.is_admin? || current_user.has_role?(:evaluator)
+      - if current_user.is_admin? || current_user.has_role?(:evaluator) && current_tenant.identifier == 'wash'
         %li
           = link_to 'Fact check', assessment_index_path, :class => 'assess'
       - if Rails.env.development?

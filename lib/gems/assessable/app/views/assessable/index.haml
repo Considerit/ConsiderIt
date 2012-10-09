@@ -38,8 +38,6 @@
             Responsible?
           %th.header
             Status
-          %th.header
-            Result
           %th.view
 
             
@@ -70,8 +68,6 @@
 
             %td
               = obj.complete ? 'complete' : obj.reviewable ? 'reviewable' : 'incomplete'
-            %td
-              = Assessable::Claim.format_verdict(obj.overall_verdict)
             %td
               = link_to 'edit', edit_assessment_path(obj)
 

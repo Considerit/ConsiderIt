@@ -1,38 +1,5 @@
 #home
   
-  -#= render :partial => "home/follow"
-
-  -##people
-    - users = get_users_with_picts(105)
-    - if users && users.length > 75
-      .row
-        - users[0..16].each do |user|
-          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-      .row
-        - users[17..33].each do |user|
-          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-
-      // .row.fl
-      //   - users[26..30].each do |user|
-      //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-      // .row.fr
-      //   - users[35..39].each do |user|
-      //     .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-      // .clear    
-
-      .row
-        - users[34..50].each do |user|
-          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-      .row
-        - users[51..67].each do |user|
-          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-      .row
-        - users[68..84].each do |user|
-          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-      .row
-        - users[85..101].each do |user|
-          .img{:style => "background-image: url('#{image_path user.avatar.url(:small)}')"}
-
   #value 
   
     .first

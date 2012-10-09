@@ -48,7 +48,7 @@
           - if obj.requests.count == 0
             - next
 
-          %tr.assessment_row{:class => obj.complete ? "completed" : "incomplete"}
+          %tr.assessment_row{:class => obj.complete ? "completed" : obj.reviewable ? 'reviewable' : "incomplete"}
 
             %td
               I-#{obj.root_object.proposal.designator}

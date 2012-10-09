@@ -56,7 +56,9 @@ class UserMailer < ActionMailer::Base
     def generate_reset_password_token!(user)
       user.reset_password_token = User.reset_password_token
       user.reset_password_sent_at = Time.now.utc
-      user.save
+      pp user
+      pp user.save(:validate => false)
+      pp user
     end
 end
 

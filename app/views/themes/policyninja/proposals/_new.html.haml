@@ -1,0 +1,51 @@
+-#*********************************************
+  For the ConsiderIt project.
+  Copyright (C) 2010 - 2012, University of Washington
+  Author: Travis Kriplean
+  Licensed under the AGPL
+  See https://github.com/tkriplean/ConsiderIt/ for details.
+  *********************************************
+
+- prompt ||= 'Propose a new idea'
+
+.new_proposal
+
+  - if current_user
+    .full
+      = form_for :proposal, :url => {:controller => :proposals, :action => :create}, :html => {:class => 'new_proposal_form'} do |f|
+      
+        %table
+          %tr
+            %td
+              = image_tag current_user.avatar.url(:small), :class => 'avatar'
+            %td
+              = f.text_area :description, :placeholder => 'Summarize your proposal. You can edit it and add a detailed description next.'
+            %td
+              = f.submit 'Save', :class => 'button'
+  
+  %button.prompt.button
+    + #{prompt}
+    
+    - if !current_user
+      #login_trigger.user_dialog
+
+
+:javascript
+  $j(document).ready(function(){
+
+    var user = #{current_user ? current_user.id : 'null'};
+    $j(document)
+      .on('click', '.new_proposal .prompt', function(){
+        if ( user ) {
+          $j(this).parent().children().toggle();
+          $j('.new_proposal .full #proposal_description').focus();
+        } else {
+          $j('#login_trigger')
+            .load("#{new_user_registration_path(:third_party=>false, :context=>"proposal_submit")}")
+            .dialog('open');      
+        }
+      });
+
+    //$j('#proposal_description').inlined_labels();
+    $j('.new_proposal .full').hide();
+  });

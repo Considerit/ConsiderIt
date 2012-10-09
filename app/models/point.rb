@@ -26,7 +26,7 @@ class Point < ActiveRecord::Base
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
   
-  validates :nutshell, :presence => true, :length => {:minimum => 3, :maximum => 140 }
+  validates :nutshell, :presence => true, :length => {:minimum => 3, :maximum => 141 }
 
   acts_as_tenant(:account)
 

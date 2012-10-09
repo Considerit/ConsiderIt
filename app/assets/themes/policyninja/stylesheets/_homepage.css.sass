@@ -76,10 +76,26 @@
       li.proposal_item
         float: none
         display: inline-block
-        width: 132px
+        width: auto
+        text-align: center
+        vertical-align: top
+        margin: $vertical_baseline / 4 $grid_xs / 4
+
+        a
+          display: inline-block
+          width: 250px
+          height: $vertical_baseline * 8
 
         .number
           +font-size(4)
+
+        .user_name
+          display: none
+
+        .prompt
+          +font-size(-3)
+          font-weight: normal
+          padding-top: $vertical_baseline
 
 
     li.proposal_item.local

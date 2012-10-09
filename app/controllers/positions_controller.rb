@@ -132,8 +132,18 @@ protected
     @user = current_user
 
     @title = "#{@proposal.name}"
-    @keywords = "#{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
-    @description = "Hear and engage fellow citizens about #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
+    if current_tenant.app_title == 'Living Voters Guide'
+      @keywords = "#{current_tenant.app_title} #{@proposal.category} #{@proposal.designator} #{@proposal.name} 2012 election"
+      @description = "Hear and engage fellow citizens about #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
+    elsif current_tenant.app_title == 'Office of Hawaiian Affairs'
+      @keywords = "discuss, deliberate, vote, hawaii, #{@proposal.name}"
+      @description = "Hear and engage the Office of Hawaiian Affairs about #{@proposal.name}."
+    else
+      @keywords = "discuss, deliberate, vote, #{@proposal.name}"
+      @description = "Hear and engage about #{@proposal.name}."
+    end
+
+
 
     ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
     # When we are redirected back to the position page after a user creates their account, 

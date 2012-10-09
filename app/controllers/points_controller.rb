@@ -158,8 +158,13 @@ class PointsController < ApplicationController
     # end
 
     if params[:point][:nutshell].length > 140 
-      params[:point][:text] << params[:point][:nutshell][140..-1]
-      params[:point][:nutshell] = params[:point][:nutshell][0..140]
+      params[:point][:text] << params[:point][:nutshell][139..-1]
+      params[:point][:nutshell] = params[:point][:nutshell][0..139]
+    end
+
+    if params[:point][:nutshell].length == 0 && params[:point][:text].length > 0
+      params[:point][:text] =  params[:point][:text][139..params[:point][:text].length]
+      params[:point][:nutshell] = params[:point][:text][0..139]
     end
 
     if current_user

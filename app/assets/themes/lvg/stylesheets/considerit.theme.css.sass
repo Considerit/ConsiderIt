@@ -269,6 +269,10 @@ html
 
 
 
+
+
+
+
 .proposals.horizontal.blocks
   width: 850px
   .paginate, .old
@@ -295,7 +299,10 @@ html
       
       vertical-align: top
       opacity: .9
+      
       +linear-gradient(desaturate($background_color, 30%), $background_color)
+      background-color: desaturate($background_color, 15%)
+
 
       margin: $vertical_baseline / 4 $grid_xs / 8
 
@@ -338,6 +345,7 @@ html
 
       &:hover
         +linear-gradient(lighten($background_color, 15%), $background_color)
+        background-color: lighten($background_color, 15%)
 
 
 

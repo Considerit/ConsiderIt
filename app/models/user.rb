@@ -19,7 +19,6 @@ class User < ActiveRecord::Base
   #has_many :comments, :dependent => :destroy, :class_name => 'Commentable::Comment'
   has_many :proposals
 
-  belongs_to :domain
   acts_as_tenant(:account)
   is_trackable
   

@@ -56,10 +56,10 @@
 
   });
 
-- entity = @proposal.entity || 'proposal'
-- slider_prompt = @proposal.slider_prompt || "What is your overall opinion?"
-- considerations_prompt = @proposal.considerations_prompt || "Perspective"
-- statement_prompt = @proposal.statement_prompt || "Any final remarks?"
+- entity = @proposal.entity && @proposal.entity.length > 0 ? @proposal.entity : 'proposal'
+- slider_prompt = @proposal.slider_prompt && @proposal.slider_prompt.length > 0 ? @proposal.slider_prompt : "What is your overall opinion?"
+- considerations_prompt = @proposal.considerations_prompt && @proposal.considerations_prompt.length > 0 ? @proposal.considerations_prompt : "Perspective"
+- statement_prompt = @proposal.statement_prompt && @proposal.statement_prompt.length > 0 ? @proposal.statement_prompt : "Any final remarks?"
 - has_other_points = @pro_points.length + @con_points.length > 0
 - points = { :pros => @included_pros, :cons => @included_cons }
 

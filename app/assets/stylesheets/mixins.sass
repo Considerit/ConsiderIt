@@ -60,8 +60,8 @@
 =inset-text($transparency:.4)
   text-shadow: rgba(white, $transparency) -1px -1px
 
-=outset-text
-  text-shadow: rgba(black, .1) 1px 1px
+=outset-text($transparency:.1)
+  text-shadow: rgba(black, $transparency) 1px 1px
 
 =wall($bground_color:#ccc)
   background: image-url('wall_texture.png') repeat scroll 0 0 $bground_color

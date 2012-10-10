@@ -1,8 +1,13 @@
 .proposals{ :class => "#{style} horizontal" }
   .carousel{ :name => "proposals" }
     %ul
-      - get_proposals_by_rank.where(:active => true).each do |proposal|
-        = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+      - if current_tenant.identifier == 'cali'
+        - get_proposals.order(:designator).where(:active => true).each do |proposal|
+          = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+      - else
+        - get_proposals_by_rank.where(:active => true).each do |proposal|
+          = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+
     .clear
 
     - if !@results_page

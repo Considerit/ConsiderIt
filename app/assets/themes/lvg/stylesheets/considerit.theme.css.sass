@@ -265,35 +265,78 @@ html
       padding: $vertical_baseline 0
 
 
-.proposals.horizontal
-  .paginate
+
+.proposals.horizontal.blocks
+  width: 850px
+  .paginate, .old
     display: none
+
+    h3
+      +main_font
+      +outset-text
+      +font-size(2)
+      padding-top: $vertical_baseline
 
   .carousel
     height: auto
     float: none
     ul
       
+
+
     li.proposal_item
       float: none
       display: inline-block
       text-align: center
-      width: 160px
+      width: 180px
+      
+      vertical-align: top
+      opacity: .9
       +linear-gradient(desaturate($background_color, 30%), $background_color)
 
+      margin: $vertical_baseline / 4 $grid_xs / 8
+
+      &:hover
+        background: none
+
+      > a
+        padding: 0
+        color: #ddd
+        display: block
+        padding: $vertical_baseline $grid_xs / 2 $vertical_baseline $grid_xs / 2
+        height: $vertical_baseline * 4
+
+        &:hover
+          color: white
+
       .number
-        +font-size(4)
+        +font-size(-1)
+        font-weight: normal
+        letter-spacing: normal
+        color: darken(desaturate(#980000, 60%), 20%)
+        font-weight: bold
+        top: - $vertical_baseline
+        font-variant: small-caps
+        text-transform: uppercase
+        display: block
+        //+inset-text(.1)
+        padding-bottom: $vertical_baseline /2
+
+      .short_name
+        font-weight: normal
+        vertical-align: middle
+        letter-spacing: normal
+        +font-size(1)
+        font-variant: small-caps
+        text-transform: lowercase
+        font-weight: bold
+        line-height: 1
+
 
       &:hover
         +linear-gradient(lighten($background_color, 15%), $background_color)
 
 
-      > a
-        width: 100%
-        padding: $vertical_baseline 0
-        color: #ddd
-        &:hover
-          color: white
 
 
   li.proposal_item.local

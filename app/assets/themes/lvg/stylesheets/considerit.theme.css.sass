@@ -116,18 +116,21 @@ html
             h3
               +font-size(2)
           #powered
+            .power
+              margin-top: $vertical_baseline
 
           #contact, #voter_info
             position: absolute
             top: 4 * $vertical_baseline
           #contact
             right: 15%
+            padding-bottom: $vertical_baseline
 
             iframe
               height: 20px
 
             .partners, .past
-              padding-top: $vertical_baseline
+              padding-bottom: $vertical_baseline
 
           #voter_info
             left: 15%
@@ -320,13 +323,13 @@ html
         text-transform: uppercase
         display: block
         //+inset-text(.1)
-        padding-bottom: $vertical_baseline /2
+        padding-bottom: $vertical_baseline /4
 
       .short_name
         font-weight: normal
         vertical-align: middle
         letter-spacing: normal
-        +font-size(1)
+        +font-size(2)
         font-variant: small-caps
         text-transform: lowercase
         font-weight: bold

@@ -26,13 +26,6 @@
       = link_to 'Donate', 'https://www.seattlecityclub.org/civicrm/contribute/transact?reset=1&id=10'        
 
   #powered
-    %h3
-      Powered by #{link_to "ConsiderIt", "https://github.com/tkriplean/ConsiderIt"}
-
-    %span.use_considerit.line
-      #{link_to 'Use this technology','mailto:info@livingvotersguide.org?subject=I am interested in using ConsiderIt'} in your organization.
-
-  #contact
     .contact
       %h3
         Contact us
@@ -45,6 +38,15 @@
           %span
             -#= link_to image_tag( 'facebook.png'), current_tenant.socmedia_facebook_page
             #{link_to 'Facebook', current_tenant.socmedia_facebook_page}
+    .power  
+      %h3
+        Powered by #{link_to "ConsiderIt", "https://github.com/tkriplean/ConsiderIt"}
+
+      %span.use_considerit.line
+        #{link_to 'Use this technology','mailto:info@livingvotersguide.org?subject=I am interested in using ConsiderIt'} in your organization.
+
+  #contact
+
       
     - if !is_cali
       .past
@@ -60,7 +62,7 @@
     
     .partners
       %h3
-        Partners & funders
+        Partners
 
       - if !is_cali
         .partner.line
@@ -86,12 +88,17 @@
         .partner.line
           = link_to "Engage group, U. Washington", "http://www.engage.cs.washington.edu"
 
-      .partner.line
-        = link_to "National Science Foundation", "http://www.nsf.gov"
+
+    .partners
+      %h3
+        Funders
 
       - if is_cali
         .partner.line
           = link_to "The Whitman Institute", "http://www.thewhitmaninstitute.org/"
+
+      .partner.line
+        = link_to "National Science Foundation", "http://www.nsf.gov"
 
       .partner.line
         = link_to "Google Research Award", "http://research.google.com/university/relations/research_awards.html"

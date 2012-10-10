@@ -8,6 +8,7 @@
 //= require jquery.dynamic_list.min.js
 //= require jquery.autoresize.js
 //= require jquery.html5form.js
+//= require jquery.touch-punch.js
 //= require redactor.js
 //= require jquery.inline_labels.js
 //= require jquery.fixedheadertable.min.js

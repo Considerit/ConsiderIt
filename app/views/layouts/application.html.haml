@@ -25,6 +25,9 @@
       
 
     = theme_stylesheet_link_tag 'application'
+
+    /[if IE 9]
+      = stylesheet_link_tag 'ie9'
     
     /[if lte IE 8]
       = stylesheet_link_tag 'ie'

@@ -162,7 +162,7 @@ class PointsController < ApplicationController
       params[:point][:nutshell] = params[:point][:nutshell][0..139]
     end
 
-    if params[:point][:nutshell].length == 0 && params[:point][:text].length > 0
+    if params[:point][:nutshell].length == 0 && !params[:point][:text].nil? && params[:point][:text].length > 0
       params[:point][:text] =  params[:point][:text][139..params[:point][:text].length]
       params[:point][:nutshell] = params[:point][:text][0..139]
     end

@@ -35,9 +35,7 @@
     = check_box_tag :follow_proposal, 'true', following_proposal && following_proposal.follow
 
     %span
-      Follow this proposal.
-    .sub
-      alerts for new points and periodic summaries
+      Follow this proposal to track new pro/con points
 
   - if @user.nil?
     .email{ :class => "#{following_proposal && following_proposal.follow ? '' : 'hide'}"}

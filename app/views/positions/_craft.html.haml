@@ -62,6 +62,8 @@
 - statement_prompt = @proposal.statement_prompt && @proposal.statement_prompt.length > 0 ? @proposal.statement_prompt : "Any final remarks?"
 - has_other_points = @pro_points.length + @con_points.length > 0
 - points = { :pros => @included_pros, :cons => @included_cons }
+- render_other_proposals_menu ||= current_tenant.theme != 'chalkboardit'
+
 
 = render :partial => "proposals/blocks/menu"
 
@@ -172,7 +174,18 @@
         - if current_user && @position.published
           = link_to 'Discard changes', proposal_position_path(@proposal.long_id, @position, :authenticity_token => form_authenticity_token), :method => :delete, :class => "skip_save"
         - else
-          = link_to 'Just show me the results...', proposal_path(@proposal.long_id, :anchor => 'explore_proposal'), :class => "skip_save"
+          = link_to 'Skip posting, but show me the results', proposal_path(@proposal.long_id, :anchor => 'explore_proposal'), :class => "button skip_save"
+
+
+  - if render_other_proposals_menu
+    #other_proposals
+      .head.single
+        %h3.banner 
+          Rather move on to another? 
+
+      = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false, :prompt => 'Vote on this proposal' }
+
+
 
   :javascript
     $j(document).ready(function(){

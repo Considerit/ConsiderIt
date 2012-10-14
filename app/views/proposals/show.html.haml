@@ -77,10 +77,11 @@
 
 - if render_other_proposals_menu
   #other_proposals
-    %h3
-      Done with this one? Weigh in on these other proposals. Or visit the 
-      = succeed '.' do 
-        %a{:href => '/', :title => 'homepage'} homepage
+    .head.single
+      %h3.banner
+        Weigh in on these other proposals. Or visit the 
+        = succeed '.' do 
+          %a{:href => '/', :title => 'homepage'} homepage
 
     = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false, :prompt => 'Vote on this proposal' }
 

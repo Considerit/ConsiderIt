@@ -1,26 +1,27 @@
 .slider_table
-  margin: auto
+  margin: auto auto 2 * $vertical_baseline auto
   //width: 85%
   +font-size(2)
+
       
   td.slider_label 
     +transition('all .1s linear')
     > div
-      width: 110px
+      width: 140px
 
     
     &.left
       text-align: right
-      padding-right: 10px
+      padding-right: $grid_xs
 
     &.right
       text-align: left
-      padding-left: 10px
+      padding-left: $grid_xs
 
     &.center
       text-align: center
       +font-size(-3)
-      display: none
+      //display: none
 
     +boxy_border
 

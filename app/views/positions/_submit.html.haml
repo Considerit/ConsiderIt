@@ -7,6 +7,7 @@
   *********************************************
 
 
+- prompt = @user ? "Post your opinion" : "Post your opinion as..."
 
 .stance.position_statement.hide
   = label_tag :explanation, "Optional statement that summarizes your thoughts"
@@ -16,8 +17,10 @@
 =f.hidden_field :proposal_id, :value=>@proposal.id
 =f.hidden_field :position_id, :value => @position.id
 
+
 - if @proposal.active   
-  =f.submit "Save your perspective!", :class => "submit button"
+
+  =f.submit prompt, :class => "submit button"
 
 
 //= link_to "discard your #{@position.published ? 'changes' : 'position'}", proposal_position_path(@proposal, @position), :method => :delete

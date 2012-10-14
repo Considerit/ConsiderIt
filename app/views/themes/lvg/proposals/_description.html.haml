@@ -1,4 +1,4 @@
-- prompt = "#{@proposal.category} #{@proposal.designator} : #{@proposal.short_name}"
+- prompt = "Learn about #{@proposal.category[0]}-#{@proposal.designator} : #{@proposal.short_name}"
 
 .proposal_prompt
 
@@ -71,8 +71,4 @@
         =link_to "From the Secretary of State", @proposal.url, :title => "Visit the official listing on the state's website", :target => '_blank'
   .clear
 
-  - if !@results_page
-    .head.single
-      %h3.banner
-        Should this pass? What are the most important factors to you?
 

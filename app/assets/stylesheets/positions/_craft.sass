@@ -170,11 +170,12 @@
 
           input[type="submit"]
             width: 100%
-            padding: $vertical_baseline * .5 $grid_xs * 5
+            padding: $vertical_baseline * .5 0
             +font-size(5)
           
           .notifications
-            margin-top: 8px
+            margin: $vertical_baseline / 2 auto 0 auto
+            text-align: center
             +font-size(0)
             
             
@@ -185,8 +186,11 @@
               .sub
                 +font-size(-3)
                 font-weight: normal
+                display: inline-block
+
 
             .email
+              margin-top: $vertical_baseline/2
               input
                 //color: #555
         a
@@ -197,7 +201,24 @@
           margin-top: $vertical_baseline * 2
           
           &.skip_save
-            position: absolute
+            //position: absolute
             top: 0
             right: 0px
-            width: 264px
+            width: 364px
+            +font-size(0)
+            display: block
+            text-align: center
+            text-decoration: none
+            margin: $vertical_baseline * 2 auto
+            letter-spacing: 1
+            padding: $vertical_baseline / 2 $grid_xs
+            text-shadow: none
+            font-weight: normal
+            +main-font
+
+
+
+
+
+
+

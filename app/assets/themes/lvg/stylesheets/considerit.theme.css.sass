@@ -163,6 +163,21 @@ html
       .points_other
         top: 7 * $vertical_baseline
 
+  #submitstance
+    .rest .stanceform
+      form input[type="submit"]
+
+        +linear-gradient(desaturate($background_color, 30%), $background_color)
+        background-color: desaturate($background_color, 15%)
+
+        &:hover
+          +linear-gradient(lighten($background_color, 15%), $background_color)
+          background-color: lighten($background_color, 15%)
+
+  #other_proposals
+    .proposal_item
+      //+grayscale
+
 .proposal_prompt
   
 

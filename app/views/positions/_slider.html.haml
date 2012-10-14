@@ -10,8 +10,8 @@
 - oppose_pole = @proposal.slider_right && @proposal.slider_right.length > 0 ? @proposal.slider_right : 'Oppose'
 
 %li.gut.step.slide
-  .head
-    %h3.banner.double
+  .head.single
+    %h3.banner
 
       - if @can_update
         - @proposal.slider_prompt = prompt

@@ -8,7 +8,7 @@ class CreateAssessmentsTables < ActiveRecord::Migration
       t.references :assessable, :polymorphic => true
 
       t.boolean :qualifies
-      t.string :qualifies_reason
+      t.text :qualifies_reason
       t.integer :overall_verdict
 
       t.boolean :complete, :default => false
@@ -20,8 +20,8 @@ class CreateAssessmentsTables < ActiveRecord::Migration
 
       t.references :assessment, :class_name => 'Assessable::Assessment'
       t.references :account
-      t.string :assessment
-      t.string :claim
+      t.text :assessment
+      t.text :claim
       t.integer :verdict
 
       t.timestamps
@@ -34,7 +34,7 @@ class CreateAssessmentsTables < ActiveRecord::Migration
       t.references :assessment, :class_name => 'Assessable::Assessment'      
       t.references :account
 
-      t.string :suggestion
+      t.text :suggestion
       t.timestamps
     end
 

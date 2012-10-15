@@ -21,10 +21,10 @@ class CreateAssessmentsTables < ActiveRecord::Migration
 
       t.references :assessment, :class_name => 'Assessable::Assessment'
       t.references :account
-      t.string :result
-      t.string :claim
+      t.text :result
+      t.text :claim
       t.integer :verdict
-      t.string :notes
+      t.text :notes
 
       t.timestamps
     end
@@ -36,7 +36,7 @@ class CreateAssessmentsTables < ActiveRecord::Migration
       t.references :assessment, :class_name => 'Assessable::Assessment'      
       t.references :account
 
-      t.string :suggestion
+      t.text :suggestion
       t.timestamps
     end
 

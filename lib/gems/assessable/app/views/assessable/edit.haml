@@ -97,7 +97,7 @@
 
       .add_claim_form
         = form_for :claim, :url => assessment_create_claim_path(@assessment), :html => {:class => 'hide'} do |f|
-          = f.label :claim, 'Type a verifiable claim that the above point makes that you will check'
+          = f.label :claim, 'Restate a specific claim as a factual (yes-or-no) question that you will check'
           = f.text_area :claim, :class => 'autoResize'
           .submit_block
             = f.submit 'Add'

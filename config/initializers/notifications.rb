@@ -174,7 +174,7 @@ ActiveSupport::Notifications.subscribe("new_comment_on_Point") do |*args|
       next
 
     # if follower doesn't have an email address, skip...
-    elsif !follow.user.email || follow.user.email.length == 0
+    elsif !follow.user || !follow.user.email || follow.user.email.length == 0
       next
 
     # if follower is author of commentable

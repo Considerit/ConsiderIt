@@ -30,7 +30,7 @@
 
               - if !current_user.name
                 %li.name_field.inlined
-                  = f.text_field :name, :placeholder => 'First and last name', :title => 'first and last name', :required => true
+                  = f.text_field :name, :placeholder => 'Your name', :title => 'Your name', :required => true
 
 
               - if !current_user.email || current_user.email.length == 0
@@ -82,7 +82,7 @@
                 Signing your name adds weight to your voice.
 
               %li
-                You will still have the option of posting anonymously.
+                You can still post anonymously.
 
             - if !current_user.email || current_user.email.length == 0 
               %li

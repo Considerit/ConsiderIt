@@ -28,10 +28,10 @@
                 %span.count
                   1000
 
-            // - if current_user
-            //   .point-pledge
-            //     %p.note
-            //       Thanks for keeping it civil!
+            - if current_user
+              .point-pledge
+                %p.note
+                  Thanks for being civil and upholding your pledge!
 
             = f.submit "Add comment", :class => "comment_submit button"
 

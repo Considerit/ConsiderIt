@@ -221,15 +221,19 @@
           font-weight: normal
 
         #pledge
-          margin: $vertical_baseline * 2 0 0px 0
+          margin: $vertical_baseline * 2 auto 0 auto
+          text-align: left
+          width: 300px
           ol 
             margin: auto
-            //width: 310px
+            
 
             li
               +font-size(-3)
               //text-align: left
-              list-style-type: decimal
+              list-style: decimal inside none
+              display: list-item
+              padding: $vertical_baseline/2 0 0 0
 
 
 
@@ -262,6 +266,8 @@
         color: inherit
         +main_font
         +font-size(-2)
+
+#pledge
 
 #forgot_password
   padding: $vertical_baseline * 3 3 * $grid_minor + 2 * $grid_major

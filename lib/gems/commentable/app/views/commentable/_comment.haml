@@ -10,18 +10,20 @@
   
   .comment_body
     .body_row
-      .user{ :user => comment.user.id }
-      .text.comment_text   
-        .body
-          - if comment.user.avatar
-            = image_tag comment.user.avatar.url(:medium), :alt => "#{h comment.user.username}'s profile picture", :class => 'avatar'
+      - if comment.moderation_status == 0
+        %i
+          This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.
 
-          - if comment.moderation_status == 0
-            This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.
-          - else
+      - else
+        .user{ :user => comment.user.id }
+        .text.comment_text   
+          .body
+            - if comment.user.avatar
+              = image_tag comment.user.avatar.url(:medium), :alt => "#{h comment.user.username}'s profile picture", :class => 'avatar'
+
             = h simple_format(comment.body)
 
-          .username.exclude_from_reflect 
-            &ndash; #{h comment.user.username}
+            .username.exclude_from_reflect 
+              &ndash; #{h comment.user.username}
 
       .clear

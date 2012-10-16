@@ -11,8 +11,9 @@
 %p
   Hi! 
 
-%p
-  Thanks for taking a stance on "#{@proposal.title}".
+- if @proposal
+  %p
+    Thanks for taking a stance on "#{@proposal.title}".
 
 %p
   Before your vote will be counted in the totals, we ask that you verify your email address by visiting #{confirmation_url(@user, :confirmation_token => @user.confirmation_token, :host => @options[:host])}. 

@@ -17,13 +17,16 @@
 
         %ul
           %li
+            = f.label :name, "Your name"
+            = f.text_field :name
+
+          %li
+            = f.label :email, "Email address"
+            = f.email_field :email
+                    
+          %li
             = f.label :avatar, "Your picture"          
             = f.file_field :avatar, :title => 'Upload a profile picture'
-
-          - if !current_user.email
-            %li
-              = f.label :email, "Email address"
-              = f.email_field
 
         .submit_footer
           = f.submit "Update", :class => 'button'

@@ -13,6 +13,24 @@
   background-color: white
   padding: 15px 25px
 
+  ul li
+    padding: $vertical_baseline/2 0
+    label
+      width: 250px
+      text-align: left
+      display: block
+      margin: auto
+      +font-size(-2)
+      color: #aaa
+
+    input
+      width: 250px
+
+      &[type="file"]
+        +font-size(-4)
+        line-height: 1
+        border: none
+
   .submit
     margin-top: 5px
     a.cancel

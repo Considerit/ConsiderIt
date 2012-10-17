@@ -117,7 +117,7 @@
           - elsif false
             = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }
 
-          - if true || @proposal.enable_position_statement
+          - if @proposal.enable_position_statement
             = render :partial => "positions/statement/create", :locals => { :number => 4, :prompt => statement_prompt}
 
         %td.margin

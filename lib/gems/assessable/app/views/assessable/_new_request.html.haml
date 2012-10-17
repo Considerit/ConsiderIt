@@ -1,4 +1,4 @@
-- already_requested_assessment = assessable.assessment && assessable.assessment.requests.where(:user_id => current_user.id).count > 0
+- already_requested_assessment = !current_user.nil? && assessable.assessment && assessable.assessment.requests.where(:user_id => current_user.id).count > 0
 
 .assessment
   - if !already_requested_assessment

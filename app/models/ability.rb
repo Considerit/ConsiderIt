@@ -81,7 +81,7 @@ class Ability
         (pnt.published && (pnt.moderation_status.nil? || pnt.moderation_status != 0)) || (!pnt.published && user.id.nil? && pnt.user_id.nil?) || (user.id == pnt.user_id)
       end
       can :create, Point do |pnt|
-        pnt.proposal.active
+        pnt.proposal.active || Rails.env == 'development'
       end
       can :update, Point do |pnt|
         (!pnt.published && user.id.nil? && pnt.user_id.nil?) || (user.id == pnt.user_id)

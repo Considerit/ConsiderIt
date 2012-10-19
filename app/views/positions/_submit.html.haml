@@ -18,7 +18,7 @@
 =f.hidden_field :position_id, :value => @position.id
 
 
-- if @proposal.active   
+- if @proposal.active || Rails.env == 'development' 
 
   =f.submit prompt, :class => "submit button"
 

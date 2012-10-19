@@ -118,6 +118,8 @@ html
           #powered
             .power
               margin-top: $vertical_baseline
+            > .line
+              padding-bottom: $vertical_baseline
 
           #contact, #voter_info
             position: absolute
@@ -208,8 +210,30 @@ html
 
 
 #static
-  &.tos
-    padding-top: 130px
+  &.media
+    h3
+      padding-top: $vertical_baseline
+      +font-size(2)
+    a
+      //+font-size(1)
+      font-weight: bold
+    .loc
+      font-variant: small-caps
+      text-transform: lowercase
+
+  &.centerpad
+    padding: 0 2 * $grid_major + 2 * $grid_minor $vertical_baseline 2 * $grid_major + 2 * $grid_minor
+
+    h1
+      +font-size(3)
+
+    ul
+      li
+        padding: $vertical_baseline / 2 0
+
+  a
+    text-decoration: underline
+
 
 #help 
   width: 600px

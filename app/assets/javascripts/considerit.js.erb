@@ -593,13 +593,19 @@ ConsiderIt = {
           real_point.find('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');   
           real_point.find(".unobtrusive_edit textarea").trigger('keyup');
 
+          $j('#content').css('height', Math.max($j('#content').height(), $j('.slate:visible').offset().top + real_point.height() + 100));
+
         });
       } else{
         setTimeout(function(){
           real_point.find('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');   
           real_point.find(".unobtrusive_edit textarea").trigger('keyup');        
         }, 1000);
-      }
+
+        $j('#content').css('height', Math.max($j('#content').height(), $j('.slate:visible').offset().top + real_point.height() + 100));
+
+      }      
+
 
     });
 
@@ -622,6 +628,7 @@ ConsiderIt = {
       } 
 
       $point.trigger('mouseleave');
+      $j('#content').css('height', '');
 
     };
     $j(document).delegate('#expanded .toggle.less', 'click', function(){

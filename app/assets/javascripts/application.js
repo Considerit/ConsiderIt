@@ -20,3 +20,5 @@
 //= require pdfobject.js
 //= require sevenup.min
 //= require sevenup_black.min
+//= require jquery.flot.js
+//= require jquery.flot.selection.js

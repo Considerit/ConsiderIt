@@ -84,34 +84,35 @@
       - assessment = point.assessment
       .verdict_summary
 
-        - if assessment.overall_verdict == 2
-          .assessment.truth
-            .wrap
+        .assessment{:class => "#{assessment.overall_verdict == 2 ? 'truth' : assessment.overall_verdict == 1 ? 'unverified' : 'questionable'}"}
+          .wrap
+            - if assessment.overall_verdict == 2
               &#10003;
-            .assessment_details
-              This point makes accurate factual claims.
-
-              %strong
-                Click to learn more
-
-        - elsif assessment.overall_verdict == 1
-          .assessment.unverified
-            .wrap
+            - elsif assessment.overall_verdict == 1
               &hellip;
-            .assessment_details
-              This point makes some unverifiable claims.
-
-              %strong
-                Click to learn more
-
-        - elsif assessment.overall_verdict == 0
-          .assessment.questionable
-            .wrap
+            - else
               ?
-            .assessment_details
-              This point makes some questionable claims.                
-              %strong
-                Click to learn more
+
+          .assessment_details
+            %ul
+              - assessment.claims.each do |clm|
+                %li.claim
+                  %span.verdict
+                    - if clm.verdict == 2
+                      &#10003;
+                    - elsif clm.verdict == 1
+                      &hellip;
+                    - else
+                      ?
+                  %span.summary
+                    %span.claim_desc
+                      = clm.claim
+                    %span.claim_verdict
+                      #{Assessable::Claim.format_verdict(clm.verdict)}.
+
+            %strong
+              Click to learn more
+
     .extra  
       .ajax_loading
       

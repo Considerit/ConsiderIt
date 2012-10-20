@@ -61,7 +61,7 @@ class Ability
       #Proposal
       can :read, Proposal#, :published => 1
 
-      can [:create, :update], Proposal do |prop|
+      can [:read, :create, :update], Proposal do |prop|
         (!user.id.nil? && user.id == prop.user_id) || (session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)
       end
 

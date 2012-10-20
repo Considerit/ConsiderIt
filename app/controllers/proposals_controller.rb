@@ -52,11 +52,12 @@ class ProposalsController < ApplicationController
       return
     end
 
-    authorize! :read, @proposal
-
     if !@proposal
       redirect_to root_path
     end
+
+    authorize! :read, @proposal
+
 
     @can_update = can? :update, @proposal
     @can_destroy = can? :destroy, @proposal

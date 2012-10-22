@@ -22,7 +22,8 @@ class ApplicationController < ActionController::Base
     else
       args.append({:layout => false}) if request.xhr?
     end
-    #@domain = session.has_key?(:domain) ? Domain.find(session[:domain]) : nil    
+
+    @domain = session.has_key?(:domain) ? session[:domain] : nil
     @current_page = request.fullpath == '/' ? 'homepage' : ''
 
     if current_tenant.host.nil?
@@ -34,6 +35,7 @@ class ApplicationController < ActionController::Base
     @host_with_port = request.host_with_port
 
     super
+
   end
 
   def self.find_current_tenant(rq)

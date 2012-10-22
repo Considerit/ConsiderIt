@@ -20,6 +20,7 @@ class User < ActiveRecord::Base
   has_many :proposals
 
   acts_as_tenant(:account)
+  attr_taggable :tags
   is_trackable
   
   # Include default devise modules. Others available are:

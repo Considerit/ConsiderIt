@@ -16,7 +16,9 @@ class Proposal < ActiveRecord::Base
   belongs_to :user
   
   acts_as_tenant(:account)
-  acts_as_taggable
+  attr_taggable :tags
+
+  #acts_as_taggable
 
   is_trackable
   is_followable
@@ -162,7 +164,7 @@ class Proposal < ActiveRecord::Base
   end
 
   def extract_tags
-    self.tag_list = get_tags
+    self.tags += get_tags
   end
 
   def add_long_id

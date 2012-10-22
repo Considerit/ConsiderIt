@@ -36,13 +36,11 @@ class HomeController < ApplicationController
   end  
 
   def set_domain
-    domain = Domain.where(:identifier => params[:domain]).first()
-    if domain
-      session[:domain] = domain.id
-      if current_user
-        current_user.domain_id = session[:domain]
-        current_user.save
-      end
+    
+    session[:domain] = params[:domain]
+    if current_user
+      current_user.tags = params[:domain]
+      current_user.save
     end
     
     redirect_to request.referrer

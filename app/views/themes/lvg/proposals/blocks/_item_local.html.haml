@@ -1,0 +1,23 @@
+-#*********************************************
+  For the ConsiderIt project.
+  Copyright (C) 2010 - 2012, University of Washington
+  Author: Travis Kriplean
+  Licensed under the AGPL
+  See https://github.com/tkriplean/ConsiderIt/ for details.
+  *********************************************
+
+- has_already_taken_stance = has_stance(proposal)
+
+%li{ :id => "proposal_item-#{proposal.id}", :class => "local_measure proposal_item horizontal #{has_already_taken_stance ? 'finished' : 'not-finished'} #{proposal==@proposal ? 'active' : 'not-active'} #{style}" }
+
+  %a{ :href => (!proposal.active && Rails.env != 'development') || has_already_taken_stance ? proposal_path(proposal.long_id) : new_proposal_position_path(proposal.long_id), :title => "Think through #{proposal.category} #{proposal.designator}"}
+
+    .number
+      #{proposal.short_name}
+
+    .short_name
+      #{proposal.name}
+
+
+  .completion.hide
+    &#x2713;

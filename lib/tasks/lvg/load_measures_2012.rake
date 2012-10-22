@@ -55,18 +55,153 @@ namespace :admin do
   task :tag_and_deactivate_old_measures => :environment do
     Proposal.all.each do |prop|
         if prop.id > 323
-            prop.tag_list = '2012'
+            prop.tags = ['2012']
         else
             prop.active = false
-            prop.tag_list = prop.id > 125 ? '2010' : '2011'
+            prop.tags = prop.id > 125 ? ['2010'] : ['2011']
         end
         prop.save
         pp prop
     end
   end
 
-  desc "Loads LVG data for 2012"
-  task :load_measures => :environment do
+  desc "Loads LVG local data for 2012"
+  task :load_local_measures => :environment do
+
+    # parse jurisdictions
+    contents = File.read("lib/tasks/lvg/2012.Districts.Precincts.csv")
+    ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
+    valid_contents = ic.iconv(contents)
+
+    county_map = {
+      'Okanogan County' => 'OK', 
+      'Douglas' => 'DG', 
+      'Grant' => 'GR',
+      'Lincoln' => 'LI',
+      'Asotin' => 'AS',
+      'Chelan' => 'CH',
+      'Clark' => 'CR',
+      'Cowlitz' => 'CZ',
+      'Grays Harbor' => 'GY',
+      'Mason' => 'MA',
+      'Pacific' => 'PA',
+      'Island' => 'IS',
+      'Jefferson' => 'JE',
+      'King' => 'KI',
+      'Klickitat' => 'KT',
+      'Lewis' => 'LE',
+      'Pend Oreille' => 'PE',
+      'Pierce' => 'PI',
+      'San Juan' => 'SJ',
+      'Snohomish' => 'SN',
+      'Stevens' => 'ST',
+      'Thurston' => 'TH',
+      'WallaWalla' => 'WL',
+      'Columbia' => '',
+      'Whatcom' => 'WM',
+      'Whitman' => 'WT',
+      'Yakima' => 'YA',
+      'Skagit' => 'SK',
+      'Spokane' => 'SP',
+      'Kittitas' => 'KS',
+      'Adams' => 'AD',
+    }
+    precincts = {}
+    CSV.parse(valid_contents) do |row|
+      county_code = row[0]
+      jurisdiction = row[3]
+      precinct = row[5]
+
+      key = [county_code, jurisdiction.strip]
+      if precincts.has_key?( key )
+        precincts[key].add(precinct)
+      else
+        precincts[key] = Set.new [precinct]
+      end
+
+      if county_code == 'KI'
+        key = [county_code, 'KING COUNTY']
+        if precincts.has_key?( key )
+          precincts[key].add(precinct)
+        else
+          precincts[key] = Set.new [precinct]
+        end
+      end
+
+    end
+
+
+
+    contents = File.read("lib/tasks/lvg/measures2012_local.csv")
+    ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
+    valid_contents = ic.iconv(contents)
+
+    used_precincts = Set.new
+
+    CSV.parse(valid_contents) do |row|
+      if row[0] != 'account_id' && !row[0].nil?
+        #counties
+        counties = row[9].split(',').map {|x| x.strip}.compact
+        tags = counties + ['2012', 'local']
+
+        # do precinct lookups & tagging
+        jurisdiction = row[1]
+        county_code = county_map[counties[0]]
+        key = [county_code, jurisdiction.strip]
+
+        tags += precincts[key].to_a
+
+
+        attrs = {
+            :category => row[3],
+            :short_name => row[1].titleize,
+            :name => row[5].titleize,
+            :description => row[6],
+            :long_description => row[7],
+            :url => row[8],
+            :tags => tags,
+            :long_id => SecureRandom.hex(5),
+            :admin_id => SecureRandom.hex(6)            
+          }
+
+        proposal = Proposal.where(:account_id => row[0], :description => attrs[:description], :designator => row[2], :category => attrs[:category], :name => attrs[:name], :short_name => attrs[:short_name]).tagged_with(tags).first
+
+        if proposal.nil?
+          pp "Creating #{row[3]} #{row[2]}"
+          attrs.merge!({
+            :account_id => row[0],
+            :designator => row[2],
+            :user_id => 1,
+            :active => 1
+          })
+          proposal = Proposal.create(attrs)
+          proposal.save
+
+        else
+          pp "Updating #{row[3]} #{row[2]}"
+          proposal.update_attributes!(attrs)
+        end
+      end
+    end
+
+  end
+
+  task :set_tags => :environment do
+    sets = [['id>=1 and id<=5', 'state, 2011'], 
+    ['id>=6 and id<=125', ['local', '2011']],
+    ['id>=315 and id<=323', ['state', '2010']],
+    ['id>=339 and id<=349', ['state', '2012']],
+    ['id>=350 and id<=357', ['state', '2012']]]
+    sets.each do |s|
+      Proposal.where(s[0]).each do |p|
+        p.tags = s[1]
+        p.save
+      end
+    end
+  end
+
+  desc "Loads LVG state data for 2012"
+  task :load_state_measures => :environment do
     contents = File.read("lib/tasks/lvg/measures2012_state.csv")
     ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
     valid_contents = ic.iconv(contents)
@@ -92,7 +227,7 @@ namespace :admin do
             :designator => row[2],
             :user_id => 1,
             :active => 1,
-            :tag_list => '2012'
+            :tags => ['2012', 'state']
           })
           proposal = Proposal.create(attrs)
           proposal.save

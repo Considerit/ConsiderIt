@@ -1,29 +1,35 @@
+- is_cali = current_tenant.identifier == 'cali'
+
 .proposals{ :class => "#{style} horizontal" }
   .carousel{ :name => "proposals" }
     %ul
-      - if current_tenant.identifier == 'cali'
-        - get_proposals.order(:designator).where(:active => true).each do |proposal|
-          = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+
+
+      - if is_cali
+        = render :partial => "proposals/blocks/item", :collection => get_proposals.order(:designator).active, :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially }
       - else
-        - get_proposals_by_rank.where(:active => true).each do |proposal|
-          = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+        = render :partial => "proposals/blocks/item", :collection => get_proposals_by_rank.active.where('id>=350 and id <= 357'), :as => :proposal, :locals => {:show_full_text => false, :style => style, :hide_initially => hide_initially }
+
+
+
+    - if !is_cali 
+      = render :partial => "home/unlock_local"
+
 
     .clear
 
-    - if !@results_page
+    - if !@results_page && !is_cali
       .old#o2010
         %h3
           Ballot measures from 2010
         %ul
-          - get_proposals_by_rank.where(:active => false).where('id < 324 AND id > 314').each do |proposal|
-            = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+          = render :partial => "proposals/blocks/item", :collection => get_proposals_by_rank.where(:active => false).where('id < 324 AND id > 314'), :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially }
 
       .old#o2011
         %h3 
           Ballot measures from 2011
         %ul
-          - get_proposals_by_rank.where(:active => false).where('id < 6').each do |proposal|
-            = render :partial => "proposals/blocks/item", :locals => { :proposal => proposal, :show_full_text => false, :style => style, :hide_initially => hide_initially }
+          = render :partial => "proposals/blocks/item", :collection => get_proposals_by_rank.where(:active => false).where('id < 6'), :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially }
 
   .clear
 

@@ -25,11 +25,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
           session['reify_activities'] = true 
         end    
 
-        if current_user && session.has_key?(:domain) && session[:domain] && session[:domain] != current_user.domain_id
-          current_user.domain_id = session[:domain]
+        if current_user && session.has_key?(:domain) && session[:domain] && !current_user.tags.include?(session[:domain])
+          current_user.tags = params[:domain] 
           current_user.save
-        elsif current_user && current_user.domain_id
-          session[:domain] = current_user.domain_id
+        elsif current_user && current_user.tags
+          session[:domain] = current_user.tags
         end
 
         #respond_with user, :location => session[:return_to] || redirect_location(resource_name, user)
@@ -44,10 +44,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
         if resource.active_for_authentication?
           sign_in(resource_name, resource)
           current_user.track!
-          if current_user && session[:domain] != current_user.domain_id
-            current_user.domain_id = session[:domain]
+
+          if current_user && session.has_key?(:domain) && session[:domain] && !current_user.tags.include?(session[:domain])
+            current_user.tags = params[:domain] 
             current_user.save
           end
+
           if session.has_key?('position_to_be_published')
             session['reify_activities'] = true 
           end

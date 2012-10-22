@@ -1,3 +1,5 @@
+
+
 #home
 
   = render :partial => "home/follow"
@@ -36,16 +38,16 @@
   -# = render :partial => "proposals/new"
   = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false }
 
-  -# = render :partial => "home/unlock_local"
   - if current_tenant.identifier == 'wash'
 
     #coming_soon
       .prompt
-        Now with #{link_to 'fact-checking by The Seattle Public Library', '/home/fact_check'}. Coming soon: Local measures.
+        Now with #{link_to 'fact-checking by The Seattle Public Library', '/home/fact_check'}.
+
 
 :javascript
   $j(document).ready(function(){
-    //var logo_cell = $j('#masthead .logo_cell').hide();
+    var logo_cell = $j('#masthead .logo_cell').hide();
 
     $j('body').on('click', '#active_proposals a.video', function() { 
       video_window(450, 550, 'home/videos#console', 'LVG videos');

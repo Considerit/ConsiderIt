@@ -54,14 +54,12 @@
     //var logo_cell = $j('#masthead .logo_cell').hide();
 
     geocoder = new google.maps.Geocoder();
-    console.log('loaded geocoder');
+    $j.support.cors = true;
 
     $j(document).on('click', '.unlock .button', function(){
-      console.log('clicked unlock');
 
       var address = $j(".unlock input[type='text']").val();
       geocoder.geocode({ 'address': address }, function (results, status) {
-        console.log('geocoded');
 
         if (status == google.maps.GeocoderStatus.OK) {
           var latlng = new google.maps.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng());
@@ -70,20 +68,24 @@
           return false;
         }
 
-        $j.get(
-          'https://www.googleapis.com/fusiontables/v1/query?sql=SELECT+NAME10+FROM+1KeDnT233BF_3lWgZtZIH24NzF8W30TLsFjZgp6E+WHERE+ST_INTERSECTS(geometry,%20CIRCLE(LATLNG' + latlng + ',1))&key=AIzaSyAXnrwLLoleM-QEXozrLcW0wXcqWACOjSs',
-          function(data){
+        $j.ajax({
+          url: 'https://www.googleapis.com/fusiontables/v1/query?sql=SELECT+NAME10+FROM+1KeDnT233BF_3lWgZtZIH24NzF8W30TLsFjZgp6E+WHERE+ST_INTERSECTS(geometry,%20CIRCLE(LATLNG' + latlng + ',1))&key=AIzaSyAXnrwLLoleM-QEXozrLcW0wXcqWACOjSs',
+          crossDomain: true,
+          success: function(data, textStatus, jqXHR){
             if (jQuery.type(data) === "string") {
               data = $j.parseJSON(data);
             }
-            console.log('got response');
 
             precinct = data.rows[0][0];
             var frm = $j('.hidden_form');
             frm.find('input[type="text"]').val(precinct);
             frm.find('input[type="submit"]').trigger('click');            
-          }
-        );
+          },
+          error: function(jqXHR, textStatus, errorThrown){
+            console.log('could not query fusion tables');
+          },
+          datatype: 'json'
+        });
 
       });
     });

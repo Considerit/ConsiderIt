@@ -68,7 +68,9 @@
         $j.get(
           'https://www.googleapis.com/fusiontables/v1/query?sql=SELECT+NAME10+FROM+1KeDnT233BF_3lWgZtZIH24NzF8W30TLsFjZgp6E+WHERE+ST_INTERSECTS(geometry,%20CIRCLE(LATLNG' + latlng + ',1))&key=AIzaSyAXnrwLLoleM-QEXozrLcW0wXcqWACOjSs',
           function(data){
-            precinct = data.rows[0][0];
+            console.log(data)
+
+            precinct = $j.parseJSON(data).rows[0][0];
             console.log(precinct)
             var frm = $j('.hidden_form');
             frm.find('input[type="text"]').val(precinct);

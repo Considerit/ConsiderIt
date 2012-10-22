@@ -1,43 +1,82 @@
-- if @domain
-  #zipcode_entered
-    %span.unlocked
-      - if (cnt = @domain.domain_maps.count) == 0
-        According to our records, the #{@domain.name} area does not have any local measures on the ballot. 
-      - else
-        You can now access #{cnt} #{@domain.name} area #{cnt==1 ? 'measure' : 'measures'} likely to be on your ballot.
+= javascript_include_tag 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAXnrwLLoleM-QEXozrLcW0wXcqWACOjSs&sensor=true', :async => false
+
+
+#zipcode_entered
+
+  - if @domain
+
+    - local_measures = Proposal.active.tagged_with([@domain])
+
+
+    - if local_measures.count == 0
+      .no_measures
+        According to our records, your area does not have any local ballot measures. 
+    - else
+      %h3
+        Your local measures
+
+      %ul
+        = render :partial => "proposals/blocks/item_local", :collection => local_measures, :as => :proposal, :locals => { :show_full_text => false, :style => 'blocks', :hide_initially => false }
+
     .reset
       %a     
-        Change your zip code.
+        Reset your location.
 
       .resetform.hide
-        = form_tag '/home/domain', :id => 'domain' do
-          = text_field_tag "domain", '', :title => 'your zip code', :class => 'has_example'
-          = submit_tag 'Change your zipcode', :class => 'button'
-              
-- else
-  #zipcode_entry
-    //.triangle
-    //  &#x25b2;
+        .unlock
+          %span.inlined
+            = text_field_tag :domain, '', :placeholder => 'Your address', :title => 'your address'
+          = submit_tag 'Reset', :class => 'button'
 
+          = form_tag home_domain_path, :class => 'hide hidden_form' do |f|
+            = text_field_tag :domain, ''
+            = submit_tag '', :class => 'submit'
 
-    .prompt
-      Unlock your local measures:
-    .zipform
-      = form_tag '/home/domain', :id => 'domain' do
-        %span.inlined
-          = text_field_tag :domain, '', :placeholder => 'zip code', :title => 'your zip code'
-        = submit_tag 'Set', :class => 'button'
+  - else
+
+    .no_measures.unlock_this
+      Unlock your local measures
+    .reset
+      .reset_form
+        .unlock
+          %span.inlined
+            = text_field_tag :domain, '', :placeholder => 'Your address', :title => 'your address'
+          = submit_tag 'Unlock', :class => 'button'
+
+          = form_tag home_domain_path, :class => 'hide hidden_form' do |f|
+            = text_field_tag :domain, ''
+            = submit_tag '', :class => 'submit'
+
     .clear
   
-    :javascript
-      $j(document).ready(function(){
-        $j("input#domain").autocomplete({
-          source: #{get_available_domains()},
-          select: function(event, ui){
-           /*$j.post("#{home_domain_path}", { domain: ui.item.value }, function(data){
-            $j('#domain').append(data);
-           });
-           */
+:javascript
+  $j(document).ready(function(){
+    //var logo_cell = $j('#masthead .logo_cell').hide();
+
+    geocoder = new google.maps.Geocoder();
+
+    $j(document).on('click', '.unlock .button', function(){
+      var address = $j(".unlock input[type='text']").val();
+      geocoder.geocode({ 'address': address }, function (results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          var latlng = new google.maps.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng());
+        }else{
+          alert("We couldn't locate your address.  Please ensure you entered your street number, street, city, state and zip then try again.");
+          return false;
+        }
+
+        $j.get(
+          'https://www.googleapis.com/fusiontables/v1/query?sql=SELECT+NAME10+FROM+1KeDnT233BF_3lWgZtZIH24NzF8W30TLsFjZgp6E+WHERE+ST_INTERSECTS(geometry,%20CIRCLE(LATLNG' + latlng + ',1))&key=AIzaSyAXnrwLLoleM-QEXozrLcW0wXcqWACOjSs',
+          function(data){
+            precinct = data.rows[0][0];
+            console.log(precinct)
+            var frm = $j('.hidden_form');
+            frm.find('input[type="text"]').val(precinct);
+            frm.find('input[type="submit"]').trigger('click');
           }
-        });
+        );
+
       });
+    });
+
+  });

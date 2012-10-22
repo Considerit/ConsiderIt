@@ -317,11 +317,11 @@ html
   .paginate, .old
     display: none
 
-    h3
-      +main_font
-      +outset-text
-      +font-size(2)
-      padding-top: $vertical_baseline
+  h3
+    +main_font
+    +outset-text
+    +font-size(2)
+    padding-top: $vertical_baseline
 
   .carousel
     height: auto
@@ -380,6 +380,10 @@ html
         text-transform: lowercase
         font-weight: bold
         line-height: 1
+      &.local_measure
+        width: 230px
+        > a
+          height: $vertical_baseline * 6
 
 
       &:hover

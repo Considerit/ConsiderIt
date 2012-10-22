@@ -84,7 +84,10 @@ gem 'hpricot'
 gem 'premailer-rails3'
 
 # https://github.com/bradphelan/rocket_tag
-gem 'acts-as-taggable-on'
+# gem 'acts-as-taggable-on'
+
+gem "squeel", "1.0.9"
+gem "rocket_tag", "~> 0.5.6"
 
 # https://github.com/philnash/bitly
 gem 'bitly'

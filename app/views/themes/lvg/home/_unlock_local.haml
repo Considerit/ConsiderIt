@@ -54,14 +54,19 @@
     //var logo_cell = $j('#masthead .logo_cell').hide();
 
     geocoder = new google.maps.Geocoder();
+    console.log('loaded geocoder');
 
     $j(document).on('click', '.unlock .button', function(){
+      console.log('clicked unlock');
+
       var address = $j(".unlock input[type='text']").val();
       geocoder.geocode({ 'address': address }, function (results, status) {
+        console.log('geocoded');
+
         if (status == google.maps.GeocoderStatus.OK) {
           var latlng = new google.maps.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng());
         }else{
-          alert("We couldn't locate your address.  Please ensure you entered your street number, street, city, state and zip then try again.");
+          alert('We couldn\'t locate your address.  Please ensure you entered your street number, street, city, state and zip then try again.');
           return false;
         }
 
@@ -71,6 +76,8 @@
             if (jQuery.type(data) === "string") {
               data = $j.parseJSON(data);
             }
+            console.log('got response');
+
             precinct = data.rows[0][0];
             var frm = $j('.hidden_form');
             frm.find('input[type="text"]').val(precinct);

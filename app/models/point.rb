@@ -249,7 +249,7 @@ protected
 
     qry = inclusions.joins(:position)   \
                     .where("positions.published" )                                      \
-                    .group(:stance_bucket)                                            \
+                    .group('positions.stance_bucket')                                            \
                     .select("COUNT(*) AS cnt, positions.stance_bucket")
                         
     # get the number of inclusions per stance group
@@ -274,7 +274,7 @@ protected
     scaling_distribution = Array.new(5, 0)
     qry = point_listings.joins(:position)   \
                         .where("positions.published" )                                      \
-                        .group(:stance_bucket)                                            \
+                        .group('positions.stance_bucket')                                            \
                         .select("COUNT(distinct point_listings.user_id) AS cnt, positions.stance_bucket")
                  
     qry.each do |row|

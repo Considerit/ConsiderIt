@@ -31,8 +31,6 @@
           %th.header
             To be assessed...
           %th.header
-            Requests
-          %th.header
             Requested at
           %th.header
             Responsible?
@@ -53,12 +51,17 @@
             %td.desc
               = obj.root_object.short_desc
             %td
-              = obj.requests.count
-            %td
               = obj.requests.order(:created_at).first.created_at.localtime.strftime("%m/%d/%Y %I:%M%p")
             %td
               - if !obj.user.nil?
-                = obj.user.name
+                - if current_user.id == obj.user_id
+                  = form_for :assessment, :method => :put, :url => assessment_path(obj) do |f|
+                    = f.hidden_field :id, :value => obj.id
+                    = f.hidden_field :user_id, :value => nil
+
+                    = f.submit 'Unclaim it', :class => 'take_responsibility'
+                - else                                   
+                  = obj.user.name
               - else
                 = form_for :assessment, :method => :put, :url => assessment_path(obj) do |f|
                   = f.hidden_field :id, :value => obj.id

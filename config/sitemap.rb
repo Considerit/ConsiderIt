@@ -36,7 +36,8 @@ Account.all.each do |accnt|
       add proposal_path(prop.long_id), {:priority => 0.4, :changefreq => 'daily'}
     end
 
-    add '/home/media', {:priority => 0.2, :changefreq => 'weekly'}
+    add '/home/media', {:priority => 0.2, :changefreq => 'daily'}
+    add '/home/copromoters', {:priority => 0.2, :changefreq => 'daily'}
 
     accnt.proposals.where(:active => false).each do |prop|
       add new_proposal_position_path(prop.long_id), {:priority => 0.1, :changefreq => 'yearly'}

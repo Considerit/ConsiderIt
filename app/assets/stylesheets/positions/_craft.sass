@@ -162,15 +162,24 @@
       
       .stanceform
         margin: auto
-        
+
+        .login_required
+          +font-size(-3)
+          text-align: center
+          color: #aaa
+          position: absolute
+          bottom: $vertical_baseline * 2.5
+          left: 29px
+          width: 500px
+
         form
           margin: auto
-          width: 460px
+          width: 560px
           position: relative
 
           input[type="submit"]
             width: 100%
-            padding: $vertical_baseline * .5 0
+            padding: $vertical_baseline * .75 0
             +font-size(5)
           
           .notifications

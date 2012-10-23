@@ -103,10 +103,10 @@ class Assessable::AssessableController < ApplicationController
     assessable_type = params[:request].delete(:assessable_type)
     assessable_id = params[:request].delete(:assessable_id)
 
-    request = Assessable::Request.where(:user_id => current_user.id, :assessable_type => assessable_type, :assessable_id => assessable_id).first
-    if request.nil?
-      request = Assessable::Request.new(params[:request])
-    end
+    #request = Assessable::Request.where(:user_id => current_user.id, :assessable_type => assessable_type, :assessable_id => assessable_id).first
+    #if request.nil?
+    request = Assessable::Request.new(params[:request])
+    #end
 
     assessment = Assessable::Assessment.where(:assessable_type => assessable_type, :assessable_id => assessable_id).first
     if !assessment

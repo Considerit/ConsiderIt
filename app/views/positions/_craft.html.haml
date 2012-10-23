@@ -172,9 +172,9 @@
               });
 
         - if current_user && @position.published
-          = link_to 'Discard changes', proposal_position_path(@proposal.long_id, @position, :authenticity_token => form_authenticity_token), :method => :delete, :class => "skip_save"
+          = link_to 'Discard changes and show the results', proposal_position_path(@proposal.long_id, @position, :authenticity_token => form_authenticity_token), :method => :delete, :class => "skip_save"
         - else
-          = link_to 'Skip posting, but show me the results', proposal_path(@proposal.long_id, :anchor => 'explore_proposal'), :class => "button skip_save"
+          = link_to 'Discard my position and just show the results', proposal_path(@proposal.long_id, :anchor => 'explore_proposal'), :class => "button skip_save"
 
 
   - if render_other_proposals_menu

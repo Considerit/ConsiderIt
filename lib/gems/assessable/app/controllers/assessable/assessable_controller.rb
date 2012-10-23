@@ -15,12 +15,16 @@ class Assessable::AssessableController < ApplicationController
   end
 
   def edit
+    authorize! :index, Assessable::Assessment
+
     @assessment = Assessable::Assessment.find(params[:id])
 
     render 'assessable/edit'
   end
 
   def create_claim
+    authorize! :index, Assessable::Assessment
+
     @assessment = Assessable::Assessment.find(params[:assessment_id])
 
     if params[:claim].has_key?(:copy) && params[:claim][:copy]
@@ -37,6 +41,8 @@ class Assessable::AssessableController < ApplicationController
   end
 
   def update_claim
+    authorize! :index, Assessable::Assessment
+
     claim = Assessable::Claim.find(params[:id])
     if params[:assessable_claim].has_key? :verdict
       verdict = params[:assessable_claim][:verdict]
@@ -52,6 +58,8 @@ class Assessable::AssessableController < ApplicationController
   end
 
   def destroy_claim
+    authorize! :index, Assessable::Assessment
+
     claim = Assessable::Claim.find(params[:id])
     redirect_to edit_assessment_path(claim.assessment)
 
@@ -61,6 +69,8 @@ class Assessable::AssessableController < ApplicationController
   end
 
   def update
+    authorize! :index, Assessable::Assessment
+    
     redirect_to assessment_index_path
     assessment = Assessable::Assessment.find(params[:assessment][:id])
     complete = assessment.complete
@@ -93,7 +103,11 @@ class Assessable::AssessableController < ApplicationController
     assessable_type = params[:request].delete(:assessable_type)
     assessable_id = params[:request].delete(:assessable_id)
 
-    request = Assessable::Request.new(params[:request])
+    request = Assessable::Request.where(:user_id => current_user.id, :assessable_type => assessable_type, :assessable_id => assessable_id).first
+    if request.nil?
+      request = Assessable::Request.new(params[:request])
+    end
+
     assessment = Assessable::Assessment.where(:assessable_type => assessable_type, :assessable_id => assessable_id).first
     if !assessment
       assessment = Assessable::Assessment.create!({:account_id => current_tenant.id, :assessable_type => assessable_type, :assessable_id => assessable_id})

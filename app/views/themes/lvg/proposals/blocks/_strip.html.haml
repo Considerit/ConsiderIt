@@ -23,13 +23,13 @@
         %h3
           Ballot measures from 2010
         %ul
-          = render :partial => "proposals/blocks/item", :collection => get_proposals_by_rank.where(:active => false).where('id < 324 AND id > 314'), :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially }
+          = render :partial => "proposals/blocks/item", :collection => get_proposals.where(:active => false).where('id < 324 AND id > 314'), :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially }
 
       .old#o2011
         %h3 
           Ballot measures from 2011
         %ul
-          = render :partial => "proposals/blocks/item", :collection => get_proposals_by_rank.where(:active => false).where('id < 6'), :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially }
+          = render :partial => "proposals/blocks/item", :collection => get_proposals.where(:active => false).where('id < 6'), :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially }
 
   .clear
 

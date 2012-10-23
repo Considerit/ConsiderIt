@@ -23,6 +23,9 @@
         %p.text
           = simple_format(assessable.text.gsub(/\r\n/,""))
 
+      .full_context
+        = link_to 'Read full post', proposal_point_path(assessable.proposal, assessable)
+
     %ul#claims
       - @assessment.claims.each do |clm|
         %li.claim{:id=>clm.id}

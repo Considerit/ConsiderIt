@@ -1,8 +1,8 @@
 GIT
-  remote: git://github.com/jasherai/themes_for_rails.git
-  revision: 68ca0df1e07100874df7a102b48f2e1b0141648e
+  remote: git://github.com/idearise/themes_for_rails.git
+  revision: d290a62943725adcfa71257274434ba3ebb588ca
   specs:
-    themes_for_rails (0.5.1)
+    themes_for_rails (0.5.0)
       rails (>= 3.0.0)
 
 PATH

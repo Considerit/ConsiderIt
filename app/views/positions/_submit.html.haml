@@ -7,7 +7,7 @@
   *********************************************
 
 
-- prompt = @user ? "Post your opinion" : "Post your opinion as..."
+- prompt = "Save your opinion and view results"
 
 .stance.position_statement.hide
   = label_tag :explanation, "Optional statement that summarizes your thoughts"
@@ -22,6 +22,9 @@
 
   =f.submit prompt, :class => "submit button"
 
+  - if current_user.nil?
+    .login_required
+      You will be prompted to log in first
 
 //= link_to "discard your #{@position.published ? 'changes' : 'position'}", proposal_position_path(@proposal, @position), :method => :delete
 

@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/jasherai/themes_for_rails.git
+  revision: 68ca0df1e07100874df7a102b48f2e1b0141648e
+  specs:
+    themes_for_rails (0.5.1)
+      rails (>= 3.0.0)
+
 PATH
   remote: lib/gems/assessable
   specs:
@@ -279,8 +286,6 @@ GEM
       activerecord (~> 3.0)
       activesupport (~> 3.0)
       polyamorous (~> 0.5.0)
-    themes_for_rails (0.5.1)
-      rails (>= 3.0.0)
     therubyracer (0.10.1)
       libv8 (~> 3.3.10)
     thin (1.4.1)
@@ -354,7 +359,7 @@ DEPENDENCIES
   sass-rails (~> 3.2.3)
   sitemap_generator
   squeel (= 1.0.9)
-  themes_for_rails
+  themes_for_rails!
   therubyracer
   thin
   trackable!

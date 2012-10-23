@@ -71,7 +71,7 @@ gem 'jquery-rails'
 gem 'paper_trail'
 
 # https://github.com/lucasefe/themes_for_rails
-gem "themes_for_rails"
+gem "themes_for_rails", :git => 'git://github.com/jasherai/themes_for_rails.git'
 
 # https://github.com/weppos/actionmailer_with_request
 gem 'actionmailer-with-request'
@@ -126,4 +126,5 @@ group :assets do
   gem 'coffee-rails', "~> 3.2.1"
   gem 'uglifier'
   gem "asset_sync"
+  gem "themes_for_rails", :git => 'git://github.com/jasherai/themes_for_rails.git'
 end

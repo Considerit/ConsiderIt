@@ -9,7 +9,7 @@ if defined?(AssetSync)
     #config.fog_region = 'us-west-2'
     #
     # Don't delete files from the store
-    config.existing_remote_files = "ignore"
+    config.existing_remote_files = "keep"
     #
     # Automatically replace files with their equivalent gzip compressed version
     config.gzip_compression = true

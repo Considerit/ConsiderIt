@@ -1,5 +1,8 @@
 = javascript_include_tag 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAXnrwLLoleM-QEXozrLcW0wXcqWACOjSs&sensor=true', :async => false
 
+/[if lte IE 9]
+  = javascript_include_tag 'jquery.XDomainRequest', :async => false
+
 
 #zipcode_entered
 
@@ -50,11 +53,12 @@
     .clear
   
 :javascript
+
   $j(document).ready(function(){
     //var logo_cell = $j('#masthead .logo_cell').hide();
 
     geocoder = new google.maps.Geocoder();
-    $j.support.cors = true;
+    //$j.support.cors = true;
 
     $j(document).on('click', '.unlock .button', function(){
 

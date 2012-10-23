@@ -26,7 +26,7 @@ ConsiderIt::Application.configure do
   # config.assets.manifest = YOUR_PATH
    
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
-  config.assets.precompile += ['ie.css', 'ie9.css', 'email.css', 'admin.css', 'jquery.flot.css', 'jquery.flot.js', 'jquery.flot.selection.js', 'jquery.XDomainRequest']
+  config.assets.precompile += ['ie.css', 'ie9.css', 'email.css', 'admin.css', 'jquery.flot.css', 'jquery.flot.js', 'jquery.flot.selection.js', 'jquery.XDomainRequest.js']
 
   # Specifies the header that your server uses for sending files
   # config.action_dispatch.x_sendfile_header = "X-Sendfile"

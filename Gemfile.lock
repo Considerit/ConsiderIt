@@ -1,6 +1,6 @@
 GIT
-  remote: git://github.com/idearise/themes_for_rails.git
-  revision: d290a62943725adcfa71257274434ba3ebb588ca
+  remote: git://github.com/tkriplean/themes_for_rails.git
+  revision: fc4a07bd06dc8f843371865c9d68f7cc51c9e616
   specs:
     themes_for_rails (0.5.0)
       rails (>= 3.0.0)

@@ -1,2 +1,40 @@
+#home
+  
+#active_proposals
+  %h2.get_started
+
+  
+  = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false, :carousel => false }
+
+  - if current_user && current_user.is_admin?
+    = render :partial => "proposals/new", :locals => { :prompt => 'Add new'}
+
+  :javascript
+    $j(document).ready(function(){
+
+      $j("input#domain").autocomplete({
+        source: #{get_available_domains()},
+        select: function(event, ui){
+         /*$j.post("#{home_domain_path}", { domain: ui.item.value }, function(data){
+          $j('#domain').append(data);
+         });
+         */
+        }
+      });
+    });
+
 :javascript
-  window.location = "http://#{current_tenant.host_without_subdomain}"
+
+  //document.getElementById('header_logo').src = 'assets/policyninja/images/logo_large.png';
+
+
+/ :javascript
+/   $j('#tutorial').delegate('.nav ul a', 'click', function(){
+/     if ( !$j(this).hasClass('selected')){
+/       $j(this).parent().siblings('li').find('a').removeClass('selected');
+/       var cls = $j(this).attr('class');
+/       $j(this).addClass('selected');
+/       $j(this).parents('.nav').siblings('.frame').find('> div')
+/         .hide().filter('.' + cls).show();
+/     }
+/   });

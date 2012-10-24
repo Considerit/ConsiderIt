@@ -15,24 +15,30 @@ class ProposalsController < ApplicationController
   respond_to :json, :html
   
   def index
-    filter_by_metric = params.has_key? :metric
-    filter_by_tag = params.has_key? :tag
 
-    session[:filters] ||= {:tag => nil, :metric => 'activity'}
+    if request.xhr?
+      filter_by_metric = params.has_key? :metric
+      filter_by_tag = params.has_key? :tag
 
-    if filter_by_tag
-      # if the user has clicked on the selected tag, then unselect
-      session[:filters][:tag] = session[:filters][:tag] == params[:tag] ? nil : params[:tag]
-    elsif filter_by_metric
-      session[:filters][:metric] = params[:metric]
+      session[:filters] ||= {:tag => nil, :metric => 'activity'}
+
+      if filter_by_tag
+        # if the user has clicked on the selected tag, then unselect
+        session[:filters][:tag] = session[:filters][:tag] == params[:tag] ? nil : params[:tag]
+      elsif filter_by_metric
+        session[:filters][:metric] = params[:metric]
+      end
+
+      proposal_list = session[:filters][:tag] ? Proposal.tagged_with(session[:filters][:tag]) : Proposal
+      proposal_list = proposal_list.order("#{session[:filters][:metric]} DESC").limit(100)
+
+      proposals = render_to_string :partial => "proposals/list_output/list", :locals => { 
+        :proposals => proposal_list, :style => 'blocks', :hide_initially => false }
+      render :json => {:proposals => proposals, :current_tag => session[:filters][:tag], :current_metric => session[:filters][:metric]}.to_json
+    else
+      render
     end
 
-    proposal_list = session[:filters][:tag] ? Proposal.tagged_with(session[:filters][:tag]) : Proposal
-    proposal_list = proposal_list.order("#{session[:filters][:metric]} DESC").limit(100)
-
-    proposals = render_to_string :partial => "proposals/list_output/list", :locals => { 
-      :proposals => proposal_list, :style => 'blocks', :hide_initially => false }
-    render :json => {:proposals => proposals, :current_tag => session[:filters][:tag], :current_metric => session[:filters][:metric]}.to_json
   end
 
 

@@ -1,0 +1,31 @@
+-#*********************************************
+  For the ConsiderIt project.
+  Copyright (C) 2010 - 2012, University of Washington
+  Author: Travis Kriplean
+  Licensed under the AGPL
+  See https://github.com/tkriplean/ConsiderIt/ for details.
+  *********************************************
+
+- counties = { 'Okanogan County' => 'OK',  'Douglas' => 'DG',  'Grant' => 'GR', 'Lincoln' => 'LI', 'Asotin' => 'AS', 'Chelan' => 'CH', 'Clark' => 'CR', 'Cowlitz' => 'CZ', 'Grays Harbor' => 'GY', 'Mason' => 'MA', 'Pacific' => 'PA', 'Island' => 'IS', 'Jefferson' => 'JE', 'King' => 'KI', 'Klickitat' => 'KT', 'Lewis' => 'LE', 'Pend Oreille' => 'PE', 'Pierce' => 'PI', 'San Juan' => 'SJ', 'Snohomish' => 'SN', 'Stevens' => 'ST', 'Thurston' => 'TH', 'WallaWalla' => 'WL', 'Columbia' => '', 'Whatcom' => 'WM', 'Whitman' => 'WT', 'Yakima' => 'YA', 'Skagit' => 'SK', 'Spokane' => 'SP', 'Kittitas' => 'KS', 'Adams' => 'AD'}.keys.sort
+
+
+#sitemap
+  .index
+    %h1
+      Local Washington Ballot Measures, by County
+
+    %ul
+      - counties.each do |county|
+        %li
+          %a{:href => "#county#{county.downcase.gsub(' ', '_')}"}
+            = county
+
+  - counties.each do |county|
+    .county.proposals.horizontal.blocks{ :id => "county#{county.downcase.gsub(' ', '_')}"}
+      %h3
+        = county
+
+      %ul.carousel
+        - local_measures = Proposal.active.tagged_with([county])
+        = render :partial => "proposals/blocks/item_local", :collection => local_measures, :as => :proposal, :locals => { :show_full_text => false, :style => 'blocks', :hide_initially => false }
+

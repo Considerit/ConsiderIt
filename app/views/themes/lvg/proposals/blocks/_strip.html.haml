@@ -18,7 +18,7 @@
 
     .clear
 
-    - if !@results_page && !is_cali
+    - if !is_cali
       .old#o2010
         %h3
           Ballot measures from 2010
@@ -31,5 +31,15 @@
         %ul
           = render :partial => "proposals/blocks/item", :collection => get_proposals.where(:active => false).where('id < 6'), :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially }
 
+      :javascript
+        $j(document).ready(function(){
+          $j('a.old').click(function(){
+            var is2010 = $j(this).hasClass('lvg2010'),
+                $el = is2010 ? $j('#o2010') : $j('#o2011');
+
+            $el.fadeToggle();
+
+          });      
+        });
   .clear
 

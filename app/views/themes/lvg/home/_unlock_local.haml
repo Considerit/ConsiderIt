@@ -13,10 +13,16 @@
 
     - if local_measures.count == 0
       .no_measures
-        According to our records, your area does not have any local ballot measures. 
+        According to our records, your area does not have any local ballot measures. Note that some local measures may not appear because of gov't data inconsistencies. #{link_to 'Browse by county', proposals_path} if this happens.
+
     - else
       %h3
         Your local measures
+        %span{ :style => "font-size:small; vertical-align:top;"}
+          *
+
+      .not_perfect
+        * Some local measures may not appear because of gov't data inconsistencies. #{link_to 'Browse by county', proposals_path } if this happens.
 
       %ul
         = render :partial => "proposals/blocks/item_local", :collection => local_measures, :as => :proposal, :locals => { :show_full_text => false, :style => 'blocks', :hide_initially => false }
@@ -49,6 +55,8 @@
           = form_tag home_domain_path, :class => 'hide hidden_form' do |f|
             = text_field_tag :domain, ''
             = submit_tag '', :class => 'submit'
+    .browse
+      Or #{link_to 'browse by county', proposals_path}.
 
     .clear
   

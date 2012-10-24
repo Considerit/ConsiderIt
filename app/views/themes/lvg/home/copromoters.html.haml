@@ -16,7 +16,7 @@
   %ul
     - links.each do |link|
       %li
-        = link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:anchor])
+        = link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:anchor], :rel => 'nofollow')
 
 
 

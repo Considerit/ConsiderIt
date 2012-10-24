@@ -69,7 +69,7 @@
 
       - if !is_cali
         .partner.line
-          = link_to "Center for Comm & Civic Engagement", "http://ccce.com.washington.edu/"
+          = link_to "Center for Comm & Civic Engagement", "http://ccce.com.washington.edu/", :rel => 'nofollow'
 
         .partner.line
           = link_to 'The Seattle Public Library', 'http://www.spl.org'
@@ -77,19 +77,19 @@
       - else
 
         .partner.line
-          = link_to "CITRIS Data & Democracy Initiative, UCB", "http://citris-uc.org/"
+          = link_to "CITRIS Data & Democracy Initiative, UCB", "http://citris-uc.org/", :rel => 'nofollow'
 
         .partner.line
-          = link_to "Unruh Institute of Politics, USC", "http://dornsife.usc.edu/unruh/"
+          = link_to "Unruh Institute of Politics, USC", "http://dornsife.usc.edu/unruh/", :rel => 'nofollow'
 
         .partner.line
-          = link_to "Cal Humanities", "www.calhum.org"
+          = link_to "Cal Humanities", "www.calhum.org", :rel => 'nofollow'
 
         .partner.line
-          = link_to "California Voter Foundation", "http://www.calvoter.org/"
+          = link_to "California Voter Foundation", "http://www.calvoter.org/", :rel => 'nofollow'
 
         .partner.line
-          = link_to "Engage group, U. Washington", "http://www.engage.cs.washington.edu"
+          = link_to "Engage group, U. Washington", "http://www.engage.cs.washington.edu", :rel => 'nofollow'
 
 
     .partners
@@ -101,10 +101,10 @@
           = link_to "The Whitman Institute", "http://www.thewhitmaninstitute.org/"
 
       .partner.line
-        = link_to "National Science Foundation", "http://www.nsf.gov"
+        = link_to "National Science Foundation", "http://www.nsf.gov", :rel => 'nofollow'
 
       .partner.line
-        = link_to "Google Research Award", "http://research.google.com/university/relations/research_awards.html"
+        = link_to "Google Research Award", "http://research.google.com/university/relations/research_awards.html", :rel => 'nofollow'
 
     .partners
       %h3
@@ -124,7 +124,7 @@
 
     - links.each do |link|
       .line
-        = link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:title])
+        = link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:title], :rel => 'nofollow')
 
 
 

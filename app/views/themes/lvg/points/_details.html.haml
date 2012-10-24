@@ -64,7 +64,7 @@
       = form_for [@proposal, point], :remote => true, :method => :post, :url => proposal_point_inclusions_path(@proposal.long_id, point, :page => @page) do |f|
         = f.submit 'Add to your pro/con list', :class => 'button inclusion_submit', :title => 'Add this point to your pro/con list.'
 
-  - if current_tenant.identifier == 'wash' && (@proposal.active || Rails.env == 'development')
+  - if current_tenant.identifier == 'wash' && (@proposal.active || Rails.env == 'development') && !@proposal.tags.include?('local')
     .fact_check
 
       - if point.assessment && point.assessment.complete

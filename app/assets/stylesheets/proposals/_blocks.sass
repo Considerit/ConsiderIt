@@ -116,8 +116,9 @@ li.proposal_item
   +border-radius(5px)
   opacity: .8
   +transition
-  
-  width: 225px
+  margin: $vertical_baseline / 4 $grid_xs / 8
+
+  width: 300px
 
   &.finished .completion
     display: block
@@ -153,6 +154,16 @@ li.proposal_item
       font-style: italic
       white-space: nowrap
       font-weight: normal
+
+    .title
+      height: 75px
+      text-overflow: ellipsis
+
+    .prompt
+      +font-size(-3)
+      font-weight: normal
+      padding-top: $vertical_baseline
+
 
 
   &.blocks    

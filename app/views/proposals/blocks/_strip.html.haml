@@ -8,16 +8,23 @@
 
 - prompt ||= 'Read more and comment'
 
+
+- carousel ||= false
+
 .proposals{ :class => "#{style} horizontal" }
-  .paginate.first
-    %button.back
-      &#9664;
+  - if carousel
+    .paginate.first
+      %button.back
+        &#9664;
   .carousel{ :name => "proposals" }
     %ul
       = render :partial => "proposals/blocks/item", :collection => get_proposals_by_rank, :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially, :prompt => prompt }
     .clear
-  .paginate.last
-    %button.forward.not_ajax
-      &#9654;
+
+  - if carousel
+
+    .paginate.last
+      %button.forward.not_ajax
+        &#9654;
   .clear
 

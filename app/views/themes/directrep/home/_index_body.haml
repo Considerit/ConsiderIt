@@ -40,7 +40,7 @@
       
     #proposals
 
-      = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false, :prompt => 'Vote on this proposal' }
+      = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false, :prompt => 'Vote on this proposal', :carousel => true }
 
       - if current_user && current_user.is_admin?
         = render :partial => "proposals/new", :locals => { :prompt => 'Add new proposal'}

@@ -56,6 +56,10 @@
           .open.hide
             = form_for [@assessment, clm], :url => assessment_update_claim_path(@assessment, clm) do |f|
 
+              .claim_block
+                = f.label :claim, 'The claim restatement'
+                = f.text_area :claim, :class => 'autoResize'
+
               .radio_block
                 = f.radio_button :verdict, 'accurate', :value => '2', :checked => "#{clm.verdict == 2 ? 'checked' : ''}"
                 = f.label :verdict, 'accurate', :value => 'accurate'

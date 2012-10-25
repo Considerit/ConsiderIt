@@ -12,6 +12,9 @@
   - if @notification_type == 'your point'
     One or more participants requested that your #{@point.is_pro ? 'pro' : 'con'} point be fact checked. The Seattle Public Library has done so. We hope that the additional information is helpful!
 
+  - elsif @notification_type == 'requested by you'
+    At your request, a #{@point.is_pro ? 'pro' : 'con'} point has been fact checked by The Seattle Public Library. 
+
   - else
     A #{@point.is_pro ? 'pro' : 'con'} point that you follow has been fact checked by The Seattle Public Library. 
 

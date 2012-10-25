@@ -164,7 +164,7 @@ ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
 
   commenters = assessable.comments.select(:user_id).uniq.map {|x| x.user_id }
   includers = assessable.inclusions.select(:user_id).uniq.map {|x| x.user_id }
-
+  requesters = assessable.requests.select(:user_id).uniq.map {|x| x.user_id }
 
   assessable.follows.where(:follow => true).each do |follow|
 
@@ -175,6 +175,10 @@ ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
     elsif follow.user_id == assessable.user_id
       notification_type = 'your point'
 
+    # if follower requested the check
+    elsif requesters.include?(follow.user_id)
+      notification_type = 'requested by you'
+    
     # if follower is a participant in the discussion
     elsif commenters.include? assessable.user_id
       notification_type = 'participant'

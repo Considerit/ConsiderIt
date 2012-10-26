@@ -13,7 +13,6 @@ class Commentable::CommentsController < ApplicationController
 
   def create
     authorize! :create, Commentable::Comment
-    @proposal = Proposal.find(params[:comment][:proposal_id])
     @user_who_commented = current_user
     commentable_type = params[:comment][:commentable_type]
 
@@ -61,5 +60,23 @@ class Commentable::CommentsController < ApplicationController
     end
 
   end
+
+  def update
+    @user = current_user
+
+    @comment = Commentable::Comment.find(params[:id])
+    authorize! :update, Commentable::Comment
+
+    @comment.update_attributes!(params[:commentable_comment])
+
+    updated_comment = render_to_string :partial => "commentable/comment", :locals => { :comment => @comment } 
+    response = {
+      :updated_comment => updated_comment
+    }
+    render :json => response.to_json
+
+  end
+
+
 
 end

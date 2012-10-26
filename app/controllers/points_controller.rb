@@ -30,6 +30,8 @@ class PointsController < ApplicationController
 
     @proposal = Proposal.find_by_long_id(params[:long_id])
     @user = current_user
+
+    ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
     
     if current_user
       @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 

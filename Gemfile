@@ -95,6 +95,9 @@ gem 'bitly'
 # https://github.com/mperham/dalli/
 gem 'dalli'
 
+# https://github.com/vmg/rinku
+gem 'rinku'
+
 #custom gems
 gem "reflect", :path => "lib/gems/reflect"
 gem "followable", :path => "lib/gems/followable"

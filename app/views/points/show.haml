@@ -29,17 +29,16 @@
           = render :partial => 'points/make_editable', :locals => { :point => point, :field => :nutshell, :sync_with => "#expanded .point_text.nutshell span.text", :validations => {:required => true, :maxlength => 140} }
       - else
         .point_text.nutshell 
-          = point.nutshell
+          = simple_format(auto_link(point.nutshell, :all, :target => "_blank"))
 
       .point_text.full
 
         .details
           - if point_creator
-            = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => true }        
+            = render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => false }        
           
           - elsif has_details 
-            = simple_format(point.text.gsub(/\r\n/,""))
-
+            = simple_format(auto_link(point.text.gsub(/\r\n/,""), :all, :target => "_blank"))
 
       .nested_user
         - if point.hide_name

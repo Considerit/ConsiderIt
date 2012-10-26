@@ -347,13 +347,21 @@ ConsiderIt = {
       })      
       .on('keyup', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(){
         var save_block = $j(this).siblings('.save_block');
-        save_block.find('input').show();
-        save_block.find('.updated').hide();
+        if (!save_block.is('.fading')) {      
+          save_block.find('input').show();
+          save_block.find('.updated').hide();
+        }
       })
       .delegate('.unobtrusive_edit_form', 'ajax:success', function(data, response, xhr){
-        var save_block = $j(this).find('.save_block');
-        save_block.find('input').hide();
-        save_block.find('.updated').show().delay(1200).fadeOut(); 
+        var $save_block = $j(this).find('.save_block');
+        //$save_block.find('input').remove();
+        $save_block.addClass('fading');
+
+        $save_block.find('input').hide();
+
+        $save_block.find('.updated').show().delay(1200).fadeOut(function(){
+          $save_block.removeClass('fading');
+        }); 
         if ( $j(this).attr('sync_with') ){
           $j($j(this).attr('sync_with')).text($j(this).find('textarea').val());
         }
@@ -364,8 +372,10 @@ ConsiderIt = {
       })      
       .on('blur', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(e){
         var save_block = $j(this).siblings('.save_block');
-        save_block
-          .find('.updated').hide();
+        if (!save_block.is('.fading')) {
+          save_block
+            .find('.updated').hide();
+        }
         //if ( !$j(e.target).hasClass('.save_block') && !$j(e.target).parents('.save_block').length > 0 ) {
         //  save_block.hide();
         //}

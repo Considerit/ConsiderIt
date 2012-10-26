@@ -723,28 +723,30 @@ ConsiderIt = {
 
     // post new comment
     $j(document).delegate('.new_comment form', 'ajax:success', function(data, response, xhr){
-      var new_point = response['new_point'],
-      $parent = $j(this).parents('.comment').filter(":first");
-      //because we cloned the point in order to show an expanded version when the point in the list 
-      // is contained in the carousel, need to add the comment in both places...
-      $parent = $j('#' + $parent.attr('id'));
-      if($parent.length > 0){
-        $parent.find('.comment_children').filter(":first").prepend(new_point);
-        $j('.new_comment textarea').val("");
-        $parent.find('.reply_row a.cancel').trigger('click');
-      } else {
-        $j(this).parents('.new_comment').filter(":first").before(new_point);
-        $j(this).find('textarea, .the_subject input').val("");
-      }
+      var new_point = response['new_point'];
+
+      $j(this).parents('.new_comment').filter(":first").before(new_point);
+      $j(this).find('textarea, .the_subject input').val("");
 
       if ( response['is_following'] ) {
         var commentable = $j(this).parents('.commentable:first');
         commentable.find('.follow').hide();
         commentable.find('.unfollow').show();
       }
-
-
     });
+
+    // update comment
+    $j(document).delegate('.comment form', 'ajax:success', function(data, response, xhr){
+      var updated_comment = response['updated_comment'];
+      $parent = $j(this).parents('.comment').filter(":first");
+      $parent.replaceWith(updated_comment);
+    });
+
+    $j(document).on('click', '.comment .edit_comment a', function(){
+      $j(this).parents('.edit_comment').find('.edit_form').toggleClass('hide');
+      $j(this).parents('.edit_comment').find('> a').toggleClass('hide');
+    });
+
 
     //////////////
     // POSITIONS

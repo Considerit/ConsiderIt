@@ -2,6 +2,7 @@ require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
 require 'pp'
+require 'rails_rinku'
 require './config/local_environment'
 
 if defined?(Bundler)

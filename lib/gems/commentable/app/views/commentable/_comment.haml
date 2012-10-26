@@ -6,6 +6,8 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
+- can_update = can? :update, comment
+
 %li.comment{ :id=>"comment-#{comment.id}" }
   
   .comment_body
@@ -26,4 +28,19 @@
             .username.exclude_from_reflect 
               &ndash; #{h comment.user.username}
 
+
+  - if can_update
+    .edit_comment
+      %a
+        edit
+      .edit_form.hide
+        = render :partial => 'commentable/make_editable', :locals => { :comment => comment, :validations => {:maxlength => 1000} }
+        %a
+          cancel
+
       .clear
+
+
+
+
+

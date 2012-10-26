@@ -100,6 +100,9 @@ class Ability
       if !user.id.nil?
         can :create, Commentable::Comment
       end
+
+      can :update, Commentable::Comment, :user_id => user.id
+      
     end
   end
 end

@@ -264,6 +264,7 @@ GEM
     rdoc (3.12)
       json (~> 1.4)
     remotipart (1.0.2)
+    rinku (1.7.2)
     rmagick (2.13.1)
     rocket_tag (0.5.6)
       activerecord (>= 3.2.0)
@@ -353,6 +354,7 @@ DEPENDENCIES
   rails (~> 3.2)
   rails_admin
   reflect!
+  rinku
   rmagick
   rocket_tag (~> 0.5.6)
   role_model

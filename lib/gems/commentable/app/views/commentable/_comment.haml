@@ -23,7 +23,7 @@
             - if comment.user.avatar
               = image_tag comment.user.avatar.url(:medium), :alt => "#{h comment.user.username}'s profile picture", :class => 'avatar'
 
-            = h simple_format(comment.body)
+            = simple_format(auto_link(comment.body, :all, :target => "_blank"))
 
             .username.exclude_from_reflect 
               &ndash; #{h comment.user.username}

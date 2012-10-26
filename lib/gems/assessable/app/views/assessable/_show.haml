@@ -29,7 +29,7 @@
                 #{Assessable::Claim.format_verdict(clm.verdict)}.
 
             .details
-              = simple_format(auto_link(clm.result, :all, :target => "_blank"))
+              = simple_format(auto_link(clm.result.html_safe, :all, :target => "_blank"))
 
     %p.explanation
       - num_requests = assessable.assessment.requests.count

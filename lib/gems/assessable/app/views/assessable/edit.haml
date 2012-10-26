@@ -137,7 +137,7 @@
     - @assessment.requests.each do |rq|
       .request
         .body
-          = simple_format(auto_link(rq.suggestion, :all, :target => "_blank"))
+          = simple_format(auto_link(rq.suggestion.html_safe, :all, :target => "_blank"))
         .user
           &ndash; #{rq.user.name}
 

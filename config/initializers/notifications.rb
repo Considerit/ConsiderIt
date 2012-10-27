@@ -311,7 +311,7 @@ ActiveSupport::Notifications.subscribe("first_position_by_new_user") do |*args|
   mail_options = data[:mail_options]
 
 
-  UserMailer.confirmation_instructions(user, proposal, mail_options).deliver!
+  #UserMailer.confirmation_instructions(user, proposal, mail_options).deliver!
 
 end
 

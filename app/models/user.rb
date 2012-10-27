@@ -18,6 +18,7 @@ class User < ActiveRecord::Base
   has_many :point_similarities, :dependent => :destroy
   #has_many :comments, :dependent => :destroy, :class_name => 'Commentable::Comment'
   has_many :proposals
+  has_many :follows, :dependent => :destroy, :class_name => 'Followable::Follow'
 
   acts_as_tenant(:account)
   attr_taggable :tags
@@ -46,6 +47,10 @@ class User < ActiveRecord::Base
         #:medium_dark => "70x70#",
         :small => "50x50#"
       }
+
+  def unsubscribe!
+    self.follows.update_all( {:explicit => true, :follow => false} )
+  end
 
   def send_on_create_confirmation_instructions
     #don't deliver confirmation instructions. We will wait for them to submit a position. 

@@ -6,6 +6,7 @@ module Followable
       
       match "follow" => 'followable::followable#follow'
       match "unfollow" => 'followable::followable#unfollow'
+      match "unfollow_create" => 'followable::followable#unfollow_create', :via => :post
     end
 
   end

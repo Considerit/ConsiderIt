@@ -23,7 +23,8 @@
       = f.submit prompt, :title => title, :class => 'button'
 
   .unfollow{ :class => "#{already_follows ? '' : 'hide'}"}
-    = form_for :follows, :url => unfollow_path, :as => :follow, :method => :get, :remote => true do |f|
+    = form_for :follows, :url => unfollow_create_path, :as => :follow, :remote => true do |f|
+      = f.hidden_field :user_id, :value => current_user.id
       = f.hidden_field :followable_id, :value => followable.id
       = f.hidden_field :followable_type, :value => followable.class.name    
       = f.submit unfollow_prompt, :class => 'button'

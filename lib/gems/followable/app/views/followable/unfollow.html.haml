@@ -1,0 +1,16 @@
+#unsubscribe
+  %h2
+    Unsubscribe to notifications
+
+  #single
+    = form_for :follows, :url => unfollow_create_path, :as => :follow do |f|
+      = f.hidden_field :user_id, :value => @user.id    
+      = f.hidden_field :followable_id, :value => @followable_id
+      = f.hidden_field :followable_type, :value => @followable_type
+      = f.submit "Unsubscribe to this #{@followable_type}", :class => 'button'
+
+  #all
+    = form_for :follows, :url => unfollow_create_path, :as => :follow do |f|
+      = f.hidden_field :user_id, :value => @user.id
+      = f.hidden_field :unsubscribe_all, :value => true
+      = f.submit "Unsubscribe to all notifications", :class => 'button'

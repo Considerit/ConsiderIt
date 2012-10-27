@@ -164,7 +164,7 @@ ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
 
   commenters = assessable.comments.select(:user_id).uniq.map {|x| x.user_id }
   includers = assessable.inclusions.select(:user_id).uniq.map {|x| x.user_id }
-  requesters = assessable.requests.select(:user_id).uniq.map {|x| x.user_id }
+  requesters = assessment.requests.select(:user_id).uniq.map {|x| x.user_id }
 
   assessable.follows.where(:follow => true).each do |follow|
 

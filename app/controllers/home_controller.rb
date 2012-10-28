@@ -32,7 +32,7 @@ class HomeController < ApplicationController
   end
 
   def show
-    if params[:page] == 'home'
+    if params[:page] == 'help'
       redirect_to root_path
     else
       render :action => params[:page]

@@ -53,7 +53,7 @@ class PositionsController < ApplicationController
     @proposal = Proposal.find_by_long_id(params[:long_id])
 
     if current_user.nil? 
-      redirect_to(  proposal_path(@proposal.long_id, :anchor => 'explore_proposal')
+      redirect_to(  proposal_path(@proposal.long_id, :anchor => 'explore_proposal') )
       return
     end
 

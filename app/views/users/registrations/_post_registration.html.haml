@@ -30,8 +30,7 @@
 
               - if !current_user.name
                 %li.name_field.inlined
-                  = f.text_field :name, :placeholder => 'Your name', :title => 'Your name', :required => true
-
+                  = f.text_field :name, :placeholder => 'Your name', :title => 'Your name', :required => true, :pattern => "^.{1,}"
 
               - if !current_user.email || current_user.email.length == 0
                 %li.email_field.inlined

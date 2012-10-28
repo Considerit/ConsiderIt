@@ -18,7 +18,7 @@
         %ul
           %li
             = f.label :name, "Your name"
-            = f.text_field :name
+            = f.text_field :name, :pattern => "^.{1,}"
 
           %li
             = f.label :email, "Email address"

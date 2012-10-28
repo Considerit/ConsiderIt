@@ -1,6 +1,6 @@
 /**
  * h5Validate
- * @version v0.8.2
+ * @version v0.8.4
  * Using semantic versioning: http://semver.org/
  * @author Eric Hamilton http://ericleads.com/
  * @copyright 2010 - 2012 Eric Hamilton
@@ -80,16 +80,18 @@
         patternVar: 'h5-pattern',
         stripMarkup: true,
 
-        // Validate on submit?
-        // **TODO: This isn't implemented, yet.
+        // Run submit related checks and prevent form submission if any fields are invalid?
         submit: true,
+
+        // Move focus to the first invalid field on submit?
+        focusFirstInvalidElementOnSubmit: true,
+
+        // When submitting, validate elements that haven't been validated yet?
+        validateOnSubmit: true,
 
         // Callback stubs
         invalidCallback: function () {},
         validCallback: function () {},
-
-        // When submitting, validate elements that haven't been validated yet?
-        validateOnSubmit: true,
 
         // Elements to validate with allValid (only validating visible elements)
         allValidSelectors: ':input:visible:not(:button):not(:disabled):not(.novalidate)',
@@ -179,17 +181,22 @@
 
         return $this.data('valid'); // get the validation result
       },
-      allValid: function (settings, options) {
+      allValid: function (config, options) {
         var valid = true,
           formValidity = [],
           $this = $(this),
+          $allFields,
+          $filteredFields,
+          radioNames = [],
           getValidity = function getValidity(e, data) {
             data.e = e;
             formValidity.push(data);
           },
-          settings = $.extend({}, settings, options); // allow options to override settings
+          settings = $.extend({}, config, options); // allow options to override settings
 
         options = options || {};
+
+        $this.trigger('formValidate', {settings: $.extend(true, {}, settings)});
 
         // Make sure we're not triggering handlers more than we need to.
         $this.undelegate(settings.allValidSelectors,
@@ -197,7 +204,25 @@
         $this.delegate(settings.allValidSelectors,
           'validated.allValid', getValidity);
 
-        $this.find(settings.allValidSelectors).each(function () {
+        $allFields = $this.find(settings.allValidSelectors);
+
+        // Filter radio buttons with the same name and keep only one,
+        // since they will be checked as a group by isValid()
+        $filteredFields = $allFields.filter(function(index) {
+          var name;
+
+          if(this.tagName === "INPUT"
+            && this.type === "radio") {
+            name = this.name;
+            if(radioNames[name] === true) {
+              return false;
+            }
+            radioNames[name] = true;
+          }
+          return true;
+        });
+
+        $filteredFields.each(function () {
           var $this = $(this);
           valid = $this.h5Validate('isValid', options) && valid;
         });
@@ -214,18 +239,23 @@
           // The pattern attribute must match the whole value, not just a subset:
           // "...as if it implied a ^(?: at the start of the pattern and a )$ at the end."
           re = new RegExp('^(?:' + pattern + ')$'),
+          $radiosWithSameName = null,
           value = ($this.is('[type=checkbox]')) ?
-              $this.is(':checked') : (($this.is('[type=radio]')) ?
-                $(settings.el)
-                  .find('input[name=' + $this.attr('name') + ']:checked')
+              $this.is(':checked') : ($this.is('[type=radio]') ?
+                // Cache all radio buttons (in the same form) with the same name as this one
+                ($radiosWithSameName = $this.parents('form')
+                  // **TODO: escape the radio buttons' name before using it in the jQuery selector
+                  .find('input[name="' + $this.attr('name') + '"]'))
+                  .filter(':checked')
                   .length > 0 : $this.val()),
           errorClass = settings.errorClass,
           validClass = settings.validClass,
           errorIDbare = $this.attr(settings.errorAttribute) || false, // Get the ID of the error element.
-          errorID = errorIDbare ? '#' + errorIDbare : false, // Add the hash for convenience. This is done in two steps to avoid two attribute lookups.
+          errorID = errorIDbare ? '#' + errorIDbare.replace(/(:|\.|\[|\])/g,'\\$1') : false, // Add the hash for convenience. This is done in two steps to avoid two attribute lookups.
           required = false,
           validity = createValidity({element: this, valid: true}),
-          $checkRequired = $('<input required>');
+          $checkRequired = $('<input required>'),
+          maxlength;
 
         /*  If the required attribute exists, set it required to true, unless it's set 'false'.
         * This is a minor deviation from the spec, but it seems some browsers have falsey 
@@ -245,6 +275,12 @@
           console.log('Regex test: ' + re.test(value) + ', Pattern: ' + pattern); // **DEBUG
         }
 
+        maxlength = parseInt($this.attr('maxlength'), 10);
+        if (!isNaN(maxlength) && value.length > maxlength) {
+            validity.valid = false; 
+            validity.tooLong = true;
+        }
+
         if (required && !value) {
           validity.valid = false;
           validity.valueMissing = true;
@@ -252,8 +288,6 @@
           validity.valid = false;
           validity.patternMismatch = true;
         } else {
-          validity.valid = true; // redundant?
-
           if (!settings.RODom) {
             settings.markValid({
               element: this,
@@ -279,6 +313,21 @@
           }
         }
         $this.trigger('validated', validity);
+
+        // If it's a radio button, also validate the other radio buttons with the same name
+        // (while making sure the call is not recursive)
+        if($radiosWithSameName !== null
+          && settings.alreadyCheckingRelatedRadioButtons !== true) {
+
+          settings.alreadyCheckingRelatedRadioButtons = true;
+
+          $radiosWithSameName
+            .not($this)
+            .trigger('validate');
+
+          settings.alreadyCheckingRelatedRadioButtons = false;
+
+        }
       },
 
       /**
@@ -317,7 +366,8 @@
        * @returns {object} jQuery object for chaining.
        */
       bindDelegation: function (settings) {
-        var $this = $(this);
+        var $this = $(this),
+          $forms;
         // Attach patterns from the library to elements.
         // **TODO: pattern / validation method matching should
         // take place inside the validate action.
@@ -327,9 +377,13 @@
           $('.' + settings.classPrefix + key).attr('pattern', pattern);
         });
 
-        $this.filter('form').attr('novalidate', 'novalidate');
-        $this.find('form').attr('novalidate', 'novalidate');
-        $this.parents('form').attr('novalidate', 'novalidate');
+        $forms = $this.filter('form')
+            .add($this.find('form'))
+            .add($this.parents('form'));
+
+        $forms
+          .attr('novalidate', 'novalidate')
+          .submit(checkValidityOnSubmitHandler);
 
         return this.each(function () {
           var kbEvents = {
@@ -349,8 +403,49 @@
           settings.delegateEvents(settings.kbSelectors, kbEvents, this, settings);
           settings.delegateEvents(settings.mSelectors, mEvents, this, settings);
           settings.delegateEvents(settings.activeClassSelector, activeEvents, this, settings);
+          settings.delegateEvents('textarea[maxlength]', {keyup: true}, this, settings);
         });
       }
+    },
+
+    /**
+     * Event handler for the form submit event.
+     * When settings.submit is enabled:
+     *  - prevents submission if any invalid fields are found.
+     *  - Optionally validates all fields.
+     *  - Optionally moves focus to the first invalid field.
+     * 
+     * @param {object} evt The jQuery Event object as from the submit event. 
+     * 
+     * @returns {object} undefined if no validation was done, true if validation passed, false if validation didn't.
+     */
+    checkValidityOnSubmitHandler = function(evt) {
+
+      var $this,
+        settings = getInstance.call(this),
+        allValid;
+
+      if(settings.submit !== true) {
+        return;
+      }
+
+      $this = $(this);
+      allValid = $this.h5Validate('allValid', { revalidate: settings.validateOnSubmit === true });
+
+      if(allValid !== true) {
+        evt.preventDefault();
+
+        if(settings.focusFirstInvalidElementOnSubmit === true){
+          var $invalid = $(settings.allValidSelectors, $this)
+                  .filter(function(index){
+                    return $(this).h5Validate('isValid', { revalidate: false }) !== true;
+                  });
+
+          $invalid.first().focus();
+        }
+      }
+
+      return allValid;
     },
 
     instances = [],

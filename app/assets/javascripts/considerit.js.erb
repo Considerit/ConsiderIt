@@ -148,14 +148,6 @@ ConsiderIt = {
       accept: '.pro'
     } );      
 
-    $j('.has_example').each(function(){
-      if($j(this).val() == '') {
-        $j(this).example(function() {
-          return $j(this).attr('title'); 
-        });
-      }
-    });
-
     $j('.new_comment .is_counted, .pro_con_list .is_counted').each(function(){
       if( !$j(this).data('has_noblecount') ){        
 
@@ -481,8 +473,8 @@ ConsiderIt = {
         $new_point.find('.nested_user .unknown').text(nameplate_name);
       }
 
-      $j(this).parents('.full_column').filter(":first").find('.point_list').filter(":first").append($new_point);
-      $j(this).find('textarea').val('');
+      $j(this).parents('.full_column:first').find('.point_list:first').append($new_point);
+      $j(this).find('textarea').val('').trigger('keydown');
       $j(this).find('.point-title-group .count').html(140);
       //$j(this).find('.point-description-group .count').html(2000);
       
@@ -498,7 +490,7 @@ ConsiderIt = {
 
     // Update callback
     $j('.pro_con_list.dynamic').delegate('.editpointform form', 'ajax:success', function(data, response, xhr){
-      $j(this).parents('.point_in_list').filter(":first").replaceWith(response['new_point']);
+      $j(this).parents('.point_in_list:first').replaceWith(response['new_point']);
       hide_lightbox(); 
     });
 

@@ -6,25 +6,26 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
+:javascript
+  function CheckLength(){
+    var msg_area = document.getElementById("Message");
+    msg_area.innerHTML = "";
+    alert('HEY')
+    if (document.getElementById("commentarea").value.length < 100) {
+      msg_area.innerHTML = "YOU DID NOT ENTER ENOUGH INFO FOR YOUR REVIEW";
+    }
+    else document.getElementById("pointform-#{is_pro ? 'pro' : 'con'}").submit();
+  }
 
 .pointform{ :class => "#{action}pointform" }
 
-  = form_for [@proposal, point], :action => action, :html => {:class => "form-#{is_pro ? 'pro' : 'con'}"}, :remote => true do |f|
+  = form_for [@proposal, point], :action => action, :html => {:id => "pointform-#{is_pro ? 'pro' : 'con'}", :class => "form-#{is_pro ? 'pro' : 'con'}"}, :remote => true do |f|
 
     .form_proper
       =f.hidden_field :is_pro, :id => "point-current-is_pro", :value => is_pro
 
-      / .username
-      /   by
-      /   - if point.hide_name
-      /     anonymous
-      /   - elsif point.user
-      /     = point.user.username
-      /   - else
-      /     unknown
-
       .point-title-group.inlined
-        = f.text_area :nutshell, :placeholder => 'Summarize your point (required)', :cols => 24, :class => "point-title is_counted", :required=>true, :maxlength => 140
+        = f.text_area :nutshell, :placeholder => 'Summarize your point (required)', :cols => 24, :class => "point-title is_counted", :required=>true, :maxlength => 140, :pattern => "^.{3,}"
         %span.count
           140
         .clear

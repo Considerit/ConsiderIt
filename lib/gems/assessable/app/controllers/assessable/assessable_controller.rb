@@ -168,7 +168,7 @@ ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
 
   assessable.follows.where(:follow => true).each do |follow|
 
-    if !follow.user.email || follow.user.email.length == 0
+    if !follow.user || !follow.user.email || follow.user.email.length == 0
       next
 
     # if follower is author of point

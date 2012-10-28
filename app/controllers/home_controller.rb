@@ -32,7 +32,11 @@ class HomeController < ApplicationController
   end
 
   def show
-    render :action => params[:page]
+    if params[:page] == 'home'
+      redirect_to root_path
+    else
+      render :action => params[:page]
+    end
   end  
 
   def set_domain

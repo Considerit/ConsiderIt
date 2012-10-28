@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121009164535) do
+ActiveRecord::Schema.define(:version => 20121028041531) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -86,12 +86,12 @@ ActiveRecord::Schema.define(:version => 20121009164535) do
   create_table "claims", :force => true do |t|
     t.integer  "assessment_id"
     t.integer  "account_id"
-    t.string   "result"
-    t.string   "claim"
+    t.text     "result"
+    t.text     "claim"
     t.integer  "verdict"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
-    t.string   "notes"
+    t.text     "notes"
   end
 
   create_table "comments", :force => true do |t|
@@ -356,7 +356,6 @@ ActiveRecord::Schema.define(:version => 20121009164535) do
   add_index "proposals", ["account_id", "id"], :name => "select_proposal"
   add_index "proposals", ["account_id", "long_id"], :name => "select_proposal_by_long_id"
   add_index "proposals", ["account_id"], :name => "index_proposals_on_account_id"
-  add_index "proposals", ["admin_id"], :name => "index_proposals_on_admin_id", :unique => true
   add_index "proposals", ["long_id"], :name => "index_proposals_on_long_id", :unique => true
 
   create_table "rails_admin_histories", :force => true do |t|
@@ -435,7 +434,7 @@ ActiveRecord::Schema.define(:version => 20121009164535) do
     t.integer  "user_id"
     t.integer  "assessment_id"
     t.integer  "account_id"
-    t.string   "suggestion"
+    t.text     "suggestion"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end

@@ -16,6 +16,10 @@ class UserMailer < ActionMailer::Base
 
   ######### DEVISE MAILERS
   def confirmation_instructions(user, proposal, options)
+    if user.nil?
+      return
+    end
+    
     generate_reset_password_token!(user) #if (user.reset_password_token.nil? || !user.reset_password_period_valid?)
 
     @user = user

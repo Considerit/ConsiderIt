@@ -486,12 +486,14 @@ h1,h2,h3,h4,h5,h6, .pro_con_list .full_column .pro_con_list_header .inner, #craf
       .assessment_details
         display: none
         position: absolute
-        +font-size(-2)
-        width: 275px
+        +font-size(-3)
+        width: 200px
         padding: $vertical_baseline/2 $grid_xs
         text-align: left
 
         .claim
+          padding-bottom: $vertical_baseline
+
           .verdict
             padding-right: $grid_xs
 
@@ -526,7 +528,7 @@ h1,h2,h3,h4,h5,h6, .pro_con_list .full_column .pro_con_list_header .inner, #craf
 
         .assessment_details
           display: inline-block
-          right: 0
+          right: -30px
 
           strong
             display: block

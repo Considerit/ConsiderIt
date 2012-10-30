@@ -97,7 +97,7 @@
             %ul
               - assessment.claims.each do |clm|
                 %li.claim
-                  %span.verdict
+                  %span.hide.verdict
                     - if clm.verdict == 2
                       &#10003;
                     - elsif clm.verdict == 1
@@ -105,10 +105,11 @@
                     - else
                       ?
                   %span.summary
+                    %span.claim_verdict
+                      #{Assessable::Claim.format_verdict(clm.verdict)}:
+
                     %span.claim_desc
                       = clm.claim
-                    %span.claim_verdict
-                      #{Assessable::Claim.format_verdict(clm.verdict)}.
 
             %strong
               Click to learn more

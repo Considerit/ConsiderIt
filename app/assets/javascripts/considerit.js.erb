@@ -791,7 +791,7 @@ ConsiderIt = {
       $j('.bar.selected', $histogram).removeClass('selected hard_select soft_select');
       $bar.addClass('selected ' + (hard_select ? 'hard_select' : 'soft_select'));
 
-      $stored.show();            
+      $stored.show();
       $j('#ranked_points .pro_con_list:not(#domain_' + bucket + '), .statements').hide();
       var $col = $j('.full_column', $stored);
       if ( !$col.data('carousel_initialized') ) {
@@ -861,29 +861,40 @@ ConsiderIt = {
 
     initialize_participants_block : function( ) {
 
-      var cur_low = null;
-      for ( var bucket = 0; bucket<= 6; bucket+=1 ) {
-        var container = $j('#bucket-' + bucket + '.bar'),
-            p = $j('> .people_bar', container),
-            participants = $j('> .statement img', p),            
-            dim = get_tile_size(container.width(), container.height(), participants.length);
-        
-        if ( participants.length > 0 ) {
-          cur_low = cur_low ? Math.min(dim, cur_low) : dim;
-        }
-      }
+      var cur_low = null, tile_sizes = {};
 
       for ( var bucket = 0; bucket<= 6; bucket+=1 ) {
         var container = $j('#bucket-' + bucket + '.bar'),
             p = $j('> .people_bar', container),
             participants = $j('> .statement img', p);
 
-        var per_row = Math.floor( container.width() / cur_low);
-        for ( var i = 0; participants.length % per_row != 0 && i < per_row - participants.length % per_row; i+=1 ) {
-          p.prepend('<li style="visibility:hidden; float: right; height:' + cur_low + 'px; width:'+cur_low+'px;">')
+        console.log(container.width())   
+        console.log(container.height())        
+        console.log(participants.length)
+        var dim = get_tile_size(container.width(), container.height(), participants.length);
+
+        console.log(dim)
+        tile_sizes[bucket] = dim;        
+        if ( participants.length > 0 ) {
+          cur_low = cur_low ? Math.min(dim, cur_low) : dim;
         }
+      }
+
+      console.log(tile_sizes)
+      for ( var bucket = 0; bucket<= 6; bucket+=1 ) {
+        var container = $j('#bucket-' + bucket + '.bar'),
+            p = $j('> .people_bar', container),
+            participants = $j('> .statement img', p),
+            icon_size = tile_sizes[bucket]; //cur_low
+
+        var per_row = Math.floor( container.width() / icon_size);
+        for ( var i = 0; participants.length % per_row != 0 && i < per_row - participants.length % per_row; i+=1 ) {
+          p.prepend('<li style="visibility:hidden; float: right; height:' + icon_size + 'px; width:'+icon_size+'px;">')
+        }
+        //participants
+        //  .css({'width': cur_low, 'height': cur_low});
         participants
-          .css({'width': cur_low, 'height': cur_low});
+          .css({'width':icon_size, 'height':icon_size})
         //container.css('height', 'auto');
       }
 

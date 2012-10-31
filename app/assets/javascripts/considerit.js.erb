@@ -868,19 +868,14 @@ ConsiderIt = {
             p = $j('> .people_bar', container),
             participants = $j('> .statement img', p);
 
-        console.log(container.width())   
-        console.log(container.height())        
-        console.log(participants.length)
         var dim = get_tile_size(container.width(), container.height(), participants.length);
 
-        console.log(dim)
         tile_sizes[bucket] = dim;        
         if ( participants.length > 0 ) {
           cur_low = cur_low ? Math.min(dim, cur_low) : dim;
         }
       }
 
-      console.log(tile_sizes)
       for ( var bucket = 0; bucket<= 6; bucket+=1 ) {
         var container = $j('#bucket-' + bucket + '.bar'),
             p = $j('> .people_bar', container),

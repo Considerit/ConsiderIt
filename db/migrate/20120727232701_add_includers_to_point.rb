@@ -1,5 +1,7 @@
 class AddIncludersToPoint < ActiveRecord::Migration
   def change
-    add_column :points, :includers, :string
+    add_column :points, :includers, :text
   end
 end
+
+

@@ -11,11 +11,32 @@
 
 //body, input, button, 
 
-h1, h2, h3, h4, h5, h6, 
-#craft_position #submitstance .rest .stanceform form input[type="submit"]
+h1, h2, h3, h4, h5, h6
   font-family: 'Armata', 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
 
+#craft_position #nameplate
+  display: none
+  +font-size(0)
+  &, input, a, textarea
+    font-family: 'Armata', 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
 
+.participant_connection
+  +main_font
+  
+#craft_position #submitstance .rest .stanceform form 
+  width: 650px
+  input[type="submit"]
+    +main_font
+    font-weight: bold
+  .login_required
+
+.infiniteCarousel .paginate input.forward[type="submit"], .infiniteCarousel .paginate button.back, .infiniteCarousel .paginate button.forward, .infiniteCarousel .arrow input.forward[type="submit"], .infiniteCarousel .arrow button.back, .infiniteCarousel .arrow button.forward, .dynamicList .paginate input.forward[type="submit"], .dynamicList .paginate button.back, .dynamicList .paginate button.forward, .dynamicList .arrow input.forward[type="submit"], .dynamicList .arrow button.back, .dynamicList .arrow button.forward
+  color: #777
+
+#craft_position > .user_opinion td.margin
+  padding-top: 5 * $vertical_baseline
+#craft_position > .user_opinion td.margin .points_other
+  top: 8 * $vertical_baseline
 
 
 $primary_button_background_color: #082872
@@ -163,3 +184,36 @@ html
     //background-color: #222
     display: block
     margin: auto
+
+.proposals.horizontal
+  .paginate
+    display: none
+
+  .carousel
+    height: auto
+    float: none
+    ul
+      text-align: center
+    li.proposal_item
+      float: none
+      display: inline-block
+      width: auto
+      text-align: center
+      vertical-align: top
+      margin: $vertical_baseline / 4 $grid_xs / 4
+
+      a
+        display: inline-block
+        width: 250px
+        height: $vertical_baseline * 8
+
+      .number
+        +font-size(4)
+
+      .user_name
+        display: none
+
+      .prompt
+        +font-size(-3)
+        font-weight: normal
+        padding-top: $vertical_baseline

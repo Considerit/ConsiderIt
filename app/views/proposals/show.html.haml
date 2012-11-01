@@ -65,10 +65,6 @@
 
       .explore#ranked_points
 
-        - if has_position
-          .action
-            Click a bar to filter results ^
-
         = render :partial => "points/pro_con_list", :locals => { :dynamic => false, :bucket => 'all', :points => {:pros => @pro_points, :cons => @con_points} }
 
 

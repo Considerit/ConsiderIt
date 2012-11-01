@@ -77,24 +77,22 @@ html body #wrap.homepage > div#masthead
 
     .banner
 
-      h1#tagline
+      #tagline
         font-weight: bold
         +font-size(5)
         color: #333
         text-align: center
         //+banner-single
-        +main_font
         line-height: 1.3
         padding: $vertical_baseline/2 $grid_xs 0 $grid_xs
         letter-spacing: 0
         +outset-text
 
-      h2.get_started
+      .get_started
         +font-size(1)
         text-align: center
         color: #777
         font-weight: normal
-        +main_font
         +outset-text
 
         a
@@ -139,9 +137,9 @@ html body #wrap.homepage > div#masthead
     display: inline-block
     +font-size(-3)
 
-    a
-      color: inherit
-      text-decoration: underline
+  a
+    color: inherit
+    text-decoration: underline
 
   #domain
     width: 350px

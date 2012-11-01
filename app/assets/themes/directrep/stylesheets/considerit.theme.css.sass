@@ -96,7 +96,7 @@ body #wrap > div#content
         width: 688px
         margin-left: 385px
 
-#wrap #footer
+body #wrap > div#footer
   margin-top: 2 * $vertical_baseline
   +chalkboard
   width: 100%
@@ -108,7 +108,7 @@ body #wrap > div#content
     font-variant: small-caps
     padding-top: 10px
 
-  .footer_wrapper
+  > .footer_wrapper
     position: relative
     width: 738px
 
@@ -116,6 +116,7 @@ body #wrap > div#content
       color: #e1e1e1
 
       &.powered_by
+        display: none
         position: absolute
         margin-top: 0
         right: 0
@@ -140,7 +141,6 @@ body #wrap > div#content
         display: none
 
       &#other_candidates
-        text-align: left
         font-variant: small-caps
         .heading
           +heading
@@ -149,8 +149,9 @@ body #wrap > div#content
 
 
         .candidate_list
-
+          margin: auto
           .candidate
+            display: inline-block
             padding: 0 $grid_xs
             //width: 125px
             position: relative
@@ -201,3 +202,4 @@ body #wrap > div#content
 
 #registration_form #third_party #twitter
   display: none
+

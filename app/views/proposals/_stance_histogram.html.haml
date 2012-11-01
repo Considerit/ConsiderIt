@@ -6,7 +6,11 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
+
 = cache [@proposal, 'histogram'] do
+
+  - support_pole = @proposal.slider_left && @proposal.slider_left.length > 0 ? @proposal.slider_left : 'Supporters'
+  - oppose_pole = @proposal.slider_right && @proposal.slider_right.length > 0 ? @proposal.slider_right : 'Opposers'
 
   - people_bars ||= true
   - barheight = 180
@@ -25,7 +29,8 @@
       %table
         %tr
           %td.support
-            = @proposal.slider_left || 'Supporters'
+            %h3
+              = support_pole
 
           - stance_breakdown.reverse.each_with_index do |bucket_percentile, index| 
             - height = bucket_percentile/height_scaler
@@ -56,7 +61,8 @@
                     %li.clear
 
           %td.oppose
-            = @proposal.slider_right || 'Opposers'
+            %h3
+              = oppose_pole
 
       #axis_arrow
                   

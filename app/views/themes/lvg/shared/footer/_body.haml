@@ -3,7 +3,7 @@
 #footer_segments
   #service
 
-    %h3.what
+    .heading.what
       A free, non-partisan service
 
     - if is_cali
@@ -30,7 +30,7 @@
       = link_to 'Media', '/home/media'
 
     .contact
-      %h3
+      .heading
         Contact us
 
       .line
@@ -42,7 +42,7 @@
             -#= link_to image_tag( 'facebook.png'), current_tenant.socmedia_facebook_page
             #{link_to 'Facebook', current_tenant.socmedia_facebook_page}
     .power  
-      %h3
+      .heading
         Powered by #{link_to "ConsiderIt", "https://github.com/tkriplean/ConsiderIt"}
 
       %span.use_considerit.line
@@ -53,7 +53,7 @@
       
     - if !is_cali
       .past
-        %h3
+        .heading
           Past results
 
         .line        
@@ -64,7 +64,7 @@
             2011    
     
     .partners
-      %h3
+      .heading
         Partners
 
       - if !is_cali
@@ -93,7 +93,7 @@
 
 
     .partners
-      %h3
+      .heading
         Funders
 
       - if is_cali
@@ -107,13 +107,13 @@
         = link_to "Google Research Award", "http://research.google.com/university/relations/research_awards.html", :rel => 'nofollow'
 
     .partners
-      %h3
+      .heading
         Co-promoters
       .partner.line
         Thanks to all of our #{link_to "co-promoters", "/home/copromoters"}
 
   #voter_info
-    %h3
+    .heading
       Information for voters
     - if !is_cali
 

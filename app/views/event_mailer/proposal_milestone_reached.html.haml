@@ -9,6 +9,8 @@
 - num_positions = @proposal.positions.published.count
 - stance_breakdown = @proposal.stance_fractions
 - barheight = 100
+- support_pole = @proposal.slider_left && @proposal.slider_left.length > 0 ? @proposal.slider_left : 'Supporters'
+- oppose_pole = @proposal.slider_right && @proposal.slider_right.length > 0 ? @proposal.slider_right : 'Opposers'
 
 %p.intro
   %strong
@@ -80,7 +82,7 @@
         %td
       %tr.histogram_arrow
         %td.support
-          = @proposal.slider_left || 'Support'
+          = support_pole
 
         - stance_breakdown.reverse.each_with_index do |bucket_percentile, index| 
           %td.spanner
@@ -89,7 +91,7 @@
                 #{link_to 'You', edit_proposal_position_url(@proposal.long_id, user_position)} &#8593;
                   
         %td.oppose
-          = @proposal.slider_right || 'Oppose'
+          = oppose_pole
 
 - notable_points = @proposal.notable_points
 - if notable_points

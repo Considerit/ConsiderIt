@@ -4,7 +4,6 @@
 
     &, input, a, textarea
       color: #666
-      +heading
       //text-shadow: rgba(255, 255, 255, 0.4) -1px -1px
       text-align: center
 
@@ -82,10 +81,11 @@
         opacity: .8
 
         .lead
-          +heading
           +font-size(0)
           text-transform: uppercase
           letter-spacing: -1px
+          color: #777
+          font-weight: normal
 
         .sublead
           +font-size(-3)
@@ -171,6 +171,7 @@
           bottom: $vertical_baseline * 2.5
           left: 29px
           width: 500px
+          pointer-events: none
 
         form
           margin: auto
@@ -181,6 +182,7 @@
             width: 100%
             padding: $vertical_baseline * .75 0
             +font-size(5)
+            +heading
           
           .notifications
             margin: $vertical_baseline / 2 auto 0 auto

@@ -33,7 +33,7 @@ class PointsController < ApplicationController
 
     ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
     
-    if current_user
+    if !current_user.nil?
       @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 
     else
       @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil

@@ -7,7 +7,7 @@
 
   %ul.candidate_list
     - candidates.each do |cnd|
-      %li.candidate.fl
+      %li.candidate
         %a{ :href => "http://#{current_tenant.host_with_port.gsub(phil ? 'dodds' : 'hansen', cnd[:identifier])}" }
           %span.name_block
             .name

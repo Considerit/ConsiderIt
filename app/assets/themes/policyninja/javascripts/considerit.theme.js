@@ -1,5 +1,5 @@
 $j(document).ready(function(){
-  document.getElementById('header_logo').src = 'assets/policyninja/images/logo_large.png';  
+  
   per_request();
   $j(document).ajaxComplete(function(e, xhr, settings) {
     per_request();

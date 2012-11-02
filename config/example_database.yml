@@ -4,12 +4,14 @@ development:
   username: root
   password: root
   host: localhost
+  encoding: utf8
 
 test:
   adapter: mysql2
   database: considerit_test
   password: root
   host: localhost
+  encoding: utf8
 
 production:
   adapter: mysql2
@@ -17,5 +19,5 @@ production:
   username: root
   password: root
   host: localhost
-
+  encoding: utf8
 

@@ -1,3 +1,0 @@
-namespace :users do
-
-end

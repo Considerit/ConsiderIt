@@ -3,6 +3,12 @@
 @import "homepage"
 @import "paper_proposal"
 
+
+$primary_button_background_color: #c83b34
+
+$background_color: #e6e6e6
+
+
 @font-face
   font-family: 'Armata'
   font-style: normal
@@ -41,10 +47,6 @@ h1, h2, h3, h4, h5, h6
 .newpoint .newpointbutton a.write_new
   +font-size(0)
 
-$primary_button_background_color: #082872
-
-$background_color: #e6e6e6
-
 //$dark_header_background: #710000
 
 #admin_strip #content #more_options
@@ -53,11 +55,11 @@ $background_color: #e6e6e6
 #explore_proposal
 //  margin-top: 60px
 #wrap #masthead .inner .logo_cell
-  left: 220px
-  top: 33px  
+  margin-left: 378px
+  top: 11px  
   //margin-left: -193px
   img 
-    width: 60px
+    width: 300px
 
 #footer, #zipcode_entry
   display: none
@@ -219,3 +221,79 @@ html
         +font-size(-3)
         font-weight: normal
         padding-top: $vertical_baseline
+
+
+
+.proposals.horizontal.blocks
+  //width: 850px
+  .paginate, .old
+    display: none
+
+  h3
+    +main_font
+    +outset-text
+    +font-size(2)
+    padding-top: $vertical_baseline
+
+  .carousel
+    height: auto
+    float: none
+    ul
+      
+
+
+    li.proposal_item
+      float: none
+      display: inline-block
+      text-align: center
+      //width: 180px
+      
+      vertical-align: top
+      opacity: .9
+      
+      +linear-gradient(darken($primary_button_background_color, 25%), $primary_button_background_color)
+      background-color: darken($primary_button_background_color, 5%)
+
+
+      margin: $vertical_baseline / 4 $grid_xs / 8
+
+      &:hover
+        background: none
+
+      > a
+        padding: 0
+        color: #ddd
+        display: block
+        padding: $vertical_baseline $grid_xs / 2 $vertical_baseline $grid_xs / 2
+        //height: $vertical_baseline * 4
+
+        &:hover
+          color: white
+
+      .number
+        +font-size(-1)
+        font-weight: normal
+        letter-spacing: normal
+        color: darken(desaturate(#980000, 60%), 20%)
+        font-weight: bold
+        top: - $vertical_baseline
+        font-variant: small-caps
+        text-transform: uppercase
+        display: block
+        //+inset-text(.1)
+        padding-bottom: $vertical_baseline /4
+
+      .short_name
+        font-weight: normal
+        vertical-align: middle
+        letter-spacing: normal
+        +font-size(1)
+        font-variant: small-caps
+        text-transform: lowercase
+        font-weight: bold
+        line-height: 1
+
+
+      &:hover
+        +linear-gradient(darken($primary_button_background_color, 15%), $primary_button_background_color)
+        background-color: darken($primary_button_background_color, 5%)

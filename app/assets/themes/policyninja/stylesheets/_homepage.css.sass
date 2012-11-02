@@ -31,23 +31,6 @@
 
   #home
 
-    #people
-      //width: 400px
-      font-size: 0
-      margin: -38px 0 0 0px
-      .row
-        text-align: center
-        .img
-          display: inline-block
-          opacity: .7    
-          width: 35px
-          height: 35px
-          //border-right: 1px solid white
-          //border-bottom: 1px solid white
-
-          &:hover
-            opacity: 1
-
     #logo
       position: absolute
       top: -70px
@@ -101,70 +84,3 @@
         text-decoration: underline
         color: inherit
     
-    #zipcode_entered
-      color: #777
-      padding: 6px 30px 0 30px
-      margin: 0 auto
-      +font-size(-3)
-      text-align: center
-
-
-      .reset
-        display: inline-block
-
-        a
-          color: inherit
-          text-decoration: underline
-
-    #zipcode_entry
-      //background-color: #700000
-      //+border-radius(2px)
-      position: relative
-      //bottom: -55px
-      //padding: 10px 30px 4px 30px
-      //border-top: 1px solid #8a0000
-      //border-bottom: 1px solid black
-      //+box-shadow(0,1px,3px, rgba(black, .7))
-      //+outset-text
-      //left: 50%
-      width: 360px
-      //margin-left: -225px
-      margin: 10px auto
-
-
-      .triangle
-        position: absolute
-        top: -20px
-        +font-size(3)
-        color: #700000
-        left: 50%
-        margin-left: -8px
-
-      .prompt
-        +font-size(-1)
-        color: #777
-        font-weight: normal
-        float: left
-        +outset-text
-
-      .zipform
-        float: right
-        position: relative
-        top: -6px
-        
-        input[type="text"]
-          +font-size(-2)
-          width: 80px
-          display: inline-block
-          border-color: #ccc
-          background-color: white
-
-        input[type="submit"]
-          margin-top: 5px
-          +font-size(-2)
-          display: inline-block
-          margin-left: 7px
-          +linear-gradient(#eee,#ddd)
-          border-bottom-color: #bbb
-          border-top-color: #f1f1f1
-          +box-shadow(0, 1px, 2px, rgba(black,.3))

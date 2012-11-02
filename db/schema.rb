@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121028041531) do
+ActiveRecord::Schema.define(:version => 20121102000241) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -39,6 +39,15 @@ ActiveRecord::Schema.define(:version => 20121028041531) do
     t.string   "host"
     t.string   "host_with_port"
     t.string   "inherited_themes"
+    t.string   "pro_label"
+    t.string   "con_label"
+    t.string   "slider_right"
+    t.string   "slider_left"
+    t.string   "slider_prompt"
+    t.string   "considerations_prompt"
+    t.string   "statement_prompt"
+    t.string   "entity"
+    t.boolean  "enable_position_statement"
   end
 
   add_index "accounts", ["identifier"], :name => "index_accounts_on_identifier"
@@ -262,7 +271,7 @@ ActiveRecord::Schema.define(:version => 20121028041531) do
     t.datetime "followable_last_notification"
     t.integer  "comment_count",                          :default => 0
     t.integer  "point_link_count",                       :default => 0
-    t.string   "includers"
+    t.text     "includers"
     t.float    "divisiveness"
     t.integer  "moderation_status"
   end

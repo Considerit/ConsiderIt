@@ -27,6 +27,84 @@ class Proposal < ActiveRecord::Base
 
   scope :active, where( :active => true )
 
+
+
+  def label_proposal
+    if self.entity && self.entity.length > 0 
+      self.entity 
+    elsif self.account.entity && self.account.entity.length > 0
+      self.account.entity
+    else
+      self.category ? self.category : 'proposal'
+    end
+  end
+
+  def label_slider_prompt
+    if self.slider_prompt && self.slider_prompt.length > 0
+      self.slider_prompt
+    elsif self.account.slider_prompt && self.account.slider_prompt.length > 0
+      self.account.slider_prompt
+    else
+      "Do you support this #{label_proposal.downcase}?"
+    end
+  end
+
+  def label_slider_left
+    if self.slider_left && self.slider_left.length > 0
+      self.slider_left
+    elsif self.account.slider_left && self.account.slider_left.length > 0
+      self.account.slider_left
+    else
+      "Support"
+    end
+  end
+
+  def label_slider_right
+    if self.slider_right && self.slider_right.length > 0
+      self.slider_right
+    elsif self.account.slider_right && self.account.slider_right.length > 0
+      self.account.slider_right
+    else
+      "Oppose"
+    end
+  end
+
+  def label_considerations_prompt
+    if self.considerations_prompt && self.considerations_prompt.length > 0 
+      self.considerations_prompt
+    elsif self.account.considerations_prompt && self.account.considerations_prompt.length > 0
+      self.account.considerations_prompt
+    else
+      "What are the most important #{label_pro.downcase}s and #{label_con.downcase}s to you?"
+    end
+  end
+
+  def label_statement_prompt
+    if self.statement_prompt && self.statement_prompt.length > 0 
+      self.statement_prompt
+    elsif self.account.statement_prompt && self.account.statement_prompt.length > 0 
+      self.account.statement_prompt
+    else
+      "Any final remarks?"
+    end
+  end
+
+  def label_pro
+    if self.account.pro_label && self.account.pro_label.length > 0
+      self.account.pro_label
+    else
+      'Pro'
+    end
+  end
+
+  def label_con
+    if self.account.con_label && self.account.con_label.length > 0
+      self.account.con_label
+    else
+      'Con'
+    end
+  end
+
   def format_description
     return self.description.split('\n')
   end

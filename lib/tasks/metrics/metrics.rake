@@ -1,3 +1,5 @@
+require 'uri'
+
 namespace :metrics do
   desc "Create metrics output"
 
@@ -67,6 +69,50 @@ namespace :metrics do
       )
     end
 
+  end
+
+  task :referer => :environment do 
+    puts "User referals"
+    year = 2012
+    users = User.where(:account_id => 1).where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
+
+    domains = {}
+
+    users.each do |user|
+      begin
+        domain = URI.parse(user.referer).host
+        if user.referer.index('aclk')
+          domain = 'google.ads.com'
+        end
+      rescue
+        domain = nil
+      end
+
+
+      if !domains.has_key?(domain)
+        domains[domain] = {:users => 0, :positions => 0, :points => 0, :inclusions => 0}
+      end
+      domains[domain][:users] += 1 
+      domains[domain][:positions] += user.positions.published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count
+      domains[domain][:points] += user.points.published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count      
+      domains[domain][:inclusions] += user.inclusions.where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins(:position).where('positions.published = 1').count
+      #domains[domain][:comments] += user.comments.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count      
+    end
+
+    as_array = []; domains.each {|k,vs| as_array.push([k,vs]) }  
+
+    puts( "Domain\tusers\tpositions\tinclusions\tpoints")
+    as_array.sort{|x,y| x[1][:users]<=>y[1][:users]}.each do |domain|
+        printf("%s\t%i\t%i\t%i\t%i\n",
+
+        domain[0], 
+        domain[1][:users],
+        domain[1][:positions],
+        domain[1][:inclusions],
+        domain[1][:points]
+        #domain[:comments]
+      )
+    end
   end
 
 

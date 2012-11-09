@@ -80,7 +80,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       # this is for caching purposes, particularly the histogram
       Proposal.find_by_id(params[:user].delete(:proposal_id)).touch
     end
-    redirect_to request.referer
+    redirect_to !request.referer.nil? ? request.referer : root_path
   end
 
   def check_login_info    

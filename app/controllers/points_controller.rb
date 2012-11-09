@@ -199,7 +199,12 @@ class PointsController < ApplicationController
   end
 
   def show
-    @point = Point.find(params[:id])
+    begin
+      @point = Point.find(params[:id])
+    rescue
+      redirect_to root_path, :notice => 'Cannot find that point. The author may have deleted it.'
+      return
+    end
     @proposal = Proposal.find_by_long_id(params[:long_id])
     authorize! :read, @point
 

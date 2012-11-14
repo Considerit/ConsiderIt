@@ -38,7 +38,10 @@
           .inner_wrapper
             .pro_con_list_header.pro_header
               .inner
-                = File.exists?(theme_image_path('pro_header.png')) ? theme_image_tag('pro_header.png') : image_tag('chalk/pros.png') 
+                - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
+                  = theme_image_tag('pro_header.png')
+                - else
+                  = image_tag('chalk/pros.png') 
 
             = render :partial => "points/column", :locals => { :points => points[:pros], :is_pro => true, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 
@@ -51,7 +54,10 @@
           .inner_wrapper
             .pro_con_list_header.con_header
               .inner
-                = File.exists?(theme_image_path('con_header.png')) ? theme_image_tag('con_header.png') : image_tag('chalk/cons.png') 
+                - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
+                  = theme_image_tag('con_header.png')
+                - else
+                  = image_tag('chalk/cons.png') 
 
             = render :partial => "points/column", :locals => { :points => points[:cons], :is_pro => false, :origin => origin, :bucket => bucket, :enable_pagination => !dynamic, :page => @page, :paginate_before => false, :paginate_after => true, :show_both_arrows => true }
 

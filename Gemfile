@@ -71,7 +71,7 @@ gem 'jquery-rails'
 gem 'paper_trail'
 
 # https://github.com/lucasefe/themes_for_rails
-gem "themes_for_rails", "0.5.0.1", :git => 'git://github.com/tkriplean/themes_for_rails.git'
+gem "themes_for_rails", "0.5.0.2", :git => 'git://github.com/tkriplean/themes_for_rails.git'
 
 # https://github.com/weppos/actionmailer_with_request
 gem 'actionmailer-with-request'

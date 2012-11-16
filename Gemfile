@@ -24,14 +24,6 @@ gem 'twitter'
 # https://github.com/ErwinM/acts_as_tenant
 gem 'acts_as_tenant'
 
-# https://github.com/gregbell/active_admin
-#gem "formtastic", "~> 2.1.1"
-#gem 'activeadmin'
-#gem 'meta_search',    '>= 1.1.0.pre'
-
-# https://github.com/sferik/rails_admin/
-# gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin.git' #, :branch => 'rails-3.0'
-
 # https://github.com/sferik/rails_admin
 gem 'rails_admin'
 
@@ -129,5 +121,6 @@ group :assets do
   gem 'coffee-rails', "~> 3.2.1"
   gem 'uglifier'
   gem "asset_sync"
+  gem 'turbo-sprockets-rails3'
   #gem "themes_for_rails", :git => 'git://github.com/jasherai/themes_for_rails.git'
 end

@@ -119,7 +119,7 @@ class Proposal < ActiveRecord::Base
   end
 
   def title(max_len = 140)
-    if name
+    if name && name.length > 0
       my_title = name
     elsif description
       my_title = description

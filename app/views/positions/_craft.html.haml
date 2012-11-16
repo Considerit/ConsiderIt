@@ -104,7 +104,8 @@
 
         %td.slate
 
-          = render :partial => "positions/nameplate", :locals => { :prompt => considerations_prompt}
+          - if false
+            = render :partial => "positions/nameplate", :locals => { :prompt => 'Perspective'}
 
           - if false
             = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => slider_prompt }

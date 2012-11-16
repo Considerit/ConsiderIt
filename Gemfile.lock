@@ -1,8 +1,8 @@
 GIT
   remote: git://github.com/tkriplean/themes_for_rails.git
-  revision: e8c80d43445882f575bb66850ffcabac2e2fd52c
+  revision: a4c7b4014e9d6b6ccc074b010c4960e47d4b376f
   specs:
-    themes_for_rails (0.5.0.1)
+    themes_for_rails (0.5.0.2)
       rails (>= 3.0.0)
 
 PATH
@@ -361,7 +361,7 @@ DEPENDENCIES
   sass-rails (~> 3.2.3)
   sitemap_generator
   squeel (= 1.0.9)
-  themes_for_rails (= 0.5.0.1)!
+  themes_for_rails (= 0.5.0.2)!
   therubyracer
   thin
   trackable!

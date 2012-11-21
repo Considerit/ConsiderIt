@@ -61,7 +61,7 @@ class UserMailer < ActionMailer::Base
       subject = "#{@proposal.user.name} invites you to participate in a discussion"
     end
 
-    mail(from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
 
   end  
 

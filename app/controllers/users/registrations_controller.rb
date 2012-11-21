@@ -12,7 +12,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def new
     @context = params[:context] 
     if params.has_key?(:user) && params.has_key?(:token) && params[:token]
-      if self.arbitrary_token("#{params[:user]}#{current_tenant.identifier}") == params[:token]
+      if ApplicationController.arbitrary_token("#{params[:user]}#{current_tenant.identifier}") == params[:token]
         @pinned_user = params[:user]
       end
     end

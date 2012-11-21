@@ -30,7 +30,7 @@ class ProposalsController < ApplicationController
       end
 
       proposal_list = session[:filters][:tag] ? Proposal.tagged_with(session[:filters][:tag]) : Proposal
-      proposal_list = proposal_list.order("#{session[:filters][:metric]} DESC").limit(100)
+      proposal_list = proposal_list.public.active.order("#{session[:filters][:metric]} DESC").limit(100)
 
       proposals = render_to_string :partial => "proposals/list_output/list", :locals => { 
         :proposals => proposal_list, :style => 'blocks', :hide_initially => false }
@@ -53,17 +53,20 @@ class ProposalsController < ApplicationController
     elsif params.has_key?(:admin_id)
       @proposal = Proposal.find_by_admin_id(params[:admin_id])
     else
-      raise 'Error'
-      redirect_to root_path
+      redirect_to root_path, :notice => 'Invalid request.'
       return
     end
 
     if !@proposal
-      redirect_to root_path
+      redirect_to root_path, :notice => 'That proposal does not exist.'
+      return
     end
 
-    authorize! :read, @proposal
-
+    if cannot?(:read, @proposal)
+      store_location request.path
+      redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
+      return  
+    end
 
     @can_update = can? :update, @proposal
     @can_destroy = can? :destroy, @proposal
@@ -150,10 +153,42 @@ class ProposalsController < ApplicationController
     # TODO: this edit will fail for those who do not have an account & whose session timed out, but try to edit following admin_id link
     @proposal = Proposal.find_by_long_id(params[:long_id])
     authorize! :update, @proposal
+    publicity_changed = params[:proposal].has_key?(:publicity) && params[:proposal][:publicity] == '0'
+
+    if publicity_changed
+      before_attributes = @proposal.attributes
+    end
 
     @proposal.update_attributes!(params[:proposal])
+
+    if publicity_changed
+      users = []
+      inviter = nil
+
+      if before_attributes[:access_list].nil? || before_attributes[:access_list].nil? == '' 
+        if !current_user.nil?
+          inviter = current_user
+        end
+        users = @proposal.access_list.gsub(' ', '').split(',')
+      else
+        before = before_attributes[:access_list].gsub(' ', '').split(',').to_set
+        after = @proposal.access_list.gsub(' ', '').split(',').to_set
+        users = after - before
+      end
+
+      ActiveSupport::Notifications.instrument("alert_proposal_publicity_changed", 
+        :proposal => @proposal,
+        :users => users,
+        :inviter => inviter,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )
+    end
+
     response = {
-      :success => true
+      :success => true,
+      :access_list => @proposal.access_list,
+      :publicity => @proposal.publicity
     }
     render :json => response.to_json
   end

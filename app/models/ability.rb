@@ -58,8 +58,12 @@ class Ability
       can :manage, user_facing_models
       can [:index, :create, :update, :destroy, :read], :all
     else
+
+
       #Proposal
-      can :read, Proposal#, :published => 1
+      can :read, Proposal do |prop|
+        prop.publicity != 0 || (!user.id.nil? && prop.access_list.gsub(' ', '').split(',').include?(user.email) )
+      end
 
       can [:read, :create, :update], Proposal do |prop|
         (!user.id.nil? && user.id == prop.user_id) || (session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)
@@ -72,8 +76,10 @@ class Ability
 
       #Position
       can [:create, :update, :destroy], Position do |pos|
+        prop = pos.proposal
+        prop.publicity != 0 || (!user.id.nil? && prop.access_list.gsub(' ', '').split(',').include?(user.email) )
         #TODO: get this to work!
-        true#(!pos.published && user.id.nil? && pos.user_id.nil?) || (user.id == pos.user_id)
+        #(!pos.published && user.id.nil? && pos.user_id.nil?) || (user.id == pos.user_id)
       end
 
       #Point

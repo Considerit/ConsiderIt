@@ -165,13 +165,13 @@ class ProposalsController < ApplicationController
       users = []
       inviter = nil
 
-      if before_attributes[:access_list].nil? || before_attributes[:access_list].nil? == '' 
+      if before_attributes['access_list'].nil? || before_attributes['access_list'] == '' 
         if !current_user.nil?
           inviter = current_user
         end
         users = @proposal.access_list.gsub(' ', '').split(',')
       else
-        before = before_attributes[:access_list].gsub(' ', '').split(',').to_set
+        before = before_attributes['access_list'].gsub(' ', '').split(',').to_set
         after = @proposal.access_list.gsub(' ', '').split(',').to_set
         users = after - before
       end

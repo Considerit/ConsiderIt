@@ -10,7 +10,7 @@ class Users::SessionsController < Devise::SessionsController
 	protect_from_forgery :except => :create
 
   def new     
-    store_location request.referer
+    #store_location request.referer unless params[:redirect_already_set] == 'true'   
     if ( params[:third_party] )
     	case params[:provider]
 	    	when 'twitter'

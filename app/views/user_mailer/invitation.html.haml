@@ -20,9 +20,9 @@
   The proposal: 
 
   .object
-    &ldquo;#{link_to @proposal.title, proposal_url(@proposal.long_id, :host => @host, :u => @email, :t => ApplicationController.arbitrary_token("#{@email}#{@options[:current_tenant].identifier}"))}&rdquo;
+    &ldquo;#{link_to @proposal.title, new_proposal_position_url(@proposal.long_id, :host => @host, :u => @email, :t => ApplicationController.arbitrary_token("#{@email}#{@options[:current_tenant].identifier}"))}&rdquo;
 
 .action_call
   .rest
     .call
-      = link_to 'Join the discussion', proposal_url(@proposal.long_id, :host => @host, :u => @email, :t => ApplicationController.arbitrary_token("#{@email}#{@options[:current_tenant].identifier}"))
+      = link_to 'Join the discussion', new_proposal_position_url(@proposal.long_id, :host => @host, :u => @email, :t => ApplicationController.arbitrary_token("#{@email}#{@options[:current_tenant].identifier}"))

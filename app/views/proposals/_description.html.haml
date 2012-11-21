@@ -16,9 +16,58 @@
         %a
           Edit proposal
           = image_tag 'edit_page.png'
+      .share_settings
+        %a
+          Sharing: 
+          %span
+            - if @proposal.publicity == 2
+              public
+            - elsif @proposal.publicity == 1
+              link only
+            - else
+              private
+
+          = image_tag 'edit_page.png'
+        #sharing_settings
+          %h1
+            Who can view and participate?
+
+          = form_for @proposal, :url => proposal_path(@proposal.long_id), :remote => true, :html => {:class => ''} do |f|
+            .radio_block
+              .option
+                = f.radio_button :publicity, '2', :value => '2', :checked => "#{@proposal.publicity == 2 ? 'checked' : ''}"
+                = f.label :publicity, 'Public', :value => '2'
+                .sublabel
+                  It will be accessible on the homepage.
+
+              .option
+                = f.radio_button :publicity, '1', :value => '1', :checked => "#{@proposal.publicity == 1 ? 'checked' : ''}"
+                = f.label :publicity, 'Anyone with a link', :value => '1'
+                .sublabel
+                  Only people that have a link to this proposal will be able to access it.
+
+              .option
+                = f.radio_button :publicity, '0', :value => '0', :checked => "#{@proposal.publicity == 0 ? 'checked' : ''}"
+                = f.label :publicity, 'Private', :value => '0'
+                .sublabel
+                  Restrict access to the following invited participants.
+
+                .access_list
+                  .label
+                    Comma-separated email list of invited users:
+                  = f.text_area :access_list, :rows => 2, :class => "autoResize"
+
+            .save_block
+              = f.submit 'save'
+              %a.cancel
+                cancel
+
+
+
       - if @can_destroy
         .delete_proposal
           = link_to "Delete proposal", proposal_path(@proposal.long_id, :authenticity_token => form_authenticity_token), :confirm => "Are you sure?", :method=>:delete
+
 
 
   .head.single

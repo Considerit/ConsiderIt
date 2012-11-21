@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121102000241) do
+ActiveRecord::Schema.define(:version => 20121119173241) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -360,6 +360,8 @@ ActiveRecord::Schema.define(:version => 20121102000241) do
     t.datetime "end_date"
     t.boolean  "active",                                                       :default => true
     t.integer  "moderation_status"
+    t.integer  "publicity",                                                    :default => 2
+    t.binary   "access_list",                            :limit => 16777215
   end
 
   add_index "proposals", ["account_id", "id"], :name => "select_proposal"

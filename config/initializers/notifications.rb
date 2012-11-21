@@ -44,6 +44,27 @@ end
 ##### PROPOSAL LEVEL ######
 ###########################
 
+ActiveSupport::Notifications.subscribe("alert_proposal_publicity_changed") do |*args|
+  data = args.last
+  users = data[:users]
+  inviter = data[:inviter]
+  proposal = data[:proposal]
+  current_tenant = data[:current_tenant]
+  mail_options = data[:mail_options]
+
+  users.each do |user|
+    if user.length > 0
+      UserMailer.invitation(user, proposal, 'invitee', mail_options).deliver!
+    end
+  end
+  if inviter && !inviter.email.nil? && inviter.email.length > 0
+    UserMailer.invitation(inviter.email, proposal, 'your proposal', mail_options).deliver!
+  end
+
+end
+
+
+
 ActiveSupport::Notifications.subscribe("published_new_position") do |*args|
   def fib(n)
     curr = 0; succ = 1

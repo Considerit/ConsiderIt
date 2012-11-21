@@ -337,6 +337,31 @@ ConsiderIt = {
           $j('.unobtrusive_edit_form textarea').blur();
         }
       })      
+      .on('click', '.share_settings > a', function(){
+        var $share_window = $j('#sharing_settings');
+        $share_window.detach().prependTo('#wrap > #content');
+        $share_window.show();
+
+      })            
+      .on('click', '#sharing_settings a.cancel', function(){
+        var $share_window = $j('#sharing_settings');
+        $share_window.detach().appendTo('.share_settings');        
+        $share_window.hide();
+      })                  
+      .on('ajax:success', '#sharing_settings form', function(data, response, xhr){
+        var $share_window = $j('.share_settings > a span'),
+            publicity = response.publicity;
+
+        if (publicity == 2) {
+          $share_window.text('public');          
+        } else if (publicity == 1) {
+          $share_window.text('link only');          
+        } else if (publicity == 0) {
+          $share_window.text('private');          
+        }
+        $j(this).parents('#sharing_settings').detach().appendTo('.share_settings').hide();        
+
+      })                        
       .on('keyup', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(){
         var save_block = $j(this).siblings('.save_block');
         if (!save_block.is('.fading')) {      

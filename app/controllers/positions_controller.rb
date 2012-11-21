@@ -17,6 +17,12 @@ class PositionsController < ApplicationController
   def create
     @proposal = Proposal.find_by_long_id(params[:long_id])
 
+    if cannot?(:read, @proposal)
+      store_location request.path
+      redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
+      return  
+    end
+
     (stance, bucket) = get_stance_val_from_params(params)
 
     params[:position].update({
@@ -29,6 +35,7 @@ class PositionsController < ApplicationController
     @position = Position.find(params[:position][:position_id])
     params[:position].delete(:position_id)
     @position.update_attributes(params[:position])
+
     authorize! :create, @position
     @position.save
 
@@ -131,6 +138,12 @@ protected
       @proposal.session_id = request.session_options[:id]
       @proposal.save
     end
+
+    if cannot?(:read, @proposal)
+      store_location request.path
+      redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
+      return  
+    end    
 
     @can_update = can? :update, @proposal
     @can_destroy = can? :destroy, @proposal

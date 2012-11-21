@@ -5,11 +5,19 @@
 # See https://github.com/tkriplean/ConsiderIt/ for details.
 #*********************************************
 
+
 class Users::RegistrationsController < Devise::RegistrationsController
 	protect_from_forgery :except => :create
 
   def new
-    @context = params[:context]    
+    @context = params[:context] 
+    if params.has_key?(:user) && params.has_key?(:token) && params[:token]
+      if self.arbitrary_token("#{params[:user]}#{current_tenant.identifier}") == params[:token]
+        @pinned_user = params[:user]
+      end
+    end
+    
+    store_location request.referer unless params[:redirect_already_set] == 'true'   
     super
   end
 
@@ -33,7 +41,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
         end
 
         #respond_with user, :location => session[:return_to] || redirect_location(resource_name, user)
-        redirect_to request.referer
+        #redirect_to request.referer
+        redirect_to session[:return_to] || root_path
       else
         redirect_to root_path, :notice => 'Incorrect password'
       end
@@ -54,7 +63,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
             session['reify_activities'] = true 
           end
           set_flash_message :notice, :signed_up
-          redirect_to request.referer
+          #redirect_to request.referer
+          redirect_to session[:return_to] || root_path
         else
           set_flash_message :notice, :"signed_up_but_#{resource.inactive_message}" if is_navigational_format?
           expire_session_data_after_sign_in!

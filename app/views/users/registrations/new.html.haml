@@ -17,79 +17,109 @@
       - else
         Sign in / Create an account
 
-    #third_party
+    - if @pinned_user
+      - user = User.find_by_email(@pinned_user)
 
-      %h3
-        One-click sign in with your account from...
+      .pinned_user
+        Hi #{@pinned_user}. 
+        - if !user.nil?
+          You need to sign in first to access that page. 
+        - else
+          To access that page, you need to create an account. 
 
-      - ['facebook', 'twitter', 'google'].each do |provider|
-        %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',900, 500)", :id => provider }
-          = image_tag("#{provider}.png")
+        #third_party
+          - if !user.nil?
+            - has_third_party = false
+            - ['facebook', 'twitter', 'google'].each do |provider|
+              - if !user.send("#{provider}_uid").nil? 
+                - has_third_party = true
+                %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',900, 500)", :id => provider }
+                  = image_tag("#{provider}.png")
 
-      .fineprint
-        We won't post to your account or share your info without permission.
+        - if user.nil? || !has_third_party
 
-    .divider
-      &mdash; or &mdash;
+          #site_registration
 
-    #site_registration
+            = form_for(resource, :as => :user, :url => user_registration_path, :html => { :multipart => true }) do |f|
+            
+              %ul
+                %li
+                  = devise_error_messages!
+                
 
-      = form_for(resource, :as => :user, :url => user_registration_path, :html => { :multipart => true }) do |f|
-      
-        %ul
-          %li
-            = devise_error_messages!
+                %li.email_field
+
+                  = f.hidden_field :email, :required => true, :value => @pinned_user
+
+                %li.password_field
+                  = f.password_field :password, :title => 'password', :placeholder => 'Password', :required => true
+                  - if !user.nil?
+                    %a.hide.forget_password_prompt{ :href => "#{new_user_password_path}" }
+                      Forgot your password?
+
+                %li.submit_footer
+                  .proxy.button_proxy.button
+                    sign in
+                    
+                  = f.submit "sign in", :class => 'hide'
+
+                  %a.cancel
+                    x
+        - if @user.nil?
+          #acknowledgment
+            Signing up acknowledges that you read and agree to the 
+            %a
+              Terms of Use.
+
+    - else
 
 
-          // %li.name_field
-          //   = f.text_field :name, :class => 'has_example', :title => 'first and last name'
+      #third_party
 
-          //   %span.add_qtip{ :title => 'You stand behind your opinions, don’t you? When possible, we believe it is best to avoid anonymity.'}
-          //     why?
+        %h3
+          One-click sign in with your account from...
+
+        - ['facebook', 'twitter', 'google'].each do |provider|
+          %a{ :onclick => "javascript:login('#{new_user_session_path(:third_party=>true, :provider=>"#{provider}")}',900, 500)", :id => provider }
+            = image_tag("#{provider}.png")
+
+        .fineprint
+          We won't post to your account or share your info without permission.
+
+      .divider
+        &mdash; or &mdash;
+
+      #site_registration
+
+        = form_for(resource, :as => :user, :url => user_registration_path, :html => { :multipart => true }) do |f|
+        
+          %ul
+            %li
+              = devise_error_messages!
             
 
+            %li.email_field
 
-          %li.email_field
+              = f.email_field :email, :title => 'email address', :placeholder => 'Email address', :required => true, :class =>"h5-email"
 
-            //{ :title => 'Your email is never shown to other users and we promise not to share your information with third parties. Your email is only used to confirm your account and to send notifications of relevant events, such as when someone replys to a comment you left.'}
+            %li.password_field
+              = f.password_field :password, :title => 'password', :placeholder => 'Password', :required => true
+              %a.hide.forget_password_prompt{ :href => "#{new_user_password_path}" }
+                Forgot your password?
 
-            = f.email_field :email, :title => 'email address', :placeholder => 'Email address', :required => true, :class =>"h5-email"
+            %li.submit_footer
+              .proxy.button_proxy.button
+                sign in
+                
+              = f.submit "sign in", :class => 'hide'
 
-          %li.password_field
-            = f.password_field :password, :title => 'password', :placeholder => 'Password', :required => true
-            %a.hide.forget_password_prompt{ :href => "#{new_user_password_path}" }
-              Forgot your password?
+              %a.cancel
+                x
 
-          %li.submit_footer
-            .proxy.button_proxy.button
-              sign in
-              
-            = f.submit "sign in", :class => 'hide'
+      #acknowledgment
+        Signing up acknowledges that you read and agree to the 
+        %a
+          Terms of Use.
 
-            %a.cancel
-              x
-
-    #acknowledgment
-      Signing up acknowledges that you read and agree to the 
-      %a
-        Terms of Use.
-
-  .secondary
-    %h3
-      Why Sign In?
-
-    %hr.ledge.top
-    %hr.ledge.bottom
-
-    %ul
-
-      %li    
-        Your vote will count in the totals.
-
-      %li
-        Share your points for other people to consider.
-        
-      %li
-        Comment on the points others have added.  
 
 

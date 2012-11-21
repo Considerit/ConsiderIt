@@ -26,7 +26,7 @@ class Proposal < ActiveRecord::Base
   before_save :extract_tags
 
   scope :active, where( :active => true )
-
+  scope :public, where( :publicity => 2)
 
 
   def label_proposal

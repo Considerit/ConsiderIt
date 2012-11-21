@@ -64,6 +64,10 @@ class ApplicationController < ActionController::Base
     Digest::MD5.hexdigest("#{user.unique_token}#{object.id}#{object.class.name}#{action}")
   end
 
+  def self.arbitrary_token(key)
+    Digest::MD5.hexdigest(key)
+  end
+
   def self.reset_user_activities(session, proposal)
     session[proposal.id] = {
       :included_points => {},

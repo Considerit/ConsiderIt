@@ -18,7 +18,7 @@
         &#9664;
   .carousel{ :name => "proposals" }
     %ul
-      = render :partial => "proposals/blocks/item", :collection => get_proposals_by_rank, :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially, :prompt => prompt }
+      = render :partial => "proposals/blocks/item", :collection => get_proposals_by_rank.active, :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially, :prompt => prompt }
     .clear
 
   - if carousel

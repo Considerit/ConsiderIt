@@ -45,6 +45,26 @@ class UserMailer < ActionMailer::Base
     mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
+  def invitation(email, proposal, notification_type, options )
+    @email = email
+    @proposal = proposal
+    @host = options[:host]
+    @options = options
+    @notification_type = notification_type
+
+    email_with_name = @email
+    from = format_email(options[:from], options[:app_title])
+
+    if notification_type == 'your proposal'
+      subject = "Information about your new discussion"
+    else
+      subject = "#{@proposal.user.name} invites you to participate in a discussion"
+    end
+
+    mail(from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+
+  end  
+
   private
 
     def format_email(addr, name = nil)

@@ -6,14 +6,6 @@
 #*********************************************
 
 module ApplicationHelper
-  
-  def get_available_domains
-    domains = []
-    Domain.all.each do |d|
-      domains.push("#{d.identifier}")
-    end
-    return domains
-  end
 
   def get_host
     port_string = request.port != 80 ? ':' + request.port.to_s : '' 
@@ -44,28 +36,13 @@ module ApplicationHelper
     #proposals += Proposal.where(:domain_short => 'WA state').order(:designator)
     
 
-    return Proposal
+    return Proposal.public
 
   end
 
   def get_proposals_by_rank(metric = 'activity')
-    proposals = Proposal.order("#{metric} desc")
-    proposals
-  end
-
-  def get_proposals_by_domain
-    proposals = []
-    #TODO: do a join here instead???
-    if session.has_key?(:domain)
-     domain = Domain.find(session[:domain])
-     domain.domain_maps.each do |dm|
-       proposals.push(dm.proposal) if dm.proposal.active
-     end
-    end
-    # TODO: add a "show_all, :integer" field to Option 
-    # that can be queried here instead
-    proposals += Proposal.active.where(:domain => 'all').order(:designator)
-    proposals
+    return Proposal.public.order("#{metric} desc")
+    
   end
 
   def has_stance(proposal)

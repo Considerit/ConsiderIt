@@ -188,7 +188,8 @@ class ProposalsController < ApplicationController
     response = {
       :success => true,
       :access_list => @proposal.access_list,
-      :publicity => @proposal.publicity
+      :publicity => @proposal.publicity,
+      :active => @proposal.active
     }
     render :json => response.to_json
   end

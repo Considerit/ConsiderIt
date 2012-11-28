@@ -10,6 +10,8 @@ class Followable::Follow < ActiveRecord::Base
   belongs_to :followable, :polymorphic=>true
   belongs_to :user
 
+  scope :active, where( :follow => true )  
+
   def notify?
     follow
   end

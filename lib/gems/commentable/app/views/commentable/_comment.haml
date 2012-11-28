@@ -26,7 +26,7 @@
             = simple_format(auto_link(comment.body.html_safe, :all, :target => "_blank"))
 
             .username.exclude_from_reflect 
-              &ndash; #{h comment.user.username}
+              &ndash; #{link_to comment.user.username, profile_path(comment.user), :target => '_blank'}
 
 
   - if can_update

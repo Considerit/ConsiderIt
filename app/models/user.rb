@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
   has_many :point_similarities, :dependent => :destroy
-  #has_many :comments, :dependent => :destroy, :class_name => 'Commentable::Comment'
+  has_many :comments, :dependent => :destroy, :class_name => 'Commentable::Comment'
   has_many :proposals
   has_many :follows, :dependent => :destroy, :class_name => 'Followable::Follow'
 
@@ -31,7 +31,7 @@ class User < ActiveRecord::Base
 
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask
+  attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask
 
   attr_accessor :avatar_url
 
@@ -61,8 +61,27 @@ class User < ActiveRecord::Base
     has_any_role? :admin, :superadmin
   end
 
+  def role_list
+    if roles_mask == 0
+      return '-'
+    else
+      lst = []
+      roles.each do |role|
+        lst.push(role.to_s)
+      end
+      lst.join(', ').gsub(':', '')
+    end
+  end
+
   def third_party_authenticated?
-    self.facebook_uid || self.google_uid || self.yahoo_uid || self.openid_uid || self.twitter_uid
+    pp self
+    if !self.facebook_uid.nil?
+      'facebook' 
+    elsif !self.google_uid.nil?
+      'google'
+    elsif !self.twitter_uid.nil?
+      'twitter'
+    end
   end
 
   def avatar_url_provided?
@@ -82,7 +101,22 @@ class User < ActiveRecord::Base
     case access_token.provider
       when 'twitter'
         user = User.find_by_twitter_uid(access_token.uid)
-      else
+        if user
+          user.twitter_uid = access_token.uid
+        end
+
+      when 'facebook'
+        user = User.find_by_facebook_uid(access_token.uid) || User.find_by_email(access_token.info.email)
+        if user
+          user.facebook_uid = access_token.uid
+        end
+
+      when 'google'
+        user = User.find_by_google_uid(access_token.uid) || User.find_by_email(access_token.info.email)
+        if user
+          user.google_uid = access_token.uid
+        end
+      else  
         user = User.find_by_email(access_token.info.email)
     end
 
@@ -94,10 +128,6 @@ class User < ActiveRecord::Base
           when 'google'
             u.name = access_token.info.name
             u.google_uid = access_token.uid
-            u.email = access_token.info.email
-          when 'yahoo'
-            u.name = access_token.info.name
-            u.yahoo_uid = access_token.uid
             u.email = access_token.info.email
           when 'twitter'
             u.name = access_token.info.name
@@ -119,6 +149,8 @@ class User < ActiveRecord::Base
       user.skip_confirmation!
       user.save
       user.track!
+    else
+      user.save
     end
 
     user

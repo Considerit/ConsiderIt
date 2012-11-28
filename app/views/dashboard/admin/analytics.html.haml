@@ -14,6 +14,7 @@
 
 = stylesheet_link_tag 'jquery.flot'
 
+
 #analytics
   :javascript
     analytics_data = #{@series.to_json};
@@ -22,6 +23,10 @@
           xaxis: { mode: "time", tickLength: 5 },
           selection: { mode: "x" },
     };    
+
+  %h2
+    Analyze Trends
+
   - @series.each do |s|
 
     .placeholder{ :id => "placeholder-#{s[:title]}" }

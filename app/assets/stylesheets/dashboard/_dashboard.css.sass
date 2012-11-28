@@ -1,0 +1,127 @@
+@import "dashboard/rtf_table"
+
+$sidebar_width: $grid_major * 2 + $grid_minor * 2 + $grid_xs
+
+html body #wrap.dashboard #content
+  #sidebar
+    margin-top: 4 * $vertical_baseline
+    position: absolute
+    z-index: 10
+    width: $sidebar_width - $grid_xs
+    margin-left: $grid_xs
+    border: 1px solid rgba(#888, .6)    
+    //+box-shadow(0, 0, 2px, rgba(black, .2))
+    ul li
+      border-top: 1px solid white
+      +linear-gradient(#eee, #ccc)
+      &.current
+        font-weight: bold
+        background: none
+        background-color: white
+        position: relative
+        left: 1px
+        &:hover
+          background: none
+          background-color: white
+
+
+      &:hover
+        +linear-gradient(#fff, #ddd)
+      a
+        +font-size(-2)
+        color: #555
+        
+        width: $sidebar_width - 2 * $grid_xs
+        padding: 5px 0px 5px $grid_xs
+        display: inline-block
+
+        
+  #inner_content
+    //font-size: 75%
+    border: 1px solid rgba(#888, .6)
+    //+box-shadow(0, 0, 2px, rgba(black, .2))
+
+    background-color: white
+
+    width: $content_width - $sidebar_width - $grid_xs * 1 - $grid_minor * 2
+    margin: 0 0 $vertical_baseline $sidebar_width + 1
+
+    padding: 0 $grid_minor 2 * $vertical_baseline $grid_minor
+    #heading
+      margin-bottom: 20px
+      
+      td
+        padding: 8px
+        vertical-align: bottom
+
+      h1
+        font-size: 200%
+
+
+    .field
+      padding: $vertical_baseline/2 0
+      +font-size(-1)
+      label
+        
+      input[type="text"], input[type="email"], textarea
+        display: block
+
+      .sublabel
+        margin-top: 2px      
+        +font-size(-2)
+        color: #777
+    
+    fieldset
+      table
+        width: 100%
+        table-layout: fixed
+
+    .save_block
+      margin-top: $vertical_baseline
+
+    .avatar
+      width: 120px
+      height: 120px
+      overflow: hidden
+      img
+        width: 120px
+
+    /////////////////
+    // PAGE SPECIFIC 
+    /////////////////
+
+    #profile_page
+      .user_card
+        .avatar
+          display: inline-block
+          vertical-align: top
+          margin-top: $vertical_baseline
+        .info
+          display: inline-block
+          margin-left: $grid_xs
+          width: 600px
+
+          .name
+
+          .edit_profile
+            +font-size(-2)
+            text-decoration: underline
+            position: relative
+            top: -$vertical_baseline
+
+      .body
+        margin-top: $vertical_baseline
+
+      .block
+        margin-bottom: $vertical_baseline
+      
+      .empty
+        +font-size(-2)
+        font-style: italic
+
+    #edit_profile
+      table td.fileinput
+        padding-left: $grid_xs
+
+
+

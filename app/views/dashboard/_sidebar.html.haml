@@ -1,0 +1,72 @@
+= yield :selected_navigation
+
+#sidebar
+  %ul
+    - if @sidebar_context == :user
+      %li{ :class => selected_navigation(:profile)}
+        = link_to 'Profile', profile_path(@user || current_user)
+
+      - if @user.nil? || (@user.id == current_user.id)
+        %li{ :class => selected_navigation(:edit_profile)}
+          = link_to 'Edit profile', edit_profile_path(current_user)
+
+      //%li{ :class => selected_navigation(:influence)}
+      //  = link_to 'Influence', profile_path(@user || current_user, :anchor => 'influence')
+      %li{ :class => selected_navigation(:positions)}
+        = link_to 'Positions', profile_path(@user || current_user, :anchor => 'positions')
+      %li{ :class => selected_navigation(:points)}
+        = link_to 'Points', profile_path(@user || current_user, :anchor => 'points')
+      %li{ :class => selected_navigation(:comments)}
+        = link_to 'Comments', profile_path(@user || current_user, :anchor => 'comments')
+
+
+    - elsif @sidebar_context == :user_profile && @user.nil?
+      %li{ :class => selected_navigation(:main_profile)}
+        = link_to 'Profile', profile_path(current_user)
+      %li{ :class => selected_navigation(:profile)}
+        = link_to 'Edit profile', edit_profile_path(current_user)
+      %li{ :class => selected_navigation(:account)}
+        = link_to 'Account settings', edit_account_path(current_user)
+      %li{ :class => selected_navigation(:notifications)}
+        = link_to 'Email notifications', edit_notifications_path(current_user)          
+
+
+    - elsif @sidebar_context == :admin
+      - if @user.nil? || (@user.id == current_user.id)
+
+        - if current_user.is_admin?
+          %li{ :class => selected_navigation(:app_settings)}
+            = link_to 'App settings', application_settings_path, :class => 'app_settings'
+
+
+        - if current_user.is_admin? || current_user.has_role?(:manager)
+          %li{ :class => selected_navigation(:manage_proposals)}
+            = link_to 'Manage proposals', manage_proposals_path, :class => 'manage_proposals'
+
+        - if current_user.is_admin?
+          %li{ :class => selected_navigation(:manage_roles)}
+            = link_to 'User roles', manage_roles_path, :class => 'roles'
+
+        - if (current_user.is_admin? || current_user.has_role?(:moderator)) && current_tenant.enable_moderation
+          %li{ :class => selected_navigation(:moderate)}
+            = link_to 'Moderate content', moderate_path, :class => 'moderate'
+
+        - if current_user.is_admin? || current_user.has_role?(:analyst)
+          %li{ :class => selected_navigation(:analyze)}
+            = link_to 'Analyze trends', analytics_path, :class => 'analyze'
+
+
+        - if (current_user.is_admin? || current_user.has_role?(:evaluator)) && current_tenant.identifier == 'wash'
+          %li{ :class => selected_navigation(:assess)}
+            = link_to 'Fact check', assessment_index_path, :class => 'assess'
+
+        - if current_user.is_admin?
+          %li{ :class => selected_navigation(:database)}
+            = link_to 'Database', rails_admin_path, :class => 'admin'
+
+        - if Rails.env.development?
+          %li{ :class => selected_navigation(:tune)}
+            = link_to 'Tune performance', '/newrelic', :target => "_blank"
+
+
+

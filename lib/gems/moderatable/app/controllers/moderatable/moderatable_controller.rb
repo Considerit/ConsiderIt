@@ -1,4 +1,4 @@
-class Moderatable::ModeratableController < ApplicationController
+class Moderatable::ModeratableController < Dashboard::DashboardController
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to root_path, :notice => 'Please login first to access the moderation panel'
     return
@@ -6,8 +6,15 @@ class Moderatable::ModeratableController < ApplicationController
 
   # list all the objects to be moderated; allow seeing the existing moderations
   def index
+    @selected_navigation = :moderate
+    @sidebar_context = :admin
     
     authorize! :index, Moderatable::Moderation
+
+    if !current_tenant.enable_moderation
+      redirect_to root_path, :notice => "Moderation is disabled for this application."
+      return
+    end
 
     @classes_to_moderate = Moderatable::Moderation.classes_to_moderate
 
@@ -30,9 +37,20 @@ class Moderatable::ModeratableController < ApplicationController
           records = records.where("moderatable_id in (#{objs.join(',')})")
         end
         records = records.includes(:user)
-      else
-        @objs_to_moderate[mc.name] = mc.moderatable_objects.call
-        records = Moderatable::Moderation.where(:moderatable_type => mc.name).includes(:user)
+      elsif mc == Point
+        points = []
+        mc.moderatable_objects.call.each do |point|
+          if point.proposal.active 
+            points.push(point)
+          end
+        end
+        @objs_to_moderate[mc.name] = points
+        objs = @objs_to_moderate[mc.name].map{|x| x.id}.compact
+        records = Moderatable::Moderation.where(:moderatable_type => mc.name)
+        if objs.length > 0
+          records = records.where("moderatable_id in (#{objs.join(',')})")
+        end
+        records = records.includes(:user)
       end
       records.each do |mod|
         @existing_moderations[mc.name][mod.moderatable_id] = mod unless @existing_moderations[mc.name].has_key?(mod.moderatable_id) && @existing_moderations[mc.name][mod.moderatable_id].user_id == current_user.id

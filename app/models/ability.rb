@@ -75,7 +75,7 @@ class Ability
       end
 
       #Position
-      can [:create, :update, :destroy], Position do |pos|
+      can [:create, :update, :destroy, :read], Position do |pos|
         prop = pos.proposal
         prop.publicity != 0 || (!user.id.nil? && prop.access_list.gsub(' ', '').split(',').include?(user.email) )
         #TODO: get this to work!

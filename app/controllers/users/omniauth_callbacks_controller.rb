@@ -27,6 +27,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def _third_party_callback
 
+    pp env["omniauth.auth"]
     @user = User.find_for_third_party_auth(env["omniauth.auth"], current_user)
     @user.referer = session[:referer] if session.has_key?(:referer)
     @user.save

@@ -69,10 +69,9 @@
 
 = render :partial => "proposals/blocks/menu"
 
+//TODO: proper unique name
 #craft_position
 
-  #proposal_id.hide
-    = @proposal.id
   #proposal_long_id.hide
     = @proposal.long_id
 
@@ -82,7 +81,7 @@
   
 
   .head.single
-    %h3.banner
+    %h1.banner
       = considerations_prompt
 
   .user_opinion
@@ -180,7 +179,7 @@
   - if render_other_proposals_menu
     #other_proposals
       .head.single
-        %h3.banner 
+        %h1.banner 
           Rather move on to another? 
 
       = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false, :prompt => 'Vote on this proposal' }

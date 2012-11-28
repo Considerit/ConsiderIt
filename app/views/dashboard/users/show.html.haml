@@ -1,0 +1,94 @@
+- own_page = current_user.id == @user.id
+- max_length_root = 35
+- max_length_content = 65
+
+#profile_page
+
+  .user_card
+
+    .avatar
+      - if own_page
+        = link_to image_tag(current_user.avatar.url(:original), :alt => "#{h current_user.username}'s profile picture"), edit_profile_url(current_user)
+      - else
+        = image_tag(@user.avatar.url(:original), :alt => "#{h @user.username}'s profile picture")
+
+    .info
+      %h2.name
+        = @user.name
+
+      - if own_page
+        = link_to 'Edit profile', edit_profile_path(current_user), :class => 'edit_profile'
+      .bio
+        %h3
+          About
+        - if @user.bio && @user.bio.length > 0 
+          %p
+            = @user.bio 
+        - else
+          %p.empty
+            No details provided
+
+
+  .body
+
+
+    #positions.block
+      %h3
+        Positions taken
+      - if @user.positions.published.count > 0
+        %table.table.table-condensed.table-striped
+          %tbody
+            - @user.positions.published.each do |position|
+              %tr.position
+                %td.proposal
+                  = position.proposal.title(max_length_root)
+                %td.stance
+                  = position.stance_name
+                %td.action
+                  = link_to 'View and consider', user_position_proposal_path(position.proposal.long_id, position.user, :anchor => 'position')
+      - else
+        .empty
+          #{@user.first_name} has not taken any positions.
+
+    #points.block
+      %h3
+        Points written
+      - if @user.points.published.count > 0
+        %table.table.table-condensed.table-striped
+          %tbody
+
+            - @user.points.published.each do |point|
+              - if own_page || !point.hide_name
+                %tr.position
+                  %td.proposal
+                    = point.proposal.title(max_length_root)
+                  %td.desc
+                    [#{point.category}] #{point.short_desc(max_length_content-6)}
+                  %td.action
+                    = link_to 'Read and discuss', proposal_point_path(point.proposal.long_id, point)
+      - else
+        .empty
+          #{@user.first_name} has not contributed any points.
+
+    #comments.block
+      %h3
+        Comments
+      %table.table.table-condensed.table-striped
+        - if @user.comments.count > 0
+          %tbody
+            - @user.comments.each do |comment|
+              - point = comment.root_object
+              %tr.position
+                %td
+                  [#{point.category}] #{point.short_desc(max_length_root-6)}
+                %td.desc
+                  = comment.text(max_length_content)
+                %td.action
+                  = link_to 'Join in', proposal_point_path(point.proposal.long_id, point, :anchor => "comment-#{comment.id}")
+
+        - else
+          .empty
+            #{@user.first_name} has not made any comments.
+     
+    #discussions
+

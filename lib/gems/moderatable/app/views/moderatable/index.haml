@@ -7,11 +7,11 @@
   *********************************************
 
 #moderate
-  #header
+  #heading
     %table
       %tr
         %td
-          %h1
+          %h2
             Moderation Interface
           .subheader
             Fail posts with personal attacks, or wildly offtopic/inappropriate material.
@@ -26,6 +26,8 @@
         %span.name
           = mc.name.split('::').last
         = surround '(', ')' do
+          - pp @objs_to_moderate[mc.name].count
+          - pp @existing_moderations[mc.name].count
           = @objs_to_moderate[mc.name].length - @existing_moderations[mc.name].length
 
   
@@ -46,10 +48,18 @@
 
             %tr.moderation_row{:class => existing_moderation ? "moderated #{@existing_moderations[mc.name][obj.id].status == 1 ? 'passed' : 'failed'}" : 'not_moderated'}
 
-              - mc.text_fields.each do |tf|
+              - mc.text_fields.each_with_index do |tf, idx|
                 %td
                   = obj.read_attribute(tf)
-              %td.submit_col
+                  - if idx == 0
+                    = surround(' [', ']') do
+                      - if mc.name == 'Point'
+                        = link_to 'view', proposal_point_path(obj.proposal, obj), :target => '_blank'
+                      - else
+                        = link_to 'view', proposal_point_path(obj.root_object.proposal, obj.root_object), :target => '_blank'
+              %td.action
+
+
 
                 = form_for :moderate, :url => moderate_create_path, :method => :get, :remote => true do |f|
                   = f.hidden_field :moderatable_id, :value => obj.id
@@ -57,9 +67,9 @@
                   = f.hidden_field :status, :value => existing_moderation ? @existing_moderations[mc.name][obj.id].status : nil
 
 
-                  %button.pass{:class => existing_moderation && @existing_moderations[mc.name][obj.id].status == 1 ? 'selected' : ''}
+                  %button.pressable_button.pass{:class => existing_moderation && @existing_moderations[mc.name][obj.id].status == 1 ? 'selected' : ''}
                     Pass
-                  %button.fail{:class => existing_moderation && @existing_moderations[mc.name][obj.id].status == 0 ? 'selected' : ''}
+                  %button.pressable_button.fail{:class => existing_moderation && @existing_moderations[mc.name][obj.id].status == 0 ? 'selected' : ''}
                     Fail
 
                   = f.submit 'done', :class => 'hide'
@@ -67,11 +77,6 @@
                   - if existing_moderation && @existing_moderations[mc.name][obj.id].user_id != current_user.id
                     .by
                       Moderated by #{@existing_moderations[mc.name][obj.id].user.name}
-              %td.context_col
-                - if mc.name == 'Point'
-                  = link_to 'view', proposal_point_path(obj.proposal, obj), :target => '_blank'
-                - else
-                  = link_to 'view', proposal_point_path(obj.root_object.proposal, obj.root_object), :target => '_blank'
 
 
 
@@ -91,11 +96,11 @@
 
     $j('#moderate #tabs a:first').trigger('click');
 
-    $j('#moderate #header #hide_moderated').click(function(){
+    $j('#moderate #heading #hide_moderated').click(function(){
       $j('#moderate .moderation_block').toggleClass('hide_moderated');
     });
 
-    if($j('#moderate #header #hide_moderated:checked').length > 0) {
+    if($j('#moderate #heading #hide_moderated:checked').length > 0) {
       $j('#moderate .moderation_block').toggleClass('hide_moderated');
     }
     

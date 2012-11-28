@@ -21,18 +21,19 @@
         = image_tag current_user.avatar.url(:small), :alt => "#{h current_user.username}'s profile picture"
     %ul.fr
       %li
-        %a.settings
-          Preferences
+        = link_to 'Profile', profile_path(current_user)    
+      %li
+        = link_to 'Preferences', edit_profile_path(current_user)
       - if current_user.is_admin?
         %li
-          = link_to 'Manage', rails_admin_path, :class => 'admin'
-      - if current_user.is_admin? || current_user.has_role?(:moderator)
+          = link_to 'App settings', application_settings_path, :class => 'application'
+      - if (current_user.is_admin? || current_user.has_role?(:moderator)) && current_tenant.enable_moderation
         %li
           = link_to 'Moderate', moderate_path, :class => 'moderate'
       - if current_user.is_admin? || current_user.has_role?(:analyst)
         %li
-          = link_to 'Analyze', dashboard_analytics_path, :class => 'analyze'
-      - if current_user.is_admin? || current_user.has_role?(:evaluator) && current_tenant.identifier == 'wash'
+          = link_to 'Analyze', analytics_path, :class => 'analyze'
+      - if (current_user.is_admin? || current_user.has_role?(:evaluator)) && current_tenant.identifier == 'wash'
         %li
           = link_to 'Fact check', assessment_index_path, :class => 'assess'
       - if Rails.env.development?
@@ -62,21 +63,22 @@
       resizable: false
     }).fadeIn();
 
-    $j("#settings_dialog").dialog({
-      bgiframe: true, 
-      autoOpen: false, 
-      modal: true,
-      width: 'auto',
-      draggable: false,
-      resizable: false
-    });
+    /* $j("#settings_dialog").dialog({
+    /   bgiframe: true, 
+    /   autoOpen: false, 
+    /   modal: true,
+    /   width: 'auto',
+    /   draggable: false,
+    /   resizable: false
+    / }); 
   
-    $j('a.settings')
-      .click(function(){
-        var dialog = $j('#settings_dialog');
-        dialog.load("#{edit_user_registration_path}");
-        dialog.dialog('open');
-      });
+    / $j('a.settings')
+    /   .click(function(){
+    /     var dialog = $j('#settings_dialog');
+    /     dialog.load("#{edit_user_registration_path}");
+    /     dialog.dialog('open');
+    /   }); 
+    */
 
     $j('#nav-user .triangle')
       .hover(

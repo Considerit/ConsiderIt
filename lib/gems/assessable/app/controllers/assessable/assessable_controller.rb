@@ -1,4 +1,4 @@
-class Assessable::AssessableController < ApplicationController
+class Assessable::AssessableController < Dashboard::DashboardController
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to root_path, :notice => 'Please login first to access the assessment panel'
     return
@@ -6,7 +6,9 @@ class Assessable::AssessableController < ApplicationController
 
   # list all the objects to be moderated; allow seeing the existing moderations
   def index
-    
+    @selected_navigation = :assess
+    @sidebar_context = :admin
+
     authorize! :index, Assessable::Assessment
 
     @assessments = Assessable::Assessment.order(:complete)
@@ -15,6 +17,9 @@ class Assessable::AssessableController < ApplicationController
   end
 
   def edit
+    @selected_navigation = :assess
+    @sidebar_context = :admin
+
     authorize! :index, Assessable::Assessment
 
     @assessment = Assessable::Assessment.find(params[:id])

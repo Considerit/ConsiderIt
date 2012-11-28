@@ -29,8 +29,7 @@
       %table
         %tr
           %td.support
-            %h3
-              = support_pole
+            = support_pole
 
           - stance_breakdown.reverse.each_with_index do |bucket_percentile, index| 
             - height = bucket_percentile/height_scaler
@@ -61,8 +60,7 @@
                     %li.clear
 
           %td.oppose
-            %h3
-              = oppose_pole
+            = oppose_pole
 
       #axis_arrow
                   

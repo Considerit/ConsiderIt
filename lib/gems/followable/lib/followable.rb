@@ -21,6 +21,8 @@ module Followable
     def is_followable
       has_many :follows, :as => :followable, :class_name => 'Followable::Follow', :dependent => :destroy
       accepts_nested_attributes_for :follows
+
+
     
       include InstanceMethods
     end

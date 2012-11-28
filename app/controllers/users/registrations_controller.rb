@@ -82,9 +82,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def update
     # not using skip confirmation because it sets confirmed_at on additional info provisioning...not sure why it was enabled
     #current_user.skip_confirmation!
-    current_user.update_attributes(params[:user])
+    @user = User.find(current_user.id)
+    if @user.update_attributes(params[:user])
+      sign_in @user, :bypass => true if params[:user].has_key?(:password)
+    end
+
     #current_user.skip_confirmation!
-    current_user.save
+    #current_user.save
 
     if params[:user].has_key?(:proposal_id)
       # this is for caching purposes, particularly the histogram

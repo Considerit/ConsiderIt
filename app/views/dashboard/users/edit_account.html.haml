@@ -1,0 +1,28 @@
+#edit_account_settings.profile_edit
+
+  %h2
+    Account Settings
+
+  = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put, :html => { :multipart => true }) do |f|
+
+    .field
+      = f.label :email, "Email address"
+      = f.email_field :email
+      .sublabel
+        Your email will never be shared with other users or third parties
+
+    .field
+      - if current_user.third_party_authenticated?
+        Authorized via #{current_user.third_party_authenticated?.capitalize}
+      - else      
+        .field
+          = f.label :password, "New password"
+          = f.password_field :password
+
+        .field
+          = f.label :password_confirmation, "Confirm new password" 
+          = f.password_field :password_confirmation
+
+
+    .save_block
+      = f.submit "Save changes", :class => 'button'

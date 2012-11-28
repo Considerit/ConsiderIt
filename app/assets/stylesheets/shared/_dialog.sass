@@ -1,0 +1,67 @@
+.dialog
+  a
+    span
+    img
+      height: 23px
+      //vertical-align: top
+      //position: absolute
+      //right: -30px
+      //top: 0
+
+
+.detachable
+  display: none
+  position: fixed
+  top: 0
+  z-index: 10000
+  left: 50%
+  margin-left: -3.5*$grid_major - 3*$grid_minor
+  +on_chalkboard
+  +chalkboard
+  border: 5px solid white
+  +box-shadow(0,0,2px, rgba(black,.4))
+  border-radius: 5px
+  width: $grid_major * 7 + $grid_minor * 6
+  text-align: center
+  +font-size(1)
+  margin-top: 5 * $vertical_baseline
+
+  h1 
+    +font-size(2)
+    padding: $vertical_baseline 0
+    color: white
+
+  .option
+    margin-bottom: $vertical_baseline
+    text-align: left
+    position: relative
+    width: $grid_major * 5 + $grid_minor * 5
+    margin-left: $grid_xs + $grid_major + $grid_minor
+    input[type="radio"]
+      position: absolute
+      left: - 2 * $grid_xs 
+      top: 8px
+    label
+      font-weight: bold
+      color: white
+    .sublabel
+      +font-size(-2)
+
+      .suboption
+        padding: $vertical_baseline/2 0
+        +font-size(-1)
+        .sublabel
+          padding-left: $grid_xs
+
+  .save_block
+    margin-bottom: $vertical_baseline
+    input
+      +button
+
+  &#sharing_settings
+    .option .access_list
+      +font-size(-4)
+      margin-top: $vertical_baseline
+      textarea
+        width: 100%
+        +font-size(1)

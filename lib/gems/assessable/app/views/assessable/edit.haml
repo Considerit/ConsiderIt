@@ -4,7 +4,7 @@
   .back
     = link_to 'back to fact-checking index', assessment_index_path
 
-  %h1
+  %h2
     Conduct a fact check
 
   #main
@@ -35,7 +35,7 @@
 
             .actions
               
-              %button.answer
+              %button.button.answer
                 #{clm.verdict.nil? ? 'Answer' :'Edit'}
 
               - if !@assessment.complete
@@ -78,12 +78,12 @@
                 = f.label :notes, 'Private notes'
                 = f.text_area :notes, :class => 'autoResize'
 
-              = f.submit
+              = f.submit :class => 'button'
               %a.cancel
                 cancel
 
     #evaluate
-      %button.add_claim
+      %button.button.add_claim
         + Add a claim to check
 
       - if @assessment.reviewable && current_user.id != @assessment.user_id
@@ -91,7 +91,7 @@
           = form_for :assessment, :method => :put, :url => assessment_path(@assessment) do |f|
             = f.hidden_field :complete, :value => true
             = f.hidden_field :id, :value => @assessment.id
-            = f.submit "#{@assessment.claims.count == 0 ? 'Correct, there are no verifiable claims, publish it' : 'Publish fact check'}"
+            = f.submit "#{@assessment.claims.count == 0 ? 'Correct, there are no verifiable claims, publish it' : 'Publish fact check'}", :class => 'button'
 
       - if !@assessment.reviewable
         .review
@@ -130,7 +130,7 @@
 
 
 
-  #sidebar
+  #requester_sidebar
     %h3
       Suggestions by requesters...
 

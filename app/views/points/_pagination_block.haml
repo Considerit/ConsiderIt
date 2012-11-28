@@ -6,7 +6,7 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
-- has_items = points && points.length > 0
+- has_items = !points.nil? && points.length > 0
 
 - if show_both_arrows || is_before_list
   .arrow

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121119173241) do
+ActiveRecord::Schema.define(:version => 20121128020740) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(:version => 20121119173241) do
     t.string   "statement_prompt"
     t.string   "entity"
     t.boolean  "enable_position_statement"
+    t.boolean  "enable_moderation",                        :default => false
   end
 
   add_index "accounts", ["identifier"], :name => "index_accounts_on_identifier"

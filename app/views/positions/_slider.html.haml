@@ -10,14 +10,16 @@
 - oppose_pole = @proposal.label_slider_right
 
 %li.gut.step.slide
-  .head.single
-    %h3.banner
 
-      - if @can_update
-        - @proposal.slider_prompt = prompt
-        = render :partial => 'proposals/admin_make_editable', :locals => { :field => :slider_prompt}
-      - else
-        = prompt
+  - if prompt
+    .head.single
+      %h1.banner
+
+        - if @can_update
+          - @proposal.slider_prompt = prompt
+          = render :partial => 'proposals/admin_make_editable', :locals => { :field => :slider_prompt}
+        - else
+          = prompt
   
   // TODO: this should probably be named "stance", not "position"
   .rest.position

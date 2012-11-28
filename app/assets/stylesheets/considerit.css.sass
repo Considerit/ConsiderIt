@@ -46,8 +46,11 @@
 @import "shared/carousel"
 @import "shared/messages"
 @import "shared/social_media"
+@import "shared/dialog"
 
 @import "users/sessions"
+
+@import "dashboard/dashboard"
 
 
 //////////////////////////////////////////////////////
@@ -117,6 +120,10 @@ html body
     border: none
     text-decoration: underline
 
+
+.pressable_button
+  +pressable_button
+
 //// TEXT INPUT styles
 
 
@@ -124,8 +131,6 @@ input[type="text"], input[type="email"], input[type="password"], textarea
   padding: 3px 5px
   color: #333
 
-input[type="file"].proxied
-  visibility: hidden
 
 input[type=checkbox], input[type=radio]
   //vertical-align: middle
@@ -165,7 +170,19 @@ input.hidden_edit
 
 h1, h2, h3, h4, h5, h6
   font-weight: bold
+
+// Use for banners 
+h1
   +heading
+  +font-size(3)
+
+// Use for page/dialog headers
+h2
+  +font-size(2)
+  padding: $vertical_baseline/2 0
+
+// Base header
+h3 
 
 strong
   font-weight: bold
@@ -238,6 +255,27 @@ ol
   margin: 0
   list-style-type: decimal
 
+blockquote
+  quotes: "\201C" "\201D"
+  &:before
+    content: open-quote
+    font-weight: bold
+  &:after
+    content: close-quote
+    font-weight: bold
+
+
+fieldset
+  border: 1px solid #bbb
+  padding: $vertical_baseline $grid_xs
+  margin: $vertical_baseline 0
+ 
+  legend
+    margin-left: $grid_xs
+    color: #777
+    +font-size(-3)
+    padding: 0 $grid_xs / 2
+
 .loading .ajax_loading
   display: block
 
@@ -252,7 +290,7 @@ ol
   text-align: center
   padding: $vertical_baseline $grid_xs
     
-  h3.banner
+  .banner
     +font-size(5)
     margin-bottom: 0px
     text-align: center

@@ -44,4 +44,8 @@ class Commentable::Comment < ActiveRecord::Base
     commentable_type.constantize.find(commentable_id)
   end
 
+  def text(max_len = 140)
+    body.length > max_len ? "#{body[(0..max_len)]}..." : body
+  end
+
 end

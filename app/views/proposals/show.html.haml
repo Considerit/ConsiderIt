@@ -43,14 +43,14 @@
       - else
         .head.single
           - if @position        
-            %h3.banner.thanks
+            %h1.banner.thanks
               Thanks for your contribution, #{current_user.first_name}.
-            %h3.single.banner.results_prompt
+            %h1.single.banner.results_prompt
               Now explore the overall results!
           - else
-            %h3.banner.thanks
+            %h1.banner.thanks
               Explore the overall results
-            %h3.banner.results_prompt
+            %h1.banner.results_prompt
               - if @proposal.active || Rails.env == 'development'
                 Don't forget to 
                 = succeed '!' do 
@@ -74,7 +74,7 @@
 - if render_other_proposals_menu
   #other_proposals
     .head.single
-      %h3.banner
+      %h1.banner
         Weigh in on these other proposals. Or visit the 
         = succeed '.' do 
           %a{:href => '/', :title => 'homepage'} homepage

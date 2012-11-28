@@ -14,6 +14,11 @@ class HomeController < ApplicationController
     {:tag => "is_logged_in-#{current_user ? "#{current_user.id}-#{current_user.registration_complete}-#{current_user.avatar_file_name}"  : '-1'}-#{updated_at}-#{session.has_key?(:domain) ? session[:domain] : -1}"}
   }
 
+  def render(*args)
+    @current_page = 'homepage'
+    super
+  end
+
   def index
     # TODO: move this to config somehow
     if current_tenant.app_title == 'Living Voters Guide'

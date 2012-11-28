@@ -17,7 +17,7 @@ $background_color: #e6e6e6
 
 //body, input, button, 
 
-h1, h2, h3, h4, h5, h6
+h1
   font-family: 'Armata', 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
 
 #craft_position #nameplate
@@ -49,8 +49,14 @@ h1, h2, h3, h4, h5, h6
 
 //$dark_header_background: #710000
 
-#admin_strip #content #more_options
+#admin_strip #content #links .link #copy_container, 
+#admin_strip #content #links .link #copy_admin_container
   display: none
+
+#admin_strip 
+  color: #777
+  #content #more_options
+    display: none
 
 #explore_proposal
 //  margin-top: 60px
@@ -114,8 +120,17 @@ html
       left: 0
       z-index: 1
 
-#nav-user > li.triangle .hide
-  +main_background
+#nav-user 
+  color: #555
+  a
+    color: #555
+  > li.triangle .hide
+    +main_background
+
+    ul li a
+      color: #555
+      &:hover
+        color: black
 
 #craft_position
 
@@ -240,8 +255,6 @@ html
     float: none
     ul
       
-
-
     li.proposal_item
       float: none
       display: inline-block
@@ -272,7 +285,6 @@ html
 
       .number
         +font-size(-1)
-        font-weight: normal
         letter-spacing: normal
         color: darken(desaturate(#980000, 60%), 20%)
         font-weight: bold
@@ -284,7 +296,6 @@ html
         padding-bottom: $vertical_baseline /4
 
       .short_name
-        font-weight: normal
         vertical-align: middle
         letter-spacing: normal
         +font-size(1)

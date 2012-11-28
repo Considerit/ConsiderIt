@@ -22,6 +22,7 @@ module ApplicationHelper
     end
   end
 
+
   def get_proposals
     proposals = []
     #TODO: do a join here instead???
@@ -84,4 +85,7 @@ module ApplicationHelper
     end
   end    
 
+  def selected_navigation(element)
+    element == @selected_navigation ? "current" : ""
+  end
 end

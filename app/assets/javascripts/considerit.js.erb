@@ -99,6 +99,8 @@ ConsiderIt = {
 
     ConsiderIt.positions.initialize_participants_block();
 
+    $j('input[type="file"]').customFileInput();
+
     if ( ConsiderIt.point_page ) {
       $j('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');            
       $j(".unobtrusive_edit textarea").trigger('keyup');      
@@ -216,13 +218,6 @@ ConsiderIt = {
     // ACCOUNTS
     /////////////
     $j("body") 
-      .on('click', '.inputfileproxy', function(){
-          $j(this).siblings('input["file"]').trigger('click');
-        })
-      .on('change', '.avatar_field input[type="file"]', function(){
-          var mfile = $j(this).val().split('\\').pop();
-          $j(this).siblings('.selected_file').text(mfile);
-        })
       .on('click', '.proxy', function() {
           var email = $j('#user_email'), password = $j('#user_password'), $me = $j(this);
           if ( email.val().length == 0 || password.val().length == 0 || email.is('.error') || password.is('.error') ) {
@@ -337,31 +332,52 @@ ConsiderIt = {
           $j('.unobtrusive_edit_form textarea').blur();
         }
       })      
-      .on('click', '.share_settings > a', function(){
-        var $share_window = $j('#sharing_settings');
-        $share_window.detach().prependTo('#wrap > #content');
-        $share_window.show();
 
+
+      .on('click', '.dialog > a', function(){
+        var $dialog_window = $j(this).parent().children('.detachable');
+        $dialog_window.detach().prependTo('#wrap > #content');
+        $dialog_window.data('parent', $j(this).parent());
+        $dialog_window.show();
       })            
-      .on('click', '#sharing_settings a.cancel', function(){
-        var $share_window = $j('#sharing_settings');
-        $share_window.detach().appendTo('.share_settings');        
-        $share_window.hide();
+      .on('click', '.detachable a.cancel', function(){
+        var $dialog_window = $j('#wrap > #content > .detachable');
+        $dialog_window.detach().appendTo($dialog_window.data('parent'));        
+        $dialog_window.hide();
       })                  
       .on('ajax:success', '#sharing_settings form', function(data, response, xhr){
-        var $share_window = $j('.share_settings > a span'),
+        var $dialog_window = $j(this).parents('.detachable'),
+            $field = $dialog_window.data('parent').children('a').find('span'),
             publicity = response.publicity;
 
         if (publicity == 2) {
-          $share_window.text('public');          
+          $field.text('public');          
         } else if (publicity == 1) {
-          $share_window.text('link only');          
+          $field.text('link only');          
         } else if (publicity == 0) {
-          $share_window.text('private');          
+          $field.text('private');          
         }
-        $j(this).parents('#sharing_settings').detach().appendTo('.share_settings').hide();        
+        $dialog_window.detach().appendTo($dialog_window.data('parent')).hide();            
+      })                                
+      .on('ajax:success', '#status_settings form', function(data, response, xhr){
+        var $dialog_window = $j(this).parents('.detachable'),
+            $field = $dialog_window.data('parent').children('a').find('span'),
+            active = response.active;
 
-      })                        
+        $field.text( active ? 'active' : 'inactive');      
+        $dialog_window.detach().appendTo($dialog_window.data('parent')).hide();            
+      }) 
+      .on('ajax:success', '.edit_role form', function(data, response, xhr){
+        var $dialog_window = $j(this).parents('.detachable'),
+            $field = $dialog_window.data('parent').children('a').find('span'),
+            role = response.role_list;
+
+        $field.text( role );          
+        $dialog_window.detach().appendTo($dialog_window.data('parent')).hide();        
+      }) 
+
+
+
       .on('keyup', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(){
         var save_block = $j(this).siblings('.save_block');
         if (!save_block.is('.fading')) {      
@@ -587,7 +603,9 @@ ConsiderIt = {
       real_point.offset(); // forces Chrome to execute proper animation
 
       var top = $j('.slate:visible').offset().top - placeholder.parents('.point_list').offset().top, 
-          left = ConsiderIt.results_page ? $j('.slate:visible').offset().left - 136 : $j('.margin:first').offset().left + 9;
+          left = $j('.slate:visible').offset().left - 136;
+
+          //left = ConsiderIt.results_page ? $j('.slate:visible').offset().left - 136 : $j('.margin:first').offset().left + 9;
       left -= placeholder.parents('.point_list').offset().left
 
       real_point

@@ -1,0 +1,42 @@
+html body #wrap.dashboard
+
+  .table, .fht-table
+    font-size: 75%
+    width: 100%
+    table-layout: fixed
+
+    a 
+      text-decoration: underline
+      img
+        height: 23px      
+
+    td
+      //max-width: 200px
+      overflow: hidden
+      border-top: 1px solid #ddd
+      line-height: 20px
+      padding: 8px
+      text-align: left
+      vertical-align: top
+
+      &.action
+        text-align: right
+    th
+      //max-width: 200px    
+      text-transform: capitalize
+      font-size: 125%
+      font-weight: bold
+      padding: 8px 8px 1px 8px
+      border-bottom: 1px solid #ddd
+
+  .table-condensed 
+    td
+      padding: 4px 5px
+
+  .table-striped tbody tr:nth-child(2n+1) 
+    td
+      background-color: #f9f9f9
+
+
+  .fht-table-wrapper .fht-fixed-body .fht-tbody, .fht-table-wrapper .fht-tbody
+    overflow-x: hidden

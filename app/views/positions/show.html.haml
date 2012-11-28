@@ -1,0 +1,72 @@
+-#*********************************************
+  For the ConsiderIt project.
+  Copyright (C) 2010 - 2012, University of Washington
+  Author: Travis Kriplean
+  Licensed under the AGPL
+  See https://github.com/tkriplean/ConsiderIt/ for details.
+  *********************************************
+
+:javascript
+  $j(document).ready(function(){
+
+    // INITIALIZE SLIDERS
+    var params = { 
+      min: 0.0, 
+      max: 2.0, 
+      value: #{-1 * @position.stance + 1}, 
+      step: .015,
+      slide: function(event, ui) {
+        ConsiderIt.positions.set_slider_value(ui.value);
+      },
+      change: function(event, ui) {
+        ConsiderIt.positions.set_slider_value(ui.value);
+      },
+      disabled: true
+    };
+
+    $j(".slider").slider(params);
+    ConsiderIt.positions.set_slider_value(#{-1 * @position.stance + 1});    
+  });
+
+- entity = @proposal.label_proposal
+- slider_prompt = @proposal.label_slider_prompt
+- statement_prompt = @proposal.label_statement_prompt
+- points = { :pros => @included_pros, :cons => @included_cons }
+
+#craft_position.show
+
+  #proposal_long_id.hide
+    = @proposal.long_id
+
+  = render :partial => "proposals/description"
+
+  .head.single#position
+    %h1.banner
+      #{@user.name.possessive} position
+
+
+  - if @proposal.enable_position_statement && @position.explanation && @position.explanation.length > 0
+
+    .statement
+      %blockquote
+        = @position.explanation           
+
+  = render :partial => "positions/slider", :locals => { :id => 1, :number => 1, :prompt => nil }
+
+  .user_opinion
+
+    %table
+      %tr
+        %td.margin
+        %td.slate
+
+          = render :partial => "points/pro_con_list", :locals => { :points => points, :dynamic => true, :has_other_points => false }
+
+
+     
+        %td.margin
+
+  #submitstance
+    .rest
+      .stanceform
+        // TODO: fork position

@@ -119,6 +119,29 @@ class PositionsController < ApplicationController
     handle_new_edit(false)
   end
 
+  def show
+    @user = User.find(params[:user_id])
+    @proposal = Proposal.find_by_long_id(params[:long_id])
+    @position = @proposal.positions.published.where(:user_id => params[:user_id]).first
+
+    if @position.nil?
+      redirect_to root_path, :notice => 'That position does not exist.'
+      return  
+    end
+
+    if cannot?(:read, @position)
+      redirect_to root_path, :notice => 'You do not have permission to view that position.'
+      return  
+    end    
+
+    @included_pros = Point.included_by_stored(@user, @proposal, nil).includes(:user).where(:is_pro => true)
+    @included_cons = Point.included_by_stored(@user, @proposal, nil).includes(:user).where(:is_pro => false)
+
+
+
+  end
+
+
 protected
   def handle_new_edit(is_new)
     @proposal = nil

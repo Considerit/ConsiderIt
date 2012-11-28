@@ -25,7 +25,8 @@ task :compute_metrics => ["cache:points", "cache:proposals"]
 
 namespace :alerts do
   task :check_moderation => :environment do
-    Account.all.each do |accnt|
+    Account.where(:enable_moderation => true).each do |accnt|
+
       ApplicationController.set_current_tenant_to(accnt)
 
       # Find out how many objects need to be moderated

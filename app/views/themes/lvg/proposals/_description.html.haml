@@ -3,7 +3,7 @@
 .proposal_prompt
 
   .head.single
-    %h3.banner.name
+    %h1.banner.name
       = prompt
 
   //= image_tag "lvg/images/states/#{current_tenant.identifier}.png", :class => "pic"
@@ -12,7 +12,7 @@
     .name
       #{@proposal.name}
     .full_text
-      %p        
+      %p
         = @proposal.description.html_safe
 
     - if @proposal.long_description && @proposal.long_description.strip != ''

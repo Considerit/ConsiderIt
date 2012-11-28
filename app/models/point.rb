@@ -103,12 +103,21 @@ class Point < ActiveRecord::Base
     end
   end
 
-  def short_desc
+  def short_desc(max_len = 140)
     if nutshell.length > 0
-      return text && text.length > 0 ? nutshell + '...' : nutshell
+      if text && text.length > 0 
+        nutshell[(0..max_len)] + '...' 
+      else 
+        nutshell.length > max_len ? nutshell[(0..max_len)]+ '...' : nutshell
+      end
     else
-      return text && text.length > 0 ? text[(0..140)] : ''
+      return text && text.length > 0 ? text[(0..max_len)] : ''
     end
+  end
+
+  def category
+    is_pro ? 'pro' : 'con'
+
   end
 
   def update_absolute_score

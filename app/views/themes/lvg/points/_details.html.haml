@@ -31,7 +31,7 @@
       - if point.hide_name
         anonymous
       - elsif point.user
-        = point.user.username
+        = link_to point.user.username, profile_path(point.user), :target => '_blank'
       - else
         unknown
 

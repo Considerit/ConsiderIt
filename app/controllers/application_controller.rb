@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
     end
 
     @domain = session.has_key?(:domain) ? session[:domain] : nil
-    @current_page = request.fullpath == '/' ? 'homepage' : ''
+    #@current_page = request.fullpath == '/' ? 'homepage' : ''
 
     if current_tenant.host.nil?
       current_tenant.host = request.host

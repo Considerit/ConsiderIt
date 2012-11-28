@@ -1,0 +1,40 @@
+#manage_proposals
+  %h2
+    Manage proposals
+
+  .active
+    %h3
+      Active proposals
+
+    - if current_tenant.proposals.active.count > 0 
+      %table.table.table-condensed.table-striped
+        %tbody
+          - current_tenant.proposals.active.each do |proposal| 
+            %tr.position
+              %td.proposal
+                = proposal.title(50)
+              %td.action
+                = link_to new_proposal_position_path(proposal.long_id), :target => '_blank' do 
+                  Edit
+                  = image_tag('edit_page.png')
+    - else
+      There are no active proposals.
+
+  .inactive
+    %h3
+      Inactive proposals
+
+    - if current_tenant.proposals.inactive.count > 0 
+      %table.table.table-condensed.table-striped
+        %tbody
+          - current_tenant.proposals.inactive.each do |proposal| 
+            %tr.position
+              %td.proposal
+                = proposal.title(50)
+              %td.action
+                = link_to new_proposal_position_path(proposal.long_id), :target => '_blank' do 
+                  Edit
+                  = image_tag('edit_page.png')
+    - else
+      There are no inactive proposals.
+

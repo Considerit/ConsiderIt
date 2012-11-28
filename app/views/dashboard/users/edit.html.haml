@@ -1,0 +1,39 @@
+-#*********************************************
+  For the ConsiderIt project.
+  Copyright (C) 2010 - 2012, University of Washington
+  Author: Travis Kriplean
+  Licensed under the AGPL
+  See https://github.com/tkriplean/ConsiderIt/ for details.
+  *********************************************
+
+
+#edit_profile.profile_edit
+
+  %h2
+    Edit Profile
+
+  = form_for(current_user, :as => :user, :url => registration_path(:user), :method => :put, :html => { :multipart => true }) do |f|
+
+    .field
+      = f.label :name, "Name"
+      = f.text_field :name, :pattern => "^.{1,}"
+
+    .field
+      = f.label :bio, "About you"
+      = f.text_area :bio, :rows => 5
+                
+    %table
+      %tr
+        %td
+          .avatar
+            = image_tag(current_user.avatar.url(:original), :alt => "#{h current_user.username}'s profile picture")
+
+        %td.fileinput           
+          .field
+            = f.label :avatar, "Your picture"          
+            = f.file_field :avatar, :title => 'Upload a profile picture'
+
+    .save_block
+      = f.submit "Save changes", :class => 'button'
+
+

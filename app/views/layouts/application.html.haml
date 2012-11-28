@@ -62,7 +62,10 @@
       = render :partial => "shared/flash_messages"
       = render :partial => "shared/header/container"
       #content
-        = yield
+        - if @dashboard
+          = render :partial => "dashboard/sidebar"  
+        #inner_content
+          = yield
 
       = render :partial => "shared/footer/container"
 

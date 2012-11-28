@@ -1,0 +1,78 @@
+#manage_roles
+
+  %h2
+    Manage user roles
+
+  %table.table.table-condensed.table-striped
+    %tbody
+      - current_tenant.users.order('roles_mask DESC').each do |user| 
+        %tr
+          %td.user
+            = user.name
+          %td.email
+            = user.email.nil? ? '' : user.email.length > 50 ? "#{user.email[(0..50)]}..." : user.email
+          %td.action
+            .role_settings.dialog
+              %a
+                Roles:
+                %span
+                  = user.role_list
+
+                = image_tag 'edit_page.png'
+
+              .edit_role.detachable
+                = form_for user, :url => update_role_path(user), :remote => true do |f|
+                  %h2
+                    #{user.username.length > 0 ? user.username.possessive : user.email.possessive} role
+
+                  .radio_block
+                    .option
+                      = f.radio_button :role, 'admin', :checked => user.has_role?(:admin)
+                      = f.label :role, 'Admin', :value => 'admin'
+                      .sublabel
+                        Grants all permissions to this user.
+                    .option.specific
+                      = f.radio_button :role, 'specific', :checked => !user.has_role?(:admin) && user.roles_mask > 0
+                      = f.label :role, 'Specific roles', :value => 'specific'
+                      .sublabel
+                        Choose amongst the available roles.
+
+                        .suboption
+                          = f.check_box 'manager', :checked => user.has_role?(:manager)
+                          = f.label 'manager', 'Manager'
+                          .sublabel
+                            This user can create and edit all proposals.
+
+                        - if current_tenant.enable_moderation
+                          .suboption
+                            = f.check_box 'moderator', :checked => user.has_role?(:moderator)
+                            = f.label 'moderator', 'Moderator'
+                            .sublabel
+                              This user can approve/disapprove user contributed content.
+
+                        .suboption
+                          = f.check_box 'analyst', :checked => user.has_role?(:analyst)
+                          = f.label 'analyst', 'Analyst'
+                          .sublabel
+                            This user can explore data trends.
+
+
+                    .option
+                      = f.radio_button :role, 'user', :checked => user.roles_mask == 0
+                      = f.label :role, 'User', :value => 'user'
+                      .sublabel
+                        Has no special permissions.
+
+                  .save_block
+                    = f.submit 'Save'
+                    %a.cancel
+                      cancel
+
+:javascript
+  $j(document).ready(function(){
+    $j(document).on('click', '.edit_role input[type="checkbox"]', function(){
+      $j(this).parents('.edit_role').find('.option.specific input[type="radio"]').trigger('click');
+
+    });
+
+  });

@@ -1,0 +1,16 @@
+#edit_email_notifications.profile_edit
+
+  %h2
+    Notification Settings
+
+  %p
+    You are currently subscribed to #{current_user.follows.active.where(:followable_type => 'Proposal').count } Proposals and #{current_user.follows.active.where(:followable_type => 'Points').count } Points.
+
+  .field
+    = form_for :follows, :url => unfollow_create_path, :as => :follow do |f|
+      = f.hidden_field :user_id, :value => current_user.id
+      = f.hidden_field :unsubscribe_all, :value => true
+      = f.submit "Unsubscribe to all notifications", :class => 'button'
+    .sublabel
+      In the future, we will have more fine-grained options for configuring your notification settings.
+

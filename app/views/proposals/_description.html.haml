@@ -16,7 +16,7 @@
         %a
           Edit proposal
           = image_tag 'edit_page.png'
-      .share_settings
+      .share_settings.dialog
         %a
           Sharing: 
           %span
@@ -28,8 +28,8 @@
               private
 
           = image_tag 'edit_page.png'
-        #sharing_settings
-          %h1
+        #sharing_settings.detachable
+          %h2
             Who can view and participate?
 
           = form_for @proposal, :url => proposal_path(@proposal.long_id), :remote => true, :html => {:class => ''} do |f|
@@ -62,6 +62,39 @@
               %a.cancel
                 cancel
 
+      .status_settings.dialog
+        %a
+          Status: 
+          %span
+            - if @proposal.active
+              active
+            - else
+              inactive
+
+          = image_tag 'edit_page.png'
+        #status_settings.detachable
+          %h2
+            Set the status of this proposal.
+
+          = form_for @proposal, :url => proposal_path(@proposal.long_id), :remote => true, :html => {:class => ''} do |f|
+            .radio_block
+              .option
+                = f.radio_button :active, true, :value => true, :checked => "#{@proposal.active ? 'checked' : ''}"
+                = f.label :active, 'Active', :value => true
+                .sublabel
+                  Contributions are open. People with access to this proposal can contribute to it.
+              .option
+                = f.radio_button :active, false, :value => false, :checked => "#{!@proposal.active ? 'checked' : ''}"
+                = f.label :active, 'Inactive', :value => false
+                .sublabel
+                  Contributions are closed. People with access to this proposal will only be able to view it. 
+
+            .save_block
+              = f.submit 'save'
+              %a.cancel
+                cancel
+
+
 
 
       - if @can_destroy
@@ -71,7 +104,7 @@
 
 
   .head.single
-    %h3.banner
+    %h1.banner
       - if @can_update
         - @proposal.name = prompt
         = render :partial => 'proposals/admin_make_editable', :locals => { :field => :name}

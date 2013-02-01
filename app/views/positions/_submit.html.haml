@@ -46,9 +46,16 @@
       = text_field_tag :email, '', :placeholder => 'your email address'
 
     :javascript
-      $j(document).ready(function(){
-        $j('.notifications input[type="checkbox"]').change(function(e){
-          $j('.notifications .email').fadeToggle();
-          $j('.notifications .email input').focus();
+
+      (function(){
+      $(document).ready(function () {init();});
+      if($(window)){$(window).bind('page:change', function() {init();});}
+      function init(){
+        $('.notifications input[type="checkbox"]').change(function(e){
+          $('.notifications .email').fadeToggle();
+          $('.notifications .email input').focus();
         })
-      });
+      }
+      })();
+
+

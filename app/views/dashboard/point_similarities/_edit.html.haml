@@ -62,19 +62,19 @@
         (#{@total_compared} comparisons completed for #{@proposal.designator})
 
 :javascript
-  $j(function() {
-    $j( "#similarity_slider" ).slider({
+  $(function() {
+    $( "#similarity_slider" ).slider({
       value:#{@init_val},
       min: 1,
       max: 5,
       step: 1,
       slide: function( event, ui ) {
-        $j( "#similarity_val" ).val( ui.value );
-        $j( ".current_value .vallabel").hide();
-        $j( ".current_value .vallabel." + {5:'five',4:'four',3:'three',2:'two',1:'one'}[ui.value] ).show();
+        $( "#similarity_val" ).val( ui.value );
+        $( ".current_value .vallabel").hide();
+        $( ".current_value .vallabel." + {5:'five',4:'four',3:'three',2:'two',1:'one'}[ui.value] ).show();
       }
     });
-    $j( "#similarity_val" ).val( $j( "#similarity_slider" ).slider( "value" ) );
-    $j( ".current_value .vallabel").hide();
-    $j( ".current_value .vallabel." + {5:'five',4:'four',3:'three',2:'two',1:'one'}[#{@init_val}] ).show();
+    $( "#similarity_val" ).val( $( "#similarity_slider" ).slider( "value" ) );
+    $( ".current_value .vallabel").hide();
+    $( ".current_value .vallabel." + {5:'five',4:'four',3:'three',2:'two',1:'one'}[#{@init_val}] ).show();
   });

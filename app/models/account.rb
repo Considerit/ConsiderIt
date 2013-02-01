@@ -19,10 +19,16 @@ class Account < ActiveRecord::Base
   has_many :reflect_bullets, :class_name => 'Reflect::ReflectBullet'
   has_many :reflect_responses, :class_name => 'Reflect::ReflectResponse'
 
+  #has_one :theme#, :polymorphic => true
+
   is_followable
 
   def host_without_subdomain
     host_with_port.split('.')[-2, 2].join('.')
   end
 
+
+  def self.all_themes
+    Dir['app/assets/themes/*/'].map { |a| File.basename(a) }
+  end
 end

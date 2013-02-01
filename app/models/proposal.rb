@@ -16,7 +16,7 @@ class Proposal < ActiveRecord::Base
   belongs_to :user
   
   acts_as_tenant(:account)
-  attr_taggable :tags
+  #attr_taggable :tags
 
   #acts_as_taggable
 

@@ -53,8 +53,11 @@
 
 
 :javascript
-  $j(document).ready(function() {
-    $j("#post_signup_dialog").dialog({
+  (function(){
+  $(document).ready(function () {init();});
+  if($(window)){$(window).bind('page:change', function() {init();});}
+  function init(){
+    $("#post_signup_dialog").dialog({
       bgiframe: true, 
       autoOpen: true, 
       modal: true,
@@ -63,7 +66,7 @@
       resizable: false
     }).fadeIn();
 
-    /* $j("#settings_dialog").dialog({
+    /* $("#settings_dialog").dialog({
     /   bgiframe: true, 
     /   autoOpen: false, 
     /   modal: true,
@@ -72,26 +75,26 @@
     /   resizable: false
     / }); 
   
-    / $j('a.settings')
+    / $('a.settings')
     /   .click(function(){
-    /     var dialog = $j('#settings_dialog');
+    /     var dialog = $('#settings_dialog');
     /     dialog.load("#{edit_user_registration_path}");
     /     dialog.dialog('open');
     /   }); 
     */
 
-    $j('#nav-user .triangle')
+    $('#nav-user .triangle')
       .hover(
         function(){
-          $j(this).find('.hide')
+          $(this).find('.hide')
             .stop(true,false)
             .css('height', '')
             .slideDown();
         },
         function(){
-          $j(this).find('.hide')
+          $(this).find('.hide')
           .stop(true,false)
           .slideUp();        
         });
-
-  });
+  }
+  })();

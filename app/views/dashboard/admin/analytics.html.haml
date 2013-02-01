@@ -44,18 +44,17 @@
 
     - [:main, :cumulative].each do |style|
       :javascript
+        (function(){
 
         analytics_plots.#{s[:title]} = [];
-
-
-        $j(document).ready(function () {
+        function init(){
           var d = #{s[style][:data].to_json};
           
 
           
-          var plot = $j.plot($j("#placeholder-#{s[:title]} .#{style.to_s} .graph"), [d], analytics_options);
+          var plot = $.plot($("#placeholder-#{s[:title]} .#{style.to_s} .graph"), [d], analytics_options);
 
-          var overview = $j.plot($j("#placeholder-#{s[:title]} .#{style.to_s} .overview"), [d], {
+          var overview = $.plot($("#placeholder-#{s[:title]} .#{style.to_s} .overview"), [d], {
               series: {
                   lines: { show: true, lineWidth: 1 },
                   shadowSize: 0
@@ -66,41 +65,55 @@
           });
           analytics_plots.#{s[:title]}.push([plot,overview]);
 
-
-        });
-
-  // now connect the two
-  :javascript
-    $j(document).ready(function () {
-      $j(".graph").bind("plotselected", function (event, ranges) {
-          // do the zooming
-          var new_options = $j.extend(true, {}, analytics_options, {
-                              xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
-                            });
-
-          for ( var i = 0; i < analytics_data.length; i+=1){
-            var s = analytics_data[i];
-            $j.plot($j("#placeholder-" + s.title + " .main .graph"), [s.main.data], new_options);
-            $j.plot($j("#placeholder-" + s.title + " .cumulative .graph"), [s.cumulative.data], new_options);
-
-            // don't fire event on the overview to prevent eternal loop
-            analytics_plots[s.title][0][1].setSelection(ranges, true);
-            analytics_plots[s.title][1][1].setSelection(ranges, true);
-
-          }
-
-      });
-      
-      $j(".overview").bind("plotselected", function (event, ranges) {
-        for ( var i = 0; i < analytics_data.length; i+=1){
-          var s = analytics_data[i];
-          analytics_plots[s.title][0][0].setSelection(ranges);
-          analytics_plots[s.title][1][0].setSelection(ranges);
         }
 
+  $(document).ready(function () {init();});
+  if($(window)){$(window).bind('page:change', function() {init();});}
 
-      });
+
+        })();
+
+// now connect the two
+:javascript
+  (function() {
+
+
+  $(document).ready(function () {init();});
+  if($(window)){$(window).bind('page:change', function() {init();});}
+
+  function init(){
+    $(".graph").bind("plotselected", function (event, ranges) {
+        // do the zooming
+        var new_options = $.extend(true, {}, analytics_options, {
+                            xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
+                          });
+
+        for ( var i = 0; i < analytics_data.length; i+=1){
+          var s = analytics_data[i];
+          $.plot($("#placeholder-" + s.title + " .main .graph"), [s.main.data], new_options);
+          $.plot($("#placeholder-" + s.title + " .cumulative .graph"), [s.cumulative.data], new_options);
+
+          // don't fire event on the overview to prevent eternal loop
+          analytics_plots[s.title][0][1].setSelection(ranges, true);
+          analytics_plots[s.title][1][1].setSelection(ranges, true);
+
+        }
+
     });
+    
+    $(".overview").bind("plotselected", function (event, ranges) {
+      for ( var i = 0; i < analytics_data.length; i+=1){
+        var s = analytics_data[i];
+        analytics_plots[s.title][0][0].setSelection(ranges);
+        analytics_plots[s.title][1][0].setSelection(ranges);
+      }
+
+
+    });
+   
+  }
+
+  })();
 
 
   

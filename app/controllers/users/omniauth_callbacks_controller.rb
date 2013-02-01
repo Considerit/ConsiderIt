@@ -27,7 +27,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def _third_party_callback
 
-    pp env["omniauth.auth"]
     @user = User.find_for_third_party_auth(env["omniauth.auth"], current_user)
     @user.referer = session[:referer] if session.has_key?(:referer)
     @user.save
@@ -42,7 +41,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if @user && session.has_key?(:domain) && session[:domain] && !@user.tags.include?(session[:domain])
         @user.tags = params[:domain] 
         @user.save
-      elsif @user && @user.tags
+      elsif @user && @user.respond_to?(:tags) && @user.tags
         session[:domain] = current_user.tags
       end
 

@@ -7,24 +7,26 @@
   *********************************************
 
 - prompt ||= 'Read more and comment'
-
-
 - carousel ||= false
 
-.proposals{ :class => "#{style} horizontal" }
-  - if carousel
-    .paginate.first
-      %button.back
-        &#9664;
-  .carousel{ :name => "proposals" }
-    %ul
-      = render :partial => "proposals/blocks/item", :collection => get_proposals_by_rank.active, :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially, :prompt => prompt }
+- proposals = get_proposals_by_rank.active
+
+= cache [proposals, carousel, prompt] do 
+
+  .proposals{ :class => "#{style} horizontal" }
+    - if carousel
+      .paginate.first
+        %button.back
+          &#9664;
+    .carousel{ :name => "proposals" }
+      %ul
+        = render :partial => "proposals/blocks/item", :collection => proposals, :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially, :prompt => prompt }
+      .clear
+
+    - if carousel
+
+      .paginate.last
+        %button.forward.not_ajax
+          &#9654;
     .clear
-
-  - if carousel
-
-    .paginate.last
-      %button.forward.not_ajax
-        &#9654;
-  .clear
 

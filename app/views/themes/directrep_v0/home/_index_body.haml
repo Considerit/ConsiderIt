@@ -1,0 +1,153 @@
+- theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
+- rep_user = theme.user
+
+#homepage
+  
+  #introduction
+
+    .head.single
+      %h1.banner
+        %span.rep
+          = theme.rep_name
+        %span.dialogue
+          wants to hear from
+        %span.constituency
+          You
+
+    .rep
+      .img
+        = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+      .about
+        = theme.rep_about
+      .links
+        %a
+          website 
+        ★
+        %a
+          twitter
+        ★ 
+        %a
+          facebook
+
+    .dialogue
+      .bubble.rep_statement.left
+        %strong
+          Tell me what you think about the issues below. 
+        I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
+
+      .bubble.constituent_statement.longer.right
+        Politicians don't care what we think!
+
+      .clear
+      .bubble.constituent_statement.shorter.right
+        Why should we spend the time?
+
+      .clear
+      .bubble.rep_statement.left
+        %strong
+          I promise to post a response to your concerns.
+        Your opinions help shape how I look at these important issues for our community. I care what you think.
+
+    .constituency
+      .people  
+        - cols = 6
+        - rows = 8
+        - pics = User.unscoped.where('avatar_file_name IS NOT NULL')
+        - users = pics.sample( [cols*rows, pics.count].min )
+
+        - users.each do |user|
+          = image_tag image_path(user.avatar.url(:small))
+
+  .issues
+
+    %h2.banner
+      Issues open for discussion
+
+    - positions = rep_user.nil? ? nil : Hash[rep_user.positions.published.comprehend {|p| [p.proposal_id,p]}]
+
+    - #top_pros = Hash[Point.ranked_overall.pros.group(:proposal_id).comprehend {|p| [p.proposal_id,p]}]
+
+    - #top_cons = Hash[Point.ranked_overall.cons.group(:proposal_id).comprehend {|p| [p.proposal_id,p]}]
+
+    - get_proposals_by_rank.active.each do |proposal|
+      - top_pro = proposal.points.ranked_overall.pros.first #top_pros[proposal.id]
+      - top_con = proposal.points.ranked_overall.cons.first #top_cons[proposal.id]
+      - position = positions[proposal.id]
+
+      - cache [proposal, top_pro, top_con, position ] do
+
+        .proposal
+          .rep
+            = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+
+          .dialogue
+            .bubble.proposal_bubble.left
+              .question
+                = succeed '?' do
+                  = proposal.title(200)
+
+              .top_points
+
+                .top
+                  - if top_pro.nil?
+                    .bubble.right.empty
+                      No pro arguments added yet.
+                  - else
+                    .pic
+                      = image_tag top_pro.user.avatar.url(:small), :class => 'avatar author', :alt => "#{h top_pro.user}'s profile picture"
+                    .bubble.right.pro
+                      = top_pro.short_desc
+                    .lead
+                      top pro argument
+                  .clear
+
+                .top
+                  - if top_con.nil?
+                    .bubble.right.empty
+                      No con arguments added yet.
+                  - else
+                    .pic
+                      = image_tag top_con.user.avatar.url(:small), :class => 'avatar author', :alt => "#{h top_con.user}'s profile picture"
+                    .bubble.right.con
+                      = top_con.short_desc
+                    .lead
+                      top con argument
+                  .clear
+              .official_response
+                .pic
+                  = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+
+
+
+
+                - if position.nil?
+                  .bubble.left.empty
+
+                    I've not yet taken a stance
+
+                - elsif proposal.active
+                  .bubble.left.rep_statement
+
+                    Read my #{link_to 'initial position', user_position_proposal_path(proposal.long_id, rep_user)}. I'm still listening.
+
+                - else
+                  .bubble.left.rep_statement
+
+                    Based on your input and my considerations, I've decided that I #{position.stance_name_adverb}. Read my #{link_to 'full report', user_position_proposal_path(proposal.long_id, rep_user)}. Thanks!
+                
+                .clear
+
+
+
+
+
+            = link_to new_proposal_position_path(proposal.long_id), :class => 'join' do
+
+              = image_tag current_theme_image_path("join.png")
+
+              %span.text
+                Join the Conversation
+
+
+
+          .constituency

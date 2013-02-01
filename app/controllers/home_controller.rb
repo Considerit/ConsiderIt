@@ -55,6 +55,11 @@ class HomeController < ApplicationController
     redirect_to request.referrer
   end
 
+  def set_dev_options
+    session["user_theme"] = params[:theme]
+    redirect_to request.referrer
+  end
+
   def study
     category = params[:category]
     sd = StudyData.create!({

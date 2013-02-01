@@ -50,7 +50,10 @@
           #prop_overview
 
           :javascript
-            $j(document).ready(function(){          
+            (function(){
+            $(document).ready(function () {init();});
+            if($(window)){$(window).bind('page:change', function() {init();});}
+            function init(){
               var myPDF = new PDFObject({
                 url: "/lvg/measures/#{@proposal.designator}-title-summ-analysis.pdf",
                 id: "proposal_overview",
@@ -63,7 +66,8 @@
                   pagemode: "thumbs"
                 }
               }).embed("prop_overview");
-            });
+            }
+            })();
 
 
     - elsif @proposal.url && @proposal.url.strip != ''

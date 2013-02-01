@@ -476,7 +476,7 @@ javascript:
     }
   };
 
-  var fd = new $jit.ForceDirected({  
+  var fd = new $it.ForceDirected({  
     //id of the visualization container  
     injectInto: 'infovis',  
     //Enable zooming and panning  
@@ -522,7 +522,7 @@ javascript:
       },  
       //Implement the same handler for touchscreens  
       onTouchMove: function(node, eventInfo, e) {  
-        $jit.util.event.stop(e); //stop default touchmove event  
+        $it.util.event.stop(e); //stop default touchmove event  
         this.onDragMove(node, eventInfo, e);  
       }  
     },  
@@ -601,7 +601,7 @@ javascript:
           if(adj.getData('alpha')) list.push(adj.nodeTo.name);  
         });  
         //append connections information  
-        $jit.id('inner-details').innerHTML = html + list.join("</li><li>") + "</li></ul>";  
+        $it.id('inner-details').innerHTML = html + list.join("</li><li>") + "</li></ul>";  
       };  
     },  
     // Change node styles when DOM labels are placed  
@@ -629,7 +629,7 @@ javascript:
       Log.write('done');  
       fd.animate({  
         modes: ['linear'],  
-        transition: $jit.Trans.Elastic.easeOut,  
+        transition: $it.Trans.Elastic.easeOut,  
         duration: 2500  
       });  
     }  

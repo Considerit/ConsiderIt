@@ -29,6 +29,9 @@ class PointsController < ApplicationController
 
 
     @proposal = Proposal.find_by_long_id(params[:long_id])
+
+    redirect_to root_path if @proposal.nil?
+
     @user = current_user
 
     ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
@@ -205,7 +208,10 @@ class PointsController < ApplicationController
       redirect_to root_path, :notice => 'Cannot find that point. The author may have deleted it.'
       return
     end
+
     @proposal = Proposal.find_by_long_id(params[:long_id])
+    redirect_to root_path if @proposal.nil? || @proposal.id != @point.proposal_id
+
     authorize! :read, @point
 
     if request.xhr?
@@ -216,6 +222,11 @@ class PointsController < ApplicationController
       render
     end
 
+  end
+
+  def sp_data
+    point = Point.find params[:point_id]
+    render :json => {:comments => point.comments.select('body, user_id, moderation_status').to_json}
   end
 
   def update
@@ -240,6 +251,7 @@ class PointsController < ApplicationController
   end
 
   def destroy
+
     @point = Point.find(params[:id])
     
     authorize! :destroy, @point

@@ -50,7 +50,7 @@ class InclusionsController < ApplicationController
 
     rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :origin => 'margin', :point => next_point }) : nil
         
-    response = { :new_point => rendered_next_point, :total_remaining => points.total_count } 
+    response = { :new_point_json => next_point.to_json, :new_point => rendered_next_point, :total_remaining => points.total_count } 
     
     render :json => response.to_json
   end
@@ -63,15 +63,27 @@ class InclusionsController < ApplicationController
     @proposal = Proposal.find_by_long_id(params[:long_id])
     @point = Point.find(params[:point_id])
 
-    session[@proposal.id][:included_points].delete(params[:point_id])    
-    if current_user
-      @inc = current_user.inclusions.where(:point_id => @point.id).first
-      if @inc
-        session[@proposal.id][:deleted_points][@point.id] = 1
+    ApplicationController.reset_user_activities(session, @point.proposal) if !session.has_key?(@point.proposal.id)
+
+    if session[@proposal.id][:included_points].has_key?(params[:point_id])
+
+      if current_user
+        @inc = current_user.inclusions.where(:point_id => @point.id).first
+        if @inc
+          session[@proposal.id][:deleted_points][@point.id] = 1
+        end
       end
+
+      authorize! :destroy, @inc || Inclusion.new
+      session[@proposal.id][:included_points].delete(params[:point_id])    
+
+    else
+      authorize! :destroy, @point
+      session[@point.proposal_id][:written_points].delete(@point.id)
+      session[@point.proposal_id][:included_points].delete(@point.id)  
+      @point.destroy
     end
 
-    authorize! :destroy, @inc || Inclusion.new
 
     @page = params[:page].to_i
     candidate_next_points = @point.is_pro ? @proposal.points.viewable.pros : @proposal.points.viewable.cons

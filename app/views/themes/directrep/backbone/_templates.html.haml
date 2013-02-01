@@ -1,0 +1,507 @@
+
+
+%script{ :type => "text/template", :id => "tpl_point_in_list" }      
+        
+  %a.toggle.less.hide.point_text_toggle
+    x
+
+  .body.compact_body
+
+    .bullet_point
+      &#8226;
+          
+    %p.point_text.nutshell.reader
+      %span.text
+        {{adjusted_nutshell}}
+        %span.details_indicator
+          (&#8230;)
+    
+      %span.nested_user
+        {{user.get("name")}}
+
+  .operations
+
+    .read_more
+      %a.toggle.more.point_text_toggle.point_operation{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }
+        
+        {{ comment_count == 1 ? "1 comment" : comment_count + " comments"}}
+
+    %a.include
+      Add
+    %a.remove
+      Remove
+
+  .clear
+
+%script{ :type => "text/template", :id => "tpl_newpoint" }      
+  
+  .newpoint
+    .newpointbutton
+      .bullet_point
+        &#8226;
+    
+      %a{ :class => "{{is_pro ? 'pro' : 'con'}} write_new" }
+        Write a new {{is_pro ? "pro" : "con"}} point
+
+      %div{ :class => "pointform {{is_pro ? 'pro' : 'con'}} newpointform" }
+
+        %div{:id => "pointform-{{is_pro ? 'pro' : 'con'}}"}
+
+          .form_proper
+
+            .point-title-group.inlined
+              = text_area_tag :nutshell, nil, :placeholder => 'Summarize your point (required)', :cols => 24, :class => "point-title is_counted", :required=>true, :maxlength => 140, :pattern => "^.{3,}"
+              %span.count
+                140
+              .clear
+
+            .point-description-group
+              = text_area_tag :text, nil, :placeholder => "Write a longer description (optional)", :title => "Write a longer description (optional)", :cols => 24, :class => "autoResize point-description"
+              .clear
+
+            .hide_name.fl{:title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'}
+              = check_box_tag :hide_name
+              = label_tag :hide_name, 'conceal your name'
+
+            .point-submit.fr
+              %input{ :type => 'submit', :value => 'Done', :class => "button {{is_pro ? 'pro' : 'con'}}"}
+              
+            .point-cancel
+              %a.new_point_cancel
+                cancel
+          .clear
+
+%script{ :type => "text/template", :id => "tpl_pointlistpagination" }
+  .pagination
+    %a.pager.backward
+      back
+    %a.pager.forward
+      forward
+
+%script{ :type => "text/template", :id => "tpl_point_details" }   
+  (( var point_creator = false, has_details = false, hide_name = false; ))
+
+  .point{ :class => "point {{is_pro ? 'pro' : 'con'}} commentable" }
+    %a.close
+      Close details
+
+    %ul.header
+      %li.type.first
+        = "{{is_pro ? 'Pro' : 'Con'}}" 
+
+    (( if( !hide_name && user ){ ))
+    %img{ :src => "{{PaperClip.get_avatar_url(user, 'medium')}}", :alt => "{{user.get('name')}}'s profile picture", :class => "avatar author"}
+    (( } ))
+
+
+    .body
+
+      (( if (point_creator) { ))
+      .point_text.nutshell.nutshell_edit
+        -#= render :partial => 'points/make_editable', :locals => { :point => point, :field => :nutshell, :sync_with => "#expanded .point_text.nutshell span.text", :validations => {:required => true, :maxlength => 140} }
+      (( } else { ))
+      .point_text.nutshell 
+        {{ nutshell }} 
+      (( } ))
+
+      .point_text.full
+
+        .details
+          (( if (point_creator) { ))
+          -#= render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => false }        
+          (( } else if (has_details) { ))
+          {{text.replace('\r\n', '')}}
+          (( } ))
+
+      .nested_user
+        (( if (hide_name) { ))
+        anonymous
+        (( } else if (user) { ))
+        {{ user.get('name') }}
+        (( } else { ))
+        unknown
+        (( } ))
+
+    .point_operations
+      (( if (published) { ))
+      -#= render :partial => 'followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
+      (( } ))
+
+      (( if (point_creator) { ))
+      .edit
+        %a.editpoint.point_operation.button
+          Edit this point
+      (( } ))
+            
+    .extra  
+      
+      .discuss    
+        %h3.discussion_header    
+          Discussion
+
+        %ul.commentlist
+          
+    .clear
+
+
+%script{ :type => "text/template", :id => "tpl_newcomment" }   
+  %li.new_comment            
+    .comment_body
+      .body_row
+        .user
+          %img{ :src => "{{PaperClip.get_avatar_url(user, 'medium')}}", :alt => "your profile picture", :class => "avatar"}
+
+        .text                                
+          %ul.form
+             
+            %li.body
+              %textarea#comment_body.is_counted{ :name => :body, :placeholder => 'Type your comment here...', :title => 'Type your comment here...' }
+              %span.count
+                1000
+
+          - if current_user
+            .point-pledge
+              %p.note
+                Thanks for being civil and upholding your pledge!
+
+          %a.button.comment_submit
+            Add comment
+
+        .clear
+
+    .signinrequired.hide
+      You must 
+      %a.signin_link
+        sign in
+      to leave a comment.
+
+
+
+%script{ :type => "text/template", :id => "tpl_comment" }   
+  .comment_body
+    .body_row
+      (( if( moderation_status == 0 ){ ))
+      
+      %i
+        This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.
+
+      ((} else { ))
+      
+      .text.comment_text   
+        .body
+          %img{ :src => "{{PaperClip.get_avatar_url(user, 'medium')}}", :alt => "{{user.get('name')}}'s profile picture", :class => "avatar"}
+
+          {{body}}
+
+          .username.exclude_from_reflect 
+            &ndash; 
+            %a{ :href => "{{Routes.profile_path(user.id)}}", :target => '_blank'}
+              {{ user.get('name') }}
+
+      (( } ))
+
+  - if false && can_update
+    .edit_comment
+      %a
+        edit
+      .edit_form.hide
+        -#= render :partial => 'commentable/make_editable', :locals => { :comment => comment, :validations => {:maxlength => 1000} }
+        %a
+          cancel
+
+      .clear
+
+
+
+- theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
+- rep_user = theme.user
+- top_pro = Point.pros.first
+- top_con = Point.cons.first
+- position = nil
+
+%script{ :type => "text/template", :id => "tpl_proposal" }
+  
+  .proposer
+    = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+
+  .talking
+    .bubble.proposal_bubble.left
+      .question
+        {{title}}?
+
+      .top_points
+
+        .top
+          - if top_pro.nil?
+            .bubble.right.empty
+              No pro arguments added yet.
+          - else
+            .pic
+              = image_tag top_pro.user.avatar.url(:small), :class => 'avatar author', :alt => "#{h top_pro.user.name}'s profile picture"
+            .bubble.right.pro
+              = top_pro.short_desc
+            .lead
+              top pro argument
+          .clear
+
+        .top
+          - if top_con.nil?
+            .bubble.right.empty
+              No con arguments added yet.
+          - else
+            .pic
+              = image_tag top_con.user.avatar.url(:small), :class => 'avatar author', :alt => "#{h top_con.user.name}'s profile picture"
+            .bubble.right.con
+              = top_con.short_desc
+            .lead
+              top con argument
+          .clear
+
+      .user_opinion
+
+      .aggregated_results
+
+
+      .official_response
+        .pic
+          = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+
+        - if true || position.nil?
+
+          .bubble.left.empty
+            I've not yet taken a stance
+
+        - elsif true || proposal.active
+
+          .bubble.left.rep_statement
+            Read my INITIAL POSITION. I'm still listening.
+
+        - else
+
+          .bubble.left.rep_statement
+            Based on your input and my considerations, I've decided that I support. Read my FULL REPORT. Thanks!
+        
+        .clear
+
+    %a.results{:href => "{{Routes.proposal_path( long_id )}}"}
+      See results
+      
+    %a.join{ :href => "{{Routes.new_proposal_position_path( long_id )}}"}
+
+      = image_tag current_theme_image_path("join.png")
+
+      %span.text
+        Join the Conversation
+
+
+
+  .participants
+
+
+%script{ :type => "text/template", :id => "tpl_position" }      
+
+  .slide
+    .head.single
+      %h1.banner
+        What is your opinion?
+
+    
+    .rest.position
+
+      %table.slider_table
+        %tr
+          %td.slider_label.left
+            %div
+              Support
+
+          %td.slider_container
+            %div.slider
+          %td.slider_label.right
+            %div
+              Oppose
+        %tr
+          %td.slider_label.center{ :colspan => 3 }
+            Neutral
+
+
+  .head.single
+    %h1.banner
+      What are the most important Pros and Cons to you?
+
+  %table
+    %tr
+      %td.margin
+        .heading
+          %h3.lead
+            Pros by other users
+          .sublead
+            drag good ones to your list
+
+        #peer_pros.inner_wrapper
+          %ul.peer_points.point_list
+
+      %td.slate
+
+        .pro_con_list{ :id => "domain_self", :class => "dynamic has_other_points"}
+
+          .slate
+           
+            %table
+              %tr.point_columns
+                %td.full_column.pro_column#points_on_board_pro
+                  #propoints.inner_wrapper
+                    .pro_con_list_header.pro_header
+                      .inner
+                        - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
+                          = theme_image_tag('pro_header.png')
+                        - else
+                          = image_tag('chalk/pros.png') 
+
+                    %ul.point_list
+
+                %td.full_column.con_column#points_on_board_con 
+                  #conpoints.inner_wrapper
+                    .pro_con_list_header.con_header
+                      .inner
+                        - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
+                          = theme_image_tag('con_header.png')
+                        - else
+                          = image_tag('chalk/cons.png') 
+
+                    %ul.point_list
+
+      %td.margin
+
+        .heading
+          %h3.lead
+            cons by other users
+          .sublead
+            drag good ones to your list
+
+        #peer_cons.inner_wrapper
+          %ul.peer_points.point_list
+
+
+  - prompt = "Save your opinion and view results"
+
+  .stance.position_statement.hide
+    %label{ :name => :explanation }
+      Optional statement that summarizes your thoughts
+    %textarea{ :name => :explanation}
+
+
+  (( if (proposal.active || #{Rails.env} == 'development') { ))
+
+  %button.submit.button
+    = prompt
+
+  (( } ))
+
+
+
+%script{ :type => "text/template", :id => "tpl_results" }      
+  
+  .breakdown
+
+    #histogram
+      %table
+        %tr
+          %td.support
+            Supporters
+
+          (( _.each(histogram, function(bucket, index){ ))
+
+          (( var height = bucket.length/biggest_segment, full_clss = num_positions == 0 ? 'noone' : 'some'; ))
+
+          %td.bar_cell
+
+            .bar.empty{ :style => "height: {{barheight - height * barheight}}px;"}
+
+            .bar.full{ :style => "height: {{height * barheight}}px;", :bucket => "{{index}}", :id => "bucket-{{index}}", :class => "{{full_clss}}"}
+
+              .close
+                x
+
+              .border_cover
+
+              (( if (bucket.length > 0) { ))
+              %ul.people_bar
+                (( _.each(bucket, function(position) { ))
+
+                (( var user = ConsiderIt.users[position.get('user_id')]; ))
+                (( if (user){ ))
+
+                (( var has_explanation = position.explanation && position.explanation.length > 0, expl_clss = has_explanation ? 'with_explanation' : 'no_explanation'; ))
+
+                %li.statement{:class=>"bucket-{{index}} {{expl_clss}}", :id=>"user-{{user.id}}", :user => "{{user.id}}"}
+                  .view_statement
+                    %img{ :src => "{{PaperClip.get_avatar_url(user, 'small')}}", :alt => "{{user.get('name')}}'s profile picture", :class => "{{expl_clss}}"}
+
+                    .details
+                      .position_author_name
+                        {{user.get('name')}}
+
+                      (( if ( has_explanation ) { ))
+                      %blockquote.explanation
+                        {{ position.explanation }}
+                      (( } ))
+                (( } ))
+                (( }); ))
+              (( } ))
+
+          %li.clear
+          (( }); ))
+          %td.oppose
+            Opposers
+
+      #axis_arrow
+
+  .opinions
+
+    %table
+      %tr
+
+        %td.slate
+
+          .pro_con_list{ :id => "domain_board", :class => "static"}
+
+            .slate
+              %h3.participant_connection
+                .others
+                .all
+                  All Factors
+                  .filters
+                    %span.label
+                      order by 
+
+                    %a.point_filter.selected{ :'data-filter' => 'score'}
+                      Popularity
+                    %a.point_filter{ :'data-filter' => 'appeal'}
+                      Most Unifying
+                    %a.point_filter{ :'data-filter' => 'divisiveness'}
+                      Most Divisive
+
+             
+              %table
+                %tr.point_columns
+                  %td.full_column.pro_column#points_on_board_pro
+                    #propoints.inner_wrapper
+                      .pro_con_list_header.pro_header
+                        .inner
+                          - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
+                            = theme_image_tag('pro_header.png')
+                          - else
+                            = image_tag('chalk/pros.png') 
+
+                      %ul.point_list
+
+                  %td.full_column.con_column#points_on_board_con 
+                    #conpoints.inner_wrapper
+                      .pro_con_list_header.con_header
+                        .inner
+                          - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
+                            = theme_image_tag('con_header.png')
+                          - else
+                            = image_tag('chalk/cons.png') 
+
+                      %ul.point_list

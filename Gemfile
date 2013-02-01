@@ -1,14 +1,18 @@
 source 'http://rubygems.org'
 
 gem "therubyracer", :require => 'v8'
-gem 'rails', '~>3.2'
+gem 'rails', '~>3.2.11'
+gem 'turbolinks'
 
 gem "mysql2"
 
 gem 'thin'
 
 gem "haml"
-gem 'sass-rails',   "~> 3.2.3"
+gem 'sass-rails'#,   "~> 3.2.3"
+
+# https://github.com/railsware/js-routes
+gem "js-routes"
 
 # https://github.com/plataformatec/devise
 gem 'devise'
@@ -99,6 +103,7 @@ gem "moderatable", :path => "lib/gems/moderatable"
 gem "assessable", :path => "lib/gems/assessable"
 
 gem 'sitemap_generator'
+gem 'newrelic_rpm'
 
 #gem 'spatial_adapter',   :git => 'git://github.com/AdamFerguson/spatial_adapter.git'
 
@@ -114,13 +119,12 @@ group :production do
   gem 'exception_notification'
 end
 
-gem 'newrelic_rpm'
 
 group :assets do
-  gem 'sass-rails',   "~> 3.2.3"
-  gem 'coffee-rails', "~> 3.2.1"
+  gem 'sass-rails'#,   "~> 3.2.3"
+  gem 'coffee-rails'#, "~> 3.2.1"
   gem 'uglifier'
   gem "asset_sync"
-  gem 'turbo-sprockets-rails3'
+  #gem 'turbo-sprockets-rails3'
   #gem "themes_for_rails", :git => 'git://github.com/jasherai/themes_for_rails.git'
 end

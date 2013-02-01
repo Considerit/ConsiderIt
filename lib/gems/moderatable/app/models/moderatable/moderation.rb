@@ -1,10 +1,3 @@
-#*********************************************
-# For the ConsiderIt project.
-# Copyright (C) 2010 - 2012 by Travis Kriplean.
-# Licensed under the AGPL for non-commercial use.
-# See https://github.com/tkriplean/ConsiderIt/ for details.
-#*********************************************
-
 class Moderatable::Moderation < ActiveRecord::Base
   class_attribute :classes_to_moderate
   self.classes_to_moderate = [Point, Commentable::Comment]

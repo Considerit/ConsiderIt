@@ -32,14 +32,20 @@
           = render :partial => "proposals/blocks/item", :collection => get_proposals.where(:active => false).where('id < 6'), :as => :proposal, :locals => { :show_full_text => false, :style => style, :hide_initially => hide_initially }
 
       :javascript
-        $j(document).ready(function(){
-          $j('a.old').click(function(){
-            var is2010 = $j(this).hasClass('lvg2010'),
-                $el = is2010 ? $j('#o2010') : $j('#o2011');
+        (function(){
+        $(document).ready(function () {init();});
+        if($(window)){$(window).bind('page:change', function() {init();});}
+
+        function init(){
+          $('a.old').click(function(){
+            var is2010 = $(this).hasClass('lvg2010'),
+                $el = is2010 ? $('#o2010') : $('#o2011');
 
             $el.fadeToggle();
 
           });      
-        });
+        }
+        })();
+
   .clear
 

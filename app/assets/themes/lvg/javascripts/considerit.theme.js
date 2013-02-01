@@ -1,6 +1,6 @@
-$j(document).ready(function(){
+$(document).ready(function(){
 
-  // $j('.proposals.horizontal').infiniteCarousel({
+  // $('.proposals.horizontal').infiniteCarousel({
   //   speed: 1500,
   //   vertical: false,
   //   total_items: 8,
@@ -9,7 +9,7 @@ $j(document).ready(function(){
   //   dim: 900
   // });
 
-  // $j('.proposal_prompt .proposals.horizontal').infiniteCarousel({
+  // $('.proposal_prompt .proposals.horizontal').infiniteCarousel({
   //   speed: 1500,
   //   vertical: false,
   //   total_items: 8,
@@ -18,19 +18,19 @@ $j(document).ready(function(){
   //   dim: 720
   // });    
 
-  $j(document).on('click', '.assessment a.point_operation', function(){
-    $j(this).hide();
-    $j(this).siblings('.request_form').show();
+  $(document).on('click', '.assessment a.point_operation', function(){
+    $(this).hide();
+    $(this).siblings('.request_form').show();
   });
 
-  $j(document).on('click', '.assessment .request_form a.cancel', function(){
-    $j(this).parents('.request_form').hide();
-    $j(this).parents('.request_form').siblings('.point_operation').show();
+  $(document).on('click', '.assessment .request_form a.cancel', function(){
+    $(this).parents('.request_form').hide();
+    $(this).parents('.request_form').siblings('.point_operation').show();
   });  
 
-  $j(document).on('ajax:success', '.assessment .request_form form', function(){
-    $j(this).parents('.request_form').siblings('.already_requested').show();    
-    $j(this).parents('.request_form').remove();
+  $(document).on('ajax:success', '.assessment .request_form form', function(){
+    $(this).parents('.request_form').siblings('.already_requested').show();    
+    $(this).parents('.request_form').remove();
   });
 
 });

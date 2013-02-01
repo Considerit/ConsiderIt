@@ -1,0 +1,49 @@
+:javascript
+  $(document).ready(function(){
+
+    var proposals = #{ Proposal.active.select('id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active').to_json };
+
+    //var proposals = { ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select("SELECT id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active FROM proposals where account_id=#{current_tenant.id} AND active=1")) };
+
+    //var proposals = [];
+    ConsiderIt.proposals = _.object(_.map(proposals, function(v){ return [v.proposal.long_id, {
+      points : null,
+      positions : null,
+      model : new ConsiderIt.Proposal(v.proposal),
+      view : null,      
+      views : {}}];}));
+
+    ConsiderIt.proposals_by_id = _.object(_.map(ConsiderIt.proposals, function(v,k){ return [v.model.id, v] }))
+
+    //var users = { User.select("id, name, avatar_file_name").to_json };
+    var users = #{ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id}",  )) }
+
+    ConsiderIt.users = _.object(_.map(users, function(v){ return [v.id, new ConsiderIt.User(v)];})) ;
+    ConsiderIt.comments = {}
+
+    ConsiderIt.current_user = ConsiderIt.users[#{current_user.id}]
+    
+    ConsiderIt.router = new ConsiderIt.Router();
+
+    app = new ConsiderIt.AppView();
+    app.render();
+
+    Backbone.history.start({pushState: true});
+
+
+    $(document).on("click", "a[href^='/']", function(event) {
+      href = $(event.currentTarget).attr('href');
+   
+      // Allow shift+click for new tabs, etc.
+      if (!event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey){
+        event.preventDefault();
+        
+        // Instruct Backbone to trigger routing events
+        ConsiderIt.router.navigate(href, { trigger : true });
+
+        return false;
+      }
+    });
+
+  });
+

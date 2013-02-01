@@ -56,6 +56,53 @@ class PositionsController < ApplicationController
     end
   end
   
+  #TODO: migrate some of the functionality from the old update
+  def sp_update
+    position = Position.find params[:position_id]
+
+    # proposal = Proposal.find_by_long_id(params[:long_id])
+
+    # if current_user.nil? 
+    #   redirect_to(  proposal_path(proposal.long_id, :anchor => 'explore_proposal') )
+    #   return
+    # end
+
+    already_published = position.published
+
+    (stance, bucket) = get_stance_val_from_params(params)
+    update_attrs = {
+      :explanation => params[:position][:explanation],
+      :stance => stance,
+      :stance_bucket => bucket
+    }
+
+    authorize! :update, position
+
+    update_attrs[:published] = true
+    position.update_attributes update_attrs
+      
+    position.track!
+
+    #proposal.follow!(current_user, :follow => params[:position][:follow_proposal] == 'true', :explicit => true)
+
+    params[:position][:included_points] ||= []
+    params[:position][:included_points].each do |pnt|
+      session[position.proposal_id][:included_points][pnt] = true
+    end
+
+    params[:position][:viewed_points] ||= []
+    params[:position][:viewed_points].each do |pnt|
+      session[position.proposal_id][:viewed_points].push([pnt,-1])
+    end
+
+    save_actions(position)
+
+    alert_new_published_position(proposal, position) unless already_published
+
+    render :json => position
+
+  end
+
   def update
     @proposal = Proposal.find_by_long_id(params[:long_id])
 
@@ -184,8 +231,6 @@ protected
       @keywords = "discuss, deliberate, vote, #{@proposal.name}"
       @description = "Hear and engage about #{@proposal.name}."
     end
-
-
 
     ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
     # When we are redirected back to the position page after a user creates their account, 

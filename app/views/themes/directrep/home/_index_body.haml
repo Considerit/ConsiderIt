@@ -1,95 +1,63 @@
--#*********************************************
-  For the ConsiderIt project.
-  Copyright (C) 2010 - 2012, University of Washington
-  Author: Travis Kriplean
-  Licensed under the AGPL
-  See https://github.com/tkriplean/ConsiderIt/ for details.
-  *********************************************
+- theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
+- rep_user = theme.user
 
-- phil = current_tenant.identifier.include?('phil') || current_tenant.identifier.include?('dodds')
-- style = 'horizontal'
-- hide_initially = false
+#homepage
+  
+  #introduction
 
-#home
-  #flag
-    = image_tag current_theme_image_path("flag.png")
-    .planks
-      .plank.short
-      .plank.short
-      .plank.short
-      .plank
-      .plank
-      .plank
-      .plank
+    .head.single
+      %h1.banner
+        %span.rep
+          = theme.rep_name
+        %span.dialogue
+          wants to hear from
+        %span.constituency
+          You
 
-  #paper{ :class => phil ? 'phil' : 'jeremy' }
+    .rep
+      .img
+        = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+      .about
+        = theme.rep_about
+      .links
+        %a
+          website 
+        ★
+        %a
+          twitter
+        ★ 
+        %a
+          facebook
 
-    .subheader
+    .dialogue
+      .bubble.rep_statement.left
+        %strong
+          Tell me what you think about the issues below. 
+        I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
 
-      - if phil
-        &hellip;if you 
-        = succeed ' ' do
-          %a{:href => 'http://www.phildoddsforcongress.com', :title => 'Phil Dodd\'s candidate website'} elect me
-        as U.S. House Representative of Florida District 3
-      - else
-        &hellip;if you 
-        = succeed ' ' do
-          %a{:href => 'http://vermontelection.org/', :title => 'Jeremy Hansen\'s candidate website'} elect me 
-          as Vermont State Senator for Washington County
-      = render :partial => "home/follow"
-      
-    #proposals
+      .bubble.constituent_statement.longer.right
+        Politicians don't care what we think!
 
-      = render :partial => "proposals/blocks/strip", :locals => { :style => 'blocks', :hide_initially => false, :prompt => 'Vote on this proposal', :carousel => true }
+      .clear
+      .bubble.constituent_statement.shorter.right
+        Why should we spend the time?
 
-      - if current_user && current_user.is_admin?
-        = render :partial => "proposals/new", :locals => { :prompt => 'Add new proposal'}
+      .clear
+      .bubble.rep_statement.left
+        %strong
+          I promise to post a response to your concerns.
+        Your opinions help shape how I look at these important issues for our community. I care what you think.
 
-    #elect
-      - if phil
-        %span.label
-          Help elect Phil to make this happen!
-        %span.star
-          &#9733;
-        = succeed ' ' do
-          %a{ :href => 'http://www.phildoddsforcongress.com/'} website
-        %span.star
-          &#9733;
-        = succeed ' ' do
-          %a{ :href => 'https://phildoddsforcongress.nationbuilder.com/donate_to_democracy' } donate    
-        %span.star
-          &#9733;
-        = succeed ' ' do
-          %a{ :href => 'http://www.phildoddsforcongress.com/volunteer' } volunteer
-        %span.star
-          &#9733;
-        = succeed ' ' do
-          %a{ :href => 'http://www.facebook.com/PhilDoddsForCongress' } facebook
-        %span.star
-          &#9733;
+    .constituency
+      .people  
+        - cols = 6
+        - rows = 8
+        - pics = User.unscoped.where('avatar_file_name IS NOT NULL')
+        - users = pics.sample( [cols*rows, pics.count].min )
 
-      - else
-        %span.label
-          Help elect Jeremy to make this happen!
-        %span.star
-          &#9733;
-        = succeed ' ' do
-          %a{ :href => 'http://vermontelection.org/'} website
-        %span.star
-          &#9733;
-        = succeed ' ' do
+        - users.each do |user|
+          = image_tag image_path(user.avatar.url(:small))
 
-          %a{ :href => 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CLAT2DNV3EVK6' } donate    
-        %span.star
-          &#9733;  
-        = succeed ' ' do
-
-          %a{ :href => 'mailto:jeremy@vermontelection.org?subject="I want to volunteer"' } volunteer
-        %span.star
-          &#9733;
-           
-        = succeed ' ' do
-          %a{ :href => 'http://www.facebook.com/jeremyhansen2012' } facebook
-        %span.star
-          &#9733;
+  #proposals
+    %ul.proposallist
 

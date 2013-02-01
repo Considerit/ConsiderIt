@@ -66,7 +66,10 @@
 
 
 :javascript
-  $j(document).ready(function(){
+  (function(){
+  $(document).ready(function () {init();});
+  if($(window)){$(window).bind('page:change', function() {init();});}
+  function init(){
     ZeroClipboard.setMoviePath( '/zeroclipboard/ZeroClipboard.swf' );
 
     var clip = new ZeroClipboard.Client();
@@ -77,16 +80,16 @@
     clip2.setText( "#{get_host}/#{@proposal.admin_id}" );
     clip2.glue( 'copy_admin_container', 'copy_admin_link' );
 
-    $j('#more_options').on('click', 'a.show', function(){
-      $j(this).siblings('.more').slideToggle();
-      $j(this).find('.label').toggle();
+    $(document).on('click', '#more_options a.show', function(){
+      $(this).siblings('.more').slideToggle();
+      $(this).find('.label').toggle();
     });
 
-    $j('#admin_strip').on('click', '.link span', function(){
+    $(document).on('click', '#admin_strip .link span', function(){
       selectElementText(this);
     });
 
-    $j('#more_options .more').hide();
+    $('#more_options .more').hide();
     function selectElementText(el, win) {
       win = win || window;
       var doc = win.document, sel, range;
@@ -102,4 +105,6 @@
           range.select();
       }
     }
-  });
+  }
+  })();
+

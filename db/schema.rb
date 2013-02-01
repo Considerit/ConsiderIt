@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121128020740) do
+ActiveRecord::Schema.define(:version => 20130116194546) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(:version => 20121128020740) do
     t.string   "entity"
     t.boolean  "enable_position_statement"
     t.boolean  "enable_moderation",                        :default => false
+    t.boolean  "single_page",                              :default => false
   end
 
   add_index "accounts", ["identifier"], :name => "index_accounts_on_identifier"
@@ -91,6 +92,7 @@ ActiveRecord::Schema.define(:version => 20121128020740) do
     t.datetime "created_at",                          :null => false
     t.datetime "updated_at",                          :null => false
     t.boolean  "reviewable",       :default => false
+    t.integer  "max_verdict"
   end
 
   create_table "claims", :force => true do |t|
@@ -479,6 +481,18 @@ ActiveRecord::Schema.define(:version => 20121128020740) do
     t.string  "name"
     t.integer "account_id"
   end
+
+  create_table "theme_directreps", :force => true do |t|
+    t.integer  "account_id"
+    t.string   "rep_name"
+    t.string   "rep_about"
+    t.string   "website"
+    t.integer  "user_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "theme_directreps", ["account_id"], :name => "index_theme_directreps_on_account_id"
 
   create_table "users", :force => true do |t|
     t.integer  "account_id"

@@ -33,11 +33,15 @@
 
     :javascript
       //http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
-      (function(w,d,u){w.readyQ=[];w.bindReadyQ=[];function p(x,y){if(x=="ready"){w.bindReadyQ.push(y);}else{w.readyQ.push(x);}};var a={ready:p,bind:p};w.$j=w.jQuery=function(f){if(f===d||f===u){return a}else{p(f)}}})(window,document)
+      (function(w,d,u){w.readyQ=[];w.bindReadyQ=[];function p(x,y){if(x=="ready"){w.bindReadyQ.push(y);}else{w.readyQ.push(x);}};var a={ready:p,bind:p};w.$=w.jQuery=function(f){if(f===d||f===u){return a}else{p(f)}}})(window,document)
 
-      $j(document).ready(function(){
+      $(document).ready(function(){
         sevenUp.plugin.black.test({});      
         ConsiderIt.init(); 
+        $(window).bind('page:change', function() {
+          ConsiderIt.init();
+        });
+
       });   
 
     = theme_javascript_include_tag 'application', :async => Rails.env.production?
@@ -61,7 +65,11 @@
     #wrap{ :class => @current_page}
       = render :partial => "shared/flash_messages"
       = render :partial => "shared/header/container"
+
       #content
+        - if Rails.env.development?
+          = render :partial => "shared/dev_tools"      
+
         - if @dashboard
           = render :partial => "dashboard/sidebar"  
         #inner_content

@@ -11,11 +11,9 @@
 //= require jquery.nouislider.js
 //= require jquery.noblecount.min.js
 //= require jquery.example.min.js
-//= require jquery.dynamic_list.min.js
 //= require jquery.autoresize.js
 //= require jquery.html5form.js
 //= require jquery.touch-punch.js
-//= require redactor.js
 //= require jquery.inline_labels.js
 //= require jquery.fixedheadertable.min.js
 //= require jquery.fileinput.js
@@ -32,10 +30,10 @@
 //= require ./main
 //= require ./considerit.theme
 
-//= require_tree ./backbone
-//= require_tree ./models
-//= require_tree ./collections
-//= require_tree ./views
-//= require_tree ./views_list
-//= require ./router
+//= require_tree ../../../javascripts/backbone
+//= require_tree ../../../javascripts/models
+//= require_tree ../../../javascripts/collections
+//= require_tree ../../../javascripts/views
+//= require_tree ../../../javascripts/views_list
+//= require router
 

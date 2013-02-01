@@ -41,22 +41,22 @@ ConsiderIt = {
 
     $('textarea#statement').autoResize({extraSpace: 5});
     
-    $("#points_other_pro, #points_other_con").dynamicList({
-        speed: 1000,
-        vertical: true,
-        total_items: parseInt($(this).find('.total').filter(":first").text()),
-        items_per_page: 3,
-        loading_from_ajax: true, 
-        dim: 550,
-        resetSizePerPage: true,
-        total_items_callback: function($carousel){
-          if ($carousel.find('.total').filter(":first").length > 0) {
-            return parseInt($carousel.find('.total').filter(":first").text());
-          } else {
-            return $carousel.find('li.point_in_list').length;
-          }
-        }
-      });
+    // $("#points_other_pro, #points_other_con").dynamicList({
+    //     speed: 1000,
+    //     vertical: true,
+    //     total_items: parseInt($(this).find('.total').filter(":first").text()),
+    //     items_per_page: 3,
+    //     loading_from_ajax: true, 
+    //     dim: 550,
+    //     resetSizePerPage: true,
+    //     total_items_callback: function($carousel){
+    //       if ($carousel.find('.total').filter(":first").length > 0) {
+    //         return parseInt($carousel.find('.total').filter(":first").text());
+    //       } else {
+    //         return $carousel.find('li.point_in_list').length;
+    //       }
+    //     }
+    //   });
 
     if ( ConsiderIt.results_page ) {
       $.get('/' + $.trim($('#proposal_long_id').text()) + '/results', function(data){
@@ -116,39 +116,39 @@ ConsiderIt = {
       }
     });  
 
-    $("#ranked_points .full_column").each(function(){
-      $(this).dynamicList({
-        speed: 1000,
-        vertical: true,
-        total_items: parseInt($(this).find('.total').filter(":first").text()),
-        items_per_page: 4,
-        loading_from_ajax: true, 
-        dim: 500,
-        resetSizePerPage: true,
-        total_items_callback: function($carousel){
-          return parseInt($carousel.find('.total').filter(":first").text());
-        }
-      });
-    });   
+    // $("#ranked_points .full_column").each(function(){
+    //   $(this).dynamicList({
+    //     speed: 1000,
+    //     vertical: true,
+    //     total_items: parseInt($(this).find('.total').filter(":first").text()),
+    //     items_per_page: 4,
+    //     loading_from_ajax: true, 
+    //     dim: 500,
+    //     resetSizePerPage: true,
+    //     total_items_callback: function($carousel){
+    //       return parseInt($carousel.find('.total').filter(":first").text());
+    //     }
+    //   });
+    // });   
 
     $('[placeholder]').inlined_labels();
 
     //$('form.html5:not(.html5formified)').html5form();
     $('form').h5Validate({errorClass : 'error'});
 
-    $('.pointform .wysiwyg').redactor({
-      buttons: ['formatting', 'bold', 'italic', 'unorderedlist', 'orderedlist', 'link', 'fullscreen'],
-      autoresize: true,
-      inline_label: 'Add details and links (optional)',
-      css: 'chalkboard.css'
-    });
+    // $('.pointform .wysiwyg').redactor({
+    //   buttons: ['formatting', 'bold', 'italic', 'unorderedlist', 'orderedlist', 'link', 'fullscreen'],
+    //   autoresize: true,
+    //   inline_label: 'Add details and links (optional)',
+    //   css: 'chalkboard.css'
+    // });
 
-    $('.unobtrusive_edit_form .wysiwyg').redactor({
-      buttons: ['formatting', 'bold', 'italic', 'unorderedlist', 'orderedlist', 'link', 'fullscreen'],
-      autoresize: true,
-      inline_label: 'Add details and links (optional)',
-      css: 'postit.css'
-    });
+    // $('.unobtrusive_edit_form .wysiwyg').redactor({
+    //   buttons: ['formatting', 'bold', 'italic', 'unorderedlist', 'orderedlist', 'link', 'fullscreen'],
+    //   autoresize: true,
+    //   inline_label: 'Add details and links (optional)',
+    //   css: 'postit.css'
+    // });
 
     $('.autoResize').trigger('keyup');
 

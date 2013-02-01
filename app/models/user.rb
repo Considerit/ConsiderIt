@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
   has_many :follows, :dependent => :destroy, :class_name => 'Followable::Follow'
 
   acts_as_tenant(:account)
-  attr_taggable :tags
+  #attr_taggable :tags
   is_trackable
   
   # Include default devise modules. Others available are:
@@ -74,7 +74,6 @@ class User < ActiveRecord::Base
   end
 
   def third_party_authenticated?
-    pp self
     if !self.facebook_uid.nil?
       'facebook' 
     elsif !self.google_uid.nil?

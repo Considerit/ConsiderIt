@@ -93,7 +93,7 @@ private
   end
 
   def theme_resolver
-    if !session.has_key?('user_theme') || Rails.env == 'development'
+    if !session.has_key?('user_theme')
       session["user_theme"] = current_tenant.theme
     end
     
@@ -102,8 +102,8 @@ private
         add_theme_view_path_for(parent_theme)
       end
     end
-    set_theme(session["user_theme"])
 
+    set_theme(session["user_theme"])
   end
 
   def store_location(path)

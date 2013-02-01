@@ -143,16 +143,19 @@
 
 
 :javascript
-  $j(document).ready(function(){
-    $j('#edit_assessment')
-      .on('click', '.actions .answer, .open .cancel', function(){
-        var $claim = $j(this).parents('.claim');
+  (function(){
+  $(document).ready(function () {init();});
+  if($(window)){$(window).bind('page:change', function() {init();});}
+  function init(){
+    $(document)
+      .on('click', '#edit_assessment .actions .answer, .open .cancel', function(){
+        var $claim = $(this).parents('.claim');
         $claim.find('.open, .closed, .head .answer').toggleClass('hide');
         $claim.find('.autoResize').trigger('keyup');
       })
-      .on('click', '#evaluate .add_claim, #evaluate .add_claim_form .cancel', function(){
-        $j(this).parents('#evaluate').find('.add_claim, .add_claim_form form, .add_claim_form #other_claims').toggleClass('hide');
-        $j('.add_claim_form').find('.autoResize').trigger('keyup');
+      .on('click', '#edit_assessment #evaluate .add_claim, #evaluate .add_claim_form .cancel', function(){
+        $(this).parents('#evaluate').find('.add_claim, .add_claim_form form, .add_claim_form #other_claims').toggleClass('hide');
+        $('.add_claim_form').find('.autoResize').trigger('keyup');
 
       });
 
@@ -160,9 +163,7 @@
         num_answered_claims = #{@assessment.claims.where('verdict IS NOT NULL').count};
 
     if ( num_claims > 0 && num_answered_claims != num_claims ) {
-      $j('#evaluate .complete, #evaluate .review').hide();
+      $('#evaluate .complete, #evaluate .review').hide();
     }
-
-
-  });
-
+  }
+  })();

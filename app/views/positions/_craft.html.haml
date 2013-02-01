@@ -7,7 +7,10 @@
   *********************************************
 
 :javascript
-  $j(document).ready(function(){
+  (function(){
+  $(document).ready(function () {init();});
+  if($(window)){$(window).bind('page:change', function() {init();});}
+  function init(){
 
     // INITIALIZE SLIDERS
     var params = { 
@@ -16,9 +19,9 @@
       value: #{-1 * @position.stance + 1}, 
       step: .015,
       slide: function(event, ui) {
-        // $j('.slider:not(#' + $j(event.currentTarget).attr('id') +')').each(function(){
-        //  if ( ui.value != $j(this).slider('value') ) {
-        //     $j(this).slider("option", "value", ui.value);
+        // $('.slider:not(#' + $(event.currentTarget).attr('id') +')').each(function(){
+        //  if ( ui.value != $(this).slider('value') ) {
+        //     $(this).slider("option", "value", ui.value);
         //     ConsiderIt.positions.set_slider_value(ui.value);            
         //   }
         // });
@@ -29,32 +32,32 @@
       }
       //stop: function(event, ui){
         //if (ConsiderIt && ConsiderIt.study) {
-        //  $j.post('/home/study/2', {
+        //  $.post('/home/study/2', {
         //    position_id: #{@position.id},
         //    proposal_id: #{@proposal.id},
-        //    ival: $j(this).attr('id').substring(6),
+        //    ival: $(this).attr('id').substring(6),
         //    fval: ui.value
         //  });   
         //}
       //}
     };
 
-    $j(".slider").slider(params);
+    $(".slider").slider(params);
     ConsiderIt.positions.set_slider_value(#{-1 * @position.stance + 1});
       
     // Study delegators for point expansions
     //if (ConsiderIt && ConsiderIt.study) {
-    //  $j(document).delegate('.point_in_list a.toggle', 'click', function(){
-    //    $j.post('/home/study/1', {
+    //  $(document).delegate('.point_in_list a.toggle', 'click', function(){
+    //    $.post('/home/study/1', {
     //      position_id: #{@position.id},
     //      proposal_id: #{@proposal.id},
-    //      point_id: $j(this).parents('.point_in_list').find('.id:first').text(),
-    //      bval: $j(this).hasClass('more')
+    //      point_id: $(this).parents('.point_in_list').find('.id:first').text(),
+    //      bval: $(this).hasClass('more')
     //    });   
     //  });
-    
 
-  });
+  }
+  })();
 
 - entity = @proposal.label_proposal
 - slider_prompt = @proposal.label_slider_prompt
@@ -149,8 +152,16 @@
             #position_save_login_trigger.user_dialog
 
             :javascript
-              $j(document).ready(function(){
-                $j('#position_save_login_trigger').dialog({
+              (function(){
+              $(document).ready(function () {
+                init();
+              });
+              $(window).bind('page:change', function() {
+                init();
+              });
+              function init(){
+
+                $('#position_save_login_trigger').dialog({
                   autoOpen: false,
                   modal: true,
                   draggable: false,
@@ -158,17 +169,19 @@
                   width: 800
                 });
 
-                $j('.stanceform input.submit').click(function(){
-                  $j('#position_save_login_trigger')
+                $('.stanceform input.submit').click(function(){
+                  $('#position_save_login_trigger')
                     .load("#{new_user_registration_path(:third_party=>false, :context=>"position_submit")}", function(){
-                      if ($j('.notifications input[type="checkbox"]').prop("checked")) {
-                        $j('#site_registration .email_field #user_email').val($j('.notifications .email input').val());
+                      if ($('.notifications input[type="checkbox"]').prop("checked")) {
+                        $('#site_registration .email_field #user_email').val($('.notifications .email input').val());
                       }
                     })
                     .dialog('open');
                   return true;
                 });
-              });
+
+              }
+              })();
 
         - if current_user && @position.published
           = link_to 'Discard changes and show the results', proposal_position_path(@proposal.long_id, @position, :authenticity_token => form_authenticity_token), :method => :delete, :class => "skip_save"
@@ -187,9 +200,17 @@
 
 
   :javascript
-    $j(document).ready(function(){
-      $j('li.statement.step textarea').change(function(){
-        var statement = $j(this).val();
-        $j('form .stance.position_statement textarea').val(statement);
-      });  
-    });
+    (function(){
+      $(document).ready(function () {
+        init();
+      });
+      $(window).bind('page:change', function() {
+        init();
+      });
+      function init(){
+        $('li.statement.step textarea').change(function(){
+          var statement = $(this).val();
+          $('form .stance.position_statement textarea').val(statement);
+        });  
+      }
+      })();

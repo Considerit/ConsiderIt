@@ -6,17 +6,6 @@
   See https://github.com/tkriplean/ConsiderIt/ for details.
   *********************************************
 
-:javascript
-  function CheckLength(){
-    var msg_area = document.getElementById("Message");
-    msg_area.innerHTML = "";
-    alert('HEY')
-    if (document.getElementById("commentarea").value.length < 100) {
-      msg_area.innerHTML = "YOU DID NOT ENTER ENOUGH INFO FOR YOUR REVIEW";
-    }
-    else document.getElementById("pointform-#{is_pro ? 'pro' : 'con'}").submit();
-  }
-
 .pointform{ :class => "#{action}pointform" }
 
   = form_for [@proposal, point], :action => action, :html => {:id => "pointform-#{is_pro ? 'pro' : 'con'}", :class => "form-#{is_pro ? 'pro' : 'con'}"}, :remote => true do |f|

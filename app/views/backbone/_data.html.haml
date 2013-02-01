@@ -21,7 +21,7 @@
     ConsiderIt.users = _.object(_.map(users, function(v){ return [v.id, new ConsiderIt.User(v)];})) ;
     ConsiderIt.comments = {}
 
-    ConsiderIt.current_user = ConsiderIt.users[#{current_user.id}]
+    ConsiderIt.current_user = ConsiderIt.users[#{current_user ? current_user.id : 0}]
     
     ConsiderIt.router = new ConsiderIt.Router();
 

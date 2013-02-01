@@ -1,0 +1,205 @@
+@import "mixins"
+@import "homepage"
+@import "paper_proposal"
+//@import url(https://fonts.googleapis.com/css?family=Alfa+Slab+One)
+
+
+html 
+  background-image: none
+  background-color: #e4e4e4
+  position: relative
+  +wall(#bbc)
+
+#admin_strip #content 
+  #more_options
+    display: none
+  #links
+    display: none
+
+.logo_cell
+  float: none
+  z-index: -1
+  position: absolute
+  left: 0
+
+#nav-user
+  top: -5px
+
+
+body #wrap > div#content
+  padding-top: 6em
+
+.blocks.horizontal.proposals.infiniteCarousel .carousel
+  height: 10 * $vertical_baseline + .2
+
+  li.proposal_item
+    width: 210px
+    height: 10 * $vertical_baseline
+    +linear-gradient(#002266, #001133)
+    opacity: 1
+    color: #e1e1e1
+    margin: 0 5px
+    position: relative
+    +transition
+
+    &:hover
+      +linear-gradient(#6B0000, #390000)
+      a, .prompt
+        color: white
+
+    > a
+      text-align: left
+      color: #e1e1e1
+      height: 10 * $vertical_baseline
+      +font-size(-2)
+
+    .title
+
+    .prompt
+      +font-size(-2)
+      margin-top: $vertical_baseline
+      border-bottom: 1px dotted #555
+      font-variant: small-caps
+      display: inline-block
+      position: absolute
+      bottom: 10px
+
+.new_proposal
+  position: absolute
+  bottom: -70px
+  left: 20px
+  .avatar
+    left: 0px
+  form input[type="submit"]
+    position: absolute
+    top: 5px
+    right: -65px
+
+
+
+
+#flag
+  position: relative
+  .planks
+    position: absolute
+    z-index: -1
+    top: 0
+    width: 100%
+    .plank
+      +wall(#390000)
+      background-image: image-url('directrep_old/images/red_wall.png')
+      width: 100%
+      height: 35px
+      margin-bottom: 35px
+
+      &.short
+        width: 688px
+        margin-left: 385px
+
+body #wrap > div#footer
+  margin-top: 2 * $vertical_baseline
+  +chalkboard
+  width: 100%
+  height: 4 * $vertical_baseline
+  .paid_for
+    +font-size(-4)
+    text-align: center
+    text-transform: lowercase
+    font-variant: small-caps
+    padding-top: 10px
+
+  > .footer_wrapper
+    position: relative
+    width: 738px
+
+    > div
+      color: #e1e1e1
+
+      &.powered_by
+        display: none
+        position: absolute
+        margin-top: 0
+        right: 0
+        +font-size(-2)
+        top: -2px
+
+        .power
+          position: absolute
+        .power
+          top: 5px
+          left: -85px
+        img
+          position: relative
+          //top: 8px
+          display: block
+          padding-bottom: 5px
+
+        .paid_for
+          //padding-top: 10px
+
+      &.report_problems
+        display: none
+
+      &#other_candidates
+        font-variant: small-caps
+        .heading
+          +heading
+          letter-spacing: normal
+          display: none
+
+
+        .candidate_list
+          margin: auto
+          .candidate
+            display: inline-block
+            padding: 0 $grid_xs
+            //width: 125px
+            position: relative
+
+            a
+              color: #e1e1e1
+              &:hover
+                color: white
+                .mugshot            
+                  opacity: 1
+            .mugshot, .name, .district, .direct_rep
+              text-transform: uppercase
+              text-align: center
+              +transition
+
+            .mugshot
+              opacity: .75
+
+            .name_block
+              //position: absolute
+              //bottom: -25px
+              //left: 0
+              width: 150px
+
+              text-align: center
+              //> span
+                //text-shadow: 0 -1px 2px #313131
+
+              .name
+                font-weight: bold
+
+              .district
+                +font-size(-4)
+                text-transform: uppercase
+                //position: relative
+                //top: -10px                
+              .directrep
+                +font-size(-4)
+                //position: relative
+                text-transform: uppercase
+                //top: -5px
+
+#other_proposals
+  .blocks.horizontal.proposals.infiniteCarousel .carousel li.proposal_item
+    +linear-gradient(#333, #222)
+    &:hover
+      +linear-gradient(#6B0000, #390000)
+
+#registration_form #third_party #twitter
+  display: none
+

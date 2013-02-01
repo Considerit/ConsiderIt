@@ -1,0 +1,54 @@
+body #wrap.homepage
+  > div#content
+    height: 700px 
+    z-index: 1
+    padding-top: 0em    
+  .logo_cell
+    display: none
+
+  font-family: 'Lucida Grande', 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
+
+  #paper
+    width: 755px
+    height: 538px
+    top: 160px
+    left: 50%
+    margin-left: -373px
+    position: absolute
+
+    &.phil
+      background: image-url('directrep_old/images/phil.png') no-repeat 0 0 
+    &.jeremy
+      background: image-url('directrep_old/images/jeremy.png') no-repeat 0 0 
+
+    .subheader
+      position: absolute
+      top: 50px
+      left: 41px
+      +font-size(1)
+
+      a
+        text-decoration: underline
+        font-weight: bold
+    #follow
+      display: inline-block
+      position: relative
+      top: 5px
+
+    #elect
+      position: absolute
+      bottom: 24px
+      left: 40px
+      a
+        text-decoration: underline
+      .label
+        font-weight: bold
+      .star
+        +font-size(-3)
+
+    #proposals
+      position: absolute
+      bottom: 35px
+      left: 15px
+
+

@@ -69,10 +69,15 @@
                       cancel
 
 :javascript
-  $j(document).ready(function(){
-    $j(document).on('click', '.edit_role input[type="checkbox"]', function(){
-      $j(this).parents('.edit_role').find('.option.specific input[type="radio"]').trigger('click');
+  (function(){
+  $(document).ready(function () {init();});
+  if($(window)){$(window).bind('page:change', function() {init();});}
+  function init(){
+
+    $(document).on('click', '.edit_role input[type="checkbox"]', function(){
+      $(this).parents('.edit_role').find('.option.specific input[type="radio"]').trigger('click');
 
     });
 
-  });
+  }
+  })();

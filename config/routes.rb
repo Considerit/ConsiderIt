@@ -19,10 +19,16 @@ ConsiderIt::Application.routes.draw do
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
-    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :destroy], :path_names => {:new => ''} 
+    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :destroy], :path_names => {:new => ''} do
+      match '/sp_update' => "positions#sp_update", :as => :sp_update
+    end
+
     match '/positions/:user_id' => "positions#show", :as => :user_position
+    match '/sp_show' => "proposals#data", :as => :data
+
     resources :points, :only => [:index, :create, :update, :destroy, :show] do 
       resources :inclusions, :only => [:create] 
+      match '/sp_data' => "points#sp_data", :as => :data
     end
     #resources :point_similarities, :module => :admin
     
@@ -47,6 +53,9 @@ ConsiderIt::Application.routes.draw do
 
   #match "/theme" => "theme#set", :via => :post
   match "/home/domain" => "home#set_domain", :via => :post
+  match "/home/theme" => "home#set_dev_options", :via => :post, :as => :set_dev_options
+
+
   match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|videos|help|fact_check|copromoters/ } 
 
   #match '/home/study/:category' => "home#study", :via => :post  

@@ -1,54 +1,83 @@
+
+$rep_color: #81BADF
+$constituency_color: #E0D875
+$header_gray: #9C9C9C
+$proposal_background: #EAEAEA
+$pro_color: #B2C392
+$con_color: #C09D96
+$empty_color: #ddd
+
+$proposal_width: 617px
+$top_argument_width: 400px
+
 body #wrap.homepage
   > div#content
-    height: 700px 
-    z-index: 1
-    padding-top: 0em    
-  .logo_cell
-    display: none
 
-  font-family: 'Lucida Grande', 'Open Sans', Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
+    #introduction
+      .bubble
+        margin-bottom: $vertical_baseline / 2
 
-  #paper
-    width: 755px
-    height: 538px
-    top: 160px
-    left: 50%
-    margin-left: -373px
-    position: absolute
-
-    &.phil
-      background: image-url('directrep/images/phil.png') no-repeat 0 0 
-    &.jeremy
-      background: image-url('directrep/images/jeremy.png') no-repeat 0 0 
-
-    .subheader
-      position: absolute
-      top: 50px
-      left: 41px
-      +font-size(1)
-
-      a
-        text-decoration: underline
-        font-weight: bold
-    #follow
+    div.rep, div.dialogue, div.constituency
       display: inline-block
+      vertical-align: top
+
+    div.rep
+      width: 237px - $grid_xs
+
+      .about
+        width: 220px
+        color: $header_gray
+        text-align: center
+
+      .links
+        +font-size(-2)
+        padding-top: $vertical_baseline / 2
+        text-align: center
+        color: $header_gray
+        a
+          color: $header_gray
+
+    div.dialogue
+      width: $proposal_width
       position: relative
-      top: 5px
 
-    #elect
-      position: absolute
-      bottom: 24px
-      left: 40px
-      a
-        text-decoration: underline
-      .label
-        font-weight: bold
-      .star
-        +font-size(-3)
+    div.constituency
+      width: 186px
 
-    #proposals
-      position: absolute
-      bottom: 35px
-      left: 15px
+    h1
+      +font-size(5)
+      //padding: $vertical_baseline/2 0
+      font-weight: bold
+
+      .rep
+        color: $rep_color
+
+      .dialogue
+        color: $header_gray
+
+      .constituency 
+        color: $constituency_color
+
+    .people
+      font-size: 0
+      text-align: left
+      img
+        display: inline-block
+        opacity: .5
+        width: 31px
+        height: 31px
+        //+grayscale
+        //+transition
+
+        &.hovered
+          //+grayscale_off
+          opacity: 1
+        //&:hover
+        //  opacity: 1
+        //border-right: 1px solid white
+        //border-bottom: 1px solid white
+
+
+
 
 

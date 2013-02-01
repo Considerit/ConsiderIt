@@ -7,8 +7,10 @@
   *********************************************
 
 :javascript
-  $j(document).ready(function(){
-
+  (function(){
+  $(document).ready(function () {init();});
+  if($(window)){$(window).bind('page:change', function() {init();});}
+  function init(){
     // INITIALIZE SLIDERS
     var params = { 
       min: 0.0, 
@@ -24,9 +26,10 @@
       disabled: true
     };
 
-    $j(".slider").slider(params);
+    $(".slider").slider(params);
     ConsiderIt.positions.set_slider_value(#{-1 * @position.stance + 1});    
-  });
+  }
+  })();
 
 - entity = @proposal.label_proposal
 - slider_prompt = @proposal.label_slider_prompt

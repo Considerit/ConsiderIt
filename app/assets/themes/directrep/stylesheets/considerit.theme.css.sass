@@ -1,205 +1,233 @@
 @import "mixins"
 @import "homepage"
-@import "paper_proposal"
-//@import url(https://fonts.googleapis.com/css?family=Alfa+Slab+One)
+//@import "paper_proposal"
+@import "ribbon_banners"
 
+$rep_color: #81BADF
+$constituency_color: #E0D875
+$header_gray: #9C9C9C
 
-html 
-  background-image: none
-  background-color: #e4e4e4
+html body
+  background: url('/assets/directrep/images/background.jpg') repeat top left
   position: relative
-  +wall(#bbc)
+  z-index: -2
+  #content
+    background-color: white
+    +box-shadow(0px, 1px, 2px, rgba(black, .4))
+    position: relative
+    #inner_content
 
-#admin_strip #content 
-  #more_options
-    display: none
-  #links
-    display: none
+h1.banner
+  color: $header_gray
 
 .logo_cell
-  float: none
-  z-index: -1
-  position: absolute
-  left: 0
+  top: $vertical_baseline
 
-#nav-user
-  top: -5px
-
-
-body #wrap > div#content
-  padding-top: 6em
-
-.blocks.horizontal.proposals.infiniteCarousel .carousel
-  height: 10 * $vertical_baseline + .2
-
-  li.proposal_item
-    width: 210px
-    height: 10 * $vertical_baseline
-    +linear-gradient(#002266, #001133)
-    opacity: 1
-    color: #e1e1e1
-    margin: 0 5px
-    position: relative
-    +transition
-
-    &:hover
-      +linear-gradient(#6B0000, #390000)
-      a, .prompt
-        color: white
-
-    > a
-      text-align: left
-      color: #e1e1e1
-      height: 10 * $vertical_baseline
-      +font-size(-2)
-
-    .title
-
-    .prompt
-      +font-size(-2)
-      margin-top: $vertical_baseline
-      border-bottom: 1px dotted #555
-      font-variant: small-caps
-      display: inline-block
-      position: absolute
-      bottom: 10px
-
-.new_proposal
-  position: absolute
-  bottom: -70px
-  left: 20px
-  .avatar
-    left: 0px
-  form input[type="submit"]
-    position: absolute
-    top: 5px
-    right: -65px
-
-
-
-
-#flag
+.head.single
+    
+  background: image-url('/assets/directrep/images/banner_background.jpg') repeat left top white
+  //width: $content_width + 8px
   position: relative
-  .planks
+  left: -4px - $grid_xs
+  border: 1px solid
+  border-color: #333 #2a2a2a #444
+  +box-shadow(0px, 1px, 2px, black, .4)
+  //z-index: 1
+  text-align: center
+
+  &:before, &:after
+    background: image-url('/assets/directrep/images/banner-ribbon.png') repeat left top transparent
+    //z-index: 0
+    height: 64px
+    width: $grid_xs * 2
+    top: 5px
+    border-color: #333 #222 #111
+
+  &:before
+    right: -20px
+
+  &:after
+    left: -23px
+
+h2.banner
+  background: image-url('/assets/directrep/images/banner_background.jpg') repeat left top white
+  text-align: center
+  border-color: #333 #2a2a2a #444
+  +box-shadow(0px, 1px, 2px, black, .4)
+  color: $header_gray
+
+
+.bubble
+  padding: $vertical_baseline / 2 $grid_xs
+  position: relative
+
+  &.left:before, &.right:before, &.left:after, &.right:after
     position: absolute
-    z-index: -1
-    top: 0
-    width: 100%
-    .plank
-      +wall(#390000)
-      background-image: image-url('directrep/images/red_wall.png')
-      width: 100%
-      height: 35px
-      margin-bottom: 35px
+    display: block
 
-      &.short
-        width: 688px
-        margin-left: 385px
+  &.left:before, &.right:before    
+    z-index: 6
 
-body #wrap > div#footer
-  margin-top: 2 * $vertical_baseline
-  +chalkboard
-  width: 100%
-  height: 4 * $vertical_baseline
-  .paid_for
-    +font-size(-4)
-    text-align: center
-    text-transform: lowercase
-    font-variant: small-caps
-    padding-top: 10px
+  &.left:after, &.right:after    
+    z-index: 5
+    color: white
 
-  > .footer_wrapper
-    position: relative
-    width: 738px
+  &.left:before, &.left:after
+    //content: '\25C0'
+    content: '\25B8'
+    +flip-horizontal
+    font-size: 34px
+    top: -4px
 
-    > div
-      color: #e1e1e1
+  &.left:before
+    left: -11px
 
-      &.powered_by
-        display: none
-        position: absolute
-        margin-top: 0
-        right: 0
-        +font-size(-2)
-        top: -2px
+  &.left:after
+    left: -17px
 
-        .power
-          position: absolute
-        .power
-          top: 5px
-          left: -85px
+  &.right:before, &.right:after
+    content: '\25B8'
+    font-size: 24px
+    top: -1px
+
+  &.right:before
+    right: -9px
+
+  &.right:after
+    right: -12px
+    
+  &.pro
+    background-color: $pro_color
+    &:before
+      color: $pro_color
+
+  &.con
+    background-color: $con_color
+    &:before
+      color: $con_color
+
+  &.empty
+    background-color: $empty_color
+    &:before
+      color: $empty_color
+
+  &.rep_statement
+    background-color: $rep_color
+
+    &:before
+      color: $rep_color
+
+  &.proposal_bubble
+    background-color: $proposal_background
+    +inset-box-shadow(0,1px,4px,#ddd)
+
+    &:before
+      color: $proposal_background
+
+  &.constituent_statement
+    background-color: $constituency_color
+    text-align: right
+    float: right
+    &.shorter
+      width: 240px
+    &.longer
+      width: 270px
+
+    &:before
+      color: $constituency_color
+
+
+
+#proposals
+  margin-top: $vertical_baseline
+
+
+  .proposal
+    margin: $vertical_baseline 0 2 * $vertical_baseline 0
+
+    div.proposer, div.talking, div.participants
+      display: inline-block
+      vertical-align: top
+
+    .proposer
+      text-align: right
+      img
+        width: 115px
+
+    .talking
+      .bubble
+
+        .question
+
+        .top_points
+          margin-top: $vertical_baseline
+
+          .top
+            margin-bottom: $vertical_baseline/2
+            .lead
+              font-variant: small-caps
+              +font-size(-3)
+              float: left
+              margin-top: $vertical_baseline/2
+              //margin-left: $proposal_width - $top_argument_width - 50
+            .bubble
+              width: $top_argument_width
+              float: right
+              +font-size(-2)
+              &:after
+                color: $proposal_background
+
+            .pic
+              float: right
+              margin-left: 3px
+        
+        .official_response
+          .pic
+            float: left
+            margin-right: 3px
+            img
+              width: 88px
+          .bubble
+            float: left
+            +font-size(-2)
+            width: $top_argument_width
+            &:after
+              color: $proposal_background
+            &:after, &:before
+              top: -8px
+
+
+      .join
+        display: block
+        +linear-gradient(#777, #161616)
+        padding: $vertical_baseline/2 $grid_xs/2
+        &:hover
+
+          color: $constituency_color
+          cursor: pointer
+          img
+            opacity: 1
+            
+          .text
+            color: white
+
         img
-          position: relative
-          //top: 8px
-          display: block
-          padding-bottom: 5px
+          opacity: .2
+          +transition
+          width: 25px
 
-        .paid_for
-          //padding-top: 10px
+        .text
+          //font-variant: small-caps
+          +transition
+          +font-size(-2)
+          text-transform: uppercase
+          text-decoration: underline
+          vertical-align: top
+          display: inline-block
+          padding-top: 3px
+          color: #aaa
+          position: absolute
+          right: $grid_xs + $grid_minor
 
-      &.report_problems
-        display: none
 
-      &#other_candidates
-        font-variant: small-caps
-        .heading
-          +heading
-          letter-spacing: normal
-          display: none
-
-
-        .candidate_list
-          margin: auto
-          .candidate
-            display: inline-block
-            padding: 0 $grid_xs
-            //width: 125px
-            position: relative
-
-            a
-              color: #e1e1e1
-              &:hover
-                color: white
-                .mugshot            
-                  opacity: 1
-            .mugshot, .name, .district, .direct_rep
-              text-transform: uppercase
-              text-align: center
-              +transition
-
-            .mugshot
-              opacity: .75
-
-            .name_block
-              //position: absolute
-              //bottom: -25px
-              //left: 0
-              width: 150px
-
-              text-align: center
-              //> span
-                //text-shadow: 0 -1px 2px #313131
-
-              .name
-                font-weight: bold
-
-              .district
-                +font-size(-4)
-                text-transform: uppercase
-                //position: relative
-                //top: -10px                
-              .directrep
-                +font-size(-4)
-                //position: relative
-                text-transform: uppercase
-                //top: -5px
-
-#other_proposals
-  .blocks.horizontal.proposals.infiniteCarousel .carousel li.proposal_item
-    +linear-gradient(#333, #222)
-    &:hover
-      +linear-gradient(#6B0000, #390000)
-
-#registration_form #third_party #twitter
-  display: none
 

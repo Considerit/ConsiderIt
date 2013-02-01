@@ -14,11 +14,11 @@
       %a.logo_home{ :href => root_path, :title => ""}
         :javascript
           function no_image(source) {
-            $j(this).parents('.logo_cell').remove();
+            $(this).parents('.logo_cell').remove();
           }
         %img#header_logo{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);", :title => "Go back to the homepage" }
           
-    - if @proposal && @can_update
+    - if @proposal && @can_update && false
       = render :partial => "proposals/admin_strip"
           
     %ul#nav-user

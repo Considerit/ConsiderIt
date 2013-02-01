@@ -218,6 +218,69 @@ namespace :metrics do
   end
 
 
+  task :fact_checking => :environment do 
+    puts "Fact-checking metrics"
+
+
+    impacts = []
+    [0,1,2].each do |verdict|
+      puts "For points with an overall " + verdict.to_s + " verdict"
+      col = :overall_verdict
+      #col = :max_verdict
+      assessments = Assessable::Assessment.where(col => verdict)
+
+      inclusions = { :before => 0, :after => 0 } 
+      views = { :before => 0, :after => 0 }
+
+      normalized_impact = 0
+      cnt = 0
+
+      assessments.each do |ass|
+        pivot = ass.updated_at
+        point = ass.root_object
+
+        #next if ass.claims.count > 1
+        #next if point.point_listings.where('created_at > "' + pivot.to_s + '"').count < 10
+
+        population_before = point.proposal.inclusions.where('created_at < "' + pivot.to_s + '"').count.to_f / point.proposal.point_listings.where('created_at < "' + pivot.to_s + '"').count
+        population_after = point.proposal.inclusions.where('created_at > "' + pivot.to_s + '"').count.to_f / point.proposal.point_listings.where('created_at > "' + pivot.to_s + '"').count
+        population_after = population_after.infinite? ? 1.0 : population_after
+
+        point_before = point.inclusions.where('created_at < "' + pivot.to_s + '"').count.to_f / point.point_listings.where('created_at < "' + pivot.to_s + '"').count
+        point_after = point.inclusions.where('created_at > "' + pivot.to_s + '"').count.to_f / point.point_listings.where('created_at > "' + pivot.to_s + '"').count
+        point_after = point_after.infinite? ? 1.0 : point_after
+
+        next if point_after.nan?
+
+        normalized_impact += (point_before > 0 ? point_after / point_before : 0) - (population_before > 0 ? population_after / population_before : 0)
+        inclusions[:before] += point.inclusions.where('created_at < "' + pivot.to_s + '"').count
+        inclusions[:after] += point.inclusions.where('created_at > "' + pivot.to_s + '"') .count
+        views[:before] += point.point_listings.where('created_at < "' + pivot.to_s + '"').count
+        views[:after] += point.point_listings.where('created_at > "' + pivot.to_s + '"').count
+        cnt += 1
+
+        impacts.push([point, normalized_impact, cnt, point.point_listings.where('created_at > "' + pivot.to_s + '"').count, verdict])
+
+      end
+
+      printf("%s:\tinclusions %i\tviews %i\t%.2f\n", 'Before', inclusions[:before], views[:before], inclusions[:before].to_f / views[:before] )
+      printf("%s:\tinclusions %i\tviews %i\t%.2f\n", 'After', inclusions[:after], views[:after], inclusions[:after].to_f / views[:after] )
+
+      printf("Impact:\t%.2f\n", (inclusions[:after].to_f / views[:after]) / (inclusions[:before].to_f / views[:before]) )
+      printf("Normalized:\t%.2f\n", normalized_impact / cnt )
+      pp cnt
+
+
+    end
+
+    impacts.sort! {|a,b| a[1] <=> b[1]}
+
+    impacts.each do |i|
+      printf("%i\t%i\t%i\t%.2f\t%i\n", i[4], i[0].point_listings.count, i[3], i[1], i[0].id)
+    end
+  end
+
+
   task :referer => :environment do 
     puts "User referals"
     year = 2012
@@ -261,5 +324,21 @@ namespace :metrics do
       )
     end
   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 end

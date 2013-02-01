@@ -24,12 +24,12 @@
 
 
 / :javascript
-/   $j('#tutorial').delegate('.nav ul a', 'click', function(){
-/     if ( !$j(this).hasClass('selected')){
-/       $j(this).parent().siblings('li').find('a').removeClass('selected');
-/       var cls = $j(this).attr('class');
-/       $j(this).addClass('selected');
-/       $j(this).parents('.nav').siblings('.frame').find('> div')
+/   $('#tutorial').delegate('.nav ul a', 'click', function(){
+/     if ( !$(this).hasClass('selected')){
+/       $(this).parent().siblings('li').find('a').removeClass('selected');
+/       var cls = $(this).attr('class');
+/       $(this).addClass('selected');
+/       $(this).parents('.nav').siblings('.frame').find('> div')
 /         .hide().filter('.' + cls).show();
 /     }
 /   });

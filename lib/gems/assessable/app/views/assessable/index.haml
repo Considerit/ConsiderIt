@@ -76,17 +76,19 @@
 
 
 :javascript
-  $j(document).ready(function(){
+  (function(){
+  $(document).ready(function () {init();});
+  if($(window)){$(window).bind('page:change', function() {init();});}
+  function init(){
+    $('#assess .table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, height: 700 });
 
-    $j('#assess .table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, height: 700 });
-
-    $j('#assess #header #hide_completed').click(function(){
-      $j('#assess .assessment_block').toggleClass('hide_completed');
+    $('#assess #header #hide_completed').click(function(){
+      $('#assess .assessment_block').toggleClass('hide_completed');
     });
 
-    if($j('#assess #header #hide_moderated:checked').length > 0) {
-      $j('#assess .assessment_block').toggleClass('hide_completed');
+    if($('#assess #header #hide_moderated:checked').length > 0) {
+      $('#assess .assessment_block').toggleClass('hide_completed');
     }
-    
-  });
+  }
+  })();
 

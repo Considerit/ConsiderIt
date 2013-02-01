@@ -9,7 +9,7 @@
 :javascript
   var json = #{@graph_def};
 
-  $j( document ).ready( function() {
+  $( document ).ready( function() {
     
     var labelType, useGradients, nativeTextSupport, animate;
 
@@ -38,7 +38,7 @@
       }
     };
 
-    var fd = new $jit.ForceDirected({  
+    var fd = new $it.ForceDirected({  
       //id of the visualization container  
       injectInto: 'infovis',  
       //Enable zooming and panning  
@@ -84,7 +84,7 @@
         },  
         //Implement the same handler for touchscreens  
         onTouchMove: function(node, eventInfo, e) {  
-          $jit.util.event.stop(e); //stop default touchmove event  
+          $it.util.event.stop(e); //stop default touchmove event  
           this.onDragMove(node, eventInfo, e);  
         }  
       },  
@@ -163,7 +163,7 @@
             if(adj.getData('alpha')) list.push(adj.nodeTo.name);  
           });  
           //append connections information  
-          $jit.id('inner-details').innerHTML = html + list.join("</li><li>") + "</li></ul>";  
+          $it.id('inner-details').innerHTML = html + list.join("</li><li>") + "</li></ul>";  
         };  
       },  
       // Change node styles when DOM labels are placed  
@@ -191,7 +191,7 @@
         Log.write('done');  
         fd.animate({  
           modes: ['linear'],  
-          transition: $jit.Trans.Elastic.easeOut,  
+          transition: $it.Trans.Elastic.easeOut,  
           duration: 2500  
         });  
       }  

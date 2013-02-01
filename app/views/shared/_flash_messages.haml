@@ -29,13 +29,17 @@
         %span.close
           = button_tag 'x'
 
-  :javascript
-    $j(document).ready(function(){
-      $j('.message .close').click(function(){
-        $j('.message').fadeOut().remove();
-      });  
-      $j('.message.confirmation_required').on('ajax:success', 'form', function(){
-        $j('.message.confirmation_required').text('Confirmation sent! ');
-        $j('.message.confirmation_required').delay(2200).fadeOut();
-      });
-    })
+:javascript
+  (function(){
+  $(document).ready(function () {init();});
+  if($(window)){$(window).bind('page:change', function() {init();});}
+  function init(){
+    $(document).on('click', '.message .close', function(){
+      $('.message').fadeOut().remove();
+    });  
+    $(document).on('ajax:success', '.message.confirmation_required form', function(){
+      $('.message.confirmation_required').text('Confirmation sent! ');
+      $('.message.confirmation_required').delay(2200).fadeOut();
+    });
+  }
+  })();

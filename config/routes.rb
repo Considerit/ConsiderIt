@@ -12,16 +12,14 @@ ConsiderIt::Application.routes.draw do
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
-    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :destroy], :path_names => {:new => ''} do
-      match '/sp_update' => "positions#sp_update", :as => :sp_update
-    end
+    resources :positions, :path => '', :only => [:new, :edit, :create, :update, :destroy], :path_names => {:new => ''} 
 
     match '/positions/:user_id' => "positions#show", :as => :user_position
-    match '/sp_show' => "proposals#data", :as => :data
+    #match '/sp_show' => "proposals#data", :as => :data
 
     resources :points, :only => [:index, :create, :update, :destroy, :show] do 
       resources :inclusions, :only => [:create] 
-      match '/sp_data' => "points#sp_data", :as => :data
+      #match '/sp_data' => "points#sp_data", :as => :data
     end
     #resources :point_similarities, :module => :admin
     

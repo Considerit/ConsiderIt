@@ -26,11 +26,6 @@ PATH
     moderatable (0.0.1)
 
 PATH
-  remote: lib/gems/reflect
-  specs:
-    reflect (0.0.1)
-
-PATH
   remote: lib/gems/trackable
   specs:
     trackable (0.0.1)
@@ -359,7 +354,7 @@ DEPENDENCIES
   premailer-rails3
   rails (~> 3.2.11)
   rails_admin
-  reflect!
+  remotipart (~> 1.0.2)
   rinku
   rmagick
   rocket_tag (~> 0.5.6)

@@ -1,5 +1,5 @@
 class Commentable::Comment < ActiveRecord::Base
-  is_reflectable
+  #is_reflectable
   is_trackable
   is_followable
   is_moderatable :text_fields => [:body], :moderatable_objects => lambda {

@@ -51,14 +51,15 @@
   $(document).ready(function () {init();});
   if($(window)){$(window).bind('page:change', function() {init();});}
   function init(){
-    $("#post_signup_dialog").dialog({
-      bgiframe: true, 
-      autoOpen: true, 
-      modal: true,
-      width: 'auto',
-      draggable: false,
-      resizable: false
-    }).fadeIn();
+
+    /* $("#post_signup_dialog").dialog({
+    /   bgiframe: true, 
+    /   autoOpen: true, 
+    /   modal: true,
+    /   width: 'auto',
+    /   draggable: false,
+    /   resizable: false
+    / }).fadeIn();
 
     /* $("#settings_dialog").dialog({
     /   bgiframe: true, 

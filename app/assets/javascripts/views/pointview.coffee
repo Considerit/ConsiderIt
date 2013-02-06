@@ -12,17 +12,19 @@ class ConsiderIt.PointView extends Backbone.View
     @data_loaded = false
 
   render : () -> 
+    user = if this.model.get('user_id') then ConsiderIt.users[this.model.get('user_id')] else ConsiderIt.current_user
     @$el.html(
-      ConsiderIt.PointView.template($.extend({}, @model.attributes, {
-        adjusted_nutshell : this.model.adjusted_nutshell(),
-        user : ConsiderIt.users[this.model.get('user_id')],
-        proposal : @proposal.model.attributes
-      }))
+      ConsiderIt.PointView.template $.extend({}, @model.attributes,
+        adjusted_nutshell : this.model.adjusted_nutshell()
+        user : user.attributes
+        proposal : @proposal.model.attributes,
+        is_you : user == ConsiderIt.current_user
+      )
     )
     this
 
   load_data : (callback) ->
-    $.get Routes.proposal_point_data_path(@proposal.model.get('long_id'), @model.id), (data) =>
+    $.get Routes.proposal_point_path(@proposal.model.get('long_id'), @model.id), (data) =>
       comments = (co.comment for co in $.parseJSON(data.comments))
       ConsiderIt.comments[@model.id] = new ConsiderIt.CommentList()
       ConsiderIt.comments[@model.id].reset(comments)

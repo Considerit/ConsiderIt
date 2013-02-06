@@ -1,9 +1,3 @@
-/*********************************************
-* For the ConsiderIt project.
-* Copyright (C) 2010 - 2012 by Travis Kriplean.
-* Licensed under the AGPL for non-commercial use.
-* See https://github.com/tkriplean/ConsiderIt/ for details.
-**********************************************/
 
 var ConsiderIt; //global namespace for ConsiderIt js methods
 
@@ -14,8 +8,8 @@ var ConsiderIt; //global namespace for ConsiderIt js methods
 ConsiderIt = {
   study : false,
   init : function() {
-    ConsiderIt.results_page = $('#explore_proposal').length > 0;
-    ConsiderIt.point_page = $('.point').length > 0;
+    // ConsiderIt.results_page = $('#explore_proposal').length > 0;
+    // ConsiderIt.point_page = $('.point').length > 0;
 
     ConsiderIt.delegators();
 
@@ -58,29 +52,29 @@ ConsiderIt = {
     //     }
     //   });
 
-    if ( ConsiderIt.results_page ) {
-      $.get('/' + $.trim($('#proposal_long_id').text()) + '/results', function(data){
-        var $segments = $(data['segments']);
-        $('.explore#ranked_points').append($segments);
+    // if ( ConsiderIt.results_page ) {
+    //   $.get('/' + $.trim($('#proposal_long_id').text()) + '/results', function(data){
+    //     var $segments = $(data['segments']);
+    //     $('.explore#ranked_points').append($segments);
 
-        $('.thanks').fadeOut(function(){
-          $(this).siblings('.results_prompt').fadeIn();                
+    //     $('.thanks').fadeOut(function(){
+    //       $(this).siblings('.results_prompt').fadeIn();                
 
-          $('#histogram').animate({'top': '0px'}, 'slow', function(){
-            $('.support,.oppose,#axis_arrow,.personal_position.update', $(this)).delay(100).fadeIn();
-          });
-        });
-      });
-    }
+    //       $('#histogram').animate({'top': '0px'}, 'slow', function(){
+    //         $('.support,.oppose,#axis_arrow,.personal_position.update', $(this)).delay(100).fadeIn();
+    //       });
+    //     });
+    //   });
+    // }
 
     //ConsiderIt.positions.initialize_participants_block();
 
-    $('input[type="file"]').customFileInput();
+    //$('input[type="file"]').customFileInput();
 
-    if ( ConsiderIt.point_page ) {
-      $('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');            
-      $(".unobtrusive_edit textarea").trigger('keyup');      
-    }
+    // if ( ConsiderIt.point_page ) {
+    //   $('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');            
+    //   $(".unobtrusive_edit textarea").trigger('keyup');      
+    // }
 
     // $('.proposals.vertical').infiniteCarousel({
     //   speed: 1500,
@@ -93,13 +87,7 @@ ConsiderIt = {
 
     //ConsiderIt.points.create.initialize_counters('.newpointform, .editpointform');
 
-    // google analytics
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-        
+
   },
   per_request : function() {
     //$('.point_in_list_margin.pro').draggable(ConsiderIt.draggable_options);
@@ -134,7 +122,7 @@ ConsiderIt = {
     $('[placeholder]').inlined_labels();
 
     //$('form.html5:not(.html5formified)').html5form();
-    $('form').h5Validate({errorClass : 'error'});
+    //$('form').h5Validate({errorClass : 'error'});
 
     // $('.pointform .wysiwyg').redactor({
     //   buttons: ['formatting', 'bold', 'italic', 'unorderedlist', 'orderedlist', 'link', 'fullscreen'],
@@ -160,30 +148,30 @@ ConsiderIt = {
     // ACCOUNTS
     /////////////
     $(document) 
-      .on('click', '.proxy', function() {
-          var email = $('#user_email'), password = $('#user_password'), $me = $(this);
-          if ( email.val().length == 0 || password.val().length == 0 || email.is('.error') || password.is('.error') ) {
-            return;
-          } else {
-            $.post('<%= Rails.application.routes.url_helpers.users_check_login_info_path %>', {
-                'user' : {
-                  'email' : email.val(),
-                  'password' : password.val()
-                }
-              }, function(data){
+      // .on('click', '.proxy', function() {
+      //     var email = $('#user_email'), password = $('#user_password'), $me = $(this);
+      //     if ( email.val().length == 0 || password.val().length == 0 || email.is('.error') || password.is('.error') ) {
+      //       return;
+      //     } else {
+      //       $.post('<%= Rails.application.routes.url_helpers.users_check_login_info_path %>', {
+      //           'user' : {
+      //             'email' : email.val(),
+      //             'password' : password.val()
+      //           }
+      //         }, function(data){
 
-              if ( data.valid ) {
-                $me.siblings('input[type="submit"]').trigger('click');
-              } else {
-                $('#site_registration .password_field .forget_password_prompt').css({'color': 'red', 'font-weight':'bold'});
-              }
+      //         if ( data.valid ) {
+      //           $me.siblings('input[type="submit"]').trigger('click');
+      //         } else {
+      //           $('#site_registration .password_field .forget_password_prompt').css({'color': 'red', 'font-weight':'bold'});
+      //         }
 
-            });
-          }
-        })
-      .on('focus', 'input#user_password', function(){
-        $(this).siblings('.forget_password_prompt').show();
-      })
+      //       });
+      //     }
+      //   })
+      // .on('focus', 'input#user_password', function(){
+      //   $(this).siblings('.forget_password_prompt').show();
+      // })
       .on('click', '#post_signup_form a.cancel', function(){
         $.ajax({
           type: 'DELETE',
@@ -203,9 +191,9 @@ ConsiderIt = {
 
     $(document)
 
-      .on('click', '#site_registration a.cancel', function(){
-        $('.user_dialog, #settings_dialog').dialog('close');
-      })
+      // .on('click', '#site_registration a.cancel', function(){
+      //   $('.user_dialog, #settings_dialog').dialog('close');
+      // })
 
       .on('click', '#acknowledgment a', function(){
         show_tos(700, 700);  
@@ -932,16 +920,16 @@ ConsiderIt = {
 // TODO: integrate better into code
 
 // FROM: https://github.com/ryanb/complex-form-examples/blob/master/public/javascripts/application.js
-function remove_fields(link) {
-  jQuery(link).parents('.point_link_form').remove();
-}
+// function remove_fields(link) {
+//   jQuery(link).parents('.point_link_form').remove();
+// }
 
-function add_fields(link, association, content) {
-  var new_id = new Date().getTime();
-  var regexp = new RegExp("new_" + association, "g");
-  var new_content = content.replace(regexp, new_id);
-  jQuery(link).parent().prepend(new_content);
-}
+// function add_fields(link, association, content) {
+//   var new_id = new Date().getTime();
+//   var regexp = new RegExp("new_" + association, "g");
+//   var new_content = content.replace(regexp, new_id);
+//   jQuery(link).parent().prepend(new_content);
+// }
 
 function show_tos(width, height) {
   var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
@@ -960,39 +948,39 @@ function show_tos(width, height) {
   return false;
 }
 
-function login(provider_url, width, height) {
-  var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
-      screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
-      outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
-      outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
-      left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
-      top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
-      features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=yes');
+// function login(provider_url, width, height) {
+//   var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+//       screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+//       outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+//       outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+//       left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
+//       top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
+//       features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=yes');
 
-  newwindow = window.open(provider_url, '_blank', features);
+//   newwindow = window.open(provider_url, '_blank', features);
 
-  if (window.focus)
-    newwindow.focus();
+//   if (window.focus)
+//     newwindow.focus();
 
-  return false;
-}
+//   return false;
+// }
 
-function video_window(width, height, link, title) {
-  var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
-      screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
-      outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
-      outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
-      left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
-      top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
-      features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=no');
+// function video_window(width, height, link, title) {
+//   var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+//       screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+//       outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+//       outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+//       left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
+//       top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
+//       features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=no');
 
-      var tos = window.open(link, title, features);
+//       var tos = window.open(link, title, features);
 
-  if (tos.focus)
-    tos.focus();
+//   if (tos.focus)
+//     tos.focus();
 
-  return false;
-}
+//   return false;
+// }
 
 
 

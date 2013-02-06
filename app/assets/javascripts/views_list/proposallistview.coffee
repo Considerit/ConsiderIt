@@ -19,6 +19,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       collection: @collection
       attributes : 
         'data-id': "#{proposal.cid}"
+        id : "#{id}"
         class : "#{ConsiderIt.ProposalListView.childClass}"
     
     return ConsiderIt.proposals[id].view

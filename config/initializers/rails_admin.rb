@@ -32,10 +32,10 @@ RailsAdmin.config do |config|
 
   #  ==> Included models
   # Add all excluded models here:
-  # config.excluded_models = [Account, Activity, ActsAsFollowable::Follow, Comment, DelayedMailhopper::Email, Domain, DomainMap, Inclusion, Mailhopper::Email, Point, PointListing, PointSimilarity, Position, Proposal, Reflect::ReflectBullet, Reflect::ReflectBulletRevision, Reflect::ReflectHighlight, Reflect::ReflectResponse, Reflect::ReflectResponseRevision, Session, User]
+  # config.excluded_models = [Account, Activity, ActsAsFollowable::Follow, Comment, DelayedMailhopper::Email, Domain, DomainMap, Inclusion, Mailhopper::Email, Point, PointListing, Position, Proposal, Reflect::ReflectBullet, Reflect::ReflectBulletRevision, Reflect::ReflectHighlight, Reflect::ReflectResponse, Reflect::ReflectResponseRevision, Session, User]
 
   # Add models here if you want to go 'whitelist mode':
-  # config.included_models = [Account, Activity, ActsAsFollowable::Follow, Comment, DelayedMailhopper::Email, Domain, DomainMap, Inclusion, Mailhopper::Email, Point, PointListing, PointSimilarity, Position, Proposal, Reflect::ReflectBullet, Reflect::ReflectBulletRevision, Reflect::ReflectHighlight, Reflect::ReflectResponse, Reflect::ReflectResponseRevision, Session, User]
+  # config.included_models = [Account, Activity, ActsAsFollowable::Follow, Comment, DelayedMailhopper::Email, Domain, DomainMap, Inclusion, Mailhopper::Email, Point, PointListing, Position, Proposal, Reflect::ReflectBullet, Reflect::ReflectBulletRevision, Reflect::ReflectHighlight, Reflect::ReflectResponse, Reflect::ReflectResponseRevision, Session, User]
 
   # Application wide tried label methods for models' instances
   # config.label_methods << :description # Default is [:name, :title]
@@ -54,10 +54,13 @@ RailsAdmin.config do |config|
   # end
   #
 
-  classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Commentable::Comment', 'Moderatable::Moderation', 'Reflect::ReflectBullet', 'Reflect::ReflectBulletRevision', 'Reflect::ReflectHighlight', 'Reflect::ReflectResponse', 'Reflect::ReflectResponseRevision', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment']
+  #classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Commentable::Comment', 'Moderatable::Moderation', 'Reflect::ReflectBullet', 'Reflect::ReflectBulletRevision', 'Reflect::ReflectHighlight', 'Reflect::ReflectResponse', 'Reflect::ReflectResponseRevision', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment']
+  classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Commentable::Comment', 'Moderatable::Moderation', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment']
+  
   classes.each do |cls|
     config.model cls do
       edit do
+        #pp cls
         exclude_fields :account_id, :account
       end
     end
@@ -394,27 +397,7 @@ RailsAdmin.config do |config|
   #   create do; end
   #   update do; end
   # end
-  # config.model PointSimilarity do
-  #   # Found associations:
-  #     configure :p1, :belongs_to_association 
-  #     configure :p2, :belongs_to_association 
-  #     configure :proposal, :belongs_to_association 
-  #     configure :user, :belongs_to_association   #   # Found columns:
-  #     configure :id, :integer 
-  #     configure :p1_id, :integer         # Hidden 
-  #     configure :p2_id, :integer         # Hidden 
-  #     configure :proposal_id, :integer         # Hidden 
-  #     configure :user_id, :integer         # Hidden 
-  #     configure :value, :integer 
-  #     configure :created_at, :datetime 
-  #     configure :updated_at, :datetime   #   # Sections:
-  #   list do; end
-  #   export do; end
-  #   show do; end
-  #   edit do; end
-  #   create do; end
-  #   update do; end
-  # end
+
   # config.model Position do
   #   # Found associations:
   #     configure :proposal, :belongs_to_association 

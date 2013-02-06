@@ -1,6 +1,6 @@
 
 
-%a.signin_link
+%a.signin_link{ :href => "#{new_user_registration_path(:third_party=>false)}" }
   Sign In / Create Account
 
 
@@ -11,7 +11,7 @@
   $(document).ready(function () {init();});
   if($(window)){$(window).bind('page:change', function() {init();});}
   function init(){
-    $('.user_dialog').dialog({
+    /*$('.user_dialog').dialog({
       autoOpen: false,
       modal: true,
       draggable: false,
@@ -20,12 +20,6 @@
       resizable: false,
       position: ['center', 'middle']
     });
-
-    $(document).on('click', '.signin_link', function(){
-      $('#signin_dialog')
-        .load("#{new_user_registration_path(:third_party=>false, :context=>"header")}")
-        .dialog('open');
-      return false;
-    });
+    */
   }
   })();

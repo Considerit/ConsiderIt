@@ -1,5 +1,5 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-    
+
   def facebook
     _third_party_callback
   end
@@ -9,10 +9,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def twitter
-    _third_party_callback
-  end
-
-  def yahoo
     _third_party_callback
   end
 
@@ -43,12 +39,14 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       #redirect_to new_user_registration_url
     end
 
-    @redirect_to = session[:return_to] || root_path
+    #@redirect_to = session[:return_to] || root_path
+
     render :inline =>
-      '<script type="text/javascript">' +
-      '  window.close();' +
-      '  window.opener.location = "<%= @redirect_to %>";' +
-      '</script>'
+      "<script type=\"text/javascript\">" +
+      "  var opener = window.opener;" +
+      "  window.close();" +
+      "  opener.handleOpenIdResponse(#{@user.to_json}, '#{form_authenticity_token}');"   +
+      "</script>"
 
   end
  

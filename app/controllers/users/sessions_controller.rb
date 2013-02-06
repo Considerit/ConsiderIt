@@ -1,26 +1,40 @@
 
 class Users::SessionsController < Devise::SessionsController
-	protect_from_forgery :except => :create
+  #TODO: reevaluate whether this exception is still needed
+	protect_from_forgery #:except => :create
 
-  def new     
-    #store_location request.referer unless params[:redirect_already_set] == 'true'   
-    if ( params[:third_party] )
-    	case params[:provider]
-	    	when 'twitter'
-	    		redirect_to user_omniauth_authorize_path(:twitter, :x_auth_access_type => "read").to_s
-	    	when 'facebook'
-	    		redirect_to user_omniauth_authorize_path(:facebook).to_s
-	    	when 'google'
-	    		redirect_to user_omniauth_authorize_path(:google).to_s
-	    	when 'yahoo'
-	    		redirect_to user_omniauth_authorize_path(:yahoo, :openid_url => "http://yahoo.com").to_s
-	    	else
-	    		raise 'Unsupported provider'
-    	end
-    	return
+  def create
+    user = User.find_by_email(params[:user][:email])
+    if user && user.valid_password?(params[:user][:password])
+      self.resource = warden.authenticate!(auth_options)
+      sign_in(resource_name, resource)
+      response = {
+        :result => 'successful',
+        #TODO: filter users' to_json
+        :user => current_user.to_json
+      }
+    elsif user
+      response = {
+        :result => 'failure',
+        :reason => 'wrong password'
+      }
+    else
+      response = {
+        :result => 'failure',
+        :reason => 'no user'
+      }
+
     end
-    super
+    render :json => response
   end
+
+  def destroy
+    signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))
+    render :json => {
+      :new_csrf => form_authenticity_token
+    }
+  end
+
 
 end
 

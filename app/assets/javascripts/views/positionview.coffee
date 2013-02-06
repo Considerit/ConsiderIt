@@ -87,7 +87,7 @@ class ConsiderIt.PositionView extends Backbone.View
     'click a.write_new' : 'new_point'
     'click a.new_point_cancel' : 'cancel_new_point'
     'click .point-submit input' : 'create_new_point'
-    'click .submit' : 'submit_position'
+    'click .submit' : 'handle_submit_position'
 
   include : (ev) ->
     $item = @_$item(ev.currentTarget)
@@ -109,7 +109,7 @@ class ConsiderIt.PositionView extends Backbone.View
     $.post Routes.proposal_point_inclusions_path( @proposal.model.get('long_id'), model.attributes.id ), 
       params, 
       (data) ->
-        peers.add($.parseJSON(data.new_point_json).point)
+        peers.add($.parseJSON(data.point))
 
   remove : (ev) ->
     $item = @_$item(ev.currentTarget)
@@ -123,21 +123,20 @@ class ConsiderIt.PositionView extends Backbone.View
     peers.add(model)
 
     params = { }
-    csrfName = $("meta[name='csrf-param']").attr('content')
-    csrfValue = $("meta[name='csrf-token']").attr('content')
-    params[csrfName] = csrfValue
+    ConsiderIt.utils.add_CSRF(params)
 
     $.post Routes.proposal_point_inclusions_path( @proposal.model.get('long_id'), model.attributes.id, {delete : true} ), 
       params, 
       (data) ->
 
-  point_attributes : ($form) -> {
+  point_attributes : ($form) ->       
+    {
       nutshell : $form.find('.point-title').val()
       text : $form.find('.point-description').val()
       is_pro : $form.hasClass('pro')
       hide_name : $form.find('.hide_name input').is(':checked')
       comment_count : 0
-      proposal_id : ConsiderIt.State.proposal
+      proposal_id : @proposal.model.id
     }
 
   new_point : (ev) ->
@@ -165,7 +164,7 @@ class ConsiderIt.PositionView extends Backbone.View
     #pointlist.add(point)
     @cancel_new_point({currentTarget: $form.find('.new_point_cancel')})
 
-    pointlist.create attrs,
+    pointlist.create attrs, {wait: true}
       success : (data) ->
 
   slider_change : (new_value) ->  
@@ -183,11 +182,26 @@ class ConsiderIt.PositionView extends Backbone.View
       viewed_points : _.values(@proposal.points.viewed_points)
     }
 
-  submit_position : (ev) ->
+  submit_position : () ->
     _.extend(@proposal.position.attributes, @position_attributes())
     Backbone.sync 'update', @proposal.position,
-      success : (data) ->
-      failure : (data) ->
+      success : (data) =>
+        #TODO: any reason to wait for the server to respond before navigating to the results?
+        ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: true})
+      failure : (data) =>
+        console.log('Something went wrong syncing position')
+
+  handle_submit_position : (ev) ->
+    if ConsiderIt.current_user.isNew()
+      regview = ConsiderIt.app.usermanagerview.handle_user_registration(ev)
+      regview.$el.bind 'destroyed', () => 
+        if !ConsiderIt.current_user.isNew()
+          @submit_position()
+        else
+          console.log('user canceled login')
+
+    else
+      @submit_position(ev)
 
   peer_point_list_reset : (list) ->
     for pnt in list.models

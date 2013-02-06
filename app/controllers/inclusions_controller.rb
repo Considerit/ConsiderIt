@@ -3,7 +3,7 @@ class InclusionsController < ApplicationController
 
   respond_to :json
 
-  POINTS_PER_PAGE = 4
+  #POINTS_PER_PAGE = 4
   
   def create
     authorize! :create, Inclusion
@@ -41,11 +41,11 @@ class InclusionsController < ApplicationController
       session[@proposal.id][:viewed_points].push([next_point.id, 3])
     end
 
-    rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :origin => 'margin', :point => next_point }) : nil
+    #rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :origin => 'margin', :point => next_point }) : nil
         
-    response = { :new_point_json => next_point.to_json, :new_point => rendered_next_point, :total_remaining => points.total_count } 
+    response = next_point
     
-    render :json => response.to_json
+    render :json => next_point
   end
   
   protected

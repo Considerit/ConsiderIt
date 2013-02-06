@@ -1,12 +1,15 @@
 class ConsiderIt.Point extends Backbone.Model
   defaults: { 
-    included : false
   }
   name: 'point'
 
 
   url : () ->
-    Routes.proposal_points_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id'), @id) 
+    if @id
+      Routes.proposal_point_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id'), @id) 
+    else
+      Routes.proposal_points_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id') ) 
+
 
   is_manager : () -> false
 

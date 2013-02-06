@@ -10,13 +10,15 @@ class ApplicationController < ActionController::Base
     if !session.has_key?(:referer)
       session[:referer] = request.referer      
     end
+
+    #TODO: what does this do?
     if args && args.first.respond_to?('has_key?')
       args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
     else
       args.append({:layout => false}) if request.xhr?
     end
 
-    @domain = session.has_key?(:domain) ? session[:domain] : nil
+    #@domain = session.has_key?(:domain) ? session[:domain] : nil
     #@current_page = request.fullpath == '/' ? 'homepage' : ''
 
     if current_tenant.host.nil?
@@ -26,6 +28,15 @@ class ApplicationController < ActionController::Base
     end
 
     @host_with_port = request.host_with_port
+
+    # Destroy the current user if a request is made to the server when the user has yet
+    # to complete their registration. There are no legit reasons for a refresh to occur, 
+    # and many illegimate ones. 
+    if !request.env.has_key?("omniauth.auth") && !request.xhr? && current_user && !current_user.registration_complete
+      user = current_user
+      Devise.sign_out_all_scopes ? sign_out : sign_out('user')
+      user.destroy
+    end
 
     super
 

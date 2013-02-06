@@ -25,6 +25,9 @@ gem 'omniauth-facebook'
 
 gem 'twitter'
 
+# https://rubygems.org/gems/remotipart
+gem "remotipart", "~> 1.0.2"
+
 # https://github.com/ErwinM/acts_as_tenant
 gem 'acts_as_tenant'
 
@@ -95,7 +98,7 @@ gem 'dalli'
 gem 'rinku'
 
 #custom gems
-gem "reflect", :path => "lib/gems/reflect"
+#gem "reflect", :path => "lib/gems/reflect"
 gem "followable", :path => "lib/gems/followable"
 gem "trackable", :path => "lib/gems/trackable"
 gem "commentable", :path => "lib/gems/commentable"

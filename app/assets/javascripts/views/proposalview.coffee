@@ -17,7 +17,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     this
 
   load_data : (callback, callback_params) ->
-    $.get Routes.data_proposal_path(@long_id), (data) =>
+    $.get Routes.proposal_path(@long_id), (data) =>
       _.extend(@proposal, {
         points : {
           pros : _.map(data.points.pros, (pnt) -> new ConsiderIt.Point(pnt.point))

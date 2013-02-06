@@ -17,7 +17,13 @@
           (&#8230;)
     
       %span.nested_user
-        {{user.get("name")}}
+        (( if(user.name) { ))
+        {{user.name}}
+        (( } else if(is_you) { ))
+        You
+        (( } else { ))
+        Anonymous
+        (( } ))
 
   .operations
 
@@ -215,8 +221,8 @@
 
 - theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
 - rep_user = theme.user
-- top_pro = Point.pros.first
-- top_con = Point.cons.first
+- top_pro = Point.published.pros.first
+- top_con = Point.published.cons.first
 - position = nil
 
 %script{ :type => "text/template", :id => "tpl_proposal" }
@@ -505,3 +511,5 @@
                             = image_tag('chalk/cons.png') 
 
                       %ul.point_list
+
+= render :partial => 'backbone/templates_user'

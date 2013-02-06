@@ -9,105 +9,34 @@ class ProposalsController < ApplicationController
   
   def index
 
-    if request.xhr?
-      filter_by_metric = params.has_key? :metric
-      filter_by_tag = params.has_key? :tag
+    # if request.xhr?
+    #   filter_by_metric = params.has_key? :metric
+    #   filter_by_tag = params.has_key? :tag
 
-      session[:filters] ||= {:tag => nil, :metric => 'activity'}
+    #   session[:filters] ||= {:tag => nil, :metric => 'activity'}
 
-      if filter_by_tag
-        # if the user has clicked on the selected tag, then unselect
-        session[:filters][:tag] = session[:filters][:tag] == params[:tag] ? nil : params[:tag]
-      elsif filter_by_metric
-        session[:filters][:metric] = params[:metric]
-      end
+    #   if filter_by_tag
+    #     # if the user has clicked on the selected tag, then unselect
+    #     session[:filters][:tag] = session[:filters][:tag] == params[:tag] ? nil : params[:tag]
+    #   elsif filter_by_metric
+    #     session[:filters][:metric] = params[:metric]
+    #   end
 
-      proposal_list = session[:filters][:tag] ? Proposal.tagged_with(session[:filters][:tag]) : Proposal
-      proposal_list = proposal_list.public.active.order("#{session[:filters][:metric]} DESC").limit(100)
+    #   proposal_list = session[:filters][:tag] ? Proposal.tagged_with(session[:filters][:tag]) : Proposal
+    #   proposal_list = proposal_list.public.active.order("#{session[:filters][:metric]} DESC").limit(100)
 
-      proposals = render_to_string :partial => "proposals/list_output/list", :locals => { 
-        :proposals => proposal_list, :style => 'blocks', :hide_initially => false }
-      render :json => {:proposals => proposals, :current_tag => session[:filters][:tag], :current_metric => session[:filters][:metric]}.to_json
-    else
-      render
-    end
+    #   proposals = render_to_string :partial => "proposals/list_output/list", :locals => { 
+    #     :proposals => proposal_list, :style => 'blocks', :hide_initially => false }
+    #   render :json => {:proposals => proposals, :current_tag => session[:filters][:tag], :current_metric => session[:filters][:metric]}.to_json
+    # else
+    #   render
+    # end
 
   end
-
 
   # Shows the proposal. If it is a json request, it will just return the voter segments
   def show
-    @user = current_user
- 
-    if params.has_key?(:id)
-      @proposal = Proposal.find(params[:id])
-    elsif params.has_key?(:long_id)
-      @proposal = Proposal.find_by_long_id(params[:long_id])
-    elsif params.has_key?(:admin_id)
-      @proposal = Proposal.find_by_admin_id(params[:admin_id])
-    else
-      redirect_to root_path, :notice => 'Invalid request.'
-      return
-    end
 
-    if !@proposal
-      redirect_to root_path, :notice => 'That proposal does not exist.'
-      return
-    end
-
-    if cannot?(:read, @proposal)
-      store_location request.path
-      redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
-      return  
-    end
-
-    @can_update = can? :update, @proposal
-    @can_destroy = can? :destroy, @proposal
-
-    @position = current_user ? current_user.positions.published.where(:proposal_id => @proposal.id).first : nil
-
-    @results_page = true
-    @page = 1
-
-    if !!request.xhr?
-      @segments = Array.new(7)
-      (0..6).each do |bucket|
-        qry = @proposal.points.viewable.includes(:user).ranked_for_stance_segment(bucket)
-        @segments[bucket] = [qry.pros.page( 1 ).per( POINTS_PER_PAGE ),
-          qry.cons.page( 1 ).per( POINTS_PER_PAGE )]
-      end
-
-      segments = render_to_string :partial => 'proposals/segment_positions'
-    
-      response = {
-        :segments => segments,
-        :success => true
-      }
-      render :json => response.to_json
-
-    else
-      #@title = "#{@proposal.category} #{@proposal.designator} #{@proposal.short_name}"
-      @title = "#{@proposal.short_name}"
-      @keywords = "#{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
-      @description = "Explore the opinions of citizen participants for #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
-      
-      @positions = @proposal.positions.published.includes(:user)
-      @pro_points = @proposal.points.viewable.includes(:user).pros.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
-      @con_points = @proposal.points.viewable.includes(:user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
-
-    end
-
- 
-    #Point.update_relative_scores
-
-    #@comments = @proposal.root_comments
-    #@comment = Comment.new      
-    #@reflectable = true    
-    
-  end
-
-  # transitionary method as we migrate to single page app
-  def data
     @user = current_user
  
     if params.has_key?(:id)
@@ -158,7 +87,76 @@ class ProposalsController < ApplicationController
     }
     render :json => response.to_json
 
+    
+    # @user = current_user
+ 
+    # if params.has_key?(:id)
+    #   @proposal = Proposal.find(params[:id])
+    # elsif params.has_key?(:long_id)
+    #   @proposal = Proposal.find_by_long_id(params[:long_id])
+    # elsif params.has_key?(:admin_id)
+    #   @proposal = Proposal.find_by_admin_id(params[:admin_id])
+    # else
+    #   redirect_to root_path, :notice => 'Invalid request.'
+    #   return
+    # end
+
+    # if !@proposal
+    #   redirect_to root_path, :notice => 'That proposal does not exist.'
+    #   return
+    # end
+
+    # if cannot?(:read, @proposal)
+    #   store_location request.path
+    #   redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
+    #   return  
+    # end
+
+    # @can_update = can? :update, @proposal
+    # @can_destroy = can? :destroy, @proposal
+
+    # @position = current_user ? current_user.positions.published.where(:proposal_id => @proposal.id).first : nil
+
+    # @results_page = true
+    # @page = 1
+
+    # if !!request.xhr?
+    #   @segments = Array.new(7)
+    #   (0..6).each do |bucket|
+    #     qry = @proposal.points.viewable.includes(:user).ranked_for_stance_segment(bucket)
+    #     @segments[bucket] = [qry.pros.page( 1 ).per( POINTS_PER_PAGE ),
+    #       qry.cons.page( 1 ).per( POINTS_PER_PAGE )]
+    #   end
+
+    #   segments = render_to_string :partial => 'proposals/segment_positions'
+    
+    #   response = {
+    #     :segments => segments,
+    #     :success => true
+    #   }
+    #   render :json => response.to_json
+
+    # else
+    #   #@title = "#{@proposal.category} #{@proposal.designator} #{@proposal.short_name}"
+    #   @title = "#{@proposal.short_name}"
+    #   @keywords = "#{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
+    #   @description = "Explore the opinions of citizen participants for #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
+      
+    #   @positions = @proposal.positions.published.includes(:user)
+    #   @pro_points = @proposal.points.viewable.includes(:user).pros.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
+    #   @con_points = @proposal.points.viewable.includes(:user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
+
+    # end
+
+ 
+    #Point.update_relative_scores
+
+    #@comments = @proposal.root_comments
+    #@comment = Comment.new      
+    #@reflectable = true    
+    
   end
+
 
   # def index
   #   headers['Content-Type'] = 'application/xml'

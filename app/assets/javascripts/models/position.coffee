@@ -6,7 +6,7 @@ class ConsiderIt.Position extends Backbone.Model
 
 
   url : () ->
-    Routes.proposal_position_sp_update_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id'), @id) 
+    Routes.proposal_position_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id'), @id) 
 
   @stance_name : (d) ->
     switch parseInt(d)

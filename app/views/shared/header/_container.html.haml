@@ -16,10 +16,10 @@
       = render :partial => "proposals/admin_strip"
           
     %ul#nav-user
-      - if user_signed_in?
+      -# if user_signed_in?
         = render :partial => "shared/header/logged_in_head"
         
-      - else
+      -# else
         = render :partial => "shared/header/logged_out_head"
 
     .clear

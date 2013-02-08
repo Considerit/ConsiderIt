@@ -38,6 +38,19 @@ class ApplicationController < ActionController::Base
       user.destroy
     end
 
+    if !request.xhr?
+      @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id}",  ))
+      @proposals = {}
+      for proposal in Proposal.active.select('id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active, top_pro, top_con, participants')
+        @proposals[proposal.long_id] = {
+          :model => proposal.to_json,
+          :top_con => proposal.top_con ? Point.find(proposal.top_con).to_json : nil,
+          :top_pro => proposal.top_pro ? Point.find(proposal.top_pro).to_json : nil
+        } 
+
+      end
+    end
+
     super
 
   end

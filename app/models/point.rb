@@ -19,13 +19,14 @@ class Point < ActiveRecord::Base
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
   
-  validates :nutshell, :presence => true, :length => {:minimum => 3, :maximum => 141 }
+  validates :nutshell, :presence => true, :length => { :maximum => 141 }
 
   acts_as_tenant(:account)
 
-  cattr_reader :per_page
-  @@per_page = 4  
+  # cattr_reader :per_page
+  # @@per_page = 4  
 
+  scope :public_fields, select([:appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :position_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id])
   scope :published, where( :published => true )
   scope :viewable, where( 'published=1 AND (moderation_status IS NULL OR moderation_status=1)')
   #default_scope where( :published => true )  

@@ -281,14 +281,6 @@ ConsiderIt = {
         }
 
       })
-      .on('hover', '.proposal_menu', function(event){
-        var $target = $(this).children('ul');
-        if ( event.type == 'mouseenter' ) {
-          $target.slideDown('fast', 'linear');
-        } else {
-          $target.slideUp('fast', 'linear');
-        }
-      })
       .on('blur', 'input.my_name', function(){
         if ( $(this).val().length > 3 ) {
           $(this).addClass('hidden_edit');

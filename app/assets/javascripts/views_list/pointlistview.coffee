@@ -11,10 +11,10 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
     @location = options.location
     @proposal = options.proposal
     _.bindAll this
+    ConsiderIt.router.on('route:PointDetails', @show_point_details_handler)
 
   render : () ->
     super
-    ConsiderIt.router.on('route:PointDetails', @show_point_details_handler)
 
   # Returns an instance of the view class
   getItemView: (point)->

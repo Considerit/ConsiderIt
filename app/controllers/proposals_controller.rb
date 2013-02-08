@@ -3,7 +3,7 @@ class ProposalsController < ApplicationController
 
   protect_from_forgery
 
-  POINTS_PER_PAGE = 4
+  #POINTS_PER_PAGE = 4
 
   respond_to :json, :html
   
@@ -37,56 +37,57 @@ class ProposalsController < ApplicationController
   # Shows the proposal. If it is a json request, it will just return the voter segments
   def show
 
-    @user = current_user
- 
-    if params.has_key?(:id)
-      @proposal = Proposal.find(params[:id])
-    elsif params.has_key?(:long_id)
-      @proposal = Proposal.find_by_long_id(params[:long_id])
-    else
-      redirect_to root_path, :notice => 'Invalid request.'
-      return
+    if request.xhr?
+      @user = current_user
+   
+      if params.has_key?(:id)
+        @proposal = Proposal.find(params[:id])
+      elsif params.has_key?(:long_id)
+        @proposal = Proposal.find_by_long_id(params[:long_id])
+      else
+        redirect_to root_path, :notice => 'Invalid request.'
+        return
+      end
+
+      if !@proposal
+        redirect_to root_path, :notice => 'That proposal does not exist.'
+        return
+      end
+
+      if cannot?(:read, @proposal)
+        store_location request.path
+        redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
+        return
+      end
+
+      @can_update = can? :update, @proposal
+      @can_destroy = can? :destroy, @proposal
+
+      ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
+
+      @position = current_user ? current_user.positions.published.where(:proposal_id => @proposal.id).last : !session["position-#{@proposal.id}"].nil? ? Position.find(session["position-#{@proposal.id}"]) : nil
+      @position ||= Position.create!( 
+        :stance => 0.0, 
+        :proposal_id => @proposal.id, 
+        :user_id => @user ? @user.id : nil,
+        :account_id => current_tenant.id
+      )
+
+      #TODO: filter user id from points & positions when not that user & anonymous set
+      #TODO: return just "points" and "included points" and let client sort through them
+      response = {
+        :points => {
+          :pros => @proposal.points.viewable.pros.public_fields,
+          :cons => @proposal.points.viewable.cons.public_fields,
+          :included_pros => Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).where(:is_pro => true).select('points.id') + Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => true).select('points.id'),
+          :included_cons => Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).where(:is_pro => false).select('points.id') + Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => false).select('points.id')
+          },
+        #TODO: the last where prevents db caching; can be avoided
+        :positions => @proposal.positions.published.where("id != #{@position.id}").public_fields,
+        :position => @position
+      }
+      render :json => response.to_json
     end
-
-    if !@proposal
-      redirect_to root_path, :notice => 'That proposal does not exist.'
-      return
-    end
-
-    if cannot?(:read, @proposal)
-      store_location request.path
-      redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
-      return  
-    end
-
-    @can_update = can? :update, @proposal
-    @can_destroy = can? :destroy, @proposal
-
-    ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
-
-    @position = current_user ? current_user.positions.published.where(:proposal_id => @proposal.id).first : !session["position-#{@proposal.id}"].nil? ? Position.find(session["position-#{@proposal.id}"]) : nil
-    @position ||= Position.create!( 
-      :stance => 0.0, 
-      :proposal_id => @proposal.id, 
-      :user_id => @user ? @user.id : nil,
-      :account_id => current_tenant.id
-    )
-
-    #TODO: filter data that is returned
-    #TODO: return just "points" and "included points" and let client sort through them
-    response = {
-      :points => {
-        :pros => @proposal.points.viewable.pros,
-        :cons => @proposal.points.viewable.cons,
-        :included_pros => Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).where(:is_pro => true).select('points.id') + Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => true).select('points.id'),
-        :included_cons => Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).where(:is_pro => false).select('points.id') + Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => false).select('points.id')
-        },
-      #TODO: the last where prevents db caching; can be avoided
-      :positions => @proposal.positions.published.where("id != #{@position.id}"),
-      :position => @position
-    }
-    render :json => response.to_json
-
     
     # @user = current_user
  

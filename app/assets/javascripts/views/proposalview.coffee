@@ -8,13 +8,24 @@ class ConsiderIt.ProposalView extends Backbone.View
     @proposal = ConsiderIt.proposals[@long_id]
     @data_loaded = false
 
+
   render : () -> 
 
-    @$el.html(
-      ConsiderIt.ProposalView.template($.extend({}, this.model.attributes, {title : this.model.title()}))
-    )
-    #@state = 1
+    @$el.html ConsiderIt.ProposalView.template($.extend({}, this.model.attributes, {
+        title : this.model.title() 
+        top_pro : @proposal.top_pro 
+        top_con : @proposal.top_con
+      }))
+
+    delay = (ms, func) -> setTimeout func, ms
+    me = this
+    delay 0, -> me.fit_participants(me)
+
+    #me.fit_participants(me)
+
+    #@fit_participants()
     this
+
 
   load_data : (callback, callback_params) ->
     $.get Routes.proposal_path(@long_id), (data) =>
@@ -26,13 +37,14 @@ class ConsiderIt.ProposalView extends Backbone.View
           included_cons : new ConsiderIt.PointList()
           peer_pros : new ConsiderIt.PaginatedPointList()
           peer_cons : new ConsiderIt.PaginatedPointList()
-          viewed_points : {}          
+          viewed_points : {}    
+          written_points : []
         }
-        positions : _.map(data.positions, (pos) -> new ConsiderIt.Position(pos.position))
+        positions : _.object(_.map(data.positions, (pos) -> [pos.position.user_id, new ConsiderIt.Position(pos.position)]))
         position : new ConsiderIt.Position(data.position.position)
       })
 
-      @proposal.positions.push(@proposal.position)
+      @proposal.positions[@proposal.position.user_id] = @proposal.position
 
       # separating points out into peers and included
       for [source_points, source_included, dest_included, dest_peer] in [[@proposal.points.pros, data.points.included_pros, @proposal.points.included_pros, @proposal.points.peer_pros], [@proposal.points.cons, data.points.included_cons, @proposal.points.included_cons, @proposal.points.peer_cons]]
@@ -48,42 +60,85 @@ class ConsiderIt.ProposalView extends Backbone.View
         dest_peer.reset(peers)
         dest_included.reset(included)
 
-      @data_loaded = true    
-      callback(this, callback_params)
+      @data_loaded = true
+      @listenTo ConsiderIt.app, 'user:signin', @post_signin
+      @listenTo ConsiderIt.app, 'user:signout', @post_signout
+      callback this, callback_params
+
+  merge_existing_position_into_current : (existing_position) ->
+    existing_position.subsume(@proposal.position)
+    @proposal.position.set(existing_position.attributes)
+    @proposal.positions[ConsiderIt.current_user.id] = @proposal.position
+    delete @proposal.positions[-1]
+
+    # transfer already included points from existing_position into the included lists
+    _.each $.parseJSON(existing_position.get('point_inclusions')), (pnt_id) =>
+      if (model = @proposal.points.peer_pros.remove_from_all(pnt_id))?
+        @proposal.points.included_pros.add model
+      else if (model = @proposal.points.peer_cons.remove_from_all(pnt_id))?
+        @proposal.points.included_cons.add model
+
+  post_signin : () ->
+    point.set('user_id', ConsiderIt.current_user.id) for point in @proposal.points.written_points
+    existing_position = @proposal.positions[ConsiderIt.current_user.id]
+    if existing_position?
+      @merge_existing_position_into_current(existing_position)
+    @trigger 'proposal:handled_signin'
+
+
+  post_signout : () -> 
+    _.each @proposal.points.written_points, (pnt) ->
+      if pnt.get('is_pro') @proposal.points.included_pros.remove(pnt) else @proposal.points.included_cons.remove(pnt)
+
+    @proposal.position.clear()
+    @proposal.points.written_points = {}
+    @proposal.points.viewed_points = {}
+    @data_loaded = false
+    @close()
 
   take_position : (me) ->
+    _.each me.proposal.views, (vw) -> 
+      delete vw.remove()
+    me.proposal.views = {}
 
-    if me.proposal.views.show_results?
-      me.proposal.views.show_results.hide()
+    # if me.proposal.views.show_results?
+    #   me.proposal.views.show_results.remove() 
+    # if me.proposal
+      #delete me.proposal.views.show_results
 
     me.$el.find('.top_points').fadeOut()
 
-    if me.proposal.views.take_position?
-      me.proposal.views.take_position.show()
-    else
-      me.proposal.views.take_position = new ConsiderIt.PositionView({ el : me.$el.find('.user_opinion'), proposal : me.proposal, model : me.proposal.position})
-      me.proposal.views.take_position.render()  
+    el = $('<div class="user_opinion">').insertAfter(me.$el.find('.question'))
+    me.proposal.views.take_position = new ConsiderIt.PositionView
+      el : el
+      proposal : me.proposal
+      model : me.proposal.position
+      parent : me
+    
+    me.proposal.views.take_position.render()
 
+  show_results : (me) ->
+    _.each me.proposal.views, (vw) -> 
+      delete vw.remove()
+    me.proposal.views = {}
+
+    # if me.proposal.views.take_position?
+    #   me.proposal.views.take_position.remove() 
+    #   delete me.proposal.views.take_position
+
+    me.$el.find('.top_points').fadeOut()
+    el = $('<div class="aggregated_results">').insertAfter(me.$el.find('.question'))
+    me.proposal.views.show_results = new ConsiderIt.ResultsView
+      el : el
+      proposal : me.proposal
+
+    me.proposal.views.show_results.render()
 
   take_position_handler : () ->
     if !@data_loaded
       @load_data(@take_position)
     else
       @take_position(this)
-
-    #@state = 2
-
-  show_results : (me) ->
-    if me.proposal.views.take_position?
-      me.proposal.views.take_position.hide()
-    
-    me.$el.find('.top_points').fadeOut()
-
-    if me.proposal.views.show_results?
-      me.proposal.views.show_results.show()
-    else
-      me.proposal.views.show_results = new ConsiderIt.ResultsView({ el : me.$el.find('.aggregated_results'), proposal : me.proposal})
-      me.proposal.views.show_results.render()
 
   show_results_handler : () ->
     if !@data_loaded
@@ -92,6 +147,12 @@ class ConsiderIt.ProposalView extends Backbone.View
       @show_results(this)
 
     #@state = 3
+
+  close : () ->
+    _.each @proposal.views, (vw) -> 
+      delete vw.remove()
+    @proposal.views = {}
+    @$el.find('.top_points').fadeIn()
 
 
   # Point details are being handled here (messily) for the case when a user directly visits the point details page without
@@ -107,8 +168,8 @@ class ConsiderIt.ProposalView extends Backbone.View
       point = results_view.pointlists.cons.get(params.point_id)
       if point?
         pointview = results_view.views.cons.getViewByModel(point)
-    pointview.show_point_details_handler()
 
+    pointview.show_point_details_handler() if pointview?
 
   show_point_details_handler : (point_id) ->
     if !@data_loaded
@@ -116,7 +177,16 @@ class ConsiderIt.ProposalView extends Backbone.View
     # if data is already loaded, then the PointListView is already properly handling this
 
 
+  fit_participants : (me) ->
+    $container = me.$el.find('.participants')
+    $container.height(me.$el.find('.proposal_bubble').height())
+    width = $container.width()
+    height = Math.min(400, $container.height())
+    $participants = $container.find('img')
+    tile_size = Math.min(50, ConsiderIt.utils.get_tile_size(width, height, $participants.length))
 
+    $participants
+      .css({'width': tile_size, 'height': tile_size})
 
 
 

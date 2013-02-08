@@ -54,7 +54,7 @@ class PositionsController < ApplicationController
   def update
     raise 'Cannot update without a logged in user' if !current_user || !current_user.registration_complete
 
-    position = Position.find params[:position_id]
+    position = Position.find params[:id]
     authorize! :update, position
 
     proposal = position.proposal
@@ -73,12 +73,6 @@ class PositionsController < ApplicationController
 
     update_attrs[:published] = true
     position.update_attributes update_attrs
-      
-    position.track!
-
-    #proposal.follow!(current_user, :follow => params[:position][:follow_proposal] == 'true', :explicit => true)
-    position.follow!(current_user, :follow => true, :explicit => false)
-    proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
 
     params[:position][:included_points] ||= []
     params[:position][:included_points].each do |pnt|
@@ -91,6 +85,17 @@ class PositionsController < ApplicationController
     end
 
     save_actions(position)
+
+    position.point_inclusions = Inclusion.where(:user_id => position.user_id).where(:proposal_id => position.proposal_id).select(:point_id).map {|x| x.point_id}.compact.to_s
+    #position.point_inclusions = position.inclusions(:select => [:point_id]).map {|x| x.point_id}.compact.to_s       
+    position.save
+    
+    position.track!
+
+    #proposal.follow!(current_user, :follow => params[:position][:follow_proposal] == 'true', :explicit => true)
+    position.follow!(current_user, :follow => true, :explicit => false)
+    proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
+
 
     alert_new_published_position(proposal, position) unless already_published
 
@@ -397,7 +402,7 @@ protected
 
   def get_stance_val_from_params( params )
 
-    stance = -1 * Float(params[:position][:stance])
+    stance = Float(params[:position][:stance])
     if stance > 1
       stance = 1
     elsif stance < -1

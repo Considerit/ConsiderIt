@@ -2,23 +2,31 @@
 class ConsiderIt.PointView extends Backbone.View
 
   tagName : 'li'
+  data_loaded : false
+  user : null
   @template : _.template( $("#tpl_point_in_list").html() )
-
   @expanded_point_template : _.template( $("#tpl_point_details").html() )
 
   initialize : (options) -> 
-    #options.parent.on("include:#{this.model.attributes.id}", this.include, this);
     @proposal = options.proposal
-    @data_loaded = false
+    @model.on('change', @render, this)
+    @reset_listeners()
+
+  reset_listeners : () ->
+    user = if this.model.get('user_id') then ConsiderIt.users[this.model.get('user_id')] else ConsiderIt.current_user
+    if !@user? || user.id != @user.id
+      @user.off('change', @render, this) if @user?
+      @user = user
+      @user.on('change', @render, this)
 
   render : () -> 
-    user = if this.model.get('user_id') then ConsiderIt.users[this.model.get('user_id')] else ConsiderIt.current_user
+    @reset_listeners()
     @$el.html(
       ConsiderIt.PointView.template $.extend({}, @model.attributes,
         adjusted_nutshell : this.model.adjusted_nutshell()
-        user : user.attributes
+        user : @user.attributes
         proposal : @proposal.model.attributes,
-        is_you : user == ConsiderIt.current_user
+        is_you : @user == ConsiderIt.current_user
       )
     )
     this
@@ -34,7 +42,7 @@ class ConsiderIt.PointView extends Backbone.View
 
   show_point_details : (me) ->
     overlay = $('<div class="point_details_overlay">')
-    me.proposal.view.$el.find('.user_opinion').prepend(overlay)
+    me.proposal.view.$el.find('.proposal_bubble').prepend(overlay)
     
     me.pointdetailsview = new ConsiderIt.PointDetailsView( {proposal : me.proposal, model: me.model, el: overlay} )
     me.pointdetailsview.render()

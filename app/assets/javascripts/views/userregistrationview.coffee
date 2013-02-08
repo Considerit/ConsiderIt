@@ -63,6 +63,8 @@ class ConsiderIt.RegistrationView extends Backbone.View
   update_user : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
     ConsiderIt.update_current_user($.parseJSON(data.user).user)
+    if not ConsiderIt.current_user.id of ConsiderIt.users
+      ConsiderIt.users[ConsiderIt.current_user.id] = ConsiderIt.current_user
     @remove()
 
   cancel : () ->

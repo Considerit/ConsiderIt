@@ -33,23 +33,21 @@ class InclusionsController < ApplicationController
 
     session[@proposal.id][:included_points][params[:point_id]] = 1
 
-    candidate_next_points = candidate_next_points.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys)
-    points = candidate_next_points.ranked_persuasiveness.page( @page ).per( POINTS_PER_PAGE )
-    next_point = points.last
+    # candidate_next_points = candidate_next_points.not_included_by(current_user, session[@proposal.id][:included_points].keys, session[@proposal.id][:deleted_points].keys)
+    # points = candidate_next_points.ranked_persuasiveness.page( @page ).per( POINTS_PER_PAGE )
+    # next_point = points.last
     
-    if next_point
-      session[@proposal.id][:viewed_points].push([next_point.id, 3])
-    end
+    # if next_point
+    #   session[@proposal.id][:viewed_points].push([next_point.id, 3])
+    # end
 
     #rendered_next_point = next_point ? render_to_string( :partial => "points/show", :locals => { :origin => 'margin', :point => next_point }) : nil
         
-    response = next_point
+    #response = next_point
     
-    render :json => next_point
+    render :json => { :success => true }
   end
   
-  protected
-
   #cannot just route here in normal REST fashion because for unregistered users, 
   # we do not save the inclusion and hence do not have an ID for the inclusion
   def destroy(params)
@@ -77,18 +75,6 @@ class InclusionsController < ApplicationController
       @point.destroy
     end
 
-
-    @page = params[:page].to_i
-    candidate_next_points = @point.is_pro ? @proposal.points.viewable.pros : @proposal.points.viewable.cons
-    
-    points = candidate_next_points.not_included_by(
-      current_user, 
-      session[@proposal.id][:included_points].keys, 
-      session[@proposal.id][:deleted_points].keys
-    ).ranked_persuasiveness.page( @page ).per( POINTS_PER_PAGE )
-    
-    render :json => { 
-      :total_remaining => points.total_count 
-    }.to_json
+    render :json => { :success => true }
   end
 end

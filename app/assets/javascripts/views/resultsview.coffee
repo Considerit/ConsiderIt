@@ -16,7 +16,7 @@ class ConsiderIt.ResultsView extends Backbone.View
 
   render : () -> 
 
-    this.$el.html ConsiderIt.ResultsView.template
+    @$el.html ConsiderIt.ResultsView.template
       histogram : @histogram,
       num_positions : @proposal.positions.length,
       biggest_segment : Math.max.apply(null, _.map(@histogram, (pos) -> pos.length)) 

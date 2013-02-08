@@ -221,12 +221,9 @@
 
 - theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
 - rep_user = theme.user
-- top_pro = Point.published.pros.first
-- top_con = Point.published.cons.first
-- position = nil
+- rep_position = nil
 
 %script{ :type => "text/template", :id => "tpl_proposal" }
-  
   .proposer
     = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
 
@@ -238,41 +235,44 @@
       .top_points
 
         .top
-          - if top_pro.nil?
-            .bubble.right.empty
-              No pro arguments added yet.
-          - else
-            .pic
-              = image_tag top_pro.user.avatar.url(:small), :class => 'avatar author', :alt => "#{h top_pro.user.name}'s profile picture"
-            .bubble.right.pro
-              = top_pro.short_desc
-            .lead
-              top pro argument
-          .clear
+          (( if(!top_pro) { ))
+          .bubble.right.empty
+            No pro arguments added yet.
+          (( } else { ))
+          .pic
+            %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.users[top_pro.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "avatar author"}
 
+          .bubble.right.pro
+            {{top_pro.nutshell}}
+          .lead
+            top pro argument
+          (( } ))
+          .clear
         .top
-          - if top_con.nil?
-            .bubble.right.empty
-              No con arguments added yet.
-          - else
-            .pic
-              = image_tag top_con.user.avatar.url(:small), :class => 'avatar author', :alt => "#{h top_con.user.name}'s profile picture"
-            .bubble.right.con
-              = top_con.short_desc
-            .lead
-              top con argument
+          (( if(!top_con) { ))
+          .bubble.right.empty
+            No con arguments added yet.
+          (( } else { ))
+          .pic
+            %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.users[top_con.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "avatar author"}
+
+          .bubble.right.con
+            {{top_con.nutshell}}
+          .lead
+            top con argument
+          (( } ))
           .clear
 
-      .user_opinion
+      //.user_opinion
 
-      .aggregated_results
+      //.aggregated_results
 
 
       .official_response
         .pic
           = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
 
-        - if true || position.nil?
+        - if true || rep_position.nil?
 
           .bubble.left.empty
             I've not yet taken a stance
@@ -299,10 +299,12 @@
       %span.text
         Join the Conversation
 
-
-
   .participants
-
+    %ul
+      (( _.each($.parseJSON(participants), function(p){ ))
+      %li
+        %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "avatar participant"}
+      (( }); ))
 
 %script{ :type => "text/template", :id => "tpl_position" }      
 
@@ -316,13 +318,13 @@
 
       %table.slider_table
         %tr
-          %td.slider_label.left
+          %td.slider_label.left{:style => "font-size:1em;"}
             %div
               Support
 
           %td.slider_container
-            %div.slider
-          %td.slider_label.right
+            
+          %td.slider_label.right{:style => "font-size:1em;"}
             %div
               Oppose
         %tr

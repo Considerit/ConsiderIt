@@ -43,8 +43,10 @@ class ConsiderIt.UserManagerView extends Backbone.View
   handle_user_logout : (ev) ->
     $.get Routes.destroy_user_session_path(), (data) =>
       ConsiderIt.utils.update_CSRF(data.new_csrf)
-      ConsiderIt.current_user.clear()
+      @model = ConsiderIt.current_user = new ConsiderIt.User
       @render()
+      ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
+      ConsiderIt.app.trigger('user:signout')      
 
   add_registration_overlay : () ->
     me = ConsiderIt.app.usermanagerview
@@ -58,6 +60,13 @@ class ConsiderIt.UserManagerView extends Backbone.View
       top: $('body').scrollTop() + window.innerHeight / 2 - $overlay.outerHeight() / 2     
       left: window.innerWidth / 2 - $overlay.outerWidth() / 2
 
+
+  post_signin : () ->
+    if !ConsiderIt.current_user.isNew()
+      @model = ConsiderIt.current_user
+      @render()
+      ConsiderIt.app.trigger('user:signin')
+
   handle_user_registration : (ev) ->
     me = ConsiderIt.app.usermanagerview
 
@@ -69,7 +78,9 @@ class ConsiderIt.UserManagerView extends Backbone.View
       parent : me
 
     me.registrationview.render()
-    me.registrationview.$el.bind 'destroyed', () => @render()
+    me.registrationview.$el.bind 'destroyed', () =>
+      @post_signin()
+
     me.center_overlay()
 
     me.registrationview
@@ -86,7 +97,9 @@ class ConsiderIt.UserManagerView extends Backbone.View
       parent : me
 
     me.signinview.render()
-    me.signinview.$el.bind 'destroyed', () => @render()
+    me.signinview.$el.bind 'destroyed', () => 
+      @post_signin()
+
     me.center_overlay()
 
     me.signinview

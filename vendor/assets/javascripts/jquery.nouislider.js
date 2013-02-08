@@ -75,7 +75,7 @@
 			 * [BOOLEAN]			true, false
 			 */
 				'click'		:		true
-			
+
 			};
 			
 			helpers = {
@@ -248,7 +248,8 @@
 						/* expose */
 						api.options=s;
 						api.slider.data('api',api);
-					
+						helpers.call(api.options.change, api.slider, 'move');
+						helpers.call(api.options.end, api.slider, 'move');
 					});
 				
 				},
@@ -305,6 +306,11 @@
 				},
 				api:				function(){
 					return $(this).data('api');
+				},
+				destroy: function() {
+					this.each(function(){
+						$(this).remove();
+					});
 				},
 				disable:			function(){
 					return this.each( function(){

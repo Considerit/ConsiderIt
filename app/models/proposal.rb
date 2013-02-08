@@ -16,7 +16,7 @@ class Proposal < ActiveRecord::Base
   is_trackable
   is_followable
   
-  before_save :extract_tags
+  #before_save :extract_tags
 
   scope :active, where( :active => true )
   scope :inactive, where( :active => false )
@@ -208,7 +208,7 @@ class Proposal < ActiveRecord::Base
       self.num_inclusions += pnt.inclusions.count
     end
     self.num_perspectives = positions.published.count
-    self.num_unpublished_positions = positions.where(:published => false)
+    self.num_unpublished_positions = positions.where(:published => false).count
     self.num_supporters = positions.published.where("stance_bucket > ?", 3).count
     self.num_opposers = positions.published.where("stance_bucket < ?", 3).count
 
@@ -226,6 +226,13 @@ class Proposal < ActiveRecord::Base
 
     polarization = num_perspectives == 0 ? 1 : num_supporters.to_f / num_perspectives - 0.5
     self.contested = -4 * polarization ** 2 + 1
+
+
+    self.participants = positions(:select => [:user_id]).published.map {|x| x.user_id}.compact.to_s
+    tc = points(:select => [:id]).cons.published.order('score DESC').limit(1)[0]
+    tp = points(:select => [:id]).pros.published.order('score DESC').limit(1)[0]
+    self.top_con = !tc.nil? ? tc.id : nil
+    self.top_pro = !tp.nil? ? tp.id : nil
 
     self.save
 

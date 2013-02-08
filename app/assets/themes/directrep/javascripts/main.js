@@ -172,19 +172,19 @@ ConsiderIt = {
       // .on('focus', 'input#user_password', function(){
       //   $(this).siblings('.forget_password_prompt').show();
       // })
-      .on('click', '#post_signup_form a.cancel', function(){
-        $.ajax({
-          type: 'DELETE',
-          url: "<%= Rails.application.routes.url_helpers.user_registration_path %>",
-          data: {},
-          success: function(data){
-            location.reload(true);
-          }, error: function(data){
-            location.reload(true);
-          }
+      // .on('click', '#post_signup_form a.cancel', function(){
+      //   $.ajax({
+      //     type: 'DELETE',
+      //     url: "<%= Rails.application.routes.url_helpers.user_registration_path %>",
+      //     data: {},
+      //     success: function(data){
+      //       location.reload(true);
+      //     }, error: function(data){
+      //       location.reload(true);
+      //     }
 
-          });
-        });
+      //     });
+      //   });
       // .on('click', '.confirmation_required form', function(){
       //     $(this).parents('.message').append('<span> [done]</span>');
       //   })
@@ -233,25 +233,6 @@ ConsiderIt = {
 
         }
 
-      })
-      .on('hover', '.proposal_menu', function(event){
-        var $target = $(this).children('ul');
-        if ( event.type == 'mouseenter' ) {
-          $target.slideDown('fast', 'linear');
-        } else {
-          $target.slideUp('fast', 'linear');
-        }
-      })
-      .on('blur', 'input.my_name', function(){
-        if ( $(this).val().length > 3 ) {
-          $(this).addClass('hidden_edit');
-          $(this).autoGrowInput();
-          var prompt = $(this).parents('#nameplate');
-          prompt.width( prompt.find('.my_name').outerWidth() + prompt.find('.prompt').outerWidth() + 40);
-
-          //update the username of all points written by this user
-          $('.point_in_list.added_by_me').find('.nested_user .unknown').text($(this).val());
-        }
       })
       .on('click', '.edit_page a', function(){
         $(this).toggleClass('edit_mode');

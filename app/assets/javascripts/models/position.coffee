@@ -1,6 +1,7 @@
 class ConsiderIt.Position extends Backbone.Model
   defaults: 
     stance : 0
+    user_id : -1
 
   name: 'position'
 
@@ -17,3 +18,13 @@ class ConsiderIt.Position extends Backbone.Model
       when 4 then "mild supporters"
       when 5 then "supporters"
       when 6 then "strong supporters"
+
+  subsume : (other_pos) ->
+    params = 
+      stance : if other_pos.get('stance') != 0 then other_pos.get('stance') else @get('stance')
+      stance_bucket : other_pos.get('stance_bucket')
+
+    explanation = other_pos.get('explanation')
+    params.explanation = explanation if explanation? and explanation.length > 0
+
+    @set params

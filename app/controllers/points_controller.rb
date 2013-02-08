@@ -209,9 +209,10 @@ class PointsController < ApplicationController
     # else
     #   render
     # end
-    point = Point.find params[:point_id]
-    render :json => {:comments => point.comments.select('body, user_id, moderation_status').to_json}
-
+    if request.xhr?
+      point = Point.find params[:id]
+      render :json => {:comments => point.comments.select('body, user_id, moderation_status').to_json}
+    end
   end
 
   def update

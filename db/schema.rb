@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130116194546) do
+ActiveRecord::Schema.define(:version => 20130206234031) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -304,6 +304,7 @@ ActiveRecord::Schema.define(:version => 20130116194546) do
     t.boolean  "notification_author",                    :default => true
     t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
+    t.text     "point_inclusions"
   end
 
   add_index "positions", ["account_id", "proposal_id", "published"], :name => "index_positions_on_account_id_and_proposal_id_and_published"
@@ -365,6 +366,9 @@ ActiveRecord::Schema.define(:version => 20130116194546) do
     t.integer  "moderation_status"
     t.integer  "publicity",                                                    :default => 2
     t.binary   "access_list",                            :limit => 16777215
+    t.integer  "top_con"
+    t.integer  "top_pro"
+    t.text     "participants"
   end
 
   add_index "proposals", ["account_id", "id"], :name => "select_proposal"

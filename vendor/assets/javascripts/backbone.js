@@ -123,6 +123,7 @@
       this._events || (this._events = {});
       var events = this._events[name] || (this._events[name] = []);
       events.push({callback: callback, context: context, ctx: context || this});
+      
       return this;
     },
 

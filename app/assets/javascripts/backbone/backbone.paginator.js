@@ -226,6 +226,41 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
 
     },
 
+
+    ///////// THESE ARE ADOPTED FROM BACKBONE.COLLECTION
+    //////////// in order to pull out items from the collections that are currently hidden.
+    //////////// Implementation was done quickly and is inefficient.
+
+    // Get a model from the set by id.
+    get_from_all: function(id) {
+      var model = null;
+      if(this.origModels == null) return null;
+      for(var i = 0; i < this.origModels.length; i++){
+        model = this.origModels[i];
+        if( model.id == id) return model;
+      }
+      return null;
+    },
+
+    // Remove a model by id
+    remove_from_all: function(id) {
+      var model = null;
+      //if(!this.origModels) return null;
+
+      for(var i = 0; i < this.origModels.length; i++){
+        model = this.origModels[i];
+        if( model.id == id){ 
+          if (this._byId[model.id]){
+            this.remove(id);
+          }
+          this.origModels.splice(i, 1)
+          return model;
+        }
+      }
+      return null;
+    },
+
+
     // setFilter is used to filter the current model. After
     // passing 'fields', which can be a string referring to
     // the model's field, an array of strings representing

@@ -23,7 +23,7 @@
           = link_to 'App settings', application_settings_path, :class => 'application'
       - if (current_user.is_admin? || current_user.has_role?(:moderator)) && current_tenant.enable_moderation
         %li
-          = link_to 'Moderate', moderate_path, :class => 'moderate'
+          = link_to 'Moderate', dashboard_moderate_path, :class => 'moderate'
       - if current_user.is_admin? || current_user.has_role?(:analyst)
         %li
           = link_to 'Analyze', analytics_path, :class => 'analyze'

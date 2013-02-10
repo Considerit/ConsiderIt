@@ -49,7 +49,7 @@
 
         - if (current_user.is_admin? || current_user.has_role?(:moderator)) && current_tenant.enable_moderation
           %li{ :class => selected_navigation(:moderate)}
-            = link_to 'Moderate content', moderate_path, :class => 'moderate'
+            = link_to 'Moderate content', dashboard_moderate_path, :class => 'moderate'
 
         - if current_user.is_admin? || current_user.has_role?(:analyst)
           %li{ :class => selected_navigation(:analyze)}

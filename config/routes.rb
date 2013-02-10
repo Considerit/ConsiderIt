@@ -1,6 +1,6 @@
 ConsiderIt::Application.routes.draw do
     
-  mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
+  mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
   #mount Assessable::Engine => '/dashboard/assessable', :as => 'assessable'
 
   themes_for_rails 
@@ -16,7 +16,7 @@ ConsiderIt::Application.routes.draw do
   resource :proposal, :path => '/:long_id', :long_id => /[a-z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
     match '/' => "proposals#show" , :via => :get, :as => :new_position
 
-    resources :positions, :path => '', :only => [:edit, :create, :update, :destroy], :path_names => {:new => ''} 
+    resources :positions, :path => '', :only => [:update], :path_names => {:new => ''} 
 
     match '/positions/:user_id' => "positions#show", :as => :user_position
 

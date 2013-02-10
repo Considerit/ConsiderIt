@@ -32,7 +32,7 @@ gem "remotipart", "~> 1.0.2"
 gem 'acts_as_tenant'
 
 # https://github.com/sferik/rails_admin
-gem 'rails_admin', "~> 0.0.5"
+gem 'rails_admin'#, "~> 0.0.5"
 
 #https://github.com/ryanb/cancan
 gem 'cancan'

@@ -22,6 +22,7 @@ class User < ActiveRecord::Base
   devise :omniauthable, :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :trackable
 
+  validates :name, :presence => true
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
   attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask
@@ -29,6 +30,10 @@ class User < ActiveRecord::Base
   attr_accessor :avatar_url
 
   before_validation :download_remote_image, :if => :avatar_url_provided?
+  before_save do 
+    self.name = Sanitize.clean(self.name)    
+    self.bio = Sanitize.clean(self.bio, Sanitize::Config::RELAXED)
+  end
   validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
   after_create :add_token
 

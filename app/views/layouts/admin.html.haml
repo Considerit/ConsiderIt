@@ -1,5 +1,3 @@
-
-
 !!! Strict
 %html{html_attrs}
   %head{ :profile => "http://gmpg.org/xfn/1" }
@@ -26,34 +24,11 @@
       = stylesheet_link_tag 'ie'
 
     :javascript
-      //http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
-      (function(w,d,u){w.readyQ=[];w.bindReadyQ=[];function p(x,y){if(x=="ready"){w.bindReadyQ.push(y);}else{w.readyQ.push(x);}};var a={ready:p,bind:p};w.$=w.jQuery=function(f){if(f===d||f===u){return a}else{p(f)}}})(window,document)
-
       $(document).ready(function(){
         sevenUp.plugin.black.test({});      
-        ConsiderIt.init(); 
-        $(window).bind('page:change', function() {
-          ConsiderIt.init();
-        });
-
       });   
 
-    = theme_javascript_include_tag 'application', :async => Rails.env.production?
-
-      
-    - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
-      :javascript
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-        _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
-        _gaq.push(['_trackPageview']);
-
-
-    - if current_tenant.analytics_google && current_tenant.analytics_google != ''
-      :javascript
-        var _gaq_account = _gaq_account || [];
-        _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-        _gaq_account.push(['_trackPageview']);
+    = theme_javascript_include_tag 'admin'
 
   %body
     #wrap{ :class => @current_page}

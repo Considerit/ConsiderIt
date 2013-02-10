@@ -20,8 +20,6 @@
         %span.name
           = mc.name.split('::').last
         = surround '(', ')' do
-          - pp @objs_to_moderate[mc.name].count
-          - pp @existing_moderations[mc.name].count
           = @objs_to_moderate[mc.name].length - @existing_moderations[mc.name].length
 
   
@@ -69,8 +67,9 @@
                   = f.submit 'done', :class => 'hide'
 
                   - if existing_moderation && @existing_moderations[mc.name][obj.id].user_id != current_user.id
-                    .by
-                      Moderated by #{@existing_moderations[mc.name][obj.id].user.name}
+                    - if !@existing_moderations[mc.name][obj.id].user.nil?
+                      .by
+                        Moderated by #{@existing_moderations[mc.name][obj.id].user.name}
 
 
 

@@ -21,6 +21,7 @@ class Proposal < ActiveRecord::Base
   scope :active, where( :active => true )
   scope :inactive, where( :active => false )
   scope :public, where( :publicity => 2)
+  scope :public_fields, select('id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active, top_pro, top_con, participants')
 
 
   def label_proposal

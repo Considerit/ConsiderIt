@@ -1,6 +1,8 @@
 ConsiderIt::Application.routes.draw do
     
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
+  #mount Assessable::Engine => '/dashboard/assessable', :as => 'assessable'
+
   themes_for_rails 
   followable_routes
   commentable_routes

@@ -14,7 +14,7 @@
               %td.proposal
                 = proposal.title(50)
               %td.action
-                = link_to new_proposal_position_path(proposal.long_id), :target => '_blank' do 
+                = link_to new_position_proposal_path(proposal.long_id), :target => '_blank' do 
                   Edit
                   = image_tag('edit_page.png')
     - else
@@ -32,7 +32,7 @@
               %td.proposal
                 = proposal.title(50)
               %td.action
-                = link_to new_proposal_position_path(proposal.long_id), :target => '_blank' do 
+                = link_to new_position_proposal_path(proposal.long_id), :target => '_blank' do 
                   Edit
                   = image_tag('edit_page.png')
     - else

@@ -47,7 +47,7 @@
 
         (( if( (is_admin || is_moderator ) && #{current_tenant.enable_moderation} ) { ))
         %li
-          %a.moderate{:href => "{{Routes.moderate_path()}}"}
+          %a.moderate{:href => "{{Routes.dashboard_moderate_path()}}"}
             Moderate
         (( } ))
 
@@ -60,7 +60,7 @@
         (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
         %li
           %a.assess{:href => "{{Routes.assessment_index_path()}}"}
-            Moderate
+            Assess
         (( } ))
 
         - if Rails.env.development?

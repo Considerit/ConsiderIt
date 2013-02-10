@@ -2,7 +2,8 @@ require 'date'
 
 class Dashboard::AdminController < Dashboard::DashboardController
   respond_to :json, :html
-
+  layout 'admin'
+  
   def application
     if !current_user.is_admin?
       redirect_to root_path, :notice => "You need to be an admin to access that page."

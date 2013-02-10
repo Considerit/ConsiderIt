@@ -21,12 +21,29 @@ class Point < ActiveRecord::Base
   
   validates :nutshell, :presence => true, :length => { :maximum => 141 }
 
+
+  before_validation do 
+    self.nutshell = Sanitize.clean(self.nutshell)
+    self.text = Sanitize.clean(self.text, Sanitize::Config::RELAXED)
+
+    if self.nutshell.length > 140 
+      text << self.nutshell[139..-1]
+      self.nutshell = self.nutshell[0..139]
+    end
+
+    if self.nutshell.length == 0 && !self.text.nil? && self.text.length > 0
+      self.text =  self.text[139..self.text.length]
+      self.nutshell = self.text[0..139]
+    end
+
+  end
+
   acts_as_tenant(:account)
 
   # cattr_reader :per_page
   # @@per_page = 4  
 
-  scope :public_fields, select([:appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :position_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id])
+  scope :public_fields, select([:appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :position_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id, :hide_name])
   scope :published, where( :published => true )
   scope :viewable, where( 'published=1 AND (moderation_status IS NULL OR moderation_status=1)')
   #default_scope where( :published => true )  
@@ -94,6 +111,16 @@ class Point < ActiveRecord::Base
       proposal.points.where("points.id IN (?)", included_points)
     else
       proposal.points.published.where(:id => -1) #null set
+    end
+  end
+
+  #WARNING: do not save these points after doing this
+  def self.mask_anonymous_users(points, user)
+    points.map do |pnt|
+      if pnt.hide_name && (user.nil? || user.id != pnt.user_id)
+        pnt.user_id = -1
+      end
+      pnt
     end
   end
 

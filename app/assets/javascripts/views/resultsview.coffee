@@ -2,6 +2,9 @@ class ConsiderIt.ResultsView extends Backbone.View
 
   @template : _.template( $("#tpl_results").html() )
 
+  BARHEIGHT : 175
+  BARWIDTH : 70
+
   initialize : (options) -> 
     @proposal = options.proposal
     @histogram = @create_histogram()
@@ -17,25 +20,19 @@ class ConsiderIt.ResultsView extends Backbone.View
   render : () -> 
 
     @$el.html ConsiderIt.ResultsView.template
-      histogram : @histogram,
-      num_positions : @proposal.positions.length,
-      biggest_segment : Math.max.apply(null, _.map(@histogram, (pos) -> pos.length)) 
-      barheight : 180
-
-    @$histogram = @$el.find('#histogram') unless @$histogram?
+      histogram : @histogram
 
     @views =
       pros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.pros, el : @$el.find('#propoints'), location: 'board', proposal : @proposal})
       cons : new ConsiderIt.PaginatedPointListView({collection : @pointlists.cons, el : @$el.find('#conpoints'), location: 'board', proposal : @proposal})
 
-    _.each @histogram, (bar, idx) =>
-      @fit_people_in_bar(bar, idx)
+    @$histogram = @$el.find('#histogram')
 
     @pointlists.pros.setSort('score', 'desc')
     @pointlists.cons.setSort('score', 'desc')
 
     @show()
-      
+    $('html, body').animate {scrollTop: @$el.offset().top}, 1000      
     this
 
   show : () ->
@@ -49,35 +46,37 @@ class ConsiderIt.ResultsView extends Backbone.View
     @$el.hide()
 
   create_histogram : () ->
-    histogram = [[],[],[],[],[],[],[]]
+    histogram =
+      breakdown : [{positions:[]} for i in [0..6]][0]
 
     _.each @proposal.positions, (pos) ->
-      histogram[6-pos.get('stance_bucket')].push(pos)
+      histogram.breakdown[6-pos.get('stance_bucket')].positions.push(pos)
+
+    _.extend histogram, 
+      biggest_segment : Math.max.apply(null, _.map(histogram.breakdown, (bar) -> bar.positions.length))
+      num_positions : _.keys(@proposal.positions).length 
+
+    _.each histogram.breakdown, (bar, idx) =>
+      height = bar.positions.length / histogram.biggest_segment
+      full_size = height * @BARHEIGHT 
+      empty_size = @BARHEIGHT * (1 - height)
+
+      tile_size = ConsiderIt.utils.get_tile_size(@BARWIDTH, full_size, bar.positions.length)
+
+      tiles_per_row = Math.floor( @BARWIDTH / tile_size)
+
+      _.extend bar, 
+        tile_size : tile_size
+        full_size : full_size
+        empty_size : empty_size
+        num_ghosts : if bar.positions.length % tiles_per_row != 0 then tiles_per_row - bar.positions.length % tiles_per_row else 0
 
     histogram
 
-  fit_people_in_bar : (bar, bucket) ->
-
-    container = @$el.find('#bucket-' + bucket + '.bar')
-    p = $('> .people_bar', container)
-    width = container.width()
-    height = container.height()
-    participants = $('> .statement img', p)
-    tile_size = ConsiderIt.utils.get_tile_size(width, height, bar.length) + 1
-
-    per_row = Math.floor( width / tile_size)
-    if bar.length % per_row != 0
-      #TODO: aggregate DOM touches
-      for i in [0..per_row - bar.length % per_row] by 1
-        p.prepend('<li style="visibility:hidden; float: right; height:' + tile_size + 'px; width:' + tile_size + 'px;">')
-
-    participants
-      .css({'width':tile_size, 'height':tile_size})
-
-
   #handlers
   events : 
-    'hover .point_in_list:not(#expanded)' : 'highlight_point_includers'
+    'mouseenter .point_in_list:not(#expanded)' : 'highlight_point_includers'
+    'mouseout .point_in_list:not(#expanded)' : 'highlight_point_includers'
     'mouseenter #histogram .bar.hard_select .view_statement' : 'show_user_explanation' 
     'mouseout #histogram .bar.hard_select .view_statement' : 'hide_user_explanation' 
     'mouseover #histogram .bar.full:not(.selected)' : 'select_bar'

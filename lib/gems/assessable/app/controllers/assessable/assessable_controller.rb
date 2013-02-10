@@ -53,6 +53,8 @@ class Assessable::AssessableController < Dashboard::DashboardController
       verdict = params[:assessable_claim][:verdict]
       params[:assessable_claim][:verdict] = Assessable::Claim.translate(verdict)
     end 
+
+    # TODO: explicitly grab params  
     claim.update_attributes(params[:assessable_claim])
     redirect_to edit_assessment_path(claim.assessment)
 
@@ -77,6 +79,8 @@ class Assessable::AssessableController < Dashboard::DashboardController
     authorize! :index, Assessable::Assessment
     
     redirect_to assessment_index_path
+
+    # TODO: explicitly grab params    
     assessment = Assessable::Assessment.find(params[:assessment][:id])
     complete = assessment.complete
     assessment.update_attributes(params[:assessment])

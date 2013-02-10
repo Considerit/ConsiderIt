@@ -142,36 +142,20 @@ class PointsController < ApplicationController
   
   def create
     proposal = Proposal.find_by_long_id(params[:long_id])
-    # if current_user
-    #   @position = Position.where(:proposal_id => proposal.id, :user_id => current_user.id).last 
-    # else
-    #   @position = session.has_key?("position-#{proposal.id}") ? Position.find(session["position-#{proposal.id}"]) : nil
-    # end
 
-    @user = current_user
+    create_params = {
+        :nutshell => params[:point][:nutshell],
+        :text => params[:point][:text],
+        :is_pro => params[:point][:is_pro],
+        :hide_name => params[:point][:hide_name],
+        :comment_count => 0,
+        :proposal_id => proposal.id,
+        :user_id => current_user ? current_user.id : nil,
+        :published => false
+    }
 
-    params[:point][:proposal_id] = proposal.id   
-    # if @position
-    #   params[:point][:position_id] = @position.id
-    # end
-
-    if params[:point][:nutshell].length > 140 
-      params[:point][:text] << params[:point][:nutshell][139..-1]
-      params[:point][:nutshell] = params[:point][:nutshell][0..139]
-    end
-
-    if params[:point][:nutshell].length == 0 && !params[:point][:text].nil? && params[:point][:text].length > 0
-      params[:point][:text] =  params[:point][:text][139..params[:point][:text].length]
-      params[:point][:nutshell] = params[:point][:text][0..139]
-    end
-
-    if current_user
-      params[:point][:user_id] = current_user.id
-    else
-      params[:point][:published] = false
-    end
-
-    point = Point.create!(params[:point])
+    point = Point.create!(create_params)
+    #TODO: shouldn't this happen before?
     authorize! :create, point
 
     ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
@@ -179,11 +163,6 @@ class PointsController < ApplicationController
     session[proposal.id][:written_points].push(point.id)
     session[proposal.id][:included_points][point.id] = 1    
     session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
-
-    #if @point.published
-    #  @point.update_absolute_score
-    #  @point.notify_parties(current_tenant, mail_options)
-    #end
     
     render :json => point
 
@@ -209,9 +188,11 @@ class PointsController < ApplicationController
     # else
     #   render
     # end
+
     if request.xhr?
       point = Point.find params[:id]
-      render :json => {:comments => point.comments.select('body, user_id, moderation_status').to_json}
+      authorize! :read, point
+      render :json => {:comments => point.comments.public_fields}
     end
   end
 
@@ -223,10 +204,16 @@ class PointsController < ApplicationController
     #   @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
     # end
     #@user = current_user
-    point = Point.find(params[:id])
+    point = Point.find params[:id]
     authorize! :update, point
 
-    point.update_attributes!(params[:point])
+    update_params = {
+        :nutshell => params[:point][:nutshell],
+        :text => params[:point][:text],
+        :hide_name => params[:point][:hide_name],
+    }
+
+    point.update_attributes! update_params
 
     render :json => point
 
@@ -234,7 +221,7 @@ class PointsController < ApplicationController
 
   def destroy
 
-    @point = Point.find(params[:id])
+    @point = Point.find params[:id]
     
     authorize! :destroy, @point
 
@@ -246,7 +233,11 @@ class PointsController < ApplicationController
     @point.destroy
 
     response = {:result => 'successful'}
-    render :json => response.to_json
+    render :json => response
+  end
+
+  def points_for_user
+    render :json => current_user.points.published.where(:hide_name => true).joins(:proposal).select('proposals.long_id, points.id, points.is_pro')
   end
   
   

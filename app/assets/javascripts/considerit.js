@@ -1,11 +1,5 @@
 
-var ConsiderIt; //global namespace for ConsiderIt js methods
-
-
-(function($) {
-
-
-ConsiderIt = {
+me = {
   study : false,
   init : function() {
     // ConsiderIt.results_page = $('#explore_proposal').length > 0;
@@ -24,34 +18,12 @@ ConsiderIt = {
       }
     });
     
-    $('a.smooth_anchor').click(function(){
-      $('html, body').animate({
-        scrollTop: $($(this).attr('href')).offset().top}, 1000);
-        return false;
-    });
-
+    
     $('.autoResize, .pointform textarea.point-title, .pointform input[type="text"]').autoResize({extraSpace: 10, maxWidth: 'original'});
     //$('.pointform > form').validateOnBlur();
 
     $('textarea#statement').autoResize({extraSpace: 5});
     
-    // $("#points_other_pro, #points_other_con").dynamicList({
-    //     speed: 1000,
-    //     vertical: true,
-    //     total_items: parseInt($(this).find('.total').filter(":first").text()),
-    //     items_per_page: 3,
-    //     loading_from_ajax: true, 
-    //     dim: 550,
-    //     resetSizePerPage: true,
-    //     total_items_callback: function($carousel){
-    //       if ($carousel.find('.total').filter(":first").length > 0) {
-    //         return parseInt($carousel.find('.total').filter(":first").text());
-    //       } else {
-    //         return $carousel.find('li.point_in_list').length;
-    //       }
-    //     }
-    //   });
-
     // if ( ConsiderIt.results_page ) {
     //   $.get('/' + $.trim($('#proposal_long_id').text()) + '/results', function(data){
     //     var $segments = $(data['segments']);
@@ -67,30 +39,16 @@ ConsiderIt = {
     //   });
     // }
 
-    //ConsiderIt.positions.initialize_participants_block();
-
-    //$('input[type="file"]').customFileInput();
-
     // if ( ConsiderIt.point_page ) {
     //   $('iframe').focus().contents().trigger('keyup').find('#page').trigger('keyup');            
     //   $(".unobtrusive_edit textarea").trigger('keyup');      
     // }
-
-    // $('.proposals.vertical').infiniteCarousel({
-    //   speed: 1500,
-    //   vertical: true,
-    //   total_items: 5,
-    //   items_per_page: 5,
-    //   loading_from_ajax: false,
-    //   dim: 250
-    // });
 
     //ConsiderIt.points.create.initialize_counters('.newpointform, .editpointform');
 
 
   },
   per_request : function() {
-    //$('.point_in_list_margin.pro').draggable(ConsiderIt.draggable_options);
 
     $('.new_comment .is_counted, .pro_con_list .is_counted').each(function(){
       if( !$(this).data('has_noblecount') ){        
@@ -104,34 +62,13 @@ ConsiderIt = {
       }
     });  
 
-    // $("#ranked_points .full_column").each(function(){
-    //   $(this).dynamicList({
-    //     speed: 1000,
-    //     vertical: true,
-    //     total_items: parseInt($(this).find('.total').filter(":first").text()),
-    //     items_per_page: 4,
-    //     loading_from_ajax: true, 
-    //     dim: 500,
-    //     resetSizePerPage: true,
-    //     total_items_callback: function($carousel){
-    //       return parseInt($carousel.find('.total').filter(":first").text());
-    //     }
-    //   });
-    // });   
 
     $('[placeholder]').inlined_labels();
 
     //$('form.html5:not(.html5formified)').html5form();
     //$('form').h5Validate({errorClass : 'error'});
 
-    // $('.pointform .wysiwyg').redactor({
-    //   buttons: ['formatting', 'bold', 'italic', 'unorderedlist', 'orderedlist', 'link', 'fullscreen'],
-    //   autoresize: true,
-    //   inline_label: 'Add details and links (optional)',
-    //   css: 'chalkboard.css'
-    // });
-
-    // $('.unobtrusive_edit_form .wysiwyg').redactor({
+    // $('.wysiwyg').redactor({
     //   buttons: ['formatting', 'bold', 'italic', 'unorderedlist', 'orderedlist', 'link', 'fullscreen'],
     //   autoresize: true,
     //   inline_label: 'Add details and links (optional)',
@@ -147,53 +84,8 @@ ConsiderIt = {
     /////////////
     // ACCOUNTS
     /////////////
-    $(document) 
-      // .on('click', '.proxy', function() {
-      //     var email = $('#user_email'), password = $('#user_password'), $me = $(this);
-      //     if ( email.val().length == 0 || password.val().length == 0 || email.is('.error') || password.is('.error') ) {
-      //       return;
-      //     } else {
-      //       $.post('<%= Rails.application.routes.url_helpers.users_check_login_info_path %>', {
-      //           'user' : {
-      //             'email' : email.val(),
-      //             'password' : password.val()
-      //           }
-      //         }, function(data){
-
-      //         if ( data.valid ) {
-      //           $me.siblings('input[type="submit"]').trigger('click');
-      //         } else {
-      //           $('#site_registration .password_field .forget_password_prompt').css({'color': 'red', 'font-weight':'bold'});
-      //         }
-
-      //       });
-      //     }
-      //   })
-      // .on('focus', 'input#user_password', function(){
-      //   $(this).siblings('.forget_password_prompt').show();
-      // })
-      // .on('click', '#post_signup_form a.cancel', function(){
-      //   $.ajax({
-      //     type: 'DELETE',
-      //     url: "<%= Rails.application.routes.url_helpers.user_registration_path %>",
-      //     data: {},
-      //     success: function(data){
-      //       location.reload(true);
-      //     }, error: function(data){
-      //       location.reload(true);
-      //     }
-
-      //     });
-      //   });
-      // .on('click', '.confirmation_required form', function(){
-      //     $(this).parents('.message').append('<span> [done]</span>');
-      //   })
 
     $(document)
-
-      // .on('click', '#site_registration a.cancel', function(){
-      //   $('.user_dialog, #settings_dialog').dialog('close');
-      // })
 
       .on('click', '#acknowledgment a', function(){
         show_tos(700, 700);  
@@ -322,55 +214,10 @@ ConsiderIt = {
         //  save_block.hide();
         //}
       })
-      // .on('ajax:success', '.filter a', function(event, data){
-      //   $('.proposal_list').replaceWith($(data.proposals));
-
-
-      //   if ($(this).parent().is('.tag.selected') ){
-      //     $(this).parent().removeClass('selected').siblings().removeClass('selected');
-      //   } else{
-      //     $(this).parent()
-      //       .addClass('selected')
-      //       .siblings() 
-      //         .removeClass('selected');          
-      //   }
-
-      // });
 
     //////////////
     // POINTS
     //////////////
-
-    // // mouseover a point
-    // $(document).on('hover', '.point_in_list:not(#expanded)', function( event ) {
-    //   if ( $('.point_in_list.expanded').length == 0 ){
-    //     if ( $(this).hasClass('point_in_list_board')) {
-    //       var $histogram = $('#histogram');
-    //       $histogram.toggleClass('hovering_over_point');
-    //       var includers = $.parseJSON($(this).attr('includers')), selector = [];
-    //       for ( var i = 0; i < includers.length; i+=1 ) {
-    //         selector.push('#user-' + includers[i] + ' .view_statement img');
-    //       }
-          
-    //       if (event.type == 'mouseenter') {
-    //         $(selector.join(','), $histogram).addClass('includer_of_hovered_point');
-    //         $('#user-' + $(this).attr('user') + ' .view_statement img').addClass('author_of_hovered_point');            
-    //       } else {
-    //         $(selector.join(','), $histogram).removeClass('includer_of_hovered_point');
-    //         $('#user-' + $(this).attr('user') + ' .view_statement img').removeClass('author_of_hovered_point');                        
-    //       }
-
-    //     }
-    //   }
-    // });
-
-
-    // mouseover read more button
-    $(document).on('hover', '.point_in_list_margin .point_text_toggle.more:not(#expanded)', function(event){
-      if ( $('.point_in_list#expanded').length == 0 ){
-        var parent = $(this).parents('.point_in_list_margin');
-      }
-    });
 
     // new button clicked
     // $(document).on('click', '.pro_con_list.dynamic .newpoint .newpointbutton a.write_new', function(){
@@ -387,44 +234,6 @@ ConsiderIt = {
     //       })
 
     //   });  
-    // });
-
-    // new/edit point cancel clicked
-    // $(document).on('click', '.pro_con_list.dynamic .new_point_cancel', function(){
-    //   var form = $(this).parents('.pointform');
-    //   form
-    //     .fadeOut(function(){
-    //       $(this).parents('.newpoint').find('.write_new').fadeIn(); 
-    //       //form.find('.point_link_form').remove();
-    //       form.find('textarea').val('').trigger('keydown');
-    //       form.find('label.inline').addClass('empty');
-    //       $('.newpoint').fadeIn();
-
-    //       //$('.droppable').fadeIn();
-    //     });
-    //     $(this).parents('.point_in_list').removeClass('edit_mode');
-    // });
-
-    // Create callback
-
-
-
-
-    // $(document).on('ajax:success', '.pro_con_list.dynamic .newpoint .newpointform form', function(data, response, xhr){
-    //   var $new_point = $(response['new_point']);
-    //   $new_point.addClass('added_by_me');
-    //   if ($new_point.find('.nested_user .unknown').length > 0 && $('#nameplate input.my_name.hidden_edit').length > 0){
-    //     var nameplate_name = $('#nameplate input.my_name.hidden_edit').val();
-    //     $new_point.find('.nested_user .unknown').text(nameplate_name);
-    //   }
-
-    //   $(this).parents('.full_column:first').find('.point_list:first').append($new_point);
-    //   $(this).find('textarea').val('').trigger('keydown');
-    //   $(this).find('.point-title-group .count').html(140);
-    //   //$(this).find('.point-description-group .count').html(2000);
-      
-    //   $(this).find('.new_point_cancel').trigger('click');
-
     // });
 
     // edit point
@@ -579,32 +388,6 @@ ConsiderIt = {
     //   unexpand_point($(this).parents('#expanded'));
     // });
 
-    //////////////
-    // INCLUSIONS
-    //////////////
-
-
-    // Remove from list
-    // $(document).on('ajax:success', '.uninclude_point_form', function(data, response, xhr){
-
-    //   var old_point = $(this).parents('.point_in_list_self'),
-    //     margin_point_list = old_point.hasClass('pro') ? $('#points_other_pro .point_list') : $('#points_other_con .point_list'),
-    //     carousel = margin_point_list.parents('.dynamicList');
-
-    //   if (old_point.is('#expanded')){
-    //     unexpand_point(old_point);
-    //   } 
-    //   old_point.fadeOut(function(){
-    //     old_point = old_point.detach(); 
-    //     margin_point_list.append(old_point);
-    //     old_point
-    //       .removeClass('point_in_list_self')
-    //       .addClass('point_in_list_margin')
-    //       //.fadeIn(function(){
-    //         carousel.dynamicList({'operation': 'refresh', 'total_items': parseInt(response['total_remaining'])});
-    //       //});
-    //   });
-    // });
 
     //////////////
     //COMMENTS
@@ -725,71 +508,15 @@ ConsiderIt = {
     //   deselect_bars($selected_bar);        
     // });    
         
-    $(document).on('click', "#histogram .position_statement .important_points .show, .position_statement .important_points .hide", function(){
-      $(this).parent().children().fadeToggle(); 
-    });
+    // $(document).on('click', "#histogram .position_statement .important_points .show, .position_statement .important_points .hide", function(){
+    //   $(this).parent().children().fadeToggle(); 
+    // });
 
-    //////////////
-    //PROPOSAL
-    //////////////
-    $(document).on('ajax:success', "#ranked_points .point_filter", function(data, response, xhr){
-      //$(this).siblings.removeClass('selected');
-      //$(this).addClass('selected');
-      // TODO: store, don't replace
-      $(this).parents('#domain_all').replaceWith($(response.points));
-
-    });
 
   },
 
   positions : {
 
-    // initialize_participants_block : function( ) {
-
-    //   var cur_low = null, tile_sizes = {};
-
-    //   for ( var bucket = 0; bucket<= 6; bucket+=1 ) {
-    //     var container = $('#bucket-' + bucket + '.bar'),
-    //         p = $('> .people_bar', container),
-    //         participants = $('> .statement img', p);
-
-    //     var dim = get_tile_size(container.width(), container.height(), participants.length);
-
-    //     tile_sizes[bucket] = dim;        
-    //     if ( participants.length > 0 ) {
-    //       cur_low = cur_low ? Math.min(dim, cur_low) : dim;
-    //     }
-    //   }
-
-    //   for ( var bucket = 0; bucket<= 6; bucket+=1 ) {
-    //     var container = $('#bucket-' + bucket + '.bar'),
-    //         p = $('> .people_bar', container),
-    //         participants = $('> .statement img', p),
-    //         icon_size = tile_sizes[bucket]; //cur_low
-
-    //     var per_row = Math.floor( container.width() / icon_size);
-    //     for ( var i = 0; participants.length % per_row != 0 && i < per_row - participants.length % per_row; i+=1 ) {
-    //       p.prepend('<li style="visibility:hidden; float: right; height:' + icon_size + 'px; width:'+icon_size+'px;">')
-    //     }
-    //     //participants
-    //     //  .css({'width': cur_low, 'height': cur_low});
-    //     participants
-    //       .css({'width':icon_size, 'height':icon_size})
-    //     //container.css('height', 'auto');
-    //   }
-
-    //   $('.people_bar').show();
-    // },
-
-    // set_slider_value : function(new_value){
-        
-    //   var max_effect = 65, base = 110, value = new_value - 1;
-    //   $( '.slider_table .right').css('font-size', base + max_effect * value + '%' )
-    //   $( '.slider_table .left').css('font-size', base - max_effect * value + '%')
-      
-    //   $('#stance-value').val( value );  
-    //   ConsiderIt.update_unobtrusive_edit_heights($(".slider_label .unobtrusive_edit textarea"));
-    // },
     
     close_segment_click : function(e){
       if ( $(e.target).parents('.point_in_list#expanded').length == 0  && $('body > .ui-widget-overlay').length == 0) {
@@ -803,30 +530,6 @@ ConsiderIt = {
       }
     },
     
-    // set_stance : function(bucket, dontadjust) {
-    //   if (dontadjust) bucket = parseInt(bucket)
-    //   $('.stance_name').text(ConsiderIt.positions.stance_name(bucket));
-    // },
-    
-    // stance_name : function(d) {
-    //   switch (d) {
-    //     case 0: 
-    //       return "strong opposers"
-    //     case 1: 
-    //       return "opposers"
-    //     case 2:
-    //       return "mild opposers"
-    //     case 3:
-    //       return "neutral parties"
-    //     case 4:
-    //       return "mild supporters"
-    //     case 5:
-    //       return "supporters"
-    //     case 6:
-    //       return "strong supporters"
-    //   }
-    // }  
-    
   },
 
   update_unobtrusive_edit_heights : function (els) {
@@ -837,11 +540,6 @@ ConsiderIt = {
     });    
   },
 
-  //update_carousel_heights: function(){
-    // $('.points_other .point_list').css({
-    //   'height': $('.pro_con_list').height()
-    // })
-  //},
   noblecount :  {
     positive_count : function( t_obj, char_area, c_settings, char_rem ) {
       
@@ -895,22 +593,8 @@ ConsiderIt = {
   
 };
 
-})(jQuery);
+_.extend(window.ConsiderIt, me);
 
-
-// TODO: integrate better into code
-
-// FROM: https://github.com/ryanb/complex-form-examples/blob/master/public/javascripts/application.js
-// function remove_fields(link) {
-//   jQuery(link).parents('.point_link_form').remove();
-// }
-
-// function add_fields(link, association, content) {
-//   var new_id = new Date().getTime();
-//   var regexp = new RegExp("new_" + association, "g");
-//   var new_content = content.replace(regexp, new_id);
-//   jQuery(link).parent().prepend(new_content);
-// }
 
 function show_tos(width, height) {
   var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
@@ -929,43 +613,7 @@ function show_tos(width, height) {
   return false;
 }
 
-// function login(provider_url, width, height) {
-//   var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
-//       screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
-//       outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
-//       outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
-//       left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
-//       top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
-//       features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=yes');
 
-//   newwindow = window.open(provider_url, '_blank', features);
-
-//   if (window.focus)
-//     newwindow.focus();
-
-//   return false;
-// }
-
-// function video_window(width, height, link, title) {
-//   var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
-//       screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
-//       outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
-//       outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
-//       left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
-//       top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
-//       features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=no');
-
-//       var tos = window.open(link, title, features);
-
-//   if (tos.focus)
-//     tos.focus();
-
-//   return false;
-// }
-
-
-
-(function($) {
 $.fn.autoGrowInput = function(o) {
 
     o = $.extend({
@@ -1020,7 +668,6 @@ $.fn.autoGrowInput = function(o) {
     return this;
 
 };
-})(jQuery);
 
 //http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
 (function($,d){$.each(readyQ,function(i,f){$(f)});$.each(bindReadyQ,function(i,f){$(d).bind("ready",f)})})(jQuery,document)

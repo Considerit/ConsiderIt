@@ -3,8 +3,6 @@ class ProposalsController < ApplicationController
 
   protect_from_forgery
 
-  #POINTS_PER_PAGE = 4
-
   respond_to :json, :html
   
   def index
@@ -27,12 +25,27 @@ class ProposalsController < ApplicationController
       return
     end
 
+    #TODO: handle permissions
     if cannot?(:read, proposal)
-      store_location request.path
-      redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
+      #store_location request.path
+      #redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
       return
     end
 
+
+  #   @title = "#{@proposal.name}"
+  #   if current_tenant.app_title == 'Living Voters Guide'
+  #     @keywords = "#{current_tenant.app_title} #{@proposal.category} #{@proposal.designator} #{@proposal.name} 2012 election"
+  #     @description = "Hear and engage fellow citizens about #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
+  #   elsif current_tenant.app_title == 'Office of Hawaiian Affairs'
+  #     @keywords = "discuss, deliberate, vote, hawaii, #{@proposal.name}"
+  #     @description = "Hear and engage the Office of Hawaiian Affairs about #{@proposal.name}."
+  #   else
+  #     @keywords = "discuss, deliberate, vote, #{@proposal.name}"
+  #     @description = "Hear and engage about #{@proposal.name}."
+  #   end
+
+  
     @can_update = can? :update, proposal
     @can_destroy = can? :destroy, proposal
 
@@ -66,25 +79,6 @@ class ProposalsController < ApplicationController
       format.html
     end
 
-    # if cannot?(:read, @proposal)
-    #   store_location request.path
-    #   redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
-    #   return  
-    # end
-
-    # @can_update = can? :update, @proposal
-    # @can_destroy = can? :destroy, @proposal
-
-    # @position = current_user ? current_user.positions.published.where(:proposal_id => @proposal.id).first : nil
-
-    # @results_page = true
-    # @page = 1
-
-    #   #@title = "#{@proposal.category} #{@proposal.designator} #{@proposal.short_name}"
-    #   @title = "#{@proposal.short_name}"
-    #   @keywords = "#{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
-    #   @description = "Explore the opinions of citizen participants for #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
-         
   end
 
   def create

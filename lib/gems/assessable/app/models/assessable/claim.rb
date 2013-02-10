@@ -4,6 +4,9 @@ class Assessable::Claim < ActiveRecord::Base
   
   acts_as_tenant(:account)
 
+  #TODO: sanitize before_validation
+  #self.text = Sanitize.clean(self.text, Sanitize::Config::RELAXED)
+
   def self.build_from(obj, user_id, status)
     c = self.new
     c.assessable_id = obj.id 

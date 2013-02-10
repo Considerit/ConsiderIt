@@ -33,7 +33,7 @@ class ConsiderIt.PointView extends Backbone.View
 
   load_data : (callback) ->
     $.get Routes.proposal_point_path(@proposal.model.get('long_id'), @model.id), (data) =>
-      comments = (co.comment for co in $.parseJSON(data.comments))
+      comments = (co.comment for co in data.comments)
       ConsiderIt.comments[@model.id] = new ConsiderIt.CommentList()
       ConsiderIt.comments[@model.id].reset(comments)
 
@@ -44,8 +44,12 @@ class ConsiderIt.PointView extends Backbone.View
     overlay = $('<div class="point_details_overlay">')
     me.proposal.view.$el.find('.proposal_bubble').prepend(overlay)
     
+    me.proposal.view.trigger 'point_details:staged'
+
     me.pointdetailsview = new ConsiderIt.PointDetailsView( {proposal : me.proposal, model: me.model, el: overlay} )
     me.pointdetailsview.render()
+
+
 
   show_point_details_handler : () ->
     if @data_loaded

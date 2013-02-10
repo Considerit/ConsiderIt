@@ -9,7 +9,7 @@ gem "mysql2"
 gem 'thin'
 
 gem "haml"
-gem 'sass-rails'#,   "~> 3.2.3"
+gem 'sass-rails'#,   "3.2.6"
 
 # https://github.com/railsware/js-routes
 gem "js-routes"
@@ -32,7 +32,7 @@ gem "remotipart", "~> 1.0.2"
 gem 'acts_as_tenant'
 
 # https://github.com/sferik/rails_admin
-gem 'rails_admin'
+gem 'rails_admin', "~> 0.0.5"
 
 #https://github.com/ryanb/cancan
 gem 'cancan'
@@ -64,6 +64,9 @@ gem 'delayed_mailhopper'
 # https://github.com/markbates/yamler
 gem 'yamler'
 
+# https://github.com/rgrove/sanitize/
+gem 'sanitize'
+
 # https://github.com/indirect/jquery-rails
 gem 'jquery-rails'
 
@@ -85,8 +88,8 @@ gem 'premailer-rails3'
 # https://github.com/bradphelan/rocket_tag
 # gem 'acts-as-taggable-on'
 
-gem "squeel", "1.0.9"
-gem "rocket_tag", "~> 0.5.6"
+#gem "squeel", "1.0.9"
+#gem "rocket_tag", "~> 0.5.6"
 
 # https://github.com/philnash/bitly
 gem 'bitly'
@@ -124,7 +127,7 @@ end
 
 
 group :assets do
-  gem 'sass-rails'#,   "~> 3.2.3"
+  gem 'sass-rails'#,   "3.2.6"
   gem 'coffee-rails'#, "~> 3.2.1"
   gem 'uglifier'
   gem "asset_sync"

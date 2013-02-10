@@ -46,63 +46,44 @@ class Position < ActiveRecord::Base
     end   
   end       
 
-  # def stance_name
-  #   case stance_bucket
-  #     when 0
-  #       return "strong oppose"
-  #     when 1
-  #       return "oppose"
-  #     when 2
-  #       return "weak oppose"
-  #     when 3
-  #       return "undecided"
-  #     when 4
-  #       return "weak support"
-  #     when 5
-  #       return "support"
-  #     when 6
-  #       return "strong support"
-  #   end
-  # end    
-
-  # def stance_name_adverb
-  #   case stance_bucket
-  #     when 0
-  #       return "strongly oppose"
-  #     when 1
-  #       return "oppose"
-  #     when 2
-  #       return "weakly oppose"
-  #     when 3
-  #       return "are undecided"
-  #     when 4
-  #       return "weakly support"
-  #     when 5
-  #       return "support"
-  #     when 6
-  #       return "strongly support"
-  #   end
-  # end    
+  def stance_name
+    case stance_bucket
+      when 0
+        return "strong oppose"
+      when 1
+        return "oppose"
+      when 2
+        return "weak oppose"
+      when 3
+        return "undecided"
+      when 4
+        return "weak support"
+      when 5
+        return "support"
+      when 6
+        return "strong support"
+    end
+  end      
 
 
-  # def stance_name_singular
-  #   case stance_bucket
-  #     when 0
-  #       return "strongly opposes"
-  #     when 1
-  #       return "opposes"
-  #     when 2
-  #       return "weakly opposes"
-  #     when 3
-  #       return "is neutral about"
-  #     when 4
-  #       return "weakly supports"
-  #     when 5
-  #       return "supports"
-  #     when 6
-  #       return "strongly supports"
-  #   end
-  # end   
+  def stance_name_singular
+    case stance_bucket
+      when 0
+        return "strongly opposes"
+      when 1
+        return "opposes"
+      when 2
+        return "weakly opposes"
+      when 3
+        return "is neutral about"
+      when 4
+        return "weakly supports"
+      when 5
+        return "supports"
+      when 6
+        return "strongly supports"
+    end
+  end   
 
 end
 

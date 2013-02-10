@@ -1,10 +1,12 @@
-# encoding: utf-8
+
+
 module Assessable
   module Routes
 
     def assessable_routes
       # user facing
-      resources :assessment, :controller => "assessable::assessable", :only => [:index, :create, :edit, :update] do 
+      
+      resources :assessment, :path => "dashboard/assessment", :controller => "assessable::assessable", :only => [:index, :create, :edit, :update] do 
         match "claim/create" => 'assessable::assessable#create_claim', :via => :post, :as => 'create_claim'
         match "claim/:id/update" => 'assessable::assessable#update_claim', :via => :put, :as => 'update_claim'
         match "claim/:id/destroy" => 'assessable::assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'

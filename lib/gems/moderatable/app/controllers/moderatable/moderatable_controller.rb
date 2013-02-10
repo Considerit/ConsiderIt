@@ -1,4 +1,6 @@
 class Moderatable::ModeratableController < Dashboard::DashboardController
+  layout 'admin'
+
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to root_path, :notice => 'Please login first to access the moderation panel'
     return

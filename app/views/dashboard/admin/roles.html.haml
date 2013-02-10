@@ -21,7 +21,7 @@
                 = image_tag 'edit_page.png'
 
               .edit_role.detachable
-                = form_for user, :url => update_role_path(user), :remote => true do |f|
+                = form_for user, :url => update_role_path(user), :remote => true, :method => :post do |f|
                   %h2
                     #{user.username.length > 0 ? user.username.possessive : user.email.possessive} role
 

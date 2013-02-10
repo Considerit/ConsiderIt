@@ -1,5 +1,6 @@
 class Dashboard::UsersController < Dashboard::DashboardController
 
+  layout 'admin'
   def show
     @sidebar_context = :user
     @selected_navigation = :profile

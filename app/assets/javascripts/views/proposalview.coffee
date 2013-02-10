@@ -8,62 +8,63 @@ class ConsiderIt.ProposalView extends Backbone.View
     @proposal = ConsiderIt.proposals[@long_id]
     @data_loaded = false
 
-
   render : () -> 
 
-    @$el.html ConsiderIt.ProposalView.template($.extend({}, this.model.attributes, {
+    @$el.html ConsiderIt.ProposalView.template($.extend({}, @model.attributes, {
         title : this.model.title() 
         top_pro : @proposal.top_pro 
         top_con : @proposal.top_con
+        tile_size : @fit_participants($.parseJSON(@model.get('participants')).length)
       }))
 
-    delay = (ms, func) -> setTimeout func, ms
-    me = this
-    delay 0, -> me.fit_participants(me)
-
-    #me.fit_participants(me)
-
-    #@fit_participants()
     this
 
 
+  set_data : (data) =>
+    _.extend(@proposal, {
+      points : {
+        pros : _.map(data.points.pros, (pnt) -> new ConsiderIt.Point(pnt.point))
+        cons : _.map(data.points.cons, (pnt) -> new ConsiderIt.Point(pnt.point))
+        included_pros : new ConsiderIt.PointList()
+        included_cons : new ConsiderIt.PointList()
+        peer_pros : new ConsiderIt.PaginatedPointList()
+        peer_cons : new ConsiderIt.PaginatedPointList()
+        viewed_points : {}    
+        written_points : []
+      }
+      positions : _.object(_.map(data.positions, (pos) -> [pos.position.user_id, new ConsiderIt.Position(pos.position)]))
+      position : new ConsiderIt.Position(data.position.position)
+    })
+
+    @proposal.positions[@proposal.position.user_id] = @proposal.position
+
+    # separating points out into peers and included
+    for [source_points, source_included, dest_included, dest_peer] in [[@proposal.points.pros, data.points.included_pros, @proposal.points.included_pros, @proposal.points.peer_pros], [@proposal.points.cons, data.points.included_cons, @proposal.points.included_cons, @proposal.points.peer_cons]]
+      indexed_inclusions = _.object( ([pnt.point.id, true] for pnt in source_included)  )
+      peers = []
+      included = []
+      for pnt in source_points
+        if pnt.id of indexed_inclusions
+          included.push(pnt)
+        else
+          peers.push(pnt)
+
+      dest_peer.reset(peers)
+      dest_included.reset(included)
+
+    @data_loaded = true
+    @listenTo ConsiderIt.app, 'user:signin', @post_signin
+    @listenTo ConsiderIt.app, 'user:signout', @post_signout
+    @trigger 'proposal:data_loaded'
+
+
   load_data : (callback, callback_params) ->
-    $.get Routes.proposal_path(@long_id), (data) =>
-      _.extend(@proposal, {
-        points : {
-          pros : _.map(data.points.pros, (pnt) -> new ConsiderIt.Point(pnt.point))
-          cons : _.map(data.points.cons, (pnt) -> new ConsiderIt.Point(pnt.point))
-          included_pros : new ConsiderIt.PointList()
-          included_cons : new ConsiderIt.PointList()
-          peer_pros : new ConsiderIt.PaginatedPointList()
-          peer_cons : new ConsiderIt.PaginatedPointList()
-          viewed_points : {}    
-          written_points : []
-        }
-        positions : _.object(_.map(data.positions, (pos) -> [pos.position.user_id, new ConsiderIt.Position(pos.position)]))
-        position : new ConsiderIt.Position(data.position.position)
-      })
+    @once 'proposal:data_loaded', => callback(this, callback_params)
+    if ConsiderIt.current_proposal && ConsiderIt.current_proposal.long_id == @long_id
+      @set_data(ConsiderIt.current_proposal.data)
+    else
+      $.get Routes.proposal_path(@long_id), @set_data
 
-      @proposal.positions[@proposal.position.user_id] = @proposal.position
-
-      # separating points out into peers and included
-      for [source_points, source_included, dest_included, dest_peer] in [[@proposal.points.pros, data.points.included_pros, @proposal.points.included_pros, @proposal.points.peer_pros], [@proposal.points.cons, data.points.included_cons, @proposal.points.included_cons, @proposal.points.peer_cons]]
-        indexed_inclusions = _.object( ([pnt.point.id, true] for pnt in source_included)  )
-        peers = []
-        included = []
-        for pnt in source_points
-          if pnt.id of indexed_inclusions
-            included.push(pnt)
-          else
-            peers.push(pnt)
-
-        dest_peer.reset(peers)
-        dest_included.reset(included)
-
-      @data_loaded = true
-      @listenTo ConsiderIt.app, 'user:signin', @post_signin
-      @listenTo ConsiderIt.app, 'user:signout', @post_signout
-      callback this, callback_params
 
   merge_existing_position_into_current : (existing_position) ->
     existing_position.subsume(@proposal.position)
@@ -117,6 +118,10 @@ class ConsiderIt.ProposalView extends Backbone.View
     
     me.proposal.views.take_position.render()
 
+    $('html, body').animate {scrollTop: me.$el.offset().top - 50}, 1000
+
+
+
   show_results : (me) ->
     _.each me.proposal.views, (vw) -> 
       delete vw.remove()
@@ -134,17 +139,22 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     me.proposal.views.show_results.render()
 
+    $('html, body').animate {scrollTop: me.$el.offset().top - 50}, 1000
+
+
   take_position_handler : () ->
-    if !@data_loaded
-      @load_data(@take_position)
-    else
+    if @data_loaded
       @take_position(this)
+    else
+      @load_data(@take_position)
+
 
   show_results_handler : () ->
-    if !@data_loaded
-      @load_data(@show_results)
-    else
+    if @data_loaded
       @show_results(this)
+    else
+      @load_data(@show_results)
+
 
     #@state = 3
 
@@ -177,16 +187,13 @@ class ConsiderIt.ProposalView extends Backbone.View
     # if data is already loaded, then the PointListView is already properly handling this
 
 
-  fit_participants : (me) ->
-    $container = me.$el.find('.participants')
-    $container.height(me.$el.find('.proposal_bubble').height())
-    width = $container.width()
-    height = Math.min(400, $container.height())
-    $participants = $container.find('img')
-    tile_size = Math.min(50, ConsiderIt.utils.get_tile_size(width, height, $participants.length))
+  fit_participants : (num_participants) ->
+    width = 150
+    height = 250
+    Math.min 50, ConsiderIt.utils.get_tile_size(width, height, num_participants)
 
-    $participants
-      .css({'width': tile_size, 'height': tile_size})
+    #$participants
+    #  .css({'width': tile_size, 'height': tile_size})
 
 
 

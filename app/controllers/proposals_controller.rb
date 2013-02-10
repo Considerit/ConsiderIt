@@ -9,103 +9,62 @@ class ProposalsController < ApplicationController
   
   def index
 
-    # if request.xhr?
-    #   filter_by_metric = params.has_key? :metric
-    #   filter_by_tag = params.has_key? :tag
-
-    #   session[:filters] ||= {:tag => nil, :metric => 'activity'}
-
-    #   if filter_by_tag
-    #     # if the user has clicked on the selected tag, then unselect
-    #     session[:filters][:tag] = session[:filters][:tag] == params[:tag] ? nil : params[:tag]
-    #   elsif filter_by_metric
-    #     session[:filters][:metric] = params[:metric]
-    #   end
-
-    #   proposal_list = session[:filters][:tag] ? Proposal.tagged_with(session[:filters][:tag]) : Proposal
-    #   proposal_list = proposal_list.public.active.order("#{session[:filters][:metric]} DESC").limit(100)
-
-    #   proposals = render_to_string :partial => "proposals/list_output/list", :locals => { 
-    #     :proposals => proposal_list, :style => 'blocks', :hide_initially => false }
-    #   render :json => {:proposals => proposals, :current_tag => session[:filters][:tag], :current_metric => session[:filters][:metric]}.to_json
-    # else
-    #   render
-    # end
-
   end
 
-  # Shows the proposal. If it is a json request, it will just return the voter segments
   def show
 
-    if request.xhr?
-      @user = current_user
-   
-      if params.has_key?(:id)
-        @proposal = Proposal.find(params[:id])
-      elsif params.has_key?(:long_id)
-        @proposal = Proposal.find_by_long_id(params[:long_id])
-      else
-        redirect_to root_path, :notice => 'Invalid request.'
-        return
-      end
-
-      if !@proposal
-        redirect_to root_path, :notice => 'That proposal does not exist.'
-        return
-      end
-
-      if cannot?(:read, @proposal)
-        store_location request.path
-        redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
-        return
-      end
-
-      @can_update = can? :update, @proposal
-      @can_destroy = can? :destroy, @proposal
-
-      ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
-
-      @position = current_user ? current_user.positions.published.where(:proposal_id => @proposal.id).last : !session["position-#{@proposal.id}"].nil? ? Position.find(session["position-#{@proposal.id}"]) : nil
-      @position ||= Position.create!( 
-        :stance => 0.0, 
-        :proposal_id => @proposal.id, 
-        :user_id => @user ? @user.id : nil,
-        :account_id => current_tenant.id
-      )
-
-      #TODO: filter user id from points & positions when not that user & anonymous set
-      #TODO: return just "points" and "included points" and let client sort through them
-      response = {
-        :points => {
-          :pros => @proposal.points.viewable.pros.public_fields,
-          :cons => @proposal.points.viewable.cons.public_fields,
-          :included_pros => Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).where(:is_pro => true).select('points.id') + Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => true).select('points.id'),
-          :included_cons => Point.included_by_stored(current_user, @proposal, session[@proposal.id][:deleted_points].keys).where(:is_pro => false).select('points.id') + Point.included_by_unstored(session[@proposal.id][:included_points].keys, @proposal).where(:is_pro => false).select('points.id')
-          },
-        #TODO: the last where prevents db caching; can be avoided
-        :positions => @proposal.positions.published.where("id != #{@position.id}").public_fields,
-        :position => @position
-      }
-      render :json => response.to_json
+    if params.has_key?(:id)
+      proposal = Proposal.find(params[:id])
+    elsif params.has_key?(:long_id)
+      proposal = Proposal.find_by_long_id(params[:long_id])
+    else
+      redirect_to root_path, :notice => 'Invalid request.'
+      return
     end
-    
-    # @user = current_user
- 
-    # if params.has_key?(:id)
-    #   @proposal = Proposal.find(params[:id])
-    # elsif params.has_key?(:long_id)
-    #   @proposal = Proposal.find_by_long_id(params[:long_id])
-    # elsif params.has_key?(:admin_id)
-    #   @proposal = Proposal.find_by_admin_id(params[:admin_id])
-    # else
-    #   redirect_to root_path, :notice => 'Invalid request.'
-    #   return
-    # end
 
-    # if !@proposal
-    #   redirect_to root_path, :notice => 'That proposal does not exist.'
-    #   return
-    # end
+    if !proposal
+      redirect_to root_path, :notice => 'That proposal does not exist.'
+      return
+    end
+
+    if cannot?(:read, proposal)
+      store_location request.path
+      redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
+      return
+    end
+
+    @can_update = can? :update, proposal
+    @can_destroy = can? :destroy, proposal
+
+    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
+
+    position = current_user ? current_user.positions.published.where(:proposal_id => proposal.id).last : !session["position-#{proposal.id}"].nil? ? Position.find(session["position-#{proposal.id}"]) : nil
+    position ||= Position.create!( 
+      :stance => 0.0, 
+      :proposal_id => proposal.id, 
+      :user_id => current_user ? current_user.id : nil,
+      :account_id => current_tenant.id
+    )
+
+    #TODO: return just "points" and "included points" and let client sort through them
+    response = {
+      :points => {
+        :pros => Point.mask_anonymous_users(proposal.points.viewable.pros.public_fields, current_user),
+        :cons => Point.mask_anonymous_users(proposal.points.viewable.cons.public_fields, current_user),
+        :included_pros => Point.included_by_stored(current_user, proposal, session[proposal.id][:deleted_points].keys).where(:is_pro => true).select('points.id') + Point.included_by_unstored(session[proposal.id][:included_points].keys, proposal).where(:is_pro => true).select('points.id'),
+        :included_cons => Point.included_by_stored(current_user, proposal, session[proposal.id][:deleted_points].keys).where(:is_pro => false).select('points.id') + Point.included_by_unstored(session[proposal.id][:included_points].keys, proposal).where(:is_pro => false).select('points.id')
+        },
+      #TODO: the last where prevents db caching; can be avoided
+      :positions => proposal.positions.published.where("id != #{position.id}").public_fields,
+      :position => position
+    }
+    
+    #@proposal = {:data => response, :long_id => @proposal.long_id}.to_json
+
+    respond_to do |format|
+      format.json {render :json => response}
+      format.html
+    end
 
     # if cannot?(:read, @proposal)
     #   store_location request.path
@@ -121,78 +80,40 @@ class ProposalsController < ApplicationController
     # @results_page = true
     # @page = 1
 
-    # if !!request.xhr?
-    #   @segments = Array.new(7)
-    #   (0..6).each do |bucket|
-    #     qry = @proposal.points.viewable.includes(:user).ranked_for_stance_segment(bucket)
-    #     @segments[bucket] = [qry.pros.page( 1 ).per( POINTS_PER_PAGE ),
-    #       qry.cons.page( 1 ).per( POINTS_PER_PAGE )]
-    #   end
-
-    #   segments = render_to_string :partial => 'proposals/segment_positions'
-    
-    #   response = {
-    #     :segments => segments,
-    #     :success => true
-    #   }
-    #   render :json => response.to_json
-
-    # else
     #   #@title = "#{@proposal.category} #{@proposal.designator} #{@proposal.short_name}"
     #   @title = "#{@proposal.short_name}"
     #   @keywords = "#{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.name}"
     #   @description = "Explore the opinions of citizen participants for #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
-      
-    #   @positions = @proposal.positions.published.includes(:user)
-    #   @pro_points = @proposal.points.viewable.includes(:user).pros.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
-    #   @con_points = @proposal.points.viewable.includes(:user).cons.ranked_overall.page( 1 ).per( POINTS_PER_PAGE )
-
-    # end
-
- 
-    #Point.update_relative_scores
-
-    #@comments = @proposal.root_comments
-    #@comment = Comment.new      
-    #@reflectable = true    
-    
+         
   end
-
-
-  # def index
-  #   headers['Content-Type'] = 'application/xml'
-
-  #   @proposals = Proposal.all
-  #   respond_to do |format|
-  #     format.xml {  } # sitemap is a named scope
-  #     format.html {  }
-  #   end
-
-  # end
 
   def create
 
+
+    description = params[:proposal][:description] || ''
+
+    if current_tenant.default_hashtags && description.index('#').nil?
+      description += " #{current_tenant.default_hashtags}"
+    end
+
     # TODO: handle remote possibility of name collisions?
-    params[:proposal][:long_id] = SecureRandom.hex(5)
-    params[:proposal][:admin_id] = SecureRandom.hex(6)
-    params[:proposal][:description] ||= ''
+    # TODO: explicitly grab parameters
+    params[:proposal].update({
+      :long_id => SecureRandom.hex(5),
+      :admin_id => SecureRandom.hex(6),
+      :user_id => current_user ? current_user.id : nil,
+      :description => description
+    })
 
-    if current_user
-      params[:proposal][:user_id] = current_user.id
-    end
-
-    if current_tenant.default_hashtags && params[:proposal][:description].index('#').nil?
-      params[:proposal][:description] += " #{current_tenant.default_hashtags}"
-    end
-    @proposal = Proposal.create(params[:proposal])
-    authorize! :create, @proposal
-    @proposal.save
-    @proposal.track!
+    proposal = Proposal.create(params[:proposal])
+    authorize! :create, proposal
+    proposal.save
+    proposal.track!
 
     current_tenant.follow!(current_user, :follow => true, :explicit => false)
-    @proposal.follow!(current_user, :follow => true, :explicit => false)
+    proposal.follow!(current_user, :follow => true, :explicit => false)
 
-    redirect_to new_proposal_position_path(@proposal.long_id)
+    render :json => proposal
     
   end
 
@@ -206,6 +127,7 @@ class ProposalsController < ApplicationController
       before_attributes = @proposal.attributes
     end
 
+    # TODO: explicitly grab params
     @proposal.update_attributes!(params[:proposal])
 
     if publicity_changed

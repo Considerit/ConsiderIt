@@ -6,6 +6,12 @@ class Assessable::Request < ActiveRecord::Base
 
   acts_as_tenant(:account)
 
+
+  before_save do
+    self.suggestion = Sanitize.clean(self.suggestion)
+  end
+
+
   def self.build_from(obj, user_id, status)
     c = self.new
     c.assessable_id = obj.id 

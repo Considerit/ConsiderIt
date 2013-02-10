@@ -57,7 +57,6 @@ class ConsiderIt.PositionView extends Backbone.View
       @create_slider()
 
     @show()
-
     this
 
   bindings : 

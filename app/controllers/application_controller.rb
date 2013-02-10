@@ -41,14 +41,23 @@ class ApplicationController < ActionController::Base
     if !request.xhr?
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id}",  ))
       @proposals = {}
-      for proposal in Proposal.active.select('id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active, top_pro, top_con, participants')
-        @proposals[proposal.long_id] = {
-          :model => proposal.to_json,
-          :top_con => proposal.top_con ? Point.find(proposal.top_con).to_json : nil,
-          :top_pro => proposal.top_pro ? Point.find(proposal.top_pro).to_json : nil
-        } 
 
+      top = Proposal.active.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
+            Proposal.active.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
+      
+      top_points = {}
+      Point.where('id in (?)', top).public_fields.each do |pnt|
+        top_points[pnt.id] = pnt
       end
+
+      Proposal.active.public_fields.each do |proposal|
+        @proposals[proposal.long_id] = {
+          :model => proposal,
+          :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,
+          :top_pro => proposal.top_pro ? top_points[proposal.top_pro] : nil,
+        } 
+      end
+
     end
 
     super

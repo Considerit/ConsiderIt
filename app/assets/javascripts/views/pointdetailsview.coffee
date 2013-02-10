@@ -4,6 +4,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
   initialize : (options) -> 
     @proposal = options.proposal
+    @listenTo @proposal.view, 'point_details:staged', -> @remove()
 
   render : () -> 
     @$el.html ConsiderIt.PointDetailsView.template($.extend({}, @model.attributes, {
@@ -19,6 +20,9 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       commentable_type: 'Point'})
     @commentsview.renderAllItems()
     this
+
+    $('html, body').animate {scrollTop: @$el.offset().top - 50}, 1000
+
 
   events : 
     'click .close' : 'close_details'

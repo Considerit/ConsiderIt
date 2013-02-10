@@ -1,24 +1,36 @@
 // ...
 //= require jquery
 //= require jquery_ujs
-//= require jquery-ui
-//= require jquery.noblecount.min.js
-//= require jquery.example.min.js
-//= require jquery.dynamic_list.min.js
-//= require jquery.autoresize.js
-//= require jquery.html5form.js
-//= require jquery.touch-punch.js
-//= require redactor.js
-//= require jquery.inline_labels.js
-//= require jquery.fixedheadertable.min.js
-//= require jquery.fileinput.js
-//= require javascripts/acts_as_followable.js
-//= require ZeroClipboard.js
-//= require turbolinks
-//= require considerit
-//= require javascripts/moderatable.js
-//= require pdfobject.js
+//= require underscore
+//= require backbone
+//= require backbone_rails_sync
+//= require Backbone.Rails
+//= require backbone.query-parameters
+//= require backbone.stickit
+
+//= require jquery.remotipart
+//= require jquery.nouislider
+//= require jquery.noblecount.min
+//= require jquery.example.min
+//= require jquery.autoresize
+//= require jquery.h5validate
+//= require jquery.touch-punch
+//= require jquery.inline_labels
+//= require jquery.fileinput
+//= require ZeroClipboard
+//= require pdfobject
 //= require sevenup.min
 //= require sevenup_black.min
-//= require jquery.flot.js
-//= require jquery.flot.selection.js
+
+//= require js-routes
+//= require main
+//= require considerit
+//= require_tree ./backbone
+//= require_tree ./models
+//= require_tree ./collections
+//= require_tree ./views
+//= require_tree ./views_list
+//= require router
+
+//= require javascripts/acts_as_followable
+

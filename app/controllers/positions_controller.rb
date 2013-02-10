@@ -62,12 +62,10 @@ class PositionsController < ApplicationController
 
     already_published = position.published
 
-    (stance, bucket) = get_stance_val_from_params(params)
     update_attrs = {
       :user_id => current_user.id,
       :explanation => params[:position][:explanation],
-      :stance => stance,
-      :stance_bucket => bucket,
+      :stance => params[:position][:stance],
       :proposal => proposal
     }
 
@@ -303,6 +301,7 @@ protected
   #   @page = 1
   #end
 
+  #TODO: move to before save ?
   def save_actions ( position )
     actions = session[position.proposal_id]
 
@@ -398,19 +397,6 @@ protected
       )
     end
 
-  end
-
-  def get_stance_val_from_params( params )
-
-    stance = Float(params[:position][:stance])
-    if stance > 1
-      stance = 1
-    elsif stance < -1
-      stance = -1
-    end
-    bucket = Position.get_bucket(stance)
-    
-    return stance, bucket
   end
       
       

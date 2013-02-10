@@ -7,6 +7,7 @@ class AccountsController < ApplicationController
       return
     end
 
+    # TODO: explicitly grab params
     current_tenant.update_attributes(params[:account])
     redirect_to request.referrer
 

@@ -1,5 +1,7 @@
 module Assessable
   class Engine < ::Rails::Engine #:nodoc:
+    #isolate_namespace Assessable
+
   end
 
   class AssessableRailtie < ::Rails::Railtie

@@ -4,9 +4,6 @@ _.templateSettings =
   interpolate : /\{\{(.+?)\}\}/g
   evaluate : /\(\((.+?)\)\)/g
 
-#_.extend(ConsiderIt, {Models: {}, Collections: {}, Views: {}})
-
-
 window.PaperClip =
   get_avatar_url : (user, size, fname) ->
     if fname?
@@ -110,6 +107,9 @@ $.event.special.destroyed =
 
 $(document).on "click", "a[href^='/']", (event) ->
   href = $(event.currentTarget).attr('href')
+
+  if href[1..9] == 'dashboard'
+    return true
 
   # Allow shift+click for new tabs, etc.
   if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey

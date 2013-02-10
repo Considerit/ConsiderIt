@@ -53,7 +53,7 @@
 
 
 
-                = form_for :moderate, :url => moderate_create_path, :method => :get, :remote => true do |f|
+                = form_for :moderate, :url => dashboard_moderate_create_path, :method => :get, :remote => true do |f|
                   = f.hidden_field :moderatable_id, :value => obj.id
                   = f.hidden_field :moderatable_type, :value => obj.class.name
                   = f.hidden_field :status, :value => existing_moderation ? @existing_moderations[mc.name][obj.id].status : nil
@@ -81,7 +81,7 @@
   function init(){
     $('#moderate .table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, height: 700 });
 
-    $(document).on('click', ''#moderate #tabs' a.inactive', function(){
+    $(document).on('click', '#moderate #tabs a.inactive', function(){
       var cls = $(this).attr('class_name');
       $(this).siblings('.active').toggleClass('active inactive');
       $(this).toggleClass('active inactive');

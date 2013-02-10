@@ -1,13 +1,4 @@
-
-
--#= javascript_include_tag "highstock"
--#= javascript_include_tag "exporting"
-
--# = javascript_include_tag "jquery.flot.js"
--# = javascript_include_tag "jquery.flot.selection.js"
-
 = stylesheet_link_tag 'jquery.flot'
-
 
 #analytics
   :javascript
@@ -44,8 +35,6 @@
         function init(){
           var d = #{s[style][:data].to_json};
           
-
-          
           var plot = $.plot($("#placeholder-#{s[:title]} .#{style.to_s} .graph"), [d], analytics_options);
 
           var overview = $.plot($("#placeholder-#{s[:title]} .#{style.to_s} .overview"), [d], {
@@ -61,8 +50,8 @@
 
         }
 
-  $(document).ready(function () {init();});
-  if($(window)){$(window).bind('page:change', function() {init();});}
+        $(document).ready(function () {init();});
+        if($(window)){$(window).bind('page:change', function() {init();});}
 
 
         })();

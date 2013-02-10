@@ -6,6 +6,8 @@ class Commentable::Comment < ActiveRecord::Base
     Commentable::Comment.where('id > -1') #tacked on this where in order to enable chaining
   }
 
+  scope :public_fields, select('body, user_id, moderation_status')
+  
   has_paper_trail :only => [:title, :body, :subject, :user_id]  
   
   #acts_as_nested_set :scope => [:commentable_id, :commentable_type]
@@ -16,6 +18,10 @@ class Commentable::Comment < ActiveRecord::Base
   belongs_to :commentable, :polymorphic=>true, :touch => true
 
   acts_as_tenant(:account)
+
+  before_save do 
+    self.body = Sanitize.clean(self.explanation, Sanitize::Config::RELAXED)
+  end
 
   # Helper class method that allows you to build a comment
   # by passing a commentable object, a user_id, and comment text

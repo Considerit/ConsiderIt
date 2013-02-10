@@ -5,7 +5,7 @@ class Position < ActiveRecord::Base
   has_many :points
   has_many :point_listings
   has_many :comments, :as => :commentable, :dependent => :destroy
-
+  
   has_paper_trail
   is_commentable
   is_trackable
@@ -15,7 +15,11 @@ class Position < ActiveRecord::Base
   
   scope :published, where( :published => true )
   scope :public_fields, select( [:created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_bucket, :user_id])
-    
+
+  before_save do 
+    self.explanation = Sanitize.clean(self.explanation, Sanitize::Config::RELAXED)
+    self.stance_bucket = Position.get_bucket(self.stance)
+  end 
 
   def subsume( subsumed_position )
     subsumed_position.point_listings.update_all({:user_id => user_id, :position_id => id})

@@ -53,10 +53,13 @@ module ConsiderIt
 
     config.assets.version = '1.0'
 
+    config.assets.initialize_on_precompile = true
+
     config.action_mailer.delivery_method = :mailhopper
 
     config.force_ssl = false
     
+
     # Enable FS storage for Paperclip
     Paperclip::Attachment.default_options.merge!({
       :path => ":rails_root/public/system/:attachment/:id/:style/:filename",

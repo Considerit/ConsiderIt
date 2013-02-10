@@ -1,8 +1,6 @@
 :javascript
   $(document).ready(function(){
 
-
-
     //var proposals = { ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select("SELECT id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active FROM proposals where account_id=#{current_tenant.id} AND active=1")) };
 
     //var proposals = [];
@@ -16,9 +14,9 @@
         positions : null,
         view : null,
         views : {},
-        model : new ConsiderIt.Proposal($.parseJSON(prop.model).proposal), 
-        top_con : prop.top_con ? $.parseJSON(prop.top_con).point : null,
-        top_pro : prop.top_pro ? $.parseJSON(prop.top_pro).point : null
+        model : new ConsiderIt.Proposal(prop.model.proposal), 
+        top_con : prop.top_con ? prop.top_con.point : null,
+        top_pro : prop.top_pro ? prop.top_pro.point : null
       });
     }
 
@@ -27,10 +25,12 @@
     //var users = { User.select("id, name, avatar_file_name").to_json };
     var users = #{@users};
     ConsiderIt.users = _.object(_.map(users, function(v){ return [v.id, new ConsiderIt.User(v)];})) ;
+    ConsiderIt.users[-1] = new ConsiderIt.User({name: 'Anonymous'});
     ConsiderIt.comments = {}
 
     ConsiderIt.current_user = #{current_user ? "ConsiderIt.users[#{current_user.id}]" : 'new ConsiderIt.User'};
 
+    ConsiderIt.current_proposal = #{@proposal ? @proposal : 'null'};
 
     ConsiderIt.router = new ConsiderIt.Router();
 

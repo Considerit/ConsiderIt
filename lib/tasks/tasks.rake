@@ -26,7 +26,7 @@ namespace :cache do
           data = [File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}")].pack('m')
           avatars[:small][user.id] = "data:image/jpg;base64,#{data}"
         end
-        File.open("public/system/cache/#{accnt.identifier}.js", 'w') do |f|
+        File.open("public/system/cache/#{accnt.identifier}.json", 'w') do |f|
           f.puts("#{avatars.to_json};")
         end
       end

@@ -4,9 +4,16 @@ _.templateSettings =
   interpolate : /\{\{(.+?)\}\}/g
   evaluate : /\(\((.+?)\)\)/g
 
+
+
+
 window.PaperClip =
   get_avatar_url : (user, size, fname) ->
-    if fname?
+    return '' if size == 'small' && !window.cached_avatars_loaded
+
+    if size == 'small' && window.avatar_data['small'][user.id]?
+      window.avatar_data['small'][user.id]
+    else if fname?
       "/system/avatars/#{user.id}/#{size}/#{fname}"
     else if user.get('avatar_file_name')
       "/system/avatars/#{user.id}/#{size}/#{user.get('avatar_file_name')}"
@@ -14,6 +21,19 @@ window.PaperClip =
       "/system/default_avatar/#{size}_default-profile-pic.png"
 
 $(document).ready () ->
+  window.avatars = 
+    load_avatars : ->
+      $('img.avatar-replace-small').each ->
+        user_id = $(this).data('id')
+        if window.avatar_data['small'][user_id]?
+          this.src = window.avatar_data['small'][user_id];
+        else
+          this.src = window.PaperClip.get_avatar_url(ConsiderIt.users[user_id], 'small')
+
+
+  if window.cached_avatars_loaded
+    window.avatars.load_avatars()
+
     # google analytics
   ( () ->
     ga = document.createElement('script')

@@ -4,6 +4,7 @@ class ConsiderIt.AppView extends Backbone.View
   #@itemView : ConsiderIt.ProposalView
 
   initialize : (options) -> 
+
     @proposals = new ConsiderIt.ProposalList()
     @proposals.reset( _.pluck(_.values(ConsiderIt.proposals), 'model'))
 
@@ -24,7 +25,6 @@ class ConsiderIt.AppView extends Backbone.View
     @proposalsview.renderAllItems()
     @usermanagerview.render()
 
-    console.log('rendering app view')
     this
 
   #route handlers

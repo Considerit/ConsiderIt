@@ -4,7 +4,6 @@
 //= require underscore
 
 //= require jquery.remotipart
-//= require jquery.example.min
 //= require jquery.autoresize
 //= require jquery.h5validate
 //= require jquery.touch-punch

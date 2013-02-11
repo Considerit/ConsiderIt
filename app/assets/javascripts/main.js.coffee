@@ -137,6 +137,3 @@ $(document).on "click", "a[href^='/']", (event) ->
     # Instruct Backbone to trigger routing events
     ConsiderIt.router.navigate(href, { trigger : true })
     return false
-
-  
-        

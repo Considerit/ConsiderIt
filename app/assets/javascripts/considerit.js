@@ -50,17 +50,17 @@ me = {
   },
   per_request : function() {
 
-    $('.new_comment .is_counted, .pro_con_list .is_counted').each(function(){
-      if( !$(this).data('has_noblecount') ){        
+    // $('.new_comment .is_counted, .pro_con_list .is_counted').each(function(){
+    //   if( !$(this).data('has_noblecount') ){        
 
-        $(this).NobleCount($(this).siblings('.count'), {
-          block_negative: true,
-          max_chars : parseInt($(this).siblings('.count').text())          
-          //on_negative : ConsiderIt.noblecount.negative_count,
-          //on_positive : ConsiderIt.noblecount.positive_count
-        });
-      }
-    });  
+    //     $(this).NobleCount($(this).siblings('.count'), {
+    //       block_negative: true,
+    //       max_chars : parseInt($(this).siblings('.count').text())          
+    //       //on_negative : ConsiderIt.noblecount.negative_count,
+    //       //on_positive : ConsiderIt.noblecount.positive_count
+    //     });
+    //   }
+    // });  
 
 
     $('[placeholder]').inlined_labels();
@@ -497,56 +497,56 @@ me = {
     });    
   },
 
-  noblecount :  {
-    positive_count : function( t_obj, char_area, c_settings, char_rem ) {
+  // noblecount :  {
+  //   positive_count : function( t_obj, char_area, c_settings, char_rem ) {
       
-      if ( char_area.hasClass( 'too_many_chars' ) ) {
-        var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
+  //     if ( char_area.hasClass( 'too_many_chars' ) ) {
+  //       var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
 
-        char_area.removeClass( 'too_many_chars' ).css( {
-          'font-weight' : 'normal',
-          'font-size' : '125%'
-        } );
+  //       char_area.removeClass( 'too_many_chars' ).css( {
+  //         'font-weight' : 'normal',
+  //         'font-size' : '125%'
+  //       } );
     
-        submit_button
-            .animate( {
-              opacity : 1,
-              duration : 50
-            } ).attr( 'disabled', false ).css( 'cursor', 'pointer' );
-        t_obj.data( 'disabled', false );
-      } else if ( char_rem < c_settings.max_chars && $( t_obj ).data( 'disabled' ) ) {
-        var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
+  //       submit_button
+  //           .animate( {
+  //             opacity : 1,
+  //             duration : 50
+  //           } ).attr( 'disabled', false ).css( 'cursor', 'pointer' );
+  //       t_obj.data( 'disabled', false );
+  //     } else if ( char_rem < c_settings.max_chars && $( t_obj ).data( 'disabled' ) ) {
+  //       var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
 
-        t_obj.data( 'disabled', false );
-        submit_button
-            .attr( 'disabled', false );
-      } else if ( char_rem == c_settings.max_chars ) {
+  //       t_obj.data( 'disabled', false );
+  //       submit_button
+  //           .attr( 'disabled', false );
+  //     } else if ( char_rem == c_settings.max_chars ) {
 
-        var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
+  //       var submit_button = t_obj.parents( 'form' ).find( 'input[type="submit"]' );
 
-        t_obj.data( 'disabled', true );
-        submit_button
-            .attr( 'disabled', true );
-      }
+  //       t_obj.data( 'disabled', true );
+  //       submit_button
+  //           .attr( 'disabled', true );
+  //     }
       
-    },    
-    negative_count : function( t_obj, char_area, c_settings, char_rem ) {
-      if ( !char_area.hasClass( 'too_many_chars' ) ) {
-        char_area.addClass( 'too_many_chars' ).css( {
-          'font-weight' : 'bold',
-          'font-size' : '175%'
-        } );
+  //   },    
+  //   negative_count : function( t_obj, char_area, c_settings, char_rem ) {
+  //     if ( !char_area.hasClass( 'too_many_chars' ) ) {
+  //       char_area.addClass( 'too_many_chars' ).css( {
+  //         'font-weight' : 'bold',
+  //         'font-size' : '175%'
+  //       } );
     
-        t_obj.parents( parent_selector ).find( submit_selector )
-            .animate( {
-              opacity : .25,
-              duration : 50
-            } ).attr( 'disabled', true ).css( 'cursor', 'default' );
-        t_obj.data( 'disabled', true );
+  //       t_obj.parents( parent_selector ).find( submit_selector )
+  //           .animate( {
+  //             opacity : .25,
+  //             duration : 50
+  //           } ).attr( 'disabled', true ).css( 'cursor', 'default' );
+  //       t_obj.data( 'disabled', true );
     
-      } 
-    }
-  }
+  //     } 
+  //   }
+  // }
   
 };
 

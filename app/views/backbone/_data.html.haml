@@ -27,6 +27,7 @@
     ConsiderIt.users = _.object(_.map(users, function(v){ return [v.id, new ConsiderIt.User(v)];})) ;
     ConsiderIt.users[-1] = new ConsiderIt.User({name: 'Anonymous'});
 
+    ConsiderIt.comments = {}
     ConsiderIt.current_tenant = {
         identifier : '#{current_tenant.identifier}'
     };

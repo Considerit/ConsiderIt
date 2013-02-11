@@ -49,6 +49,12 @@ class ConsiderIt.PositionView extends Backbone.View
     $('#points_on_board_pro .inner_wrapper', @$el).append(ConsiderIt.PositionView.newpoint_template({is_pro : true}))
     $('#points_on_board_con .inner_wrapper', @$el).append(ConsiderIt.PositionView.newpoint_template({is_pro : false}))
 
+
+    @$el.find('.pointform .is_counted').each () ->
+      $(this).NobleCount $(this).siblings('.count'), {
+        block_negative: true,
+        max_chars : parseInt($(this).siblings('.count').text()) }        
+
     @create_slider()
     @stickit()
 
@@ -123,15 +129,14 @@ class ConsiderIt.PositionView extends Backbone.View
       params, 
       (data) ->
 
-  point_attributes : ($form) ->       
-    {
-      nutshell : $form.find('.point-title').val()
-      text : $form.find('.point-description').val()
-      is_pro : $form.hasClass('pro')
-      hide_name : $form.find('.hide_name input').is(':checked')
-      comment_count : 0
-      proposal_id : @proposal.model.id
-    }
+  point_attributes : ($form) ->  {
+    nutshell : $form.find('.point-title').val()
+    text : $form.find('.point-description').val()
+    is_pro : $form.hasClass('pro')
+    hide_name : $form.find('.hide_name input').is(':checked')
+    comment_count : 0
+    proposal_id : @proposal.model.id
+  }
 
   new_point : (ev) ->
     $(ev.currentTarget).fadeOut 100, () ->

@@ -240,7 +240,7 @@
             No pro arguments added yet.
           (( } else { ))
           .pic
-            %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.users[top_pro.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "avatar author"}
+            %img.avatar-replace-small{ :width => 50, :height => 50, :'data-id' => "{{top_pro.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_pro.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "avatar author"}
 
           .bubble.right.pro
             {{top_pro.nutshell}}
@@ -254,7 +254,7 @@
             No con arguments added yet.
           (( } else { ))
           .pic
-            %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.users[top_con.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "avatar author"}
+            %img.avatar-replace-small{ :width => 50, :height => 50,  :'data-id' => "{{top_con.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_con.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "avatar author"}
 
           .bubble.right.con
             {{top_con.nutshell}}
@@ -303,7 +303,7 @@
     %ul
       (( _.each($.parseJSON(participants), function(p){ ))
       %li
-        %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+        %img.avatar-replace-small{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
       (( }); ))
 
 %script{ :type => "text/template", :id => "tpl_position" }      
@@ -446,7 +446,7 @@
 
                 %li.statement{:class=>"bucket-{{bucket}} {{expl_clss}}", :id=>"user-{{user.id}}", :user => "{{user.id}}"}
                   .view_statement
-                    %img{ :src => "{{PaperClip.get_avatar_url(user, 'small')}}", :alt => "{{user.get('name')}}'s profile picture", :class => "{{expl_clss}}", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
+                    %img.avatar-replace-small{ :'data-id' => "{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(user, 'small')}}",:class => "{{expl_clss}}", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
 
                     .details
                       .position_author_name

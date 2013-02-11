@@ -41,24 +41,56 @@
 
       = render :partial => 'backbone/templates'
 
-      = theme_javascript_include_tag 'application', :async => Rails.env.production?
+      :javascript
+        window.cached_avatars_loaded = false;
 
-        
-      - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
-        :javascript
-          var _gaq = _gaq || [];
-          _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-          _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
-          _gaq.push(['_trackPageview']);
+        (function() {
+          var httpRequest;
+         
+          function makeRequest(url) {
+            if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+              httpRequest = new XMLHttpRequest();
+            } else if (window.ActiveXObject) { // IE
+              try {
+                httpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+              } 
+              catch (e) {
+                try {
+                  httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+                } 
+                catch (e) {}
+              }
+            }
+         
+            if (!httpRequest) {
+              alert('Giving up :( Cannot create an XMLHTTP instance');
+              return false;
+            }
+            httpRequest.onreadystatechange = alertContents;
+            httpRequest.open('GET', url);
+            httpRequest.send();
+          }
+         
+          function alertContents() {
+            if (httpRequest.readyState === 4) {
+              if (httpRequest.status === 200) {
+                window.avatar_data = JSON && JSON.parse(httpRequest.responseText) || $.parseJSON(httpRequest.responseText); 
+                window.cached_avatars_loaded = true;
 
+                if(window.avatars) { 
+                  window.avatars.load_avatars();
+                }
+              } else {
+                console.log('Could not fetch avatars');
+              }
+            }
+          }
+          makeRequest("/system/cache/#{current_tenant.identifier}.json");
 
-      - if current_tenant.analytics_google && current_tenant.analytics_google != ''
-        :javascript
-          var _gaq_account = _gaq_account || [];
-          _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-          _gaq_account.push(['_trackPageview']);
-    
-    = render :partial => 'backbone/data'
+        })();
+
+      = theme_javascript_include_tag 'application', :async => true # => Rails.env.production?
+
 
   - theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
   - cache [current_tenant, theme, @dashboard] do 
@@ -128,20 +160,41 @@
                   .people  
                     - cols = 6
                     - rows = 8
-                    - pics = User.unscoped.where('avatar_file_name IS NOT NULL')
+                    - pics = User.where('avatar_file_name IS NOT NULL')
                     - users = pics.sample( [cols*rows, pics.count].min )
 
                     - users.each do |user|
-                      = image_tag image_path(user.avatar.url(:small))
+                      %img{ :class => 'avatar-replace-small', :'data-id' => user.id }
+
+                      -# = image_tag image_path(user.avatar.url(:small))
 
               #proposals
                 %ul.proposallist
 
-
-
-
-
-
         = render :partial => "shared/footer/container"
+
+
       
 
+        //$.get("/system/cache/#{current_tenant.identifier}.json", function(data) { 
+        //  window.avatar_data = data;
+        //  window.avatars.load_avatars();
+        //});
+
+      = render :partial => 'backbone/data'        
+
+      - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+        :javascript
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+          _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
+          _gaq.push(['_trackPageview']);
+
+
+      - if current_tenant.analytics_google && current_tenant.analytics_google != ''
+        :javascript
+          var _gaq_account = _gaq_account || [];
+          _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+          _gaq_account.push(['_trackPageview']);
+
+    

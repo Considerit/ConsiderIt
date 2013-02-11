@@ -65,13 +65,6 @@ me = {
     //$('form.html5:not(.html5formified)').html5form();
     //$('form').h5Validate({errorClass : 'error'});
 
-    // $('.wysiwyg').redactor({
-    //   buttons: ['formatting', 'bold', 'italic', 'unorderedlist', 'orderedlist', 'link', 'fullscreen'],
-    //   autoresize: true,
-    //   inline_label: 'Add details and links (optional)',
-    //   css: 'postit.css'
-    // });
-
     $('.autoResize').trigger('keyup');
 
   },

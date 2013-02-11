@@ -98,6 +98,8 @@ class ConsiderIt.ProposalView extends Backbone.View
     @close()
 
   take_position : (me) ->
+    $('html, body').animate {scrollTop: me.$el.offset().top - 50 }, 800
+
     _.each me.proposal.views, (vw) -> 
       delete vw.remove()
     me.proposal.views = {}
@@ -118,11 +120,13 @@ class ConsiderIt.ProposalView extends Backbone.View
     
     me.proposal.views.take_position.render()
 
-    $('html, body').animate {scrollTop: me.$el.offset().top - 50}, 1000
+    $('html, body').animate {scrollTop: me.$el.offset().top - 50 }, 200
 
 
 
   show_results : (me) ->
+    $('html, body').animate {scrollTop: me.$el.offset().top - 50 }, 800
+
     _.each me.proposal.views, (vw) -> 
       delete vw.remove()
     me.proposal.views = {}
@@ -133,13 +137,15 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     me.$el.find('.top_points').fadeOut()
     el = $('<div class="aggregated_results">').insertAfter(me.$el.find('.question'))
+
+      
     me.proposal.views.show_results = new ConsiderIt.ResultsView
       el : el
       proposal : me.proposal
 
     me.proposal.views.show_results.render()
 
-    $('html, body').animate {scrollTop: me.$el.offset().top - 50}, 1000
+    $('html, body').animate {scrollTop: me.$el.offset().top - 50 }, 200
 
 
   take_position_handler : () ->

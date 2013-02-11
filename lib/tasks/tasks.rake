@@ -17,8 +17,24 @@ namespace :cache do
       Rails.logger.info "Could not update proposal scores"
     end
   end
-  
 
+  task :avatars => :environment do 
+    begin
+      Account.all.each do |accnt|
+        avatars = {:small => {}}
+        accnt.users.select([:id,:avatar_file_name]).where('avatar_file_name IS NOT NULL').each do |user|
+          data = [File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}")].pack('m')
+          avatars[:small][user.id] = "data:image/jpg;base64,#{data}"
+        end
+        File.open("public/system/cache/#{accnt.identifier}.js", 'w') do |f|
+          f.puts("#{avatars.to_json};")
+        end
+      end
+    rescue
+      Rails.logger.info "Could not regenerate avatars"
+    end
+
+  end
 end
 
 task :compute_metrics => ["cache:points", "cache:proposals"]

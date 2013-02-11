@@ -23,6 +23,11 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
     $('html, body').animate {scrollTop: @$el.offset().top - 50}, 1000
 
+    @$el.find('.new_comment .is_counted').each () ->
+      $(this).NobleCount $(this).siblings('.count'), {
+        block_negative: true,
+        max_chars : parseInt($(this).siblings('.count').text()) }        
+
 
   events : 
     'click .close' : 'close_details'

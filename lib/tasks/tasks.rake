@@ -27,7 +27,7 @@ namespace :cache do
           avatars[:small][user.id] = "data:image/jpg;base64,#{data}"
         end
         File.open("public/system/cache/#{accnt.identifier}.json", 'w') do |f|
-          f.puts("#{avatars.to_json};")
+          f.puts("#{avatars.to_json}")
         end
       end
     rescue

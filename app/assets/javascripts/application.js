@@ -11,16 +11,15 @@
 //= require jquery.remotipart
 //= require jquery.nouislider
 //= require jquery.noblecount.min
-//= require jquery.example.min
 //= require jquery.autoresize
 //= require jquery.h5validate
-//= require jquery.touch-punch
 //= require jquery.inline_labels
 //= require jquery.fileinput
-//= require ZeroClipboard
-//= require pdfobject
+//= require jquery.touch-punch
 //= require sevenup.min
 //= require sevenup_black.min
+//= require ZeroClipboard
+//= require pdfobject
 
 //= require js-routes
 //= require main

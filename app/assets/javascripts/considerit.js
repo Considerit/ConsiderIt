@@ -7,13 +7,6 @@ me = {
     ConsiderIt.update_unobtrusive_edit_heights($(".unobtrusive_edit textarea"));
 
     ConsiderIt.per_request();
-
-    $(document).ajaxComplete(function(e, xhr, settings) {
-
-      if ( settings.url.indexOf('reflect') == -1 ) {
-        ConsiderIt.per_request();
-      }
-    });
     
     
     $('.autoResize, .pointform textarea.point-title, .pointform input[type="text"]').autoResize({extraSpace: 10, maxWidth: 'original'});
@@ -93,29 +86,31 @@ me = {
         $('.proposal_prompt').removeClass('hiding');
         $(this).remove();
       })
-      .on('click', '.description_wrapper a.hidden, .description_wrapper a.showing', function(){
-        var $block = $(this).parents('.extra:first'),
-            $full_text = $block.find('.full'), 
-            show = $(this).hasClass('hidden');
 
-        if (show) {
-          $full_text.slideDown();
-          $block.find('a.hidden')
-            .text('hide')
-            .toggleClass('hidden showing');
-        } else {
-          $full_text.slideUp(1000);
-          $block.find('a.showing')
-            .text('show')
-            .toggleClass('hidden showing');      
+      
+      // .on('click', '.description_wrapper a.hidden, .description_wrapper a.showing', function(){
+      //   var $block = $(this).parents('.extra:first'),
+      //       $full_text = $block.find('.full'), 
+      //       show = $(this).hasClass('hidden');
 
-          $('html, body').animate({
-            scrollTop: 0
-          }, 1000);
+      //   if (show) {
+      //     $full_text.slideDown();
+      //     $block.find('a.hidden')
+      //       .text('hide')
+      //       .toggleClass('hidden showing');
+      //   } else {
+      //     $full_text.slideUp(1000);
+      //     $block.find('a.showing')
+      //       .text('show')
+      //       .toggleClass('hidden showing');      
 
-        }
+      //     $('html, body').animate({
+      //       scrollTop: 0
+      //     }, 1000);
 
-      })
+      //   }
+
+      // })
       .on('click', '.edit_page a', function(){
         $(this).toggleClass('edit_mode');
         $('.unobtrusive_edit_form').toggleClass('implicit_edit_mode explicit_edit_mode');

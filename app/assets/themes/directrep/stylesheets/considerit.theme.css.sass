@@ -1,11 +1,60 @@
 @import "mixins"
 @import "homepage"
 //@import "paper_proposal"
-@import "ribbon_banners"
+//@import "ribbon_banners"
+@import "homepage"
 
-$rep_color: #81BADF
-$constituency_color: #E0D875
-$header_gray: #9C9C9C
+//$rep_color: #D2E1EA
+//$dark_rep_color: #97BFE0
+//$constituency_color: #EFEDC8
+//$dark_constituency_color: #DFD75C
+
+$rep_color: lighten(#49B1E5, 20%)
+$dark_rep_color: darken($rep_color, 20%)
+
+$constituency_color: lighten(#E5E15A, 20%)
+$dark_constituency_color: darken($constituency_color, 30%)
+
+$user_color: #ddd
+$dark_user_color: darken($user_color, 10%) 
+
+$comp_color: lighten(#882F35, 10%)
+$dark_comp_color: darken($comp_color, 10%)
+
+$header_gray: #777
+$empty_color: #ddd
+
+$proposal_width: 617px
+$body_width: 685px
+
+$content_background : image-url('directrep/images/brillant.png')
+
+html
+  //background-color: #bbb
+  //+wall(#777)
+  //background-attachment: fixed
+  
+  &:after
+    content: ''
+    position: absolute
+    top: 0
+    left: 0
+    position: fixed
+    height: 100%
+    width: 100%
+    background: image-url('directrep/images/back.png') repeat left top $comp_color
+
+body #wrap > div#content .inner_content
+  //padding-top: 65px
+  background: $content_background repeat top left white
+  
+  //+border-radius(2px)
+  background-color: white    
+  +box-shadow(0px, 1px, 2px, rgba(black, .7))
+  padding: $vertical_baseline $grid_xs
+
+  position: relative
+  z-index: 26
 
 
 .customfile-preview-wrap
@@ -17,247 +66,306 @@ $header_gray: #9C9C9C
     height: 80px
 
 
-html body
-  background: url('/assets/directrep/images/background.jpg') repeat top left
-  position: relative
-  z-index: -2
-  #content
-    background-color: white
-    +box-shadow(0px, 1px, 2px, rgba(black, .4))
-    position: relative
-    #inner_content
+=true_inset($color)
+  background-color: darken($color, 20%)
+  +background-clip(text)
+  text-shadow: rgba(255,255,255,0.2) 0px 3px 3px
+  color: transparent
 
-h1.banner
-  color: $header_gray
+.head
+  margin-bottom: $vertical_baseline
+  h1.banner
+    font-size: 3em
+    font-weight: bold
+    text-align: center
+
+    .rep
+      +true_inset($dark_rep_color)
+      //color: $rep_color
+
+    .dialogue
+      +true_inset(#bbb)
+
+      //color: $header_gray
+
+    .constituency 
+      +true_inset(#bbb)
+      //+true_inset(lighten($comp_color, 30))
+      //color: $constituency_color
 
 .logo_cell
   top: $vertical_baseline
 
-.head.single
-    
-  background: image-url('/assets/directrep/images/banner_background.jpg') repeat left top white
-  //width: $content_width + 8px
-  position: relative
-  left: -4px - $grid_xs
-  border: 1px solid
-  border-color: #333 #2a2a2a #444
-  +box-shadow(0px, 1px, 2px, black, .4)
-  //z-index: 1
-  text-align: center
-
-  &:before, &:after
-    background: image-url('/assets/directrep/images/banner-ribbon.png') repeat left top transparent
-    //z-index: 0
-    height: 64px
-    width: $grid_xs * 2
-    top: 5px
-    border-color: #333 #222 #111
-
-  &:before
-    right: -20px
-
-  &:after
-    left: -23px
-
 h2.banner
-  background: image-url('/assets/directrep/images/banner_background.jpg') repeat left top white
+  //background: image-url('/assets/directrep/images/banner_background.jpg') repeat left top white
   text-align: center
-  border-color: #333 #2a2a2a #444
-  +box-shadow(0px, 1px, 2px, black, .4)
+  //border-color: #333 #2a2a2a #444
+  //+box-shadow(0px, 1px, 2px, black, .4)
   color: $header_gray
 
 
-.bubble
-  padding: $vertical_baseline / 2 $grid_xs
-  position: relative
 
-  &.left:before, &.right:before, &.left:after, &.right:after
+$pos: -9px
+
+= bubble
+  .bubble, &:after, &:before
     position: absolute
     display: block
 
-  &.left:before, &.right:before    
-    z-index: 6
+  .bubble
+    z-index: 7
+    top: 0px
+    font-size: 10px
 
-  &.left:after, &.right:after    
-    z-index: 5
-    color: white
 
-  &.left:before, &.left:after
-    //content: '\25C0'
-    content: '\25B8'
-    +flip-horizontal
-    font-size: 34px
-    top: -4px
-
-  &.left:before
-    left: -11px
-
-  &.left:after
-    left: -17px
-
-  &.right:before, &.right:after
-    content: '\25B8'
-    font-size: 24px
+  &:after, &:before
+    content: '\25E4'
     top: -1px
 
-  &.right:before
-    right: -9px
+  &:after
+    font-size: 12px
+    z-index: 4
+    color: #f7f7f7
 
-  &.right:after
-    right: -12px
-    
-  &.pro
-    background-color: $pro_color
+  &:before
+    z-index: 6
+    font-size: 12px
+  
+  &.left .bubble, &.left:after, &.left:before
+    +flip-horizontal
+
+
+  &.left
+    &:after
+      left: $pos - 8
     &:before
-      color: $pro_color
+      left: $pos - 3
+    > .bubble
+      left: $pos
 
-  &.con
-    background-color: $con_color
+  &.right
+    &:after
+      right: $pos - 8
     &:before
-      color: $con_color
+      right: $pos - 3
+    > .bubble
+      right: $pos
 
-  &.empty
-    background-color: $empty_color
-    &:before
-      color: $empty_color
+= direct_rep_bubbles
+  +bubble
+  +inset-box-shadow(1px,6px,9px, -5px, #fff)
 
-  &.rep_statement
-    background-color: $rep_color
+  .bubble
+    +background-clip(text)          
+    color: transparent          
 
-    &:before
-      color: $rep_color
-
-  &.proposal_bubble
-    background-color: $proposal_background
-    +inset-box-shadow(0,1px,4px,#ddd)
-
-    &:before
-      color: $proposal_background
-
-  &.constituent_statement
+  &.public
     background-color: $constituency_color
-    text-align: right
-    float: right
-    &.shorter
-      width: 240px
-    &.longer
-      width: 270px
-
+    border: 1px solid $dark_constituency_color
     &:before
-      color: $constituency_color
+      color: $dark_constituency_color
 
+    > .bubble
+      +complex-gradient(lighten($constituency_color, 7%), lighten($constituency_color, 0%), $from_stop : 0%, $to_stop: 50%)
+
+  &.proposer
+    background-color: $rep_color
+    border: 1px solid $dark_rep_color
+    &:before
+      color: $dark_rep_color
+
+    > .bubble
+      +complex-gradient(lighten($rep_color, 7%), lighten($rep_color, 0%), $from_stop : 0%, $to_stop: 50%)
+
+  &.you
+    background-color: $user_color
+    border: 1px solid $dark_user_color
+    &:before
+      color: $dark_user_color
+
+    > .bubble
+      +complex-gradient(lighten($user_color, 7%), lighten($user_color, 0%), $from_stop : 0%, $to_stop: 50%)
+
+    &.join, &.your_action
+      &:before
+        color: $dark_comp_color
+      border: 1px solid $dark_comp_color
+      > .bubble
+        +complex-gradient(lighten($comp_color, 34%), lighten($comp_color, 10%), $from_stop : 0%, $to_stop: 37%)
+
+  &.top
+
+    +colored_post_it($repeated: 1)
+    border: 1px solid $dark_constituency_color
+    &:before
+      color: $dark_constituency_color
+    &:after
+      color: $constituency_color
+    > .bubble
+      +complex-gradient(lighten($constituency_color, 7%), lighten($constituency_color, 0%), $from_stop : 0%, $to_stop: 50%)
+
+
+
+  
+=superbutton
+  //width: 100%
+  //padding: $vertical_baseline /2 0
+  +linear-gradient(lighten($comp_color, 5%), $comp_color)
+  background-color: lighten($comp_color, 5%)
+
+  &:hover
+    +complex-gradient(lighten($comp_color, 15%), lighten($comp_color, 5%), $from_stop : 0%, $to_stop: 20%)
+    background-color: lighten($comp_color, 15%)
 
 
 #proposals
   margin-top: $vertical_baseline
 
-
   .proposal
     margin: $vertical_baseline 0 2 * $vertical_baseline 0
 
-    div.proposer, div.talking, div.participants
-      display: inline-block
-      vertical-align: top
-
-    .proposer
-      text-align: right
-      img
-        width: 115px
-
-    .participants
-      width: 150px
-      height: 250px
-      font-size: 0
+    .social_media_ribbon
+      margin-top: $vertical_baseline
       ul
-        list-style: none
+        text-align: center
         li
-          font-size: 0
-          line-height: 0
           display: inline-block
-          img
-            //width: 10px
-            //height: 10px
-
-    .talking
-      width: 600px
-      .bubble
-
-        .question
-
-        .top_points
-          margin-top: $vertical_baseline
-
-          .top
-            margin-bottom: $vertical_baseline/2
-            .lead
-              font-variant: small-caps
-              +font-size(-3)
-              float: left
-              margin-top: $vertical_baseline/2
-              //margin-left: $proposal_width - $top_argument_width - 50
-            .bubble
-              width: $top_argument_width
-              float: right
-              +font-size(-2)
-              &:after
-                color: $proposal_background
-
-            .pic
-              float: right
-              margin-left: 3px
-        
-        .official_response
-          .pic
-            float: left
-            margin-right: 3px
-            img
-              width: 88px
-          .bubble
-            float: left
-            +font-size(-2)
-            width: $top_argument_width
-            &:after
-              color: $proposal_background
-            &:after, &:before
-              top: -8px
-
-
-      .join
-        display: block
-        +linear-gradient(#777, #161616)
-        padding: $vertical_baseline/2 $grid_xs/2
-        &:hover
-
-          color: $constituency_color
-          cursor: pointer
-          img
-            opacity: 1
-            
-          .text
-            color: white
-
-        img
-          opacity: .2
-          +transition
-          width: 25px
-
-        .text
-          //font-variant: small-caps
-          +transition
-          +font-size(-2)
-          text-transform: uppercase
-          text-decoration: underline
-          vertical-align: top
-          display: inline-block
-          padding-top: 3px
+          vertical-align: middle
+          +font-size(-3)
           color: #aaa
-          position: absolute
-          right: $grid_xs + $grid_minor
+
+          &.action
+            cursor: pointer
+
+    .question
+      text-align: center
+      //+true_inset($dark_rep_color)
+      +true_inset($header_gray)
+      width: $body_width + 2 * $grid_major
+      text-transform: capitalize
+      margin: auto
+    .statement
+      margin-top: $vertical_baseline / 2
+      .speaker, .listener, .body
+        display: inline-block
+        vertical-align: top
+
+      .speaker, .listener
+        width: 150px
+
+      > .body
+        padding: $vertical_baseline / 2 $grid_xs
+        position: relative
+        width: $body_width
+
+        +direct_rep_bubbles
+
+        &.you.your_action
+          +superbutton
+          color: white
+          text-align: center
+          +font-size(3)
+
+          img
+            display: none
+            vertical-align: text-top
+
+      .speaker
+
+        &.proposer
+          text-align: right
+          img
+            width: 115px
+          &.small
+            img
+              width: 50px
+
+        &.public
+          .participants
+            //width: 150px
+            height: 150px
+            
+            ul
+              font-size: 0
+              list-style: none
+              li
+                font-size: 0
+                line-height: 0
+                display: inline-block
+                img
+                  //width: 10px
+                  //height: 10px
+      &.aggregated_results .summary
+        cursor: pointer
+        .top_points
+          padding-top: $vertical_baseline 
+          .top_point
+            display: inline-block
+            .top
+              padding: $vertical_baseline / 2 $grid_xs
+              width: 235px
+              position: relative
+              +direct_rep_bubbles
+
+            &.pro
+              padding-right: $grid_xs
 
 
 
 
-#registration_overlay
+
+#introduction
+
+  div.rep, div.dialogue, div.constituency
+    display: inline-block
+    vertical-align: top
+
+  div.rep
+    width: 237px - $grid_xs
+
+    .about
+      width: 220px
+      color: $header_gray
+      text-align: center
+
+    .links
+      +font-size(-2)
+      padding-top: $vertical_baseline / 2
+      text-align: center
+      color: $header_gray
+      a
+        color: $header_gray
+
+  div.dialogue
+    width: $proposal_width
+    position: relative
+
+    .body
+      position: relative
+      padding: $vertical_baseline / 2 $grid_xs
+      margin-bottom: $vertical_baseline / 2
+
+      +direct_rep_bubbles
+
+  div.constituency
+    width: 186px
+
+  .people
+    font-size: 0
+    text-align: left
+    img
+      display: inline-block
+      opacity: .75
+      width: 31px
+      height: 31px
+
+      &.hovered
+        opacity: 1
+
+
+
+#registration_overlay, #point_details_overlay
   position: absolute
   z-index: 9999
+
 

@@ -21,13 +21,22 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     @commentsview.renderAllItems()
     this
 
-    $('html, body').animate {scrollTop: @$el.offset().top - 50}, 1000
-
     @$el.find('.new_comment .is_counted').each () ->
       $(this).NobleCount $(this).siblings('.count'), {
         block_negative: true,
         max_chars : parseInt($(this).siblings('.count').text()) }        
 
+
+    $('html, body').stop(true, true);
+    @center_overlay()
+    $('html, body').animate {scrollTop: @$el.offset().top - 50}, 1000
+
+
+  center_overlay : () ->
+    $overlay = $('#point_details_overlay')
+    @$el.offset 
+      top: $('body').scrollTop() + window.innerHeight / 2 - @$el.outerHeight() / 2     
+      left: window.innerWidth / 2 - @$el.outerWidth() / 2
 
   events : 
     'click .close' : 'close_details'

@@ -4,6 +4,92 @@
 #############
 
 class ConsiderIt.PositionView extends Backbone.View
+  initialize : (options) -> 
+    @proposal = options.proposal
+    @state = 0
+
+  render : ->
+    your_action_el = $('<div class="statement your_action">')
+
+    @your_action_view = new ConsiderIt.YourActionView 
+      el : your_action_el
+      proposal : @proposal
+      model : @model
+
+    @your_action_view.render()
+
+    your_action_el
+
+  set_model : (model) ->
+    @model = model
+    @your_action_view.model = model if @your_action_view
+    @your_action_view.render()
+    @crafting_view.model = model if @state == 1
+
+  show_crafting : ->
+    crafting_el = $('<div class="user_opinion statement">')
+    @crafting_view = new ConsiderIt.CraftingView
+      el : crafting_el
+      proposal : @proposal
+      model : @model
+
+    @crafting_view.render()
+    @your_action_view.crafting_state()
+    @state = 1
+
+    crafting_el
+
+  close_crafting : ->
+    if @state == 1
+      @crafting_view.remove()
+      @your_action_view.close_crafting()
+      @state = 0
+
+  events :
+    'click .submit' : 'handle_submit_position'
+
+  submit_position : () ->
+    _.extend(@proposal.position.attributes, @crafting_view.position_attributes())
+    Backbone.sync 'update', @proposal.position,
+      success : (data) =>
+        #TODO: any reason to wait for the server to respond before navigating to the results?
+        ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: true})
+
+      failure : (data) =>
+        console.log('Something went wrong syncing position')
+
+  handle_submit_position : (ev) ->
+    if ConsiderIt.current_user.isNew()
+      regview = ConsiderIt.app.usermanagerview.handle_user_registration(ev)
+      # if user cancels login, then we could later submit this position unexpectedly when signing in to submit a different position!
+      @listenTo @proposal.view, 'proposal:handled_signin', () => 
+        @stopListening @proposal.view, 'proposal:handled_signin'
+        @submit_position()
+    else
+      @submit_position()
+
+
+class ConsiderIt.YourActionView extends Backbone.View
+  @craft_template : _.template( $("#tpl_your_action_craft").html() )
+  @save_template : _.template( $("#tpl_your_action_save").html() )
+
+  initialize : (options) -> 
+    @proposal = options.proposal
+
+  render : () -> 
+    @close_crafting()
+
+  crafting_state : ->
+    @$el.html ConsiderIt.YourActionView.save_template 
+      call : if true then 'Save your position' else 'Update your position'
+
+  close_crafting : ->
+    @$el.html ConsiderIt.YourActionView.craft_template
+      call : if true then 'Join the conversation' else 'Revisit the conversation'
+      long_id : @proposal.model.get('long_id')
+
+
+class ConsiderIt.CraftingView extends Backbone.View
 
   #el: '.user_opinion'
   @template : _.template( $("#tpl_position").html() )
@@ -12,10 +98,9 @@ class ConsiderIt.PositionView extends Backbone.View
   
   initialize : (options) -> 
     @proposal = options.proposal
-    @parent = options.parent
 
   render : () -> 
-    this.$el.html ConsiderIt.PositionView.template($.extend({}, this.model.attributes, {proposal : @proposal.model.attributes}))
+    @$el.html ConsiderIt.CraftingView.template($.extend({}, @model.attributes, {proposal : @proposal.model.attributes}))
 
     @slider = 
       max_effect : 65 
@@ -46,8 +131,8 @@ class ConsiderIt.PositionView extends Backbone.View
     @views.mypros.renderAllItems()
     @views.mycons.renderAllItems()
 
-    $('#points_on_board_pro .inner_wrapper', @$el).append(ConsiderIt.PositionView.newpoint_template({is_pro : true}))
-    $('#points_on_board_con .inner_wrapper', @$el).append(ConsiderIt.PositionView.newpoint_template({is_pro : false}))
+    $('#points_on_board_pro .inner_wrapper', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : true}))
+    $('#points_on_board_con .inner_wrapper', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : false}))
 
 
     @$el.find('.pointform .is_counted').each () ->
@@ -88,7 +173,6 @@ class ConsiderIt.PositionView extends Backbone.View
     'click a.write_new' : 'new_point'
     'click a.new_point_cancel' : 'cancel_new_point'
     'click .point-submit input' : 'create_new_point'
-    'click .submit' : 'handle_submit_position'
 
   include_point : (ev) ->
     $item = @_$item(ev.currentTarget)
@@ -184,25 +268,6 @@ class ConsiderIt.PositionView extends Backbone.View
       viewed_points : _.values(@proposal.points.viewed_points)
     }
 
-  submit_position : () ->
-    _.extend(@proposal.position.attributes, @position_attributes())
-    Backbone.sync 'update', @proposal.position,
-      success : (data) =>
-        #TODO: any reason to wait for the server to respond before navigating to the results?
-        ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: true})
-
-      failure : (data) =>
-        console.log('Something went wrong syncing position')
-
-  handle_submit_position : (ev) ->
-    if ConsiderIt.current_user.isNew()
-      regview = ConsiderIt.app.usermanagerview.handle_user_registration(ev)
-      # if user cancels login, then we could later submit this position unexpectedly when signing in to submit a different position!
-      @listenTo @parent, 'proposal:handled_signin', () => 
-        @stopListening @parent, 'proposal:handled_signin'
-        @submit_position()
-    else
-      @submit_position()
 
   peer_point_list_reset : (list) ->
     for pnt in list.models

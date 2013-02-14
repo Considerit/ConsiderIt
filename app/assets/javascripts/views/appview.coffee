@@ -18,7 +18,6 @@ class ConsiderIt.AppView extends Backbone.View
     #handle here because of dependency on proposal being loaded first
     ConsiderIt.router.on 'route:PointDetails', @handle_point_details
 
-
     @listenTo this, 'user:signin', @load_anonymous_data
 
   render : () -> 
@@ -29,6 +28,8 @@ class ConsiderIt.AppView extends Backbone.View
 
   #route handlers
   show_position : (long_id, params) ->
+    console.log('HIHI')
+
     ConsiderIt.proposals[long_id].view.take_position_handler()
 
   show_results : (long_id, params) ->

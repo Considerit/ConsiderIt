@@ -51,8 +51,13 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
     #   .split('\n');
     # console.log(stack);
 
-    @$el.append(ConsiderIt.PaginatedPointListView.pagingTemplate) if !@_rendered
-    @_rendered = true
+    @collection.info()
+    if @$el.find('#pagination').length == 0 then @$el.append('<div id="pagination">')
+
+    @repaginate()
+
+    @listenTo @collection, 'reset', () => @repaginate()
+
 
 
   onAdd : (model) ->
@@ -63,14 +68,22 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
     super
     @collection.pager()
 
+  repaginate : ->
+    @$el.find('#pagination').html(ConsiderIt.PaginatedPointListView.pagingTemplate({
+      start_record : @collection.information.startRecord
+      end_record : @collection.information.endRecord
+      total_records : @collection.information.totalRecords
+    })) 
+
   events : 
     'click .pager.forward' : 'forward'
     'click .pager.backward' : 'backward'
 
   forward : (ev) -> 
     @collection.nextPage()
-
+    #@repaginate()
 
   backward : (ev) ->
     @collection.previousPage()
+    #@repaginate()
 

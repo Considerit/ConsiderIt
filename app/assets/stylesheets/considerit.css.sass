@@ -25,15 +25,15 @@
 @import "points/show"
 @import "points/new_point"
 @import "points/column"
-@import "points/pro_con_list"
+//@import "points/pro_con_list"
 
 @import "proposals/blocks"
-@import "proposals/show"
+//@import "proposals/show"
 @import "proposals/description"
 @import "proposals/admin"
 @import "proposals/create"
 
-@import "positions/craft"
+//@import "positions/craft"
 @import "positions/slider"
 
 @import "comments/comment"
@@ -43,7 +43,7 @@
 @import "static/static"
 @import "shared/footer"
 @import "shared/header"
-@import "shared/carousel"
+//@import "shared/carousel"
 @import "shared/messages"
 @import "shared/social_media"
 @import "shared/dialog"
@@ -74,20 +74,17 @@
 
 .point_in_list#expanded, #content .point
   +on_post_it
-  &.pro
-    +green_post_it($repeated: 1)
-  &.con
-    +red_post_it($repeated: 1)
+  +green_post_it($repeated: 1)
 
 // this should probably be overridden per theme
 =on_background
-  color: #444
+  color: #222
 
   h1, h2, h3
     color: #222
 
   a, input, button
-    color: #444  
+    color: #222  
     +transition
 
     &:hover
@@ -175,10 +172,12 @@ h1, h2, h3, h4, h5, h6
 h1
   +heading
   +font-size(3)
+  text-align: center
 
 // Use for page/dialog headers
 h2
-  +font-size(2)
+  text-align: center
+  +font-size(3)
   padding: $vertical_baseline/2 0
 
 // Base header
@@ -223,13 +222,13 @@ body
       position: relative    
 
       &#masthead
-        z-index: 2
+        z-index: 33
       &#content   
         position: relative
         width: $content_width
         margin: 0 auto
 
-        #inner_content
+        .inner_content
           padding: 0 $grid_xs $vertical_baseline $grid_xs
       
 
@@ -291,17 +290,15 @@ fieldset
   height: 15px
   
 
-.head
+//.head
   text-align: center
-  padding: $vertical_baseline $grid_xs
-    
+  padding: $vertical_baseline $grid_xs    
   .banner
     +font-size(5)
     margin-bottom: 0px
     text-align: center
     font-weight: normal
     //+inset-text
-
     a
       text-decoration: underline
 
@@ -310,13 +307,13 @@ hr.ledge
   width: 100%
   margin: auto
   border: none
-  height: 1px
+  height: 4px
   &.top
-    background-color: #ccc
-    background-color: rgba(white, .15)
+    background-color: #fff
+    //background-color: rgba(white, .15)
   &.bottom
-    background-color: #666
-    background-color: rgba(black, .15)
+    background-color: #888
+    background-color: rgba(black, .10)
 
 
  
@@ -326,3 +323,657 @@ hr.ledge
   opacity: .8
   +opacity(80)
 
+
+// CONTENTS of @import "proposals/show" and 'proposals/histogram'
+
+#histogram 
+  margin: $vertical_baseline auto 0px auto
+  position: relative
+  //top: 190px
+
+  table
+    padding: 0px
+    color: #272727
+    border-spacing: 3px 0px
+    margin: auto
+
+    td.support, td.oppose
+      position: absolute
+      color: #313131
+      +font-size(0)
+      +heading
+      font-weight: bold
+      vertical-align: bottom
+      width: 3 * $grid_major
+      //visibility: hidden
+      //display: none
+      text-transform: uppercase
+      bottom: 0
+      +transition
+      &.support
+        //padding-right: $grid_minor
+        text-align: right
+        left: -150px
+
+      &.oppose
+        //padding-left: $grid_minor
+        text-align: left
+        right: -150px
+
+
+    td.bar_cell
+      width: $histogram_bar_width
+      position: relative
+
+      .bar.empty
+        position: relative
+      .bar.full 
+        +transition
+        &, a
+          color: #ccc
+        a:hover
+          color: white
+
+        border: 3px solid #222  
+        padding: 0px                            
+        +box-shadow(0px, 1px, 2px, black)
+
+        border-bottom: none
+        background-color: #222
+        cursor: pointer
+        z-index: 0
+        position: relative
+
+        .close, .border_cover
+          display: none
+          position: absolute
+
+
+        &.hard_select .people_bar .view_statement img
+          opacity: .8
+          +transition
+          &.default.no_explanation
+            opacity: .35         
+          &.with_explanation
+            +grayscale_off
+            opacity: 1
+
+        &.soft_select .people_bar .view_statement img
+          opacity: .6
+          &.default.no_explanation
+            opacity: .35
+          &.with_explanation
+            opacity: .9
+            +grayscale_off
+
+        &:hover
+          +chalkboard
+          border-color: #414141
+          z-index: 40
+          img.with_explanation
+            +grayscale_off
+            opacity: .6
+
+        &.noone
+          display: none
+          
+        &.selected
+          +chalkboard
+          +box-shadow(0px, 1px, 2px, black)
+          z-index: 60
+          border-color: black
+
+          .border_cover
+            display: block
+            height: 5px
+            width: $histogram_bar_width - 3
+            left: -2px
+            +chalkboard
+            bottom: -4px
+            border-top-right-radius: 6px
+            border-top-left-radius: 6px
+
+          &.hard_select
+            border-top-left-radius: 10px 
+            border-top-right-radius: 10px
+            .close
+              display: block
+              right: 5px
+              top: -2px
+              z-index: 1
+              +font-size(-3)
+              color: #999
+
+      .personal_position.update
+        bottom: 0
+        left: 30px
+        position: absolute
+        +on_background
+        z-index: 50
+        display: none
+        //left: 50%
+        //margin-left: 10px
+
+        .label
+          +font-size(-1)
+          position: relative
+          margin-left: 4px
+          .arrow
+            position: absolute
+            +font-size(2)
+            font-weight: bold
+            left: -25px
+            top: 8px
+
+        .revise 
+          position: relative
+          top: -2px
+          a
+            text-transform: lowercase
+            font-weight: bold
+            text-decoration: underline
+            +font-size(-2)
+        
+
+.people_bar
+  background-color: transparent
+  position: absolute
+  z-index: 1000
+  font-size: 0
+
+  color: #222
+
+  margin: auto
+  bottom: 0px
+
+  li.statement
+    background-color: inherit
+    margin: auto
+    display: inline-block
+
+    &.with_explanation 
+
+      .details
+        margin-left: -150px
+        width: 400px
+
+        &:after
+          left: 200px - 12
+
+    &.no_explanation 
+      .details
+        margin-left: -75px
+        width: 150px
+
+        &:after
+          left: 62px
+
+
+    .view_statement
+      text-align: center  
+      position: relative
+      display: block
+      cursor: pointer
+
+
+      img
+        max-height: 50px
+        max-width: 50px
+        opacity: .35
+        position: relative
+        +grayscale
+
+        &.author_of_hovered_point
+          opacity: 1
+      
+      .details
+        //don't use +font-size here because of the earlier 0% declaration
+        font-size: 16px
+        background-color: black
+        color: #e1e1e1
+        position: absolute
+        display: none
+        z-index: 2
+        top: 100%
+        left: 50%
+        margin-top: 14px
+        +border-radius(5px)
+        padding: 5px $grid_xs
+        +box-shadow(0px, 1px, 2px, #313131)
+
+        .position_author_name
+          +font-size(0)
+          font-weight: bold
+          white-space: nowrap
+
+        &:after
+          content: "\25B2"
+          position: absolute
+          padding: 0 4px 0
+          top: -13px
+          color: black
+          z-index: 5
+
+        blockquote.explanation
+          padding: 5px 0 0 0 
+          +font-size(-1)
+
+          p
+            margin-bottom: 6px
+            text-align: left
+
+// hovering over a point
+#histogram.hovering_over_point  
+  table td.bar_cell .bar.full 
+    //background-color: transparent
+
+    .people_bar
+
+      li.statement
+        .view_statement
+          img
+            visibility: hidden
+            &.author_of_hovered_point
+              opacity: 1
+              visibility: visible 
+              +grayscale_off
+            &.includer_of_hovered_point
+              opacity: 1
+              visibility: visible
+              +grayscale_off
+
+#axis_arrow
+  height: 1 * $vertical_baseline
+  background-color: transparent
+  background-color: rgba(black, .15)
+  width: $content_width - 4 * $grid_major - 5 * $grid_minor
+  position: absolute
+  bottom: 0
+  z-index: -1
+  border-radius: 8px
+  margin-left: 2 * $grid_major + 2.5 * $grid_minor
+  display: none
+
+
+
+.user_opinion
+  >.body > table
+    position: relative
+    margin-left: -193px
+
+.aggregated_results
+  position: relative
+
+  .participant_connection
+    padding-top: 12px
+    text-align: center
+    +font-size(3)
+    height: 48px
+
+    .group_name
+      display: block
+
+    .filters
+      +font-size(-5)
+      text-transform: lowercase
+      font-variant: small-caps
+
+      .label
+        color: #999
+      a
+        padding: 0 $grid_xs / 2
+        &:hover
+          cursor: pointer
+        &.selected
+          background-color: #666
+          background-color: rgba(white, .1)
+          +border-radius(5px)
+
+
+// from points/pro_con_list
+
+.pro_con_list
+
+  vertical-align: top
+  margin: auto
+  position: relative
+                   
+  > .slate
+    +chalkboard 
+    width: 688px
+    border: $chalkboard_border_width solid
+    border-color: hsl(0, 0%, 80%) hsl(0, 0%, 10%) hsl(0, 0%, 10%) hsl(0, 0%, 50%)
+    +box-shadow(0, 1px, 5px, rgba(black, .5))
+
+    > table
+      padding-top: 2 * $vertical_baseline
+
+
+  //+box-shadow(0px, 5px, 3px, black, .6)
+  
+  &#domain_all, &#domain_self
+    display: block
+
+
+  > div
+    position: relative
+    //padding: 0px 5px      
+  
+
+  .full_column
+    position: relative
+    vertical-align: top
+
+    width: 50%
+    
+
+    .pro_con_list_header   
+      //height: 120px 
+      //background: transparent image-url("chalk/point_header_back.png") no-repeat scroll top center
+      margin-bottom: $vertical_baseline
+      height: 3 * $vertical_baseline
+
+      .inner
+        text-align: center
+        position: relative
+
+    &#points_on_board_pro > *
+      margin-left: $grid_major - $chalkboard_border_width
+      margin-right: 35px
+
+    &#points_on_board_con > *
+      margin-right: $grid_major - $chalkboard_border_width
+      margin-left: 35px
+
+  // for pro/con lists that can't have new points added to them
+  //&.static
+    //+wood-frame
+    //width: $pro_con_list_static_width
+    margin: auto
+    border-top: none
+    //+box-shadow-remove
+
+    > .slate
+      min-height: 550px
+
+      > table
+        //width: $pro_con_list_static_width
+        margin-top: $vertical_baseline
+
+    .full_column
+      
+      &#points_on_board_pro
+        //padding: 0 5px 0 35px
+
+      &#points_on_board_con
+        //padding-right: 30px
+
+      .pro_con_list_header
+        //background-position: center -23px 
+        .inner
+          //top: 6px
+
+      .carousel
+        //top: -50px
+        position: relative
+        width: 310px
+        //padding-left: 6px
+        
+        ul.point_list
+          top: 0
+
+
+  // for pro/con lists that can have new points added to them
+  &.dynamic
+    //width: 620px
+    //padding-top: 2em
+
+    > .slate
+
+      > table
+        width: 100% 
+        tr.point_columns
+          height: 625px
+
+    #inclusion_learned
+      position: absolute
+      +font-size(3)
+      width: 225px
+      text-align: center
+      left: 50%
+      margin-left: -150px
+      top: 250px
+      color: #99965c
+      font-weight: bold
+
+    &.no_other_points > .slate > table tr.point_columns
+      height: 300px
+      
+    &.empty
+    .full_column
+
+
+.bullet_point
+  +font-size(-1)
+  position: absolute
+  top: 4px
+  left: 1px
+  font-family: Impact, Impact5, Charcoal6, sans-serif
+
+// from positions/craft
+
+
+.user_opinion
+  +nude-list
+  +wood-frame
+  //width: 1000px
+  position: relative
+  //left: -30px
+
+  > table
+    table-layout: fixed
+    width: 1056px
+
+  td.slate  
+    //padding: 12px 0
+    //+chalkboard 
+    //width: 648px
+    ///border: $chalkboard_border_width solid
+    //border-color: hsl(0, 0%, 80%) hsl(0, 0%, 10%) hsl(0, 0%, 10%) hsl(0, 0%, 50%)
+    //+box-shadow(0, 1px, 5px, rgba(black, .5))
+    //border-top: none
+
+  td.margin
+    //+corkboard
+    //+on_corkboard
+    width: 210px
+    vertical-align: top 
+    padding-top: 5 * $vertical_baseline
+
+    .heading
+      opacity: .8
+      &.pros
+        text-align: left
+        margin-left: $grid_xs
+      &.cons
+        text-align: right
+        margin-right: $grid_xs
+
+      .lead
+        +font-size(0)
+        text-transform: uppercase
+        letter-spacing: -1px
+        color: #777
+        font-weight: normal
+
+      .sublead
+        +font-size(-3)
+        position: relative
+        top: -3px
+      .ledge
+        display: none
+
+    .points_other
+      vertical-align: top
+      padding: 0
+      position: absolute
+      top: 11 * $vertical_baseline
+
+
+      
+      .point_list
+        //z-index: 100
+        //width: 172px
+
+      .point_list_footer
+        width: 172px
+        margin: 0 $grid_xs            
+        .arrow
+
+        .paginate
+          font-weight: normal
+          //padding-top: $vertical_baseline
+      
+      .carousel
+        //padding: 5px 3px
+      
+        
+      &#points_other_pro 
+        left: 0
+        .carousel
+          //width: 530px
+
+
+      &#points_other_con 
+        right: 0
+        .carousel
+          //width: 530px
+          .point_list
+            float: right
+
+  li
+    &.step
+      margin-bottom: 2em
+      //padding-bottom: 25px          
+
+    &.slide
+      margin-top: 1em
+      .head
+        
+      .position
+        margin: auto
+        margin-top: 10px
+                
+    &.statement
+      textarea
+        display: block
+        height: $vertical_baseline * 5
+        margin: auto
+        width: 450px
+
+#submitstance
+  position: relative
+  margin: 2 * $vertical_baseline 0px 
+                        
+  .rest
+    margin: auto
+    width: 100%
+    
+    .stanceform
+      margin: auto
+
+      .login_required
+        +font-size(-3)
+        text-align: center
+        color: #aaa
+        position: absolute
+        bottom: $vertical_baseline * 2.5
+        width: 100%
+        pointer-events: none
+
+      form
+        margin: auto
+        width: 560px
+        position: relative
+
+        input[type="submit"]
+          width: 100%
+          padding: $vertical_baseline * .75 0
+          +font-size(5)
+          +heading
+        
+        .notifications
+          margin: $vertical_baseline / 2 auto 0 auto
+          text-align: center
+          +font-size(0)
+          
+          
+          > label
+            font-weight: bold
+            span
+              padding-left: 3px
+            .sub
+              +font-size(-3)
+              font-weight: normal
+              display: inline-block
+
+
+          .email
+            margin-top: $vertical_baseline/2
+            input
+              //color: #555
+      a
+        display: inline-block
+        +font-size(0)
+        font-weight: bold
+        text-decoration: underline
+        margin-top: $vertical_baseline * 2
+        
+        &.skip_save
+          //position: absolute
+          top: 0
+          right: 0px
+          width: 364px
+          +font-size(0)
+          display: block
+          text-align: center
+          text-decoration: none
+          margin: $vertical_baseline * 2 auto
+          letter-spacing: 1
+          padding: $vertical_baseline / 2 $grid_xs
+          text-shadow: none
+          font-weight: normal
+          +main-font
+
+
+// pagination
+
+#pagination
+  .count
+    +font-size(-3)
+    font-weight: bold
+
+
+#pagination
+  text-align: center
+  color: #777
+  a
+    color: #777
+  .count
+    +font-size(-3)
+    font-weight: bold
+
+
+
+// proposal details
+
+.proposal
+  .question
+    font-weight: bold
+  .details
+    //display: none
+    +font-size(-2)
+
+    .extra .prompt a
+      text-decoration: underline
+  

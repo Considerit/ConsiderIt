@@ -6,7 +6,7 @@ $yellow_postit_color: hsl(57, 76%, 75%)
   &:hover
     color: #333
 
-=colored_post_it($repeated, $color)
+=colored_post_it($repeated)
   $color: $yellow_postit_color 
   //background-color: $color
   @if $repeated == 0
@@ -21,13 +21,13 @@ $yellow_postit_color: hsl(57, 76%, 75%)
 =red_post_it($repeated: 0)
   //+colored_post_it(hsl(352, 94%, 94%))
   //+colored_post_it(hsl(360,41%,63%))
-  +colored_post_it($repeated, hsl(357, 100%, 86%))
+  +colored_post_it($repeated)
   //background-color: #e8e37d
   
 =green_post_it($repeated: 0)
   //+colored_post_it(hsl(87, 69%, 89%))
   //+colored_post_it(hsl(84,35%,54%))
-  +colored_post_it($repeated, hsl(79, 48%, 75%))
+  +colored_post_it($repeated)
   //background-color: #e8e37d
 
 =on_post_it

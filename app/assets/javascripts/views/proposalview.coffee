@@ -1,6 +1,8 @@
 class ConsiderIt.ProposalView extends Backbone.View
   @template : _.template( $("#tpl_proposal").html() )
+
   tagName : 'li'
+
 
   initialize : (options) -> 
     #@state = 0
@@ -8,17 +10,35 @@ class ConsiderIt.ProposalView extends Backbone.View
     @proposal = ConsiderIt.proposals[@long_id]
     @data_loaded = false
 
+
   render : () -> 
+    results_el = $('<div class="aggregated_results statement">')
+    @proposal.views.results = new ConsiderIt.ResultsView
+      el : results_el
+      proposal : @proposal
+      model : @model
+
+    @proposal.views.results.render()
+
+    @proposal.views.take_position = new ConsiderIt.PositionView
+      proposal : @proposal
+      model : @proposal.position
+      el : @$el
+
+    position_el = @proposal.views.take_position.render()
+    
+    @$el.hide()
 
     @$el.html ConsiderIt.ProposalView.template($.extend({}, @model.attributes, {
-        title : this.model.title() 
-        top_pro : @proposal.top_pro 
-        top_con : @proposal.top_con
-        tile_size : @fit_participants($.parseJSON(@model.get('participants')).length)
+        title : this.model.title()
       }))
 
-    this
+    results_el.insertAfter(@$el.find('.statement.proposing'))
+    position_el.insertAfter(results_el)
 
+    @$el.show()
+
+    this
 
   set_data : (data) =>
     _.extend(@proposal, {
@@ -36,7 +56,9 @@ class ConsiderIt.ProposalView extends Backbone.View
       position : new ConsiderIt.Position(data.position.position)
     })
 
+
     @proposal.positions[@proposal.position.user_id] = @proposal.position
+    @proposal.views.take_position.set_model @proposal.position
 
     # separating points out into peers and included
     for [source_points, source_included, dest_included, dest_peer] in [[@proposal.points.pros, data.points.included_pros, @proposal.points.included_pros, @proposal.points.peer_pros], [@proposal.points.cons, data.points.included_cons, @proposal.points.included_cons, @proposal.points.peer_cons]]
@@ -97,58 +119,27 @@ class ConsiderIt.ProposalView extends Backbone.View
     @data_loaded = false
     @close()
 
+
   take_position : (me) ->
-    $('html, body').animate {scrollTop: me.$el.offset().top - 50 }, 800
 
-    _.each me.proposal.views, (vw) -> 
-      delete vw.remove()
-    me.proposal.views = {}
-
-    # if me.proposal.views.show_results?
-    #   me.proposal.views.show_results.remove() 
-    # if me.proposal
-      #delete me.proposal.views.show_results
-
-    me.$el.find('.top_points').fadeOut()
-
-    el = $('<div class="user_opinion">').insertAfter(me.$el.find('.question'))
-    me.proposal.views.take_position = new ConsiderIt.PositionView
-      el : el
-      proposal : me.proposal
-      model : me.proposal.position
-      parent : me
+    el = me.proposal.views.take_position.show_crafting()
+    el.insertAfter(me.$el.find('.statement.aggregated_results'))
     
-    me.proposal.views.take_position.render()
-
-    $('html, body').animate {scrollTop: me.$el.offset().top - 50 }, 200
-
+    $('html, body').stop(true, false);
+    $('html, body').animate {scrollTop: el.offset().top - 100 }, 800
 
 
   show_results : (me) ->
-    $('html, body').animate {scrollTop: me.$el.offset().top - 50 }, 800
 
-    _.each me.proposal.views, (vw) -> 
-      delete vw.remove()
-    me.proposal.views = {}
+    me.proposal.views.take_position.close_crafting()
+    me.proposal.views.results.show_explorer()
 
-    # if me.proposal.views.take_position?
-    #   me.proposal.views.take_position.remove() 
-    #   delete me.proposal.views.take_position
-
-    me.$el.find('.top_points').fadeOut()
-    el = $('<div class="aggregated_results">').insertAfter(me.$el.find('.question'))
-
-      
-    me.proposal.views.show_results = new ConsiderIt.ResultsView
-      el : el
-      proposal : me.proposal
-
-    me.proposal.views.show_results.render()
-
-    $('html, body').animate {scrollTop: me.$el.offset().top - 50 }, 200
+    $('html, body').stop(true, false);
+    $('html, body').animate {scrollTop: me.proposal.views.results.$el.offset().top - 100 }, 800
 
 
   take_position_handler : () ->
+
     if @data_loaded
       @take_position(this)
     else
@@ -161,21 +152,20 @@ class ConsiderIt.ProposalView extends Backbone.View
     else
       @load_data(@show_results)
 
-
-    #@state = 3
-
   close : () ->
-    _.each @proposal.views, (vw) -> 
-      delete vw.remove()
-    @proposal.views = {}
-    @$el.find('.top_points').fadeIn()
+    #_.each @proposal.views, (vw) -> 
+    #  delete vw.remove()
+    #@proposal.views = {}
+    @proposal.views.take_position.close_crafting()
+    @proposal.views.results.show_summary()
+
 
 
   # Point details are being handled here (messily) for the case when a user directly visits the point details page without
   # (e.g. if they followed a link to it). In that case, we need to create some context around it first.
   prepare_for_point_details : (me, params) ->
     me.show_results(me)
-    results_view = me.proposal.views.show_results
+    results_view = me.proposal.views.results
 
     point = results_view.pointlists.pros.get(params.point_id)
     if point?
@@ -193,13 +183,29 @@ class ConsiderIt.ProposalView extends Backbone.View
     # if data is already loaded, then the PointListView is already properly handling this
 
 
-  fit_participants : (num_participants) ->
-    width = 150
-    height = 250
-    Math.min 50, ConsiderIt.utils.get_tile_size(width, height, num_participants)
 
-    #$participants
-    #  .css({'width': tile_size, 'height': tile_size})
+
+  events : 
+    'click a.hidden' : 'show_details'
+    'click a.showing' : 'hide_details'
+
+  show_details : (ev) -> 
+    $block = $(ev.currentTarget).closest('.extra')
+
+    $block.find('.full').slideDown();
+    $block.find('a.hidden')
+      .text('hide')
+      .toggleClass('hidden showing');
+
+  hide_details : (ev) -> 
+    $block = $(ev.currentTarget).closest('.extra')
+
+    $block.find('.full').slideUp(1000);
+    $block.find('a.showing')
+      .text('show')
+      .toggleClass('hidden showing');      
+
+
 
 
 

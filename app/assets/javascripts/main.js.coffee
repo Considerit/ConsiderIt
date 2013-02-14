@@ -11,11 +11,11 @@ window.PaperClip =
   get_avatar_url : (user, size, fname) ->
     return '' if size == 'small' && !window.cached_avatars_loaded
 
-    if size == 'small' && window.avatar_data['small'][user.id]?
+    if user? && size == 'small' && window.avatar_data['small'][user.id]?
       window.avatar_data['small'][user.id]
     else if fname?
       "/system/avatars/#{user.id}/#{size}/#{fname}"
-    else if user.get('avatar_file_name')
+    else if user? && user.get('avatar_file_name')
       "/system/avatars/#{user.id}/#{size}/#{user.get('avatar_file_name')}"
     else
       "/system/default_avatar/#{size}_default-profile-pic.png"

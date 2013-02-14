@@ -78,16 +78,35 @@
           .clear
 
 %script{ :type => "text/template", :id => "tpl_pointlistpagination" }
-  .pagination
+  #pagination
+
     %a.pager.backward
-      back
+      (( if(start_record != 1){ ))
+      &#9650;
+      (( } ))
+
+    .count
+
+      %span#start_record
+        {{start_record}}
+      &ndash;
+      %span#end_record
+        {{end_record}}
+      = surround ' ' do
+        of
+      %span#total_records
+        {{total_records}}
+
     %a.pager.forward
-      forward
+      (( if(end_record != total_records){ ))
+      &#9660;
+      (( } ))
+
 
 %script{ :type => "text/template", :id => "tpl_point_details" }   
   (( var point_creator = false, has_details = false, hide_name = false; ))
 
-  .point{ :class => "point {{is_pro ? 'pro' : 'con'}} commentable" }
+  .point{ :class => "point  commentable" }
     %a.close
       Close details
 
@@ -219,279 +238,150 @@
 
 
 
+
 - theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
 - rep_user = theme.user
 - rep_position = nil
 
 %script{ :type => "text/template", :id => "tpl_proposal" }
-  .proposer
-    = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
-
-  .talking
-    .bubble.proposal_bubble.left
-      .question
-        {{title}}?
-
-      .top_points
-
-        .top
-          (( if(!top_pro) { ))
-          .bubble.right.empty
-            No pro arguments added yet.
-          (( } else { ))
-          .pic
-            %img.avatar-replace-small{ :width => 50, :height => 50, :'data-id' => "{{top_pro.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_pro.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "avatar author"}
-
-          .bubble.right.pro
-            {{top_pro.nutshell}}
-          .lead
-            top pro argument
-          (( } ))
-          .clear
-        .top
-          (( if(!top_con) { ))
-          .bubble.right.empty
-            No con arguments added yet.
-          (( } else { ))
-          .pic
-            %img.avatar-replace-small{ :width => 50, :height => 50,  :'data-id' => "{{top_con.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_con.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "avatar author"}
-
-          .bubble.right.con
-            {{top_con.nutshell}}
-          .lead
-            top con argument
-          (( } ))
-          .clear
-
-      //.user_opinion
-
-      //.aggregated_results
 
 
-      .official_response
-        .pic
-          = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+  %h2.question
+    Should We {{title}}?
 
-        - if true || rep_position.nil?
+  .statement.proposing
+    .speaker.proposer
+      = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
 
-          .bubble.left.empty
-            I've not yet taken a stance
+    .body.left.proposer
+      .bubble 
+        &#9700;   
+      %p
+        {{description}}
 
-        - elsif true || proposal.active
+      .details
+        (( if( long_description && $.trim(long_description) != '') { ))
+        .long_description.extra
+          .prompt
+            Long Description
+            %a.hidden
+              show
+          .full.hide
+            {{ long_description }}
+            %a.hidden
+              show
+        (( } ))
 
-          .bubble.left.rep_statement
-            Read my INITIAL POSITION. I'm still listening.
+        (( if( additional_details && $.trim(additional_details) != '') { ))
+        .additional.extra
+          .prompt
+            Fiscal impact statement
+            %a.hidden
+              show
+          .full.hide
+            {{ additional_details }}
+            %a.hidden
+              show
+        (( } ))
+    .listener
 
-        - else
+  .statement.responding
+    .speaker.proposer.small
+      = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
 
-          .bubble.left.rep_statement
-            Based on your input and my considerations, I've decided that I support. Read my FULL REPORT. Thanks!
+    .body.left.proposer
+      .bubble
+        &#9700;
+
+      - if true || rep_position.nil?
+
+        .empty
+          I've not yet taken a stance
+
+      - elsif true || proposal.active
+
+        .rep_statement
+          Read my INITIAL POSITION. I'm still listening.
+
+      - else
+
+        .rep_statement
+          Based on your input and my considerations, I've decided that I support. Read my FULL REPORT. Thanks!
         
-        .clear
+  
+  .social_media_ribbon
 
-    %a.results{:href => "{{Routes.proposal_path( long_id )}}"}
-      See results
-      
-    %a.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
-
-      = image_tag current_theme_image_path("join.png")
-
-      %span.text
-        Join the Conversation
-
-  .participants
     %ul
-      (( _.each($.parseJSON(participants), function(p){ ))
       %li
-        %img.avatar-replace-small{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-      (( }); ))
+        Help spread the word
+      %li.action
+        = image_tag 'fb.png'
+      %li.action
+        = image_tag 'tw.png'
+      %li.action
+        = image_tag 'link.png'
+      %li
+        Link to this discussion
+
+
+%script{ :type => "text/template", :id => "tpl_your_action_craft"}
+  .listener
+
+  %a.body.you.your_action.right.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+    %span.bubble
+      &#9700;
+
+    = image_tag current_theme_image_path("join.png")
+
+    %span.text
+      {{call}}
+
+  .speaker.you
+    = image_tag current_theme_image_path("you.png")
+
+%script{ :type => "text/template", :id => "tpl_your_action_save"}
+  .listener
+
+  %a.body.you.your_action.right.submit
+    %span.bubble
+      &#9700;
+
+    = image_tag current_theme_image_path("join.png")
+
+    %span.text
+      {{call}}
+
+  .speaker.you
+    = image_tag current_theme_image_path("you.png")
+
 
 %script{ :type => "text/template", :id => "tpl_position" }      
-
-  .slide
-    .head.single
-      %h1.banner
-        What is your opinion?
-
-    
-    .rest.position
-
-      %table.slider_table
-        %tr
-          %td.slider_label.left{:style => "font-size:1em;"}
-            %div
-              Support
-
-          %td.slider_container
-            
-          %td.slider_label.right{:style => "font-size:1em;"}
-            %div
-              Oppose
-        %tr
-          %td.slider_label.center{ :colspan => 3 }
-            Neutral
+  .listener
+  .body.right.you
+    .bubble
+      &#9700;
 
 
-  .head.single
-    %h1.banner
-      What are the most important Pros and Cons to you?
-
-  %table
-    %tr
-      %td.margin
-        .heading
-          %h3.lead
-            Pros by other users
-          .sublead
-            drag good ones to your list
-
-        #peer_pros.inner_wrapper
-          %ul.peer_points.point_list
-
-      %td.slate
-
-        .pro_con_list{ :id => "domain_self", :class => "dynamic has_other_points"}
-
-          .slate
-           
-            %table
-              %tr.point_columns
-                %td.full_column.pro_column#points_on_board_pro
-                  #propoints.inner_wrapper
-                    .pro_con_list_header.pro_header
-                      .inner
-                        - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
-                          = theme_image_tag('pro_header.png')
-                        - else
-                          = image_tag('chalk/pros.png') 
-
-                    %ul.point_list
-
-                %td.full_column.con_column#points_on_board_con 
-                  #conpoints.inner_wrapper
-                    .pro_con_list_header.con_header
-                      .inner
-                        - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
-                          = theme_image_tag('con_header.png')
-                        - else
-                          = image_tag('chalk/cons.png') 
-
-                    %ul.point_list
-
-      %td.margin
-
-        .heading
-          %h3.lead
-            cons by other users
-          .sublead
-            drag good ones to your list
-
-        #peer_cons.inner_wrapper
-          %ul.peer_points.point_list
-
-
-  - prompt = "Save your opinion and view results"
-
-  .stance.position_statement.hide
-    %label{ :name => :explanation }
-      Optional statement that summarizes your thoughts
-    %textarea{ :name => :explanation}
-
-
-  (( if (proposal.active || #{Rails.env} == 'development') { ))
-
-  %button.submit.button
-    = prompt
-
-  (( } ))
-
-
-
-%script{ :type => "text/template", :id => "tpl_results" }      
-  
-  .breakdown
-
-    #histogram
-      %table
-        %tr
-          %td.support
-            Supporters
-
-          (( _.each(histogram.breakdown, function(bar, bucket){ ))
-
-          (( var full_clss = bar.positions.length == 0 ? 'noone' : 'some'; ))
-
-          %td.bar_cell
-
-            .bar.empty{ :style => "height: {{bar.empty_size}}px;"}
-
-            .bar.full{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}", :class => "{{full_clss}}"}
-
-              .close
-                x
-
-              .border_cover
-
-              (( if (bar.positions.length > 0) { ))
-              %ul.people_bar
-                (( _.each( _.range(bar.num_ghosts), function(ghost){  ))
-                %li{ :style => "visibility:hidden; float: right; height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
-                (( }); ))
-
-                (( _.each(bar.positions, function(position) { ))
-                (( var user = ConsiderIt.users[position.get('user_id')]; ))
-                (( if (user){ ))
-
-                (( var has_explanation = position.explanation && position.explanation.length > 0, expl_clss = has_explanation ? 'with_explanation' : 'no_explanation'; ))
-
-                %li.statement{:class=>"bucket-{{bucket}} {{expl_clss}}", :id=>"user-{{user.id}}", :user => "{{user.id}}"}
-                  .view_statement
-                    %img.avatar-replace-small{ :'data-id' => "{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(user, 'small')}}",:class => "{{expl_clss}}", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
-
-                    .details
-                      .position_author_name
-                        {{user.get('name')}}
-
-                      (( if ( has_explanation ) { ))
-                      %blockquote.explanation
-                        {{ position.explanation }}
-                      (( } ))
-                (( } ))
-                (( }); ))
-              (( } ))
-
-          %li.clear
-          (( }); ))
-          %td.oppose
-            Opposers
-
-      #axis_arrow
-
-  .opinions
+    %h2
+      These are the pros and cons that I think are most important: 
 
     %table
       %tr
+        %td.margin
+          .heading.pros
+            %h3.lead
+              Pros by other users
+            .sublead
+              drag good ones to your list
+
+          #peer_pros.inner_wrapper
+            %ul.peer_points.point_list
 
         %td.slate
 
-          .pro_con_list{ :id => "domain_board", :class => "static"}
+          .pro_con_list{ :id => "domain_self", :class => "dynamic has_other_points"}
 
             .slate
-              %h3.participant_connection
-                .others
-                .all
-                  All Factors
-                  .filters
-                    %span.label
-                      order by 
-
-                    %a.point_filter.selected{ :'data-filter' => 'score'}
-                      Popularity
-                    %a.point_filter{ :'data-filter' => 'appeal'}
-                      Most Unifying
-                    %a.point_filter{ :'data-filter' => 'divisiveness'}
-                      Most Divisive
-
              
               %table
                 %tr.point_columns
@@ -516,5 +406,242 @@
                             = image_tag('chalk/cons.png') 
 
                       %ul.point_list
+
+        %td.margin
+
+          .heading.cons
+            %h3.lead
+              cons by other users
+            .sublead
+              drag good ones to your list
+
+          #peer_cons.inner_wrapper
+            %ul.peer_points.point_list
+
+
+    .slide
+      %h2
+        After weighing the pros and cons, I have decided that I... 
+
+      
+      .rest.position
+
+        %table.slider_table
+          %tr
+            %td.slider_label.left{:style => "font-size:1em;"}
+              %div
+                Support
+
+            %td.slider_container
+              
+            %td.slider_label.right{:style => "font-size:1em;"}
+              %div
+                Oppose
+          %tr
+            %td.slider_label.center{ :colspan => 3 }
+              Neutral
+
+
+
+    .stance.position_statement.hide
+      %label{ :name => :explanation }
+        Optional statement that summarizes your thoughts
+      %textarea{ :name => :explanation}
+
+  .speaker.you
+    = image_tag current_theme_image_path("you.png")
+
+
+
+%script{ :type => "text/template", :id => "tpl_summary" }      
+  .listener
+
+  .body.right.public.summary{ :style => " {{ tile_size==50 ? '' : 'min-height:160px;' }} "}
+    .bubble
+      &#9700;
+
+
+    %h3
+      These are the most compelling pros and cons we've discussed thus far: 
+      
+    .top_points
+
+      .top_point.pro
+        (( if(!top_pro) { ))
+        .text
+          No pro arguments added yet.
+        (( } else { ))
+
+        %img.avatar-replace-small{ :width => 50, :height => 50, :'data-id' => "{{top_pro.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_pro.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "avatar author"}
+
+        .top.body.left
+
+          .bubble
+            &#9700;
+
+          .text
+            {{top_pro.nutshell}}
+
+        (( } ))
+        .clear
+
+      .top_point
+
+        (( if(!top_con) { ))
+
+        .text
+          No con arguments added yet.
+        (( } else { ))
+
+        .top.body.right
+
+          .bubble
+            &#9700;
+
+          .text
+            {{top_con.nutshell}}
+
+        %img.avatar-replace-small{ :width => 50, :height => 50,  :'data-id' => "{{top_con.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_con.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "avatar author"}
+
+        (( } ))
+        .clear
+
+  .speaker.public
+    .participants
+      %ul
+        (( _.each($.parseJSON(participants), function(p){ ))
+        %li
+          %img.avatar-replace-small{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+        (( }); ))
+
+      %a.results{:href => "{{Routes.proposal_path( long_id )}}"}
+        View results
+
+%script{ :type => "text/template", :id => "tpl_results" }      
+  .listener
+
+  .body.right.public
+    .bubble
+      &#9700;
+
+    %h3
+      This is what we believe and why. Hover over the bars to find common ground and identify sticking points.
+
+    .breakdown
+
+      #histogram
+        %table
+          %tr
+            %td.support
+              Supporters
+
+            (( _.each(histogram.breakdown, function(bar, bucket){ ))
+
+            (( var full_clss = bar.positions.length == 0 ? 'noone' : 'some'; ))
+
+            %td.bar_cell
+
+              .bar.empty{ :style => "height: {{bar.empty_size}}px;"}
+
+              .bar.full{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}", :class => "{{full_clss}}"}
+
+                .close
+                  x
+
+                .border_cover
+
+                (( if (bar.positions.length > 0) { ))
+                %ul.people_bar
+                  (( _.each( _.range(bar.num_ghosts), function(ghost){  ))
+                  %li{ :style => "visibility:hidden; float: right; height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
+                  (( }); ))
+
+                  (( _.each(bar.positions, function(position) { ))
+                  (( var user = ConsiderIt.users[position.get('user_id')]; ))
+                  (( if (user){ ))
+
+                  (( var has_explanation = position.explanation && position.explanation.length > 0, expl_clss = has_explanation ? 'with_explanation' : 'no_explanation'; ))
+
+                  %li.statement{:class=>"bucket-{{bucket}} {{expl_clss}}", :id=>"user-{{user.id}}", :user => "{{user.id}}"}
+                    .view_statement
+                      %img.avatar-replace-small{ :'data-id' => "{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(user, 'small')}}",:class => "{{expl_clss}}", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
+
+                      .details
+                        .position_author_name
+                          {{user.get('name')}}
+
+                        (( if ( has_explanation ) { ))
+                        %blockquote.explanation
+                          {{ position.explanation }}
+                        (( } ))
+                  (( } ))
+                  (( }); ))
+                (( } ))
+
+            %li.clear
+            (( }); ))
+            %td.oppose
+              Opposers
+
+        #axis_arrow
+
+    .opinions
+
+      %table
+        %tr
+
+          %td.slate
+
+            .pro_con_list{ :id => "domain_board", :class => "static"}
+
+              .slate
+                %h3.participant_connection
+                  .others
+                  .all
+                    All Factors
+                    .filters
+                      %span.label
+                        order by 
+
+                      %a.point_filter.selected{ :'data-filter' => 'score'}
+                        Popularity
+                      %a.point_filter{ :'data-filter' => 'appeal'}
+                        Most Unifying
+                      %a.point_filter{ :'data-filter' => 'divisiveness'}
+                        Most Divisive
+
+               
+                %table
+                  %tr.point_columns
+                    %td.full_column.pro_column#points_on_board_pro
+                      #propoints.inner_wrapper
+                        .pro_con_list_header.pro_header
+                          .inner
+                            - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
+                              = theme_image_tag('pro_header.png')
+                            - else
+                              = image_tag('chalk/pros.png') 
+
+                        %ul.point_list
+
+                    %td.full_column.con_column#points_on_board_con 
+                      #conpoints.inner_wrapper
+                        .pro_con_list_header.con_header
+                          .inner
+                            - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
+                              = theme_image_tag('con_header.png')
+                            - else
+                              = image_tag('chalk/cons.png') 
+
+                        %ul.point_list
+
+  .speaker.public
+    .participants
+      %ul
+        (( _.each($.parseJSON(participants), function(p){ ))
+        %li
+          %img.avatar-replace-small{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+        (( }); ))
+
 
 = render :partial => 'backbone/templates_user'

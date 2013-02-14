@@ -1,13 +1,70 @@
 class ConsiderIt.ResultsView extends Backbone.View
+  PARTICIPANT_WIDTH : 150
+  PARTICIPANT_HEIGHT : 150
+
+  initialize : (options) ->
+    @proposal = options.proposal
+    num_participants = $.parseJSON(@model.get('participants')).length
+    @tile_size = Math.min 50, ConsiderIt.utils.get_tile_size(@PARTICIPANT_WIDTH, @PARTICIPANT_HEIGHT, num_participants)
+
+  render : ->     
+    @show_summary()
+    this
+
+  show_summary : ->
+    @view.remove if @view
+    @view = new ConsiderIt.SummaryView
+      el : @$el
+      proposal : @proposal
+      model : @proposal.model
+      tile_size : @tile_size
+    @view.render()
+    @$el.addClass('summary')
+    @state = 0
+
+  show_explorer : ->
+    @view.remove if @view
+    @view = new ConsiderIt.ExplorerView
+      el : @$el
+      proposal : @proposal
+      model : @model
+      tile_size : @tile_size
+    @view.render()
+    @state = 1
+
+  events : 
+    'click' : 'transition_explorer'
+
+  transition_explorer : ->
+    ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: true}) if @state==0
+
+class ConsiderIt.SummaryView extends Backbone.View
+  @template : _.template( $("#tpl_summary").html() )
+
+  initialize : (options) ->
+    @proposal = options.proposal
+    @tile_size = options.tile_size
+
+  render : () ->
+    this.$el.html ConsiderIt.SummaryView.template($.extend({}, @model.attributes, {
+      top_pro : @proposal.top_pro 
+      top_con : @proposal.top_con
+      tile_size : @tile_size      
+      }))
+
+    this
+
+class ConsiderIt.ExplorerView extends Backbone.View
 
   @template : _.template( $("#tpl_results").html() )
 
-  BARHEIGHT : 175
-  BARWIDTH : 70
+  BARHEIGHT : 172
+  BARWIDTH : 87
 
   initialize : (options) -> 
     @proposal = options.proposal
     @histogram = @create_histogram()
+    @tile_size = options.tile_size
 
     @pointlists = 
       pros : new ConsiderIt.PaginatedPointList({perPage : 6} )
@@ -19,8 +76,9 @@ class ConsiderIt.ResultsView extends Backbone.View
 
   render : () -> 
 
-    @$el.html ConsiderIt.ResultsView.template
+    @$el.html ConsiderIt.ExplorerView.template _.extend {}, @model.attributes, 
       histogram : @histogram
+      tile_size : @tile_size
 
     @views =
       pros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.pros, el : @$el.find('#propoints'), location: 'board', proposal : @proposal})

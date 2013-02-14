@@ -62,13 +62,13 @@ source slice width outset repeat
   -webkit-box-shadow: $value
   box-shadow: $value
 
-=inset-box-shadow($x, $y, $offset, $hex, $opacity: 1, $ie: $useIEFilters)
-  -moz-box-shadow: $x $y $offset $hex inset
-  -webkit-box-shadow: $x $y $offset $hex inset
+=inset-box-shadow($x, $y, $blur: 0, $spread: 0, $hex: #fff, $opacity: 1, $ie: $useIEFilters)
+  -moz-box-shadow: $x $y $blur $spread $hex inset
+  -webkit-box-shadow: $x $y $blur $spread $hex inset
   @if $opacity != 1
-    box-shadow: $x $y $offset rgba($hex, $opacity) inset
+    box-shadow: $x $y $blur $spread rgba($hex, $opacity) inset
   @else
-    box-shadow: $x $y $offset $hex inset
+    box-shadow: $x $y $blur $spread $hex inset
   @if $ie == 1
     $iecolor: "#" + red($hex) + green($hex) + blue($hex)
     filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=#{$x}, OffY=#{$y}, Color='#{$iecolor}')
@@ -108,6 +108,11 @@ source slice width outset repeat
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$from}', endColorstr='#{$to}')
     -ms-filter: quote(progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$from}', endColorstr='#{$to}'))
 
+=background-clip($clip)
+  -webkit-background-clip:  $clip
+  -mox-background-clip:     $clip
+  -o-background-clip:       $clip
+  background-clip:          $clip
 
 =hyphenate
   -ms-word-break: break-all

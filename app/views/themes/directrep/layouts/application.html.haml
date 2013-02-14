@@ -106,7 +106,9 @@
 
           - if @dashboard
             = render :partial => "dashboard/sidebar"  
-          #inner_content
+
+
+          .inner_content
             - rep_user = theme.user
 
             #homepage
@@ -138,20 +140,22 @@
                       facebook
 
                 .dialogue
-                  .bubble.rep_statement.left
+                  .body.rep_statement.left.proposer
+                    .bubble
+                      &#9700;
                     %strong
                       Tell me what you think about the issues below. 
                     I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
 
-                  .bubble.constituent_statement.longer.right
-                    Politicians don't care what we think!
+                  .body.constituent_statement.longer.right.public
+                    .bubble
+                      &#9700;                  
+                    Why should we spend the time? Politicians don't care what we think. 
 
                   .clear
-                  .bubble.constituent_statement.shorter.right
-                    Why should we spend the time?
-
-                  .clear
-                  .bubble.rep_statement.left
+                  .body.rep_statement.left.proposer
+                    .bubble
+                      &#9700;                  
                     %strong
                       I promise to post a response to your concerns.
                     Your opinions help shape how I look at these important issues for our community. I care what you think.
@@ -159,7 +163,7 @@
                 .constituency
                   .people  
                     - cols = 6
-                    - rows = 8
+                    - rows = 7
                     - pics = User.where('avatar_file_name IS NOT NULL')
                     - users = pics.sample( [cols*rows, pics.count].min )
 
@@ -168,8 +172,8 @@
 
                       -# = image_tag image_path(user.avatar.url(:small))
 
-              #proposals
-                %ul.proposallist
+          #proposals
+            %ul.proposallist
 
         = render :partial => "shared/footer/container"
 

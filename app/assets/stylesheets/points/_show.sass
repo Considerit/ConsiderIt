@@ -132,7 +132,7 @@
       
     //width: 255px
     border-color: transparent
-    padding-bottom: $vertical_baseline
+    //padding-bottom: $vertical_baseline
     cursor: pointer
 
     .bullet_point
@@ -144,12 +144,17 @@
       margin-bottom: 0px
 
     &:hover .operations
-      display: block
+      visibility: visible
     .operations
-      +transition
+      //+transition
       bottom: 0
       left: 0
-      display: none
+      position: relative
+      visibility: hidden
+      //display: none
+
+      .include
+        display: none
 
 
   //&.point_in_list_board
@@ -163,6 +168,11 @@
 
   &.point_in_list_self
     width: $grid_major * 5
+
+  &.point_in_list_board
+    .operations
+      .remove
+        display: none
 
   
   //everything related to hovering over a point

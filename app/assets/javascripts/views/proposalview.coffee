@@ -169,11 +169,11 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     point = results_view.pointlists.pros.get(params.point_id)
     if point?
-      pointview = results_view.views.pros.getViewByModel(point)
+      pointview = results_view.view.views.pros.getViewByModel(point)
     else
       point = results_view.pointlists.cons.get(params.point_id)
       if point?
-        pointview = results_view.views.cons.getViewByModel(point)
+        pointview = results_view.view.views.cons.getViewByModel(point)
 
     pointview.show_point_details_handler() if pointview?
 

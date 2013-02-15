@@ -30,7 +30,51 @@ class ConsiderIt.ResultsView extends Backbone.View
       model : @model
       tile_size : @tile_size
     @view.render()
+
+    me = this
+    window.delay 1000, -> me.explode_participants()
+
     @state = 1
+
+  explode_participants : ->
+
+    $participants = @$el.find('.speaker')
+      .css({'position':'relative','z-index':99}) 
+      .find('.participants')
+
+    from_tile_size = $participants.find('img:first').width()
+    to_tile_size = @$el.find("#histogram img:first").width()
+
+    $participants.hide()
+    $participants.find('img').css {
+            'width' : "#{to_tile_size}px",
+            'height' : "#{to_tile_size}px"}
+    $participants.show()
+
+    me = this
+
+    $.each $participants.find('img'), ->
+      $from = $(this)
+      id = $from.data('id')
+      $to = me.$el.find("#histogram #user-#{id}")
+
+      $from.css
+        'position': 'relative'
+
+      to_offset = $to.offset()
+      from_offset = $from.offset()
+
+      $from.animate {
+        "left": to_offset.left - from_offset.left, 
+        "top": to_offset.top - from_offset.top}, 1200, 'linear'
+
+
+    window.delay 1300, -> 
+      me.$el.find('#histogram .bar.full').css 'opacity', 1
+
+    window.delay 1500, -> 
+      $participants.fadeOut -> 
+        $(this).remove()
 
   events : 
     'click' : 'transition_explorer'
@@ -76,6 +120,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   render : () -> 
 
+    @$el.hide()
+
     @$el.html ConsiderIt.ExplorerView.template _.extend {}, @model.attributes, 
       histogram : @histogram
       tile_size : @tile_size
@@ -90,6 +136,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
     @pointlists.cons.setSort('score', 'desc')
 
     @show()
+
     $('html, body').animate {scrollTop: @$el.offset().top}, 1000      
     this
 
@@ -134,10 +181,10 @@ class ConsiderIt.ExplorerView extends Backbone.View
   #handlers
   events : 
     'mouseenter .point_in_list:not(#expanded)' : 'highlight_point_includers'
-    'mouseout .point_in_list:not(#expanded)' : 'highlight_point_includers'
+    'mouseleave .point_in_list:not(#expanded)' : 'highlight_point_includers'
     'mouseenter #histogram .bar.hard_select .view_statement' : 'show_user_explanation' 
-    'mouseout #histogram .bar.hard_select .view_statement' : 'hide_user_explanation' 
-    'mouseover #histogram .bar.full:not(.selected)' : 'select_bar'
+    'mouseleave #histogram .bar.hard_select .view_statement' : 'hide_user_explanation' 
+    'mouseenter #histogram .bar.full:not(.selected)' : 'select_bar'
     'click #histogram .bar.full:not(.hard_select)' : 'select_bar'
     'click #histogram .bar.selected:not(.soft_select)' : 'deselect_bar'
     'mouseleave #histogram .bar.full.soft_select' : 'deselect_bar'
@@ -224,11 +271,9 @@ class ConsiderIt.ExplorerView extends Backbone.View
       $(ev.currentTarget).children('.details').hide()
 
   highlight_point_includers : (ev) ->
-    #TODO make this more performant
-    
+
     $target = $(ev.currentTarget)
 
-    @$histogram.toggleClass('hovering_over_point')
     includers = $.parseJSON($target.attr('includers'))
     selector = []
 
@@ -236,9 +281,11 @@ class ConsiderIt.ExplorerView extends Backbone.View
       selector.push('#user-' + includers[i] + ' .view_statement img')
     
     if ev.type == 'mouseenter'
+      @$histogram.addClass('hovering_over_point')
       $(selector.join(','), @$histogram).addClass('includer_of_hovered_point')
       $('#user-' + $target.attr('user') + ' .view_statement img').addClass('author_of_hovered_point')          
     else
+      @$histogram.removeClass('hovering_over_point')
       $(selector.join(','), @$histogram).removeClass('includer_of_hovered_point')
       $('#user-' + $target.attr('user') + ' .view_statement img').removeClass('author_of_hovered_point')    
 

@@ -172,6 +172,37 @@
 
                       -# = image_tag image_path(user.avatar.url(:small))
 
+          .inner_content.inner_content-no-background#proposals_filters
+            %h2
+              Rep. #{theme.rep_name} has considered #{@proposals.length} issues
+            .sub
+              .show
+                .title
+                  Filter to: 
+                %a.selected.all
+                  All
+                %a.open
+                  Open
+                %a.completed
+                  Completed
+              .sort
+                .title
+                  Sort by: 
+                %a.selected.activity
+                  Activity
+                %a.newest
+                  Newest
+              .index
+                Jump to issue
+                
+                %ul.menu
+                  - @proposals.each do |prop|
+                    %li
+                      %a{ :href => "##{prop[0]}"}
+                        Should we #{prop[1][:model].title}?
+
+                .clear
+
           #proposals
             %ul.proposallist
 

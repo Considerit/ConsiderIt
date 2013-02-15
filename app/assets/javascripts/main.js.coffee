@@ -5,6 +5,7 @@ _.templateSettings =
   evaluate : /\(\((.+?)\)\)/g
 
 
+window.delay = (ms, func) -> setTimeout func, ms
 
 
 window.PaperClip =
@@ -27,7 +28,7 @@ $(document).ready () ->
         user_id = $(this).data('id')
         if window.avatar_data['small'][user_id]?
           this.src = window.avatar_data['small'][user_id];
-        else
+        else if ConsiderIt.users?
           this.src = window.PaperClip.get_avatar_url(ConsiderIt.users[user_id], 'small')
 
 

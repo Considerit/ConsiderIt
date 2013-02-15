@@ -2,9 +2,6 @@
 
 %script{ :type => "text/template", :id => "tpl_point_in_list" }      
         
-  %a.toggle.less.hide.point_text_toggle
-    x
-
   .body.compact_body
 
     .bullet_point
@@ -292,22 +289,29 @@
     .body.left.proposer
       .bubble
         &#9700;
+      (( var r = Math.floor(Math.random()*3); ))
 
-      - if true || rep_position.nil?
+      (( if(r==0){ ))
+      -# if r == 0 #true || rep_position.nil?
 
-        .empty
-          I've not yet taken a stance
+      .empty
+        I've not yet taken a stance
+      (( } else if(r==1){ ))
+      -# elsif r == 1 #true || proposal.active
 
-      - elsif true || proposal.active
+      .rep_statement
+        I'm still hoping to hear from more of you. In the meantime, these are 
+        %a{ :style => "text-decoration: underline; cursor: pointer;"}
+          my thoughts so far. 
+      (( } else{ ))
 
-        .rep_statement
-          Read my INITIAL POSITION. I'm still listening.
-
-      - else
-
-        .rep_statement
-          Based on your input and my considerations, I've decided that I support. Read my FULL REPORT. Thanks!
-        
+      .rep_statement
+        Based on your input and my considerations, I've decided that I support. Read my 
+        = surround '', '.' do
+          %a{ :style => "text-decoration: underline; cursor: pointer;"}
+            full report
+        Thanks!
+      (( } ))        
   
   .social_media_ribbon
 

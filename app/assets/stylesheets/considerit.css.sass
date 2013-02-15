@@ -85,10 +85,12 @@
 
   a, input, button
     color: #222  
-    +transition
-
+  
     &:hover
       color: #000    
+  
+  input, button
+    +transition
 
 html body
   +on_background
@@ -230,7 +232,7 @@ body
 
         .inner_content
           padding: 0 $grid_xs $vertical_baseline $grid_xs
-      
+          margin-bottom: $vertical_baseline      
 
       &#footer > .footer_wrapper
         width: $content_width
@@ -349,7 +351,7 @@ hr.ledge
       //display: none
       text-transform: uppercase
       bottom: 0
-      +transition
+      //+transition
       &.support
         //padding-right: $grid_minor
         text-align: right
@@ -369,20 +371,23 @@ hr.ledge
         position: relative
       .bar.full 
         +transition
+        opacity: 0
         &, a
           color: #ccc
         a:hover
           color: white
 
-        border: 3px solid #222  
-        padding: 0px                            
-        +box-shadow(0px, 1px, 2px, black)
 
-        border-bottom: none
-        background-color: #222
+        padding: 0px                                    
         cursor: pointer
         z-index: 0
         position: relative
+
+        +box-shadow(0px, 1px, 2px, black)
+        border: 3px solid #222
+        border-bottom: none
+        background-color: #222
+
 
         .close, .border_cover
           display: none
@@ -390,29 +395,29 @@ hr.ledge
 
 
         &.hard_select .people_bar .view_statement img
-          opacity: .8
-          +transition
+          //opacity: .8
+          //+transition
           &.default.no_explanation
-            opacity: .35         
+          //  opacity: .35         
           &.with_explanation
-            +grayscale_off
-            opacity: 1
+            //+grayscale_off
+          //  opacity: 1
 
         &.soft_select .people_bar .view_statement img
-          opacity: .6
+          //opacity: .6
           &.default.no_explanation
-            opacity: .35
+            //opacity: .35
           &.with_explanation
-            opacity: .9
-            +grayscale_off
+            //opacity: .9
+            //+grayscale_off
 
         &:hover
           +chalkboard
           border-color: #414141
           z-index: 40
           img.with_explanation
-            +grayscale_off
-            opacity: .6
+            //+grayscale_off
+            //opacity: .6
 
         &.noone
           display: none
@@ -519,12 +524,12 @@ hr.ledge
       img
         max-height: 50px
         max-width: 50px
-        opacity: .35
+        //opacity: .35
         position: relative
-        +grayscale
+        //+grayscale
 
         &.author_of_hovered_point
-          opacity: 1
+          //opacity: 1
       
       .details
         //don't use +font-size here because of the earlier 0% declaration
@@ -574,13 +579,13 @@ hr.ledge
           img
             visibility: hidden
             &.author_of_hovered_point
-              opacity: 1
+              //opacity: 1
               visibility: visible 
-              +grayscale_off
+              //+grayscale_off
             &.includer_of_hovered_point
-              opacity: 1
+              //opacity: 1
               visibility: visible
-              +grayscale_off
+              //+grayscale_off
 
 #axis_arrow
   height: 1 * $vertical_baseline
@@ -670,12 +675,15 @@ hr.ledge
     .pro_con_list_header   
       //height: 120px 
       //background: transparent image-url("chalk/point_header_back.png") no-repeat scroll top center
-      margin-bottom: $vertical_baseline
-      height: 3 * $vertical_baseline
+      margin-bottom: $vertical_baseline/2
+      //height: 3 * $vertical_baseline
 
       .inner
         text-align: center
         position: relative
+
+        img
+          width: 80px
 
     &#points_on_board_pro > *
       margin-left: $grid_major - $chalkboard_border_width

@@ -56,6 +56,9 @@ body #wrap > div#content .inner_content
   position: relative
   z-index: 26
 
+  border-top: 1px solid white
+  border-bottom: 1px solid #333
+
 
 .customfile-preview-wrap
   width: 80px
@@ -71,6 +74,9 @@ body #wrap > div#content .inner_content
   +background-clip(text)
   text-shadow: rgba(255,255,255,0.2) 0px 3px 3px
   color: transparent
+
+=inset_text
+  //text-shadow: 6px 6px 0px rgba(0,0,0,0.2)
 
 .head
   margin-bottom: $vertical_baseline
@@ -106,8 +112,14 @@ h2.banner
 
 
 $pos: -9px
+$bubble_border_radius: 8px
 
 = bubble
+  &.left
+    border-radius: 0 $bubble_border_radius $bubble_border_radius $bubble_border_radius
+  
+  &.right
+    border-radius: $bubble_border_radius 0 $bubble_border_radius $bubble_border_radius
   .bubble, &:after, &:before
     position: absolute
     display: block
@@ -120,16 +132,17 @@ $pos: -9px
 
   &:after, &:before
     content: '\25E4'
-    top: -1px
 
   &:after
-    font-size: 12px
+    font-size: 14px
     z-index: 4
     color: #f7f7f7
+    top: -3px
 
   &:before
     z-index: 6
     font-size: 12px
+    top: -1px
   
   &.left .bubble, &.left:after, &.left:before
     +flip-horizontal
@@ -137,7 +150,7 @@ $pos: -9px
 
   &.left
     &:after
-      left: $pos - 8
+      left: $pos - 10
     &:before
       left: $pos - 3
     > .bubble
@@ -145,7 +158,7 @@ $pos: -9px
 
   &.right
     &:after
-      right: $pos - 8
+      right: $pos - 10
     &:before
       right: $pos - 3
     > .bubble
@@ -212,14 +225,93 @@ $pos: -9px
   //padding: $vertical_baseline /2 0
   +linear-gradient(lighten($comp_color, 5%), $comp_color)
   background-color: lighten($comp_color, 5%)
+  +transition
 
   &:hover
     +complex-gradient(lighten($comp_color, 15%), lighten($comp_color, 5%), $from_stop : 0%, $to_stop: 20%)
     background-color: lighten($comp_color, 15%)
 
 
+body #wrap > div#content .inner_content.inner_content-no-background
+  background: rgba(white, .15)
+  +box-shadow-remove
+
+body #wrap > div#content #proposals_filters
+  z-index: 100
+  border-radius: 8px
+  width: 650px
+  margin: auto
+  border-top: 1px solid lighten($comp_color, 15%)
+  border-bottom: 1px solid darken($comp_color, 20%)
+
+  h2
+    margin-top: 0
+    padding-top: 0
+  .sub
+    +font-size(-2)
+    margin-top: -$vertical_baseline
+    text-align: center
+    .show, .sort, .index
+      display: inline-block
+      padding-right: $grid_xs
+      > *
+        display: inline-block
+        padding-right: $grid_xs/2
+
+      a
+        color: #333
+        &:hover
+          color: black
+        &.selected, &.selected:hover
+          font-weight: bold
+          color: #222
+          //background-color: rgba(black, .5)
+          //padding: $vertical_baseline/2 $grid_xs
+          //color: white
+          //border-radius: 5px
+          //border-top: 1px solid lighten($comp_color, 15%)
+          //border-bottom: 1px solid darken($comp_color, 20%)
+
+    .index
+      position: relative
+      cursor: pointer
+      z-index: 40
+      &:after
+        content: '\25BE'
+        color: #222
+
+
+      .menu
+        display: none
+        position: absolute
+        z-index: 999
+        text-align: right
+        width: 500px
+        right: 0
+        background-color: rgba(darken($comp_color, 40%), .9)
+        padding-right: 0
+        li
+          cursor: pointer
+          text-align: right
+          border-bottom: 1px dotted #aaa
+          a
+            display: inline-block
+            color: #ddd
+            padding: $vertical_baseline/2 $grid_xs
+          &:hover 
+            background-color: darken($comp_color, 40%)
+            a
+              color: #eee
+
+      &:hover .menu
+        display: block
+
+
+
 #proposals
   margin-top: $vertical_baseline
+  position: relative
+  z-index: 1
 
   .proposal
     margin: $vertical_baseline 0 2 * $vertical_baseline 0
@@ -240,7 +332,9 @@ $pos: -9px
     .question
       text-align: center
       //+true_inset($dark_rep_color)
-      +true_inset($header_gray)
+      //+true_inset($header_gray)
+      +inset_text
+      color: #222
       width: $body_width + 2 * $grid_major
       text-transform: capitalize
       margin: auto
@@ -292,7 +386,12 @@ $pos: -9px
                 font-size: 0
                 line-height: 0
                 display: inline-block
+
                 img
+                  display: inline-block
+                  position: relative
+                  left: 0
+                  top: 0
                   //width: 10px
                   //height: 10px
       &.aggregated_results .summary
@@ -321,7 +420,7 @@ $pos: -9px
     vertical-align: top
 
   div.rep
-    width: 237px - $grid_xs
+    width: 238px - $grid_xs
 
     .about
       width: 220px

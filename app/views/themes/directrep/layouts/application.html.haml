@@ -20,6 +20,9 @@
         
       = theme_stylesheet_link_tag 'application'
 
+      %link{ :href => "/system/cache/#{current_tenant.identifier}.css", :type => 'text/css', :media => "screen", :rel => "stylesheet"}
+
+
       /[if IE 9]
         = stylesheet_link_tag 'ie9'
       
@@ -74,7 +77,7 @@
           function alertContents() {
             if (httpRequest.readyState === 4) {
               if (httpRequest.status === 200) {
-                window.avatar_data = JSON && JSON.parse(httpRequest.responseText) || $.parseJSON(httpRequest.responseText); 
+                window.avatar_data = (JSON && JSON.parse(httpRequest.responseText)) || ($ && $.parseJSON(httpRequest.responseText)); 
                 window.cached_avatars_loaded = true;
 
                 if(window.avatars) { 
@@ -85,7 +88,7 @@
               }
             }
           }
-          makeRequest("/system/cache/#{current_tenant.identifier}.json");
+          //makeRequest("/system/cache/#{current_tenant.identifier}.json");
 
         })();
 
@@ -168,7 +171,7 @@
                     - users = pics.sample( [cols*rows, pics.count].min )
 
                     - users.each do |user|
-                      %img{ :class => 'avatar-replace-small', :'data-id' => user.id }
+                      .avatar{ :id => "avatar-#{user.id}", :'data-id' => user.id }
 
                       -# = image_tag image_path(user.avatar.url(:small))
 

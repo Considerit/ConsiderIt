@@ -1,17 +1,17 @@
 //@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,800)
-@font-face 
+//@font-face 
   font-family: 'Open Sans'
   font-style: normal
   font-weight: 800
   src: local('Open Sans Extrabold'), local('OpenSans-Extrabold'), url(https://themes.googleusercontent.com/static/fonts/opensans/v6/EInbV5DfGHOiMmvb1Xr-hqRDOzjiPcYnFooOUGCOsRk.woff) format('woff')
 
-@font-face 
+//@font-face 
   font-family: 'Open Sans'
   font-style: italic
   font-weight: 400
   src: local('Open Sans Italic'), local('OpenSans-Italic'), url(https://themes.googleusercontent.com/static/fonts/opensans/v6/xjAJXh38I15wypJXxuGMBrrIa-7acMAeDBVuclsi6Gc.woff) format('woff')
 
-@font-face
+//@font-face
   font-family: 'Open Sans'
   font-style: normal
   font-weight: 400
@@ -20,37 +20,40 @@
 
 @import "mixins"
 
-@import "carousel"
+//@import "carousel"
 
-@import "points/show"
-@import "points/new_point"
-@import "points/column"
+//@import "points/show"
+//@import "points/new_point"
+//@import "points/column"
 //@import "points/pro_con_list"
 
-@import "proposals/blocks"
+//@import "proposals/blocks"
 //@import "proposals/show"
-@import "proposals/description"
-@import "proposals/admin"
-@import "proposals/create"
+//@import "proposals/description"
+//@import "proposals/admin"
+//@import "proposals/create"
 
 //@import "positions/craft"
-@import "positions/slider"
 
-@import "comments/comment"
-@import "comments/discussion"
-@import "comments/new"
 
-@import "static/static"
-@import "shared/footer"
-@import "shared/header"
+//@import "positions/slider"
+
+//@import "comments/comment"
+//@import "comments/discussion"
+//@import "comments/new"
+
+//@import "static/static"
+//@import "shared/footer"
+//@import "shared/header"
 //@import "shared/carousel"
-@import "shared/messages"
-@import "shared/social_media"
-@import "shared/dialog"
+//@import "shared/messages"
+//@import "shared/social_media"
+//@import "shared/dialog"
+
+//@import "dashboard/dashboard"
+
 
 @import "users/sessions"
-
-@import "dashboard/dashboard"
 
 
 //////////////////////////////////////////////////////
@@ -394,30 +397,10 @@ hr.ledge
           position: absolute
 
 
-        &.hard_select .people_bar .view_statement img
-          //opacity: .8
-          //+transition
-          &.default.no_explanation
-          //  opacity: .35         
-          &.with_explanation
-            //+grayscale_off
-          //  opacity: 1
-
-        &.soft_select .people_bar .view_statement img
-          //opacity: .6
-          &.default.no_explanation
-            //opacity: .35
-          &.with_explanation
-            //opacity: .9
-            //+grayscale_off
-
         &:hover
           +chalkboard
           border-color: #414141
           z-index: 40
-          img.with_explanation
-            //+grayscale_off
-            //opacity: .6
 
         &.noone
           display: none
@@ -521,7 +504,7 @@ hr.ledge
       cursor: pointer
 
 
-      img
+      .avatar
         max-height: 50px
         max-width: 50px
         //opacity: .35
@@ -576,7 +559,7 @@ hr.ledge
 
       li.statement
         .view_statement
-          img
+          .avatar
             visibility: hidden
             &.author_of_hovered_point
               //opacity: 1
@@ -778,9 +761,6 @@ hr.ledge
   position: relative
   //left: -30px
 
-  > table
-    table-layout: fixed
-    width: 1056px
 
   td.slate  
     //padding: 12px 0
@@ -818,40 +798,28 @@ hr.ledge
         +font-size(-3)
         position: relative
         top: -3px
-      .ledge
-        display: none
 
-    .points_other
+    //.points_other
       vertical-align: top
       padding: 0
       position: absolute
       top: 11 * $vertical_baseline
-
-
-      
       .point_list
         //z-index: 100
         //width: 172px
-
       .point_list_footer
         width: 172px
         margin: 0 $grid_xs            
         .arrow
-
         .paginate
           font-weight: normal
           //padding-top: $vertical_baseline
-      
       .carousel
         //padding: 5px 3px
-      
-        
       &#points_other_pro 
         left: 0
         .carousel
           //width: 530px
-
-
       &#points_other_con 
         right: 0
         .carousel
@@ -879,79 +847,458 @@ hr.ledge
         margin: auto
         width: 450px
 
-#submitstance
+
+
+// points/show
+
+
+.point_in_list
+  +nude-list
   position: relative
-  margin: 2 * $vertical_baseline 0px 
-                        
-  .rest
-    margin: auto
-    width: 100%
-    
-    .stanceform
-      margin: auto
-
-      .login_required
-        +font-size(-3)
-        text-align: center
-        color: #aaa
-        position: absolute
-        bottom: $vertical_baseline * 2.5
-        width: 100%
-        pointer-events: none
-
-      form
-        margin: auto
-        width: 560px
-        position: relative
-
-        input[type="submit"]
-          width: 100%
-          padding: $vertical_baseline * .75 0
-          +font-size(5)
-          +heading
-        
-        .notifications
-          margin: $vertical_baseline / 2 auto 0 auto
-          text-align: center
-          +font-size(0)
-          
-          
-          > label
-            font-weight: bold
-            span
-              padding-left: 3px
-            .sub
-              +font-size(-3)
-              font-weight: normal
-              display: inline-block
+  
+  background-repeat: no-repeat
+  //border: 5px solid transparent
 
 
-          .email
-            margin-top: $vertical_baseline/2
-            input
-              //color: #555
-      a
+  .body
+    vertical-align: top
+    //padding: 3px 10px 3px 10px
+    position: relative
+
+    .nested_user
+      //font-style: italic
+      text-transform: uppercase
+
+    .point_text
+      //+hyphenate
+
+    .nutshell
+
+      .nested_user
+        white-space: nowrap
         display: inline-block
-        +font-size(0)
-        font-weight: bold
-        text-decoration: underline
-        margin-top: $vertical_baseline * 2
+        +font-size(-2)
+
+
+
+  .operations   
+    position: absolute
+    text-align: right
+
+    > div
+      display: inline-block
         
-        &.skip_save
-          //position: absolute
+      a.point_operation
+        +font-size(-4)
+        padding: 0
+        margin: 0
+        font-weight: bold
+
+      .editpoint:before, &.remove:before
+        content: '\2022'
+        +font-size(-6)
+        position: relative
+        right: 1px
+
+      a.toggle
+        display: inline-block
+
+
+  &.point_in_list_margin
+    //width: 148px
+    width: 174px
+    height: 160px
+    cursor: move
+    //+curl-shadow
+    //margin-bottom: 1em
+    padding: 0 9px $vertical_baseline 9px
+    //margin: 0 9px 
+
+    &.pro
+      border-right: none
+      //border-color: $pro_point_dark
+
+    &.con
+      border-left: none
+      //border-color: $con_point_dark
+
+    .include
+      //display: none
+
+    .body > .bullet_point 
+      display: none
+      left: -10px
+      top: 1px
+
+    .body 
+      padding: $vertical_baseline $grid_xs
+
+      .nutshell
+
+        +font-size(-4)
+        //width: 148px
+
+    .operations        
+      bottom: 23px
+      left: $grid_xs + 9px
+      a
+        color: darken(desaturate($yellow_postit, 20%), 30%)
+
+      .edit, .remove
+        display: none
+                  
+
+  &.point_in_list_board, &.point_in_list_self
+      
+    //width: 255px
+    border-color: transparent
+    //padding-bottom: $vertical_baseline
+    cursor: pointer
+
+    .bullet_point
+      left: -10px
+      top: 0px
+
+    .body > .nutshell
+      +font-size(-2)
+      margin-bottom: 0px
+
+    &:hover .operations
+      visibility: visible
+    .operations
+      //+transition
+      bottom: 0
+      left: 0
+      position: relative
+      visibility: hidden
+      //display: none
+
+      .include
+        display: none
+
+
+  //&.point_in_list_board
+  //  width: 310px
+  //  .nutshell
+  //    width: 310px
+
+  //  .body .operations
+  //    .bullet
+  //      display: none
+
+  &.point_in_list_self
+    width: $grid_major * 5
+
+  &.point_in_list_board
+    .operations
+      .remove
+        display: none
+
+  
+  //everything related to hovering over a point
+
+  &:hover
+    &.point_in_list_margin
+      .operations a
+        color: darken(desaturate($yellow_postit, 100%), 70%)
+
+    &.point_in_list_self, &.point_in_list_board
+
+
+
+.point
+  +on_paper
+  //+curl-shadow
+  margin: auto
+  +box-shadow(0px,1px,5px,rgba(black,.4)) 
+  width: 882px - 2 * $grid_major - 2 * $grid_minor
+  height: auto
+  min-height: 550px
+  padding: $vertical_baseline 2 * $grid_major + 2 * $grid_minor
+
+  a
+    text-decoration: underline
+    opacity: 1
+
+  > .header
+    //margin-left: $grid_major + $grid_minor
+
+  .avatar.author
+    position: absolute
+    left: 86px
+    top: $vertical_baseline * 3.25
+    z-index: 1
+
+    &.has_pic:after, &.has_pic:before
+      position: absolute
+      display: block
+      z-index: 1
+      content: ''
+
+    &.has_pic:after
+      background: image-url('tape.png') no-repeat top left transparent
+      width: 53px
+      height: 23px
+      right: 14px
+      top: -16px
+      z-index: 3
+
+    &.has_pic:before
+      background: image-url('pic_background.png') no-repeat top left transparent
+      width: 50px
+      height: 45px
+      left: -10px
+      bottom: -5px
+
+  > .body
+    padding: $vertical_baseline $grid_xs
+    position: relative
+
+
+
+    .details
+      +font-size(1)
+      a
+        text-decoration: underline
+
+
+    .nutshell, .full, .nested_user
+      //margin-left: 82px
+
+    .nutshell
+      +font-size(3)
+      //padding-right: 130px
+
+      width: auto
+      font-weight: bold
+      margin-bottom: $vertical_baseline
+
+
+
+    .full
+      width: 600px
+
+    .nested_user
+      font-style: italic
+      padding: 10px 0
+
+
+  > .extra
+    padding: 0 $grid_xs
+    .discuss
+      //left: 82px
+
+  .point_operations
+    //margin-left: $grid_major + $grid_minor
+
+.point, .point_in_list
+
+  .nutshell_edit .save_block
+    +font-size(-3)      
+
+  .unobtrusive_edit_form 
+    #point_nutshell
+      background-color: transparent
+      border: 1px solid transparent
+
+    .save_block
+      display: none
+      width: 85px
+
+
+  &.edit_state
+
+    .unobtrusive_edit_form 
+      #point_nutshell
+        border-color: #cca
+      .save_block
+        display: block
+
+  &.point, &#expanded 
+    .header
+      margin: 0 $grid_xs
+      display: block
+      font-variant: small-caps
+      +font-size(-1)
+      text-transform: lowercase
+      li
+        position: relative
+        padding-right: $grid_xs
+        display: inline-block
+        &:after
+          content: '\2022'
+          position: absolute
+          left: -14px
           top: 0
-          right: 0px
-          width: 364px
-          +font-size(0)
-          display: block
-          text-align: center
-          text-decoration: none
-          margin: $vertical_baseline * 2 auto
-          letter-spacing: 1
-          padding: $vertical_baseline / 2 $grid_xs
-          text-shadow: none
-          font-weight: normal
-          +main-font
+        &.first:after
+          content: ''
+
+      .type
+        
+      .permalink
+        text-decoration: underline
+
+    .point_operations
+      display: block
+
+  &.point_in_list_margin
+    .point_operations .remove
+      display: none
+
+  &.point_in_list_self
+    .point_operations .include
+      display: none
+
+  .point_operations 
+    display: none
+    padding: 0 $grid_xs
+    > div
+      display: inline-block
+      padding-right: $grid_xs
+
+      &.hide
+        display: none
+
+
+  .follow, .unfollow
+    margin: 0 0 $vertical_baseline 0 
+    //+font-size(-2)
+
+//@import "points/new_point"
+
+.newpoint
+  //margin: 0 0 15px 0
+  //top: -19px
+  position: relative
+
+  .bullet_point
+    //top: 9px
+    display: inline-block
+    position: relative
+    top: 0
+    left: -10px
+    +font-size(2)
+
+  .newpointbutton 
+    
+    a.write_new
+      +font-size(2)
+      width: 240px
+      //height: 40px
+      border: none
+      padding: 0
+      position: relative
+      text-align: left
+      text-decoration: underline
+      margin-left: -10px
+      font-weight: bold
+
+.pointform
+  //+complex-gradient(rgba(white, 0), rgba(white, 0.03), 13%, 100%, center top)
+  +border-radius(5px)
+  //padding: 5px 0 0 10px
+  position: relative
+  //left: -10px
+  top: -29px
+  //width: 230px
+
+  display: none
+  //margin-top: -55px
+
+
+
+//@import "points/column"
+//.point_column
+  ul.point_list
+    margin: 0
+    padding: 0
+    position: relative
+  &.point_column_margin
+    //min-height: 200px
+    //padding: 10px 0
+    ul.point_list
+      top: 0
+  &.point_column_self
+    //top: -15px
+    position: relative
+
+//.point_list_footer
+  min-height: 35px
+  text-align: center
+  margin: 5px 0
+  .arrow
+    height: 18px
+  input.forward
+    background-position: 0 3px
+
+// positions/slider
+.slider_table
+  margin: auto auto 2 * $vertical_baseline auto
+  //width: 85%
+  +font-size(2)
+
+      
+  td.slider_label 
+    +transition('all .1s linear')
+    > div
+      width: 140px
+
+    
+    &.left
+      text-align: right
+      padding-right: $grid_xs
+
+    &.right
+      text-align: left
+      padding-left: $grid_xs
+
+    &.center
+      text-align: center
+      +font-size(-3)
+      //display: none
+
+    +boxy_border
+
+    textarea
+      overflow: hidden
+
+  .slider_container
+    margin: auto
+    height: 60px
+    text-align: center
+    position: relative
+    z-index: 0
+    
+    .slider
+      margin: 10px
+
+    .ui-slider, .noUiSlider
+      background: none
+      background-color: #666
+
+      background-color: rgba(black, .15)
+
+      +box-shadow(0,0,0,transparent)
+      border-radius: 15px
+      width: 360px
+
+
+      border: none
+      height: 16px
+      a.ui-slider-handle, .noUi-handle > div
+        background: image-url("slider.png") repeat-x scroll 50% 50% transparent  
+        border: none
+        //+border-radius(0px)
+        top: -.2em
+        height: 38px
+        width: 39px
+        +transition('none')
+        margin-left: -21px
+
+        &:hover
+          cursor: move
+
+  
 
 
 // pagination
@@ -985,3 +1332,202 @@ hr.ledge
     .extra .prompt a
       text-decoration: underline
   
+
+//@import "comments/comment"
+
+li.comment, li.new_comment
+  position: relative
+  margin: 8px 0 25px 0
+  min-height: 50px
+    
+  .comment_body
+    width: 100%
+    
+    .body_row
+
+      .avatar
+        position: absolute
+        left: -75px
+        width: 58px
+        top: 3px
+            
+      .comment_text
+        //opacity: .8
+        
+        +border-radius(5px)
+        position: relative
+        +font-size(-2)
+
+        .body
+          padding: 0
+          
+        p
+          margin-bottom: 6px
+
+          br
+            margin-bottom: 6px
+
+        .username
+          display: inline-block
+          vertical-align: top
+          font-style: italic
+
+  .edit_comment
+    a
+      +font-size(-2)
+
+    .save_block
+      top: auto
+      left: 50px
+      bottom: -30px
+
+li.new_comment
+  a.signin_link
+    font-weight: bold
+
+
+
+//@import "comments/discussion"
+
+.discuss
+  position: relative
+  width: 660px
+  .discussion_header
+    +font-size(3)
+    margin: 0px 0 $vertical_baseline 0
+
+//@import "comments/new"
+
+
+
+li.new_comment
+  width: 400px
+  +nude-list
+  +font-size(-1)
+    
+  li.body
+    textarea
+      height: 60px
+  
+  .comment_submit
+    margin: 0 0 $vertical_baseline/2 0
+    float: left
+  
+  .comment_body
+    border-bottom: none
+    width: 100%
+    margin-top: 5px
+        
+    .body_row
+      .user
+        max-width: 70px
+        +font-size(-4)
+      .text
+
+        form
+          .point-pledge
+            +font-size(-3)
+
+          ul.form
+            li.body.inlined
+              width: 360px
+
+              label
+                +font-size(-2)                
+              textarea
+                +font-size(-2)
+                height: 40px
+                margin: 0
+              .count
+                width: 35px
+                display: block
+                position: absolute
+                right: 0
+                +font-size(-3)
+                bottom: -18px
+
+        .point-pledge, .count
+          //opacity: .6
+
+//@import "shared/header"
+
+#wrap
+  #masthead
+    height: $vertical_baseline * 2
+    position: relative
+    width: 100%
+    margin-bottom: $vertical_baseline
+    
+    .inner
+      width: $content_width
+      //margin-top: $vertical_baseline * 2
+      position: relative
+      z-index: 1
+      padding: 0
+      margin: auto
+
+      .logo_cell
+        position: absolute
+        left: 0px
+        z-index: 6
+        //float: left
+        a
+          overflow: hidden
+          opacity: 1
+
+
+#nav-user
+  //position: absolute
+  //top: -80px
+  //right: 0
+  position: absolute
+  z-index: 7
+  right: 0
+  border-bottom-right-radius: 5px
+  border-bottom-left-radius: 5px
+
+  padding: 10px 15px
+
+  a
+    color: $header_color
+    font-weight: bold
+    +font-size(-1)
+
+  > li
+    display: inline-block
+    vertical-align: top
+
+    &.triangle
+      cursor: pointer
+      position: relative
+
+      .spacing
+        height: 0px
+
+      .hide
+        z-index: 99
+        position: absolute
+        right: -19px
+        width: 150px
+        +chalkboard
+        +on_chalkboard
+
+        .avatar 
+          padding: 2px 0 0px 15px
+          a
+            padding: 0
+            margin: 0
+            img
+              width: 35px
+              height: 35px
+        ul
+          margin-left: 0
+          li a
+            width: 100%
+            padding: 1px 10px 0 8px
+            display: block
+            cursor: pointer
+            +font-size(-3)
+
+            //&:hover
+            //  color: #ccc

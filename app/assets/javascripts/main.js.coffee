@@ -23,17 +23,17 @@ window.PaperClip =
 
 $(document).ready () ->
   window.avatars = 
-    load_avatars : ->
-      $('img.avatar-replace-small').each ->
-        user_id = $(this).data('id')
-        if window.avatar_data['small'][user_id]?
-          this.src = window.avatar_data['small'][user_id];
-        else if ConsiderIt.users?
-          this.src = window.PaperClip.get_avatar_url(ConsiderIt.users[user_id], 'small')
+    # load_avatars : ->
+    #   $('img.avatar-replace-small').each ->
+    #     user_id = $(this).data('id')
+    #     if window.avatar_data['small'][user_id]?
+    #       this.src = window.avatar_data['small'][user_id];
+    #     else if ConsiderIt.users?
+    #       this.src = window.PaperClip.get_avatar_url(ConsiderIt.users[user_id], 'small')
 
 
-  if window.cached_avatars_loaded
-    window.avatars.load_avatars()
+  # if window.cached_avatars_loaded
+  #   window.avatars.load_avatars()
 
     # google analytics
   ( () ->

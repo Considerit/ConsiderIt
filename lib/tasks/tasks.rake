@@ -21,13 +21,14 @@ namespace :cache do
   task :avatars => :environment do 
     begin
       Account.all.each do |accnt|
-        avatars = {:small => {}}
-        accnt.users.select([:id,:avatar_file_name]).where('avatar_file_name IS NOT NULL').each do |user|
-          data = [File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}")].pack('m')
-          avatars[:small][user.id] = "data:image/jpg;base64,#{data}"
-        end
-        File.open("public/system/cache/#{accnt.identifier}.json", 'w') do |f|
-          f.puts("#{avatars.to_json}")
+        File.open("public/system/cache/#{accnt.identifier}.css", 'w') do |f|
+
+          accnt.users.select([:id,:avatar_file_name]).where('avatar_file_name IS NOT NULL').each do |user|
+            #data = [File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}")].pack('m')
+            data = ActiveSupport::Base64.encode64(File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}"))
+            f.puts("#avatar-#{user.id} { background-image: url(\"data:image/jpg;base64,#{data.gsub(/\n/," ")}\"); }")
+            #avatars[:small][user.id] = "data:image/jpg;base64,#{data}"
+          end
         end
       end
     rescue

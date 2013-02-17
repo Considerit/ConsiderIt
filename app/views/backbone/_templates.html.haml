@@ -112,7 +112,7 @@
         = "{{is_pro ? 'Pro' : 'Con'}}" 
 
     (( if( !hide_name && user ){ ))
-    %img{ :src => "{{PaperClip.get_avatar_url(user, 'medium')}}", :alt => "{{user.get('name')}}'s profile picture", :class => "avatar author"}
+    .avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :class => "author"}
     (( } ))
 
 
@@ -171,7 +171,7 @@
     .comment_body
       .body_row
         .user
-          %img{ :src => "{{PaperClip.get_avatar_url(user, 'medium')}}", :alt => "your profile picture", :class => "avatar"}
+          .avatar{ :id => "avatar-{{user.id}}", :alt => "your profile picture"}
 
         .text                                
           %ul.form
@@ -211,7 +211,7 @@
       
       .text.comment_text   
         .body
-          %img{ :src => "{{PaperClip.get_avatar_url(user, 'medium')}}", :alt => "{{user.get('name')}}'s profile picture", :class => "avatar"}
+          .avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
 
           {{body}}
 
@@ -335,7 +335,7 @@
     %span.bubble
       &#9700;
 
-    = image_tag current_theme_image_path("join.png")
+    //= image_tag current_theme_image_path("join.png")
 
     %span.text
       {{call}}
@@ -350,7 +350,7 @@
     %span.bubble
       &#9700;
 
-    = image_tag current_theme_image_path("join.png")
+    //= image_tag current_theme_image_path("join.png")
 
     %span.text
       {{call}}
@@ -476,7 +476,9 @@
           No pro arguments added yet.
         (( } else { ))
 
-        %img.avatar-replace-small{ :width => 50, :height => 50, :'data-id' => "{{top_pro.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_pro.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "avatar author"}
+        -# %img.avatar-replace-small{ :width => 50, :height => 50, :'data-id' => "{{top_pro.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_pro.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "avatar author"}
+
+        .avatar{ :'data-id' => "{{top_pro.user_id}}", :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "author"}
 
         .top.body.left
 
@@ -489,7 +491,7 @@
         (( } ))
         .clear
 
-      .top_point
+      .top_point.con
 
         (( if(!top_con) { ))
 
@@ -505,7 +507,9 @@
           .text
             {{top_con.nutshell}}
 
-        %img.avatar-replace-small{ :width => 50, :height => 50,  :'data-id' => "{{top_con.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_con.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "avatar author"}
+        .avatar{ :'data-id' => "{{top_con.user_id}}", :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "author"}
+
+        -#%img.avatar-replace-small{ :width => 50, :height => 50,  :'data-id' => "{{top_con.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_con.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "avatar author"}
 
         (( } ))
         .clear
@@ -515,7 +519,9 @@
       %ul
         (( _.each($.parseJSON(participants), function(p){ ))
         %li
-          %img.avatar-replace-small{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+          .avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+
+          -# %img.avatar-replace-small{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
         (( }); ))
 
       %a.results{:href => "{{Routes.proposal_path( long_id )}}"}
@@ -568,7 +574,7 @@
 
                   %li.statement{:class=>"bucket-{{bucket}} {{expl_clss}}", :id=>"user-{{user.id}}", :user => "{{user.id}}"}
                     .view_statement
-                      %img.avatar-replace-small{ :'data-id' => "{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(user, 'small')}}",:class => "{{expl_clss}}", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
+                      .avatar{ :'data-id' => "{{user.id}}", :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :class => "{{expl_clss}}", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
 
                       .details
                         .position_author_name
@@ -644,7 +650,7 @@
       %ul
         (( _.each($.parseJSON(participants), function(p){ ))
         %li
-          %img.avatar-replace-small{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+          .avatar{ :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
         (( }); ))
 
 

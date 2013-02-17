@@ -13,13 +13,13 @@ class ConsiderIt.ResultsView extends Backbone.View
 
   show_summary : ->
     @view.remove if @view
+    @$el.addClass('summary')
     @view = new ConsiderIt.SummaryView
       el : @$el
       proposal : @proposal
       model : @proposal.model
       tile_size : @tile_size
     @view.render()
-    @$el.addClass('summary')
     @state = 0
 
   show_explorer : ->
@@ -42,18 +42,18 @@ class ConsiderIt.ResultsView extends Backbone.View
       .css({'position':'relative','z-index':99}) 
       .find('.participants')
 
-    from_tile_size = $participants.find('img:first').width()
-    to_tile_size = @$el.find("#histogram img:first").width()
+    from_tile_size = $participants.find('.avatar:first').width()
+    to_tile_size = @$el.find("#histogram .avatar:first").width()
 
     $participants.hide()
-    $participants.find('img').css {
+    $participants.find('.avatar').css {
             'width' : "#{to_tile_size}px",
             'height' : "#{to_tile_size}px"}
     $participants.show()
 
     me = this
 
-    $.each $participants.find('img'), ->
+    $.each $participants.find('.avatar'), ->
       $from = $(this)
       id = $from.data('id')
       $to = me.$el.find("#histogram #user-#{id}")
@@ -90,6 +90,13 @@ class ConsiderIt.SummaryView extends Backbone.View
     @tile_size = options.tile_size
 
   render : () ->
+
+    ht = ConsiderIt.SummaryView.template($.extend({}, @model.attributes, {
+      top_pro : @proposal.top_pro 
+      top_con : @proposal.top_con
+      tile_size : @tile_size      
+      }))
+              
     this.$el.html ConsiderIt.SummaryView.template($.extend({}, @model.attributes, {
       top_pro : @proposal.top_pro 
       top_con : @proposal.top_con
@@ -120,7 +127,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   render : () -> 
 
-    @$el.hide()
+    @hide()
 
     @$el.html ConsiderIt.ExplorerView.template _.extend {}, @model.attributes, 
       histogram : @histogram
@@ -278,16 +285,16 @@ class ConsiderIt.ExplorerView extends Backbone.View
     selector = []
 
     for i in [0..includers.length] by 1
-      selector.push('#user-' + includers[i] + ' .view_statement img')
+      selector.push('#user-' + includers[i] + ' .view_statement .avatar')
     
     if ev.type == 'mouseenter'
       @$histogram.addClass('hovering_over_point')
       $(selector.join(','), @$histogram).addClass('includer_of_hovered_point')
-      $('#user-' + $target.attr('user') + ' .view_statement img').addClass('author_of_hovered_point')          
+      $('#user-' + $target.attr('user') + ' .view_statement .avatar').addClass('author_of_hovered_point')          
     else
       @$histogram.removeClass('hovering_over_point')
       $(selector.join(','), @$histogram).removeClass('includer_of_hovered_point')
-      $('#user-' + $target.attr('user') + ' .view_statement img').removeClass('author_of_hovered_point')    
+      $('#user-' + $target.attr('user') + ' .view_statement .avatar').removeClass('author_of_hovered_point')    
 
 
   sort_all : (ev) ->

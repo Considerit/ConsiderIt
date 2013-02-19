@@ -1,9 +1,9 @@
 class ConsiderIt.CommentListView extends Backbone.CollectionView
 
   itemView : ConsiderIt.CommentView
-  @childClass : 'comment'
+  @childClass : 'm-comment'
   @newcomment_template : _.template( $('#tpl_newcomment').html() )
-  listSelector : '.commentlist'
+  listSelector : '.m-point-comments'
 
   initialize : (options) -> 
     super
@@ -14,27 +14,34 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
     super
     @$el.append(ConsiderIt.CommentListView.newcomment_template({user : ConsiderIt.current_user }))
 
+    @$el.find('.m-new-comment .is_counted').each () ->
+      $(this).NobleCount $(this).siblings('.count'), {
+        block_negative: true,
+        max_chars : parseInt($(this).siblings('.count').text()) }        
+
+
+
   # Returns an instance of the view class
   getItemView: (comment)->
     new @itemView
       model: comment
       collection: @collection
       attributes :
-        class : "comment"
+        class : "m-comment"
 
   #handlers
   events :
-    'click .comment_submit' : 'create_new_comment'
+    'click .m-new-comment-submit' : 'create_new_comment'
 
-  comment_attributes : ($form) -> 
-    body : $form.find('#comment_body').val()
+  comment_attributes : -> 
+    body : @$el.find('.m-new-comment-body-field').val()
     user_id : ConsiderIt.current_user.id
     commentable_type : @commentable_type
     commentable_id : @commentable_id
 
   create_new_comment : (ev) ->
     
-    attrs = @comment_attributes( @$el.find('.new_comment') )
+    attrs = @comment_attributes( )
 
     @collection.create attrs,
       success : (data) ->

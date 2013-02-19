@@ -232,7 +232,7 @@ me = {
     //       full = body.find('> .full'),
     //       extra = real_point.find('.extra'),
     //       is_pro = real_point.hasClass('pro'),
-    //       is_margin = real_point.hasClass('point_in_list_margin'),
+    //       is_margin = real_point.hasClass('m-point-peer'),
     //       details_loaded = extra.find('> .ajax_loading').length == 0;
 
     //   real_point.data({
@@ -247,7 +247,7 @@ me = {
     //       //'visibility' : 'hidden'
     //     });
 
-    //   if (real_point.is('.point_in_list_margin') ) {
+    //   if (real_point.is('.m-point-peer') ) {
 
     //     var $hidden = real_point.children();
     //     $hidden.css('visibility', 'hidden');
@@ -268,7 +268,7 @@ me = {
     //       //'visibility': ''
     //     });
 
-    //   if (real_point.is('.point_in_list_margin') ) {
+    //   if (real_point.is('.m-point-peer') ) {
     //     setTimeout(function(){$hidden.css('visibility', '');},300);
     //   }
     //   $(document)

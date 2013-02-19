@@ -1,13 +1,5 @@
 @import "mixins"
-@import "homepage"
-//@import "paper_proposal"
-//@import "ribbon_banners"
-@import "homepage"
-
-//$rep_color: #D2E1EA
-//$dark_rep_color: #97BFE0
-//$constituency_color: #EFEDC8
-//$dark_constituency_color: #DFD75C
+@import "mixins/bubble"
 
 $rep_color: lighten(#49B1E5, 20%)
 $dark_rep_color: darken($rep_color, 20%)
@@ -25,15 +17,11 @@ $header_gray: #777
 $empty_color: #ddd
 
 $proposal_width: 617px
-$body_width: 685px
+$body_width: 727px
 
 $content_background : image-url('directrep/images/brillant.png')
 
 html
-  //background-color: #bbb
-  //+wall(#777)
-  //background-attachment: fixed
-  
   &:after
     content: ''
     position: absolute
@@ -45,29 +33,15 @@ html
     background: image-url('directrep/images/back.png') repeat left top $comp_color
 
 body #wrap > div#content .inner_content
-  //padding-top: 65px
-  background: $content_background repeat top left white
-  
-  //+border-radius(2px)
-  background-color: white    
+  background: $content_background repeat top left white  
   +box-shadow(0px, 1px, 2px, rgba(black, .7))
-  padding: $vertical_baseline $grid_xs
-
-  position: relative
   z-index: 26
-
   border-top: 1px solid white
   border-bottom: 1px solid #333
 
-
-.customfile-preview-wrap
-  width: 80px
-  height: 80px
-  overflow: hidden
-
-  img.customfile-preview
-    height: 80px
-
+body #wrap > div#content .inner_content-no-background
+  background: rgba(white, .15)
+  +box-shadow-remove
 
 =true_inset($color)
   background-color: darken($color, 20%)
@@ -75,115 +49,30 @@ body #wrap > div#content .inner_content
   text-shadow: rgba(255,255,255,0.2) 0px 3px 3px
   color: transparent
 
-=inset_text
-  //text-shadow: 6px 6px 0px rgba(0,0,0,0.2)
-
-.head
+.t-directrep-heading
   margin-bottom: $vertical_baseline
-  h1.banner
-    font-size: 3em
-    font-weight: bold
-    text-align: center
+  font-size: 3em
+  font-weight: bold
+  text-align: center
 
-    .rep
-      +true_inset($dark_rep_color)
-      //color: $rep_color
+  .rep
+    +true_inset($dark_rep_color)
+    //color: $rep_color
 
-    .dialogue
-      +true_inset(#bbb)
+  .dialogue
+    +true_inset(#bbb)
+    //color: $header_gray
 
-      //color: $header_gray
-
-    .constituency 
-      +true_inset(#bbb)
-      //+true_inset(lighten($comp_color, 30))
-      //color: $constituency_color
+  .constituency 
+    +true_inset(#bbb)
+    //+true_inset(lighten($comp_color, 30))
+    //color: $constituency_color
 
 .logo_cell
   top: $vertical_baseline
 
-h2.banner
-  //background: image-url('/assets/directrep/images/banner_background.jpg') repeat left top white
-  text-align: center
-  //border-color: #333 #2a2a2a #444
-  //+box-shadow(0px, 1px, 2px, black, .4)
-  color: $header_gray
-
-
-
-$pos: -9px
-$bubble_border_radius: 8px
-
-= bubble($direction)
-
-  @if $direction == left
-    border-radius: 0 $bubble_border_radius $bubble_border_radius $bubble_border_radius
-  @else if $direction == right
-    border-radius: $bubble_border_radius 0 $bubble_border_radius $bubble_border_radius
-
-  .bubble, &:after, &:before
-    position: absolute
-    display: block
-
-  .bubble
-    z-index: 7
-    top: 0px
-    font-size: 10px
-
-
-  &:after, &:before
-    content: '\25E4'
-
-  &:after
-    font-size: 14px
-    z-index: 4
-    color: #f7f7f7
-    top: -3px
-
-  &:before
-    z-index: 6
-    font-size: 12px
-    top: -1px
-  
-  @if $direction == left
-    .bubble, &:after, &:before
-      +flip-horizontal
-
-    &:after
-      left: $pos - 10
-    &:before
-      left: $pos - 3
-    > .bubble
-      left: $pos
-
-  @else if $direction == right
-    &:after
-      right: $pos - 10
-    &:before
-      right: $pos - 3
-    > .bubble
-      right: $pos
-
-= direct_rep_bubbles($light, $dark, $direction)
-  +bubble($direction)
-  +inset-box-shadow(1px,6px,9px, -5px, #fff)
-
-  background-color: $light
-  border: 1px solid $dark
-  &:before
-    color: $dark
-
-  > .bubble
-    +complex-gradient(lighten($light, 7%), $light, $from_stop : 0%, $to_stop: 50%)
-
-  .bubble
-    +background-clip(text)          
-    color: transparent
-
   
 =superbutton
-  //width: 100%
-  //padding: $vertical_baseline /2 0
   +linear-gradient(lighten($comp_color, 5%), $comp_color)
   background-color: lighten($comp_color, 5%)
   +transition
@@ -193,208 +82,58 @@ $bubble_border_radius: 8px
     background-color: lighten($comp_color, 15%)
 
 
-body #wrap > div#content .inner_content.inner_content-no-background
-  background: rgba(white, .15)
-  +box-shadow-remove
+.statement
+  padding-top: $vertical_baseline / 2
+  .speaker, .listener, .body
+    display: inline-block
+    vertical-align: top
 
-body #wrap > div#content #proposals_filters
-  z-index: 100
-  border-radius: 8px
-  width: 650px
-  margin: auto
-  border-top: 1px solid lighten($comp_color, 15%)
-  border-bottom: 1px solid darken($comp_color, 20%)
+  > .body
+    padding: $vertical_baseline / 2 $grid_xs
+    position: relative
+    width: $body_width
 
-  h2
-    margin-top: 0
-    padding-top: 0
-  .sub
-    +font-size(-2)
-    margin-top: -$vertical_baseline
-    text-align: center
-    .show, .sort, .index
-      display: inline-block
-      padding-right: $grid_xs
-      > *
-        display: inline-block
-        padding-right: $grid_xs/2
+    &.proposer
+      +bubble($rep_color, $dark_rep_color, left)
 
-      a
-        color: #333
-        &:hover
-          color: black
-        &.selected, &.selected:hover
-          font-weight: bold
-          color: #222
-          //background-color: rgba(black, .5)
-          //padding: $vertical_baseline/2 $grid_xs
-          //color: white
-          //border-radius: 5px
-          //border-top: 1px solid lighten($comp_color, 15%)
-          //border-bottom: 1px solid darken($comp_color, 20%)
+    &.public
+      +bubble($constituency_color, $dark_constituency_color, right)
 
-    .index
-      position: relative
-      cursor: pointer
-      z-index: 40
-      &:after
-        content: '\25BE'
-        color: #222
+    &.you
+      +bubble($user_color, $dark_user_color, right )
 
-
-      .menu
-        display: none
-        position: absolute
-        z-index: 999
-        text-align: right
-        width: 500px
-        right: 0
-        background-color: rgba(darken($comp_color, 40%), .9)
-        padding-right: 0
-        li
-          cursor: pointer
-          text-align: right
-          border-bottom: 1px dotted #aaa
-          a
-            display: inline-block
-            color: #ddd
-            padding: $vertical_baseline/2 $grid_xs
-          &:hover 
-            background-color: darken($comp_color, 40%)
-            a
-              color: #eee
-
-      &:hover .menu
-        display: block
-
-
-
-#proposals
-  margin-top: $vertical_baseline
-  position: relative
-  z-index: 1
-
-  .proposal
-    margin: $vertical_baseline 0 2 * $vertical_baseline 0
-
-    .social_media_ribbon
-      margin-top: $vertical_baseline
-      ul
+      &.your_action
+        +superbutton
+        border: 1px solid $dark_comp_color
+        color: white
         text-align: center
-        li
-          display: inline-block
-          vertical-align: middle
-          +font-size(-3)
-          color: #aaa
+        +font-size(3)
 
-          &.action
-            cursor: pointer
+        &:before
+          color: $dark_comp_color
+        > .bubble
+          +complex-gradient(lighten($comp_color, 34%), lighten($comp_color, 10%), $from_stop : 0%, $to_stop: 37%)
 
-    .question
-      text-align: center
-      //+true_inset($dark_rep_color)
-      //+true_inset($header_gray)
-      +inset_text
-      color: #222
-      width: $body_width + 2 * $grid_major
-      text-transform: capitalize
-      margin: auto
-    .statement
-      margin-top: $vertical_baseline / 2
-      .speaker, .listener, .body
-        display: inline-block
-        vertical-align: top
+  .speaker, .listener
+    width: 150px
 
-      .speaker, .listener
-        width: 150px
+  .speaker
 
-      > .body
-        padding: $vertical_baseline / 2 $grid_xs
-        position: relative
-        width: $body_width
+    &.proposer
+      text-align: right
+      img
+        width: 115px
+      &.small
+        img
+          width: 50px
 
-        &.proposer
-          +direct_rep_bubbles($rep_color, $dark_rep_color, left)
-
-        &.public
-          +direct_rep_bubbles($constituency_color, $dark_constituency_color, right)
-
-        &.you
-          +direct_rep_bubbles($user_color, $dark_user_color, right )
-
-          &.your_action
-            +superbutton
-            border: 1px solid $dark_comp_color
-            color: white
-            text-align: center
-            +font-size(3)
-
-            &:before
-              color: $dark_comp_color
-            > .bubble
-              +complex-gradient(lighten($comp_color, 34%), lighten($comp_color, 10%), $from_stop : 0%, $to_stop: 37%)
-
-
-
-
-
-      .speaker
-
-        &.proposer
-          text-align: right
-          img
-            width: 115px
-          &.small
-            img
-              width: 50px
-
-        &.public
-          .participants
-            //width: 150px
-            height: 150px
-            
-            ul
-              font-size: 0
-              list-style: none
-              li
-                font-size: 0
-                line-height: 0
-                display: inline-block
-
-                .avatar
-                  display: inline-block
-                  position: relative
-                  left: 0
-                  top: 0
-                  //width: 10px
-                  //height: 10px
-      &.aggregated_results .summary
-        cursor: pointer
-        .top_points
-          padding-top: $vertical_baseline 
-          .top_point
-            display: inline-block
-            .avatar
-              display: inline-block
-              width: 50px
-              height: 50px
-            .top
-              padding: $vertical_baseline / 2 $grid_xs
-              width: 235px
-              position: relative
-              &.left
-                +direct_rep_bubbles($constituency_color, $dark_constituency_color, left)              
-              &.right
-                +direct_rep_bubbles($constituency_color, $dark_constituency_color, right)              
-
-              +colored_post_it($repeated: 1)
-            &.pro
-              padding-right: $grid_xs
-
-
-
-
-
+    &.public
+      .participants
+        //width: 150px
+        height: 150px
+        font-size: 0
+        line-height: 0
+        
 #introduction
 
   div.rep, div.dialogue, div.constituency
@@ -426,12 +165,11 @@ body #wrap > div#content #proposals_filters
       padding: $vertical_baseline / 2 $grid_xs
       margin-bottom: $vertical_baseline / 2
 
-      
       &.proposer
-        +direct_rep_bubbles($rep_color, $dark_rep_color, left)
+        +bubble($rep_color, $dark_rep_color, left)
 
       &.public
-        +direct_rep_bubbles($constituency_color, $dark_constituency_color, right)
+        +bubble($constituency_color, $dark_constituency_color, right)
 
 
   div.constituency
@@ -440,18 +178,11 @@ body #wrap > div#content #proposals_filters
   .people
     font-size: 0
     text-align: left
-    .avatar
-      display: inline-block
+
+    .avatar      
       opacity: .75
       width: 31px
       height: 31px
 
 
 
-#registration_overlay, #point_details_overlay
-  position: absolute
-  z-index: 9999
-
-.avatar
-  background-size: 100% 100%
-  background-image: url('/system/default_avatar/small_default-profile-pic.png')

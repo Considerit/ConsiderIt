@@ -2,36 +2,31 @@
 
 
 %script{ :type => "text/template", :id => "tpl_logged_out"}
-  %a.signin_link
-    Sign In
-  %a.signup_link
-    Create Account
-
-
+  .m-login
+    %a.m-login-signin
+      Sign In
+    %a.m-login-signup
+      Create Account
 
 %script{ :type => "text/template", :id => "tpl_logged_in"}
 
-  %li.triangle
-    %a.settings
-      {{ name }} 
-    = image_tag "user_settings_triangle.png", :class => 'triangle_img'
-    
+  .m-user-options
+    .m-user-options-display
+      %a
+        {{ name }} 
 
-    .spacing
+      = image_tag "user_settings_triangle.png", :class => 'triangle_img'
+  
 
-    .hide
-      .avatar.fl
-        %a.settings
-          %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.current_user, 'small')}}", :alt => "your profile picture", :class => "avatar"}
-
+    .m-user-options-menu-wrap
+      %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.current_user, 'small')}}", :alt => "your profile picture"}
 
       (( var is_admin = #{!current_user.nil? && current_user.is_admin?}; ))
       (( var is_moderator = #{!current_user.nil? && current_user.has_role?(:moderator)}; ))
       (( var is_analyst = #{!current_user.nil? && current_user.has_role?(:analyst)}; ))
       (( var is_evaluator = #{!current_user.nil? && current_user.has_role?(:evaluator)}; ))
 
-
-      %ul.fr
+      %ul.m-user-options-menu
         %li
           %a{:href => "{{Routes.profile_path(id)}}"}
             Profile
@@ -67,13 +62,9 @@
           %li
             = link_to 'Tune', '/newrelic', :target => "_blank"
         %li
-          %a.logout
+          %a.m-user-options-logout
             Sign out
 
-      .clear
-
-
-  %li.clear
 
 
 %script{ :type => "text/template", :id => "tpl_user_signin"}

@@ -13,7 +13,7 @@ class ConsiderIt.ResultsView extends Backbone.View
 
   show_summary : ->
     @view.remove if @view
-    @$el.addClass('summary')
+    @$el.addClass('m-results-summary')
     @view = new ConsiderIt.SummaryView
       el : @$el
       proposal : @proposal
@@ -43,7 +43,7 @@ class ConsiderIt.ResultsView extends Backbone.View
       .find('.participants')
 
     from_tile_size = $participants.find('.avatar:first').width()
-    to_tile_size = @$el.find("#histogram .avatar:first").width()
+    to_tile_size = @$el.find(".m-histogram .avatar:first").width()
 
     $participants.hide()
     $participants.find('.avatar').css {
@@ -56,7 +56,7 @@ class ConsiderIt.ResultsView extends Backbone.View
     $.each $participants.find('.avatar'), ->
       $from = $(this)
       id = $from.data('id')
-      $to = me.$el.find("#histogram #user-#{id}")
+      $to = me.$el.find(".m-histogram #user-#{id}")
 
       $from.css
         'position': 'relative'
@@ -70,7 +70,7 @@ class ConsiderIt.ResultsView extends Backbone.View
 
 
     window.delay 1300, -> 
-      me.$el.find('#histogram .bar.full').css 'opacity', 1
+      me.$el.find('.m-histogram-bar').css 'opacity', 1
 
     window.delay 1500, -> 
       $participants.fadeOut -> 
@@ -134,10 +134,10 @@ class ConsiderIt.ExplorerView extends Backbone.View
       tile_size : @tile_size
 
     @views =
-      pros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.pros, el : @$el.find('#propoints'), location: 'board', proposal : @proposal})
-      cons : new ConsiderIt.PaginatedPointListView({collection : @pointlists.cons, el : @$el.find('#conpoints'), location: 'board', proposal : @proposal})
+      pros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.pros, el : @$el.find('.m-pro-con-list-propoints'), location: 'results', proposal : @proposal})
+      cons : new ConsiderIt.PaginatedPointListView({collection : @pointlists.cons, el : @$el.find('.m-pro-con-list-conpoints'), location: 'results', proposal : @proposal})
 
-    @$histogram = @$el.find('#histogram')
+    @$histogram = @$el.find('.m-histogram')
 
     @pointlists.pros.setSort('score', 'desc')
     @pointlists.cons.setSort('score', 'desc')
@@ -187,16 +187,16 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   #handlers
   events : 
-    'mouseenter .point_in_list:not(#expanded)' : 'highlight_point_includers'
-    'mouseleave .point_in_list:not(#expanded)' : 'highlight_point_includers'
-    'mouseenter #histogram .bar.hard_select .view_statement' : 'show_user_explanation' 
-    'mouseleave #histogram .bar.hard_select .view_statement' : 'hide_user_explanation' 
-    'mouseenter #histogram .bar.full:not(.selected)' : 'select_bar'
-    'click #histogram .bar.full:not(.hard_select)' : 'select_bar'
-    'click #histogram .bar.selected:not(.soft_select)' : 'deselect_bar'
-    'mouseleave #histogram .bar.full.soft_select' : 'deselect_bar'
+    'mouseenter .m-point-results:not(#expanded)' : 'highlight_point_includers'
+    'mouseleave .m-point-results:not(#expanded)' : 'highlight_point_includers'
+    'mouseenter .m-bar-is-hard-selected .m-bar-person' : 'show_user_explanation' 
+    'mouseleave .m-bar-is-hard-selected .m-bar-person' : 'hide_user_explanation' 
+    'mouseenter .m-histogram-bar:not(.m-bar-is-selected)' : 'select_bar'
+    'click .m-histogram-bar:not(.m-bar-is-hard-selected)' : 'select_bar'
+    'click .m-bar-is-hard-selected' : 'deselect_bar'
+    'mouseleave .m-bar-is-soft-selected' : 'deselect_bar'
     'keypress' : 'deselect_bar'
-    'click .opinions .point_filter:not(.selected)' : 'sort_all'
+    'click .point_filter:not(.selected)' : 'sort_all'
 
 
   select_bar : (ev) ->
@@ -204,11 +204,11 @@ class ConsiderIt.ExplorerView extends Backbone.View
     $target = $(ev.currentTarget)
     hard_select = ev.type == 'click'
 
-    if @$el.find('#expanded').length == 0 && ( hard_select || @$histogram.find('.hard_select').length == 0 )
-      $bar = $target.closest('.bar')
+    if @$el.find('#expanded').length == 0 && ( hard_select || @$histogram.find('.m-bar-is-hard-selected').length == 0 )
+      $bar = $target.closest('.m-histogram-bar')
       bucket = $bar.attr('bucket')
-      $('.bar.selected', @$histogram).removeClass('selected hard_select soft_select')
-      $bar.addClass("selected #{if hard_select then 'hard_select' else 'soft_select'}")
+      $('.m-bar-is-selected', @$histogram).removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
+      $bar.addClass("m-bar-is-selected #{if hard_select then 'm-bar-is-hard-selected' else 'm-bar-is-soft-selected'}")
 
       fld = "score_stance_group_#{6-bucket}"
 
@@ -227,8 +227,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
         value : (fld) -> fld > 0
       }]
 
-      others = @$el.find('.participant_connection .others')
-      others.siblings('.all').hide()
+      others = @$el.find('.m-results-pro-con-list-who-others')
+      others.siblings('.m-results-pro-con-list-who-all').hide()
       others
         .html("Most important factors for <div class='group_name'>#{ConsiderIt.Position.stance_name(bucket)}</div>")
         .show()
@@ -247,7 +247,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
     return if ev.type == 'click' && $target.closest('pro_con_list').length > 0
     return if @$el.find('#expanded').length > 0
 
-    $selected_bar = @$histogram.find('.bar.selected')
+    $selected_bar = @$histogram.find('.m-bar-is-selected')
     return if $selected_bar.length == 0
 
     bucket = $selected_bar.attr('bucket')
@@ -256,13 +256,13 @@ class ConsiderIt.ExplorerView extends Backbone.View
     @pointlists.pros.setFieldFilter()
     @pointlists.cons.setFieldFilter()
 
-    aggregate_heading = @$el.find('.participant_connection .all')
-    aggregate_heading.siblings('.others').hide()
+    aggregate_heading = @$el.find('.m-results-pro-con-list-who-all')
+    aggregate_heading.siblings('.m-results-pro-con-list-who-others').hide()
     aggregate_heading.show()
 
-    $('.view_statement .details:visible', $selected_bar).hide()
+    $('.m-bar-person-details:visible', $selected_bar).hide()
     
-    $selected_bar.removeClass('selected hard_select soft_select')
+    $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
 
     # $(document)
     #   .unbind('click', close_bar_click)
@@ -271,11 +271,11 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   show_user_explanation : (ev) ->
     if @$el.find('#expanded').length == 0
-      $(ev.currentTarget).children('.details').show()
+      $(ev.currentTarget).find('.m-bar-person-details').show()
 
   hide_user_explanation : (ev) ->
     if @$el.find('#expanded').length == 0
-      $(ev.currentTarget).children('.details').hide()
+      $(ev.currentTarget).find('.m-bar-person-details').hide()
 
   highlight_point_includers : (ev) ->
 
@@ -285,17 +285,18 @@ class ConsiderIt.ExplorerView extends Backbone.View
     selector = []
 
     for i in [0..includers.length] by 1
-      selector.push('#user-' + includers[i] + ' .view_statement .avatar')
+      selector.push "#avatar-#{includers[i]}" 
     
-    if ev.type == 'mouseenter'
-      @$histogram.addClass('hovering_over_point')
-      $(selector.join(','), @$histogram).addClass('includer_of_hovered_point')
-      $('#user-' + $target.attr('user') + ' .view_statement .avatar').addClass('author_of_hovered_point')          
-    else
-      @$histogram.removeClass('hovering_over_point')
-      $(selector.join(','), @$histogram).removeClass('includer_of_hovered_point')
-      $('#user-' + $target.attr('user') + ' .view_statement .avatar').removeClass('author_of_hovered_point')    
+    @$histogram.hide()
 
+    if ev.type == 'mouseenter'
+      @$histogram.find('.avatar').css('visibility', 'hidden')
+      $(selector.join(','), @$histogram).css('visibility', '')
+      $("#avatar-#{$target.attr('user')}").css('visibility', '')
+    else
+      @$histogram.find('.avatar').css('visibility', '')
+
+    @$histogram.show()
 
   sort_all : (ev) ->
     $target = $(ev.currentTarget)

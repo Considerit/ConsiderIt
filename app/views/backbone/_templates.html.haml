@@ -1,141 +1,110 @@
 
 
-%script{ :type => "text/template", :id => "tpl_point_in_list" }      
+%script{ :type => "text/template", :id => "tpl_point" }      
         
-  .body.compact_body
+  %p.m-point-nutshell
+    {{adjusted_nutshell}}
+    %span.details_indicator
+      (&#8230;)
+  
+    %span.m-point-user
+      (( if(user.name) { ))
+      {{user.name}}
+      (( } else if(is_you) { ))
+      You
+      (( } else { ))
+      Anonymous
+      (( } ))
 
-    .bullet_point
-      &#8226;
-          
-    %p.point_text.nutshell.reader
-      %span.text
-        {{adjusted_nutshell}}
-        %span.details_indicator
-          (&#8230;)
-    
-      %span.nested_user
-        (( if(user.name) { ))
-        {{user.name}}
-        (( } else if(is_you) { ))
-        You
-        (( } else { ))
-        Anonymous
-        (( } ))
-
-  .operations
-
-    .read_more
-      %a.toggle.more.point_text_toggle.point_operation{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }
-        
-        {{ comment_count == 1 ? "1 comment" : comment_count + " comments"}}
-
-    %a.include
+  .m-point-operations
+    %a.m-point-read-more{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }        
+      {{ comment_count == 1 ? "1 comment" : comment_count + " comments"}}
+    %a.m-point-include
       Add
-    %a.remove
+    %a.m-point-remove
       Remove
-
-  .clear
 
 %script{ :type => "text/template", :id => "tpl_newpoint" }      
   
-  .newpoint
-    .newpointbutton
-      .bullet_point
-        &#8226;
-    
-      %a{ :class => "{{is_pro ? 'pro' : 'con'}} write_new" }
-        Write a new {{is_pro ? "pro" : "con"}} point
+  .m-newpoint
 
-      %div{ :class => "pointform {{is_pro ? 'pro' : 'con'}} newpointform" }
+    %a.m-newpoint-new{ :class => "{{is_pro ? 'pro' : 'con'}}" }
+      Write a new {{is_pro ? "pro" : "con"}} point
 
-        %div{:id => "pointform-{{is_pro ? 'pro' : 'con'}}"}
+    .m-newpoint-form{ :class => "{{is_pro ? 'pro' : 'con'}}" }
 
-          .form_proper
+      .m-newpoint-fields
 
-            .point-title-group.inlined
-              = text_area_tag :nutshell, nil, :placeholder => 'Summarize your point (required)', :cols => 24, :class => "point-title is_counted", :required=>true, :maxlength => 140, :pattern => "^.{3,}"
-              %span.count
-                140
-              .clear
+        .m-newpoint-nutshell-wrap
+          = text_area_tag :nutshell, nil, :placeholder => 'Summarize your point (required)', :cols => 28, :class => "m-newpoint-nutshell is_counted", :required=>true, :maxlength => 140, :pattern => "^.{3,}"
+          %span.count
+            140
 
-            .point-description-group
-              = text_area_tag :text, nil, :placeholder => "Write a longer description (optional)", :title => "Write a longer description (optional)", :cols => 24, :class => "autoResize point-description"
-              .clear
+        .m-newpoint-description-wrap
+          = text_area_tag :text, nil, :placeholder => "Write a longer description (optional)", :title => "Write a longer description (optional)", :cols => 28, :class => "autoResize m-newpoint-description"
 
-            .hide_name.fl{:title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'}
-              = check_box_tag :hide_name
-              = label_tag :hide_name, 'conceal your name'
+        .m-newpoint-anonymous-wrap
+          = check_box_tag :hide_name, :class => 'm-newpoint-anonymous'
+          = label_tag :hide_name, 'conceal your name', :title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'
 
-            .point-submit.fr
-              %input{ :type => 'submit', :value => 'Done', :class => "button {{is_pro ? 'pro' : 'con'}}"}
-              
-            .point-cancel
-              %a.new_point_cancel
-                cancel
-          .clear
+      .m-newpoint-submit
 
+        %a.m-newpoint-cancel
+          cancel
+
+        %input.m-newpoint-create.button{ :type => 'submit', :value => 'Done'}
+        
+      
 %script{ :type => "text/template", :id => "tpl_pointlistpagination" }
-  #pagination
+  %a.m-pointlist-backward
+    (( if(start_record != 1){ ))
+    &#9650;
+    (( } ))
 
-    %a.pager.backward
-      (( if(start_record != 1){ ))
-      &#9650;
-      (( } ))
+  .m-pointlist-status
 
-    .count
+    %span.m-pointlist-start
+      {{start_record}}
+    &ndash;
+    %span.m-pointlist-end
+      {{end_record}}
+    = surround ' ' do
+      of
+    %span.m-pointlist-total
+      {{total_records}}
 
-      %span#start_record
-        {{start_record}}
-      &ndash;
-      %span#end_record
-        {{end_record}}
-      = surround ' ' do
-        of
-      %span#total_records
-        {{total_records}}
-
-    %a.pager.forward
-      (( if(end_record != total_records){ ))
-      &#9660;
-      (( } ))
+  %a.m-pointlist-forward
+    (( if(end_record != total_records){ ))
+    &#9660;
+    (( } ))
 
 
 %script{ :type => "text/template", :id => "tpl_point_details" }   
   (( var point_creator = false, has_details = false, hide_name = false; ))
 
-  .point{ :class => "point  commentable" }
-    %a.close
-      Close details
+  %div{ :class => "statement m-point-details-{{ is_pro ? 'pro' : 'con' }}" }
 
-    %ul.header
-      %li.type.first
-        = "{{is_pro ? 'Pro' : 'Con'}}" 
-
-    (( if( !hide_name && user ){ ))
-    .avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :class => "author"}
+    (( if( is_pro ){ ))
+    .speaker.other
+      %span.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
+    (( } else { ))
+    .listener
     (( } ))
 
+    .body.m-point-details-body
+      .bubble 
+        &#9700;   
 
-    .body
+      %a.m-point-details-close
+        Close details
 
-      (( if (point_creator) { ))
-      .point_text.nutshell.nutshell_edit
-        -#= render :partial => 'points/make_editable', :locals => { :point => point, :field => :nutshell, :sync_with => "#expanded .point_text.nutshell span.text", :validations => {:required => true, :maxlength => 140} }
-      (( } else { ))
-      .point_text.nutshell 
+      .m-point-details-nutshell 
         {{ nutshell }} 
-      (( } ))
 
-      .point_text.full
+      .m-point-details-description 
+        {{text.replace('\r\n', '')}}
 
-        .details
-          (( if (point_creator) { ))
-          -#= render :partial => 'points/make_editable', :locals =>  { :point => point, :field => :text, :wysiwyg => false }        
-          (( } else if (has_details) { ))
-          {{text.replace('\r\n', '')}}
-          (( } ))
-
-      .nested_user
+      .m-point-details-author
         (( if (hide_name) { ))
         anonymous
         (( } else if (user) { ))
@@ -144,96 +113,90 @@
         unknown
         (( } ))
 
-    .point_operations
-      (( if (published) { ))
-      -#= render :partial => 'followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
-      (( } ))
+      .m-point-details-operations
+        (( if (published) { ))
+        -#= render :partial => 'followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
+        (( } ))
 
-      (( if (point_creator) { ))
-      .edit
-        %a.editpoint.point_operation.button
+        (( if (point_creator) { ))
+        %a.m-point-details-edit.button
           Edit this point
-      (( } ))
-            
-    .extra  
-      
-      .discuss    
-        %h3.discussion_header    
+        (( } ))
+
+      .m-point-discussion
+        
+        %h3.m-point-discussion-heading
           Discussion
 
-        %ul.commentlist
-          
-    .clear
+        %ul.m-point-comments
+
+    (( if( !is_pro ){ ))
+    .speaker.other
+      %span.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
+    (( } else { ))
+    .listener
+    (( } ))
+
+    (( if( !hide_name && user ){ ))
+    %span.avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :class => "author"}
+    (( } ))
+
+            
 
 
 %script{ :type => "text/template", :id => "tpl_newcomment" }   
-  %li.new_comment            
-    .comment_body
-      .body_row
-        .user
-          .avatar{ :id => "avatar-{{user.id}}", :alt => "your profile picture"}
+  .m-new-comment            
 
-        .text                                
-          %ul.form
-             
-            %li.body
-              %textarea#comment_body.is_counted{ :name => :body, :placeholder => 'Type your comment here...', :title => 'Type your comment here...' }
-              %span.count
-                1000
+    %span.avatar.m-new-comment-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
 
-          - if current_user
-            .point-pledge
-              %p.note
-                Thanks for being civil and upholding your pledge!
+    .m-new-comment-body
+      %textarea.m-new-comment-body-field.is_counted{ :name => :body, :placeholder => 'Type your comment here...', :title => 'Type your comment here...' }
+      %span.count
+        1000
 
-          %a.button.comment_submit
-            Add comment
+      (( if( user ) { ))
+      .m-new-comment-submit-wrap
+        %span.m-new-comment-civility-reminder
+          Thanks for being civil!
 
-        .clear
+        %a.m-new-comment-submit.button
+          Add comment
 
-    .signinrequired.hide
-      You must 
-      %a.signin_link
-        sign in
-      to leave a comment.
-
+      (( } else { ))
+      .signinrequired
+        You must 
+        %a.signin_link
+          sign in
+        to leave a comment.
+      (( } ))
 
 
 %script{ :type => "text/template", :id => "tpl_comment" }   
-  .comment_body
-    .body_row
-      (( if( moderation_status == 0 ){ ))
-      
-      %i
-        This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.
+  
+  (( if( moderation_status == 0 ){ ))
+  %i
+    This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.
+  ((} else { ))
 
-      ((} else { ))
-      
-      .text.comment_text   
-        .body
-          .avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
+  %span.avatar.m-comment-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
 
-          {{body}}
+  .m-comment-body
+    {{body}}
 
-          .username.exclude_from_reflect 
-            &ndash; 
-            %a{ :href => "{{Routes.profile_path(user.id)}}", :target => '_blank'}
-              {{ user.get('name') }}
-
-      (( } ))
+    %span.m-comment-author
+      &ndash; 
+      %a{ :href => "{{Routes.profile_path(user.id)}}", :target => '_blank'}
+        {{ user.get('name') }}
 
   - if false && can_update
-    .edit_comment
-      %a
+    .m-comment-edit-wrap
+      %a.m-comment-edit
         edit
-      .edit_form.hide
+      .m-comment-edit-form.hide
         -#= render :partial => 'commentable/make_editable', :locals => { :comment => comment, :validations => {:maxlength => 1000} }
         %a
           cancel
-
-      .clear
-
-
+  (( } ))
 
 
 - theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
@@ -365,85 +328,69 @@
     .bubble
       &#9700;
 
-
     %h2
       These are the pros and cons that I think are most important: 
 
-    %table
-      %tr
-        %td.margin
-          .heading.pros
-            %h3.lead
-              Pros by other users
-            .sublead
-              drag good ones to your list
+    .m-reasons
+      .m-reasons-peer-points
+        .m-reasons-peer-pros-heading
+          %h3
+            Pros by other users
+          .sublead
+            add good ones to your list
 
-          #peer_pros.inner_wrapper
-            %ul.peer_points.point_list
+        .m-reasons-peer-pros
+          %ul.m-point-list
 
-        %td.slate
+      .m-reasons-pro-con-list
+        .m-pro-con-list-propoints
+         
+          .m-pro-con-list-header
+            - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
+              = theme_image_tag('pro_header.png')
+            - else
+              = image_tag('chalk/pros.png') 
 
-          .pro_con_list{ :id => "domain_self", :class => "dynamic has_other_points"}
+          %ul.m-point-list
 
-            .slate
-             
-              %table
-                %tr.point_columns
-                  %td.full_column.pro_column#points_on_board_pro
-                    #propoints.inner_wrapper
-                      .pro_con_list_header.pro_header
-                        .inner
-                          - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
-                            = theme_image_tag('pro_header.png')
-                          - else
-                            = image_tag('chalk/pros.png') 
+        .m-pro-con-list-conpoints
 
-                      %ul.point_list
+          .m-pro-con-list-header
+            - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
+              = theme_image_tag('con_header.png')
+            - else
+              = image_tag('chalk/cons.png') 
 
-                  %td.full_column.con_column#points_on_board_con 
-                    #conpoints.inner_wrapper
-                      .pro_con_list_header.con_header
-                        .inner
-                          - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
-                            = theme_image_tag('con_header.png')
-                          - else
-                            = image_tag('chalk/cons.png') 
+          %ul.m-point-list
 
-                      %ul.point_list
+      .m-reasons-peer-points
+        .m-reasons-peer-cons-heading
+          %h3
+            cons by other users
+          .sublead
+            add good ones to your list
 
-        %td.margin
-
-          .heading.cons
-            %h3.lead
-              cons by other users
-            .sublead
-              drag good ones to your list
-
-          #peer_cons.inner_wrapper
-            %ul.peer_points.point_list
+        .m-reasons-peer-cons
+          %ul.m-point-list
 
 
-    .slide
+    .m-stance
       %h2
         After weighing the pros and cons, I have decided that I... 
+      %table
+        %tr
+          %td.m-stance-label-support
+            %div
+              Support
 
-      
-      .rest.position
-
-        %table.slider_table
-          %tr
-            %td.slider_label.left{:style => "font-size:1em;"}
-              %div
-                Support
-
-            %td.slider_container
-              
-            %td.slider_label.right{:style => "font-size:1em;"}
-              %div
-                Oppose
-          %tr
-            %td.slider_label.center{ :colspan => 3 }
-              Neutral
+          %td.m-stance-slider-container
+            
+          %td.m-stance-label-oppose
+            %div
+              Oppose
+        %tr
+          %td.m-stance-label-neutral{ :colspan => 3 }
+            Neutral
 
 
 
@@ -465,64 +412,47 @@
       &#9700;
 
 
-    %h3
+    %h3.m-summary-heading
       These are the most compelling pros and cons we've discussed thus far: 
       
-    .top_points
+    .m-summary-top-pro
+      (( if(!top_pro) { ))
+      .text
+        No pro arguments added yet.
+      (( } else { ))
 
-      .top_point.pro
-        (( if(!top_pro) { ))
+      %span.avatar{ :'data-id' => "{{top_pro.user_id}}", :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "author"}
+
+      .m-top-pro-body.left
+        .bubble
+          &#9700;
         .text
-          No pro arguments added yet.
-        (( } else { ))
+          {{top_pro.nutshell}}
+      (( } ))
 
-        -# %img.avatar-replace-small{ :width => 50, :height => 50, :'data-id' => "{{top_pro.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_pro.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "avatar author"}
-
-        .avatar{ :'data-id' => "{{top_pro.user_id}}", :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "author"}
-
-        .top.body.left
-
-          .bubble
-            &#9700;
-
-          .text
-            {{top_pro.nutshell}}
-
-        (( } ))
-        .clear
-
-      .top_point.con
-
-        (( if(!top_con) { ))
-
+    .m-summary-top-con
+      (( if(!top_con) { ))
+      .text
+        No con arguments added yet.
+      (( } else { ))
+      .m-top-con-body.body.right
+        .bubble
+          &#9700;
         .text
-          No con arguments added yet.
-        (( } else { ))
+          {{top_con.nutshell}}
 
-        .top.body.right
+      %span.avatar{ :'data-id' => "{{top_con.user_id}}", :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "author"}
 
-          .bubble
-            &#9700;
-
-          .text
-            {{top_con.nutshell}}
-
-        .avatar{ :'data-id' => "{{top_con.user_id}}", :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "author"}
-
-        -#%img.avatar-replace-small{ :width => 50, :height => 50,  :'data-id' => "{{top_con.user_id}}", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[top_con.user_id], 'small')}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "avatar author"}
-
-        (( } ))
-        .clear
+      (( } ))
+    .clear  
 
   .speaker.public
     .participants
-      %ul
-        (( _.each($.parseJSON(participants), function(p){ ))
-        %li
-          .avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+      (( _.each($.parseJSON(participants), function(p){ ))
+      %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
 
-          -# %img.avatar-replace-small{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-        (( }); ))
+      -# %span.avatar-replace-small{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+      (( }); ))
 
       %a.results{:href => "{{Routes.proposal_path( long_id )}}"}
         View results
@@ -537,121 +467,93 @@
     %h3
       This is what we believe and why. Hover over the bars to find common ground and identify sticking points.
 
-    .breakdown
+    .m-histogram
 
-      #histogram
-        %table
-          %tr
-            %td.support
-              Supporters
+      .m-histogram-label-support
+        Supporters
 
-            (( _.each(histogram.breakdown, function(bar, bucket){ ))
+      (( _.each(histogram.breakdown, function(bar, bucket){ ))
 
-            (( var full_clss = bar.positions.length == 0 ? 'noone' : 'some'; ))
 
-            %td.bar_cell
+      .m-histogram-bar{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}"}
 
-              .bar.empty{ :style => "height: {{bar.empty_size}}px;"}
+        .m-bar-close
+          x
 
-              .bar.full{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}", :class => "{{full_clss}}"}
+        (( if (bar.positions.length > 0) { ))
+        %ul.m-bar-people
+          (( _.each( _.range(bar.num_ghosts), function(ghost){  ))
+          %li.m-bar-ghost{ :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
+          (( }); ))
 
-                .close
-                  x
+          (( _.each(bar.positions, function(position) { ))
+          (( var user = ConsiderIt.users[position.get('user_id')]; ))
+          (( if (user){ ))
 
-                .border_cover
+          (( var has_explanation = position.get('explanation') && position.get('explanation').length > 0, expl_clss = has_explanation ? 'm-person-has-explanation' : 'm-person-has-no-explanation'; ))
 
-                (( if (bar.positions.length > 0) { ))
-                %ul.people_bar
-                  (( _.each( _.range(bar.num_ghosts), function(ghost){  ))
-                  %li{ :style => "visibility:hidden; float: right; height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
-                  (( }); ))
+          %li.m-bar-person{:class=>"bucket-{{bucket}} {{expl_clss}}", :id=>"user-{{user.id}}", :user => "{{user.id}}"}
+            %span.avatar{ :'data-id' => "{{user.id}}", :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}   
+                   
+            .m-bar-person-details
+              
+              %strong
+                {{user.get('name')}}
 
-                  (( _.each(bar.positions, function(position) { ))
-                  (( var user = ConsiderIt.users[position.get('user_id')]; ))
-                  (( if (user){ ))
+              (( if ( has_explanation ) { ))
+              %blockquote.m-bar-person-explanation
+                {{  position.get('explanation') }}
+              (( } ))
+          (( } ))
+          (( }); ))
+        (( } ))
 
-                  (( var has_explanation = position.explanation && position.explanation.length > 0, expl_clss = has_explanation ? 'with_explanation' : 'no_explanation'; ))
+      (( }); ))
+      .m-histogram-label-oppose
+        Opposers
 
-                  %li.statement{:class=>"bucket-{{bucket}} {{expl_clss}}", :id=>"user-{{user.id}}", :user => "{{user.id}}"}
-                    .view_statement
-                      .avatar{ :'data-id' => "{{user.id}}", :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :class => "{{expl_clss}}", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
 
-                      .details
-                        .position_author_name
-                          {{user.get('name')}}
+    .m-results-pro-con-list{ :class => "static" }
 
-                        (( if ( has_explanation ) { ))
-                        %blockquote.explanation
-                          {{ position.explanation }}
-                        (( } ))
-                  (( } ))
-                  (( }); ))
-                (( } ))
+      %h3.m-results-pro-con-list-who
+        .m-results-pro-con-list-who-others
+        .m-results-pro-con-list-who-all
+          All Factors
+          .filters
+            %span.label
+              order by 
 
-            %li.clear
-            (( }); ))
-            %td.oppose
-              Opposers
+            %a.point_filter.selected{ :'data-filter' => 'score'}
+              Popularity
+            %a.point_filter{ :'data-filter' => 'appeal'}
+              Most Unifying
+            %a.point_filter{ :'data-filter' => 'divisiveness'}
+              Most Divisive
 
-        #axis_arrow
+      .m-pro-con-list-propoints             
+        .m-pro-con-list-header
+          - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
+            = theme_image_tag('pro_header.png')
+          - else
+            = image_tag('chalk/pros.png') 
+        %ul.m-point-list
+   
 
-    .opinions
+      .m-pro-con-list-conpoints
 
-      %table
-        %tr
+        .m-pro-con-list-header
+          - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
+            = theme_image_tag('con_header.png')
+          - else
+            = image_tag('chalk/cons.png') 
 
-          %td.slate
-
-            .pro_con_list{ :id => "domain_board", :class => "static"}
-
-              .slate
-                %h3.participant_connection
-                  .others
-                  .all
-                    All Factors
-                    .filters
-                      %span.label
-                        order by 
-
-                      %a.point_filter.selected{ :'data-filter' => 'score'}
-                        Popularity
-                      %a.point_filter{ :'data-filter' => 'appeal'}
-                        Most Unifying
-                      %a.point_filter{ :'data-filter' => 'divisiveness'}
-                        Most Divisive
-
-               
-                %table
-                  %tr.point_columns
-                    %td.full_column.pro_column#points_on_board_pro
-                      #propoints.inner_wrapper
-                        .pro_con_list_header.pro_header
-                          .inner
-                            - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
-                              = theme_image_tag('pro_header.png')
-                            - else
-                              = image_tag('chalk/pros.png') 
-
-                        %ul.point_list
-
-                    %td.full_column.con_column#points_on_board_con 
-                      #conpoints.inner_wrapper
-                        .pro_con_list_header.con_header
-                          .inner
-                            - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
-                              = theme_image_tag('con_header.png')
-                            - else
-                              = image_tag('chalk/cons.png') 
-
-                        %ul.point_list
+        %ul.m-point-list
 
   .speaker.public
     .participants
-      %ul
-        (( _.each($.parseJSON(participants), function(p){ ))
-        %li
-          .avatar{ :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-        (( }); ))
+      (( _.each($.parseJSON(participants), function(p){ ))
+      %span.avatar{ :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+      (( }); ))
 
 
 = render :partial => 'backbone/templates_user'

@@ -10,11 +10,7 @@ window.delay = (ms, func) -> setTimeout func, ms
 
 window.PaperClip =
   get_avatar_url : (user, size, fname) ->
-    return '' if size == 'small' && !window.cached_avatars_loaded
-
-    if user? && size == 'small' && window.avatar_data['small'][user.id]?
-      window.avatar_data['small'][user.id]
-    else if fname?
+    if fname?
       "/system/avatars/#{user.id}/#{size}/#{fname}"
     else if user? && user.get('avatar_file_name')
       "/system/avatars/#{user.id}/#{size}/#{user.get('avatar_file_name')}"

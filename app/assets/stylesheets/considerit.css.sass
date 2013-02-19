@@ -1,143 +1,1051 @@
-//@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,800)
-//@font-face 
-  font-family: 'Open Sans'
-  font-style: normal
-  font-weight: 800
-  src: local('Open Sans Extrabold'), local('OpenSans-Extrabold'), url(https://themes.googleusercontent.com/static/fonts/opensans/v6/EInbV5DfGHOiMmvb1Xr-hqRDOzjiPcYnFooOUGCOsRk.woff) format('woff')
+//////////////////////////////////////////
+// BASE
+//////////////////////////////////////////
 
-//@font-face 
-  font-family: 'Open Sans'
-  font-style: italic
-  font-weight: 400
-  src: local('Open Sans Italic'), local('OpenSans-Italic'), url(https://themes.googleusercontent.com/static/fonts/opensans/v6/xjAJXh38I15wypJXxuGMBrrIa-7acMAeDBVuclsi6Gc.woff) format('woff')
-
-//@font-face
-  font-family: 'Open Sans'
-  font-style: normal
-  font-weight: 400
-  src: local('Open Sans'), local('OpenSans'), url(https://themes.googleusercontent.com/static/fonts/opensans/v6/cJZKeOuBrn4kERxqtaUH3bO3LdcAZYWl9Si6vvxL-qU.woff) format('woff')
+/* VARIABLES */
 
 
 @import "mixins"
-
-//@import "carousel"
-
-//@import "points/show"
-//@import "points/new_point"
-//@import "points/column"
-//@import "points/pro_con_list"
-
-//@import "proposals/blocks"
-//@import "proposals/show"
-//@import "proposals/description"
-//@import "proposals/admin"
-//@import "proposals/create"
-
-//@import "positions/craft"
-
-
-//@import "positions/slider"
-
-//@import "comments/comment"
-//@import "comments/discussion"
-//@import "comments/new"
-
-//@import "static/static"
-//@import "shared/footer"
-//@import "shared/header"
-//@import "shared/carousel"
-//@import "shared/messages"
-//@import "shared/social_media"
-//@import "shared/dialog"
-
-//@import "dashboard/dashboard"
-
+@import "mixins/bubble"
 
 @import "users/sessions"
 
+/* RESET
+ * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
+ * http://cssreset.com
+ */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video
+  margin: 0
+  padding: 0
+  border: 0
+  font-size: 100%
+  font: inherit
+  vertical-align: baseline
 
-//////////////////////////////////////////////////////
-/////////////// Materials definitions ////////////////
-/// TODO: these maybe should be defined per theme ////
-//////////////////////////////////////////////////////
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section
+  display: block
 
-#site_registration .primary, #registration_form .primary, #post_signup_dialog .primary
+body 
+  line-height: 1.3
+
+ol, ul 
+  list-style: none
+
+blockquote, q
+  quotes: none
+
+blockquote:before, blockquote:after,
+q:before, q:after
+  content: ''
+  content: none
+
+table
+  border-collapse: collapse
+  border-spacing: 0
+
+/* COLORS */
+$base_color: #222
+$base_hover_color: #000
+
+body, h1, h2, h3, h4, h5, h6, a, input, button
+  color: $base_color
+
+/* FONTS */
+
+$main_font-family: Optima, Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
+%main_font-family
+  font-family: $main_font-family
+
+// do we need to put input and button here...?
+body, input, button
+  @extend %main_font-family
+
+/* ELEMENT DEFAULTS */
+
+//http://paulirish.com/2012/box-sizing-border-box-ftw/
+*
+  +boxy_border
+
+body
+  font-size: 100%
+
+a, input, button
+  &:hover
+    color: $base_hover_color
+
+a
+  color: inherit
+  outline: none
+  cursor: pointer  
+  text-decoration: none
+  img
+    border: none  
+
+input, button
+  +transition
+
+h1, h2, h3, h4, h5, h6, strong
+  font-weight: bold
+
+em 
+  font-style: italic
+
+table
+  border-collapse: separate  
+
+p
+  margin-bottom: $vertical_baseline
+
+ul
+  margin: 0
+  list-style-type: disc
+
+ol
+  margin: 0
+  list-style-type: decimal
+
+blockquote
+  quotes: "\201C" "\201D"
+  &:before
+    content: open-quote
+    font-weight: bold
+  &:after
+    content: close-quote
+    font-weight: bold
+
+
+/* HELPERS */
+
+.clear
+  clear: both
+  display: none
+
+.fl
+  float: left
+
+.fr
+  float: right
+
+.hide
+  display: none
+
+/* VARIABLES */
+
+$grid_major: 48px
+$grid_minor: 30px
+$grid_xs: 18px
+
+$vertical_baseline: 1em
+
+$content_width: $grid_major * 22 + $grid_xs
+$pro_con_list_width: 675px
+
+$peer-point-width: 194px
+$peer-point-height: 180px
+
+$histogram_bar_width: 2 * $grid_major - 4
+
+$rep_color: lighten(#49B1E5, 20%)
+$dark_rep_color: darken($rep_color, 20%)
+
+$constituency_color: lighten(#E5E15A, 20%)
+$dark_constituency_color: darken($constituency_color, 30%)
+
+$user_color: #ddd
+$dark_user_color: darken($user_color, 10%) 
+
+$comp_color: lighten(#882F35, 10%)
+$dark_comp_color: darken($comp_color, 10%)
+
+$header_gray: #777
+$empty_color: #ddd
+
+$proposal_width: 617px
+$body_width: 727px
+
+$content_background : image-url('directrep/images/brillant.png')
+
+$hex-bullet-point: '\2022'
+
+/* SHARED STYLES */
+
+%chalkboard
   +on_chalkboard
+  +chalkboard
 
+%postit
+  +on_paper
 
-.user_opinion .slate, .pro_con_list
-  +on_chalkboard
+%postit-background-no-repeat
+  @extend %postit
+  +green_post_it
 
-.point_in_list_margin
-  +on_post_it
-  &.pro
-    +green_post_it
-  &.con
-    +red_post_it
-
-.point_in_list#expanded, #content .point
-  +on_post_it
+%postit-background-repeat
+  @extend %postit
   +green_post_it($repeated: 1)
 
-// this should probably be overridden per theme
-=on_background
+%pro_con_list
+  vertical-align: top
+  margin: auto
+  position: relative
+                   
+  width: $pro_con_list_width
+  border: $chalkboard_border_width solid
+  border-color: hsl(0, 0%, 80%) hsl(0, 0%, 10%) hsl(0, 0%, 10%) hsl(0, 0%, 50%)
+  +box-shadow(0, 1px, 5px, rgba(black, .5))
+
+  padding: 2 * $vertical_baseline 0 0 $grid_xs
+
+  %m-pro-con-list-column
+    position: relative
+    vertical-align: top
+    display: inline-block
+    width: 40%
+
+  .m-pro-con-list-propoints, .m-pro-con-list-conpoints
+    @extend %m-pro-con-list-column
+
+  .m-pro-con-list-propoints 
+    margin-left: $grid_major - $chalkboard_border_width
+    margin-right: $grid_xs
+
+  .m-pro-con-list-conpoints 
+    margin-right: $grid_major - $chalkboard_border_width
+    margin-left: $grid_xs
+    
+  .m-pro-con-list-header   
+    margin-bottom: $vertical_baseline/2
+    text-align: center
+    position: relative
+
+    img
+      width: 80px
+
+.avatar
+  vertical-align: top
+  background-color: transparent
+  border: none
+  display: inline-block
+  margin: 0
+  padding: 0
+  background-size: 100% 100%
+  background-image: url('/system/default_avatar/small_default-profile-pic.png')
+
+
+//////////////////////////////////////////
+// LAYOUT
+//////////////////////////////////////////
+
+
+/* CONTAINERS */
+
+#wrap
+  position: relative
+
+  > div
+    margin: 0 auto
+    position: relative
+
+  #masthead
+    z-index: 33
+    height: $vertical_baseline * 2
+    position: relative
+    width: 100%
+    margin-bottom: $vertical_baseline
+
+    .inner
+      width: $content_width
+      //margin-top: $vertical_baseline * 2
+      position: relative
+      z-index: 1
+      padding: 0
+      margin: auto
+
+      .logo_cell
+        position: absolute
+        left: 0px
+        z-index: 6
+        //float: left
+        a
+          overflow: hidden
+
+  #content
+    position: relative
+    width: $content_width
+    margin: 0 auto
+
+    .inner_content
+      padding: $vertical_baseline $grid_xs
+      margin-bottom: $vertical_baseline
+      position: relative
+
+  .footer_wrapper
+    width: $content_width
+    position: relative
+    margin: 0 auto
+
+
+//////////////////////////////////////////
+// USER MODULES
+//////////////////////////////////////////
+
+/* USER-NAV  */
+
+#nav-user
+  position: absolute
+  z-index: 7
+  right: 0
+  border-bottom-right-radius: 5px
+  border-bottom-left-radius: 5px
+  padding: 10px 15px
+
+.m-login a, .m-user-options a
+  color: #a6a6a6
+  font-weight: bold
+  +font-size(-1)
+
+.m-user-options
+  cursor: pointer
+  position: relative
+
+  .m-user-options-menu-wrap
+    display: none
+    z-index: 99
+    position: absolute
+    right: -19px
+    width: 150px
+    +chalkboard
+    +on_chalkboard
+
+    img
+      vertical-align: top 
+      margin: 2px 0 0px 15px
+      width: 35px
+      height: 35px
+      display: inline-block
+
+  .m-user-options-menu
+    +nude-list
+    margin-left: 0
+    display: inline-block
+
+    a
+      width: 100%
+      padding: 1px 10px 0 8px
+      display: block
+      cursor: pointer
+      +font-size(-3)
+
+//////////////////////////////////////////
+// MODULES
+//////////////////////////////////////////
+
+/* POINT_IN_LIST */
+
+
+%m-point
+  +nude-list
+  position: relative
+  cursor: pointer
+
+  .m-point-nutshell
+
+    .m-point-user
+      white-space: nowrap
+      display: inline-block
+      +font-size(-2)
+
+  .m-point-operations
+    padding: 0 $grid_xs
+
+    %point_operation
+      display: inline-block          
+      +font-size(-4)
+      padding: 0
+      margin: 0
+      font-weight: bold
+
+    .m-point-include, .m-point-remove, .m-point-read-more, .m-point-edit
+      @extend %point_operation
+
+    .m-point-edit:before, .m-point-remove:before
+      content: '\2022'
+      +font-size(-6)
+      position: relative
+      right: 1px
+
+
+.m-point-peer
+  @extend %m-point
+  @extend %postit-background-no-repeat
+
+  width: $peer-point-width
+  height: $peer-point-height
+  padding: $vertical_baseline $grid_xs
+
+  .m-point-nutshell
+    +font-size(-4)
+
+  .m-point-operations        
+    bottom: 23px
+    left: $grid_xs + 9px
+    a
+      color: darken(desaturate($yellow_postit, 20%), 30%)
+
+    .m-point-edit, .m-point-remove
+      display: none
+
+  &:hover .m-point_operations a
+    color: darken(desaturate($yellow_postit, 100%), 70%)
+
+.m-point-position
+  @extend %m-point
+
+  .m-point_operations .m-point-include
+    display: none
+                  
+.m-point-results
+  @extend %m-point
+
+  .m-point-operations 
+    .m-point-remove, .m-point-include
+      display: none
+
+.m-point-results, .m-point-position
+  //border-color: transparent
+
+  .m-point-nutshell
+    +font-size(-2)
+    margin-bottom: 0px
+    // bullet point
+    &:before
+      content: $hex-bullet-point
+      position: absolute
+      left: -10px
+      top: 0px
+
+  .m-point-operations
+    bottom: 0
+    left: 0
+    position: relative
+    visibility: hidden
+
+  &:hover .m-point-operations
+    visibility: visible
+
+/* NEWPOINT */
+
+.m-newpoint
+  position: relative
+
+  // bullet point
+  &:before
+    content: $hex-bullet-point
+    display: inline-block
+    position: relative
+    top: 0
+    left: -10px
+    
+  .m-newpoint-new
+    +font-size(2)
+    width: 240px
+    border: none
+    padding: 0
+    position: relative
+    text-align: left
+    text-decoration: underline
+    margin-left: -10px
+    font-weight: bold
+
+  .m-newpoint-form
+    position: relative
+    top: -29px
+    display: none
+
+  .m-newpoint-description
+    width: 100%
+  
+  .m-newpoint-nutshell-wrap
+    .m-newpoint-nutshell
+      width: 88%
+
+    .count
+      +font-size(-3)
+      vertical-align: middle
+
+  .m-newpoint-submit
+    text-align: right
+
+
+/* POINTLISTPAGINATION */
+
+.m-pointlist-pagination
+  text-align: center
+  color: #777
+  a
+    color: #777
+
+  .m-pointlist-status
+    +font-size(-3)
+    font-weight: bold
+
+
+/* POINT_DETAILS */
+
+%m-point-details
+
+  .m-point-details-body
+    @extend %postit-background-repeat  
+    width: 600px - 2 * $grid_major - 2 * $grid_minor
+    min-height: 300px
+    padding: $vertical_baseline 2 * $grid_major + 2 * $grid_minor
+
+  .m-point-details-author-avatar
+    width: 70px
+    height: 70px
+
+  .m-point-details-nutshell
+    +font-size(3)
+
+    width: auto
+    font-weight: bold
+    margin-bottom: $vertical_baseline
+
+  .m-point-details-description
+    a
+      text-decoration: underline
+
+  .m-point-details-author
+    font-style: italic
+    padding: 10px 0
+
+  .m-point-details-operations
+    display: block
+    padding: 0 $grid_xs
+
+  .m-point-details-edit
+    padding-right: $grid_xs
+
+  .m-point-discussion
+    position: relative
+    //width: 660px
+    padding: 0 $grid_xs
+
+  .m-point-discussion-heading
+    +font-size(3)
+    margin: 0px 0 $vertical_baseline 0
+
+  .m-point-comments
+    +nude-list
+
+.m-point-details-pro
+  @extend %m-point-details
+  .m-point-details-body
+    +bubble($constituency_color, $dark_constituency_color, left)     
+  .speaker
+    text-align: right
+
+.m-point-details-con
+  @extend %m-point-details
+  .m-point-details-body
+    +bubble($constituency_color, $dark_constituency_color, right)     
+
+
+/* COMMENTS */
+.m-comment
+  margin: 8px 0 25px 0
+
+  .m-comment-avatar
+    width: 50px
+    height: 50px
+    
+  .m-comment-body
+    +font-size(-2)    
+    display: inline-block
+    width: 80%
+    margin-left: $grid_xs    
+    p, br
+      margin-bottom: 6px
+
+  .m-comment-author
+    font-style: italic
+    white-space: nowrap
+
+  .m-comment-edit
+    +font-size(-2)
+
+  .m-comment-edit-form
+    .save_block
+      top: auto
+      left: 50px
+      bottom: -30px
+
+/* NEWCOMMENT */
+
+.m-new-comment
+  margin: 8px 0 25px 0
+
+  .m-new-comment-avatar
+    width: 50px
+    height: 50px
+
+  .m-new-comment-body
+    +font-size(-1)    
+    display: inline-block
+    width: 80%
+    margin-left: $grid_xs    
+
+  .m-new-comment-body-field
+    height: 60px
+    width: 90%
+
+  .m-new-comment-submit-wrap
+    text-align: right
+    width: 90%
+
+  .m-new-comment-civility-reminder
+    +font-size(-2)
+    width: 150px
+    padding-right: $grid_xs
+
+  a.signin_link
+    font-weight: bold
+
+
+/* PROPOSAL */
+
+#proposals
+  margin-top: $vertical_baseline
+  position: relative
+  z-index: 1
+
+  .proposallist
+    +nude-list
+
+.proposal
+  margin: $vertical_baseline 0 2 * $vertical_baseline 0
+
+  .question
+    text-align: center
+    color: #222
+    width: $body_width + 2 * $grid_major
+    text-transform: capitalize
+    margin: auto
+    font-weight: bold
+
+  .details
+    +font-size(-2)
+
+    .extra .prompt a
+      text-decoration: underline
+
+.social_media_ribbon
+  margin-top: $vertical_baseline
+  ul
+    text-align: center
+    li
+      display: inline-block
+      vertical-align: middle
+      +font-size(-3)
+      color: #aaa
+
+      &.action
+        cursor: pointer
+
+
+/* YOUR_ACTION */
+
+// YOUR_ACTION_CRAFT
+
+// YOUR_ACTION_SAVE
+
+/* SUMMARY */
+.m-results-summary
+  cursor: pointer
+
+  .m-summary-heading
+    padding-bottom: $vertical_baseline 
+
+  %top_point
+    display: inline-block
+    
+    .avatar
+      width: 50px
+      height: 50px
+ 
+  .m-summary-top-pro
+    @extend %top_point
+    float: left
+
+  .m-summary-top-con
+    @extend %top_point
+    float: right
+
+  %m-top-point-body
+    padding: $vertical_baseline / 2 $grid_xs
+    width: 280px
+    position: relative
+    display: inline-block
+    +colored_post_it($repeated: 1)
+
+  .m-top-pro-body
+    @extend %m-top-point-body
+    +bubble($constituency_color, $dark_constituency_color, left)              
+
+  .m-top-con-body
+    @extend %m-top-point-body
+    +bubble($constituency_color, $dark_constituency_color, right)              
+
+
+/* RESULTS */
+
+.m-aggregated-results
+
+// HISTOGRAM / WHAT
+
+.m-histogram
+  margin: $vertical_baseline auto 0px auto
+  position: relative
+  width: $pro_con_list_width - 6
+  z-index: 10
+  bottom: -4px
+
+  %m-histogram-label
+    position: absolute
+    color: #313131
+    +font-size(0)
+    font-weight: bold
+    vertical-align: bottom
+    width: 3 * $grid_major
+    text-transform: uppercase
+    bottom: 0
+
+  .m-histogram-label-support
+    @extend %m-histogram-label
+    text-align: right
+    left: -150px
+
+  .m-histogram-label-oppose
+    @extend %m-histogram-label
+    text-align: left
+    right: -150px
+
+
+  .m-histogram-bar
+    width: $histogram_bar_width
+    position: relative
+    display: inline-block
+    opacity: 0
+    cursor: pointer
+    +box-shadow(0px, 1px, 2px, black)
+    border: 3px solid #222
+    border-bottom: none
+    background-color: #222
+    +transition
+    z-index: 1
+
+    .m-bar-close
+      display: none
+      position: absolute
+
+    &:hover, &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
+      +chalkboard
+
+    &:hover
+      border-color: #414141
+
+    &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
+      +box-shadow(0px, 1px, 2px, black)
+      border-color: black
+
+      &:after
+        +chalkboard
+        content: ''
+        position: absolute
+        display: block
+        height: 5px
+        width: $histogram_bar_width + 3
+        left: -5px
+        bottom: -4px
+        border-radius: 6px 6px 0 0
+    
+    &.m-bar-is-soft-selected
+      z-index: 5
+
+    &.m-bar-is-hard-selected
+      z-index: 10
+      border-radius: 5px 5px 0 0
+
+      .m-bar-close
+        display: block
+        right: 5px
+        top: -2px
+        z-index: 1
+        +font-size(-3)
+        color: #999
+
+    //.personal_position.update
+      bottom: 0
+      left: 30px
+      position: absolute
+      +on_background
+      z-index: 50
+      display: none
+      //left: 50%
+      //margin-left: 10px
+      .label
+        +font-size(-1)
+        position: relative
+        margin-left: 4px
+        .arrow
+          position: absolute
+          +font-size(2)
+          font-weight: bold
+          left: -25px
+          top: 8px
+      .revise 
+        position: relative
+        top: -2px
+        a
+          text-transform: lowercase
+          font-weight: bold
+          text-decoration: underline
+          +font-size(-2)
+      
+
+.m-bar-people
+  background-color: transparent
+  position: absolute
+  z-index: 1000
+  font-size: 0
+
   color: #222
 
-  h1, h2, h3
-    color: #222
+  margin: auto
+  bottom: 0px
 
-  a, input, button
-    color: #222  
+  .m-bar-ghost
+    visibility: hidden
+    float: right
   
-    &:hover
-      color: #000    
-  
-  input, button
-    +transition
-
-html body
-  +on_background
-
-/////////////
+  .m-bar-person
+    background-color: inherit
+    margin: auto
+    display: inline-block
+    position: relative
 
 
+  %m-bar-person-details
+    text-align: center  
+    cursor: pointer
+    //don't use +font-size here because of the earlier 0% declaration
+    font-size: 16px
+    background-color: black
+    color: #e1e1e1
+    position: absolute
+    display: none
+    z-index: 2
+    top: 100%
+    left: 50%
+    margin-top: 14px
+    +border-radius(5px)
+    padding: 5px $grid_xs
+    +box-shadow(0px, 1px, 2px, #313131)
 
-//////////////////////////////////////////////////////
-/////////////// Base styles for input ////////////////
-//////////////////////////////////////////////////////
+    &:after
+      content: "\25B2"
+      position: absolute
+      padding: 0 4px 0
+      top: -13px
+      color: black
+      z-index: 5
+
+    .m-bar-person-explanation
+      padding: 5px 0 0 0 
+      +font-size(-1)
+
+      p
+        margin-bottom: 6px
+        text-align: left
+
+  .m-person-has-explanation .m-bar-person-details
+    @extend %m-bar-person-details
+    margin-left: -150px
+    width: 400px
+    &:after
+      left: 200px - 12
+
+  .m-person-has-no-explanation .m-bar-person-details
+    @extend %m-bar-person-details
+    margin-left: -75px
+    width: 150px
+    &:after
+      left: 62px
 
 
-//// SUBMIT styles
+// POINTS / WHY
 
-.button, .button_proxy, button, input[type="submit"]
-  outline: none
-  cursor: pointer
+.m-results-pro-con-list
+  @extend %chalkboard
+  @extend %pro_con_list
+  min-height: 550px
+
+.m-results-pro-con-list-who
   text-align: center
+  +font-size(3)
+  height: 3 * $vertical_baseline
+  margin-top: -$vertical_baseline
 
-  &.button
-    +button($text_color: hsl(0,0,85%), $bground_color: hsl(0,0,35%))
+  .filters
+    +font-size(-5)
+    text-transform: lowercase
+    font-variant: small-caps
 
-  &.linkified
-    background-color: transparent
+    .label
+      color: #999
+
+    .point_filter
+      padding: 0 $grid_xs / 2
+      &:hover
+        cursor: pointer
+      &.selected
+        background-color: #666
+        background-color: rgba(white, .1)
+        +border-radius(5px)
+
+
+/* POSITION */  
+
+.m-position
+
+// REASONS
+.m-reasons
+  position: relative
+  margin-left: -$peer-point-width
+  width: $content_width
+
+  .m-reasons-pro-con-list, .m-reasons-peer-points
+    display: inline-block
+
+  .m-reasons-pro-con-list
+    @extend %pro_con_list 
+    @extend %chalkboard
+    min-height: 645px
+
+  .m-reasons-peer-points
+    width: $peer-point-width
+    vertical-align: top 
+    padding-top: 5 * $vertical_baseline
+
+
+  %m-reasons-peer-points-heading
+    opacity: .8
+    h3
+      +font-size(0)
+      text-transform: uppercase
+      letter-spacing: -1px
+      color: #777
+      font-weight: normal
+
+    .sublead
+      +font-size(-3)
+      margin-top: -3
+      //position: relative
+      //top: -3px
+
+  .m-reasons-peer-pros-heading
+    @extend %m-reasons-peer-points-heading
+    text-align: left
+    margin-left: $grid_xs
+
+  .m-reasons-peer-cons-heading
+    @extend %m-reasons-peer-points-heading
+    text-align: right
+    margin-right: $grid_xs
+
+// SLIDER
+.m-stance
+  margin: auto auto 2 * $vertical_baseline auto 
+  +font-size(2)
+      
+  %m-stance-label
+    vertical-align: top
+    div
+      width: 120px
+
+  .m-stance-label-support
+    @extend %m-stance-label
+    text-align: right
+    padding-right: $grid_xs
+
+  .m-stance-label-oppose
+    @extend %m-stance-label
+    text-align: left
+    padding-left: $grid_xs
+
+  .m-stance-label-neutral
+    @extend %m-stance-label
+    text-align: center
+    +font-size(-3)
+
+  .m-stance-slider-container
+    height: 60px 
+
+  .noUiSlider
+    margin: 10px
+    background: none
+    background-color: #666
+
+    background-color: rgba(black, .15)
+
+    +box-shadow(0,0,0,transparent)
+    border-radius: 15px
+    width: 360px
+
     border: none
-    text-decoration: underline
+    height: 16px
+
+  .noUi-handle > div
+    background: image-url("slider.png") repeat-x scroll 50% 50% transparent  
+    border: none
+    top: -.2em
+    height: 38px
+    width: 39px
+    +transition('none')
+    margin-left: -21px
+
+    &:hover
+      cursor: move
 
 
-.pressable_button
-  +pressable_button
+//////////////////////////////////////////
+// UNINCORPORATED
+//////////////////////////////////////////
+.customfile-preview-wrap
+  width: 80px
+  height: 80px
+  overflow: hidden
 
-//// TEXT INPUT styles
+  img.customfile-preview
+    height: 80px
 
-
-input[type="text"], input[type="email"], input[type="password"], textarea
-  padding: 3px 5px
-  color: #333
-
-
-input[type=checkbox], input[type=radio]
-  //vertical-align: middle
-  //position: relative
-  //bottom: 2px
+#registration_overlay, #point_details_overlay
+  position: absolute
+  z-index: 9999
 
 .inlined
   position: relative
@@ -161,1373 +1069,79 @@ label.inline
   &.empty
     visibility: visible !important
 
-input.hidden_edit
-  background-color: transparent
-  border: none
-  width: auto
-  text-align: right
-  padding-right: none
-
-/////////////
-
-h1, h2, h3, h4, h5, h6
-  font-weight: bold
-
-// Use for banners 
-h1
-  +heading
-  +font-size(3)
-  text-align: center
-
-// Use for page/dialog headers
-h2
-  text-align: center
-  +font-size(3)
-  padding: $vertical_baseline/2 0
-
-// Base header
-h3 
-
-strong
-  font-weight: bold
-
-em
-  font-style: italic
-
-.clear
-  clear: both
-
-.fl
-  float: left
-
-.fr
-  float: right
-
-.hide
-  display: none
-
-table
-  border-collapse: separate  
-
-body, input, button
-  +main_font
-
-
-body
-  // 12pt/16px default font, for traditional browsers
-  font-size: 100%
-  line-height: 1.3
-
-  #wrap
-    position: relative
-    
-    > div
-      
-      margin: 0 auto
-      position: relative    
-
-      &#masthead
-        z-index: 33
-      &#content   
-        position: relative
-        width: $content_width
-        margin: 0 auto
-
-        .inner_content
-          padding: 0 $grid_xs $vertical_baseline $grid_xs
-          margin-bottom: $vertical_baseline      
-
-      &#footer > .footer_wrapper
-        width: $content_width
-        position: relative
-        margin: 0 auto
-
-h2.sub_follows
-  margin-bottom: 0px
-
-p
-  margin-bottom: 18px
-
-a
-  color: inherit
+.button, .button_proxy, button, input[type="submit"]
   outline: none
-  cursor: pointer  
-  text-decoration: none
-  img
-    border: none
-
-ul
-  margin: 0
-  list-style-type: disc
-
-ol
-  margin: 0
-  list-style-type: decimal
-
-blockquote
-  quotes: "\201C" "\201D"
-  &:before
-    content: open-quote
-    font-weight: bold
-  &:after
-    content: close-quote
-    font-weight: bold
-
-
-fieldset
-  border: 1px solid #bbb
-  padding: $vertical_baseline $grid_xs
-  margin: $vertical_baseline 0
- 
-  legend
-    margin-left: $grid_xs
-    color: #777
-    +font-size(-3)
-    padding: 0 $grid_xs / 2
-
-.loading .ajax_loading
-  display: block
-
-.ajax_loading
-  //background-image: image-url("ajax-loader.gif") 
-  display: none
-  width: 15px
-  height: 15px
-  
-
-//.head
+  cursor: pointer
   text-align: center
-  padding: $vertical_baseline $grid_xs    
-  .banner
-    +font-size(5)
-    margin-bottom: 0px
-    text-align: center
-    font-weight: normal
-    //+inset-text
-    a
-      text-decoration: underline
+
+  &.button
+    +button($text_color: hsl(0,0,85%), $bground_color: hsl(0,0,35%))
 
 
-hr.ledge
-  width: 100%
-  margin: auto
-  border: none
-  height: 4px
-  &.top
-    background-color: #fff
-    //background-color: rgba(white, .15)
-  &.bottom
-    background-color: #888
-    background-color: rgba(black, .10)
+.pressable_button
+  +pressable_button
 
 
- 
-.ui-widget-overlay
-  position: fixed
-  background-color: white
-  opacity: .8
-  +opacity(80)
 
-
-// CONTENTS of @import "proposals/show" and 'proposals/histogram'
-
-#histogram 
-  margin: $vertical_baseline auto 0px auto
-  position: relative
-  //top: 190px
-
-  table
-    padding: 0px
-    color: #272727
-    border-spacing: 3px 0px
-    margin: auto
-
-    td.support, td.oppose
-      position: absolute
-      color: #313131
-      +font-size(0)
-      +heading
-      font-weight: bold
-      vertical-align: bottom
-      width: 3 * $grid_major
-      //visibility: hidden
-      //display: none
-      text-transform: uppercase
-      bottom: 0
-      //+transition
-      &.support
-        //padding-right: $grid_minor
-        text-align: right
-        left: -150px
-
-      &.oppose
-        //padding-left: $grid_minor
-        text-align: left
-        right: -150px
-
-
-    td.bar_cell
-      width: $histogram_bar_width
-      position: relative
-
-      .bar.empty
-        position: relative
-      .bar.full 
-        +transition
-        opacity: 0
-        &, a
-          color: #ccc
-        a:hover
-          color: white
-
-
-        padding: 0px                                    
-        cursor: pointer
-        z-index: 0
-        position: relative
-
-        +box-shadow(0px, 1px, 2px, black)
-        border: 3px solid #222
-        border-bottom: none
-        background-color: #222
-
-
-        .close, .border_cover
-          display: none
-          position: absolute
-
-
-        &:hover
-          +chalkboard
-          border-color: #414141
-          z-index: 40
-
-        &.noone
-          display: none
-          
-        &.selected
-          +chalkboard
-          +box-shadow(0px, 1px, 2px, black)
-          z-index: 60
-          border-color: black
-
-          .border_cover
-            display: block
-            height: 5px
-            width: $histogram_bar_width - 3
-            left: -2px
-            +chalkboard
-            bottom: -4px
-            border-top-right-radius: 6px
-            border-top-left-radius: 6px
-
-          &.hard_select
-            border-top-left-radius: 10px 
-            border-top-right-radius: 10px
-            .close
-              display: block
-              right: 5px
-              top: -2px
-              z-index: 1
-              +font-size(-3)
-              color: #999
-
-      .personal_position.update
-        bottom: 0
-        left: 30px
-        position: absolute
-        +on_background
-        z-index: 50
-        display: none
-        //left: 50%
-        //margin-left: 10px
-
-        .label
-          +font-size(-1)
-          position: relative
-          margin-left: 4px
-          .arrow
-            position: absolute
-            +font-size(2)
-            font-weight: bold
-            left: -25px
-            top: 8px
-
-        .revise 
-          position: relative
-          top: -2px
-          a
-            text-transform: lowercase
-            font-weight: bold
-            text-decoration: underline
-            +font-size(-2)
-        
-
-.people_bar
-  background-color: transparent
-  position: absolute
-  z-index: 1000
-  font-size: 0
-
-  color: #222
-
-  margin: auto
-  bottom: 0px
-
-  li.statement
-    background-color: inherit
-    margin: auto
-    display: inline-block
-
-    &.with_explanation 
-
-      .details
-        margin-left: -150px
-        width: 400px
-
-        &:after
-          left: 200px - 12
-
-    &.no_explanation 
-      .details
-        margin-left: -75px
-        width: 150px
-
-        &:after
-          left: 62px
-
-
-    .view_statement
-      text-align: center  
-      position: relative
-      display: block
-      cursor: pointer
-
-
-      .avatar
-        max-height: 50px
-        max-width: 50px
-        //opacity: .35
-        position: relative
-        //+grayscale
-
-        &.author_of_hovered_point
-          //opacity: 1
-      
-      .details
-        //don't use +font-size here because of the earlier 0% declaration
-        font-size: 16px
-        background-color: black
-        color: #e1e1e1
-        position: absolute
-        display: none
-        z-index: 2
-        top: 100%
-        left: 50%
-        margin-top: 14px
-        +border-radius(5px)
-        padding: 5px $grid_xs
-        +box-shadow(0px, 1px, 2px, #313131)
-
-        .position_author_name
-          +font-size(0)
-          font-weight: bold
-          white-space: nowrap
-
-        &:after
-          content: "\25B2"
-          position: absolute
-          padding: 0 4px 0
-          top: -13px
-          color: black
-          z-index: 5
-
-        blockquote.explanation
-          padding: 5px 0 0 0 
-          +font-size(-1)
-
-          p
-            margin-bottom: 6px
-            text-align: left
-
-// hovering over a point
-#histogram.hovering_over_point  
-  table td.bar_cell .bar.full 
-    //background-color: transparent
-
-    .people_bar
-
-      li.statement
-        .view_statement
-          .avatar
-            visibility: hidden
-            &.author_of_hovered_point
-              //opacity: 1
-              visibility: visible 
-              //+grayscale_off
-            &.includer_of_hovered_point
-              //opacity: 1
-              visibility: visible
-              //+grayscale_off
-
-#axis_arrow
-  height: 1 * $vertical_baseline
-  background-color: transparent
-  background-color: rgba(black, .15)
-  width: $content_width - 4 * $grid_major - 5 * $grid_minor
-  position: absolute
-  bottom: 0
-  z-index: -1
+#proposals_filters
+  z-index: 100
   border-radius: 8px
-  margin-left: 2 * $grid_major + 2.5 * $grid_minor
-  display: none
-
-
-
-.user_opinion
-  >.body > table
-    position: relative
-    margin-left: -193px
-
-.aggregated_results
-  position: relative
-
-  .participant_connection
-    padding-top: 12px
-    text-align: center
-    +font-size(3)
-    height: 48px
-
-    .group_name
-      display: block
-
-    .filters
-      +font-size(-5)
-      text-transform: lowercase
-      font-variant: small-caps
-
-      .label
-        color: #999
-      a
-        padding: 0 $grid_xs / 2
-        &:hover
-          cursor: pointer
-        &.selected
-          background-color: #666
-          background-color: rgba(white, .1)
-          +border-radius(5px)
-
-
-// from points/pro_con_list
-
-.pro_con_list
-
-  vertical-align: top
+  width: 650px
   margin: auto
-  position: relative
-                   
-  > .slate
-    +chalkboard 
-    width: 688px
-    border: $chalkboard_border_width solid
-    border-color: hsl(0, 0%, 80%) hsl(0, 0%, 10%) hsl(0, 0%, 10%) hsl(0, 0%, 50%)
-    +box-shadow(0, 1px, 5px, rgba(black, .5))
-
-    > table
-      padding-top: 2 * $vertical_baseline
-
-
-  //+box-shadow(0px, 5px, 3px, black, .6)
-  
-  &#domain_all, &#domain_self
-    display: block
-
-
-  > div
-    position: relative
-    //padding: 0px 5px      
-  
-
-  .full_column
-    position: relative
-    vertical-align: top
-
-    width: 50%
-    
-
-    .pro_con_list_header   
-      //height: 120px 
-      //background: transparent image-url("chalk/point_header_back.png") no-repeat scroll top center
-      margin-bottom: $vertical_baseline/2
-      //height: 3 * $vertical_baseline
-
-      .inner
-        text-align: center
-        position: relative
-
-        img
-          width: 80px
-
-    &#points_on_board_pro > *
-      margin-left: $grid_major - $chalkboard_border_width
-      margin-right: 35px
-
-    &#points_on_board_con > *
-      margin-right: $grid_major - $chalkboard_border_width
-      margin-left: 35px
-
-  // for pro/con lists that can't have new points added to them
-  //&.static
-    //+wood-frame
-    //width: $pro_con_list_static_width
-    margin: auto
-    border-top: none
-    //+box-shadow-remove
-
-    > .slate
-      min-height: 550px
-
-      > table
-        //width: $pro_con_list_static_width
-        margin-top: $vertical_baseline
-
-    .full_column
-      
-      &#points_on_board_pro
-        //padding: 0 5px 0 35px
-
-      &#points_on_board_con
-        //padding-right: 30px
-
-      .pro_con_list_header
-        //background-position: center -23px 
-        .inner
-          //top: 6px
-
-      .carousel
-        //top: -50px
-        position: relative
-        width: 310px
-        //padding-left: 6px
-        
-        ul.point_list
-          top: 0
-
-
-  // for pro/con lists that can have new points added to them
-  &.dynamic
-    //width: 620px
-    //padding-top: 2em
-
-    > .slate
-
-      > table
-        width: 100% 
-        tr.point_columns
-          height: 625px
-
-    #inclusion_learned
-      position: absolute
-      +font-size(3)
-      width: 225px
-      text-align: center
-      left: 50%
-      margin-left: -150px
-      top: 250px
-      color: #99965c
-      font-weight: bold
-
-    &.no_other_points > .slate > table tr.point_columns
-      height: 300px
-      
-    &.empty
-    .full_column
-
-
-.bullet_point
-  +font-size(-1)
-  position: absolute
-  top: 4px
-  left: 1px
-  font-family: Impact, Impact5, Charcoal6, sans-serif
-
-// from positions/craft
-
-
-.user_opinion
-  +nude-list
-  +wood-frame
-  //width: 1000px
-  position: relative
-  //left: -30px
-
-
-  td.slate  
-    //padding: 12px 0
-    //+chalkboard 
-    //width: 648px
-    ///border: $chalkboard_border_width solid
-    //border-color: hsl(0, 0%, 80%) hsl(0, 0%, 10%) hsl(0, 0%, 10%) hsl(0, 0%, 50%)
-    //+box-shadow(0, 1px, 5px, rgba(black, .5))
-    //border-top: none
-
-  td.margin
-    //+corkboard
-    //+on_corkboard
-    width: 210px
-    vertical-align: top 
-    padding-top: 5 * $vertical_baseline
-
-    .heading
-      opacity: .8
-      &.pros
-        text-align: left
-        margin-left: $grid_xs
-      &.cons
-        text-align: right
-        margin-right: $grid_xs
-
-      .lead
-        +font-size(0)
-        text-transform: uppercase
-        letter-spacing: -1px
-        color: #777
-        font-weight: normal
-
-      .sublead
-        +font-size(-3)
-        position: relative
-        top: -3px
-
-    //.points_other
-      vertical-align: top
-      padding: 0
-      position: absolute
-      top: 11 * $vertical_baseline
-      .point_list
-        //z-index: 100
-        //width: 172px
-      .point_list_footer
-        width: 172px
-        margin: 0 $grid_xs            
-        .arrow
-        .paginate
-          font-weight: normal
-          //padding-top: $vertical_baseline
-      .carousel
-        //padding: 5px 3px
-      &#points_other_pro 
-        left: 0
-        .carousel
-          //width: 530px
-      &#points_other_con 
-        right: 0
-        .carousel
-          //width: 530px
-          .point_list
-            float: right
-
-  li
-    &.step
-      margin-bottom: 2em
-      //padding-bottom: 25px          
-
-    &.slide
-      margin-top: 1em
-      .head
-        
-      .position
-        margin: auto
-        margin-top: 10px
-                
-    &.statement
-      textarea
-        display: block
-        height: $vertical_baseline * 5
-        margin: auto
-        width: 450px
-
-
-
-// points/show
-
-
-.point_in_list
-  +nude-list
-  position: relative
-  
-  background-repeat: no-repeat
-  //border: 5px solid transparent
-
-
-  .body
-    vertical-align: top
-    //padding: 3px 10px 3px 10px
-    position: relative
-
-    .nested_user
-      //font-style: italic
-      text-transform: uppercase
-
-    .point_text
-      //+hyphenate
-
-    .nutshell
-
-      .nested_user
-        white-space: nowrap
-        display: inline-block
-        +font-size(-2)
-
-
-
-  .operations   
-    position: absolute
-    text-align: right
-
-    > div
-      display: inline-block
-        
-      a.point_operation
-        +font-size(-4)
-        padding: 0
-        margin: 0
-        font-weight: bold
-
-      .editpoint:before, &.remove:before
-        content: '\2022'
-        +font-size(-6)
-        position: relative
-        right: 1px
-
-      a.toggle
-        display: inline-block
-
-
-  &.point_in_list_margin
-    //width: 148px
-    width: 174px
-    height: 160px
-    cursor: move
-    //+curl-shadow
-    //margin-bottom: 1em
-    padding: 0 9px $vertical_baseline 9px
-    //margin: 0 9px 
-
-    &.pro
-      border-right: none
-      //border-color: $pro_point_dark
-
-    &.con
-      border-left: none
-      //border-color: $con_point_dark
-
-    .include
-      //display: none
-
-    .body > .bullet_point 
-      display: none
-      left: -10px
-      top: 1px
-
-    .body 
-      padding: $vertical_baseline $grid_xs
-
-      .nutshell
-
-        +font-size(-4)
-        //width: 148px
-
-    .operations        
-      bottom: 23px
-      left: $grid_xs + 9px
-      a
-        color: darken(desaturate($yellow_postit, 20%), 30%)
-
-      .edit, .remove
-        display: none
-                  
-
-  &.point_in_list_board, &.point_in_list_self
-      
-    //width: 255px
-    border-color: transparent
-    //padding-bottom: $vertical_baseline
-    cursor: pointer
-
-    .bullet_point
-      left: -10px
-      top: 0px
-
-    .body > .nutshell
-      +font-size(-2)
-      margin-bottom: 0px
-
-    &:hover .operations
-      visibility: visible
-    .operations
-      //+transition
-      bottom: 0
-      left: 0
-      position: relative
-      visibility: hidden
-      //display: none
-
-      .include
-        display: none
-
-
-  //&.point_in_list_board
-  //  width: 310px
-  //  .nutshell
-  //    width: 310px
-
-  //  .body .operations
-  //    .bullet
-  //      display: none
-
-  &.point_in_list_self
-    width: $grid_major * 5
-
-  &.point_in_list_board
-    .operations
-      .remove
-        display: none
-
-  
-  //everything related to hovering over a point
-
-  &:hover
-    &.point_in_list_margin
-      .operations a
-        color: darken(desaturate($yellow_postit, 100%), 70%)
-
-    &.point_in_list_self, &.point_in_list_board
-
-
-
-.point
-  +on_paper
-  //+curl-shadow
-  margin: auto
-  +box-shadow(0px,1px,5px,rgba(black,.4)) 
-  width: 882px - 2 * $grid_major - 2 * $grid_minor
-  height: auto
-  min-height: 550px
-  padding: $vertical_baseline 2 * $grid_major + 2 * $grid_minor
-
-  a
-    text-decoration: underline
-    opacity: 1
-
-  > .header
-    //margin-left: $grid_major + $grid_minor
-
-  .avatar.author
-    position: absolute
-    left: 86px
-    top: $vertical_baseline * 3.25
-    z-index: 1
-
-    &.has_pic:after, &.has_pic:before
-      position: absolute
-      display: block
-      z-index: 1
-      content: ''
-
-    &.has_pic:after
-      background: image-url('tape.png') no-repeat top left transparent
-      width: 53px
-      height: 23px
-      right: 14px
-      top: -16px
-      z-index: 3
-
-    &.has_pic:before
-      background: image-url('pic_background.png') no-repeat top left transparent
-      width: 50px
-      height: 45px
-      left: -10px
-      bottom: -5px
-
-  > .body
-    padding: $vertical_baseline $grid_xs
-    position: relative
-
-
-
-    .details
-      +font-size(1)
-      a
-        text-decoration: underline
-
-
-    .nutshell, .full, .nested_user
-      //margin-left: 82px
-
-    .nutshell
-      +font-size(3)
-      //padding-right: 130px
-
-      width: auto
-      font-weight: bold
-      margin-bottom: $vertical_baseline
-
-
-
-    .full
-      width: 600px
-
-    .nested_user
-      font-style: italic
-      padding: 10px 0
-
-
-  > .extra
-    padding: 0 $grid_xs
-    .discuss
-      //left: 82px
-
-  .point_operations
-    //margin-left: $grid_major + $grid_minor
-
-.point, .point_in_list
-
-  .nutshell_edit .save_block
-    +font-size(-3)      
-
-  .unobtrusive_edit_form 
-    #point_nutshell
-      background-color: transparent
-      border: 1px solid transparent
-
-    .save_block
-      display: none
-      width: 85px
-
-
-  &.edit_state
-
-    .unobtrusive_edit_form 
-      #point_nutshell
-        border-color: #cca
-      .save_block
-        display: block
-
-  &.point, &#expanded 
-    .header
-      margin: 0 $grid_xs
-      display: block
-      font-variant: small-caps
-      +font-size(-1)
-      text-transform: lowercase
-      li
-        position: relative
-        padding-right: $grid_xs
-        display: inline-block
-        &:after
-          content: '\2022'
-          position: absolute
-          left: -14px
-          top: 0
-        &.first:after
-          content: ''
-
-      .type
-        
-      .permalink
-        text-decoration: underline
-
-    .point_operations
-      display: block
-
-  &.point_in_list_margin
-    .point_operations .remove
-      display: none
-
-  &.point_in_list_self
-    .point_operations .include
-      display: none
-
-  .point_operations 
-    display: none
-    padding: 0 $grid_xs
-    > div
-      display: inline-block
-      padding-right: $grid_xs
-
-      &.hide
-        display: none
-
-
-  .follow, .unfollow
-    margin: 0 0 $vertical_baseline 0 
-    //+font-size(-2)
-
-//@import "points/new_point"
-
-.newpoint
-  //margin: 0 0 15px 0
-  //top: -19px
-  position: relative
-
-  .bullet_point
-    //top: 9px
-    display: inline-block
-    position: relative
-    top: 0
-    left: -10px
-    +font-size(2)
-
-  .newpointbutton 
-    
-    a.write_new
-      +font-size(2)
-      width: 240px
-      //height: 40px
-      border: none
-      padding: 0
-      position: relative
-      text-align: left
-      text-decoration: underline
-      margin-left: -10px
-      font-weight: bold
-
-.pointform
-  //+complex-gradient(rgba(white, 0), rgba(white, 0.03), 13%, 100%, center top)
-  +border-radius(5px)
-  //padding: 5px 0 0 10px
-  position: relative
-  //left: -10px
-  top: -29px
-  //width: 230px
-
-  display: none
-  //margin-top: -55px
-
-
-
-//@import "points/column"
-//.point_column
-  ul.point_list
-    margin: 0
-    padding: 0
-    position: relative
-  &.point_column_margin
-    //min-height: 200px
-    //padding: 10px 0
-    ul.point_list
-      top: 0
-  &.point_column_self
-    //top: -15px
-    position: relative
-
-//.point_list_footer
-  min-height: 35px
-  text-align: center
-  margin: 5px 0
-  .arrow
-    height: 18px
-  input.forward
-    background-position: 0 3px
-
-// positions/slider
-.slider_table
-  margin: auto auto 2 * $vertical_baseline auto
-  //width: 85%
-  +font-size(2)
-
-      
-  td.slider_label 
-    +transition('all .1s linear')
-    > div
-      width: 140px
-
-    
-    &.left
-      text-align: right
-      padding-right: $grid_xs
-
-    &.right
-      text-align: left
-      padding-left: $grid_xs
-
-    &.center
-      text-align: center
-      +font-size(-3)
-      //display: none
-
-    +boxy_border
-
-    textarea
-      overflow: hidden
-
-  .slider_container
-    margin: auto
-    height: 60px
-    text-align: center
-    position: relative
-    z-index: 0
-    
-    .slider
-      margin: 10px
-
-    .ui-slider, .noUiSlider
-      background: none
-      background-color: #666
-
-      background-color: rgba(black, .15)
-
-      +box-shadow(0,0,0,transparent)
-      border-radius: 15px
-      width: 360px
-
-
-      border: none
-      height: 16px
-      a.ui-slider-handle, .noUi-handle > div
-        background: image-url("slider.png") repeat-x scroll 50% 50% transparent  
-        border: none
-        //+border-radius(0px)
-        top: -.2em
-        height: 38px
-        width: 39px
-        +transition('none')
-        margin-left: -21px
-
-        &:hover
-          cursor: move
-
-  
-
-
-// pagination
-
-#pagination
-  .count
-    +font-size(-3)
-    font-weight: bold
-
-
-#pagination
-  text-align: center
-  color: #777
-  a
-    color: #777
-  .count
-    +font-size(-3)
-    font-weight: bold
-
-
-
-// proposal details
-
-.proposal
-  .question
-    font-weight: bold
-  .details
-    //display: none
+  border-top: 1px solid lighten($comp_color, 15%)
+  border-bottom: 1px solid darken($comp_color, 20%)
+
+  h2
+    margin-top: 0
+    padding-top: 0
+  .sub
     +font-size(-2)
+    //margin-top: -$vertical_baseline
+    text-align: center
+    .show, .sort, .index
+      display: inline-block
+      padding-right: $grid_xs
+      > *
+        display: inline-block
+        padding-right: $grid_xs/2
 
-    .extra .prompt a
-      text-decoration: underline
-  
+      a
+        color: #333
+        &:hover
+          color: black
+        &.selected, &.selected:hover
+          font-weight: bold
+          color: #222
 
-//@import "comments/comment"
-
-li.comment, li.new_comment
-  position: relative
-  margin: 8px 0 25px 0
-  min-height: 50px
-    
-  .comment_body
-    width: 100%
-    
-    .body_row
-
-      .avatar
-        position: absolute
-        left: -75px
-        width: 58px
-        top: 3px
-            
-      .comment_text
-        //opacity: .8
-        
-        +border-radius(5px)
-        position: relative
-        +font-size(-2)
-
-        .body
-          padding: 0
-          
-        p
-          margin-bottom: 6px
-
-          br
-            margin-bottom: 6px
-
-        .username
-          display: inline-block
-          vertical-align: top
-          font-style: italic
-
-  .edit_comment
-    a
-      +font-size(-2)
-
-    .save_block
-      top: auto
-      left: 50px
-      bottom: -30px
-
-li.new_comment
-  a.signin_link
-    font-weight: bold
-
-
-
-//@import "comments/discussion"
-
-.discuss
-  position: relative
-  width: 660px
-  .discussion_header
-    +font-size(3)
-    margin: 0px 0 $vertical_baseline 0
-
-//@import "comments/new"
-
-
-
-li.new_comment
-  width: 400px
-  +nude-list
-  +font-size(-1)
-    
-  li.body
-    textarea
-      height: 60px
-  
-  .comment_submit
-    margin: 0 0 $vertical_baseline/2 0
-    float: left
-  
-  .comment_body
-    border-bottom: none
-    width: 100%
-    margin-top: 5px
-        
-    .body_row
-      .user
-        max-width: 70px
-        +font-size(-4)
-      .text
-
-        form
-          .point-pledge
-            +font-size(-3)
-
-          ul.form
-            li.body.inlined
-              width: 360px
-
-              label
-                +font-size(-2)                
-              textarea
-                +font-size(-2)
-                height: 40px
-                margin: 0
-              .count
-                width: 35px
-                display: block
-                position: absolute
-                right: 0
-                +font-size(-3)
-                bottom: -18px
-
-        .point-pledge, .count
-          //opacity: .6
-
-//@import "shared/header"
-
-#wrap
-  #masthead
-    height: $vertical_baseline * 2
-    position: relative
-    width: 100%
-    margin-bottom: $vertical_baseline
-    
-    .inner
-      width: $content_width
-      //margin-top: $vertical_baseline * 2
+    .index
       position: relative
-      z-index: 1
-      padding: 0
-      margin: auto
-
-      .logo_cell
-        position: absolute
-        left: 0px
-        z-index: 6
-        //float: left
-        a
-          overflow: hidden
-          opacity: 1
-
-
-#nav-user
-  //position: absolute
-  //top: -80px
-  //right: 0
-  position: absolute
-  z-index: 7
-  right: 0
-  border-bottom-right-radius: 5px
-  border-bottom-left-radius: 5px
-
-  padding: 10px 15px
-
-  a
-    color: $header_color
-    font-weight: bold
-    +font-size(-1)
-
-  > li
-    display: inline-block
-    vertical-align: top
-
-    &.triangle
       cursor: pointer
-      position: relative
+      z-index: 40
+      &:after
+        content: '\25BE'
+        color: #222
 
-      .spacing
-        height: 0px
-
-      .hide
-        z-index: 99
+      .menu
+        display: none
         position: absolute
-        right: -19px
-        width: 150px
-        +chalkboard
-        +on_chalkboard
-
-        .avatar 
-          padding: 2px 0 0px 15px
+        z-index: 999
+        text-align: right
+        width: 500px
+        right: 0
+        background-color: rgba(darken($comp_color, 40%), .9)
+        padding-right: 0
+        li
+          cursor: pointer
+          text-align: right
+          border-bottom: 1px dotted #aaa
           a
-            padding: 0
-            margin: 0
-            img
-              width: 35px
-              height: 35px
-        ul
-          margin-left: 0
-          li a
-            width: 100%
-            padding: 1px 10px 0 8px
-            display: block
-            cursor: pointer
-            +font-size(-3)
+            display: inline-block
+            color: #ddd
+            padding: $vertical_baseline/2 $grid_xs
+          &:hover 
+            background-color: darken($comp_color, 40%)
+            a
+              color: #eee
 
-            //&:hover
-            //  color: #ccc
+      &:hover .menu
+        display: block

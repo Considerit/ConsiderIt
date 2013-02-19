@@ -15,12 +15,9 @@
     - if @proposal && @can_update && false
       = render :partial => "proposals/admin_strip"
           
-    %ul#nav-user
+    #nav-user
       -# if user_signed_in?
         = render :partial => "shared/header/logged_in_head"
         
       -# else
         = render :partial => "shared/header/logged_out_head"
-
-    .clear
-          

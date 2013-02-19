@@ -4,7 +4,7 @@ class ConsiderIt.PointView extends Backbone.View
   tagName : 'li'
   data_loaded : false
   user : null
-  @template : _.template( $("#tpl_point_in_list").html() )
+  @template : _.template( $("#tpl_point").html() )
   @expanded_point_template : _.template( $("#tpl_point_details").html() )
 
   initialize : (options) -> 

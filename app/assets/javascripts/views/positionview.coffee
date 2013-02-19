@@ -27,7 +27,7 @@ class ConsiderIt.PositionView extends Backbone.View
     @crafting_view.model = model if @state == 1
 
   show_crafting : ->
-    crafting_el = $('<div class="user_opinion statement">')
+    crafting_el = $('<div class="m-position statement">')
     @crafting_view = new ConsiderIt.CraftingView
       el : crafting_el
       proposal : @proposal
@@ -90,11 +90,9 @@ class ConsiderIt.YourActionView extends Backbone.View
 
 
 class ConsiderIt.CraftingView extends Backbone.View
-
-  #el: '.user_opinion'
   @template : _.template( $("#tpl_position").html() )
   @newpoint_template : _.template( $("#tpl_newpoint").html() )
-  slider_template : () -> $('<div class="slider noUiSlider">').appendTo(@$el.find('.slider_container'))
+  slider_template : () -> $('<div class="noUiSlider">').appendTo(@$el.find('.m-stance-slider-container'))
   
   initialize : (options) -> 
     @proposal = options.proposal
@@ -105,8 +103,8 @@ class ConsiderIt.CraftingView extends Backbone.View
     @slider = 
       max_effect : 65 
       value : @model.get('stance') * 100
-      $right : @$el.find( '.slider_table .right')
-      $left : @$el.find( '.slider_table .left')
+      $oppose_label : @$el.find( '.m-stance-label-oppose')
+      $support_label : @$el.find( '.m-stance-label-support')
       params :       
         handles: 1
         connect: "lower"
@@ -120,10 +118,10 @@ class ConsiderIt.CraftingView extends Backbone.View
       peercons : @proposal.points.peer_cons
     
     @views = 
-      mypros : new ConsiderIt.PointListView({collection : @pointlists.mypros, el : @$el.find('#propoints'), location: 'self', proposal : @proposal})
-      peerpros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.peerpros, el : @$el.find('#peer_pros'), location: 'margin', proposal : @proposal})
-      mycons : new ConsiderIt.PointListView({collection : @pointlists.mycons, el : @$el.find('#conpoints'), location: 'self', proposal : @proposal})
-      peercons : new ConsiderIt.PaginatedPointListView({collection : @pointlists.peercons, el : @$el.find('#peer_cons'), location: 'margin', proposal : @proposal})
+      mypros : new ConsiderIt.PointListView({collection : @pointlists.mypros, el : @$el.find('.m-pro-con-list-propoints'), location: 'position', proposal : @proposal})
+      peerpros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.peerpros, el : @$el.find('.m-reasons-peer-pros'), location: 'peer', proposal : @proposal})
+      mycons : new ConsiderIt.PointListView({collection : @pointlists.mycons, el : @$el.find('.m-pro-con-list-conpoints'), location: 'position', proposal : @proposal})
+      peercons : new ConsiderIt.PaginatedPointListView({collection : @pointlists.peercons, el : @$el.find('.m-reasons-peer-cons'), location: 'peer', proposal : @proposal})
 
     @listenTo @pointlists.peerpros, 'reset', @peer_point_list_reset
     @listenTo @pointlists.peercons, 'reset', @peer_point_list_reset
@@ -131,11 +129,11 @@ class ConsiderIt.CraftingView extends Backbone.View
     @views.mypros.renderAllItems()
     @views.mycons.renderAllItems()
 
-    $('#points_on_board_pro .inner_wrapper', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : true}))
-    $('#points_on_board_con .inner_wrapper', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : false}))
+    $('.m-pro-con-list-propoints', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : true}))
+    $('.m-pro-con-list-conpoints', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : false}))
 
 
-    @$el.find('.pointform .is_counted').each () ->
+    @$el.find('.m-newpoint-form .is_counted').each () ->
       $(this).NobleCount $(this).siblings('.count'), {
         block_negative: true,
         max_chars : parseInt($(this).siblings('.count').text()) }        
@@ -168,11 +166,11 @@ class ConsiderIt.CraftingView extends Backbone.View
 
   #handlers
   events :
-    'click .include' : 'include_point'
-    'click .remove' : 'remove_point'
-    'click a.write_new' : 'new_point'
-    'click a.new_point_cancel' : 'cancel_new_point'
-    'click .point-submit input' : 'create_new_point'
+    'click .m-point-include' : 'include_point'
+    'click .m-point-remove' : 'remove_point'
+    'click .m-newpoint-new' : 'new_point'
+    'click .m-newpoint-cancel' : 'cancel_new_point'
+    'click .m-newpoint-create' : 'create_new_point'
 
   include_point : (ev) ->
     $item = @_$item(ev.currentTarget)
@@ -214,32 +212,32 @@ class ConsiderIt.CraftingView extends Backbone.View
       (data) ->
 
   point_attributes : ($form) ->  {
-    nutshell : $form.find('.point-title').val()
-    text : $form.find('.point-description').val()
+    nutshell : $form.find('.m-newpoint-nutshell').val()
+    text : $form.find('.m-newpoint-description').val()
     is_pro : $form.hasClass('pro')
-    hide_name : $form.find('.hide_name input').is(':checked')
+    hide_name : $form.find('.m-newpoint-anonymous').is(':checked')
     comment_count : 0
     proposal_id : @proposal.model.id
   }
 
   new_point : (ev) ->
     $(ev.currentTarget).fadeOut 100, () ->
-      $(this).siblings('.pointform').fadeIn 'fast', () ->
-        $(this).find('iframe').focus().contents().trigger('keyup').find('#page')            
+      $(this).siblings('.m-newpoint-form').fadeIn 'fast', () ->
+        #$(this).find('iframe').focus().contents().trigger('keyup').find('#page')            
         $(this).find('input,textarea').trigger('keyup')
         $(this).find('.point-title').focus()
 
   cancel_new_point : (ev) ->
-    $form = $(ev.currentTarget).closest('.pointform')
+    $form = $(ev.currentTarget).closest('.m-newpoint-form')
     $form
       .fadeOut () -> 
-        $form.siblings('.write_new').fadeIn() 
+        $form.siblings('.m-newpoint-new').fadeIn() 
         $form.find('textarea').val('').trigger('keydown')
         $form.find('label.inline').addClass('empty')
-        $('.newpoint').fadeIn()
+        #$('.newpoint').fadeIn()
 
   create_new_point : (ev) ->
-    $form = $(ev.currentTarget).closest('.pointform')
+    $form = $(ev.currentTarget).closest('.m-newpoint-form')
     attrs = @point_attributes($form)
 
     pointlist = if attrs.is_pro then @pointlists.mypros else @pointlists.mycons
@@ -256,8 +254,8 @@ class ConsiderIt.CraftingView extends Backbone.View
     @model.set('stance', @slider.value / 100, {silent : true})
 
     size = @slider.max_effect / 100 * @slider.value
-    @slider.$right.css('font-size', 100 - size + '%')
-    @slider.$left.css('font-size', 100 + size + '%')
+    @slider.$oppose_label.css('font-size', 100 - size + '%')
+    @slider.$support_label.css('font-size', 100 + size + '%')
 
     #ConsiderIt.update_unobtrusive_edit_heights($(".slider_label .unobtrusive_edit textarea"));
 
@@ -274,6 +272,6 @@ class ConsiderIt.CraftingView extends Backbone.View
       @proposal.points.viewed_points[pnt.id] = pnt.id
 
   _$item : (child) ->
-    $(child).closest(".#{ConsiderIt.PointListView.childClass}")
+    $(child).closest("[data-role=\"#{ConsiderIt.PointListView.childClass}\"]")
 
 

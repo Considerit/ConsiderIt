@@ -23,8 +23,6 @@
 
             - [{:name => 'popularity', :label => 'Popularity', :selected => @filter == 'popularity'}, {:name => 'unify', :label => 'Most unifying', :selected => @filter == 'unify'}, {:name => 'divisive', :label => 'Most Divisive', :selected => @filter == 'divisive'}].each do |filter|
               = link_to filter[:label], proposal_points_path(@proposal.long_id, :filter => filter[:name], :page => 1, :bucket => 'all'), :remote => true, :title => "Order by #{filter[:label]}", :class => "#{filter[:selected] ? 'selected' : ''} point_filter", :id => "point_filter-#{filter[:name]}"
-
-        .ajax_loading
    
     %table
       %tr.point_columns

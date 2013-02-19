@@ -28,8 +28,6 @@ class ConsiderIt.AppView extends Backbone.View
 
   #route handlers
   show_position : (long_id, params) ->
-    console.log('HIHI')
-
     ConsiderIt.proposals[long_id].view.take_position_handler()
 
   show_results : (long_id, params) ->

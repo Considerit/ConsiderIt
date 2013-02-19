@@ -15,16 +15,11 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     
     @commentsview = new ConsiderIt.CommentListView({
       collection: ConsiderIt.comments[@model.id], 
-      el: @$el.find('.discuss')
+      el: @$el.find('.m-point-discussion')
       commentable_id: @model.id,
       commentable_type: 'Point'})
     @commentsview.renderAllItems()
     this
-
-    @$el.find('.new_comment .is_counted').each () ->
-      $(this).NobleCount $(this).siblings('.count'), {
-        block_negative: true,
-        max_chars : parseInt($(this).siblings('.count').text()) }        
 
 
     $('html, body').stop(true, true);
@@ -39,7 +34,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       left: window.innerWidth / 2 - @$el.outerWidth() / 2
 
   events : 
-    'click .close' : 'close_details'
+    'click .m-point-details-close' : 'close_details'
 
   close_details : (ev) ->
     @commentsview.clear()

@@ -1,9 +1,9 @@
 class ConsiderIt.PointListView extends Backbone.CollectionView
 
   @itemView : ConsiderIt.PointView
-  @childClass : 'point_in_list'
+  @childClass : 'm-point'
 
-  listSelector : '.point_list'
+  listSelector : '.m-point-list'
 
 
   initialize : (options) ->
@@ -23,8 +23,9 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
       collection: @collection
       proposal : @proposal
       attributes : 
-        class : "#{ConsiderIt.PointListView.childClass} #{ConsiderIt.PointListView.childClass}_#{@location} #{if point.attributes.is_pro then 'pro' else 'con' }"
+        class : "#{ConsiderIt.PointListView.childClass}-#{@location} #{if point.attributes.is_pro then 'pro' else 'con' }"
         'data-id': "#{point.cid}"
+        'data-role': 'm-point'
         includers : "#{point.get('includers')}"
 
   show_point_details_handler : (long_id, point_id) ->
@@ -52,7 +53,7 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
     # console.log(stack);
 
     @collection.info()
-    if @$el.find('#pagination').length == 0 then @$el.append('<div id="pagination">')
+    if @$el.find('.m-pointlist-pagination').length == 0 then @$el.append('<div class="m-pointlist-pagination">')
 
     @repaginate()
 
@@ -69,15 +70,15 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
     @collection.pager()
 
   repaginate : ->
-    @$el.find('#pagination').html(ConsiderIt.PaginatedPointListView.pagingTemplate({
+    @$el.find('.m-pointlist-pagination').html(ConsiderIt.PaginatedPointListView.pagingTemplate({
       start_record : @collection.information.startRecord
       end_record : @collection.information.endRecord
       total_records : @collection.information.totalRecords
     })) 
 
   events : 
-    'click .pager.forward' : 'forward'
-    'click .pager.backward' : 'backward'
+    'click .m-pointlist-forward' : 'forward'
+    'click .m-pointlist-backward' : 'backward'
 
   forward : (ev) -> 
     @collection.nextPage()

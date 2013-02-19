@@ -12,7 +12,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   render : () -> 
-    results_el = $('<div class="aggregated_results statement">')
+    results_el = $('<div class="m-aggregated-results statement">')
     @proposal.views.results = new ConsiderIt.ResultsView
       el : results_el
       proposal : @proposal
@@ -123,7 +123,7 @@ class ConsiderIt.ProposalView extends Backbone.View
   take_position : (me) ->
 
     el = me.proposal.views.take_position.show_crafting()
-    el.insertAfter(me.$el.find('.statement.aggregated_results'))
+    el.insertAfter(me.$el.find('.m-aggregated-results'))
     
     $('html, body').stop(true, false);
     $('html, body').animate {scrollTop: el.offset().top - 100 }, 800
@@ -165,15 +165,15 @@ class ConsiderIt.ProposalView extends Backbone.View
   # (e.g. if they followed a link to it). In that case, we need to create some context around it first.
   prepare_for_point_details : (me, params) ->
     me.show_results(me)
-    results_view = me.proposal.views.results
+    results_explorer = me.proposal.views.results.view
 
-    point = results_view.pointlists.pros.get(params.point_id)
+    point = results_explorer.pointlists.pros.get(params.point_id)
     if point?
-      pointview = results_view.view.views.pros.getViewByModel(point)
+      pointview = results_explorer.views.pros.getViewByModel(point)
     else
-      point = results_view.pointlists.cons.get(params.point_id)
+      point = results_explorer.pointlists.cons.get(params.point_id)
       if point?
-        pointview = results_view.view.views.cons.getViewByModel(point)
+        pointview = results_explorer.views.cons.getViewByModel(point)
 
     pointview.show_point_details_handler() if pointview?
 

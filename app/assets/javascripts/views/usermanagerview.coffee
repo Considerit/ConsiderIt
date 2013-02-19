@@ -5,10 +5,11 @@ class ConsiderIt.UserManagerView extends Backbone.View
   @logged_out_template : _.template( $("#tpl_logged_out").html() )
 
   initialize : (options) -> 
+    console.log @$el
     @$header_el = @$el.find('#nav-user')
     #@model.on('change:id', @render)
 
-  render : () -> 
+  render : -> 
     if @model.id?
       @$header_el.html(
         ConsiderIt.UserManagerView.logged_in_template($.extend({}, @model.attributes, {
@@ -23,20 +24,20 @@ class ConsiderIt.UserManagerView extends Backbone.View
     this
 
   events : 
-    'click a.logout' : 'handle_user_logout'
-    'click a.signin_link' : 'handle_user_signin'
-    'click a.signup_link' : 'handle_user_registration'
-    'mouseenter #nav-user .triangle' : 'nav_entered' 
-    'mouseleave #nav-user .triangle' : 'nav_exited' 
+    'click .m-login-signin' : 'handle_user_signin'
+    'click .m-login-signup' : 'handle_user_registration'
+    'click .m-user-options-logout' : 'handle_user_logout'
+    'mouseenter .m-user-options' : 'nav_entered' 
+    'mouseleave .m-user-options' : 'nav_exited' 
 
   nav_entered : (ev) -> 
-    $(ev.currentTarget).find('.hide')
+    $(ev.currentTarget).find('.m-user-options-menu-wrap')
       .stop(true,false)
       .css('height', '')
       .slideDown();
 
   nav_exited : (ev) ->
-    $(ev.currentTarget).find('.hide')
+    $(ev.currentTarget).find('.m-user-options-menu-wrap')
       .stop(true,false)
       .slideUp();
 
@@ -103,8 +104,6 @@ class ConsiderIt.UserManagerView extends Backbone.View
     me.center_overlay()
 
     me.signinview
-
-
 
 
   handle_third_party_callback : (user_data) ->

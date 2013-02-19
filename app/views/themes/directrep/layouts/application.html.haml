@@ -128,14 +128,13 @@
               
               #introduction
 
-                .head.single
-                  %h1.banner
-                    %span.rep
-                      = theme.rep_name
-                    %span.dialogue
-                      wants to hear from
-                    %span.constituency
-                      You
+                %h1.t-directrep-heading
+                  %span.rep
+                    = theme.rep_name
+                  %span.dialogue
+                    wants to hear from
+                  %span.constituency
+                    You
 
                 .rep
                   .img
@@ -181,7 +180,7 @@
                     - users = pics.sample( [cols*rows, pics.count].min )
 
                     - users.each do |user|
-                      .avatar{ :id => "avatar-#{user.id}", :'data-id' => user.id }
+                      %span.avatar{ :id => "avatar-#{user.id}", :'data-id' => user.id }
 
                       -# = image_tag image_path(user.avatar.url(:small))
 

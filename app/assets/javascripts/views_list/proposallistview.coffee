@@ -1,8 +1,8 @@
 class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
   itemView : ConsiderIt.ProposalView
-  @childClass : 'proposal'
-  listSelector : '.proposallist'
+  @childClass : 'm-proposal'
+  listSelector : '.m-proposal-list'
 
   initialize : (options) -> 
     super

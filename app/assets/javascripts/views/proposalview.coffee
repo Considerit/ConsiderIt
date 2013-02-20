@@ -11,8 +11,8 @@ class ConsiderIt.ProposalView extends Backbone.View
     @data_loaded = false
 
 
-  render : () -> 
-    results_el = $('<div class="m-aggregated-results statement">')
+  render : -> 
+    results_el = $('<div class="m-proposal-message m-aggregated-results">')
     @proposal.views.results = new ConsiderIt.ResultsView
       el : results_el
       proposal : @proposal
@@ -31,9 +31,10 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     @$el.html ConsiderIt.ProposalView.template($.extend({}, @model.attributes, {
         title : this.model.title()
+        description_detail_fields : this.model.description_detail_fields()
       }))
 
-    results_el.insertAfter(@$el.find('.statement.proposing'))
+    results_el.insertAfter(@$el.find('.m-proposal-introduction'))
     position_el.insertAfter(results_el)
 
     @$el.show()
@@ -186,22 +187,22 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   events : 
-    'click a.hidden' : 'show_details'
-    'click a.showing' : 'hide_details'
+    'click .hidden' : 'show_details'
+    'click .showing' : 'hide_details'
 
   show_details : (ev) -> 
-    $block = $(ev.currentTarget).closest('.extra')
+    $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
-    $block.find('.full').slideDown();
-    $block.find('a.hidden')
+    $block.find('.m-proposal-description-detail-field-full').slideDown();
+    $block.find('.hidden')
       .text('hide')
       .toggleClass('hidden showing');
 
   hide_details : (ev) -> 
-    $block = $(ev.currentTarget).closest('.extra')
+    $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
-    $block.find('.full').slideUp(1000);
-    $block.find('a.showing')
+    $block.find('.m-proposal-description-detail-field-full').slideUp(1000);
+    $block.find('.showing')
       .text('show')
       .toggleClass('hidden showing');      
 

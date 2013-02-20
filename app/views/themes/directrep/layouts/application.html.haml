@@ -123,25 +123,24 @@
 
           .inner_content
             - rep_user = theme.user
-
-            #homepage
               
-              #introduction
+            .t-dr-mock-dialogue
 
-                %h1.t-directrep-heading
-                  %span.rep
-                    = theme.rep_name
-                  %span.dialogue
-                    wants to hear from
-                  %span.constituency
-                    You
+              %h1.t-dr-heading
+                %span.rep
+                  = theme.rep_name
+                %span.dialogue
+                  wants to hear from
+                %span.constituency
+                  You
 
-                .rep
-                  .img
-                    = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
-                  .about
+              .l-message-speaker.rep
+                = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+
+                .t-dr-leader-desc
+                  .t-leader-desc-about
                     = theme.rep_about
-                  .links
+                  .t-dr-leader-media
                     %a
                       website 
                     ★
@@ -151,38 +150,34 @@
                     %a
                       facebook
 
-                .dialogue
-                  .body.rep_statement.left.proposer
-                    .bubble
-                      &#9700;
-                    %strong
-                      Tell me what you think about the issues below. 
-                    I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
+              .l-message-body
+                .rep_statement.left
+                  .t-bubble
+                    &#9700;
+                  %strong
+                    Tell me what you think about the issues below. 
+                  I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
 
-                  .body.constituent_statement.longer.right.public
-                    .bubble
-                      &#9700;                  
-                    Why should we spend the time? Politicians don't care what we think. 
+                .constituent_statement.right
+                  .t-bubble
+                    &#9700;                  
+                  Why should we spend the time? Politicians don't care what we think. 
 
-                  .clear
-                  .body.rep_statement.left.proposer
-                    .bubble
-                      &#9700;                  
-                    %strong
-                      I promise to post a response to your concerns.
-                    Your opinions help shape how I look at these important issues for our community. I care what you think.
+                .rep_statement.left
+                  .t-bubble
+                    &#9700;                  
+                  %strong
+                    I promise to post a response to your concerns.
+                  Your opinions help shape how I look at these important issues for our community. I care what you think.
 
-                .constituency
-                  .people  
-                    - cols = 6
-                    - rows = 7
-                    - pics = User.where('avatar_file_name IS NOT NULL')
-                    - users = pics.sample( [cols*rows, pics.count].min )
+              .l-message-recipient.l-group-container
+                - cols = 6
+                - rows = 7
+                - pics = User.where('avatar_file_name IS NOT NULL')
+                - users = pics.sample( [cols*rows, pics.count].min )
 
-                    - users.each do |user|
-                      %span.avatar{ :id => "avatar-#{user.id}", :'data-id' => user.id }
-
-                      -# = image_tag image_path(user.avatar.url(:small))
+                - users.each do |user|
+                  %span.avatar{ :id => "avatar-#{user.id}", :'data-id' => user.id }
 
           .inner_content.inner_content-no-background#proposals_filters
             %h2
@@ -215,13 +210,10 @@
 
                 .clear
 
-          #proposals
-            %ul.proposallist
+          #m-proposals-container
+            %ul.m-proposal-list
 
         = render :partial => "shared/footer/container"
-
-
-      
 
         //$.get("/system/cache/#{current_tenant.identifier}.json", function(data) { 
         //  window.avatar_data = data;

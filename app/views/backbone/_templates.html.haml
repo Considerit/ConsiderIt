@@ -82,17 +82,17 @@
 %script{ :type => "text/template", :id => "tpl_point_details" }   
   (( var point_creator = false, has_details = false, hide_name = false; ))
 
-  %div{ :class => "statement m-point-details-{{ is_pro ? 'pro' : 'con' }}" }
+  %div{ :class => "m-point-details-{{ is_pro ? 'pro' : 'con' }}" }
 
     (( if( is_pro ){ ))
-    .speaker.other
+    .l-message-speaker
       %span.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
     (( } else { ))
-    .listener
+    .l-message-recipient
     (( } ))
 
-    .body.m-point-details-body
-      .bubble 
+    .l-message-body.m-point-details-body
+      .t-bubble 
         &#9700;   
 
       %a.m-point-details-close
@@ -131,17 +131,15 @@
         %ul.m-point-comments
 
     (( if( !is_pro ){ ))
-    .speaker.other
+    .l-message-speaker
       %span.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
     (( } else { ))
-    .listener
+    .l-message-recipient
     (( } ))
 
     (( if( !hide_name && user ){ ))
     %span.avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :class => "author"}
     (( } ))
-
-            
 
 
 %script{ :type => "text/template", :id => "tpl_newcomment" }   
@@ -206,96 +204,87 @@
 %script{ :type => "text/template", :id => "tpl_proposal" }
 
 
-  %h2.question
+  %h2.m-proposal-heading
     Should We {{title}}?
 
-  .statement.proposing
-    .speaker.proposer
+  .m-proposal-message.m-proposal-introduction
+    .l-message-speaker.m-proposal-initiator
       = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
 
-    .body.left.proposer
-      .bubble 
+    .l-message-body.left.m-proposal-description
+      .t-bubble 
         &#9700;   
       %p
         {{description}}
 
-      .details
-        (( if( long_description && $.trim(long_description) != '') { ))
-        .long_description.extra
-          .prompt
-            Long Description
+      .m-proposal-description-details
+
+        (( _.each(description_detail_fields, function(field) {  ))
+
+        (( if( field[1] != '') { ))
+        .m-proposal-description-detail-field
+          .m-proposal-description-detail-field-heading
+            {{ field[0] }}
             %a.hidden
               show
-          .full.hide
-            {{ long_description }}
+          .m-proposal-description-detail-field-full.hide
+            {{ field[1] }}
             %a.hidden
               show
         (( } ))
 
-        (( if( additional_details && $.trim(additional_details) != '') { ))
-        .additional.extra
-          .prompt
-            Fiscal impact statement
-            %a.hidden
-              show
-          .full.hide
-            {{ additional_details }}
-            %a.hidden
-              show
-        (( } ))
-    .listener
+        (( }); ))
 
-  .statement.responding
-    .speaker.proposer.small
+    .l-message-recipient
+
+  .m-proposal-message.m-proposal-leader-response
+    .l-message-speaker.m-proposal-initiator.small
       = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
 
-    .body.left.proposer
-      .bubble
+    .l-message-body.left.m-proposal-description
+      .t-bubble
         &#9700;
       (( var r = Math.floor(Math.random()*3); ))
 
-      (( if(r==0){ ))
-      -# if r == 0 #true || rep_position.nil?
-
-      .empty
-        I've not yet taken a stance
-      (( } else if(r==1){ ))
-      -# elsif r == 1 #true || proposal.active
-
       .rep_statement
+        (( if(r==0){ ))
+        -# if r == 0 #true || rep_position.nil?
+        I've not yet taken a stance
+        (( } else if(r==1){ ))
+        -# elsif r == 1 #true || proposal.active        
         I'm still hoping to hear from more of you. In the meantime, these are 
         %a{ :style => "text-decoration: underline; cursor: pointer;"}
           my thoughts so far. 
-      (( } else{ ))
-
-      .rep_statement
+        (( } else{ ))
         Based on your input and my considerations, I've decided that I support. Read my 
         = surround '', '.' do
           %a{ :style => "text-decoration: underline; cursor: pointer;"}
             full report
         Thanks!
-      (( } ))        
+        (( } ))  
+
+    .l-message-recipient      
   
-  .social_media_ribbon
+  .m-proposal-connect
 
     %ul
       %li
         Help spread the word
-      %li.action
+      %li.m-proposal-action-link
         = image_tag 'fb.png'
-      %li.action
+      %li.m-proposal-action-link
         = image_tag 'tw.png'
-      %li.action
+      %li.m-proposal-action-link
         = image_tag 'link.png'
       %li
         Link to this discussion
 
 
 %script{ :type => "text/template", :id => "tpl_your_action_craft"}
-  .listener
+  .l-message-recipient
 
-  %a.body.you.your_action.right.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
-    %span.bubble
+  %a.l-message-body.m-position-your-action-body.right.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+    %span.t-bubble
       &#9700;
 
     //= image_tag current_theme_image_path("join.png")
@@ -303,14 +292,14 @@
     %span.text
       {{call}}
 
-  .speaker.you
+  .l-message-speaker
     = image_tag current_theme_image_path("you.png")
 
 %script{ :type => "text/template", :id => "tpl_your_action_save"}
-  .listener
+  .l-message-recipient
 
-  %a.body.you.your_action.right.submit
-    %span.bubble
+  %a.l-message-body.m-position-your-action-body.right.submit
+    %span.t-bubble
       &#9700;
 
     //= image_tag current_theme_image_path("join.png")
@@ -318,14 +307,14 @@
     %span.text
       {{call}}
 
-  .speaker.you
+  .l-message-speaker
     = image_tag current_theme_image_path("you.png")
 
 
 %script{ :type => "text/template", :id => "tpl_position" }      
-  .listener
-  .body.right.you
-    .bubble
+  .l-message-recipient
+  .l-message-body.right.m-position-message-body
+    .t-bubble
       &#9700;
 
     %h2
@@ -399,16 +388,15 @@
         Optional statement that summarizes your thoughts
       %textarea{ :name => :explanation}
 
-  .speaker.you
+  .l-message-speaker
     = image_tag current_theme_image_path("you.png")
 
 
 
 %script{ :type => "text/template", :id => "tpl_summary" }      
-  .listener
-
-  .body.right.public.summary{ :style => " {{ tile_size==50 ? '' : 'min-height:160px;' }} "}
-    .bubble
+  .l-message-recipient
+  .l-message-body.right.m-results-responders.summary{ :style => " {{ tile_size==50 ? '' : 'min-height:160px;' }} "}
+    .t-bubble
       &#9700;
 
 
@@ -424,7 +412,7 @@
       %span.avatar{ :'data-id' => "{{top_pro.user_id}}", :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "author"}
 
       .m-top-pro-body.left
-        .bubble
+        .t-bubble
           &#9700;
         .text
           {{top_pro.nutshell}}
@@ -435,8 +423,8 @@
       .text
         No con arguments added yet.
       (( } else { ))
-      .m-top-con-body.body.right
-        .bubble
+      .m-top-con-body.l-message-body.right
+        .t-bubble
           &#9700;
         .text
           {{top_con.nutshell}}
@@ -446,22 +434,19 @@
       (( } ))
     .clear  
 
-  .speaker.public
-    .participants
-      (( _.each($.parseJSON(participants), function(p){ ))
-      %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+  .l-message-speaker.l-group-container
+    (( _.each($.parseJSON(participants), function(p){ ))
+    %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+    (( }); ))
 
-      -# %span.avatar-replace-small{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :src => "{{window.PaperClip.get_avatar_url(ConsiderIt.users[p], 'small')}}", :class => "avatar participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-      (( }); ))
-
-      %a.results{:href => "{{Routes.proposal_path( long_id )}}"}
-        View results
+    %a.results{:href => "{{Routes.proposal_path( long_id )}}"}
+      View results
 
 %script{ :type => "text/template", :id => "tpl_results" }      
-  .listener
+  .l-message-recipient
 
-  .body.right.public
-    .bubble
+  .l-message-body.right.m-results-responders
+    .t-bubble
       &#9700;
 
     %h3
@@ -549,11 +534,10 @@
 
         %ul.m-point-list
 
-  .speaker.public
-    .participants
-      (( _.each($.parseJSON(participants), function(p){ ))
-      %span.avatar{ :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-      (( }); ))
+  .l-message-speaker.l-group-container
+    (( _.each($.parseJSON(participants), function(p){ ))
+    %span.avatar{ :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+    (( }); ))
 
 
 = render :partial => 'backbone/templates_user'

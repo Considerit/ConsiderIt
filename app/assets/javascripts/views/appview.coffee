@@ -8,7 +8,7 @@ class ConsiderIt.AppView extends Backbone.View
     @proposals = new ConsiderIt.ProposalList()
     @proposals.reset( _.pluck(_.values(ConsiderIt.proposals), 'model'))
 
-    @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#proposals'})
+    @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#m-proposals-container'})
     
     @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#wrap'})
 

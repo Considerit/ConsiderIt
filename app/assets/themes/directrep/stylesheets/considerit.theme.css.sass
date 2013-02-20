@@ -20,6 +20,7 @@ $proposal_width: 617px
 $body_width: 727px
 
 $content_background : image-url('directrep/images/brillant.png')
+$background: image-url('directrep/images/back.png')
 
 html
   &:after
@@ -30,7 +31,7 @@ html
     position: fixed
     height: 100%
     width: 100%
-    background: image-url('directrep/images/back.png') repeat left top $comp_color
+    background: $background repeat left top $comp_color
 
 body #wrap > div#content .inner_content
   background: $content_background repeat top left white  
@@ -43,146 +44,86 @@ body #wrap > div#content .inner_content-no-background
   background: rgba(white, .15)
   +box-shadow-remove
 
+.logo_cell
+  top: $vertical_baseline
+
+
 =true_inset($color)
   background-color: darken($color, 20%)
   +background-clip(text)
   text-shadow: rgba(255,255,255,0.2) 0px 3px 3px
   color: transparent
 
-.t-directrep-heading
-  margin-bottom: $vertical_baseline
-  font-size: 3em
-  font-weight: bold
-  text-align: center
 
-  .rep
-    +true_inset($dark_rep_color)
-    //color: $rep_color
+%l-message-template
 
-  .dialogue
-    +true_inset(#bbb)
-    //color: $header_gray
-
-  .constituency 
-    +true_inset(#bbb)
-    //+true_inset(lighten($comp_color, 30))
-    //color: $constituency_color
-
-.logo_cell
-  top: $vertical_baseline
-
-  
-=superbutton
-  +linear-gradient(lighten($comp_color, 5%), $comp_color)
-  background-color: lighten($comp_color, 5%)
-  +transition
-
-  &:hover
-    +complex-gradient(lighten($comp_color, 15%), lighten($comp_color, 5%), $from_stop : 0%, $to_stop: 20%)
-    background-color: lighten($comp_color, 15%)
-
-
-.statement
-  padding-top: $vertical_baseline / 2
-  .speaker, .listener, .body
+  > .l-message-speaker, .l-message-recipient, .l-message-body
     display: inline-block
     vertical-align: top
 
-  > .body
-    padding: $vertical_baseline / 2 $grid_xs
+  > .l-message-body
     position: relative
-    width: $body_width
+    width: 100%
 
-    &.proposer
-      +bubble($rep_color, $dark_rep_color, left)
 
-    &.public
-      +bubble($constituency_color, $dark_constituency_color, right)
 
-    &.you
-      +bubble($user_color, $dark_user_color, right )
+.t-dr-mock-dialogue
 
-      &.your_action
-        +superbutton
-        border: 1px solid $dark_comp_color
-        color: white
-        text-align: center
-        +font-size(3)
+  .t-dr-heading
+    //margin-bottom: $vertical_baseline
+    font-size: 3em
+    font-weight: bold
+    text-align: center
 
-        &:before
-          color: $dark_comp_color
-        > .bubble
-          +complex-gradient(lighten($comp_color, 34%), lighten($comp_color, 10%), $from_stop : 0%, $to_stop: 37%)
+    .rep
+      +true_inset($dark_rep_color)
 
-  .speaker, .listener
-    width: 150px
+    .dialogue
+      +true_inset(#bbb)
 
-  .speaker
+    .constituency 
+      +true_inset(#bbb)
 
-    &.proposer
-      text-align: right
-      img
-        width: 115px
-      &.small
-        img
-          width: 50px
-
-    &.public
-      .participants
-        //width: 150px
-        height: 150px
-        font-size: 0
-        line-height: 0
-        
-#introduction
-
-  div.rep, div.dialogue, div.constituency
-    display: inline-block
-    vertical-align: top
-
-  div.rep
+  @extend %l-message-template
+  .l-message-speaker
     width: 238px - $grid_xs
 
-    .about
-      width: 220px
-      color: $header_gray
-      text-align: center
-
-    .links
-      +font-size(-2)
-      padding-top: $vertical_baseline / 2
-      text-align: center
-      color: $header_gray
-      a
-        color: $header_gray
-
-  div.dialogue
-    width: $proposal_width
-    position: relative
-
-    .body
-      position: relative
-      padding: $vertical_baseline / 2 $grid_xs
-      margin-bottom: $vertical_baseline / 2
-
-      &.proposer
-        +bubble($rep_color, $dark_rep_color, left)
-
-      &.public
-        +bubble($constituency_color, $dark_constituency_color, right)
-
-
-  div.constituency
+  .l-message-recipient
     width: 186px
-
-  .people
-    font-size: 0
-    text-align: left
 
     .avatar      
       opacity: .75
       width: 31px
       height: 31px
+
+  .l-message-body
+    width: $proposal_width
+
+  .t-leader-desc-about
+    width: 220px
+    color: $header_gray
+    text-align: center
+
+  .t-dr-leader-media
+    +font-size(-2)
+    padding-top: $vertical_baseline / 2
+    text-align: center
+    color: $header_gray
+    a
+      color: $header_gray
+
+  .rep_statement, .constituent_statement
+    position: relative
+    padding: $vertical_baseline / 2 $grid_xs
+    margin-bottom: $vertical_baseline / 2
+    width: 100%
+
+  .rep_statement
+    +bubble($rep_color, $dark_rep_color, left)
+
+  .constituent_statement
+    +bubble($constituency_color, $dark_constituency_color, right)
+
 
 
 

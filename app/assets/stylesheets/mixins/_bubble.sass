@@ -4,15 +4,15 @@ $bubble_border_radius: 8px
 %bubble
   +inset-box-shadow(1px,6px,9px, -5px, #fff)
 
-  .bubble
+  .t-bubble
     +background-clip(text)          
     color: transparent
 
-  .bubble, &:after, &:before
+  .t-bubble, &:after, &:before
     position: absolute
     display: block
 
-  .bubble
+  .t-bubble
     z-index: 7
     top: 0px
     font-size: 10px
@@ -38,20 +38,20 @@ $bubble_border_radius: 8px
     right: $pos - 10
   &:before
     right: $pos - 3
-  > .bubble
+  > .t-bubble
     right: $pos
 
 %bubble_left
   @extend %bubble
   border-radius: 0 $bubble_border_radius $bubble_border_radius $bubble_border_radius
-  .bubble, &:after, &:before
+  .t-bubble, &:after, &:before
     +flip-horizontal
 
   &:after
     left: $pos - 10
   &:before
     left: $pos - 3
-  > .bubble
+  > .t-bubble
     left: $pos
 
 = bubble($light, $dark, $direction)
@@ -65,5 +65,5 @@ $bubble_border_radius: 8px
 
   &:before
     color: $dark
-  > .bubble
+  > .t-bubble
     +complex-gradient(lighten($light, 7%), $light, $from_stop : 0%, $to_stop: 50%)

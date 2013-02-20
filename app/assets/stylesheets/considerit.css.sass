@@ -183,6 +183,16 @@ $hex-bullet-point: '\2022'
 
 /* SHARED STYLES */
 
+=superbutton
+  +linear-gradient(lighten($comp_color, 5%), $comp_color)
+  background-color: lighten($comp_color, 5%)
+  +transition
+
+  &:hover
+    +complex-gradient(lighten($comp_color, 15%), lighten($comp_color, 5%), $from_stop : 0%, $to_stop: 20%)
+    background-color: lighten($comp_color, 15%)
+
+
 %chalkboard
   +on_chalkboard
   +chalkboard
@@ -197,6 +207,17 @@ $hex-bullet-point: '\2022'
 %postit-background-repeat
   @extend %postit
   +green_post_it($repeated: 1)
+
+
+%l-message-template
+  > .l-message-speaker, > .l-message-recipient, > .l-message-body
+    display: inline-block
+    vertical-align: top
+
+  > .l-message-body
+    position: relative
+    width: 100%
+
 
 %pro_con_list
   vertical-align: top
@@ -234,6 +255,11 @@ $hex-bullet-point: '\2022'
 
     img
       width: 80px
+
+
+.l-group-container
+  font-size: 0
+  line-height: 0
 
 .avatar
   vertical-align: top
@@ -506,13 +532,23 @@ $hex-bullet-point: '\2022'
 
 /* POINT_DETAILS */
 
+#point_details_overlay
+  padding: $vertical_baseline $grid_xs
+  background-color: lighten($constituency_color, 5%)
+  border: 1px solid $dark_constituency_color
+  width: 867px
+
 %m-point-details
+  @extend %l-message-template
+
+  > .l-message-speaker, > .l-message-recipient
+    width: 70px
 
   .m-point-details-body
     @extend %postit-background-repeat  
-    width: 600px - 2 * $grid_major - 2 * $grid_minor
+    width: 800px - $grid_major
     min-height: 300px
-    padding: $vertical_baseline 2 * $grid_major + 2 * $grid_minor
+    padding: $vertical_baseline $grid_major
 
   .m-point-details-author-avatar
     width: 70px
@@ -556,7 +592,7 @@ $hex-bullet-point: '\2022'
   @extend %m-point-details
   .m-point-details-body
     +bubble($constituency_color, $dark_constituency_color, left)     
-  .speaker
+  .l-message-speaker
     text-align: right
 
 .m-point-details-con
@@ -628,54 +664,98 @@ $hex-bullet-point: '\2022'
 
 /* PROPOSAL */
 
-#proposals
+#m-proposals-container
   margin-top: $vertical_baseline
   position: relative
   z-index: 1
 
-  .proposallist
+  .m-proposal-list
     +nude-list
 
-.proposal
+.m-proposal
   margin: $vertical_baseline 0 2 * $vertical_baseline 0
 
-  .question
+  .m-proposal-heading
     text-align: center
     color: #222
     width: $body_width + 2 * $grid_major
     text-transform: capitalize
     margin: auto
     font-weight: bold
+    +font-size(3)
 
-  .details
+  .m-proposal-description-details
     +font-size(-2)
 
-    .extra .prompt a
+    .hidden, .showing
       text-decoration: underline
 
-.social_media_ribbon
-  margin-top: $vertical_baseline
-  ul
-    text-align: center
+  .m-proposal-connect
+    margin-top: $vertical_baseline
+    ul
+      text-align: center
     li
       display: inline-block
       vertical-align: middle
       +font-size(-3)
       color: #aaa
 
-      &.action
-        cursor: pointer
+    .m-proposal-action-link
+      cursor: pointer
 
+.m-proposal-message
+  @extend %l-message-template
+  padding-top: $vertical_baseline / 2
+
+  > .l-message-body
+    width: $body_width
+    padding: $vertical_baseline / 2 $grid_xs
+    
+  > .l-message-speaker, > .l-message-recipient
+    width: 150px
+
+  > .l-group-container
+    height: 150px
+
+  .m-proposal-initiator
+    text-align: right
+    img
+      width: 115px
+    &.small
+      img
+        width: 50px
+
+  .m-proposal-description
+    +bubble($rep_color, $dark_rep_color, left)
 
 /* YOUR_ACTION */
+
+.m-position-your-action-body
+  +bubble($comp_color, $dark_comp_color, right )
+  +superbutton
+  +font-size(3)
+  color: white
+  text-align: center
+
+  &:hover
+    color: white
+  &:before
+    color: $dark_comp_color
+  > .t-bubble
+    +complex-gradient(lighten($comp_color, 34%), lighten($comp_color, 10%), $from_stop : 0%, $to_stop: 37%)
 
 // YOUR_ACTION_CRAFT
 
 // YOUR_ACTION_SAVE
 
 /* SUMMARY */
+
+
 .m-results-summary
   cursor: pointer
+
+  .m-results-responders
+    +bubble($constituency_color, $dark_constituency_color, right)
 
   .m-summary-heading
     padding-bottom: $vertical_baseline 
@@ -714,6 +794,8 @@ $hex-bullet-point: '\2022'
 /* RESULTS */
 
 .m-aggregated-results
+  .m-results-responders
+    +bubble($constituency_color, $dark_constituency_color, right)
 
 // HISTOGRAM / WHAT
 
@@ -930,7 +1012,10 @@ $hex-bullet-point: '\2022'
 
 /* POSITION */  
 
+
 .m-position
+  .m-position-message-body
+    +bubble($user_color, $dark_user_color, right )
 
 // REASONS
 .m-reasons

@@ -20,3 +20,7 @@ class ConsiderIt.Proposal extends Backbone.Model
       "#{my_title[0..max_len]}..."
     else
       my_title
+
+  description_detail_fields : ->
+    [ ['Long Description', $.trim(@get('long_description'))],
+      ['Fiscal Impact Statement', $.trim(@get('additional_details'))] ]

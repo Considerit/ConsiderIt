@@ -9,7 +9,7 @@ class ConsiderIt.PositionView extends Backbone.View
     @state = 0
 
   render : ->
-    your_action_el = $('<div class="statement your_action">')
+    your_action_el = $('<div class="m-proposal-message m-position-your_action">')
 
     @your_action_view = new ConsiderIt.YourActionView 
       el : your_action_el
@@ -27,7 +27,7 @@ class ConsiderIt.PositionView extends Backbone.View
     @crafting_view.model = model if @state == 1
 
   show_crafting : ->
-    crafting_el = $('<div class="m-position statement">')
+    crafting_el = $('<div class="m-proposal-message m-position">')
     @crafting_view = new ConsiderIt.CraftingView
       el : crafting_el
       proposal : @proposal

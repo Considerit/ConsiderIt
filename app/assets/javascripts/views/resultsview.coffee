@@ -38,7 +38,7 @@ class ConsiderIt.ResultsView extends Backbone.View
 
   explode_participants : ->
 
-    $participants = @$el.find('.speaker')
+    $participants = @$el.find('.l-message-speaker')
       .css({'position':'relative','z-index':99}) 
       .find('.participants')
 

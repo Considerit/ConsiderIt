@@ -84,12 +84,8 @@
 
   %div{ :class => "m-point-details-{{ is_pro ? 'pro' : 'con' }}" }
 
-    (( if( is_pro ){ ))
     .l-message-speaker
       %span.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
-    (( } else { ))
-    .l-message-recipient
-    (( } ))
 
     .l-message-body.m-point-details-body
       .t-bubble 
@@ -130,12 +126,8 @@
 
         %ul.m-point-comments
 
-    (( if( !is_pro ){ ))
-    .l-message-speaker
-      %span.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
-    (( } else { ))
+
     .l-message-recipient
-    (( } ))
 
     (( if( !hide_name && user ){ ))
     %span.avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :class => "author"}
@@ -317,7 +309,7 @@
     .t-bubble
       &#9700;
 
-    %h2
+    %h2.m-position-heading
       These are the pros and cons that I think are most important: 
 
     .m-reasons
@@ -364,8 +356,8 @@
 
 
     .m-stance
-      %h2
-        After weighing the pros and cons, I have decided that I... 
+      %h2.m-position-heading
+        After weighing the pros and cons, I vote to... 
       %table
         %tr
           %td.m-stance-label-support

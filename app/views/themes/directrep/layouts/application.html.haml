@@ -109,11 +109,11 @@
   - cache [current_tenant, theme, @dashboard] do 
 
     %body
-      #wrap{ :class => 'homepage'}
+      #l-wrap
         = render :partial => "shared/flash_messages"
         = render :partial => "shared/header/container"
 
-        #content
+        #l-content
           - if Rails.env.development?
             = render :partial => "shared/dev_tools"      
 
@@ -121,7 +121,7 @@
             = render :partial => "dashboard/sidebar"  
 
 
-          .inner_content
+          .l-content-wrap
             - rep_user = theme.user
               
             .t-dr-mock-dialogue
@@ -179,11 +179,11 @@
                 - users.each do |user|
                   %span.avatar{ :id => "avatar-#{user.id}", :'data-id' => user.id }
 
-          .inner_content.inner_content-no-background#proposals_filters
-            %h2
+          .l-content-wrap.l-content-wrap-no-background.m-proposals-heading
+            %h2.m-proposals-header
               Rep. #{theme.rep_name} has considered #{@proposals.length} issues
-            .sub
-              .show
+            .m-proposals-header-sub
+              .m-proposals-filter-container
                 .title
                   Filter to: 
                 %a.selected.all
@@ -192,14 +192,14 @@
                   Open
                 %a.completed
                   Completed
-              .sort
+              .m-proposals-sort-container
                 .title
                   Sort by: 
                 %a.selected.activity
                   Activity
                 %a.newest
                   Newest
-              .index
+              .m-proposals-index
                 Jump to issue
                 
                 %ul.menu

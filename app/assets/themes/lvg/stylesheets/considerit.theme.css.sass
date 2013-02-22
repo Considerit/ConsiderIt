@@ -21,7 +21,7 @@ html
     &:after, &:before
       content: none
 
-    #wrap 
+    #l-wrap 
       z-index: 4
       &:after
         +main_background
@@ -47,7 +47,7 @@ html
         +linear-gradient(#888,#777)
         z-index: 2      
 
-      > div#content  
+      > div#l-content  
         //padding-top: 65px
         background: image-url('chalkboardit/images/proposal_back.jpg') repeat top left white
         +border-radius(2px)
@@ -66,7 +66,7 @@ html
           visibility: hidden
 
 
-      #masthead
+      #l-heading
         z-index: 27
         height: $vertical_baseline * 2
 
@@ -76,16 +76,16 @@ html
           img
             width: 170px
 
-        #nav-user 
+        #m-user-nav 
           > li.triangle .hide
             +main_background
 
-      #footer
+      #l-footer
         padding: 0 0 $vertical_baseline 0
         +wall(#777)
         z-index: 25
 
-        #footer_segments
+        #l-footer_segments
           color: #555
 
           a
@@ -244,7 +244,7 @@ html
       list-style: disc inside none
 
 
-#wrap #footer
+#l-wrap #l-footer
   width: 100%
   .contact
     //height: 100px
@@ -399,7 +399,7 @@ html
     //&:hover
       //color: white
 
-h1,h2,h3,h4,h5,h6, .pro_con_list .full_column .pro_con_list_header .inner, #craft_position #nameplate, #craft_position #nameplate input, #craft_position #nameplate a, #craft_position #nameplate textarea, #craft_position > .user_opinion td.margin .heading .lead, #histogram table td.support, #histogram table td.oppose, #wrap #footer > div .label
+h1,h2,h3,h4,h5,h6, .pro_con_list .full_column .pro_con_list_header .inner, #craft_position #nameplate, #craft_position #nameplate input, #craft_position #nameplate a, #craft_position #nameplate textarea, #craft_position > .user_opinion td.margin .heading .lead, #histogram table td.support, #histogram table td.oppose, #l-wrap #l-footer > div .label
   //font-family: Georgia, Times, "Times New Roman", serif
 
 #admin_strip
@@ -592,7 +592,7 @@ h1,h2,h3,h4,h5,h6, .pro_con_list .full_column .pro_con_list_header .inner, #craf
                 font-style: italic
             .details
 
-html body #wrap.dashboard #masthead .inner .logo_cell 
+html body #l-wrap.dashboard #masthead .inner .logo_cell 
   left: $grid_xs
   top: 0 
   img 

@@ -5,9 +5,9 @@ class ConsiderIt.UserManagerView extends Backbone.View
   @logged_out_template : _.template( $("#tpl_logged_out").html() )
 
   initialize : (options) -> 
-    console.log @$el
-    @$header_el = @$el.find('#nav-user')
+    @$header_el = @$el.find('#m-user-nav')
     #@model.on('change:id', @render)
+    @on 'user:signin', -> $('#registration_overlay').remove()
 
   render : -> 
     if @model.id?
@@ -22,6 +22,10 @@ class ConsiderIt.UserManagerView extends Backbone.View
       )
 
     this
+
+  remove : ->
+    super
+    $('#registration_overlay').remove()
 
   events : 
     'click .m-login-signin' : 'handle_user_signin'
@@ -51,8 +55,8 @@ class ConsiderIt.UserManagerView extends Backbone.View
 
   add_registration_overlay : () ->
     me = ConsiderIt.app.usermanagerview
-    $overlay = $('<div id="registration_overlay">')
-    me.$header_el.prepend($overlay)
+    $overlay = $('<div class="l-overlay" id="registration_overlay">')
+    $('#l-wrap').prepend($overlay)
     $overlay
 
   center_overlay : () ->

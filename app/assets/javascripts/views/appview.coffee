@@ -1,6 +1,6 @@
 class ConsiderIt.AppView extends Backbone.View
 
-  el: '#wrap'
+  el: '#l-wrap'
   #@itemView : ConsiderIt.ProposalView
 
   initialize : (options) -> 
@@ -10,7 +10,7 @@ class ConsiderIt.AppView extends Backbone.View
 
     @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#m-proposals-container'})
     
-    @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#wrap'})
+    @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#l-wrap'})
 
     ConsiderIt.router.on 'route:Consider', @show_position
     ConsiderIt.router.on 'route:Aggregate', @show_results

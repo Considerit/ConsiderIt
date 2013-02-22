@@ -20,12 +20,12 @@
 $(document)
   .on('click', '.dialog > a', function(){
     var $dialog_window = $(this).parent().children('.detachable');
-    $dialog_window.detach().prependTo('#wrap > #content');
+    $dialog_window.detach().prependTo('#l-wrap > #l-content');
     $dialog_window.data('parent', $(this).parent());
     $dialog_window.show();
   })            
   .on('click', '.detachable a.cancel', function(){
-    var $dialog_window = $('#wrap > #content > .detachable');
+    var $dialog_window = $('#l-wrap > #l-content > .detachable');
     $dialog_window.detach().appendTo($dialog_window.data('parent'));        
     $dialog_window.hide();
   })                  

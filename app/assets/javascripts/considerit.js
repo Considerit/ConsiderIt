@@ -292,7 +292,7 @@ me = {
     //         real_point.find(".unobtrusive_edit textarea").trigger('keyup');
     //       }, 1000);
 
-    //       $('#content').css('height', Math.max($('#content').height(), $('.slate:visible').offset().top + real_point.height() + 100));
+    //       $('#l-content').css('height', Math.max($('#l-content').height(), $('.slate:visible').offset().top + real_point.height() + 100));
 
     //     });
     //   } else{
@@ -301,7 +301,7 @@ me = {
     //       real_point.find(".unobtrusive_edit textarea").trigger('keyup');        
     //     }, 1000);
 
-    //     $('#content').css('height', Math.max($('#content').height(), $('.slate:visible').offset().top + real_point.height() + 100));
+    //     $('#l-content').css('height', Math.max($('#l-content').height(), $('.slate:visible').offset().top + real_point.height() + 100));
 
     //   }      
 
@@ -323,7 +323,7 @@ me = {
     //   placeholder.remove();
 
     //   $point.trigger('mouseleave');
-    //   $('#content').css('height', '');
+    //   $('#l-content').css('height', '');
 
     // };
     // $(document).on('click', '#expanded .toggle.less', function(){

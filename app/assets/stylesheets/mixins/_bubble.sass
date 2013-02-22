@@ -23,7 +23,6 @@ $bubble_border_radius: 8px
   &:after
     font-size: 14px
     z-index: 4
-    color: #f7f7f7
     top: -3px
 
   &:before
@@ -54,7 +53,7 @@ $bubble_border_radius: 8px
   > .t-bubble
     left: $pos
 
-= bubble($light, $dark, $direction)
+= bubble($light, $dark, $direction, $bg-color: #f7f7f7)
   @if $direction == left
     @extend %bubble_left
   @else if $direction == right
@@ -67,3 +66,6 @@ $bubble_border_radius: 8px
     color: $dark
   > .t-bubble
     +complex-gradient(lighten($light, 7%), $light, $from_stop : 0%, $to_stop: 50%)
+
+  &:after
+    color: $bg-color

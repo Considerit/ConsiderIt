@@ -270,7 +270,6 @@ GEM
     ref (1.0.2)
     remotipart (1.0.5)
     rinku (1.7.2)
-    rmagick (2.13.2)
     role_model (0.8.1)
     ruby-hmac (0.4.0)
     ruby-openid (2.2.2)
@@ -362,7 +361,6 @@ DEPENDENCIES
   rails_admin
   remotipart (~> 1.0.2)
   rinku
-  rmagick
   role_model
   sanitize
   sass-rails

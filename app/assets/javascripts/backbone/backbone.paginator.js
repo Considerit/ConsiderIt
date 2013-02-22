@@ -1,12 +1,9 @@
-/*! backbone.paginator - v0.5 - 1/8/2013
-* http://github.com/addyosmani/backbone.paginator
-* Copyright (c) 2013 Addy Osmani; Licensed MIT */
-
+/*globals Backbone:true, _:true, jQuery:true*/
 Backbone.Paginator = (function ( Backbone, _, $ ) {
   "use strict";
 
   var Paginator = {};
-  Paginator.version = "0.5";
+  Paginator.version = "<%= pkg.version %>";
 
   // @name: clientPager
   //
@@ -41,22 +38,22 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
     },
 
     // Default values used when sorting and/or filtering.
-    initialize: function(options){
+    initialize: function(){
       //LISTEN FOR ADD & REMOVE EVENTS THEN REMOVE MODELS FROM ORGINAL MODELS
       this.on('add', this.addModel, this);
       this.on('remove', this.removeModel, this);
 
       // SET DEFAULT VALUES (ALLOWS YOU TO POPULATE PAGINATOR MAUNALLY)
-      this.setDefaults(options);
+      this.setDefaults();
     },
 
 
-    setDefaults: function(options) {
+    setDefaults: function() {
       // SET DEFAULT UI SETTINGS
-      var defaults = _.extend(this.defaults_ui, this.paginator_ui, options);
+      var options = _.defaults(this.paginator_ui, this.defaults_ui);
 
       //UPDATE GLOBAL UI SETTINGS
-      _.defaults(this, defaults);
+      _.defaults(this, options);
     },
 
     addModel: function(model) {
@@ -69,89 +66,101 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
       this.origModels.splice(index, 1);
     },
 
-    // sync: function ( method, model, options ) {
-    //   var self = this;
+    sync: function ( method, model, options ) {
+      var self = this;
 
-    //   // SET DEFAULT VALUES
-    //   this.setDefaults();
+      // SET DEFAULT VALUES
+      this.setDefaults();
 
-    //   // Some values could be functions, let's make sure
-    //   // to change their scope too and run them
-    //   var queryAttributes = {};
-    //   _.each(_.result(self, "server_api"), function(value, key){
-    //     if( _.isFunction(value) ) {
-    //       value = _.bind(value, self);
-    //       value = value();
-    //     }
-    //     queryAttributes[key] = value;
-    //   });
+      // Some values could be functions, let's make sure
+      // to change their scope too and run them
+      var queryAttributes = {};
+      _.each(_.result(self, "server_api"), function(value, key){
+        if( _.isFunction(value) ) {
+          value = _.bind(value, self);
+          value = value();
+        }
+        queryAttributes[key] = value;
+      });
 
-    //   var queryOptions = _.clone(self.paginator_core);
-    //   _.each(queryOptions, function(value, key){
-    //     if( _.isFunction(value) ) {
-    //       value = _.bind(value, self);
-    //       value = value();
-    //     }
-    //     queryOptions[key] = value;
-    //   });
+      var queryOptions = _.clone(self.paginator_core);
+      _.each(queryOptions, function(value, key){
+        if( _.isFunction(value) ) {
+          value = _.bind(value, self);
+          value = value();
+        }
+        queryOptions[key] = value;
+      });
 
-    //   // Create default values if no others are specified
-    //   queryOptions = _.defaults(queryOptions, {
-    //     timeout: 25000,
-    //     cache: false,
-    //     type: 'GET',
-    //     dataType: 'jsonp'
-    //   });
+      // Create default values if no others are specified
+      queryOptions = _.defaults(queryOptions, {
+        timeout: 25000,
+        cache: false,
+        type: 'GET',
+        dataType: 'jsonp'
+      });
 
-    //   var success = options.success;
-    //   options.success = function ( resp, status, xhr ) {
-    //     if ( success ) {
-    //       success( resp, status, xhr );
-    //     }
-    //     if ( model && model.trigger ) {
-    //       model.trigger( 'sync', model, resp, options );
-    //     }
-    //   };
+      queryOptions = _.extend(queryOptions, {
+        data: decodeURIComponent($.param(queryAttributes)),
+        processData: false,
+        url: _.result(queryOptions, 'url')
+      }, options);
 
-    //   var error = options.error;
-    //   options.error = function ( xhr, status, thrown ) {
-    //     if ( error ) {
-    //       error( model, xhr, options );
-    //     }
-    //     if ( model && model.trigger ) {
-    //       model.trigger( 'error', model, xhr, options );
-    //     }
-    //   };
+      var bbVer = Backbone.VERSION.split('.');
+      var oldSuccessFormat = (parseInt(bbVer[0], 10) === 0 &&
+                              parseInt(bbVer[1], 10) === 9 &&
+                              parseInt(bbVer[2], 10) <= 9);
 
-    //   queryOptions = _.extend(queryOptions, {
-    //     data: decodeURIComponent($.param(queryAttributes)),
-    //     processData: false,
-    //     url: _.result(queryOptions, 'url')
-    //   }, options);
+      var success = queryOptions.success;
+      queryOptions.success = function ( resp, status, xhr ) {
+        if ( success ) {
+          // This is to keep compatibility with Backbone older than 0.9.10
+          if (oldSuccessFormat) {
+            success( resp, status, xhr );
+          } else {
+            success( model, resp, queryOptions );
+          }
+        }
+        if ( model && model.trigger ) {
+          model.trigger( 'sync', model, resp, queryOptions );
+        }
+      };
 
-    //   var xhr = $.ajax( queryOptions );
-    //   if ( model && model.trigger ) {
-    //     model.trigger('request', model, xhr, options);
-    //   }
-    //   return xhr;
-    // },
+      var error = queryOptions.error;
+      queryOptions.error = function ( xhr ) {
+        if ( error ) {
+          error( model, xhr, queryOptions );
+        }
+        if ( model && model.trigger ) {
+          model.trigger( 'error', model, xhr, queryOptions );
+        }
+      };
 
-    nextPage: function () {
+      var xhr = queryOptions.xhr = $.ajax( queryOptions );
+      if ( model && model.trigger ) {
+        model.trigger('request', model, xhr, queryOptions);
+      }
+      return xhr;
+    },
+
+    nextPage: function (options) {
       if(this.currentPage < this.information.totalPages) {
         this.currentPage = ++this.currentPage;
-        this.pager();
+        this.pager(options);
       }
     },
 
-    previousPage: function () {
-      this.currentPage = --this.currentPage || 1;
-      this.pager();
+    previousPage: function (options) {
+      if(this.currentPage > 1) {
+        this.currentPage = --this.currentPage;
+        this.pager(options);
+      }
     },
 
-    goTo: function ( page ) {
+    goTo: function ( page, options ) {
       if(page !== undefined){
         this.currentPage = parseInt(page, 10);
-        this.pager();
+        this.pager(options);
       }
     },
 
@@ -170,15 +179,13 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
     // to filter and 'direction', which is the direction
     // desired for the ordering ('asc' or 'desc'), pager()
     // and info() will be called automatically.
-    setSort: function ( column, direction, execute_sort ) {
+    setSort: function ( column, direction ) {
       if(column !== undefined && direction !== undefined){
         this.lastSortColumn = this.sortColumn;
         this.sortColumn = column;
         this.sortDirection = direction;
-        if (execute_sort) {
-          this.pager();
-          this.info();
-        }
+        this.pager();
+        this.info();
       }
     },
 
@@ -226,41 +233,6 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
 
     },
 
-
-    ///////// THESE ARE ADOPTED FROM BACKBONE.COLLECTION
-    //////////// in order to pull out items from the collections that are currently hidden.
-    //////////// Implementation was done quickly and is inefficient.
-
-    // Get a model from the set by id.
-    get_from_all: function(id) {
-      var model = null;
-      if(this.origModels == null) return null;
-      for(var i = 0; i < this.origModels.length; i++){
-        model = this.origModels[i];
-        if( model.id == id) return model;
-      }
-      return null;
-    },
-
-    // Remove a model by id
-    remove_from_all: function(id) {
-      var model = null;
-      //if(!this.origModels) return null;
-
-      for(var i = 0; i < this.origModels.length; i++){
-        model = this.origModels[i];
-        if( model.id == id){ 
-          if (this._byId[model.id]){
-            this.remove(id);
-          }
-          this.origModels.splice(i, 1)
-          return model;
-        }
-      }
-      return null;
-    },
-
-
     // setFilter is used to filter the current model. After
     // passing 'fields', which can be a string referring to
     // the model's field, an array of strings representing
@@ -303,7 +275,7 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
 
     // pager is used to sort, filter and show the data
     // you expect the library to display.
-    pager: function () {
+    pager: function (options) {
       var self = this,
       disp = this.perPage,
       start = (self.currentPage - 1) * disp,
@@ -312,11 +284,10 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
       // as we could need to sort or filter, and we don't want
       // to loose the data we fetched from the server.
       if (self.origModels === undefined) {
-
         self.origModels = self.models;
       }
 
-      self.models = self.origModels.slice(0);
+      self.models = self.origModels.slice();
 
       // Check if sorting was set using setSort.
       if ( this.sortColumn !== "" ) {
@@ -346,18 +317,20 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
 
       // We need to save the sorted and filtered models collection
       // because we'll use that sorted and filtered collection in info().
-      //self.sortedAndFilteredModels = self.models;
-
-      self.reset(self.models.slice(start, stop));
+      self.sortedAndFilteredModels = self.models.slice();
       self.info();
+      self.reset(self.models.slice(start, stop));
 
+      // This is somewhat of a hack to get all the nextPage, prevPage, and goTo methods
+      // to work with a success callback (as in the requestPager). Realistically there is no failure case here,
+      // but maybe we could catch exception and trigger a failure callback?
+      _.result(options, 'success');
     },
 
     // The actual place where the collection is sorted.
     // Check setSort for arguments explicacion.
     _sort: function ( models, sort, direction ) {
       models = models.sort(function (a, b) {
-
         var ac = a.get(sort),
         bc = b.get(sort);
 
@@ -433,7 +406,6 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
     // Check setFieldFilter for arguments explicacion.
     _fieldFilter: function( models, rules ) {
 
-
       // Check if there are any rules
       if ( _.isEmpty(rules) ) {
         return models;
@@ -444,12 +416,11 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
       // Iterate over each rule
       _.each(models, function(model){
 
-
         var should_push = true;
 
         // Apply each rule to each model in the collection
         _.each(rules, function(rule){
-  
+
           // Don't go inside the switch if we're already sure that the model won't be included in the results
           if( !should_push ){
             return false;
@@ -687,8 +658,7 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
     info: function () {
       var self = this,
       info = {},
-      //totalRecords = (self.sortedAndFilteredModels) ? self.sortedAndFilteredModels.length : self.length,
-      totalRecords = self.origModels.length,
+      totalRecords = (self.sortedAndFilteredModels) ? self.sortedAndFilteredModels.length : self.length,
       totalPages = Math.ceil(totalRecords / self.perPage);
 
       info = {
@@ -768,9 +738,20 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
 
       return pages;
 
+    },
+
+    bootstrap: function(options) {
+      _.extend(this, options);
+      this.goTo(1);
+      this.info();
+      return this;
     }
 
   });
+
+  // function aliasing
+  Paginator.clientPager.prototype.prevPage = Paginator.clientPager.prototype.previousPage;
+
 
 
   // @name: requestPager
@@ -782,28 +763,13 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
   // and sort capabilities for requests to a server-side
   // data service (e.g an API)
   //
-
   // Paginator.requestPager = Backbone.Collection.extend({
 
   //   sync: function ( method, model, options ) {
 
   //     var self = this;
 
-  //     // Create default values if no others are specified
-  //     _.defaults(self.paginator_ui, {
-  //       firstPage: 0,
-  //       currentPage: 1,
-  //       perPage: 5,
-  //       totalPages: 10,
-  //       pagesInRange: 4
-  //     });
-
-  //     // Change scope of 'paginator_ui' object values
-  //     _.each(self.paginator_ui, function(value, key) {
-  //       if( _.isUndefined(self[key]) ) {
-  //         self[key] = self.paginator_ui[key];
-  //       }
-  //     });
+  //     self.setDefaults();
 
   //     // Some values could be functions, let's make sure
   //     // to change their scope too and run them
@@ -840,36 +806,68 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
   //       options.data = decodeURIComponent($.param(queryAttributes));
   //     }
 
-  //     var success = options.success;
-  //     options.success = function ( resp, status, xhr ) {
-  //       if ( success ) {
-  //         success( resp, status, xhr );
-  //       }
-  //       if ( model && model.trigger ) {
-  //         model.trigger( 'sync', model, resp, options );
-  //       }
-  //     };
-
-  //     var error = options.error;
-  //     options.error = function ( xhr, status, thrown ) {
-  //       if ( error ) {
-  //         error( model, xhr, options );
-  //       }
-  //       if ( model && model.trigger ) {
-  //         model.trigger( 'error', model, xhr, options );
-  //       }
-  //     };
-
   //     queryOptions = _.extend(queryOptions, {
+  //       data: decodeURIComponent($.param(queryAttributes)),
   //       processData: false,
   //       url: _.result(queryOptions, 'url')
   //     }, options);
 
-  //     var xhr = $.ajax( queryOptions );
+  //     var bbVer = Backbone.VERSION.split('.');
+  //     var oldSuccessFormat = (parseInt(bbVer[0], 10) === 0 &&
+  //                             parseInt(bbVer[1], 10) === 9 &&
+  //                             parseInt(bbVer[2], 10) <= 9);
+
+  //     var success = queryOptions.success;
+  //     queryOptions.success = function ( resp, status, xhr ) {
+
+  //       if ( success ) {
+  //         // This is to keep compatibility with Backbone older than 0.9.10
+  //         if (oldSuccessFormat) {
+  //           success( resp, status, xhr );
+  //         } else {
+  //           success( model, resp, queryOptions );
+  //         }
+  //       }
+  //       if ( model && model.trigger ) {
+  //         model.trigger( 'sync', model, resp, queryOptions );
+  //       }
+  //     };
+
+  //     var error = queryOptions.error;
+  //     queryOptions.error = function ( xhr ) {
+  //       if ( error ) {
+  //         error( model, xhr, queryOptions );
+  //       }
+  //       if ( model && model.trigger ) {
+  //         model.trigger( 'error', model, xhr, queryOptions );
+  //       }
+  //     };
+
+  //     var xhr = queryOptions.xhr = $.ajax( queryOptions );
   //     if ( model && model.trigger ) {
-  //       model.trigger('request', model, xhr, options);
+  //       model.trigger('request', model, xhr, queryOptions);
   //     }
   //     return xhr;
+  //   },
+
+  //   setDefaults: function() {
+  //     var self = this;
+
+  //     // Create default values if no others are specified
+  //     _.defaults(self.paginator_ui, {
+  //       firstPage: 0,
+  //       currentPage: 1,
+  //       perPage: 5,
+  //       totalPages: 10,
+  //       pagesInRange: 4
+  //     });
+
+  //     // Change scope of 'paginator_ui' object values
+  //     _.each(self.paginator_ui, function(value, key) {
+  //       if (_.isUndefined(self[key])) {
+  //         self[key] = self.paginator_ui[key];
+  //       }
+  //     });
   //   },
 
   //   requestNextPage: function ( options ) {
@@ -921,10 +919,6 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
   //     }
   //   },
 
-  //   sort: function () {
-  //     //assign to as needed.
-  //   },
-
   //   info: function () {
 
   //     var info = {
@@ -937,17 +931,21 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
   //       totalPages: Math.ceil(this.totalRecords / this.perPage),
   //       lastPage: this.totalPages, // should use totalPages in template
   //       perPage: this.perPage,
-  //       hasPrevious:false,
-  //       hasNext:false
+  //       previous:false,
+  //       next:false
   //     };
 
   //     if (this.currentPage > 1) {
-  //       info.hasPrevious = this.currentPage - 1;
+  //       info.previous = this.currentPage - 1;
   //     }
 
   //     if (this.currentPage < info.totalPages) {
-  //       info.hasNext = this.currentPage + 1;
+  //       info.next = this.currentPage + 1;
   //     }
+
+  //     // left around for backwards compatibility
+  //     info.hasNext = info.next;
+  //     info.hasPrevious = info.next;
 
   //     info.pageSet = this.setPagination(info);
 
@@ -1007,7 +1005,7 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
   //   pager: function ( options ) {
   //     if ( !_.isObject(options) ) {
   //       options = {};
-  //     }
+  //     }  
   //     return this.fetch( options );
   //   },
 
@@ -1019,10 +1017,19 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
   //     } else {
   //       return null;
   //     }
+  //   },
+
+  //   bootstrap: function(options) {
+  //     _.extend(this, options);
+  //     this.setDefaults();
+  //     this.info();
+  //     return this;
   //   }
-
-
   // });
+
+  // function aliasing
+  //Paginator.requestPager.prototype.nextPage = Paginator.requestPager.prototype.requestNextPage;
+  //Paginator.requestPager.prototype.prevPage = Paginator.requestPager.prototype.requestPreviousPage;
 
   return Paginator;
 

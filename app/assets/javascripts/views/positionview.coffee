@@ -92,23 +92,24 @@ class ConsiderIt.YourActionView extends Backbone.View
 class ConsiderIt.CraftingView extends Backbone.View
   @template : _.template( $("#tpl_position").html() )
   @newpoint_template : _.template( $("#tpl_newpoint").html() )
-  slider_template : () -> $('<div class="noUiSlider">').appendTo(@$el.find('.m-stance-slider-container'))
   
   initialize : (options) -> 
     @proposal = options.proposal
 
   render : () -> 
     @$el.html ConsiderIt.CraftingView.template($.extend({}, @model.attributes, {proposal : @proposal.model.attributes}))
-
     @slider = 
       max_effect : 65 
       value : @model.get('stance') * 100
       $oppose_label : @$el.find( '.m-stance-label-oppose')
       $support_label : @$el.find( '.m-stance-label-support')
+      $neutral_label : @$el.find( '.m-stance-label-neutral')
+      is_neutral : Math.abs(@model.get('stance') * 100) < 5
       params :       
         handles: 1
         connect: "lower"
         scale: [100, -100]
+        width: 360
         change: () => @slider_change(@slider.$el.noUiSlider('value')[1])
 
     @pointlists = 
@@ -138,23 +139,28 @@ class ConsiderIt.CraftingView extends Backbone.View
         block_negative: true,
         max_chars : parseInt($(this).siblings('.count').text()) }        
 
-    @create_slider()
     @stickit()
 
+    @create_slider()
+    
     @listenTo @model, 'change:stance', => 
       @slider.$el.noUiSlider('destroy')
       @create_slider()
 
     @show()
+
     this
 
   bindings : 
     'textarea[name="explanation"]' : 'explanation'
 
   create_slider : () ->
-    @slider.$el = @slider_template()
-    @slider.params.start = @model.get('stance') * 100      
+    @slider.$el = $('<div class="noUiSlider">').appendTo(@$el.find('.m-stance-slider-container'))
+    @slider.params.start = @model.get('stance') * 100  
     @slider.$el.noUiSlider('init', @slider.params)
+    if !@slider.is_neutral
+      @slider.$neutral_label.hide()
+
 
   show : () ->
     @pointlists.peerpros.goTo(1)
@@ -248,6 +254,14 @@ class ConsiderIt.CraftingView extends Backbone.View
     @proposal.points.written_points.push new_point
 
   slider_change : (new_value) -> 
+    return unless isFinite(new_value)
+
+    if Math.abs(new_value) < 5
+      @slider.$neutral_label.css('opacity', 1)
+      @slider.is_neutral = true
+    else if @slider.is_neutral
+      @slider.$neutral_label.css('opacity', 0)
+      @slider.is_neutral = false
 
     @slider.value = new_value
 

@@ -7,6 +7,7 @@
 //= require Backbone.Rails
 //= require backbone.query-parameters
 //= require backbone.stickit
+//= require modernizr.custom.81392
 
 //= require jquery.remotipart
 //= require jquery.nouislider

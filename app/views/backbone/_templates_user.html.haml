@@ -66,197 +66,191 @@
             Sign out
 
 
-
 %script{ :type => "text/template", :id => "tpl_user_signin"}
 
-  #registration_form
+  .m-user-accounts-wrap
 
-    .primary
-      %h2
-        Sign in
+    %h2.m-user-accounts-heading
+      Sign in
 
-      - if @pinned_user
-        - user = User.find_by_email(@pinned_user)
+    - if @pinned_user
+      - user = User.find_by_email(@pinned_user)
 
-        .pinned_user
-          Hi #{@pinned_user}. 
-          - if !user.nil?
-            You need to sign in first to access that page. 
-          - else
-            To access that page, you need to create an account. 
-
-          #third_party
-            - if !user.nil?
-              - providers.each do |(provider, path)|
-                - if !user.send("#{provider}_uid").nil?                   
-                  %a{ :onclick => "javascript:openPopupWindow('#{path}')", :id => provider }
-                    = image_tag("#{provider}.png")
-
-          - if user.nil? || !has_third_party
-
-            #site_registration
-
-              = form_for(resource, :as => :user, :url => user_registration_path, :html => { :multipart => true }) do |f|
-              
-                %ul
-                  %li
-                    = devise_error_messages!
-                  
-
-                  %li.email_field
-
-                    = f.hidden_field :email, :required => true, :value => @pinned_user
-
-                  %li.password_field
-                    = f.password_field :password, :title => 'password', :placeholder => 'Password', :required => true
-                    - if !user.nil?
-                      %a.forget_password_prompt{ :href => "#{new_user_password_path}" }
-                        Forgot your password?
-
-                  %li.submit_footer
-                    .proxy.button_proxy.button
-                      sign in
-                      
-                    = f.submit "sign in", :class => 'hide'
-
-                    %a.cancel
-                      x
-          - if @user.nil?
-            #acknowledgment
-              Signing up acknowledges that you read and agree to the 
-              %a
-                Terms of Use.
-
-      - else
-
+      .pinned_user
+        Hi #{@pinned_user}. 
+        - if !user.nil?
+          You need to sign in first to access that page. 
+        - else
+          To access that page, you need to create an account. 
 
         #third_party
+          - if !user.nil?
+            - providers.each do |(provider, path)|
+              - if !user.send("#{provider}_uid").nil?                   
+                %a{ :onclick => "javascript:openPopupWindow('#{path}')", :id => provider }
+                  = image_tag("#{provider}.png")
 
-          %h3
-            One-click sign in with your account from...
+        - if user.nil? || !has_third_party
 
-          - providers.each do |(provider, path)|
-            %a{ :onclick => "javascript:openPopupWindow('#{path}')", :id => provider }
-              = image_tag("#{provider}.png")
+          #site_registration
 
-          .fineprint
-            We won't post to your account or share your info without permission.
+            = form_for(resource, :as => :user, :url => user_registration_path, :html => { :multipart => true }) do |f|
+            
+              = devise_error_messages!
+                
+              .email_field
+                = f.hidden_field :email, :required => true, :value => @pinned_user
 
-        .divider
-          &mdash; or &mdash;
+              .password_field
+                = f.password_field :password, :title => 'password', :placeholder => 'Password', :required => true
+                - if !user.nil?
+                  %a.forget_password_prompt{ :href => "#{new_user_password_path}" }
+                    Forgot your password?
 
-        #site_registration
-          = form_for :user, :url => user_session_path, :remote => true do |f|
-
-            %ul
-              
-              %li.email_field
-                = f.email_field :email, :title => 'Email address is required', :placeholder => 'Email address', :required => true, :class =>"h5-email"
-
-              %li.password_field
-                = f.password_field :password, :title => 'Password is required', :placeholder => 'Password', :required => true
-                %a.forget_password_prompt
-                  Forgot your password?
-                %button.button.hide.send_reminder
-                  Send a password reminder to the above email address
-
-              %li.submit_footer
-                %li.submit_footer
-                  = f.submit "Sign in", :class => "button get_started"
+              .submit_footer
+                .button
+                  sign in
                   
+                = f.submit "sign in", :class => 'hide'
+
                 %a.cancel
                   x
+
+        - if @user.nil?
+          #acknowledgment
+            Signing up acknowledges that you read and agree to the 
+            %a
+              Terms of Use.
+
+    - else
+
+
+      #third_party
+
+        %h3
+          One-click sign in with your account from...
+
+        - providers.each do |(provider, path)|
+          %a{ :onclick => "javascript:openPopupWindow('#{path}')", :id => provider }
+            = image_tag("#{provider}.png")
+
+        .fineprint
+          We won't post to your account or share your info without permission.
+
+      .divider
+        &mdash; or &mdash;
+
+      #site_registration
+        = form_for :user, :url => user_session_path, :remote => true do |f|
+
+          .email_field
+            = f.email_field :email, :title => 'Email address is required', :placeholder => 'Email address', :required => true, :class =>"h5-email"
+
+          .password_field
+            = f.password_field :password, :title => 'Password is required', :placeholder => 'Password', :required => true
+            %a.forget_password_prompt
+              Forgot your password?
+            %button.button.hide.send_reminder
+              Send a password reminder to the above email address
+
+          .submit_footer
+            .submit_footer
+              .button
+                sign in
+                
+              = f.submit "sign in", :class => 'hide'         
+
+            %a.cancel
+              x
 
 
 %script{ :type => "text/template", :id => "tpl_new_user" }      
+  .m-user-accounts-wrap
+
+    %h2.m-user-accounts-heading
+      Create an account
+
+    .firstphase
+      #third_party
+
+        %h3
+          One-click sign in with your account from...
+
+        - providers.each do |(provider, path)|
+          %a{ :onclick => "javascript:openPopupWindow('#{path}')", :id => provider }
+            = image_tag("#{provider}.png")
+
+        .fineprint
+          We won't post to your account or share your info without permission.
+
+      .divider
+        &mdash; or &mdash;
+
+      #site_registration
         
-  #registration_form
+        = form_for :user, :url => user_registration_path, :remote => true do |f|
 
-    .primary
-      %h2
-        Create an account
+          %ul
+            
+            %li.name_field
+              = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => 'Your name', :required => true, :class =>"", :pattern => "^.{1,}"
 
-      .firstphase
-        #third_party
+            %li.email_field
+              = f.email_field :email, :title => 'Email address is required', :placeholder => 'Email address', :required => true, :class =>"h5-email"
 
-          %h3
-            One-click sign in with your account from...
-
-          - providers.each do |(provider, path)|
-            %a{ :onclick => "javascript:openPopupWindow('#{path}')", :id => provider }
-              = image_tag("#{provider}.png")
-
-          .fineprint
-            We won't post to your account or share your info without permission.
-
-        .divider
-          &mdash; or &mdash;
-
-        #site_registration
-          
-          = form_for :user, :url => user_registration_path, :remote => true do |f|
-
-            %ul
-              
-              %li.name_field
-                = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => 'Your name', :required => true, :class =>"", :pattern => "^.{1,}"
-
-              %li.email_field
-                = f.email_field :email, :title => 'Email address is required', :placeholder => 'Email address', :required => true, :class =>"h5-email"
-
-              %li.password_field
-                = f.password_field :password, :title => 'Password is required.', :placeholder => 'Password', :required => true
-                %a.hide.forget_password_prompt{ :href => "#{new_user_password_path}" }
-                  Forgot your password?
-
-              %li.submit_footer
-                = f.submit "Get Started", :class => "button get_started"
-                  
-                %a.cancel
-                  x
-
-        #acknowledgment
-          Signing up acknowledges that you read and agree to the 
-          %a
-            Terms of Use.
-
-      - requires_pledge = current_tenant.requires_civility_pledge_on_registration
-
-      .secondphase.hide
-        = form_for :user, :url => user_registration_path, :remote => true, :multipart => true, :method => :put do |f|
-          %ul#identity
-            %li
-              = f.hidden_field :registration_complete, :value => true
-
-            %li.name_field.inlined
-              = f.text_field :name, :placeholder => 'Your name', :title => 'Your name', :required => true, :pattern => "^.{1,}"
-
-            %li.email_field.inlined
-              = f.email_field :email, :placeholder => 'Email address', :title => 'Email address is required', :required => true
-              .sub
-                Used to notify you if e.g. someone comments on a point you authored. 
-
-            %li.avatar_field.inlined
-
-              = f.file_field :avatar, :title => 'Upload a profile picture (optional)'
-
-              .selected_file.hide
-
-            - if requires_pledge
-              = render :partial => "users/registrations/pledge"
-            - else
-              .clear
-
-            -#= f.hidden_field :registration_complete, :value => true
+            %li.password_field
+              = f.password_field :password, :title => 'Password is required.', :placeholder => 'Password', :required => true
+              %a.hide.forget_password_prompt{ :href => "#{new_user_password_path}" }
+                Forgot your password?
 
             %li.submit_footer
-              - if requires_pledge
-                = f.submit "Yes, I will uphold these principles", :class => "button finish"
-                %a.cancel
-                  No, I cannot
+              = f.submit "Get Started", :class => "button get_started"
+                
+              %a.cancel
+                x
 
-              - else
-                = f.submit "Finish registration", :class => "button finish"
-                %a.cancel
-                  cancel
+      #acknowledgment
+        Signing up acknowledges that you read and agree to the 
+        %a
+          Terms of Use.
+
+    - requires_pledge = current_tenant.requires_civility_pledge_on_registration
+
+    .secondphase.hide
+      = form_for :user, :url => user_registration_path, :remote => true, :multipart => true, :method => :put do |f|
+        %ul#identity
+          %li
+            = f.hidden_field :registration_complete, :value => true
+
+          %li.name_field.inlined
+            = f.text_field :name, :placeholder => 'Your name', :title => 'Your name', :required => true, :pattern => "^.{1,}"
+
+          %li.email_field.inlined
+            = f.email_field :email, :placeholder => 'Email address', :title => 'Email address is required', :required => true
+            .sub
+              Used to notify you if e.g. someone comments on a point you authored. 
+
+          %li.avatar_field.inlined
+
+            = f.file_field :avatar, :title => 'Upload a profile picture (optional)'
+
+            .selected_file.hide
+
+          - if requires_pledge
+            = render :partial => "users/registrations/pledge"
+          - else
+            .clear
+
+          -#= f.hidden_field :registration_complete, :value => true
+
+          %li.submit_footer
+            - if requires_pledge
+              = f.submit "Yes, I will uphold these principles", :class => "button finish"
+              %a.cancel
+                No, I cannot
+
+            - else
+              = f.submit "Finish registration", :class => "button finish"
+              %a.cancel
+                cancel
 

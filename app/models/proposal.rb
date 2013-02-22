@@ -3,7 +3,6 @@ class Proposal < ActiveRecord::Base
   has_many :positions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
-  has_many :point_similarities, :dependent => :destroy
   has_many :domain_maps
 
   belongs_to :user

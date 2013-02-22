@@ -12,7 +12,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   render : -> 
-    results_el = $('<div class="m-proposal-message m-aggregated-results">')
+    results_el = $('<div class="m-proposal-message">')
     @proposal.views.results = new ConsiderIt.ResultsView
       el : results_el
       proposal : @proposal
@@ -124,7 +124,7 @@ class ConsiderIt.ProposalView extends Backbone.View
   take_position : (me) ->
 
     el = me.proposal.views.take_position.show_crafting()
-    el.insertAfter(me.$el.find('.m-aggregated-results'))
+    el.insertAfter(me.$el.find('[data-role="results-section"]'))
     
     $('html, body').stop(true, false);
     $('html, body').animate {scrollTop: el.offset().top - 100 }, 800

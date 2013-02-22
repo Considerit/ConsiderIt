@@ -154,6 +154,8 @@ $vertical_baseline: 1em
 $content_width: $grid_major * 22 + $grid_xs
 $pro_con_list_width: 675px
 
+$slider_width: 360px
+
 $peer-point-width: 194px
 $peer-point-height: 180px
 
@@ -209,14 +211,6 @@ $hex-bullet-point: '\2022'
   +green_post_it($repeated: 1)
 
 
-%l-message-template
-  > .l-message-speaker, > .l-message-recipient, > .l-message-body
-    display: inline-block
-    vertical-align: top
-
-  > .l-message-body
-    position: relative
-    width: 100%
 
 
 %pro_con_list
@@ -257,10 +251,6 @@ $hex-bullet-point: '\2022'
       width: 80px
 
 
-.l-group-container
-  font-size: 0
-  line-height: 0
-
 .avatar
   vertical-align: top
   background-color: transparent
@@ -272,6 +262,15 @@ $hex-bullet-point: '\2022'
   background-image: url('/system/default_avatar/small_default-profile-pic.png')
 
 
+.button, button, input[type="submit"]
+  outline: none
+  cursor: pointer
+  text-align: center
+
+.button
+  +button($text_color: hsl(0,0,85%), $bground_color: hsl(0,0,35%))
+
+
 //////////////////////////////////////////
 // LAYOUT
 //////////////////////////////////////////
@@ -279,70 +278,103 @@ $hex-bullet-point: '\2022'
 
 /* CONTAINERS */
 
-#wrap
+$background: image-url('directrep/images/back.png')
+
+html
+  //&:after
+    //content: ''
+    //position: absolute
+    //top: 0
+    //left: 0
+    //position: fixed
+    height: 100%
+    width: 100%
+  background: $background repeat left top $comp_color
+    //z-index: -1
+
+#l-wrap
   position: relative
 
-  > div
-    margin: 0 auto
+  #l-heading, #l-content, #l-footer
     position: relative
 
-  #masthead
-    z-index: 33
-    height: $vertical_baseline * 2
+  .l-heading-wrap, .l-content-wrap, .l-footer-wrap
+    position: relative
+
+  #l-heading
+    //height: $vertical_baseline * 2
+    //width: 100%
+    //margin-bottom: $vertical_baseline
+
+  .l-heading-wrap
+    width: $content_width
+    position: relative
+    padding: 0
+    margin: auto
+
+  #l-content
+    width: $content_width
+    margin: 0 auto
+
+  .l-content-wrap
+    padding: $vertical_baseline $grid_xs
+    margin-bottom: $vertical_baseline
+    position: relative
+
+  #l-footer
+
+  .l-footer-wrap
+    width: $content_width
+    position: relative
+    margin: 0 auto
+
+
+%l-message-template
+  > .l-message-speaker, > .l-message-recipient, > .l-message-body
+    display: inline-block
+    vertical-align: top
+
+  > .l-message-body
     position: relative
     width: 100%
-    margin-bottom: $vertical_baseline
 
-    .inner
-      width: $content_width
-      //margin-top: $vertical_baseline * 2
-      position: relative
-      z-index: 1
-      padding: 0
-      margin: auto
+.l-group-container
+  font-size: 0
+  line-height: 0
 
-      .logo_cell
-        position: absolute
-        left: 0px
-        z-index: 6
-        //float: left
-        a
-          overflow: hidden
-
-  #content
-    position: relative
-    width: $content_width
-    margin: 0 auto
-
-    .inner_content
-      padding: $vertical_baseline $grid_xs
-      margin-bottom: $vertical_baseline
-      position: relative
-
-  .footer_wrapper
-    width: $content_width
-    position: relative
-    margin: 0 auto
-
-
-//////////////////////////////////////////
-// USER MODULES
-//////////////////////////////////////////
-
-/* USER-NAV  */
-
-#nav-user
+.l-overlay
   position: absolute
-  z-index: 7
-  right: 0
-  border-bottom-right-radius: 5px
-  border-bottom-left-radius: 5px
+  z-index: 9999
+
+
+//////////////////////////////////////////
+// HEADING 
+//////////////////////////////////////////
+
+#l-heading
+  .t-logo
+    position: absolute
+    left: 0px
+    overflow: hidden
+
+#m-user-nav
+  position: relative
+  text-align: right
+  z-index: 1
   padding: 10px 15px
+
+.m-login, .m-user-options
+  display: inline-block
 
 .m-login a, .m-user-options a
   color: #a6a6a6
   font-weight: bold
   +font-size(-1)
+
+.m-login-signin:after
+  position: relative
+  content: $hex-bullet-point
+  right: 0
 
 .m-user-options
   cursor: pointer
@@ -350,7 +382,7 @@ $hex-bullet-point: '\2022'
 
   .m-user-options-menu-wrap
     display: none
-    z-index: 99
+    //z-index: 99
     position: absolute
     right: -19px
     width: 150px
@@ -376,8 +408,37 @@ $hex-bullet-point: '\2022'
       cursor: pointer
       +font-size(-3)
 
+
 //////////////////////////////////////////
-// MODULES
+// USER MODULES
+//////////////////////////////////////////
+
+#registration_overlay
+  width: 600px
+  padding: 8px
+
+  +wall(white)
+  +border-radius(5px)
+  +box-shadow(0,1px,2px,rgba(black,.5)) 
+
+
+.m-user-accounts-wrap
+  +on_chalkboard
+  +chalkboard
+
+  text-align: center
+  padding: $vertical_baseline $grid_xs
+
+  input[type="text"], input[type="email"], input[type="password"], textarea
+    padding: 3px 5px
+    //color: #333
+
+  .m-user-accounts-heading
+    +font-size(3)
+
+
+//////////////////////////////////////////
+// CONSIDERIT MODULES
 //////////////////////////////////////////
 
 /* POINT_IN_LIST */
@@ -667,10 +728,80 @@ $hex-bullet-point: '\2022'
 #m-proposals-container
   margin-top: $vertical_baseline
   position: relative
-  z-index: 1
+  //z-index: 1
 
   .m-proposal-list
     +nude-list
+
+
+.m-proposals-heading
+  //z-index: 100
+  border-radius: 8px
+  width: 650px
+  margin: auto
+  border-top: 1px solid lighten($comp_color, 15%)
+  border-bottom: 1px solid darken($comp_color, 20%)
+
+  .m-proposals-header
+    margin-top: 0
+    padding-top: 0
+    +font-size(3)
+    text-align: center
+
+  .m-proposals-header-sub
+    +font-size(-2)
+    //margin-top: -$vertical_baseline
+    text-align: center
+    .m-proposals-filter-container, .m-proposals-sort-container, .m-proposals-index
+      display: inline-block
+      padding-right: $grid_xs
+      > *
+        display: inline-block
+        padding-right: $grid_xs/2
+
+      a
+        color: #333
+        &:hover
+          color: black
+        &.selected, &.selected:hover
+          font-weight: bold
+          color: #222
+
+    .m-proposals-index
+      position: relative
+      cursor: pointer
+      z-index: 1
+      &:after
+        content: '\25BE'
+        color: #222
+
+      .menu
+        display: none
+        position: absolute
+        +nude-list
+        //z-index: 999
+        text-align: right
+        width: 500px
+        right: 0
+        background-color: rgba(darken($comp_color, 40%), .9)
+        padding-right: 0
+        li
+          cursor: pointer
+          text-align: right
+          border-bottom: 1px dotted #aaa
+          a
+            display: inline-block
+            color: #ddd
+            padding: $vertical_baseline/2 $grid_xs
+          &:hover 
+            background-color: darken($comp_color, 40%)
+            a
+              color: #eee
+
+      &:hover .menu
+        display: block
+
+
 
 .m-proposal
   margin: $vertical_baseline 0 2 * $vertical_baseline 0
@@ -702,6 +833,12 @@ $hex-bullet-point: '\2022'
 
     .m-proposal-action-link
       cursor: pointer
+      +transition
+      +grayscale
+      opacity: .6
+      &:hover
+        +grayscale_off
+        opacity: 1
 
 .m-proposal-message
   @extend %l-message-template
@@ -727,6 +864,7 @@ $hex-bullet-point: '\2022'
 
   .m-proposal-description
     +bubble($rep_color, $dark_rep_color, left)
+
 
 /* YOUR_ACTION */
 
@@ -784,11 +922,11 @@ $hex-bullet-point: '\2022'
 
   .m-top-pro-body
     @extend %m-top-point-body
-    +bubble($constituency_color, $dark_constituency_color, left)              
+    +bubble($constituency_color, $dark_constituency_color, left, $constituency_color)              
 
   .m-top-con-body
     @extend %m-top-point-body
-    +bubble($constituency_color, $dark_constituency_color, right)              
+    +bubble($constituency_color, $dark_constituency_color, right, $constituency_color)              
 
 
 /* RESULTS */
@@ -803,7 +941,7 @@ $hex-bullet-point: '\2022'
   margin: $vertical_baseline auto 0px auto
   position: relative
   width: $pro_con_list_width - 6
-  z-index: 10
+  //z-index: 10
   bottom: -4px
 
   %m-histogram-label
@@ -838,7 +976,7 @@ $hex-bullet-point: '\2022'
     border-bottom: none
     background-color: #222
     +transition
-    z-index: 1
+    //z-index: 1
 
     .m-bar-close
       display: none
@@ -876,7 +1014,7 @@ $hex-bullet-point: '\2022'
         display: block
         right: 5px
         top: -2px
-        z-index: 1
+        //z-index: 1
         +font-size(-3)
         color: #999
 
@@ -912,7 +1050,7 @@ $hex-bullet-point: '\2022'
 .m-bar-people
   background-color: transparent
   position: absolute
-  z-index: 1000
+  //z-index: 1000
   font-size: 0
 
   color: #222
@@ -932,6 +1070,8 @@ $hex-bullet-point: '\2022'
 
 
   %m-bar-person-details
+    display: none
+
     text-align: center  
     cursor: pointer
     //don't use +font-size here because of the earlier 0% declaration
@@ -939,8 +1079,7 @@ $hex-bullet-point: '\2022'
     background-color: black
     color: #e1e1e1
     position: absolute
-    display: none
-    z-index: 2
+    z-index: 1
     top: 100%
     left: 50%
     margin-top: 14px
@@ -954,7 +1093,7 @@ $hex-bullet-point: '\2022'
       padding: 0 4px 0
       top: -13px
       color: black
-      z-index: 5
+      //z-index: 5
 
     .m-bar-person-explanation
       padding: 5px 0 0 0 
@@ -1017,6 +1156,11 @@ $hex-bullet-point: '\2022'
   .m-position-message-body
     +bubble($user_color, $dark_user_color, right )
 
+  .m-position-heading
+    +font-size(3)
+    padding: $vertical_baseline / 2 0
+    text-align: center
+
 // REASONS
 .m-reasons
   position: relative
@@ -1065,10 +1209,12 @@ $hex-bullet-point: '\2022'
 // SLIDER
 .m-stance
   margin: auto auto 2 * $vertical_baseline auto 
-  +font-size(2)
+  
       
   %m-stance-label
-    vertical-align: top
+    vertical-align: middle
+    //height: 40px
+    +font-size(2)
     div
       width: 120px
 
@@ -1085,10 +1231,13 @@ $hex-bullet-point: '\2022'
   .m-stance-label-neutral
     @extend %m-stance-label
     text-align: center
-    +font-size(-3)
+    //+font-size(-3)
+    +transition
 
   .m-stance-slider-container
-    height: 60px 
+    height: 45px 
+    padding-top: 4px
+    width: $slider_width
 
   .noUiSlider
     margin: 10px
@@ -1099,7 +1248,7 @@ $hex-bullet-point: '\2022'
 
     +box-shadow(0,0,0,transparent)
     border-radius: 15px
-    width: 360px
+    width: $slider_width
 
     border: none
     height: 16px
@@ -1111,26 +1260,18 @@ $hex-bullet-point: '\2022'
     height: 38px
     width: 39px
     +transition('none')
-    margin-left: -21px
+    margin-left: -19.5px
 
     &:hover
       cursor: move
 
-
 //////////////////////////////////////////
-// UNINCORPORATED
+// VENDOR
 //////////////////////////////////////////
-.customfile-preview-wrap
-  width: 80px
-  height: 80px
-  overflow: hidden
 
-  img.customfile-preview
-    height: 80px
-
-#registration_overlay, #point_details_overlay
-  position: absolute
-  z-index: 9999
+/**
+/* for jquery.inline_labels.js
+/**
 
 .inlined
   position: relative
@@ -1140,7 +1281,6 @@ label.inline
   color: inherit
   &.focus
     color: #777
-    //opacity: .65
 
   text-align: left
   position: absolute !important
@@ -1154,79 +1294,24 @@ label.inline
   &.empty
     visibility: visible !important
 
-.button, .button_proxy, button, input[type="submit"]
-  outline: none
-  cursor: pointer
-  text-align: center
+/**
+/* for jquery.fileinput.js
+/**
 
-  &.button
-    +button($text_color: hsl(0,0,85%), $bground_color: hsl(0,0,35%))
+.customfile-preview-wrap
+  width: 80px
+  height: 80px
+  overflow: hidden
+
+  img.customfile-preview
+    height: 80px
 
 
-.pressable_button
-  +pressable_button
+//////////////////////////////////////////
+// UNINCORPORATED
+//////////////////////////////////////////
 
 
 
-#proposals_filters
-  z-index: 100
-  border-radius: 8px
-  width: 650px
-  margin: auto
-  border-top: 1px solid lighten($comp_color, 15%)
-  border-bottom: 1px solid darken($comp_color, 20%)
 
-  h2
-    margin-top: 0
-    padding-top: 0
-  .sub
-    +font-size(-2)
-    //margin-top: -$vertical_baseline
-    text-align: center
-    .show, .sort, .index
-      display: inline-block
-      padding-right: $grid_xs
-      > *
-        display: inline-block
-        padding-right: $grid_xs/2
 
-      a
-        color: #333
-        &:hover
-          color: black
-        &.selected, &.selected:hover
-          font-weight: bold
-          color: #222
-
-    .index
-      position: relative
-      cursor: pointer
-      z-index: 40
-      &:after
-        content: '\25BE'
-        color: #222
-
-      .menu
-        display: none
-        position: absolute
-        z-index: 999
-        text-align: right
-        width: 500px
-        right: 0
-        background-color: rgba(darken($comp_color, 40%), .9)
-        padding-right: 0
-        li
-          cursor: pointer
-          text-align: right
-          border-bottom: 1px dotted #aaa
-          a
-            display: inline-block
-            color: #ddd
-            padding: $vertical_baseline/2 $grid_xs
-          &:hover 
-            background-color: darken($comp_color, 40%)
-            a
-              color: #eee
-
-      &:hover .menu
-        display: block

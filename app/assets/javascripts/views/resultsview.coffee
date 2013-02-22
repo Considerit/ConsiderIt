@@ -13,13 +13,21 @@ class ConsiderIt.ResultsView extends Backbone.View
 
   show_summary : ->
     @view.remove if @view
-    @$el.addClass('m-results-summary')
+
     @view = new ConsiderIt.SummaryView
       el : @$el
       proposal : @proposal
       model : @proposal.model
       tile_size : @tile_size
+
+    @$el.hide()
+    @$el
+      .addClass('m-results-summary')
+      .removeClass('m-aggregated-results')
+      .attr('data-role', 'results-section')
     @view.render()
+    @$el.show()
+
     @state = 0
 
   show_explorer : ->
@@ -29,52 +37,78 @@ class ConsiderIt.ResultsView extends Backbone.View
       proposal : @proposal
       model : @model
       tile_size : @tile_size
+
+    @$el.hide()
+    @$el
+      .removeClass('m-results-summary')
+      .addClass('m-aggregated-results')
+
     @view.render()
+    @$el.show()
 
     me = this
-    window.delay 1000, -> me.explode_participants()
+    window.delay 1000, -> 
+      me.explode_participants()
 
     @state = 1
 
   explode_participants : ->
+    speed = 1500
+
+    modern = Modernizr.csstransforms && Modernizr.csstransitions
 
     $participants = @$el.find('.l-message-speaker')
-      .css({'position':'relative','z-index':99}) 
-      .find('.participants')
 
     from_tile_size = $participants.find('.avatar:first').width()
     to_tile_size = @$el.find(".m-histogram .avatar:first").width()
+    ratio = to_tile_size / from_tile_size
 
-    $participants.hide()
-    $participants.find('.avatar').css {
-            'width' : "#{to_tile_size}px",
-            'height' : "#{to_tile_size}px"}
-    $participants.show()
+    if modern
+      $participants
+        .css({'position':'relative','z-index':99}) 
+        .find('.avatar').css {
+          '-o-transition': "all #{speed}ms",
+          '-ms-transition': "all #{speed}ms",
+          '-moz-transition': "all #{speed}ms",
+          '-webkit-transition': "all #{speed}ms",
+          'transition': "all #{speed}ms"}
+    else
+      $participants.hide()
+      $participants.find('.avatar').css {
+              'width' : "#{to_tile_size}px",
+              'height' : "#{to_tile_size}px",
+              'position' : 'relative'}
+      $participants.show()
 
     me = this
 
     $.each $participants.find('.avatar'), ->
       $from = $(this)
       id = $from.data('id')
-      $to = me.$el.find(".m-histogram #user-#{id}")
-
-      $from.css
-        'position': 'relative'
+      $to = me.$el.find(".m-histogram #avatar-#{id}")
 
       to_offset = $to.offset()
       from_offset = $from.offset()
 
-      $from.animate {
-        "left": to_offset.left - from_offset.left, 
-        "top": to_offset.top - from_offset.top}, 1200, 'linear'
+      offsetX = to_offset.left - from_offset.left
+      offsetY = to_offset.top - from_offset.top
 
+      if modern
+        offsetX -= (from_tile_size - to_tile_size)/2
+        offsetY -= (from_tile_size - to_tile_size)/2
+        $from.css 
+          '-webkit-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
+      else
+        $from.animate {
+          "left": offsetX, 
+          "top": offsetY,
+          }, speed, 'linear'
 
-    window.delay 1300, -> 
+    window.delay speed + 350, -> 
       me.$el.find('.m-histogram-bar').css 'opacity', 1
+      window.delay 400, -> 
+        $participants.remove()
 
-    window.delay 1500, -> 
-      $participants.fadeOut -> 
-        $(this).remove()
 
   events : 
     'click' : 'transition_explorer'
@@ -212,6 +246,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
       fld = "score_stance_group_#{6-bucket}"
 
+      _.each @views, (vw) -> vw.$el.hide()
+
       @pointlists.pros.setSort(fld, 'desc')
       @pointlists.cons.setSort(fld, 'desc')
 
@@ -233,8 +269,9 @@ class ConsiderIt.ExplorerView extends Backbone.View
         .html("Most important factors for <div class='group_name'>#{ConsiderIt.Position.stance_name(bucket)}</div>")
         .show()
 
-      #sort / filter @pointlists.pros and @pointlists.cons
-
+      _.each @views, (vw) -> 
+        #vw.repaginate()
+        vw.$el.show()
 
       # $(document)
       #   .click(close_bar_click)

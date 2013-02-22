@@ -1,255 +1,94 @@
-#site_registration .primary, #registration_form .primary, #post_signup_dialog .primary
-  +on_chalkboard
-  input[type="text"], input[type="email"], input[type="password"], textarea
-    padding: 3px 5px
-    color: #333
 
-#signin_dialog, #settings_dialog, #post_signup_dialog
-  overflow: hidden
-
-#user_edit
-  label
-    text-transform: none
-    letter-spacing: 0
-  h2
-    margin-bottom: 5px
-      
-#update_registration_form
-  background-color: white
-  padding: 15px 25px
-
-  ul li
-    padding: $vertical_baseline/2 0
-    label
-      width: 250px
-      text-align: left
-      display: block
-      margin: auto
-      +font-size(-2)
-      color: #aaa
-
-    input
-      width: 250px
 
 .submit
-  //margin-top: 5px
   a.cancel
     display: inline-block
     padding: 5px
   
-//.ui-widget-content
+.m-user-accounts-wrap
 
-#registration_form,
-#update_registration_form,
-#post_signup_form
-  +wall(white)
-  +border-radius(5px)
-  +box-shadow(0,1px,2px,rgba(black,.5))
-  padding: 8px
+  #third_party
+    .fineprint
+      +font-size(-3)
 
-  > ul > li
-    display: inline-block
-  
-  .primary
-    text-align: center
-    display: inline-block
-    width: 515px
-    +chalkboard
-    padding: $vertical_baseline $grid_xs
-    +box-shadow(0,1px,3px,rgba(black,.5))
-    +border_radius(5px)
-    +on_chalkboard
+  #site_registration
 
-    h1,h2,h3
-      font-family: inherit
-
-    h2
-      +font-size(3)
-      padding-bottom: $vertical_baseline
-
-      //padding: 20px 0 32px 0
-      //background: image-url('chalk/point_header_back.png') no-repeat scroll 125px -20px transparent
-
-    #third_party
-      height: 83px
-
-      h3
-        font-weight: normal
-        +font-size(1)
-
-      a
-        margin: 10px 8px 8px 8px
-        display: inline-block
-
-      .fineprint
-        +font-size(-3)
-
-    #site_registration
-      ul li 
-        margin: 0 2px
-
-      .submit_footer
-        display: inline-block
-
-      li
-        display: inline-block
-
-        input, label
-          z-index: 9999
-
-        &.email_field input
-          width: 205px
-
-        &.password_field 
-          position: relative
-          input
-            width: 128px
-
-          .forget_password_prompt
-            position: absolute
-            //bottom: -17px
-            +font-size(-4)
-            //left: 0
-            left: 0
-            width: 150px
-            text-align: left
-            bottom: -1.5em
-            text-decoration: underline
-
-    .divider
-      margin: 30px 0
-
-    #acknowledgment
+    .forget_password_prompt
+      position: absolute
+      //bottom: -17px
       +font-size(-4)
-      margin-top: 30px
-
-      a
-        text-decoration: underline
-        color: inherit
-
-  .secondary
-    display: inline-block
-    padding: 0
-    margin: 0px 0 0 20px
-    vertical-align: top
-
-    h3
-      +font-size(1)
-      padding-bottom: 0
-      margin-bottom: 0
-      text-align: center
-
-    ul
-      margin-left: 0
-      margin-top: 10px
-      li
-        +font-size(-3)
-        +yellow-postit
-        +box-shadow(0,1px,2px,rgba(black,.4))
-        padding: 10px
-        margin-bottom: 10px
-        width: 95px
-        height: 70px
-
-  &#pledge_form button, 
-  &#registration_form .primary, 
-  &#registration_form .secondary
-    button#go
-      +border-radius(5px)
-
-
-#registration_form
-
-
+      //left: 0
+      left: 0
+      //width: 150px
+      text-align: left
+      bottom: -1.5em
+      text-decoration: underline
 
 .secondphase
   height: 316px
 
-  li
-    &.name_field input, &.avatar_field input, &.email_field input
-      width: 225px
+  .name_field input, .avatar_field input, .email_field input
+    //width: 225px
 
+  .email_field
+    display: inline-block
+    margin-bottom: 2 * $vertical_baseline
+    .sub
+      +font-size(-5)
+      position: absolute
+      //width: 225px
+      bottom: -30px
+      left: 0px
+      text-align: left
+      line-height: 1.2
+      padding-left: 7px
 
-    &.email_field
-      //width: 300px
-      display: inline-block
-      margin-bottom: 2 * $vertical_baseline
-      .sub
-        +font-size(-5)
-        position: absolute
-        width: 225px
-        bottom: -30px
-        left: 0px
-        text-align: left
-        line-height: 1.2
-        padding-left: 7px
+  .avatar_field
+    background-color: transparent
+    border-color: transparent
 
-    &.avatar_field
-      background-color: transparent
-      border-color: transparent
+    #user_avatar
+      position: absolute
 
-      #user_avatar
-        position: absolute
+    input[type="button"]
+      +font-size(-3)
 
-      input[type="button"]
-        +font-size(-3)
-
-      .selected_file
-        position: absolute
-        z-index: 9999
-        top: 32px
-        right: 20px
-        +font-size(-3)
-
-
+    .selected_file
+      position: absolute
+      z-index: 9999
+      top: 32px
+      right: 20px
+      +font-size(-3)
 
   h3
     margin: 3px 0 10px 0
     font-weight: normal
 
-  #pledge
+  .m-user-accounts-pledge
     margin: $vertical_baseline auto 0 auto
     text-align: center
     width: 500px
+
     ol 
       text-align: left
       margin: auto
       
-
       li
         +font-size(-3)
-        //text-align: left
         list-style: decimal inside none
         display: list-item
         padding: $vertical_baseline/2 0 0 0
 
 
 
-.submit_footer
+//.submit_footer
   padding-top: $vertical_baseline
-
   a.cancel
     +font-size(-3)
     display: block
     padding-top: 5px
     font-weight: bold
 
-#update_registration_form
 
-  .notifications
-    h3
-      margin-top: 15px
-    li
-      +font-size(-2)
-      text-align: left
-
-      label
-        padding: 1px 4px
-        display: inline-block
-
-
-
-#pledge
-
-#forgot_password
+//#forgot_password
   padding: $vertical_baseline * 3 3 * $grid_minor + 2 * $grid_major

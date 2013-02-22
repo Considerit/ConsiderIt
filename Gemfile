@@ -41,8 +41,7 @@ gem 'cancan'
 gem 'role_model'
 
 # https://github.com/thoughtbot/paperclip
-gem 'rmagick'
-gem 'aws-sdk'
+#gem 'rmagick'
 gem 'paperclip'
 
 # https://github.com/amatsuda/kaminari
@@ -111,8 +110,6 @@ gem "assessable", :path => "lib/gems/assessable"
 gem 'sitemap_generator'
 gem 'newrelic_rpm'
 
-#gem 'spatial_adapter',   :git => 'git://github.com/AdamFerguson/spatial_adapter.git'
-
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:
@@ -127,6 +124,7 @@ end
 
 
 group :assets do
+  gem 'aws-sdk'
   gem 'sass-rails'#,   "3.2.6"
   gem 'coffee-rails'#, "~> 3.2.1"
   gem 'uglifier'

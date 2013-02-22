@@ -33,17 +33,17 @@
 
 
   %body
-    #wrap{ :class => @current_page}
+    #l-wrap{ :class => @current_page}
       = render :partial => "shared/flash_messages"
       = render :partial => "shared/header/container"
 
-      #content
+      #l-content
         - if Rails.env.development?
           = render :partial => "shared/dev_tools"      
 
         - if @dashboard
           = render :partial => "dashboard/sidebar"  
-        .inner_content
+        .l-content-wrap
           = yield
 
       = render :partial => "shared/footer/container"

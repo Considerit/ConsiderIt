@@ -45,21 +45,12 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
 
   render : () ->
     super
-    # e = new Error('dummy');
-    # stack = e.stack.replace(/^[^\(]+?[\n$]/gm, '')
-    #   .replace(/^\s+at\s+/gm, '')
-    #   .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@')
-    #   .split('\n');
-    # console.log(stack);
 
     @collection.info()
     if @$el.find('.m-pointlist-pagination').length == 0 then @$el.append('<div class="m-pointlist-pagination">')
 
     @repaginate()
-
     @listenTo @collection, 'reset', () => @repaginate()
-
-
 
   onAdd : (model) ->
     super

@@ -1,21 +1,13 @@
 
 
-#masthead.header
-      
-  -# = render :partial => "shared/available_themes"
-  .inner
-    .logo_cell
-      %a.logo_home{ :href => root_path, :title => ""}
-        :javascript
-          function no_image(source) {
-            $(this).parents('.logo_cell').remove();
-          }
-        %img#header_logo{ :src => current_theme_image_path("logo.png"), :onerror => "no_image(this);", :title => "Go back to the homepage" }
+#l-heading
+  .l-heading-wrap
+    = link_to image_tag(current_theme_image_path("logo.png"), :title => "Go back to the homepage"), root_path, :class => 't-logo'
           
     - if @proposal && @can_update && false
       = render :partial => "proposals/admin_strip"
           
-    #nav-user
+    #m-user-nav
       -# if user_signed_in?
         = render :partial => "shared/header/logged_in_head"
         

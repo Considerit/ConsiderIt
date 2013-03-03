@@ -5,12 +5,6 @@ class ConsiderIt.AppView extends Backbone.View
 
   initialize : (options) -> 
 
-    @proposals = new ConsiderIt.ProposalList()
-    @proposals.reset( _.pluck(_.values(ConsiderIt.proposals), 'model'))
-
-    @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#m-proposals-container'})
-    
-    @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#l-wrap'})
 
     ConsiderIt.router.on 'route:Consider', @show_position
     ConsiderIt.router.on 'route:Aggregate', @show_results
@@ -21,6 +15,13 @@ class ConsiderIt.AppView extends Backbone.View
     @listenTo this, 'user:signin', @load_anonymous_data
 
   render : () -> 
+    @proposals = new ConsiderIt.ProposalList()
+    @proposals.reset( _.pluck(_.values(ConsiderIt.proposals), 'model'))
+
+    @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#m-proposals-container'})
+    
+    @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#l-wrap'})
+
     @proposalsview.renderAllItems()
     @usermanagerview.render()
 

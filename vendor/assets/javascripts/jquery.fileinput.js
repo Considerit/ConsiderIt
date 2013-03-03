@@ -52,7 +52,7 @@ $.fn.customFileInput = function(){
         .data('fileExt', fileExt) //store file extension for class removal on next change
         .addClass('customfile-feedback-populated'); //add class to show populated state
       //change text of button 
-      uploadButton.text('Change');  
+      //uploadButton.text('Change');  
 
       if (html5_capable) {
         file = ev.target.files[0];
@@ -73,12 +73,12 @@ $.fn.customFileInput = function(){
     
   //create custom control container
   var upload = $('<div class="customfile"></div>');
-  //create custom control button
-  var uploadButton = $('<span class="customfile-button" aria-hidden="true">Browse</span>').appendTo(upload);
   //create custom control feedback
   var uploadFeedback = $('<span class="customfile-feedback" aria-hidden="true">No file selected...</span>').appendTo(upload);
 
   var uploadPreview = $('<div class="customfile-preview-wrap"><img src="/system/default_avatar/medium_default-profile-pic.png" class="customfile-preview" aria-hidden="true"></div>').appendTo(upload);
+  //create custom control button
+  var uploadButton = $('<span class="customfile-button" aria-hidden="true">change picture</span>').appendTo(upload);
   
   //match disabled state
   if(fileInput.is('[disabled]')){

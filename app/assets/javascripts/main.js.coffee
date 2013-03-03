@@ -104,7 +104,7 @@ window.getCenteredCoords = (width, height) ->
         Math.max(0, Math.floor((parentSize[0] - width) / 2))
     yPos = parentPos[1] +
         Math.max(0, Math.floor((parentSize[1] - (height*1.25)) / 2))
-  
+  yPos = 100
   [xPos, yPos]
 
 window.openPopupWindow = (url) ->
@@ -112,9 +112,8 @@ window.openPopupWindow = (url) ->
   coords = getCenteredCoords(450,500)  
   openidpopup.moveTo(coords[0],coords[1])
 
-window.handleOpenIdResponse = (parameters, redirect_to) ->
+window.handleOpenIdResponse = (parameters, redirect_to) ->  
   ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
-
 
 $.event.special.destroyed =
   remove: (o) ->

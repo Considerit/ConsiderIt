@@ -1,4 +1,4 @@
-- providers = [ ['facebook',user_omniauth_authorize_path(:facebook)], ['twitter',user_omniauth_authorize_path(:twitter, :x_auth_access_type => "read")], ['google', user_omniauth_authorize_path(:google)]]
+- providers = [ ['google', user_omniauth_authorize_path(:google)], ['facebook',user_omniauth_authorize_path(:facebook)], ['twitter',user_omniauth_authorize_path(:twitter, :x_auth_access_type => "read")] ]
 
 
 %script{ :type => "text/template", :id => "tpl_logged_out"}
@@ -16,15 +16,9 @@
         {{ name }} 
 
       = image_tag "user_settings_triangle.png", :class => 'triangle_img'
-  
 
     .m-user-options-menu-wrap
       %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.current_user, 'small')}}", :alt => "your profile picture"}
-
-      (( var is_admin = #{!current_user.nil? && current_user.is_admin?}; ))
-      (( var is_moderator = #{!current_user.nil? && current_user.has_role?(:moderator)}; ))
-      (( var is_analyst = #{!current_user.nil? && current_user.has_role?(:analyst)}; ))
-      (( var is_evaluator = #{!current_user.nil? && current_user.has_role?(:evaluator)}; ))
 
       %ul.m-user-options-menu
         %li
@@ -66,191 +60,303 @@
             Sign out
 
 
-%script{ :type => "text/template", :id => "tpl_user_signin"}
+%script{ :type => "text/template", :id => "tpl_pinned_user_signin"}
+  %a.m-user-accounts-cancel
+    &#10006;
 
-  .m-user-accounts-wrap
+  .m-user-accounts-wrap.m-user-accounts-choose-method
 
     %h2.m-user-accounts-heading
-      Sign in
+      Welcome back, {{ConsiderIt.pinned_user_email}}! Please sign in. 
 
-    - if @pinned_user
-      - user = User.find_by_email(@pinned_user)
+    (( if(auth_method == 'email') { ))
+    = form_for :user, :url => user_session_path, :remote => true do |f|
 
-      .pinned_user
-        Hi #{@pinned_user}. 
-        - if !user.nil?
-          You need to sign in first to access that page. 
-        - else
-          To access that page, you need to create an account. 
+      .m-user-accounts-form
+        .m-user-accounts-form-fields-wrap
 
-        #third_party
-          - if !user.nil?
+          .m-user-accounts-form-fields-text
+
+            .email_field.inlined
+              //= f.label :email, 'Member email'
+              = f.hidden_field :email, :value => "{{ConsiderIt.pinned_user_email}}"
+
+            .password_field.inlined
+              //= f.label :email, 'Password'
+              = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+              %a.forget_password_prompt
+                I forgot. Email me password instructions. 
+              
+        .m-user-accounts-finish-wrap
+
+          = f.submit "Sign in!"
+
+    (( } else { ))
+    %ul.m-user-accounts-login-options
+      - providers.each do |(provider, path)|
+        %li{ :class => "m-user-accounts-login-option {{ #{provider} != auth_method ? 'hide' : '' }}"} 
+          %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
+            #{provider.capitalize}
+    (( } ))
+
+
+%script{ :type => "text/template", :id => "tpl_user_signin"}
+  %a.m-user-accounts-cancel
+    &#10006;
+
+  .m-user-accounts-wrap.m-user-accounts-choose-method
+
+    %h2.m-user-accounts-heading
+      Welcome back! Select your sign in method below.
+
+    %a.m-user-accounts-switch-method
+      New here?
+
+      %span
+        Create Account
+
+    %ul.m-user-accounts-login-options
+      %li.m-user-accounts-login-option
+        %a.email.zocial{:'data-provider' => 'email'}
+          Old-fashioned email
+
+      - providers.each do |(provider, path)|
+        %li.m-user-accounts-login-option
+          %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
+            #{provider.capitalize}
+
+
+  .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-signin
+
+    = form_for :user, :url => user_session_path, :remote => true do |f|
+
+      .m-user-accounts-form
+        .m-user-accounts-form-fields-wrap
+
+          .m-user-accounts-form-fields-text
+
+            .email_field.inlined
+              //= f.label :email, 'Member email'
+              = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
+
+            .password_field.inlined
+              //= f.label :email, 'Password'
+              = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+              %a.forget_password_prompt
+                I forgot. Email me password instructions. 
+              
             - providers.each do |(provider, path)|
-              - if !user.send("#{provider}_uid").nil?                   
-                %a{ :onclick => "javascript:openPopupWindow('#{path}')", :id => provider }
-                  = image_tag("#{provider}.png")
+              .m-user-accounts-authorized-feedback{:'data-provider' => "#{provider}" }
 
-        - if user.nil? || !has_third_party
+                %a{ :class => "zocial #{provider} icon" }
 
-          #site_registration
+                Registering via #{provider}
 
-            = form_for(resource, :as => :user, :url => user_registration_path, :html => { :multipart => true }) do |f|
-            
-              = devise_error_messages!
+
+
+        .m-user-accounts-finish-wrap
+
+          = f.submit "Sign in!"
+      
+
+
+
+- requires_pledge = current_tenant.requires_civility_pledge_on_registration
+%script{ :type => "text/template", :id => "tpl_new_user" }      
+  %a.m-user-accounts-cancel
+    &#10006;
+
+  .m-user-accounts-wrap.m-user-accounts-choose-method
+
+    %h2.m-user-accounts-heading
+      Welcome! How do you want to register?
+
+    %a.m-user-accounts-switch-method
+      Returning?
+
+      %span
+        Sign In
+
+    %ul.m-user-accounts-login-options
+      %li.m-user-accounts-login-option
+        %a.email.zocial{:'data-provider' => 'email'}
+          Old-fashioned email
+        .m-user-accounts-fineprint.m-fineprint-email
+          Email confirmation step required
+
+      - providers.each do |(provider, path)|
+        %li.m-user-accounts-login-option
+          %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
+            #{provider.capitalize}
+          - if provider == 'facebook'
+            .m-user-accounts-fineprint.m-fineprint-social
+              We don't post to your wall without permission
+
+
+  .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-register
+
+    //%h2.m-user-accounts-heading
+    //  Complete your registration
+
+    = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
+      .m-user-accounts-form
+        .m-user-accounts-form-fields-wrap
+
+          = image_tag current_theme_image_path("logo.png"), :class => "m-user-accounts-logo"
+
+          .m-user-accounts-form-fields-text
+
+            .name_field.inlined
+              //= f.label :name, 'Member name'
+              = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => "Your name",  :required => true, :class =>"", :pattern => "^.{1,}"
+
+            .email_field.inlined
+              //= f.label :email, 'Member email'
+              = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
+
+            .password_field.inlined
+              //= f.label :email, 'Password'
+              = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+
+
+            .m-user-accounts-authorized-feedback{:'data-provider' => 'email'}
+              %a.email.zocial.icon
                 
-              .email_field
-                = f.hidden_field :email, :required => true, :value => @pinned_user
+              Registering via email
+              
+            - providers.each do |(provider, path)|
+              .m-user-accounts-authorized-feedback{:'data-provider' => "#{provider}" }
 
-              .password_field
-                = f.password_field :password, :title => 'password', :placeholder => 'Password', :required => true
-                - if !user.nil?
-                  %a.forget_password_prompt{ :href => "#{new_user_password_path}" }
-                    Forgot your password?
+                %a{ :class => "zocial #{provider} icon" }
 
-              .submit_footer
-                .button
-                  sign in
-                  
-                = f.submit "sign in", :class => 'hide'
+                Registering via #{provider}
 
-                %a.cancel
-                  x
+            .m-user-accounts-pledge-taken
+              &#10004; Civility pledge taken
 
-        - if @user.nil?
-          #acknowledgment
-            Signing up acknowledges that you read and agree to the 
+
+          .avatar_field
+            = f.file_field :avatar, :title => 'Upload a profile picture (optional)'
+            .selected.hide
+  
+            .import_from_third_party
+              Import pic from: 
+
+              .import_from_third_parties
+
+                %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
+
+                %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
+
+              = f.hidden_field :avatar_url, :class => 'avatar_url'
+
+
+          .clear
+
+        .m-user-accounts-finish-wrap
+          - if requires_pledge
+            .m-user-accounts-pledge
+              //.m-user-accounts-pledge-heading
+              //  To participate, we ask for your pledge
+              = render :partial => "users/registrations/pledge"
+
+          = f.hidden_field :registration_complete, :value => true
+
+          = f.submit "Create my account!"
+
+          .m-user-accounts-tos
+            Signing up acknowledges that you agree to the 
             %a
               Terms of Use.
 
-    - else
 
 
-      #third_party
+%script{ :type => "text/template", :id => "tpl_new_pinned_user" }      
+  %a.m-user-accounts-cancel
+    &#10006;
 
-        %h3
-          One-click sign in with your account from...
-
-        - providers.each do |(provider, path)|
-          %a{ :onclick => "javascript:openPopupWindow('#{path}')", :id => provider }
-            = image_tag("#{provider}.png")
-
-        .fineprint
-          We won't post to your account or share your info without permission.
-
-      .divider
-        &mdash; or &mdash;
-
-      #site_registration
-        = form_for :user, :url => user_session_path, :remote => true do |f|
-
-          .email_field
-            = f.email_field :email, :title => 'Email address is required', :placeholder => 'Email address', :required => true, :class =>"h5-email"
-
-          .password_field
-            = f.password_field :password, :title => 'Password is required', :placeholder => 'Password', :required => true
-            %a.forget_password_prompt
-              Forgot your password?
-            %button.button.hide.send_reminder
-              Send a password reminder to the above email address
-
-          .submit_footer
-            .submit_footer
-              .button
-                sign in
-                
-              = f.submit "sign in", :class => 'hide'         
-
-            %a.cancel
-              x
-
-
-%script{ :type => "text/template", :id => "tpl_new_user" }      
-  .m-user-accounts-wrap
+  .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-register
 
     %h2.m-user-accounts-heading
-      Create an account
+      Welcome, {{ConsiderIt.pinned_user_email}}! Please create an account. 
 
-    .firstphase
-      #third_party
+    = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
+      .m-user-accounts-form
+        .m-user-accounts-form-fields-wrap
 
-        %h3
-          One-click sign in with your account from...
+          = image_tag current_theme_image_path("logo.png"), :class => "m-user-accounts-logo"
 
-        - providers.each do |(provider, path)|
-          %a{ :onclick => "javascript:openPopupWindow('#{path}')", :id => provider }
-            = image_tag("#{provider}.png")
+          .m-user-accounts-form-fields-text
 
-        .fineprint
-          We won't post to your account or share your info without permission.
+            .name_field.inlined
+              //= f.label :name, 'Member name'
+              = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => "Your name",  :required => true, :class =>"", :pattern => "^.{1,}"
 
-      .divider
-        &mdash; or &mdash;
+            .email_field.inlined
+              //= f.label :email, 'Member email'
+              {{ConsiderIt.pinned_user_email}}
+              = f.hidden_field :email, :value => "{{ConsiderIt.pinned_user_email}}"
 
-      #site_registration
-        
-        = form_for :user, :url => user_registration_path, :remote => true do |f|
+            .password_field.inlined
+              //= f.label :email, 'Password'
+              = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
 
-          %ul
-            
-            %li.name_field
-              = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => 'Your name', :required => true, :class =>"", :pattern => "^.{1,}"
-
-            %li.email_field
-              = f.email_field :email, :title => 'Email address is required', :placeholder => 'Email address', :required => true, :class =>"h5-email"
-
-            %li.password_field
-              = f.password_field :password, :title => 'Password is required.', :placeholder => 'Password', :required => true
-              %a.hide.forget_password_prompt{ :href => "#{new_user_password_path}" }
-                Forgot your password?
-
-            %li.submit_footer
-              = f.submit "Get Started", :class => "button get_started"
-                
-              %a.cancel
-                x
-
-      #acknowledgment
-        Signing up acknowledges that you read and agree to the 
-        %a
-          Terms of Use.
-
-    - requires_pledge = current_tenant.requires_civility_pledge_on_registration
-
-    .secondphase.hide
-      = form_for :user, :url => user_registration_path, :remote => true, :multipart => true, :method => :put do |f|
-        %ul#identity
-          %li
-            = f.hidden_field :registration_complete, :value => true
-
-          %li.name_field.inlined
-            = f.text_field :name, :placeholder => 'Your name', :title => 'Your name', :required => true, :pattern => "^.{1,}"
-
-          %li.email_field.inlined
-            = f.email_field :email, :placeholder => 'Email address', :title => 'Email address is required', :required => true
-            .sub
-              Used to notify you if e.g. someone comments on a point you authored. 
-
-          %li.avatar_field.inlined
-
+          .avatar_field
             = f.file_field :avatar, :title => 'Upload a profile picture (optional)'
+            .selected.hide
+  
+            .import_from_third_party
+              Import pic from: 
 
-            .selected_file.hide
+              .import_from_third_parties
 
+                %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
+
+                %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
+
+              = f.hidden_field :avatar_url, :class => 'avatar_url'
+
+
+          .clear
+
+        .m-user-accounts-finish-wrap
           - if requires_pledge
-            = render :partial => "users/registrations/pledge"
-          - else
-            .clear
+            .m-user-accounts-pledge
+              //.m-user-accounts-pledge-heading
+              //  To participate, we ask for your pledge
+              = render :partial => "users/registrations/pledge"
 
-          -#= f.hidden_field :registration_complete, :value => true
+          = f.hidden_field :registration_complete, :value => true
 
-          %li.submit_footer
-            - if requires_pledge
-              = f.submit "Yes, I will uphold these principles", :class => "button finish"
-              %a.cancel
-                No, I cannot
+          = f.submit "Create my account!"
 
-            - else
-              = f.submit "Finish registration", :class => "button finish"
-              %a.cancel
-                cancel
+          .m-user-accounts-tos
+            Signing up acknowledges that you agree to the 
+            %a
+              Terms of Use.
+
+%script{ :type => "text/template", :id => "tpl_user_reset_password" }
+  %a.m-user-accounts-cancel
+    &#10006;
+
+  .m-user-accounts-wrap
+
+    %h2
+      Change your password
+
+    = form_for(:user, :url => password_path(:user), :remote => true, :html => { :method => :put }) do |f|
+
+      = f.hidden_field :reset_password_token, :value => "{{password_reset_token}}"
+
+      %p
+        = f.label :password, "New password"
+
+      = f.password_field :password
+
+      %p
+        = f.label :password_confirmation, "Confirm new password" 
+      = f.password_field :password_confirmation
+
+      .m-user-accounts-finish-wrap
+        = f.submit "Change my password and sign in", :class => 'button'
 

@@ -5,36 +5,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # it works fine without, but need to check if it works when creating account from omniauth
 	protect_from_forgery #:except => :update
 
-  # deprecated
-  # todo: handle pinned user on client
-  def new
-    @context = params[:context] 
-    if params.has_key?(:user) && params.has_key?(:token) && params[:token]
-      if ApplicationController.arbitrary_token("#{params[:user]}#{current_tenant.identifier}") == params[:token]
-        @pinned_user = params[:user]
-      end
-    end
-    
-    store_location request.referer unless params[:redirect_already_set] == 'true'   
-    super
-  end
-
   def create
-    user = User.find_by_email(params[:user][:email])
+    by_third_party = params[:user][:via_third_party] && params[:user][:via_third_party] == 'true'
 
-    if user && user.valid_password?(params[:user][:password])
+    user = by_third_party ? User.find_by_third_party_token(session[:access_token]) : User.find_by_email(params[:user][:email])
+
+    if user && user.registration_complete && (by_third_party || user.valid_password?(params[:user][:password]) )
       sign_in(resource_name, user)
-      # if session.has_key?('position_to_be_published')
-      #   session['reify_activities'] = true 
-      # end    
 
       #TODO: handle domains / zipcodes / addresses in client
-      #if current_user && session.has_key?(:domain) && session[:domain] && !current_user.tags.include?(session[:domain])
-      #  current_user.tags = params[:domain] 
-      #  current_user.save
-      #elsif current_user && current_user.tags
-      #  session[:domain] = current_user.tags
-      #end
 
       response = { 
         :result => 'logged_in',
@@ -48,28 +27,38 @@ class Users::RegistrationsController < Devise::RegistrationsController
         :reason => 'user_exists'
       }
 
-    else
+    elsif by_third_party
+      params = User.create_from_third_party_token(session[:access_token])
+      params.referer = session[:referer] if session.has_key?(:referer)
+
+      params.update params[:user]
+      user = User.new params
+      
+      sign_in(resource_name, user)
+
+      current_user.skip_confirmation!
+      current_user.save
+      current_user.track!
+      response = {
+        :result => 'successful',
+        #TODO: filter users' to_json
+        :user => current_user
+      }
+
+
+    else #registration via email
       user = build_resource
       user.referer = session[:referer] if session.has_key?(:referer)
       if user.save
         sign_in(resource_name, user)
         current_user.track!
 
-        # if current_user && session.has_key?(:domain) && session[:domain] && !current_user.tags.include?(session[:domain])
-        #   current_user.tags = params[:domain] 
-        #   current_user.save
-        # end
-
-        # if session.has_key?('position_to_be_published')
-        #   session['reify_activities'] = true 
-        # end
         # set_flash_message :notice, :signed_up
-        #redirect_to request.referer
-        # redirect_to session[:return_to] || root_path
+
         response = {
           :result => 'successful',
           #TODO: filter users' to_json
-          :user => current_user.to_json
+          :user => current_user
         }
 
       else
@@ -96,7 +85,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       render :json => {
         :result => 'successful',
         #TODO: filter users' to_json
-        :user => current_user.to_json
+        :user => current_user
       }
     else 
       render :json => {

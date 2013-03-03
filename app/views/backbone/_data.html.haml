@@ -34,6 +34,15 @@
 
     ConsiderIt.current_user = #{current_user ? "ConsiderIt.users[#{current_user.id}]" : 'new ConsiderIt.User'};
 
+    //TODO: filter data
+    #{current_user ? "ConsiderIt.update_current_user(#{current_user.to_json()}.user)" : ''}
+    
+
+    ConsiderIt.pinned_user = #{@pinned_user ? "ConsiderIt.users[#{@pinned_user}]" : 'null'};
+    ConsiderIt.pinned_user_email = #{@pinned_user_email ? @pinned_user_email : 'null'};
+
+    ConsiderIt.password_reset_token = #{@reset_password_token ? "'#{@reset_password_token}'" : 'null'};  
+
     ConsiderIt.current_proposal = #{@proposal ? @proposal : 'null'};
 
     ConsiderIt.router = new ConsiderIt.Router();

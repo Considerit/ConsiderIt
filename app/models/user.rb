@@ -41,7 +41,6 @@ class User < ActiveRecord::Base
   has_attached_file :avatar, 
       :styles => { 
         :medium => "70x70#", 
-        #:medium_dark => "70x70#",
         :small => "50x50#"
       }
 
@@ -90,23 +89,17 @@ class User < ActiveRecord::Base
     def io.original_filename; base_uri.path.split('/').last; end
     self.avatar = io.original_filename.blank? ? nil : io
     self.avatar_remote_url = avatar_url
-
   end
 
-  def self.find_for_third_party_auth(access_token, signed_in_resource=nil)
+  def self.find_by_third_party_token(access_token)
     case access_token.provider
       when 'twitter'
         user = User.find_by_twitter_uid(access_token.uid)
-        if user
-          user.twitter_uid = access_token.uid
-        end
-
       when 'facebook'
         user = User.find_by_facebook_uid(access_token.uid) || User.find_by_email(access_token.info.email)
         if user
           user.facebook_uid = access_token.uid
         end
-
       when 'google'
         user = User.find_by_google_uid(access_token.uid) || User.find_by_email(access_token.info.email)
         if user
@@ -116,45 +109,52 @@ class User < ActiveRecord::Base
         user = User.find_by_email(access_token.info.email)
     end
 
-    if not user
-      user = User.new do |u|
-        u.password = Devise.friendly_token[0,20]
-                
-        case access_token.provider
-          when 'google'
-            u.name = access_token.info.name
-            u.google_uid = access_token.uid
-            u.email = access_token.info.email
-          when 'twitter'
-            u.name = access_token.info.name
-            u.twitter_uid = access_token.uid
-            u.bio = access_token.info.description
-            u.url = access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter
-            u.twitter_handle = access_token.info.nickname
-            u.avatar_url = access_token.info.image
-          when 'facebook'
-            u.name = access_token.info.name
-            u.email = access_token.info.email
-            u.facebook_uid = access_token.uid
-            u.url = access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter
-            u.avatar_url = 'http://graph.facebook.com/' + access_token.uid + '/picture?type=large'
-          else
-            raise 'Unsupported provider'
-        end
-      end
-      user.skip_confirmation!
-      user.save
-      user.track!
-    else
-      user.save
-    end
-
     user
+
+  end
+
+  def self.create_from_third_party_token(access_token)
+    params = {
+      :name => access_token.info.name,
+      :password => Devise.friendly_token[0,20]
+    }
+            
+    case access_token.provider
+      when 'google'
+
+        third_party_params = {
+          :google_uid => access_token.uid,
+          :email => access_token.info.email
+        }
+
+      when 'twitter'
+        third_party_params = {
+          :twitter_uid => access_token.uid,
+          :bio => access_token.info.description,
+          :url => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
+          :twitter_handle => access_token.info.nickname,
+          :avatar_url => access_token.info.image.gsub('_normal', '_reasonably_small')
+        }
+
+      when 'facebook'
+        third_party_params = {
+          :facebook_uid => access_token.uid,
+          :email => access_token.info.email,
+          :url => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter, #TODO: fix this for facebook
+          :avatar_url => 'http://graph.facebook.com/' + access_token.uid + '/picture?type=large'
+        }
+
+      else
+        raise 'Unsupported provider'
+    end
+    params.update third_party_params
+    params
+
   end
 
   def email_required? 
     twitter_uid.nil?
-  end   
+  end
 
   def username
     name ? 

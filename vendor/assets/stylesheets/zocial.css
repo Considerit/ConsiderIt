@@ -130,6 +130,7 @@ a.zocial {
 .zocial.itunes,
 .zocial.ninetyninedesigns,
 .zocial.openid,
+.zocial.permalink,
 .zocial.plancast,
 .zocial.pocket,
 .zocial.posterous,
@@ -173,6 +174,8 @@ a.zocial {
 .zocial.ninetyninedesigns:hover,
 .zocial.openid:focus,
 .zocial.openid:hover,
+.zocial.permalink:focus,
+.zocial.permalink:hover,
 .zocial.plancast:focus,
 .zocial.plancast:hover,
 .zocial.pocket:focus,
@@ -214,6 +217,7 @@ a.zocial {
 .zocial.itunes:active,
 .zocial.ninetyninedesigns:active,
 .zocial.openid:active,
+.zocial.permalink:active,
 .zocial.plancast:active,
 .zocial.pocket:active,
 .zocial.posterous:active,
@@ -296,6 +300,7 @@ a.zocial {
 .zocial.openid:before {content: "o"; color: #ff921d;}
 .zocial.opentable:before {content: "\00C7";}
 .zocial.paypal:before {content: "$";}
+.zocial.permalink:before {content: "\00EE";}
 .zocial.pinboard:before {content: "n";}
 .zocial.pinterest:before {content: "1";}
 .zocial.plancast:before {content: "P";}
@@ -398,6 +403,7 @@ a.zocial {
 .zocial.openid {background-color: #f5f5f5; color: #333;}
 .zocial.opentable {background-color: #990000;}
 .zocial.paypal {background-color: #fff; color: #32689a; text-shadow: 0 1px 0 rgba(255,255,255,0.5);}
+.zocial.permalink {background-color: #f0f0eb; color: #312c2a;}
 .zocial.pinboard {background-color: blue;}
 .zocial.pinterest {background-color: #c91618;}
 .zocial.plancast {background-color: #e7ebed; color: #333;}

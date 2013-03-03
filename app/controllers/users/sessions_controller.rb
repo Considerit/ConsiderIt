@@ -11,7 +11,7 @@ class Users::SessionsController < Devise::SessionsController
       response = {
         :result => 'successful',
         #TODO: filter users' to_json
-        :user => current_user.to_json
+        :user => current_user
       }
     elsif user
       response = {

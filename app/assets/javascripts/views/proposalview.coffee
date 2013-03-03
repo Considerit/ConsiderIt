@@ -127,7 +127,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     el.insertAfter(me.$el.find('[data-role="results-section"]'))
     
     $('html, body').stop(true, false);
-    $('html, body').animate {scrollTop: el.offset().top - 100 }, 800
+    $('html, body').animate {scrollTop: el.offset().top - 100 }, 500
 
 
   show_results : (me) ->
@@ -136,7 +136,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     me.proposal.views.results.show_explorer()
 
     $('html, body').stop(true, false);
-    $('html, body').animate {scrollTop: me.proposal.views.results.$el.offset().top - 100 }, 800
+    $('html, body').animate {scrollTop: me.proposal.views.results.$el.offset().top - 100 }, 500
 
 
   take_position_handler : () ->

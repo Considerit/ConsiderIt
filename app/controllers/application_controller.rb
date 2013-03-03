@@ -11,15 +11,24 @@ class ApplicationController < ActionController::Base
       session[:referer] = request.referer      
     end
 
+    if params.has_key?(:user) && params.has_key?(:token) && params[:token]
+      if ApplicationController.arbitrary_token("#{params[:user]}#{current_tenant.identifier}") == params[:token]
+        @pinned_user = User.find_by_email(params[:user]) ? User.find_by_email(params[:user]).id : nil
+        @pinned_user_email = params[:user]
+      end
+    end
+
+    if params.has_key?(:reset_password_token)
+      @reset_password_token = params[:reset_password_token]
+    end
+
+
     #TODO: what does this do?
     if args && args.first.respond_to?('has_key?')
       args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
     else
       args.append({:layout => false}) if request.xhr?
     end
-
-    #@domain = session.has_key?(:domain) ? session[:domain] : nil
-    #@current_page = request.fullpath == '/' ? 'homepage' : ''
 
     if current_tenant.host.nil?
       current_tenant.host = request.host

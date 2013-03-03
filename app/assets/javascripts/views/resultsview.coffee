@@ -47,7 +47,7 @@ class ConsiderIt.ResultsView extends Backbone.View
     @$el.show()
 
     me = this
-    window.delay 1000, -> 
+    window.delay 500, -> 
       me.explode_participants()
 
     @state = 1
@@ -240,11 +240,11 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     if @$el.find('#expanded').length == 0 && ( hard_select || @$histogram.find('.m-bar-is-hard-selected').length == 0 )
       $bar = $target.closest('.m-histogram-bar')
-      bucket = $bar.attr('bucket')
+      bucket = 6 - $bar.attr('bucket')
       $('.m-bar-is-selected', @$histogram).removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
       $bar.addClass("m-bar-is-selected #{if hard_select then 'm-bar-is-hard-selected' else 'm-bar-is-soft-selected'}")
 
-      fld = "score_stance_group_#{6-bucket}"
+      fld = "score_stance_group_#{bucket}"
 
       _.each @views, (vw) -> vw.$el.hide()
 
@@ -287,7 +287,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
     $selected_bar = @$histogram.find('.m-bar-is-selected')
     return if $selected_bar.length == 0
 
-    bucket = $selected_bar.attr('bucket')
     @pointlists.pros.setSort('score', 'desc')
     @pointlists.cons.setSort('score', 'desc')
     @pointlists.pros.setFieldFilter()

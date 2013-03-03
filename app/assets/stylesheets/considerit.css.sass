@@ -8,7 +8,7 @@
 @import "mixins"
 @import "mixins/bubble"
 
-@import "users/sessions"
+//@import "users/sessions"
 
 /* RESET
  * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
@@ -414,27 +414,219 @@ html
 //////////////////////////////////////////
 
 #registration_overlay
-  width: 600px
+  width: 820px
   padding: 8px
 
   +wall(white)
   +border-radius(5px)
   +box-shadow(0,1px,2px,rgba(black,.5)) 
 
+  .m-user-accounts-cancel
+    position: absolute
+    right: -17px
+    top: -16px
+    border-radius: 50%
+    border: 3px solid white
+    width: 30px
+    height: 30px
+    padding-top: 2px
+    +box-shadow(0, 1px, 2px, rgba(black, .25))
+    background-color: #555
+    color: white
+    z-index: 1
+    text-align: center
+    &:hover
+      background-color: black  
 
 .m-user-accounts-wrap
   +on_chalkboard
   +chalkboard
 
   text-align: center
-  padding: $vertical_baseline $grid_xs
-
-  input[type="text"], input[type="email"], input[type="password"], textarea
-    padding: 3px 5px
-    //color: #333
+  padding: $vertical_baseline * 2 $grid_xs * 2
+  position: relative
 
   .m-user-accounts-heading
+    +font-size(4)
+    margin-bottom: $vertical_baseline
+
+.m-user-accounts-choose-method
+  .m-user-accounts-switch-method
+    position: absolute
+    right: $grid_xs
+    top: $vertical_baseline / 2
+
+    +font-size(-2)
+    span
+      text-decoration: underline
+
+  .m-user-accounts-login-options
+    +nude-list
+    padding-bottom: $vertical_baseline
+
+    .m-user-accounts-login-option
+      display: inline
+      margin-right: $grid_xs
+      position: relative
+
+
+  .m-user-accounts-fineprint
+    +font-size(-3)
+    display: inline-block
+    position: absolute
+    bottom: -2 * $vertical_baseline
+    left: 40px
+    width: 250px
+    text-align: left
+
+
+$avatar_preview_height: 120px
+$membership_card_width: 450px
+$membership_card_height: 278px
+
+.m-user-accounts-complete
+  display: none
+
+  .m-user-accounts-form-fields-wrap
+    input[type="text"], input[type="email"], input[type="password"], textarea
+      padding: 1px 5px
+      background-color: transparent
+      border: 1px solid rgba(white, .5)
+      margin-bottom: 2px   
+      color: white
+
+    .email_field input, .password_field input
+      +font-size(2)
+
+  input[type="submit"]
+    margin: $vertical_baseline 0
+    +button
+    +superbutton
+    padding: $vertical_baseline/2 $grid_xs * 2
+    color: #eee
     +font-size(3)
+
+.m-user-accounts-complete-signin
+  .email_field, .password_field
+    display: inline
+    position: relative
+
+  .forget_password_prompt
+    position: absolute
+    left: 0
+    bottom: - 2 * $vertical_baseline
+
+.m-user-accounts-complete-register
+  .m-user-accounts-form
+    margin: auto
+
+  .m-user-accounts-form-fields-wrap
+    width: $membership_card_width
+    height: $membership_card_height
+    background-image: $background
+    border-radius: 5px
+    border-top: 1px solid #ccc
+    border-bottom: 1px solid black
+    padding: $vertical_baseline $grid_xs
+    margin: auto
+
+    box-shadow: 0 1px 2px rgba(black, .35), inset 0 0 8px 2px rgba(white, .5)
+
+    .m-user-accounts-logo
+      display: block
+      margin-bottom: $vertical_baseline
+
+    .m-user-accounts-form-fields-text
+      width: $membership_card_width - $avatar_preview_height - $grid_xs * 3
+      float: right
+
+    label
+      +font-size(-2)
+      text-align: left
+      //margin-left: $grid_xs
+      float: left
+
+    input[type="text"], input[type="email"], input[type="password"], textarea
+      width: 100%
+      &.ui-state-valid
+        border-color: transparent
+
+    .name_field input
+      +font-size(4)
+      font-weight: bold
+
+
+    .m-user-accounts-authorized-feedback
+      display: none
+      a
+        +font-size(-6)
+      vertical-align: top
+      text-align: left
+      margin-top: $vertical_baseline / 2
+      //color: #333
+
+    .m-user-accounts-pledge-taken
+      display: none
+      text-align: left
+
+    // this is overriding some CSS from the jquery.fileinput plugin
+    .avatar_field
+      float: left
+      width: $avatar_preview_height + 2
+      .customfile
+        background: transparent
+        width: $avatar_preview_height + 2
+        border: none
+
+      .customfile-preview-wrap
+        width: $avatar_preview_height
+        height: $avatar_preview_height
+        overflow: hidden
+        border: 1px solid #333
+        border-radius: 5px
+        background-color: rgba(black, .25)      
+        img.customfile-preview
+          height: $avatar_preview_height
+
+
+      .customfile-button
+        float: none
+        +font-size(-2)
+        text-decoration: underline
+
+      .customfile-feedback
+        display: none
+
+      .import_from_third_party
+        +font-size(-4)
+        a
+          +font-size(1)
+
+  .m-user-accounts-finish-wrap
+    width: $membership_card_width
+    margin: $vertical_baseline auto
+
+    .m-user-accounts-pledge
+      //.m-user-accounts-pledge-heading
+      //  +font-size(2)
+      //  font-weight: bold
+
+      ol
+        text-align: left
+        list-style: none
+
+        li
+          color: white
+
+          label, input
+            cursor: pointer
+
+    .m-user-accounts-tos
+      +font-size(-2)
+
+
+
+
 
 
 //////////////////////////////////////////
@@ -834,11 +1026,11 @@ html
     .m-proposal-action-link
       cursor: pointer
       +transition
-      +grayscale
-      opacity: .6
+      //+grayscale
+      //opacity: .6
       &:hover
-        +grayscale_off
-        opacity: 1
+        //+grayscale_off
+        //opacity: 1
 
 .m-proposal-message
   @extend %l-message-template
@@ -1298,13 +1490,6 @@ label.inline
 /* for jquery.fileinput.js
 /**
 
-.customfile-preview-wrap
-  width: 80px
-  height: 80px
-  overflow: hidden
-
-  img.customfile-preview
-    height: 80px
 
 
 //////////////////////////////////////////

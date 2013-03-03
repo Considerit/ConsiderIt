@@ -15,37 +15,24 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   protected
 
   def _third_party_callback
+    access_token = env["omniauth.auth"]
+    user = User.find_by_third_party_token access_token
 
-    @user = User.find_for_third_party_auth(env["omniauth.auth"], current_user)
-    @user.referer = session[:referer] if session.has_key?(:referer)
-    @user.save
-    
-    if @user.persisted?
-      @user.skip_confirmation!
-      sign_in @user, :event => :authentication
-      if session.has_key?('position_to_be_published')
-        session['reify_activities'] = true 
-      end
-
-      if @user && session.has_key?(:domain) && session[:domain] && !@user.tags.include?(session[:domain])
-        @user.tags = params[:domain] 
-        @user.save
-      elsif @user && @user.respond_to?(:tags) && @user.tags
-        session[:domain] = current_user.tags
-      end
-
+    if user && user.registration_complete
+      sign_in user, :event => :authentication
+      params = user #TODO: filter this down (actually, it might not be needed)
     else
-      session["devise.third_party"] = env["omniauth.auth"]
-      #redirect_to new_user_registration_url
+      session[:access_token] = access_token
+      params = {
+        :user => User.create_from_third_party_token(access_token)
+      }
     end
-
-    #@redirect_to = session[:return_to] || root_path
-
+    
     render :inline =>
       "<script type=\"text/javascript\">" +
       "  var opener = window.opener;" +
       "  window.close();" +
-      "  opener.handleOpenIdResponse(#{@user.to_json}, '#{form_authenticity_token}');"   +
+      "  opener.handleOpenIdResponse(#{params.to_json}, '#{form_authenticity_token}');"   +
       "</script>"
 
   end

@@ -1,10 +1,11 @@
-.m-user-accounts-pledge
 
-  To join, we ask for your pledge
-  %ol
-    %li
-      I will be civil to others. I will not attack or mock other participants or groups.
-    %li
-      I am speaking on behalf of myself, not an organization or campaign.
-    %li 
-      I will only use one account.
+%ol
+  %li
+    = check_box_tag :pledge1, :required => true, :title => 'All participants must make this pledge to join.'
+    = label_tag :pledge1, 'I will not attack or mock other participants or groups.'
+  %li
+    = check_box_tag :pledge2, :required => true, :title => 'All participants must make this pledge to join.'
+    = label_tag :pledge2, 'I will speak only on behalf of myself, not an organization.'
+  %li 
+    = check_box_tag :pledge3, :required => true, :title => 'All participants must make this pledge to join.'
+    = label_tag :pledge3, 'I will use only one account when participating.' 

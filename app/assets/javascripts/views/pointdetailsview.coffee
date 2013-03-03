@@ -30,7 +30,8 @@ class ConsiderIt.PointDetailsView extends Backbone.View
   center_overlay : () ->
     $overlay = $('#point_details_overlay')
     @$el.offset 
-      top: $('body').scrollTop() + window.innerHeight / 2 - @$el.outerHeight() / 2     
+      #top: $('body').scrollTop() + window.innerHeight / 2 - @$el.outerHeight() / 2  
+      top: $('body').scrollTop() + 50 #window.innerHeight / 2 - @$el.outerHeight() / 2     
       left: window.innerWidth / 2 - @$el.outerWidth() / 2
 
   events : 

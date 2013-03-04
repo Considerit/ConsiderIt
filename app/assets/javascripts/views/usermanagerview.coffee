@@ -85,8 +85,6 @@ class ConsiderIt.UserManagerView extends Backbone.View
 
 
   post_signin : () ->
-    console.log $('#registration_overlay')
-
     $('#registration_overlay').remove()
 
     if !ConsiderIt.current_user.isNew()

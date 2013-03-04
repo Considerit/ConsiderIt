@@ -16,6 +16,9 @@
 //= require jquery.h5validate
 //= require jquery.inline_labels
 //= require jquery.fileinput
+//= require jquery.simpleformat
+//= require jquery.linkify
+//= require jquery.requestanimationframe
 //= require jquery.touch-punch
 //= require sevenup.min
 //= require sevenup_black.min

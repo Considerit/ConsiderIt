@@ -51,7 +51,8 @@ class ConsiderIt.PointView extends Backbone.View
 
 
   show_point_details_handler : () ->
+
     if @data_loaded
-      @show_point_details()
+      @show_point_details(this)
     else
       @load_data(@show_point_details)

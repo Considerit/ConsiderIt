@@ -234,7 +234,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
 
   select_bar : (ev) ->
-        
     $target = $(ev.currentTarget)
     hard_select = ev.type == 'click'
 
@@ -273,16 +272,22 @@ class ConsiderIt.ExplorerView extends Backbone.View
         #vw.repaginate()
         vw.$el.show()
 
-      # $(document)
-      #   .click(close_bar_click)
-      #   .keyup(close_bar_key);
-  
-  deselect_bar : (ev) ->
-    $target = $(ev.currentTarget)
+      #######
+      # when clicking outside of bar, close it
+      if hard_select
+        $(document).click (ev) => @close_bar_click()
+        $(document).keyup (ev) => @close_bar_key(ev)
+        ev.stopPropagation()
+      #######
 
-    return if ev.type == 'keypress' && (ev.keyCode != 27 || $('body > .ui-widget-overlay').length > 0)
-    return if ev.type == 'click' && $target.closest('pro_con_list').length > 0
-    return if @$el.find('#expanded').length > 0
+  close_bar_click : (ev) ->
+    @deselect_bar()
+
+  close_bar_key : (ev) ->
+    if ev.keyCode == 27 && $('#registration_overlay').length == 0
+      @deselect_bar()
+  
+  deselect_bar : () ->
 
     $selected_bar = @$histogram.find('.m-bar-is-selected')
     return if $selected_bar.length == 0
@@ -300,9 +305,13 @@ class ConsiderIt.ExplorerView extends Backbone.View
     
     $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
 
-    # $(document)
-    #   .unbind('click', close_bar_click)
-    #   .unbind('keyup', close_bar_key);
+    $(document)
+      .unbind 'click', @close_bar_click
+    $(document)
+      .unbind 'keyup', @close_bar_key
+
+    #try 
+    #  ev.stopPropagation()
   
 
   show_user_explanation : (ev) ->

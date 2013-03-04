@@ -189,10 +189,11 @@ me = {
       $deleted_point.fadeOut();
     });
 
+
+
     var close_point_click = function(e){
       if ( !$(e.target).is('#expanded') && $(e.target).parents('.point_in_list#expanded').length == 0  && $('body > .ui-widget-overlay').length == 0 && $(e.target).filter(':visible').length > 0) {
         $('.point_in_list#expanded .toggle.less:visible').trigger('click');
-
       }
     };
 

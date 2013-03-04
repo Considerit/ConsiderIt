@@ -2,8 +2,10 @@ class ConsiderIt.Proposal extends Backbone.Model
   defaults: { }
   name: 'proposal'
 
-  initialize : () ->
-    
+  initialize : ->
+    super
+    @attributes.description = htmlFormat(@attributes.description)
+
   url : () ->
     Routes.proposal_path( @attributes.long_id )
 
@@ -22,5 +24,5 @@ class ConsiderIt.Proposal extends Backbone.Model
       my_title
 
   description_detail_fields : ->
-    [ ['Long Description', $.trim(@get('long_description'))],
-      ['Fiscal Impact Statement', $.trim(@get('additional_details'))] ]
+    [ ['Long Description', $.trim(htmlFormat(@attributes.long_description))], 
+      ['Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_details))] ]

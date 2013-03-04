@@ -4,5 +4,9 @@ class ConsiderIt.Comment extends Backbone.Model
   
   name: 'comment'
 
+  initialize : ->
+    super
+    @attributes.body = htmlFormat(@attributes.body)
+
   url : () ->
     Routes.comments_path( )

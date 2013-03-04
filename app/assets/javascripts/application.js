@@ -17,13 +17,13 @@
 //= require jquery.inline_labels
 //= require jquery.fileinput
 //= require jquery.simpleformat
-//= require jquery.linkify
 //= require jquery.requestanimationframe
 //= require jquery.touch-punch
 //= require sevenup.min
 //= require sevenup_black.min
 //= require ZeroClipboard
 //= require pdfobject
+//= require format
 
 //= require js-routes
 //= require main

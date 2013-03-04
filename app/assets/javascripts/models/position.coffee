@@ -5,6 +5,10 @@ class ConsiderIt.Position extends Backbone.Model
 
   name: 'position'
 
+  initialize : ->
+    super
+    @attributes.explanation = htmlFormat(@attributes.explanation)
+
 
   url : () ->
     Routes.proposal_position_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id'), @id) 

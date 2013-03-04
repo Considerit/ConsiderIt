@@ -3,6 +3,10 @@ class ConsiderIt.Point extends Backbone.Model
   }
   name: 'point'
 
+  initialize : () ->
+    super
+    @attributes.nutshell = htmlFormat(@attributes.nutshell)
+    @attributes.text = htmlFormat(@attributes.text)
 
   url : () ->
     if @id

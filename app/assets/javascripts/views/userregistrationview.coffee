@@ -47,6 +47,7 @@ class ConsiderIt.RegistrationView extends Backbone.View
     'click .m-user-accounts-login-option a' : 'login_option_choosen'
     'click .m-user-accounts-cancel' : 'cancel'
     'change .m-user-accounts-pledge input' : 'pledge_clicked'
+    'click .m-user-terms-show' : 'show_terms_of_use'
 
   pledge_clicked : ->
     if $('.m-user-accounts-pledge input').length == $('.m-user-accounts-pledge input:checked').length
@@ -110,3 +111,7 @@ class ConsiderIt.RegistrationView extends Backbone.View
   cancel : () ->
     ConsiderIt.current_user.clear()
     @remove()
+
+  show_terms_of_use : ->
+    @$el.find('.m-user-the-terms-of-use').slideToggle()
+

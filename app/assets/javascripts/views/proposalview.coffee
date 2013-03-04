@@ -9,7 +9,13 @@ class ConsiderIt.ProposalView extends Backbone.View
     @long_id = @model.get('long_id')
     @proposal = ConsiderIt.proposals[@long_id]
     @data_loaded = false
+    @state = 0
 
+    @on 'point_details:closed', ->
+      if @state == 2
+        ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: false})
+      else if @state == 1
+        ConsiderIt.router.navigate(Routes.new_position_proposal_path( @proposal.model.get('long_id') ), {trigger: false})
 
   render : -> 
     results_el = $('<div class="m-proposal-message">')
@@ -129,6 +135,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     $('html, body').stop(true, false);
     $('html, body').animate {scrollTop: el.offset().top - 100 }, 500
 
+    @state = 1
 
   show_results : (me) ->
 
@@ -138,6 +145,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     $('html, body').stop(true, false);
     $('html, body').animate {scrollTop: me.proposal.views.results.$el.offset().top - 100 }, 500
 
+    @state = 2
 
   take_position_handler : () ->
 

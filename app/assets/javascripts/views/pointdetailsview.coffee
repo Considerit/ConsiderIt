@@ -19,13 +19,21 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       commentable_id: @model.id,
       commentable_type: 'Point'})
     @commentsview.renderAllItems()
-    this
-
-
+    
     $('html, body').stop(true, true);
     @center_overlay()
     $('html, body').animate {scrollTop: @$el.offset().top - 50}, 1000
 
+    # when clicking outside of point, close it
+    $(document).click => @close_details()
+    @$el.click (e) => e.stopPropagation()
+    $(document).keyup (ev) => @close_by_keyup(ev)
+
+    this
+
+  close_by_keyup : (ev) ->
+    if ev.keyCode == 27 && $('#registration_overlay').length == 0
+      @close_details()    
 
   center_overlay : () ->
     $overlay = $('#point_details_overlay')
@@ -42,3 +50,12 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     @commentsview.remove()
     @$el.html ''
     @remove()
+    $(document)
+      .unbind 'click', @close_details
+    $(document)
+      .unbind 'keyup', @close_by_keyup
+
+    @proposal.view.trigger 'point_details:closed'
+
+
+

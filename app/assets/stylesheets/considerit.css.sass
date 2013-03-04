@@ -624,6 +624,29 @@ $membership_card_height: 278px
     .m-user-accounts-tos
       +font-size(-2)
 
+      .m-user-terms-show
+        text-decoration: underline
+
+      .m-user-the-terms-of-use
+        display: none
+        text-align: left
+        background-color: white
+        padding: $vertical_baseline $grid_xs
+        margin: $vertical_baseline
+        border-radius: 5px
+
+        color: #333
+        h1,h2,h3
+          color: #333
+          margin-top: $vertical_baseline
+        a
+          color: #333
+          text-decoration: underline
+          cursor: pointer
+
+        li
+          list-style-position: inside
+          margin-bottom: $vertical_baseline
 
 
 
@@ -1452,7 +1475,7 @@ $membership_card_height: 278px
     height: 38px
     width: 39px
     +transition('none')
-    margin-left: -19.5px
+    //margin-left: -19.5px
 
     &:hover
       cursor: move

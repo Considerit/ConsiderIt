@@ -133,3 +133,11 @@ $(document).on "click", "a[href^='/']", (event) ->
     # Instruct Backbone to trigger routing events
     ConsiderIt.router.navigate(href, { trigger : true })
     return false
+
+
+
+#http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
+(($, d) ->
+  $.each readyQ, (i,f) -> $(f);
+  $.each bindReadyQ, (i,f) -> $(d).bind("ready",f);
+)(jQuery, document)

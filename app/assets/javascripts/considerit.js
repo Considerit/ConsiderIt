@@ -74,20 +74,10 @@ me = {
         show_tos(700, 700);  
       })
 
-      .on('click', '#zipcode_entered .reset a', function(){
-        $(this).siblings('.resetform').show();
-      });
-
     //////////////
     // PROPOSALS
     //////////////
-    $(document)
-      .on('click', '.proposal_prompt a.show_proposal_description', function(){
-        $('.proposal_prompt').removeClass('hiding');
-        $(this).remove();
-      })
-
-      
+    
       // .on('click', '.description_wrapper a.hidden, .description_wrapper a.showing', function(){
       //   var $block = $(this).parents('.extra:first'),
       //       $full_text = $block.find('.full'), 
@@ -561,5 +551,3 @@ $.fn.autoGrowInput = function(o) {
 
 };
 
-//http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
-(function($,d){$.each(readyQ,function(i,f){$(f)});$.each(bindReadyQ,function(i,f){$(d).bind("ready",f)})})(jQuery,document)

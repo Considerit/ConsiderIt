@@ -16,10 +16,10 @@ class ConsiderIt.UserManagerView extends Backbone.View
     if @model.id?
       @$header_el.html(
         ConsiderIt.UserManagerView.logged_in_template($.extend({}, @model.attributes, {
-          is_admin : @model.has_role('admin')
-          is_moderator : @model.has_role('moderator')
-          is_analyst : @model.has_role('analyst')
-          is_evaluator : @model.has_role('evaluator')
+          is_admin : ConsiderIt.roles.is_admin
+          is_moderator : ConsiderIt.roles.is_moderator
+          is_analyst : ConsiderIt.roles.is_analyst
+          is_evaluator : ConsiderIt.roles.is_evaluator
         }))
       )
     else

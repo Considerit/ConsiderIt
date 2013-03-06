@@ -75,7 +75,13 @@ class PointsController < ApplicationController
     if request.xhr?
       point = Point.find params[:id]
       authorize! :read, point
-      render :json => {:comments => point.comments.public_fields}
+      render :json => {
+        :comments => point.comments.public_fields,
+        :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
+        :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
+        :num_assessment_requests => point.assessment ? point.assessment.requests.count : nil,
+        :already_requested_assessment => point.assessment ? !current_user.nil? && point.assessment.requests.where(:user_id => current_user.id).count > 0 : nil
+      }
     end
   end
 
@@ -90,11 +96,18 @@ class PointsController < ApplicationController
     point = Point.find params[:id]
     authorize! :update, point
 
-    update_params = {
-        :nutshell => params[:point][:nutshell],
-        :text => params[:point][:text],
-        :hide_name => params[:point][:hide_name],
-    }
+    update_params = {}
+
+    if params[:point].has_key? :nutshell
+      update_params[:nutshell] = params[:point][:nutshell]
+    end
+    if params[:point].has_key? :text
+      update_params[:text] = params[:point][:text]
+    end
+    if params[:point].has_key? :hide_name
+      update_params[:hide_name] = params[:point][:hide_name]
+    end
+
 
     point.update_attributes! update_params
 

@@ -12,4 +12,15 @@ class ConsiderIt.CommentView extends Backbone.View
         user : ConsiderIt.users[@model.get('user_id')]
       }))
     )
+
+    #TODO: if user logs in as admin, need to do this
+    if ConsiderIt.current_user.id == @model.user_id || ConsiderIt.roles.is_admin
+      @$el.find('.m-comment-body').editable {
+          resource: 'comment'
+          pk: @model.id
+          url: Routes.update_comment_path @model.id
+          type: 'textarea'
+          name: 'body'
+        }
+
     this

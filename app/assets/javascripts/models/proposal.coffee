@@ -23,6 +23,9 @@ class ConsiderIt.Proposal extends Backbone.Model
     else
       my_title
 
+  @description_detail_fields : ->
+    ['long_description', 'additional_details']
+    
   description_detail_fields : ->
-    [ ['Long Description', $.trim(htmlFormat(@attributes.long_description))], 
-      ['Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_details))] ]
+    [ ['long_description', 'Long Description', $.trim(htmlFormat(@attributes.long_description))], 
+      ['additional_details', 'Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_details))] ]

@@ -2,7 +2,9 @@ class Assessable::Claim < ActiveRecord::Base
 
   belongs_to :assessment, :class_name => 'Assessable::Assessment'
   
-  acts_as_tenant(:account)
+  acts_as_tenant :account
+
+  scope :public_fields, select( [:id, :verdict, :claim, :result])
 
   #TODO: sanitize before_validation
   #self.text = Sanitize.clean(self.text, Sanitize::Config::RELAXED)

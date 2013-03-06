@@ -14,6 +14,8 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
     super
     @$el.append(ConsiderIt.CommentListView.newcomment_template({user : ConsiderIt.current_user }))
 
+    @$el.find('[placeholder]').simplePlaceholder()
+
     @$el.find('.m-new-comment .is_counted').each () ->
       $(this).NobleCount $(this).siblings('.count'), {
         block_negative: true,

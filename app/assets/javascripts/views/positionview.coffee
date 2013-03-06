@@ -133,8 +133,11 @@ class ConsiderIt.CraftingView extends Backbone.View
     $('.m-pro-con-list-propoints', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : true}))
     $('.m-pro-con-list-conpoints', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : false}))
 
+    @$el.find('.m-newpoint-nutshell, .m-newpoint-description').autoResize {extraSpace: 10, maxWidth: 'original'}
+    @$el.find('.m-position-statement').autoResize {extraSpace: 5}
+    @$el.find('[placeholder]').simplePlaceholder()
 
-    @$el.find('.m-newpoint-form .is_counted').each () ->
+    @$el.find('.m-newpoint-form .is_counted').each ->
       $(this).NobleCount $(this).siblings('.count'), {
         block_negative: true,
         max_chars : parseInt($(this).siblings('.count').text()) }        
@@ -231,7 +234,7 @@ class ConsiderIt.CraftingView extends Backbone.View
       $(this).siblings('.m-newpoint-form').fadeIn 'fast', () ->
         #$(this).find('iframe').focus().contents().trigger('keyup').find('#page')            
         $(this).find('input,textarea').trigger('keyup')
-        $(this).find('.point-title').focus()
+        $(this).find('.m-newpoint-nutshell').focus()
 
   cancel_new_point : (ev) ->
     $form = $(ev.currentTarget).closest('.m-newpoint-form')

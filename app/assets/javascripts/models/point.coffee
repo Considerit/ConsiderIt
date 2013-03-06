@@ -15,9 +15,9 @@ class ConsiderIt.Point extends Backbone.Model
       Routes.proposal_points_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id') ) 
 
 
-  is_manager : () -> false
+  #is_manager : () -> false
 
-  has_details : () -> attributes.text? && attributes.text.length > 0
+  has_details : -> attributes.text? && attributes.text.length > 0
 
   adjusted_nutshell : () -> 
     nutshell = this.get('nutshell')
@@ -29,3 +29,16 @@ class ConsiderIt.Point extends Backbone.Model
       this.get('text')[0..137] 
     else
       this.get('text')
+
+  update_assessable_data : (data) ->
+    @assessment = data.assessment
+    @claims = []
+    @num_assessment_requests = data.num_assessment_requests
+    @already_requested_assessment = data.already_requested_assessment
+    
+    if data.claims
+      for d in data.claims 
+        d.claim.result = htmlFormat(d.claim.result)
+
+        @claims.push(d.claim)
+

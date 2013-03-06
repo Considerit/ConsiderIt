@@ -7,9 +7,10 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     @listenTo @proposal.view, 'point_details:staged', -> @remove()
 
   render : () -> 
+    @$el.hide()
     @$el.html ConsiderIt.PointDetailsView.template($.extend({}, @model.attributes, {
-        adjusted_nutshell : this.model.adjusted_nutshell(),
-        user : ConsiderIt.users[this.model.get('user_id')],
+        adjusted_nutshell : @model.adjusted_nutshell()
+        user : ConsiderIt.users[this.model.get('user_id')]
         proposal : @proposal.model.attributes
       }))
     
@@ -19,15 +20,41 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       commentable_id: @model.id,
       commentable_type: 'Point'})
     @commentsview.renderAllItems()
-    
-    $('html, body').stop(true, true);
-    @center_overlay()
-    $('html, body').animate {scrollTop: @$el.offset().top - 50}, 1000
+
+    if ConsiderIt.current_tenant.assessment_enabled && @proposal.model.get('active') 
+      @assessmentview = new ConsiderIt.AssessmentView({
+        model : @model
+        el: @$el.find('.m-point-assessment-wrap'), 
+        proposal : @proposal
+      })
+      @assessmentview.render()
 
     # when clicking outside of point, close it
     $(document).click => @close_details()
     @$el.click (e) => e.stopPropagation()
     $(document).keyup (ev) => @close_by_keyup(ev)
+
+    #TODO: if user logs in as admin, need to do this
+    if ConsiderIt.current_user.id == @model.user_id || ConsiderIt.roles.is_admin
+      @$el.find('.m-point-details-nutshell ').editable {
+          resource: 'point'
+          pk: @model.id
+          url: Routes.proposal_point_path @proposal.model.attributes.long_id, @model.id
+          type: 'textarea'
+          name: 'nutshell'
+        }
+      @$el.find('.m-point-details-description ').editable {
+          resource: 'point'
+          pk: @model.id
+          url: Routes.proposal_point_path @proposal.model.attributes.long_id, @model.id
+          type: 'textarea'
+          name: 'text'
+        }
+
+    @$el.show()
+    $('html, body').stop(true, true);
+    @center_overlay()
+    $('html, body').animate {scrollTop: @$el.offset().top - 50}, 1000
 
     this
 
@@ -48,6 +75,9 @@ class ConsiderIt.PointDetailsView extends Backbone.View
   close_details : (ev) ->
     @commentsview.clear()
     @commentsview.remove()
+    if @assessmentview
+      @assessmentview.remove()
+
     @$el.html ''
     @remove()
     $(document)
@@ -56,6 +86,5 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       .unbind 'keyup', @close_by_keyup
 
     @proposal.view.trigger 'point_details:closed'
-
 
 

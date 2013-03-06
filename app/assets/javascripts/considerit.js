@@ -4,15 +4,15 @@ me = {
 
     ConsiderIt.delegators();
 
-    ConsiderIt.update_unobtrusive_edit_heights($(".unobtrusive_edit textarea"));
+    //ConsiderIt.update_unobtrusive_edit_heights($(".unobtrusive_edit textarea"));
 
-    ConsiderIt.per_request();
+    //ConsiderIt.per_request();
     
     
-    $('.autoResize, .pointform textarea.point-title, .pointform input[type="text"]').autoResize({extraSpace: 10, maxWidth: 'original'});
+    //$('.autoResize').autoResize({extraSpace: 10, maxWidth: 'original'});
     //$('.pointform > form').validateOnBlur();
 
-    $('textarea#statement').autoResize({extraSpace: 5});
+    ///$('textarea#statement').autoResize({extraSpace: 5});
     
     // if ( ConsiderIt.results_page ) {
     //   $.get('/' + $.trim($('#proposal_long_id').text()) + '/results', function(data){
@@ -53,12 +53,12 @@ me = {
     // });  
 
 
-    $('[placeholder]').inlined_labels();
+    //$('[placeholder]').inlined_labels();
 
     //$('form.html5:not(.html5formified)').html5form();
     //$('form').h5Validate({errorClass : 'error'});
 
-    $('.autoResize').trigger('keyup');
+    //$('.autoResize').trigger('keyup');
 
   },
 
@@ -68,11 +68,11 @@ me = {
     // ACCOUNTS
     /////////////
 
-    $(document)
+    //$(document)
 
-      .on('click', '#acknowledgment a', function(){
-        show_tos(700, 700);  
-      })
+      // .on('click', '#acknowledgment a', function(){
+      //   show_tos(700, 700);  
+      // })
 
     //////////////
     // PROPOSALS
@@ -101,51 +101,51 @@ me = {
       //   }
 
       // })
-      .on('click', '.edit_page a', function(){
-        $(this).toggleClass('edit_mode');
-        $('.unobtrusive_edit_form').toggleClass('implicit_edit_mode explicit_edit_mode');
-        if ($(this).hasClass('edit_mode')) {
-          $('.unobtrusive_edit_form textarea:first').focus();
-        } else {
-          $('.unobtrusive_edit_form textarea').blur();
-        }
-      })      
+      // .on('click', '.edit_page a', function(){
+      //   $(this).toggleClass('edit_mode');
+      //   $('.unobtrusive_edit_form').toggleClass('implicit_edit_mode explicit_edit_mode');
+      //   if ($(this).hasClass('edit_mode')) {
+      //     $('.unobtrusive_edit_form textarea:first').focus();
+      //   } else {
+      //     $('.unobtrusive_edit_form textarea').blur();
+      //   }
+      // })      
 
-      .on('keyup', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(){
-        var save_block = $(this).siblings('.save_block');
-        if (!save_block.is('.fading')) {      
-          save_block.find('input').show();
-          save_block.find('.updated').hide();
-        }
-      })
-      .on('ajax:success', '.unobtrusive_edit_form', function(data, response, xhr){
-        var $save_block = $(this).find('.save_block');
-        //$save_block.find('input').remove();
-        $save_block.addClass('fading');
+      // .on('keyup', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(){
+      //   var save_block = $(this).siblings('.save_block');
+      //   if (!save_block.is('.fading')) {      
+      //     save_block.find('input').show();
+      //     save_block.find('.updated').hide();
+      //   }
+      // })
+      // .on('ajax:success', '.unobtrusive_edit_form', function(data, response, xhr){
+      //   var $save_block = $(this).find('.save_block');
+      //   //$save_block.find('input').remove();
+      //   $save_block.addClass('fading');
 
-        $save_block.find('input').hide();
+      //   $save_block.find('input').hide();
 
-        $save_block.find('.updated').show().delay(1200).fadeOut(function(){
-          $save_block.removeClass('fading');
-        }); 
-        if ( $(this).attr('sync_with') ){
-          $($(this).attr('sync_with')).text($(this).find('textarea').val());
-        }
-      })
-      .on('focus', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(){
-        var save_block = $(this).siblings('.save_block');
-        save_block.show();
-      })      
-      .on('blur', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(e){
-        var save_block = $(this).siblings('.save_block');
-        if (!save_block.is('.fading')) {
-          save_block
-            .find('.updated').hide();
-        }
-        //if ( !$(e.target).hasClass('.save_block') && !$(e.target).parents('.save_block').length > 0 ) {
-        //  save_block.hide();
-        //}
-      })
+      //   $save_block.find('.updated').show().delay(1200).fadeOut(function(){
+      //     $save_block.removeClass('fading');
+      //   }); 
+      //   if ( $(this).attr('sync_with') ){
+      //     $($(this).attr('sync_with')).text($(this).find('textarea').val());
+      //   }
+      // })
+      // .on('focus', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(){
+      //   var save_block = $(this).siblings('.save_block');
+      //   save_block.show();
+      // })      
+      // .on('blur', '.unobtrusive_edit input[type="text"], .unobtrusive_edit textarea', function(e){
+      //   var save_block = $(this).siblings('.save_block');
+      //   if (!save_block.is('.fading')) {
+      //     save_block
+      //       .find('.updated').hide();
+      //   }
+      //   //if ( !$(e.target).hasClass('.save_block') && !$(e.target).parents('.save_block').length > 0 ) {
+      //   //  save_block.hide();
+      //   //}
+      // })
 
     //////////////
     // POINTS
@@ -191,17 +191,17 @@ me = {
 
 
 
-    var close_point_click = function(e){
-      if ( !$(e.target).is('#expanded') && $(e.target).parents('.point_in_list#expanded').length == 0  && $('body > .ui-widget-overlay').length == 0 && $(e.target).filter(':visible').length > 0) {
-        $('.point_in_list#expanded .toggle.less:visible').trigger('click');
-      }
-    };
+    // var close_point_click = function(e){
+    //   if ( !$(e.target).is('#expanded') && $(e.target).parents('.point_in_list#expanded').length == 0  && $('body > .ui-widget-overlay').length == 0 && $(e.target).filter(':visible').length > 0) {
+    //     $('.point_in_list#expanded .toggle.less:visible').trigger('click');
+    //   }
+    // };
 
-    var close_point_key = function(e) { 
-      if (e.keyCode == 27 && $('body > .ui-widget-overlay').length == 0) {
-        $('.point_in_list#expanded .toggle.less:visible').trigger('click');
-      }
-    };
+    // var close_point_key = function(e) { 
+    //   if (e.keyCode == 27 && $('body > .ui-widget-overlay').length == 0) {
+    //     $('.point_in_list#expanded .toggle.less:visible').trigger('click');
+    //   }
+    // };
 
     // Toggle point details ON
     // $(document).on('click', '.point_in_list:not(.noclick):not(#expanded)', function(){
@@ -448,30 +448,30 @@ me = {
 
   },
 
-  positions : {
+  // positions : {
 
     
-    close_segment_click : function(e){
-      if ( $(e.target).parents('.point_in_list#expanded').length == 0  && $('body > .ui-widget-overlay').length == 0) {
-        $('.point_in_list#expanded .toggle.less:visible').trigger('click');
-      }
-    },
+  //   close_segment_click : function(e){
+  //     if ( $(e.target).parents('.point_in_list#expanded').length == 0  && $('body > .ui-widget-overlay').length == 0) {
+  //       $('.point_in_list#expanded .toggle.less:visible').trigger('click');
+  //     }
+  //   },
 
-    close_segment_key : function(e) { 
-      if (e.keyCode == 27) {
-        $('.point_in_list#expanded .toggle.less:visible').trigger('click');
-      }
-    },
+  //   close_segment_key : function(e) { 
+  //     if (e.keyCode == 27) {
+  //       $('.point_in_list#expanded .toggle.less:visible').trigger('click');
+  //     }
+  //   },
     
-  },
+  // },
 
-  update_unobtrusive_edit_heights : function (els) {
-    els.each(function(){
-        var lineHeight = parseFloat($(this).css("line-height")) || parseFloat($(this).css("font-size")) * 1.5;
-        var lines = $(this).attr("rows")*1 || $(this).prop("rows")*1;
-        $(this).css("height", lines*lineHeight);
-    });    
-  },
+  // update_unobtrusive_edit_heights : function (els) {
+  //   els.each(function(){
+  //       var lineHeight = parseFloat($(this).css("line-height")) || parseFloat($(this).css("font-size")) * 1.5;
+  //       var lines = $(this).attr("rows")*1 || $(this).prop("rows")*1;
+  //       $(this).css("height", lines*lineHeight);
+  //   });    
+  // },
 
   
 };
@@ -479,76 +479,76 @@ me = {
 _.extend(window.ConsiderIt, me);
 
 
-function show_tos(width, height) {
-  var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
-      screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
-      outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
-      outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
-      left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
-      top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
-      features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=yes');
+// function show_tos(width, height) {
+//   var screenX     = typeof window.screenX != 'undefined' ? window.screenX : window.screenLeft,
+//       screenY     = typeof window.screenY != 'undefined' ? window.screenY : window.screenTop,
+//       outerWidth  = typeof window.outerWidth != 'undefined' ? window.outerWidth : document.body.clientWidth,
+//       outerHeight = typeof window.outerHeight != 'undefined' ? window.outerHeight : (document.body.clientHeight - 22),
+//       left        = parseInt(screenX + ((outerWidth - width) / 2), 10),
+//       top         = parseInt(screenY + ((outerHeight - height) / 2.5), 10),
+//       features    = ('width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=yes');
 
-      var tos = window.open('/home/terms-of-use', 'Terms of Use', features);
+//       var tos = window.open('/home/terms-of-use', 'Terms of Use', features);
 
-  if (tos.focus)
-    tos.focus();
+//   if (tos.focus)
+//     tos.focus();
 
-  return false;
-}
+//   return false;
+// }
 
 
-$.fn.autoGrowInput = function(o) {
+// $.fn.autoGrowInput = function(o) {
 
-    o = $.extend({
-        maxWidth: 1000,
-        minWidth: 0,
-        comfortZone: 10
-    }, o);
+//     o = $.extend({
+//         maxWidth: 1000,
+//         minWidth: 0,
+//         comfortZone: 10
+//     }, o);
 
-    this.filter('input:text').each(function(){
+//     this.filter('input:text').each(function(){
 
-        var minWidth = o.minWidth,
-            val = '',
-            input = $(this),
-            testSubject = $('<tester/>').css({
-                position: 'absolute',
-                top: -9999,
-                left: -9999,
-                width: 'auto',
-                fontSize: input.css('fontSize'),
-                fontFamily: input.css('fontFamily'),
-                fontWeight: input.css('fontWeight'),
-                letterSpacing: input.css('letterSpacing'),
-                whiteSpace: 'nowrap'
-            }),
-            check = function() {
-                if (val === (val = input.val())) {return;}
+//         var minWidth = o.minWidth,
+//             val = '',
+//             input = $(this),
+//             testSubject = $('<tester/>').css({
+//                 position: 'absolute',
+//                 top: -9999,
+//                 left: -9999,
+//                 width: 'auto',
+//                 fontSize: input.css('fontSize'),
+//                 fontFamily: input.css('fontFamily'),
+//                 fontWeight: input.css('fontWeight'),
+//                 letterSpacing: input.css('letterSpacing'),
+//                 whiteSpace: 'nowrap'
+//             }),
+//             check = function() {
+//                 if (val === (val = input.val())) {return;}
 
-                // Enter new content into testSubject
-                var escaped = val.replace(/&/g, '&amp;').replace(/\s/g,' ').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                testSubject.html(escaped);
+//                 // Enter new content into testSubject
+//                 var escaped = val.replace(/&/g, '&amp;').replace(/\s/g,' ').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+//                 testSubject.html(escaped);
 
-                // Calculate new width + whether to change
-                var testerWidth = testSubject.width(),
-                    newWidth = (testerWidth + o.comfortZone) >= minWidth ? testerWidth + o.comfortZone : minWidth,
-                    currentWidth = input.width(),
-                    isValidWidthChange = (newWidth < currentWidth && newWidth >= minWidth)
-                                         || (newWidth > minWidth && newWidth < o.maxWidth);
+//                 // Calculate new width + whether to change
+//                 var testerWidth = testSubject.width(),
+//                     newWidth = (testerWidth + o.comfortZone) >= minWidth ? testerWidth + o.comfortZone : minWidth,
+//                     currentWidth = input.width(),
+//                     isValidWidthChange = (newWidth < currentWidth && newWidth >= minWidth)
+//                                          || (newWidth > minWidth && newWidth < o.maxWidth);
 
-                // Animate width
-                if (isValidWidthChange) {
-                    input.width(newWidth);
-                }
+//                 // Animate width
+//                 if (isValidWidthChange) {
+//                     input.width(newWidth);
+//                 }
 
-            };
+//             };
 
-        testSubject.insertAfter(input);
+//         testSubject.insertAfter(input);
 
-        $(this).bind('keyup keydown blur update', check);
+//         $(this).bind('keyup keydown blur update', check);
 
-    });
+//     });
 
-    return this;
+//     return this;
 
-};
+// };
 

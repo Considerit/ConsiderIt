@@ -3,6 +3,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   tagName : 'li'
 
+  @editable_fields : _.union([ ['.m-proposal-heading', 'name', 'text'], ['.m-proposal-description-body', 'description', 'textarea'] ], ([".m-proposal-description-detail-field-#{f}", f, 'textarea'] for f in ConsiderIt.Proposal.description_detail_fields() ))
 
   initialize : (options) -> 
     #@state = 0
@@ -42,6 +43,18 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     results_el.insertAfter(@$el.find('.m-proposal-introduction'))
     position_el.insertAfter(results_el)
+
+    #TODO: if user logs in as admin, need to do this
+    if ConsiderIt.roles.is_admin
+      _.each ConsiderIt.ProposalView.editable_fields, (field) =>
+        [selector, name, type] = field 
+        @$el.find(selector).editable {
+          resource: 'proposal'
+          pk: @long_id
+          url: Routes.proposal_path @long_id
+          type: type
+          name: name
+        }
 
     @$el.show()
 

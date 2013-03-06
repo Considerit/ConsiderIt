@@ -29,8 +29,16 @@
 
     ConsiderIt.comments = {}
     ConsiderIt.current_tenant = {
-        identifier : '#{current_tenant.identifier}'
+        identifier : "#{current_tenant.identifier}",
+        assessment_enabled : "#{current_tenant.assessment_enabled}"
     };
+
+    ConsiderIt.roles = {
+      is_admin : false,
+      is_moderator : false,
+      is_analyst : false,
+      is_evaluator : false
+    }
 
     ConsiderIt.current_user = #{current_user ? "ConsiderIt.users[#{current_user.id}]" : 'new ConsiderIt.User'};
 

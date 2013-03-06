@@ -5,6 +5,8 @@ class PositionsController < ApplicationController
 
   respond_to :html, :json
   
+
+  #TODO: review the consequences of this call when doing unobtrusive edit
   def update
     raise 'Cannot update without a logged in user' if !current_user || !current_user.registration_complete
 
@@ -18,10 +20,15 @@ class PositionsController < ApplicationController
 
     update_attrs = {
       :user_id => current_user.id,
-      :explanation => params[:position][:explanation],
-      :stance => params[:position][:stance],
       :proposal => proposal
     }
+
+    if params[:position].has_key? :explanation
+      update_attrs[:explanation] = params[:position][:explanation]
+    end
+    if params[:position].has_key? :stance
+      update_attrs[:stance] = params[:position][:stance]
+    end
 
     update_attrs[:published] = true
     position.update_attributes update_attrs

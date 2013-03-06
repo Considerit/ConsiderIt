@@ -18,6 +18,9 @@
 //= require jquery.fileinput
 //= require jquery.simpleformat
 //= require jquery.requestanimationframe
+//= require jquery.editable
+//= require jquery.editable-rails
+//= require jquery.copycss
 //= require jquery.touch-punch
 //= require sevenup.min
 //= require sevenup_black.min

@@ -8,6 +8,16 @@
 @import "mixins"
 @import "mixins/bubble"
 
+
+@font-face 
+  font-family: 'ModernPictogramsNormal'
+  src: font-url('modernpics-webfont.eot')
+  src: font-url('modernpics-webfont.eot?#iefix') format('embedded-opentype'), font-url('modernpics-webfont.woff') format('woff'), font-url('modernpics-webfont.ttf') format('truetype'), font-url('modernpics-webfont.svg#ModernPictogramsNormal') format('svg')
+  font-weight: normal
+  font-style: normal
+
+
+
 //@import "users/sessions"
 
 /* RESET
@@ -126,6 +136,7 @@ blockquote
   &:after
     content: close-quote
     font-weight: bold
+
 
 
 /* HELPERS */
@@ -269,6 +280,10 @@ $hex-bullet-point: '\2022'
 
 .button
   +button($text_color: hsl(0,0,85%), $bground_color: hsl(0,0,35%))
+
+.icon:before 
+  content: attr(data-icon)
+  font-family: modern_pictograms_proregular
 
 
 //////////////////////////////////////////
@@ -664,7 +679,7 @@ $membership_card_height: 278px
   position: relative
   cursor: pointer
 
-  .m-point-nutshell
+  .m-point-nutshell-wrap
 
     .m-point-user
       white-space: nowrap
@@ -699,7 +714,7 @@ $membership_card_height: 278px
   height: $peer-point-height
   padding: $vertical_baseline $grid_xs
 
-  .m-point-nutshell
+  .m-point-nutshell-wrap
     +font-size(-4)
 
   .m-point-operations        
@@ -730,7 +745,7 @@ $membership_card_height: 278px
 .m-point-results, .m-point-position
   //border-color: transparent
 
-  .m-point-nutshell
+  .m-point-nutshell-wrap
     +font-size(-2)
     margin-bottom: 0px
     // bullet point
@@ -876,6 +891,107 @@ $membership_card_height: 278px
   .m-point-details-body
     +bubble($constituency_color, $dark_constituency_color, right)     
 
+/* ASSESSMENT */
+
+// Assessment request
+// requesting fact check
+.m-point-assessment-request
+
+
+  .m-point-assessment-request-form
+    +box-shadow(0, 1px, 2px, black, 0.2)
+    border-radius: 5px
+    padding: $vertical_baseline $grid_xs
+    background-color: #FEFFCC
+    color: #777
+    width: 550px
+    margin-top: $vertical_baseline
+
+    strong
+      color: #555
+
+    .ask
+      +font-size(2)
+    p
+      +font-size(-2)
+      a
+        text-decoration: underline
+
+    .subheader
+      +font-size(-4)
+      font-weight: normal
+      color: #777
+
+    textarea
+      height: 3em
+
+    a
+      color: #777
+
+    .m-point-assessment-cancel-request
+      +font-size(-2)
+
+  a.signin_link
+    font-weight: bold
+
+
+
+// Assessment
+.m-point-assessment
+  //width: 100%
+  +on_paper
+  padding: $vertical_baseline $grid_minor
+  +box-shadow(0, 1px, 2px, black, 0.2)
+  +font-size(-2)
+  //font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace
+  color: #777
+  margin-top: $vertical_baseline
+
+  a 
+    //font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace
+
+  .m-point-metadata
+    display: inline-block
+    width: 15%
+    margin-right: $grid_xs
+    text-align: left
+    vertical-align: top
+    +font-size(-2)
+    list-style: none
+
+  .m-point-assessment-inner-wrap
+    display: inline-block
+    width: 80%
+    h1
+      +font-size(3)
+      padding-bottom: $vertical_baseline
+      color: #555
+
+    a 
+      text-decoration: underline
+      color: #777
+
+  .m-point-assessment-claim
+    list-style: none
+    padding-bottom: $vertical_baseline
+    position: relative
+
+    &:before
+      position: absolute
+      left: -$grid_xs
+      top: 0
+
+    &[data-verdict="2"]:before
+      content: "\2713\0020"
+    &[data-verdict='1']:before
+      content: '&hellip;'
+    &[data-verdict='0']:before
+      content: '?'
+
+    .m-point-assessment-claim-header
+      font-weight: bold
+      .claim_verdict
+        font-style: italic
 
 /* COMMENTS */
 .m-comment
@@ -885,7 +1001,7 @@ $membership_card_height: 278px
     width: 50px
     height: 50px
     
-  .m-comment-body
+  .m-comment-body-wrap
     +font-size(-2)    
     display: inline-block
     width: 80%
@@ -1079,6 +1195,9 @@ $membership_card_height: 278px
 
   .m-proposal-description
     +bubble($rep_color, $dark_rep_color, left)
+
+    p
+      margin-bottom: $vertical_baseline
 
 
 /* YOUR_ACTION */
@@ -1513,13 +1632,135 @@ label.inline
 /* for jquery.fileinput.js
 /**
 
+/**
+/* for jquery.editable.js
+/** 
 
+.editable.editable-click, a.editable.editable-click
+  cursor: pointer
+  border-bottom: none
+  position: relative
+
+  &:hover
+    &:after
+      position: absolute
+      right: -22px
+      top: 0
+      content: 'r'
+      font-size: 22px
+      font-family: "ModernPictogramsNormal"
+      text-transform: lowercase
+      color: #777
+
+.editableform .control-group
+  position: relative
+
+.editable-buttons
+  position: absolute
+  right: 0
+  bottom: 0
+
+  button
+    color: #555
+    font-weight: bold
+
+    &:hover
+      color: black
+
+  .editable-cancel
+    background: none
+    border: none
+    margin-left: 0
 
 //////////////////////////////////////////
 // UNINCORPORATED
 //////////////////////////////////////////
 
 
+// verdict on point in margin
+.m-point-results, .m-point-position
+  .verdict_summary
+    display: none
+
+.m-point-peer, .m-point-results:hover, .m-point-position:hover
+  
+
+  &.m-point-peer
+    .verdict_summary .assessment
+      color: #CBBE31
+      right: 10px
+      bottom: 20px
+
+  &.m-point-results, &.m-point-position
+    .verdict_summary .assessment
+      //color: #CBBE31
+      right: 0px
+      bottom: 0px
+
+
+  .verdict_summary 
+    display: block
+    .assessment
+      text-align: right
+      position: absolute
+      z-index: 10
+
+      .assessment_details
+        display: none
+        position: absolute
+        +font-size(-3)
+        width: 200px
+        padding: $vertical_baseline/2 $grid_xs
+        text-align: left
+
+        .claim
+          padding-bottom: $vertical_baseline
+
+          .verdict
+            padding-right: $grid_xs
+
+          .summary
+            .claim_desc
+              font-style: italic
+
+            .claim_verdict
+              font-weight: bold
+              font-variant: small-caps
+              text-transform: lowercase
+
+      .wrap
+        padding: 2px 10px
+
+      &:hover
+        cursor: pointer
+        color: black
+
+        &.truth
+          .wrap, .assessment_details
+            background-color: #cfc
+
+        &.unverified
+          .wrap, .assessment_details
+            background-color: #ccf
+
+        &.questionable
+          .wrap, .assessment_details
+            background-color: #fcc
+
+
+        .assessment_details
+          display: inline-block
+          right: -30px
+
+          strong
+            display: block
+            padding-top: $vertical_baseline
+
+#expanded .verdict_summary
+  display: none
+
+
+// fact checking
 
 
 

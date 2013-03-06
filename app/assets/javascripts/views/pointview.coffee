@@ -29,6 +29,17 @@ class ConsiderIt.PointView extends Backbone.View
         is_you : @user == ConsiderIt.current_user
       )
     )
+
+    #TODO: if user logs in as admin, need to do this
+    if ConsiderIt.current_user.id == @model.user_id || ConsiderIt.roles.is_admin
+      @$el.find('.m-point-nutshell').editable {
+          resource: 'point'
+          pk: @model.id
+          url: Routes.proposal_point_path @proposal.model.attributes.long_id, @model.id
+          type: 'textarea'
+          name: 'nutshell'
+        }
+
     this
 
   load_data : (callback) ->
@@ -36,6 +47,9 @@ class ConsiderIt.PointView extends Backbone.View
       comments = (co.comment for co in data.comments)
       ConsiderIt.comments[@model.id] = new ConsiderIt.CommentList()
       ConsiderIt.comments[@model.id].reset(comments)
+
+      console.log data
+      @model.update_assessable_data(data)
 
       @data_loaded = true
       callback(this)

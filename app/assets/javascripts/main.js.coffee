@@ -4,6 +4,7 @@ _.templateSettings =
   interpolate : /\{\{(.+?)\}\}/g
   evaluate : /\(\((.+?)\)\)/g
 
+$.fn.editable.defaults.mode = 'inline'
 
 window.delay = (ms, func) -> setTimeout func, ms
 
@@ -92,6 +93,12 @@ window.ConsiderIt.update_current_user = (parameters) ->
     ConsiderIt.current_user = ConsiderIt.users[parameters.id]
 
   ConsiderIt.current_user.set(parameters)
+
+  ConsiderIt.roles =
+    is_admin : ConsiderIt.current_user.has_role('admin')
+    is_moderator : ConsiderIt.current_user.has_role('moderator')
+    is_analyst : ConsiderIt.current_user.has_role('analyst')
+    is_evaluator : ConsiderIt.current_user.has_role('evaluator')  
 
 window.getCenteredCoords = (width, height) ->
   if (window.ActiveXObject)

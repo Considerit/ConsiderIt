@@ -2,8 +2,9 @@
 
 %script{ :type => "text/template", :id => "tpl_point" }      
         
-  .m-point-nutshell
-    {{adjusted_nutshell}}
+  .m-point-nutshell-wrap
+    %span.m-point-nutshell
+      {{adjusted_nutshell}}
     %span.details_indicator
       (&#8230;)
   
@@ -41,7 +42,7 @@
             140
 
         .m-newpoint-description-wrap
-          = text_area_tag :text, nil, :placeholder => "Write a longer description (optional)", :title => "Write a longer description (optional)", :cols => 28, :class => "autoResize m-newpoint-description"
+          = text_area_tag :text, nil, :placeholder => "Write a longer description (optional)", :title => "Write a longer description (optional)", :cols => 28, :class => "m-newpoint-description"
 
         .m-newpoint-anonymous-wrap
           = check_box_tag :hide_name, :class => 'm-newpoint-anonymous'
@@ -80,7 +81,7 @@
 
 
 %script{ :type => "text/template", :id => "tpl_point_details" }   
-  (( var point_creator = false, has_details = false, hide_name = false; ))
+  (( var hide_name = false; ))
 
   %div{ :class => "m-point-details-{{ is_pro ? 'pro' : 'con' }}" }
 
@@ -98,7 +99,7 @@
         {{ nutshell }} 
 
       .m-point-details-description 
-        {{text.replace('\r\n', '')}}
+        {{text}}
 
       .m-point-details-author
         (( if (hide_name) { ))
@@ -114,10 +115,7 @@
         -#= render :partial => 'followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
         (( } ))
 
-        (( if (point_creator) { ))
-        %a.m-point-details-edit.button
-          Edit this point
-        (( } ))
+      .m-point-assessment-wrap
 
       .m-point-discussion
         
@@ -132,6 +130,97 @@
     (( if( !hide_name && user ){ ))
     %span.avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :class => "author"}
     (( } ))
+
+%script{ :type => "text/template", :id => "tpl_assessment_request"}
+
+
+  .m-point-assessment-request
+    (( if( !already_requested_assessment ) { ))
+    %a.button.m-point-assessment-request-initiate
+      Ask a librarian to fact check this point
+    (( } ))
+
+    .m-point-assessment-requested-feedback
+      Your fact check request has been registered.
+
+    (( if( !already_requested_assessment ) { ))
+    = form_for :request, :url => assessment_index_path, :method => :post, :remote => true, :html => {:class => "hide m-point-assessment-request-form"} do |f|
+      = f.hidden_field :assessable_id, :value => "{{id}}"
+      = f.hidden_field :assessable_type, :value => "Point"
+
+      %strong.ask
+        Ask a librarian to fact check this point
+
+      %p
+        Fact-checking performed by librarians at The Seattle Public Library. Only falsifiable statements can be checked. See the #{link_to 'guidelines', '/home/fact_check', :target => "_blank"} for more details.
+
+      %strong
+        Which claims do you wish to have fact checked?
+        .subheader
+          Please link to reliable information that is helpful for verfiying the claim, if available.
+
+      = f.text_area :suggestion
+
+      (( if( ConsiderIt.current_user ) { ))
+      .submit_block
+        = f.submit 'Submit your request', :class => 'button hide'
+        %a.m-point-assessment-cancel-request
+          cancel
+      (( } else { ))
+      .login
+        You must 
+        %a.signin_link
+          sign in
+        to request a fact check.
+      (( } ))
+    (( } ))
+
+%script{ :type => "text/template", :id => "tpl_assessment"}
+  .m-point-assessment
+    %ul.m-point-metadata
+      %li
+        {{ is_pro ? 'Pro' : 'Con' }}
+      %li
+        {{id}}.{{proposal.designator}}
+      %li
+        {{user.get('name')}}
+
+    .m-point-assessment-inner-wrap
+      %h1
+        Fact Check
+
+      %ul.m-point-assessment-claims
+        (( _.each(claims, function(clm){ ))
+        %li.m-point-assessment-claim{ :'data-verdict' => "{{clm.verdict}}"}
+
+          .m-point-assessment-claim-header
+            %span.claim_desc
+              {{ clm.claim }}
+            %span.claim_verdict
+              {{ format_verdict(clm.verdict) }}
+
+          .m-point-assessment-claim-details
+            {{ clm.result }}
+
+        (( }) ))
+
+      %p.explanation
+
+        (( if( assessment.overall_verdict > -1) { ))
+          
+        Prepared in response to {{num_assessment_requests}} {{num_assessment_requests == 1 ? 'request' : 'requests'}}. We hope that this information will be useful to this discussion!
+
+        (( } else { ))
+        This point does not make any verifiable claims.
+        (( } ))
+
+        .signature
+          Sincerely, 
+          %br
+          The Seattle Public Library
+
+        .process
+          = link_to 'Read about the fact-checking process', '/home/fact_check', :target => '_blank' 
 
 
 %script{ :type => "text/template", :id => "tpl_newcomment" }   
@@ -170,8 +259,9 @@
 
   %span.avatar.m-comment-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
 
-  .m-comment-body
-    {{body}}
+  .m-comment-body-wrap
+    .m-comment-body
+      {{body}}
 
     %span.m-comment-author
       &ndash; 
@@ -206,21 +296,22 @@
     .l-message-body.left.m-proposal-description
       .t-bubble 
         &#9700;   
-      %p
+      .m-proposal-description-body
         {{description}}
 
       .m-proposal-description-details
 
         (( _.each(description_detail_fields, function(field) {  ))
 
-        (( if( field[1] != '') { ))
+        (( if( field[2] != '') { ))
         .m-proposal-description-detail-field
           .m-proposal-description-detail-field-heading
-            {{ field[0] }}
+            {{ field[1] }}
             %a.hidden
               show
           .m-proposal-description-detail-field-full.hide
-            {{ field[1] }}
+            %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
+              {{ field[2] }}
             %a.hidden
               show
         (( } ))
@@ -379,7 +470,7 @@
     .stance.position_statement.hide
       %label{ :name => :explanation }
         Optional statement that summarizes your thoughts
-      %textarea{ :name => :explanation}
+      %textarea.m-position-statement{ :name => :explanation}
 
   .l-message-speaker
     = image_tag current_theme_image_path("you.png")

@@ -6,8 +6,12 @@ class ConsiderIt.Proposal extends Backbone.Model
     super
     @attributes.description = htmlFormat(@attributes.description)
 
+
   url : () ->
-    Routes.proposal_path( @attributes.long_id )
+    if @id
+      Routes.proposal_path( @attributes.long_id ) 
+    else
+      Routes.proposals_path( )
 
   title : (max_len = 140) ->
     if @get('name') && @get('name').length > 0

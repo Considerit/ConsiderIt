@@ -82,8 +82,6 @@ class ProposalsController < ApplicationController
   end
 
   def create
-
-
     description = params[:proposal][:description] || ''
 
     if current_tenant.default_hashtags && description.index('#').nil?
@@ -96,7 +94,7 @@ class ProposalsController < ApplicationController
       :long_id => SecureRandom.hex(5),
       :admin_id => SecureRandom.hex(6),
       :user_id => current_user ? current_user.id : nil,
-      :description => description
+      :description => description,
     })
 
     proposal = Proposal.create(params[:proposal])

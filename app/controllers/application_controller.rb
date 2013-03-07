@@ -59,7 +59,8 @@ class ApplicationController < ActionController::Base
         top_points[pnt.id] = pnt
       end
 
-      Proposal.active.where('activity > 0').public_fields.each do |proposal|
+      #Proposal.active.where('activity > 0').public_fields.each do |proposal|
+      Proposal.active.order('updated_at DESC').limit(20).public_fields.each do |proposal|      
         @proposals[proposal.long_id] = {
           :model => proposal,
           :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,

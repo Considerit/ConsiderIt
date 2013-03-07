@@ -4,7 +4,7 @@ class ConsiderIt.ResultsView extends Backbone.View
 
   initialize : (options) ->
     @proposal = options.proposal
-    num_participants = $.parseJSON(@model.get('participants')).length
+    num_participants = ($.parseJSON(@model.get('participants'))||[]).length
     @tile_size = Math.min 50, ConsiderIt.utils.get_tile_size(@PARTICIPANT_WIDTH, @PARTICIPANT_HEIGHT, num_participants)
 
   render : ->     

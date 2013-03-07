@@ -283,11 +283,34 @@
 - rep_user = theme.user
 - rep_position = nil
 
+%script{ :type => "text/template", :id => "tpl_new_proposal"}
+
+
+  %h2.m-proposal-heading
+    = text_field_tag 'name', nil, :placeholder => "Should we\u2026?", :class => 'm-proposal-name'
+
+  .m-proposal-message.m-proposal-introduction
+    .l-message-speaker.m-proposal-initiator
+      = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+
+    .l-message-body.left.m-proposal-description
+      .t-bubble 
+        &#9700;   
+
+      .m-proposal-description-body-wrap
+        = text_area_tag 'description', nil, :placeholder => "Add details of the proposal here.", :class => 'm-proposal-description-body'
+
+    .m-new-proposal-submit-wrap
+      = hidden_field_tag 'active', :value => true, :class => 'm-proposal-active'
+      = submit_tag 'Post this proposal', :class => "m-new-proposal-submit button"
+
+
+
 %script{ :type => "text/template", :id => "tpl_proposal" }
 
 
   %h2.m-proposal-heading
-    Should We {{title}}?
+    {{title}}
 
   .m-proposal-message.m-proposal-introduction
     .l-message-speaker.m-proposal-initiator

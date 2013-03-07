@@ -897,7 +897,6 @@ $membership_card_height: 278px
 // requesting fact check
 .m-point-assessment-request
 
-
   .m-point-assessment-request-form
     +box-shadow(0, 1px, 2px, black, 0.2)
     border-radius: 5px
@@ -1055,6 +1054,25 @@ $membership_card_height: 278px
 
 
 /* PROPOSAL */
+
+// New Proposal
+
+.m-proposals-new
+  .m-proposal-name, .m-proposal-description-body
+    background-color: transparent
+    width: 100%
+
+  .m-proposal-name
+    +font-size(3)
+    text-align: center
+    color: #222
+    font-weight: bold
+
+  .m-proposal-description-body
+    min-height: 3 * $vertical_baseline
+    +font-size(0)
+
+// Proposal
 
 #m-proposals-container
   margin-top: $vertical_baseline

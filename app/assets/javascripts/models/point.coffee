@@ -1,6 +1,5 @@
 class ConsiderIt.Point extends Backbone.Model
-  defaults: { 
-  }
+  defaults: { }
   name: 'point'
 
   initialize : () ->
@@ -35,7 +34,7 @@ class ConsiderIt.Point extends Backbone.Model
     @claims = []
     @num_assessment_requests = data.num_assessment_requests
     @already_requested_assessment = data.already_requested_assessment
-    
+
     if data.claims
       for d in data.claims 
         d.claim.result = htmlFormat(d.claim.result)

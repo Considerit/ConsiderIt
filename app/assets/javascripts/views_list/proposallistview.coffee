@@ -28,7 +28,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
   # Returns an instance of the view class
   getItemView: (proposal)->
-    console.log proposal
     id = proposal.get('long_id')
 
     if id of ConsiderIt.proposals

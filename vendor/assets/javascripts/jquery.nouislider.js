@@ -177,6 +177,7 @@
 						s			= api.options;
 						
 						typeof s.start == 'object' ? 1 : s.start=[s.start];
+
 						/* Available elements */
 						
 						api.slider	= slider;
@@ -231,7 +232,6 @@
 						
 						$.each( api.handles, function( index ){
 						
-
 							$(this).css({
 								'left' : helpers.scale(s.start[index],api.options.scale,s.width || api.slider.innerWidth()),
 								'zIndex' : index + 1

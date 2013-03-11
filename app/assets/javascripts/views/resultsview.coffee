@@ -39,11 +39,13 @@ class ConsiderIt.ResultsView extends Backbone.View
       tile_size : @tile_size
 
     @$el.hide()
+
     @$el
       .removeClass('m-results-summary')
       .addClass('m-aggregated-results')
 
     @view.render()
+
     @$el.show()
 
     me = this
@@ -52,12 +54,13 @@ class ConsiderIt.ResultsView extends Backbone.View
 
     @state = 1
 
+
   explode_participants : ->
-    speed = 1500
+    speed = 800
 
     modern = Modernizr.csstransforms && Modernizr.csstransitions
 
-    $participants = @$el.find('.l-message-speaker')
+    $participants = @$el.find('.l-message-speaker .l-group-container')
 
     from_tile_size = $participants.find('.avatar:first').width()
     to_tile_size = @$el.find(".m-histogram .avatar:first").width()
@@ -65,7 +68,7 @@ class ConsiderIt.ResultsView extends Backbone.View
 
     if modern
       $participants
-        .css({'position':'relative','z-index':99}) 
+        .css({'position':'absolute','z-index':99}) 
         .find('.avatar').css {
           '-o-transition': "all #{speed}ms",
           '-ms-transition': "all #{speed}ms",
@@ -105,9 +108,9 @@ class ConsiderIt.ResultsView extends Backbone.View
           }, speed, 'linear'
 
     window.delay speed + 350, -> 
-      me.$el.find('.m-histogram-bar').css 'opacity', 1
+      me.$el.find('.m-histogram').css 'opacity', 1
       window.delay 400, -> 
-        $participants.remove()
+        $participants.fadeOut()
 
 
   events : 
@@ -124,17 +127,12 @@ class ConsiderIt.SummaryView extends Backbone.View
     @tile_size = options.tile_size
 
   render : () ->
-
-    ht = ConsiderIt.SummaryView.template($.extend({}, @model.attributes, {
-      top_pro : @proposal.top_pro 
-      top_con : @proposal.top_con
-      tile_size : @tile_size      
-      }))
-              
+    
     this.$el.html ConsiderIt.SummaryView.template($.extend({}, @model.attributes, {
       top_pro : @proposal.top_pro 
       top_con : @proposal.top_con
-      tile_size : @tile_size      
+      tile_size : @tile_size   
+      participants : _.sortBy($.parseJSON(@model.get('participants')), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
       }))
 
     this
@@ -143,8 +141,11 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   @template : _.template( $("#tpl_results").html() )
 
-  BARHEIGHT : 172
-  BARWIDTH : 87
+  #BARHEIGHT : 172
+  #BARWIDTH : 87
+
+  BARHEIGHT : 149
+  BARWIDTH : 41
 
   initialize : (options) -> 
     @proposal = options.proposal
@@ -152,8 +153,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
     @tile_size = options.tile_size
 
     @pointlists = 
-      pros : new ConsiderIt.PaginatedPointList({perPage : 6} )
-      cons : new ConsiderIt.PaginatedPointList({perPage : 6} )
+      pros : new ConsiderIt.PaginatedPointList({perPage : 5} )
+      cons : new ConsiderIt.PaginatedPointList({perPage : 5} )
 
     @pointlists.pros.reset(@proposal.points.pros)
     @pointlists.cons.reset(@proposal.points.cons)
@@ -166,6 +167,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
     @$el.html ConsiderIt.ExplorerView.template _.extend {}, @model.attributes, 
       histogram : @histogram
       tile_size : @tile_size
+      participants : _.sortBy($.parseJSON(@model.get('participants')), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
 
     @views =
       pros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.pros, el : @$el.find('.m-pro-con-list-propoints'), location: 'results', proposal : @proposal})
@@ -196,7 +198,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
       breakdown : [{positions:[]} for i in [0..6]][0]
 
     _.each @proposal.positions, (pos) ->
-      histogram.breakdown[6-pos.get('stance_bucket')].positions.push(pos)
+      histogram.breakdown[6-pos.get('stance_bucket')].positions.push(pos) if pos.get('user_id') > -1
 
     _.extend histogram, 
       biggest_segment : Math.max.apply(null, _.map(histogram.breakdown, (bar) -> bar.positions.length))
@@ -204,7 +206,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     _.each histogram.breakdown, (bar, idx) =>
       height = bar.positions.length / histogram.biggest_segment
-      full_size = height * @BARHEIGHT 
+      full_size = Math.ceil(height * @BARHEIGHT)
       empty_size = @BARHEIGHT * (1 - height)
 
       tile_size = ConsiderIt.utils.get_tile_size(@BARWIDTH, full_size, bar.positions.length)
@@ -217,6 +219,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
         empty_size : empty_size
         num_ghosts : if bar.positions.length % tiles_per_row != 0 then tiles_per_row - bar.positions.length % tiles_per_row else 0
 
+      bar.positions = _.sortBy bar.positions, (pos) -> !ConsiderIt.users[pos.get('user_id')].get('avatar_file_name')?
     histogram
 
   #handlers
@@ -262,10 +265,13 @@ class ConsiderIt.ExplorerView extends Backbone.View
         value : (fld) -> fld > 0
       }]
 
+      @pointlists.pros.updateList()
+      @pointlists.cons.updateList()
+
       others = @$el.find('.m-results-pro-con-list-who-others')
       others.siblings('.m-results-pro-con-list-who-all').hide()
       others
-        .html("Most important factors for <div class='group_name'>#{ConsiderIt.Position.stance_name(bucket)}</div>")
+        .html("For us <span class='group_name'>#{ConsiderIt.Position.stance_name(bucket)}</span>, these are the most important")
         .show()
 
       _.each @views, (vw) -> 
@@ -292,10 +298,16 @@ class ConsiderIt.ExplorerView extends Backbone.View
     $selected_bar = @$histogram.find('.m-bar-is-selected')
     return if $selected_bar.length == 0
 
+    @$el.hide()
+
+
     @pointlists.pros.setSort('score', 'desc')
     @pointlists.cons.setSort('score', 'desc')
     @pointlists.pros.setFieldFilter()
     @pointlists.cons.setFieldFilter()
+
+    @pointlists.cons.updateList()
+    @pointlists.pros.updateList()
 
     aggregate_heading = @$el.find('.m-results-pro-con-list-who-all')
     aggregate_heading.siblings('.m-results-pro-con-list-who-others').hide()
@@ -303,6 +315,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     $('.m-bar-person-details:visible', $selected_bar).hide()
     
+    @$el.show()
+
     $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
 
     $(document)
@@ -336,10 +350,11 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     if ev.type == 'mouseenter'
       @$histogram.find('.avatar').css('visibility', 'hidden')
-      $(selector.join(','), @$histogram).css('visibility', '')
-      $("#avatar-#{$target.attr('user')}").css('visibility', '')
+      $(selector.join(','), @$histogram).css {'visibility': '', 'opacity': 1}
+      console.log 'hi'
+      $("#avatar-#{$target.attr('user')}").css {'visibility': '', 'opacity': 1}
     else
-      @$histogram.find('.avatar').css('visibility', '')
+      @$histogram.find('.avatar').css {'visibility': '', 'opacity': ''} 
 
     @$histogram.show()
 

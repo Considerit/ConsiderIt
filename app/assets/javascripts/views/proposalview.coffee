@@ -141,6 +141,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   take_position : (me) ->
+    me.proposal.views.results.show_summary()
 
     el = me.proposal.views.take_position.show_crafting()
     el.insertAfter(me.$el.find('[data-role="results-section"]'))

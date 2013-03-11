@@ -85,7 +85,7 @@ window.ConsiderIt.utils =
         y_size = Math.min(Math.floor(width/x), Math.floor(height/test_y))
         tileSize = Math.max(x_size, y_size)
       
-    tileSize
+    tileSize - 1
 
 
 window.ConsiderIt.update_current_user = (parameters) ->

@@ -98,6 +98,7 @@ class ConsiderIt.CraftingView extends Backbone.View
 
   render : () -> 
     @$el.html ConsiderIt.CraftingView.template($.extend({}, @model.attributes, {proposal : @proposal.model.attributes}))
+
     @slider = 
       max_effect : 65 
       value : @model.get('stance') * 100
@@ -109,7 +110,7 @@ class ConsiderIt.CraftingView extends Backbone.View
         handles: 1
         connect: "lower"
         scale: [100, -100]
-        width: 360
+        width: 300
         change: () => @slider_change(@slider.$el.noUiSlider('value')[1])
 
     @pointlists = 
@@ -133,7 +134,9 @@ class ConsiderIt.CraftingView extends Backbone.View
     $('.m-pro-con-list-propoints', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : true}))
     $('.m-pro-con-list-conpoints', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : false}))
 
-    @$el.find('.m-newpoint-nutshell, .m-newpoint-description').autoResize {extraSpace: 10, maxWidth: 'original'}
+    @$el.find('.m-newpoint-nutshell').autoResize {extraSpace: 10, minHeight: 50}
+    @$el.find('.m-newpoint-description').autoResize {extraSpace: 10, minHeight: 100 }
+
     @$el.find('.m-position-statement').autoResize {extraSpace: 5}
     @$el.find('[placeholder]').simplePlaceholder()
 
@@ -158,12 +161,13 @@ class ConsiderIt.CraftingView extends Backbone.View
     'textarea[name="explanation"]' : 'explanation'
 
   create_slider : () ->
+
     @slider.$el = $('<div class="noUiSlider">').appendTo(@$el.find('.m-stance-slider-container'))
     @slider.params.start = @model.get('stance') * 100  
     @slider.$el.noUiSlider('init', @slider.params)
     if !@slider.is_neutral
       @slider.$neutral_label.hide()
-
+    
 
   show : () ->
     @pointlists.peerpros.goTo(1)
@@ -180,6 +184,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     'click .m-newpoint-new' : 'new_point'
     'click .m-newpoint-cancel' : 'cancel_new_point'
     'click .m-newpoint-create' : 'create_new_point'
+    'click .m-point-peer' : 'navigate_point_details'
 
   include_point : (ev) ->
     $item = @_$item(ev.currentTarget)
@@ -201,6 +206,8 @@ class ConsiderIt.CraftingView extends Backbone.View
     $.post Routes.proposal_point_inclusions_path( @proposal.model.get('long_id'), model.attributes.id ), 
       params, 
       (data) ->
+
+    ev.stopPropagation()
 
   remove_point : (ev) ->
     $item = @_$item(ev.currentTarget)
@@ -231,11 +238,11 @@ class ConsiderIt.CraftingView extends Backbone.View
 
   new_point : (ev) ->
     $(ev.currentTarget).fadeOut 100, () ->
+      $(this).siblings('.m-newpoint-form').find('.m-newpoint-nutshell, .m-newpoint-description').trigger('keyup')
       $(this).siblings('.m-newpoint-form').fadeIn 'fast', () ->
         #$(this).find('iframe').focus().contents().trigger('keyup').find('#page')            
-        $(this).find('input,textarea').trigger('keyup')
         $(this).find('.m-newpoint-nutshell').focus()
-
+  
   cancel_new_point : (ev) ->
     $form = $(ev.currentTarget).closest('.m-newpoint-form')
     $form
@@ -290,5 +297,8 @@ class ConsiderIt.CraftingView extends Backbone.View
 
   _$item : (child) ->
     $(child).closest("[data-role=\"#{ConsiderIt.PointListView.childClass}\"]")
+
+  navigate_point_details : (ev) ->
+    ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.model.get('long_id'), $(ev.currentTarget).data('id')), {trigger: true})
 
 

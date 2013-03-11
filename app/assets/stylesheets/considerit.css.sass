@@ -261,13 +261,16 @@ $hex-bullet-point: '\2022'
     //margin-left: $grid_xs
     margin-left: $grid_minor
     
-  //.m-pro-con-list-header   
+  .m-pro-con-list-header   
     margin-bottom: $vertical_baseline/2
     text-align: center
-    position: relative
+    +font-size(2)
+    background-color: rgba(black, .15)
+    //border-radius: 5px
+    //position: relative
 
-    img
-      width: 80px
+    //img
+    //  width: 80px
 
 
 .avatar
@@ -1238,6 +1241,13 @@ $membership_card_height: 278px
     min-height: 3 * $vertical_baseline
     +font-size(0)
 
+  .m-new-proposal-submit-wrap input[type="submit"]
+    +font-size(2)
+    color: white
+    +superbutton
+    margin-left: 164px
+
+
 // Proposal
 
 #m-proposals-container
@@ -1433,10 +1443,11 @@ $membership_card_height: 278px
 
   %m-top-point-body
     padding: $vertical_baseline / 2 $grid_xs
-    width: 280px
+    width: 210px
     position: relative
     display: inline-block
     +colored_post_it($repeated: 1)
+    +font-size(-2)
 
   .m-top-pro-body
     @extend %m-top-point-body
@@ -1531,7 +1542,8 @@ $histogram_bar_color: #6E6E6E
 
 
     $base_selected_bar_color: #B1B18F
-    $darken_amt: 15%
+    $base_selected_bar_color: #7F7F56
+    $darken_amt: 10%
     $hue_spread: 18
 
     &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
@@ -1541,17 +1553,17 @@ $histogram_bar_color: #6E6E6E
       &#bucket-0
         $b0: adjust-hue($base_selected_bar_color, 3 * $hue_spread)
         background-color: $b0
-        border-color: darken($b0, $darken_amt)
+        border-color: saturate( darken($b0, $darken_amt), $darken_amt)
 
       &#bucket-1
         $b1: adjust-hue($base_selected_bar_color, 2 * $hue_spread)
         background-color: $b1
-        border-color: darken($b1, $darken_amt)
+        border-color: saturate( darken($b1, $darken_amt), $darken_amt)
 
       &#bucket-2
         $b2: adjust-hue($base_selected_bar_color, 1 * $hue_spread)
         background-color: $b2
-        border-color: darken($b2, $darken_amt)
+        border-color: saturate( darken($b2, $darken_amt), $darken_amt)
 
       &#bucket-3
         $b3: $base_selected_bar_color
@@ -1561,17 +1573,17 @@ $histogram_bar_color: #6E6E6E
       &#bucket-4
         $b4: adjust-hue($base_selected_bar_color, - 1 * $hue_spread)
         background-color: $b4
-        border-color: darken($b4, $darken_amt)
+        border-color: saturate( darken($b4, $darken_amt), $darken_amt)
 
       &#bucket-5
         $b5: adjust-hue($base_selected_bar_color, - 2  * $hue_spread)
         background-color: $b5
-        border-color: darken($b5, $darken_amt)
+        border-color: saturate( darken($b5, $darken_amt), $darken_amt)
 
       &#bucket-6
         $b6: adjust-hue($base_selected_bar_color, - 3 * $hue_spread)
         background-color: $b6
-        border-color: darken($b6, $darken_amt)
+        border-color: saturate( darken($b6, $darken_amt), $darken_amt)
 
       //&:after
         //+chalkboard
@@ -1711,15 +1723,17 @@ $histogram_bar_color: #6E6E6E
 .m-results-pro-con-list-who
   text-align: center
   +font-size(2)
-  height: 3 * $vertical_baseline
+  margin-bottom: $vertical_baseline/2
+  //height: 2 * $vertical_baseline
 
 .m-results-pro-con-list
   //@extend %chalkboard
   @extend %pro_con_list
-  min-height: 450px
+  min-height: 530px
 
 $filter_width: 371px
 .m-results-point-filters
+  display: none
   +font-size(-3)
   text-transform: uppercase
   text-align: center

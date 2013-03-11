@@ -443,7 +443,8 @@
       .m-reasons-pro-con-list
         .m-pro-con-list-propoints
          
-          //.m-pro-con-list-header
+          / .m-pro-con-list-header
+          /   Pros
           //  - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
           //    = theme_image_tag('pro_header.png')
           //  - else
@@ -453,7 +454,8 @@
 
         .m-pro-con-list-conpoints
 
-          // .m-pro-con-list-header
+          / .m-pro-con-list-header
+          /   Cons
           //   - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
           //     = theme_image_tag('con_header.png')
           //   - else
@@ -569,21 +571,23 @@
 
 
       .m-pro-con-list-propoints             
-        / .m-pro-con-list-header
-        /   - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
-        /     = theme_image_tag('pro_header.png')
-        /   - else
-        /     = image_tag('chalk/pros.png') 
+        .m-pro-con-list-header
+          Pros
+          / - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
+          /   = theme_image_tag('pro_header.png')
+          / - else
+          /   = image_tag('chalk/pros.png') 
         %ul.m-point-list
    
 
       .m-pro-con-list-conpoints
 
-        / .m-pro-con-list-header
-        /   - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
-        /     = theme_image_tag('con_header.png')
-        /   - else
-        /     = image_tag('chalk/cons.png') 
+        .m-pro-con-list-header
+          Cons
+          / - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
+          /   = theme_image_tag('con_header.png')
+          / - else
+          /   = image_tag('chalk/cons.png') 
 
         %ul.m-point-list
 

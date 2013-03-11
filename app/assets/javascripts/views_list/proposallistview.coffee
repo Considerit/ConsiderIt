@@ -16,14 +16,13 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
   #TODO: do this when login as admin
   render_new_proposal : ->
-    if ConsiderIt.roles.is_admin
+    if true || ConsiderIt.roles.is_admin
       @$new_proposal = $('<div class="m-proposals-new l-content-wrap">')
         .html ConsiderIt.ProposalListView.new_proposal_template( {  })
       
-      @$new_proposal.find('.m-proposal-description-body').autoResize {extraSpace: 10}
+      @$new_proposal.find('.m-proposal-description-body').autoResize( {extraSpace: 10, minHeight: 100})
+        .trigger('keyup')
       @$new_proposal.find('[placeholder]').simplePlaceholder()
-
-      @$el.prepend(@$new_proposal)
 
 
   # Returns an instance of the view class

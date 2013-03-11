@@ -41,9 +41,10 @@ class ConsiderIt.PositionView extends Backbone.View
 
   close_crafting : ->
     if @state == 1
-      @crafting_view.remove()
-      @your_action_view.close_crafting()
-      @state = 0
+      @crafting_view.$el.slideUp =>
+        @crafting_view.remove()
+        @your_action_view.close_crafting()
+        @state = 0
 
   events :
     'click .submit' : 'handle_submit_position'

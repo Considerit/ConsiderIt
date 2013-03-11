@@ -351,7 +351,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
     if ev.type == 'mouseenter'
       @$histogram.find('.avatar').css('visibility', 'hidden')
       $(selector.join(','), @$histogram).css {'visibility': '', 'opacity': 1}
-      console.log 'hi'
       $("#avatar-#{$target.attr('user')}").css {'visibility': '', 'opacity': 1}
     else
       @$histogram.find('.avatar').css {'visibility': '', 'opacity': ''} 
@@ -364,6 +363,9 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     @pointlists.pros.setSort(fld, 'desc', true)
     @pointlists.cons.setSort(fld, 'desc', true)
+
+    @pointlists.pros.updateList()
+    @pointlists.cons.updateList()
 
     $target.siblings().removeClass('selected')
     $target.addClass('selected')

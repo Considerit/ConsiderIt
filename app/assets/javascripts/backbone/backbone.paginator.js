@@ -184,8 +184,8 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
         this.lastSortColumn = this.sortColumn;
         this.sortColumn = column;
         this.sortDirection = direction;
-        this.pager();
-        this.info();
+        //this.pager();
+        //this.info();
       }
     },
 
@@ -199,16 +199,21 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
       if( !_.isEmpty( fieldFilterRules ) ) {
         this.lastFieldFilterRules = this.fieldFilterRules;
         this.fieldFilterRules = fieldFilterRules;
-        this.pager();
-        this.info();
+        //this.pager();
+        //this.info();
         // if all the filters are removed, we should save the last filter
         // and then let the list reset to it's original state.
       } else {
         this.lastFieldFilterRules = this.fieldFilterRules;
         this.fieldFilterRules = '';
-        this.pager();
-        this.info();
+        //this.pager();
+        //this.info();
       }
+    },
+
+    updateList: function() {
+      this.pager();
+      this.info();
     },
 
     // doFakeFieldFilter can be used to get the number of models that will remain

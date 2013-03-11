@@ -31,7 +31,8 @@ class ConsiderIt.PointView extends Backbone.View
     )
 
     #TODO: if user logs in as admin, need to do this
-    if ConsiderIt.current_user.id == @model.user_id || ConsiderIt.roles.is_admin
+    #TODO: need to allow people who haven't logged in to edit their own points
+    if (ConsiderIt.current_user && ConsiderIt.current_user.id == @model.get('user_id')) || ConsiderIt.roles.is_admin
       @$el.find('.m-point-nutshell').editable {
           resource: 'point'
           pk: @model.id

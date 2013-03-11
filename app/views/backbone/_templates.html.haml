@@ -1,52 +1,53 @@
 
 
 %script{ :type => "text/template", :id => "tpl_point" }      
-        
-  .m-point-nutshell-wrap
-    %span.m-point-nutshell
-      {{adjusted_nutshell}}
-    %span.details_indicator
-      (&#8230;)
-  
-    %span.m-point-user
-      (( if(user.name) { ))
-      {{user.name}}
-      (( } else if(is_you) { ))
-      You
-      (( } else { ))
-      Anonymous
-      (( } ))
+  .m-point-wrap
+    .m-point-nutshell-wrap
+      %span.m-point-nutshell
+        {{adjusted_nutshell}}
+      //%span.details_indicator
+      //  (&#8230;)
+    
+      // %span.m-point-user
+      //   (( if(user.name) { ))
+      //   {{user.name}}
+      //   (( } else if(is_you) { ))
+      //   You
+      //   (( } else { ))
+      //   Anonymous
+      //   (( } ))
 
-  .m-point-operations
-    %a.m-point-read-more{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }        
-      {{ comment_count == 1 ? "1 comment" : comment_count + " comments"}}
-    %a.m-point-include
-      Add
-    %a.m-point-remove
-      Remove
+    .m-point-operations
+      %a.m-point-read-more{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }        
+        {{ comment_count == 1 ? "1 comment" : comment_count + " comments"}}
+      %a.m-point-remove
+        Remove
+
+    .m-point-include-wrap
+      %a.m-point-include
+        Add to your list
+      %span.list_connector
 
 %script{ :type => "text/template", :id => "tpl_newpoint" }      
   
   .m-newpoint
 
-    %a.m-newpoint-new{ :class => "{{is_pro ? 'pro' : 'con'}}" }
+    %a.m-newpoint-new
       Write a new {{is_pro ? "pro" : "con"}} point
 
-    .m-newpoint-form{ :class => "{{is_pro ? 'pro' : 'con'}}" }
+    .m-newpoint-form
+      .m-newpoint-nutshell-wrap
+        = text_area_tag :nutshell, nil, :placeholder => 'Summarize your point (required)', :cols => 28, :class => "m-newpoint-nutshell is_counted", :required=>true, :maxlength => 140, :pattern => "^.{3,}"
+        %span.count
+          140
 
-      .m-newpoint-fields
+      .m-newpoint-description-wrap
+        = text_area_tag :text, nil, :placeholder => "Write a longer description (optional)", :title => "Write a longer description (optional)", :cols => 28, :class => "m-newpoint-description"
 
-        .m-newpoint-nutshell-wrap
-          = text_area_tag :nutshell, nil, :placeholder => 'Summarize your point (required)', :cols => 28, :class => "m-newpoint-nutshell is_counted", :required=>true, :maxlength => 140, :pattern => "^.{3,}"
-          %span.count
-            140
+      .m-newpoint-anonymous-wrap
+        = label_tag :hide_name, 'conceal your name', :title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'
 
-        .m-newpoint-description-wrap
-          = text_area_tag :text, nil, :placeholder => "Write a longer description (optional)", :title => "Write a longer description (optional)", :cols => 28, :class => "m-newpoint-description"
-
-        .m-newpoint-anonymous-wrap
-          = check_box_tag :hide_name, :class => 'm-newpoint-anonymous'
-          = label_tag :hide_name, 'conceal your name', :title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'
+        = check_box_tag :hide_name, :class => 'm-newpoint-anonymous'
 
       .m-newpoint-submit
 
@@ -358,7 +359,7 @@
         I've not yet taken a stance
         (( } else if(r==1){ ))
         -# elsif r == 1 #true || proposal.active        
-        I'm still hoping to hear from more of you. In the meantime, these are 
+        I hope to hear from more of you. Meanwhile, these are 
         %a{ :style => "text-decoration: underline; cursor: pointer;"}
           my thoughts so far. 
         (( } else{ ))
@@ -425,15 +426,16 @@
       &#9700;
 
     %h2.m-position-heading
-      These are the pros and cons that I think are most important: 
+      I consider these the most important pros and cons
 
     .m-reasons
-      .m-reasons-peer-points
-        .m-reasons-peer-pros-heading
-          %h3
-            Pros by other users
-          .sublead
-            add good ones to your list
+      .m-reasons-peer-points.m-reasons-peer-points-pros
+
+        / .m-reasons-peer-pros-heading
+        /   %h3
+        /     Pros by other users
+        /   .sublead
+        /     add good ones to your list
 
         .m-reasons-peer-pros
           %ul.m-point-list
@@ -441,30 +443,30 @@
       .m-reasons-pro-con-list
         .m-pro-con-list-propoints
          
-          .m-pro-con-list-header
-            - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
-              = theme_image_tag('pro_header.png')
-            - else
-              = image_tag('chalk/pros.png') 
+          //.m-pro-con-list-header
+          //  - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
+          //    = theme_image_tag('pro_header.png')
+          //  - else
+          //    = image_tag('chalk/pros.png') 
 
           %ul.m-point-list
 
         .m-pro-con-list-conpoints
 
-          .m-pro-con-list-header
-            - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
-              = theme_image_tag('con_header.png')
-            - else
-              = image_tag('chalk/cons.png') 
+          // .m-pro-con-list-header
+          //   - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
+          //     = theme_image_tag('con_header.png')
+          //   - else
+          //     = image_tag('chalk/cons.png') 
 
           %ul.m-point-list
 
-      .m-reasons-peer-points
-        .m-reasons-peer-cons-heading
-          %h3
-            cons by other users
-          .sublead
-            add good ones to your list
+      .m-reasons-peer-points.m-reasons-peer-points-cons
+        / .m-reasons-peer-cons-heading
+        /   %h3
+        /     cons by other users
+        /   .sublead
+        /     add good ones to your list
 
         .m-reasons-peer-cons
           %ul.m-point-list
@@ -542,7 +544,7 @@
     .clear  
 
   .l-message-speaker.l-group-container
-    (( _.each($.parseJSON(participants), function(p){ ))
+    (( _.each(participants, function(p){ ))
     %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
     (( }); ))
 
@@ -556,8 +558,55 @@
     .t-bubble
       &#9700;
 
-    %h3
-      This is what we believe and why. Hover over the bars to find common ground and identify sticking points.
+    %h3.m-results-pro-con-list-who
+      .m-results-pro-con-list-who-others
+      .m-results-pro-con-list-who-all    
+        Amongst all of us, these are the most important
+
+
+
+    .m-results-pro-con-list{ :class => "static" }
+
+
+      .m-pro-con-list-propoints             
+        / .m-pro-con-list-header
+        /   - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
+        /     = theme_image_tag('pro_header.png')
+        /   - else
+        /     = image_tag('chalk/pros.png') 
+        %ul.m-point-list
+   
+
+      .m-pro-con-list-conpoints
+
+        / .m-pro-con-list-header
+        /   - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
+        /     = theme_image_tag('con_header.png')
+        /   - else
+        /     = image_tag('chalk/cons.png') 
+
+        %ul.m-point-list
+
+      .m-results-point-filters
+        %span.label
+          order by 
+
+        %a.point_filter.selected{ :'data-filter' => 'score'}
+          Popularity
+        %a.point_filter{ :'data-filter' => 'appeal'}
+          Most Unifying
+        %a.point_filter{ :'data-filter' => 'divisiveness'}
+          Most Divisive
+
+  .l-message-speaker
+
+    .l-group-container{ :style => 'position: absolute; top: 0; left: 0;'}
+      (( _.each( participants, function(p){ ))
+      %span.avatar{ :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+      (( }); ))
+
+    .clear
+
 
     .m-histogram
 
@@ -567,7 +616,10 @@
       (( _.each(histogram.breakdown, function(bar, bucket){ ))
 
 
-      .m-histogram-bar{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}"}
+      .m-histogram-bar{ :style => "width: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}"}
+
+        .m-bar-percentage
+          {{ Math.ceil(bar.positions.length / participants.length * 1000)/10 }}%
 
         .m-bar-close
           x
@@ -604,47 +656,10 @@
       .m-histogram-label-oppose
         Opposers
 
+      .clear  
 
-    .m-results-pro-con-list{ :class => "static" }
 
-      %h3.m-results-pro-con-list-who
-        .m-results-pro-con-list-who-others
-        .m-results-pro-con-list-who-all
-          All Factors
-          .filters
-            %span.label
-              order by 
 
-            %a.point_filter.selected{ :'data-filter' => 'score'}
-              Popularity
-            %a.point_filter{ :'data-filter' => 'appeal'}
-              Most Unifying
-            %a.point_filter{ :'data-filter' => 'divisiveness'}
-              Most Divisive
-
-      .m-pro-con-list-propoints             
-        .m-pro-con-list-header
-          - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
-            = theme_image_tag('pro_header.png')
-          - else
-            = image_tag('chalk/pros.png') 
-        %ul.m-point-list
-   
-
-      .m-pro-con-list-conpoints
-
-        .m-pro-con-list-header
-          - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
-            = theme_image_tag('con_header.png')
-          - else
-            = image_tag('chalk/cons.png') 
-
-        %ul.m-point-list
-
-  .l-message-speaker.l-group-container
-    (( _.each($.parseJSON(participants), function(p){ ))
-    %span.avatar{ :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-    (( }); ))
 
 
 = render :partial => 'backbone/templates_user'

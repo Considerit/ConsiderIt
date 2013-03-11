@@ -35,7 +35,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     $(document).keyup (ev) => @close_by_keyup(ev)
 
     #TODO: if user logs in as admin, need to do this
-    if ConsiderIt.current_user.id == @model.user_id || ConsiderIt.roles.is_admin
+    if ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.roles.is_admin
       @$el.find('.m-point-details-nutshell ').editable {
           resource: 'point'
           pk: @model.id

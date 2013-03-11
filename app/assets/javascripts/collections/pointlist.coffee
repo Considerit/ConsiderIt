@@ -11,5 +11,7 @@ class ConsiderIt.PaginatedPointList extends Backbone.Paginator.clientPager
     perPage: 3
 
   initialize: (options) -> 
-    _.extend @paginator_ui, options || {}
     super
+
+    if options? && options.perPage? 
+      @perPage = options.perPage

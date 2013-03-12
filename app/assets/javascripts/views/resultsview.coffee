@@ -274,6 +274,12 @@ class ConsiderIt.ExplorerView extends Backbone.View
         .html("For us <span class='group_name'>#{ConsiderIt.Position.stance_name(bucket)}</span>, these are the most important")
         .show()
 
+      @$el.find('.t-bubble').hide()
+
+      $bar_bubble = $('<div class="t-bubble-bar t-bubble"><div class="t-bubble-wrap">&#9654;</div></div>')
+      $bar_bubble.css('top', $bar.position().top + 2)
+      @$el.find('.l-message-body').append($bar_bubble)
+
       _.each @views, (vw) -> 
         #vw.repaginate()
         vw.$el.show()
@@ -314,7 +320,11 @@ class ConsiderIt.ExplorerView extends Backbone.View
     aggregate_heading.show()
 
     $('.m-bar-person-details:visible', $selected_bar).hide()
-    
+
+    @$el.find('.t-bubble-bar').remove()
+
+    @$el.find('.t-bubble').show()
+
     @$el.show()
 
     $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')

@@ -99,8 +99,9 @@
       %span.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
 
     .l-message-body.m-point-details-body
-      .t-bubble 
-        &#9700;   
+      .t-bubble
+        .t-bubble-wrap
+          &#9700;
 
       %a.m-point-details-close
         Close details
@@ -304,8 +305,9 @@
       = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
 
     .l-message-body.left.m-proposal-description
-      .t-bubble 
-        &#9700;   
+      .t-bubble
+        .t-bubble-wrap
+          &#9700;
 
       .m-proposal-description-body-wrap
         = text_area_tag 'description', nil, :placeholder => "Add details of the proposal here.", :class => 'm-proposal-description-body'
@@ -327,8 +329,9 @@
       = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
 
     .l-message-body.left.m-proposal-description
-      .t-bubble 
-        &#9700;   
+      .t-bubble
+        .t-bubble-wrap
+          &#9700;
       .m-proposal-description-body
         {{description}}
 
@@ -359,7 +362,8 @@
 
     .l-message-body.left.m-proposal-description
       .t-bubble
-        &#9700;
+        .t-bubble-wrap
+          &#9700;
       (( var r = Math.floor(Math.random()*3); ))
 
       .rep_statement
@@ -402,7 +406,8 @@
 
   %a.l-message-body.m-position-your-action-body.right.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
     %span.t-bubble
-      &#9700;
+      %span.t-bubble-wrap
+        &#9700;
 
     //= image_tag current_theme_image_path("join.png")
 
@@ -417,7 +422,8 @@
 
   %a.l-message-body.m-position-your-action-body.right.submit
     %span.t-bubble
-      &#9700;
+      %span.t-bubble-wrap
+        &#9700;
 
     //= image_tag current_theme_image_path("join.png")
 
@@ -432,7 +438,8 @@
   .l-message-recipient
   .l-message-body.right.m-position-message-body
     .t-bubble
-      &#9700;
+      .t-bubble-wrap
+        &#9700;
 
     %h2.m-position-heading
       I consider these the most important pros and cons
@@ -517,7 +524,8 @@
   .l-message-recipient
   .l-message-body.right.m-results-responders.summary{ :style => " {{ tile_size==50 ? '' : 'min-height:160px;' }} "}
     .t-bubble
-      &#9700;
+      .t-bubble-wrap
+        &#9700;
 
 
     %h3.m-summary-heading
@@ -533,7 +541,8 @@
 
       .m-top-pro-body.left
         .t-bubble
-          &#9700;
+          .t-bubble-wrap
+            &#9700;
         .text
           {{top_pro.nutshell}}
       (( } ))
@@ -545,7 +554,8 @@
       (( } else { ))
       .m-top-con-body.l-message-body.right
         .t-bubble
-          &#9700;
+          .t-bubble-wrap
+            &#9700;
         .text
           {{top_con.nutshell}}
 
@@ -567,7 +577,8 @@
 
   .l-message-body.right.m-results-responders
     .t-bubble
-      &#9700;
+      .t-bubble-wrap
+        &#9700;
 
     %h3.m-results-pro-con-list-who
       .m-results-pro-con-list-who-others

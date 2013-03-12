@@ -16,7 +16,7 @@ $dark_comp_color: darken($comp_color, 10%)
 $header_gray: #777
 $empty_color: #ddd
 
-$proposal_width: 617px
+$proposal_width: 600px
 $body_width: 600px
 
 $content_background : image-url('directrep/images/brillant.png')
@@ -49,6 +49,9 @@ body #l-wrap > div#l-content .l-content-wrap-no-background
     display: inline-block
     vertical-align: top
 
+  > .l-message-speaker, > .l-message-recipient
+    margin-top: 2px
+
   > .l-message-body
     position: relative
     width: 100%
@@ -74,26 +77,31 @@ body #l-wrap > div#l-content .l-content-wrap-no-background
 
   @extend %l-message-template
   .l-message-speaker
-    width: 238px - $grid_xs
+    width: 160px
+    text-align: right
+    img
+      width: 160px
 
   .l-message-recipient
-    width: 186px
+    width: 160px
 
     .avatar      
       opacity: .75
-      width: 31px
-      height: 31px
+      width: 25px
+      height: 25px
 
   .l-message-body
     width: $proposal_width
 
   .t-leader-desc-about
-    width: 220px
+    //width: 220px
+    width: 160px
     color: $header_gray
     text-align: center
+    +font-size(-2)
 
   .t-dr-leader-media
-    +font-size(-2)
+    +font-size(-4)
     padding-top: $vertical_baseline / 2
     text-align: center
     color: $header_gray

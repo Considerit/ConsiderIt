@@ -114,7 +114,7 @@
         = render :partial => "shared/header/container"
 
         #l-content
-          - if Rails.env.development?
+          - if false && Rails.env.development?
             = render :partial => "shared/dev_tools"      
 
           - if @dashboard
@@ -172,7 +172,7 @@
 
               .l-message-recipient.l-group-container
                 - cols = 6
-                - rows = 7
+                - rows = 8
                 - pics = User.where('avatar_file_name IS NOT NULL')
                 - users = pics.sample( [cols*rows, pics.count].min )
 

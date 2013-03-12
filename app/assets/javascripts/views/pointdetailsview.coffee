@@ -52,9 +52,16 @@ class ConsiderIt.PointDetailsView extends Backbone.View
         }
 
     @$el.show()
-    $('html, body').stop(true, true);
-    @center_overlay()
-    $('html, body').animate {scrollTop: @$el.offset().top - 50}, 1000
+
+    $unexpanded_point = $("[data-id='#{@model.cid}']")
+    if $unexpanded_point.length > 0
+      @$el.css {left: $unexpanded_point.offset().left - @proposal.view.$el.offset().left - (if @model.get('is_pro') == true then 0 else @$el.width()), top: $unexpanded_point.offset().top - @proposal.view.$el.offset().top }
+    else
+      @center_overlay()
+
+    $('html, body').stop(true, true)
+    #@center_overlay()
+    $('html, body').animate {scrollTop: @$el.offset().top - 250}, 1000
 
     this
 

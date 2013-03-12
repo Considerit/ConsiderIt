@@ -361,6 +361,8 @@ html
     vertical-align: top
     position: relative
 
+  > .l-message-speaker, > .l-message-recipient
+    margin-top: 2px
   > .l-message-body
     width: 100%
 
@@ -690,6 +692,9 @@ $membership_card_height: 278px
   position: relative
   cursor: pointer
 
+  .m-point-author-avatar
+    display: none
+
   .m-point-nutshell-wrap
 
     .m-point-user
@@ -717,6 +722,11 @@ $membership_card_height: 278px
       right: 1px
 
 
+= circle($width)
+  border-radius: 50%
+  width: $width
+  height: $width
+
 .m-point-peer
 
   width: $peer-point-width
@@ -726,6 +736,42 @@ $membership_card_height: 278px
   position: relative
   cursor: pointer
 
+  &:before, &:after
+    content: ''
+    position: absolute
+    border: 1px solid $dark_constituency_color
+    @extend %postit-background-repeat
+    border-bottom-color: transparent
+
+  &:before
+    +circle(5px)
+    top: 23px
+    z-index: -1
+    opacity: .75
+
+  &:after
+    +circle(7px)
+    top: 15px
+    opacity: .9
+
+  &.pro
+    &:before, &:after
+      border-right-color: transparent
+    &:before
+      left: -13px
+
+    &:after
+      left: -7px
+
+  &.con
+    &:before, &:after
+      border-left-color: transparent
+    &:before
+      right: -13px
+
+    &:after
+      right: -7px
+
 
   .m-point-wrap
     +inset-box-shadow(1px,6px,9px, -5px, #fff)
@@ -734,6 +780,21 @@ $membership_card_height: 278px
     border-radius: 8px
     border: 1px solid $dark_constituency_color
     @extend %postit-background-repeat
+
+  .m-point-author-avatar
+    width: 50px
+    height: 50px
+    display: inline-block
+    position: absolute
+    border-radius: 8px
+    top: 2 * $vertical_baseline
+    opacity: .55
+
+  &.pro .m-point-author-avatar
+    left: -50px
+
+  &.con .m-point-author-avatar
+    right: -50px
 
   .m-point-nutshell-wrap
     +font-size(-3)
@@ -957,21 +1018,24 @@ $membership_card_height: 278px
       left: -9px    
 
   .m-newpoint-description
-    width: 100%
+    width: 94%
   
   .m-newpoint-nutshell-wrap
     .m-newpoint-nutshell
-      width: 88%
+      width: 94%
 
     .count
       +font-size(-3)
       vertical-align: middle
+      position: absolute
 
   .m-newpoint-submit, .m-newpoint-anonymous-wrap
     text-align: right
+    margin-left: 10px
 
   .m-newpoint-anonymous-wrap
     +font-size(-1)
+    display: none
 
   .m-newpoint-submit
     margin-top: 3px
@@ -1238,8 +1302,9 @@ $membership_card_height: 278px
     font-weight: bold
 
   .m-proposal-description-body
-    min-height: 3 * $vertical_baseline
+    min-height: 5 * $vertical_baseline
     +font-size(0)
+    border: none
 
   .m-new-proposal-submit-wrap input[type="submit"]
     +font-size(2)
@@ -1771,6 +1836,9 @@ $filter_width: 371px
     border-radius: 0
     //+box-shadow(0, 1px, 5px, rgba(black, .5))
 
+    > .t-bubble
+      +complex-gradient(lighten($position_color, 45%), $position_color, $from_stop : 0%, $to_stop: 40%)
+
   .m-position-heading
     +font-size(2)
     padding: $vertical_baseline / 2 0 $vertical_baseline 0
@@ -1886,7 +1954,7 @@ $filter_width: 371px
     height: 38px
     width: 39px
     +transition('none')
-    margin-left: -19.5px
+    ///margin-left: -19.5px
 
     &:hover
       cursor: move

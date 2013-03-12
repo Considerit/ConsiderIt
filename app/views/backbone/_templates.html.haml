@@ -1,7 +1,14 @@
 
 
-%script{ :type => "text/template", :id => "tpl_point" }      
+%script{ :type => "text/template", :id => "tpl_point" }   
+
   .m-point-wrap
+    (( if (hide_name) { ))
+    %span.avatar.m-point-author-avatar{:style => "background-image: url(\"/system/default_avatar/small_default-profile-pic.png\")"}
+    (( } else if (user) { ))
+    %span.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile picture"}
+    (( } ))
+
     .m-point-nutshell-wrap
       %span.m-point-nutshell
         {{adjusted_nutshell}}
@@ -36,6 +43,8 @@
       Write a new {{is_pro ? "pro" : "con"}} point
 
     .m-newpoint-form
+      = hidden_field_tag :is_pro, "{{is_pro}}", :class => 'm-newpoint-is_pro'
+
       .m-newpoint-nutshell-wrap
         = text_area_tag :nutshell, nil, :placeholder => 'Summarize your point (required)', :cols => 28, :class => "m-newpoint-nutshell is_counted", :required=>true, :maxlength => 140, :pattern => "^.{3,}"
         %span.count
@@ -302,7 +311,7 @@
         = text_area_tag 'description', nil, :placeholder => "Add details of the proposal here.", :class => 'm-proposal-description-body'
 
     .m-new-proposal-submit-wrap
-      = hidden_field_tag 'active', :value => true, :class => 'm-proposal-active'
+      = hidden_field_tag 'active', true, :class => 'm-proposal-active'
       = submit_tag 'Post this proposal', :class => "m-new-proposal-submit button"
 
 

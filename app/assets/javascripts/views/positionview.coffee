@@ -194,9 +194,36 @@ class ConsiderIt.CraftingView extends Backbone.View
     [peers, mine] = if $item.hasClass('pro') then [@pointlists.peerpros, @pointlists.mypros] else [@pointlists.peercons, @pointlists.mycons]
 
     model = peers.get(id)
+    included_point_model = mine.add(model).get(model)
+    $included_point = @$el.find(".m-point-position[data-id='#{included_point_model.cid}']")
 
-    peers.remove(model)
-    mine.add(model)
+    offsetX = $included_point.offset().left - $item.offset().left
+    offsetY = $included_point.offset().top - $item.offset().top
+
+    target_props = $included_point.getStyles()
+
+    $included_point.css 'visibility', 'hidden'
+
+    $placeholder = $('<li class="m-point-peer">')
+    $placeholder.css {height: $item.outerHeight(), visibility: 'hidden'}
+
+    $item.find('.m-point-author-avatar, .m-point-include-wrap, .m-point-operations').fadeOut(50)
+
+    $wrap = $item.find('.m-point-wrap')
+    $wrap.css {position: 'absolute', width: $wrap.outerWidth()}
+
+    $placeholder.insertAfter($item)
+
+    _.extend target_props, {top: offsetY, left: offsetX, position: 'absolute'}
+    $wrap.animate target_props, 200, ->
+      $item.fadeOut -> 
+        peers.remove(model)
+        $placeholder.remove()
+
+      $included_point.css 'visibility', ''
+
+
+
 
     # persist the inclusion ... (in future, don't have to do this until posting...)
     params = {  }

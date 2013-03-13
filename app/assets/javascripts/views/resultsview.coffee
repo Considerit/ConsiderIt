@@ -243,9 +243,13 @@ class ConsiderIt.ExplorerView extends Backbone.View
     hard_select = ev.type == 'click'
 
     if @$el.find('#expanded').length == 0 && ( hard_select || @$histogram.find('.m-bar-is-hard-selected').length == 0 )
-      @$el.hide()
+
 
       $bar = $target.closest('.m-histogram-bar')
+      bubble_offset = $bar.offset().top - @$el.find('.l-message-body').offset().top + 2
+
+      @$el.hide()
+
       bucket = 6 - $bar.attr('bucket')
       $('.m-bar-is-selected', @$histogram).removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
       $bar.addClass("m-bar-is-selected #{if hard_select then 'm-bar-is-hard-selected' else 'm-bar-is-soft-selected'}")
@@ -279,9 +283,11 @@ class ConsiderIt.ExplorerView extends Backbone.View
         .show()
 
       @$el.find('.t-bubble').hide()
+      @$el.find('.t-bubble-bar').remove()
+
 
       $bar_bubble = $('<div class="t-bubble-bar t-bubble"><div class="t-bubble-wrap">&#9654;</div></div>')
-      $bar_bubble.css('top', $bar.position().top + 2)
+      $bar_bubble.css('top', bubble_offset)
       @$el.find('.l-message-body').append($bar_bubble)
 
       _.each @views, (vw) -> 

@@ -231,16 +231,20 @@ class ConsiderIt.ExplorerView extends Backbone.View
     'mouseenter .m-histogram-bar:not(.m-bar-is-selected)' : 'select_bar'
     'click .m-histogram-bar:not(.m-bar-is-hard-selected)' : 'select_bar'
     'click .m-bar-is-hard-selected' : 'deselect_bar'
-    'mouseleave .m-bar-is-soft-selected' : 'deselect_bar'
+    #'mouseleave .m-bar-is-soft-selected' : 'deselect_bar'
+    'mouseleave .m-histogram' : 'deselect_bar'
     'keypress' : 'deselect_bar'
     'click .point_filter:not(.selected)' : 'sort_all'
 
 
   select_bar : (ev) ->
+
     $target = $(ev.currentTarget)
     hard_select = ev.type == 'click'
 
     if @$el.find('#expanded').length == 0 && ( hard_select || @$histogram.find('.m-bar-is-hard-selected').length == 0 )
+      @$el.hide()
+
       $bar = $target.closest('.m-histogram-bar')
       bucket = 6 - $bar.attr('bucket')
       $('.m-bar-is-selected', @$histogram).removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
@@ -292,6 +296,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
         ev.stopPropagation()
       #######
 
+      @$el.show()
+
   close_bar_click : (ev) ->
     @deselect_bar()
 
@@ -299,10 +305,10 @@ class ConsiderIt.ExplorerView extends Backbone.View
     if ev.keyCode == 27 && $('#registration_overlay').length == 0
       @deselect_bar()
   
-  deselect_bar : () ->
+  deselect_bar : (ev) ->
 
     $selected_bar = @$histogram.find('.m-bar-is-selected')
-    return if $selected_bar.length == 0
+    return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.m-bar-is-hard-selected'))
 
     @$el.hide()
 

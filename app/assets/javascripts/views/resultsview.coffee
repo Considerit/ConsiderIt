@@ -83,12 +83,11 @@ class ConsiderIt.ResultsView extends Backbone.View
               'position' : 'relative'}
       $participants.show()
 
-    me = this
 
-    $.each $participants.find('.avatar'), ->
-      $from = $(this)
+    for participant in $participants.find('.avatar')
+      $from = $(participant)
       id = $from.data('id')
-      $to = me.$el.find(".m-histogram #avatar-#{id}")
+      $to = @$el.find(".m-histogram #avatar-#{id}")
 
       to_offset = $to.offset()
       from_offset = $from.offset()
@@ -107,6 +106,7 @@ class ConsiderIt.ResultsView extends Backbone.View
           "top": offsetY,
           }, speed, 'linear'
 
+    me = this
     window.delay speed + 350, -> 
       me.$el.find('.m-histogram').css 'opacity', 1
       window.delay 400, -> 
@@ -197,14 +197,14 @@ class ConsiderIt.ExplorerView extends Backbone.View
     histogram =
       breakdown : [{positions:[]} for i in [0..6]][0]
 
-    _.each @proposal.positions, (pos) ->
+    for id, pos of @proposal.positions
       histogram.breakdown[6-pos.get('stance_bucket')].positions.push(pos) if pos.get('user_id') > -1
 
     _.extend histogram, 
       biggest_segment : Math.max.apply(null, _.map(histogram.breakdown, (bar) -> bar.positions.length))
       num_positions : _.keys(@proposal.positions).length 
 
-    _.each histogram.breakdown, (bar, idx) =>
+    for bar,idx in histogram.breakdown
       height = bar.positions.length / histogram.biggest_segment
       full_size = Math.ceil(height * @BARHEIGHT)
       empty_size = @BARHEIGHT * (1 - height)
@@ -254,9 +254,10 @@ class ConsiderIt.ExplorerView extends Backbone.View
       $('.m-bar-is-selected', @$histogram).removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
       $bar.addClass("m-bar-is-selected #{if hard_select then 'm-bar-is-hard-selected' else 'm-bar-is-soft-selected'}")
 
-      fld = "score_stance_group_#{bucket}"
 
-      _.each @views, (vw) -> vw.$el.hide()
+      vw.$el.hide() for vw in @views
+
+      fld = "score_stance_group_#{bucket}"
 
       @pointlists.pros.setSort(fld, 'desc')
       @pointlists.cons.setSort(fld, 'desc')
@@ -290,7 +291,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
       $bar_bubble.css('top', bubble_offset)
       @$el.find('.l-message-body').append($bar_bubble)
 
-      _.each @views, (vw) -> 
+      for vw in @views
         #vw.repaginate()
         vw.$el.show()
 

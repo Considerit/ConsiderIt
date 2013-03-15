@@ -16,10 +16,10 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
 
     @$el.find('[placeholder]').simplePlaceholder()
 
-    @$el.find('.m-new-comment .is_counted').each () ->
-      $(this).NobleCount $(this).siblings('.count'), {
+    for el in @$el.find('.m-new-comment .is_counted')
+      $(el).NobleCount $(el).siblings('.count'), {
         block_negative: true,
-        max_chars : parseInt($(this).siblings('.count').text()) }        
+        max_chars : parseInt($(el).siblings('.count').text()) }        
 
 
 

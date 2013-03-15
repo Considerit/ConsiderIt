@@ -46,7 +46,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     #TODO: if user logs in as admin, need to do this
     if ConsiderIt.roles.is_admin
-      _.each ConsiderIt.ProposalView.editable_fields, (field) =>
+      for field in ConsiderIt.ProposalView.editable_fields
         [selector, name, type] = field 
         @$el.find(selector).editable {
           resource: 'proposal'
@@ -115,7 +115,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     delete @proposal.positions[-1]
 
     # transfer already included points from existing_position into the included lists
-    _.each $.parseJSON(existing_position.get('point_inclusions')), (pnt_id) =>
+    for pnt_id in $.parseJSON(existing_position.get('point_inclusions'))
       if (model = @proposal.points.peer_pros.remove_from_all(pnt_id))?
         @proposal.points.included_pros.add model
       else if (model = @proposal.points.peer_cons.remove_from_all(pnt_id))?
@@ -130,7 +130,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   post_signout : () -> 
-    _.each @proposal.points.written_points, (pnt) ->
+    for pnt in @proposal.points.written_points
       if pnt.get('is_pro') @proposal.points.included_pros.remove(pnt) else @proposal.points.included_cons.remove(pnt)
 
     @proposal.position.clear()

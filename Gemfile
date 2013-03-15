@@ -110,6 +110,8 @@ gem "assessable", :path => "lib/gems/assessable"
 gem 'sitemap_generator'
 gem 'newrelic_rpm'
 
+
+
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:
@@ -129,6 +131,8 @@ group :assets do
   gem 'coffee-rails'#, "~> 3.2.1"
   gem 'uglifier'
   gem "asset_sync"
+  gem 'compass'
+  gem 'compass-rails'  
   #gem 'turbo-sprockets-rails3'
   #gem "themes_for_rails", :git => 'git://github.com/jasherai/themes_for_rails.git'
 end

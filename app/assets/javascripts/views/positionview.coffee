@@ -141,10 +141,10 @@ class ConsiderIt.CraftingView extends Backbone.View
     @$el.find('.m-position-statement').autoResize {extraSpace: 5}
     @$el.find('[placeholder]').simplePlaceholder()
 
-    @$el.find('.m-newpoint-form .is_counted').each ->
-      $(this).NobleCount $(this).siblings('.count'), {
+    for el in @$el.find('.m-newpoint-form .is_counted')
+      $(el).NobleCount $(el).siblings('.count'), {
         block_negative: true,
-        max_chars : parseInt($(this).siblings('.count').text()) }        
+        max_chars : parseInt($(el).siblings('.count').text()) }        
 
     @stickit()
 

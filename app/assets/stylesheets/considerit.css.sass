@@ -7,7 +7,7 @@
 
 @import "mixins"
 @import "mixins/bubble"
-
+@import "sprite"
 
 @font-face 
   font-family: 'ModernPictogramsNormal'
@@ -196,7 +196,7 @@ $empty_color: #ddd
 $proposal_width: 617px
 $body_width: 600px
 
-$content_background : image-url('directrep/images/brillant.png')
+//$content_background : image-url('directrep/images/brillant.png')
 
 $hex-bullet-point: '\2022'
 
@@ -313,10 +313,11 @@ html
     //top: 0
     //left: 0
     //position: fixed
-    height: 100%
-    width: 100%
-  background: $background repeat left top $comp_color
+    //height: 100%
+    //width: 100%
     //z-index: -1
+  background: repeat left top $comp_color
+  +background-img
 
 #l-wrap
   position: relative
@@ -410,6 +411,9 @@ html
 .m-user-options
   cursor: pointer
   position: relative
+
+  .m-user-settings-triangle
+    +down_wide_triangle
 
   .m-user-options-menu-wrap
     display: none

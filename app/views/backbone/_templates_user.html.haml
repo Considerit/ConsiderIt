@@ -15,7 +15,7 @@
       %a
         {{ name }} 
 
-      = image_tag "user_settings_triangle.png", :class => 'triangle_img'
+      %span.m-user-settings-triangle
 
     .m-user-options-menu-wrap
       %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.current_user, 'small')}}", :alt => "your profile picture"}

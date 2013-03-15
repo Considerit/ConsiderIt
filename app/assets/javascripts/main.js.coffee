@@ -145,6 +145,6 @@ $(document).on "click", "a[href^='/']", (event) ->
 
 #http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
 (($, d) ->
-  $.each readyQ, (i,f) -> $(f);
-  $.each bindReadyQ, (i,f) -> $(d).bind("ready",f);
+  $(f) for f, i in readyQ
+  $(d).bind("ready",f) for f,i in bindReadyQ
 )(jQuery, document)

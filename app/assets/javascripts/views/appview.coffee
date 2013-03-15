@@ -42,11 +42,11 @@ class ConsiderIt.AppView extends Backbone.View
   # that the user can update them.
   load_anonymous_data : ->
     $.get Routes.points_for_user_path(), (data) =>
-      _.each data, (pnt) =>
+      for pnt in data
         [id, long_id, is_pro] = [pnt.point.id, pnt.point.long_id, pnt.point.is_pro]
         if ConsiderIt.proposals[long_id].view && ConsiderIt.proposals[long_id].view.data_loaded
           points = if is_pro then ConsiderIt.proposals[long_id].points.pros else ConsiderIt.proposals[long_id].points.cons
-          _.each points, (pm) =>
+          for pm in points
             pm.set('user_id', ConsiderIt.current_user.id) if pm.id == id
       
 

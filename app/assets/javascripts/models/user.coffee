@@ -27,7 +27,7 @@ class ConsiderIt.User extends Backbone.Model
 
     user_roles = []
     me = this
-    _.each all_roles, (element, idx) ->
+    for element, idx in all_roles
       if me.attributes.roles_mask & Math.pow(2, idx) != 0
         user_roles.push element
 

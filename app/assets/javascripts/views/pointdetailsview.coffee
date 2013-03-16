@@ -51,17 +51,19 @@ class ConsiderIt.PointDetailsView extends Backbone.View
           name: 'text'
         }
 
+    $('body').prepend('<div id="lightbox">')
     @$el.show()
 
     $unexpanded_point = $("[data-id='#{@model.cid}']")
-    if $unexpanded_point.length > 0
+    
+    if false && $unexpanded_point.length > 0
       @$el.css {left: $unexpanded_point.offset().left - @proposal.view.$el.offset().left - (if @model.get('is_pro') == true then 0 else @$el.width()), top: $unexpanded_point.offset().top - @proposal.view.$el.offset().top }
     else
       @center_overlay()
 
     $('html, body').stop(true, true)
     #@center_overlay()
-    $('html, body').animate {scrollTop: @$el.offset().top - 250}, 1000
+    $('html, body').animate {scrollTop: @$el.offset().top - 50}, 1000
 
     this
 
@@ -80,6 +82,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     'click .m-point-details-close' : 'close_details'
 
   close_details : (ev) ->
+    $('#lightbox').remove()
     @commentsview.clear()
     @commentsview.remove()
     if @assessmentview

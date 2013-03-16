@@ -19,13 +19,14 @@ namespace :cache do
   end
 
   task :avatars => :environment do 
+    size = 'large'
     begin
       Account.all.each do |accnt|
         File.open("public/system/cache/#{accnt.identifier}.css", 'w') do |f|
 
           accnt.users.select([:id,:avatar_file_name]).where('avatar_file_name IS NOT NULL').each do |user|
             #data = [File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}")].pack('m')
-            data = ActiveSupport::Base64.encode64(File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}"))
+            data = ActiveSupport::Base64.encode64(File.read("public/system/avatars/#{user.id}/#{size}/#{user.avatar_file_name}"))
             f.puts("#avatar-#{user.id} { background-image: url(\"data:image/jpeg;base64,#{data.gsub(/\n/," ")}\"); }")
             #avatars[:small][user.id] = "data:image/jpg;base64,#{data}"
           end

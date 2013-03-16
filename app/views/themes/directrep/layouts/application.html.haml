@@ -175,8 +175,8 @@
                   Your opinions help shape how I look at these important issues for our community. I care what you think.
 
               .l-message-recipient.l-group-container
-                - cols = 6
-                - rows = 8
+                - cols = 10
+                - rows = 13
                 - pics = User.where('avatar_file_name IS NOT NULL')
                 - users = pics.sample( [cols*rows, pics.count].min )
 

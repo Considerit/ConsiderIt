@@ -40,6 +40,7 @@ class User < ActiveRecord::Base
 
   has_attached_file :avatar, 
       :styles => { 
+        :large => "200x200#",
         :medium => "70x70#", 
         :small => "50x50#"
       }

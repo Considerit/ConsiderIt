@@ -56,7 +56,7 @@ class ConsiderIt.ResultsView extends Backbone.View
 
 
   explode_participants : ->
-    speed = 800
+    speed = 1500
 
     modern = Modernizr.csstransforms && Modernizr.csstransitions
 
@@ -109,6 +109,7 @@ class ConsiderIt.ResultsView extends Backbone.View
     me = this
     window.delay speed + 350, -> 
       me.$el.find('.m-histogram').css 'opacity', 1
+      
       window.delay 400, -> 
         $participants.fadeOut()
 

@@ -154,6 +154,15 @@ blockquote
 .hide
   display: none
 
+#lightbox
+  background-color: rgba(black, .85)
+  position: fixed
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  z-index: 100
+
 /* VARIABLES */
 
 $grid_major: 48px
@@ -1065,8 +1074,8 @@ $membership_card_height: 278px
 
 #point_details_overlay
   padding: $vertical_baseline $grid_xs
-  background-color: lighten($constituency_color, 5%)
-  border: 1px solid $dark_constituency_color
+  //background-color: lighten($constituency_color, 5%)
+  //border: 1px solid $dark_constituency_color
   width: 867px
 
 %m-point-details
@@ -1075,12 +1084,21 @@ $membership_card_height: 278px
   > .l-message-speaker, > .l-message-recipient
     width: 70px
 
+  .m-point-details-close
+    position: absolute
+    right: -10px
+    color: white
+    top: -10px
+
   .m-point-details-body
     @extend %postit-background-repeat  
     width: 800px - $grid_major
     min-height: 300px
     padding: $vertical_baseline $grid_major
 
+    > .t-bubble:after
+      display: none
+      
   .m-point-details-author-avatar
     width: 70px
     height: 70px
@@ -1110,7 +1128,7 @@ $membership_card_height: 278px
   .m-point-discussion
     position: relative
     //width: 660px
-    padding: 0 $grid_xs
+    //padding: 0 $grid_xs
 
   .m-point-discussion-heading
     +font-size(3)
@@ -1129,14 +1147,14 @@ $membership_card_height: 278px
 .m-point-details-con
   @extend %m-point-details
   .m-point-details-body
-    +bubble($constituency_color, $dark_constituency_color, right)     
+    +bubble($constituency_color, $dark_constituency_color, left)     
 
 /* ASSESSMENT */
 
 // Assessment request
 // requesting fact check
 .m-point-assessment-request
-
+  display: none
   .m-point-assessment-request-form
     +box-shadow(0, 1px, 2px, black, 0.2)
     border-radius: 5px
@@ -1177,6 +1195,7 @@ $membership_card_height: 278px
 
 // Assessment
 .m-point-assessment
+  display: none
   //width: 100%
   +on_paper
   padding: $vertical_baseline $grid_minor

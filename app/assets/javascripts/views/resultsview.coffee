@@ -83,7 +83,6 @@ class ConsiderIt.ResultsView extends Backbone.View
               'position' : 'relative'}
       $participants.show()
 
-
     for participant in $participants.find('.avatar')
       $from = $(participant)
       id = $from.data('id')

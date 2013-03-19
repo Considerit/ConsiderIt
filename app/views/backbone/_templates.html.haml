@@ -148,7 +148,7 @@
   .m-point-assessment-request
     (( if( !already_requested_assessment ) { ))
     %a.button.m-point-assessment-request-initiate
-      Ask a librarian to fact check this point
+      Request a fact check of this point
     (( } ))
 
     .m-point-assessment-requested-feedback
@@ -160,10 +160,10 @@
       = f.hidden_field :assessable_type, :value => "Point"
 
       %strong.ask
-        Ask a librarian to fact check this point
+        Request a fact check of this point
 
       %p
-        Fact-checking performed by librarians at The Seattle Public Library. Only falsifiable statements can be checked. See the #{link_to 'guidelines', '/home/fact_check', :target => "_blank"} for more details.
+        Only falsifiable statements can be checked. See the #{link_to 'guidelines', '/home/fact_check', :target => "_blank"} for more details.
 
       %strong
         Which claims do you wish to have fact checked?
@@ -225,10 +225,10 @@
         This point does not make any verifiable claims.
         (( } ))
 
-        .signature
-          Sincerely, 
-          %br
-          The Seattle Public Library
+        //.signature
+        //  Sincerely, 
+        //  %br
+        //  The Seattle Public Library
 
         .process
           = link_to 'Read about the fact-checking process', '/home/fact_check', :target => '_blank' 
@@ -302,7 +302,7 @@
 
   .m-proposal-message.m-proposal-introduction
     .l-message-speaker.m-proposal-initiator
-      = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+      = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
 
     .l-message-body.left.m-proposal-description
       .t-bubble
@@ -326,7 +326,7 @@
 
   .m-proposal-message.m-proposal-introduction
     .l-message-speaker.m-proposal-initiator
-      = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+      = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
 
     .l-message-body.left.m-proposal-description
       .t-bubble
@@ -358,7 +358,7 @@
 
   .m-proposal-message.m-proposal-leader-response
     .l-message-speaker.m-proposal-initiator.small
-      = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.jpg")
+      = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
 
     .l-message-body.left.m-proposal-description
       .t-bubble

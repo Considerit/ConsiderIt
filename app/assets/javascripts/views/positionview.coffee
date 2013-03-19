@@ -256,9 +256,10 @@ class ConsiderIt.CraftingView extends Backbone.View
       (data) ->
 
   point_attributes : ($form) ->  {
+
     nutshell : $form.find('.m-newpoint-nutshell').val()
     text : $form.find('.m-newpoint-description').val()
-    is_pro : $form.find('.m-newpoint-is_pro').val()
+    is_pro : $form.find('.m-newpoint-is_pro').val() == 'true'
     hide_name : $form.find('.m-newpoint-anonymous').is(':checked')
     comment_count : 0
     proposal_id : @proposal.model.id
@@ -282,11 +283,12 @@ class ConsiderIt.CraftingView extends Backbone.View
 
   create_new_point : (ev) ->
     $form = $(ev.currentTarget).closest('.m-newpoint-form')
-    console.log $form.find('.m-newpoint-is_pro')
+
     attrs = @point_attributes($form)
 
+
     pointlist = if attrs.is_pro then @pointlists.mypros else @pointlists.mycons
-    @cancel_new_point({currentTarget: $form.find('.new_point_cancel')})
+    @cancel_new_point({currentTarget: $form.find('.m-newpoint-cancel')})
 
     new_point = pointlist.create attrs, {wait: true}
       success : (data) ->

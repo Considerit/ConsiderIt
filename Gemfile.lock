@@ -64,7 +64,7 @@ GEM
       multi_json (~> 1.0)
     acts_as_tenant (0.2.9)
       rails (>= 3.1)
-    addressable (2.3.2)
+    addressable (2.3.3)
     arel (3.0.2)
     asset_sync (0.5.4)
       activemodel
@@ -85,6 +85,12 @@ GEM
       sass (~> 3.2)
     builder (3.0.4)
     cancan (1.6.9)
+    capistrano (2.14.2)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.1.0)
     chronic (0.9.0)
     chunky_png (1.2.7)
     cocaine (0.4.2)
@@ -102,9 +108,8 @@ GEM
     compass-rails (1.0.3)
       compass (>= 0.12.2, < 0.14)
     crack (0.3.2)
-    css_parser (1.2.6)
+    css_parser (1.3.4)
       addressable
-      rdoc
     daemons (1.1.9)
     dalli (2.6.2)
     delayed_job (3.0.5)
@@ -146,8 +151,8 @@ GEM
     fssm (0.2.10)
     haml (3.1.7)
     hashie (1.2.0)
+    highline (1.6.16)
     hike (1.2.1)
-    hpricot (0.8.6)
     htmlentities (4.3.1)
     httparty (0.10.2)
       multi_json (~> 1.0)
@@ -184,7 +189,11 @@ GEM
     nested_form (0.3.1)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
+    net-sftp (2.1.1)
+      net-ssh (>= 2.6.5)
     net-ssh (2.6.5)
+    net-ssh-gateway (1.2.0)
+      net-ssh (>= 2.6.5)
     newrelic_rpm (3.5.5.38)
     nokogiri (1.5.6)
     oauth (0.4.7)
@@ -226,9 +235,9 @@ GEM
     premailer (1.7.3)
       css_parser (>= 1.1.9)
       htmlentities (>= 4.0.0)
-    premailer-rails3 (1.3.1)
+    premailer-rails (1.3.2)
       premailer (~> 1.7)
-      rails (~> 3)
+      rails (>= 3)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -339,6 +348,7 @@ DEPENDENCIES
   backup (~> 3.0.24)
   bitly
   cancan
+  capistrano
   coffee-rails
   commentable!
   compass
@@ -351,7 +361,6 @@ DEPENDENCIES
   exception_notification
   followable!
   haml
-  hpricot
   jquery-rails
   js-routes
   kaminari
@@ -366,7 +375,7 @@ DEPENDENCIES
   omniauth-twitter
   paper_trail
   paperclip
-  premailer-rails3
+  premailer-rails
   rails (~> 3.2.11)
   rails_admin
   remotipart (~> 1.0.2)

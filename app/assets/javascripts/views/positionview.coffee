@@ -1,10 +1,10 @@
 #############
-## Responsible for managing inclusions between peer points and 
+## Responsible for managing inclusions between peer points and
 ## the individual's personal points.
 #############
 
 class ConsiderIt.PositionView extends Backbone.View
-  initialize : (options) -> 
+  initialize : (options) ->
     @proposal = options.proposal
     @state = 0
 
@@ -274,12 +274,11 @@ class ConsiderIt.CraftingView extends Backbone.View
   
   cancel_new_point : (ev) ->
     $form = $(ev.currentTarget).closest('.m-newpoint-form')
-    $form
-      .fadeOut () -> 
-        $form.siblings('.m-newpoint-new').fadeIn() 
-        $form.find('textarea').val('').trigger('keydown')
-        $form.find('label.inline').addClass('empty')
-        #$('.newpoint').fadeIn()
+    $form.fadeOut () -> 
+      $form.siblings('.m-newpoint-new').fadeIn() 
+      $form.find('textarea').val('').trigger('keydown')
+      $form.find('label.inline').addClass('empty')
+      #$('.newpoint').fadeIn()
 
   create_new_point : (ev) ->
     $form = $(ev.currentTarget).closest('.m-newpoint-form')
@@ -291,7 +290,6 @@ class ConsiderIt.CraftingView extends Backbone.View
     @cancel_new_point({currentTarget: $form.find('.m-newpoint-cancel')})
 
     new_point = pointlist.create attrs, {wait: true}
-      success : (data) ->
     @proposal.points.written_points.push new_point
 
   slider_change : (new_value) -> 
@@ -315,11 +313,11 @@ class ConsiderIt.CraftingView extends Backbone.View
     #ConsiderIt.update_unobtrusive_edit_heights($(".slider_label .unobtrusive_edit textarea"));
 
   position_attributes : () -> {
-      stance : @model.get('stance')
-      explanation : @$el.find('.position_statement textarea').val()
-      included_points : ( pnt.id for pnt in @pointlists.mypros.models ).concat ( pnt.id for pnt in @pointlists.mycons.models )
-      viewed_points : _.values(@proposal.points.viewed_points)
-    }
+    stance : @model.get('stance')
+    explanation : @$el.find('.position_statement textarea').val()
+    included_points : ( pnt.id for pnt in @pointlists.mypros.models ).concat ( pnt.id for pnt in @pointlists.mycons.models )
+    viewed_points : _.values(@proposal.points.viewed_points)
+  }
 
 
   peer_point_list_reset : (list) ->

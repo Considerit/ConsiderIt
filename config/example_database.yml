@@ -1,6 +1,6 @@
 development:
   adapter: mysql2
-  database: considerit_dev
+  database: considerit
   username: root
   password: root
   host: localhost
@@ -8,14 +8,14 @@ development:
 
 test:
   adapter: mysql2
-  database: considerit_test
+  database: considerit
   password: root
   host: localhost
   encoding: utf8
 
 production:
   adapter: mysql2
-  database: considerit_production
+  database: considerit
   username: root
   password: root
   host: localhost

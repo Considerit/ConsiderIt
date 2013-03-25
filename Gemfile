@@ -81,8 +81,8 @@ gem 'actionmailer-with-request'
 gem 'backup', "~>3.0.24"
 
 # https://github.com/fphilipe/premailer-rails3
-gem 'hpricot'
-gem 'premailer-rails3'
+#gem 'hpricot'
+gem 'premailer-rails'
 
 # https://github.com/bradphelan/rocket_tag
 # gem 'acts-as-taggable-on'
@@ -118,6 +118,7 @@ gem 'newrelic_rpm'
 group :development, :test do
   # gem 'ruby-debug19', :require => 'ruby-debug'
   # gem 'heroku'
+  gem "capistrano"
 end
 
 group :production do

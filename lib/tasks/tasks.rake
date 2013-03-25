@@ -26,8 +26,12 @@ namespace :cache do
 
           accnt.users.select([:id,:avatar_file_name]).where('avatar_file_name IS NOT NULL').each do |user|
             #data = [File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}")].pack('m')
-            data = ActiveSupport::Base64.encode64(File.read("public/system/avatars/#{user.id}/#{size}/#{user.avatar_file_name}"))
-            f.puts("#avatar-#{user.id} { background-image: url(\"data:image/jpeg;base64,#{data.gsub(/\n/," ")}\"); }")
+            begin
+              data = ActiveSupport::Base64.encode64(File.read("public/system/avatars/#{user.id}/#{size}/#{user.avatar_file_name}"))
+              f.puts("#avatar-#{user.id} { background-image: url(\"data:image/jpeg;base64,#{data.gsub(/\n/," ")}\"); }")
+            rescue
+              Rails.logger.info "Could not generate avatar #{user.id}"
+            end
             #avatars[:small][user.id] = "data:image/jpg;base64,#{data}"
           end
         end

@@ -70,7 +70,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     @cancel_new_proposal()
 
     new_proposal = @collection.create attrs, {wait: true, at: 0}
-      success : (data) ->
 
   cancel_new_proposal : ->
     @$new_proposal.find('input[type="text"], textarea').val('')

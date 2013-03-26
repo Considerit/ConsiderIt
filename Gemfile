@@ -1,12 +1,10 @@
 source 'http://rubygems.org'
 
 gem "therubyracer", :require => 'v8'
-gem 'rails', '~>3.2.11'
-gem 'turbolinks'
+gem 'rails'#, '~>3.2.11'
+#gem 'turbolinks'
 
 gem "mysql2"
-
-gem 'thin'
 
 gem "haml"
 gem 'sass-rails'#,   "3.2.6"
@@ -118,7 +116,8 @@ gem 'newrelic_rpm'
 group :development, :test do
   # gem 'ruby-debug19', :require => 'ruby-debug'
   # gem 'heroku'
-  gem "capistrano"
+  gem "query_reviewer"
+  gem 'thin'
 end
 
 group :production do

@@ -1,0 +1,13 @@
+# good set of playbooks: https://github.com/francisbesset/ansible-playbooks/
+#https://www.digitalocean.com/community/articles/how-to-install-rails-and-nginx-with-passenger-on-ubuntu
+
+---
+
+- hosts: all
+  name: Setting up environment
+  vars_files:
+    - vars/environment.yml
+  tasks:
+    - include: tasks/setup.yml
+  handlers:
+    - include: handlers.yml

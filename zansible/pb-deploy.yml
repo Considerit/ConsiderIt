@@ -1,0 +1,10 @@
+---
+
+- hosts: all
+  name: Deploy ConsiderIt
+  vars_files:
+    - vars/environment.yml
+  tasks:
+    - include: tasks/deploy.yml
+  handlers:
+    - include: handlers.yml

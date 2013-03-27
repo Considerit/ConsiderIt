@@ -1,0 +1,185 @@
+# good set of playbooks: https://github.com/francisbesset/ansible-playbooks/
+#https://www.digitalocean.com/community/articles/how-to-install-rails-and-nginx-with-passenger-on-ubuntu
+
+---
+
+# Install dependencies
+- name: Update apt
+  command: /usr/bin/apt-get update
+  sudo: True
+
+- name: Installs ruby building dependencies
+  apt: pkg=$item state=latest install_recommends=no
+  with_items: $deps
+  sudo: True
+
+# Install memcached
+- name: Write memcached.conf
+  action: template src=templates/memcached/memcached.cnf.j2 dest=/etc/memcached.conf mode=0644
+  sudo: True
+
+- name: Restart memcached
+  service: name=memcached state=started
+  sudo: True
+
+# Install MySQL
+- name: Write mysqld.conf
+  template: src=templates/mysql/mysqld.cnf.j2 dest=/etc/mysql/conf.d/mysqld.cnf
+  sudo: True
+  notify:
+    - Restart mysql
+
+- name: Write mysqld.conf
+  template: src=templates/mysql/client.cnf.j2 dest=/etc/mysql/conf.d/client.cnf
+  sudo: True
+  notify:
+    - Restart mysql
+
+
+# Set up base database
+- name: Start mysql service
+  service: name=mysql state=restarted
+  sudo: True
+
+- name: Change default pass for user root for mysql
+  mysql_user: name=${database.user} password=${database.password}
+  ignore_errors: yes
+  sudo: True
+
+- name: Create default database
+  mysql_db: name=${database.name} state=present login_user=${database.user} login_password=${database.password}
+  sudo: True
+
+# Install ConsiderIt
+
+- name: Make .ssh directory
+  file: path=/home/$user/.ssh owner=$user state=directory
+
+- name: Copy over private rsa deploy key
+  copy: src=files/${deploy_key}_rsa dest=/home/$user/.ssh/${deploy_key}_rsa mode=700
+
+- name: Add ssh key to config file
+  template: src=templates/ssh_config.j2 dest=/home/$user/.ssh/config
+
+- name: Add Github to known hosts
+  copy: src=templates/ssh_known_hosts dest=/home/$user/.ssh/known_hosts
+
+- name: Installs ConsiderIt
+  git: repo=${code.repo} dest=$app_home version=${code.branch}
+
+- name: Create database.yml
+  template: src=templates/project/database.yml.j2 dest=$app_home/config/database.yml mode=400
+
+- name: Create local_environment.yml
+  template: src=templates/project/local_environment.yml.j2 dest=$app_home/config/local_environment.yml mode=400
+
+#- name: Update environments/production.rb
+
+#- copy over ssl certs
+
+# Install rbenv, ruby
+- name: Install rbenv
+  git: repo=git://github.com/sstephenson/rbenv.git dest=/home/$user/.rbenv
+
+- name: Create rbenv plugin directory
+  file: path=~$user/.rbenv/plugins/ owner=$user group=$user mode=0755 state=directory
+
+- name: Install ruby-build
+  git: repo=git://github.com/sstephenson/ruby-build.git dest=~$user/.rbenv/plugins/ruby-build
+
+- name: Add rbenv and shims to path
+  lineinfile: dest=/home/$user/.profile line='export PATH="$HOME/.rbenv/bin:$ruby_home:$PATH"' regexp=rbenv*
+
+- name: Get current ruby version
+  shell: $source && rbenv version | cut -f1 -d" "
+  register: ruby_current_version
+
+- name: Install ruby
+  shell: $source && rbenv install $ruby_version
+  only_if: "'${ruby_current_version.stdout}' != '$ruby_version'"
+  async: 600
+  poll: 30
+
+- name: Set global rbenv version
+  shell: $source && rbenv global $ruby_version
+  only_if: "'${ruby_current_version.stdout}' != '$ruby_version'"
+
+- name: Install bundler
+  shell: $source && gem install bundler --no-rdoc --no-ri && rbenv rehash
+
+- name: Update gems
+  shell: $source && bundle install --gemfile=$app_home/Gemfile && rbenv rehash
+
+# Install passenger, nginx
+- name: Install passenger
+  shell: $source && gem install passenger --no-rdoc --no-ri #&& rbenv rehash
+  sudo: True
+
+- name: Rbenv rehash
+  shell: $source && rbenv rehash
+
+- name: Install passenger nginx module
+  shell: $source && passenger-install-nginx-module --auto --auto-download --prefix=/opt/nginx creates=/opt/nginx
+  sudo: True
+
+- name: Configure nginx as service
+  template: src=templates/nginx/nginx.init.j2 dest=/etc/init.d/nginx mode=0755
+  sudo: True
+
+- name: Write nginx.conf
+  template: src=templates/nginx/nginx.conf.j2 dest=/opt/nginx/conf/nginx.conf
+  sudo: True
+  notify:
+    - Restart nginx
+
+- name: Make virtual hosts directory
+  file: path=/etc/nginx/conf.d owner=root state=directory
+  sudo: True
+
+- name: Create vhost for this site
+  template: src=templates/nginx/sites/vhost.conf.j2 dest=/etc/nginx/conf.d/$app_name.conf mode=0755
+  sudo: True
+  only_if: is_set('$server_name')
+
+- name: Make ssl directory
+  file: path=/etc/ssl owner=root state=directory
+  sudo: True
+
+- name: Make ssl private directory
+  file: path=/etc/ssl/private owner=root state=directory mode=600
+  sudo: True
+
+- name: Make ssl cert directory
+  file: path=/etc/ssl/cert owner=root state=directory
+  sudo: True
+
+- name: Copy SSL certificate private key
+  copy: src=files/ssl/$app_name/$app_name.key dest=/etc/ssl/private/$app_name.key mode=600
+  sudo: true
+  only_if: is_set('${server.ssl}')
+
+- name: Copy SSL certificate
+  copy: src=files/ssl/$app_name/$app_name.crt dest=/etc/ssl/cert/$app_name.crt mode=600
+  sudo: true
+  only_if: is_set('${server.ssl}')
+
+- name: Stop nginx service
+  service: name=nginx state=stopped pattern=nginx
+  sudo: True
+
+- name: Start nginx service and have it run during system startup
+  service: name=nginx state=started enabled=yes pattern=nginx
+  sudo: True
+
+#- name: Create environments/production.rb
+
+- name: Stop Passenger
+  shell: $source && cd $app_home && passenger stop -p $port
+  ignore_errors: yes
+
+- name: Start Passenger
+  shell: $source && cd $app_home && passenger start -d -a 0.0.0.0 -p $port -e $environment
+  ignore_errors: yes
+  async: 60
+  poll: 10
+

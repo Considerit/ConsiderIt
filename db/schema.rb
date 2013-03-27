@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130305225914) do
+ActiveRecord::Schema.define(:version => 20130326045314) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -53,7 +53,7 @@ ActiveRecord::Schema.define(:version => 20130305225914) do
     t.boolean  "assessment_enabled",                       :default => false
   end
 
-  add_index "accounts", ["identifier"], :name => "index_accounts_on_identifier"
+  add_index "accounts", ["identifier"], :name => "by_identifier", :length => {"identifier"=>10}
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -280,6 +280,8 @@ ActiveRecord::Schema.define(:version => 20130305225914) do
     t.integer  "moderation_status"
   end
 
+  add_index "points", ["account_id", "proposal_id", "id", "is_pro"], :name => "select_included_points"
+  add_index "points", ["account_id", "proposal_id", "published", "id", "is_pro"], :name => "select_published_included_points"
   add_index "points", ["account_id", "proposal_id", "published", "is_pro"], :name => "select_published_pros_or_cons"
   add_index "points", ["account_id", "proposal_id", "published", "moderation_status", "is_pro"], :name => "select_acceptable_pros_or_cons"
   add_index "points", ["account_id"], :name => "index_points_on_account_id"
@@ -372,6 +374,7 @@ ActiveRecord::Schema.define(:version => 20130305225914) do
     t.text     "participants"
   end
 
+  add_index "proposals", ["account_id", "active"], :name => "select_proposal_by_active"
   add_index "proposals", ["account_id", "id"], :name => "select_proposal"
   add_index "proposals", ["account_id", "long_id"], :name => "select_proposal_by_long_id"
   add_index "proposals", ["account_id"], :name => "index_proposals_on_account_id"
@@ -540,7 +543,10 @@ ActiveRecord::Schema.define(:version => 20130305225914) do
     t.datetime "reset_password_sent_at"
   end
 
+  add_index "users", ["account_id", "avatar_file_name"], :name => "select_user_by_avatar_name", :length => {"account_id"=>nil, "avatar_file_name"=>3}
+  add_index "users", ["account_id", "id"], :name => "select_user_by_account_and_id"
   add_index "users", ["account_id"], :name => "account_id"
+  add_index "users", ["account_id"], :name => "select_user_by_account"
   add_index "users", ["email"], :name => "index_users_on_email"
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 

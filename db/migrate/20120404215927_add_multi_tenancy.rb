@@ -7,8 +7,6 @@ class AddMultiTenancy < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :accounts, :identifier
-
     add_column :proposals, :account_id, :integer
     add_column :positions, :account_id, :integer
     add_column :points, :account_id, :integer

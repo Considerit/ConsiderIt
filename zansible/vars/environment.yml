@@ -1,0 +1,50 @@
+deps: 
+  - autoconf 
+  - automake 
+  - bison 
+  - build-essential 
+  - curl 
+  - exuberant-ctags 
+  - git-core
+  - imagemagick
+  - libcurl4-openssl-dev #nginx/passenger requirement
+  - libmagickcore-dev
+  - libmagickwand-dev
+  - libmysqlclient-dev
+  - libreadline6 
+  - libreadline6-dev 
+  - libreadline-dev
+  - libssl-dev 
+  - libncurses5-dev
+  - libtool
+  - libxml2-dev 
+  - libxslt1-dev 
+  - memcached
+  - mysql-server
+  - openssl 
+  - python-mysqldb # for Ansible mysql module
+  - unzip
+  - zlib1g 
+  - zlib1g-dev
+mysqld:
+  bind_address: 127.0.0.1
+  key_buffer: 16M
+  max_connection: 100
+  utf8: true
+
+memcached:
+  memory: 64
+  port: 11211
+  user: root
+  listen: 127.0.0.1
+  max_connections: 1024
+
+nginx:
+  connections: 1024
+
+ruby_home: /home/$user/.rbenv/shims
+ruby_version: 1.9.3-p392
+source: . /home/$user/.profile
+port: 3000
+environment: production
+

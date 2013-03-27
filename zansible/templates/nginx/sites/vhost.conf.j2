@@ -1,0 +1,12 @@
+server {
+    listen 80;
+    server_name {{ server.name }}: 
+    root {{ app_home }};
+    passenger_enabled on;
+
+    {% if server.ssl %}
+      ssl on;
+      ssl_certificate /etc/ssl/certs/{{ app_name }}.crt;
+      ssl_certificate_key /etc/ssl/private/{{ app_name }}.key;
+    {% endif %}
+}

@@ -43,6 +43,8 @@ nginx:
   connections: 1024
 
 ruby_home: /home/$user/.rbenv/shims
+rbenv_home: /home/$user/.rbenv/bin
+path: PATH="/home/$user/.rbenv/bin:/home/$user/.rbenv/libexec:/home/$user/.rbenv/plugins/ruby-build/bin:/home/$user/.rbenv/shims:$PATH"
 ruby_version: 1.9.3-p392
 source: . /home/$user/.profile
 port: 3000

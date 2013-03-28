@@ -1,22 +1,27 @@
 ---
 - name: Compress avatars
   local_action: shell zip -r files/avatars.zip ../public/system/avatars
+  sudo: False
 
 - name: Copy sample avatars
   copy: src=files/avatars.zip dest=$app_home
+  sudo: False
 
 - name: Uncompress avatars directory
   shell: unzip $app_home/avatars.zip -d $app_home
   ignore_errors: yes
   async: 60
   poll: 10
+  sudo: False
 
 - name: Remove avatars zip
   file: path=$app_home/avatars.zip state=absent
+  sudo: False
 
 # Cache avatars
 - name: Cache avatars
   shell: $source && cd $app_home && RAILS_ENV=$environment bundle exec rake cache:avatars
+  sudo: False
 
 # Import seed database
 - name: Copy existing database to remote server

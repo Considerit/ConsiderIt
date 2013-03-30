@@ -129,11 +129,14 @@ body #l-wrap > div#l-content .l-content-wrap-no-background
 
 
 // FOR AARP VERSION OF THE SITE
-.t-dr-mock-dialogue
-  .t-dr-heading
-    img
-      height: 42px
-      vertical-align: -2px
+$aarp: 0
+@if $aarp > 0 {
+  .t-dr-mock-dialogue
+    .t-dr-heading
+      img
+        height: 42px
+        vertical-align: -2px
 
-.t-logo
-  display: none
+  .t-logo
+    display: none
+}

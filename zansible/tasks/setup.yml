@@ -1,6 +1,7 @@
 # good set of playbooks: https://github.com/francisbesset/ansible-playbooks/
 #https://www.digitalocean.com/community/articles/how-to-install-rails-and-nginx-with-passenger-on-ubuntu
 
+# In setting up daniels, I had to modify /etc/sudoers to change the secure_path because rbenv paths weren't accessible through sudo
 ---
 
 # Install dependencies
@@ -35,8 +36,6 @@
   notify:
     - Restart mysql
 
-
-# Set up base database
 - name: Start mysql service
   service: name=mysql state=restarted
   sudo: True
@@ -80,26 +79,40 @@
   template: src=templates/project/local_environment.yml.j2 dest=$app_home/config/local_environment.yml mode=400
   sudo: False
 
-#- name: Update environments/production.rb
-
-#- copy over ssl certs
-
 # Install rbenv, ruby
 - name: Install rbenv
-  git: repo=git://github.com/sstephenson/rbenv.git dest=/home/$user/.rbenv
+  git: repo=git://github.com/sstephenson/rbenv.git dest=$rbenv_path
   sudo: False
 
 - name: Create rbenv plugin directory
-  file: path=~$user/.rbenv/plugins/ owner=$user group=$user mode=0755 state=directory
+  file: path=$rbenv_path/plugins/ owner=$user group=$user state=directory
   sudo: False
 
 - name: Install ruby-build
-  git: repo=git://github.com/sstephenson/ruby-build.git dest=~$user/.rbenv/plugins/ruby-build
+  git: repo=git://github.com/sstephenson/ruby-build.git dest=${rbenv_path}/plugins/ruby-build
   sudo: False
 
-- name: Add rbenv and shims to path
-  lineinfile: dest=/home/$user/.profile line='export PATH="$HOME/.rbenv/bin:$ruby_home:$PATH"' regexp=rbenv*
+- name: Add rbenv and shims to bashrc
+  lineinfile: dest=/home/$user/.profile line='export RBENV_ROOT=${rbenv_path}; export PATH="$RBENV_ROOT/bin:$PATH"; eval "$(rbenv init -)"' regexp=rbenv*
   sudo: False
+
+- name: Add rbenv and shims to root bashrc
+  lineinfile: dest=/root/.profile line='export RBENV_ROOT=${rbenv_path}; export PATH="$RBENV_ROOT/bin:$PATH"; eval "$(rbenv init -)"' regexp=rbenv*
+  sudo: True
+
+- name: Add rbenv and shims to skel profile
+  lineinfile: dest=/etc/skel/.profile line='export RBENV_ROOT=${rbenv_path}; export PATH="$RBENV_ROOT/bin:$PATH"; eval "$(rbenv init -)"' regexp=rbenv*
+  sudo: True
+
+
+#note: this could be dangerous if server is not just hosting considerit
+# - name: Copy over root profile
+#   shell: cp /etc/skel/.bashrc /root/.bashrc creates=/root/.profile
+#   sudo: True
+
+# - name: Add rbenv and shims to root path
+#   lineinfile: dest=/root/.bashrc line='export PATH="/home/$user/.rbenv/bin:$ruby_home:$PATH"' regexp=rbenv*
+#   sudo: True
 
 - name: Get current ruby version
   shell: $source && $path rbenv version | cut -f1 -d" "
@@ -107,39 +120,56 @@
   sudo: False
 
 - name: Install ruby
-  shell: $source && $path rbenv install $ruby_version
-  #only_if: "'${ruby_current_version.stdout}' != '$ruby_version'"
+  shell: $source && $path rbenv install $ruby_version && $path rbenv global $ruby_version
+  only_if: "'${ruby_current_version.stdout}' != '$ruby_version'"
   async: 600
   poll: 30
   sudo: False
 
-- name: Set global rbenv version
-  shell: $source && $path rbenv global $ruby_version
-  only_if: "'${ruby_current_version.stdout}' != '$ruby_version'"
-  sudo: False
+# - name: Set global rbenv version
+#   shell: $source && $path rbenv global $ruby_version
+#   only_if: "'${ruby_current_version.stdout}' != '$ruby_version'"
+#   sudo: False
 
 - name: Install bundler
   shell: $source && $path gem install bundler --no-rdoc --no-ri && $rbenv_home/rbenv rehash
   sudo: False
 
 - name: Update gems
-  shell: $source && $path bundle install --gemfile=$app_home/Gemfile && $rbenv_home/rbenv rehash
+  shell: $source && $path bundle install --gemfile=$app_home/Gemfile
   sudo: False
 
-# Install passenger, nginx
+# Install passenger
 - name: Install passenger
   shell: $source && $path gem install passenger --no-rdoc --no-ri #&& rbenv rehash
-  sudo: True
+  sudo: False
 
 - name: Rbenv rehash
   shell: $source && $path rbenv rehash
   sudo: False
 
 - name: Install passenger nginx module
-  shell: $source && passenger-install-nginx-module --auto --auto-download --prefix=/opt/nginx creates=/opt/nginx
+  shell: $source && passenger-install-nginx-module --auto --auto-download --prefix=/opt/nginx --extra-configure-flags=--with-http_ssl_module creates=/opt/nginx
   sudo: True
 
+- name: Create passenger agents
+  shell: $source && cd $passenger_root && rake nginx creates=$passenger_root/agents/PassengerWatchdog
+  sudo: False
+
 # Setup nginx
+
+- name: Create /var/log
+  file: path=/var/log/nginx owner=root state=directory
+  sudo: True
+
+- name: Create /etc/nginx
+  file: path=/etc/nginx owner=root state=directory
+  sudo: True
+
+- name: Write nginx mime.types
+  template: src=templates/nginx/mime.types.j2 dest=/etc/nginx/mime.types
+  sudo: True
+
 - name: Configure nginx as service
   template: src=templates/nginx/nginx.init.j2 dest=/etc/init.d/nginx mode=0755
   sudo: True
@@ -164,24 +194,27 @@
 - name: Make ssl directory
   file: path=/etc/ssl owner=root state=directory
   sudo: True
+  only_if: ${server.ssl}
 
 - name: Make ssl private directory
   file: path=/etc/ssl/private owner=root state=directory mode=600
   sudo: True
+  only_if: ${server.ssl}
 
 - name: Make ssl cert directory
   file: path=/etc/ssl/cert owner=root state=directory
   sudo: True
+  only_if: ${server.ssl}
 
 - name: Copy SSL certificate private key
   copy: src=files/ssl/$app_name/$app_name.key dest=/etc/ssl/private/$app_name.key mode=600
   sudo: True
-  only_if: is_set('${server.ssl}')
+  only_if: ${server.ssl}
 
 - name: Copy SSL certificate
   copy: src=files/ssl/$app_name/$app_name.crt dest=/etc/ssl/certs/$app_name.crt mode=600
   sudo: True
-  only_if: is_set('${server.ssl}')
+  only_if: ${server.ssl}
 
 # Startup nginx
 - name: Stop nginx service
@@ -190,19 +223,5 @@
 
 - name: Start nginx service and have it run during system startup
   service: name=nginx state=started enabled=yes pattern=nginx
-  sudo: True
-
-#- name: Create environments/production.rb
-
-- name: Stop Passenger
-  shell: $source && cd $app_home && passenger stop -p $port
-  ignore_errors: yes
-  sudo: True
-
-- name: Start Passenger
-  shell: $source && cd $app_home && passenger start -d -a 0.0.0.0 -p $port -e $environment
-  ignore_errors: yes
-  async: 60
-  poll: 10
   sudo: True
 

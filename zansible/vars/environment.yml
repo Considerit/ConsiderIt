@@ -42,11 +42,12 @@ memcached:
 nginx:
   connections: 1024
 
+rbenv_path: /home/$user/.rbenv #/usr/local/.rbenv
 ruby_home: /home/$user/.rbenv/shims
-rbenv_home: /home/$user/.rbenv/bin
-path: PATH="/home/$user/.rbenv/bin:/home/$user/.rbenv/libexec:/home/$user/.rbenv/plugins/ruby-build/bin:/home/$user/.rbenv/shims:$PATH"
+rbenv_home: ${rbenv_path}/bin
+path: PATH="${rbenv_path}/bin:${rbenv_path}/plugins/ruby-build/bin:/home/$user/.rbenv/shims:$PATH"
 ruby_version: 1.9.3-p392
-source: . /home/$user/.profile
+source: . ~/.profile
 port: 3000
 environment: production
-
+passenger_root: ${rbenv_path}/versions/$ruby_version/lib/ruby/gems/1.9.1/gems/passenger-3.0.19

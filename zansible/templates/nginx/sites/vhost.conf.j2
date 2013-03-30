@@ -1,12 +1,40 @@
-server {
-    listen 80;
-    server_name {{ server.name }};
-    root {{ app_home }};
-    passenger_enabled on;
 
-    {% if server.ssl %}
-      ssl on;
-      ssl_certificate /etc/ssl/certs/{{ app_name }}.crt;
-      ssl_certificate_key /etc/ssl/private/{{ app_name }}.key;
-    {% endif %}
+{% if server.ssl %}
+server {
+  listen         80;
+  server_name    {{ server.name }};
+  rewrite        ^ https://$host$request_uri? permanent;
+}
+{% endif %}
+
+server {
+  {% if server.ssl %}
+    listen 443 ssl;
+    ssl_certificate /etc/ssl/certs/{{ app_name }}.crt;
+    ssl_certificate_key /etc/ssl/private/{{ app_name }}.key;
+    passenger_set_cgi_param HTTP_X_FORWARDED_PROTO https;
+  {% else %}
+    listen 80;
+  {% endif %}
+
+  server_name {{ server.name }};
+  root {{ app_home }}/public;
+  passenger_enabled on;
+  rails_spawn_method smart;
+  rails_env production;
+
+  location ~ ^/(assets|images|javascripts|stylesheets|system)/ {
+    gzip_static on;
+    expires     max;
+    add_header  Cache-Control public;
+    add_header  Last-Modified "";
+    add_header  ETag "";
+    break;
+  }  
+
+  location = /favicon.ico {
+    expires    max;
+    add_header Cache-Control public;
+  }
+  
 }

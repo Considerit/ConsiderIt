@@ -1,4 +1,16 @@
 ---
+# - name: Stop Passenger
+#   shell: $source && cd $app_home && passenger stop -p $port
+#   ignore_errors: yes
+#   sudo: False
+
+# - name: Start Passenger
+#   shell: $source && cd $app_home && passenger start -d -a 0.0.0.0 -p $port -e $environment
+#   ignore_errors: yes
+#   async: 60
+#   poll: 10
+#   sudo: False
+
 - name: Compress avatars
   local_action: shell zip -r files/avatars.zip ../public/system/avatars
   sudo: False
@@ -16,6 +28,10 @@
 
 - name: Remove avatars zip
   file: path=$app_home/avatars.zip state=absent
+  sudo: False
+
+- name: Ensure cache directory
+  file: path=$app_home/public/system/cache state=directory
   sudo: False
 
 # Cache avatars

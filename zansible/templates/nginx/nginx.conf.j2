@@ -1,10 +1,10 @@
 user www-data;
 worker_processes {{ ansible_processor_count }};
  
-pid /var/run/nginx.pid;
+pid /opt/nginx/logs/nginx.pid;
  
 events {
-    worker_connections {{ connections }} ;
+    worker_connections {{ nginx.connections }} ;
     # multi_accept on;
 }
  
@@ -13,8 +13,8 @@ http {
     ##
     # Basic Settings
     ##
-    passenger_root /home/{{ ruby_user }}/.rbenv/versions/{{ ruby_version }}/lib/ruby/gems/1.9.1/gems/passenger-3.0.19;
-    passenger_ruby /home/{{ ruby_user }}/versions/{{ ruby_version }}/bin/ruby;
+    passenger_root {{ passenger_root }};
+    passenger_ruby {{ rbenv_path }}/versions/{{ ruby_version }}/bin/ruby;
 
     sendfile on;
     tcp_nopush on;
@@ -43,12 +43,12 @@ http {
     gzip on;
     gzip_disable "msie6";
  
-    # gzip_vary on;
-    # gzip_proxied any;
-    # gzip_comp_level 6;
-    # gzip_buffers 16 8k;
-    # gzip_http_version 1.1;
-    # gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml text/javascript;
  
     ##
     # If HTTPS, then set a variable so it can be passed along.

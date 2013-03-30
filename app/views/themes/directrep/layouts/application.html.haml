@@ -107,6 +107,7 @@
 
   - theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
   - cache [current_tenant, theme, @dashboard] do 
+  - aarp = false
 
     %body
       #l-wrap
@@ -127,18 +128,20 @@
             .t-dr-mock-dialogue
 
               %h1.t-dr-heading
-                = image_tag current_theme_image_path("aarp_logo.png")
+                - if aarp
+                  = image_tag current_theme_image_path("aarp_logo.png")
                 = image_tag current_theme_image_path("logo.png")
 
 
-                //%span.dialogue
-                //  The
-                //%span.rep
-                //  = theme.rep_name
-                //%span.dialogue
-                //  wants to hear from
-                //%span.constituency
-                //  You
+                - if !aarp
+                  %span.dialogue
+                   The
+                  %span.rep
+                   = theme.rep_name
+                  %span.dialogue
+                   wants to hear from
+                  %span.constituency
+                   You
 
               .l-message-speaker.rep
                 = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
@@ -162,33 +165,41 @@
                     .t-bubble-wrap
                       &#9700;
                   %strong
-                    //Tell me what you think about the issues below. 
-                    Tell us what you think about the issues below.
+                    - if !aarp
+                      Tell me what you think about the issues below. 
+                    - else
+                      Tell us what you think about the issues below.
 
-                  //I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
-                  
-                  //I want to be able to represent the residents of Moanalua, Salt Lake and Aliamanu as we consider these issues in the State House.
-
-                  We want to represent our members as our government consider these important policy issues that will effect the lives of our members.
+                  - if !aarp
+                    I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
+                    
+                    //I want to be able to represent the residents of Moanalua, Salt Lake and Aliamanu as we consider these issues in the State House.
+                  - else
+                    We want to represent our members as our government consider these important policy issues that will effect the lives of our members.
 
                 .constituent_statement.right
                   .t-bubble
                     .t-bubble-wrap
                       &#9700;             
-                  //Why should we spend the time? Politicians don't care what we think.
-                  Why should we spend time?  Does the AARP really care what we think?
+                  - if !aarp
+                    Why should we spend the time? Politicians don't care what we think.
+                  - else
+                    Why should we spend time?  Does the AARP really care what we think?
 
                 .rep_statement.left
                   .t-bubble
                     .t-bubble-wrap
                       &#9700;               
                   %strong
-                    //I promise to post a response to your concerns.
-                    Your voice powers the AARP.  
+                    - if !aarp
+                      I promise to post a response to your concerns.
+                    - else
+                      Your voice powers the AARP.  
 
-                  //Your opinions help shape how I look at these important issues for our community. I care what you think.
-
-                  Your opinions help shape how we as an organization can respond to these important issues.  We care what you think.
+                  - if !aarp
+                    Your opinions help shape how I look at these important issues for our community. I care what you think.
+                  - else
+                    Your opinions help shape how we as an organization can respond to these important issues.  We care what you think.
 
               .l-message-recipient.l-group-container
                 - cols = 10
@@ -201,8 +212,11 @@
 
           .l-content-wrap.l-content-wrap-no-background.m-proposals-heading
             %h2.m-proposals-header
-              //Rep. #{theme.rep_name} has considered #{@proposals.length} issues
-              The #{theme.rep_name} has considered #{@proposals.length} issues with you
+              - if !aarp
+                Rep. #{theme.rep_name} has considered #{@proposals.length} issues
+              - else
+                The #{theme.rep_name} has considered #{@proposals.length} issues with you
+                
             .m-proposals-header-sub
               .m-proposals-filter-container
                 .title

@@ -135,13 +135,13 @@
 
                 - if !aarp
                   %span.dialogue
-                   The
+                    The
                   %span.rep
-                   = theme.rep_name
+                    = theme.rep_name
                   %span.dialogue
-                   wants to hear from
+                    wants to hear from
                   %span.constituency
-                   You
+                    You
 
               .l-message-speaker.rep
                 = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
@@ -216,7 +216,7 @@
                 Rep. #{theme.rep_name} has considered #{@proposals.length} issues
               - else
                 The #{theme.rep_name} has considered #{@proposals.length} issues with you
-                
+
             .m-proposals-header-sub
               .m-proposals-filter-container
                 .title

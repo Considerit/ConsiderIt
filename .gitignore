@@ -44,3 +44,11 @@ zansible/group_vars/chalkboardit
 zansible/group_vars/development
 
 zansible/hosts-chalkboardit
+
+zansible/files/ssl/chalkboardit/chalkboardit.key.encrypted
+
+zansible/files/ssl/chalkboardit/chalkboardit.key.nopass
+
+zansible/group_vars/chlkit
+
+zansible/hosts-chlkit

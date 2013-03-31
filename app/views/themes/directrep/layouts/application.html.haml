@@ -130,10 +130,9 @@
               %h1.t-dr-heading
                 - if aarp
                   = image_tag current_theme_image_path("aarp_logo.png")
-                = image_tag current_theme_image_path("logo.png")
+                  = image_tag current_theme_image_path("logo.png")
 
-
-                - if !aarp
+                - else
                   %span.rep
                     = theme.rep_name
                   %span.dialogue

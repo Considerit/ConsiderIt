@@ -1,13 +1,13 @@
-$yellow_postit_color: hsl(57, 76%, 75%)
+$yellow_postit: hsl(55, 81%, 79%)
 
 =post_it_button
   color: #888
-  +button(darken(desaturate($yellow_postit_color, 60%), 35%), desaturate($yellow_postit_color, 20%))
+  +button(darken(desaturate($yellow_postit, 60%), 35%), desaturate($yellow_postit, 20%))
   &:hover
     color: #333
 
-=colored_post_it($repeated)
-  $color: $yellow_postit_color 
+=post_it($repeated: 0)
+  $color: $yellow_postit
   //background-color: $color
   @if $repeated == 0
     background: image-url('yellow_postit.png') no-repeat top left transparent
@@ -18,17 +18,6 @@ $yellow_postit_color: hsl(57, 76%, 75%)
   .button
     +post_it_button
 
-=red_post_it($repeated: 0)
-  //+colored_post_it(hsl(352, 94%, 94%))
-  //+colored_post_it(hsl(360,41%,63%))
-  +colored_post_it($repeated)
-  //background-color: #e8e37d
-  
-=green_post_it($repeated: 0)
-  //+colored_post_it(hsl(87, 69%, 89%))
-  //+colored_post_it(hsl(84,35%,54%))
-  +colored_post_it($repeated)
-  //background-color: #e8e37d
 
 =on_post_it
   color: #333
@@ -88,35 +77,11 @@ $yellow_postit_color: hsl(57, 76%, 75%)
 
 
 =on_paper
-  background-image: image-url('paper.jpg') 
-  background-repeat: repeat 
-  background-position: left top
-
-=on_background
-  background: none
-  color: #333
-  a
-    color: #333
-    &:hover
-      color: #111
+  background: image-url('paper.jpg') repeat left top
       
-=on_corkboard
-  color: hsl(30, 40%, 18%)
-
-=wood-frame
-  //border-style: solid
-  //border-width: 19px 21px 28px 21px
-  //border-width: 22px 26px 33px 26px
-  //border-color: #bbb #222 #222 #777  
-  //+border-image(image-url('chalk/chalkboard_frame.png'), 17, 21, 28, 21, stretch)
-
 =chalkboard
-  background: image-url("chalk/chalkboard.jpg") repeat left top #414141   
+  background: image-url("chalk/chalkboard.jpg") repeat left top #414141
 
-
-=chalkboard-with-frame 
-  +wood-frame
-
-  > .slate
-    +chalkboard
+=wall($bground_color:#ccc)
+  background: image-url('wall_texture.png') repeat scroll 0 0 $bground_color
 

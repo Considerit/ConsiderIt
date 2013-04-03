@@ -231,7 +231,6 @@ GEM
     premailer-rails (1.3.2)
       premailer (~> 1.7)
       rails (>= 3)
-    query_reviewer (0.1.8)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -367,7 +366,6 @@ DEPENDENCIES
   paper_trail
   paperclip
   premailer-rails
-  query_reviewer
   rails
   rails_admin
   remotipart (~> 1.0.2)

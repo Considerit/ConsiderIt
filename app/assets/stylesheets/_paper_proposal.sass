@@ -3,7 +3,7 @@
   margin: 0 auto 2 * $vertical_baseline auto
   min-height: 150px
   background: image-url('chalkboardit/images/proposal_back.jpg') repeat top left white
-  +box-shadow(0px, 1px, 2px, rgba(black,.4))
+  +single-box-shadow
   padding: 5px $grid_major $vertical_baseline $grid_major
 
   .description_wrapper
@@ -23,7 +23,7 @@
     img
       position: relative
       z-index: 1
-      +box-shadow(0,0,2px, rgba(black,.2))
+      +single-box-shadow
 
     &:after, &:before
       position: absolute

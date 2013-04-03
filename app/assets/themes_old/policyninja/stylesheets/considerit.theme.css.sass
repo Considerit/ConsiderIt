@@ -264,7 +264,7 @@ html
       vertical-align: top
       opacity: .9
       
-      +linear-gradient(darken($primary_button_background_color, 25%), $primary_button_background_color)
+      +background-image(linear-gradient(darken($primary_button_background_color, 25%), $primary_button_background_color))
       background-color: darken($primary_button_background_color, 5%)
 
 
@@ -292,7 +292,6 @@ html
         font-variant: small-caps
         text-transform: uppercase
         display: block
-        //+inset-text(.1)
         padding-bottom: $vertical_baseline /4
 
       .short_name
@@ -306,5 +305,5 @@ html
 
 
       &:hover
-        +linear-gradient(darken($primary_button_background_color, 15%), $primary_button_background_color)
+        +background-image(linear-gradient(darken($primary_button_background_color, 15%), $primary_button_background_color))
         background-color: darken($primary_button_background_color, 5%)

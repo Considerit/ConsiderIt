@@ -88,7 +88,7 @@ body, input, button
 
 //http://paulirish.com/2012/box-sizing-border-box-ftw/
 *
-  +boxy_border
+  +box_sizing(border-box)
 
 body
   font-size: 100%
@@ -212,12 +212,12 @@ $hex-bullet-point: '\2022'
 /* SHARED STYLES */
 
 =superbutton
-  +linear-gradient(lighten($comp_color, 5%), $comp_color)
+  +background-image(linear-gradient(lighten($comp_color, 5%), $comp_color))
   background-color: lighten($comp_color, 5%)
   +transition
 
   &:hover
-    +complex-gradient(lighten($comp_color, 15%), lighten($comp_color, 5%), $from_stop : 0%, $to_stop: 20%)
+    +background-image(linear-gradient(lighten($comp_color, 15%) 0%, lighten($comp_color, 5%) 20%))
     background-color: lighten($comp_color, 15%)
 
 
@@ -230,11 +230,11 @@ $hex-bullet-point: '\2022'
 
 %postit-background-no-repeat
   @extend %postit
-  +green_post_it
+  +post_it
 
 %postit-background-repeat
   @extend %postit
-  +green_post_it($repeated: 1)
+  +post_it($repeated: 1)
 
 
 
@@ -463,7 +463,7 @@ html
 
   +wall(white)
   +border-radius(5px)
-  +box-shadow(0,1px,2px,rgba(black,.5)) 
+  +single-box-shadow
 
   .m-user-accounts-cancel
     position: absolute
@@ -474,7 +474,7 @@ html
     width: 30px
     height: 30px
     padding-top: 2px
-    +box-shadow(0, 1px, 2px, rgba(black, .25))
+    +single-box-shadow
     background-color: #555
     color: white
     z-index: 1
@@ -748,7 +748,7 @@ $membership_card_height: 278px
   width: $peer-point-width
   border-radius: 8px
   +nude-list
-  +box-shadow(0, 1px, 2px, rgba(black, .2))
+  +single-box-shadow($color: rgba(black, .2))
   position: relative
   cursor: pointer
 
@@ -790,7 +790,7 @@ $membership_card_height: 278px
 
 
   .m-point-wrap
-    +inset-box-shadow(1px,6px,9px, -5px, #fff)
+    +single-box-shadow($color: #fff, $hoff: 1px, $voff: 6px, $blur: 9px, $spread: -5px, $inset: true) 
     padding: $vertical_baseline / 2 $grid_xs / 2 2 * $vertical_baseline $grid_xs / 2
     margin-bottom: $vertical_baseline
     border-radius: 8px
@@ -1156,7 +1156,7 @@ $membership_card_height: 278px
 .m-point-assessment-request
   //display: none
   .m-point-assessment-request-form
-    +box-shadow(0, 1px, 2px, black, 0.2)
+    +single-box-shadow($color: rgba(black, 0.2))
     border-radius: 5px
     padding: $vertical_baseline $grid_xs
     background-color: #FEFFCC
@@ -1199,7 +1199,7 @@ $membership_card_height: 278px
   //width: 100%
   +on_paper
   padding: $vertical_baseline $grid_minor
-  +box-shadow(0, 1px, 2px, black, 0.2)
+  +single-box-shadow($color: rgba(black, 0.2))
   +font-size(-2)
   //font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace
   color: #777
@@ -1499,7 +1499,7 @@ $membership_card_height: 278px
   &:before
     color: $dark_comp_color
   > .t-bubble .t-bubble-wrap
-    +complex-gradient(lighten($comp_color, 34%), lighten($comp_color, 10%), $from_stop : 0%, $to_stop: 37%)
+    +background-image(linear-gradient(lighten($comp_color, 34%) 0%, lighten($comp_color, 10%) 37%))
 
 // YOUR_ACTION_CRAFT
 
@@ -1537,7 +1537,7 @@ $membership_card_height: 278px
     width: 210px
     position: relative
     display: inline-block
-    +colored_post_it($repeated: 1)
+    +post_it($repeated: 1)
     +font-size(-2)
 
   .m-top-pro-body
@@ -1601,8 +1601,7 @@ $histogram_bar_color: #6E6E6E
     position: relative
     //display: inline-block
     cursor: pointer
-    //+box-shadow(0px, 1px, 2px, black)
-    +inset-box-shadow(-6px,6px,9px, -5px, white)
+    +single-box-shadow($hoff: -6px, $voff: 6px, $blur: 9px, $spread: -5px, $color: white, $inset: true)
     margin-bottom: 2px
 
     border: 2px solid $histogram_bar_border-color
@@ -1631,14 +1630,12 @@ $histogram_bar_color: #6E6E6E
     &:hover
       //border-color: #414141
 
-
     $base_selected_bar_color: #B1B18F
     $base_selected_bar_color: #7F7F56
     $darken_amt: 10%
     $hue_spread: 18
 
     &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
-      //+box-shadow(0px, 1px, 2px, black)
       //border-color: black
 
       &#bucket-0
@@ -1707,7 +1704,6 @@ $histogram_bar_color: #6E6E6E
       bottom: 0
       left: 30px
       position: absolute
-      +on_background
       z-index: 50
       display: none
       //left: 50%
@@ -1776,7 +1772,7 @@ $histogram_bar_color: #6E6E6E
     margin-top: 14px
     +border-radius(5px)
     padding: 5px $grid_xs
-    +box-shadow(0px, 1px, 2px, #313131)
+    +single-box-shadow($color: #313131)
 
     &:after
       content: "\25B2"
@@ -1860,10 +1856,10 @@ $filter_width: 371px
   .m-position-message-body
     +bubble($position_color, $dark_position_color, right )
     border-radius: 0
-    //+box-shadow(0, 1px, 5px, rgba(black, .5))
+    //+single-box-shadow($blur: 5px, :color: rgba(black, .5))
 
     > .t-bubble .t-bubble-wrap
-      +complex-gradient(lighten($position_color, 45%), $position_color, $from_stop : 0%, $to_stop: 40%)
+      +background-image(linear-gradient(lighten($position_color, 45%) 0%, $position_color 40%))
 
   .m-position-heading
     +font-size(2)
@@ -1966,7 +1962,7 @@ $filter_width: 371px
 
     background-color: rgba(black, .15)
 
-    +box-shadow(0,0,0,transparent)
+    +box-shadow(none)
     border-radius: 15px
     width: $slider_width
 

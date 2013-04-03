@@ -10,10 +10,10 @@ html body #l-wrap.dashboard #l-content
     width: $sidebar_width - $grid_xs
     margin-left: $grid_xs
     border: 1px solid rgba(#888, .6)    
-    //+box-shadow(0, 0, 2px, rgba(black, .2))
+
     ul li
       border-top: 1px solid white
-      +linear-gradient(#eee, #ccc)
+      +background-image(linear-gradient(#eee, #ccc))
       &.current
         font-weight: bold
         background: none
@@ -26,7 +26,7 @@ html body #l-wrap.dashboard #l-content
 
 
       &:hover
-        +linear-gradient(#fff, #ddd)
+        +background-image(linear-gradient(#fff, #ddd))
       a
         +font-size(-2)
         color: #555
@@ -39,7 +39,6 @@ html body #l-wrap.dashboard #l-content
   .l-content-wrap
     //font-size: 75%
     border: 1px solid rgba(#888, .6)
-    //+box-shadow(0, 0, 2px, rgba(black, .2))
 
     background-color: white
 

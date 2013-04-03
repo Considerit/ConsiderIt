@@ -116,7 +116,7 @@ gem 'newrelic_rpm'
 group :development, :test do
   # gem 'ruby-debug19', :require => 'ruby-debug'
   # gem 'heroku'
-  gem "query_reviewer"
+  #gem "query_reviewer"
   gem 'thin'
 end
 

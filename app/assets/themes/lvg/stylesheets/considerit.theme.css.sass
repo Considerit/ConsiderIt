@@ -43,8 +43,8 @@ html
         top: $vertical_baseline * 13
         border-top: 1px solid #919191
         border-bottom: 1px solid #555
-        +box-shadow(0px, 1px, 2px, rgba(black, .3))
-        +linear-gradient(#888,#777)
+        +single-box-shadow($color: rgba(black, .3))
+        +background-image(linear-gradient(#888,#777))
         z-index: 2      
 
       > div#l-content  
@@ -52,7 +52,7 @@ html
         background: image-url('chalkboardit/images/proposal_back.jpg') repeat top left white
         +border-radius(2px)
         background-color: white    
-        +box-shadow(0px, 1px, 2px, rgba(black, .7))
+        +single-box-shadow($color: rgba(black, .7))
         padding-top: $vertical_baseline
 
         position: relative
@@ -169,11 +169,11 @@ html
     .rest .stanceform
       form input[type="submit"]
 
-        +linear-gradient(desaturate($background_color, 30%), $background_color)
+        +background-image(linear-gradient(desaturate($background_color, 30%), $background_color))
         background-color: desaturate($background_color, 15%)
 
         &:hover
-          +linear-gradient(lighten($background_color, 15%), $background_color)
+          +background-image(linear-gradient(lighten($background_color, 15%), $background_color))
           background-color: lighten($background_color, 15%)
 
   #other_proposals
@@ -284,8 +284,8 @@ html
 .slider_table .slider_container .ui-slider
   width: 600px
   background: none
-  +complex-gradient(#aaa, #6a6a6a, 0%, 100%, center top, 1)
-  +box-shadow(1px, 2px, 3px, black, .4)
+  +background-image(linear-gradient(#aaa 0%, #6a6a6a 100%))
+  +single-box-shadow($hoff: 1px, $voff: 2px, $spread: 3px, $color: rgba(black, .4))
 
 .proposal_prompt .description_wrapper 
   //margin-left: 300px
@@ -339,7 +339,7 @@ html
       vertical-align: top
       opacity: .9
       
-      +linear-gradient(desaturate($background_color, 30%), $background_color)
+      +background-image(linear-gradient(desaturate($background_color, 30%), $background_color))
       background-color: desaturate($background_color, 15%)
 
 
@@ -368,7 +368,6 @@ html
         font-variant: small-caps
         text-transform: uppercase
         display: block
-        //+inset-text(.1)
         padding-bottom: $vertical_baseline /4
 
       .short_name
@@ -387,7 +386,7 @@ html
 
 
       &:hover
-        +linear-gradient(lighten($background_color, 15%), $background_color)
+        +background-image(linear-gradient(lighten($background_color, 15%), $background_color))
         background-color: lighten($background_color, 15%)
 
 

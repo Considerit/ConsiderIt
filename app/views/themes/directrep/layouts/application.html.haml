@@ -115,14 +115,11 @@
       %svg{ :xmlns => "http://www.w3.org/2000/svg", :height => 0, :style => "position: absolute", :version => "1.1", :baseProfile => "full" }
 
         %defs
-          %filter#innershadow{ :x0 => "-50%", :y0 => "0%", :width => "200%", :height => "200%" }
-            %feGaussianBlur{ :in => "SourceAlpha", :stdDeviation => ".75", :result =>"blur" }
-            %feOffset{ :dy => "3", :dx => "0" }
-            %feComposite{ :in2 => "SourceAlpha", :operator => "arithmetic", :k2 => "-1", :k3 => "1", :result => "shadowDiff" }
-            %feFlood{ :'flood-color' => "white", :'flood-opacity' => ".3" }
-            %feComposite{ :in2 => "shadowDiff", :operator => "in" }
+          %filter{ :id => "bubble_gradient"}
+            %feImage{ :x => "10", :y => "0", :'xlink:href' => "/assets/bubble_gradient.png", :result => "overlay" }
+            %feOffset{ :dy => ".2", :dx => "0" }  
+            //%feBlend{ :in2 => "SourceGraphic", :in1 => "overlay", :mode => "lighten" }
             %feComposite{ :in2 => "SourceGraphic", :operator => "over" }
-
 
       #l-wrap
         = render :partial => "shared/flash_messages"

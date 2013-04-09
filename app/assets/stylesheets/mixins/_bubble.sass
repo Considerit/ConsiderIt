@@ -1,103 +1,48 @@
-$pos: -9px
 $bubble_border_radius: 8px
-
-
+$banchor_top: -3px
+$banchor_adjustx: -20px
 
 %bubble
   +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 9px, $spread: -5px, $color: #fff, $inset: true)
 
-  .t-bubble
-    font-size: 10px
-
-  .t-bubble, .t-bubble:after, .t-bubble:before
+  > .t-bubble
+    font-size: 0
+    line-height: 1
     position: absolute
-    display: block
-
-  .t-bubble-wrap
-    +background-clip(text)          
-    color: transparent
-    z-index: 7
-    position: absolute
-    
-
-  .t-bubble
-
-    top: 0px
-
-    &:after
-      font-size: 1.4em
-      z-index: 4
-      top: -3px
-
-    &:before
-      z-index: 6
-      font-size: 1.2em
-      top: -1px
+    top: $banchor_top
+    z-index: 99
 
 %bubble_right
   @extend %bubble
-  border-radius: $bubble_border_radius 0 $bubble_border_radius $bubble_border_radius
   > .t-bubble
-    right: $pos
-
-    .t-bubble-wrap
-      right: 0
-
-    &:after
-      right: -10px
-    &:before
-      right: -3px
-
+    right: $banchor_adjustx 
 
 %bubble_left
   @extend %bubble
-  border-radius: 0 $bubble_border_radius $bubble_border_radius $bubble_border_radius
-  .t-bubble //, &:after, &:before
-    +flip-horizontal
-
   > .t-bubble
-    left: 0 //$pos
+    left: $banchor_adjustx 
 
-    .t-bubble-wrap
-      left: -1px
+= bubble($light, $dark, $direction, $bg-color: #f7f7f7, $bborder-width: 1px, $include_bg: true)
 
-    &:after
-      left: 4px
-    &:before
-      left: 0px //-3px
+  @if $include_bg
+    background-color: $light
+    border: $bborder-width solid $dark
 
-= bubble($light, $dark, $direction, $bg-color: #f7f7f7, $content: '\25E4')
   @if $direction == left
     @extend %bubble_left
+
   @else if $direction == right
     @extend %bubble_right
 
-  background-color: $light
-  border: 1px solid $dark
-
   > .t-bubble
+    
+    > .t-bubble-inner
+      fill: $light
+      
+    > .t-bubble-border
+      fill: $dark
 
-    .t-bubble-wrap
-      +background-image(linear-gradient(lighten($light, 7%) 0%, $light 50%))
-    &:before
-      color: $dark
+    > .t-bubble-spacing
+      fill: $bg-color
 
-    &:after
-      color: $bg-color
 
-    &:after, &:before
-      content: $content
-
-    &.t-bubble-bar
-      font-size: 8px
-      right: $pos + 2
-
-      &:after
-        right: -3px
-        top: -1px
-
-      &:before
-        right: -1px
-
-      &:after, &:before
-        content: '\25B6'

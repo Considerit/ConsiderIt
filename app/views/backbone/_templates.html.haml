@@ -4,7 +4,7 @@
 
   .m-point-wrap
     (( if (hide_name) { ))
-    %span.avatar.m-point-author-avatar{:style => "background-image: url(\"/system/default_avatar/small_default-profile-pic.png\")"}
+    %span.avatar.m-point-author-avatar{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)"}
     (( } else if (user) { ))
     %span.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile picture"}
     (( } ))
@@ -31,9 +31,9 @@
         Remove
 
     .m-point-include-wrap
-      %a.m-point-include
+      %a.m-point-include{:href => ''}
         Add to your list
-      %span.list_connector
+        %span.list_connector
 
 %script{ :type => "text/template", :id => "tpl_newpoint" }      
   
@@ -76,11 +76,12 @@
 
     %span.m-pointlist-start
       {{start_record}}
-    &ndash;
+    %span &ndash;
     %span.m-pointlist-end
       {{end_record}}
-    = surround ' ' do
-      of
+    %span
+      = surround ' ' do
+        of
     %span.m-pointlist-total
       {{total_records}}
 
@@ -99,9 +100,7 @@
       %span.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
 
     .l-message-body.m-point-details-body
-      .t-bubble
-        .t-bubble-wrap
-          &#9700;
+      = render :partial => "shared/bubble", :locals => {:left => true}
 
       %a.m-point-details-close
         &#10006;
@@ -305,9 +304,7 @@
       = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
 
     .l-message-body.left.m-proposal-description
-      .t-bubble
-        .t-bubble-wrap
-          &#9700;
+      = render :partial => "shared/bubble", :locals => {:left => true}
 
       .m-proposal-description-body-wrap
         = text_area_tag 'description', nil, :placeholder => "Add details of the proposal here.", :class => 'm-proposal-description-body'
@@ -318,20 +315,21 @@
 
 
 
-%script{ :type => "text/template", :id => "tpl_proposal" }
+%script{ :type => "text/template", :id => "tpl_unexpanded_proposal" }
+  .m-proposal-heading-wrap
+    %h2.m-proposal-heading
+      {{title}}
 
+    %a.toggle_proposal
 
-  %h2.m-proposal-heading
-    {{title}}
+%script{ :type => "text/template", :id => "tpl_expanded_proposal" }
 
   .m-proposal-message.m-proposal-introduction
     .l-message-speaker.m-proposal-initiator
       = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
 
     .l-message-body.left.m-proposal-description
-      .t-bubble
-        .t-bubble-wrap
-          &#9700;
+      = render :partial => "shared/bubble", :locals => {:left => true}
       .m-proposal-description-body
         {{description}}
 
@@ -361,9 +359,8 @@
       = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
 
     .l-message-body.left.m-proposal-description
-      .t-bubble
-        .t-bubble-wrap
-          &#9700;
+      = render :partial => "shared/bubble", :locals => {:left => true}
+
       (( var r = Math.floor(Math.random()*3); ))
 
       .rep_statement
@@ -405,9 +402,7 @@
   .l-message-recipient
 
   %a.l-message-body.m-position-your-action-body.right.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
-    %span.t-bubble
-      %span.t-bubble-wrap
-        &#9700;
+    = render :partial => "shared/bubble", :locals => {:left => false}
 
     //= image_tag current_theme_image_path("join.png")
 
@@ -421,9 +416,7 @@
   .l-message-recipient
 
   %a.l-message-body.m-position-your-action-body.right.submit
-    %span.t-bubble
-      %span.t-bubble-wrap
-        &#9700;
+    = render :partial => "shared/bubble", :locals => {:left => false}
 
     //= image_tag current_theme_image_path("join.png")
 
@@ -437,9 +430,7 @@
 %script{ :type => "text/template", :id => "tpl_position" }      
   .l-message-recipient
   .l-message-body.right.m-position-message-body
-    .t-bubble
-      .t-bubble-wrap
-        &#9700;
+    = render :partial => "shared/bubble", :locals => {:left => false}
 
     %h2.m-position-heading
       I consider these the most important pros and cons
@@ -518,14 +509,10 @@
   .l-message-speaker
     = image_tag current_theme_image_path("you.png")
 
-
-
 %script{ :type => "text/template", :id => "tpl_summary" }      
   .l-message-recipient
   .l-message-body.right.m-results-responders.summary{ :style => " {{ tile_size==50 ? '' : 'min-height:160px;' }} "}
-    .t-bubble
-      .t-bubble-wrap
-        &#9700;
+    = render :partial => "shared/bubble", :locals => {:left => false}
 
 
     %h3.m-summary-heading
@@ -540,9 +527,7 @@
       %span.avatar{ :'data-id' => "{{top_pro.user_id}}", :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "author"}
 
       .m-top-pro-body.left
-        .t-bubble
-          .t-bubble-wrap
-            &#9700;
+        = render :partial => "shared/bubble", :locals => {:left => true}
         .text
           {{top_pro.nutshell}}
       (( } ))
@@ -553,9 +538,7 @@
         No con arguments added yet.
       (( } else { ))
       .m-top-con-body.l-message-body.right
-        .t-bubble
-          .t-bubble-wrap
-            &#9700;
+        = render :partial => "shared/bubble", :locals => {:left => false}
         .text
           {{top_con.nutshell}}
 
@@ -576,9 +559,7 @@
   .l-message-recipient
 
   .l-message-body.right.m-results-responders
-    .t-bubble
-      .t-bubble-wrap
-        &#9700;
+    = render :partial => "shared/bubble", :locals => {:left => false}
 
     %h3.m-results-pro-con-list-who
       .m-results-pro-con-list-who-others
@@ -642,6 +623,8 @@
 
       .m-histogram-bar{ :style => "width: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}"}
 
+        = render :partial => "shared/bubble_equilateral", :locals => {:left => false}
+
         .m-bar-percentage
           {{ Math.ceil(bar.positions.length / participants.length * 1000)/10 }}%
 
@@ -681,9 +664,5 @@
         Opposers
 
       .clear  
-
-
-
-
 
 = render :partial => 'backbone/templates_user'

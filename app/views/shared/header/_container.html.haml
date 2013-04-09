@@ -2,14 +2,10 @@
 
 #l-heading
   .l-heading-wrap
-    = link_to image_tag(current_theme_image_path("logo.png"), :title => "Go back to the homepage"), root_path, :class => 't-logo'
+
+    = render :partial => "shared/logo"
           
     - if @proposal && @can_update && false
       = render :partial => "proposals/admin_strip"
           
     #m-user-nav
-      -# if user_signed_in?
-        = render :partial => "shared/header/logged_in_head"
-        
-      -# else
-        = render :partial => "shared/header/logged_out_head"

@@ -1,5 +1,16 @@
 $yellow_postit: hsl(55, 81%, 79%)
 
+%on_background
+  +single-text-shadow($hoff: 1px, $voff: 1px, $color: rgba(black,.5)) 
+  color: #ccc
+
+  a
+    color: #ccc
+
+    &:hover
+      color: #eee
+
+
 =post_it_button
   color: #888
   +button(darken(desaturate($yellow_postit, 60%), 35%), desaturate($yellow_postit, 20%))
@@ -10,10 +21,10 @@ $yellow_postit: hsl(55, 81%, 79%)
   $color: $yellow_postit
   //background-color: $color
   @if $repeated == 0
-    background: image-url('yellow_postit.png') no-repeat top left transparent
+    background: asset-data-url('yellow_postit.png') no-repeat top left transparent
 
   @else
-    background: image-url('yellow_postit_no_shadow.png') repeat top left transparent  
+    background: asset-data-url('yellow_postit_no_shadow.png') repeat top left transparent  
 
   .button
     +post_it_button

@@ -1,3 +1,8 @@
+
+$comp_color: lighten(#882F35, 10%)
+$dark_comp_color: darken($comp_color, 10%)
+
+
 %imagesprite
   display: inline-block
 
@@ -17,5 +22,11 @@
   //@extend %background-tile-sprite
   //background-image: inline-image("../themes/directrep/images/back.png") 
   
-  background-image: image-url('directrep/images/back.png')
+  //background-image: image-url('directrep/images/back.png')
 
+  background-color: $comp_color
+  $stripe-color: darken($comp_color, 1%)
+  $height: $vertical_baseline
+
+  +background-image(linear-gradient(transparent 50%, $stripe-color 50%))
+  +background-size($height $height)

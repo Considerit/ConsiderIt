@@ -20,10 +20,12 @@
     = theme_stylesheet_link_tag 'application'
 
     /[if IE 9]
-      = stylesheet_link_tag 'ie9'
-    
+      %meta{ :http-equiv => "X-UA-Compatible", :content => "IE=9" }
+
+      = stylesheet_link_tag 'browser/ie/ie9'
+
     /[if lte IE 8]
-      = stylesheet_link_tag 'ie'
+      = stylesheet_link_tag 'browser/ie/ie'
 
     :javascript
       //http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/

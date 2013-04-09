@@ -62,11 +62,14 @@ class ConsiderIt.ResultsView extends Backbone.View
 
     $participants = @$el.find('.l-message-speaker .l-group-container')
 
-    from_tile_size = $participants.find('.avatar:first').width()
-    to_tile_size = @$el.find(".m-histogram .avatar:first").width()
-    ratio = to_tile_size / from_tile_size
+    if !modern
+      @$el.find('.m-histogram').css 'opacity', 1
+      $participants.fadeOut()
+    else
+      from_tile_size = $participants.find('.avatar:first').width()
+      to_tile_size = @$el.find(".m-histogram .avatar:first").width()
+      ratio = to_tile_size / from_tile_size
 
-    if modern
       $participants
         .css({'position':'absolute','z-index':99}) 
         .find('.avatar').css {
@@ -75,43 +78,34 @@ class ConsiderIt.ResultsView extends Backbone.View
           '-moz-transition': "all #{speed}ms",
           '-webkit-transition': "all #{speed}ms",
           'transition': "all #{speed}ms"}
-    else
-      $participants.hide()
-      $participants.find('.avatar').css {
-              'width' : "#{to_tile_size}px",
-              'height' : "#{to_tile_size}px",
-              'position' : 'relative'}
-      $participants.show()
 
-    for participant in $participants.find('.avatar')
-      $from = $(participant)
-      id = $from.data('id')
-      $to = @$el.find(".m-histogram #avatar-#{id}")
+      for participant in $participants.find('.avatar')
+        $from = $(participant)
+        id = $from.data('id')
+        $to = @$el.find(".m-histogram #avatar-#{id}")
 
-      to_offset = $to.offset()
-      from_offset = $from.offset()
+        to_offset = $to.offset()
+        from_offset = $from.offset()
 
-      offsetX = to_offset.left - from_offset.left
-      offsetY = to_offset.top - from_offset.top
+        offsetX = to_offset.left - from_offset.left
+        offsetY = to_offset.top - from_offset.top
 
-      if modern
         offsetX -= (from_tile_size - to_tile_size)/2
         offsetY -= (from_tile_size - to_tile_size)/2
         $from.css 
-          '-webkit-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
-      else
-        $from.animate {
-          "left": offsetX, 
-          "top": offsetY,
-          }, speed, 'linear'
+          '-o-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
+          '-ms-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
+          '-moz-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
+          '-webkit-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
+          'transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
 
-    me = this
-    window.delay speed + 350, -> 
-      me.$el.find('.m-histogram').css 'opacity', 1
-      
-      window.delay 400, -> 
-        $participants.fadeOut()
-
+        me = this
+        window.delay speed + 350, -> 
+          me.$el.find('.m-histogram').css 'opacity', 1
+          
+          window.delay 400, -> 
+            $participants.fadeOut()
+ 
 
   events : 
     'click' : 'transition_explorer'
@@ -226,8 +220,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
   events : 
     'mouseenter .m-point-results:not(#expanded)' : 'highlight_point_includers'
     'mouseleave .m-point-results:not(#expanded)' : 'highlight_point_includers'
-    'mouseenter .m-bar-is-hard-selected .m-bar-person' : 'show_user_explanation' 
-    'mouseleave .m-bar-is-hard-selected .m-bar-person' : 'hide_user_explanation' 
+    #'mouseenter .m-bar-is-hard-selected .m-bar-person' : 'show_user_explanation' 
+    #'mouseleave .m-bar-is-hard-selected .m-bar-person' : 'hide_user_explanation' 
     'mouseenter .m-histogram-bar:not(.m-bar-is-selected)' : 'select_bar'
     'click .m-histogram-bar:not(.m-bar-is-hard-selected)' : 'select_bar'
     'click .m-bar-is-hard-selected' : 'deselect_bar'
@@ -246,7 +240,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
 
       $bar = $target.closest('.m-histogram-bar')
-      bubble_offset = $bar.offset().top - @$el.find('.l-message-body').offset().top + 2
+      bubble_offset = $bar.offset().top - @$el.find('.l-message-body').offset().top + 20
 
       @$el.hide()
 
@@ -283,13 +277,15 @@ class ConsiderIt.ExplorerView extends Backbone.View
         .html("For us <span class='group_name'>#{ConsiderIt.Position.stance_name(bucket)}</span>, these are the most important")
         .show()
 
-      @$el.find('.t-bubble').hide()
-      @$el.find('.t-bubble-bar').remove()
+      @$el.find('.l-message-body .t-bubble').hide()
+      @$el.find('.l-message-speaker').css('z-index': 999)
+
+      #@$el.find('.t-bubble-bar').remove()
 
 
-      $bar_bubble = $('<div class="t-bubble-bar t-bubble"><div class="t-bubble-wrap">&#9654;</div></div>')
-      $bar_bubble.css('top', bubble_offset)
-      @$el.find('.l-message-body').append($bar_bubble)
+      #$bar_bubble = $('<div class="t-bubble-bar t-bubble"><div class="t-bubble-wrap">&#9654;</div></div>')
+      #$bar_bubble.css('top', bubble_offset)
+      #@$el.find('.l-message-body').append($bar_bubble)
 
       for vw in @views
         #vw.repaginate()
@@ -334,9 +330,10 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     $('.m-bar-person-details:visible', $selected_bar).hide()
 
-    @$el.find('.t-bubble-bar').remove()
+    #@$el.find('.t-bubble-bar').remove()
 
-    @$el.find('.t-bubble').show()
+    @$el.find('.l-message-body .t-bubble').show()
+    @$el.find('.l-message-speaker').css('z-index': '')
 
     @$el.show()
 

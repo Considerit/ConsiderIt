@@ -461,11 +461,11 @@ button:-moz-focus-inner {
 
 
 
-/* Reference icons from font-files
+/*/* Reference icons from font-files
 ** Base 64-encoded version recommended to resolve cross-site font-loading issues
 */
 
-@font-face {
+/*@font-face {
     font-family: 'zocial';
     src: url('zocial-regular-webfont.eot');
 }
@@ -477,4 +477,4 @@ button:-moz-focus-inner {
          url('zocial-regular-webfont.svg#zocialregular') format('svg');
     font-weight: normal;
     font-style: normal;
-}
+}*/

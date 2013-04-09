@@ -1,5 +1,6 @@
 class ConsiderIt.ProposalView extends Backbone.View
-  @template : _.template( $("#tpl_proposal").html() )
+  @expanded_template : _.template( $("#tpl_expanded_proposal").html() )
+  @unexpanded_template: _.template( $("#tpl_unexpanded_proposal").html() )
 
   tagName : 'li'
 
@@ -10,7 +11,6 @@ class ConsiderIt.ProposalView extends Backbone.View
     @long_id = @model.get('long_id')
     @proposal = ConsiderIt.proposals[@long_id]
     @data_loaded = false
-    @state = 0
 
     @on 'point_details:closed', ->
       if @state == 2
@@ -19,30 +19,11 @@ class ConsiderIt.ProposalView extends Backbone.View
         ConsiderIt.router.navigate(Routes.new_position_proposal_path( @proposal.model.get('long_id') ), {trigger: false})
 
   render : -> 
-    results_el = $('<div class="m-proposal-message">')
-    @proposal.views.results = new ConsiderIt.ResultsView
-      el : results_el
-      proposal : @proposal
-      model : @model
 
-    @proposal.views.results.render()
-
-    @proposal.views.take_position = new ConsiderIt.PositionView
-      proposal : @proposal
-      model : @proposal.position
-      el : @$el
-
-    position_el = @proposal.views.take_position.render()
-    
-    @$el.hide()
-
-    @$el.html ConsiderIt.ProposalView.template($.extend({}, @model.attributes, {
+    @$el.html ConsiderIt.ProposalView.unexpanded_template($.extend({}, @model.attributes, {
         title : this.model.title()
         description_detail_fields : this.model.description_detail_fields()
       }))
-
-    results_el.insertAfter(@$el.find('.m-proposal-introduction'))
-    position_el.insertAfter(results_el)
 
     #TODO: if user logs in as admin, need to do this
     if ConsiderIt.roles.is_admin
@@ -56,7 +37,8 @@ class ConsiderIt.ProposalView extends Backbone.View
           name: name
         }
 
-    @$el.show()
+    @$el.addClass('unexpanded')
+    @state = -1
 
     this
 
@@ -75,8 +57,7 @@ class ConsiderIt.ProposalView extends Backbone.View
       positions : _.object(_.map(data.positions, (pos) -> [pos.position.user_id, new ConsiderIt.Position(pos.position)]))
       position : new ConsiderIt.Position(data.position.position)
     })
-
-
+    
     @proposal.positions[@proposal.position.user_id] = @proposal.position
     @proposal.views.take_position.set_model @proposal.position
 
@@ -162,6 +143,8 @@ class ConsiderIt.ProposalView extends Backbone.View
     @state = 2
 
   take_position_handler : () ->
+    if @state == -1
+      @toggle()
 
     if @data_loaded
       @take_position(this)
@@ -170,6 +153,9 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   show_results_handler : () ->
+    if @state == -1
+      @toggle()
+
     if @data_loaded
       @show_results(this)
     else
@@ -205,12 +191,75 @@ class ConsiderIt.ProposalView extends Backbone.View
       @load_data(@prepare_for_point_details, {point_id : point_id})
     # if data is already loaded, then the PointListView is already properly handling this
 
-
-
-
   events : 
     'click .hidden' : 'show_details'
     'click .showing' : 'hide_details'
+    'click .m-proposal-heading-wrap' : 'toggle'
+    'click ' : 'toggle_if_not_expanded'
+
+  toggle_if_not_expanded : (ev) ->
+    if @$el.is('.unexpanded')
+      @toggle(ev)
+
+  toggle : (ev) ->
+    if ev
+      ev.stopPropagation()
+
+    if @state == -1
+      @$el.hide()
+
+      @$el.append ConsiderIt.ProposalView.expanded_template($.extend({}, @model.attributes, {
+          title : this.model.title()
+          description_detail_fields : this.model.description_detail_fields()
+        }))
+
+      results_el = $('<div class="m-proposal-message">')
+      @proposal.views.results = new ConsiderIt.ResultsView
+        el : results_el
+        proposal : @proposal
+        model : @model
+
+      @proposal.views.results.render()
+
+      @proposal.views.take_position = new ConsiderIt.PositionView
+        proposal : @proposal
+        model : @proposal.position
+        el : @$el
+
+      position_el = @proposal.views.take_position.render()
+      
+      results_el.insertAfter(@$el.find('.m-proposal-introduction'))
+      position_el.insertAfter(results_el)
+
+      #TODO: if user logs in as admin, need to do this
+      if ConsiderIt.roles.is_admin
+        for field in ConsiderIt.ProposalView.editable_fields
+          [selector, name, type] = field 
+          @$el.find(selector).editable {
+            resource: 'proposal'
+            pk: @long_id
+            url: Routes.proposal_path @long_id
+            type: type
+            name: name
+          }
+
+      @$el.show()
+      @state = 0
+
+      @$el.addClass('expanded')
+      @$el.removeClass('unexpanded')
+
+      this
+    else
+      @render()
+      ConsiderIt.router.navigate(Routes.root_path(), {trigger: false})
+      @$el.addClass('unexpanded')
+      @$el.removeClass('expanded')
+
+      @state = -1
+
+
+
 
   show_details : (ev) -> 
     $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')

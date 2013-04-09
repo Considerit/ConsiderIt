@@ -24,10 +24,11 @@
 
 
       /[if IE 9]
-        = stylesheet_link_tag 'ie9'
+        = stylesheet_link_tag 'browser/ie/ie9'
       
       /[if lte IE 8]
-        = stylesheet_link_tag 'ie'
+        = stylesheet_link_tag 'browser/ie/ie'
+
 
       :javascript
         //http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
@@ -107,9 +108,22 @@
 
   - theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
   - cache [current_tenant, theme, @dashboard] do 
-  - aarp = false
+    - aarp = false
 
     %body
+
+      %svg{ :xmlns => "http://www.w3.org/2000/svg", :height => 0, :style => "position: absolute", :version => "1.1", :baseProfile => "full" }
+
+        %defs
+          %filter#innershadow{ :x0 => "-50%", :y0 => "0%", :width => "200%", :height => "200%" }
+            %feGaussianBlur{ :in => "SourceAlpha", :stdDeviation => ".75", :result =>"blur" }
+            %feOffset{ :dy => "3", :dx => "0" }
+            %feComposite{ :in2 => "SourceAlpha", :operator => "arithmetic", :k2 => "-1", :k3 => "1", :result => "shadowDiff" }
+            %feFlood{ :'flood-color' => "white", :'flood-opacity' => ".3" }
+            %feComposite{ :in2 => "shadowDiff", :operator => "in" }
+            %feComposite{ :in2 => "SourceGraphic", :operator => "over" }
+
+
       #l-wrap
         = render :partial => "shared/flash_messages"
         = render :partial => "shared/header/container"
@@ -133,11 +147,11 @@
                   = image_tag current_theme_image_path("logo.png")
 
                 - else
-                  %span.rep
+                  %span.rep{:title => "#{theme.rep_name}"}
                     = theme.rep_name
-                  %span.dialogue
+                  %span.dialogue{:title => "wants to hear from"}
                     wants to hear from
-                  %span.constituency
+                  %span.constituency{:title => "You"}
                     You
 
               .l-message-speaker.rep
@@ -158,9 +172,8 @@
 
               .l-message-body
                 .rep_statement.left
-                  .t-bubble
-                    .t-bubble-wrap
-                      &#9700;
+                  = render :partial => "shared/bubble", :locals => {:left => true}
+
                   %strong
                     - if !aarp
                       Tell me what you think about the issues below. 
@@ -175,18 +188,17 @@
                     We want to represent our members as our government consider these important policy issues that will effect the lives of our members.
 
                 .constituent_statement.right
-                  .t-bubble
-                    .t-bubble-wrap
-                      &#9700;             
+                  //.t-bubble
+                  = render :partial => "shared/bubble", :locals => {:left => false}
+          
                   - if !aarp
                     Why should we spend the time? Politicians don't care what we think.
                   - else
                     Why should we spend time?  Does the AARP really care what we think?
 
                 .rep_statement.left
-                  .t-bubble
-                    .t-bubble-wrap
-                      &#9700;               
+                  = render :partial => "shared/bubble", :locals => {:left => true}
+      
                   %strong
                     - if !aarp
                       I promise to post a response to your concerns.
@@ -207,40 +219,25 @@
                 - users.each do |user|
                   %span.avatar{ :id => "avatar-#{user.id}", :'data-id' => user.id }
 
-          .l-content-wrap.l-content-wrap-no-background.m-proposals-heading
-            %h2.m-proposals-header
-              - if !aarp
-                Rep. #{theme.rep_name} has considered #{@proposals.length} issues
-              - else
-                The #{theme.rep_name} has considered #{@proposals.length} issues with you
+          .m-proposals-heading
 
-            .m-proposals-header-sub
-              .m-proposals-filter-container
-                .title
-                  Filter to: 
-                %a.selected.all
-                  All
-                %a.open
-                  Open
-                %a.completed
-                  Completed
-              .m-proposals-sort-container
-                .title
-                  Sort by: 
-                %a.selected.activity
-                  Activity
-                %a.newest
-                  Newest
-              .m-proposals-index
-                Jump to issue
-                
-                %ul.menu
-                  - @proposals.each do |prop|
-                    %li
-                      %a{ :href => "##{prop[0]}"}
-                        Should we #{prop[1][:model].title}?
+            .m-proposals-sort-container
+              .title
+                Sort issues by: 
+              %a.selected.activity
+                Most active
+              %a.newest
+                Newest
 
-                .clear
+            .m-proposals-filter-container
+              .title
+                Filter to: 
+              %a.selected.all
+                All
+              %a.open
+                Open
+              %a.completed
+                Completed
 
           #m-proposals-container
             %ul.m-proposal-list

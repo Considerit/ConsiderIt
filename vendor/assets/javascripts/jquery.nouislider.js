@@ -101,9 +101,13 @@
 					if(api.connect){
 					
 						if(api.handles.length>1){
-							api.connect.css({'left':api.low.left(),'right':(api.slider.innerWidth()-api.up.left())});
+							//api.connect.css({'left':api.low.left(),'right':(api.slider.innerWidth()-api.up.left())});
+							api.connect.css({'left':api.low.left()});
+
 						} else {
-							api.low ? api.connect.css({'left':api.low.left(),'right':0}) : api.connect.css({'left':0,'right':(api.slider.innerWidth()-api.up.left())});
+							//api.low ? api.connect.css({'left':api.low.left(),'right':0}) : api.connect.css({'left':0,'right':(api.slider.innerWidth()-api.up.left())});
+							api.low ? api.connect.css({'left':api.low.left()}) : api.connect.css({'left':0});
+
 						}
 					
 					}

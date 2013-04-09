@@ -49,7 +49,6 @@ class ConsiderIt.PointView extends Backbone.View
       ConsiderIt.comments[@model.id] = new ConsiderIt.CommentList()
       ConsiderIt.comments[@model.id].reset(comments)
 
-      console.log data
       @model.update_assessable_data(data)
 
       @data_loaded = true

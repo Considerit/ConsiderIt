@@ -3,7 +3,7 @@ $banchor_top: -3px
 $banchor_adjustx: -20px
 
 %bubble
-  +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 9px, $spread: -5px, $color: #fff, $inset: true)
+  +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: #fff, $inset: true)
 
   > .t-bubble
     font-size: 0
@@ -22,10 +22,11 @@ $banchor_adjustx: -20px
   > .t-bubble
     left: $banchor_adjustx 
 
-= bubble($light, $dark, $direction, $bg-color: #f7f7f7, $bborder-width: 1px, $include_bg: true)
+= bubble($light, $dark, $direction, $bg-color: #fafafa, $bborder-width: 1px, $include_bg: true)
 
   @if $include_bg
     background-color: $light
+    //background-color: black
     border: $bborder-width solid $dark
 
   @if $direction == left
@@ -36,13 +37,14 @@ $banchor_adjustx: -20px
 
   > .t-bubble
     
-    > .t-bubble-inner
+    .t-bubble-inner
       fill: $light
+      //fill: black
       
-    > .t-bubble-border
+    .t-bubble-border
       fill: $dark
 
-    > .t-bubble-spacing
+    .t-bubble-spacing
       fill: $bg-color
 
 

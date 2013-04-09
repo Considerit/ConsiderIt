@@ -1567,11 +1567,11 @@ $membership_card_height: 278px
 
   .m-top-pro-body
     @extend %m-top-point-body
-    +bubble($constituency_color, $dark_constituency_color, left, $constituency_color)              
+    +bubble(#F0EB7F, $dark_constituency_color, left, $constituency_color)              
 
   .m-top-con-body
     @extend %m-top-point-body
-    +bubble($constituency_color, $dark_constituency_color, right, $constituency_color)              
+    +bubble(#F0EB7F, $dark_constituency_color, right, $constituency_color)              
 
 
 /* RESULTS */
@@ -1913,7 +1913,7 @@ $filter_width: 371px
   .m-position-message-body
     +bubble($position_color, $dark_position_color, right )
     border-radius: 0
-    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 6px, $spread: -5px, $color: #fff, $inset: true)
+    //+single-box-shadow($hoff: 1px, $voff: 6px, $blur: 6px, $spread: -5px, $color: #fff, $inset: true)
 
   .m-position-heading
     +font-size(1)

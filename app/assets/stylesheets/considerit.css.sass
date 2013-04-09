@@ -9,16 +9,28 @@
 @import "mixins/bubble"
 @import "sprite"
 
-@font-face 
-  font-family: 'ModernPictogramsNormal'
-  src: font-url('modernpics-webfont.eot')
-  src: font-url('modernpics-webfont.eot?#iefix') format('embedded-opentype'), font-url('modernpics-webfont.woff') format('woff'), font-url('modernpics-webfont.ttf') format('truetype'), font-url('modernpics-webfont.svg#ModernPictogramsNormal') format('svg')
++font-face("ModernPictogramsNormal", font-files("modernpics-webfont.woff", "modernpics-webfont.eot",  "modernpics-webfont.ttf", "modernpics-webfont.svg#ModernPictogramsNormal"), $eot: "modernpics-webfont.eot")
+
+//+font-face("FontAwesome", font-files("fontawesome-webfont.woff", "fontawesome-webfont.eot",  "fontawesome-webfont.ttf"), $eot: "fontawesome-webfont.eot")
+
+$styles: "regular", "bold", "italic"
+@each $style in $styles
+  $file: "optima-#{$style}-webfont"
+  +font-face("Optima-web-#{$style}", font-files("#{$file}.woff", "#{$file}.eot",  "#{$file}.ttf", "#{$file}.svg"), $eot: "#{$file}.eot")
+
+@font-face
+  font-family: 'zocial'
+  src: font-url('zocial-regular-webfont.eot')
+  src: font-url('zocial-regular-webfont.eot?#iefix') format('eot')
   font-weight: normal
   font-style: normal
 
+@font-face
+  font-family: 'zocial'
+  src: asset-data-url('zocial-regular-webfont.woff') format('woff'), font-url('zocial-regular-webfont.ttf') format('truetype'), font-url('zocial-regular-webfont.svg#zocialregular') format('svg')
+  font-weight: normal
+  font-style: normal
 
-
-//@import "users/sessions"
 
 /* RESET
  * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
@@ -72,17 +84,23 @@ $base_color: #222
 $base_hover_color: #000
 
 body, h1, h2, h3, h4, h5, h6, a, input, button
-  color: $base_color
+  //color: $base_color
 
-/* FONTS */
 
-$main_font-family: Optima, Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif
-%main_font-family
-  font-family: $main_font-family
+
 
 // do we need to put input and button here...?
-body, input, button
-  @extend %main_font-family
+html
+  body, input, button
+    @extend %main_font-family
+
+  h1, h2, h3, h4, h5, h6, strong
+    @extend %bolded
+
+
+  em, i 
+    @extend %italicized
+
 
 /* ELEMENT DEFAULTS */
 
@@ -90,8 +108,6 @@ body, input, button
 *
   +box_sizing(border-box)
 
-body
-  font-size: 100%
 
 a, input, button
   &:hover
@@ -108,11 +124,6 @@ a
 input, button
   +transition
 
-h1, h2, h3, h4, h5, h6, strong
-  font-weight: bold
-
-em 
-  font-style: italic
 
 table
   border-collapse: separate  
@@ -132,10 +143,10 @@ blockquote
   quotes: "\201C" "\201D"
   &:before
     content: open-quote
-    font-weight: bold
+    @extend %bolded
   &:after
     content: close-quote
-    font-weight: bold
+    @extend %bolded
 
 
 
@@ -289,7 +300,7 @@ $hex-bullet-point: '\2022'
   display: inline-block
   margin: 0
   padding: 0
-  background-size: 100% 100%
+  background-size: cover
   background-image: url('/system/default_avatar/small_default-profile-pic.png')
 
 
@@ -407,10 +418,14 @@ html
 .m-login, .m-user-options
   display: inline-block
 
+.m-login, .m-user-options-display
+  @extend %on_background
+
 .m-login a, .m-user-options a
-  color: #a6a6a6
-  font-weight: bold
-  +font-size(-1)
+  //color: #a6a6a6
+  @extend %bolded
+  +font-size(-4)
+  text-transform: uppercase
 
 .m-login-signin:after
   position: relative
@@ -597,7 +612,7 @@ $membership_card_height: 278px
 
     .name_field input
       +font-size(4)
-      font-weight: bold
+      @extend %bolded
 
 
     .m-user-accounts-authorized-feedback
@@ -642,7 +657,8 @@ $membership_card_height: 278px
         display: none
 
       .import_from_third_party
-        +font-size(-4)
+        span
+          +font-size(-4)
         a
           +font-size(1)
 
@@ -653,7 +669,7 @@ $membership_card_height: 278px
     .m-user-accounts-pledge
       //.m-user-accounts-pledge-heading
       //  +font-size(2)
-      //  font-weight: bold
+      //  @extend %bolded
 
       ol
         text-align: left
@@ -666,7 +682,8 @@ $membership_card_height: 278px
             cursor: pointer
 
     .m-user-accounts-tos
-      +font-size(-2)
+      span, p, a
+        +font-size(-2)
 
       .m-user-terms-show
         text-decoration: underline
@@ -716,7 +733,7 @@ $membership_card_height: 278px
     .m-point-user
       white-space: nowrap
       display: inline-block
-      +font-size(-2)
+      //+font-size(-6)
 
   .m-point-operations
     padding: 0 $grid_xs
@@ -726,7 +743,7 @@ $membership_card_height: 278px
       +font-size(-4)
       padding: 0
       margin: 0
-      font-weight: bold
+      @extend %bolded
 
     .m-point-remove, .m-point-read-more, .m-point-edit
       @extend %point_operation
@@ -813,16 +830,17 @@ $membership_card_height: 278px
     right: -50px
 
   .m-point-nutshell-wrap
-    +font-size(-3)
+    .m-point-nutshell, .m-point-user, .details_indicator
+      +font-size(-4)
 
   .m-point-operations        
     position: absolute
     bottom: $vertical_baseline / 4
-    +font-size(-3)
     
     a
+      +font-size(-3)
       color: darken(desaturate($yellow_postit, 25%), 35%)
-      font-weight: bold
+      @extend %bolded
       +transition
 
       &:hover
@@ -850,7 +868,7 @@ $membership_card_height: 278px
   $add_point_background-light: #EDE276
   $add_point_background-dark: #CEC04A
   $add_point_border-color: #BAAC54
-  $arrow_height: 9px
+  $arrow_height: 11px
 
   =triangle($size)
     width: 0
@@ -858,19 +876,19 @@ $membership_card_height: 278px
     border-top: $size solid transparent
     border-bottom: $size solid transparent
 
-  =triangle-right($size, $color)
+  =triangle-right($size, $color: transparent)
     +triangle($size)
     border-left: $size solid $color
 
-  =triangle-left($size, $color)
+  =triangle-left($size, $color: transparent)
     +triangle($size)
     border-right: $size solid $color
 
   .m-point-include-wrap
-    display: inline-block
+    //display: inline-block
     position: absolute
     bottom: 0
-    opacity: .5
+    //opacity: .5
     +transition
 
     .m-point-include
@@ -880,50 +898,53 @@ $membership_card_height: 278px
       padding: $vertical_baseline/4 $grid_xs / 2
       color: #222
       +font-size(-4)
-      font-weight: bold
+      @extend %bolded
       position: relative
       z-index: 2
       background-color: $add_point_background-light
 
     .list_connector
-      display: inline-block
+      +transition
+      //display: inline-block
       position: absolute      
       bottom: 0
-      +transition
-      z-index: 1
+      z-index: -1
 
       &:after
         content: ''
         position: absolute   
         top: -$arrow_height 
 
-    &:hover
-      opacity: 1    
+    //&:hover
+      //opacity: 1    
 
 
   &.pro
     .m-point-include-wrap
       right: 0
+
       .m-point-include
         border-bottom-right-radius: 8px
 
-      .list_connector
-        +triangle-right($arrow_height + 2, $add_point_border-color)
-        //right: -$arrow_height - 3
+        .list_connector
+          +triangle-right($arrow_height + 2)
+          right: 0//right: -$arrow_height - 3
 
-        &:after
-          right: 2px
-          +triangle-right($arrow_height, $add_point_background-light)
+          &:after
+            right: 2px
+            +triangle-right($arrow_height)
 
-
-
-      &:hover
-        .m-point-include
+        &:hover
           border-bottom-right-radius: 0px
           border-right-color: transparent
-        .list_connector
-          right: -$arrow_height - 2
-          
+
+          .list_connector
+            //left: auto
+            right: -$arrow_height - 2
+            border-left-color: $add_point_border-color
+
+            &:after
+              border-left-color: $add_point_background-light          
 
   &.con
     .m-point-include-wrap
@@ -932,22 +953,25 @@ $membership_card_height: 278px
       .m-point-include
         border-bottom-left-radius: 8px
 
-      .list_connector 
-        +triangle-left($arrow_height + 2, $add_point_border-color)    
-        //left: -$arrow_height - 3
+        .list_connector 
+          +triangle-left($arrow_height + 2)    
+          left: 0
 
-        &:after
-          left: 2px
-          +triangle-left($arrow_height, $add_point_background-light)
+          &:after
+            left: 2px
+            +triangle-left($arrow_height)
 
 
-      &:hover
-        .m-point-include
+        &:hover
           border-bottom-left-radius: 0px
           border-left-color: transparent 
-        .list_connector
-          left: -$arrow_height - 2
-          
+
+          .list_connector
+            left: -$arrow_height - 2
+            border-right-color: $add_point_border-color
+
+            &:after
+              border-right-color: $add_point_background-light
 
 
   &:hover .m-point_operations a
@@ -969,14 +993,17 @@ $membership_card_height: 278px
   //border-color: transparent
 
   .m-point-nutshell-wrap
-    +font-size(-2)
     margin-bottom: 0px
     // bullet point
+    .m-point-nutshell, .details_indicator, .m-point-user
+      +font-size(-4)
+
     &:before
       content: $hex-bullet-point
       position: absolute
       left: -10px
       top: 0px
+      +font-size(-5)
 
   .m-point-operations
     bottom: 0
@@ -1004,14 +1031,14 @@ $membership_card_height: 278px
       //left: -10px
 
   .m-newpoint-new
-    +font-size(2)
+    +font-size(1)
     width: 105%
     border: none
     padding: 0
     position: relative
     text-align: left
     //text-decoration: underline
-    font-weight: bold
+    @extend %bolded
     display: inline-block
 
     border: 1px solid
@@ -1050,8 +1077,8 @@ $membership_card_height: 278px
     margin-left: 10px
 
   .m-newpoint-anonymous-wrap
-    +font-size(-1)
-    display: none
+    label, input
+      +font-size(-1)
 
   .m-newpoint-submit
     margin-top: 3px
@@ -1066,8 +1093,9 @@ $membership_card_height: 278px
     color: #777
 
   .m-pointlist-status
-    +font-size(-3)
-    font-weight: bold
+    span
+      +font-size(-3)
+      @extend %bolded
 
 
 /* POINT_DETAILS */
@@ -1107,7 +1135,7 @@ $membership_card_height: 278px
     +font-size(3)
 
     width: auto
-    font-weight: bold
+    @extend %bolded
     margin-bottom: $vertical_baseline
 
   .m-point-details-description
@@ -1115,7 +1143,7 @@ $membership_card_height: 278px
       text-decoration: underline
 
   .m-point-details-author
-    font-style: italic
+    @extend %italicized
     padding: 10px 0
 
   .m-point-details-operations
@@ -1189,7 +1217,7 @@ $membership_card_height: 278px
       +font-size(-2)
 
   a.signin_link
-    font-weight: bold
+    @extend %bolded
 
 
 
@@ -1247,9 +1275,9 @@ $membership_card_height: 278px
       content: '?'
 
     .m-point-assessment-claim-header
-      font-weight: bold
+      @extend %bolded
       .claim_verdict
-        font-style: italic
+        @extend %italicized
 
 /* COMMENTS */
 .m-comment
@@ -1268,7 +1296,7 @@ $membership_card_height: 278px
       margin-bottom: 6px
 
   .m-comment-author
-    font-style: italic
+    @extend %italicized
     white-space: nowrap
 
   .m-comment-edit
@@ -1309,7 +1337,7 @@ $membership_card_height: 278px
     padding-right: $grid_xs
 
   a.signin_link
-    font-weight: bold
+    @extend %bolded
 
 
 /* PROPOSAL */
@@ -1325,7 +1353,7 @@ $membership_card_height: 278px
     +font-size(3)
     text-align: center
     color: #222
-    font-weight: bold
+    @extend %bolded
 
   .m-proposal-description-body
     min-height: 5 * $vertical_baseline
@@ -1351,91 +1379,88 @@ $membership_card_height: 278px
 
 
 .m-proposals-heading
-  //z-index: 100
-  border-radius: 8px
-  width: 650px
-  margin: auto
-  border-top: 1px solid lighten($comp_color, 15%)
-  border-bottom: 1px solid darken($comp_color, 20%)
+  @extend %on_background
+  text-align: center
 
-  .m-proposals-header
-    margin-top: 0
-    padding-top: 0
-    +font-size(3)
-    text-align: center
-
-  .m-proposals-header-sub
-    +font-size(-2)
-    //margin-top: -$vertical_baseline
-    text-align: center
-    .m-proposals-filter-container, .m-proposals-sort-container, .m-proposals-index
+  .m-proposals-filter-container, .m-proposals-sort-container
+    display: inline-block
+    padding-right: $grid_xs
+    .title, a
       display: inline-block
-      padding-right: $grid_xs
-      > *
-        display: inline-block
-        padding-right: $grid_xs/2
+      padding-right: $grid_xs/2
 
-      a
-        color: #333
-        &:hover
-          color: black
-        &.selected, &.selected:hover
-          font-weight: bold
-          color: #222
-
-    .m-proposals-index
-      position: relative
-      cursor: pointer
-      z-index: 1
-      &:after
-        content: '\25BE'
-        color: #222
-
-      .menu
-        display: none
-        position: absolute
-        +nude-list
-        //z-index: 999
-        text-align: right
-        width: 500px
-        right: 0
-        background-color: rgba(darken($comp_color, 40%), .9)
-        padding-right: 0
-        li
-          cursor: pointer
-          text-align: right
-          border-bottom: 1px dotted #aaa
-          a
-            display: inline-block
-            color: #ddd
-            padding: $vertical_baseline/2 $grid_xs
-          &:hover 
-            background-color: darken($comp_color, 40%)
-            a
-              color: #eee
-
-      &:hover .menu
-        display: block
-
+    a
+      color: #aaa
+      text-transform: lowercase
+      font-variant: small-caps
+      &:hover
+        color: #eee
+      &.selected, &.selected:hover
+        @extend %bolded
+        color: #ccc
 
 
 .m-proposal
   margin: $vertical_baseline 0 2 * $vertical_baseline 0
 
+  &.unexpanded
+    opacity: .75
+    +transition
+    cursor: pointer
+
+    &:hover
+      opacity: 1
+
+  .m-proposal-heading-wrap
+    //width: 104%
+    //position: relative
+    //padding: $vertical_baseline $grid_xs
+    //left: -$grid_xs
+    //top: -$vertical_baseline
+    cursor: pointer
+
   .m-proposal-heading
     text-align: center
     color: #222
-    width: $body_width + 2 * $grid_major
+    //width: $body_width + 2 * $grid_major
     text-transform: capitalize
     margin: auto
-    font-weight: bold
-    +font-size(3)
+    @extend %bolded
+    +font-size(2)
+    padding-right: $grid_minor
+
 
   .m-proposal-description-details
     +font-size(-2)
 
     .hidden, .showing
       text-decoration: underline
+
+  .toggle_proposal
+    +font-size(5)
+    position: absolute
+    right: 0
+    top: 0
+    height: 100%
+    width: 30px
+    color: #a1a1a1
+    display: inline-block
+    border-left: 1px solid #a1a1a1
+    padding: 11px 0 0 3px
+
+  &.expanded .toggle_proposal
+    border-left-color: transparent
+
+  .toggle_proposal:before
+    content: '\25B8'
+
+  &.expanded .toggle_proposal:before
+    content: '\25BE'
+
+
+
+
+
 
   .m-proposal-connect
     margin-top: $vertical_baseline
@@ -1488,18 +1513,17 @@ $membership_card_height: 278px
 /* YOUR_ACTION */
 
 .m-position-your-action-body
-  +bubble($comp_color, $dark_comp_color, right )
+  +bubble(lighten($comp_color, 5%), $dark_comp_color, right )
   +superbutton
-  +font-size(3)
   color: white
   text-align: center
+  span.text
+    +font-size(3)
 
   &:hover
     color: white
   &:before
     color: $dark_comp_color
-  > .t-bubble .t-bubble-wrap
-    +background-image(linear-gradient(lighten($comp_color, 34%) 0%, lighten($comp_color, 10%) 37%))
 
 // YOUR_ACTION_CRAFT
 
@@ -1538,7 +1562,8 @@ $membership_card_height: 278px
     position: relative
     display: inline-block
     +post_it($repeated: 1)
-    +font-size(-2)
+    .text
+      +font-size(-4)
 
   .m-top-pro-body
     @extend %m-top-point-body
@@ -1554,6 +1579,25 @@ $membership_card_height: 278px
 .m-aggregated-results
   .m-results-responders
     +bubble($constituency_color, $dark_constituency_color, right)
+    .t-bubble.t-bubble-bar
+      font-size: 13px
+      right: -10px //$pos 
+      +scaleY(1.75)
+
+      &:after
+        right: -5px
+        top: -4px
+      
+      &:before
+        right: -3px
+
+      &:after, &:before
+        content: '\25B6'
+
+      .t-bubble-wrap
+        &:after
+          display: none
+          background: none
 
 // HISTOGRAM / WHAT
 
@@ -1578,7 +1622,7 @@ $histogram_bar_color: #6E6E6E
     position: absolute
     color: $histogram_bar_color
     +font-size(-1)
-    font-weight: bold
+    @extend %bolded
     margin-left: 5px
     //width: 3 * $grid_major
     //text-transform: uppercase
@@ -1601,7 +1645,7 @@ $histogram_bar_color: #6E6E6E
     position: relative
     //display: inline-block
     cursor: pointer
-    +single-box-shadow($hoff: -6px, $voff: 6px, $blur: 9px, $spread: -5px, $color: white, $inset: true)
+    //+single-box-shadow($hoff: -6px, $voff: 6px, $blur: 9px, $spread: -5px, $color: white, $inset: true)
     margin-bottom: 2px
 
     border: 2px solid $histogram_bar_border-color
@@ -1609,16 +1653,27 @@ $histogram_bar_color: #6E6E6E
     //border-bottom: none
     background-color: $histogram_bar_color
     +transition
+    +bubble($constituency_color, $dark_constituency_color, right, $include_bg: false)
     //z-index: 1
 
     .m-bar-percentage
       +font-size(-5)
       color: $histogram_bar_color
       position: absolute
-      right: -30px
+      right: -36px
       top: $histogram_bar_width / 2 - 8px
 
-    
+    &.m-bar-is-selected .t-bubble
+      display: block
+
+    .t-bubble
+      display: none
+      position: absolute
+      left: -7.5px
+      right: auto
+      top: 50%
+      margin-top: -10px
+      z-index: 999999
 
     .m-bar-close
       display: none
@@ -1694,6 +1749,7 @@ $histogram_bar_color: #6E6E6E
 
       .m-bar-close
         display: block
+        display: none
         right: -10px
         top: -2px
         //z-index: 1
@@ -1715,7 +1771,7 @@ $histogram_bar_color: #6E6E6E
         .arrow
           position: absolute
           +font-size(2)
-          font-weight: bold
+          @extend %bolded
           left: -25px
           top: 8px
       .revise 
@@ -1723,7 +1779,7 @@ $histogram_bar_color: #6E6E6E
         top: -2px
         a
           text-transform: lowercase
-          font-weight: bold
+          @extend %bolded
           text-decoration: underline
           +font-size(-2)
       
@@ -1805,11 +1861,12 @@ $histogram_bar_color: #6E6E6E
       left: 62px
 
 
+
 // POINTS / WHY
 
 .m-results-pro-con-list-who
   text-align: center
-  +font-size(2)
+  +font-size(1)
   margin-bottom: $vertical_baseline/2
   //height: 2 * $vertical_baseline
 
@@ -1825,7 +1882,7 @@ $filter_width: 371px
   text-transform: uppercase
   text-align: center
   //font-variant: small-caps
-  font-weight: bold
+  @extend %bolded
   position: absolute
   bottom: $vertical_baseline/4
 
@@ -1856,13 +1913,10 @@ $filter_width: 371px
   .m-position-message-body
     +bubble($position_color, $dark_position_color, right )
     border-radius: 0
-    //+single-box-shadow($blur: 5px, :color: rgba(black, .5))
-
-    > .t-bubble .t-bubble-wrap
-      +background-image(linear-gradient(lighten($position_color, 45%) 0%, $position_color 40%))
+    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 6px, $spread: -5px, $color: #fff, $inset: true)
 
   .m-position-heading
-    +font-size(2)
+    +font-size(1)
     padding: $vertical_baseline / 2 0 $vertical_baseline 0
     text-align: center
     text-decoration: underline
@@ -1959,7 +2013,6 @@ $filter_width: 371px
     margin: 10px
     background: none
     background-color: #666
-
     background-color: rgba(black, .15)
 
     +box-shadow(none)
@@ -1969,17 +2022,20 @@ $filter_width: 371px
     border: none
     height: 16px
 
-  .noUi-handle > div
-    background: image-url("slider.png") repeat-x scroll 50% 50% transparent  
-    border: none
-    top: -.2em
+  .noUi-handle 
     height: 38px
     width: 39px
-    +transition('none')
-    ///margin-left: -19.5px
+    > div
+      background: image-url("slider.png") repeat-x scroll 50% 50% transparent  
+      border: none
+      top: -.2em
+      height: 38px
+      width: 39px
+      +transition('none')
+      margin-left: -19.5px
 
-    &:hover
-      cursor: move
+      &:hover
+        cursor: move
 
 //////////////////////////////////////////
 // VENDOR
@@ -2028,10 +2084,14 @@ label.inline
       position: absolute
       right: -22px
       top: 0
-      content: 'r'
       font-size: 22px
-      font-family: "ModernPictogramsNormal"
-      text-transform: lowercase
+      // content: 'r'
+      // font-family: "ModernPictogramsNormal"
+      //font-family: "FontAwesome"
+      //content: "\f040"
+      font-style: normal
+      font-weight: normal
+
       color: #777
 
 .editableform .control-group
@@ -2044,7 +2104,7 @@ label.inline
 
   button
     color: #555
-    font-weight: bold
+    @extend %bolded
 
     &:hover
       color: black
@@ -2103,10 +2163,10 @@ label.inline
 
           .summary
             .claim_desc
-              font-style: italic
+              @extend %italicized
 
             .claim_verdict
-              font-weight: bold
+              @extend %bolded
               font-variant: small-caps
               text-transform: lowercase
 

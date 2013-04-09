@@ -19,7 +19,7 @@ namespace :cache do
   end
 
   task :avatars => :environment do 
-    size = 'large'
+    size = 'medium'
     begin
       Account.all.each do |accnt|
         File.open("public/system/cache/#{accnt.identifier}.css", 'w') do |f|

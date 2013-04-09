@@ -33,11 +33,11 @@
 	border-color:			#CCC;
 	background:				#CCC;
 }
-@media (-webkit-min-device-pixel-ratio:1.2),-moz-touch-enabled,(max-device-width:1024px){
+/*@media (-webkit-min-device-pixel-ratio:1.2),-moz-touch-enabled,(max-device-width:1024px){
 	.noUi-handle > div {
 		height:				38px;
 		width:				40px;
 		top:				-13px;
 		left:				-20px;
 	}
-}
+}*/

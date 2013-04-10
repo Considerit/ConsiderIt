@@ -12,13 +12,15 @@
 
   .m-user-options
     .m-user-options-display
+      %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.current_user, 'small')}}", :alt => "your profile picture"}
+
       %a
         {{ name }} 
 
-      %span.m-user-settings-triangle
+      %span.m-user-options-triangle
+        &#x25BE;
 
     .m-user-options-menu-wrap
-      %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.current_user, 'small')}}", :alt => "your profile picture"}
 
       %ul.m-user-options-menu
         %li

@@ -421,7 +421,7 @@ html
 .m-login, .m-user-options-display
   @extend %on_background
 
-.m-login a, .m-user-options a
+.m-login a, .m-user-options-display a
   //color: #a6a6a6
   @extend %bolded
   +font-size(-4)
@@ -436,36 +436,46 @@ html
   cursor: pointer
   position: relative
 
-  .m-user-settings-triangle
-    +down_wide_triangle
+  .m-user-options-display
+    img
+      vertical-align: middle 
+      margin: 2px 0 0px 15px
+      width: $vertical_baseline * 1.5
+      height: $vertical_baseline * 1.5
+      display: inline-block
+
+    .m-user-options-triangle
+
+    &:hover, &:hover a
+      color: white
+  
 
   .m-user-options-menu-wrap
     display: none
-    //z-index: 99
     position: absolute
-    right: -19px
-    width: 150px
-    +chalkboard
-    +on_chalkboard
-
-    img
-      vertical-align: top 
-      margin: 2px 0 0px 15px
-      width: 35px
-      height: 35px
-      display: inline-block
+    right: -$grid_minor
 
   .m-user-options-menu
     +nude-list
     margin-left: 0
     display: inline-block
+    +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
+    border-radius: 5px
+    background-color: white
+    padding: $vertical_baseline / 2 0
+    border: 1px solid #aaa
 
     a
       width: 100%
-      padding: 1px 10px 0 8px
+      padding: 2px $grid_minor
       display: block
       cursor: pointer
       +font-size(-3)
+      font-weight: bold
+      color: #444
+      &:hover
+        color: white
+        background-color: $dark_comp_color
 
 
 //////////////////////////////////////////

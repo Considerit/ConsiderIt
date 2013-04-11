@@ -118,6 +118,7 @@ group :development, :test do
   # gem 'heroku'
   #gem "query_reviewer"
   gem 'thin'
+  gem 'meta_request'
 end
 
 group :production do

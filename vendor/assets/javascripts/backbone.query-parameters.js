@@ -1,28 +1,3 @@
-// Copyright (c) 2012, Joseph A. Hudson
-// All rights reserved.
-
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
-//     * Neither the name of Joseph A. Hudson nor the
-//       names of its contributors may be used to endorse or promote products
-//       derived from this software without specific prior written permission.
-
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL JOSEPH A. HUDSON BE LIABLE FOR ANY
-// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 (function(_, Backbone) {
 
 // Require Underscore and Backbone if there's a `require` function.
@@ -40,6 +15,7 @@ var queryStringParam = /^\?(.*)/,
     escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g,
     queryStrip = /(\?.*)$/,
     fragmentStrip = /^([^\?]*)/,
+    hasQueryString = /(\?)[\w-]+=/i,
     namesPattern = /[\:\*]([^\:\?\/]+)/g;
 Backbone.Router.arrayValueSplit = '|';
 
@@ -50,6 +26,8 @@ _.extend(Backbone.History.prototype, {
     fragment = _getFragment.apply(this, arguments);
     if (excludeQueryString) {
       fragment = fragment.replace(queryStrip, '');
+    } else if (! hasQueryString.test(fragment)) {
+      fragment += this.location.search;
     }
     return fragment;
   },
@@ -157,6 +135,10 @@ _.extend(Backbone.Router.prototype, {
         length = length - 1;
       }
     }
+    
+    if (!_.isString(params[0])) {
+        params.unshift('');
+    }
 
     for (var i=0; i<length; i++) {
       if (_.isString(params[i])) {
@@ -254,7 +236,7 @@ _.extend(Backbone.Router.prototype, {
       } else if (_.isArray(_val)) {
         // arrays use Backbone.Router.arrayValueSplit separator
         var str = '';
-        for (var i in _val) {
+        for (var i = 0; i < _val.length; i++) {
           var param = this._toQueryParam(_val[i]);
           if (_.isBoolean(param) || param) {
             str += splitChar + encodeSplit(param);

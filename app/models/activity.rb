@@ -50,8 +50,8 @@ class Activity < ActiveRecord::Base
       "#{user ? user.username : 'Anonymous'} #{this_obj.stance_name_singular} \"#{this_obj.proposal.title}\""
     when 'Inclusion'
       "#{user ? user.username : 'Anonymous'} included a point by #{this_obj.point.hide_name || !this_obj.point.user ? '[hidden]' : this_obj.point.user.username} for \"#{this_obj.proposal.title}\""
-    when 'Reflect::ReflectBulletRevision'
-      "#{user ? user.username : 'Anonymous'} summarized a comment by #{this_obj.comment.user.username}"
+    # when 'Reflect::ReflectBulletRevision'
+    #   "#{user ? user.username : 'Anonymous'} summarized a comment by #{this_obj.comment.user.username}"
     when 'Comment'
       #TODO: handle commentable type
       "#{user ? user.username : 'Anonymous'} commented on an {item} by #{this_obj.root_object.user.username} for \"#{this_obj.root_object.proposal.title}\""      
@@ -79,8 +79,8 @@ class Activity < ActiveRecord::Base
       ""
     when 'Inclusion'
       "The point states \"#{this_obj.point.nutshell}\". #{this_obj.point.inclusions.count - 1} others have included this point."
-    when 'Reflect::ReflectBulletRevision'
-      "#{user ? user.username : 'Anonymous'} believes that #{this_obj.comment.user.username} said \"#{this_obj.text}\"."
+    # when 'Reflect::ReflectBulletRevision'
+    #   "#{user ? user.username : 'Anonymous'} believes that #{this_obj.comment.user.username} said \"#{this_obj.text}\"."
     when 'Comment'
       #TODO: handle commentable
       "#{user.username} commented on an {item} by #{this_obj.root_object.hide_name || !this_obj.root_object.user ? '[hidden]' : this_obj.root_object.user.username} for \"#{this_obj.root_object.proposal.title}\""      
@@ -104,9 +104,9 @@ class Activity < ActiveRecord::Base
       ""
     when 'Inclusion'
       helper.proposal_point_url(obj.proposal.long_id, obj.point_id, :host => host)
-    when 'Reflect::ReflectBulletRevision'
+    #when 'Reflect::ReflectBulletRevision'
       #obj.comment.commentable_path
-      helper.proposal_url(obj.comment.root_object.proposal.long_id, :host => host)
+      #helper.proposal_url(obj.comment.root_object.proposal.long_id, :host => host)
     when 'Comment'
       #obj.comment.commentable_path
       helper.proposal_url(obj.root_object.proposal.long_id, :host => host)

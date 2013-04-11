@@ -1,4 +1,14 @@
 GIT
+  remote: git://github.com/drewblas/aws-ses.git
+  revision: ac295fd35ac7a5b8312bb17cbd1cb4a20dde81a0
+  specs:
+    aws-ses (0.5.0)
+      builder
+      mail (> 2.2.5)
+      mime-types
+      xml-simple
+
+GIT
   remote: git://github.com/tkriplean/themes_for_rails.git
   revision: a4c7b4014e9d6b6ccc074b010c4960e47d4b376f
   specs:
@@ -330,6 +340,7 @@ GEM
     whenever (0.8.2)
       activesupport (>= 2.3.4)
       chronic (>= 0.6.3)
+    xml-simple (1.1.2)
     yamler (0.1.0)
 
 PLATFORMS
@@ -341,6 +352,7 @@ DEPENDENCIES
   assessable!
   asset_sync
   aws-sdk
+  aws-ses (~> 0.5.0)!
   backup (~> 3.0.24)
   bitly
   cancan

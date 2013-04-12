@@ -38,7 +38,7 @@
       = render :partial => "shared/header/container"
 
       #l-content
-        - if Rails.env.development?
+        - if false && Rails.env.development?
           = render :partial => "shared/dev_tools"      
 
         - if @dashboard

@@ -45,7 +45,7 @@
     ConsiderIt.current_user = #{current_user ? "ConsiderIt.users[#{current_user.id}]" : 'new ConsiderIt.User'};
 
     //TODO: filter data
-    #{current_user ? "ConsiderIt.update_current_user(#{current_user.to_json()}.user)" : ''}
+    #{current_user ? "ConsiderIt.update_current_user(#{current_user.to_json(:methods => :third_party_authenticated)}.user)" : ''}
     
 
     ConsiderIt.pinned_user = #{@pinned_user ? "ConsiderIt.users[#{@pinned_user}]" : 'null'};

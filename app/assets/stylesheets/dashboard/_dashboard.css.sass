@@ -1,51 +1,79 @@
+// TODO: refactor!
+@import "mixins"
 @import "dashboard/rtf_table"
 
-$sidebar_width: $grid_major * 2 + $grid_minor * 2 + $grid_xs
+$dashboard_sidebar_width: $grid_major * 2 + $grid_minor * 2 + $grid_xs
 
-html body #l-wrap.dashboard #l-content
-  #sidebar
-    margin-top: 4 * $vertical_baseline
+html body #m-dashboard
+
+  .m-dashboard-close
     position: absolute
-    z-index: 10
-    width: $sidebar_width - $grid_xs
-    margin-left: $grid_xs
-    border: 1px solid rgba(#888, .6)    
+    top: 5px
+    right: 5px
 
-    ul li
-      border-top: 1px solid white
-      +background-image(linear-gradient(#eee, #ccc))
+  .m-dashboard-sidebar
+    float: left
+    //margin-top: 4 * $vertical_baseline
+    //position: absolute
+    z-index: 10
+    width: $dashboard_sidebar_width
+    //margin-left: $grid_xs
+    //left: -$dashboard_sidebar_width
+    //top: 0
+
+    hr
+      border-top: 1px solid #aaa
+      margin: $vertical_baseline/2 0
+
+    li
+      list-style-type: none
+    .m-dashboard_link
+      //+background-image(linear-gradient(#eee, #ccc))
+      +font-size(-2)
+      color: #555
+      width: 100%      
+      //width: $dashboard_sidebar_width - 2 * $grid_xs
+      padding: 5px $grid_xs
+      display: inline-block
+
       &.current
         font-weight: bold
-        background: none
-        background-color: white
-        position: relative
-        left: 1px
-        &:hover
-          background: none
-          background-color: white
-
+        background-color: $comp_color
+        color: white
+        //position: relative
+        //left: 1px
+        //&:hover
+        //  background: none
+        //  background-color: white
 
       &:hover
-        +background-image(linear-gradient(#fff, #ddd))
-      a
-        +font-size(-2)
-        color: #555
-        
-        width: $sidebar_width - 2 * $grid_xs
-        padding: 5px 0px 5px $grid_xs
-        display: inline-block
+        //+background-image(linear-gradient(#fff, #ddd))
+        background-color: $comp_color
+        color: white
+
+
+  .m-dashboard-content
+    padding-left: $grid_minor
+    float: left
 
         
   .l-content-wrap
+    
+    margin-top: $vertical_baseline
+
     //font-size: 75%
     border: 1px solid rgba(#888, .6)
 
     background-color: white
 
-    width: $content_width - $sidebar_width - $grid_xs * 1 - $grid_minor * 2
-    margin: 0 0 $vertical_baseline $sidebar_width + 1
+    //width: $content_width - $dashboard_sidebar_width
+    //margin-left: $dashboard_sidebar_width
+    //min-height: 300px
 
-    padding: 0 $grid_minor 2 * $vertical_baseline $grid_minor
+    //margin: 0 0 $vertical_baseline $dashboard_sidebar_width + 1
+
+    //padding: 0 $grid_minor 2 * $vertical_baseline $grid_minor
+    
     #heading
       margin-bottom: 20px
       
@@ -94,11 +122,11 @@ html body #l-wrap.dashboard #l-content
         .avatar
           display: inline-block
           vertical-align: top
-          margin-top: $vertical_baseline
+          margin-left: $grid_xs
+
         .info
           display: inline-block
-          margin-left: $grid_xs
-          width: 600px
+          // width: 600px
 
           .name
 
@@ -106,7 +134,7 @@ html body #l-wrap.dashboard #l-content
             +font-size(-2)
             text-decoration: underline
             position: relative
-            top: -$vertical_baseline
+            //top: -$vertical_baseline
 
       .body
         margin-top: $vertical_baseline

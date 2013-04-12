@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   before_filter :theme_resolver
 
   def render(*args)
+
     if !session.has_key?(:referer)
       session[:referer] = request.referer      
     end
@@ -21,7 +22,6 @@ class ApplicationController < ActionController::Base
     if params.has_key?(:reset_password_token)
       @reset_password_token = params[:reset_password_token]
     end
-
 
     #TODO: what does this do?
     if args && args.first.respond_to?('has_key?')

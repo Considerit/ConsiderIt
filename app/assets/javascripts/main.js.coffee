@@ -100,6 +100,10 @@ window.ConsiderIt.update_current_user = (parameters) ->
     is_analyst : ConsiderIt.current_user.has_role('analyst')
     is_evaluator : ConsiderIt.current_user.has_role('evaluator')  
 
+  if ConsiderIt.app
+    ConsiderIt.app.trigger('user:updated')
+
+
 window.getCenteredCoords = (width, height) ->
   if (window.ActiveXObject)
     xPos = window.event.screenX - (width/2) + 100

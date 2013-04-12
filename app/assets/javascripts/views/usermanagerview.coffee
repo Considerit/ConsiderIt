@@ -10,6 +10,11 @@ class ConsiderIt.UserManagerView extends Backbone.View
 
     @on 'user:signin', -> 
       $('#registration_overlay').remove()
+      if @dashboardview
+        @dashboardview.remove()
+
+    @listenTo ConsiderIt.app, 'user:updated', ->
+      @render() #this should only be updated the user-nav
 
 
   render : -> 
@@ -50,6 +55,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
     'click .m-user-options-logout' : 'handle_user_logout'
     'mouseenter .m-user-options' : 'nav_entered' 
     'mouseleave .m-user-options' : 'nav_exited' 
+    'click .m-user-options-dashboard_link' : 'open_dashboard'
 
   nav_entered : (ev) -> 
     $(ev.currentTarget).find('.m-user-options-menu-wrap')
@@ -57,8 +63,8 @@ class ConsiderIt.UserManagerView extends Backbone.View
       .css('height', '')
       .slideDown();
 
-  nav_exited : (ev) ->
-    $(ev.currentTarget).find('.m-user-options-menu-wrap')
+  nav_exited : () ->
+    @$header_el.find('.m-user-options-menu-wrap')
       .stop(true,false)
       .slideUp();
 
@@ -170,4 +176,23 @@ class ConsiderIt.UserManagerView extends Backbone.View
     @center_overlay()
 
     @signinview
+
+  open_dashboard : (ev) -> 
+    target_context = $(ev.currentTarget).data('target')
+
+    user = ConsiderIt.current_user
+
+    if @dashboardview
+      @dashboardview.change_context(target_context)
+    else
+      @dashboardview = new ConsiderIt.UserDashboardView
+        model : ConsiderIt.current_user
+        el : "#m-dashboard"
+        initial_context : target_context
+
+      @dashboardview.render()
+
+    @nav_exited()
+
+
 

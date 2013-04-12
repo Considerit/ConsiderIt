@@ -46,7 +46,6 @@ class HomeController < ApplicationController
     
     session[:domain] = params[:domain]
     if current_user
-      current_user.tags = params[:domain]
       current_user.save
     end
     

@@ -105,14 +105,10 @@
 
       = theme_javascript_include_tag 'application', :async => true # => Rails.env.production?
 
-
-
   %body
 
     - cache do
-
       %svg{ :xmlns => "http://www.w3.org/2000/svg", :height => 0, :style => "position: absolute", :version => "1.1", :baseProfile => "full" }
-
         %defs
           %filter{ :id => "bubble_gradient"}
             %feImage{ :x => "10", :y => "0", :'xlink:href' => "/assets/bubble_gradient.png", :result => "overlay" }
@@ -124,16 +120,10 @@
       = render :partial => "shared/header/container"
 
       #l-content
-
-
+        #m-dashboard
+        
         = render :partial => "shared/body"
-
         = render :partial => "shared/footer/container"
-
-        //$.get("/system/cache/#{current_tenant.identifier}.json", function(data) { 
-        //  window.avatar_data = data;
-        //  window.avatars.load_avatars();
-        //});
 
       = render :partial => 'backbone/data'        
 
@@ -150,5 +140,3 @@
           var _gaq_account = _gaq_account || [];
           _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
           _gaq_account.push(['_trackPageview']);
-
-    

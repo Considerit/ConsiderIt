@@ -13,8 +13,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if user && user.registration_complete && (by_third_party || user.valid_password?(params[:user][:password]) )
       sign_in(resource_name, user)
 
-      #TODO: handle domains / zipcodes / addresses in client
-
       response = { 
         :result => 'logged_in',
         :reason => 'email_password_success'

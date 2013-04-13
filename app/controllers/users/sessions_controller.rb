@@ -7,7 +7,7 @@ class Users::SessionsController < Devise::SessionsController
     user = User.find_by_email(params[:user][:email])
     if user && user.valid_password?(params[:user][:password])
       self.resource = warden.authenticate!(auth_options)
-      sign_in(resource_name, resource)
+      sign_in resource_name, resource
       response = {
         :result => 'successful',
         #TODO: filter users' to_json

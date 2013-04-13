@@ -3,7 +3,7 @@ module Moderatable
   module Routes
 
     def moderatable_routes
-      match "/dashboard/moderate/create" => 'moderatable::moderatable#create', :via => :get
+      match "/dashboard/moderate/create" => 'moderatable::moderatable#create', :via => :post
       match "/dashboard/moderate" => 'moderatable::moderatable#index'
     end
 

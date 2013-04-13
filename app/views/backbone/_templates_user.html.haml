@@ -1,607 +1,611 @@
 - providers = [ ['google', user_omniauth_authorize_path(:google)], ['facebook',user_omniauth_authorize_path(:facebook)], ['twitter',user_omniauth_authorize_path(:twitter, :x_auth_access_type => "read")] ]
 
+- cache do 
 
-%script{ :type => "text/template", :id => "tpl_logged_out"}
-  .m-login
-    %a.m-login-signin
-      Sign In
-    %a.m-login-signup
-      Create Account
-
-%script{ :type => "text/template", :id => "tpl_logged_in"}
-
-  .m-user-options
-    .m-user-options-display
-      %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.current_user, 'small')}}", :alt => "your profile picture"}
-
-      %a
-        {{ name }} 
-
-      %span.m-user-options-triangle
-        &#x25BE;
-
-    .m-user-options-menu-wrap
-
-      %ul.m-user-options-menu
-        %li
-          %a.m-user-options-dashboard_link{:'data-target' => 'profile'}
-            Profile
-        %li
-          %a.m-user-options-dashboard_link{:'data-target' => 'edit_profile'}
-            Edit Profile
-
-        (( if(is_admin) { ))
-        %li
-          %a.m-user-options-dashboard_link.application{:'data-target' => 'app_settings'}
-            App settings
-        (( } ))
-
-        (( if( (is_admin || is_moderator ) && #{current_tenant.enable_moderation} ) { ))
-        %li
-          %a.m-user-options-dashboard_link.moderate{:'data-target' => 'moderate'}
-            Moderate
-        (( } ))
-
-        (( if( is_admin || is_analyst ) { ))
-        %li
-          %a.m-user-options-dashboard_link.analyze{:'data-target' => 'analyze'}
-            Analyze
-        (( } ))
-
-        (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
-        %li
-          %a.m-user-options-dashboard_link.assess{:'data-target' => 'assess'}
-            Assess
-        (( } ))
-
-        - if Rails.env.development?
-          %li
-            = link_to 'Tune', '/newrelic', :target => "_blank"
-        %li
-          %a.m-user-options-logout
-            Sign out
-
-
-%script{ :type => "text/template", :id => "tpl_pinned_user_signin"}
-  %a.m-user-accounts-cancel
-    &#10006;
-
-  .m-user-accounts-wrap.m-user-accounts-choose-method
-
-    %h2.m-user-accounts-heading
-      Welcome back, {{ConsiderIt.pinned_user_email}}! Please sign in. 
-
-    (( if(auth_method == 'email') { ))
-    = form_for :user, :url => user_session_path, :remote => true do |f|
-
-      .m-user-accounts-form
-        .m-user-accounts-form-fields-wrap
-
-          .m-user-accounts-form-fields-text
-
-            .email_field.inlined
-              //= f.label :email, 'Member email'
-              = f.hidden_field :email, :value => "{{ConsiderIt.pinned_user_email}}"
-
-            .password_field.inlined
-              //= f.label :email, 'Password'
-              = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
-              %a.forget_password_prompt
-                I forgot. Email me password instructions. 
-              
-        .m-user-accounts-finish-wrap
-
-          = f.submit "Sign in!"
-
-    (( } else { ))
-    %ul.m-user-accounts-login-options
-      - providers.each do |(provider, path)|
-        %li{ :class => "m-user-accounts-login-option {{ #{provider} != auth_method ? 'hide' : '' }}"} 
-          %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
-            #{provider.capitalize}
-    (( } ))
-
-
-%script{ :type => "text/template", :id => "tpl_user_signin"}
-  %a.m-user-accounts-cancel
-    &#10006;
-
-  .m-user-accounts-wrap.m-user-accounts-choose-method
-
-    %h2.m-user-accounts-heading
-      Welcome back! Select your sign in method below.
-
-    %a.m-user-accounts-switch-method
-      New here?
-
-      %span
+  %script{ :type => "text/template", :id => "tpl_logged_out"}
+    .m-login
+      %a.m-login-signin
+        Sign In
+      %a.m-login-signup
         Create Account
 
-    %ul.m-user-accounts-login-options
-      %li.m-user-accounts-login-option
-        %a.email.zocial{:'data-provider' => 'email'}
-          Old-fashioned email
+  %script{ :type => "text/template", :id => "tpl_logged_in"}
 
-      - providers.each do |(provider, path)|
-        %li.m-user-accounts-login-option
-          %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
-            #{provider.capitalize}
+    .m-user-options
+      .m-user-options-display
+        %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.current_user, 'small')}}", :alt => "your profile picture"}
 
+        %a
+          {{ name }} 
 
-  .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-signin
+        %span.m-user-options-triangle
+          &#x25BE;
 
-    = form_for :user, :url => user_session_path, :remote => true do |f|
+      .m-user-options-menu-wrap
 
-      .m-user-accounts-form
-        .m-user-accounts-form-fields-wrap
-
-          .m-user-accounts-form-fields-text
-
-            .email_field.inlined
-              //= f.label :email, 'Member email'
-              = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
-
-            .password_field.inlined
-              //= f.label :email, 'Password'
-              = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
-              %a.forget_password_prompt
-                I forgot. Email me password instructions. 
-              
-            - providers.each do |(provider, path)|
-              .m-user-accounts-authorized-feedback{:'data-provider' => "#{provider}" }
-
-                %a{ :class => "zocial #{provider} icon" }
-
-                Registering via #{provider}
-
-
-
-        .m-user-accounts-finish-wrap
-
-          = f.submit "Sign in!"
-      
-
-
-
-- requires_pledge = current_tenant.requires_civility_pledge_on_registration
-%script{ :type => "text/template", :id => "tpl_new_user" }      
-  %a.m-user-accounts-cancel
-    &#10006;
-
-  .m-user-accounts-wrap.m-user-accounts-choose-method
-
-    %h2.m-user-accounts-heading
-      Welcome! How do you want to register?
-
-    %a.m-user-accounts-switch-method
-      Returning?
-
-      %span
-        Sign In
-
-    %ul.m-user-accounts-login-options
-      %li.m-user-accounts-login-option
-        %a.email.zocial{:'data-provider' => 'email'}
-          Old-fashioned email
-        .m-user-accounts-fineprint.m-fineprint-email
-          Email confirmation step required
-
-      - providers.each do |(provider, path)|
-        %li.m-user-accounts-login-option
-          %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
-            #{provider.capitalize}
-          - if provider == 'facebook'
-            .m-user-accounts-fineprint.m-fineprint-social
-              We don't post to your wall without permission
-
-
-  .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-register
-
-    //%h2.m-user-accounts-heading
-    //  Complete your registration
-
-    = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
-      .m-user-accounts-form
-        .m-user-accounts-form-fields-wrap
-
-          = image_tag current_theme_image_path("logo.png"), :class => "m-user-accounts-logo"
-
-          .m-user-accounts-form-fields-text
-
-            .name_field.inlined
-              //= f.label :name, 'Member name'
-              = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => "Your name",  :required => true, :class =>"", :pattern => "^.{1,}"
-
-            .email_field.inlined
-              //= f.label :email, 'Member email'
-              = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
-
-            .password_field.inlined
-              //= f.label :email, 'Password'
-              = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
-
-
-            .m-user-accounts-authorized-feedback{:'data-provider' => 'email'}
-              %a.email.zocial.icon
-                
-              Registering via email
-              
-            - providers.each do |(provider, path)|
-              .m-user-accounts-authorized-feedback{:'data-provider' => "#{provider}" }
-
-                %a{ :class => "zocial #{provider} icon" }
-
-                Registering via #{provider}
-
-            .m-user-accounts-pledge-taken
-              &#10004; Civility pledge taken
-
-
-          .avatar_field
-            = f.file_field :avatar, :title => 'Upload a profile picture (optional)'
-            .selected.hide
-  
-            .import_from_third_party
-              %span
-                Import pic from: 
-
-              .import_from_third_parties
-
-                %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
-
-                %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
-
-              = f.hidden_field :avatar_url, :class => 'avatar_url'
-
-
-          .clear
-
-        .m-user-accounts-finish-wrap
-          - if requires_pledge
-            .m-user-accounts-pledge
-              //.m-user-accounts-pledge-heading
-              //  To participate, we ask for your pledge
-              = render :partial => "users/registrations/pledge"
-
-          = f.hidden_field :registration_complete, :value => true
-
-          = f.submit "Create my account!"
-
-          .m-user-accounts-tos
-            %span
-              Signing up acknowledges that you agree to the 
-            %a.m-user-terms-show
-              Terms of Use
-
-            .m-user-the-terms-of-use
-              = render :partial => "home/terms-of-use"
-
-
-
-%script{ :type => "text/template", :id => "tpl_new_pinned_user" }      
-  %a.m-user-accounts-cancel
-    &#10006;
-
-  .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-register
-
-    %h2.m-user-accounts-heading
-      Welcome, {{ConsiderIt.pinned_user_email}}! Please create an account. 
-
-    = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
-      .m-user-accounts-form
-        .m-user-accounts-form-fields-wrap
-
-          = image_tag current_theme_image_path("logo.png"), :class => "m-user-accounts-logo"
-
-          .m-user-accounts-form-fields-text
-
-            .name_field.inlined
-              //= f.label :name, 'Member name'
-              = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => "Your name",  :required => true, :class =>"", :pattern => "^.{1,}"
-
-            .email_field.inlined
-              //= f.label :email, 'Member email'
-              {{ConsiderIt.pinned_user_email}}
-              = f.hidden_field :email, :value => "{{ConsiderIt.pinned_user_email}}"
-
-            .password_field.inlined
-              //= f.label :email, 'Password'
-              = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
-
-          .avatar_field
-            = f.file_field :avatar, :title => 'Upload a profile picture (optional)'
-            .selected.hide
-  
-            .import_from_third_party
-              Import pic from: 
-
-              .import_from_third_parties
-
-                %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
-
-                %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
-
-              = f.hidden_field :avatar_url, :class => 'avatar_url'
-
-
-          .clear
-
-        .m-user-accounts-finish-wrap
-          - if requires_pledge
-            .m-user-accounts-pledge
-              //.m-user-accounts-pledge-heading
-              //  To participate, we ask for your pledge
-              = render :partial => "users/registrations/pledge"
-
-          = f.hidden_field :registration_complete, :value => true
-
-          = f.submit "Create my account!"
-
-          .m-user-accounts-tos
-            Signing up acknowledges that you agree to the 
-            %a
-              Terms of Use.
-
-%script{ :type => "text/template", :id => "tpl_user_reset_password" }
-  %a.m-user-accounts-cancel
-    &#10006;
-
-  .m-user-accounts-wrap
-
-    %h2
-      Change your password
-
-    = form_for(:user, :url => password_path(:user), :remote => true, :html => { :method => :put }) do |f|
-
-      = f.hidden_field :reset_password_token, :value => "{{password_reset_token}}"
-
-      %p
-        = f.label :password, "New password"
-
-      = f.password_field :password
-
-      %p
-        = f.label :password_confirmation, "Confirm new password" 
-      = f.password_field :password_confirmation
-
-      .m-user-accounts-finish-wrap
-        = f.submit "Change my password and sign in", :class => 'button'
-
-
-
-%script{ :type => "text/template", :id => "tpl_dashboard_container"}
-  .l-content-wrap
-
-    %a.m-dashboard-close
-      &#10006;
-
-    .m-dashboard-sidebar
-      %ul
-        %li
-          %a.m-dashboard_link{:'data-target' => 'profile'}
-            Profile      
-
-        (( if( is_self ) { ))
-        %li
-          %a.m-dashboard_link{:'data-target' => 'edit_profile'}
-            Edit profile
-
-        %li
-          %a.m-dashboard_link{:'data-target' => 'account_settings'}
-            Account settings
-        %li
-          %a.m-dashboard_link{:'data-target' => 'email_notifications'}        
-            Email notifications        
-
-        (( } ))
-
-      %hr
-
-      // if admin ...
-      %ul
-        (( if(is_admin) { ))
-        %li
-          %a.m-dashboard_link{:'data-target' => 'app_settings'}
-            App settings
-        (( } ))
-
-        (( if( (is_admin || is_moderator ) && #{current_tenant.enable_moderation} ) { ))
-        %li
-          %a.m-dashboard_link{:'data-target' => 'moderate'}
-            Moderate
-        (( } ))
-
-        (( if( is_admin || is_analyst ) { ))
-        %li
-          %a.m-dashboard_link{:'data-target' => 'analyze'}
-            Analyze
-        (( } ))
-
-        (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
-        %li
-          %a.m-dashboard_link{:'data-target' => 'assess'}
-            Assess
-        (( } ))
-
-        - if Rails.env.development?
+        %ul.m-user-options-menu
           %li
-            = link_to 'Tune', '/newrelic', :target => "_blank", :class => 'm-dashboard_link'
+            %a.m-user-options-dashboard_link{:'data-target' => 'profile'}
+              Profile
+          %li
+            %a.m-user-options-dashboard_link{:'data-target' => 'edit_profile'}
+              Edit Profile
 
-    .m-dashboard-content
-
-    .clear
-
-
-
-%script{ :type => "text/template", :id => "tpl_dashboard_profile"}
-  (( var max_length_root = 35, max_length_content = 65; ))
-
-  #profile_page
-
-    .user_card
-
-      .info
-        %h2.name
-          {{ user.name }}
-
-        (( if ( is_self ) { ))
-        %a.edit_profile
-          Edit profile
-        (( } ))
-
-        .bio
-          %h3
-            About
-
-          (( if(user.bio && user.bio.length > 0) { ))
-          %p
-            {{ user.bio }} 
-          (( } else { ))
-          %p.empty
-            No details provided
+          (( if(is_admin) { ))
+          %li
+            %a.m-user-options-dashboard_link.application{:'data-target' => 'app_settings'}
+              App settings
           (( } ))
 
-      .avatar
-        %img.edit_profile{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+          (( if( (is_admin || is_moderator ) && #{current_tenant.enable_moderation} ) { ))
+          %li
+            %a.m-user-options-dashboard_link.moderate{:'data-target' => 'moderate'}
+              Moderate
+          (( } ))
 
-// .body
-//   #positions.block
-//     %h3
-//       Positions taken
-//     - if @user.positions.published.count > 0
-//       %table.table.table-condensed.table-striped
-//         %tbody
-//           - @user.positions.published.each do |position|
-//             %tr.position
-//               %td.proposal
-//                 = position.proposal.title(max_length_root)
-//               %td.stance
-//                 = position.stance_name
-//               %td.action
-//                 = link_to 'View and consider', user_position_proposal_path(position.proposal.long_id, position.user, :anchor => 'position')
-//     - else
-//       .empty
-//         #{@user.first_name} has not taken any positions.
-//   #points.block
-//     %h3
-//       Points written
-//     - if @user.points.published.count > 0
-//       %table.table.table-condensed.table-striped
-//         %tbody
-//           - @user.points.published.each do |point|
-//             - if is_self || !point.hide_name
-//               %tr.position
-//                 %td.proposal
-//                   = point.proposal.title(max_length_root)
-//                 %td.desc
-//                   [#{point.category}] #{point.short_desc(max_length_content-6)}
-//                 %td.action
-//                   = link_to 'Read and discuss', proposal_point_path(point.proposal.long_id, point)
-//     - else
-//       .empty
-//         #{@user.first_name} has not contributed any points.
-//   #comments.block
-//     %h3
-//       Comments
-//     %table.table.table-condensed.table-striped
-//       - if @user.comments.count > 0
-//         %tbody
-//           - @user.comments.each do |comment|
-//             - point = comment.root_object
-//             %tr.position
-//               %td
-//                 [#{point.category}] #{point.short_desc(max_length_root-6)}
-//               %td.desc
-//                 = comment.text(max_length_content)
-//               %td.action
-//                 = link_to 'Join in', proposal_point_path(point.proposal.long_id, point, :anchor => "comment-#{comment.id}")
-//       - else
-//         .empty
-//           #{@user.first_name} has not made any comments.
-      
+          (( if( is_admin || is_analyst ) { ))
+          %li
+            %a.m-user-options-dashboard_link.analyze{:'data-target' => 'analyze'}
+              Analyze
+          (( } ))
+
+          (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
+          %li
+            %a.m-user-options-dashboard_link.assess{:'data-target' => 'assess'}
+              Assess
+          (( } ))
+
+          - if Rails.env.development?
+            %li
+              = link_to 'Tune', '/newrelic', :target => "_blank"
+          %li
+            %a.m-user-options-logout
+              Sign out
 
 
+  %script{ :type => "text/template", :id => "tpl_pinned_user_signin"}
+    %a.m-user-accounts-cancel
+      &#10006;
 
+    .m-user-accounts-wrap.m-user-accounts-choose-method
 
+      %h2.m-user-accounts-heading
+        Welcome back, {{ConsiderIt.pinned_user_email}}! Please sign in. 
 
-%script{ :type => "text/template", :id => "tpl_dashboard_edit_profile"}
+      (( if(auth_method == 'email') { ))
+      = form_for :user, :url => user_session_path, :remote => true do |f|
 
+        .m-user-accounts-form
+          .m-user-accounts-form-fields-wrap
 
-  #edit_profile.profile_edit
+            .m-user-accounts-form-fields-text
 
-    %h2
-      Edit Profile
+              .email_field.inlined
+                //= f.label :email, 'Member email'
+                = f.hidden_field :email, :value => "{{ConsiderIt.pinned_user_email}}"
 
-    = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
+              .password_field.inlined
+                //= f.label :email, 'Password'
+                = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+                %a.forget_password_prompt
+                  I forgot. Email me password instructions. 
+                
+          .m-user-accounts-finish-wrap
 
-      .field
-        = f.label :name, "Name"
-        = f.text_field :name, :pattern => "^.{1,}", :value => "{{ user.name }}"
+            = f.submit "Sign in!"
 
-      .field
-        = f.label :bio, "About you"
-        = f.text_area :bio, :rows => 5, :value => "{{ user.bio }}"
-                  
-      %table
-        %tr
-          %td
-            .avatar
-              %img{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
-
-          %td.fileinput           
-            .field
-              = f.label :avatar, "Your picture"
-              = f.file_field :avatar, :title => 'Upload a profile picture'
-
-      .save_block
-        = f.submit "Save changes", :class => 'button'
-
-
-%script{ :type => "text/template", :id => "tpl_dashboard_account_settings"}
-
-  #edit_profile.profile_edit
-
-    %h2
-      Account settings
-
-    = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
-
-      .field
-        = f.label :email, "Email address"
-        = f.email_field :email, :value => "{{ user.email }}"
-        .sublabel
-          Your email will never be shared with other users or third parties
-
-      (( if ( user.third_party_authenticated ) { ))
-      .field
-        Authorized via {{user.third_party_authenticated}}
       (( } else { ))
-      .field
-        = f.label :password, "New password"
-        = f.password_field :password
-      .field
-        = f.label :password_confirmation, "Confirm new password" 
-        = f.password_field :password_confirmation
+      %ul.m-user-accounts-login-options
+        - providers.each do |(provider, path)|
+          %li{ :class => "m-user-accounts-login-option {{ #{provider} != auth_method ? 'hide' : '' }}"} 
+            %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
+              #{provider.capitalize}
       (( } ))
 
-      .save_block
-        = f.submit "Save changes", :class => 'button'
 
-%script{ :type => "text/template", :id => "tpl_dashboard_email_notifications"}
+  %script{ :type => "text/template", :id => "tpl_user_signin"}
+    %a.m-user-accounts-cancel
+      &#10006;
 
-  #edit_email_notifications.profile_edit
+    .m-user-accounts-wrap.m-user-accounts-choose-method
 
-    %h2
-      Notification Settings
+      %h2.m-user-accounts-heading
+        Welcome back! Select your sign in method below.
 
-    //%p
-    //  You are currently subscribed to {{current_user.follows.active.where(:followable_type => 'Proposal').count } Proposals and #{current_user.follows.active.where(:followable_type => 'Points').count } Points.
+      %a.m-user-accounts-switch-method
+        New here?
 
-    .field
-      = form_for :follows, :url => unfollow_create_path, :as => :follow do |f|
-        = f.hidden_field :user_id, :value => "{{user.id}}"
-        = f.hidden_field :unsubscribe_all, :value => true
-        = f.submit "Unsubscribe to all notifications", :class => 'button'
-      .sublabel
-        In the future, we will have more fine-grained options for configuring your notification settings.
+        %span
+          Create Account
+
+      %ul.m-user-accounts-login-options
+        %li.m-user-accounts-login-option
+          %a.email.zocial{:'data-provider' => 'email'}
+            Old-fashioned email
+
+        - providers.each do |(provider, path)|
+          %li.m-user-accounts-login-option
+            %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
+              #{provider.capitalize}
+
+
+    .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-signin
+
+      = form_for :user, :url => user_session_path, :remote => true do |f|
+
+        .m-user-accounts-form
+          .m-user-accounts-form-fields-wrap
+
+            .m-user-accounts-form-fields-text
+
+              .email_field.inlined
+                //= f.label :email, 'Member email'
+                = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
+
+              .password_field.inlined
+                //= f.label :email, 'Password'
+                = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+                %a.forget_password_prompt
+                  I forgot. Email me password instructions. 
+                
+              - providers.each do |(provider, path)|
+                .m-user-accounts-authorized-feedback{:'data-provider' => "#{provider}" }
+
+                  %a{ :class => "zocial #{provider} icon" }
+
+                  Registering via #{provider}
+
+
+
+          .m-user-accounts-finish-wrap
+
+            = f.submit "Sign in!"
+        
+
+
+
+  - requires_pledge = current_tenant.requires_civility_pledge_on_registration
+  %script{ :type => "text/template", :id => "tpl_new_user" }      
+    %a.m-user-accounts-cancel
+      &#10006;
+
+    .m-user-accounts-wrap.m-user-accounts-choose-method
+
+      %h2.m-user-accounts-heading
+        Welcome! How do you want to register?
+
+      %a.m-user-accounts-switch-method
+        Returning?
+
+        %span
+          Sign In
+
+      %ul.m-user-accounts-login-options
+        %li.m-user-accounts-login-option
+          %a.email.zocial{:'data-provider' => 'email'}
+            Old-fashioned email
+          .m-user-accounts-fineprint.m-fineprint-email
+            Email confirmation step required
+
+        - providers.each do |(provider, path)|
+          %li.m-user-accounts-login-option
+            %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
+              #{provider.capitalize}
+            - if provider == 'facebook'
+              .m-user-accounts-fineprint.m-fineprint-social
+                We don't post to your wall without permission
+
+
+    .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-register
+
+      //%h2.m-user-accounts-heading
+      //  Complete your registration
+
+      = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
+        .m-user-accounts-form
+          .m-user-accounts-form-fields-wrap
+
+            = image_tag current_theme_image_path("logo.png"), :class => "m-user-accounts-logo"
+
+            .m-user-accounts-form-fields-text
+
+              .name_field.inlined
+                //= f.label :name, 'Member name'
+                = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => "Your name",  :required => true, :class =>"", :pattern => "^.{1,}"
+
+              .email_field.inlined
+                //= f.label :email, 'Member email'
+                = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
+
+              .password_field.inlined
+                //= f.label :email, 'Password'
+                = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+
+
+              .m-user-accounts-authorized-feedback{:'data-provider' => 'email'}
+                %a.email.zocial.icon
+                  
+                Registering via email
+                
+              - providers.each do |(provider, path)|
+                .m-user-accounts-authorized-feedback{:'data-provider' => "#{provider}" }
+
+                  %a{ :class => "zocial #{provider} icon" }
+
+                  Registering via #{provider}
+
+              .m-user-accounts-pledge-taken
+                &#10004; Civility pledge taken
+
+
+            .avatar_field
+              = f.file_field :avatar, :title => 'Upload a profile picture (optional)'
+              .selected.hide
+    
+              .import_from_third_party
+                %span
+                  Import pic from: 
+
+                .import_from_third_parties
+
+                  %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
+
+                  %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
+
+                = f.hidden_field :avatar_url, :class => 'avatar_url'
+
+
+            .clear
+
+          .m-user-accounts-finish-wrap
+            - if requires_pledge
+              .m-user-accounts-pledge
+                //.m-user-accounts-pledge-heading
+                //  To participate, we ask for your pledge
+                = render :partial => "users/registrations/pledge"
+
+            = f.hidden_field :registration_complete, :value => true
+
+            = f.submit "Create my account!"
+
+            .m-user-accounts-tos
+              %span
+                Signing up acknowledges that you agree to the 
+              %a.m-user-terms-show
+                Terms of Use
+
+              .m-user-the-terms-of-use
+                = render :partial => "home/terms-of-use"
+
+
+
+  %script{ :type => "text/template", :id => "tpl_new_pinned_user" }      
+    %a.m-user-accounts-cancel
+      &#10006;
+
+    .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-register
+
+      %h2.m-user-accounts-heading
+        Welcome, {{ConsiderIt.pinned_user_email}}! Please create an account. 
+
+      = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
+        .m-user-accounts-form
+          .m-user-accounts-form-fields-wrap
+
+            = image_tag current_theme_image_path("logo.png"), :class => "m-user-accounts-logo"
+
+            .m-user-accounts-form-fields-text
+
+              .name_field.inlined
+                //= f.label :name, 'Member name'
+                = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => "Your name",  :required => true, :class =>"", :pattern => "^.{1,}"
+
+              .email_field.inlined
+                //= f.label :email, 'Member email'
+                {{ConsiderIt.pinned_user_email}}
+                = f.hidden_field :email, :value => "{{ConsiderIt.pinned_user_email}}"
+
+              .password_field.inlined
+                //= f.label :email, 'Password'
+                = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+
+            .avatar_field
+              = f.file_field :avatar, :title => 'Upload a profile picture (optional)'
+              .selected.hide
+    
+              .import_from_third_party
+                Import pic from: 
+
+                .import_from_third_parties
+
+                  %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
+
+                  %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
+
+                = f.hidden_field :avatar_url, :class => 'avatar_url'
+
+
+            .clear
+
+          .m-user-accounts-finish-wrap
+            - if requires_pledge
+              .m-user-accounts-pledge
+                //.m-user-accounts-pledge-heading
+                //  To participate, we ask for your pledge
+                = render :partial => "users/registrations/pledge"
+
+            = f.hidden_field :registration_complete, :value => true
+
+            = f.submit "Create my account!"
+
+            .m-user-accounts-tos
+              Signing up acknowledges that you agree to the 
+              %a
+                Terms of Use.
+
+  %script{ :type => "text/template", :id => "tpl_user_reset_password" }
+    %a.m-user-accounts-cancel
+      &#10006;
+
+    .m-user-accounts-wrap
+
+      %h2
+        Change your password
+
+      = form_for(:user, :url => password_path(:user), :remote => true, :html => { :method => :put }) do |f|
+
+        = f.hidden_field :reset_password_token, :value => "{{password_reset_token}}"
+
+        %p
+          = f.label :password, "New password"
+
+        = f.password_field :password
+
+        %p
+          = f.label :password_confirmation, "Confirm new password" 
+        = f.password_field :password_confirmation
+
+        .m-user-accounts-finish-wrap
+          = f.submit "Change my password and sign in", :class => 'button'
+
+
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_container"}
+    .l-content-wrap
+
+      %a.m-dashboard-close
+        &#10006;
+
+      .m-dashboard-sidebar
+        %ul
+          %li
+            %a.m-dashboard_link{:'data-target' => 'profile'}
+              Profile      
+
+          (( if( is_self ) { ))
+          %li
+            %a.m-dashboard_link{:'data-target' => 'edit_profile'}
+              Edit profile
+
+          %li
+            %a.m-dashboard_link{:'data-target' => 'account_settings'}
+              Account settings
+          %li
+            %a.m-dashboard_link{:'data-target' => 'email_notifications'}        
+              Email notifications        
+
+          (( } ))
+
+        %hr
+
+        // if admin ...
+        %ul
+          (( if(is_admin) { ))
+          %li
+            %a.m-dashboard_link{:'data-target' => 'app_settings'}
+              App settings
+          (( } ))
+
+          (( if( (is_admin || is_moderator ) && #{current_tenant.enable_moderation} ) { ))
+          %li
+            %a.m-dashboard_link{:'data-target' => 'moderate'}
+              Moderate
+          (( } ))
+
+          (( if( is_admin || is_analyst ) { ))
+          %li
+            %a.m-dashboard_link{:'data-target' => 'analyze'}
+              Analyze
+          (( } ))
+
+          (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
+          %li
+            %a.m-dashboard_link{:'data-target' => 'assess'}
+              Assess
+          (( } ))
+
+          - if Rails.env.development?
+            %li
+              = link_to 'Tune', '/newrelic', :target => "_blank", :class => 'm-dashboard_link'
+
+      .m-dashboard-content
+
+      .clear
+
+
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_profile"}
+    (( var max_length_root = 35, max_length_content = 65; ))
+
+    #profile_page
+
+      .user_card
+
+        .info
+          %h2.name
+            {{ user.name }}
+
+          (( if ( is_self ) { ))
+          %a.edit_profile
+            Edit profile
+          (( } ))
+
+          .bio
+            %h3
+              About
+
+            (( if(user.bio && user.bio.length > 0) { ))
+            %p
+              {{ user.bio }} 
+            (( } else { ))
+            %p.empty
+              No details provided
+            (( } ))
+
+        .avatar
+          %img.edit_profile{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+
+  // .body
+  //   #positions.block
+  //     %h3
+  //       Positions taken
+  //     - if @user.positions.published.count > 0
+  //       %table.table.table-condensed.table-striped
+  //         %tbody
+  //           - @user.positions.published.each do |position|
+  //             %tr.position
+  //               %td.proposal
+  //                 = position.proposal.title(max_length_root)
+  //               %td.stance
+  //                 = position.stance_name
+  //               %td.action
+  //                 = link_to 'View and consider', user_position_proposal_path(position.proposal.long_id, position.user, :anchor => 'position')
+  //     - else
+  //       .empty
+  //         #{@user.first_name} has not taken any positions.
+  //   #points.block
+  //     %h3
+  //       Points written
+  //     - if @user.points.published.count > 0
+  //       %table.table.table-condensed.table-striped
+  //         %tbody
+  //           - @user.points.published.each do |point|
+  //             - if is_self || !point.hide_name
+  //               %tr.position
+  //                 %td.proposal
+  //                   = point.proposal.title(max_length_root)
+  //                 %td.desc
+  //                   [#{point.category}] #{point.short_desc(max_length_content-6)}
+  //                 %td.action
+  //                   = link_to 'Read and discuss', proposal_point_path(point.proposal.long_id, point)
+  //     - else
+  //       .empty
+  //         #{@user.first_name} has not contributed any points.
+  //   #comments.block
+  //     %h3
+  //       Comments
+  //     %table.table.table-condensed.table-striped
+  //       - if @user.comments.count > 0
+  //         %tbody
+  //           - @user.comments.each do |comment|
+  //             - point = comment.root_object
+  //             %tr.position
+  //               %td
+  //                 [#{point.category}] #{point.short_desc(max_length_root-6)}
+  //               %td.desc
+  //                 = comment.text(max_length_content)
+  //               %td.action
+  //                 = link_to 'Join in', proposal_point_path(point.proposal.long_id, point, :anchor => "comment-#{comment.id}")
+  //       - else
+  //         .empty
+  //           #{@user.first_name} has not made any comments.
+        
+
+
+
+
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_edit_profile"}
+
+
+    #edit_profile.profile_edit
+
+      %h2
+        Edit Profile
+
+      = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
+
+        .field
+          = f.label :name, "Name"
+          = f.text_field :name, :pattern => "^.{1,}", :value => "{{ user.name }}"
+
+        .field
+          = f.label :bio, "About you"
+          = f.text_area :bio, :rows => 5, :value => "{{ user.bio }}"
+                    
+        %table
+          %tr
+            %td
+              .avatar
+                %img{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+
+            %td.fileinput           
+              .field
+                = f.label :avatar, "Your picture"
+                = f.file_field :avatar, :title => 'Upload a profile picture'
+
+        .save_block
+          = f.submit "Save changes", :class => 'button'
+
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_account_settings"}
+
+    #edit_profile.profile_edit
+
+      %h2
+        Account settings
+
+      = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
+
+        .field
+          = f.label :email, "Email address"
+          = f.email_field :email, :value => "{{ user.email }}"
+          .sublabel
+            Your email will never be shared with other users or third parties
+
+        (( if ( user.third_party_authenticated ) { ))
+        .field
+          Authorized via {{user.third_party_authenticated}}
+        (( } else { ))
+        .field
+          = f.label :password, "New password"
+          = f.password_field :password
+        .field
+          = f.label :password_confirmation, "Confirm new password" 
+          = f.password_field :password_confirmation
+        (( } ))
+
+        .save_block
+          = f.submit "Save changes", :class => 'button'
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_email_notifications"}
+
+    #edit_email_notifications.profile_edit
+
+      %h2
+        Notification Settings
+
+      //%p
+      //  You are currently subscribed to {{current_user.follows.active.where(:followable_type => 'Proposal').count } Proposals and #{current_user.follows.active.where(:followable_type => 'Points').count } Points.
+
+      .field
+        = form_for :follows, :url => unfollow_create_path, :as => :follow do |f|
+          = f.hidden_field :user_id, :value => "{{user.id}}"
+          = f.hidden_field :unsubscribe_all, :value => true
+          = f.submit "Unsubscribe to all notifications", :class => 'button'
+        .sublabel
+          In the future, we will have more fine-grained options for configuring your notification settings.
+
+
+
 

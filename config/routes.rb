@@ -27,7 +27,7 @@ ConsiderIt::Application.routes.draw do
 
   match "/points_for_user" => "points#points_for_user", :as => :points_for_user
 
-  resource :account, :only => [:update]
+  resource :account, :only => [:show, :update]
 
   devise_for :users, :controllers => { 
     :omniauth_callbacks => "users/omniauth_callbacks", 
@@ -52,7 +52,7 @@ ConsiderIt::Application.routes.draw do
 
   #match '/home/study/:category' => "home#study", :via => :post  
   scope :module => "dashboard" do
-    match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
+    #match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
     match '/dashboard/analytics' => "admin#analytics", :via => :get, :as => :analytics
     match '/dashboard/proposals' => "admin#proposals", :via => :get, :as => :manage_proposals
     match '/dashboard/roles' => "admin#roles", :via => :get, :as => :manage_roles

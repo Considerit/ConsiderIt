@@ -82,6 +82,9 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   load_data : (callback, callback_params) ->
+    if @state == -1
+      @toggle()
+
     @once 'proposal:data_loaded', => callback(this, callback_params)
     if ConsiderIt.current_proposal && ConsiderIt.current_proposal.long_id == @long_id
       @set_data(ConsiderIt.current_proposal.data)
@@ -167,12 +170,14 @@ class ConsiderIt.ProposalView extends Backbone.View
     #@proposal.views = {}
     @proposal.views.take_position.close_crafting()
     @proposal.views.results.show_summary()
-
+    if @pointdetailsview
+      @pointdetailsview.remove()
 
 
   # Point details are being handled here (messily) for the case when a user directly visits the point details page without
   # (e.g. if they followed a link to it). In that case, we need to create some context around it first.
   prepare_for_point_details : (me, params) ->
+
     me.show_results(me)
     results_explorer = me.proposal.views.results.view
 
@@ -184,9 +189,28 @@ class ConsiderIt.ProposalView extends Backbone.View
       if point?
         pointview = results_explorer.views.cons.getViewByModel(point)
 
-    pointview.show_point_details_handler() if pointview?
+    if point?
+      pointview.show_point_details_handler() if pointview?
+    else
+      # this happens if the point is being directly visited, but is not on the front page of results
+
+      for pnt in me.proposal.points.pros.concat me.proposal.points.cons
+        if pnt.id == parseInt(params.point_id)
+          point = pnt
+          break
+
+      ConsiderIt.PointView.load_data me.proposal, point, () ->
+        # This is non DRY code from pointview#show_point_details
+        overlay = $('<div class="l-overlay" id="point_details_overlay">')
+        me.$el.prepend(overlay)
+        me.trigger 'point_details:staged'
+        # warning: this is not being properly removed
+        me.pointdetailsview = new ConsiderIt.PointDetailsView( {proposal : me.proposal, model: point, el: overlay} )
+        me.pointdetailsview.render()
+
 
   show_point_details_handler : (point_id) ->
+
     if !@data_loaded
       @load_data(@prepare_for_point_details, {point_id : point_id})
     # if data is already loaded, then the PointListView is already properly handling this

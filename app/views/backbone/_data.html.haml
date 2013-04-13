@@ -30,10 +30,12 @@
     ConsiderIt.users[-1] = new ConsiderIt.User({name: 'Anonymous'});
 
     ConsiderIt.comments = {}
-    ConsiderIt.current_tenant = {
+    //ConsiderIt.current_tenant = new ConsiderIt.Account()
+
+    ConsiderIt.current_tenant = new ConsiderIt.Account({
         identifier : "#{current_tenant.identifier}",
         assessment_enabled : "#{current_tenant.assessment_enabled}"
-    };
+    });
 
     ConsiderIt.roles = {
       is_admin : false,

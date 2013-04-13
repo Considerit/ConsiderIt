@@ -19,7 +19,7 @@ window.PaperClip =
       "/system/default_avatar/#{size}_default-profile-pic.png"
 
 $(document).ready () ->
-  window.avatars = 
+  #window.avatars = 
     # load_avatars : ->
     #   $('img.avatar-replace-small').each ->
     #     user_id = $(this).data('id')
@@ -134,8 +134,9 @@ $.event.special.destroyed =
 
 $(document).on "click", "a[href^='/']", (event) ->
   href = $(event.currentTarget).attr('href')
+  target = $(event.currentTarget).attr('target')
 
-  if href[1..9] == 'dashboard'
+  if href[1..9] == 'dashboard' || target == '_blank' || href == '/newrelic' 
     return true
 
   # Allow shift+click for new tabs, etc.

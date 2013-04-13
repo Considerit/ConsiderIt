@@ -36,5 +36,9 @@ class ConsiderIt.User extends Backbone.Model
   has_role : (role) ->
     _.indexOf(@roles(), role) >= 0
 
+  common_user : ->
+    roles = @roles
+    !roles? || roles.length == 0
+
 
     #Roles.new(self, self.class.valid_roles.reject { |r| ( (@attributes.roles_mask || 0) & Math.pow(2, all_roles.index(r))).zero? })

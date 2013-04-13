@@ -17,8 +17,6 @@ class ConsiderIt.UserDashboardView extends Backbone.View
         is_moderator : ConsiderIt.roles.is_moderator
         is_analyst : ConsiderIt.roles.is_analyst
         is_evaluator : ConsiderIt.roles.is_evaluator
-
-        
       } ) )
     )
 
@@ -30,7 +28,9 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
     this
 
-
+  _check_box : (model, attribute, selector) ->
+    if model.get(attribute)
+      input = document.getElementById(selector).checked = true
 
   change_context : (target_context) ->
     
@@ -39,45 +39,53 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
     @current_context = target_context
 
+    admin_template_loaded = $('#c-admin-template-loaded').length > 0
     switch target_context
-      #when 'profile'
-      #  data_uri = Routes.profile_path(user.id)
-      #when 'preferences'
-      #  data_uri = Routes.edit_profile_path(user.id)
-      #when 'account_settings'
-      #  data_uri = Routes.edit_profile_path(user.id)
-      #when 'email_notifications'
-      #  data_uri = Routes.edit_notifications_path(user.id)
 
       when 'app_settings'
-        data_uri = Routes.application_settings_path()
+        data_uri = Routes.account_path()
+        $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
+          if !admin_template_loaded
+            $('head').append(data.admin_template)
+          ConsiderIt.current_tenant.set(data.account.account)
+          @change_context_finish({ account : ConsiderIt.current_tenant.attributes })
+          @_check_box(ConsiderIt.current_tenant, 'enable_moderation', 'account_enable_moderation')
+          @_check_box(ConsiderIt.current_tenant, 'enable_position_statement', 'account_enable_position_statement')
+
       when 'moderate'
         data_uri = Routes.dashboard_moderate_path()
+        $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
+          if !admin_template_loaded
+            $('head').append(data.admin_template)
+
+          @change_context_finish(data)
+
       when 'analyze'
         data_uri = Routes.analytics_path()
       when 'assess'
         data_uri = Routes.assessment_index_path()
+      else
+        @change_context_finish({})
 
-
-    if !(target_context of @templates)
-      @templates[target_context] = _.template( $("#tpl_dashboard_#{target_context}").html() )
-
-    if data_uri
       # add loading icon
       #TODO: fetch data from server
       #TODO: don't fetch every time
       # remove loading icon
-    else
-      @change_context_finish({})
 
 
   change_context_finish : (params) ->
+    if !(@current_context of @templates)
+      @templates[@current_context] = _.template( $("#tpl_dashboard_#{@current_context}").html() )
+
+    params = $.extend({}, params, {
+      is_self : @model.id == ConsiderIt.current_user.id        
+      user : @model.attributes
+      avatar : window.PaperClip.get_avatar_url(@model, 'original')
+    })
+
+    console.log params
     @$content_area.html(
-      @templates[@current_context]( $.extend({}, params, {
-        is_self : @model.id == ConsiderIt.current_user.id        
-        user : @model.attributes
-        avatar : window.PaperClip.get_avatar_url(@model, 'original')
-      }))
+      @templates[@current_context](params)
     )
 
     @$el.find('.m-dashboard_link').removeClass('current').filter("[data-target=#{@current_context}]").addClass('current')
@@ -90,10 +98,17 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     'click .edit_profile' : 'change_context_edit_profile'
     'click .m-dashboard-close' : 'close'
     'ajax:complete .m-dashboard-edit-user' : 'user_updated'
+    'ajax:complete .m-dashboard-edit-account' : 'account_updated'
 
   user_updated : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
     ConsiderIt.update_current_user(data.user.user)
+    if @current_context
+      @change_context @current_context
+
+  account_updated : (ev, response, options) ->
+    data = $.parseJSON(response.responseText)
+    ConsiderIt.current_tenant.set(data.account)
     if @current_context
       @change_context @current_context
 

@@ -43,16 +43,17 @@ class ConsiderIt.PointView extends Backbone.View
 
     this
 
-  load_data : (callback) ->
-    $.get Routes.proposal_point_path(@proposal.model.get('long_id'), @model.id), (data) =>
+  # I wish this was handled in PointViewDetails
+  @load_data : (proposal, model, callback, view) ->
+    $.get Routes.proposal_point_path(proposal.model.get('long_id'), model.id), (data) =>
       comments = (co.comment for co in data.comments)
-      ConsiderIt.comments[@model.id] = new ConsiderIt.CommentList()
-      ConsiderIt.comments[@model.id].reset(comments)
+      ConsiderIt.comments[model.id] = new ConsiderIt.CommentList()
+      ConsiderIt.comments[model.id].reset(comments)
 
-      @model.update_assessable_data(data)
+      model.update_assessable_data(data)
 
-      @data_loaded = true
-      callback(this)
+      view.data_loaded = true if view
+      callback(view)
 
   show_point_details : (me) ->
     overlay = $('<div class="l-overlay" id="point_details_overlay">')
@@ -63,10 +64,8 @@ class ConsiderIt.PointView extends Backbone.View
     me.pointdetailsview = new ConsiderIt.PointDetailsView( {proposal : me.proposal, model: me.model, el: overlay} )
     me.pointdetailsview.render()
 
-
   show_point_details_handler : () ->
-
     if @data_loaded
       @show_point_details(this)
     else
-      @load_data(@show_point_details)
+      ConsiderIt.PointView.load_data(@proposal, @model, @show_point_details, this)

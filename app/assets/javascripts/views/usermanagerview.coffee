@@ -25,6 +25,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
           is_moderator : ConsiderIt.roles.is_moderator
           is_analyst : ConsiderIt.roles.is_analyst
           is_evaluator : ConsiderIt.roles.is_evaluator
+          is_manager : ConsiderIt.roles.is_manager
         }))
       )
     else

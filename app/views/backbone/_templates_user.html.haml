@@ -43,17 +43,20 @@
               Moderate
           (( } ))
 
+          (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
+          %li
+            %a.m-user-options-dashboard_link.assess{:'data-target' => 'assess'}
+              Assess
+          (( } ))
+
+
           (( if( is_admin || is_analyst ) { ))
           %li
             %a.m-user-options-dashboard_link.analyze{:'data-target' => 'analyze'}
               Analyze
           (( } ))
 
-          (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
-          %li
-            %a.m-user-options-dashboard_link.assess{:'data-target' => 'assess'}
-              Assess
-          (( } ))
+
 
           - if Rails.env.development?
             %li
@@ -404,24 +407,44 @@
           %li
             %a.m-dashboard_link{:'data-target' => 'app_settings'}
               App settings
+
+          %li
+            %a.m-dashboard_link{:'data-target' => 'user_roles'}
+              User roles
+
           (( } ))
+
+
+          (( if( is_admin || is_manager ) { ))
+
+          %li
+            %a.m-dashboard_link{:'data-target' => 'manage_proposals'}
+              Manage proposals
+
+          (( } ))
+
 
           (( if( (is_admin || is_moderator ) && #{current_tenant.enable_moderation} ) { ))
           %li
             %a.m-dashboard_link{:'data-target' => 'moderate'}
-              Moderate
+              Moderate content
           (( } ))
 
           (( if( is_admin || is_analyst ) { ))
           %li
             %a.m-dashboard_link{:'data-target' => 'analyze'}
-              Analyze
+              Analyze trends
           (( } ))
 
           (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
           %li
             %a.m-dashboard_link{:'data-target' => 'assess'}
-              Assess
+              Assess claims
+          (( } ))
+
+          (( if(is_admin) { ))
+          %li
+            = link_to 'Database', rails_admin_path, :target => "_blank", :class => 'm-dashboard_link'
           (( } ))
 
           - if Rails.env.development?
@@ -437,33 +460,34 @@
   %script{ :type => "text/template", :id => "tpl_dashboard_profile"}
     (( var max_length_root = 35, max_length_content = 65; ))
 
-    #profile_page
+    .m-dashboard-heading
+      %h2
+        {{ user.name }} 
 
-      .user_card
+      .m-dashboard-subheading
+        Public profile
 
-        .info
-          %h2.name
-            {{ user.name }}
+    .user_card
+      .info
+        (( if ( is_self ) { ))
+        %a.edit_profile
+          Edit profile
+        (( } ))
 
-          (( if ( is_self ) { ))
-          %a.edit_profile
-            Edit profile
+        .bio
+          %h3
+            About
+
+          (( if(user.bio && user.bio.length > 0) { ))
+          %p
+            {{ user.bio }} 
+          (( } else { ))
+          %p.empty
+            No details provided
           (( } ))
 
-          .bio
-            %h3
-              About
-
-            (( if(user.bio && user.bio.length > 0) { ))
-            %p
-              {{ user.bio }} 
-            (( } else { ))
-            %p.empty
-              No details provided
-            (( } ))
-
-        .avatar
-          %img.edit_profile{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+      .avatar
+        %img.edit_profile{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
 
   // .body
   //   #positions.block
@@ -527,84 +551,91 @@
 
   %script{ :type => "text/template", :id => "tpl_dashboard_edit_profile"}
 
-
-    #edit_profile.profile_edit
-
+    .m-dashboard-heading
       %h2
-        Edit Profile
+        Edit your Profile
 
-      = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
+      .m-dashboard-subheading
+        Control the information that other people can see.
 
-        .field
-          = f.label :name, "Name"
-          = f.text_field :name, :pattern => "^.{1,}", :value => "{{ user.name }}"
 
-        .field
-          = f.label :bio, "About you"
-          = f.text_area :bio, :rows => 5, :value => "{{ user.bio }}"
-                    
-        %table
-          %tr
-            %td
-              .avatar
-                %img{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+    = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
 
-            %td.fileinput           
-              .field
-                = f.label :avatar, "Your picture"
-                = f.file_field :avatar, :title => 'Upload a profile picture'
+      .field
+        = f.label :name, "Name"
+        = f.text_field :name, :pattern => "^.{1,}", :value => "{{ user.name }}"
 
-        .save_block
-          = f.submit "Save changes", :class => 'button'
+      .field
+        = f.label :bio, "About you"
+        = f.text_area :bio, :rows => 5, :value => "{{ user.bio }}"
+                  
+      %table
+        %tr
+          %td
+            .avatar
+              %img{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+
+          %td.fileinput           
+            .field
+              = f.label :avatar, "Your picture"
+              = f.file_field :avatar, :title => 'Upload a profile picture'
+
+      .save_block
+        = f.submit "Save changes", :class => 'button'
 
 
   %script{ :type => "text/template", :id => "tpl_dashboard_account_settings"}
 
-    #edit_profile.profile_edit
-
+    .m-dashboard-heading
       %h2
-        Account settings
+        Account Settings
 
-      = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
+      .m-dashboard-subheading
+        Modify your authentication options.
 
-        .field
-          = f.label :email, "Email address"
-          = f.email_field :email, :value => "{{ user.email }}"
-          .sublabel
-            Your email will never be shared with other users or third parties
+    = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
 
-        (( if ( user.third_party_authenticated ) { ))
-        .field
-          Authorized via {{user.third_party_authenticated}}
-        (( } else { ))
-        .field
-          = f.label :password, "New password"
-          = f.password_field :password
-        .field
-          = f.label :password_confirmation, "Confirm new password" 
-          = f.password_field :password_confirmation
-        (( } ))
+      .field
+        = f.label :email, "Email address"
+        = f.email_field :email, :value => "{{ user.email }}"
+        .sublabel
+          Your email will never be shared with other users or third parties
 
-        .save_block
-          = f.submit "Save changes", :class => 'button'
+      (( if ( user.third_party_authenticated ) { ))
+      .field
+        Authorized via {{user.third_party_authenticated}}
+      (( } else { ))
+      .field
+        = f.label :password, "New password"
+        = f.password_field :password
+      .field
+        = f.label :password_confirmation, "Confirm new password" 
+        = f.password_field :password_confirmation
+      (( } ))
+
+      .save_block
+        = f.submit "Save changes", :class => 'button'
 
   %script{ :type => "text/template", :id => "tpl_dashboard_email_notifications"}
 
-    #edit_email_notifications.profile_edit
-
+    .m-dashboard-heading
       %h2
-        Notification Settings
+        Email Notification Settings
 
-      //%p
-      //  You are currently subscribed to {{current_user.follows.active.where(:followable_type => 'Proposal').count } Proposals and #{current_user.follows.active.where(:followable_type => 'Points').count } Points.
+      .m-dashboard-subheading
+        Control when you receive email updates.
+      
 
-      .field
-        = form_for :follows, :url => unfollow_create_path, :as => :follow do |f|
-          = f.hidden_field :user_id, :value => "{{user.id}}"
-          = f.hidden_field :unsubscribe_all, :value => true
-          = f.submit "Unsubscribe to all notifications", :class => 'button'
-        .sublabel
-          In the future, we will have more fine-grained options for configuring your notification settings.
+    //%p
+    //  You are currently subscribed to {{current_user.follows.active.where(:followable_type => 'Proposal').count } Proposals and #{current_user.follows.active.where(:followable_type => 'Points').count } Points.
+
+    .field
+      = form_for :follows, :url => unfollow_create_path, :as => :follow do |f|
+        = f.hidden_field :user_id, :value => "{{user.id}}"
+        = f.hidden_field :unsubscribe_all, :value => true
+        = f.submit "Unsubscribe to all notifications", :class => 'button'
+      .sublabel
+        In the future, we will have more fine-grained options for configuring your notification settings.
 
 
 

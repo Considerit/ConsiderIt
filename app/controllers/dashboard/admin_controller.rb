@@ -1,8 +1,7 @@
 require 'date'
 
 class Dashboard::AdminController < Dashboard::DashboardController
-  respond_to :json, :html
-  layout 'admin'
+  respond_to :json
   
   def application
     if !current_user.is_admin?
@@ -25,18 +24,21 @@ class Dashboard::AdminController < Dashboard::DashboardController
   end
 
   def roles
-    if !current_user.is_admin?
+
+    if !(current_user.is_admin? || current_user.has_role?(:manager))
       redirect_to root_path, :notice => "You need to be an admin to access that page."
       return
     end
 
-    @sidebar_context = :admin
-    @selected_navigation = :manage_roles
+    render :json => { 
+      :users_by_roles_mask => current_tenant.users.order('roles_mask DESC').select([:id, :name, :email, :roles_mask]), 
+      :admin_template => params["admin_template_needed"] == 'true' ? self.admin_template() : nil}
+
   end
 
   def update_role
 
-    if !current_user.is_admin?
+    if !(current_user.is_admin? || current_user.has_role?(:manager))
       redirect_to root_path, :notice => "You need to be an admin to do that."
       return
     end

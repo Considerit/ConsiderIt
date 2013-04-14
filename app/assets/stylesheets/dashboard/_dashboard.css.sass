@@ -30,7 +30,7 @@ html body #m-dashboard
       list-style-type: none
     .m-dashboard_link
       //+background-image(linear-gradient(#eee, #ccc))
-      +font-size(-2)
+      +font-size(-1)
       color: #555
       width: 100%      
       //width: $dashboard_sidebar_width - 2 * $grid_xs
@@ -58,29 +58,34 @@ html body #m-dashboard
     float: left
     width: $dashboard_content_width
 
+  .m-dashboard-heading
+    margin-bottom: 20px
+    
+    h2
+      +font-size(2)
+
+    .m-dashboard-subheading
+      color: #888
+
+
+
   .l-content-wrap
     margin-top: $vertical_baseline
     border: 1px solid rgba(#888, .6)
     background-color: white
     
-    #heading
-      margin-bottom: 20px
-      
-      td
-        padding: 8px
-        vertical-align: bottom
 
-      h1
-        font-size: 200%
 
 
     .field
-      padding: $vertical_baseline/2 0
-      +font-size(-1)
+      margin-bottom: $vertical_baseline
+      
       label
-        
+        +font-size(0)
       input[type="text"], input[type="email"], textarea
         display: block
+        +font-size(0)
+        padding: 2px
 
       .sublabel
         margin-top: 2px      
@@ -107,7 +112,7 @@ html body #m-dashboard
     // PAGE SPECIFIC 
     /////////////////
 
-    #profile_page
+    .m-dashboard-profile
       .user_card
         .avatar
           display: inline-block
@@ -136,9 +141,8 @@ html body #m-dashboard
         +font-size(-2)
         font-style: italic
 
-    #edit_profile
-      table td.fileinput
-        padding-left: $grid_xs
 
+    .m-user_roles-edit_form
+      display: none
 
 

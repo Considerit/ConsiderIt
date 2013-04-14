@@ -38,11 +38,3 @@ $(document)
     $field.text( active ? 'active' : 'inactive');      
     $dialog_window.detach().appendTo($dialog_window.data('parent')).hide();            
   }) 
-  .on('ajax:success', '.edit_role form', function(data, response, xhr){
-    var $dialog_window = $(this).parents('.detachable'),
-        $field = $dialog_window.data('parent').children('a').find('span'),
-        role = response.role_list;
-
-    $field.text( role );          
-    $dialog_window.detach().appendTo($dialog_window.data('parent')).hide();        
-  }) 

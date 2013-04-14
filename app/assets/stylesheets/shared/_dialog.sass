@@ -9,41 +9,41 @@
       //top: 0
 
 
+$dialog_width: $grid_major * 6 + $grid_minor * 6
+
 .detachable
-  display: none
   position: fixed
   top: 0
   z-index: 10000
   left: 50%
-  margin-left: -3.5*$grid_major - 3*$grid_minor
-  +on_chalkboard
-  +chalkboard
-  border: 5px solid white
-  +single-box-shadow($vhoff: 0)
+  margin-left: - $dialog_width / 2
+
+  border: 1px solid #aaa
+  +single-box-shadow($voff: 0)
   border-radius: 5px
-  width: $grid_major * 7 + $grid_minor * 6
+  width: $dialog_width
   text-align: center
-  +font-size(1)
-  margin-top: 5 * $vertical_baseline
+  margin-top: 3 * $vertical_baseline
+  padding: $vertical_baseline $grid_minor
+  background-color: white
 
   h1 
     +font-size(2)
-    padding: $vertical_baseline 0
-    color: white
+    margin-bottom: $vertical_baseline
 
   .option
-    margin-bottom: $vertical_baseline
+    margin: $vertical_baseline/2 0
     text-align: left
     position: relative
     width: $grid_major * 5 + $grid_minor * 5
     margin-left: $grid_xs + $grid_major + $grid_minor
     input[type="radio"]
       position: absolute
-      left: - 2 * $grid_xs 
-      top: 8px
+      left: -25px
+      top: 1px
     label
       font-weight: bold
-      color: white
+
     .sublabel
       +font-size(-2)
 

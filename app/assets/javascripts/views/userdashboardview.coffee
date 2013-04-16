@@ -54,13 +54,6 @@ class ConsiderIt.UserDashboardView extends Backbone.View
           @_check_box(ConsiderIt.current_tenant, 'enable_moderation', 'account_enable_moderation')
           @_check_box(ConsiderIt.current_tenant, 'enable_position_statement', 'account_enable_position_statement')
 
-      when 'moderate'
-        $.get Routes.dashboard_moderate_path(), {admin_template_needed : !admin_template_loaded}, (data) =>
-          if !admin_template_loaded
-            $('head').append(data.admin_template)
-
-          @change_context_finish(data, ConsiderIt.Moderatable.ModerationView)
-
       when 'manage_proposals'
         active = []
         inactive = []
@@ -85,13 +78,34 @@ class ConsiderIt.UserDashboardView extends Backbone.View
           @users_by_roles_mask = new Backbone.Collection()
           @users_by_roles_mask.set((new ConsiderIt.User(user.user) for user in data.users_by_roles_mask) )
 
-          @change_context_finish({users_by_roles_mask: @users_by_roles_mask})
-
+          @change_context_finish(data)
 
       when 'analyze'
         data_uri = Routes.analytics_path()
+        $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
+          if !admin_template_loaded
+            $('head').append(data.admin_template)
+
+          @change_context_finish(data, ConsiderIt.UserDashboardViewAnalyze)
+
+      when 'moderate'
+        $.get Routes.dashboard_moderate_path(), {admin_template_needed : !admin_template_loaded}, (data) =>
+          if !admin_template_loaded
+            $('head').append(data.admin_template)
+
+          @change_context_finish(data, ConsiderIt.Moderatable.ModerationView)
+
       when 'assess'
         data_uri = Routes.assessment_index_path()
+
+      when 'database'
+        data_uri = Routes.account_path()
+        $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
+          if !admin_template_loaded
+            $('head').append(data.admin_template)
+
+          @change_context_finish({})
+
       else
         @change_context_finish({})
 

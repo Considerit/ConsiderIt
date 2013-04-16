@@ -70,44 +70,40 @@ class Dashboard::AdminController < Dashboard::DashboardController
       return
     end
 
-    @sidebar_context = :admin
-    @selected_navigation = :analyze
-
     @series = []
-    start = nil #'2012-09-20 00:00:00'
 
     has_permission = current_user && (current_user.is_admin? || current_user.has_role?(:analyst) )
     classes = has_permission ? [Session, User, Position, Inclusion, Point, Commentable::Comment] : []
+
     classes.each_with_index do |data, idx|
       dates = {}
       name = data.name.split('::').last
 
-      if start
-        data = data.where("created_at > '#{start}'")
-      end
-
       if [Position, Point].include?(data)
         qry = data.published
-      elsif [Inclusion].include?(data)
-        qry = data.joins(:position).where('positions.published = 1')
-      else 
-        qry = data.all
+      else
+        qry = data
       end
 
-      qry.each do |row|
-        if !row.created_at.nil?
-          date = row.created_at.in_time_zone("Pacific Time (US & Canada)").to_date
-          dates[date] ||= 0
-          dates[date] += 1  
-        end         
+      if [Inclusion].include? data
+        qry = qry
+                .joins(:position)
+                .where('positions.published = 1')
+                .where('inclusions.created_at is not null')
+                .select('count(*) as cnt, inclusions.created_at')
+                .group('YEAR(inclusions.created_at), MONTH(inclusions.created_at), DAY(inclusions.created_at)')
+      else
+        qry = qry.select('count(*) as cnt, created_at')
+                .group('YEAR(created_at), MONTH(created_at), DAY(created_at)')
+                .where('created_at is not null')
       end
+
+      qry = qry.order('created_at')
 
       time = []
-      dates.sort_by{ |k,v| k}.each do |date, cnt|
-        time.push([date.strftime('%s').to_i * 1000, cnt ])
+      qry.each do |obj|
+         time.push([obj.created_at.to_date.strftime('%s').to_i * 1000, obj.cnt ])
       end
-
-      time.sort! {|x,y| x[2] <=> y[2] }
 
       cumulative = []
       prev = 0
@@ -116,13 +112,16 @@ class Dashboard::AdminController < Dashboard::DashboardController
         prev += row[1]
       end
 
-      #@series.push([seriesOptions, yAxisOptions, data.name, chartOptions, title])
       @series.push( {
         :title => name,
         :main => { :title => name, :data => time}, 
         :cumulative => { :title => 'Cumulative ' + name, :data => cumulative}
       })
     end
+
+    render :json => { 
+      :analytics_data => @series,
+      :admin_template => params["admin_template_needed"] == 'true' ? self.admin_template() : nil}
 
   end
 

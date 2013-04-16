@@ -242,6 +242,7 @@ namespace :metrics do
         #next if ass.claims.count > 1
         #next if point.point_listings.where('created_at > "' + pivot.to_s + '"').count < 10
 
+
         population_before = point.proposal.inclusions.where('created_at < "' + pivot.to_s + '"').count.to_f / point.proposal.point_listings.where('created_at < "' + pivot.to_s + '"').count
         population_after = point.proposal.inclusions.where('created_at > "' + pivot.to_s + '"').count.to_f / point.proposal.point_listings.where('created_at > "' + pivot.to_s + '"').count
         population_after = population_after.infinite? ? 1.0 : population_after
@@ -263,11 +264,11 @@ namespace :metrics do
 
       end
 
-      printf("%s:\tinclusions %i\tviews %i\t%.2f\n", 'Before', inclusions[:before], views[:before], inclusions[:before].to_f / views[:before] )
-      printf("%s:\tinclusions %i\tviews %i\t%.2f\n", 'After', inclusions[:after], views[:after], inclusions[:after].to_f / views[:after] )
+      printf("%s:\tinclusions %i\tviews %i\t%.3f\n", 'Before', inclusions[:before], views[:before], inclusions[:before].to_f / views[:before] )
+      printf("%s:\tinclusions %i\tviews %i\t%.3f\n", 'After', inclusions[:after], views[:after], inclusions[:after].to_f / views[:after] )
 
-      printf("Impact:\t%.2f\n", (inclusions[:after].to_f / views[:after]) / (inclusions[:before].to_f / views[:before]) )
-      printf("Normalized:\t%.2f\n", normalized_impact / cnt )
+      printf("Impact:\t%.3f\n", (inclusions[:after].to_f / views[:after]) / (inclusions[:before].to_f / views[:before]) )
+      printf("Normalized:\t%.3f\n", normalized_impact / cnt )
       pp cnt
 
 
@@ -276,7 +277,95 @@ namespace :metrics do
     impacts.sort! {|a,b| a[1] <=> b[1]}
 
     impacts.each do |i|
-      printf("%i\t%i\t%i\t%.2f\t%i\n", i[4], i[0].point_listings.count, i[3], i[1], i[0].id)
+      printf("%i\t%i\t%i\t%.3f\t%i\n", i[4], i[0].point_listings.count, i[3], i[1], i[0].id)
+    end
+  end
+
+  task :fact_checking_discussion => :environment do 
+    puts "Fact-checking metrics"
+
+
+    impacts = []
+    proposal_point_map = {}
+    Point.where('comment_count > 0').each do |pnt|
+      comts = pnt.comments.map {|x| x.created_at}.compact
+      if !proposal_point_map.has_key? pnt.proposal.id
+        proposal_point_map[pnt.proposal_id] = [comts]
+      else
+        proposal_point_map[pnt.proposal_id].push comts
+      end
+    end
+    #pp proposal_point_map
+
+    [0,1,2].each do |verdict|
+      puts "For points with an overall " + verdict.to_s + " verdict"
+      col = :overall_verdict
+      #col = :max_verdict
+      assessments = Assessable::Assessment.where(col => verdict)
+
+      comments = { :before => 0, :after => 0 } 
+      views = { :before => 0, :after => 0 }
+
+      normalized_impact = 0
+      cnt = 0
+
+
+      assessments.each do |ass|
+        pivot = ass.updated_at
+        point = ass.root_object
+
+        #next if point.comments.count == 0
+        #next if ass.claims.count > 1
+        #next if point.point_listings.where('created_at > "' + pivot.to_s + '"').count < 10
+
+        comments_before_pivot = comments_after_pivot = 0.0
+
+        proposal_point_map[point.proposal_id].each do |pnt|
+          pnt.each do |comment|
+            if comment < pivot
+              comments_before_pivot += 1
+            else  
+              comments_after_pivot += 1
+            end
+          end 
+        end
+
+        point_before = point.comments.where('created_at < "' + pivot.to_s + '"').count.to_f / point.point_listings.where('created_at < "' + pivot.to_s + '"').count
+        point_after = point.comments.where('created_at > "' + pivot.to_s + '"').count.to_f / point.point_listings.where('created_at > "' + pivot.to_s + '"').count
+        point_after = point_after.infinite? ? 1.0 : point_after
+
+        population_before = comments_before_pivot / point.proposal.point_listings.where('created_at < "' + pivot.to_s + '"').count
+        population_after = comments_after_pivot / point.proposal.point_listings.where('created_at > "' + pivot.to_s + '"').count
+        population_after = population_after.infinite? ? 1.0 : population_after
+
+        
+        next if point_after.nan?
+
+        normalized_impact += (point_before > 0 ? point_after / point_before : 0) - (population_before > 0 ? population_after / population_before : 0)
+        comments[:before] += point.comments.where('created_at < "' + pivot.to_s + '"').count
+        comments[:after] += point.comments.where('created_at > "' + pivot.to_s + '"') .count
+        views[:before] += point.point_listings.where('created_at < "' + pivot.to_s + '"').count
+        views[:after] += point.point_listings.where('created_at > "' + pivot.to_s + '"').count
+        cnt += 1
+
+        impacts.push([point, normalized_impact, cnt, point.point_listings.where('created_at > "' + pivot.to_s + '"').count, verdict])
+
+      end
+
+      printf("%s:\tcomments %i\tviews %i\t%.3f\n", 'Before', comments[:before], views[:before], comments[:before].to_f / views[:before] )
+      printf("%s:\tcomments %i\tviews %i\t%.3f\n", 'After', comments[:after], views[:after], comments[:after].to_f / views[:after] )
+
+      printf("Impact:\t%.3f\n", (comments[:after].to_f / views[:after]) / (comments[:before].to_f / views[:before]) )
+      printf("Normalized:\t%.3f\n", normalized_impact / cnt )
+      pp cnt
+
+
+    end
+
+    impacts.sort! {|a,b| a[1] <=> b[1]}
+
+    impacts.each do |i|
+      printf("%i\t%i\t%i\t%.3f\t%i\n", i[4], i[0].point_listings.count, i[3], i[1], i[0].id)
     end
   end
 

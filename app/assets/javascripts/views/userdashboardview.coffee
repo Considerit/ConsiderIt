@@ -78,7 +78,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
           @users_by_roles_mask = new Backbone.Collection()
           @users_by_roles_mask.set((new ConsiderIt.User(user.user) for user in data.users_by_roles_mask) )
 
-          @change_context_finish(data)
+          @change_context_finish(_.extend(data, {users_by_roles_mask: @users_by_roles_mask}) )
 
       when 'analyze'
         data_uri = Routes.analytics_path()

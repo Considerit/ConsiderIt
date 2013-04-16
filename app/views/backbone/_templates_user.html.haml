@@ -50,13 +50,6 @@
           (( } ))
 
 
-          (( if( is_admin || is_analyst ) { ))
-          %li
-            %a.m-user-options-dashboard_link.analyze{:'data-target' => 'analyze'}
-              Analyze
-          (( } ))
-
-
 
           - if Rails.env.development?
             %li
@@ -430,21 +423,24 @@
               Moderate content
           (( } ))
 
-          (( if( is_admin || is_analyst ) { ))
-          %li
-            %a.m-dashboard_link{:'data-target' => 'analyze'}
-              Analyze trends
-          (( } ))
-
           (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
           %li
             %a.m-dashboard_link{:'data-target' => 'assess'}
               Assess claims
           (( } ))
 
+          (( if( is_admin || is_analyst ) { ))
+          %li
+            %a.m-dashboard_link{:'data-target' => 'analyze'}
+              Analyze trends
+          (( } ))
+
           (( if(is_admin) { ))
           %li
-            = link_to 'Database', rails_admin_path, :target => "_blank", :class => 'm-dashboard_link'
+            %a.m-dashboard_link{:'data-target' => 'database'}
+              Database
+
+            // = link_to 'Database', rails_admin_path, :target => "_blank", :class => 'm-dashboard_link'
           (( } ))
 
           - if Rails.env.development?

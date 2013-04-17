@@ -38,6 +38,12 @@
         .sublabel
           Whether you wish to moderate user contributed content like comments and pro and con points. 
 
+      .field  
+        = f.check_box :assessment_enabled
+        = f.label :assessment_enabled, 'Enable Assessments'
+        .sublabel
+          Whether you wish to fact check the pros and cons users contribute. 
+
       .field
         = f.check_box :enable_position_statement
 
@@ -197,18 +203,21 @@
               .sublabel
                 Can create and edit all proposals.
 
-            - if current_tenant.enable_moderation
-              .suboption
-                = f.check_box 'moderator'
-                = f.label 'moderator', 'Moderator'
-                .sublabel
-                  Can approve/disapprove user contributed content.
+            (( if( ConsiderIt.current_tenant.get('enable_moderation') ) { ))
+            .suboption
+              = f.check_box 'moderator'
+              = f.label 'moderator', 'Moderator'
+              .sublabel
+                Can approve/disapprove user contributed content.
+            (( } ))
 
+            (( if( ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
             .suboption
               = f.check_box 'evaluator'
               = f.label 'evaluator', 'Evaluator'
               .sublabel
                 Create official responses (like fact-checks) to pro/con points.
+            (( } ))
 
             .suboption
               = f.check_box 'analyst'
@@ -261,8 +270,5 @@
 
 
 
-  - if current_tenant.enable_moderation
-    = render :partial => "moderatable/templates"
-
-  // TODO: add account switch for assessments
+  = render :partial => "moderatable/templates"
   = render :partial => "assessable/templates"

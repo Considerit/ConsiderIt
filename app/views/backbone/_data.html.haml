@@ -34,7 +34,8 @@
 
     ConsiderIt.current_tenant = new ConsiderIt.Account({
         identifier : "#{current_tenant.identifier}",
-        assessment_enabled : "#{current_tenant.assessment_enabled}"
+        assessment_enabled : #{current_tenant.assessment_enabled},
+        enable_moderation : #{current_tenant.enable_moderation}
     });
 
     ConsiderIt.roles = {

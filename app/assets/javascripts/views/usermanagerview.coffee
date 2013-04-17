@@ -67,7 +67,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
   nav_exited : () ->
     @$header_el.find('.m-user-options-menu-wrap')
       .stop(true,false)
-      .slideUp();
+      .slideUp()
 
   handle_user_logout : (ev) ->
     $.get Routes.destroy_user_session_path(), (data) =>
@@ -193,7 +193,10 @@ class ConsiderIt.UserManagerView extends Backbone.View
 
       @dashboardview.render()
 
-    @nav_exited()
+    $(ev.currentTarget)
+      .fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100)
+      .delay(100, => @nav_exited())
+
 
 
 

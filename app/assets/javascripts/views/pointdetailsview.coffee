@@ -21,7 +21,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       commentable_type: 'Point'})
     @commentsview.renderAllItems()
 
-    if ConsiderIt.current_tenant.assessment_enabled && @proposal.model.get('active') 
+    if ConsiderIt.current_tenant.get('assessment_enabled') && @proposal.model.get('active') 
       @assessmentview = new ConsiderIt.AssessmentView({
         model : @model
         el: @$el.find('.m-point-assessment-wrap'), 

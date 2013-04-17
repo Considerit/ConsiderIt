@@ -97,6 +97,11 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
       when 'assess'
         data_uri = Routes.assessment_index_path()
+        $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
+          if !admin_template_loaded
+            $('head').append(data.admin_template)
+
+          @change_context_finish(data, ConsiderIt.Assessable.AssessmentsView)
 
       when 'database'
         data_uri = Routes.account_path()

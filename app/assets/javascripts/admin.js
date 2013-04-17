@@ -2,7 +2,8 @@
 //= require jquery.fixedheadertable.min
 //= require jquery.flot
 //= require jquery.flot.selection
-//= require javascripts/moderatable
+//= require moderatable
+//= require assessable
 
 $(document)
   .on('click', '.dialog > a', function(){

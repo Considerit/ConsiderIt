@@ -75,13 +75,20 @@ class PointsController < ApplicationController
     if request.xhr?
       point = Point.find params[:id]
       authorize! :read, point
-      render :json => {
-        :comments => point.comments.public_fields,
-        :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
-        :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
-        :num_assessment_requests => point.assessment ? point.assessment.requests.count : nil,
-        :already_requested_assessment => point.assessment ? !current_user.nil? && point.assessment.requests.where(:user_id => current_user.id).count > 0 : nil
+      response = {
+        :comments => point.comments.public_fields
       }
+
+      if current_tenant.assessment_enabled
+        response.update({
+          :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
+          :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
+          :num_assessment_requests => point.assessment ? point.assessment.requests.count : nil,
+          :already_requested_assessment => point.assessment ? !current_user.nil? && point.assessment.requests.where(:user_id => current_user.id).count > 0 : nil
+        })
+      end
+
+      render :json => response
     end
   end
 

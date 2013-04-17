@@ -50,7 +50,8 @@ class ConsiderIt.PointView extends Backbone.View
       ConsiderIt.comments[model.id] = new ConsiderIt.CommentList()
       ConsiderIt.comments[model.id].reset(comments)
 
-      model.update_assessable_data(data)
+      if ConsiderIt.current_tenant.assessment_enabled
+        model.update_assessable_data(data)
 
       view.data_loaded = true if view
       callback(view)

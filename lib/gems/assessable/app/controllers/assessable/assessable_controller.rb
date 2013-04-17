@@ -12,9 +12,25 @@ class Assessable::AssessableController < Dashboard::DashboardController
 
     authorize! :index, Assessable::Assessment
 
-    @assessments = Assessable::Assessment.order(:complete)
+    # need to return:
+    #   - all assessment objects
+    #   - all claims
+    #   - all requests
+    #   - all assessable objects
 
-    render 'assessable/index'
+
+    assessments = Assessable::Assessment.order(:complete)
+    assessable_ids = assessments.map{ |assessment| assessment.assessable_id }.compact
+    assessable_objects = Point.where("id in (?)", assessable_ids).all
+
+
+    render :json => { 
+      :assessments => assessments,
+      :requests => Assessable::Request.all,
+      :claims => Assessable::Claim.all,
+      :assessable_objects => assessable_objects,
+      :admin_template => params["admin_template_needed"] == 'true' ? self.admin_template() : nil
+    }
   end
 
   def edit
@@ -25,7 +41,7 @@ class Assessable::AssessableController < Dashboard::DashboardController
 
     @assessment = Assessable::Assessment.find(params[:id])
 
-    render 'assessable/edit'
+    render :json => {:assessment => @assessment}
   end
 
   def create_claim
@@ -57,30 +73,30 @@ class Assessable::AssessableController < Dashboard::DashboardController
 
     # TODO: explicitly grab params  
     claim.update_attributes(params[:assessable_claim])
-    redirect_to edit_assessment_path(claim.assessment)
+    #redirect_to edit_assessment_path(claim.assessment)
 
     if claim.assessment.complete
       claim.assessment.update_overall_verdict
       claim.assessment.save
     end
+
   end
 
   def destroy_claim
     authorize! :index, Assessable::Assessment
 
     claim = Assessable::Claim.find(params[:id])
-    redirect_to edit_assessment_path(claim.assessment)
 
     if !claim.assessment.complete
       claim.destroy
     end
+
+    render :json => {:id => params[:id]}
   end
 
   def update
     authorize! :index, Assessable::Assessment
     
-    redirect_to assessment_index_path
-
     # TODO: explicitly grab params    
     assessment = Assessable::Assessment.find(params[:assessment][:id])
     complete = assessment.complete
@@ -99,7 +115,7 @@ class Assessable::AssessableController < Dashboard::DashboardController
       )
     end
 
-
+    render :json => { :assessment => assessment}
   end
 
   ### User facing

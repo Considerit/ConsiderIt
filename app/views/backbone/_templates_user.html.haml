@@ -1,6 +1,6 @@
 - providers = [ ['google', user_omniauth_authorize_path(:google)], ['facebook',user_omniauth_authorize_path(:facebook)], ['twitter',user_omniauth_authorize_path(:twitter, :x_auth_access_type => "read")] ]
 
-- cache do 
+- cache [current_tenant] do 
 
   %script{ :type => "text/template", :id => "tpl_logged_out"}
     .m-login
@@ -37,13 +37,13 @@
               App settings
           (( } ))
 
-          (( if( (is_admin || is_moderator ) && #{current_tenant.enable_moderation} ) { ))
+          (( if( (is_admin || is_moderator ) && ConsiderIt.current_tenant.get('enable_moderation') ) { ))
           %li
             %a.m-user-options-dashboard_link.moderate{:'data-target' => 'moderate'}
               Moderate
           (( } ))
 
-          (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
+          (( if( (is_admin || is_evaluator ) && ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
           %li
             %a.m-user-options-dashboard_link.assess{:'data-target' => 'assess'}
               Assess
@@ -416,14 +416,13 @@
 
           (( } ))
 
-
-          (( if( (is_admin || is_moderator ) && #{current_tenant.enable_moderation} ) { ))
+          (( if( (is_admin || is_moderator ) && ConsiderIt.current_tenant.get('enable_moderation') ) { ))
           %li
             %a.m-dashboard_link{:'data-target' => 'moderate'}
               Moderate content
           (( } ))
 
-          (( if( (is_admin || is_evaluator ) && #{current_tenant.identifier == 'wash'} ) { ))
+          (( if( (is_admin || is_evaluator ) && ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
           %li
             %a.m-dashboard_link{:'data-target' => 'assess'}
               Assess claims

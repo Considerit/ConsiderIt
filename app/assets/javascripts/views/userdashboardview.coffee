@@ -3,7 +3,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   template : _.template( $('#tpl_dashboard_container').html())
 
   initialize : (options) ->  
-    @initial_context = options.initial_context
+    @current_context = options.initial_context
     @templates = {}
 
   render : ->
@@ -23,9 +23,8 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
     @$content_area = @$el.find('.m-dashboard-content')
 
-    if @initial_context
-      @change_context(@initial_context)
-      @initial_context = null
+    if @current_context
+      @change_context(@current_context)
 
     this
 
@@ -36,7 +35,6 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   change_context : (target_context) ->
     
     user = @model
-    data_uri = null
 
     @previous_context = @current_context
     @current_context = target_context
@@ -51,6 +49,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
             $('head').append(data.admin_template)
           ConsiderIt.current_tenant.set(data.account.account)
           @change_context_finish({ account : ConsiderIt.current_tenant.attributes })
+          @_check_box(ConsiderIt.current_tenant, 'assessment_enabled', 'account_assessment_enabled')
           @_check_box(ConsiderIt.current_tenant, 'enable_moderation', 'account_enable_moderation')
           @_check_box(ConsiderIt.current_tenant, 'enable_position_statement', 'account_enable_position_statement')
 
@@ -168,7 +167,9 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     data = $.parseJSON(response.responseText)
     ConsiderIt.current_tenant.set(data.account)
     if @current_context
-      @change_context @current_context
+      @render()
+
+    #@$content_area.find('.save_block').append('<div class="flash_notice">Account updated</div>').delay(2000).fadeOut('slow')
 
   change_context_edit_profile : () ->
     @change_context('edit_profile')

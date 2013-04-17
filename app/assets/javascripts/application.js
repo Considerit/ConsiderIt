@@ -36,6 +36,7 @@
 //= require_tree ./collections
 //= require_tree ./views
 //= require_tree ./views_list
+//= require views/assessmentview
 //= require router
 
 //= require javascripts/acts_as_followable

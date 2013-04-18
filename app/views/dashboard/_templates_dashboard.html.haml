@@ -1,13 +1,10 @@
 
 
-- cache [current_tenant] do 
+- cache ['admin_dashboard', current_tenant] do 
 
   = theme_stylesheet_link_tag 'admin'
 
   = javascript_include_tag 'admin'
-
-  #c-admin-template-loaded
-
 
   %script{ :type => "text/template", :id => "tpl_dashboard_app_settings"}
 

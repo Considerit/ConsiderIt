@@ -1,6 +1,6 @@
 - aarp = false
 - theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
-- cache [current_tenant, theme, @dashboard] do 
+- cache ['theme_body', current_tenant, theme, @dashboard] do 
 
   - if false && Rails.env.development?
     = render :partial => "shared/dev_tools"      

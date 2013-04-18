@@ -4,7 +4,7 @@
   %head{ :profile => "http://gmpg.org/xfn/1" }
     = csrf_meta_tags
 
-    - cache [current_tenant] do 
+    - cache ['main_layout', current_tenant] do 
 
       %title
         = @title && @title != '' ? @title : current_tenant.app_title
@@ -107,7 +107,7 @@
 
   %body
 
-    - cache do
+    - cache 'main_body' do
       %svg{ :xmlns => "http://www.w3.org/2000/svg", :height => 0, :style => "position: absolute", :version => "1.1", :baseProfile => "full" }
         %defs
           %filter{ :id => "bubble_gradient"}

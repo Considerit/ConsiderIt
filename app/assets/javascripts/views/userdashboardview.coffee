@@ -5,6 +5,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   initialize : (options) ->  
     @current_context = options.initial_context
     @templates = {}
+    @admin_template_loaded = false
 
   render : ->
     @$el.hide()
@@ -39,14 +40,14 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     @previous_context = @current_context
     @current_context = target_context
 
-    admin_template_loaded = $('#c-admin-template-loaded').length > 0
     switch target_context
 
       when 'app_settings'
         data_uri = Routes.account_path()
         $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
-          if !admin_template_loaded
+          if !@admin_template_loaded
             $('head').append(data.admin_template)
+            @admin_template_loaded = true
           ConsiderIt.current_tenant.set(data.account.account)
           @change_context_finish({ account : ConsiderIt.current_tenant.attributes })
           @_check_box(ConsiderIt.current_tenant, 'assessment_enabled', 'account_assessment_enabled')
@@ -58,8 +59,9 @@ class ConsiderIt.UserDashboardView extends Backbone.View
         inactive = []
         data_uri = Routes.account_path() #TODO: actually fetch the proposals that are not currently loaded
         $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
-          if !admin_template_loaded
+          if !@admin_template_loaded
             $('head').append(data.admin_template)
+            @admin_template_loaded = true
 
           for proposal in _.values(ConsiderIt.proposals)
             if proposal.model.get('active')
@@ -71,8 +73,9 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
       when 'user_roles'
         $.get Routes.manage_roles_path(), {admin_template_needed : !admin_template_loaded}, (data) =>
-          if !admin_template_loaded
+          if !@admin_template_loaded
             $('head').append(data.admin_template)
+            @admin_template_loaded = true
 
           @users_by_roles_mask = new Backbone.Collection()
           @users_by_roles_mask.set((new ConsiderIt.User(user.user) for user in data.users_by_roles_mask) )
@@ -82,40 +85,40 @@ class ConsiderIt.UserDashboardView extends Backbone.View
       when 'analyze'
         data_uri = Routes.analytics_path()
         $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
-          if !admin_template_loaded
+          if !@admin_template_loaded
             $('head').append(data.admin_template)
+            @admin_template_loaded = true
 
           @change_context_finish(data, ConsiderIt.UserDashboardViewAnalyze)
 
       when 'moderate'
         $.get Routes.dashboard_moderate_path(), {admin_template_needed : !admin_template_loaded}, (data) =>
-          if !admin_template_loaded
+          if !@admin_template_loaded
             $('head').append(data.admin_template)
+            @admin_template_loaded = true
 
           @change_context_finish(data, ConsiderIt.Moderatable.ModerationView)
 
       when 'assess'
         data_uri = Routes.assessment_index_path()
         $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
-          if !admin_template_loaded
+          if !@admin_template_loaded
             $('head').append(data.admin_template)
+            @admin_template_loaded = true
 
           @change_context_finish(data, ConsiderIt.Assessable.AssessmentsView)
 
       when 'database'
         data_uri = Routes.account_path()
         $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
-          if !admin_template_loaded
+          if !@admin_template_loaded
             $('head').append(data.admin_template)
+            @admin_template_loaded = true
 
           @change_context_finish({})
 
       else
         @change_context_finish({})
-
-      # add loading icon
-      #TODO: don't fetch every time
-      # remove loading icon
 
 
   change_context_finish : (params, view_class) ->

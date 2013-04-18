@@ -1,6 +1,6 @@
-- providers = [ ['google', user_omniauth_authorize_path(:google)], ['facebook',user_omniauth_authorize_path(:facebook)], ['twitter',user_omniauth_authorize_path(:twitter, :x_auth_access_type => "read")] ]
 
-- cache [current_tenant] do 
+- cache ['user_templates', current_tenant] do 
+  - providers = [ ['google', user_omniauth_authorize_path(:google)], ['facebook',user_omniauth_authorize_path(:facebook)], ['twitter',user_omniauth_authorize_path(:twitter, :x_auth_access_type => "read")] ]
 
   %script{ :type => "text/template", :id => "tpl_logged_out"}
     .m-login

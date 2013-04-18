@@ -44,7 +44,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
       when 'app_settings'
         data_uri = Routes.account_path()
-        $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
+        $.get data_uri, {admin_template_needed : !@admin_template_loaded}, (data) =>
           if !@admin_template_loaded
             $('head').append(data.admin_template)
             @admin_template_loaded = true
@@ -58,7 +58,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
         active = []
         inactive = []
         data_uri = Routes.account_path() #TODO: actually fetch the proposals that are not currently loaded
-        $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
+        $.get data_uri, {admin_template_needed : !@admin_template_loaded}, (data) =>
           if !@admin_template_loaded
             $('head').append(data.admin_template)
             @admin_template_loaded = true
@@ -72,7 +72,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
           @change_context_finish({ active_proposals: active, inactive_proposals: inactive })
 
       when 'user_roles'
-        $.get Routes.manage_roles_path(), {admin_template_needed : !admin_template_loaded}, (data) =>
+        $.get Routes.manage_roles_path(), {admin_template_needed : !@admin_template_loaded}, (data) =>
           if !@admin_template_loaded
             $('head').append(data.admin_template)
             @admin_template_loaded = true
@@ -84,7 +84,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
       when 'analyze'
         data_uri = Routes.analytics_path()
-        $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
+        $.get data_uri, {admin_template_needed : !@admin_template_loaded}, (data) =>
           if !@admin_template_loaded
             $('head').append(data.admin_template)
             @admin_template_loaded = true
@@ -92,7 +92,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
           @change_context_finish(data, ConsiderIt.UserDashboardViewAnalyze)
 
       when 'moderate'
-        $.get Routes.dashboard_moderate_path(), {admin_template_needed : !admin_template_loaded}, (data) =>
+        $.get Routes.dashboard_moderate_path(), {admin_template_needed : !@admin_template_loaded}, (data) =>
           if !@admin_template_loaded
             $('head').append(data.admin_template)
             @admin_template_loaded = true
@@ -101,7 +101,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
       when 'assess'
         data_uri = Routes.assessment_index_path()
-        $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
+        $.get data_uri, {admin_template_needed : !@admin_template_loaded}, (data) =>
           if !@admin_template_loaded
             $('head').append(data.admin_template)
             @admin_template_loaded = true
@@ -110,7 +110,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
       when 'database'
         data_uri = Routes.account_path()
-        $.get data_uri, {admin_template_needed : !admin_template_loaded}, (data) =>
+        $.get data_uri, {admin_template_needed : !@admin_template_loaded}, (data) =>
           if !@admin_template_loaded
             $('head').append(data.admin_template)
             @admin_template_loaded = true

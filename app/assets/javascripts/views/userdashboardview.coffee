@@ -216,6 +216,6 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   close : () ->
     @$el.slideUp()
     if @managing_dashboard_content_view
-      @managing_dashboard_content_view.remove()
+      @managing_dashboard_content_view.undelegateEvents()
     
 

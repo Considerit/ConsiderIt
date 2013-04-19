@@ -171,7 +171,7 @@ Devise.setup do |config|
 
 
   FACEBOOK_SETUP_PROC = lambda do |env| 
-    APP_CONFIG = Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to) if !APP_CONFIG.has_key? 'facebook'
+    conf = APP_CONFIG && APP_CONFIG.has_key?( 'facebook') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
     env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_client || APP_CONFIG['facebook']['consumer_id']
@@ -182,7 +182,7 @@ Devise.setup do |config|
 
 
   TWITTER_SETUP_PROC = lambda do |env| 
-    APP_CONFIG = Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to) if !APP_CONFIG.has_key? 'twitter'
+    conf = APP_CONFIG && APP_CONFIG.has_key?( 'twitter') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
     env['omniauth.strategy'].options[:consumer_key] = current_tenant.socmedia_twitter_consumer_key || APP_CONFIG['twitter']['consumer_id']
@@ -193,7 +193,7 @@ Devise.setup do |config|
   config.omniauth :twitter, :setup => TWITTER_SETUP_PROC, :strategy_class => OmniAuth::Strategies::Twitter
 
   GOOGLE_SETUP_PROC = lambda do |env|
-    APP_CONFIG = Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to) if !APP_CONFIG.has_key? 'google'
+    conf = APP_CONFIG && APP_CONFIG.has_key?( 'google') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
     env['omniauth.strategy'].options[:client_id] = APP_CONFIG['google']['consumer_id']

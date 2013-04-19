@@ -4,6 +4,14 @@
   # NOTE: if config/environments/production.rb is modified in the repo or on the server, there may be problems
   sudo: False
 
+- name: Create database.yml
+  template: src=templates/project/database.yml.j2 dest=$app_home/config/database.yml mode=400
+  sudo: False
+
+- name: Create local_environment.yml
+  template: src=templates/project/local_environment.yml.j2 dest=$app_home/config/local_environment.yml mode=400
+  sudo: False
+
 - name: Initialize production configuration
   template: src=templates/project/production.rb.j2 dest=$app_home/config/environments/production.rb
   sudo: False

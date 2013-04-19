@@ -932,7 +932,6 @@ Applied as jQuery method.
             // TRAVIS EDIT //
             var mystyle = this.$element.getStyles();
             _.extend(mystyle, {cursor: 'auto'})
-            console.log(mystyle)
             /////////////////
 
             this.$element.addClass('editable-open');

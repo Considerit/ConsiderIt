@@ -79,7 +79,7 @@ GEM
     asset_sync (0.5.4)
       activemodel
       fog
-    aws-sdk (1.8.5)
+    aws-sdk (1.9.1)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
@@ -214,6 +214,9 @@ GEM
       rack
     omniauth-facebook (1.4.1)
       omniauth-oauth2 (~> 1.1.0)
+    omniauth-google-oauth2 (0.1.15)
+      omniauth (~> 1.0)
+      omniauth-oauth2
     omniauth-oauth (1.0.1)
       oauth
       omniauth (~> 1.0)
@@ -378,6 +381,7 @@ DEPENDENCIES
   newrelic_rpm
   omniauth
   omniauth-facebook
+  omniauth-google-oauth2
   omniauth-oauth
   omniauth-openid
   omniauth-twitter

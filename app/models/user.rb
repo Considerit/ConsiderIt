@@ -15,11 +15,12 @@ class User < ActiveRecord::Base
   acts_as_tenant(:account)
   #attr_taggable :tags
   is_trackable
-  
+
+  #devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :omniauthable, :database_authenticatable, :registerable, :confirmable,
-         :recoverable, :rememberable, :trackable
+  devise :database_authenticatable, :registerable, :confirmable, :recoverable, :rememberable, :trackable
+  devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
 
   validates :name, :presence => true
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
@@ -106,8 +107,18 @@ class User < ActiveRecord::Base
         if user
           user.google_uid = access_token.uid
         end
+
+      when 'google_oauth2'
+        user = User.find_by_google_uid(access_token.uid) || User.find_by_email(access_token.info.email)  #for_google_oauth2(request.env["omniauth.auth"], current_user)
+
+        if user
+          user.google_uid = access_token.uid
+        end
+
       else  
         user = User.find_by_email(access_token.info.email)
+
+
     end
 
     user
@@ -122,11 +133,17 @@ class User < ActiveRecord::Base
             
     case access_token.provider
       when 'google'
-
         third_party_params = {
           :google_uid => access_token.uid,
           :email => access_token.info.email
         }
+
+      when 'google_oauth2'
+        third_party_params = {
+          :google_uid => access_token.uid,
+          :email => access_token.info.email,
+          :avatar_url => access_token.info.image
+        }        
 
       when 'twitter'
         third_party_params = {

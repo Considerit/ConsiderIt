@@ -8,6 +8,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     _third_party_callback
   end
 
+  def google_oauth2
+    _third_party_callback
+  end
+
   def twitter
     _third_party_callback
   end

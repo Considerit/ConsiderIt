@@ -169,38 +169,42 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
 
-  # Twitter.configure do |twitter_config|
-  #   # twitter_config.consumer_key = APP_CONFIG[:authentication][:twitter][:consumer_key]
-  #   # twitter_config.consumer_secret = APP_CONFIG[:authentication][:twitter][:consumer_secret]
-  #   # twitter_config.oauth_token = APP_CONFIG[:authentication][:twitter][:oauth_token]
-  #   # twitter_config.oauth_token_secret = APP_CONFIG[:authentication][:twitter][:oauth_token_secret]
-  #   twitter_config = APP_CONFIG[:authentication][:twitter]
-  # end
-
-
 
   FACEBOOK_SETUP_PROC = lambda do |env| 
+    APP_CONFIG = Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to) if !APP_CONFIG.has_key? 'facebook'
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_client
-    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret
+    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_client || APP_CONFIG['facebook']['consumer_id']
+    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret || APP_CONFIG['facebook']['consumer_secret']
   end
 
   config.omniauth :facebook, :setup => FACEBOOK_SETUP_PROC, :scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook, :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
 
-  config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo', :require => 'omniauth-openid'
-  config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'
-
 
   TWITTER_SETUP_PROC = lambda do |env| 
+    APP_CONFIG = Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to) if !APP_CONFIG.has_key? 'twitter'
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:consumer_key] = current_tenant.socmedia_twitter_consumer_key
-    env['omniauth.strategy'].options[:consumer_secret] = current_tenant.socmedia_twitter_consumer_secret
+    env['omniauth.strategy'].options[:consumer_key] = current_tenant.socmedia_twitter_consumer_key || APP_CONFIG['twitter']['consumer_id']
+    env['omniauth.strategy'].options[:consumer_secret] = current_tenant.socmedia_twitter_consumer_secret || APP_CONFIG['twitter']['consumer_secret']
     
   end  
 
   config.omniauth :twitter, :setup => TWITTER_SETUP_PROC, :strategy_class => OmniAuth::Strategies::Twitter
+
+  GOOGLE_SETUP_PROC = lambda do |env|
+    APP_CONFIG = Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to) if !APP_CONFIG.has_key? 'google'
+    request = Rack::Request.new(env)
+    current_tenant = ApplicationController.find_current_tenant(request)
+    env['omniauth.strategy'].options[:client_id] = APP_CONFIG['google']['consumer_id']
+    env['omniauth.strategy'].options[:client_secret] = APP_CONFIG['google']['consumer_secret']
+  end
+
+  require "omniauth-google-oauth2"
+  config.omniauth :google_oauth2, :setup => GOOGLE_SETUP_PROC, :scope => 'userinfo.email,userinfo.profile', :strategy_class => OmniAuth::Strategies::GoogleOauth2, :client_options => { access_type: "offline", approval_prompt: "" }
+
+  #config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo', :require => 'omniauth-openid'
+  #config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'
 
 
   # ==> Warden configuration

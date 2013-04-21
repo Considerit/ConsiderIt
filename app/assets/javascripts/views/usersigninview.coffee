@@ -66,7 +66,8 @@ class ConsiderIt.SignInView extends Backbone.View
   sign_in : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
     if data.result == 'successful'
-      @finish(data.user.user)
+      data.user = data.user.user
+      @finish(data)
     else if data.result == 'failure' && data.reason == 'wrong password'
       # TODO: help users if they previously signed in via third party
       note = "<div class='note'>Incorrect password.</div>"

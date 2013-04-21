@@ -51,7 +51,11 @@
               Assess
           (( } ))
 
-
+          (( if( (is_admin || is_analyst ) ) { ))
+          %li
+            %a.m-user-options-dashboard_link.analyze{:'data-target' => 'analyze'}
+              Analyze
+          (( } ))
 
           - if Rails.env.development?
             %li
@@ -378,7 +382,7 @@
         %ul
           %li
             %a.m-dashboard_link{:'data-target' => 'profile'}
-              Profile      
+              Profile
 
           (( if( is_self ) { ))
           %li

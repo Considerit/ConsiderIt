@@ -24,13 +24,15 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if user && user.registration_complete
       sign_in user, :event => :authentication
-      params = user #TODO: filter this down (actually, it might not be needed)
+      params = { :user => user } #TODO: filter this down (actually, it might not be needed)
     else
       session[:access_token] = access_token
       params = {
         :user => User.create_from_third_party_token(access_token)
       }
     end
+
+    params[:follows] = current_user.follows.all
     
     render :inline =>
       "<script type=\"text/javascript\">" +

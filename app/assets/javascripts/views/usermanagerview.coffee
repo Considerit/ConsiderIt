@@ -16,7 +16,6 @@ class ConsiderIt.UserManagerView extends Backbone.View
     @listenTo ConsiderIt.app, 'user:updated', ->
       @render() #this should only be updated the user-nav
 
-
   render : -> 
     if @model.id?
       @$header_el.html(
@@ -49,6 +48,8 @@ class ConsiderIt.UserManagerView extends Backbone.View
     super
     $('#registration_overlay').remove()
 
+
+
   events : 
     'click .m-login-signin' : 'handle_user_signin'
     'click .m-login-signup' : 'handle_user_registration'
@@ -56,7 +57,12 @@ class ConsiderIt.UserManagerView extends Backbone.View
     'click .m-user-options-logout' : 'handle_user_logout'
     'mouseenter .m-user-options' : 'nav_entered' 
     'mouseleave .m-user-options' : 'nav_exited' 
-    'click .m-user-options-dashboard_link' : 'open_dashboard'
+    'click .m-user-options-dashboard_link' : 'access_dashboard'
+
+  access_dashboard : (ev) -> 
+    $(ev.currentTarget)
+      .fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100)
+      .delay(100, => @nav_exited())
 
   nav_entered : (ev) -> 
     $(ev.currentTarget).find('.m-user-options-menu-wrap')
@@ -110,8 +116,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
       parent : me
 
     me.registrationview.render()
-    me.registrationview.$el.bind 'destroyed', () =>
-      @post_signin()
+    me.registrationview.$el.bind 'destroyed', () => @post_signin()
 
     me.center_overlay()
 
@@ -129,8 +134,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
       parent : me
 
     me.signinview.render()
-    me.signinview.$el.bind 'destroyed', () => 
-      @post_signin()
+    me.signinview.$el.bind 'destroyed', () => @post_signin()
 
     me.center_overlay()
 
@@ -149,10 +153,10 @@ class ConsiderIt.UserManagerView extends Backbone.View
 
   handle_third_party_callback : (user_data) ->
     if @registrationview && @registrationview.$el.is(':visible')
-      @registrationview.handle_third_party_callback(user_data.user)
+      @registrationview.handle_third_party_callback(user_data)
       
     else if @signinview && @signinview.$el.is(':visible')
-      @signinview.finish(user_data.user)
+      @signinview.finish(user_data)
     else
       throw 'Bad application state'
 
@@ -178,24 +182,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
 
     @signinview
 
-  open_dashboard : (ev) -> 
-    target_context = $(ev.currentTarget).data('target')
 
-    user = ConsiderIt.current_user
-
-    if @dashboardview
-      @dashboardview.change_context(target_context)
-    else
-      @dashboardview = new ConsiderIt.UserDashboardView
-        model : ConsiderIt.current_user
-        el : "#m-dashboard"
-        initial_context : target_context
-
-      @dashboardview.render()
-
-    $(ev.currentTarget)
-      .fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100)
-      .delay(100, => @nav_exited())
 
 
 

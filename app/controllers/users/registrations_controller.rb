@@ -40,7 +40,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
       response = {
         :result => 'successful',
         #TODO: filter users' to_json
-        :user => current_user
+        :user => current_user,
+        :follows => current_user.follows.all
       }
 
 
@@ -56,7 +57,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
         response = {
           :result => 'successful',
           #TODO: filter users' to_json
-          :user => current_user
+          :user => current_user,
+          :follows => current_user.follows.all
         }
 
       else

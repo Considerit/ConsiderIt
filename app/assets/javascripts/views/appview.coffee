@@ -14,13 +14,14 @@ class ConsiderIt.AppView extends Backbone.View
 
     @listenTo this, 'user:signin', @load_anonymous_data
 
-  render : () -> 
     @proposals = new ConsiderIt.ProposalList()
     @proposals.reset( _.pluck(_.values(ConsiderIt.proposals), 'model'))
 
+  render : () -> 
+
     @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#m-proposals-container'})
-    
     @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#l-wrap'})
+    @dashboardview = new ConsiderIt.UserDashboardView({ model : ConsiderIt.current_user, el : '#l-wrap'})
 
     @proposalsview.renderAllItems()
     @usermanagerview.render()

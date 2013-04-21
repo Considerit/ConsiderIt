@@ -1,7 +1,18 @@
+class XHRConstraint
+  def matches?(request)
+    !request.xhr? #&& !(request.url =~ /\.json$/ && ::Rails.env == 'development')
+  end
+end
+
 ConsiderIt::Application.routes.draw do
-    
+
+  root :to => "home#index"
+
   mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
   #mount Assessable::Engine => '/dashboard/assessable', :as => 'assessable'
+
+
+  match '(*url)' => 'home#index', :constraints => XHRConstraint.new
 
   themes_for_rails 
   followable_routes
@@ -9,7 +20,6 @@ ConsiderIt::Application.routes.draw do
   moderatable_routes
   assessable_routes
 
-  root :to => "home#index"
 
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
@@ -52,9 +62,10 @@ ConsiderIt::Application.routes.draw do
 
   #match '/home/study/:category' => "home#study", :via => :post  
   scope :module => "dashboard" do
+    match '/dashboard/admin_template' => "admin#admin_template", :via => :get, :as => :admin_template
     #match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
     match '/dashboard/analytics' => "admin#analytics", :via => :get, :as => :analytics
-    match '/dashboard/proposals' => "admin#proposals", :via => :get, :as => :manage_proposals
+    #match '/dashboard/proposals' => "admin#proposals", :via => :get, :as => :manage_proposals
     match '/dashboard/roles' => "admin#roles", :via => :get, :as => :manage_roles
     match '/dashboard/roles/users/:user_id' => "admin#update_role", :via => :post, :as => :update_role
     match '/dashboard/users/:id/profile' => "users#show", :as => :profile

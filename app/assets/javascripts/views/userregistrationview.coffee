@@ -30,8 +30,9 @@ class ConsiderIt.RegistrationView extends Backbone.View
 
   handle_third_party_callback : (user_data) ->
     if @state == 1
-      @finish_first_phase(user_data.user, ConsiderIt.current_user.auth_method())
+      @finish_first_phase(user_data, ConsiderIt.current_user.auth_method())
     else if @state == 2
+      # if using third party auth method to get profile picture
       @$el.find('.customfile-preview').attr('src', user_data.avatar_url)
       @$el.find('.avatar_field input.avatar_url').val(user_data.avatar_url)
 
@@ -105,7 +106,7 @@ class ConsiderIt.RegistrationView extends Backbone.View
 
   update_user : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
-    ConsiderIt.update_current_user(data.user.user)
+    ConsiderIt.update_current_user(data.user)
     if not ConsiderIt.current_user.id of ConsiderIt.users
       ConsiderIt.users[ConsiderIt.current_user.id] = ConsiderIt.current_user
     @remove()

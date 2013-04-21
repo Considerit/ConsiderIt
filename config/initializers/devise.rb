@@ -174,19 +174,20 @@ Devise.setup do |config|
     conf = APP_CONFIG && APP_CONFIG.has_key?( 'facebook') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_client || APP_CONFIG['facebook']['consumer_id']
-    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret || APP_CONFIG['facebook']['consumer_secret']
+    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_client || conf['facebook']['consumer_id']
+    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret || conf['facebook']['consumer_secret']
   end
 
   config.omniauth :facebook, :setup => FACEBOOK_SETUP_PROC, :scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook, :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
 
 
   TWITTER_SETUP_PROC = lambda do |env| 
-    conf = APP_CONFIG && APP_CONFIG.has_key?( 'twitter') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
+    conf = APP_CONFIG && APP_CONFIG.has_key?('twitter') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
+    
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:consumer_key] = current_tenant.socmedia_twitter_consumer_key || APP_CONFIG['twitter']['consumer_id']
-    env['omniauth.strategy'].options[:consumer_secret] = current_tenant.socmedia_twitter_consumer_secret || APP_CONFIG['twitter']['consumer_secret']
+    env['omniauth.strategy'].options[:consumer_key] = current_tenant.socmedia_twitter_consumer_key || conf['twitter']['consumer_id']
+    env['omniauth.strategy'].options[:consumer_secret] = current_tenant.socmedia_twitter_consumer_secret || conf['twitter']['consumer_secret']
     
   end  
 
@@ -196,8 +197,8 @@ Devise.setup do |config|
     conf = APP_CONFIG && APP_CONFIG.has_key?( 'google') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:client_id] = APP_CONFIG['google']['consumer_id']
-    env['omniauth.strategy'].options[:client_secret] = APP_CONFIG['google']['consumer_secret']
+    env['omniauth.strategy'].options[:client_id] = conf['google']['consumer_id']
+    env['omniauth.strategy'].options[:client_secret] = conf['google']['consumer_secret']
   end
 
   require "omniauth-google-oauth2"

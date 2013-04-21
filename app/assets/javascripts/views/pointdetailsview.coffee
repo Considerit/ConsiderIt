@@ -8,10 +8,14 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
   render : () -> 
     @$el.hide()
+
+    # existing_follows = followable.follows.where(:user_id => current_user.id).first
+    # already_follows = !existing_follows.nil? && existing_follows.follow    
     @$el.html ConsiderIt.PointDetailsView.template($.extend({}, @model.attributes, {
         adjusted_nutshell : @model.adjusted_nutshell()
         user : ConsiderIt.users[this.model.get('user_id')]
-        proposal : @proposal.model.attributes
+        proposal : @proposal.model.attributes,
+        already_follows : ConsiderIt.current_user.is_following('Point', @model.id)
       }))
     
     @commentsview = new ConsiderIt.CommentListView({
@@ -80,6 +84,13 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
   events : 
     'click .m-point-details-close' : 'close_details'
+    'ajax:success .follow form' : 'toggle_follow'
+    'ajax:success .unfollow form' : 'toggle_follow'
+
+  toggle_follow : (ev, data) -> 
+    console.log $(ev.currentTarget)
+    $(ev.currentTarget).parent().addClass('hide').siblings('.follow, .unfollow').removeClass('hide')
+    ConsiderIt.current_user.set_following(data.follow.follow)
 
   close_details : (ev) ->
     $('#lightbox').remove()

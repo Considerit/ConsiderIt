@@ -1,5 +1,4 @@
 class PointsController < ApplicationController
-  #include ActsAsFollowable::ControllerMethods
 
   protect_from_forgery
 

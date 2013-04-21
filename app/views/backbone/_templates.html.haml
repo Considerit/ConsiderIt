@@ -109,7 +109,7 @@
           {{ nutshell }} 
 
         .m-point-details-description 
-          {{text}}
+          {{ text }}
 
         .m-point-details-author
           (( if (hide_name) { ))
@@ -121,8 +121,23 @@
           (( } ))
 
         .m-point-details-operations
-          (( if (published) { ))
-          -#= render :partial => 'followable/follow', :locals => {:followable => point, :obj => [@proposal, point], :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
+          (( if( published && ConsiderIt.current_user.is_logged_in() ) { ))
+
+          (( var follows_class = already_follows ? 'hide' : ''; ))
+          (( var unfollows_class = already_follows ? '' : 'hide'; ))
+          %div{ :class => "follow {{ follows_class }}"}
+            = form_for :follows, :url => "{{ Routes.follow_path() }}", :as => :follow, :method => :get, :remote => true do |f|
+              = f.hidden_field :followable_id, :value => "{{id}}"
+              = f.hidden_field :followable_type, :value => "Point"
+              = f.submit "Follow this point", :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.', :class => 'button'
+
+          %div{ :class => "unfollow {{ unfollows_class }}"}
+            = form_for :follows, :url => "{{ Routes.unfollow_create_path() }}", :as => :follow, :remote => true do |f|
+              = f.hidden_field :user_id, :value => "{{ ConsiderIt.current_user.id }}"
+              = f.hidden_field :followable_id, :value => "{{ id }}"
+              = f.hidden_field :followable_type, :value => "Point"
+              = f.submit "Unfollow this point", :class => 'button'
+
           (( } ))
 
         .m-point-assessment-wrap

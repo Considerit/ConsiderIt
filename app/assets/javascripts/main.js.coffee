@@ -89,10 +89,11 @@ window.ConsiderIt.utils =
 
 
 window.ConsiderIt.update_current_user = (parameters) ->
-  if parameters.id of ConsiderIt.users
-    ConsiderIt.current_user = ConsiderIt.users[parameters.id]
+  if parameters.user.id of ConsiderIt.users
+    ConsiderIt.current_user = ConsiderIt.users[parameters.user.id]
 
-  ConsiderIt.current_user.set(parameters)
+  ConsiderIt.current_user.set(parameters.user)
+  ConsiderIt.current_user.set_follows(parameters.follows)
 
   ConsiderIt.roles =
     is_admin : ConsiderIt.current_user.has_role('admin') || ConsiderIt.current_user.has_role('superadmin')
@@ -125,6 +126,7 @@ window.openPopupWindow = (url) ->
   openidpopup.moveTo(coords[0],coords[1])
 
 window.handleOpenIdResponse = (parameters, redirect_to) ->  
+  parameters.user = parameters.user.user
   ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
 
 $.event.special.destroyed =

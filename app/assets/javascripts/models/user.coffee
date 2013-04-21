@@ -32,6 +32,9 @@ class ConsiderIt.User extends Backbone.Model
 
     user_roles
 
+  is_logged_in : ->
+    'id' of @attributes
+
   has_role : (role) ->
     _.indexOf(@roles(), role) >= 0
 
@@ -42,5 +45,17 @@ class ConsiderIt.User extends Backbone.Model
     roles = @roles()
     !roles? || roles.length == 0
 
+  set_follows : (follows) ->
+    follows = ( f.follow for f in follows )
+    @follows = {}
+    for f in follows
+      @follows[f.followable_type] = {} if !(f.followable_type of @follows)
+      @follows[f.followable_type][f.followable_id] = f
+    
+  is_following : (followable_type, followable_id) ->
+    return @follows[followable_type][followable_id] if followable_type of @follows && followable_id of @follows[followable_type] && @follows[followable_type][followable_id].follow == true
+    false
 
-    #Roles.new(self, self.class.valid_roles.reject { |r| ( (@attributes.roles_mask || 0) & Math.pow(2, all_roles.index(r))).zero? })
+  set_following : (follow) ->
+    @follows[follow.followable_type] = {} if !follow.followable_type of @follows
+    @follows[follow.followable_type][follow.followable_id] = follow

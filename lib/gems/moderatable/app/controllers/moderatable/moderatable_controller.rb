@@ -1,5 +1,4 @@
 class Moderatable::ModeratableController < Dashboard::DashboardController
-  layout 'admin'
 
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to root_path, :notice => 'Please login first to access the moderation panel'
@@ -8,9 +7,6 @@ class Moderatable::ModeratableController < Dashboard::DashboardController
 
   # list all the objects to be moderated; allow seeing the existing moderations
   def index
-    @selected_navigation = :moderate
-    @sidebar_context = :admin
-    
     authorize! :index, Moderatable::Moderation
 
     if !current_tenant.enable_moderation
@@ -53,7 +49,7 @@ class Moderatable::ModeratableController < Dashboard::DashboardController
       end
     end
 
-    rendered_admin_template = params["admin_template_needed"] == 'true' ? self.admin_template() : nil
+    rendered_admin_template = params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil
 
     render :json => {:objs_to_moderate => @objs_to_moderate, :classes_to_moderate => moderatable_classes, :existing_moderations => @existing_moderations, :admin_template => rendered_admin_template}
   end

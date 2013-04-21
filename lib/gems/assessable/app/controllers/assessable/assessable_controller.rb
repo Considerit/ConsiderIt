@@ -1,5 +1,5 @@
 class Assessable::AssessableController < Dashboard::DashboardController
-  layout 'admin'
+
   rescue_from CanCan::AccessDenied do |exception|
     redirect_to root_path, :notice => 'Please login first to access the assessment panel'
     return
@@ -7,9 +7,6 @@ class Assessable::AssessableController < Dashboard::DashboardController
 
   # list all the objects to be moderated; allow seeing the existing moderations
   def index
-    @selected_navigation = :assess
-    @sidebar_context = :admin
-
     authorize! :index, Assessable::Assessment
 
     # need to return:
@@ -29,14 +26,11 @@ class Assessable::AssessableController < Dashboard::DashboardController
       :requests => Assessable::Request.all,
       :claims => Assessable::Claim.all,
       :assessable_objects => assessable_objects,
-      :admin_template => params["admin_template_needed"] == 'true' ? self.admin_template() : nil
+      :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil
     }
   end
 
   def edit
-    @selected_navigation = :assess
-    @sidebar_context = :admin
-
     authorize! :index, Assessable::Assessment
 
     @assessment = Assessable::Assessment.find(params[:id])

@@ -6,21 +6,12 @@
   - ypos1 = stroke_width * 3
   - ypos2 = stroke_width * 3 + size
 
-  //- if left
   - xpos1 = svg_size
   - xpos2 = svg_size - size
   - bubbleadjustx = 1
   - spacingadjustx = -border_width * 3  
   - borderadjustx = -stroke_width * 3
   - spacingoffsetx = -1
-
-  / - else
-  /   - xpos1 = 0
-  /   - xpos2 = size
-  /   - bubbleadjustx = -1
-  /   - spacingoffsetx = 1
-  /   - spacingadjustx = border_width * 3
-  /   - borderadjustx = stroke_width * 3
 
   - points = "#{xpos1 + bubbleadjustx},#{ypos1} #{xpos1 + bubbleadjustx},#{ypos2} #{xpos2},#{ypos1} #{xpos1 + bubbleadjustx}, #{ypos1}"
   - points_border = "#{xpos1}, #{ypos1 - stroke_width} #{xpos1},#{ypos2 + stroke_width * 2} #{xpos2 + borderadjustx},#{ypos1 - stroke_width} #{xpos1}, #{ypos1 - stroke_width}"

@@ -29,13 +29,24 @@ class ConsiderIt.UserDashboardViewAnalyze extends Backbone.View
       } )
     )
 
+    SIZE = 
+      graph: { width: '300px', height: '150px' }
+      overview: { width: '288px', height: '50px' }
+
     for s in @analytics_data
       @analytics_plots[s.title] = {}
       for style in ['main', 'cumulative']
         d = s[style]['data']
-        plot = $.plot($("#placeholder-#{s.title} .#{style} .graph"), [d], @analytics_options[style])
 
-        overview = $.plot($("#placeholder-#{s.title} .#{style} .overview"), [d], {
+        graph = $("#placeholder-#{s.title} .#{style} .graph")
+        graph.css SIZE.graph
+
+        plot = $.plot(graph, [d], @analytics_options[style])
+
+        graph = $("#placeholder-#{s.title} .#{style} .overview")
+        graph.css SIZE.overview
+
+        overview = $.plot(graph, [d], {
             series: {
                 lines: { show: true, lineWidth: 1 },
                 shadowSize: 0

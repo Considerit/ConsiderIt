@@ -3,24 +3,17 @@ require 'date'
 class Dashboard::AdminController < Dashboard::DashboardController
   respond_to :json
   
-  def application
-    if !current_user.is_admin?
-      redirect_to root_path, :notice => "You need to be an admin to access that page."
-      return
-    end
+  def admin_template
+    render :json => { 
+      :admin_template => self.process_admin_template() }
 
-    @sidebar_context = :admin
-    @selected_navigation = :app_settings
   end
 
   def proposals
-    if !(current_user.is_admin? || current_user.has_role?(:manager))
-      redirect_to root_path, :notice => "You need to be an admin to do that."
-      return
-    end
-
-    @sidebar_context = :admin
-    @selected_navigation = :manage_proposals
+    # if !(current_user.is_admin? || current_user.has_role?(:manager))
+    #   redirect_to root_path, :notice => "You need to be an admin to do that."
+    #   return
+    # end
   end
 
   def roles
@@ -32,7 +25,7 @@ class Dashboard::AdminController < Dashboard::DashboardController
 
     render :json => { 
       :users_by_roles_mask => current_tenant.users.order('roles_mask DESC').select([:id, :name, :email, :roles_mask]), 
-      :admin_template => params["admin_template_needed"] == 'true' ? self.admin_template() : nil}
+      :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
 
   end
 
@@ -121,7 +114,7 @@ class Dashboard::AdminController < Dashboard::DashboardController
 
     render :json => { 
       :analytics_data => @series,
-      :admin_template => params["admin_template_needed"] == 'true' ? self.admin_template() : nil}
+      :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
 
   end
 

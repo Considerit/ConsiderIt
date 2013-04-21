@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
       user.destroy
     end
 
-    if !request.xhr? && !@dashboard
+    if !request.xhr?
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id}",  ))
       @proposals = {}
 

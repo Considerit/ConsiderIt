@@ -1,5 +1,4 @@
 class PositionsController < ApplicationController
-  #include ActsAsFollowable::ControllerMethods
 
   protect_from_forgery
 

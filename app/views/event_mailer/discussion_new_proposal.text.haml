@@ -17,7 +17,7 @@ To think through this proposal, visit #{@url}
 = "\r\n"
 \----
 
-To unsubscribe to new proposal updates: #{unfollow_url(:host => @host, :u => @user.id, :i => @options[:current_tenant].id, :m => 'Account', :t => ApplicationController.token_for_action(@user.id, @options[:current_tenant], 'unfollow'))}
+= render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to new proposal updates', :text => true}
 
 = "\r\n"
 #{@options[:app_title]} is powered by http://chalkboard.it

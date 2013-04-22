@@ -3,9 +3,9 @@ module Followable
   module Routes
 
     def followable_routes
-      
+      match "followable_index" => 'followable::followable#index', :as => 'followable_index'
       match "follow" => 'followable::followable#follow'
-      match "unfollow" => 'followable::followable#unfollow'
+      #match "unfollow" => 'followable::followable#unfollow'
       match "unfollow_create" => 'followable::followable#unfollow_create', :via => :post
     end
 

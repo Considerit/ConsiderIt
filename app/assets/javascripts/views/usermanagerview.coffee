@@ -10,8 +10,6 @@ class ConsiderIt.UserManagerView extends Backbone.View
 
     @on 'user:signin', -> 
       $('#registration_overlay').remove()
-      if @dashboardview
-        @dashboardview.remove()
 
     @listenTo ConsiderIt.app, 'user:updated', ->
       @render() #this should only be updated the user-nav

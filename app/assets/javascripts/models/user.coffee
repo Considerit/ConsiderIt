@@ -57,5 +57,16 @@ class ConsiderIt.User extends Backbone.Model
     false
 
   set_following : (follow) ->
-    @follows[follow.followable_type] = {} if !follow.followable_type of @follows
+    @follows[follow.followable_type] = {} if !_.has(@follows, follow.followable_type)
     @follows[follow.followable_type][follow.followable_id] = follow
+
+  # unfollow : (followable_type, followable_id) ->
+  #   follow = @follows[followable_type][followable_id] if followable_type of @follows && if followable_id of @follows[followable_type]
+  #   follow.explicit = true
+  #   follow.follow = false
+
+  unfollow_all : ->
+    for fgroup in _.values(@follows)
+      for follow in _.values(fgroup)
+        follow.explicit = true
+        follow.follow = false

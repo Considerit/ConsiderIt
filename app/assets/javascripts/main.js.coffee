@@ -156,3 +156,9 @@ $(document).on "click", "a[href^='/']", (event) ->
   $(f) for f, i in readyQ
   $(d).bind("ready",f) for f,i in bindReadyQ
 )(jQuery, document)
+
+
+String.prototype.toCamel = -> @replace(/(\-[a-z])/g, ($1) -> $1.toUpperCase().replace('-','')  )
+
+String.prototype.toUnderscore = -> @replace(/([A-Z])/g, ($1) -> "_" + $1.toLowerCase() )
+

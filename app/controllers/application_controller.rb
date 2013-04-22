@@ -12,11 +12,19 @@ class ApplicationController < ActionController::Base
       session[:referer] = request.referer      
     end
 
-    if params.has_key?(:user) && params.has_key?(:token) && params[:token]
-      if ApplicationController.arbitrary_token("#{params[:user]}#{current_tenant.identifier}") == params[:token]
-        @pinned_user = User.find_by_email(params[:user]) ? User.find_by_email(params[:user]).id : nil
-        @pinned_user_email = params[:user]
+    #TODO: make this safer, & use a users' private token
+    if params.has_key?(:u) && params.has_key?(:t) && params[:t]
+      user = User.find_by_email(params[:u])
+
+      permission =   (user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") == params[:t]) \
+                  ||(!user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{user.unique_token}#{current_tenant.identifier}") == params[:t]) # this user already exists, want to have a harder auth method; still not secure if user forwards their email
+
+      if permission
+        @pinned_user = user ? user.id : nil
+        @pinned_user_email = params[:u]
+        @pinned_user_follows = user ? @pinned_user.follows.all : []
       end
+
     end
 
     if params.has_key?(:reset_password_token)
@@ -47,6 +55,7 @@ class ApplicationController < ActionController::Base
       user.destroy
     end
 
+    #TODO: now that we have a global redirect to home#index for non-ajax requests, can we move this to home controller?
     if !request.xhr?
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id}",  ))
       @proposals = {}

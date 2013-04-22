@@ -26,7 +26,8 @@ Read and discuss further at #{proposal_point_url(@proposal.long_id, @point, :hos
 = "\r\n"
 \----
 
-To unsubscribe to this point: #{unfollow_url(:host => @host, :u => @user.id, :i => @point.id, :m => 'Point', :t => ApplicationController.token_for_action(@user.id, @point, 'unfollow'))}
+
+= render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this point', :text => true}
 
 = "\r\n"
 #{@options[:app_title]} is powered by http://chalkboard.it

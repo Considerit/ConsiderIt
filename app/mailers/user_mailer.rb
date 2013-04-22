@@ -40,6 +40,9 @@ class UserMailer < ActionMailer::Base
 
   def invitation(email, proposal, notification_type, options )
     @email = email
+    user = User.find_by_email(email)
+    @private_token = user.nil? ? '' : user.private_token
+
     @proposal = proposal
     @host = options[:host]
     @options = options

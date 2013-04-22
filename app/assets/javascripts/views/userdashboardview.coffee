@@ -9,6 +9,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     @admin_template_loaded = false
     @rendered = false
 
+
     ConsiderIt.router.on 'route:AppSettings', => @access_dashboard_app_settings()
     ConsiderIt.router.on 'route:ManageProposals', => @access_dashboard_manage_proposals()
     ConsiderIt.router.on 'route:UserRoles', => @access_dashboard_user_roles()
@@ -21,6 +22,14 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     ConsiderIt.router.on 'route:EditProfile', => @access_dashboard_edit_profile()
     ConsiderIt.router.on 'route:AccountSettings', => @access_dashboard_account_settings()
     ConsiderIt.router.on 'route:EmailNotifications', => @access_dashboard_email_notifications()
+
+    @listenTo ConsiderIt.app, 'user:signin', => 
+      @model = ConsiderIt.current_user
+      if @$dashboard_el.is(':visible')
+        @render()
+        Backbone.history.loadUrl(Backbone.history.fragment) if @current_context
+    
+    @listenTo ConsiderIt.app, 'user:signout', @close
 
   render : ->
     @$dashboard_el.hide()
@@ -38,9 +47,13 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     )
 
     @$content_area = @$dashboard_el.find('.m-dashboard-content')
-    @rendered = true
 
-    @$dashboard_el.slideDown()
+    if !@rendered
+      @$dashboard_el.slideDown() 
+    else
+      @$dashboard_el.show()
+
+    @rendered = true
 
     this
 
@@ -103,35 +116,41 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   access_dashboard_database : -> 
     @_process_dashboard_context('database', {admin_template_needed: true})
 
-  access_dashboard_profile : -> @_process_dashboard_context('profile', {})
-  access_dashboard_edit_profile : -> @_process_dashboard_context('edit_profile', {})
-  access_dashboard_account_settings : -> @_process_dashboard_context('account_settings', {})
-  access_dashboard_email_notifications : -> @_process_dashboard_context('email_notifications', {})
+        
+  access_dashboard_profile : -> @_process_dashboard_context('profile', {params: {is_self : @model.id == ConsiderIt.current_user.id, user : @model.attributes, avatar : window.PaperClip.get_avatar_url(@model, 'original')}})
+  access_dashboard_edit_profile : -> @_process_dashboard_context('edit_profile', {params: {user : @model.attributes, avatar : window.PaperClip.get_avatar_url(@model, 'original')}})
+  access_dashboard_account_settings : -> @_process_dashboard_context('account_settings', {params: {user : @model.attributes}})
+  access_dashboard_email_notifications : -> 
+    options = 
+      data_uri : Routes.followable_index_path()
+      data_params : {user_id : ConsiderIt.current_user.id}
+      view_class: -> ConsiderIt.UserDashboardViewNotifications
+    @_process_dashboard_context('email_notifications', options)
 
   _check_box : (model, attribute, selector, condition) ->
     if condition || (!condition? && model.get(attribute))
       input = document.getElementById(selector).checked = true
 
-  _process_dashboard_context : (new_context, {params, admin_template_needed, view_class, data_uri, render_callback, data_callback}) ->  
+  _process_dashboard_context : (new_context, {params, admin_template_needed, view_class, data_uri, render_callback, data_callback, data_params}) ->  
     admin_template_needed ?= false
     params ?= {}
-    
-    if data_uri
-      qry_params = if admin_template_needed && !@admin_template_loaded then {admin_template_needed: true} else {}
-      $.get data_uri, qry_params, (data, status, xhr) => 
-        $('head').append(data.admin_template)
-        @admin_template_loaded = true
-        params = _.extend data, params
-        params = data_callback(data, params) if data_callback
-        @change_context(new_context, params, view_class)
-        render_callback() if render_callback
+    data_params ?= {}
+    load_admin_template = admin_template_needed && !@admin_template_loaded
+    data_uri = Routes.admin_template_path() if !data_uri && load_admin_template
 
-    else if admin_template_needed && !@admin_template_loaded
-      $.get Routes.admin_template_path(), (data, status, xhr) =>
-        $('head').append(data.admin_template)
-        @admin_template_loaded = true
-        @change_context(new_context, params, view_class)
-        render_callback() if render_callback
+    if data_uri
+      qry_params = if load_admin_template then _.extend(data_params, {admin_template_needed: true}) else data_params
+      $.get data_uri, qry_params, (data, status, xhr) => 
+        if data.result == 'failed'
+          @change_context(new_context, _.extend(data, {unauthorized: true}))
+        else
+          if load_admin_template
+            $('head').append(data.admin_template)
+            @admin_template_loaded = true
+          params = _.extend data, params
+          params = data_callback(data, params) if data_callback
+          @change_context(new_context, params, view_class)
+          render_callback() if render_callback
     else
       @change_context(new_context, params, view_class)
       render_callback() if render_callback
@@ -140,20 +159,17 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     previous_context = @current_context
     @current_context = new_context
 
-    @render() if !@rendered
+    @render() #if !@rendered
 
     if !view_class
-      if !(@current_context of @templates)
-        @templates[@current_context] = _.template( $("#tpl_dashboard_#{@current_context}").html() )
 
-      params = $.extend({}, params, {
-        is_self : @model.id == ConsiderIt.current_user.id        
-        user : @model.attributes
-        avatar : window.PaperClip.get_avatar_url(@model, 'original')
-      })
+      tpl = if 'unauthorized' of params && params['unauthorized'] then 'unauthorized' else @current_context
+
+      if !(tpl of @templates)
+        @templates[tpl] = _.template( $("#tpl_dashboard_#{tpl}").html() )
 
       @$content_area.html(
-        @templates[@current_context](params)
+        @templates[tpl](params)
       )
     else
       cls = view_class()
@@ -198,7 +214,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   navigate_to_edit_profile : -> ConsiderIt.router.navigate Routes.edit_profile_path( ConsiderIt.current_user.id ), {trigger: true}
   navigate_to_account_settings : -> ConsiderIt.router.navigate Routes.edit_account_path( ConsiderIt.current_user.id ), {trigger: true}
   navigate_to_email_notifications : -> ConsiderIt.router.navigate Routes.edit_notifications_path( ConsiderIt.current_user.id ), {trigger: true}
-  navigate_to_app_settings : -> ConsiderIt.router.navigate Routes.application_settings_path(), {trigger: true}
+  navigate_to_app_settings : -> ConsiderIt.router.navigate 'dashboard/application', {trigger: true}
   navigate_to_user_roles : -> ConsiderIt.router.navigate Routes.manage_roles_path(), {trigger: true}
   navigate_to_manage_proposals : -> ConsiderIt.router.navigate 'dashboard/proposals', {trigger: true}
   navigate_to_moderate : -> ConsiderIt.router.navigate Routes.dashboard_moderate_path(), {trigger: true}
@@ -259,6 +275,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
   close : () ->
     @$dashboard_el.slideUp()
+    @current_context = null
 
     if @managing_dashboard_content_view
       @managing_dashboard_content_view.undelegateEvents()

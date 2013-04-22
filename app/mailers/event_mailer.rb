@@ -106,56 +106,56 @@ class EventMailer < ActionMailer::Base
 
   #### COMMENT LEVEL ####
 
-  def reflect_new_bullet(user, bullet, comment, options, notification_type)
-    @notification_type = notification_type
-    @user = user
-    @bullet = bullet
-    @comment = comment
-    @proposal = comment.root_object.proposal
-    @host = options[:host]
-    @options = options
-    if comment.commentable_type == 'Point' 
-      @url = proposal_point_url(comment.root_object.proposal.long_id, comment.root_object, :anchor => "comment-#{comment.id}", :host => @host)
-    elsif comment.commentable_type == 'Position' 
-      raise 'Need to implement position statement homepage'
-    end   
+  # def reflect_new_bullet(user, bullet, comment, options, notification_type)
+  #   @notification_type = notification_type
+  #   @user = user
+  #   @bullet = bullet
+  #   @comment = comment
+  #   @proposal = comment.root_object.proposal
+  #   @host = options[:host]
+  #   @options = options
+  #   if comment.commentable_type == 'Point' 
+  #     @url = proposal_point_url(comment.root_object.proposal.long_id, comment.root_object, :anchor => "comment-#{comment.id}", :host => @host)
+  #   elsif comment.commentable_type == 'Position' 
+  #     raise 'Need to implement position statement homepage'
+  #   end   
 
-    if notification_type == 'your comment'
-      subject = "#{@bullet.user ? @bullet.user.username : 'Anonymous'} summarized your comment"
-    elsif notification_type == 'other summarizer'
-      subject = "#{@bullet.user ? @bullet.user.username : 'Anonymous'} summarized a comment you also summarized"
-    end
-    from = format_email(options[:from], options[:app_title])
+  #   if notification_type == 'your comment'
+  #     subject = "#{@bullet.user ? @bullet.user.username : 'Anonymous'} summarized your comment"
+  #   elsif notification_type == 'other summarizer'
+  #     subject = "#{@bullet.user ? @bullet.user.username : 'Anonymous'} summarized a comment you also summarized"
+  #   end
+  #   from = format_email(options[:from], options[:app_title])
 
-    email_with_name = "#{@user.username} <#{@user.email}>"
-    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
-  end
+  #   email_with_name = "#{@user.username} <#{@user.email}>"
+  #   mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+  # end
 
-  def reflect_new_response(user, response, bullet, comment, options, notification_type)
-    @notification_type = notification_type
-    @user = user
-    @bullet = bullet
-    @comment = comment
-    @response = response
-    @proposal = comment.root_object.proposal
-    @host = options[:host]
-    @options = options
-    if comment.commentable_type == 'Point' 
-      @url = proposal_point_url(comment.root_object.proposal.long_id, comment.root_object, :anchor => "comment-#{comment.id}", :host => @host)
-    elsif comment.commentable_type == 'Position' 
-      raise 'Need to implement position statement homepage'
-    end   
+  # def reflect_new_response(user, response, bullet, comment, options, notification_type)
+  #   @notification_type = notification_type
+  #   @user = user
+  #   @bullet = bullet
+  #   @comment = comment
+  #   @response = response
+  #   @proposal = comment.root_object.proposal
+  #   @host = options[:host]
+  #   @options = options
+  #   if comment.commentable_type == 'Point' 
+  #     @url = proposal_point_url(comment.root_object.proposal.long_id, comment.root_object, :anchor => "comment-#{comment.id}", :host => @host)
+  #   elsif comment.commentable_type == 'Position' 
+  #     raise 'Need to implement position statement homepage'
+  #   end   
 
-    if notification_type == 'your bullet'
-      subject = "#{@comment.user.username} responded to your summary"
-    elsif notification_type == 'other summarizer'
-      subject = "#{@comment.user.username} responded to a summary of their comment"
-    end
-    from = format_email(options[:from], options[:app_title])
+  #   if notification_type == 'your bullet'
+  #     subject = "#{@comment.user.username} responded to your summary"
+  #   elsif notification_type == 'other summarizer'
+  #     subject = "#{@comment.user.username} responded to a summary of their comment"
+  #   end
+  #   from = format_email(options[:from], options[:app_title])
 
-    email_with_name = "#{@user.username} <#{@user.email}>"
-    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
-  end
+  #   email_with_name = "#{@user.username} <#{@user.email}>"
+  #   mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+  # end
 
 
   #### POSITION LEVEL ####

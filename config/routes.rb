@@ -1,6 +1,8 @@
 class XHRConstraint
   def matches?(request)
-    !request.xhr? #&& !(request.url =~ /\.json$/ && ::Rails.env == 'development')
+    #pp request.url =~ /\/users\/auth/
+    #pp !request.xhr? || request.url =~ /\/users\/auth/
+    !(request.xhr? || request.url =~ /\/users\/auth/)
   end
 end
 
@@ -20,7 +22,18 @@ ConsiderIt::Application.routes.draw do
   moderatable_routes
   assessable_routes
 
+  devise_for :users, :controllers => { 
+    :omniauth_callbacks => "users/omniauth_callbacks", 
+    :sessions => "users/sessions", 
+    :registrations => "users/registrations",
+    :passwords => "users/passwords",
+    :confirmations => "users/confirmations"
+  }
 
+  devise_scope :user do 
+    match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
+  end
+  
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
@@ -38,18 +51,6 @@ ConsiderIt::Application.routes.draw do
   match "/points_for_user" => "points#points_for_user", :as => :points_for_user
 
   resource :account, :only => [:show, :update]
-
-  devise_for :users, :controllers => { 
-    :omniauth_callbacks => "users/omniauth_callbacks", 
-    :sessions => "users/sessions", 
-    :registrations => "users/registrations",
-    :passwords => "users/passwords",
-    :confirmations => "users/confirmations"
-  }
-
-  devise_scope :user do 
-    match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
-  end
   
   match "/feed" => "activities#feed"
 

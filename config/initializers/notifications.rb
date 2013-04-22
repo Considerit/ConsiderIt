@@ -184,7 +184,6 @@ ActiveSupport::Notifications.subscribe("new_comment_on_Point") do |*args|
   current_tenant = data[:current_tenant]
   mail_options = data[:mail_options]
 
-
   commenters = commentable.comments.select(:user_id).uniq.map {|x| x.user_id }
   includers = commentable.inclusions.select(:user_id).uniq.map {|x| x.user_id }
 
@@ -264,60 +263,60 @@ end
 ##### COMMENT LEVEL #######
 ###########################
 
-ActiveSupport::Notifications.subscribe("new_bullet_on_a_comment") do |*args|
-  data = args.last
-  bullet = data[:bullet]
-  current_tenant = data[:current_tenant]
-  mail_options = data[:mail_options]
+# ActiveSupport::Notifications.subscribe("new_bullet_on_a_comment") do |*args|
+#   data = args.last
+#   bullet = data[:bullet]
+#   current_tenant = data[:current_tenant]
+#   mail_options = data[:mail_options]
 
-  bullet.comment.follows.where(:follow => true).each do |follow|
+#   bullet.comment.follows.where(:follow => true).each do |follow|
 
-    if follow.user_id == bullet.user_id
-      next
+#     if follow.user_id == bullet.user_id
+#       next
 
-    elsif !follow.user.email || follow.user.email.length == 0
-      next
+#     elsif !follow.user.email || follow.user.email.length == 0
+#       next
 
-    elsif follow.user_id == bullet.comment.user_id
-      notification_type = 'your comment'
+#     elsif follow.user_id == bullet.comment.user_id
+#       notification_type = 'your comment'
     
-    else
-      notification_type = 'other summarizer'
-    end
+#     else
+#       notification_type = 'other summarizer'
+#     end
 
-    EventMailer.reflect_new_bullet(follow.user, bullet, bullet.comment, mail_options, notification_type).deliver!
+#     EventMailer.reflect_new_bullet(follow.user, bullet, bullet.comment, mail_options, notification_type).deliver!
 
-  end
+#   end
 
-end
+# end
 
-ActiveSupport::Notifications.subscribe("response_to_bullet_on_a_comment") do |*args|
-  data = args.last
-  response = data[:response]
-  bullet = response.bullet_revision
-  current_tenant = data[:current_tenant]
-  mail_options = data[:mail_options]
+# ActiveSupport::Notifications.subscribe("response_to_bullet_on_a_comment") do |*args|
+#   data = args.last
+#   response = data[:response]
+#   bullet = response.bullet_revision
+#   current_tenant = data[:current_tenant]
+#   mail_options = data[:mail_options]
 
-  bullet.comment.follows.where(:follow => true).each do |follow|
+#   bullet.comment.follows.where(:follow => true).each do |follow|
 
-    if follow.user_id == response.user_id
-      next
+#     if follow.user_id == response.user_id
+#       next
 
-    elsif !follow.user.email || follow.user.email.length == 0
-      next
+#     elsif !follow.user.email || follow.user.email.length == 0
+#       next
 
-    elsif follow.user_id == bullet.user_id
-      notification_type = 'your bullet'
+#     elsif follow.user_id == bullet.user_id
+#       notification_type = 'your bullet'
     
-    else
-      notification_type = 'other summarizer'
-    end
+#     else
+#       notification_type = 'other summarizer'
+#     end
 
-    EventMailer.reflect_new_response(follow.user, response, bullet, bullet.comment, mail_options, notification_type).deliver!
+#     EventMailer.reflect_new_response(follow.user, response, bullet, bullet.comment, mail_options, notification_type).deliver!
 
-  end
+#   end
 
-end
+# end
 
 ##########################
 ### USERS ###

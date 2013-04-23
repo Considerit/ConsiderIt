@@ -123,7 +123,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   access_dashboard_email_notifications : -> 
     options = 
       data_uri : Routes.followable_index_path()
-      data_params : {user_id : ConsiderIt.current_user.id}
+      data_params : {user_id : if ConsiderIt.current_user.is_logged_in() then ConsiderIt.current_user.id else ConsiderIt.limited_user.id}
       view_class: -> ConsiderIt.UserDashboardViewNotifications
     @_process_dashboard_context('email_notifications', options)
 

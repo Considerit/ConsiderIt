@@ -6,11 +6,11 @@ class ConsiderIt.RegistrationView extends Backbone.View
     @parent = options.parent
 
   render : () -> 
-    if ConsiderIt.pinned_user?
+    if ConsiderIt.limited_user?
 
       @$el.html(
-        _.template($("#tpl_new_pinned_user").html(), $.extend({}, @model.attributes, {
-          auth_method : if ConsiderIt.pinned_user? then ConsiderIt.pinned_user.auth_method() else null
+        _.template($("#tpl_new_limited_user").html(), $.extend({}, @model.attributes, {
+          auth_method : if ConsiderIt.limited_user? then ConsiderIt.limited_user.auth_method() else null
         }))
       )
     else

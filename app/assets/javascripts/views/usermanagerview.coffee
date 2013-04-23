@@ -33,11 +33,11 @@ class ConsiderIt.UserManagerView extends Backbone.View
 
     if ConsiderIt.password_reset_token?
       @handle_password_reset()
-    else if ConsiderIt.pinned_user_email?
-      if ConsiderIt.pinned_user?
-        @handle_user_signin()
-      else
-        @handle_user_registration()
+    #else if ConsiderIt.limited_user_email?
+    #  if ConsiderIt.limited_user?
+    #    @handle_user_signin()
+    #  else
+    #    @handle_user_registration()
 
 
     this

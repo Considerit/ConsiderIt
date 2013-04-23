@@ -10,11 +10,11 @@ class ConsiderIt.User extends Backbone.Model
     Routes.user_path( @attributes.id )
 
   auth_method : ->
-    if @attributes.google_uid?
+    if @attributes.google_uid? && @attributes.google_uid.length > 0
       return 'google' 
-    else if @attributes.facebook_uid?
+    else if @attributes.facebook_uid? && @attributes.facebook_uid.length > 0
       return 'facebook'
-    else if @attributions.twitter_uid?
+    else if @attributions.twitter_uid? && @attributes.twitter_uid.length > 0
       return 'twitter'
     else
       return 'email'

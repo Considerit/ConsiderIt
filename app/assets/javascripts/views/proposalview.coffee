@@ -267,7 +267,7 @@ class ConsiderIt.ProposalView extends Backbone.View
             name: name
           }
 
-      @$el.show()
+      @$el.slideDown()
       @state = 0
 
       @$el.addClass('expanded')

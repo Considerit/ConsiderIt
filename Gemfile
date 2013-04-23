@@ -16,8 +16,8 @@ gem "js-routes"
 gem 'devise'
 
 gem "omniauth"
-gem 'omniauth-openid'
-gem 'omniauth-oauth'
+#gem 'omniauth-openid'
+gem 'omniauth-oauth2'
 gem 'omniauth-twitter' 
 gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'

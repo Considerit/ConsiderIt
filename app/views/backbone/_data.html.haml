@@ -53,9 +53,11 @@
     #{current_user ? "ConsiderIt.update_current_user( { user: #{current_user.to_json(:methods => :third_party_authenticated)}.user, follows: #{current_user.follows.all.to_json} })" : ''}
     
 
-    ConsiderIt.pinned_user = #{@pinned_user ? "ConsiderIt.users[#{@pinned_user}]" : 'null'};
-    ConsiderIt.pinned_user_email = #{@pinned_user_email ? @pinned_user_email : 'null'};
-    #{@pinned_user ? "ConsiderIt.pinned_user.set_follows(#{@pinned_user_follows.to_json})" : 'null'};
+    ConsiderIt.limited_user = #{@limited_user ? "ConsiderIt.users[#{@limited_user.id}]" : 'null'};
+    ConsiderIt.limited_user_email = "#{@limited_user_email ? @limited_user_email : 'null'}";
+    #{@limited_user ? "ConsiderIt.limited_user.set( { google_uid: '#{@limited_user.google_uid}', facebook_uid: '#{@limited_user.facebook_uid}', twitter_uid: '#{@limited_user.twitter_uid}'  })" : ''}
+
+    #{@limited_user ? "ConsiderIt.limited_user.set_follows(#{@limited_user_follows.to_json})" : 'null'};
 
     ConsiderIt.password_reset_token = #{@reset_password_token ? "'#{@reset_password_token}'" : 'null'};  
 

@@ -13,15 +13,6 @@ ConsiderIt::Application.routes.draw do
   mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
   #mount Assessable::Engine => '/dashboard/assessable', :as => 'assessable'
 
-
-  match '(*url)' => 'home#index', :constraints => XHRConstraint.new
-
-  themes_for_rails 
-  followable_routes
-  commentable_routes
-  moderatable_routes
-  assessable_routes
-
   devise_for :users, :controllers => { 
     :omniauth_callbacks => "users/omniauth_callbacks", 
     :sessions => "users/sessions", 
@@ -29,6 +20,15 @@ ConsiderIt::Application.routes.draw do
     :passwords => "users/passwords",
     :confirmations => "users/confirmations"
   }
+
+  # route all non-ajax requests to home controller, with a few exceptions
+  match '(*url)' => 'home#index', :constraints => XHRConstraint.new
+
+  themes_for_rails 
+  followable_routes
+  commentable_routes
+  moderatable_routes
+  assessable_routes
 
   devise_scope :user do 
     match "users/check_login_info" => "users/registrations#check_login_info", :via => :post

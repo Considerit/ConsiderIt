@@ -17,19 +17,24 @@ class Followable::FollowableController < ApplicationController
     render :json => {:success => true, :follow => follow}.to_json
   end
 
-  def unfollow_create
+  def unfollow
     user = User.find(params[:follows][:user_id])
 
-    if params[:follows].has_key?(:unsubscribe_all) && params[:follows][:unsubscribe_all] == 'true'
-      user.unsubscribe!
-      render :json => {:success => true}
-    else
-      followable_type = params[:follows][:followable_type]
-      followable_id = params[:follows][:followable_id]
-      obj_to_follow = followable_type.constantize.find(followable_id)
-      follow = obj_to_follow.follow!(user, :follow => params[:follows][:follow] && params[:follows][:follow] == 'true', :explicit => true)
+    if (!current_user.nil? && user.id == current_user.id) || (session.has_key?(:limited_user) && session[:limited_user].id == user.id)
 
-      render :json => {:success => true, :follow => follow}.to_json
+      if params[:follows].has_key?(:unsubscribe_all) && params[:follows][:unsubscribe_all] == 'true'
+        user.unsubscribe!
+        render :json => {:success => true}
+      else
+        followable_type = params[:follows][:followable_type]
+        followable_id = params[:follows][:followable_id]
+        obj_to_follow = followable_type.constantize.find(followable_id)
+        follow = obj_to_follow.follow!(user, :follow => params[:follows][:follow] && params[:follows][:follow] == 'true', :explicit => true)
+
+        render :json => {:success => true, :follow => follow}.to_json
+      end
+    else
+      render :json => {:success => false, :reason => 'Permission denied.'}
     end
 
   end

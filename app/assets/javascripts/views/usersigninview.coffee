@@ -6,17 +6,16 @@ class ConsiderIt.SignInView extends Backbone.View
     @parent = options.parent
 
   render : () -> 
-    if ConsiderIt.pinned_user?
+    if ConsiderIt.limited_user?
 
       @$el.html(
-        _.template($("#tpl_pinned_user_sign_in").html(), $.extend({}, @model.attributes, {
-          auth_method : if ConsiderIt.pinned_user? then ConsiderIt.pinned_user.auth_method() else null
+        _.template($("#tpl_limited_user_sign_in").html(), $.extend({}, ConsiderIt.limited_user.attributes, {
+          auth_method : if ConsiderIt.limited_user? then ConsiderIt.limited_user.auth_method() else null
         }))
       )
     else
       @$el.html(
-        ConsiderIt.SignInView.signin_template($.extend({}, @model.attributes, {
-        }))
+        ConsiderIt.SignInView.signin_template($.extend({}, @model.attributes, {}))
       )
 
     @$el.find('input[type="file"]').customFileInput()

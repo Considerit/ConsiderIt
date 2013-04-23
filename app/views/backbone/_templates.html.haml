@@ -132,7 +132,7 @@
               = f.submit "Follow this point", :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.', :class => 'button'
 
           %div{ :class => "unfollow {{ unfollows_class }}"}
-            = form_for :follows, :url => "{{ Routes.unfollow_create_path() }}", :as => :follow, :remote => true do |f|
+            = form_for :follows, :url => "{{ Routes.unfollow_path() }}", :as => :follow, :remote => true do |f|
               = f.hidden_field :user_id, :value => "{{ ConsiderIt.current_user.id }}"
               = f.hidden_field :followable_id, :value => "{{ id }}"
               = f.hidden_field :followable_type, :value => "Point"

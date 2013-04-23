@@ -65,14 +65,14 @@
               Sign out
 
 
-  %script{ :type => "text/template", :id => "tpl_pinned_user_signin"}
+  %script{ :type => "text/template", :id => "tpl_limited_user_sign_in"}
     %a.m-user-accounts-cancel
       &#10006;
 
     .m-user-accounts-wrap.m-user-accounts-choose-method
 
       %h2.m-user-accounts-heading
-        Welcome back, {{ConsiderIt.pinned_user_email}}! Please sign in. 
+        Welcome back, {{ConsiderIt.limited_user_email}}! Please sign in. 
 
       (( if(auth_method == 'email') { ))
       = form_for :user, :url => user_session_path, :remote => true do |f|
@@ -83,11 +83,9 @@
             .m-user-accounts-form-fields-text
 
               .email_field.inlined
-                //= f.label :email, 'Member email'
-                = f.hidden_field :email, :value => "{{ConsiderIt.pinned_user_email}}"
+                = f.hidden_field :email, :value => "{{ConsiderIt.limited_user_email}}"
 
               .password_field.inlined
-                //= f.label :email, 'Password'
                 = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
                 %a.forget_password_prompt
                   I forgot. Email me password instructions. 
@@ -99,7 +97,8 @@
       (( } else { ))
       %ul.m-user-accounts-login-options
         - providers.each do |(provider, path)|
-          %li{ :class => "m-user-accounts-login-option {{ #{provider} != auth_method ? 'hide' : '' }}"} 
+          (( var provider_class = "#{provider}" != auth_method ? 'hide' : ''; ))
+          %li{ :class => "m-user-accounts-login-option {{ provider_class }}"} 
             %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
               #{provider.capitalize}
       (( } ))
@@ -281,14 +280,14 @@
 
 
 
-  %script{ :type => "text/template", :id => "tpl_new_pinned_user" }      
+  %script{ :type => "text/template", :id => "tpl_new_limited_user" }      
     %a.m-user-accounts-cancel
       &#10006;
 
     .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-register
 
       %h2.m-user-accounts-heading
-        Welcome, {{ConsiderIt.pinned_user_email}}! Please create an account. 
+        Welcome, {{ConsiderIt.limited_user_email}}! Please create an account. 
 
       = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
         .m-user-accounts-form
@@ -304,8 +303,8 @@
 
               .email_field.inlined
                 //= f.label :email, 'Member email'
-                {{ConsiderIt.pinned_user_email}}
-                = f.hidden_field :email, :value => "{{ConsiderIt.pinned_user_email}}"
+                {{ConsiderIt.limited_user_email}}
+                = f.hidden_field :email, :value => "{{ConsiderIt.limited_user_email}}"
 
               .password_field.inlined
                 //= f.label :email, 'Password'
@@ -635,7 +634,7 @@
       
 
     .field
-      = form_for :follows, :url => unfollow_create_path, :remote => true, :as => :follow, :html => { :class => 'm-dashboard-notifications-unfollow_all'} do |f|
+      = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => { :class => 'm-dashboard-notifications-unfollow_all'} do |f|
         = f.hidden_field :user_id, :value => "{{user.id}}"
         = f.hidden_field :unsubscribe_all, :value => true
         = f.submit "Unsubscribe to all notifications", :class => 'button'
@@ -650,7 +649,7 @@
 
         (( var account_followerer = _.has(follows, 'Account') && _.has(follows['Account'], ConsiderIt.current_tenant.id ) && follows['Account'][ConsiderIt.current_tenant.id].follow; ))
         (( var submit_text = account_followerer ? 'Unsubscribe' : 'Subscribe'; ))
-        = form_for :follows, :url => unfollow_create_path, :remote => true, :as => :follow, :html => {:class => "m-dashboard-notifications-unfollow"} do |f|
+        = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => {:class => "m-dashboard-notifications-unfollow"} do |f|
           = f.hidden_field :user_id, :value => "{{ user.id }}"
           = f.hidden_field :followable_type, :value => "Account"
           = f.hidden_field :followable_id, :value => "{{ ConsiderIt.current_tenant.id }}"  
@@ -687,7 +686,7 @@
                 {{ root_object[followable_type.attribute] }}
 
               %td
-                = form_for :follows, :url => unfollow_create_path, :remote => true, :as => :follow, :html => {:class => "m-dashboard-notifications-unfollow"} do |f|
+                = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => {:class => "m-dashboard-notifications-unfollow"} do |f|
                   = f.hidden_field :user_id, :value => "{{user.id}}"
                   = f.hidden_field :followable_type, :value => "{{obj.followable_type}}"
                   = f.hidden_field :followable_id, :value => "{{obj.followable_id}}"  

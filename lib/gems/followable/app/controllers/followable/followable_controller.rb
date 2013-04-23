@@ -20,7 +20,7 @@ class Followable::FollowableController < ApplicationController
   def unfollow
     user = User.find(params[:follows][:user_id])
 
-    if (!current_user.nil? && user.id == current_user.id) || (session.has_key?(:limited_user) && session[:limited_user].id == user.id)
+    if (!current_user.nil? && user.id == current_user.id) || (session.has_key?(:limited_user) && session[:limited_user] == user.id)
 
       if params[:follows].has_key?(:unsubscribe_all) && params[:follows][:unsubscribe_all] == 'true'
         user.unsubscribe!

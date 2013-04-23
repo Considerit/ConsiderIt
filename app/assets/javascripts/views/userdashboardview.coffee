@@ -25,9 +25,9 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
     @listenTo ConsiderIt.app, 'user:signin', => 
       @model = ConsiderIt.current_user
-      if @$dashboard_el.is(':visible')
+      if @$dashboard_el.is(':visible') && @current_context
         @render()
-        Backbone.history.loadUrl(Backbone.history.fragment) if @current_context
+        Backbone.history.loadUrl(Backbone.history.fragment)
     
     @listenTo ConsiderIt.app, 'user:signout', @close
 
@@ -121,9 +121,10 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   access_dashboard_edit_profile : -> @_process_dashboard_context('edit_profile', {params: {user : @model.attributes, avatar : window.PaperClip.get_avatar_url(@model, 'original')}})
   access_dashboard_account_settings : -> @_process_dashboard_context('account_settings', {params: {user : @model.attributes}})
   access_dashboard_email_notifications : -> 
+    user = if ConsiderIt.current_user.is_logged_in() then ConsiderIt.current_user.id else ConsiderIt.limited_user.id
     options = 
       data_uri : Routes.followable_index_path()
-      data_params : {user_id : if ConsiderIt.current_user.is_logged_in() then ConsiderIt.current_user.id else ConsiderIt.limited_user.id}
+      data_params : {user_id : user.id}
       view_class: -> ConsiderIt.UserDashboardViewNotifications
     @_process_dashboard_context('email_notifications', options)
 

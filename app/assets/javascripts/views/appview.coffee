@@ -1,7 +1,6 @@
 class ConsiderIt.AppView extends Backbone.View
 
   el: '#l-wrap'
-  #@itemView : ConsiderIt.ProposalView
 
   initialize : (options) -> 
 

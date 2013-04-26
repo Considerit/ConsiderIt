@@ -4,7 +4,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
   initialize : (options) -> 
     @proposal = options.proposal
-    @listenTo @proposal.view, 'point_details:staged', -> @remove()
+    @listenTo @proposal.view, 'point_details:staged', => @remove()
 
   render : () -> 
     @$el.hide()

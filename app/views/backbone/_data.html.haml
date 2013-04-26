@@ -22,8 +22,6 @@
 
     ConsiderIt.proposals_by_id = _.object(_.map(ConsiderIt.proposals, function(v,k){ return [v.model.id, v] }))
 
-    
-
     //var users = { User.select("id, name, avatar_file_name").to_json };
     var users = #{@users};
     ConsiderIt.users = _.object(_.map(users, function(v){ return [v.id, new ConsiderIt.User(v)];})) ;

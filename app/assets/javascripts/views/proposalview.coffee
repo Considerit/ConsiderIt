@@ -37,8 +37,10 @@ class ConsiderIt.ProposalView extends Backbone.View
           name: name
         }
 
+    @$el.removeClass('expanded')
     @$el.addClass('unexpanded')
     @state = -1
+    @$main_content_el = @$el.find('.m-proposal-body_wrap')
 
     this
 
@@ -218,8 +220,17 @@ class ConsiderIt.ProposalView extends Backbone.View
   events : 
     'click .hidden' : 'show_details'
     'click .showing' : 'hide_details'
-    'click .m-proposal-heading-wrap' : 'toggle'
+    # 'click .m-proposal-heading-wrap' : 'toggle'
     'click ' : 'toggle_if_not_expanded'
+    'click .m-proposal-toggle' : 'toggle'
+    'click .m-proposal-follow_conversation' : 'toggle_follow_proposal'
+
+    'click .m-proposal-admin_operations-status' : 'show_status'
+    'ajax:complete .m-proposal-admin_operations-settings-form' : 'change_settings'
+    'click .m-proposal-admin_operations-publicity' : 'show_publicity'
+    'ajax:complete .m-proposal-admin_operations-settings-form' : 'change_settings'
+    'click .l-dialog-detachable a.cancel' : 'cancel_dialog'
+    'ajax:complete .m-delete_proposal' : 'delete_proposal'
 
   toggle_if_not_expanded : (ev) ->
     if @$el.is('.unexpanded')
@@ -230,11 +241,11 @@ class ConsiderIt.ProposalView extends Backbone.View
       ev.stopPropagation()
 
     if @state == -1
-      @$el.hide()
+      @$main_content_el.hide()
 
-      @$el.append ConsiderIt.ProposalView.expanded_template($.extend({}, @model.attributes, {
-          title : this.model.title()
-          description_detail_fields : this.model.description_detail_fields()
+      @$main_content_el.append ConsiderIt.ProposalView.expanded_template($.extend({}, @model.attributes, {
+          title : @model.title()
+          description_detail_fields : @model.description_detail_fields()
         }))
 
       results_el = $('<div class="m-proposal-message">')
@@ -256,7 +267,9 @@ class ConsiderIt.ProposalView extends Backbone.View
       position_el.insertAfter(results_el)
 
       #TODO: if user logs in as admin, need to do this
-      if ConsiderIt.roles.is_admin
+      if ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
+
+        @render_admin_strip()
         for field in ConsiderIt.ProposalView.editable_fields
           [selector, name, type] = field 
           @$el.find(selector).editable {
@@ -267,7 +280,7 @@ class ConsiderIt.ProposalView extends Backbone.View
             name: name
           }
 
-      @$el.slideDown()
+      @$main_content_el.slideDown => $('html, body').animate {scrollTop: @$el.offset().top - 50}
       @state = 0
 
       @$el.addClass('expanded')
@@ -275,15 +288,20 @@ class ConsiderIt.ProposalView extends Backbone.View
 
       this
     else
-      @render()
-      ConsiderIt.router.navigate(Routes.root_path(), {trigger: false})
-      @$el.addClass('unexpanded')
-      @$el.removeClass('expanded')
+      @$main_content_el.slideUp => 
+        @render()
+        ConsiderIt.router.navigate(Routes.root_path(), {trigger: false})
+        #@$el.addClass('unexpanded')
+        $('html, body').animate {scrollTop: @$el.offset().top - 50}
 
-      @state = -1
+        @state = -1
 
-
-
+  render_admin_strip : ->
+    @$el.find('.m-proposal-admin_strip').remove()
+    admin_strip_el = $('<div class="m-proposal-admin_strip m-proposal-strip">')
+    template = _.template($('#tpl_proposal_admin_strip').html())
+    admin_strip_el.html( template(@model.attributes))
+    admin_strip_el.insertBefore(@$el.find('.m-proposal_strip_toggle'))
 
   show_details : (ev) -> 
     $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
@@ -301,7 +319,37 @@ class ConsiderIt.ProposalView extends Backbone.View
       .text('show')
       .toggleClass('hidden showing');      
 
+  toggle_follow_proposal : (ev) -> 
+    $follow_button = $(ev.currentTarget)
+    follows = ConsiderIt.current_user.is_following('Proposal', @model.id)
+    url = if !follows then Routes.follow_path() else Routes.unfollow_path()
 
+    $.post url, {follows: {user_id: ConsiderIt.current_user.id, followable_type: 'Proposal', followable_id: @model.id, follow: !follows} }, (data, status, xhr) => 
+      if follows
+        $follow_button.removeClass('selected')
+      else 
+        $follow_button.addClass('selected')
 
+      ConsiderIt.current_user.set_following {followable_type: 'Proposal', followable_id: @model.id, follow: !follows, explicit: true}
 
+  # ADMIN methods
+  show_status : (ev) ->
+    tpl = _.template( $('#tpl_proposal_admin_strip_edit_active').html() )
+    @$el.find('.m-proposal-admin-status').append tpl(@model.attributes)
 
+  show_publicity : (ev) ->
+    tpl = _.template( $('#tpl_proposal_admin_strip_edit_publicity').html() )
+    @$el.find('.m-proposal-admin-publicity').append tpl(@model.attributes)
+
+  change_settings : (ev, response, options) ->
+    data = $.parseJSON(response.responseText)
+    @model.set({access_list: data.access_list, active: data.active, publicity: data.publicity})
+    @render_admin_strip()
+
+  cancel_dialog : (ev) ->
+    $(ev.currentTarget).closest('.l-dialog-detachable').remove()
+
+  delete_proposal : (ev, response, options) ->
+    data = $.parseJSON(response.responseText)
+    if data.success
+      ConsiderIt.app.trigger('proposal:deleted', @proposal.model )

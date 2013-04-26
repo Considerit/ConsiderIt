@@ -151,7 +151,7 @@ class User < ActiveRecord::Base
           :bio => access_token.info.description,
           :url => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
           :twitter_handle => access_token.info.nickname,
-          :avatar_url => access_token.info.image.gsub('_normal', '_reasonably_small')
+          :avatar_url => access_token.info.image.gsub('_normal', '_reasonably_small'),
         }
 
       when 'facebook'
@@ -166,7 +166,6 @@ class User < ActiveRecord::Base
         raise 'Unsupported provider'
     end
     params.update third_party_params
-    params
 
   end
 

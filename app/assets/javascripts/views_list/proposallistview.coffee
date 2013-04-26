@@ -7,12 +7,13 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   @new_proposal_template = _.template($('#tpl_new_proposal').html())
 
   initialize : (options) -> 
+    @listenTo ConsiderIt.app, 'proposal:deleted', (proposal) => @delete_proposal(proposal)
+    
     super
   
   render : -> 
     super
     @render_new_proposal()
-
 
   #TODO: do this when login as admin
   render_new_proposal : ->
@@ -52,7 +53,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       attributes : 
         'data-id': "#{proposal.cid}"
         id : "#{id}"
-        class : "#{ConsiderIt.ProposalListView.childClass} l-content-wrap"
+        class : "#{ConsiderIt.ProposalListView.childClass}"
     
     return ConsiderIt.proposals[id].view
 
@@ -73,3 +74,10 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
   cancel_new_proposal : ->
     @$new_proposal.find('input[type="text"], textarea').val('')
+
+
+  delete_proposal : (proposal) ->
+    ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
+    delete ConsiderIt.proposals_by_id[proposal.id]
+    delete ConsiderIt.proposals[proposal.long_id]
+    @collection.remove proposal

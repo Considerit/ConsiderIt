@@ -238,11 +238,19 @@
 
 
   %script{ :type => "text/template", :id => "tpl_unexpanded_proposal" }
-    .m-proposal-heading-wrap
-      %h2.m-proposal-heading
-        {{title}}
+    .l-content-wrap
+      .m-proposal-heading-wrap
+        %h2.m-proposal-heading
+          {{title}}
 
-      %a.toggle_proposal
+      .m-proposal-body_wrap
+
+      .m-proposal_strip_toggle.m-proposal-strip
+        %a.m-proposal-toggle
+          %span.m-proposal_toggle_expanded
+            Hide conversation
+          %span.m-proposal_toggle_unexpanded
+            Show conversation
 
   %script{ :type => "text/template", :id => "tpl_expanded_proposal" }
 
@@ -307,7 +315,7 @@
     .m-proposal-connect
 
       %ul
-        %li
+        %li.m-proposal-action-label
           Help spread the word
         %li.m-proposal-action-link
           .zocial.icon.facebook
@@ -315,9 +323,18 @@
           .zocial.icon.twitter
         %li.m-proposal-action-link
           .zocial.icon.permalink
-          //= image_tag 'link.png'
-        %li
-          Link to this discussion
+        %li.m-proposal-action-label
+          Link to this conversation
+
+
+    (( if( ConsiderIt.current_user.is_logged_in() ) { ))
+    (( var selected_class = ConsiderIt.current_user.is_following('Proposal', id) ? 'selected' : ''; ))
+
+    %button{ :class => "{{ selected_class }} m-proposal-follow_conversation" }
+      Follow this conversation
+
+    (( } ))
+
 
 
   %script{ :type => "text/template", :id => "tpl_your_action_craft"}
@@ -438,7 +455,7 @@
 
 
       %h3.m-summary-heading
-        These are the most compelling pros and cons we've discussed thus far: 
+        These are the most compelling pros and cons we've considered thus far: 
         
       .m-summary-top-pro
         (( if(!top_pro) { ))
@@ -586,6 +603,117 @@
           Opposers
 
         .clear  
+
+  %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_publicity" }
+    .l-dialog-detachable
+      %h2
+        Who can view and participate?  
+
+      = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-admin_operations-settings-form'} do |f|
+        .radio_block
+          .option
+            (( if(publicity == 2) { ))
+            = f.radio_button :publicity, '2', :value => '2', :checked => true
+            (( } else { ))
+            = f.radio_button :publicity, '2', :value => '2'
+            (( } ))
+
+            = f.label :publicity, 'Public', :value => '2'
+            .sublabel
+              It will be accessible on the homepage.
+
+          .option
+            (( if(publicity == 1) { ))
+            = f.radio_button :publicity, '1', :value => '1', :checked => true
+            (( } else { ))
+            = f.radio_button :publicity, '1', :value => '1'
+            (( } ))
+
+            = f.label :publicity, 'Anyone with a link', :value => '1'
+            .sublabel
+              Only people that have a link to this proposal will be able to access it.
+
+          .option
+            (( if(publicity == 0) { ))
+            = f.radio_button :publicity, '0', :value => '0', :checked => true
+            (( } else { ))
+            = f.radio_button :publicity, '0', :value => '0'
+            (( } ))
+
+            = f.label :publicity, 'Private', :value => '0'
+            .sublabel
+              Restrict access to the following invited participants.
+
+            .access_list
+              .label
+                Comma-separated email list of invited users:
+              = f.text_area :access_list, :rows => 2, :class => "autoResize"
+
+        .save_block
+          = f.submit 'save'
+          %a.cancel
+            cancel
+
+  %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_active"}
+    .l-dialog-detachable
+      %h2
+        Set the status of this proposal.  
+
+      = form_for :proposal, :url => "{{ Routes.proposal_path(long_id) }}", :method => :put, :remote => true, :html => {:class => 'm-proposal-admin_operations-settings-form'} do |f|
+        .radio_block
+          .option
+            (( if(active) { ))
+            = f.radio_button :active, true, :value => true, :checked => true
+            (( } else { ))
+            = f.radio_button :active, true, :value => true
+            (( } ))
+            = f.label :active, 'Active', :value => true
+            .sublabel
+              Contributions are open. People with access to this proposal can contribute to it.
+          .option
+            (( if(active) { ))
+            = f.radio_button :active, false, :value => false
+            (( } else { ))
+            = f.radio_button :active, false, :value => false, :checked => true
+            (( } ))
+            = f.label :active, 'Inactive', :value => false
+            .sublabel
+              Contributions are closed. People with access to this proposal will only be able to view it. 
+
+        .save_block
+          = f.submit 'save'
+          %a.cancel
+            cancel
+
+  %script{ :type => "text/template", :id => "tpl_proposal_admin_strip" }
+
+    %span.m-proposal-admin_label
+      Edit this conversation's settings:
+
+    .m-proposal-admin-publicity.l-dialog-prompt
+      %a.m-proposal-admin_operations-publicity.l-dialog-prompt-label
+        Sharing is 
+        %span
+          (( if(publicity == 2) { ))
+          public
+          (( } else if(publicity == 1){ ))
+          link only
+          (( } else { ))
+          private
+          (( } ))
+
+    .m-proposal-admin-status.l-dialog-prompt
+      %a.m-proposal-admin_operations-status.l-dialog-prompt-label
+        Status is 
+        %span
+          (( if(active){ ))
+          active
+          (( } else { ))
+          inactive
+          (( } ))
+
+
+    = link_to "Delete this conversation", "{{Routes.proposal_path(long_id)}}", :confirm => "Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
 
 
   = render :partial => 'assessable/templates_user_facing'

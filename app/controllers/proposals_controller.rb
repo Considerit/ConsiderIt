@@ -158,7 +158,7 @@ class ProposalsController < ApplicationController
     @proposal = Proposal.find_by_long_id(params[:long_id])
     authorize! :destroy, @proposal
     @proposal.destroy
-    redirect_to root_path
+    render :json => {:success => true}
   end
 
 end

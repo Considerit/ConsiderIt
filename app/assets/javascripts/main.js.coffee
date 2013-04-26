@@ -40,6 +40,8 @@ $(document).ready () ->
     ga.src = (if 'https:' == document.location.protocol then 'https://ssl' else 'http://www') + '.google-analytics.com/ga.js'
     s = document.getElementsByTagName('script')[0] 
     s.parentNode.insertBefore(ga, s)
+
+
   )()
 
 
@@ -89,11 +91,11 @@ window.ConsiderIt.utils =
 
 
 window.ConsiderIt.update_current_user = (parameters) ->
-  if parameters.user.id of ConsiderIt.users
-    ConsiderIt.current_user = ConsiderIt.users[parameters.user.id]
+  
+  ConsiderIt.current_user = ConsiderIt.users[parameters.user.id] if parameters.user.id of ConsiderIt.users
 
   ConsiderIt.current_user.set(parameters.user)
-  ConsiderIt.current_user.set_follows(parameters.follows)
+  ConsiderIt.current_user.set_follows(parameters.follows) if 'follows' of parameters
 
   ConsiderIt.roles =
     is_admin : ConsiderIt.current_user.has_role('admin') || ConsiderIt.current_user.has_role('superadmin')
@@ -126,7 +128,9 @@ window.openPopupWindow = (url) ->
   openidpopup.moveTo(coords[0],coords[1])
 
 window.handleOpenIdResponse = (parameters, redirect_to) ->  
+  console.log parameters
   parameters.user = parameters.user.user
+
   ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
 
 $.event.special.destroyed =
@@ -136,10 +140,10 @@ $.event.special.destroyed =
 
 
 $(document).on "click", "a[href^='/']", (event) ->
-  href = $(event.currentTarget).attr('href')
+  href = event.currentTarget.href
   target = $(event.currentTarget).attr('target')
 
-  if href[1..9] == 'dashboard' || target == '_blank' || href == '/newrelic' 
+  if href[1..9] == 'dashboard' || target == '_blank' || href == '/newrelic'  || $(event.currentTarget).data('remote')
     return true
 
   # Allow shift+click for new tabs, etc.

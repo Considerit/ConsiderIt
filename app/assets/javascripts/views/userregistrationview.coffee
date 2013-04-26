@@ -24,17 +24,17 @@ class ConsiderIt.RegistrationView extends Backbone.View
 
     @$el.find('[placeholder]').simplePlaceholder()
 
-    @state = 1
+    @signin_method = null
     @stickit()
     this
 
   handle_third_party_callback : (user_data) ->
-    if @state == 1
-      @finish_first_phase(user_data, ConsiderIt.current_user.auth_method())
-    else if @state == 2
+    if !@signin_method
+      @finish_first_phase(user_data)
+    else
       # if using third party auth method to get profile picture
-      @$el.find('.customfile-preview').attr('src', user_data.avatar_url)
-      @$el.find('.avatar_field input.avatar_url').val(user_data.avatar_url)
+      console.log user_data
+      @update_avatar_file(user_data.user.avatar_url || user_data.user.avatar_remote_url)
 
   bindings : 
     '.name_field input' : 'name'
@@ -52,6 +52,10 @@ class ConsiderIt.RegistrationView extends Backbone.View
     'change .m-user-accounts-pledge input' : 'pledge_clicked'
     'click .m-user-terms-show' : 'show_terms_of_use'
 
+  update_avatar_file : (avatar_url) ->
+    @$el.find('.customfile-preview').attr('src', avatar_url)
+    @$el.find('.avatar_field input.avatar_url').val(avatar_url)
+
   pledge_clicked : ->
     if $('.m-user-accounts-pledge input').length == $('.m-user-accounts-pledge input:checked').length
       $('.m-user-accounts-pledge-taken').fadeIn()
@@ -60,45 +64,33 @@ class ConsiderIt.RegistrationView extends Backbone.View
 
   login_option_choosen : (ev) ->
     choice = $(ev.currentTarget).data('provider')
+    @second_phase(choice) if choice == 'email'
 
-    @second_phase(choice)
 
-
-  finish_first_phase : (user_data, signin_method) ->
+  finish_first_phase : (user_data) ->
     ConsiderIt.update_current_user(user_data)
 
     if ConsiderIt.current_user.get('registration_complete')
       @remove()
     else
-      @second_phase(signin_method)
-
-  # new_user : (ev, response, options) ->
-  #   console.log 'new user'
-  #   data = $.parseJSON(response.responseText)
-
-  #   if data.result == 'successful' || data.result == 'logged_in'
-  #     console.log 'finished'
-  #     @finish_first_phase(data, 'email')
-  #   else if data.result == 'rejected' && data.reason == 'validation error'
-  #     throw "Need to handle validation issues"
-  #   else if data.result == 'rejected' && data.reason == 'user_exists'
-  #     note = "<div class='note'>That email address is already taken.</div>"
-  #     @$el.prepend(note)
-  #   else 
-  #     throw "Unrecognized return: #{data.result}, #{data.reason}"
+      @second_phase(ConsiderIt.current_user.auth_method())
 
   second_phase : (signin_method) ->
-    @state = 2
-    if signin_method != 'email'
-      @$el.find('.password_field').hide()
-    else
-      @$el.find('.password_field').show()
+    @signin_method = signin_method
+
+    @$el.find('.password_field').hide() if signin_method != 'email'
+    @$el.find('.password_field').show() if signin_method == 'email'
 
     @$el.find(".m-user-accounts-authorized-feedback").hide()
     @$el.find(".m-user-accounts-authorized-feedback[data-provider='#{signin_method}']").show()
 
     @$el.find('.m-user-accounts-choose-method').hide()
+
+    if @signin_method in ['facebook', 'twitter']
+      @$el.find('.import_from_third_party').hide()    
     @$el.find('.m-user-accounts-complete').show()
+
+    @update_avatar_file(ConsiderIt.current_user.attributes.avatar_url)
 
     if signin_method == 'email'
       @$el.find('#user_name').focus()

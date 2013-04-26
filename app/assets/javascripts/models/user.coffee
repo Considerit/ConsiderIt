@@ -10,11 +10,12 @@ class ConsiderIt.User extends Backbone.Model
     Routes.user_path( @attributes.id )
 
   auth_method : ->
-    if @attributes.google_uid? && @attributes.google_uid.length > 0
+    attrs = @attributes
+    if 'google_uid' of attrs && attrs.google_uid? && attrs.google_uid.length > 0
       return 'google' 
-    else if @attributes.facebook_uid? && @attributes.facebook_uid.length > 0
+    else if 'facebook_uid' of attrs && attrs.facebook_uid? && attrs.facebook_uid.length > 0
       return 'facebook'
-    else if @attributions.twitter_uid? && @attributes.twitter_uid.length > 0
+    else if 'twitter_uid' of attrs && attrs.twitter_uid? && attrs.twitter_uid.length > 0
       return 'twitter'
     else
       return 'email'
@@ -54,7 +55,6 @@ class ConsiderIt.User extends Backbone.Model
     
   is_following : (followable_type, followable_id) ->
     return @follows[followable_type][followable_id] if followable_type of @follows && followable_id of @follows[followable_type] && @follows[followable_type][followable_id].follow == true
-    false
 
   set_following : (follow) ->
     @follows[follow.followable_type] = {} if !_.has(@follows, follow.followable_type)

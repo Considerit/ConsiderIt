@@ -121,10 +121,10 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   access_dashboard_edit_profile : -> @_process_dashboard_context('edit_profile', {params: {user : @model.attributes, avatar : window.PaperClip.get_avatar_url(@model, 'original')}})
   access_dashboard_account_settings : -> @_process_dashboard_context('account_settings', {params: {user : @model.attributes}})
   access_dashboard_email_notifications : -> 
-    user = if ConsiderIt.current_user.is_logged_in() then ConsiderIt.current_user.id else ConsiderIt.limited_user.id
+    user = if ConsiderIt.current_user.is_logged_in() then ConsiderIt.current_user else ConsiderIt.limited_user
     options = 
       data_uri : Routes.followable_index_path()
-      data_params : {user_id : user.id}
+      data_params : {user_id : if user? then user.id else null}
       view_class: -> ConsiderIt.UserDashboardViewNotifications
     @_process_dashboard_context('email_notifications', options)
 
@@ -265,7 +265,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     $(ev.currentTarget).parents('.m-user_roles-edit_form').find('.option.specific input[type="radio"]').trigger('click')
 
   role_changed : (data, response, xhr) ->
-    $dialog_window = $(this).parents('.detachable')
+    $dialog_window = $(this).parents('.l-dialog-detachable')
     $field = $dialog_window.data('parent').children('a').find('span')
     role = response.role_list
 

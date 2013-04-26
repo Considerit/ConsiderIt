@@ -8,6 +8,8 @@
 @import "mixins"
 @import "mixins/bubble"
 @import "sprite"
+// only used by admins, but for inline proposal editing
+@import "shared/dialog" 
 
 +font-face("ModernPictogramsNormal", font-files("modernpics-webfont.woff", "modernpics-webfont.eot",  "modernpics-webfont.ttf", "modernpics-webfont.svg#ModernPictogramsNormal"), $eot: "modernpics-webfont.eot")
 
@@ -348,39 +350,39 @@ html
 #l-wrap
   position: relative
 
-  #l-heading, #l-content, #l-footer
-    position: relative
+#l-heading, #l-content, #l-footer
+  position: relative
 
-  .l-heading-wrap, .l-content-wrap, .l-footer-wrap
-    position: relative
+.l-heading-wrap, .l-content-wrap, .l-footer-wrap
+  position: relative
 
-  #l-heading
-    //height: $vertical_baseline * 2
-    //width: 100%
-    //margin-bottom: $vertical_baseline
+#l-heading
+  //height: $vertical_baseline * 2
+  //width: 100%
+  //margin-bottom: $vertical_baseline
 
-  .l-heading-wrap
-    width: $content_width
-    position: relative
-    padding: 0
-    margin: auto
-    height: 3 * $vertical_baseline
+.l-heading-wrap
+  width: $content_width
+  position: relative
+  padding: 0
+  margin: auto
+  height: 3 * $vertical_baseline
 
-  #l-content
-    width: $content_width
-    margin: 0 auto
+#l-content
+  width: $content_width
+  margin: 0 auto
 
-  .l-content-wrap
-    padding: $vertical_baseline $grid_xs
-    margin-bottom: $vertical_baseline
-    position: relative
+.l-content-wrap
+  padding: $vertical_baseline $grid_xs
+  //margin-bottom: $vertical_baseline
+  position: relative
 
-  #l-footer
+#l-footer
 
-  .l-footer-wrap
-    width: $content_width
-    position: relative
-    margin: 0 auto
+.l-footer-wrap
+  width: $content_width
+  position: relative
+  margin: 0 auto
 
 
 %l-message-template
@@ -614,6 +616,8 @@ $membership_card_height: 278px
     .m-user-accounts-logo
       display: block
       margin-bottom: $vertical_baseline
+      max-width: $membership_card_width - 2 * $grid_xs
+      max-height: 45px
 
     .m-user-accounts-form-fields-text
       width: $membership_card_width - $avatar_preview_height - $grid_xs * 3
@@ -638,7 +642,7 @@ $membership_card_height: 278px
     .m-user-accounts-authorized-feedback
       display: none
       a
-        +font-size(-6)
+        +font-size(-4)
       vertical-align: top
       text-align: left
       margin-top: $vertical_baseline / 2
@@ -677,10 +681,10 @@ $membership_card_height: 278px
         display: none
 
       .import_from_third_party
-        span
-          +font-size(-4)
-        a
-          +font-size(1)
+        span, a
+          +font-size(-4)          
+        //a
+        //  +font-size(-1)
 
   .m-user-accounts-finish-wrap
     width: $membership_card_width
@@ -1401,6 +1405,7 @@ $membership_card_height: 278px
 .m-proposals-heading
   @extend %on_background
   text-align: center
+  margin-top: $vertical_baseline
 
   .m-proposals-filter-container, .m-proposals-sort-container
     display: inline-block
@@ -1423,6 +1428,9 @@ $membership_card_height: 278px
 .m-proposal
   margin: $vertical_baseline 0 2 * $vertical_baseline 0
 
+  > .l-content-wrap
+    padding-bottom: 0
+
   &.unexpanded
     opacity: .75
     +transition
@@ -1430,6 +1438,22 @@ $membership_card_height: 278px
 
     &:hover
       opacity: 1
+
+    .m-proposal-toggle 
+      .m-proposal_toggle_expanded
+        display: none
+      .m-proposal_toggle_unexpanded
+        display: inline
+
+  &.expanded
+    .m-proposal-toggle 
+      .m-proposal_toggle_expanded
+        display: inline
+      .m-proposal_toggle_unexpanded
+        display: none
+
+  .m-proposal-body_wrap
+    margin-bottom: $vertical_baseline
 
   .m-proposal-heading-wrap
     //width: 104%
@@ -1447,7 +1471,7 @@ $membership_card_height: 278px
     margin: auto
     @extend %bolded
     +font-size(2)
-    padding-right: $grid_minor
+    //padding-right: $grid_minor
 
 
   .m-proposal-description-details
@@ -1455,31 +1479,6 @@ $membership_card_height: 278px
 
     .hidden, .showing
       text-decoration: underline
-
-  .toggle_proposal
-    +font-size(5)
-    position: absolute
-    right: 0
-    top: 0
-    height: 100%
-    width: 30px
-    color: #a1a1a1
-    display: inline-block
-    border-left: 1px solid #a1a1a1
-    padding: 11px 0 0 3px
-
-  &.expanded .toggle_proposal
-    border-left-color: transparent
-
-  .toggle_proposal:before
-    content: '\25B8'
-
-  &.expanded .toggle_proposal:before
-    content: '\25BE'
-
-
-
-
 
 
   .m-proposal-connect
@@ -1489,9 +1488,11 @@ $membership_card_height: 278px
     li
       display: inline-block
       vertical-align: middle
-      +font-size(-3)
+      +font-size(-1)
       color: #aaa
-
+    
+    .m-proposal-action-label
+      padding: 0 $grid_xs / 2
     .m-proposal-action-link
       cursor: pointer
       +transition
@@ -1500,6 +1501,48 @@ $membership_card_height: 278px
       &:hover
         //+grayscale_off
         //opacity: 1
+
+  .m-proposal-follow_conversation
+    +pressable_button
+
+%m-proposal-strip-item
+  color: #444
+  display: block
+  padding: $vertical_baseline 0
+  text-transform: uppercase
+  +font-size(-4)
+  +border-radius(0 0 5px 5px)
+  font-weight: bold
+
+.m-proposal-strip
+  text-align: center
+  margin: 0 auto
+  //margin-top: $vertical_baseline
+  border-top: 1px solid #ddd
+
+.m-proposal_strip_toggle
+
+  .m-proposal-toggle
+    @extend %m-proposal-strip-item
+
+// Proposal admin strip
+.m-proposal-admin_strip
+  .l-dialog-prompt, .m-proposal-admin_label, .m-delete_proposal
+    display: inline-block
+    padding-right: $grid_xs
+
+  .l-dialog-prompt-label, .m-delete_proposal, .m-proposal-admin_label
+    @extend %m-proposal-strip-item
+
+  .l-dialog-prompt-label, .m-delete_proposal
+    &:hover
+      color: black
+
+  .l-dialog-prompt-label span, .m-delete_proposal
+    text-decoration: underline
+
+  .m-proposal-admin_label
+    opacity: .5
 
 .m-proposal-message
   @extend %l-message-template

@@ -33,7 +33,6 @@ class ConsiderIt.RegistrationView extends Backbone.View
       @finish_first_phase(user_data)
     else
       # if using third party auth method to get profile picture
-      console.log user_data
       @update_avatar_file(user_data.user.avatar_url || user_data.user.avatar_remote_url)
 
   bindings : 
@@ -98,11 +97,14 @@ class ConsiderIt.RegistrationView extends Backbone.View
 
   update_user : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
-    ConsiderIt.update_current_user(data.user)
-    if not ConsiderIt.current_user.id of ConsiderIt.users
-      ConsiderIt.users[ConsiderIt.current_user.id] = ConsiderIt.current_user
-    @remove()
-
+    if data.result != 'rejected'
+      ConsiderIt.update_current_user(data.user)
+      if not ConsiderIt.current_user.id of ConsiderIt.users
+        ConsiderIt.users[ConsiderIt.current_user.id] = ConsiderIt.current_user
+      @remove()
+    else
+      # TODO: handle gracefully
+      throw 'Registration rejected from server'
   cancel : () ->
     ConsiderIt.current_user.clear()
     @remove()

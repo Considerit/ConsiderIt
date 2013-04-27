@@ -25,16 +25,16 @@ class User < ActiveRecord::Base
   validates :name, :presence => true
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
-  attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask
+  attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url
 
-  attr_accessor :avatar_url
+  attr_accessor :avatar_url, :downloaded
 
   before_validation :download_remote_image, :if => :avatar_url_provided?
   before_save do 
     self.name = Sanitize.clean(self.name)    
     self.bio = Sanitize.clean(self.bio, Sanitize::Config::RELAXED)
   end
-  validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
+  #validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
   after_create :add_token
 
   roles :superadmin, :admin, :analyst, :moderator, :manager, :evaluator, :developer
@@ -86,11 +86,17 @@ class User < ActiveRecord::Base
   end
 
   def download_remote_image
-    self.avatar_url = self.avatar_remote_url if avatar_url.nil?
-    io = open(URI.parse(self.avatar_url))
-    def io.original_filename; base_uri.path.split('/').last; end
-    self.avatar = io.original_filename.blank? ? nil : io
-    self.avatar_remote_url = avatar_url
+    if self.downloaded.nil?
+      self.downloaded = true
+      self.avatar_url = self.avatar_remote_url if avatar_url.nil?
+      io = open(URI.parse(self.avatar_url))
+      def io.original_filename; base_uri.path.split('/').last; end
+
+      self.avatar = io if !(io.original_filename.blank?)
+      self.avatar_remote_url = avatar_url
+      self.avatar_url = nil
+    end
+
   end
 
   def self.find_by_third_party_token(access_token)
@@ -127,39 +133,39 @@ class User < ActiveRecord::Base
 
   def self.create_from_third_party_token(access_token)
     params = {
-      :name => access_token.info.name,
-      :password => Devise.friendly_token[0,20]
+      'name' => access_token.info.name,
+      'password' => Devise.friendly_token[0,20]
     }
             
     case access_token.provider
       when 'google'
         third_party_params = {
-          :google_uid => access_token.uid,
-          :email => access_token.info.email
+          'google_uid' => access_token.uid,
+          'email' => access_token.info.email
         }
 
       when 'google_oauth2'
         third_party_params = {
-          :google_uid => access_token.uid,
-          :email => access_token.info.email,
-          :avatar_url => access_token.info.image
+          'google_uid' => access_token.uid,
+          'email' => access_token.info.email,
+          'avatar_url' => access_token.info.image
         }        
 
       when 'twitter'
         third_party_params = {
-          :twitter_uid => access_token.uid,
-          :bio => access_token.info.description,
-          :url => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
-          :twitter_handle => access_token.info.nickname,
-          :avatar_url => access_token.info.image.gsub('_normal', '_reasonably_small'),
+          'twitter_uid' => access_token.uid,
+          'bio' => access_token.info.description,
+          'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
+          'twitter_handle' => access_token.info.nickname,
+          'avatar_url' => access_token.info.image.gsub('_normal', '_reasonably_small'),
         }
 
       when 'facebook'
         third_party_params = {
-          :facebook_uid => access_token.uid,
-          :email => access_token.info.email,
-          :url => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter, #TODO: fix this for facebook
-          :avatar_url => 'http://graph.facebook.com/' + access_token.uid + '/picture?type=large'
+          'facebook_uid' => access_token.uid,
+          'email' => access_token.info.email,
+          'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter, #TODO: fix this for facebook
+          'avatar_url' => 'http://graph.facebook.com/' + access_token.uid + '/picture?type=large'
         }
 
       else

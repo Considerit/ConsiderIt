@@ -34,6 +34,11 @@
   file: path=$app_home/public/system/cache state=directory
   sudo: False
 
+- name: Create default database
+  mysql_db: name=${database.name} state=present login_user=${database.user} login_password=${database.password}
+  sudo: True
+  ignore_errors: yes
+
 # Cache avatars
 - name: Cache avatars
   shell: $source && cd $app_home && RAILS_ENV=$environment bundle exec rake cache:avatars
@@ -41,7 +46,7 @@
 
 # Import seed database
 - name: Copy existing database to remote server
-  copy: src=files/${src_db_name}.sql.bz2 dest=/tmp/${database.name}.sql.bz2
+  copy: src=files/${database.name}.sql.bz2 dest=/tmp/${database.name}.sql.bz2
   sudo: True
 
 - name: Uncompress database dump

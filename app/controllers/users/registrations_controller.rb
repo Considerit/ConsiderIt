@@ -6,7 +6,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	protect_from_forgery #:except => :update
 
   def create
-    by_third_party = params[:user][:via_third_party] && params[:user][:via_third_party] == 'true'
+
+    by_third_party = session.has_key? :access_token
 
     user = by_third_party ? User.find_by_third_party_token(session[:access_token]) : User.find_by_email(params[:user][:email])
 
@@ -26,23 +27,27 @@ class Users::RegistrationsController < Devise::RegistrationsController
       }
 
     elsif by_third_party
-      params = User.create_from_third_party_token(session[:access_token])
-      params.referer = session[:referer] if session.has_key?(:referer)
-
-      params.update params[:user]
-      user = User.new params
+      user_params = User.create_from_third_party_token(session[:access_token]).update params[:user]
       
-      sign_in(resource_name, user)
+      user = User.new user_params #build_resource user_params
+      user.referer = session[:referer] if session.has_key?(:referer)
 
-      current_user.skip_confirmation!
-      current_user.save
-      current_user.track!
-      response = {
-        :result => 'successful',
-        #TODO: filter users' to_json
-        :user => current_user,
-        :follows => current_user.follows.all
-      }
+      user.skip_confirmation! 
+
+      if user.save
+        sign_in(resource_name, user)
+
+        current_user.track!
+
+        response = {
+          :result => 'successful',
+          #TODO: filter users' to_json?
+          :user => current_user,
+          :follows => current_user.follows.all
+        }
+
+        session.delete(:access_token)
+      end
 
 
     else #registration via email

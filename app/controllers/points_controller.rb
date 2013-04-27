@@ -4,19 +4,6 @@ class PointsController < ApplicationController
 
   respond_to :json #, :html
   
-  # POINTS_PER_PAGE_MARGIN = 3
-  # POINTS_PER_PAGE_RESULTS = 4
-
-  ########
-  ##
-  # handles calls from:
-  #     paginate OTHER's pros OR cons; 
-  #     initial load of voter segment's pros AND cons; 
-  #     paginate voter segment's pros OR cons;   
-  #     initial load of self's pros AND cons
-  #     paginate self's pros OR cons
-  #     
-  #########
   def index
 
 
@@ -51,25 +38,6 @@ class PointsController < ApplicationController
   end
 
   def show
-    # begin
-    #   @point = Point.find(params[:id])
-    # rescue
-    #   redirect_to root_path, :notice => 'Cannot find that point. The author may have deleted it.'
-    #   return
-    # end
-
-    # @proposal = Proposal.find_by_long_id(params[:long_id])
-    # redirect_to root_path if @proposal.nil? || @proposal.id != @point.proposal_id
-
-    # authorize! :read, @point
-
-    # if request.xhr?
-    #   origin = params[:origin]
-    #   point_details = render_to_string :partial => "points/details", :locals => { :point => @point, :origin => origin}
-    #   render :json => { :details => point_details }        
-    # else
-    #   render
-    # end
 
     if request.xhr?
       point = Point.find params[:id]
@@ -92,13 +60,6 @@ class PointsController < ApplicationController
   end
 
   def update
-    #@proposal = Proposal.find_by_long_id(params[:long_id])
-    # if current_user
-    #   @position = Position.where(:proposal_id => @proposal.id, :user_id => current_user.id).last 
-    # else
-    #   @position = session.has_key?("position-#{@proposal.id}") ? Position.find(session["position-#{@proposal.id}"]) : nil
-    # end
-    #@user = current_user
     point = Point.find params[:id]
     authorize! :update, point
 

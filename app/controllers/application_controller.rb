@@ -89,7 +89,7 @@ class ApplicationController < ActionController::Base
   end
 
   def self.find_current_tenant(rq)
-    tenant = Account.find_by_identifier(rq.session[:user_account_identifier])
+    tenant = Account.find_by_identifier(rq.session[:user_account_identifier]) 
     if tenant.nil?
       tenant = Account.find(1)
     end
@@ -131,11 +131,7 @@ private
 
   def get_current_tenant(rq = nil)
     rq ||= request
-    current_account = Account.find_by_identifier(rq.subdomain)
-
-    if current_account.nil?
-      current_account = Account.find(1)
-    end    
+    current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(1) : Account.find_by_identifier(rq.subdomain)
 
     set_current_tenant(current_account)
     session["user_account_identifier"] = current_tenant.identifier

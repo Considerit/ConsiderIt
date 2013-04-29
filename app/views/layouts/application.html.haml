@@ -44,13 +44,6 @@
           document.getElementsByTagName('head')[0].appendChild(stylesheet);
 
 
-          ConsiderIt.init(); 
-          $(window).bind('page:change', function() {
-            ConsiderIt.init();
-          });
-
-          
-
         });   
 
       = render :partial => 'backbone/templates'
@@ -120,7 +113,7 @@
       = render :partial => "shared/header/container"
 
       #l-content
-        #m-dashboard
+        #m-dashboard.l-content-wrap
         
         = render :partial => "shared/body"
         = render :partial => "shared/footer/container"

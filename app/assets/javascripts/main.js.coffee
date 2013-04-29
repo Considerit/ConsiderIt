@@ -27,8 +27,6 @@ $(document).ready () ->
     #       this.src = window.avatar_data['small'][user_id];
     #     else if ConsiderIt.users?
     #       this.src = window.PaperClip.get_avatar_url(ConsiderIt.users[user_id], 'small')
-
-
   # if window.cached_avatars_loaded
   #   window.avatars.load_avatars()
 
@@ -92,7 +90,10 @@ window.ConsiderIt.utils =
 
 window.ConsiderIt.update_current_user = (parameters) ->
   
-  ConsiderIt.current_user = ConsiderIt.users[parameters.user.id] if parameters.user.id of ConsiderIt.users
+  if parameters.user.id of ConsiderIt.users
+    ConsiderIt.current_user = ConsiderIt.users[parameters.user.id] 
+  else
+    ConsiderIt.users[parameters.user.id] = ConsiderIt.current_user
 
   ConsiderIt.current_user.set(parameters.user)
   ConsiderIt.current_user.set_follows(parameters.follows) if 'follows' of parameters
@@ -140,19 +141,24 @@ $.event.special.destroyed =
 
 
 $(document).on "click", "a[href^='/']", (event) ->
-  href = event.currentTarget.href
+  href = $(event.currentTarget).attr('href')
   target = $(event.currentTarget).attr('target')
 
-  if href[1..9] == 'dashboard' || target == '_blank' || href == '/newrelic'  || $(event.currentTarget).data('remote')
+  console.log 'HI'
+  if target == '_blank' || href == '/newrelic'  || $(event.currentTarget).data('remote') # || href[1..9] == 'dashboard'
+    console.log 'RETURNING'
     return true
+
 
   # Allow shift+click for new tabs, etc.
   if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
+    console.log 'BLEH'
     event.preventDefault()
     # Instruct Backbone to trigger routing events
     ConsiderIt.router.navigate(href, { trigger : true })
     return false
 
+  console.log "TOEND"
 
 
 #http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/

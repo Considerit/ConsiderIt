@@ -11,16 +11,21 @@ class ConsiderIt.AppView extends Backbone.View
     #handle here because of dependency on proposal being loaded first
     ConsiderIt.router.on 'route:PointDetails', @handle_point_details
 
-    @listenTo this, 'user:signin', @load_anonymous_data
+    @listenTo this, 'user:signin', =>
+      @load_anonymous_data
+      @render()
+          
+    @listenTo this, 'user:signout', => 
+      @render()
 
     @proposals = new ConsiderIt.ProposalList()
     @proposals.reset( _.pluck(_.values(ConsiderIt.proposals), 'model'))
 
   render : () -> 
 
-    @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#m-proposals-container'})
-    @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#l-wrap'})
-    @dashboardview = new ConsiderIt.UserDashboardView({ model : ConsiderIt.current_user, el : '#l-wrap'})
+    @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#m-proposals-container'}) if !@proposalview?
+    @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#l-wrap'}) if !@usermanagerview?
+    @dashboardview = new ConsiderIt.UserDashboardView({ model : ConsiderIt.current_user, el : '#l-wrap'}) if !@dashboardview?
 
     @proposalsview.renderAllItems()
     @usermanagerview.render()

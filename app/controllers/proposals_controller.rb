@@ -15,36 +15,12 @@ class ProposalsController < ApplicationController
     elsif params.has_key?(:long_id)
       proposal = Proposal.find_by_long_id(params[:long_id])
     else
-      redirect_to root_path, :notice => 'Invalid request.'
-      return
-    end
-
-    if !proposal
-      redirect_to root_path, :notice => 'That proposal does not exist.'
       return
     end
 
     #TODO: handle permissions
-    if cannot?(:read, proposal)
-      #store_location request.path
-      #redirect_to new_user_registration_path(:redirect_already_set => true, :user => params.fetch(:u, nil), :token => params.fetch(:t,nil)), :notice => 'That proposal can only be viewed by authorized users.'
-      return
-    end
+    return if !proposal || cannot?(:read, proposal)
 
-
-  #   @title = "#{@proposal.name}"
-  #   if current_tenant.app_title == 'Living Voters Guide'
-  #     @keywords = "#{current_tenant.app_title} #{@proposal.category} #{@proposal.designator} #{@proposal.name} 2012 election"
-  #     @description = "Hear and engage fellow citizens about #{current_tenant.identifier} #{@proposal.category} #{@proposal.designator} #{@proposal.short_name}. You'll be voting on it in the November 2012 election!"
-  #   elsif current_tenant.app_title == 'Office of Hawaiian Affairs'
-  #     @keywords = "discuss, deliberate, vote, hawaii, #{@proposal.name}"
-  #     @description = "Hear and engage the Office of Hawaiian Affairs about #{@proposal.name}."
-  #   else
-  #     @keywords = "discuss, deliberate, vote, #{@proposal.name}"
-  #     @description = "Hear and engage about #{@proposal.name}."
-  #   end
-
-  
     @can_update = can? :update, proposal
     @can_destroy = can? :destroy, proposal
 
@@ -58,7 +34,7 @@ class ProposalsController < ApplicationController
       :account_id => current_tenant.id
     )
 
-    #TODO: return just "points" and "included points" and let client sort through them
+    #TODO: return just "points" and "included points" and let client sort through them?
     response = {
       :points => {
         :pros => Point.mask_anonymous_users(proposal.points.viewable.pros.public_fields, current_user),

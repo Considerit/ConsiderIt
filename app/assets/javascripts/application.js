@@ -30,7 +30,6 @@
 
 //= require js-routes
 //= require main
-//= require considerit
 //= require_tree ./backbone
 //= require_tree ./models
 //= require_tree ./collections

@@ -27,17 +27,20 @@ class ConsiderIt.PositionView extends Backbone.View
     @crafting_view.model = model if @state == 1
 
   show_crafting : ->
-    crafting_el = $('<div class="m-proposal-message m-position">')
-    @crafting_view = new ConsiderIt.CraftingView
-      el : crafting_el
-      proposal : @proposal
-      model : @model
+    if @state != 1
+      crafting_el = $('<div class="m-proposal-message m-position">')
+      @crafting_view = new ConsiderIt.CraftingView
+        el : crafting_el
+        proposal : @proposal
+        model : @model
 
-    @crafting_view.render()
-    @your_action_view.crafting_state()
-    @state = 1
+      @crafting_view.render()
+      @your_action_view.crafting_state()
+      @state = 1
 
-    crafting_el
+      crafting_el
+    else
+      @crafting_view.$el
 
   close_crafting : ->
     if @state == 1
@@ -86,7 +89,7 @@ class ConsiderIt.YourActionView extends Backbone.View
 
   close_crafting : ->
     @$el.html ConsiderIt.YourActionView.craft_template
-      call : if true then 'Join the conversation' else 'Revisit the conversation'
+      call : if true then 'What do you think?' else 'Revisit the conversation'
       long_id : @proposal.model.get('long_id')
 
 
@@ -185,7 +188,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     'click .m-newpoint-new' : 'new_point'
     'click .m-newpoint-cancel' : 'cancel_new_point'
     'click .m-newpoint-create' : 'create_new_point'
-    'click .m-point-peer' : 'navigate_point_details'
+    'click .m-point-peer .m-point-wrap' : 'navigate_point_details'
 
   include_point : (ev) ->
     $item = @_$item(ev.currentTarget)
@@ -328,6 +331,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     $(child).closest("[data-role=\"#{ConsiderIt.PointListView.childClass}\"]")
 
   navigate_point_details : (ev) ->
-    ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.model.get('long_id'), $(ev.currentTarget).data('id')), {trigger: true})
+    point_id = $(ev.currentTarget).closest('.pro, .con').data('id')
+    ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.model.get('long_id'), point_id), {trigger: true})
 
 

@@ -372,88 +372,90 @@
 
 
   %script{ :type => "text/template", :id => "tpl_dashboard_container"}
-    .l-content-wrap
+    %a.m-dashboard-close
+      &#10006;
 
-      %a.m-dashboard-close
-        &#10006;
+    .m-dashboard-sidebar
 
-      .m-dashboard-sidebar
-        %ul
+
+      %ul
+        %li.m-dashboard_avatar
+          %img{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+        %li
+          %a.m-dashboard_link{:'data-target' => 'profile'}
+            Profile
+
+        (( if( is_self ) { ))
+        %li
+          %a.m-dashboard_link{:'data-target' => 'edit_profile'}
+            Edit profile
+
+        %li
+          %a.m-dashboard_link{:'data-target' => 'account_settings'}
+            Account settings
+        %li
+          %a.m-dashboard_link{:'data-target' => 'email_notifications'}        
+            Email notifications        
+
+        (( } ))
+
+      %hr
+
+      // if admin ...
+      %ul
+        (( if(is_admin) { ))
+        %li
+          %a.m-dashboard_link{:'data-target' => 'app_settings'}
+            App settings
+
+        %li
+          %a.m-dashboard_link{:'data-target' => 'user_roles'}
+            User roles
+
+        (( } ))
+
+
+        (( if( is_admin || is_manager ) { ))
+
+        %li
+          %a.m-dashboard_link{:'data-target' => 'manage_proposals'}
+            Manage proposals
+
+        (( } ))
+
+        (( if( (is_admin || is_moderator ) && ConsiderIt.current_tenant.get('enable_moderation') ) { ))
+        %li
+          %a.m-dashboard_link{:'data-target' => 'moderate'}
+            Moderate content
+        (( } ))
+
+        (( if( (is_admin || is_evaluator ) && ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
+        %li
+          %a.m-dashboard_link{:'data-target' => 'assess'}
+            Assess claims
+        (( } ))
+
+        (( if( is_admin || is_analyst ) { ))
+        %li
+          %a.m-dashboard_link{:'data-target' => 'analyze'}
+            Analyze trends
+        (( } ))
+
+        (( if(is_admin) { ))
+        %li
+          %a.m-dashboard_link{:'data-target' => 'database'}
+            Database
+
+          // = link_to 'Database', rails_admin_path, :target => "_blank", :class => 'm-dashboard_link'
+        (( } ))
+
+        - if Rails.env.development?
           %li
-            %a.m-dashboard_link{:'data-target' => 'profile'}
-              Profile
+            = link_to 'Tune', '/newrelic', :target => "_blank", :class => 'm-dashboard_link'
 
-          (( if( is_self ) { ))
-          %li
-            %a.m-dashboard_link{:'data-target' => 'edit_profile'}
-              Edit profile
+    .m-dashboard-content
 
-          %li
-            %a.m-dashboard_link{:'data-target' => 'account_settings'}
-              Account settings
-          %li
-            %a.m-dashboard_link{:'data-target' => 'email_notifications'}        
-              Email notifications        
-
-          (( } ))
-
-        %hr
-
-        // if admin ...
-        %ul
-          (( if(is_admin) { ))
-          %li
-            %a.m-dashboard_link{:'data-target' => 'app_settings'}
-              App settings
-
-          %li
-            %a.m-dashboard_link{:'data-target' => 'user_roles'}
-              User roles
-
-          (( } ))
-
-
-          (( if( is_admin || is_manager ) { ))
-
-          %li
-            %a.m-dashboard_link{:'data-target' => 'manage_proposals'}
-              Manage proposals
-
-          (( } ))
-
-          (( if( (is_admin || is_moderator ) && ConsiderIt.current_tenant.get('enable_moderation') ) { ))
-          %li
-            %a.m-dashboard_link{:'data-target' => 'moderate'}
-              Moderate content
-          (( } ))
-
-          (( if( (is_admin || is_evaluator ) && ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
-          %li
-            %a.m-dashboard_link{:'data-target' => 'assess'}
-              Assess claims
-          (( } ))
-
-          (( if( is_admin || is_analyst ) { ))
-          %li
-            %a.m-dashboard_link{:'data-target' => 'analyze'}
-              Analyze trends
-          (( } ))
-
-          (( if(is_admin) { ))
-          %li
-            %a.m-dashboard_link{:'data-target' => 'database'}
-              Database
-
-            // = link_to 'Database', rails_admin_path, :target => "_blank", :class => 'm-dashboard_link'
-          (( } ))
-
-          - if Rails.env.development?
-            %li
-              = link_to 'Tune', '/newrelic', :target => "_blank", :class => 'm-dashboard_link'
-
-      .m-dashboard-content
-
-      .clear
+    .clear
 
   %script{ :type => "text/template", :id => "tpl_dashboard_unauthorized"}
 
@@ -474,87 +476,159 @@
 
       .m-dashboard-subheading
         Public profile
-
-    .user_card
-      .info
         (( if ( is_self ) { ))
-        %a.edit_profile{:'data-target' => 'edit_profile'}
-          Edit profile
+        = surround '(', ')' do
+          %a.m-dashboard-profile-edit_profile{:'data-target' => 'edit_profile'}
+            edit
         (( } ))
 
-        .bio
-          %h3
-            About
+    .m-dashboard-profile-bio
+      (( if(user.bio && user.bio.length > 0) { ))
+      %p
+        {{ user.bio }} 
+      (( } else { ))
+      %p.empty
+        No details provided
+      (( } ))
 
-          (( if(user.bio && user.bio.length > 0) { ))
-          %p
-            {{ user.bio }} 
-          (( } else { ))
-          %p.empty
-            No details provided
-          (( } ))
+    .m-dashboard-profile-activities
 
-      .avatar
-        %img.edit_profile{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+      %ul.m-dashboard-profile-activity-summaries
+        %li
+          %a.m-dashboard-profile-activity-summary{ :'data-target' => 'proposals'}
+            %span.m-activity-summary-count
+              {{ proposals.length }}
+            %span.m-activity-summary-label
+              Proposals
 
-  // .body
-  //   #positions.block
-  //     %h3
-  //       Positions taken
-  //     - if @user.positions.published.count > 0
-  //       %table.table.table-condensed.table-striped
-  //         %tbody
-  //           - @user.positions.published.each do |position|
-  //             %tr.position
-  //               %td.proposal
-  //                 = position.proposal.title(max_length_root)
-  //               %td.stance
-  //                 = position.stance_name
-  //               %td.action
-  //                 = link_to 'View and consider', user_position_proposal_path(position.proposal.long_id, position.user, :anchor => 'position')
-  //     - else
-  //       .empty
-  //         #{@user.first_name} has not taken any positions.
-  //   #points.block
-  //     %h3
-  //       Points written
-  //     - if @user.points.published.count > 0
-  //       %table.table.table-condensed.table-striped
-  //         %tbody
-  //           - @user.points.published.each do |point|
-  //             - if is_self || !point.hide_name
-  //               %tr.position
-  //                 %td.proposal
-  //                   = point.proposal.title(max_length_root)
-  //                 %td.desc
-  //                   [#{point.category}] #{point.short_desc(max_length_content-6)}
-  //                 %td.action
-  //                   = link_to 'Read and discuss', proposal_point_path(point.proposal.long_id, point)
-  //     - else
-  //       .empty
-  //         #{@user.first_name} has not contributed any points.
-  //   #comments.block
-  //     %h3
-  //       Comments
-  //     %table.table.table-condensed.table-striped
-  //       - if @user.comments.count > 0
-  //         %tbody
-  //           - @user.comments.each do |comment|
-  //             - point = comment.root_object
-  //             %tr.position
-  //               %td
-  //                 [#{point.category}] #{point.short_desc(max_length_root-6)}
-  //               %td.desc
-  //                 = comment.text(max_length_content)
-  //               %td.action
-  //                 = link_to 'Join in', proposal_point_path(point.proposal.long_id, point, :anchor => "comment-#{comment.id}")
-  //       - else
-  //         .empty
-  //           #{@user.first_name} has not made any comments.
-        
+        %li
+          %a.m-dashboard-profile-activity-summary{ :'data-target' => 'positions'}
+            %span.m-activity-summary-count
+              {{ positions.length }}
+            %span.m-activity-summary-label
+              Positions
+
+        %li
+          %a.m-dashboard-profile-activity-summary{ :'data-target' => 'points'}
+            %span.m-activity-summary-count
+              {{ points.length }}
+            %span.m-activity-summary-label
+              Pros & cons
+
+        %li
+          %a.m-dashboard-profile-activity-summary{ :'data-target' => 'comments'}
+            %span.m-activity-summary-count
+              {{ comments.length }}
+            %span.m-activity-summary-label
+              Comments
 
 
 
+
+      .m-dashboard-profile-activity-block{ :'data-target' => 'proposals-details'}
+        %h3
+          Proposals put forward     
+        (( if(proposals.length > 0) { ))
+        %table.table.table-condensed.table-striped
+          %tbody
+            (( _.each(proposals, function(proposal){ ))
+            (( var proposal = proposal.proposal; ))
+            %tr
+              %td.m-dashboard-profile-activity-substance-wrap
+                .m-dashboard-profile-activity-substance
+                  {{ proposal.name }}
+              %td.m-dashboard-profile-activity-action
+                = link_to 'View and consider', "{{Routes.proposal_path(proposal.long_id)}}"
+            (( }); ))
+        (( } else { ))
+        .m-dashboard-profile-activity-empty
+          {{ConsiderIt.users[user_id].first_name}} has not put forward any proposals.
+        (( } ))
+
+
+      .m-dashboard-profile-activity-block{ :'data-target' => 'positions-details'}
+
+
+        %h3
+          Positions taken
+
+        (( if(positions.length > 0){ ))
+        %table.table.table-condensed.table-striped
+          %tbody
+            (( _.each(positions, function(position){ ))
+            (( var position = position.position; ))
+            (( var proposal = referenced_proposals[position.proposal_id].proposal; ))
+            %tr
+              %td.m-dashboard-profile-activity-substance-wrap
+                .m-dashboard-profile-activity-substance
+                  (( if( position.stance < -.05 ) { ))
+                  Opposed
+                  (( } else if( position.stance > .05 ) { ))
+                  Supported
+                  ((} else{ ))
+                  Neutral / undecided
+                  (( }))
+                .m-dashboard-profile-activity-substance-context
+                  Re: {{ proposal.name }}
+
+              %td.m-dashboard-profile-activity-action
+                = link_to 'View and consider', "{{Routes.user_position_proposal_path(proposal.long_id, user_id)}}"
+            (( }); ))
+        (( } else { ))
+        .m-dashboard-profile-activity-empty
+          {{ConsiderIt.users[user_id].first_name}} has not taken any positions.
+        (( } ))
+
+      .m-dashboard-profile-activity-block{ :'data-target' => 'points-details'}
+        %h3
+          Pro/con points written
+
+        (( if(points.length > 0){ ))
+        %table.table.table-condensed.table-striped
+          %tbody
+            (( _.each(points, function(point){ ))
+            (( var point = point.point; ))
+            (( var proposal = referenced_proposals[point.proposal_id].proposal; ))            
+            %tr
+              %td.m-dashboard-profile-activity-substance-wrap
+                .m-dashboard-profile-activity-substance
+                  {{ point.category}} {{ point.nutshell }}
+                .m-dashboard-profile-activity-substance-context
+                  Re: {{ proposal.name }}
+              %td.m-dashboard-profile-activity-action
+                = link_to 'Read and discuss', "{{Routes.proposal_point_path(proposal.long_id, point.id)}}"
+            (( }); ))
+        (( } else { ))
+        .m-dashboard-profile-activity-empty
+          {{ConsiderIt.users[user_id].first_name}} has not contributed any points.
+        (( } ))
+
+      .m-dashboard-profile-activity-block{ :'data-target' => 'comments-details'}
+        %h3
+          Comments
+
+        (( if(comments.length > 0){ ))
+        %table.table.table-condensed.table-striped
+          %tbody
+            (( _.each(comments, function(comment){ ))
+            (( var comment = comment.comment; ))
+            (( var point = referenced_points[comment.commentable_id].point; ))
+            (( var proposal = referenced_proposals[point.proposal_id].proposal; ))
+            %tr
+              %td.m-dashboard-profile-activity-substance-wrap
+                .m-dashboard-profile-activity-substance
+                  {{ comment.body}}
+                .m-dashboard-profile-activity-substance-context
+                  Re: {{ point.is_pro ? 'Pro' : 'Con' }} point "{{ point.nutshell }}"
+                .m-dashboard-profile-activity-substance-context
+                  Re: {{ proposal.name }}
+              %td.m-dashboard-profile-activity-action
+                = link_to 'Join in', "{{Routes.proposal_point_path(proposal.long_id, point.id)}}", :anchor => "comment-{{comment.id}}"
+            (( }); ))
+        (( } else { ))
+        .m-dashboard-profile-activity-empty
+          {{ConsiderIt.users[user_id].first_name}} has not made any comments.
+        (( } ))
 
 
   %script{ :type => "text/template", :id => "tpl_dashboard_edit_profile"}
@@ -645,7 +719,7 @@
           Site-wide notifications
 
         .m-dashboard-subheading
-          Receive an email whenever a new proposal is added.
+          Receive an email whenever a new conversation is started.
 
         (( var account_followerer = _.has(follows, 'Account') && _.has(follows['Account'], ConsiderIt.current_tenant.id ) && follows['Account'][ConsiderIt.current_tenant.id].follow; ))
         (( var submit_text = account_followerer ? 'Unsubscribe' : 'Subscribe'; ))

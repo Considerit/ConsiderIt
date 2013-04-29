@@ -10,18 +10,43 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     @rendered = false
 
 
-    ConsiderIt.router.on 'route:AppSettings', => @access_dashboard_app_settings()
-    ConsiderIt.router.on 'route:ManageProposals', => @access_dashboard_manage_proposals()
-    ConsiderIt.router.on 'route:UserRoles', => @access_dashboard_user_roles()
+    ConsiderIt.router.on 'route:Profile', (id) => 
+      @model = ConsiderIt.users[id]
+      @render()
+      @access_dashboard_profile(parseInt(id))
+    ConsiderIt.router.on 'route:EditProfile', => 
+      @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
+      @access_dashboard_edit_profile()
+    ConsiderIt.router.on 'route:AccountSettings', => 
+      @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
+      @access_dashboard_account_settings()
+    ConsiderIt.router.on 'route:EmailNotifications', => 
+      @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
+      @access_dashboard_email_notifications()
 
-    ConsiderIt.router.on 'route:Analyze', => @access_dashboard_analyze()
-    ConsiderIt.router.on 'route:Moderate', => @access_dashboard_moderate()
-    ConsiderIt.router.on 'route:Assess', => @access_dashboard_assess()
-    ConsiderIt.router.on 'route:Database', => @access_dashboard_database()
-    ConsiderIt.router.on 'route:Profile', => @access_dashboard_profile()
-    ConsiderIt.router.on 'route:EditProfile', => @access_dashboard_edit_profile()
-    ConsiderIt.router.on 'route:AccountSettings', => @access_dashboard_account_settings()
-    ConsiderIt.router.on 'route:EmailNotifications', => @access_dashboard_email_notifications()
+
+    ConsiderIt.router.on 'route:AppSettings', => 
+      @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
+      @access_dashboard_app_settings()
+    ConsiderIt.router.on 'route:ManageProposals', => 
+      @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
+      @access_dashboard_manage_proposals()
+    ConsiderIt.router.on 'route:UserRoles', => 
+      @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
+      @access_dashboard_user_roles()
+
+    ConsiderIt.router.on 'route:Analyze', => 
+      @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
+      @access_dashboard_analyze()
+    ConsiderIt.router.on 'route:Moderate', => 
+      @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
+      @access_dashboard_moderate()
+    ConsiderIt.router.on 'route:Assess', => 
+      @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
+      @access_dashboard_assess()
+    ConsiderIt.router.on 'route:Database', => 
+      @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
+      @access_dashboard_database()
 
     @listenTo ConsiderIt.app, 'user:signin', => 
       @model = ConsiderIt.current_user
@@ -32,23 +57,26 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     @listenTo ConsiderIt.app, 'user:signout', @close
 
   render : ->
-    @$dashboard_el.hide()
+    visible = @$dashboard_el.is(':visible')
 
+    @$dashboard_el.hide()
+    is_self = @model.id == ConsiderIt.current_user.id
     @$dashboard_el.html(
       @template( $.extend( {}, {
-        is_self : @model.id == ConsiderIt.current_user.id
+        is_self : is_self
         user : @model.attributes
-        is_admin : ConsiderIt.roles.is_admin
-        is_moderator : ConsiderIt.roles.is_moderator
-        is_analyst : ConsiderIt.roles.is_analyst
-        is_evaluator : ConsiderIt.roles.is_evaluator
-        is_manager : ConsiderIt.roles.is_manager
+        avatar : window.PaperClip.get_avatar_url(@model, 'original')
+        is_admin : is_self && ConsiderIt.roles.is_admin
+        is_moderator : is_self && ConsiderIt.roles.is_moderator
+        is_analyst : is_self && ConsiderIt.roles.is_analyst
+        is_evaluator : is_self && ConsiderIt.roles.is_evaluator
+        is_manager : is_self && ConsiderIt.roles.is_manager
       } ) )
     )
 
     @$content_area = @$dashboard_el.find('.m-dashboard-content')
 
-    if !@rendered
+    if !visible
       @$dashboard_el.slideDown() 
     else
       @$dashboard_el.show()
@@ -116,8 +144,16 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   access_dashboard_database : -> 
     @_process_dashboard_context('database', {admin_template_needed: true})
 
-        
-  access_dashboard_profile : -> @_process_dashboard_context('profile', {params: {is_self : @model.id == ConsiderIt.current_user.id, user : @model.attributes, avatar : window.PaperClip.get_avatar_url(@model, 'original')}})
+  access_dashboard_profile : (user_id) -> 
+    options = 
+      data_uri : Routes.profile_path(user_id)
+      params: 
+        is_self : user_id == ConsiderIt.current_user.id
+        user : ConsiderIt.users[user_id].attributes
+        avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[user_id], 'original')
+
+    @_process_dashboard_context('profile', options)
+
   access_dashboard_edit_profile : -> @_process_dashboard_context('edit_profile', {params: {user : @model.attributes, avatar : window.PaperClip.get_avatar_url(@model, 'original')}})
   access_dashboard_account_settings : -> @_process_dashboard_context('account_settings', {params: {user : @model.attributes}})
   access_dashboard_email_notifications : -> 
@@ -189,6 +225,10 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   events :
     #'click .m-dashboard_link' : 'change_context_ev' 
     'click .m-dashboard-close' : 'close'
+    'click [data-target="user_profile_page"]' : 'view_user_profile'
+
+    'click .m-dashboard-profile-activity-summary' : 'activity_toggled'
+
     'ajax:complete .m-dashboard-edit-user' : 'user_updated'
     'ajax:complete .m-dashboard-edit-account' : 'account_updated'
 
@@ -209,7 +249,11 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     'click [data-target="assess"]' : 'navigate_to_assess'
     'click [data-target="analyze"]' : 'navigate_to_analyze'
     'click [data-target="database"]' : 'navigate_to_database'
-  
+
+  # handles user profile access for anyone throughout the app  
+  view_user_profile : (ev) ->
+    $('html, body').animate {scrollTop: 0 }, 500
+    ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
 
   navigate_to_profile : -> ConsiderIt.router.navigate Routes.profile_path( ConsiderIt.current_user.id ), {trigger: true}
   navigate_to_edit_profile : -> ConsiderIt.router.navigate Routes.edit_profile_path( ConsiderIt.current_user.id ), {trigger: true}
@@ -223,6 +267,16 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   navigate_to_analyze : -> ConsiderIt.router.navigate Routes.analytics_path(), {trigger: true}
   navigate_to_database : -> ConsiderIt.router.navigate 'dashboard/data', {trigger: true}
 
+
+  activity_toggled : (ev) ->
+    already_selected = $(ev.currentTarget).is('.selected')
+    @$el.find('.m-dashboard-profile-activity-block').hide()
+    @$el.find('.m-dashboard-profile-activity-summary').removeClass('selected')
+
+    if !already_selected
+      target = $(ev.currentTarget).data('target')    
+      @$el.find("[data-target='#{target}-details']").slideDown()
+      $(ev.currentTarget).addClass('selected')
 
   user_updated : (ev, response, options) ->
     data = $.parseJSON(response.responseText)

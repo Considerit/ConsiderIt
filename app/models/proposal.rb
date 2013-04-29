@@ -22,7 +22,10 @@ class Proposal < ActiveRecord::Base
   scope :public, where( :publicity => 2)
   scope :public_fields, select('id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active, top_pro, top_con, participants,publicity')
 
-
+  def public?
+    publicity == 2
+  end
+  
   def label_proposal
     if self.entity && self.entity.length > 0 
       self.entity 

@@ -18,6 +18,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   #TODO: do this when login as admin
   render_new_proposal : ->
     if ConsiderIt.roles.is_admin
+      @$el.find('.m-proposals-new').remove()
       @$new_proposal = $('<div class="m-proposals-new l-content-wrap">')
         .html ConsiderIt.ProposalListView.new_proposal_template( {  })
       

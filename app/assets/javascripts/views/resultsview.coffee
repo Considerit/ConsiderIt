@@ -135,9 +135,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   @template : _.template( $("#tpl_results").html() )
 
-  #BARHEIGHT : 172
-  #BARWIDTH : 87
-
   BARHEIGHT : 149
   BARWIDTH : 41
 
@@ -213,7 +210,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
         empty_size : empty_size
         num_ghosts : if bar.positions.length % tiles_per_row != 0 then tiles_per_row - bar.positions.length % tiles_per_row else 0
 
-      bar.positions = _.sortBy bar.positions, (pos) -> !ConsiderIt.users[pos.get('user_id')].get('avatar_file_name')?
+      bar.positions = _.sortBy bar.positions, (pos) -> 
+        !ConsiderIt.users[pos.get('user_id')].get('avatar_file_name')?
     histogram
 
   #handlers

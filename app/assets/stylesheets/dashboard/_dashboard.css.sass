@@ -7,7 +7,9 @@ $dashboard_content_width: $content_width - $dashboard_sidebar_width - 2 * $grid_
 
 html body #m-dashboard
   margin-bottom: $vertical_baseline
-  
+  padding: $vertical_baseline $grid_xs
+  display: none
+
   .m-dashboard-close
     position: absolute
     top: 5px
@@ -29,6 +31,11 @@ html body #m-dashboard
 
     li
       list-style-type: none
+
+    .m-dashboard_avatar img
+      display: inline-block
+      width: 100%
+
     .m-dashboard_link
       //+background-image(linear-gradient(#eee, #ccc))
       +font-size(-1)
@@ -37,6 +44,7 @@ html body #m-dashboard
       //width: $dashboard_sidebar_width - 2 * $grid_xs
       padding: 5px $grid_xs
       display: inline-block
+      text-align: right
 
       &.current
         font-weight: bold
@@ -71,84 +79,123 @@ html body #m-dashboard
 
 
 
-  .l-content-wrap
-    margin-top: $vertical_baseline
-    border: 1px solid rgba(#888, .6)
-    background-color: white
-
-    .field
-      margin-bottom: $vertical_baseline
-      
-      label
-        +font-size(0)
-      input[type="text"], input[type="email"], textarea
-        display: block
-        +font-size(0)
-        padding: 2px
-
-      .sublabel
-        margin-top: 2px      
-        +font-size(-2)
-        color: #777
+  .field
+    margin-bottom: $vertical_baseline
     
-    fieldset
+    label
+      +font-size(0)
+    input[type="text"], input[type="email"], textarea
+      display: block
+      +font-size(0)
+      padding: 2px
+
+    .sublabel
+      margin-top: 2px      
+      +font-size(-2)
+      color: #777
+  
+  fieldset
+    table
+      width: 100%
+      table-layout: fixed
+
+
+  .save_block
+    margin-top: $vertical_baseline
+
+  .avatar
+    width: 120px
+    height: 120px
+    overflow: hidden
+    img
+      width: 120px
+
+  /////////////////
+  // PAGE SPECIFIC 
+  /////////////////
+
+  .m-dashboard-profile
+
+    .m-dashboard-profile-edit_profile
+      +font-size(-2)
+      text-decoration: underline
+      position: relative
+      //top: -$vertical_baseline
+
+    .m-dashboard-profile-activity-summaries
+      margin-top: $vertical_baseline
+      list-style: none
+      li
+        display: inline-block
+        margin-right: $grid_xs / 2
+
+
+    .m-dashboard-profile-activity-summary
+      display: inline-block
+      padding: $vertical_baseline / 2 0
+      color: white
+      background-color: $comp_color
+      width: 120px
+
+      &:hover, &.selected
+        cursor: pointer
+        color: white
+
+      &:hover
+        background-color: darken($comp_color, 3%)
+
+      &.selected, &.selected:hover
+        background-color: #313131
+      
+
+      .m-activity-summary-count
+        +font-size(2)
+        font-weight: bold
+
+      .m-activity-summary-label
+        +font-size(-3)
+        text-transform: uppercase
+      .m-activity-summary-count, .m-activity-summary-label
+        text-align: center
+        display: inline-block
+        width: 100%
+
+
+
+    .m-dashboard-profile-bio
+      font-style: italic
+
+    .m-dashboard-profile-activity-block
+      margin-top: $vertical_baseline
+      display: none
+      h3
+        margin-bottom: $vertical_baseline/2
       table
         width: 100%
-        table-layout: fixed
+      .m-dashboard-profile-activity-action
+        text-align: right
+      .m-dashboard-profile-activity-substance
+        +font-size(1)
+        margin-bottom: $vertical_baseline/2
+      .m-dashboard-profile-activity-substance-context
+        +font-size(-1)
+
+      .m-dashboard-profile-activity-substance-wrap
+        width: 500px
+    
+    .m-dashboard-profile-activity-empty
+      +font-size(-2)
+      font-style: italic
 
 
-    .save_block
-      margin-top: $vertical_baseline
+  .m-user_roles-edit_form
+    display: none
 
-    .avatar
-      width: 120px
-      height: 120px
-      overflow: hidden
-      img
-        width: 120px
+  .m-dashboard-database
+    iframe
+      width: 100%
+      height: 100%
 
-    /////////////////
-    // PAGE SPECIFIC 
-    /////////////////
-
-    .m-dashboard-profile
-      .user_card
-        .avatar
-          display: inline-block
-          vertical-align: top
-          margin-left: $grid_xs
-
-        .info
-          display: inline-block
-          // width: 600px
-
-          .name
-
-          .edit_profile
-            +font-size(-2)
-            text-decoration: underline
-            position: relative
-            //top: -$vertical_baseline
-
-      .body
-        margin-top: $vertical_baseline
-
-      .block
-        margin-bottom: $vertical_baseline
-      
-      .empty
-        +font-size(-2)
-        font-style: italic
-
-
-    .m-user_roles-edit_form
-      display: none
-
-    .m-dashboard-database
-      iframe
-        width: 100%
-        height: 100%
-
-    .m-dashboard-notifications-followable_group
-      margin-bottom: 2 * $vertical_baseline
+  .m-dashboard-notifications-followable_group
+    margin-bottom: 2 * $vertical_baseline
 

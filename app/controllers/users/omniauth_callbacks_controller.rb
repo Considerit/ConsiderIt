@@ -28,7 +28,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     else
       session[:access_token] = access_token
       user = User.create_from_third_party_token(access_token)
-      params = { :user => {:user => user } }
+      params = { :user => {:user => user, :follows => [] } }
     end
 
     render :inline =>

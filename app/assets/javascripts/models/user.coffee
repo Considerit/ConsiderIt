@@ -5,6 +5,7 @@ class ConsiderIt.User extends Backbone.Model
   name: 'user'
 
   initialize : ->
+    @follows = {}
     
   url : ->
     Routes.user_path( @attributes.id )
@@ -54,8 +55,11 @@ class ConsiderIt.User extends Backbone.Model
       @follows[f.followable_type][f.followable_id] = f
     
   is_following : (followable_type, followable_id) ->
-    return @follows[followable_type][followable_id] if followable_type of @follows && followable_id of @follows[followable_type] && @follows[followable_type][followable_id].follow == true
-
+    if followable_type of @follows && followable_id of @follows[followable_type] && @follows[followable_type][followable_id].follow == true
+      return @follows[followable_type][followable_id] 
+    else
+      false
+      
   set_following : (follow) ->
     @follows[follow.followable_type] = {} if !_.has(@follows, follow.followable_type)
     @follows[follow.followable_type][follow.followable_id] = follow

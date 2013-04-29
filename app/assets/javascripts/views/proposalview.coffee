@@ -280,11 +280,13 @@ class ConsiderIt.ProposalView extends Backbone.View
             name: name
           }
 
-      @$main_content_el.slideDown => $('html, body').animate {scrollTop: @$el.offset().top - 50}
-      @state = 0
+      $('html, body').animate {scrollTop: @$el.offset().top - 50}, 'slow', =>
+        @$main_content_el.slideDown('slow')
 
-      @$el.addClass('expanded')
-      @$el.removeClass('unexpanded')
+        @state = 0
+
+        @$el.addClass('expanded')
+        @$el.removeClass('unexpanded')
 
       this
     else

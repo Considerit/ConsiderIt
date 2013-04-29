@@ -35,7 +35,9 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
     # when clicking outside of point, close it
     $(document).click => @close_details()
-    @$el.click (e) => e.stopPropagation()
+    @$el.click (e) => 
+      if !$(e.target).data('target')
+        e.stopPropagation()
     $(document).keyup (ev) => @close_by_keyup(ev)
 
     #TODO: if user logs in as admin, need to do this

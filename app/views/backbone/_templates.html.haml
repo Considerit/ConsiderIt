@@ -2,12 +2,14 @@
 - cache ['templates', current_tenant] do
   %script{ :type => "text/template", :id => "tpl_point" }   
 
+    (( if (hide_name || user.name == 'Anonymous' ) { ))
+    %span.avatar.m-point-author-avatar{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)"}
+    (( } else if (user) { ))
+
+    %a.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile picture", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
+    (( } ))
+
     .m-point-wrap
-      (( if (hide_name) { ))
-      %span.avatar.m-point-author-avatar{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)"}
-      (( } else if (user) { ))
-      %span.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile picture"}
-      (( } ))
 
       .m-point-nutshell-wrap
         %span.m-point-nutshell
@@ -97,7 +99,7 @@
     %div{ :class => "m-point-details-{{ is_pro ? 'pro' : 'con' }}" }
 
       .l-message-speaker
-        %span.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
+        %a.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page"}
 
       .l-message-body.m-point-details-body
         = render :partial => "shared/bubble", :locals => {:left => true}
@@ -112,10 +114,13 @@
           {{ text }}
 
         .m-point-details-author
-          (( if (hide_name) { ))
+          (( if (hide_name || user.get('name') == 'Anonymous') { ))
           anonymous
           (( } else if (user) { ))
-          {{ user.get('name') }}
+          (( console.log(user); ))
+
+          %a{:'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
+            {{ user.get('name') }}
           (( } else { ))
           unknown
           (( } ))
@@ -190,7 +195,7 @@
       This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.
     ((} else { ))
 
-    %span.avatar.m-comment-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
+    %a.avatar.m-comment-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page"}
 
     .m-comment-body-wrap
       .m-comment-body
@@ -198,7 +203,7 @@
 
       %span.m-comment-author
         &ndash; 
-        %a{ :href => "{{Routes.profile_path(user.id)}}", :target => '_blank'}
+        %a{ :href => "{{Routes.profile_path(user.id)}}", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page"}
           {{ user.get('name') }}
 
     - if false && can_update
@@ -223,7 +228,8 @@
 
     .m-proposal-message.m-proposal-introduction
       .l-message-speaker.m-proposal-initiator
-        = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
+        //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
+        %span.avatar.m-point-author-avatar{ :id => "avatar-{{ConsiderIt.current_user.id}}", :'data-id' => "{{ConsiderIt.current_user.id}}" }
 
       .l-message-body.left.m-proposal-description
         = render :partial => "shared/bubble", :locals => {:left => true}
@@ -245,6 +251,31 @@
 
       .m-proposal-body_wrap
 
+
+      .m-proposal-connect.m-proposal-strip
+
+        %ul
+          (( if( ConsiderIt.current_user.is_logged_in() ) { ))
+          (( var selected_class = ConsiderIt.current_user.is_following('Proposal', id) ? 'selected' : ''; ))
+          %li.m-proposal-action-label
+            Follow this conversation:
+          %li
+            %button{ :class => "{{ selected_class }} m-proposal-follow_conversation" }
+              Get email updates
+
+          (( } ))
+
+          %li.m-proposal-action-label
+            Help spread the word
+          %li.m-proposal-action-link
+            .zocial.icon.facebook
+          %li.m-proposal-action-link
+            .zocial.icon.twitter
+          %li.m-proposal-action-link
+            .zocial.icon.permalink
+          %li.m-proposal-action-label
+            Link to this conversation
+
       .m-proposal_strip_toggle.m-proposal-strip
         %a.m-proposal-toggle
           %span.m-proposal_toggle_expanded
@@ -252,11 +283,17 @@
           %span.m-proposal_toggle_unexpanded
             Show conversation
 
+
+
+
+
   %script{ :type => "text/template", :id => "tpl_expanded_proposal" }
 
     .m-proposal-message.m-proposal-introduction
       .l-message-speaker.m-proposal-initiator
-        = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
+        %a.avatar.m-point-author-avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+
+        //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
 
       .l-message-body.left.m-proposal-description
         = render :partial => "shared/bubble", :locals => {:left => true}
@@ -286,7 +323,9 @@
 
     .m-proposal-message.m-proposal-leader-response
       .l-message-speaker.m-proposal-initiator.small
-        = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
+        //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
+        %a.avatar.m-point-author-avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+
 
       .l-message-body.left.m-proposal-description
         = render :partial => "shared/bubble", :locals => {:left => true}
@@ -311,29 +350,6 @@
           (( } ))  
 
       .l-message-recipient      
-    
-    .m-proposal-connect
-
-      %ul
-        %li.m-proposal-action-label
-          Help spread the word
-        %li.m-proposal-action-link
-          .zocial.icon.facebook
-        %li.m-proposal-action-link
-          .zocial.icon.twitter
-        %li.m-proposal-action-link
-          .zocial.icon.permalink
-        %li.m-proposal-action-label
-          Link to this conversation
-
-
-    (( if( ConsiderIt.current_user.is_logged_in() ) { ))
-    (( var selected_class = ConsiderIt.current_user.is_following('Proposal', id) ? 'selected' : ''; ))
-
-    %button{ :class => "{{ selected_class }} m-proposal-follow_conversation" }
-      Follow this conversation
-
-    (( } ))
 
 
 
@@ -436,7 +452,7 @@
                 Oppose
           %tr
             %td.m-stance-label-neutral{ :colspan => 3 }
-              Neutral
+              Neutral / Undecided
 
 
 
@@ -455,7 +471,7 @@
 
 
       %h3.m-summary-heading
-        These are the most compelling pros and cons we've considered thus far: 
+        The most compelling pros and cons we've considered so far: 
         
       .m-summary-top-pro
         (( if(!top_pro) { ))
@@ -463,7 +479,7 @@
           No pro arguments added yet.
         (( } else { ))
 
-        %span.avatar{ :'data-id' => "{{top_pro.user_id}}", :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "author"}
+        %a.avatar{ :'data-id' => "{{top_pro.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "author"}
 
         .m-top-pro-body.left
           = render :partial => "shared/bubble", :locals => {:left => true}
@@ -481,7 +497,7 @@
           .text
             {{top_con.nutshell}}
 
-        %span.avatar{ :'data-id' => "{{top_con.user_id}}", :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "author"}
+        %a.avatar{ :'data-id' => "{{top_con.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "author"}
 
         (( } ))
       .clear  
@@ -688,23 +704,23 @@
   %script{ :type => "text/template", :id => "tpl_proposal_admin_strip" }
 
     %span.m-proposal-admin_label
-      Edit this conversation's settings:
+      Conversation settings:
 
     .m-proposal-admin-publicity.l-dialog-prompt
       %a.m-proposal-admin_operations-publicity.l-dialog-prompt-label
-        Sharing is 
+        //Sharing is 
         %span
           (( if(publicity == 2) { ))
-          public
+          publicly accessible
           (( } else if(publicity == 1){ ))
-          link only
+          accessible by link only
           (( } else { ))
           private
           (( } ))
 
     .m-proposal-admin-status.l-dialog-prompt
       %a.m-proposal-admin_operations-status.l-dialog-prompt-label
-        Status is 
+        //Status is 
         %span
           (( if(active){ ))
           active
@@ -713,7 +729,7 @@
           (( } ))
 
 
-    = link_to "Delete this conversation", "{{Routes.proposal_path(long_id)}}", :confirm => "Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
+    = link_to "Delete conversation", "{{Routes.proposal_path(long_id)}}", :confirm => "Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
 
 
   = render :partial => 'assessable/templates_user_facing'

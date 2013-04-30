@@ -227,6 +227,12 @@ class ConsiderIt.ExplorerView extends Backbone.View
     'mouseleave .m-histogram' : 'deselect_bar'
     'keypress' : 'deselect_bar'
     'click .point_filter:not(.selected)' : 'sort_all'
+    'click .m-point-wrap' : 'navigate_point_details'
+
+  navigate_point_details : (ev) ->
+    console.log 'HI'
+    point_id = $(ev.currentTarget).closest('.pro, .con').data('id')
+    ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.model.get('long_id'), point_id), {trigger: true})
 
 
   select_bar : (ev) ->

@@ -151,6 +151,8 @@ class ConsiderIt.UserDashboardView extends Backbone.View
         is_self : user_id == ConsiderIt.current_user.id
         user : ConsiderIt.users[user_id].attributes
         avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[user_id], 'original')
+      data_callback : (data, params) =>
+        _.extend params, { tile_size: Math.min 50, ConsiderIt.utils.get_tile_size(400, 42, _.keys(data.influenced_users).length) }
 
     @_process_dashboard_context('profile', options)
 

@@ -228,8 +228,9 @@
 
     .m-proposal-message.m-proposal-introduction
       .l-message-speaker.m-proposal-initiator
-        //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
-        %span.avatar{ :id => "avatar-{{ConsiderIt.current_user.id}}", :'data-id' => "{{ConsiderIt.current_user.id}}" }
+        //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")        
+        //%span.avatar{ :id => "avatar-{{ConsiderIt.current_user.id}}", :'data-id' => "{{ConsiderIt.current_user.id}}" }
+        %img{:src => "{{ avatar }}"}
 
       .l-message-body.left.m-proposal-description
         = render :partial => "shared/bubble", :locals => {:left => true}
@@ -291,7 +292,9 @@
 
     .m-proposal-message.m-proposal-introduction
       .l-message-speaker.m-proposal-initiator
-        %a.avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+        %img{:src => "{{ avatar }}"}
+
+        // %a.avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
 
         //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
 
@@ -324,7 +327,8 @@
     .m-proposal-message.m-proposal-leader-response
       .l-message-speaker.m-proposal-initiator.small
         //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
-        %a.avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+        //%a.avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+        %img{:src => "{{ avatar }}"}
 
 
       .l-message-body.left.m-proposal-description

@@ -1,6 +1,5 @@
 // TODO: refactor!
 @import "mixins"
-@import "dashboard/rtf_table"
 
 $dashboard_sidebar_width: $grid_major * 2 + $grid_minor * 2 + $grid_xs
 $dashboard_content_width: $content_width - $dashboard_sidebar_width - 2 * $grid_xs - 5
@@ -122,6 +121,30 @@ html body #m-dashboard
       position: relative
       //top: -$vertical_baseline
 
+    .m-dashboard-profile-influence
+      &:hover .m-dashboard-profile-influence-details
+        display: inline-block
+
+    .m-dashboard-profile-influence-details
+      width: 470px
+      display: none
+      vertical-align: top
+
+    .m-dashboard-profile-influence-summary
+      display: inline-block
+      vertical-align: text-bottom
+      background-color: #444
+      padding: $vertical_baseline / 2
+      cursor: pointer
+
+    .m-dashboard-profile-influence-description
+      color: #aaa
+      +font-size(-1)
+
+    .m-dashboard-profile-influenced .avatar
+      opacity: .80
+    
+
     .m-dashboard-profile-activity-summaries
       margin-top: $vertical_baseline
       list-style: none
@@ -130,35 +153,37 @@ html body #m-dashboard
         margin-right: $grid_xs / 2
 
 
-    .m-dashboard-profile-activity-summary
+    .m-dashboard-profile-activity-summary, .m-dashboard-profile-influence-summary
       display: inline-block
       padding: $vertical_baseline / 2 0
       color: white
-      background-color: $comp_color
       width: 120px
 
+    .m-dashboard-profile-activity-summary
+      background-color: $comp_color
       &:hover, &.selected
         cursor: pointer
         color: white
 
       &:hover
-        background-color: darken($comp_color, 3%)
+        background-color: darken($comp_color, 10%)
 
       &.selected, &.selected:hover
         background-color: #313131
       
 
-      .m-activity-summary-count
-        +font-size(2)
-        font-weight: bold
+    .m-activity-summary-count, .m-dashboard-profile-influence-count
+      +font-size(2)
+      font-weight: bold
 
-      .m-activity-summary-label
-        +font-size(-3)
-        text-transform: uppercase
-      .m-activity-summary-count, .m-activity-summary-label
-        text-align: center
-        display: inline-block
-        width: 100%
+    .m-activity-summary-label, .m-dashboard-profile-influence-label
+      +font-size(-3)
+      text-transform: uppercase
+
+    .m-activity-summary-count, .m-activity-summary-label, .m-dashboard-profile-influence-count, .m-dashboard-profile-influence-label
+      text-align: center
+      display: inline-block
+      width: 100%
 
 
 
@@ -176,9 +201,13 @@ html body #m-dashboard
         text-align: right
       .m-dashboard-profile-activity-substance
         +font-size(1)
+        font-weight: bold
         margin-bottom: $vertical_baseline/2
       .m-dashboard-profile-activity-substance-context
         +font-size(-1)
+
+      .m-dashboard-profile-activity-influence
+        margin-top: $vertical_baseline/2
 
       .m-dashboard-profile-activity-substance-wrap
         width: 500px
@@ -199,3 +228,49 @@ html body #m-dashboard
   .m-dashboard-notifications-followable_group
     margin-bottom: 2 * $vertical_baseline
 
+
+
+
+html body #m-dashboard
+
+  .table, .fht-table
+    font-size: 75%
+    //width: 100%
+    table-layout: fixed
+
+    a 
+      text-decoration: underline
+      img
+        height: 23px      
+
+    td
+      //max-width: 200px
+      overflow: hidden
+      border-top: 1px solid #ddd
+      line-height: 20px
+      padding: 8px
+      text-align: left
+      vertical-align: top
+
+      
+    th
+      //max-width: 200px    
+      text-transform: capitalize
+      font-size: 125%
+      font-weight: bold
+      padding: 8px 8px 1px 8px
+      border-bottom: 1px solid #ddd
+
+  .table-condensed 
+    td
+      padding: $vertical_baseline / 2 5px
+
+  .table-striped tbody tr:nth-child(2n+1) 
+    td
+      background-color: #f9f9f9
+
+
+  .fht-table-wrapper .fht-fixed-body .fht-tbody, .fht-table-wrapper .fht-tbody
+    overflow-x: hidden
+
+    

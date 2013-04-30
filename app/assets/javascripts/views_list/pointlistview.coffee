@@ -24,7 +24,7 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
       proposal : @proposal
       attributes : 
         class : "#{ConsiderIt.PointListView.childClass}-#{@location} #{if point.attributes.is_pro then 'pro' else 'con' }"
-        'data-id': "#{point.cid}"
+        'data-id': "#{point.id}"
         'data-role': 'm-point'
         includers : "#{point.get('includers')}"
 

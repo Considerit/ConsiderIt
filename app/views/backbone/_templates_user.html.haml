@@ -475,7 +475,13 @@
         {{ user.name }} 
 
       .m-dashboard-subheading
-        Public profile
+        (( if(user.bio && user.bio.length > 0) { ))
+        {{ user.bio }} 
+        (( } else { ))
+        %span.empty
+          No details provided
+        (( } ))
+
         (( if ( is_self ) { ))
         = surround '(', ')' do
           %a.m-dashboard-profile-edit_profile{:'data-target' => 'edit_profile'}
@@ -483,13 +489,6 @@
         (( } ))
 
     .m-dashboard-profile-bio
-      (( if(user.bio && user.bio.length > 0) { ))
-      %p
-        {{ user.bio }} 
-      (( } else { ))
-      %p.empty
-        No details provided
-      (( } ))
 
     .m-dashboard-profile-activities
 

@@ -101,6 +101,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     @proposal = options.proposal
 
   render : () -> 
+
     @$el.html ConsiderIt.CraftingView.template($.extend({}, @model.attributes, {proposal : @proposal.model.attributes}))
 
     @slider = 
@@ -188,7 +189,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     'click .m-newpoint-new' : 'new_point'
     'click .m-newpoint-cancel' : 'cancel_new_point'
     'click .m-newpoint-create' : 'create_new_point'
-    'click .m-point-peer .m-point-wrap' : 'navigate_point_details'
+    'click .m-point-wrap' : 'navigate_point_details'
 
   include_point : (ev) ->
     $item = @_$item(ev.currentTarget)
@@ -198,7 +199,7 @@ class ConsiderIt.CraftingView extends Backbone.View
 
     model = peers.get(id)
     included_point_model = mine.add(model).get(model)
-    $included_point = @$el.find(".m-point-position[data-id='#{included_point_model.cid}']")
+    $included_point = @$el.find(".m-point-position[data-id='#{included_point_model.id}']")
 
     offsetX = $included_point.offset().left - $item.offset().left
     offsetY = $included_point.offset().top - $item.offset().top

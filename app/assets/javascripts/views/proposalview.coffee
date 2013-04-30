@@ -244,7 +244,8 @@ class ConsiderIt.ProposalView extends Backbone.View
 
       @$main_content_el.append ConsiderIt.ProposalView.expanded_template($.extend({}, @model.attributes, {
           title : @model.title()
-          description_detail_fields : @model.description_detail_fields()
+          description_detail_fields : @model.description_detail_fields(),
+          avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'original')
         }))
 
       results_el = $('<div class="m-proposal-message">')

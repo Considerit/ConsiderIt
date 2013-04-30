@@ -490,6 +490,24 @@
 
     .m-dashboard-profile-bio
 
+    (( if(_.keys(influenced_users).length > 0){ ))
+    .m-dashboard-profile-influence
+      .m-dashboard-profile-influence-summary
+        .m-dashboard-profile-influence-count
+          {{ _.keys(influenced_users).length }}
+        .m-dashboard-profile-influence-label
+          Influence
+
+      .m-dashboard-profile-influence-details
+        .m-dashboard-profile-influence-description
+          People influenced by {{ user.name }}'s pro & con considerations
+
+        .m-dashboard-profile-influenced.l-group-container
+          (( _.each(_.keys(influenced_users), function(p){ ))
+          %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+          (( }); ))        
+    (( } ))
+
     .m-dashboard-profile-activities
 
       %ul.m-dashboard-profile-activity-summaries
@@ -498,14 +516,14 @@
             %span.m-activity-summary-count
               {{ proposals.length }}
             %span.m-activity-summary-label
-              Proposals
+              Conversations
 
         %li
           %a.m-dashboard-profile-activity-summary{ :'data-target' => 'positions'}
             %span.m-activity-summary-count
               {{ positions.length }}
             %span.m-activity-summary-label
-              Positions
+              Votes
 
         %li
           %a.m-dashboard-profile-activity-summary{ :'data-target' => 'points'}
@@ -521,12 +539,9 @@
             %span.m-activity-summary-label
               Comments
 
-
-
-
       .m-dashboard-profile-activity-block{ :'data-target' => 'proposals-details'}
         %h3
-          Proposals put forward     
+          Conversations started
         (( if(proposals.length > 0) { ))
         %table.table.table-condensed.table-striped
           %tbody
@@ -571,7 +586,7 @@
                   Re: {{ proposal.name }}
 
               %td.m-dashboard-profile-activity-action
-                = link_to 'View and consider', "{{Routes.user_position_proposal_path(proposal.long_id, user_id)}}"
+                = link_to 'See why', "{{Routes.user_position_proposal_path(proposal.long_id, user_id)}}"
             (( }); ))
         (( } else { ))
         .m-dashboard-profile-activity-empty
@@ -594,6 +609,14 @@
                   {{ point.category}} {{ point.nutshell }}
                 .m-dashboard-profile-activity-substance-context
                   Re: {{ proposal.name }}
+
+                .m-dashboard-profile-activity-influence
+                  This point has influenced {{influenced_users_by_point[point.id].length}} people
+                .l-group-container
+                  (( _.each(influenced_users_by_point[point.id], function(p){ ))
+                  %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+                  (( }); ))   
+
               %td.m-dashboard-profile-activity-action
                 = link_to 'Read and discuss', "{{Routes.proposal_point_path(proposal.long_id, point.id)}}"
             (( }); ))

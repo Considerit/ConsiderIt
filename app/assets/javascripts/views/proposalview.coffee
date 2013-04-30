@@ -1,3 +1,11 @@
+
+#######
+# state
+# -1 = unexpanded
+#  0 = expanded
+#  1 = position
+#  2 = results
+
 class ConsiderIt.ProposalView extends Backbone.View
   @expanded_template : _.template( $("#tpl_expanded_proposal").html() )
   @unexpanded_template: _.template( $("#tpl_unexpanded_proposal").html() )
@@ -17,25 +25,16 @@ class ConsiderIt.ProposalView extends Backbone.View
         ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: false})
       else if @state == 1
         ConsiderIt.router.navigate(Routes.new_position_proposal_path( @proposal.model.get('long_id') ), {trigger: false})
+      else if @state == 0
+        ConsiderIt.router.navigate(Routes.root_path(), {trigger: false} )
 
+        
   render : -> 
 
     @$el.html ConsiderIt.ProposalView.unexpanded_template($.extend({}, @model.attributes, {
         title : this.model.title()
         description_detail_fields : this.model.description_detail_fields()
       }))
-
-    #TODO: if user logs in as admin, need to do this
-    if ConsiderIt.roles.is_admin
-      for field in ConsiderIt.ProposalView.editable_fields
-        [selector, name, type] = field 
-        @$el.find(selector).editable {
-          resource: 'proposal'
-          pk: @long_id
-          url: Routes.proposal_path @long_id
-          type: type
-          name: name
-        }
 
     @$el.removeClass('expanded')
     @$el.addClass('unexpanded')
@@ -265,38 +264,40 @@ class ConsiderIt.ProposalView extends Backbone.View
       
       results_el.insertAfter(@$el.find('.m-proposal-introduction'))
       position_el.insertAfter(results_el)
-
-      #TODO: if user logs in as admin, need to do this
-      if ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
-
-        @render_admin_strip()
-        for field in ConsiderIt.ProposalView.editable_fields
-          [selector, name, type] = field 
-          @$el.find(selector).editable {
-            resource: 'proposal'
-            pk: @long_id
-            url: Routes.proposal_path @long_id
-            type: type
-            name: name
-          }
+      @state = 0
 
       $('html, body').animate {scrollTop: @$el.offset().top - 50}, 'slow', =>
         @$main_content_el.slideDown('slow')
 
-        @state = 0
 
         @$el.addClass('expanded')
         @$el.removeClass('unexpanded')
 
+
+        #TODO: if user logs in as admin, need to do this
+        if ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
+
+          @render_admin_strip()
+          for field in ConsiderIt.ProposalView.editable_fields
+            [selector, name, type] = field 
+            @$el.find(selector).editable {
+              resource: 'proposal'
+              pk: @long_id
+              url: Routes.proposal_path @long_id
+              type: type
+              name: name
+            }
+
       this
     else
+      ConsiderIt.router.navigate(Routes.root_path(), {trigger: false})
+      @state = -1
+
       @$main_content_el.slideUp => 
         @render()
-        ConsiderIt.router.navigate(Routes.root_path(), {trigger: false})
-        #@$el.addClass('unexpanded')
         $('html, body').animate {scrollTop: @$el.offset().top - 50}
+        #@$el.addClass('unexpanded')
 
-        @state = -1
 
   render_admin_strip : ->
     @$el.find('.m-proposal-admin_strip').remove()

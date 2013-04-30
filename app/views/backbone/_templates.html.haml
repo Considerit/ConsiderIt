@@ -27,7 +27,8 @@
         //   (( } ))
 
       .m-point-operations
-        %a.m-point-read-more{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }        
+        %a.m-point-read-more 
+          //{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }        
           {{ comment_count == 1 ? "1 comment" : comment_count + " comments"}}
         %a.m-point-remove
           Remove
@@ -117,7 +118,6 @@
           (( if (hide_name || user.get('name') == 'Anonymous') { ))
           anonymous
           (( } else if (user) { ))
-          (( console.log(user); ))
 
           %a{:'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
             {{ user.get('name') }}
@@ -229,7 +229,7 @@
     .m-proposal-message.m-proposal-introduction
       .l-message-speaker.m-proposal-initiator
         //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
-        %span.avatar.m-point-author-avatar{ :id => "avatar-{{ConsiderIt.current_user.id}}", :'data-id' => "{{ConsiderIt.current_user.id}}" }
+        %span.avatar{ :id => "avatar-{{ConsiderIt.current_user.id}}", :'data-id' => "{{ConsiderIt.current_user.id}}" }
 
       .l-message-body.left.m-proposal-description
         = render :partial => "shared/bubble", :locals => {:left => true}
@@ -291,7 +291,7 @@
 
     .m-proposal-message.m-proposal-introduction
       .l-message-speaker.m-proposal-initiator
-        %a.avatar.m-point-author-avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+        %a.avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
 
         //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
 
@@ -324,7 +324,7 @@
     .m-proposal-message.m-proposal-leader-response
       .l-message-speaker.m-proposal-initiator.small
         //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
-        %a.avatar.m-point-author-avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+        %a.avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
 
 
       .l-message-body.left.m-proposal-description

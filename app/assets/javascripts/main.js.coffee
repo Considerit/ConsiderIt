@@ -129,7 +129,6 @@ window.openPopupWindow = (url) ->
   openidpopup.moveTo(coords[0],coords[1])
 
 window.handleOpenIdResponse = (parameters, redirect_to) ->  
-  console.log parameters
   parameters.user = parameters.user.user
 
   ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
@@ -144,21 +143,15 @@ $(document).on "click", "a[href^='/']", (event) ->
   href = $(event.currentTarget).attr('href')
   target = $(event.currentTarget).attr('target')
 
-  console.log 'HI'
   if target == '_blank' || href == '/newrelic'  || $(event.currentTarget).data('remote') # || href[1..9] == 'dashboard'
-    console.log 'RETURNING'
     return true
-
 
   # Allow shift+click for new tabs, etc.
   if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
-    console.log 'BLEH'
     event.preventDefault()
     # Instruct Backbone to trigger routing events
     ConsiderIt.router.navigate(href, { trigger : true })
     return false
-
-  console.log "TOEND"
 
 
 #http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/

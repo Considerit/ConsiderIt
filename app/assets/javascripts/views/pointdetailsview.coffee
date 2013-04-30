@@ -33,12 +33,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       })
       @assessmentview.render()
 
-    # when clicking outside of point, close it
-    $(document).click => @close_details()
-    @$el.click (e) => 
-      if !$(e.target).data('target')
-        e.stopPropagation()
-    $(document).keyup (ev) => @close_by_keyup(ev)
 
     #TODO: if user logs in as admin, need to do this
     if ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.roles.is_admin
@@ -69,7 +63,16 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
     $('html, body').stop(true, true)
     #@center_overlay()
-    $('html, body').animate {scrollTop: @$el.offset().top - 50}, 1000
+    $('html, body').animate {scrollTop: @$el.offset().top - 50}, 750, =>
+
+      # when clicking outside of point, close it
+      $(document).on 'click', (ev)  => @close_details()
+      @$el.on 'click', (e) => 
+        if !$(e.target).data('target')
+          e.stopPropagation()
+      $(document).on 'keyup', (ev) => @close_by_keyup(ev)
+
+
 
     this
 
@@ -90,24 +93,23 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     'ajax:success .unfollow form' : 'toggle_follow'
 
   toggle_follow : (ev, data) -> 
-    console.log $(ev.currentTarget)
     $(ev.currentTarget).parent().addClass('hide').siblings('.follow, .unfollow').removeClass('hide')
     ConsiderIt.current_user.set_following(data.follow.follow)
 
-  close_details : (ev) ->
+  close_details : ->
     $('#lightbox').remove()
     @commentsview.clear()
     @commentsview.remove()
     if @assessmentview
       @assessmentview.remove()
 
-    @$el.html ''
-    @remove()
-    $(document)
-      .unbind 'click', @close_details
-    $(document)
-      .unbind 'keyup', @close_by_keyup
-
+    $(document).off 'click' #, @close_details
+    $(document).off 'keyup' #, @close_by_keyup
     @proposal.view.trigger 'point_details:closed'
+
+    #@$el.html ''
+    #@undelegateEvents()
+    @remove()
+    delete this
 
 

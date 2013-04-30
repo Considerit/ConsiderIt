@@ -20,7 +20,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     if ConsiderIt.roles.is_admin
       @$el.find('.m-proposals-new').remove()
       @$new_proposal = $('<div class="m-proposals-new l-content-wrap">')
-        .html ConsiderIt.ProposalListView.new_proposal_template( {  })
+        .html ConsiderIt.ProposalListView.new_proposal_template( { avatar : window.PaperClip.get_avatar_url(ConsiderIt.current_user, 'original') })
       
       @$new_proposal.find('.m-proposal-description-body').autoResize()
 

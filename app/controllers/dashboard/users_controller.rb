@@ -19,10 +19,20 @@ class Dashboard::UsersController < Dashboard::DashboardController
     end
 
     referenced_points = {}
+    influenced_users = {}
+    influenced_users_by_point = {}
     user.points.published.each do |pnt|
       proposal = Proposal.find(pnt.proposal_id) 
       if proposal.public? # or user has access...
         referenced_points[pnt.id] = pnt
+
+        influenced_users_by_point[pnt.id] = []
+        pnt.inclusions.where("user_id != #{user.id}").each do |inc|
+          influenced_users[inc.user_id] = 0 if ! influenced_users.has_key?(inc.user_id)
+          influenced_users[inc.user_id] +=1
+          influenced_users_by_point[pnt.id].push inc.user_id
+        end
+
         if !referenced_proposals.has_key?(pnt.proposal_id)
           referenced_proposals[pnt.proposal_id] = proposal
         end
@@ -51,7 +61,9 @@ class Dashboard::UsersController < Dashboard::DashboardController
       :referenced_points => referenced_points,
       :positions => positions,
       :points => user.points.published.public_fields,
-      :comments => user.comments.public_fields
+      :comments => user.comments.public_fields,
+      :influenced_users => influenced_users,
+      :influenced_users_by_point => influenced_users_by_point
     }
 
     render :json => data

@@ -122,12 +122,13 @@ class ConsiderIt.SummaryView extends Backbone.View
 
   render : () ->
     
-    this.$el.html ConsiderIt.SummaryView.template($.extend({}, @model.attributes, {
-      top_pro : @proposal.top_pro 
-      top_con : @proposal.top_con
-      tile_size : @tile_size   
-      participants : _.sortBy($.parseJSON(@model.get('participants')), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
-      }))
+    if @proposal.top_pro && @proposal.top_con && @proposal.model.participants().length > 0
+      this.$el.html ConsiderIt.SummaryView.template($.extend({}, @model.attributes, {
+        top_pro : @proposal.top_pro 
+        top_con : @proposal.top_con
+        tile_size : @tile_size   
+        participants : _.sortBy($.parseJSON(@model.get('participants')), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
+        }))
 
     this
 

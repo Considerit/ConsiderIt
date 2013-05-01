@@ -17,10 +17,10 @@ class Proposal < ActiveRecord::Base
   
   #before_save :extract_tags
 
-  scope :active, where( :active => true )
+  scope :active, where( :active => true, :published => true )
   scope :inactive, where( :active => false )
-  scope :public, where( :publicity => 2)
-  scope :public_fields, select('id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active, top_pro, top_con, participants,publicity')
+  scope :public, where( :publicity => 2, :published => true )
+  scope :public_fields, select('id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active, top_pro, top_con, participants,publicity,published')
 
   def public?
     publicity == 2

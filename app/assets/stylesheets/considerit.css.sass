@@ -1374,26 +1374,18 @@ $membership_card_height: 278px
 // New Proposal
 
 .m-proposals-new
-  .m-proposal-name, .m-proposal-description-body
-    background-color: transparent
-    width: 100%
-
-  .m-proposal-name
-    +font-size(3)
-    text-align: center
-    color: #222
-    @extend %bolded
-
-  .m-proposal-description-body
-    min-height: 5 * $vertical_baseline
-    +font-size(0)
-    border: none
-
-  .m-new-proposal-submit-wrap input[type="submit"]
-    +font-size(2)
-    color: white
+  .m-new-proposal-submit
     +superbutton
-    margin-left: 164px
+    +font-size(3)
+    padding: $vertical_baseline / 2 0
+    text-align: center
+    color: white
+    display: inline-block
+    width: 100%
+    border: 1px solid 
+    border-bottom: 1px solid 
+    border-color: rgba(white,.5) rgba(black, .1) rgba(black,.25) rgba(white, .2)
+    font-weight: bold
 
 
 // Proposal
@@ -1564,7 +1556,6 @@ $membership_card_height: 278px
   .l-dialog-prompt-label, .m-delete_proposal, .m-proposal-admin_label
     @extend %m-proposal-strip-item
 
-
   .l-dialog-prompt-label span, .m-delete_proposal
     text-decoration: underline
 
@@ -1578,6 +1569,28 @@ $membership_card_height: 278px
 
   .m-proposal-admin_label
     opacity: .5
+
+.m-proposal-strip_publish 
+  margin-top: $vertical_baseline
+  .m-proposal-publish-form
+    display: inline
+    
+  .m-proposal-publish
+    display: inline-block
+    width: 94%
+    background-color: #444
+    color: white
+    +font-size(3)
+    font-weight: bold
+    text-align: center
+    padding: $vertical_baseline / 2
+    &:hover
+      background-color: #222
+  .m-delete_proposal
+    text-align: center
+    color: #666
+    width: 4%
+    display: inline-block
 
 .m-proposal-message
   @extend %l-message-template
@@ -1608,6 +1621,9 @@ $membership_card_height: 278px
 
     p
       margin-bottom: $vertical_baseline
+
+  .m-proposal-description-body
+    min-height: 100px
 
 
 /* YOUR_ACTION */
@@ -2179,6 +2195,7 @@ label.inline
   border-bottom: none
   position: relative
   display: inline-block
+  width: 100%
   &:hover
     cursor: pointer
     background-color: rgba(white, .85)

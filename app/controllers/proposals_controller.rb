@@ -125,7 +125,9 @@ class ProposalsController < ApplicationController
       :success => true,
       :access_list => @proposal.access_list,
       :publicity => @proposal.publicity,
-      :active => @proposal.active
+      :published => @proposal.published,
+      :active => @proposal.active,
+      :proposal => @proposal
     }
     render :json => response.to_json
   end

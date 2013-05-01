@@ -4,8 +4,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   @childClass : 'm-proposal'
   listSelector : '.m-proposal-list'
 
-  @new_proposal_template = _.template($('#tpl_new_proposal').html())
-
   initialize : (options) -> 
     @listenTo ConsiderIt.app, 'proposal:deleted', (proposal) => @delete_proposal(proposal)
     
@@ -18,14 +16,12 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   #TODO: do this when login as admin
   render_new_proposal : ->
     if ConsiderIt.roles.is_admin
+      if !(@new_proposal_template?)
+        @new_proposal_template = _.template($('#tpl_new_proposal').html())
+
       @$el.find('.m-proposals-new').remove()
-      @$new_proposal = $('<div class="m-proposals-new l-content-wrap">')
-        .html ConsiderIt.ProposalListView.new_proposal_template( { avatar : window.PaperClip.get_avatar_url(ConsiderIt.current_user, 'original') })
+      @$new_proposal = $('<div class="m-proposals-new">').html @new_proposal_template( {} )
       
-      @$new_proposal.find('.m-proposal-description-body').autoResize()
-
-      @$new_proposal.find('[placeholder]').simplePlaceholder()
-
       @$el.prepend(@$new_proposal)
 
 
@@ -63,19 +59,19 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     'click .m-new-proposal-submit' : 'create_new_proposal'
     
   create_new_proposal : (ev) ->
-    @$new_proposal
 
     attrs = 
-      name : @$new_proposal.find('.m-proposal-name').val()
-      description : @$new_proposal.find('.m-proposal-description-body').val()
-      active : @$new_proposal.find('.m-proposal-active').val()
-    @cancel_new_proposal()
+      name : 'Should we ... ?'
+      description : "We're thinking about ..."
 
-    new_proposal = @collection.create attrs, {wait: true, at: 0}
+    new_proposal = @collection.create attrs, {
+      wait: true
+      at: 0
+      success: => 
+        new_view = @getViewByModel new_proposal
+        new_view.toggle()
 
-  cancel_new_proposal : ->
-    @$new_proposal.find('input[type="text"], textarea').val('')
-
+    }
 
   delete_proposal : (proposal) ->
     ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})

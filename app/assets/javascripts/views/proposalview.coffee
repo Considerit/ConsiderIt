@@ -225,11 +225,12 @@ class ConsiderIt.ProposalView extends Backbone.View
     'click .m-proposal-follow_conversation' : 'toggle_follow_proposal'
 
     'click .m-proposal-admin_operations-status' : 'show_status'
-    'ajax:complete .m-proposal-admin_operations-settings-form' : 'change_settings'
     'click .m-proposal-admin_operations-publicity' : 'show_publicity'
     'ajax:complete .m-proposal-admin_operations-settings-form' : 'change_settings'
     'click .l-dialog-detachable a.cancel' : 'cancel_dialog'
     'ajax:complete .m-delete_proposal' : 'delete_proposal'
+
+    'ajax:complete .m-proposal-publish-form' : 'publish_proposal'
 
   toggle_if_not_expanded : (ev) ->
     if @$el.is('.unexpanded')
@@ -248,23 +249,26 @@ class ConsiderIt.ProposalView extends Backbone.View
           avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'original')
         }))
 
-      results_el = $('<div class="m-proposal-message">')
-      @proposal.views.results = new ConsiderIt.ResultsView
-        el : results_el
-        proposal : @proposal
-        model : @model
 
-      @proposal.views.results.render()
+      if @model.get('published')
+        results_el = $('<div class="m-proposal-message">')
+        @proposal.views.results = new ConsiderIt.ResultsView
+          el : results_el
+          proposal : @proposal
+          model : @model
 
-      @proposal.views.take_position = new ConsiderIt.PositionView
-        proposal : @proposal
-        model : @proposal.position
-        el : @$el
+        @proposal.views.results.render()
 
-      position_el = @proposal.views.take_position.render()
-      
-      results_el.insertAfter(@$el.find('.m-proposal-introduction'))
-      position_el.insertAfter(results_el)
+        @proposal.views.take_position = new ConsiderIt.PositionView
+          proposal : @proposal
+          model : @proposal.position
+          el : @$el
+
+        position_el = @proposal.views.take_position.render()
+        
+        results_el.insertAfter(@$el.find('.m-proposal-introduction'))
+        position_el.insertAfter(results_el)
+
       @state = 0
 
       $('html, body').animate {scrollTop: @$el.offset().top - 50}, 'slow', =>
@@ -357,3 +361,10 @@ class ConsiderIt.ProposalView extends Backbone.View
     data = $.parseJSON(response.responseText)
     if data.success
       ConsiderIt.app.trigger('proposal:deleted', @proposal.model )
+
+  publish_proposal : (ev, response, options) ->
+    data = $.parseJSON(response.responseText)
+    console.log data
+    @model.set(data.proposal.proposal)
+    @render()
+    @toggle()

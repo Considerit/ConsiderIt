@@ -33,3 +33,6 @@ class ConsiderIt.Proposal extends Backbone.Model
   description_detail_fields : ->
     [ ['long_description', 'Long Description', $.trim(htmlFormat(@attributes.long_description))], 
       ['additional_details', 'Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_details))] ]
+
+  participants : ->
+    $.parseJSON(@attributes.participants) 

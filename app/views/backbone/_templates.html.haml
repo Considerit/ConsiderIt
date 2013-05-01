@@ -216,32 +216,9 @@
             cancel
     (( } ))
 
-
-  - theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
-  - rep_position = nil
-
   %script{ :type => "text/template", :id => "tpl_new_proposal"}
-
-
-    %h2.m-proposal-heading
-      = text_field_tag 'name', nil, :placeholder => "Should we\u2026?", :class => 'm-proposal-name'
-
-    .m-proposal-message.m-proposal-introduction
-      .l-message-speaker.m-proposal-initiator
-        //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")        
-        //%span.avatar{ :id => "avatar-{{ConsiderIt.current_user.id}}", :'data-id' => "{{ConsiderIt.current_user.id}}" }
-        %img{:src => "{{ avatar }}"}
-
-      .l-message-body.left.m-proposal-description
-        = render :partial => "shared/bubble", :locals => {:left => true}
-
-        .m-proposal-description-body-wrap
-          = text_area_tag 'description', nil, :placeholder => "Add details of the proposal here.", :class => 'm-proposal-description-body'
-
-      .m-new-proposal-submit-wrap
-        = hidden_field_tag 'active', true, :class => 'm-proposal-active'
-        = submit_tag 'Post this proposal', :class => "m-new-proposal-submit button"
-
+    %button.m-new-proposal-submit
+      Start a new conversation
 
 
   %script{ :type => "text/template", :id => "tpl_unexpanded_proposal" }
@@ -253,6 +230,7 @@
       .m-proposal-body_wrap
 
 
+      (( if(published){ ))
       .m-proposal-connect.m-proposal-strip
 
         %ul
@@ -276,7 +254,9 @@
             .zocial.icon.permalink
           %li.m-proposal-action-label
             Link to this conversation
+      (( } ))
 
+      (( if(published){ ))
       .m-proposal_strip_toggle.m-proposal-strip
         %a.m-proposal-toggle
           %span.m-proposal_toggle_expanded
@@ -284,19 +264,23 @@
           %span.m-proposal_toggle_unexpanded
             Show conversation
 
+      (( } else { ))
+      .m-proposal-strip_publish
+        = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
+          = f.hidden_field :published, :value => true
 
+          = f.submit 'Publish this new conversation', :class => 'm-proposal-publish'
 
+        = link_to "cancel", "{{Routes.proposal_path(long_id)}}", :confirm => "Canceling will permanently delete this conversation. Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
 
+      (( } ))
 
   %script{ :type => "text/template", :id => "tpl_expanded_proposal" }
 
     .m-proposal-message.m-proposal-introduction
       .l-message-speaker.m-proposal-initiator
-        %img{:src => "{{ avatar }}"}
-
-        // %a.avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
-
-        //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
+        %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+          %img{:src => "{{ avatar }}"}
 
       .l-message-body.left.m-proposal-description
         = render :partial => "shared/bubble", :locals => {:left => true}
@@ -324,11 +308,11 @@
 
       .l-message-recipient
 
+    (( if(published){ ))
     .m-proposal-message.m-proposal-leader-response
       .l-message-speaker.m-proposal-initiator.small
-        //= image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
-        //%a.avatar{ :id => "avatar-{{user_id}}", :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
-        %img{:src => "{{ avatar }}"}
+        %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+          %img{:src => "{{ avatar }}"}
 
 
       .l-message-body.left.m-proposal-description
@@ -338,10 +322,8 @@
 
         .rep_statement
           (( if(r==0){ ))
-          -# if r == 0 #true || rep_position.nil?
           I've not yet taken a stance
           (( } else if(r==1){ ))
-          -# elsif r == 1 #true || proposal.active        
           I hope to hear from more of you. Meanwhile, these are 
           %a{ :style => "text-decoration: underline; cursor: pointer;"}
             my thoughts so far. 
@@ -354,7 +336,7 @@
           (( } ))  
 
       .l-message-recipient      
-
+    (( } ))
 
 
   %script{ :type => "text/template", :id => "tpl_your_action_craft"}
@@ -362,8 +344,6 @@
 
     %a.l-message-body.m-position-your-action-body.right.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
       = render :partial => "shared/bubble", :locals => {:left => false}
-
-      //= image_tag current_theme_image_path("join.png")
 
       %span.text
         {{call}}
@@ -733,7 +713,7 @@
           (( } ))
 
 
-    = link_to "Delete conversation", "{{Routes.proposal_path(long_id)}}", :confirm => "Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
+    = link_to "Delete conversation", "{{Routes.proposal_path(long_id)}}", :confirm => "Are you sure you wish to permanently delete this conversation?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
 
 
   = render :partial => 'assessable/templates_user_facing'

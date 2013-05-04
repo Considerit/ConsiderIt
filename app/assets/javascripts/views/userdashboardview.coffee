@@ -254,7 +254,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
   # handles user profile access for anyone throughout the app  
   view_user_profile : (ev) ->
-    $('html, body').animate {scrollTop: 0 }, 500
+    $('body').animate {scrollTop: 0 }, 500
     ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
 
   navigate_to_profile : -> ConsiderIt.router.navigate Routes.profile_path( ConsiderIt.current_user.id ), {trigger: true}

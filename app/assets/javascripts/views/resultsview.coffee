@@ -172,7 +172,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     @show()
 
-    $('html, body').animate {scrollTop: @$el.offset().top}, 1000      
+    $('body').animate {scrollTop: @$el.offset().top}, 1000      
     this
 
   show : () ->
@@ -231,7 +231,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
     'click .m-point-wrap' : 'navigate_point_details'
 
   navigate_point_details : (ev) ->
-    console.log 'HI'
     point_id = $(ev.currentTarget).closest('.pro, .con').data('id')
     ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.model.get('long_id'), point_id), {trigger: true})
 

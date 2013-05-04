@@ -1,42 +1,64 @@
 
 - cache ['templates', current_tenant] do
+
+
+  %script{ :type => "text/template", :id => "tpl_point_follows"}
+    (( if( published && ConsiderIt.current_user.is_logged_in() ) { ))
+
+    (( var follows_class = already_follows ? 'hide' : ''; ))
+    (( var unfollows_class = already_follows ? '' : 'hide'; ))
+    %div{ :class => "follow {{ follows_class }}"}
+      = form_for :follows, :url => "{{ Routes.follow_path() }}", :as => :follow, :method => :get, :remote => true do |f|
+        = f.hidden_field :followable_id, :value => "{{id}}"
+        = f.hidden_field :followable_type, :value => "Point"
+        = f.submit "Follow this point", :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.' #, :class => 'button'
+
+    %div{ :class => "unfollow {{ unfollows_class }}"}
+      = form_for :follows, :url => "{{ Routes.unfollow_path() }}", :as => :follow, :remote => true do |f|
+        = f.hidden_field :user_id, :value => "{{ ConsiderIt.current_user.id }}"
+        = f.hidden_field :followable_id, :value => "{{ id }}"
+        = f.hidden_field :followable_type, :value => "Point"
+        = f.submit "Unfollow this point" #, :class => 'button'
+
+    (( } ))
+
+
   %script{ :type => "text/template", :id => "tpl_point" }   
 
     (( if (hide_name || user.name == 'Anonymous' ) { ))
-    %span.avatar.m-point-author-avatar{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)"}
+    %span.avatar.m-point-author-avatar.m-avatar-anonymous{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)", :title => "This user has requested to remain anonymous"}
     (( } else if (user) { ))
 
-    %a.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile picture", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
+    %a.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :title => "View {{user.name}}'s profile", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
     (( } ))
 
     .m-point-wrap
 
       .m-point-nutshell-wrap
-        %span.m-point-nutshell
-          {{adjusted_nutshell}}
-        //%span.details_indicator
-        //  (&#8230;)
-      
-        // %span.m-point-user
-        //   (( if(user.name) { ))
-        //   {{user.name}}
-        //   (( } else if(is_you) { ))
-        //   You
-        //   (( } else { ))
-        //   Anonymous
-        //   (( } ))
+        .m-point-nutshell
+          {{ adjusted_nutshell }}
+
+      .m-point-details-description 
+        {{ text }}
 
       .m-point-operations
+
+        .m-point-follow
+
+        .m-point-assess
+
         %a.m-point-read-more 
           //{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }        
           {{ comment_count == 1 ? "1 comment" : comment_count + " comments"}}
-        %a.m-point-remove
-          Remove
+        %a.m-point-remove{ :'data-target' => 'point-remove'}
+          Remove from your list
 
       .m-point-include-wrap
-        %a.m-point-include
+        %a.m-point-include{ :'data-target' => 'point-include'}
           Add to your list
           %span.list_connector
+
+
 
   %script{ :type => "text/template", :id => "tpl_newpoint" }      
     
@@ -94,72 +116,7 @@
       (( } ))
 
 
-  %script{ :type => "text/template", :id => "tpl_point_details" }   
-    (( var hide_name = false; ))
 
-    %div{ :class => "m-point-details-{{ is_pro ? 'pro' : 'con' }}" }
-
-      .l-message-speaker
-        %a.avatar.m-point-details-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page"}
-
-      .l-message-body.m-point-details-body
-        = render :partial => "shared/bubble", :locals => {:left => true}
-
-        %a.m-point-details-close
-          &#10006;
-
-        .m-point-details-nutshell 
-          {{ nutshell }} 
-
-        .m-point-details-description 
-          {{ text }}
-
-        .m-point-details-author
-          (( if (hide_name || user.get('name') == 'Anonymous') { ))
-          anonymous
-          (( } else if (user) { ))
-
-          %a{:'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
-            {{ user.get('name') }}
-          (( } else { ))
-          unknown
-          (( } ))
-
-        .m-point-details-operations
-          (( if( published && ConsiderIt.current_user.is_logged_in() ) { ))
-
-          (( var follows_class = already_follows ? 'hide' : ''; ))
-          (( var unfollows_class = already_follows ? '' : 'hide'; ))
-          %div{ :class => "follow {{ follows_class }}"}
-            = form_for :follows, :url => "{{ Routes.follow_path() }}", :as => :follow, :method => :get, :remote => true do |f|
-              = f.hidden_field :followable_id, :value => "{{id}}"
-              = f.hidden_field :followable_type, :value => "Point"
-              = f.submit "Follow this point", :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.', :class => 'button'
-
-          %div{ :class => "unfollow {{ unfollows_class }}"}
-            = form_for :follows, :url => "{{ Routes.unfollow_path() }}", :as => :follow, :remote => true do |f|
-              = f.hidden_field :user_id, :value => "{{ ConsiderIt.current_user.id }}"
-              = f.hidden_field :followable_id, :value => "{{ id }}"
-              = f.hidden_field :followable_type, :value => "Point"
-              = f.submit "Unfollow this point", :class => 'button'
-
-          (( } ))
-
-        .m-point-assessment-wrap
-
-        .m-point-discussion
-          
-          %h3.m-point-discussion-heading
-            Discussion
-
-          %ul.m-point-comments
-
-
-      .l-message-recipient
-
-      (( if( !hide_name && user ){ ))
-      %span.avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :class => "author"}
-      (( } ))
 
   %script{ :type => "text/template", :id => "tpl_newcomment" }   
     .m-new-comment            
@@ -262,7 +219,7 @@
           %span.m-proposal_toggle_expanded
             Hide conversation
           %span.m-proposal_toggle_unexpanded
-            Show conversation
+            Join conversation
 
       (( } else { ))
       .m-proposal-strip_publish
@@ -422,7 +379,7 @@
 
       .m-stance
         %h2.m-position-heading
-          After weighing the pros and cons, I vote to... 
+          Based on these pros and cons, I lean... 
         %table
           %tr
             %td.m-stance-label-support

@@ -9,9 +9,14 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
     super
     @commentable_type = options.commentable_type
     @commentable_id = options.commentable_id
-  
-  render : () -> 
+
+    @$el.append('<h3 class= "m-point-discussion-heading">Discussion</h3>')
+    @$el.append('<ul class= "m-point-comments">')
+
+
+  render : () ->     
     super
+
     @$el.append(ConsiderIt.CommentListView.newcomment_template({user : ConsiderIt.current_user }))
 
     @$el.find('[placeholder]').simplePlaceholder()
@@ -20,8 +25,6 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
       $(el).NobleCount $(el).siblings('.count'), {
         block_negative: true,
         max_chars : parseInt($(el).siblings('.count').text()) }        
-
-
 
   # Returns an instance of the view class
   getItemView: (comment)->

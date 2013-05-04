@@ -26,7 +26,7 @@ class ConsiderIt.ProposalView extends Backbone.View
       else if @state == 1
         ConsiderIt.router.navigate(Routes.new_position_proposal_path( @proposal.model.get('long_id') ), {trigger: false})
       else if @state == 0
-        ConsiderIt.router.navigate(Routes.root_path(), {trigger: false} )
+        ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: false})
 
         
   render : -> 
@@ -132,9 +132,9 @@ class ConsiderIt.ProposalView extends Backbone.View
     el.insertAfter(me.$el.find('[data-role="results-section"]'))
     
     $('html, body').stop(true, false);
-    $('html, body').animate {scrollTop: el.offset().top - 100 }, 500
+    $('body').animate {scrollTop: el.offset().top - 100 }, 500
 
-    @state = 1
+    me.state = 1
 
   show_results : (me) ->
 
@@ -142,9 +142,9 @@ class ConsiderIt.ProposalView extends Backbone.View
     me.proposal.views.results.show_explorer()
 
     $('html, body').stop(true, false);
-    $('html, body').animate {scrollTop: me.proposal.views.results.$el.offset().top - 100 }, 500
+    $('body').animate {scrollTop: me.proposal.views.results.$el.offset().top - 100 }, 500
 
-    @state = 2
+    me.state = 2
 
   take_position_handler : () ->
     if @state == -1
@@ -204,7 +204,7 @@ class ConsiderIt.ProposalView extends Backbone.View
         # This is non DRY code from pointview#show_point_details
         overlay = $('<div class="l-overlay" id="point_details_overlay">')
         me.$el.prepend(overlay)
-        me.trigger 'point_details:staged'
+        #me.trigger 'point_details:staged'
         # warning: this is not being properly removed
         me.pointdetailsview = new ConsiderIt.PointDetailsView( {proposal : me.proposal, model: point, el: overlay} )
         me.pointdetailsview.render()
@@ -271,7 +271,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
       @state = 0
 
-      $('html, body').animate {scrollTop: @$el.offset().top - 50}, 'slow', =>
+      $('body').animate {scrollTop: @$el.offset().top - 50}, 'slow', =>
         @$main_content_el.slideDown('slow')
 
 
@@ -300,7 +300,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
       @$main_content_el.slideUp => 
         @render()
-        $('html, body').animate {scrollTop: @$el.offset().top - 50}
+        $('body').animate {scrollTop: @$el.offset().top - 50}
         #@$el.addClass('unexpanded')
 
 
@@ -364,7 +364,6 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   publish_proposal : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
-    console.log data
     @model.set(data.proposal.proposal)
     @render()
     @toggle()

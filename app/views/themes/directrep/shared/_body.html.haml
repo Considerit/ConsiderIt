@@ -44,41 +44,43 @@
         .rep_statement.left
           = render :partial => "shared/bubble", :locals => {:left => true}
 
-          %strong
-            - if !aarp
-              Tell me what you think about the issues below. 
-            - else
-              Tell us what you think about the issues below.
-
+          
           - if !aarp
-            I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
-            
-            //I want to be able to represent the residents of Moanalua, Salt Lake and Aliamanu as we consider these issues in the State House.
+            Tell me what you think about the issues below. 
           - else
-            We want to represent our members as our government consider these important policy issues that will effect the lives of our members.
+            Tell us what you think about the issues below.
+
+          %span.light
+            - if !aarp
+              I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
+              
+              //I want to be able to represent the residents of Moanalua, Salt Lake and Aliamanu as we consider these issues in the State House.
+            - else
+              We want to represent our members as our government consider these important policy issues that will effect the lives of our members.
 
         .constituent_statement.right
           //.t-bubble
           = render :partial => "shared/bubble", :locals => {:left => false}
-  
-          - if !aarp
-            Why should we spend the time? Politicians don't care what we think.
-          - else
-            Why should we spend time?  Does the AARP really care what we think?
+          
+          %span.light
+            - if !aarp
+              Why should we spend the time? Politicians don't care what we think.
+            - else
+              Why should we spend time?  Does the AARP really care what we think?
 
         .rep_statement.left
           = render :partial => "shared/bubble", :locals => {:left => true}
 
-          %strong
-            - if !aarp
-              I promise to post a response to your concerns.
-            - else
-              Your voice powers the AARP.  
-
           - if !aarp
-            Your opinions help shape how I look at these important issues for our community. I care what you think.
+            I promise to post a response to your concerns.
           - else
-            Your opinions help shape how we as an organization can respond to these important issues.  We care what you think.
+            Your voice powers the AARP.  
+
+          %span.light  
+            - if !aarp
+              Your opinions help shape how I look at these important issues for our community. I care what you think.
+            - else
+              Your opinions help shape how we as an organization can respond to these important issues.  We care what you think.
 
       .l-message-recipient.l-group-container
         - cols = 10

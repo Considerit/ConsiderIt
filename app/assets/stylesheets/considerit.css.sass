@@ -11,14 +11,17 @@
 // only used by admins, but for inline proposal editing
 @import "shared/dialog" 
 
-+font-face("ModernPictogramsNormal", font-files("modernpics-webfont.woff", "modernpics-webfont.eot",  "modernpics-webfont.ttf", "modernpics-webfont.svg#ModernPictogramsNormal"), $eot: "modernpics-webfont.eot")
+
+
+//+font-face("ModernPictogramsNormal", font-files("modernpics-webfont.woff", "modernpics-webfont.eot",  "modernpics-webfont.ttf", "modernpics-webfont.svg#ModernPictogramsNormal"), $eot: "modernpics-webfont.eot")
 
 //+font-face("FontAwesome", font-files("fontawesome-webfont.woff", "fontawesome-webfont.eot",  "fontawesome-webfont.ttf"), $eot: "fontawesome-webfont.eot")
 
-$styles: "regular", "bold", "italic"
-@each $style in $styles
-  $file: "optima-#{$style}-webfont"
-  +font-face("Optima-web-#{$style}", font-files("#{$file}.woff", "#{$file}.eot",  "#{$file}.ttf", "#{$file}.svg"), $eot: "#{$file}.eot")
+// $styles: "regular", "bold", "italic"
+// @each $style in $styles
+//   $file: "optima-#{$style}-webfont"
+//   +font-face("Optima-web-#{$style}", font-files("#{$file}.woff", "#{$file}.eot",  "#{$file}.ttf", "#{$file}.svg"), $eot: "#{$file}.eot")
+
 
 @font-face
   font-family: 'zocial'
@@ -132,7 +135,7 @@ a
     border: none  
 
 input, button
-  +transition
+  +single-transition
 
 
 table
@@ -176,6 +179,7 @@ blockquote
   display: none
 
 #lightbox
+  display: none
   background-color: rgba(black, .85)
   position: fixed
   top: 0
@@ -201,7 +205,7 @@ $slider_label_width: 100px
 $peer-point-width: 225px
 //$peer-point-height: 180px
 
-$pro-con-list-column-width: 250px
+$pro-con-list-column-width: $body_width / 2 //250px
 
 $histogram_bar_width: 45px //2 * $grid_major - 4
 
@@ -235,7 +239,7 @@ $hex-bullet-point: '\2022'
 =superbutton
   +background-image(linear-gradient(lighten($comp_color, 5%), $comp_color))
   background-color: lighten($comp_color, 5%)
-  +transition
+  +single-transition
 
   &:hover
     +background-image(linear-gradient(lighten($comp_color, 15%) 0%, lighten($comp_color, 5%) 20%))
@@ -274,20 +278,21 @@ $hex-bullet-point: '\2022'
     position: relative
     vertical-align: top
     display: inline-block
-    width: $pro-con-list-column-width
+    width: $pro-con-list-column-width - 3
 
   .m-pro-con-list-propoints, .m-pro-con-list-conpoints
     @extend %m-pro-con-list-column
     //margin: 0 0 0 $grid_minor
+    //padding: 0 $grid_xs
 
   .m-pro-con-list-propoints 
-    margin-left: $grid_xs
+    //padding: 0 $grid_xs
     //margin-right: $grid_xs
 
   .m-pro-con-list-conpoints 
     //margin-right: $grid_major - $chalkboard_border_width
     //margin-left: $grid_xs
-    margin-left: $grid_minor
+    //padding-left: $grid_minor
     
   .m-pro-con-list-header   
     margin-bottom: $vertical_baseline/2
@@ -311,6 +316,8 @@ $hex-bullet-point: '\2022'
   background-size: cover
   background-image: url('/system/default_avatar/small_default-profile-pic.png')
 
+  &.m-avatar-anonymous
+    cursor: default
 
 .button, button, input[type="submit"]
   outline: none
@@ -334,17 +341,7 @@ $hex-bullet-point: '\2022'
 
 $background: image-url('directrep/images/back.png')
 
-html
-  //&:after
-    //content: ''
-    //position: absolute
-    //top: 0
-    //left: 0
-    //position: fixed
-    //height: 100%
-    //width: 100%
-    //z-index: -1
-  background: repeat left top $comp_color
+html  
   +background-img
 
 #l-wrap
@@ -746,63 +743,23 @@ $membership_card_height: 278px
 // CONSIDERIT MODULES
 //////////////////////////////////////////
 
+
+
 /* POINT_IN_LIST */
-
-
-%m-point
-  +nude-list
-  position: relative
-  cursor: pointer
-
-  .m-point-author-avatar
-    display: none
-
-  .m-point-nutshell-wrap
-
-    .m-point-user
-      white-space: nowrap
-      display: inline-block
-      //+font-size(-6)
-
-  .m-point-operations
-    padding: 0 $grid_xs
-
-    %point_operation
-      //display: inline-block          
-      +font-size(-4)
-      padding: 0
-      margin: 0
-      @extend %bolded
-
-    .m-point-remove, .m-point-read-more, .m-point-edit
-      @extend %point_operation
-
-    .m-point-edit:before, .m-point-remove:before
-      content: '\2022'
-      +font-size(-6)
-      position: relative
-      right: 1px
-
-
 = circle($width)
   border-radius: 50%
   width: $width
   height: $width
 
-.m-point-peer
+  //////////////////////
+  // thought bubbles...
 
-  width: $peer-point-width
-  border-radius: 8px
-  +nude-list
-  +single-box-shadow($color: rgba(black, .2))
-  position: relative
-  cursor: pointer
+%m-point-thought-bubble
 
   &:before, &:after
     content: ''
     position: absolute
-    border: 1px solid $dark_constituency_color
-    @extend %postit-background-repeat
+    border: 1px solid
     border-bottom-color: transparent
 
   &:before
@@ -834,6 +791,72 @@ $membership_card_height: 278px
     &:after
       right: -7px
 
+  .m-point-author-avatar
+    width: 50px
+    height: 50px
+    display: inline-block
+    position: absolute
+    border-radius: 8px
+    top: 2 * $vertical_baseline
+    opacity: .85
+
+  &.pro .m-point-author-avatar
+    left: -50px
+
+  &.con .m-point-author-avatar
+    right: -50px
+
+  //////////////////////
+
+
+%m-point
+  +nude-list
+  position: relative
+  cursor: pointer
+  +single-transition
+
+  .m-point-wrap
+    +single-transition
+
+  .m-point-nutshell
+    +single-transition
+
+  .m-point-nutshell-wrap
+
+    .m-point-user
+      white-space: nowrap
+      display: inline-block
+      //+font-size(-6)
+
+  .m-point-details-description 
+    display: none
+
+$add_point_background-light: #EDE276
+$add_point_background-dark: #CEC04A
+$add_point_border-color: #BAAC54
+$arrow_height: 11px
+
+
+%point_operation_button
+  background-color: $add_point_background-light
+  border: 1px solid $add_point_border-color
+  padding: $vertical_baseline/4 $grid_xs / 2
+  color: #222
+  +font-size(-4)
+  @extend %bolded
+  //height: 3 * $vertical_baseline
+  display: inline-block
+  vertical-align: top
+  margin: 0
+
+
+.m-point-peer
+  @extend %m-point
+  @extend %m-point-thought-bubble
+  width: $peer-point-width
+  border-radius: 8px
+  +single-box-shadow($color: rgba(black, .2))
+
 
   .m-point-wrap
     +single-box-shadow($color: #fff, $hoff: 1px, $voff: 6px, $blur: 9px, $spread: -5px, $inset: true) 
@@ -843,61 +866,49 @@ $membership_card_height: 278px
     border: 1px solid $dark_constituency_color
     @extend %postit-background-repeat
 
-  .m-point-author-avatar
-    width: 50px
-    height: 50px
-    display: inline-block
-    position: absolute
-    border-radius: 8px
-    top: 2 * $vertical_baseline
-    opacity: .55
-
-  &.pro .m-point-author-avatar
-    left: -50px
-
-  &.con .m-point-author-avatar
-    right: -50px
-
   .m-point-nutshell-wrap
-    .m-point-nutshell, .m-point-user, .details_indicator
-      +font-size(-4)
+
+  .m-point-nutshell, .m-point-user, .details_indicator
+    +font-size(-4)
+
+
 
   .m-point-operations        
     position: absolute
-    bottom: $vertical_baseline / 4
+    width: 90%
     
     a
       +font-size(-3)
       color: darken(desaturate($yellow_postit, 25%), 35%)
       @extend %bolded
-      +transition
+      +single-transition
 
       &:hover
         color: darken(desaturate($yellow_postit, 20%), 75%)
 
-    .m-point-edit, .m-point-remove
+    .m-point-remove
       display: none
 
+  &.m-point-unexpanded
+    .m-point-operations
+      bottom: $vertical_baseline / 4
 
   &:hover .m-point-operations a
     color: darken(desaturate($yellow_postit, 20%), 50%)
 
-
   &.pro
     .m-point-operations
-      left: $grid_xs / 2
+      //left: $grid_xs / 2
       text-align: left
   &.con
     .m-point-operations
-      right: $grid_xs / 2
+      //right: $grid_xs / 2
       text-align: right
 
 
 
-  $add_point_background-light: #EDE276
-  $add_point_background-dark: #CEC04A
-  $add_point_border-color: #BAAC54
-  $arrow_height: 11px
+  ///////////////////////
+  /// Point inclusion effect
 
   =triangle($size)
     width: 0
@@ -914,26 +925,22 @@ $membership_card_height: 278px
     border-right: $size solid $color
 
   .m-point-include-wrap
+
     //display: inline-block
     position: absolute
     bottom: 0
     //opacity: .5
-    +transition
+    +single-transition
 
     .m-point-include
-      border: 1px solid $add_point_border-color
-      +transition
+      @extend %point_operation_button
+      +single-transition
       display: inline-block
-      padding: $vertical_baseline/4 $grid_xs / 2
-      color: #222
-      +font-size(-4)
-      @extend %bolded
       position: relative
       z-index: 2
-      background-color: $add_point_background-light
 
     .list_connector
-      +transition
+      +single-transition
       //display: inline-block
       position: absolute      
       bottom: -2px
@@ -1006,42 +1013,183 @@ $membership_card_height: 278px
   &:hover .m-point_operations a
     color: darken(desaturate($yellow_postit, 100%), 70%)
 
-.m-point-position
-  @extend %m-point
+  ////////////////////
 
+.m-point-results, .m-point-position
+  //border-color: transparent
+  @extend %m-point
+  width: $pro-con-list-column-width
+
+  .m-point-nutshell, .details_indicator, .m-point-user
+    +font-size(-2)
+
+
+  &.m-point-unexpanded
+    &.pro
+      padding: 0 $grid_xs 0 2 * $grid_xs
+
+      .m-point-nutshell-wrap:before
+        left: 8px + $grid_xs
+
+    &.con
+      padding: 0 2 * $grid_xs 0 $grid_xs
+      .m-point-nutshell-wrap:before
+        left: 8px
+
+    .m-point-nutshell-wrap
+      margin-bottom: 0px
+      // bullet point
+
+      &:before
+            
+        content: $hex-bullet-point
+        position: absolute
+        top: 0px
+        +font-size(-5)
+
+    .m-point-operations
+      bottom: 0
+      left: 0
+      position: relative
+      visibility: hidden
+
+    &:hover .m-point-operations
+      visibility: visible
+
+
+    .m-point-operations
+      padding: 0 $grid_xs
+
+      %point_operation
+        //display: inline-block          
+        +font-size(-4)
+        padding: 0
+        margin: 0
+        @extend %bolded
+
+      .m-point-remove, .m-point-read-more
+        @extend %point_operation
+
+      .m-point-remove:before
+        content: '\2022'
+        +font-size(-6)
+        position: relative
+        right: 1px
+
+    .m-point-author-avatar
+      display: none
+
+
+.m-point-results, .m-point-peer
+  &:before, &:after
+    border-color: $dark_constituency_color
+    @extend %postit-background-repeat
+
+.m-point-position
+  &:before, &:after
+    border-color: #777
+    background-color: #777
   .m-point-include-wrap
     display: none
                   
 .m-point-results
-  @extend %m-point
 
   .m-point-remove, .m-point-include-wrap
     display: none
 
-.m-point-results, .m-point-position
-  //border-color: transparent
 
-  .m-point-nutshell-wrap
-    margin-bottom: 0px
-    // bullet point
-    .m-point-nutshell, .details_indicator, .m-point-user
-      +font-size(-2)
+/* EXPANDED POINT */
+$m-point-expanded-width: $body_width + 150
+.m-point-expanded
+  position: relative
+  z-index: 999
+  width: $m-point-expanded-width
+  cursor: auto
 
-    &:before
-      content: $hex-bullet-point
-      position: absolute
-      left: -10px
-      top: 0px
-      +font-size(-5)
+  &.con
+    &.m-point-position, &.m-point-results
+      left: $pro-con-list-column-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
+    &.m-point-peer
+      left: $peer-point-width - $m-point-expanded-width
+  &.pro
+    &.m-point-position, &.m-point-results
+      left: - ($m-point-expanded-width - $body_width) / 2
 
-  .m-point-operations
-    bottom: 0
-    left: 0
-    position: relative
-    visibility: hidden
 
-  &:hover .m-point-operations
-    visibility: visible
+  .m-point-wrap
+    cursor: auto
+    padding: $vertical_baseline / 2 $grid_xs
+
+  .m-point-nutshell, .m-point-details-description, .m-point-operations
+    padding-bottom: $vertical_baseline / 2
+
+  .m-point-nutshell
+    +font-size(3)
+    font-weight: bold
+
+  .m-point-details-description 
+    +font-size(0)
+
+  .m-point-read-more
+    display: none
+
+  .m-point-follow, .m-point-assess
+    display: inline-block
+
+
+  &.m-point-position, &.m-point-results
+    @extend %m-point-thought-bubble
+
+  &.m-point-position
+    .m-point-operations 
+      .m-point-assessment-request-initiate, .m-point-remove, .m-point-follow input[type="submit"]
+        @extend %point_operation_button
+        background-color: #444
+        border-color: #222
+        color: #e1e1e1
+
+
+  &.m-point-position
+    background-color: #555
+    border: 1px solid #666
+    border-radius: 5px
+
+  &.m-point-results
+    background-color: $constituency_color
+    border: 1px solid $dark_constituency_color
+    border-radius: 5px
+    .m-point-operations 
+      .m-point-assessment-request-initiate, .m-point-follow input[type="submit"]
+        @extend %point_operation_button
+
+  &.m-point-peer
+    .m-point-operations        
+      position: relative
+
+    .m-point-include-wrap
+      bottom: auto
+      position: relative
+      top: -31px
+
+    &.con
+      .m-point-include-wrap
+        float: left
+        left: -$grid_xs - 1
+        .m-point-include
+          border-bottom-left-radius: 0px
+
+    &.pro
+      .m-point-include-wrap
+        float: right
+        right: -$grid_xs - 1
+        .m-point-include
+          border-bottom-right-radius: 0px
+
+    .m-point-operations 
+      .m-point-assessment-request-initiate, .m-point-follow input[type="submit"]
+        @extend %point_operation_button
+
+
 
 /* NEWPOINT */
 
@@ -1061,7 +1209,7 @@ $membership_card_height: 278px
 
   .m-newpoint-new
     +font-size(1)
-    width: 105%
+    width: 95%
     border: none
     padding: 0
     position: relative
@@ -1073,21 +1221,22 @@ $membership_card_height: 278px
     border: 1px solid
     +inset-border(#414141)
     padding-left: $grid_xs
-    margin-left: -14px
+    margin-left: 3px
 
     &:before
       left: 4px
-      +font-size(-3)
+      +font-size(-4)
 
   .m-newpoint-form
     position: relative
     display: none
-
+    margin-left: $grid_xs
     input, textarea
       +font-size(-3)
   
     &:before
       left: -9px    
+      +font-size(-4)
 
   .m-newpoint-description
     width: 94%
@@ -1117,9 +1266,14 @@ $membership_card_height: 278px
 
 .m-pointlist-pagination
   text-align: center
-  color: #777
+  color: #444
   a
-    color: #777
+    color: #444
+    display: inline-block
+    width: 100%
+    &:hover
+      background-color: rgba(black, .3)
+
 
   .m-pointlist-status
     span
@@ -1129,82 +1283,18 @@ $membership_card_height: 278px
 
 /* POINT_DETAILS */
 
-#point_details_overlay
-  padding: $vertical_baseline $grid_xs
-  //background-color: lighten($constituency_color, 5%)
-  //border: 1px solid $dark_constituency_color
-  width: 867px
+.m-point-discussion
+  position: relative
+  //width: 660px
+  //padding: 0 $grid_xs
 
-%m-point-details
-  @extend %l-message-template
+.m-point-discussion-heading
+  +font-size(3)
+  margin: 0px 0 $vertical_baseline 0
 
-  > .l-message-speaker, > .l-message-recipient
-    width: 70px
+.m-point-comments
+  +nude-list
 
-  .m-point-details-close
-    position: absolute
-    right: -10px
-    color: white
-    top: -10px
-
-  .m-point-details-body
-    @extend %postit-background-repeat  
-    width: 800px - $grid_major
-    min-height: 300px
-    padding: $vertical_baseline $grid_major
-
-    > .t-bubble:after
-      display: none
-      
-  .m-point-details-author-avatar
-    width: 70px
-    height: 70px
-
-  .m-point-details-nutshell
-    +font-size(3)
-
-    width: auto
-    @extend %bolded
-    margin-bottom: $vertical_baseline
-
-  .m-point-details-description
-    a
-      text-decoration: underline
-
-  .m-point-details-author
-    @extend %italicized
-    padding: 10px 0
-
-  .m-point-details-operations
-    display: block
-    padding: 0 $grid_xs
-
-  .m-point-details-edit
-    padding-right: $grid_xs
-
-  .m-point-discussion
-    position: relative
-    //width: 660px
-    //padding: 0 $grid_xs
-
-  .m-point-discussion-heading
-    +font-size(3)
-    margin: 0px 0 $vertical_baseline 0
-
-  .m-point-comments
-    +nude-list
-
-.m-point-details-pro
-  @extend %m-point-details
-  .m-point-details-body
-    +bubble($constituency_color, $dark_constituency_color, left)     
-  .l-message-speaker
-    text-align: right
-
-.m-point-details-con
-  @extend %m-point-details
-  .m-point-details-body
-    +bubble($constituency_color, $dark_constituency_color, left)     
 
 /* ASSESSMENT */
 
@@ -1429,13 +1519,15 @@ $membership_card_height: 278px
     padding-bottom: 0
 
   &.unexpanded
-    opacity: .9
-    +transition
+    //opacity: .9
+    +single-transition
     cursor: pointer
 
     &:hover
-      opacity: 1
-
+      .m-proposal_strip_toggle
+        background-color: #ccc
+        a
+          color: black
     .m-proposal-connect
       display: none
 
@@ -1445,9 +1537,11 @@ $membership_card_height: 278px
       .m-proposal_toggle_unexpanded
         display: inline
 
+
   &.expanded
     .m-proposal-toggle 
       width: 100%
+
       .m-proposal_toggle_expanded
         display: inline
       .m-proposal_toggle_unexpanded
@@ -1528,7 +1622,7 @@ $membership_card_height: 278px
 
   .m-proposal-action-link
     cursor: pointer
-    +transition
+    +single-transition
     +font-size(-3)
     //+grayscale
     //opacity: .6
@@ -1574,7 +1668,7 @@ $membership_card_height: 278px
   margin-top: $vertical_baseline
   .m-proposal-publish-form
     display: inline
-    
+
   .m-proposal-publish
     display: inline-block
     width: 94%
@@ -1695,6 +1789,7 @@ $membership_card_height: 278px
 
 .m-aggregated-results
   .m-results-responders
+    padding: $vertical_baseline / 2 0
     +bubble($constituency_color, $dark_constituency_color, right)
     .t-bubble.t-bubble-bar
       font-size: 13px
@@ -1732,7 +1827,7 @@ $histogram_bar_color: #6E6E6E
   //bottom: -4px
   border-left: 2px solid $histogram_bar_border-color
   opacity: 0
-  +transition
+  +single-transition
 
 
   %m-histogram-label
@@ -1769,7 +1864,7 @@ $histogram_bar_color: #6E6E6E
     border-left: 0
     //border-bottom: none
     background-color: $histogram_bar_color
-    +transition
+    +single-transition
     +bubble($constituency_color, $dark_constituency_color, right, $include_bg: false)
     //z-index: 1
 
@@ -1991,6 +2086,7 @@ $histogram_bar_color: #6E6E6E
   //@extend %chalkboard
   @extend %pro_con_list
   min-height: 530px
+  width: $body_width + 20
 
 $filter_width: 371px
 .m-results-point-filters
@@ -2045,11 +2141,14 @@ $filter_width: 371px
   position: relative
   //margin-left: -$peer-point-width
   //width: $content_width
-
+  width: 1300px
+  left: -248px //-$peer-point-width - $grid_minor
   .m-reasons-pro-con-list, .m-reasons-peer-points
     display: inline-block
 
   .m-reasons-pro-con-list
+    //margin: 0 $grid_minor
+
     @extend %pro_con_list 
     min-height: 400px
     @extend %chalkboard
@@ -2059,13 +2158,13 @@ $filter_width: 371px
     width: $peer-point-width
     vertical-align: top 
     padding-top: 3 * $vertical_baseline
-    position: absolute
-    top: 0 
+    //position: absolute
+    //top: 0 
 
     &.m-reasons-peer-points-pros
-      left: -$peer-point-width - $grid_xs - 5
+      //left: -$peer-point-width - $grid_xs - 5
     &.m-reasons-peer-points-cons
-      right: -$peer-point-width - $grid_xs - 5
+      //right: -$peer-point-width - $grid_xs - 5
 
   %m-reasons-peer-points-heading
     opacity: .8
@@ -2101,7 +2200,7 @@ $filter_width: 371px
   %m-stance-label
     vertical-align: middle
     //height: 40px
-    +font-size(2)
+    +font-size(0)
     div
       width: $slider_label_width
 
@@ -2118,8 +2217,8 @@ $filter_width: 371px
   .m-stance-label-neutral
     @extend %m-stance-label
     text-align: center
-    //+font-size(-3)
-    +transition
+    +font-size(2)
+    +single-transition
 
   .m-stance-slider-container
     height: 45px 
@@ -2148,7 +2247,7 @@ $filter_width: 371px
       top: -.2em
       height: 38px
       width: 39px
-      +transition('none')
+      +single-transition('none')
       margin-left: -19.5px
 
       &:hover
@@ -2231,6 +2330,7 @@ label.inline
   right: 0
   bottom: -18px
   background-color: rgba(white, .85)
+  z-index: 999
 
   button
     color: #555

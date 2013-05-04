@@ -92,9 +92,10 @@ $body_width: 600px
 
   .t-dr-heading
     //margin-bottom: $vertical_baseline
-    +font-size(6)
+    +font-size(7)
     @extend %bolded
     text-align: center
+    margin-bottom: $vertical_baseline / 2
 
     .rep
       +true_inset($dark_rep_color)
@@ -150,6 +151,9 @@ $body_width: 600px
   .constituent_statement
     +bubble($constituency_color, $dark_constituency_color, right)
 
+.light
+  //font-weight: lighter
+  +font-size(-2)
 
 #l-footer
   @extend %on_background

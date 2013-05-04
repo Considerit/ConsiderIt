@@ -171,7 +171,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     @slider.params.start = @model.get('stance') * 100  
     @slider.$el.noUiSlider('init', @slider.params)
     if !@slider.is_neutral
-      @slider.$neutral_label.hide()
+      @slider.$neutral_label.css('opacity', 0)
     
 
   show : () ->
@@ -184,8 +184,8 @@ class ConsiderIt.CraftingView extends Backbone.View
 
   #handlers
   events :
-    'click .m-point-include' : 'include_point'
-    'click .m-point-remove' : 'remove_point'
+    'click [data-target="point-include"]' : 'include_point'
+    'click [data-target="point-remove"]' : 'remove_point'
     'click .m-newpoint-new' : 'new_point'
     'click .m-newpoint-cancel' : 'cancel_new_point'
     'click .m-newpoint-create' : 'create_new_point'
@@ -332,7 +332,6 @@ class ConsiderIt.CraftingView extends Backbone.View
     $(child).closest("[data-role=\"#{ConsiderIt.PointListView.childClass}\"]")
 
   navigate_point_details : (ev) ->
-    console.log 'HI'
     point_id = $(ev.currentTarget).closest('.pro, .con').data('id')
     ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.model.get('long_id'), point_id), {trigger: true})
 

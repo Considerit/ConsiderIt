@@ -22,6 +22,10 @@
 
       //%link{ :href => "/system/cache/#{current_tenant.identifier}.css", :type => 'text/css', :media => "screen", :rel => "stylesheet"}
 
+      - ['Source+Sans+Pro'].each do |font|
+        %link{ :href => "http://fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
+
+
 
       /[if IE 9]
         = stylesheet_link_tag 'browser/ie/ie9'

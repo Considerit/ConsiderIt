@@ -1,7 +1,6 @@
 class Dashboard::UsersController < Dashboard::DashboardController
   def show
     # only output data regarding publicly available data
-    # TODO: include data from non-public proposals if current user has permission
     # TODO: filter data output to fields only strictly necessary - lots of redundant data here
 
     user = User.find(params[:id])
@@ -11,7 +10,7 @@ class Dashboard::UsersController < Dashboard::DashboardController
     user.positions.published.each do |position|
       if !referenced_proposals.has_key?(position.proposal_id)
         proposal = Proposal.find(position.proposal_id) 
-        if proposal.public? # or user has access ...
+        if can?(:read, proposal)  
           referenced_proposals[position.proposal_id] = proposal
           positions.push user.positions.where(:proposal_id => position.proposal_id).published.public_fields.last
         end
@@ -21,10 +20,13 @@ class Dashboard::UsersController < Dashboard::DashboardController
     referenced_points = {}
     influenced_users = {}
     influenced_users_by_point = {}
+    accessible_points = []
+
     user.points.published.each do |pnt|
       proposal = Proposal.find(pnt.proposal_id) 
-      if proposal.public? # or user has access...
+      if can?(:read, proposal) && (!pnt.hide_name || (current_user && pnt.user_id == current_user.id)) 
         referenced_points[pnt.id] = pnt
+        accessible_points.push pnt.id
 
         influenced_users_by_point[pnt.id] = []
         pnt.inclusions.where("user_id != #{user.id}").each do |inc|
@@ -44,7 +46,7 @@ class Dashboard::UsersController < Dashboard::DashboardController
         pnt = comment.root_object
         proposal = Proposal.find(pnt.proposal_id) 
 
-        if pnt.published && proposal.public? # or user has access ...
+        if pnt.published && can?(:read, proposal)
           referenced_points[pnt.id] = pnt
 
           if !referenced_proposals.has_key? pnt.proposal_id
@@ -60,7 +62,7 @@ class Dashboard::UsersController < Dashboard::DashboardController
       :referenced_proposals => referenced_proposals,
       :referenced_points => referenced_points,
       :positions => positions,
-      :points => user.points.published.public_fields,
+      :points => user.points.published.where("id in (?)", accessible_points).public_fields,
       :comments => user.comments.public_fields,
       :influenced_users => influenced_users,
       :influenced_users_by_point => influenced_users_by_point

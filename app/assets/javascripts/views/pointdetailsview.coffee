@@ -10,9 +10,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     @transparent_els = @proposal.view.$el.find("[data-role='m-point']:not([data-id='#{@model.id}'])")
     @hidden_els = @proposal.view.$el.find(".m-newpoint, .m-position-heading, .m-pointlist-pagination, .m-stance, .l-message-speaker, .l-message-listener, .m-position-message-body > .t-bubble, .m-results-summary, .m-results-responders.summary")
 
-    @$el.addClass 'm-point-expanded'
-    @$el.removeClass 'm-point-unexpanded'
-
+    @$el.toggleClass 'm-point-expanded m-point-unexpanded'
 
     # @$el.hide()
 
@@ -88,7 +86,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     this
 
   close_by_keyup : (ev) ->
-    console.log 'keyup'
     if ev.keyCode == 27 && $('#registration_overlay').length == 0
       @close_details()    
 
@@ -109,6 +106,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
         @commentsview.clear()
         @commentsview.remove()
         @assessmentview.remove()
+        @$el.find('.m-point-include-wrap').css 'display', 'none'
 
         $(document).off 'click.m-point-details' #, @close_details
         $(document).off 'keyup.m-point-details' #, @close_by_keyup
@@ -117,8 +115,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
         @transparent_els.css('opacity', '')
         @hidden_els.css {visibility: ''}
 
-        @$el.removeClass('m-point-expanded')
-        @$el.addClass('m-point-unexpanded')
+        @$el.toggleClass('m-point-expanded m-point-unexpanded')
 
         @proposal.view.trigger 'point_details:closed'
 

@@ -10,8 +10,8 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     @listenTo @model, 'point:removed', => @close_details()
 
   render : () ->    
-    @transparent_els = @proposal.view.$el.find("[data-role='m-point']:not([data-id='#{@model.id}'])")
-    @hidden_els = @proposal.view.$el.find(".m-newpoint, .m-position-heading, .m-pointlist-pagination, .m-stance, .l-message-speaker, .l-message-listener, .m-position-message-body > .t-bubble, .m-results-summary, .m-results-responders.summary")
+    @transparent_els = @proposal.view.$el.find("")
+    @hidden_els = @proposal.view.$el.find("[data-role='m-point']:not([data-id='#{@model.id}']), .m-newpoint, .m-position-heading, .m-pointlist-pagination, .m-stance, .l-message-speaker, .l-message-listener, .m-position-message-body > .t-bubble, .m-results-summary, .m-results-responders.summary")
 
     @$el.toggleClass 'm-point-expanded m-point-unexpanded'
 

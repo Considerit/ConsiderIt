@@ -814,7 +814,6 @@ $membership_card_height: 278px
   position: relative
   cursor: pointer
 
-  //background-color
   //+single-transition
   +transition(background-color .1s linear)
 
@@ -822,6 +821,7 @@ $membership_card_height: 278px
     +transition(top .5s linear, left .5s linear, color .6s linear, font-size .6s linear, padding-right .6s linear, padding-left .6s linear, padding-top .6s linear, padding-bottom .6s linear)
     //+single-transition
   .m-point-nutshell
+    //+transition(font-weight .5s linear)
     //+single-transition
 
   .m-point-nutshell-wrap
@@ -832,6 +832,10 @@ $membership_card_height: 278px
       //+font-size(-6)
 
   .m-point-details-description 
+    display: none
+
+.m-point-unexpanded
+  .m-point-author-name
     display: none
 
 $add_point_background-light: #EDE276
@@ -1143,6 +1147,17 @@ $m-point-expanded-width: $body_width + 150
   .m-point-follow, .m-point-assess
     display: inline-block
 
+
+  .m-point-author-name
+    position: absolute
+    top: -1.5 * $vertical_baseline
+    font-weight: bold
+    text-transform: uppercase
+    cursor: pointer
+
+  &.con
+    .m-point-author-name
+      right: 0
 
   &.m-point-position, &.m-point-results
     @extend %m-point-thought-bubble

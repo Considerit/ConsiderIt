@@ -275,6 +275,8 @@ class ConsiderIt.CraftingView extends Backbone.View
     params = { }
     ConsiderIt.utils.add_CSRF(params)
 
+    ev.stopPropagation()
+
     $.post Routes.proposal_point_inclusions_path( @proposal.model.get('long_id'), model.attributes.id, {delete : true} ), 
       params, 
       (data) ->
@@ -299,7 +301,7 @@ class ConsiderIt.CraftingView extends Backbone.View
   cancel_new_point : (ev) ->
     $form = $(ev.currentTarget).closest('.m-newpoint-form')
     $form.fadeOut () -> 
-      $form.siblings('.m-newpoint-new').fadeIn() 
+      $form.siblings('.m-newpoint-new').fadeIn()
       $form.find('textarea').val('').trigger('keydown')
       $form.find('label.inline').addClass('empty')
       #$('.newpoint').fadeIn()

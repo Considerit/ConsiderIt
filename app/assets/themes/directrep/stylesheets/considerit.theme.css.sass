@@ -3,26 +3,31 @@
 @import "./sprite"
 
 
-$rep_color: lighten(#49B1E5, 20%)
-$dark_rep_color: darken($rep_color, 20%)
+// $rep_color: lighten(#49B1E5, 20%)
+// $dark_rep_color: darken($rep_color, 20%)
 
-$constituency_color: lighten(#E5E15A, 20%)
-$dark_constituency_color: darken($constituency_color, 35%)
+// $rep_color: lighten(#49B1E5, 20%)
+// $dark_rep_color: darken($rep_color, 20%)
 
-$user_color: #ddd
-$dark_user_color: darken($user_color, 10%) 
+// $constituency_color: lighten(#E5E15A, 20%)
+// $dark_constituency_color: darken($constituency_color, 35%)
 
-$comp_color: lighten(#882F35, 10%)
-$dark_comp_color: darken($comp_color, 10%)
+// $user_color: #ddd
+// $dark_user_color: darken($user_color, 10%) 
 
-$header_gray: #777
-$empty_color: #ddd
+// $comp_color: lighten(#882F35, 10%)
+// $dark_comp_color: darken($comp_color, 10%)
 
-$proposal_width: 600px
-$body_width: 600px
+// $header_gray: #777
+// $empty_color: #ddd
+
+// $proposal_width: 600px
+// $body_width: 600px
+
+//$bg_color: white
 
 .l-content-wrap
-  background: white repeat top left
+  background: $content_bg_color repeat top left
   +content-img
   +single-box-shadow($color: rgba(black, .7))
   //z-index: 26
@@ -33,6 +38,9 @@ $body_width: 600px
 //   background: rgba(white, .15)
 //   +box-shadow(none)
 
+.m-proposal-heading-wrap
+  +content-img
+  
 .t-logo
   text-transform: uppercase
   @extend %bolded
@@ -122,7 +130,7 @@ $body_width: 600px
       height: 15px
 
   .l-message-body
-    width: $proposal_width
+    width: $body_width
 
   .t-leader-desc-about
     //width: 220px

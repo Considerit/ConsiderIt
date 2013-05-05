@@ -199,47 +199,51 @@ class ConsiderIt.CraftingView extends Backbone.View
 
     model = peers.get(id)
     included_point_model = mine.add(model).get(model)
-    $included_point = @$el.find(".m-point-position[data-id='#{included_point_model.id}']")
-    $included_point.css 'visibility', 'hidden'
 
-    item_offset = $item.offset()
-    ip_offset = $included_point.offset()
-    [offsetX, offsetY] = [ip_offset.left - item_offset.left, ip_offset.top - item_offset.top]
+    if $item.is('.m-point-unexpanded')
+      $included_point = @$el.find(".m-point-position[data-id='#{included_point_model.id}']")
+      $included_point.css 'visibility', 'hidden'
 
-    styles = $included_point.getStyles()
+      item_offset = $item.offset()
+      ip_offset = $included_point.offset()
+      [offsetX, offsetY] = [ip_offset.left - item_offset.left, ip_offset.top - item_offset.top]
 
-    target_props = {
-      color: styles['color'],
-      #fontSize: styles['fontSize']
-      width: styles['width']
-      paddingRight: styles['paddingRight']
-      paddingLeft: styles['paddingLeft']
-      paddingTop: styles['paddingTop']
-      paddingBottom: styles['paddingBottom']
-      background: 'none'
-      border: 'none'
-    }
-    delete target_props['visibility']
+      styles = $included_point.getStyles()
 
-    $placeholder = $('<li class="m-point-peer">')
-    $placeholder.css {height: $item.outerHeight(), visibility: 'hidden'}
+      target_props = {
+        color: styles['color'],
+        #fontSize: styles['fontSize']
+        width: styles['width']
+        paddingRight: styles['paddingRight']
+        paddingLeft: styles['paddingLeft']
+        paddingTop: styles['paddingTop']
+        paddingBottom: styles['paddingBottom']
+        background: 'none'
+        border: 'none'
+      }
+      delete target_props['visibility']
 
-    $item.find('.m-point-author-avatar, .m-point-include-wrap, .m-point-operations').fadeOut(50)
+      _.extend target_props, {top: offsetY, left: offsetX, position: 'absolute'}
 
-    $wrap = $item.find('.m-point-wrap')
+      $placeholder = $('<li class="m-point-peer">')
+      $placeholder.css {height: $item.outerHeight(), visibility: 'hidden'}
 
-    $wrap.css {position: 'absolute', width: $wrap.outerWidth()}
+      $item.find('.m-point-author-avatar, .m-point-include-wrap, .m-point-operations').fadeOut(50)
 
+      $wrap = $item.find('.m-point-wrap')
+      $wrap.css {position: 'absolute', width: $wrap.outerWidth()}
 
-    $placeholder.insertAfter($item)
-    
+      $placeholder.insertAfter($item)
 
-    _.extend target_props, {top: offsetY, left: offsetX, position: 'absolute'}
-    $wrap.css(target_props).delay(600).queue =>
-      $item.fadeOut -> 
-        peers.remove(model)
-        $placeholder.remove()
-        $included_point.css 'visibility', ''
+      $wrap.css(target_props).delay(600).queue =>
+        $item.fadeOut -> 
+          peers.remove(model)
+          $placeholder.remove()
+          $included_point.css 'visibility', ''
+    else
+      $(document).trigger('click')
+      peers.remove(model)
+
 
     ev.stopPropagation()
 

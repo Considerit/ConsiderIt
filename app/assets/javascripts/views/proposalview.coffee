@@ -28,7 +28,7 @@ class ConsiderIt.ProposalView extends Backbone.View
       else if @state == 0
         ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: false})
 
-        
+  
   render : -> 
 
     @$el.html ConsiderIt.ProposalView.unexpanded_template($.extend({}, @model.attributes, {
@@ -38,7 +38,9 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     @$el.removeClass('expanded')
     @$el.addClass('unexpanded')
-    @state = -1
+
+    @set_unexpanded()
+
     @$main_content_el = @$el.find('.m-proposal-body_wrap')
 
     this
@@ -83,8 +85,9 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   load_data : (callback, callback_params) ->
-    if @state == -1
-      @toggle()
+    # if @state == -1
+    #   console.log 'load data toggle'
+    #   @toggle()
 
     @once 'proposal:data_loaded', => callback(this, callback_params)
     if ConsiderIt.current_proposal && ConsiderIt.current_proposal.long_id == @long_id
@@ -199,6 +202,21 @@ class ConsiderIt.ProposalView extends Backbone.View
       @load_data(@prepare_for_point_details, {point_id : point_id})
     # if data is already loaded, then the PointListView is already properly handling this
 
+  set_unexpanded : =>
+    if @state > -1
+      @$hidden_els.css 'display', ''
+
+      console.log @scroll_position
+      $('body').scrollTop @scroll_position
+
+    @state = -1
+
+  set_expanded : =>
+    @state = 0
+    @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}']), .m-proposals-heading, .t-intro-wrap")
+    @$hidden_els.css 'display', 'none'
+    $('body').scrollTop 0 #@$el.offset().top
+
   events : 
     'click .hidden' : 'show_details'
     'click .showing' : 'hide_details'
@@ -224,6 +242,8 @@ class ConsiderIt.ProposalView extends Backbone.View
       ev.stopPropagation()
 
     if @state == -1
+      @scroll_position = @$el.offset().top - $('.t-intro-wrap').offset().top - parseInt(@$el.css('marginTop'))
+
       @$main_content_el.hide()
 
       @$main_content_el.append ConsiderIt.ProposalView.expanded_template($.extend({}, @model.attributes, {
@@ -242,6 +262,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
         @proposal.views.results.render()
 
+
         @proposal.views.take_position = new ConsiderIt.PositionView
           proposal : @proposal
           model : @proposal.position
@@ -252,38 +273,40 @@ class ConsiderIt.ProposalView extends Backbone.View
         results_el.insertAfter(@$el.find('.m-proposal-introduction'))
         position_el.insertAfter(results_el)
 
-      @state = 0
-
-      $('body').animate {scrollTop: @$el.offset().top - 50}, 'slow', =>
-        @$main_content_el.slideDown('slow')
 
 
-        @$el.addClass('expanded')
-        @$el.removeClass('unexpanded')
+      @$el.addClass('expanded')
+      @$el.removeClass('unexpanded')
+
+      @$main_content_el.slideDown 500, =>
+
+        $('body').animate {scrollTop: @scroll_position }, 500, =>
 
 
-        #TODO: if user logs in as admin, need to do this
-        if ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
+          @set_expanded()
 
-          @render_admin_strip()
-          for field in ConsiderIt.ProposalView.editable_fields
-            [selector, name, type] = field 
-            @$el.find(selector).editable {
-              resource: 'proposal'
-              pk: @long_id
-              url: Routes.proposal_path @long_id
-              type: type
-              name: name
-            }
+          #TODO: if user logs in as admin, need to do this
+          if ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
+
+            @render_admin_strip()
+            for field in ConsiderIt.ProposalView.editable_fields
+              [selector, name, type] = field 
+              @$el.find(selector).editable {
+                resource: 'proposal'
+                pk: @long_id
+                url: Routes.proposal_path @long_id
+                type: type
+                name: name
+              }
 
       this
     else
-      ConsiderIt.router.navigate(Routes.root_path(), {trigger: false})
-      @state = -1
+      $('body').animate {scrollTop: @scroll_position}, =>
+        @$main_content_el.slideUp => 
+          @render()
+          @set_unexpanded()
+          ConsiderIt.router.navigate(Routes.root_path(), {trigger: false})
 
-      @$main_content_el.slideUp => 
-        @render()
-        $('body').animate {scrollTop: @$el.offset().top - 50}
         #@$el.addClass('unexpanded')
 
 

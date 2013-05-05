@@ -79,6 +79,8 @@ class ConsiderIt.ResultsView extends Backbone.View
           '-webkit-transition': "all #{speed}ms",
           'transition': "all #{speed}ms"}
 
+      # compute all offsets first, before applying changes, for perf reasons
+      positions = {}
       for participant in $participants.find('.avatar')
         $from = $(participant)
         id = $from.data('id')
@@ -92,6 +94,14 @@ class ConsiderIt.ResultsView extends Backbone.View
 
         offsetX -= (from_tile_size - to_tile_size)/2
         offsetY -= (from_tile_size - to_tile_size)/2
+
+        positions[id] = [offsetX, offsetY]
+
+      for participant in $participants.find('.avatar')
+        $from = $(participant)
+        id = $from.data('id')
+        [offsetX, offsetY] = positions[id]
+        
         $from.css 
           #'-o-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
           '-ms-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
@@ -99,12 +109,12 @@ class ConsiderIt.ResultsView extends Backbone.View
           '-webkit-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
           'transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
 
-        me = this
-        window.delay speed + 350, -> 
-          me.$el.find('.m-histogram').css 'opacity', 1
-          
-          window.delay 400, -> 
-            $participants.fadeOut()
+      me = this
+      window.delay speed + 350, -> 
+        me.$el.find('.m-histogram').css 'opacity', 1
+        
+        window.delay 400, -> 
+          $participants.fadeOut()
  
 
   events : 

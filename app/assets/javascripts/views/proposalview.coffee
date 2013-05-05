@@ -182,32 +182,15 @@ class ConsiderIt.ProposalView extends Backbone.View
     me.show_results(me)
     results_explorer = me.proposal.views.results.view
 
-    point = results_explorer.pointlists.pros.get(params.point_id)
-    if point?
-      pointview = results_explorer.views.pros.getViewByModel(point)
-    else
-      point = results_explorer.pointlists.cons.get(params.point_id)
-      if point?
-        pointview = results_explorer.views.cons.getViewByModel(point)
+    for pnt in me.proposal.points.pros.concat me.proposal.points.cons
+      if pnt.id == parseInt(params.point_id)
+        point = pnt
+        break
 
-    if point?
-      pointview.show_point_details_handler() if pointview?
-    else
-      # this happens if the point is being directly visited, but is not on the front page of results
+    pointlistview = if pnt.get('is_pro') then results_explorer.views.pros else results_explorer.views.pros
+    pointview = pointlistview.getViewByModel(point) || pointlistview.addModelView(pnt) # this happens if the point is being directly visited, but is not on the front page of results
 
-      for pnt in me.proposal.points.pros.concat me.proposal.points.cons
-        if pnt.id == parseInt(params.point_id)
-          point = pnt
-          break
-
-      ConsiderIt.PointView.load_data me.proposal, point, () ->
-        # This is non DRY code from pointview#show_point_details
-        overlay = $('<div class="l-overlay" id="point_details_overlay">')
-        me.$el.prepend(overlay)
-        #me.trigger 'point_details:staged'
-        # warning: this is not being properly removed
-        me.pointdetailsview = new ConsiderIt.PointDetailsView( {proposal : me.proposal, model: point, el: overlay} )
-        me.pointdetailsview.render()
+    pointview.show_point_details_handler() if pointview?
 
 
   show_point_details_handler : (point_id) ->

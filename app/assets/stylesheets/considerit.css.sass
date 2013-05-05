@@ -813,13 +813,16 @@ $membership_card_height: 278px
   +nude-list
   position: relative
   cursor: pointer
-  +single-transition
+
+  //background-color
+  //+single-transition
+  +transition(background-color .1s linear)
 
   .m-point-wrap
-    +single-transition
-
+    +transition(top .5s linear, left .5s linear, color .6s linear, font-size .6s linear, padding-right .6s linear, padding-left .6s linear, padding-top .6s linear, padding-bottom .6s linear)
+    //+single-transition
   .m-point-nutshell
-    +single-transition
+    //+single-transition
 
   .m-point-nutshell-wrap
 
@@ -853,12 +856,12 @@ $arrow_height: 11px
 .m-point-peer
   @extend %m-point
   @extend %m-point-thought-bubble
-  width: $peer-point-width
   border-radius: 8px
   +single-box-shadow($color: rgba(black, .2))
 
 
   .m-point-wrap
+    width: $peer-point-width 
     +single-box-shadow($color: #fff, $hoff: 1px, $voff: 6px, $blur: 9px, $spread: -5px, $inset: true) 
     padding: $vertical_baseline / 2 $grid_xs / 2 2 * $vertical_baseline $grid_xs / 2
     margin-bottom: $vertical_baseline
@@ -1018,7 +1021,9 @@ $arrow_height: 11px
 .m-point-results, .m-point-position
   //border-color: transparent
   @extend %m-point
-  width: $pro-con-list-column-width
+  
+  .m-point-wrap
+    width: $pro-con-list-column-width - 3 * $grid_xs
 
   .m-point-nutshell, .details_indicator, .m-point-user
     +font-size(-2)
@@ -1103,8 +1108,8 @@ $m-point-expanded-width: $body_width + 150
 .m-point-expanded
   position: relative
   z-index: 999
-  width: $m-point-expanded-width
   cursor: auto
+  width: $m-point-expanded-width  
 
   &.con
     &.m-point-position, &.m-point-results
@@ -1118,6 +1123,8 @@ $m-point-expanded-width: $body_width + 150
 
   .m-point-wrap
     cursor: auto
+    width: $m-point-expanded-width
+
     padding: $vertical_baseline / 2 $grid_xs
 
   .m-point-nutshell, .m-point-details-description, .m-point-operations

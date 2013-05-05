@@ -200,6 +200,8 @@ class ConsiderIt.CraftingView extends Backbone.View
     model = peers.get(id)
     included_point_model = mine.add(model).get(model)
 
+    model.trigger('point:included') 
+
     if $item.is('.m-point-unexpanded')
       $included_point = @$el.find(".m-point-position[data-id='#{included_point_model.id}']")
       $included_point.css 'visibility', 'hidden'
@@ -241,7 +243,6 @@ class ConsiderIt.CraftingView extends Backbone.View
           $placeholder.remove()
           $included_point.css 'visibility', ''
     else
-      $(document).trigger('click')
       peers.remove(model)
 
 
@@ -265,6 +266,8 @@ class ConsiderIt.CraftingView extends Backbone.View
     [peers, mine] = if $item.hasClass('pro') then [@pointlists.peerpros, @pointlists.mypros] else [@pointlists.peercons, @pointlists.mycons]
 
     model = mine.get(id)
+
+    model.trigger('point:removed') 
 
     mine.remove(model)
     peers.add(model)

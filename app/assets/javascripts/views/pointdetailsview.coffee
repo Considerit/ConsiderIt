@@ -5,6 +5,9 @@ class ConsiderIt.PointDetailsView extends Backbone.View
   initialize : (options) -> 
     @proposal = options.proposal
     #@listenTo @proposal.view, 'point_details:staged', => @remove()
+    @listenTo @model, 'point:included', => @close_details()
+
+    @listenTo @model, 'point:removed', => @close_details()
 
   render : () ->    
     @transparent_els = @proposal.view.$el.find("[data-role='m-point']:not([data-id='#{@model.id}'])")
@@ -77,10 +80,11 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
       # when clicking outside of point, close it
       $(document).on 'click.m-point-details', (ev)  => 
-        @close_details()
-      @$el.on 'click.m-point-details', (e) => 
-        if !$(e.target).data('target')
-          e.stopPropagation()
+        if !$(ev.target).data('target')
+          @close_details()
+      @$el.on 'click.m-point-details', (ev) => 
+        if !$(ev.target).data('target')
+          ev.stopPropagation()
       $(document).on 'keyup.m-point-details', (ev) => @close_by_keyup(ev)
 
     this
@@ -99,28 +103,27 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     ConsiderIt.current_user.set_following(data.follow.follow)
 
   close_details : ->
+    @$el.find('.m-point-discussion').slideUp 100
     $('body').animate {scrollTop: @$el.offset().top - 50}, 400, =>
 
-      @$el.find('.m-point-discussion').slideUp 400, =>
+      @commentsview.clear()
+      @commentsview.remove()
+      @assessmentview.remove()
+      @$el.find('.m-point-include-wrap').css 'display', 'none'
 
-        @commentsview.clear()
-        @commentsview.remove()
-        @assessmentview.remove()
-        @$el.find('.m-point-include-wrap').css 'display', 'none'
+      $(document).off 'click.m-point-details' #, @close_details
+      $(document).off 'keyup.m-point-details' #, @close_by_keyup
+      @$el.off 'click.m-point-details'
 
-        $(document).off 'click.m-point-details' #, @close_details
-        $(document).off 'keyup.m-point-details' #, @close_by_keyup
-        @$el.off 'click.m-point-details'
+      @$el.toggleClass('m-point-expanded m-point-unexpanded')
+      @transparent_els.css('opacity', '')
+      @hidden_els.css {visibility: ''}
 
-        @transparent_els.css('opacity', '')
-        @hidden_els.css {visibility: ''}
 
-        @$el.toggleClass('m-point-expanded m-point-unexpanded')
+      @proposal.view.trigger 'point_details:closed'
 
-        @proposal.view.trigger 'point_details:closed'
-
-        @model.trigger 'change' #trigger a render event
-        @undelegateEvents()
-        delete this
+      @model.trigger 'change' #trigger a render event
+      @undelegateEvents()
+      delete this
 
 

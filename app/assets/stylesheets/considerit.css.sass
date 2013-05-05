@@ -188,51 +188,6 @@ blockquote
   height: 100%
   z-index: 100
 
-/* VARIABLES */
-
-$grid_major: 48px
-$grid_minor: 30px
-$grid_xs: 18px
-
-$vertical_baseline: 1em
-
-$content_width: 967px //$grid_major * 22 + $grid_xs
-$pro_con_list_width: 675px
-
-$slider_width: 300px
-$slider_label_width: 100px
-
-$peer-point-width: 225px
-//$peer-point-height: 180px
-
-$pro-con-list-column-width: $body_width / 2 //250px
-
-$histogram_bar_width: 45px //2 * $grid_major - 4
-
-$rep_color: lighten(#49B1E5, 20%)
-$dark_rep_color: darken($rep_color, 20%)
-
-$constituency_color: lighten(#E5E15A, 20%)
-$dark_constituency_color: darken($constituency_color, 35%)
-
-$user_color: #ddd
-$dark_user_color: darken($user_color, 10%) 
-
-$position_color: #414141
-$dark_position_color: darken($position_color, 10%) 
-
-$comp_color: lighten(#882F35, 10%)
-$dark_comp_color: darken($comp_color, 10%)
-
-$header_gray: #777
-$empty_color: #ddd
-
-$proposal_width: 617px
-$body_width: 600px
-
-//$content_background : image-url('directrep/images/brillant.png')
-
-$hex-bullet-point: '\2022'
 
 /* SHARED STYLES */
 
@@ -366,13 +321,13 @@ html
   height: 3 * $vertical_baseline
 
 #l-content
-  width: $content_width
-  margin: 0 auto
 
 .l-content-wrap
   //padding: $vertical_baseline $grid_xs
   //margin-bottom: $vertical_baseline
   position: relative
+  width: $content_width
+  margin: 0 auto
 
 #l-footer
 
@@ -838,17 +793,20 @@ $membership_card_height: 278px
   .m-point-author-name
     display: none
 
-$add_point_background-light: #EDE276
-$add_point_background-dark: #CEC04A
-$add_point_border-color: #BAAC54
+$add_point_background-light: lighten($comp_color, 10%) //#EDE276
+$add_point_background-dark: $comp_color//#CEC04A
+$add_point_border-color: $dark_comp_color //#BAAC54
 $arrow_height: 11px
 
 
 %point_operation_button
-  background-color: $add_point_background-light
+  +superbutton
+  +single-box-shadow($hoff: 1px, $voff: 2px, $blur: 3px, $color: rgba(#fff,.2), $inset: true)
+
+  //background-color: $add_point_background-light
   border: 1px solid $add_point_border-color
   padding: $vertical_baseline/4 $grid_xs / 2
-  color: #222
+  color: white
   +font-size(-4)
   @extend %bolded
   //height: 3 * $vertical_baseline
@@ -886,12 +844,12 @@ $arrow_height: 11px
     
     a
       +font-size(-3)
-      color: darken(desaturate($yellow_postit, 25%), 35%)
+      color: darken(desaturate($dark_constituency_color, 25%), 35%)
       @extend %bolded
       +single-transition
 
       &:hover
-        color: darken(desaturate($yellow_postit, 20%), 75%)
+        color: darken(desaturate($dark_constituency_color, 20%), 75%)
 
     .m-point-remove
       display: none
@@ -1503,7 +1461,7 @@ $m-point-expanded-width: $body_width + 150
 // Proposal
 
 #m-proposals-container
-  margin-top: $vertical_baseline
+  //margin-top: $vertical_baseline
   position: relative
   //z-index: 1
 
@@ -1514,7 +1472,7 @@ $m-point-expanded-width: $body_width + 150
 .m-proposals-heading
   @extend %on_background
   text-align: center
-  margin-top: $vertical_baseline
+  margin: $vertical_baseline 0
 
   .m-proposals-filter-container, .m-proposals-sort-container
     display: inline-block
@@ -1539,6 +1497,9 @@ $m-point-expanded-width: $body_width + 150
 
   > .l-content-wrap
     padding-bottom: 0
+    //background-image: none
+
+    background-image: asset-data-url('directrep/images/brillant_content2.png')
 
   &.unexpanded
     //opacity: .9
@@ -1560,19 +1521,6 @@ $m-point-expanded-width: $body_width + 150
         display: inline
 
 
-  &.expanded
-    .m-proposal-toggle 
-      width: 100%
-
-      .m-proposal_toggle_expanded
-        display: inline
-      .m-proposal_toggle_unexpanded
-        display: none
-      &:hover
-        background-color: #ccc
-        a
-          color: black
-
   
   .m-proposal-body_wrap
     //margin-bottom: $vertical_baseline
@@ -1587,17 +1535,17 @@ $m-point-expanded-width: $body_width + 150
     cursor: pointer
     //background-color: #333
     text-align: center
-
+    +single-box-shadow
   .m-proposal-heading
     text-align: center
     color: #222
-    //width: $body_width + 2 * $grid_major
     text-transform: capitalize
     margin: auto
     @extend %bolded
     +font-size(2)
     //color: white
     //padding-right: $grid_minor
+    //width: $body_width + 2 * $grid_major
 
 
   .m-proposal-description-details
@@ -1605,6 +1553,40 @@ $m-point-expanded-width: $body_width + 150
 
     .hidden, .showing
       text-decoration: underline
+
+.m-proposal.expanded
+
+  .l-content-wrap
+    width: auto
+    
+
+  .m-proposal-heading-wrap
+    // position: fixed
+    // top: 3px
+    // z-index: 999
+    width: 100%
+    
+
+    .m-proposal-heading
+      width: $content_width
+
+  .m-proposal-body_wrap
+    width: $content_width
+    margin: auto
+    cursor: auto
+
+  .m-proposal-toggle 
+    width: 100%
+
+    .m-proposal_toggle_expanded
+      display: inline
+    .m-proposal_toggle_unexpanded
+      display: none
+    &:hover
+      background-color: #ccc
+      a
+        color: black
+
 
 
 %m-proposal-strip-item

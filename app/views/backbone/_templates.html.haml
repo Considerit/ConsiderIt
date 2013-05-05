@@ -27,9 +27,13 @@
 
     (( if (hide_name || user.name == 'Anonymous' ) { ))
     %span.avatar.m-point-author-avatar.m-avatar-anonymous{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)", :title => "This user has requested to remain anonymous"}
+    .m-point-author-name
+      by Anonymous
     (( } else if (user) { ))
 
     %a.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :title => "View {{user.name}}'s profile", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
+    .m-point-author-name{:'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
+      by {{user.name}}
     (( } ))
 
     .m-point-wrap

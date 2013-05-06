@@ -73,11 +73,11 @@ class ConsiderIt.ResultsView extends Backbone.View
       $participants
         .css({'position':'absolute','z-index':99}) 
         .find('.avatar').css {
-          '-o-transition': "all #{speed}ms",
-          '-ms-transition': "all #{speed}ms",
-          '-moz-transition': "all #{speed}ms",
-          '-webkit-transition': "all #{speed}ms",
-          'transition': "all #{speed}ms"}
+          #'-o-transition': "all #{speed}ms ease",
+          '-ms-transition': "-ms-transform #{speed}ms ease",
+          '-moz-transition': "-moz-transform #{speed}ms ease",
+          '-webkit-transition': "-webkit-transform #{speed}ms ease",
+          'transition': "transform #{speed}ms ease"}
 
       # compute all offsets first, before applying changes, for perf reasons
       positions = {}
@@ -182,7 +182,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     @show()
 
-    $('body').animate {scrollTop: @$el.offset().top}, 1000      
+    #$('body').animate {scrollTop: @$el.offset().top}, 1000      
     this
 
   show : () ->
@@ -327,7 +327,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
     $selected_bar = @$histogram.find('.m-bar-is-selected')
     return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.m-bar-is-hard-selected'))
 
-    @$el.hide()
+    hiding = @$el.find('.m-point-list, .m-results-pro-con-list-who')
+    hiding.hide()
 
 
     @pointlists.pros.setSort('score', 'desc')
@@ -349,7 +350,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
     @$el.find('.l-message-body .t-bubble').show()
     @$el.find('.l-message-speaker').css('z-index': '')
 
-    @$el.show()
+    hiding.show()
 
     $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
 

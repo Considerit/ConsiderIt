@@ -1,3 +1,5 @@
+@import "mixins/variables"
+
 $bubble_border_radius: 8px
 $banchor_top: -3px
 $banchor_adjustx: -20px
@@ -14,15 +16,17 @@ $banchor_adjustx: -20px
 
 %bubble_right
   @extend %bubble
+  border-radius: 5px 0 5px 5px
   > .t-bubble
     right: $banchor_adjustx 
 
 %bubble_left
   @extend %bubble
+  border-radius: 0 5px 5px 5px
   > .t-bubble
     left: $banchor_adjustx 
 
-= bubble($light, $dark, $direction, $bg-color: #fafafa, $bborder-width: 1px, $include_bg: true)
+= bubble($light, $dark, $direction, $bg-color: $content_bg_color, $bborder-width: 1px, $include_bg: true)
 
   @if $include_bg
     background-color: $light

@@ -1,3 +1,5 @@
+@import "mixins/variables"
+
 $yellow_postit: hsl(55, 81%, 79%)
 
 %on_background
@@ -19,12 +21,14 @@ $yellow_postit: hsl(55, 81%, 79%)
 
 =post_it($repeated: 0)
   $color: $yellow_postit
-  //background-color: $color
-  @if $repeated == 0
-    background: asset-data-url('yellow_postit.png') no-repeat top left transparent
+  
+  background-color: $constituency_color
+  
+  // @if $repeated == 0
+  //   background: asset-data-url('yellow_postit.png') no-repeat top left transparent
 
-  @else
-    background: asset-data-url('yellow_postit_no_shadow.png') repeat top left transparent  
+  // @else
+  //   background: asset-data-url('yellow_postit_no_shadow.png') repeat top left transparent  
 
   .button
     +post_it_button

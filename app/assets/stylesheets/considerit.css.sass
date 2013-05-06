@@ -135,7 +135,7 @@ a
     border: none  
 
 input, button
-  +single-transition
+  +transition(opacity .5s linear, color .5s linear, background-color .5s linear)
 
 
 table
@@ -194,7 +194,9 @@ blockquote
 =superbutton
   +background-image(linear-gradient(lighten($comp_color, 5%), $comp_color))
   background-color: lighten($comp_color, 5%)
-  +single-transition
+  +transition(opacity .5s linear, color .5s linear, background-color .5s linear, box-shadow .5s linear)
+
+
 
   &:hover
     +background-image(linear-gradient(lighten($comp_color, 15%) 0%, lighten($comp_color, 5%) 20%))
@@ -716,7 +718,7 @@ $membership_card_height: 278px
     position: absolute
     border: 1px solid
     border-bottom-color: transparent
-
+    +transition(left .5s linear, right .5s linear)
   &:before
     +circle(5px)
     top: 23px
@@ -747,19 +749,40 @@ $membership_card_height: 278px
       right: -7px
 
   .m-point-author-avatar
-    width: 50px
-    height: 50px
+
     display: inline-block
     position: absolute
     border-radius: 8px
     top: 2 * $vertical_baseline
     opacity: .85
+    border: 1px solid transparent
+    +single-box-shadow
+    //+transition(width .1s ease .25s, height .1s ease .25s)
+
+    &:hover
+      border-color: darken($constituency_color, 85%)
+
+  // &.m-point-expanded
+  //   .m-point-author-avatar
+  //     width: 50px
+  //     height: 50px
+
+  //   &.pro .m-point-author-avatar
+  //     left: -50px
+
+  //   &.con .m-point-author-avatar
+  //     right: -50px
+
+  // &.m-point-unexpanded
+  .m-point-author-avatar
+    width: 35px
+    height: 35px
 
   &.pro .m-point-author-avatar
-    left: -50px
+    left: -42px
 
   &.con .m-point-author-avatar
-    right: -50px
+    right: -42px
 
   //////////////////////
 
@@ -770,13 +793,14 @@ $membership_card_height: 278px
   cursor: pointer
 
   //+single-transition
-  +transition(background-color .1s linear)
+
+  +transition(background-color .1s ease, top .5s linear)
 
   .m-point-wrap
-    +transition(top .5s linear, left .5s linear, color .6s linear, font-size .6s linear, padding-right .6s linear, padding-left .6s linear, padding-top .6s linear, padding-bottom .6s linear)
+    //+transition(color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
     //+single-transition
   .m-point-nutshell
-    //+transition(font-weight .5s linear)
+    //+transition(font-weight .5s ease, font-size .5s ease)
     //+single-transition
 
   .m-point-nutshell-wrap
@@ -795,12 +819,17 @@ $membership_card_height: 278px
 
 $add_point_background-light: lighten($comp_color, 10%) //#EDE276
 $add_point_background-dark: $comp_color//#CEC04A
-$add_point_border-color: $dark_comp_color //#BAAC54
+$add_point_border-color: $comp_color //#BAAC54
 $arrow_height: 11px
 
 
 %point_operation_button
-  +superbutton
+  //+superbutton
+  background-color: lighten($comp_color, 5%)
+  &:hover
+    background-color: $comp_color
+
+
   +single-box-shadow($hoff: 1px, $voff: 2px, $blur: 3px, $color: rgba(#fff,.2), $inset: true)
 
   //background-color: $add_point_background-light
@@ -842,14 +871,17 @@ $arrow_height: 11px
     position: absolute
     width: 90%
     
+
     a
       +font-size(-3)
-      color: darken(desaturate($dark_constituency_color, 25%), 35%)
+      color: darken(desaturate($dark_constituency_color, 25%), 25%)
       @extend %bolded
-      +single-transition
+      +transition(opacity .5s linear, color .5s linear, background-color .5s linear)
+
+      //+single-transition
 
       &:hover
-        color: darken(desaturate($dark_constituency_color, 20%), 75%)
+        color: darken(desaturate($dark_constituency_color, 25%), 85%)
 
     .m-point-remove
       display: none
@@ -858,8 +890,10 @@ $arrow_height: 11px
     .m-point-operations
       bottom: $vertical_baseline / 4
 
-  &:hover .m-point-operations a
-    color: darken(desaturate($yellow_postit, 20%), 50%)
+    .m-point-wrap:hover
+      border-color: darken($dark_constituency_color, 25%) 
+      .m-point-operations a
+        color: darken(desaturate($dark_constituency_color, 25%), 85%)
 
   &.pro
     .m-point-operations
@@ -895,17 +929,17 @@ $arrow_height: 11px
     position: absolute
     bottom: 0
     //opacity: .5
-    +single-transition
+    //+single-transition
 
     .m-point-include
       @extend %point_operation_button
-      +single-transition
+      //+single-transition
       display: inline-block
       position: relative
       z-index: 2
 
     .list_connector
-      +single-transition
+      +transition(left .5s ease, right .5s ease)
       //display: inline-block
       position: absolute      
       bottom: -2px
@@ -918,6 +952,7 @@ $arrow_height: 11px
 
     //&:hover
       //opacity: 1    
+
 
 
   &.pro
@@ -945,7 +980,18 @@ $arrow_height: 11px
             border-left-color: $add_point_border-color
 
             &:after
-              border-left-color: $add_point_background-light          
+              border-left-color: $add_point_border-color   
+
+    &.m-point-expanded
+      .m-point-include-wrap .m-point-include 
+        border-bottom-right-radius: 0px
+        border-right-color: transparent    
+        .list_connector
+          right: -$arrow_height - 2
+          border-left-color: $add_point_border-color
+
+          &:after
+            border-left-color: $add_point_border-color
 
   &.con
     .m-point-include-wrap
@@ -972,8 +1018,18 @@ $arrow_height: 11px
             border-right-color: $add_point_border-color
 
             &:after
-              border-right-color: $add_point_background-light
+              border-right-color: $add_point_border-color
 
+    &.m-point-expanded
+      .m-point-include-wrap .m-point-include 
+        border-bottom-left-radius: 0px
+        border-left-color: transparent    
+        .list_connector
+          left: -$arrow_height - 2
+          border-right-color: $add_point_border-color
+
+          &:after
+            border-right-color: $add_point_border-color
 
   &:hover .m-point_operations a
     color: darken(desaturate($yellow_postit, 100%), 70%)
@@ -992,27 +1048,9 @@ $arrow_height: 11px
 
 
   &.m-point-unexpanded
-    &.pro
-      padding: 0 $grid_xs 0 2 * $grid_xs
-
-      .m-point-nutshell-wrap:before
-        left: 8px + $grid_xs
-
-    &.con
-      padding: 0 2 * $grid_xs 0 $grid_xs
-      .m-point-nutshell-wrap:before
-        left: 8px
 
     .m-point-nutshell-wrap
       margin-bottom: 0px
-      // bullet point
-
-      &:before
-            
-        content: $hex-bullet-point
-        position: absolute
-        top: 0px
-        +font-size(-5)
 
     .m-point-operations
       bottom: 0
@@ -1029,22 +1067,27 @@ $arrow_height: 11px
 
       %point_operation
         //display: inline-block          
-        +font-size(-4)
+        +font-size(-3)
         padding: 0
         margin: 0
         @extend %bolded
 
+        padding: 2px 8px
+
+        &:hover
+          background-color: rgba(white, .3)
+          color: black
+
       .m-point-remove, .m-point-read-more
         @extend %point_operation
 
-      .m-point-remove:before
-        content: '\2022'
-        +font-size(-6)
-        position: relative
-        right: 1px
+      // .m-point-remove:before
+      //   content: '\2022'
+      //   +font-size(-6)
+      //   position: relative
+      //   right: 1px
 
-    .m-point-author-avatar
-      display: none
+
 
 
 .m-point-results, .m-point-peer
@@ -1058,8 +1101,43 @@ $arrow_height: 11px
     background-color: #777
   .m-point-include-wrap
     display: none
+
+  &.m-point-unexpanded
+    &.pro
+      padding: 0 $grid_xs 4px 2 * $grid_xs
+
+      .m-point-nutshell-wrap:before
+        left: 8px + $grid_xs
+
+    &.con
+      padding: 0 2 * $grid_xs 4px $grid_xs
+
+      .m-point-nutshell-wrap:before
+        left: 8px
+
+    .m-point-nutshell-wrap
+      &:before
+            
+        content: $hex-bullet-point
+        position: absolute
+        top: 0px
+        +font-size(-3)
+
+    .m-point-author-avatar
+      display: none
+
                   
 .m-point-results
+
+  .m-point-wrap
+    display: inline-block
+
+  &.m-point-unexpanded
+    .avatar
+      width: 25px
+      height: 25px
+      margin: 2px 8px
+
 
   .m-point-remove, .m-point-include-wrap
     display: none
@@ -1077,7 +1155,7 @@ $m-point-expanded-width: $body_width + 150
     &.m-point-position, &.m-point-results
       left: $pro-con-list-column-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
     &.m-point-peer
-      left: $peer-point-width - $m-point-expanded-width
+      right: $m-point-expanded-width - $peer-point-width
   &.pro
     &.m-point-position, &.m-point-results
       left: - ($m-point-expanded-width - $body_width) / 2
@@ -1113,9 +1191,12 @@ $m-point-expanded-width: $body_width + 150
     text-transform: uppercase
     cursor: pointer
 
+  &.pro
+    .m-point-author-name
+      left: 5px
   &.con
     .m-point-author-name
-      right: 0
+      right: 5px
 
   &.m-point-position, &.m-point-results
     @extend %m-point-thought-bubble
@@ -1129,15 +1210,26 @@ $m-point-expanded-width: $body_width + 150
         color: #e1e1e1
 
 
+  &.m-point-results, .m-point-results-position
+    border-radius: 5px
+    .m-point-author-name
+      padding: 3px 8px
+      top: -27px
+
   &.m-point-position
     background-color: #555
     border: 1px solid #666
-    border-radius: 5px
+
+    .m-point-author-name
+      background-color: #555
 
   &.m-point-results
     background-color: $constituency_color
     border: 1px solid $dark_constituency_color
-    border-radius: 5px
+
+    .m-point-author-name
+      background-color: $constituency_color
+
     .m-point-operations 
       .m-point-assessment-request-initiate, .m-point-follow input[type="submit"]
         @extend %point_operation_button
@@ -1173,6 +1265,13 @@ $m-point-expanded-width: $body_width + 150
 
 /* NEWPOINT */
 
+.m-pro-con-list-propoints .m-newpoint
+  margin-left: $grid_xs
+
+.m-pro-con-list-conpoints .m-newpoint
+  margin-right: $grid_xs
+
+
 .m-newpoint
   position: relative
   margin-top: $vertical_baseline
@@ -1184,7 +1283,7 @@ $m-point-expanded-width: $body_width + 150
       content: $hex-bullet-point
       display: inline-block
       position: absolute
-      top: 5px
+      top: 1px
       //left: -10px
 
   .m-newpoint-new
@@ -1751,47 +1850,55 @@ $m-point-expanded-width: $body_width + 150
 
   .m-results-responders
     +bubble($constituency_color, $dark_constituency_color, right)
-
+    min-height: 160px  
   .m-summary-heading
-    padding-bottom: $vertical_baseline 
+    //padding-bottom: $vertical_baseline 
     font-weight: normal
 
-  %top_point
-    display: inline-block
+
+
+  // %top_point
+  //   display: inline-block
     
-    .avatar
-      width: 50px
-      height: 50px
+  //   .avatar
+  //     width: 50px
+  //     height: 50px
  
-  .m-summary-top-pro
-    @extend %top_point
-    float: left
+  // .m-summary-top-points
+  //   //width: 95%
+  //   //position: absolute
+  //   //top: 3 * $vertical_baseline
 
-  .m-summary-top-con
-    @extend %top_point
-    float: right
+  // .m-summary-top-pro
+  //   @extend %top_point
+  //   float: left
 
-  %m-top-point-body
-    padding: $vertical_baseline / 2 $grid_xs
-    width: 210px
-    position: relative
-    display: inline-block
-    +post_it($repeated: 1)
-    .text
-      +font-size(-4)
+  // .m-summary-top-con
+  //   @extend %top_point
+  //   float: right
 
-  .m-top-pro-body
-    @extend %m-top-point-body
-    +bubble(#F0EB7F, $dark_constituency_color, left, $constituency_color)              
+  // %m-top-point-body
+  //   padding: $vertical_baseline / 2 $grid_xs
+  //   width: 210px
+  //   position: relative
+  //   display: inline-block
+  //   +post_it($repeated: 1)
+  //   .text
+  //     +font-size(-4)
 
-  .m-top-con-body
-    @extend %m-top-point-body
-    +bubble(#F0EB7F, $dark_constituency_color, right, $constituency_color)              
+  // .m-top-pro-body
+  //   @extend %m-top-point-body
+  //   +bubble(#F0EB7F, $dark_constituency_color, left, $constituency_color)              
+
+  // .m-top-con-body
+  //   @extend %m-top-point-body
+  //   +bubble(#F0EB7F, $dark_constituency_color, right, $constituency_color)              
 
 
 /* RESULTS */
 
-.m-aggregated-results
+.m-aggregated-results, .m-results-summary
+
   .m-results-responders
     padding: $vertical_baseline / 2 0
     +bubble($constituency_color, $dark_constituency_color, right)
@@ -1831,7 +1938,7 @@ $histogram_bar_color: #6E6E6E
   //bottom: -4px
   border-left: 2px solid $histogram_bar_border-color
   opacity: 0
-  +single-transition
+  //+single-transition
 
 
   %m-histogram-label
@@ -1868,15 +1975,16 @@ $histogram_bar_color: #6E6E6E
     border-left: 0
     //border-bottom: none
     background-color: $histogram_bar_color
-    +single-transition
+    +transition(background-color .5s linear, color .5s linear, border-radius .5s linear)
     +bubble($constituency_color, $dark_constituency_color, right, $include_bg: false)
     //z-index: 1
+    border-radius: 0px
 
     .m-bar-percentage
-      +font-size(-5)
+      +font-size(-2)
       color: $histogram_bar_color
       position: absolute
-      right: -36px
+      right: -40px
       top: $histogram_bar_width / 2 - 8px
 
     &.m-bar-is-selected .t-bubble
@@ -1885,11 +1993,12 @@ $histogram_bar_color: #6E6E6E
     .t-bubble
       display: none
       position: absolute
-      left: -7.5px
+      left: -5.5px
       right: auto
       top: 50%
       margin-top: -10px
       z-index: 999999
+
 
     .m-bar-close
       display: none
@@ -2086,11 +2195,14 @@ $histogram_bar_color: #6E6E6E
   margin-bottom: $vertical_baseline/2
   //height: 2 * $vertical_baseline
 
-.m-results-pro-con-list
+.m-results-pro-con-list, .m-results-summary-pro-con-list
   //@extend %chalkboard
   @extend %pro_con_list
-  min-height: 530px
-  width: $body_width + 20
+  //width: $body_width + 20
+
+.m-results-pro-con-list
+  .m-point-list
+    min-height: 400px
 
 $filter_width: 371px
 .m-results-point-filters
@@ -2133,7 +2245,7 @@ $filter_width: 371px
     //+single-box-shadow($hoff: 1px, $voff: 6px, $blur: 6px, $spread: -5px, $color: #fff, $inset: true)
 
   .m-position-heading
-    +font-size(1)
+    +font-size(2)
     padding: $vertical_baseline / 2 0 $vertical_baseline 0
     text-align: center
     text-decoration: underline
@@ -2146,12 +2258,13 @@ $filter_width: 371px
   //margin-left: -$peer-point-width
   //width: $content_width
   width: 1300px
-  left: -248px //-$peer-point-width - $grid_minor
+  left: -250px //-$peer-point-width - $grid_minor
   .m-reasons-pro-con-list, .m-reasons-peer-points
     display: inline-block
 
   .m-reasons-pro-con-list
     //margin: 0 $grid_minor
+    margin: 0 3px
 
     @extend %pro_con_list 
     min-height: 400px
@@ -2161,13 +2274,19 @@ $filter_width: 371px
   .m-reasons-peer-points
     width: $peer-point-width
     vertical-align: top 
-    padding-top: 3 * $vertical_baseline
+    padding-top: $vertical_baseline
     //position: absolute
     //top: 0 
 
-    &.m-reasons-peer-points-pros
+    .m-reasons-peer-pros, .m-reasons-peer-cons
+      .m-point-list
+        min-height: 315px
+
+
+    .m-reasons-peer-pros
       //left: -$peer-point-width - $grid_xs - 5
-    &.m-reasons-peer-points-cons
+    .m-reasons-peer-cons
+      margin-left: 3px
       //right: -$peer-point-width - $grid_xs - 5
 
   %m-reasons-peer-points-heading
@@ -2222,7 +2341,7 @@ $filter_width: 371px
     @extend %m-stance-label
     text-align: center
     +font-size(2)
-    +single-transition
+    +transition(opacity .5s linear)
 
   .m-stance-slider-container
     height: 45px 

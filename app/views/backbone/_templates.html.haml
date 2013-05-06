@@ -49,13 +49,13 @@
 
         .m-point-follow
 
-        .m-point-assess
-
         %a.m-point-read-more 
           //{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }        
           {{ comment_count == 1 ? "1 comment" : comment_count + " comments"}}
         %a.m-point-remove{ :'data-target' => 'point-remove'}
           Remove from your list
+
+        .m-point-assess
 
       .m-point-include-wrap
         %a.m-point-include{ :'data-target' => 'point-include'}
@@ -411,41 +411,65 @@
 
   %script{ :type => "text/template", :id => "tpl_summary" }      
     .l-message-recipient
-    .l-message-body.right.m-results-responders.summary{ :style => " {{ tile_size==50 ? '' : 'min-height:160px;' }} "}
+    .l-message-body.right.m-results-responders.summary 
+      //{ :style => " {{ tile_size==50 ? '' : 'min-height:160px;' }} "}
       = render :partial => "shared/bubble", :locals => {:left => false}
 
 
-      %h3.m-summary-heading
-        The most compelling pros and cons we've considered so far: 
-        
-      .m-summary-top-pro
-        (( if(!top_pro) { ))
-        .text
-          No pro arguments added yet.
-        (( } else { ))
+      %h3.m-results-pro-con-list-who
+        .m-results-pro-con-list-who-others
+        .m-results-pro-con-list-who-all    
+          The most compelling considerations we've covered so far
 
-        %a.avatar{ :'data-id' => "{{top_pro.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "author"}
 
-        .m-top-pro-body.left
-          = render :partial => "shared/bubble", :locals => {:left => true}
+
+      .m-results-summary-pro-con-list{ :class => "static" }
+
+
+        .m-pro-con-list-propoints             
+          .m-pro-con-list-header
+            Pro
+            / - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
+            /   = theme_image_tag('pro_header.png')
+            / - else
+            /   = image_tag('chalk/pros.png') 
+          (( if(!top_pro) { ))
           .text
-            {{top_pro.nutshell}}
-        (( } ))
+            No pro arguments added yet.
+          (( } else { ))
+          %ul.m-point-list
+            %li.m-point-results.pro.m-point-unexpanded
+              %a.avatar{ :'data-id' => "{{top_pro.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "m-point-author-avatar"}
+              .m-point-wrap
 
-      .m-summary-top-con
-        (( if(!top_con) { ))
-        .text
-          No con arguments added yet.
-        (( } else { ))
-        .m-top-con-body.l-message-body.right
-          = render :partial => "shared/bubble", :locals => {:left => false}
+                .m-point-nutshell-wrap
+                  .m-point-nutshell
+                    {{ top_pro.nutshell }}
+          (( } ))
+
+        .m-pro-con-list-conpoints
+
+          .m-pro-con-list-header
+            Con
+            / - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
+            /   = theme_image_tag('con_header.png')
+            / - else
+            /   = image_tag('chalk/cons.png') 
+
+          (( if(!top_con) { ))
           .text
-            {{top_con.nutshell}}
+            No con arguments added yet.
+          (( } else { ))
+          %ul.m-point-list
+            %li.m-point-results.con.m-point-unexpanded
+              %a.avatar{ :'data-id' => "{{top_con.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "m-point-author-avatar"}
+              .m-point-wrap
+                .m-point-nutshell-wrap
+                  .m-point-nutshell
 
-        %a.avatar{ :'data-id' => "{{top_con.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "author"}
+                    {{ top_con.nutshell }}
+          (( } ))
 
-        (( } ))
-      .clear  
 
     .l-message-speaker.l-group-container
       (( _.each(participants, function(p){ ))
@@ -464,7 +488,7 @@
       %h3.m-results-pro-con-list-who
         .m-results-pro-con-list-who-others
         .m-results-pro-con-list-who-all    
-          Amongst all of us, these are the most important
+          The most compelling considerations we've covered so far
 
 
 

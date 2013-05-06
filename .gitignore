@@ -52,3 +52,6 @@ zansible/files/ssl/chalkboardit/chalkboardit.key.nopass
 zansible/group_vars/chlkit
 
 zansible/hosts-chlkit
+
+
+public/system/default_avatar/avatar.sketch*

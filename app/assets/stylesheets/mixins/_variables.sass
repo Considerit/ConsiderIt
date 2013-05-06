@@ -5,6 +5,8 @@ $grid_xs: 18px
 $vertical_baseline: 1em
 
 $content_width: 967px //$grid_major * 22 + $grid_xs
+$body_width: 600px
+
 $pro_con_list_width: 675px
 
 $slider_width: 300px
@@ -13,15 +15,25 @@ $slider_label_width: 100px
 $peer-point-width: 225px
 //$peer-point-height: 180px
 
-$pro-con-list-column-width: 250px
+$pro-con-list-column-width: $body_width / 2 //250px
 
 $histogram_bar_width: 45px //2 * $grid_major - 4
 
 $rep_color: lighten(#49B1E5, 20%)
 $dark_rep_color: darken($rep_color, 20%)
 
-$constituency_color: lighten(#E5E15A, 20%)
-$dark_constituency_color: darken($constituency_color, 35%)
+
+// $rep_color: #FFFF99
+// $dark_rep_color: darken($rep_color, 35%)
+
+// $rep_color: #45BF63
+// $dark_rep_color: darken($rep_color, 15%)
+
+// $constituency_color: lighten(#E5E15A, 20%)
+// $dark_constituency_color: darken($constituency_color, 35%)
+
+$constituency_color: #fafafa
+$dark_constituency_color: darken($constituency_color, 25%)
 
 $user_color: #ddd
 $dark_user_color: darken($user_color, 10%) 
@@ -35,9 +47,12 @@ $dark_comp_color: darken($comp_color, 10%)
 $header_gray: #777
 $empty_color: #ddd
 
-$proposal_width: 617px
-$body_width: 600px
-
 //$content_background : image-url('directrep/images/brillant.png')
 
 $hex-bullet-point: '\2022'
+
+$content_bg_color: #eaeaea
+
+$bg_color: desaturate( darken($comp_color, 0%), 65%)
+//$bg_color: darken($comp_color, 0%)
+//$bg_color: $content_bg_color

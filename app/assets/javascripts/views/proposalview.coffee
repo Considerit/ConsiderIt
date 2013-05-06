@@ -129,23 +129,23 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   take_position : (me) ->
-    me.proposal.views.results.show_summary()
+    #me.proposal.views.results.show_summary()
 
     el = me.proposal.views.take_position.show_crafting()
     el.insertAfter(me.$el.find('[data-role="results-section"]'))
     
-    $('html, body').stop(true, false);
-    $('body').animate {scrollTop: el.offset().top - 100 }, 500
+    #$('html, body').stop(true, false);
+    #$('body').animate {scrollTop: el.offset().top - 100 }, 500
 
     me.state = 1
 
   show_results : (me) ->
 
-    me.proposal.views.take_position.close_crafting()
+    #me.proposal.views.take_position.close_crafting()
     me.proposal.views.results.show_explorer()
 
-    $('html, body').stop(true, false);
-    $('body').animate {scrollTop: me.proposal.views.results.$el.offset().top - 100 }, 500
+    #$('html, body').stop(true, false);
+    #$('body').animate {scrollTop: me.proposal.views.results.$el.offset().top - 100 }, 500
 
     me.state = 2
 
@@ -204,9 +204,10 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   set_unexpanded : =>
     if @state > -1
-      @$hidden_els.css 'display', ''
 
-      console.log @scroll_position
+      #@$hidden_els.css 'display', ''
+      @$hidden_els.css {opacity: 0, display: ''}
+      @$hidden_els.animate {opacity: 1}, 350
       $('body').scrollTop @scroll_position
 
     @state = -1

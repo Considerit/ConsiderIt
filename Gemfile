@@ -136,6 +136,7 @@ group :assets do
   gem "asset_sync"
   gem 'compass'
   gem 'compass-rails'  
+  gem 'sassy-buttons'
   #gem 'turbo-sprockets-rails3'
   #gem "themes_for_rails", :git => 'git://github.com/jasherai/themes_for_rails.git'
 end

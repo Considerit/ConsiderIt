@@ -11,18 +11,39 @@
       
     .t-dr-mock-dialogue
 
-      %h1.t-dr-heading
-        - if aarp
-          = image_tag current_theme_image_path("aarp_logo.png")
-          = image_tag current_theme_image_path("logo.png")
+      .m-proposal-message.m-proposal-introduction
+        .l-message-body.left.down.m-proposal-description
+          = render :partial => "shared/bubble", :locals => {:left => true, :down => true}
 
-        - else
-          %span.rep{:title => "#{theme.rep_name}"}
-            = theme.rep_name
-          %span.dialogue{:title => "wants to hear from"}
-            wants to hear from
-          %span.constituency{:title => "You"}
-            You
+          .m-proposal-description-head
+            %h1.t-dr-heading
+              - if aarp
+                = image_tag current_theme_image_path("aarp_logo.png")
+                = image_tag current_theme_image_path("logo.png")
+
+              - else
+                %span.dialogue
+                  I, #{theme.rep_name}, want to discuss these issues with You.
+
+
+                / %span.rep{:title => "#{theme.rep_name}"}
+                /   = theme.rep_name
+                / %span.dialogue{:title => "wants to hear from"}
+                /   , want to hear from
+                / %span.constituency{:title => "You"}
+                /   You
+            .m-proposal-description-details
+              Residents of Framingham and Ashland, join me in thinking through the pros and cons of these issues.
+
+
+          .m-proposal-description-body
+            -# if !aarp
+              I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
+
+            -# else
+              Tell us what you think about the issues below. We want to represent our members as our government consider these important policy issues that will effect the lives of our members.
+
+            //I want to be able to represent the residents of Moanalua, Salt Lake and Aliamanu as we consider these issues in the State House.
 
       .l-message-speaker.rep
         = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
@@ -41,23 +62,7 @@
               facebook
 
       .l-message-body
-        .rep_statement.left
-          = render :partial => "shared/bubble", :locals => {:left => true}
-
-          
-          - if !aarp
-            Tell me what you think about the issues below. 
-          - else
-            Tell us what you think about the issues below.
-
-          %span.light
-            - if !aarp
-              I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
-              
-              //I want to be able to represent the residents of Moanalua, Salt Lake and Aliamanu as we consider these issues in the State House.
-            - else
-              We want to represent our members as our government consider these important policy issues that will effect the lives of our members.
-
+        
         .constituent_statement.right
           //.t-bubble
           = render :partial => "shared/bubble", :locals => {:left => false}
@@ -72,44 +77,26 @@
           = render :partial => "shared/bubble", :locals => {:left => true}
 
           - if !aarp
-            I promise to post a response to your concerns.
+            I care. I will publicly respond to the concerns you all raise here, and represent them to my fellow lawmakers. 
           - else
             Your voice powers the AARP.  
 
           %span.light  
             - if !aarp
-              Your opinions help shape how I look at these important issues for our community. I care what you think.
+
             - else
               Your opinions help shape how we as an organization can respond to these important issues.  We care what you think.
 
       .l-message-recipient.l-group-container
         - cols = 10
-        - rows = 13
+        - rows = 9
         - pics = User.where('avatar_file_name IS NOT NULL')
         - users = pics.sample( [cols*rows, pics.count].min )
 
         - users.each do |user|
           %span.avatar{ :id => "avatar-#{user.id}", :'data-id' => user.id }
 
-  .m-proposals-heading
 
-    .m-proposals-sort-container
-      .title
-        Sort conversations by: 
-      %a.selected.activity
-        Most active
-      %a.newest
-        Newest
-
-    .m-proposals-filter-container
-      .title
-        Filter to: 
-      %a.selected.all
-        All
-      %a.open
-        Open
-      %a.completed
-        Completed
 
   #m-proposals-container
     %ul.m-proposal-list

@@ -94,7 +94,33 @@
 
           %input.m-newpoint-create.button{ :type => 'submit', :value => 'Done'}
           
-        
+
+  %script{ :type => "text/template", :id => "tpl_pointlistbrowse_header" }
+    .m-pointlist-browse-header-close
+
+      %a.m-pointlist-browse-toggle
+        {{ pros ? '&laquo;' : '' }} stop browsing points {{ pros ? '' : '&raquo;' }}
+    %h3.m-pointlist-browse-heading
+      {{ pros ? 'Pro' : 'Con' }} considerations by other participants
+
+
+    - ranks = [ { :name => 'persuasivness', :selected => true, :title => 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', :target => 'persuasiveness'}, { :name => 'Popularity', :selected => false, :title => 'Considerations that have been added to the most pro/con lists are ranked higher.', :target => 'popularity'}, { :name => 'Common Ground', :selected => false, :title => 'Considerations that tend to be added by both supporters and opposers are ranked higher. Low ranked considerations are more divisive.', :target => '-divisiveness'}]
+
+    .m-pointlist-browse-sort
+      %span.m-pointlist-browse-sort-label
+        sort by: 
+      %ul
+        - ranks.each do |rank|
+          %li.m-pointlist-sort-option
+            (( var selected_class = selected == "#{rank[:target]}" ? 'selected': '';))
+            %a{ :title => rank[:title], :class => "{{selected_class}}", :'data-target' => rank[:target] }
+              = rank[:name]
+
+
+  %script{ :type => "text/template", :id => "tpl_pointlistbrowse" }
+    %a.m-pointlist-browse-toggle
+      Browse all {{ pros ? 'pro' : 'con' }} considerations
+
   %script{ :type => "text/template", :id => "tpl_pointlistpagination" }
     %a.m-pointlist-backward
       (( if(start_record != 1){ ))
@@ -177,55 +203,85 @@
             cancel
     (( } ))
 
-  %script{ :type => "text/template", :id => "tpl_new_proposal"}
-    %button.m-new-proposal-submit
-      Start a new conversation
+
+  %script{ :type => "text/template", :id => "tpl_proposal_list_header"}
+    .m-proposals-list-header
+      (( if(is_admin){ ))
+      .m-proposals-new
+        %button.m-new-proposal-submit
+          Start a new conversation
+      (( }))
+      .m-proposals-heading
+
+        .m-proposals-sort-container
+          .title
+            Sort conversations by: 
+          %a.selected.activity
+            Most active
+          %a.newest
+            Newest
+
+        .m-proposals-filter-container
+          .title
+            Filter to: 
+          %a.selected.all
+            All
+          %a.open
+            Open
+          %a.completed
+            Completed 
 
 
   %script{ :type => "text/template", :id => "tpl_unexpanded_proposal" }
     .l-content-wrap
-      .m-proposal-heading-wrap
-        %h2.m-proposal-heading
-          {{title}}
 
       .m-proposal-body_wrap
 
+        .m-proposal-message.m-proposal-introduction
+          .l-message-speaker.m-proposal-initiator
+            %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+              %img{:src => "{{ avatar }}"}
+          .l-message-body.left.down.m-proposal-description
+            = render :partial => "shared/bubble", :locals => {:left => true, :down => true}
 
-      (( if(published){ ))
-      .m-proposal-connect.m-proposal-strip
+            .m-proposal-description-title
+              {{title}}
+            .m-proposal-description-body
+              {{description}}
+            .m-proposal-description-details
 
-        %ul
-          (( if( ConsiderIt.current_user.is_logged_in() ) { ))
-          (( var selected_class = ConsiderIt.current_user.is_following('Proposal', id) ? 'selected' : ''; ))
-          %li.m-proposal-action-label
-            Follow this conversation:
-          %li
-            %button{ :class => "{{ selected_class }} m-proposal-follow_conversation" }
-              Get email updates
+              (( _.each(description_detail_fields, function(field) {  ))
 
-          (( } ))
+              (( if( field[2] != '') { ))
+              .m-proposal-description-detail-field
+                .m-proposal-description-detail-field-heading
+                  {{ field[1] }}
+                  %a.hidden
+                    show
+                .m-proposal-description-detail-field-full.hide
+                  %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
+                    {{ field[2] }}
+                  %a.hidden
+                    show
+              (( } ))
 
-          %li.m-proposal-action-label
-            Help spread the word
-          %li.m-proposal-action-link
-            .zocial.icon.facebook
-          %li.m-proposal-action-link
-            .zocial.icon.twitter
-          %li.m-proposal-action-link
-            .zocial.icon.permalink
-          %li.m-proposal-action-label
-            Link to this conversation
-      (( } ))
+              (( }); ))
 
-      (( if(published){ ))
-      .m-proposal_strip_toggle.m-proposal-strip
-        %a.m-proposal-toggle
-          %span.m-proposal_toggle_expanded
-            Hide conversation
-          %span.m-proposal_toggle_unexpanded
-            Join conversation
 
-      (( } else { ))
+          .l-message-recipient
+
+
+
+
+      / (( if(published){ ))
+      / .m-proposal_strip_toggle.m-proposal-strip
+      /   %a.m-proposal-toggle
+      /     %span.m-proposal_toggle_expanded
+      /       Hide conversation
+      /     %span.m-proposal_toggle_unexpanded
+      /       What do you think?
+
+      / (( } else { ))
       .m-proposal-strip_publish
         = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
           = f.hidden_field :published, :value => true
@@ -236,38 +292,34 @@
 
       (( } ))
 
-  %script{ :type => "text/template", :id => "tpl_expanded_proposal" }
+  %script{ :type => "text/template", :id => "tpl_proposal_strip" }
+    (( if(published){ ))
+    .m-proposal-connect.m-proposal-strip
 
-    .m-proposal-message.m-proposal-introduction
-      .l-message-speaker.m-proposal-initiator
-        %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
-          %img{:src => "{{ avatar }}"}
+      %ul
+        / (( if( ConsiderIt.current_user.is_logged_in() ) { ))
+        / (( var selected_class = ConsiderIt.current_user.is_following('Proposal', id) ? 'selected' : ''; ))
+        / %li.m-proposal-action-label
+        /   Follow this conversation:
+        / %li
+        /   %button{ :class => "{{ selected_class }} m-proposal-follow_conversation" }
+        /     Get email updates
 
-      .l-message-body.left.m-proposal-description
-        = render :partial => "shared/bubble", :locals => {:left => true}
-        .m-proposal-description-body
-          {{description}}
+        / (( } ))
 
-        .m-proposal-description-details
+        %li.m-proposal-action-label
+          Help spread the word
+        %li.m-proposal-action-link
+          .zocial.icon.facebook
+        %li.m-proposal-action-link
+          .zocial.icon.twitter
+        %li.m-proposal-action-link
+          .zocial.icon.permalink
+        %li.m-proposal-action-label
+          Link to this conversation
+    (( } ))
 
-          (( _.each(description_detail_fields, function(field) {  ))
-
-          (( if( field[2] != '') { ))
-          .m-proposal-description-detail-field
-            .m-proposal-description-detail-field-heading
-              {{ field[1] }}
-              %a.hidden
-                show
-            .m-proposal-description-detail-field-full.hide
-              %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
-                {{ field[2] }}
-              %a.hidden
-                show
-          (( } ))
-
-          (( }); ))
-
-      .l-message-recipient
+  %script{ :type => "text/template", :id => "tpl_initiator_response" }
 
     (( if(published){ ))
     .m-proposal-message.m-proposal-leader-response
@@ -276,7 +328,7 @@
           %img{:src => "{{ avatar }}"}
 
 
-      .l-message-body.left.m-proposal-description
+      .l-message-body.left.down.m-proposal-description
         = render :partial => "shared/bubble", :locals => {:left => true}
 
         (( var r = Math.floor(Math.random()*3); ))
@@ -300,37 +352,53 @@
     (( } ))
 
 
+
   %script{ :type => "text/template", :id => "tpl_your_action_craft"}
     .l-message-recipient
+      %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+        {{ call }}
 
-    %a.l-message-body.m-position-your-action-body.right.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
-      = render :partial => "shared/bubble", :locals => {:left => false}
-
-      %span.text
-        {{call}}
+    .l-message-body
 
     .l-message-speaker
-      = image_tag current_theme_image_path("you.png")
+
 
   %script{ :type => "text/template", :id => "tpl_your_action_save"}
     .l-message-recipient
 
-    %a.l-message-body.m-position-your-action-body.right.submit
-      = render :partial => "shared/bubble", :locals => {:left => false}
+    .l-message-body.m-position-your-action-body-wrap
+      %a.m-position-your-action-body.submit
+        (( if(updating){ ))
+        Update your position
+        (( } else { ))
+        Save your position
+        (( } ))
 
-      //= image_tag current_theme_image_path("join.png")
+      .m-position-submit-footer-wrap
+        .notifications
 
-      %span.text
-        {{call}}
+          = label_tag :follow_proposal, '', :title => 'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.' do
+            
+            (( if (follows) { )) 
+            = check_box_tag :follow_proposal, 'true', true
+            (( } else { ))
+            = check_box_tag :follow_proposal, 'true'
+            (( }))
+
+            %span
+              Get email updates about new activity
+
+        %a.m-position-cancel
+          cancel
+
 
     .l-message-speaker
-      = image_tag current_theme_image_path("you.png")
 
 
   %script{ :type => "text/template", :id => "tpl_position" }      
     .l-message-recipient
     .l-message-body.right.m-position-message-body
-      = render :partial => "shared/bubble", :locals => {:left => false}
+      //= render :partial => "shared/bubble", :locals => {:left => true}
 
       %h2.m-position-heading
         I consider these the most important pros and cons
@@ -407,10 +475,11 @@
         %textarea.m-position-statement{ :name => :explanation}
 
     .l-message-speaker
-      = image_tag current_theme_image_path("you.png")
+      //= image_tag current_theme_image_path("you.png")
 
   %script{ :type => "text/template", :id => "tpl_summary" }      
     .l-message-recipient
+
     .l-message-body.right.m-results-responders.summary 
       //{ :style => " {{ tile_size==50 ? '' : 'min-height:160px;' }} "}
       = render :partial => "shared/bubble", :locals => {:left => false}
@@ -428,7 +497,7 @@
 
         .m-pro-con-list-propoints             
           .m-pro-con-list-header
-            Pro
+            \#1 Pro
             / - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
             /   = theme_image_tag('pro_header.png')
             / - else
@@ -438,7 +507,7 @@
             No pro arguments added yet.
           (( } else { ))
           %ul.m-point-list
-            %li.m-point-results.pro.m-point-unexpanded
+            %li.m-point-results.pro.m-point-unexpanded{ :'data-id' => "{{top_pro.id}}", :includers => "{{ top_pro.includers }}"}
               %a.avatar{ :'data-id' => "{{top_pro.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "m-point-author-avatar"}
               .m-point-wrap
 
@@ -450,7 +519,7 @@
         .m-pro-con-list-conpoints
 
           .m-pro-con-list-header
-            Con
+            \#1 Con
             / - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
             /   = theme_image_tag('con_header.png')
             / - else
@@ -461,7 +530,7 @@
             No con arguments added yet.
           (( } else { ))
           %ul.m-point-list
-            %li.m-point-results.con.m-point-unexpanded
+            %li.m-point-results.con.m-point-unexpanded{ :'data-id' => "{{top_con.id}}", :includers => "{{ top_con.includers }}"}
               %a.avatar{ :'data-id' => "{{top_con.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "m-point-author-avatar"}
               .m-point-wrap
                 .m-point-nutshell-wrap
@@ -476,8 +545,8 @@
       %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
       (( }); ))
 
-      %a.results{:href => "{{Routes.proposal_path( long_id )}}"}
-        View results
+      %a.m-results-summary-button{:href => "{{Routes.proposal_path( long_id )}}"}
+        View full results
 
   %script{ :type => "text/template", :id => "tpl_results" }      
     .l-message-recipient
@@ -533,14 +602,15 @@
         (( _.each( participants, function(p){ ))
         %span.avatar{ :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
         (( }); ))
-
+        %a.m-results-summary-button{:'data-action' => "results-explode-participants"}
+          Show their votes
       .clear
 
 
       .m-histogram
 
-        .m-histogram-label-support
-          Supporters
+        / .m-histogram-label-support
+        /   Supporters
 
         (( _.each(histogram.breakdown, function(bar, bucket){ ))
 
@@ -550,7 +620,11 @@
           = render :partial => "shared/bubble_equilateral", :locals => {:left => false}
 
           .m-bar-percentage
-            {{ Math.ceil(bar.positions.length / participants.length * 1000)/10 }}%
+            %span.m-bar-percentage-number
+              {{ (Math.ceil(bar.positions.length / participants.length * 1000)/10).toFixed(1) }}% 
+            %span.m-bar-percentage-group
+              {{ ConsiderIt.Position.stance_name_for_bar(6-bucket) }}
+
 
           .m-bar-close
             x
@@ -584,8 +658,8 @@
           (( } ))
 
         (( }); ))
-        .m-histogram-label-oppose
-          Opposers
+        / .m-histogram-label-oppose
+        /   Opposers
 
         .clear  
 

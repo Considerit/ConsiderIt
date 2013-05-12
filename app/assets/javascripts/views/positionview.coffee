@@ -16,7 +16,7 @@ class ConsiderIt.PositionView extends Backbone.View
       proposal : @proposal
       model : @model
 
-    @your_action_view.render()
+    @your_action_view.render() 
 
     your_action_el
 
@@ -51,16 +51,11 @@ class ConsiderIt.PositionView extends Backbone.View
 
   events :
     'click .submit' : 'handle_submit_position'
+    'click .m-position-cancel' : 'position_canceled'
 
-  submit_position : () ->
-    _.extend(@proposal.position.attributes, @crafting_view.position_attributes())
-    Backbone.sync 'update', @proposal.position,
-      success : (data) =>
-        #TODO: any reason to wait for the server to respond before navigating to the results?
-        ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: true})
-
-      failure : (data) =>
-        console.log('Something went wrong syncing position')
+  position_canceled : ->
+    # TODO: discard changes
+    @proposal.view.transition_unexpanded()
 
   handle_submit_position : (ev) ->
     if ConsiderIt.current_user.isNew()
@@ -72,6 +67,15 @@ class ConsiderIt.PositionView extends Backbone.View
     else
       @submit_position()
 
+  submit_position : () ->
+    _.extend(@proposal.position.attributes, @crafting_view.position_attributes())
+    Backbone.sync 'update', @proposal.position,
+      success : (data) =>
+        #TODO: any reason to wait for the server to respond before navigating to the results?
+        ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: true})
+
+      failure : (data) =>
+        console.log('Something went wrong syncing position')
 
 class ConsiderIt.YourActionView extends Backbone.View
   @craft_template : _.template( $("#tpl_your_action_craft").html() )
@@ -84,8 +88,9 @@ class ConsiderIt.YourActionView extends Backbone.View
     @close_crafting()
 
   crafting_state : ->
-    @$el.html ConsiderIt.YourActionView.save_template 
-      call : if true then 'Save your position' else 'Update your position'
+    @$el.html ConsiderIt.YourActionView.save_template
+      updating : false
+      follows : ConsiderIt.current_user.is_following('Proposal', @model.id)
 
   close_crafting : ->
     @$el.html ConsiderIt.YourActionView.craft_template
@@ -102,6 +107,7 @@ class ConsiderIt.CraftingView extends Backbone.View
 
   render : () -> 
 
+    @$el.hide()
     @$el.html ConsiderIt.CraftingView.template($.extend({}, @model.attributes, {proposal : @proposal.model.attributes}))
 
     @slider = 
@@ -123,12 +129,12 @@ class ConsiderIt.CraftingView extends Backbone.View
       peerpros : @proposal.points.peer_pros
       mycons : @proposal.points.included_cons
       peercons : @proposal.points.peer_cons
-    
+
     @views = 
       mypros : new ConsiderIt.PointListView({collection : @pointlists.mypros, el : @$el.find('.m-pro-con-list-propoints'), location: 'position', proposal : @proposal})
-      peerpros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.peerpros, el : @$el.find('.m-reasons-peer-pros'), location: 'peer', proposal : @proposal})
+      peerpros : new ConsiderIt.BrowsablePointListView({collection : @pointlists.peerpros, el : @$el.find('.m-reasons-peer-pros'), location: 'peer', proposal : @proposal})
       mycons : new ConsiderIt.PointListView({collection : @pointlists.mycons, el : @$el.find('.m-pro-con-list-conpoints'), location: 'position', proposal : @proposal})
-      peercons : new ConsiderIt.PaginatedPointListView({collection : @pointlists.peercons, el : @$el.find('.m-reasons-peer-cons'), location: 'peer', proposal : @proposal})
+      peercons : new ConsiderIt.BrowsablePointListView({collection : @pointlists.peercons, el : @$el.find('.m-reasons-peer-cons'), location: 'peer', proposal : @proposal})
 
     @listenTo @pointlists.peerpros, 'reset', @peer_point_list_reset
     @listenTo @pointlists.peercons, 'reset', @peer_point_list_reset
@@ -158,7 +164,8 @@ class ConsiderIt.CraftingView extends Backbone.View
       @slider.$el.noUiSlider('destroy')
       @create_slider()
 
-    @show()
+    @pointlists.peerpros.goTo(1)
+    @pointlists.peercons.goTo(1)
 
     this
 
@@ -172,15 +179,10 @@ class ConsiderIt.CraftingView extends Backbone.View
     @slider.$el.noUiSlider('init', @slider.params)
     if !@slider.is_neutral
       @slider.$neutral_label.css('opacity', 0)
-    
-
-  show : () ->
-    @pointlists.peerpros.goTo(1)
-    @pointlists.peercons.goTo(1)
-    @$el.show()
+  
 
   hide : () ->
-    @$el.hide()  
+    @$el.slideUp()  
 
   #handlers
   events :
@@ -344,6 +346,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     explanation : @$el.find('.position_statement textarea').val()
     included_points : ( pnt.id for pnt in @pointlists.mypros.models ).concat ( pnt.id for pnt in @pointlists.mycons.models )
     viewed_points : _.values(@proposal.points.viewed_points)
+    follow_proposal : @$el.find('#follow_proposal').is(':checked')
   }
 
 

@@ -1,4 +1,5 @@
 class ConsiderIt.ProposalListView extends Backbone.CollectionView
+  @proposals_header_template = _.template($('#tpl_proposal_list_header').html())
 
   itemView : ConsiderIt.ProposalView
   @childClass : 'm-proposal'
@@ -11,18 +12,17 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   
   render : -> 
     super
-    @render_new_proposal()
+    @render_header()
+
 
   #TODO: do this when login as admin
-  render_new_proposal : ->
-    if ConsiderIt.roles.is_admin
-      if !(@new_proposal_template?)
-        @new_proposal_template = _.template($('#tpl_new_proposal').html())
+  render_header : ->
 
-      @$el.find('.m-proposals-new').remove()
-      @$new_proposal = $('<div class="m-proposals-new">').html @new_proposal_template( {} )
+    $heading_el = ConsiderIt.ProposalListView.proposals_header_template({is_admin : ConsiderIt.roles.is_admin})
+
+    @$el.find('.m-proposals-list-header').remove()
       
-      @$el.prepend(@$new_proposal)
+    @$el.prepend($heading_el)
 
 
   # Returns an instance of the view class

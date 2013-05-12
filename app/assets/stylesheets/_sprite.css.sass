@@ -11,8 +11,9 @@
 
 =background-img
   background: repeat left top $bg_color
-  $stripe-color: darken($bg_color, 1%)
-  $height: $vertical_baseline
+  $stripe-color: darken($bg_color, 2%)
+  $height: $vertical_baseline 
 
-  +background-image(linear-gradient(transparent 50%, $stripe-color 50%))
-  +background-size($height $height)
+  background-image: asset-data-url('directrep/images/brillant_content.png')
+  //+background-image(linear-gradient(transparent 50%, $stripe-color 50%))
+  //+background-size($height $height)

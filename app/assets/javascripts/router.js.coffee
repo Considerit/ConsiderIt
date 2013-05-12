@@ -15,3 +15,4 @@ class ConsiderIt.Router extends Backbone.Router
     "dashboard/data" : "Database"
     "dashboard/moderate" : "Moderate"
     "dashboard/assessment" : "Assess"
+    "" : "Root"

@@ -11,6 +11,9 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
 
     ConsiderIt.router.on 'route:Profile', (id) => 
+      console.log 'nav'
+      console.log window.history
+
       @model = ConsiderIt.users[id]
       @render()
       @access_dashboard_profile(parseInt(id))
@@ -226,7 +229,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
   events :
     #'click .m-dashboard_link' : 'change_context_ev' 
-    'click .m-dashboard-close' : 'close'
+    'click [data-target="close_user_dashboard"]' : 'close'
     'click [data-target="user_profile_page"]' : 'view_user_profile'
 
     'click .m-dashboard-profile-activity-summary' : 'activity_toggled'
@@ -337,7 +340,5 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     if @managing_dashboard_content_view
       @managing_dashboard_content_view.undelegateEvents()
 
-    ConsiderIt.router.navigate(Routes.root_path(), {trigger: false})
-
-    
+    window.history.go(-1)    
 

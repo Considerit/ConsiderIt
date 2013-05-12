@@ -16,6 +16,7 @@ $banchor_adjustx: -20px
 
 %bubble_right
   @extend %bubble
+  color: $community_text_color
   border-radius: 5px 0 5px 5px
   > .t-bubble
     right: $banchor_adjustx 
@@ -23,13 +24,17 @@ $banchor_adjustx: -20px
 %bubble_left
   @extend %bubble
   border-radius: 0 5px 5px 5px
+  color: $initiator_text_color
   > .t-bubble
     left: $banchor_adjustx 
 
-= bubble($light, $dark, $direction, $bg-color: $content_bg_color, $bborder-width: 1px, $include_bg: true)
+= bubble($light, $dark, $direction, $bg_image: false, $bg-color: $content_bg_color, $bborder-width: 1px, $include_bg: true)
 
   @if $include_bg
-    background-color: $light
+    @if $bg_image
+      background-image: asset-data-url($bg_image)
+    @else
+      background-color: $light
     //background-color: black
     border: $bborder-width solid $dark
 

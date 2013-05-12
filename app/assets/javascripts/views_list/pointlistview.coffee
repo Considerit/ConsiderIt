@@ -78,6 +78,7 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
 class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
   @browsing_template : _.template($('#tpl_pointlistbrowse').html())
   @browsing_header_template : _.template( $('#tpl_pointlistbrowse_header').html() )
+  @points_per : 3
 
   initialize : () ->
     super
@@ -89,27 +90,29 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
   render : () ->
     super
     @collection.info()
-    @is_pro = @$el.parent().is('.m-reasons-peer-points-pros')
+    
+    if _.size(@collection.origModels) > ConsiderIt.BrowsablePointListView.points_per
+      @is_pro = @$el.parent().is('.m-reasons-peer-points-pros')
 
-    @$browse_el.remove() if @$browse_el?
+      @$browse_el.remove() if @$browse_el?
 
-    @$browse_el = $('<div class="m-pointlist-browse">')
+      @$browse_el = $('<div class="m-pointlist-browse">')
 
-    @$browse_el.html ConsiderIt.BrowsablePointListView.browsing_template({
-      pros : @is_pro
-    })
-    @$el.append(@$browse_el)
+      @$browse_el.html ConsiderIt.BrowsablePointListView.browsing_template({
+        pros : @is_pro
+      })
+      @$el.append(@$browse_el)
 
-    @$browse_header_el.remove() if @$browse_header_el?
-    @$browse_header_el = $('<div class="m-pointlist-browse-header">')
+      @$browse_header_el.remove() if @$browse_header_el?
+      @$browse_header_el = $('<div class="m-pointlist-browse-header">')
 
-    @$browse_header_el.html ConsiderIt.BrowsablePointListView.browsing_header_template({
-      pros : @is_pro
-      selected : @selected
-    })
-    @$el.prepend(@$browse_header_el)
-    if @browsing
-      @$browse_header_el.css('visibility', 'visible')
+      @$browse_header_el.html ConsiderIt.BrowsablePointListView.browsing_header_template({
+        pros : @is_pro
+        selected : @selected
+      })
+      @$el.prepend(@$browse_header_el)
+      if @browsing
+        @$browse_header_el.css('visibility', 'visible')
   
   onAdd : (model) ->
     super
@@ -135,6 +138,8 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
       @collection.setSort('appeal', 'desc')
     else if target == 'persuasiveness'
       @collection.setSort('persuasiveness', 'desc')
+    else if target == 'created_at'
+      @collection.setSort('created_at', 'desc')
 
     @collection.pager()
 
@@ -153,7 +158,7 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
     else
       @$el.removeClass 'm-pointlist-browsing'
       @proposal.view.$el.find('.m-position').css('margin-left' : @previous_margin)
-      @collection.howManyPer(3)
+      @collection.howManyPer(ConsiderIt.BrowsablePointListView.points_per)
       @$browse_header_el.css('visibility', 'hidden')
 
     @browsing = browse

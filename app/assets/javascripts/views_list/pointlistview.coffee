@@ -13,9 +13,6 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
     _.bindAll this
     ConsiderIt.router.on('route:PointDetails', @show_point_details_handler)
 
-  render : () ->
-    super
-
   # Returns an instance of the view class
   getItemView: (point)->
     new ConsiderIt.PointListView.itemView
@@ -37,8 +34,7 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
 
 class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
 
-  @pagingTemplate : _.template($('#tpl_pointlistpagination').html())
-  _rendered : false
+  @paging_template : _.template($('#tpl_pointlistpagination').html())
 
   initialize : (options) ->
     super
@@ -61,7 +57,7 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
     @collection.pager()
 
   repaginate : ->
-    @$el.find('.m-pointlist-pagination').html(ConsiderIt.PaginatedPointListView.pagingTemplate({
+    @$el.find('.m-pointlist-pagination').html(ConsiderIt.PaginatedPointListView.paging_template({
       start_record : @collection.information.startRecord
       end_record : @collection.information.endRecord
       total_records : @collection.information.totalRecords
@@ -78,4 +74,87 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
   backward : (ev) ->
     @collection.previousPage()
     #@repaginate()
+
+class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
+  @browsing_template : _.template($('#tpl_pointlistbrowse').html())
+  @browsing_header_template : _.template( $('#tpl_pointlistbrowse_header').html() )
+
+  initialize : () ->
+    super
+    @browsing = false
+    @selected = 'persuasiveness'
+
+    @collection.setSort(@selected, 'desc')
+
+  render : () ->
+    super
+    @collection.info()
+    @is_pro = @$el.parent().is('.m-reasons-peer-points-pros')
+
+    @$browse_el.remove() if @$browse_el?
+
+    @$browse_el = $('<div class="m-pointlist-browse">')
+
+    @$browse_el.html ConsiderIt.BrowsablePointListView.browsing_template({
+      pros : @is_pro
+    })
+    @$el.append(@$browse_el)
+
+    @$browse_header_el.remove() if @$browse_header_el?
+    @$browse_header_el = $('<div class="m-pointlist-browse-header">')
+
+    @$browse_header_el.html ConsiderIt.BrowsablePointListView.browsing_header_template({
+      pros : @is_pro
+      selected : @selected
+    })
+    @$el.prepend(@$browse_header_el)
+    if @browsing
+      @$browse_header_el.css('visibility', 'visible')
+  
+  onAdd : (model) ->
+    super
+    @collection.pager()
+
+  onRemove : (model) ->
+    super
+    @collection.pager()
+
+  events : 
+    'click .m-pointlist-browse-toggle' : 'toggle_browse_ev'
+    'click .m-pointlist-sort-option a' : 'sort_list'
+
+  sort_list : (ev) ->
+    @$el.find('.m-pointlist-sort-option a').removeClass('selected')
+    $(ev.target).addClass('selected')
+
+    target = $(ev.target).data('target')
+    @selected = target
+    if target == '-divisiveness'
+      @collection.setSort('divisiveness')
+    else if target == 'popularity'
+      @collection.setSort('appeal', 'desc')
+    else if target == 'persuasiveness'
+      @collection.setSort('persuasiveness', 'desc')
+
+    @collection.pager()
+
+  toggle_browse_ev : (ev) ->
+    @toggle_browse(!@browsing)
+
+  toggle_browse : (browse) ->
+
+    if browse
+      @$el.addClass 'm-pointlist-browsing'
+      @previous_margin = @proposal.view.$el.find('.m-position').css('margin-left')
+      @proposal.view.$el.find('.m-position').css('margin-left' : if @is_pro then '550px' else '-550px')
+      @collection.howManyPer(1000)
+      @$browse_el.find('.m-pointlist-browse-toggle').text "Stop browsing"
+      @$browse_header_el.css('visibility', 'visible')
+    else
+      @$el.removeClass 'm-pointlist-browsing'
+      @proposal.view.$el.find('.m-position').css('margin-left' : @previous_margin)
+      @collection.howManyPer(3)
+      @$browse_header_el.css('visibility', 'hidden')
+
+    @browsing = browse
 

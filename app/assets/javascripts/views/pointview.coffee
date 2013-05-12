@@ -56,14 +56,8 @@ class ConsiderIt.PointView extends Backbone.View
       callback(view)
 
   show_point_details : (me) ->
-    #overlay = $('<div class="l-overlay" id="point_details_overlay">')
-    #me.proposal.view.$el.prepend(overlay)
-    
-    #me.proposal.view.trigger 'point_details:staged'
-
     me.pointdetailsview = new ConsiderIt.PointDetailsView( {proposal : me.proposal, model: me.model, el: me.$el} )
     me.pointdetailsview.render()
-
 
 
   show_point_details_handler : () ->

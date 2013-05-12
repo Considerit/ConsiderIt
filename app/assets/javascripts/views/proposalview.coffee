@@ -1,18 +1,17 @@
 
 #######
 # state
-# -1 = unexpanded
-#  0 = expanded
+#  0 = unexpanded
 #  1 = position
 #  2 = results
 
 class ConsiderIt.ProposalView extends Backbone.View
-  @expanded_template : _.template( $("#tpl_expanded_proposal").html() )
   @unexpanded_template: _.template( $("#tpl_unexpanded_proposal").html() )
+  @proposal_strip_template: _.template( $("#tpl_proposal_strip").html() )
 
   tagName : 'li'
 
-  @editable_fields : _.union([ ['.m-proposal-heading', 'name', 'text'], ['.m-proposal-description-body', 'description', 'textarea'] ], ([".m-proposal-description-detail-field-#{f}", f, 'textarea'] for f in ConsiderIt.Proposal.description_detail_fields() ))
+  @editable_fields : _.union([ ['.m-proposal-description-title', 'name', 'text'], ['.m-proposal-description-body', 'description', 'textarea'] ], ([".m-proposal-description-detail-field-#{f}", f, 'textarea'] for f in ConsiderIt.Proposal.description_detail_fields() ))
 
   initialize : (options) -> 
     #@state = 0
@@ -34,12 +33,31 @@ class ConsiderIt.ProposalView extends Backbone.View
     @$el.html ConsiderIt.ProposalView.unexpanded_template($.extend({}, @model.attributes, {
         title : this.model.title()
         description_detail_fields : this.model.description_detail_fields()
+        avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'original')
+        tile_size : Math.min 50, ConsiderIt.utils.get_tile_size(110, 55, ($.parseJSON(@model.get('participants'))||[]).length)
+        participants : _.sortBy($.parseJSON(@model.get('participants')), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
+
       }))
 
-    @$el.removeClass('expanded')
-    @$el.addClass('unexpanded')
+    results_el = $('<div class="m-proposal-message">')
+    @proposal.views.results = new ConsiderIt.ResultsView
+      el : results_el
+      proposal : @proposal
+      model : @model
 
-    @set_unexpanded()
+    @proposal.views.results.render()
+    results_el.insertAfter(@$el.find('.m-proposal-introduction'))
+
+    if @model.get('published')
+      @proposal.views.take_position = new ConsiderIt.PositionView
+        proposal : @proposal
+        model : @proposal.position
+        el : @$el
+
+      position_el = @proposal.views.take_position.render()              
+      position_el.insertAfter(results_el)
+
+    @transition_unexpanded()
 
     @$main_content_el = @$el.find('.m-proposal-body_wrap')
 
@@ -85,10 +103,6 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   load_data : (callback, callback_params) ->
-    # if @state == -1
-    #   console.log 'load data toggle'
-    #   @toggle()
-
     @once 'proposal:data_loaded', => callback(this, callback_params)
     if ConsiderIt.current_proposal && ConsiderIt.current_proposal.long_id == @long_id
       @set_data(ConsiderIt.current_proposal.data)
@@ -125,29 +139,15 @@ class ConsiderIt.ProposalView extends Backbone.View
     @proposal.points.written_points = {}
     @proposal.points.viewed_points = {}
     @data_loaded = false
-    @close()
+    @transition_unexpanded()
 
 
   take_position : (me) ->
-    #me.proposal.views.results.show_summary()
-
-    el = me.proposal.views.take_position.show_crafting()
-    el.insertAfter(me.$el.find('[data-role="results-section"]'))
-    
-    #$('html, body').stop(true, false);
-    #$('body').animate {scrollTop: el.offset().top - 100 }, 500
-
-    me.state = 1
+    me.transition_expanded(1)
 
   show_results : (me) ->
+    me.transition_expanded(2)
 
-    #me.proposal.views.take_position.close_crafting()
-    me.proposal.views.results.show_explorer()
-
-    #$('html, body').stop(true, false);
-    #$('body').animate {scrollTop: me.proposal.views.results.$el.offset().top - 100 }, 500
-
-    me.state = 2
 
   take_position_handler : () ->
     if @state == -1
@@ -168,63 +168,99 @@ class ConsiderIt.ProposalView extends Backbone.View
     else
       @load_data(@show_results)
 
-  close : () ->
-    #_.each @proposal.views, (vw) -> 
-    #  delete vw.remove()
-    #@proposal.views = {}
-    @proposal.views.take_position.close_crafting()
-    @proposal.views.results.show_summary()
-    if @pointdetailsview
-      @pointdetailsview.remove()
+
+  # TODO: This should be triggered on results opened & position opened
+  transition_expanded : (new_state) =>
+
+    callback = (new_state) =>
+      if new_state == 1
+        el = @proposal.views.take_position.show_crafting()
+        el.insertAfter(@proposal.views.results.$el)
+        el.fadeIn 500, =>
+          $my_position = el.find('.m-position-message-body')
+          $my_header = $my_position.find('.m-position-heading')
+          flash_color = '#be5237'
+          $my_position.queue( (next) => 
+            $my_position.css({borderColor: flash_color})
+            $my_header.css({color: flash_color})
+            next()
+          ).delay(800).queue( (next) => 
+            $my_position.css({borderColor: ''})
+            $my_header.css({color: ''})            
+            next()
+          )
+
+        @set_state(1)
+      else if new_state == 2
+        @proposal.views.results.show_explorer()
+        @set_state(2)
+
+      strip = ConsiderIt.ProposalView.proposal_strip_template( @model.attributes )
+      @$el.prepend(strip)
+      $('.l-navigate-home').fadeIn() #TODO: handle this in userdashboard via proposal opened event
 
 
-  # Point details are being handled here (messily) for the case when a user directly visits the point details page without
-  # (e.g. if they followed a link to it). In that case, we need to create some context around it first.
-  prepare_for_point_details : (me, params) ->
+    if @state > 0
+      if new_state == 1
+        @proposal.views.results.show_summary()
+      else if new_state == 2
+        @proposal.views.take_position.close_crafting()
 
-    me.show_results(me)
-    results_explorer = me.proposal.views.results.view
+      callback(new_state)
 
-    for pnt in me.proposal.points.pros.concat me.proposal.points.cons
-      if pnt.id == parseInt(params.point_id)
-        point = pnt
-        break
+    else
+      @scroll_position = @$el.offset().top - $('.t-intro-wrap').offset().top - parseInt(@$el.css('marginTop'))
 
-    pointlistview = if pnt.get('is_pro') then results_explorer.views.pros else results_explorer.views.pros
-    pointview = pointlistview.getViewByModel(point) || pointlistview.addModelView(pnt) # this happens if the point is being directly visited, but is not on the front page of results
+      @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}']), .m-proposals-list-header, .t-intro-wrap")
+      @$hidden_els.css 'display', 'none'
+      $('body').scrollTop 0 #@$el.offset().top
 
-    pointview.show_point_details_handler() if pointview?
+      $('body').animate {scrollTop: @scroll_position }, 300, =>
+
+        #if @$el.find('.m-proposal-description-body').is(':hidden')
+        @$el.find('.m-proposal-description-body').slideDown()
+
+        @$el.find('.m-proposal-description-details').slideDown =>
+
+          #TODO: if user logs in as admin, need to do this
+          @render_admin_strip() if ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
+          callback(new_state)
+        
+
+  transition_unexpanded : =>
+    $('body').animate {scrollTop: @scroll_position}, =>
+      # TODO: remove strip at top
+      ConsiderIt.router.navigate(Routes.root_path(), {trigger: false}) if Backbone.history.fragment != ''
+
+      if @state > 0
+
+        #@$hidden_els.css 'display', ''
+        @$hidden_els.css {opacity: 0, display: ''}
+        @$hidden_els.animate {opacity: 1}, 350
+        $('body').scrollTop @scroll_position
+
+        @proposal.views.take_position.close_crafting()
+        @proposal.views.results.show_summary()
+
+        @$el.find('.m-proposal-strip').remove()
+        $('.l-navigate-home').hide() 
+
+        if @pointdetailsview
+          @pointdetailsview.remove()
+
+      @set_state(0)
 
 
-  show_point_details_handler : (point_id) ->
-
-    if !@data_loaded
-      @load_data(@prepare_for_point_details, {point_id : point_id})
-    # if data is already loaded, then the PointListView is already properly handling this
-
-  set_unexpanded : =>
-    if @state > -1
-
-      #@$hidden_els.css 'display', ''
-      @$hidden_els.css {opacity: 0, display: ''}
-      @$hidden_els.animate {opacity: 1}, 350
-      $('body').scrollTop @scroll_position
-
-    @state = -1
-
-  set_expanded : =>
-    @state = 0
-    @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}']), .m-proposals-heading, .t-intro-wrap")
-    @$hidden_els.css 'display', 'none'
-    $('body').scrollTop 0 #@$el.offset().top
+  set_state : (new_state) ->
+    @state = new_state
+    @$el.attr('data-state', new_state)
 
   events : 
+    'click .m-proposal-description' : 'toggle_description'
     'click .hidden' : 'show_details'
     'click .showing' : 'hide_details'
-    # 'click .m-proposal-heading-wrap' : 'toggle'
-    'click ' : 'toggle_if_not_expanded'
-    'click .m-proposal-toggle' : 'toggle'
-    'click .m-proposal-follow_conversation' : 'toggle_follow_proposal'
+
+    #'click .m-proposal-follow_conversation' : 'toggle_follow_proposal'
 
     'click .m-proposal-admin_operations-status' : 'show_status'
     'click .m-proposal-admin_operations-publicity' : 'show_publicity'
@@ -234,89 +270,10 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     'ajax:complete .m-proposal-publish-form' : 'publish_proposal'
 
-  toggle_if_not_expanded : (ev) ->
-    if @$el.is('.unexpanded')
-      @toggle(ev)
-
-  toggle : (ev) ->
-    if ev
-      ev.stopPropagation()
-
-    if @state == -1
-      @scroll_position = @$el.offset().top - $('.t-intro-wrap').offset().top - parseInt(@$el.css('marginTop'))
-
-      @$main_content_el.hide()
-
-      @$main_content_el.append ConsiderIt.ProposalView.expanded_template($.extend({}, @model.attributes, {
-          title : @model.title()
-          description_detail_fields : @model.description_detail_fields(),
-          avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'original')
-        }))
 
 
-      if @model.get('published')
-        results_el = $('<div class="m-proposal-message">')
-        @proposal.views.results = new ConsiderIt.ResultsView
-          el : results_el
-          proposal : @proposal
-          model : @model
-
-        @proposal.views.results.render()
-
-
-        @proposal.views.take_position = new ConsiderIt.PositionView
-          proposal : @proposal
-          model : @proposal.position
-          el : @$el
-
-        position_el = @proposal.views.take_position.render()
-        
-        results_el.insertAfter(@$el.find('.m-proposal-introduction'))
-        position_el.insertAfter(results_el)
-
-
-
-      @$el.addClass('expanded')
-      @$el.removeClass('unexpanded')
-
-      @$main_content_el.slideDown 500, =>
-
-        $('body').animate {scrollTop: @scroll_position }, 500, =>
-
-
-          @set_expanded()
-
-          #TODO: if user logs in as admin, need to do this
-          if ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
-
-            @render_admin_strip()
-            for field in ConsiderIt.ProposalView.editable_fields
-              [selector, name, type] = field 
-              @$el.find(selector).editable {
-                resource: 'proposal'
-                pk: @long_id
-                url: Routes.proposal_path @long_id
-                type: type
-                name: name
-              }
-
-      this
-    else
-      $('body').animate {scrollTop: @scroll_position}, =>
-        @$main_content_el.slideUp => 
-          @render()
-          @set_unexpanded()
-          ConsiderIt.router.navigate(Routes.root_path(), {trigger: false})
-
-        #@$el.addClass('unexpanded')
-
-
-  render_admin_strip : ->
-    @$el.find('.m-proposal-admin_strip').remove()
-    admin_strip_el = $('<div class="m-proposal-admin_strip m-proposal-strip">')
-    template = _.template($('#tpl_proposal_admin_strip').html())
-    admin_strip_el.html( template(@model.attributes))
-    admin_strip_el.insertBefore(@$el.find('.m-proposal_strip_toggle'))
+  toggle_description : (ev) ->
+    @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
 
   show_details : (ev) -> 
     $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
@@ -326,6 +283,8 @@ class ConsiderIt.ProposalView extends Backbone.View
       .text('hide')
       .toggleClass('hidden showing');
 
+    ev.stopPropagation()
+
   hide_details : (ev) -> 
     $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
@@ -333,21 +292,60 @@ class ConsiderIt.ProposalView extends Backbone.View
     $block.find('.showing')
       .text('show')
       .toggleClass('hidden showing');      
+    ev.stopPropagation()
 
-  toggle_follow_proposal : (ev) -> 
-    $follow_button = $(ev.currentTarget)
-    follows = ConsiderIt.current_user.is_following('Proposal', @model.id)
-    url = if !follows then Routes.follow_path() else Routes.unfollow_path()
 
-    $.post url, {follows: {user_id: ConsiderIt.current_user.id, followable_type: 'Proposal', followable_id: @model.id, follow: !follows} }, (data, status, xhr) => 
-      if follows
-        $follow_button.removeClass('selected')
-      else 
-        $follow_button.addClass('selected')
+  # Point details are being handled here (messily) for the case when a user directly visits the point details page without
+  # (e.g. if they followed a link to it). In that case, we need to create some context around it first.
+  prepare_for_point_details : (me, params) ->
 
-      ConsiderIt.current_user.set_following {followable_type: 'Proposal', followable_id: @model.id, follow: !follows, explicit: true}
+    me.once 'ResultsExplorer:rendered', => 
+      results_explorer = me.proposal.views.results.view
 
+      for pnt in me.proposal.points.pros.concat me.proposal.points.cons
+        if pnt.id == parseInt(params.point_id)
+          point = pnt
+          break
+
+      pointlistview = if point.get('is_pro') then results_explorer.views.pros else results_explorer.views.cons
+      pointview = pointlistview.getViewByModel(point) || pointlistview.addModelView(point) # this happens if the point is being directly visited, but is not on the front page of results
+
+      pointview.show_point_details_handler() if pointview?
+      $('body').animate {scrollTop: pointview.$el.offset().top - 50}, 200
+
+    me.show_results(me)
+
+
+
+  show_point_details_handler : (point_id) ->
+
+    console.log 'SHOWP'
+    if !@data_loaded
+      @load_data(@prepare_for_point_details, {point_id : point_id})
+    # if data is already loaded, then the PointListView is already properly handling this
+
+
+
+
+  # TODO: move to its own view
   # ADMIN methods
+
+  render_admin_strip : ->
+    @$el.find('.m-proposal-admin_strip').remove()
+    admin_strip_el = $('<div class="m-proposal-admin_strip m-proposal-strip">')
+    template = _.template($('#tpl_proposal_admin_strip').html())
+    admin_strip_el.html( template(@model.attributes))
+    admin_strip_el.insertBefore(@$el.find('.m-proposal_strip_toggle'))
+    for field in ConsiderIt.ProposalView.editable_fields
+      [selector, name, type] = field 
+      @$el.find(selector).editable {
+        resource: 'proposal'
+        pk: @long_id
+        url: Routes.proposal_path @long_id
+        type: type
+        name: name
+      }
+
   show_status : (ev) ->
     tpl = _.template( $('#tpl_proposal_admin_strip_edit_active').html() )
     @$el.find('.m-proposal-admin-status').append tpl(@model.attributes)

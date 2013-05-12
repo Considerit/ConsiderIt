@@ -3,14 +3,14 @@
 $yellow_postit: hsl(55, 81%, 79%)
 
 %on_background
-  +single-text-shadow($hoff: 1px, $voff: 1px, $color: rgba(black,.5)) 
-  color: #ccc
+  +single-text-shadow($hoff: -1px, $voff: -1px, $color: rgba(white,.75)) 
+  color: lighten($position_color, 10%)
 
   a
-    color: #ccc
+    color: lighten($position_color, 10%)
 
     &:hover
-      color: #eee
+      color: black
 
 
 =post_it_button
@@ -22,7 +22,7 @@ $yellow_postit: hsl(55, 81%, 79%)
 =post_it($repeated: 0)
   $color: $yellow_postit
   
-  background-color: $constituency_color
+  background-color: $community_color
   
   // @if $repeated == 0
   //   background: asset-data-url('yellow_postit.png') no-repeat top left transparent
@@ -92,7 +92,7 @@ $yellow_postit: hsl(55, 81%, 79%)
 
 
 =on_paper
-  background: image-url('paper.jpg') repeat left top
+  background: image-url('paper.jpg') repeat left top #e1e1e1
       
 =chalkboard
   background: image-url("chalk/chalkboard.jpg") repeat left top #414141

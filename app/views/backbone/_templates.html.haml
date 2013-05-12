@@ -104,7 +104,10 @@
       {{ pros ? 'Pro' : 'Con' }} considerations by other participants
 
 
-    - ranks = [ { :name => 'persuasivness', :selected => true, :title => 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', :target => 'persuasiveness'}, { :name => 'Popularity', :selected => false, :title => 'Considerations that have been added to the most pro/con lists are ranked higher.', :target => 'popularity'}, { :name => 'Common Ground', :selected => false, :title => 'Considerations that tend to be added by both supporters and opposers are ranked higher. Low ranked considerations are more divisive.', :target => '-divisiveness'}]
+    - ranks = [ { :name => 'persuasivness', :title => 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', :target => 'persuasiveness'}, { :name => 'Popularity', :title => 'Considerations that have been added to the most pro/con lists are ranked higher.', :target => 'popularity'}, { :name => "Newness", :title => 'Newest considerations shown first', :target => 'created_at' } ]
+
+
+    - #{ :name => 'Common Ground', :selected => false, :title => 'Considerations that tend to be added by both supporters and opposers are ranked higher. Low ranked considerations are more divisive.', :target => '-divisiveness'}]
 
     .m-pointlist-browse-sort
       %span.m-pointlist-browse-sort-label
@@ -112,7 +115,7 @@
       %ul
         - ranks.each do |rank|
           %li.m-pointlist-sort-option
-            (( var selected_class = selected == "#{rank[:target]}" ? 'selected': '';))
+            (( var selected_class = selected == "#{rank[:target]}" ? 'selected' : ''; ))
             %a{ :title => rank[:title], :class => "{{selected_class}}", :'data-target' => rank[:target] }
               = rank[:name]
 
@@ -123,7 +126,7 @@
 
   %script{ :type => "text/template", :id => "tpl_pointlistpagination" }
     %a.m-pointlist-backward
-      (( if(start_record != 1){ ))
+      (( if(start_record > 1){ ))
       &#9650;
       (( } ))
 
@@ -213,23 +216,24 @@
       (( }))
       .m-proposals-heading
 
+        - sortable = [ {:name => 'Most active', :target => 'activity'}, {:name => 'Newness', :target => 'created_at'} ]
         .m-proposals-sort-container
           .title
             Sort conversations by: 
-          %a.selected.activity
-            Most active
-          %a.newest
-            Newest
+          - sortable.each do |sort|
+            (( var selected_class = selected_sort == "#{sort[:target]}" ? 'selected': '';))
+            %a{:'data-target' => sort[:target], :'data-type' => 'sort', :class => "m-proposallist-sort {{selected_class}}"}
+              = sort[:name]
+
+        - filterable = [ {:name => 'All', :target => 'all'}, {:name => 'Open', :target => 'active'}, {:name => 'Completed', :target => '-active'} ]
 
         .m-proposals-filter-container
           .title
             Filter to: 
-          %a.selected.all
-            All
-          %a.open
-            Open
-          %a.completed
-            Completed 
+          - filterable.each do |fil|
+            (( var selected_class = selected_filter == "#{fil[:target]}" ? 'selected': '';))
+            %a{:'data-target' => fil[:target], :'data-type' => 'filter', :class => "m-proposallist-filter {{selected_class}}"}
+              = fil[:name]
 
 
   %script{ :type => "text/template", :id => "tpl_unexpanded_proposal" }
@@ -603,7 +607,7 @@
         %span.avatar{ :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
         (( }); ))
         %a.m-results-summary-button{:'data-action' => "results-explode-participants"}
-          Show their votes
+          Show their preferences
       .clear
 
 
@@ -658,6 +662,9 @@
           (( } ))
 
         (( }); ))
+
+        %a.m-results-summary-button{:'data-action' => "results-implode-participants"}
+          Hide their preferences
         / .m-histogram-label-oppose
         /   Opposers
 

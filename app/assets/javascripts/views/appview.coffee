@@ -11,6 +11,8 @@ class ConsiderIt.AppView extends Backbone.View
     #handle here because of dependency on proposal being loaded first
     ConsiderIt.router.on 'route:PointDetails', @handle_point_details
 
+    ConsiderIt.router.on 'route:Root', @handle_root
+
     @listenTo this, 'user:signin', =>
       @load_anonymous_data
       @render()
@@ -20,6 +22,7 @@ class ConsiderIt.AppView extends Backbone.View
 
     @proposals = new ConsiderIt.ProposalList()
     @proposals.reset( _.pluck(_.values(ConsiderIt.proposals), 'model'))
+
 
   render : () -> 
 
@@ -33,10 +36,19 @@ class ConsiderIt.AppView extends Backbone.View
     this
 
   #route handlers
+  handle_root : ->
+    @current_proposal ||= null
+
+    if @current_proposal
+      ConsiderIt.proposals[@current_proposal].view.transition_unexpanded()
+      @current_proposal = null
+
   show_position : (long_id, params) ->
+    @current_proposal = long_id
     ConsiderIt.proposals[long_id].view.take_position_handler()
 
   show_results : (long_id, params) ->
+    @current_proposal = long_id
     ConsiderIt.proposals[long_id].view.show_results_handler()  
 
   handle_point_details : (long_id, point_id, params) ->

@@ -13,6 +13,16 @@ class ConsiderIt.Position extends Backbone.Model
   url : () ->
     Routes.proposal_position_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id'), @id) 
 
+  @stance_name_for_bar : (d) ->
+    switch parseInt(d)
+      when 0 then "adamantly oppose"
+      when 1 then "strongly oppose"
+      when 2 then "lean oppose"
+      when 3 then "are neutral"
+      when 4 then "lean support"
+      when 5 then "strongly support"
+      when 6 then "fervently support"
+
   @stance_name : (d) ->
     switch parseInt(d)
       when 0 then "strong opposers"

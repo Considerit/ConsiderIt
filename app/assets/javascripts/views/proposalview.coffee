@@ -48,7 +48,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     @proposal.views.results.render()
     results_el.insertAfter(@$el.find('.m-proposal-introduction'))
 
-    if @model.get('published')
+    if @model.get('published') || @can_edit()
       @proposal.views.take_position = new ConsiderIt.PositionView
         proposal : @proposal
         model : @proposal.position
@@ -56,6 +56,9 @@ class ConsiderIt.ProposalView extends Backbone.View
 
       position_el = @proposal.views.take_position.render()              
       position_el.insertAfter(results_el)
+
+    #TODO: if user logs in as admin, need to do this
+    @render_admin_strip() if @can_edit()
 
     @transition_unexpanded()
 
@@ -101,6 +104,8 @@ class ConsiderIt.ProposalView extends Backbone.View
     @listenTo ConsiderIt.app, 'user:signout', @post_signout
     @trigger 'proposal:data_loaded'
 
+  can_edit : ->
+    ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
 
   load_data : (callback, callback_params) ->
     @once 'proposal:data_loaded', => callback(this, callback_params)
@@ -195,8 +200,10 @@ class ConsiderIt.ProposalView extends Backbone.View
         @proposal.views.results.show_explorer()
         @set_state(2)
 
-      strip = ConsiderIt.ProposalView.proposal_strip_template( @model.attributes )
-      @$el.prepend(strip)
+      if @$el.find('.m-proposal-strip.m-proposal-connect').length == 0
+        strip = ConsiderIt.ProposalView.proposal_strip_template( @model.attributes )
+        @$el.append(strip)
+
       $('.l-navigate-home').fadeIn() #TODO: handle this in userdashboard via proposal opened event
 
 
@@ -222,8 +229,6 @@ class ConsiderIt.ProposalView extends Backbone.View
 
         @$el.find('.m-proposal-description-details').slideDown =>
 
-          #TODO: if user logs in as admin, need to do this
-          @render_admin_strip() if ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
           callback(new_state)
         
 
@@ -242,7 +247,7 @@ class ConsiderIt.ProposalView extends Backbone.View
         @proposal.views.take_position.close_crafting()
         @proposal.views.results.show_summary()
 
-        @$el.find('.m-proposal-strip').remove()
+        @$el.find('.m-proposal-connect').remove()
         $('.l-navigate-home').hide() 
 
         if @pointdetailsview
@@ -273,6 +278,8 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   toggle_description : (ev) ->
+    return if @can_edit() && $(ev.target).closest('.editable-click, .editable-inline').length > 0
+
     @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
 
   show_details : (ev) -> 
@@ -319,12 +326,9 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   show_point_details_handler : (point_id) ->
 
-    console.log 'SHOWP'
     if !@data_loaded
       @load_data(@prepare_for_point_details, {point_id : point_id})
     # if data is already loaded, then the PointListView is already properly handling this
-
-
 
 
   # TODO: move to its own view
@@ -335,7 +339,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     admin_strip_el = $('<div class="m-proposal-admin_strip m-proposal-strip">')
     template = _.template($('#tpl_proposal_admin_strip').html())
     admin_strip_el.html( template(@model.attributes))
-    admin_strip_el.insertBefore(@$el.find('.m-proposal_strip_toggle'))
+    @$el.append admin_strip_el 
     for field in ConsiderIt.ProposalView.editable_fields
       [selector, name, type] = field 
       @$el.find(selector).editable {

@@ -4,6 +4,7 @@ class ConsiderIt.ResultsView extends Backbone.View
 
   initialize : (options) ->
     @proposal = options.proposal
+
     num_participants = ($.parseJSON(@model.get('participants'))||[]).length
     @tile_size = Math.min 50, ConsiderIt.utils.get_tile_size(@PARTICIPANT_WIDTH, @PARTICIPANT_HEIGHT, num_participants)
 
@@ -55,10 +56,19 @@ class ConsiderIt.ResultsView extends Backbone.View
     @state = 1
 
 
+  implode_participants : ->
+    @proposal.view.set_state(2)
+    $participants = @$el.find('.l-message-speaker .l-group-container')
+    $participants.find('.avatar').css {position: '', zIndex: '', '-ms-transform': "", '-moz-transform': "", '-webkit-transform': "", transform: ""}
+
+    @$el.find('.m-bar-percentage').fadeOut()
+    @$el.find('.m-histogram').fadeOut =>
+      @$el.find('.m-histogram').css('opacity', '')
+      $participants.fadeIn()
+
   explode_participants : ->
     @proposal.view.set_state(4)
 
-    speed = 1500
 
     modern = Modernizr.csstransforms && Modernizr.csstransitions
 
@@ -68,18 +78,10 @@ class ConsiderIt.ResultsView extends Backbone.View
       @$el.find('.m-histogram').css 'opacity', 1
       $participants.fadeOut()
     else
+      speed = 1500
       from_tile_size = $participants.find('.avatar:first').width()
       to_tile_size = @$el.find(".m-histogram .avatar:first").width()
       ratio = to_tile_size / from_tile_size
-
-      $participants
-        .css({'position':'absolute','z-index':99}) 
-        .find('.avatar').css {
-          #'-o-transition': "all #{speed}ms ease",
-          '-ms-transition': "-ms-transform #{speed}ms ease",
-          '-moz-transition': "-moz-transform #{speed}ms ease",
-          '-webkit-transition': "-webkit-transform #{speed}ms ease",
-          'transition': "transform #{speed}ms ease"}
 
       # compute all offsets first, before applying changes, for perf reasons
       positions = {}
@@ -123,6 +125,7 @@ class ConsiderIt.ResultsView extends Backbone.View
   events : 
     'click .m-results-responders, .l-message-speaker.l-group-container' : 'transition_explorer'
     'click [data-action="results-explode-participants"]' : 'explode_participants'
+    'click [data-action="results-implode-participants"]' : 'implode_participants'
 
   transition_explorer : ->
     ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: true}) if @state==0
@@ -136,7 +139,7 @@ class ConsiderIt.SummaryView extends Backbone.View
 
   render : () ->
     
-    if @proposal.top_pro && @proposal.top_con && @proposal.model.participants().length > 0
+    if @proposal.has_participants
       this.$el.html ConsiderIt.SummaryView.template($.extend({}, @model.attributes, {
         top_pro : @proposal.top_pro 
         top_con : @proposal.top_con
@@ -213,7 +216,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     _.extend histogram, 
       biggest_segment : Math.max.apply(null, _.map(histogram.breakdown, (bar) -> bar.positions.length))
-      num_positions : _.keys(@proposal.positions).length 
+      num_positions : if !@proposal.positions? 0 else _.keys(@proposal.positions).length
 
     for bar,idx in histogram.breakdown
       height = bar.positions.length / histogram.biggest_segment

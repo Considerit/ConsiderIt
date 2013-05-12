@@ -3,36 +3,14 @@
 @import "./sprite"
 
 
-// $rep_color: lighten(#49B1E5, 20%)
-// $dark_rep_color: darken($rep_color, 20%)
-
-// $rep_color: lighten(#49B1E5, 20%)
-// $dark_rep_color: darken($rep_color, 20%)
-
-// $constituency_color: lighten(#E5E15A, 20%)
-// $dark_constituency_color: darken($constituency_color, 35%)
-
-// $user_color: #ddd
-// $dark_user_color: darken($user_color, 10%) 
-
-// $comp_color: lighten(#882F35, 10%)
-// $dark_comp_color: darken($comp_color, 10%)
-
-// $header_gray: #777
-// $empty_color: #ddd
-
-// $proposal_width: 600px
-// $body_width: 600px
-
-//$bg_color: white
-
 .l-content-wrap
   //background: $content_bg_color repeat top left
   +content-img
-  +single-box-shadow($color: rgba(black, .7))
+  //+single-box-shadow($color: rgba(black, .05))
   //z-index: 26
-  border-top: 1px solid white
-  border-bottom: 1px solid #333
+  //border-top: 1px solid white
+  //border-bottom: 1px solid #aaa
+  //background-color: rgba(white, .25)
 
 // body #l-wrap > div#l-content .l-content-wrap-no-background
 //   background: rgba(white, .15)
@@ -57,13 +35,13 @@
 
 
 =true_inset($color)
-  color: darken($color, 20%)
+  color: $color
   position: relative
   +single-text-shadow($hoff: -1px, $voff: -1px, $color: rgba(black, .1), $blur: 0)
 
   &:before, &:after
     content: attr(title)
-    color: rgba(255,255,255,0.1)
+    color: rgba(255,255,255,0.05)
     position: absolute
     +text-shadow(none)
 
@@ -86,7 +64,10 @@
     display: inline-block
     vertical-align: top
 
-  > .l-message-speaker, > .l-message-recipient
+  > .l-message-speaker
+    margin-top: -3px
+
+  > .l-message-recipient
     margin-top: 2px
 
   > .l-message-body
@@ -96,33 +77,44 @@
 
 
 .t-dr-mock-dialogue
-  padding: $vertical_baseline $grid_xs
+  padding: $vertical_baseline $grid_xs 0 $grid_xs
 
   .t-dr-heading
     //margin-bottom: $vertical_baseline
-    +font-size(7)
+    +font-size(5)
     @extend %bolded
-    text-align: center
+    //text-align: center
+    //margin-bottom: $vertical_baseline / 2
+
+    .rep, .dialogue, .constituency
+      +true_inset($initiator_text_color)
+
+    // .dialogue
+    //   +true_inset($base_color)
+
+    // .constituency 
+    //   +true_inset($community_text_color)
+
+  .m-proposal-introduction
     margin-bottom: $vertical_baseline / 2
 
-    .rep
-      +true_inset($dark_rep_color)
+  .m-proposal-description.l-message-body
+    cursor: default
 
-    .dialogue
-      +true_inset(#bbb)
 
-    .constituency 
-      +true_inset(#bbb)
+  .m-proposal-description-body
+    //width: 90%
+    margin: auto
 
   @extend %l-message-template
   .l-message-speaker
-    width: 160px
+    width: $margin_width
     text-align: right
     img
-      width: 160px
+      width: $margin_width
 
   .l-message-recipient
-    width: 160px
+    width: $margin_width
 
     .avatar      
       opacity: .75
@@ -134,7 +126,7 @@
 
   .t-leader-desc-about
     //width: 220px
-    width: 160px
+    width: $margin_width
     color: $header_gray
     text-align: center
     +font-size(-3)
@@ -154,14 +146,14 @@
     width: 100%
 
   .rep_statement
-    +bubble($rep_color, $dark_rep_color, left)
+    +bubble($initiator_color, $dark_initiator_color, left)
 
   .constituent_statement
-    +bubble($constituency_color, $dark_constituency_color, right)
+    +bubble($community_color, $dark_community_color, right)
 
 .light
   //font-weight: lighter
-  +font-size(-2)
+  //+font-size(-2)
 
 #l-footer
   @extend %on_background

@@ -50,12 +50,14 @@ class ConsiderIt.ResultsView extends Backbone.View
 
     me = this
     window.delay 500, -> 
-      me.explode_participants()
+      #me.explode_participants()
 
     @state = 1
 
 
   explode_participants : ->
+    @proposal.view.set_state(4)
+
     speed = 1500
 
     modern = Modernizr.csstransforms && Modernizr.csstransitions
@@ -115,10 +117,12 @@ class ConsiderIt.ResultsView extends Backbone.View
         
         window.delay 400, -> 
           $participants.fadeOut()
+          me.$el.find('.m-bar-percentage').fadeIn()
  
 
   events : 
-    'click' : 'transition_explorer'
+    'click .m-results-responders, .l-message-speaker.l-group-container' : 'transition_explorer'
+    'click [data-action="results-explode-participants"]' : 'explode_participants'
 
   transition_explorer : ->
     ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: true}) if @state==0
@@ -138,6 +142,8 @@ class ConsiderIt.SummaryView extends Backbone.View
         top_con : @proposal.top_con
         tile_size : @tile_size   
         participants : _.sortBy($.parseJSON(@model.get('participants')), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
+        avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@proposal.model.get('user_id')], 'original')
+
         }))
 
     this
@@ -146,8 +152,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   @template : _.template( $("#tpl_results").html() )
 
-  BARHEIGHT : 149
-  BARWIDTH : 41
+  BARHEIGHT : 235
+  BARWIDTH : 51
 
   initialize : (options) -> 
     @proposal = options.proposal
@@ -183,6 +189,9 @@ class ConsiderIt.ExplorerView extends Backbone.View
     @show()
 
     #$('body').animate {scrollTop: @$el.offset().top}, 1000      
+
+
+    @proposal.view.trigger 'ResultsExplorer:rendered'
     this
 
   show : () ->
@@ -227,8 +236,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   #handlers
   events : 
-    'mouseenter .m-point-results:not(#expanded)' : 'highlight_point_includers'
-    'mouseleave .m-point-results:not(#expanded)' : 'highlight_point_includers'
+    'mouseenter .m-point-results' : 'highlight_point_includers'
+    'mouseleave .m-point-results' : 'highlight_point_includers'
     #'mouseenter .m-bar-is-hard-selected .m-bar-person' : 'show_user_explanation' 
     #'mouseleave .m-bar-is-hard-selected .m-bar-person' : 'hide_user_explanation' 
     'mouseenter .m-histogram-bar:not(.m-bar-is-selected)' : 'select_bar'
@@ -250,8 +259,9 @@ class ConsiderIt.ExplorerView extends Backbone.View
     $target = $(ev.currentTarget)
     hard_select = ev.type == 'click'
 
-    if @$el.find('#expanded').length == 0 && ( hard_select || @$histogram.find('.m-bar-is-hard-selected').length == 0 )
-
+    if ( hard_select || @$histogram.find('.m-bar-is-hard-selected').length == 0 )
+      @$histogram.addClass 'm-histogram-segment-selected'
+      @$el.find('.m-bar-percentage').hide()
 
       $bar = $target.closest('.m-histogram-bar')
       bubble_offset = $bar.offset().top - @$el.find('.l-message-body').offset().top + 20
@@ -261,7 +271,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
       bucket = 6 - $bar.attr('bucket')
       $('.m-bar-is-selected', @$histogram).removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
       $bar.addClass("m-bar-is-selected #{if hard_select then 'm-bar-is-hard-selected' else 'm-bar-is-soft-selected'}")
-
 
       vw.$el.hide() for vw in @views
 
@@ -291,7 +300,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
         .html("For us <span class='group_name'>#{ConsiderIt.Position.stance_name(bucket)}</span>, these are the most important")
         .show()
 
-      @$el.find('.l-message-body .t-bubble').hide()
+      #@$el.find('.l-message-body .t-bubble').hide()
       @$el.find('.l-message-speaker').css('z-index': 999)
 
       #@$el.find('.t-bubble-bar').remove()
@@ -327,8 +336,11 @@ class ConsiderIt.ExplorerView extends Backbone.View
     $selected_bar = @$histogram.find('.m-bar-is-selected')
     return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.m-bar-is-hard-selected'))
 
+    @$histogram.removeClass 'm-histogram-segment-selected'
+    @$el.find('.m-bar-percentage').show()
+
     hiding = @$el.find('.m-point-list, .m-results-pro-con-list-who')
-    hiding.hide()
+    hiding.css 'visibility', 'hidden'
 
 
     @pointlists.pros.setSort('score', 'desc')
@@ -347,10 +359,10 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     #@$el.find('.t-bubble-bar').remove()
 
-    @$el.find('.l-message-body .t-bubble').show()
+    #@$el.find('.l-message-body .t-bubble').show()
     @$el.find('.l-message-speaker').css('z-index': '')
 
-    hiding.show()
+    hiding.css 'visibility', ''
 
     $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
 
@@ -364,15 +376,12 @@ class ConsiderIt.ExplorerView extends Backbone.View
   
 
   show_user_explanation : (ev) ->
-    if @$el.find('#expanded').length == 0
-      $(ev.currentTarget).find('.m-bar-person-details').show()
+    $(ev.currentTarget).find('.m-bar-person-details').show()
 
   hide_user_explanation : (ev) ->
-    if @$el.find('#expanded').length == 0
-      $(ev.currentTarget).find('.m-bar-person-details').hide()
+    $(ev.currentTarget).find('.m-bar-person-details').hide()
 
   highlight_point_includers : (ev) ->
-
     $target = $(ev.currentTarget)
 
     includers = $.parseJSON($target.attr('includers'))
@@ -380,17 +389,37 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     for i in [0..includers.length] by 1
       selector.push "#avatar-#{includers[i]}" 
-    
-    @$histogram.hide()
 
-    if ev.type == 'mouseenter'
-      @$histogram.find('.avatar').css('visibility', 'hidden')
-      $(selector.join(','), @$histogram).css {'visibility': '', 'opacity': 1}
-      $("#avatar-#{$target.attr('user')}").css {'visibility': '', 'opacity': 1}
+    #TODO: use CSS3 transitions instead    
+    if @$histogram.is(':visible')
+      @$histogram.hide()
+
+      if ev.type == 'mouseenter'
+        @$histogram.addClass 'm-histogram-segment-selected'
+        @$histogram.find('.avatar').css('visibility', 'hidden')
+        $(selector.join(','), @$histogram).css {'visibility': '', 'opacity': 1}
+        $("#avatar-#{$target.attr('user')}").css {'visibility': '', 'opacity': 1}
+        @$histogram.find('.m-bar-percentage').hide()
+      else
+        @$histogram.removeClass 'm-histogram-segment-selected'
+        @$histogram.find('.avatar').css {'visibility': '', 'opacity': ''} 
+        @$histogram.find('.m-bar-percentage').show()
+
+      @$histogram.show()
+
     else
-      @$histogram.find('.avatar').css {'visibility': '', 'opacity': ''} 
+      $group_container = @$el.find('.l-group-container')
+      $group_container.hide()
 
-    @$histogram.show()
+      if ev.type == 'mouseenter'
+        $group_container.find('.avatar').css('visibility', 'hidden')
+        $(selector.join(','), $group_container).css {'visibility': '', 'opacity': 1}
+        $("#avatar-#{$target.attr('user')}").css {'visibility': '', 'opacity': 1}
+      else
+        $group_container.find('.avatar').css {'visibility': '', 'opacity': ''} 
+
+      $group_container.show()
+
 
   sort_all : (ev) ->
     $target = $(ev.currentTarget)

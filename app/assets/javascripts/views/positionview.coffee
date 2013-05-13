@@ -239,7 +239,7 @@ class ConsiderIt.CraftingView extends Backbone.View
 
       $placeholder.insertAfter($item)
 
-      $wrap.css(target_props).delay(600).queue (next) =>
+      $wrap.css(target_props).delay(500).queue (next) =>
         $item.fadeOut -> 
           peers.remove(model)
           $placeholder.remove()

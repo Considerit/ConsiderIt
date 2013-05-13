@@ -26,7 +26,7 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
         includers : "#{point.get('includers')}"
 
   show_point_details_handler : (long_id, point_id) ->
-    if @$el.is(':visible') && @proposal.model.get('long_id') == long_id
+    if @$el.is(':visible') && @proposal.long_id == long_id
       point = @collection.get(point_id)
       if point?
         @getViewByModel(point).show_point_details_handler()
@@ -147,17 +147,17 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
     @toggle_browse(!@browsing)
 
   toggle_browse : (browse) ->
-
+    parent_position = @$el.closest('.m-position')
     if browse
       @$el.addClass 'm-pointlist-browsing'
-      @previous_margin = @proposal.view.$el.find('.m-position').css('margin-left')
-      @proposal.view.$el.find('.m-position').css('margin-left' : if @is_pro then '550px' else '-550px')
+      @previous_margin = parent_position.css('margin-left')
+      parent_position.css('margin-left' : if @is_pro then '550px' else '-550px')
       @collection.howManyPer(1000)
       @$browse_el.find('.m-pointlist-browse-toggle').text "Stop browsing"
       @$browse_header_el.css('visibility', 'visible')
     else
       @$el.removeClass 'm-pointlist-browsing'
-      @proposal.view.$el.find('.m-position').css('margin-left' : @previous_margin)
+      parent_position.css('margin-left' : @previous_margin)
       @collection.howManyPer(ConsiderIt.BrowsablePointListView.points_per)
       @$browse_header_el.css('visibility', 'hidden')
 

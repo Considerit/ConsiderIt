@@ -19,19 +19,6 @@ ConsiderIt::Application.routes.draw do
     :confirmations => "users/confirmations"
   }
 
-  # route all non-ajax requests to home controller, with a few exceptions
-  match '(*url)' => 'home#index', :constraints => XHRConstraint.new
-
-  themes_for_rails 
-  followable_routes
-  commentable_routes
-  moderatable_routes
-  assessable_routes
-
-  devise_scope :user do 
-    match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
-  end
-  
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
@@ -45,6 +32,21 @@ ConsiderIt::Application.routes.draw do
       resources :inclusions, :only => [:create] 
     end
   end
+  
+  # route all non-ajax requests to home controller, with a few exceptions
+  match '(*url)' => 'home#index', :constraints => XHRConstraint.new
+
+  themes_for_rails 
+  followable_routes
+  commentable_routes
+  moderatable_routes
+  assessable_routes
+
+  devise_scope :user do 
+    match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
+  end
+  
+
 
   match "/points_for_user" => "points#points_for_user", :as => :points_for_user
 

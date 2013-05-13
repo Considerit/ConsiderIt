@@ -12,7 +12,7 @@ class ConsiderIt.AssessmentView extends Backbone.View
 
       @$el.html ConsiderIt.AssessmentView.assessment_template($.extend({}, @model.attributes, {
           user : ConsiderIt.users[@model.get('user_id')]
-          proposal : @proposal.model.attributes
+          proposal : @proposal.attributes
           assessment : @model.assessment
           claims : @model.claims
           num_assessment_requests : @model.num_assessment_requests
@@ -21,7 +21,7 @@ class ConsiderIt.AssessmentView extends Backbone.View
     
     else
       @$el.html ConsiderIt.AssessmentView.request_template($.extend({}, @model.attributes, {
-          proposal : @proposal.model.attributes
+          proposal : @proposal.attributes
           already_requested_assessment : @model.already_requested_assessment
 
         }))

@@ -3,7 +3,6 @@ class ConsiderIt.ResultsView extends Backbone.View
   PARTICIPANT_HEIGHT : 150
 
   initialize : (options) ->
-    @proposal = options.proposal
 
     num_participants = ($.parseJSON(@model.get('participants'))||[]).length
     @tile_size = Math.min 50, ConsiderIt.utils.get_tile_size(@PARTICIPANT_WIDTH, @PARTICIPANT_HEIGHT, num_participants)
@@ -17,8 +16,7 @@ class ConsiderIt.ResultsView extends Backbone.View
 
     @view = new ConsiderIt.SummaryView
       el : @$el
-      proposal : @proposal
-      model : @proposal.model
+      model : @model
       tile_size : @tile_size
 
     @$el.hide()
@@ -35,7 +33,6 @@ class ConsiderIt.ResultsView extends Backbone.View
     @view.remove if @view
     @view = new ConsiderIt.ExplorerView
       el : @$el
-      proposal : @proposal
       model : @model
       tile_size : @tile_size
 
@@ -49,15 +46,17 @@ class ConsiderIt.ResultsView extends Backbone.View
 
     @$el.show()
 
-    me = this
-    window.delay 500, -> 
-      #me.explode_participants()
-
+    #me = this
+    #window.delay 500, -> 
+    #  me.explode_participants()
+    @trigger 'ResultsExplorer:rendered'
+    
     @state = 1
 
 
   implode_participants : ->
-    @proposal.view.set_state(2)
+    
+    @trigger 'results:implode_participants'
     $participants = @$el.find('.l-message-speaker .l-group-container')
     $participants.find('.avatar').css {position: '', zIndex: '', '-ms-transform': "", '-moz-transform': "", '-webkit-transform': "", transform: ""}
 
@@ -67,8 +66,7 @@ class ConsiderIt.ResultsView extends Backbone.View
       $participants.fadeIn()
 
   explode_participants : ->
-    @proposal.view.set_state(4)
-
+    @trigger 'results:explode_participants'
 
     modern = Modernizr.csstransforms && Modernizr.csstransitions
 
@@ -128,24 +126,23 @@ class ConsiderIt.ResultsView extends Backbone.View
     'click [data-action="results-implode-participants"]' : 'implode_participants'
 
   transition_explorer : ->
-    ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: true}) if @state==0
+    ConsiderIt.router.navigate(Routes.proposal_path( @model.get('long_id') ), {trigger: true}) if @state==0
 
 class ConsiderIt.SummaryView extends Backbone.View
   @template : _.template( $("#tpl_summary").html() )
 
   initialize : (options) ->
-    @proposal = options.proposal
     @tile_size = options.tile_size
 
   render : () ->
     
-    if @proposal.has_participants
+    if @model.has_participants()
       this.$el.html ConsiderIt.SummaryView.template($.extend({}, @model.attributes, {
-        top_pro : @proposal.top_pro 
-        top_con : @proposal.top_con
+        top_pro : @model.top_pro 
+        top_con : @model.top_con
         tile_size : @tile_size   
         participants : _.sortBy($.parseJSON(@model.get('participants')), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
-        avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@proposal.model.get('user_id')], 'original')
+        avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'original')
 
         }))
 
@@ -159,7 +156,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
   BARWIDTH : 51
 
   initialize : (options) -> 
-    @proposal = options.proposal
     @histogram = @create_histogram()
     @tile_size = options.tile_size
 
@@ -167,8 +163,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
       pros : new ConsiderIt.PaginatedPointList({perPage : 5} )
       cons : new ConsiderIt.PaginatedPointList({perPage : 5} )
 
-    @pointlists.pros.reset(@proposal.points.pros)
-    @pointlists.cons.reset(@proposal.points.cons)
+    @pointlists.pros.reset(@model.pros)
+    @pointlists.cons.reset(@model.cons)
 
 
   render : () -> 
@@ -181,8 +177,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
       participants : _.sortBy($.parseJSON(@model.get('participants')), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
 
     @views =
-      pros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.pros, el : @$el.find('.m-pro-con-list-propoints'), location: 'results', proposal : @proposal})
-      cons : new ConsiderIt.PaginatedPointListView({collection : @pointlists.cons, el : @$el.find('.m-pro-con-list-conpoints'), location: 'results', proposal : @proposal})
+      pros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.pros, el : @$el.find('.m-pro-con-list-propoints'), location: 'results', proposal : @model})
+      cons : new ConsiderIt.PaginatedPointListView({collection : @pointlists.cons, el : @$el.find('.m-pro-con-list-conpoints'), location: 'results', proposal : @model})
 
     @$histogram = @$el.find('.m-histogram')
 
@@ -194,7 +190,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
     #$('body').animate {scrollTop: @$el.offset().top}, 1000      
 
 
-    @proposal.view.trigger 'ResultsExplorer:rendered'
     this
 
   show : () ->
@@ -211,12 +206,12 @@ class ConsiderIt.ExplorerView extends Backbone.View
     histogram =
       breakdown : [{positions:[]} for i in [0..6]][0]
 
-    for id, pos of @proposal.positions
+    for id, pos of @model.positions
       histogram.breakdown[6-pos.get('stance_bucket')].positions.push(pos) if pos.get('user_id') > -1
 
     _.extend histogram, 
       biggest_segment : Math.max.apply(null, _.map(histogram.breakdown, (bar) -> bar.positions.length))
-      num_positions : if !@proposal.positions? 0 else _.keys(@proposal.positions).length
+      num_positions : if !@model.has_participants() then 0 else _.keys(@model.positions).length
 
     for bar,idx in histogram.breakdown
       height = bar.positions.length / histogram.biggest_segment
@@ -254,7 +249,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   navigate_point_details : (ev) ->
     point_id = $(ev.currentTarget).closest('.pro, .con').data('id')
-    ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.model.get('long_id'), point_id), {trigger: true})
+    ConsiderIt.router.navigate(Routes.proposal_point_path(@model.get('long_id'), point_id), {trigger: true})
 
 
   select_bar : (ev) ->
@@ -360,22 +355,14 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     $('.m-bar-person-details:visible', $selected_bar).hide()
 
-    #@$el.find('.t-bubble-bar').remove()
-
-    #@$el.find('.l-message-body .t-bubble').show()
     @$el.find('.l-message-speaker').css('z-index': '')
 
     hiding.css 'visibility', ''
 
     $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
 
-    $(document)
-      .unbind 'click', @close_bar_click
-    $(document)
-      .unbind 'keyup', @close_bar_key
-
-    #try 
-    #  ev.stopPropagation()
+    $(document).unbind 'click', @close_bar_click
+    $(document).unbind 'keyup', @close_bar_key
   
 
   show_user_explanation : (ev) ->

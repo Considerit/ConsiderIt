@@ -806,13 +806,8 @@ $membership_card_height: 278px
   position: relative
   cursor: pointer
 
-  //+single-transition
-
   +transition(background-color .1s ease, top .5s linear)
 
-  .m-point-wrap
-    //+transition(color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
-    //+single-transition
   .m-point-nutshell
     //+transition(font-weight .5s ease, font-size .5s ease)
     //+single-transition
@@ -893,6 +888,10 @@ $arrow_height: 10px
 
     padding: $vertical_baseline / 2 $grid_xs / 2 2 * $vertical_baseline $grid_xs / 2
     margin-bottom: $vertical_baseline
+
+    //these transitions are for point inclusion effect
+    +transition(top .5s ease, left .5s ease, color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
+
 
   .m-point-nutshell-wrap
 
@@ -1481,7 +1480,7 @@ $m-point-expanded-width: $body_width + 150
       .m-point-assessment-request-initiate, .m-point-follow input[type="submit"]
         @extend %point_operation_button
 
-  
+
 
 
 /* ASSESSMENT */
@@ -1704,7 +1703,7 @@ $m-point-expanded-width: $body_width + 150
 
 .m-proposal
   margin: $vertical_baseline 0 2 * $vertical_baseline 0
-  min-height: 200px
+  min-height: 150px
 
   // TODO: this should probably be general ...
   .m-proposal-message 
@@ -1742,6 +1741,7 @@ $m-point-expanded-width: $body_width + 150
 
     //background-image: asset-data-url('directrep/images/brillant_content.png')
   
+
   .m-proposal-body_wrap
     //margin-bottom: $vertical_baseline
     padding: 0 $grid_xs
@@ -1782,7 +1782,7 @@ $m-point-expanded-width: $body_width + 150
 
 .m-proposal
   //opacity: .9
-  +single-transition
+  //+single-transition
   .l-content-wrap
     //cursor: pointer
     //&:hover
@@ -1817,11 +1817,11 @@ $m-point-expanded-width: $body_width + 150
   margin: 0 $grid_xs
   //margin-top: $vertical_baseline
   // border-top: 1px solid #ddd
-  position: absolute
-  top: -75px
+  //position: absolute
+  //top: -75px
   text-align: center
-  margin-left: -246px
-  left: 50%
+  //margin-left: -246px
+  //left: 50%
 
 .m-proposal-connect
   margin-top: $vertical_baseline
@@ -1907,16 +1907,14 @@ $m-point-expanded-width: $body_width + 150
     display: inline
 
   .m-proposal-publish
+    +superbutton
     display: inline-block
     width: 94%
-    background-color: #444
     color: white
     +font-size(3)
     font-weight: bold
     text-align: center
-    padding: $vertical_baseline / 2
-    &:hover
-      background-color: #222
+
   .m-delete_proposal
     text-align: center
     color: #666
@@ -1938,9 +1936,38 @@ $m-point-expanded-width: $body_width + 150
     left: $margin_width + $grid_xs / 2 - 3
     position: relative
 
+  [data-action="results-implode-participants"]
+    display: none
+
+.m-proposal[data-activity="proposal-no-activity"]
+  .m-proposal-message > .l-message-speaker.m-proposal-initiator
+    bottom: -58px
+    img
+      width: 50px
+      height: 50px
+
+  .m-proposal-message.m-position-your_action
+    > .l-message-recipient
+      //top: -64px
+      left: 58px
+      margin-top: 0
+
+      .m-position-your-action-body.join
+        +font-size(2)
+        width: $content_width - 96
 
 .m-proposal[data-state="4"]
-  .m-results-summary-button
+  .l-message-speaker .l-group-container
+    position: absolute
+    z-index: 99
+
+    .avatar // for the explode transition
+      -ms-transition: -ms-transform 1.5s ease
+      -moz-transition: -moz-transform 1.5s ease
+      -webkit-transition: -webkit-transform 1.5s ease
+      transition: transform 1.5s ease
+
+  [data-action="results-explode-participants"]
     display: none
   .m-histogram
     visibility: visible
@@ -1994,7 +2021,7 @@ $m-point-expanded-width: $body_width + 150
     top: 3px
 
   > .l-message-speaker
-    text-align: right
+    //text-align: right
 
   > .l-group-container
     height: 160px
@@ -2012,7 +2039,7 @@ $m-point-expanded-width: $body_width + 150
     bottom: -168px
     opacity: .8
 
-    +transition(bottom .3 ease)
+    +transition(bottom .1 ease)
 
     &:hover
       opacity: 1
@@ -2020,7 +2047,7 @@ $m-point-expanded-width: $body_width + 150
     img
       width: $margin_width
       height: $margin_width
-      +transition(width .3s ease, height .3s ease)
+      +transition(width .1s ease, height .1s ease)
 
     &.small
       img
@@ -2685,7 +2712,7 @@ label.inline
 .editable.editable-click, a.editable.editable-click
   border-bottom: none
   position: relative
-  display: inline-block
+  //display: inline-block
   width: 100%
   &:hover
     cursor: pointer

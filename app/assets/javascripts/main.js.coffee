@@ -89,7 +89,6 @@ window.ConsiderIt.utils =
 
 
 window.ConsiderIt.update_current_user = (parameters) ->
-  
   if parameters.user.id of ConsiderIt.users
     ConsiderIt.current_user = ConsiderIt.users[parameters.user.id] 
   else

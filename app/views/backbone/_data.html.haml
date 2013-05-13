@@ -5,25 +5,25 @@
 
     //var proposals = [];
 
-    ConsiderIt.proposals = #{@proposals.to_json}
+    proposals = #{@proposals.to_json};
+    ConsiderIt.proposals = [];
 
-    for(var long_id in ConsiderIt.proposals){
-      var prop = ConsiderIt.proposals[long_id];
-      _.extend(ConsiderIt.proposals[long_id], {
-        points : {pros:[], cons:[]},
-        positions : [],
-        view : null,
-        views : {},
-        model : new ConsiderIt.Proposal(prop.model.proposal), 
-        top_con : prop.top_con ? prop.top_con.point : null,
-        top_pro : prop.top_pro ? prop.top_pro.point : null
-      });
+    var current_proposal = #{ @current_proposal ? @current_proposal.to_json : nil };
+    var current_proposal_model = null;
 
-      ConsiderIt.proposals[long_id].has_participants = ConsiderIt.proposals[long_id].top_pro &&  ConsiderIt.proposals[long_id].top_con &&  ConsiderIt.proposals[long_id].model.participants().length > 0      
+    for(var long_id in proposals){
+      var prop = proposals[long_id];
+      proposal = new ConsiderIt.Proposal(prop.model.proposal, prop.top_con ? prop.top_con.point : null, prop.top_pro ? prop.top_pro.point : null);
+
+
+      if(current_proposal.long_id == long_id) {
+        current_proposal_model = proposal;
+      }
+
+      ConsiderIt.proposals.push(proposal);
+      
 
     }
-
-    ConsiderIt.proposals_by_id = _.object(_.map(ConsiderIt.proposals, function(v,k){ return [v.model.id, v] }))
 
     //var users = { User.select("id, name, avatar_file_name").to_json };
     var users = #{@users};
@@ -62,11 +62,15 @@
 
     ConsiderIt.password_reset_token = #{@reset_password_token ? "'#{@reset_password_token}'" : 'null'};  
 
-    ConsiderIt.current_proposal = #{@proposal ? @proposal : 'null'};
 
     ConsiderIt.router = new ConsiderIt.Router();
 
     ConsiderIt.app = new ConsiderIt.AppView();
+
+    if (current_proposal_model ) { 
+      current_proposal_model.set_data( current_proposal.data);
+    }
+
     ConsiderIt.app.render();
 
     Backbone.history.start({pushState: true});

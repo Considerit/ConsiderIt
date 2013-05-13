@@ -4,7 +4,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
   initialize : (options) -> 
     @proposal = options.proposal
-    #@listenTo @proposal.view, 'point_details:staged', => @remove()
     @listenTo @model, 'point:included', => @close_details()
 
     @listenTo @model, 'point:removed', => @close_details()
@@ -13,7 +12,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
     # @$el.hide()
 
-    if ConsiderIt.current_tenant.get('assessment_enabled') && @proposal.model.get('active') 
+    if ConsiderIt.current_tenant.get('assessment_enabled') && @proposal.get('active') 
       
       if @model.assessment
         $assessment_el = $('<div class="m-point-assessment-wrap">')
@@ -50,21 +49,21 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       @$el.find('.m-point-nutshell ').editable
           resource: 'point'
           pk: @model.id
-          url: Routes.proposal_point_path @proposal.model.attributes.long_id, @model.id
+          url: Routes.proposal_point_path @proposal.long_id, @model.id
           type: 'textarea'
           name: 'nutshell'
 
       @$el.find('.m-point-details-description ').editable
           resource: 'point'
           pk: @model.id
-          url: Routes.proposal_point_path @proposal.model.attributes.long_id, @model.id
+          url: Routes.proposal_point_path @proposal.long_id, @model.id
           type: 'textarea'
           name: 'text'
 
-    @transparent_els = @proposal.view.$el.find("")
-    @hidden_els = @proposal.view.$el.find("[data-role='m-point']:not([data-id='#{@model.id}']), .m-newpoint, .m-pointlist-pagination, .m-stance, .l-message-speaker, .l-message-listener, .m-position-message-body > .t-bubble, .m-results-summary, .m-results-responders.summary, .m-position-your_action, .m-proposal-leader-response")
-    @transparent_els.animate { opacity: .1 } 
-    @hidden_els.css {visibility: 'hidden'}
+
+
+    #@hidden_els = @proposal.view.$el.find("[data-role='m-point']:not([data-id='#{@model.id}']), .m-newpoint, .m-pointlist-pagination, .m-stance, .l-message-speaker, .l-message-listener, .m-position-message-body > .t-bubble, .m-results-summary, .m-results-responders.summary, .m-position-your_action, .m-proposal-leader-response")
+    #@hidden_els.css {visibility: 'hidden'}
 
     #$('body').stop(true, true)
     #$('body').animate {scrollTop: @$el.offset().top - 50}, 500, =>
@@ -126,13 +125,14 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     @$el.toggleClass('m-point-expanded m-point-unexpanded')
 
     # @$el.toggleClass('m-point-expanded m-point-unexpanded').delay(600).queue (next) =>
-    @transparent_els.css('opacity', '')
-    @hidden_els.css {visibility: ''}
+    
+    #@hidden_els.css {visibility: ''}
 
 
-    if trigger
-      @proposal.view.trigger 'point_details:closed'
-
+    #@proposal.view.trigger 'point_details:closed' if trigger
+    #ConsiderIt.router.navigate(Backbone.history.fragment, {trigger: false})
+    window.history.go(-1)  
+    
     @model.trigger 'change' #trigger a render event
     @undelegateEvents()
     delete this

@@ -123,8 +123,11 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       wait: true
       at: 0
       success: => 
+        ConsiderIt.proposals_by_id[new_proposal.id]
+
         new_view = @getViewByModel new_proposal
-        new_view.transition_expanded(1)
+        new_view.$el.find('.m-proposal-introduction').trigger('click')
+        #new_view.transition_expanded(1)
 
     }
 

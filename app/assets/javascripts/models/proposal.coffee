@@ -36,3 +36,4 @@ class ConsiderIt.Proposal extends Backbone.Model
 
   participants : ->
     $.parseJSON(@attributes.participants) 
+

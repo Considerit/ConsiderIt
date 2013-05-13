@@ -10,14 +10,17 @@
     for(var long_id in ConsiderIt.proposals){
       var prop = ConsiderIt.proposals[long_id];
       _.extend(ConsiderIt.proposals[long_id], {
-        points : null,
-        positions : null,
+        points : {pros:[], cons:[]},
+        positions : [],
         view : null,
         views : {},
         model : new ConsiderIt.Proposal(prop.model.proposal), 
         top_con : prop.top_con ? prop.top_con.point : null,
         top_pro : prop.top_pro ? prop.top_pro.point : null
       });
+
+      ConsiderIt.proposals[long_id].has_participants = ConsiderIt.proposals[long_id].top_pro &&  ConsiderIt.proposals[long_id].top_con &&  ConsiderIt.proposals[long_id].model.participants().length > 0      
+
     }
 
     ConsiderIt.proposals_by_id = _.object(_.map(ConsiderIt.proposals, function(v,k){ return [v.model.id, v] }))

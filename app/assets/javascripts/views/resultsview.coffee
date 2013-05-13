@@ -300,7 +300,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
       others = @$el.find('.m-results-pro-con-list-who-others')
       others.siblings('.m-results-pro-con-list-who-all').hide()
       others
-        .html("For us <span class='group_name'>#{ConsiderIt.Position.stance_name(bucket)}</span>, these are the most important")
+        .html("The most compelling considerations for us <span class='group_name'>#{ConsiderIt.Position.stance_name(bucket)}</span>")
         .show()
 
       #@$el.find('.l-message-body .t-bubble').hide()

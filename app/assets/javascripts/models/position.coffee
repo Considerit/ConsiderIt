@@ -7,11 +7,12 @@ class ConsiderIt.Position extends Backbone.Model
 
   initialize : ->
     super
-    @attributes.explanation = htmlFormat(@attributes.explanation)
+    @attributes.explanation = htmlFormat(@attributes.explanation) if @attributes.explanation
 
 
   url : () ->
-    Routes.proposal_position_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id'), @id) 
+    if @attributes.proposal_id #avoid url if this is a new proposal
+      Routes.proposal_position_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id'), @id) 
 
   @stance_name_for_bar : (d) ->
     switch parseInt(d)

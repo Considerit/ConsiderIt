@@ -11,8 +11,6 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
 
     ConsiderIt.router.on 'route:Profile', (id) => 
-      console.log 'nav'
-      console.log window.history
 
       @model = ConsiderIt.users[id]
       @render()
@@ -107,8 +105,8 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     options = 
       admin_template_needed: true
       params : { 
-        active_proposals: (p.model for p in _.values(ConsiderIt.proposals) when p.model.get('active') )
-        inactive_proposals: (p.model for p in _.values(ConsiderIt.proposals) when !(p.model.get('active') )) 
+        active_proposals: ConsiderIt.app.proposals.where {active: true}
+        inactive_proposals: ConsiderIt.app.proposals.where {active: false}
       }
     @_process_dashboard_context('manage_proposals', options)
 

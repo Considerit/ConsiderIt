@@ -8,6 +8,36 @@ class ConsiderIt.PositionView extends Backbone.View
     @proposal = options.proposal
     @state = 0
 
+    @listenToOnce @proposal, 'proposal:data_loaded', => 
+      @listenTo ConsiderIt.app, 'user:signin', @post_signin
+      @listenTo ConsiderIt.app, 'user:signout', @post_signout  
+
+  post_signin : () ->
+    point.set('user_id', ConsiderIt.current_user.id) for point in @model.written_points
+    existing_position = @model.positions[ConsiderIt.current_user.id]
+
+    # need to merge old position into new
+    existing_position.subsume @model
+    @model.set existing_position.attributes
+    @proposal.positions[ConsiderIt.current_user.id] = @model
+    delete @proposal.positions[-1]
+
+    # transfer already included points from existing_position into the included lists
+    for pnt_id in $.parseJSON(existing_position.get('point_inclusions'))
+      if (model = @proposal.peer_pros.remove_from_all(pnt_id))?
+        @proposal.included_pros.add model
+      else if (model = @proposal.peer_cons.remove_from_all(pnt_id))?
+        @proposal.included_cons.add model
+
+    @trigger 'position:signin_handled'
+
+
+  post_signout : () ->
+    for pnt in @model.written_points
+      if pnt.get('is_pro') then @proposal.included_pros.remove(pnt) else @proposal.included_cons.remove(pnt)
+
+    @model.clear()
+
   render : ->
     your_action_el = $('<div class="m-proposal-message m-position-your_action">')
 
@@ -55,24 +85,22 @@ class ConsiderIt.PositionView extends Backbone.View
 
   position_canceled : ->
     # TODO: discard changes
-    @proposal.view.transition_unexpanded()
+    @trigger 'position:canceled'
 
   handle_submit_position : (ev) ->
     if ConsiderIt.current_user.isNew()
       regview = ConsiderIt.app.usermanagerview.handle_user_registration(ev)
-      # if user cancels login, then we could later submit this position unexpectedly when signing in to submit a different position!
-      @listenTo @proposal.view, 'proposal:handled_signin', () => 
-        @stopListening @proposal.view, 'proposal:handled_signin'
-        @submit_position()
+      # if user cancels login, then we could later submit this position unexpectedly when signing in to submit a different position!      
+      @on 'position:signin_handled', => @submit_position()
     else
       @submit_position()
 
   submit_position : () ->
-    _.extend(@proposal.position.attributes, @crafting_view.position_attributes())
-    Backbone.sync 'update', @proposal.position,
+    _.extend(@model.attributes, @crafting_view.position_attributes())
+    Backbone.sync 'update', @model,
       success : (data) =>
         #TODO: any reason to wait for the server to respond before navigating to the results?
-        ConsiderIt.router.navigate(Routes.proposal_path( @proposal.model.get('long_id') ), {trigger: true})
+        ConsiderIt.router.navigate(Routes.proposal_path( @model.proposal.get('long_id') ), {trigger: true})
 
       failure : (data) =>
         console.log('Something went wrong syncing position')
@@ -81,8 +109,8 @@ class ConsiderIt.YourActionView extends Backbone.View
   @craft_template : _.template( $("#tpl_your_action_craft").html() )
   @save_template : _.template( $("#tpl_your_action_save").html() )
 
-  initialize : (options) -> 
-    @proposal = options.proposal
+  # initialize : (options) -> 
+  #   @proposal = options.proposal
 
   render : () -> 
     @close_crafting()
@@ -95,7 +123,7 @@ class ConsiderIt.YourActionView extends Backbone.View
   close_crafting : ->
     @$el.html ConsiderIt.YourActionView.craft_template
       call : if true then 'What do you think?' else 'Revisit the conversation'
-      long_id : @proposal.model.get('long_id')
+      long_id : @model.proposal.long_id
 
 
 class ConsiderIt.CraftingView extends Backbone.View
@@ -108,7 +136,7 @@ class ConsiderIt.CraftingView extends Backbone.View
   render : () -> 
 
     @$el.hide()
-    @$el.html ConsiderIt.CraftingView.template($.extend({}, @model.attributes, {proposal : @proposal.model.attributes}))
+    @$el.html ConsiderIt.CraftingView.template($.extend({}, @model.attributes, {proposal : @model.proposal.attributes}))
 
     @slider = 
       max_effect : 65 
@@ -125,10 +153,10 @@ class ConsiderIt.CraftingView extends Backbone.View
         change: () => @slider_change(@slider.$el.noUiSlider('value')[1])
 
     @pointlists = 
-      mypros : @proposal.points.included_pros
-      peerpros : @proposal.points.peer_pros
-      mycons : @proposal.points.included_cons
-      peercons : @proposal.points.peer_cons
+      mypros : @model.proposal.included_pros
+      peerpros : @model.proposal.peer_pros
+      mycons : @model.proposal.included_cons
+      peercons : @model.proposal.peer_cons
 
     @views = 
       mypros : new ConsiderIt.PointListView({collection : @pointlists.mypros, el : @$el.find('.m-pro-con-list-propoints'), location: 'position', proposal : @proposal})
@@ -257,7 +285,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     csrfValue = $("meta[name='csrf-token']").attr('content')
     params[csrfName] = csrfValue
 
-    $.post Routes.proposal_point_inclusions_path( @proposal.model.get('long_id'), model.attributes.id ), 
+    $.post Routes.proposal_point_inclusions_path( @model.proposal.long_id, model.attributes.id ), 
       params, 
       (data) ->
 
@@ -280,7 +308,7 @@ class ConsiderIt.CraftingView extends Backbone.View
 
     ev.stopPropagation()
 
-    $.post Routes.proposal_point_inclusions_path( @proposal.model.get('long_id'), model.attributes.id, {delete : true} ), 
+    $.post Routes.proposal_point_inclusions_path( @model.proposal.long_id, model.attributes.id, {delete : true} ), 
       params, 
       (data) ->
 
@@ -291,7 +319,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     is_pro : $form.find('.m-newpoint-is_pro').val() == 'true'
     hide_name : $form.find('.m-newpoint-anonymous').is(':checked')
     comment_count : 0
-    proposal_id : @proposal.model.id
+    proposal_id : @model.proposal.id
   }
 
   new_point : (ev) ->
@@ -319,7 +347,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     @cancel_new_point({currentTarget: $form.find('.m-newpoint-cancel')})
 
     new_point = pointlist.create attrs, {wait: true}
-    @proposal.points.written_points.push new_point
+    @model.written_points.push new_point
 
   slider_change : (new_value) -> 
     return unless isFinite(new_value)
@@ -345,20 +373,20 @@ class ConsiderIt.CraftingView extends Backbone.View
     stance : @model.get('stance')
     explanation : @$el.find('.position_statement textarea').val()
     included_points : ( pnt.id for pnt in @pointlists.mypros.models ).concat ( pnt.id for pnt in @pointlists.mycons.models )
-    viewed_points : _.values(@proposal.points.viewed_points)
+    viewed_points : _.values(@model.viewed_points)
     follow_proposal : @$el.find('#follow_proposal').is(':checked')
   }
 
 
   peer_point_list_reset : (list) ->
     for pnt in list.models
-      @proposal.points.viewed_points[pnt.id] = pnt.id
+      @model.viewed_points[pnt.id] = pnt.id
 
   _$item : (child) ->
     $(child).closest("[data-role=\"#{ConsiderIt.PointListView.childClass}\"]")
 
   navigate_point_details : (ev) ->
     point_id = $(ev.currentTarget).closest('.pro, .con').data('id')
-    ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.model.get('long_id'), point_id), {trigger: true})
+    ConsiderIt.router.navigate(Routes.proposal_point_path(@model.proposal.long_id, point_id), {trigger: true})
 
 

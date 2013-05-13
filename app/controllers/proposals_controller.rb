@@ -51,7 +51,9 @@ class ProposalsController < ApplicationController
 
     respond_to do |format|
       format.json {render :json => response}
-      format.html
+      format.html {
+        @current_proposal = {:long_id => proposal.long_id, :data => response }
+      }
     end
 
   end

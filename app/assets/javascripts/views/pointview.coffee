@@ -24,7 +24,7 @@ class ConsiderIt.PointView extends Backbone.View
       ConsiderIt.PointView.template $.extend({}, @model.attributes,
         adjusted_nutshell : this.model.adjusted_nutshell()
         user : @user.attributes
-        proposal : @proposal.model.attributes,
+        proposal : @proposal.attributes,
         is_you : @user == ConsiderIt.current_user
       )
     )
@@ -35,7 +35,7 @@ class ConsiderIt.PointView extends Backbone.View
     #   @$el.find('.m-point-nutshell').editable {
     #       resource: 'point'
     #       pk: @model.id
-    #       url: Routes.proposal_point_path @proposal.model.attributes.long_id, @model.id
+    #       url: Routes.proposal_point_path @proposal.long_id, @model.id
     #       type: 'textarea'
     #       name: 'nutshell'
     #     }
@@ -44,7 +44,7 @@ class ConsiderIt.PointView extends Backbone.View
 
   # I wish this was handled in PointViewDetails
   @load_data : (proposal, model, callback, view) ->
-    $.get Routes.proposal_point_path(proposal.model.get('long_id'), model.id), (data) =>
+    $.get Routes.proposal_point_path(proposal.long_id, model.id), (data) =>
       comments = (co.comment for co in data.comments)
       ConsiderIt.comments[model.id] = new ConsiderIt.CommentList()
       ConsiderIt.comments[model.id].reset(comments)

@@ -33,34 +33,9 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
   # Returns an instance of the view class
   getItemView: (proposal)->
-    id = proposal.get('long_id')
+    id = proposal.long_id
 
-    if id of ConsiderIt.proposals
-      delete ConsiderIt.proposals[id].view if id of ConsiderIt.proposals
-    else
-      ConsiderIt.proposals[id] = 
-        top_con : null
-        top_pro : null
-        points :
-          pros : []
-          cons : []
-          included_pros : new ConsiderIt.PointList()
-          included_cons : new ConsiderIt.PointList()
-          peer_pros : new ConsiderIt.PaginatedPointList()
-          peer_cons : new ConsiderIt.PaginatedPointList()
-          viewed_points : {}    
-          written_points : []        
-
-        positions : []
-        position : new ConsiderIt.Position({}) #TODO: make sure initial position submitted & handled by server when submitting new proposal
-        view : null
-        views : {}
-        model : proposal
-
-      ConsiderIt.proposals_by_id[proposal.id] = ConsiderIt.proposals[id]
-
-
-    ConsiderIt.proposals[id].view = new @itemView
+    new @itemView
       model: proposal
       collection: @collection
       attributes : 
@@ -68,9 +43,8 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
         'data-role': 'm-proposal'
         id : "#{id}"
         class : "#{ConsiderIt.ProposalListView.childClass}"
-        'data-activity': if ConsiderIt.proposals[id].has_participants then 'proposal-has-activity' else 'proposal-no-activity'
+        'data-activity': if proposal.has_participants() then 'proposal-has-activity' else 'proposal-no-activity'
 
-    return ConsiderIt.proposals[id].view
 
   #handlers
   events :
@@ -123,8 +97,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       wait: true
       at: 0
       success: => 
-        ConsiderIt.proposals_by_id[new_proposal.id]
-
         new_view = @getViewByModel new_proposal
         new_view.$el.find('.m-proposal-introduction').trigger('click')
         #new_view.transition_expanded(1)
@@ -133,6 +105,4 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
   delete_proposal : (proposal) ->
     ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
-    delete ConsiderIt.proposals_by_id[proposal.id]
-    delete ConsiderIt.proposals[proposal.long_id]
     @collection.remove proposal

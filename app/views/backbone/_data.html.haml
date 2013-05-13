@@ -8,7 +8,7 @@
     proposals = #{@proposals.to_json};
     ConsiderIt.proposals = [];
 
-    var current_proposal = #{ @current_proposal ? @current_proposal.to_json : nil };
+    var current_proposal = #{ @current_proposal ? @current_proposal.to_json : 'null' };
     var current_proposal_model = null;
 
     for(var long_id in proposals){
@@ -16,7 +16,7 @@
       proposal = new ConsiderIt.Proposal(prop.model.proposal, prop.top_con ? prop.top_con.point : null, prop.top_pro ? prop.top_pro.point : null);
 
 
-      if(current_proposal.long_id == long_id) {
+      if( current_proposal && current_proposal.long_id == long_id) {
         current_proposal_model = proposal;
       }
 

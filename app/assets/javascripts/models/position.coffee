@@ -5,14 +5,21 @@ class ConsiderIt.Position extends Backbone.Model
 
   name: 'position'
 
-  initialize : ->
+  initialize : (options, proposal) ->
     super
     @attributes.explanation = htmlFormat(@attributes.explanation) if @attributes.explanation
-
+    @proposal = proposal
+    @written_points = {}
+    @viewed_points = {}
 
   url : () ->
     if @attributes.proposal_id #avoid url if this is a new proposal
-      Routes.proposal_position_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id'), @id) 
+      Routes.proposal_position_path( @proposal.long_id, @id) 
+
+  clear : ->
+    super
+    @written_points = {}
+    @viewed_points = {}
 
   @stance_name_for_bar : (d) ->
     switch parseInt(d)
@@ -43,3 +50,8 @@ class ConsiderIt.Position extends Backbone.Model
     params.explanation = explanation if explanation? and explanation.length > 0
 
     @set params
+
+
+
+
+

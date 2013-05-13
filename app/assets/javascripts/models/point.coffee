@@ -2,16 +2,17 @@ class ConsiderIt.Point extends Backbone.Model
   defaults: { }
   name: 'point'
 
-  initialize : () ->
+  initialize : ->
     super
+    @proposal = ConsiderIt.app.proposals.get @attributes.proposal_id
     @attributes.nutshell = htmlFormat(@attributes.nutshell)
     @attributes.text = htmlFormat(@attributes.text)
 
   url : () ->
     if @id
-      Routes.proposal_point_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id'), @id) 
+      Routes.proposal_point_path( @proposal.long_id, @id) 
     else
-      Routes.proposal_points_path( ConsiderIt.proposals_by_id[@get('proposal_id')].model.get('long_id') ) 
+      Routes.proposal_points_path( @proposal.long_id ) 
 
 
   #is_manager : () -> false

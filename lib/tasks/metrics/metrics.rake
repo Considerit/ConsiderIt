@@ -217,6 +217,48 @@ namespace :metrics do
 
   end
 
+  task :fact_checking_basic => :environment do 
+    puts "Fact-checking metrics"
+
+    requests = Assessable::Request.all
+
+    results = {
+      'unknown' => {:pro => 0, :con => 0 },
+      'supporter' => {:pro => 0, :con => 0 },
+      'opposer' => {:pro => 0, :con => 0 },
+      'neutral' => {:pro => 0, :con => 0 }
+
+    }
+
+    requests.each do |rq|
+      requester = rq.user
+      
+      begin
+        pos = requester.positions.published.where(:proposal_id => rq.root_object.proposal_id).last
+      rescue
+        next
+      end
+
+      is_pro = rq.root_object.is_pro ? :pro : :con
+
+      if !pos
+        stance = 'unknown'
+      elsif pos.stance_bucket > 3
+        stance = 'supporter'
+      elsif pos.stance_bucket == 3
+        stance = 'neutral'
+      else
+        stance = 'opposer'
+      end
+
+      results[stance][is_pro] += 1
+
+    end
+    pp results
+
+  end
+
+
 
   task :fact_checking => :environment do 
     puts "Fact-checking metrics"

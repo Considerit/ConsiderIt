@@ -53,7 +53,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     @listenTo @results_view, 'results:explode_participants', => @set_state(4)
 
 
-    if @model.get('published') || @can_edit()
+    if @model.get('published') #|| @can_edit()
       @position_view = new ConsiderIt.PositionView
         proposal : @model
         model : @model.position
@@ -270,12 +270,13 @@ class ConsiderIt.ProposalView extends Backbone.View
     template = _.template($('#tpl_proposal_admin_strip').html())
     admin_strip_el.html( template(@model.attributes))
     @$el.append admin_strip_el 
+
     for field in ConsiderIt.ProposalView.editable_fields
       [selector, name, type] = field 
       @$el.find(selector).editable {
         resource: 'proposal'
         pk: @long_id
-        url: Routes.proposal_path @long_id
+        url: Routes.proposal_path @model.long_id
         type: type
         name: name
       }
@@ -305,4 +306,5 @@ class ConsiderIt.ProposalView extends Backbone.View
     data = $.parseJSON(response.responseText)
     @model.set(data.proposal.proposal)
     @render()
-    @toggle()
+    @transition_expanded(1)
+    @$el.attr('data-visibility', '')

@@ -18,6 +18,8 @@ class ConsiderIt.Proposal extends Backbone.Model
 
     @long_id = @attributes.long_id
     @position = new ConsiderIt.Position({}, this)
+    
+
 
   url : () ->
     if @id

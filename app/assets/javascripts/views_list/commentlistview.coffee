@@ -49,4 +49,5 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
     attrs = @comment_attributes( )
 
     @collection.create attrs,
+      wait: true
       success : (data) ->

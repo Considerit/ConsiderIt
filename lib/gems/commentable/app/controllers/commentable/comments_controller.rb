@@ -7,7 +7,7 @@ class Commentable::CommentsController < ApplicationController
   def create
     authorize! :create, Commentable::Comment
 
-    commentable_id = params[:comment][:commentable_type]
+    commentable_id = params[:comment][:commentable_id]
     commentable_type = params[:comment][:commentable_type]
 
     commentable = commentable_type.constantize.find commentable_id

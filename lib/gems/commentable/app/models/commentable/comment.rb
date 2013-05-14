@@ -20,7 +20,7 @@ class Commentable::Comment < ActiveRecord::Base
   acts_as_tenant(:account)
 
   before_save do 
-    self.body = Sanitize.clean(self.explanation, Sanitize::Config::RELAXED)
+    self.body = Sanitize.clean(self.body, Sanitize::Config::RELAXED)
   end
 
   # Helper class method that allows you to build a comment

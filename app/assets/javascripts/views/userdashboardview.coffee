@@ -55,7 +55,8 @@ class ConsiderIt.UserDashboardView extends Backbone.View
         @render()
         Backbone.history.loadUrl(Backbone.history.fragment)
     
-    @listenTo ConsiderIt.app, 'user:signout', @close
+    @listenTo ConsiderIt.app, 'user:signout', => 
+      @close() if @$dashboard_el.is(':visible') && @current_context
 
   render : ->
     visible = @$dashboard_el.is(':visible')

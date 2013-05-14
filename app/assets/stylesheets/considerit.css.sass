@@ -1655,7 +1655,8 @@ $m-point-expanded-width: $body_width + 150
   text-align: center
 
   .m-new-proposal-submit
-    +superbutton
+    +sassy-button("glass", 5px, 12px, darken($standout_color, 32%), darken($standout_color, 40%))
+
     +font-size(2)
     //padding: $vertical_baseline / 2 0
     color: white
@@ -1939,6 +1940,29 @@ $m-point-expanded-width: $body_width + 150
   [data-action="results-implode-participants"]
     display: none
 
+
+.m-proposal[data-visibility="unpublished"]
+  .l-message-body.m-proposal-description
+    background-color: $standout_color
+    border-color: $dark_standout_color
+    color: $standout_text_color
+
+    > .t-bubble 
+      .t-bubble-border
+        fill: $dark_standout_color
+      .t-bubble-inner
+        fill: $standout_color
+
+    &:hover
+      background-color: lighten($standout_color, 5%)
+      .t-bubble .t-bubble-inner
+        fill: lighten($standout_color, 5%)
+
+  .m-proposal-publish
+    +sassy-button("glass", 5px, 12px, darken($standout_color, 32%), darken($standout_color, 40%))
+    +font-size(2)
+
+
 .m-proposal[data-activity="proposal-no-activity"]
   .m-proposal-message > .l-message-speaker.m-proposal-initiator
     bottom: -58px
@@ -1955,6 +1979,10 @@ $m-point-expanded-width: $body_width + 150
       .m-position-your-action-body.join
         +font-size(2)
         width: $content_width - 96
+  .m-proposal-strip_publish
+    .m-proposal-publish
+      width: $content_width - 2 * $grid_xs - 58
+      margin-left: $grid_xs + 58
 
 .m-proposal[data-state="4"]
   .l-message-speaker .l-group-container
@@ -2084,7 +2112,6 @@ $m-point-expanded-width: $body_width + 150
   .m-proposal-description.l-message-body
     &:hover
       background-color: lighten($initiator_color, 5%)
-      border-color: darken($dark_initiator_color, 5%)
       .t-bubble .t-bubble-inner
         fill: lighten($initiator_color, 5%)
 

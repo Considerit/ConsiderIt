@@ -100,7 +100,7 @@ class ConsiderIt.PositionView extends Backbone.View
     Backbone.sync 'update', @model,
       success : (data) =>
         #TODO: any reason to wait for the server to respond before navigating to the results?
-        ConsiderIt.router.navigate(Routes.proposal_path( @model.proposal.get('long_id') ), {trigger: true})
+        ConsiderIt.router.navigate(Routes.proposal_path( @model.proposal.long_id ), {trigger: true})
 
       failure : (data) =>
         console.log('Something went wrong syncing position')

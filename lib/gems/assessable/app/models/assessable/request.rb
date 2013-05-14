@@ -21,7 +21,7 @@ class Assessable::Request < ActiveRecord::Base
   end
 
   def root_object
-    assessable_type.constantize.find(assessable_id)
+    assessment.assessable_type.constantize.find(assessment.assessable_id)
   end
 
 end

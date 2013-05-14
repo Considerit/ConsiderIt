@@ -107,6 +107,17 @@ window.ConsiderIt.update_current_user = (parameters) ->
   if ConsiderIt.app
     ConsiderIt.app.trigger('user:updated')
 
+window.ConsiderIt.clear_current_user = ->
+  ConsiderIt.current_user = new ConsiderIt.User
+  ConsiderIt.roles =
+    is_admin : ConsiderIt.current_user.has_role('admin') || ConsiderIt.current_user.has_role('superadmin')
+    is_moderator : ConsiderIt.current_user.has_role('moderator')
+    is_analyst : ConsiderIt.current_user.has_role('analyst')
+    is_evaluator : ConsiderIt.current_user.has_role('evaluator')  
+    is_manager : ConsiderIt.current_user.has_role('manager')  
+      
+  return ConsiderIt.current_user
+
 
 window.getCenteredCoords = (width, height) ->
   if (window.ActiveXObject)

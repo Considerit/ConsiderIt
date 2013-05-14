@@ -76,9 +76,9 @@ class ConsiderIt.UserManagerView extends Backbone.View
   handle_user_logout : (ev) ->
     $.get Routes.destroy_user_session_path(), (data) =>
       ConsiderIt.utils.update_CSRF(data.new_csrf)
-      @model = ConsiderIt.current_user = new ConsiderIt.User
+      @model = ConsiderIt.clear_current_user()
       @render()
-      ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
+      #ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
       ConsiderIt.app.trigger('user:signout')      
 
   add_registration_overlay : () ->

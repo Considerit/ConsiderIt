@@ -18,7 +18,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     @long_id = @model.long_id
     @data_loaded = false
 
-    ConsiderIt.router.on 'route:Root', => @transition_unexpanded() if @state != 0
+    ConsiderIt.router.on 'route:Root', => @transition_unexpanded() if @state > 0
     ConsiderIt.router.on 'route:Consider', (long_id) => @take_position_handler() if long_id == @model.long_id
     ConsiderIt.router.on 'route:Aggregate', (long_id) => @show_results_handler() if long_id == @model.long_id
     ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @show_point_details_handler(point_id) if long_id == @model.long_id

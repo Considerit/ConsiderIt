@@ -379,6 +379,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     for i in [0..includers.length] by 1
       selector.push "#avatar-#{includers[i]}" 
+    selector.push "#avatar-#{$target.attr('user')}"
 
     #TODO: use CSS3 transitions instead    
     if @$histogram.is(':visible')
@@ -386,13 +387,12 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
       if ev.type == 'mouseenter'
         @$histogram.addClass 'm-histogram-segment-selected'
-        @$histogram.find('.avatar').css('visibility', 'hidden')
-        $(selector.join(','), @$histogram).css {'visibility': '', 'opacity': 1}
-        $("#avatar-#{$target.attr('user')}").css {'visibility': '', 'opacity': 1}
+        @$histogram.find('.avatar').hide()
+        $(selector.join(','), @$histogram).css {'display': '', 'opacity': 1}
         @$histogram.find('.m-bar-percentage').hide()
       else
         @$histogram.removeClass 'm-histogram-segment-selected'
-        @$histogram.find('.avatar').css {'visibility': '', 'opacity': ''} 
+        @$histogram.find('.avatar').css {'display': '', 'opacity': ''} 
         @$histogram.find('.m-bar-percentage').show()
 
       @$histogram.show()
@@ -402,11 +402,10 @@ class ConsiderIt.ExplorerView extends Backbone.View
       $group_container.hide()
 
       if ev.type == 'mouseenter'
-        $group_container.find('.avatar').css('visibility', 'hidden')
-        $(selector.join(','), $group_container).css {'visibility': '', 'opacity': 1}
-        $("#avatar-#{$target.attr('user')}").css {'visibility': '', 'opacity': 1}
+        $group_container.find('.avatar').hide()
+        $(selector.join(','), $group_container).css {'display': '', 'opacity': 1}
       else
-        $group_container.find('.avatar').css {'visibility': '', 'opacity': ''} 
+        $group_container.find('.avatar').css {'display': '', 'opacity': ''} 
 
       $group_container.show()
 

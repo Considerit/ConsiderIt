@@ -190,7 +190,7 @@ blockquote
 
 =superbutton
   //+sassy-button("glass", 5px, 12px, lighten($comp_color, 8%), $comp_color)
-  +sassy-button("glass", 5px, 12px, darken($position_button_bg, 8%), darken($position_button_bg, 16%))
+  +sassy-button("glass", 5px, inherit, darken($position_button_bg, 8%), darken($position_button_bg, 16%))
 
   //+background-image(linear-gradient(lighten($comp_color, 5%), $comp_color))
   // background-color: lighten($comp_color, 5%)
@@ -827,15 +827,24 @@ $membership_card_height: 278px
     display: none
 
 
+// top pro / con in summary
 
+.m-top-point
+  +font-size(-2)
+  &.m-top-pro
+    padding: 0 $grid_xs / 2 0 $grid_xs
+  &.m-top-con
+    padding: 0 $grid_xs 0 $grid_xs / 2
+  .m-top-point-user
+    white-space: nowrap
 $arrow_height: 10px
 
 
 %point_operation_button
   //+superbutton
 
-  +sassy-button("simple", 5px, 12px, lighten($position_button_bg, 8%), $position_button_bg)
-
+  +sassy-button("simple", 5px, inherit, lighten($position_button_bg, 8%), $position_button_bg)
+  +font-size(-3)
   // background-color: lighten($comp_color, 5%)
   // &:hover
   //   background-color: $comp_color
@@ -847,9 +856,9 @@ $arrow_height: 10px
   // border: 1px solid $add_point_border-color
   padding: $vertical_baseline/4 $grid_xs / 2
   text-align: center
-  color: #e1e1e1
+  color: #eaeaea
   //+font-size(-4)
-  @extend %bolded
+  //@extend %bolded
   //height: 3 * $vertical_baseline
   display: inline-block
   vertical-align: top
@@ -905,7 +914,7 @@ $arrow_height: 10px
     a
       +font-size(-3)
       color: #666 //darken(desaturate($dark_community_color, 25%), 25%)
-      @extend %bolded
+      //@extend %bolded
       +transition(opacity .5s linear, color .5s linear, background-color .5s linear)
 
       //+single-transition
@@ -1244,6 +1253,8 @@ $arrow_height: 10px
       +font-size(-3)
       vertical-align: middle
       position: absolute
+      right: 20px
+      top: -16px
 
   .m-newpoint-submit, .m-newpoint-anonymous-wrap
     text-align: right
@@ -1655,7 +1666,7 @@ $m-point-expanded-width: $body_width + 150
   text-align: center
 
   .m-new-proposal-submit
-    +sassy-button("glass", 5px, 12px, darken($standout_color, 32%), darken($standout_color, 40%))
+    +sassy-button("glass", 5px, inherit, darken($standout_color, 32%), darken($standout_color, 40%))
 
     +font-size(2)
     //padding: $vertical_baseline / 2 0
@@ -1718,6 +1729,7 @@ $m-point-expanded-width: $body_width + 150
       //display: none
 
     &.m-position-your_action
+      //height: 0
       > .l-message-body
         padding: 0
         //width: 100% 
@@ -1725,7 +1737,7 @@ $m-point-expanded-width: $body_width + 150
   .m-aggregated-results
     > .l-message-speaker
       right: 0
-      top: $vertical_baseline
+      //top: $vertical_baseline
 
   .m-results-summary
     > .l-message-speaker
@@ -1771,7 +1783,7 @@ $m-point-expanded-width: $body_width + 150
     //width: $body_width + 2 * $grid_major
 
   .m-proposal-description-title
-    +font-size(3)
+    +font-size(2)
     font-weight: bold
     //color: $position_color
 
@@ -1923,22 +1935,30 @@ $m-point-expanded-width: $body_width + 150
     display: inline-block
 
 
-.m-proposal[data-state="0"], .m-proposal[data-state="2"] 
-  .m-position-your-action-body.join
-    +font-size(2)
-
 .m-proposal[data-state="0"]
   .m-position-your-action-body.join
-    width: $content_width - 2 * $grid_xs
+    //width: $content_width - 2 * $grid_xs
+    //width: $content_width - 2 * $grid_xs
+    top: -40px
+    position: absolute
 
 .m-proposal[data-state="2"]
   .m-position-your-action-body.join
-    width: $body_width
-    left: $margin_width + $grid_xs / 2 - 3
-    position: relative
+    //width: $body_width
+    //left: $margin_width + $grid_xs / 2 - 3
+    top: -$vertical_baseline
+    position: absolute
+
+  .l-group-container
+    min-height: 85px
 
   [data-action="results-implode-participants"]
     display: none
+
+.m-proposal[data-state="4"]
+  .m-position-your-action-body.join
+    right: 60px
+    top: -12px
 
 
 .m-proposal[data-visibility="unpublished"]
@@ -1953,13 +1973,13 @@ $m-point-expanded-width: $body_width + 150
       .t-bubble-inner
         fill: $standout_color
 
-    &:hover
-      background-color: lighten($standout_color, 5%)
-      .t-bubble .t-bubble-inner
-        fill: lighten($standout_color, 5%)
+    // &:hover
+    //   background-color: lighten($standout_color, 5%)
+    //   .t-bubble .t-bubble-inner
+    //     fill: lighten($standout_color, 5%)
 
   .m-proposal-publish
-    +sassy-button("glass", 5px, 12px, darken($standout_color, 32%), darken($standout_color, 40%))
+    +sassy-button("glass", 5px, inherit, darken($standout_color, 32%), darken($standout_color, 40%))
     +font-size(2)
 
 
@@ -1990,10 +2010,10 @@ $m-point-expanded-width: $body_width + 150
     z-index: 99
 
     .avatar // for the explode transition
-      -ms-transition: -ms-transform 1.5s ease
-      -moz-transition: -moz-transform 1.5s ease
-      -webkit-transition: -webkit-transform 1.5s ease
-      transition: transform 1.5s ease
+      -ms-transition: -ms-transform .75s ease
+      -moz-transition: -moz-transform .75s ease
+      -webkit-transition: -webkit-transform .75s ease
+      transition: transform .75s ease
 
   [data-action="results-explode-participants"]
     display: none
@@ -2001,38 +2021,19 @@ $m-point-expanded-width: $body_width + 150
     visibility: visible
     display: block
 
-  .m-proposal-message
-    > .l-message-speaker.m-proposal-initiator
-      bottom: -58px
-
-      img
-        width: 50px
-        height: 50px
-
-  .m-proposal-message.m-position-your_action
-    > .l-message-recipient
-      //top: -64px
-      right: -58px
-
-      .m-position-your-action-body.join
-        +font-size(2)
-        width: $body_width
-
-    // make it appear below the histogram bars...
-    // > .l-message-recipient
-    //   top: -64px
-    //   right: -665px
-
-    //   .m-position-your-action-body.join
-    //     +font-size(2)
-    //     width: 219px
+  .l-message-speaker.m-proposal-initiator
+    opacity: .25
 
   .m-aggregated-results
-    > .l-message-speaker // histogram
-      width: $margin_width + 105
+    //> .l-message-speaker // histogram
+    //width: $margin_width + 75
+
+    > .l-message-speaker
+      //top: -64px
+      right: 58px
 
     > .l-message-body.m-results-responders
-      margin-left: 58px
+      left: -60px
 
 
 .m-proposal-message
@@ -2054,17 +2055,17 @@ $m-point-expanded-width: $body_width + 150
   > .l-group-container
     height: 160px
 
-  &.m-proposal-introduction, &.m-position, &.m-aggregated-results
+  &.m-proposal-introduction, &.m-position, &.m-aggregated-results, &.m-position-your_action
     > .l-message-recipient
       display: none
 
   > .l-message-speaker.m-proposal-initiator
 
     // this is the big main proposer image
-    text-align: left
+    text-align: right
     position: absolute
     top: auto
-    bottom: -168px
+    bottom: -125px
     opacity: .8
 
     +transition(bottom .1 ease)
@@ -2073,8 +2074,8 @@ $m-point-expanded-width: $body_width + 150
       opacity: 1
 
     img
-      width: $margin_width
-      height: $margin_width
+      width: 120px //$margin_width
+      //height: //$margin_width
       +transition(width .1s ease, height .1s ease)
 
     &.small
@@ -2085,15 +2086,23 @@ $m-point-expanded-width: $body_width + 150
   &.m-results-summary
     > .l-message-recipient
       display: none
+    > .l-message-speaker .l-group-container
+      height: 120px
+
+  &.m-results-summary, &.m-aggregated-results  
+    > .l-message-speaker .l-group-container
+      width: 180px
+      right: -20px
 
   .m-proposal-description.l-message-body
     +bubble($initiator_color, $dark_initiator_color, left)
-    width: 100% //$body_width + $margin_width + 5
+    width: $content_width - 55 // 100% //$body_width + $margin_width + 5
     border-bottom-left-radius: 0px
     border-top-left-radius: 5px
-    left: -4px
+    left: 36px
     height: 100%
     cursor: pointer
+    margin: 0
 
     .t-bubble
       top: auto
@@ -2110,10 +2119,10 @@ $m-point-expanded-width: $body_width + 150
 
 .m-proposal
   .m-proposal-description.l-message-body
-    &:hover
-      background-color: lighten($initiator_color, 5%)
-      .t-bubble .t-bubble-inner
-        fill: lighten($initiator_color, 5%)
+    // &:hover
+    //   background-color: lighten($initiator_color, 5%)
+    //   .t-bubble .t-bubble-inner
+    //     fill: lighten($initiator_color, 5%)
 
 /* YOUR_ACTION */
 
@@ -2121,9 +2130,12 @@ $m-point-expanded-width: $body_width + 150
 .m-position-your-action-body
   //+bubble(lighten($comp_color, 5%), $dark_comp_color, right )
   +superbutton
+  +font-size(-2)
   color: #fafafa
   text-align: center
   font-weight: bold
+  border-radius: 0 0 5px 5px
+  position: relative
 
   &:hover
     color: white
@@ -2133,18 +2145,21 @@ $m-point-expanded-width: $body_width + 150
     width: 100%
     padding: $vertical_baseline / 2 0
     text-align: center
+
   &.submit
     +font-size(3)
     display: block
+    border-radius: 0 0 5px 5px
+    position: relative
+    top: -$vertical_baseline / 2
 
 .m-position-submit-footer-wrap
-  margin-top: $vertical_baseline / 2
+  //margin-top: $vertical_baseline / 2
 
   .notifications
     display: inline-block
     //text-transform: uppercase
     +font-size(-2)
-
   .m-position-cancel
     display: inline-block
     margin-right: $grid_xs
@@ -2160,33 +2175,41 @@ $m-point-expanded-width: $body_width + 150
 
 /* SUMMARY */
 
+.m-results-summary
+  .m-results-summary-button
+    bottom: 5px
 
 .m-results-summary, .m-aggregated-results
   .m-results-summary-button
-    margin-top: 3px
-    +sassy-button("glass", 5px, 12px, saturate($community_color, 8%), darken(saturate($community_color, 8%), 5%))
+    //margin-top: 3px
+    +sassy-button("glass", 5px, inherit, saturate($community_color, 8%), darken(saturate($community_color, 8%), 5%))
     //+sassy-button("glass", 5px, 12px, darken(saturate($community_color, 8%), 38%), darken(saturate($community_color, 8%), 46%))
+    +font-size(-2)
     display: block
-    line-height: 1.2
+    //line-height: 1.2
     font-weight: bold
     color: $community_text_color
     text-align: center
     +text-shadow(none)
+    border-radius: 0 0 5px 5px
+    width: $margin_width + 16
+    position: absolute
+
     &:hover
       color: darken($community_text_color, 5%)
 
 
 .m-results-summary
-  cursor: pointer
+  //cursor: pointer
 
   .m-results-responders
     +bubble($community_color, $dark_community_color, right)
-    min-height: 160px  
+    min-height: 120px  
 
-    &:hover
-      background-color: lighten($community_color, 5%)
-      .t-bubble .t-bubble-inner
-        fill: lighten($community_color, 5%)
+    // &:hover
+    //   background-color: lighten($community_color, 5%)
+    //   .t-bubble .t-bubble-inner
+    //     fill: lighten($community_color, 5%)
 
   .m-summary-heading
     //padding-bottom: $vertical_baseline 
@@ -2296,7 +2319,8 @@ $histogram_bar_color: #6E6E6E
       color: black//$histogram_bar_color
       position: absolute
       left: 3px
-      top: $histogram_bar_width / 2 - 13px
+      //top: $histogram_bar_width / 2 - 13px
+      bottom: -3px
       width: 200px
       font-variant: small-caps
       .m-bar-percentage-number
@@ -2567,11 +2591,29 @@ $filter_width: 371px
 
   .m-position-heading
     +font-size(2)
-    padding: $vertical_baseline / 2 0 $vertical_baseline 0
+    padding: $vertical_baseline / 2 0 $vertical_baseline/2 0
+    margin-bottom: $vertical_baseline/2
     text-align: center
-    text-decoration: underline
     @extend %chalkboard
     +transition(color .8s linear)
+
+  .m-position-heading-points
+    background-color: darken($position_button_bg, 16%)
+    border-top: 1px solid lighten($position_button_bg, 5%)
+    border-bottom: 1px solid darken($position_button_bg, 24%)
+    border-left: 3px solid darken($position_button_bg, 35%)
+    border-right: 3px solid darken($position_button_bg, 35%)
+
+    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: white, $inset: true)
+    position: relative
+    top: -$vertical_baseline/2
+    width: $body_width
+    left: -$grid_xs - 3
+    color: #eaeaea
+  .m-position-heading-stance
+    text-decoration: underline
+
+
 
 
 // REASONS

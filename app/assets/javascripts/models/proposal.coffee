@@ -13,8 +13,9 @@ class ConsiderIt.Proposal extends Backbone.Model
     @data_loaded = false
 
     @pros = @cons = @included_pros = @included_cons = @peer_pros = @peer_cons = @positions = @position = null
-    @top_pro = top_pro
-    @top_con = top_con
+
+    @top_pro = if top_pro? && 'proposal_id' of top_pro then top_pro else null
+    @top_con = if top_con? && 'proposal_id' of top_con then top_con else null
 
     @long_id = @attributes.long_id
     @position = new ConsiderIt.Position({}, this)

@@ -3,15 +3,17 @@
 $bubble_border_radius: 8px
 $banchor_top: -3px
 $banchor_adjustx: -20px
+$bubble_shadow_color: white
 
 %bubble
-  +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: #fff, $inset: true)
-
+  +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: $bubble_shadow_color, $inset: true)
+  
   > .t-bubble
     font-size: 0
     line-height: 1
     position: absolute
     top: $banchor_top
+    
     z-index: 99
 
 %bubble_right

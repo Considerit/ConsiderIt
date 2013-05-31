@@ -258,7 +258,71 @@ namespace :metrics do
 
   end
 
+  task :fact_checking_rates => :environment do 
+    puts "Computing average commenting rate and inclusion rate"
 
+    Assessable::Assessment.all().each do |ass|
+      #pp "Created at: #{ass.created_at}, Updated at: #{ass.updated_at}"
+      #pp "requested at: #{ass.requests.first.created_at}"
+    end
+    average_date = Assessable::Assessment.select('FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(created_at) + (UNIX_TIMESTAMP(updated_at) - UNIX_TIMESTAMP(created_at))/2 )) as updated_at')
+    average_date = average_date[0].updated_at
+
+    points = Assessable::Assessment.select('distinct(assessable_id)').map {|a| a.assessable_id }.compact
+
+    proposals = points.map {|p| Point.find(p).proposal_id}.compact.uniq
+
+    if nonfactchecked=false
+      inclusions_all = Inclusion.where("proposal_id in (?) and point_id not in (?)", proposals, points)
+
+      all_points = Point.where("proposal_id in (?)", proposals)
+      comments_all = Commentable::Comment.where("commentable_id in (?) and commentable_id not in (?)", all_points.map {|p| p.id}.compact, points)
+
+      all_views = PointListing.where("point_id in (?) and point_id not in (?)", all_points.map {|p| p.id}.compact, points)
+
+      views_before = all_views.where('created_at < "' + average_date.to_s + '"').count
+      views_after = all_views.where('created_at >= "' + average_date.to_s + '"').count
+
+      comments_before = comments_all.where('created_at < "' + average_date.to_s + '"').count
+      comments_after = comments_all.where('created_at >= "' + average_date.to_s + '"').count
+
+      inclusions_before = inclusions_all.where('created_at < "' + average_date.to_s + '"').count
+      inclusions_after = inclusions_all.where('created_at >= "' + average_date.to_s + '"').count
+    else
+      inclusions_all = Inclusion.where("point_id in (?)", points)
+
+      comments_all = Commentable::Comment.where("commentable_id in (?)", points)
+
+      all_views = PointListing.where("point_id in (?)", points)
+
+      views_before = all_views.where('created_at < "' + average_date.to_s + '"').count
+      views_after = all_views.where('created_at >= "' + average_date.to_s + '"').count
+
+      comments_before = comments_all.where('created_at < "' + average_date.to_s + '"').count
+      comments_after = comments_all.where('created_at >= "' + average_date.to_s + '"').count
+
+      inclusions_before = inclusions_all.where('created_at < "' + average_date.to_s + '"').count
+      inclusions_after = inclusions_all.where('created_at >= "' + average_date.to_s + '"').count
+    end
+
+
+    pp "BEFORE"
+    pp "Views: #{views_before}"
+    pp "Comments: #{comments_before}"
+    pp "Rate: #{comments_before.to_f/views_before}"
+
+    pp "Inclusions: #{inclusions_before}"
+    pp "Rate: #{inclusions_before.to_f/views_before}"
+
+    pp "AFTER"
+    pp "Views: #{views_after}"
+    pp "Comments: #{comments_after}"
+    pp "Rate: #{comments_after.to_f/views_after}"
+
+    pp "Inclusions: #{inclusions_after}"
+    pp "Rate: #{inclusions_after.to_f/views_after}"
+
+  end
 
   task :fact_checking => :environment do 
     puts "Fact-checking metrics"
@@ -409,6 +473,257 @@ namespace :metrics do
     impacts.each do |i|
       printf("%i\t%i\t%i\t%.3f\t%i\n", i[4], i[0].point_listings.count, i[3], i[1], i[0].id)
     end
+  end
+
+  task :export_fact_checking => :environment do 
+
+    election_date = DateTime.new(2012,11,8)
+
+    Assessable::Assessment.all().each do |ass|
+      #pp "Created at: #{ass.created_at}, Updated at: #{ass.updated_at}"
+      #pp "requested at: #{ass.requests.first.created_at}"
+    end
+    # average_date = Assessable::Assessment.select('FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(created_at) + (UNIX_TIMESTAMP(updated_at) - UNIX_TIMESTAMP(created_at))/2 )) as updated_at')
+    # average_date = average_date[0].updated_at
+
+    points = Assessable::Assessment.select('distinct(assessable_id)').map {|a| a.assessable_id }.compact
+
+    proposals = points.map {|p| Point.find(p).proposal_id}.compact.uniq
+    all_points = Point.where("proposal_id in (?) AND created_at < (?)", proposals, election_date)
+
+    nf_inclusions_all = Inclusion.where("proposal_id in (?) and point_id not in (?)  AND created_at < (?)", proposals, points, election_date)
+
+    nf_all_points = Point.where("proposal_id in (?)", proposals)
+    nf_comments_all = Commentable::Comment.where("commentable_id in (?) and commentable_id not in (?) AND created_at < (?)", all_points.map {|p| p.id}.compact, points, election_date)
+
+    nf_all_views = PointListing.where("point_id in (?) and point_id not in (?) and created_at is not null  AND created_at < (?)", all_points.map {|p| p.id}.compact, points, election_date)
+
+    fc_inclusions_all = Inclusion.where("point_id in (?) AND created_at < (?)", points, election_date)
+
+    fc_comments_all = Commentable::Comment.where("commentable_id in (?) AND created_at < (?)", points, election_date)
+
+    fc_all_views = PointListing.where("point_id in (?) and created_at is not null AND created_at < (?)", points, election_date)
+
+    tmp = {}
+    nf_all_views.each do |vw|
+      if !tmp.has_key? [vw.point_id, vw.user_id]
+        tmp[[vw.point_id,vw.user_id]] = vw
+      end
+    end
+    nf_all_views = tmp.values()
+
+    tmp = {}
+    fc_all_views.each do |vw|
+      if !tmp.has_key? [vw.point_id, vw.user_id]
+        tmp[[vw.point_id,vw.user_id]] = vw
+      end
+    end
+    fc_all_views = tmp.values()
+
+
+    views_before = 0
+    views_after = 0
+
+    inclusions_before = 0
+    inclusions_after = 0
+
+    comments_after = 0
+    comments_before = 0
+
+    views_before0 = 0
+    views_before1 = 0
+    views_before2 = 0
+
+    views_after0 = 0
+    views_after1 = 0
+    views_after2 = 0
+
+    inclusions_before0 = 0
+    inclusions_before1 = 0
+    inclusions_before2 = 0
+
+    inclusions_after0 = 0
+    inclusions_after1 = 0
+    inclusions_after2 = 0
+
+    simulate_fact_check = true
+    simulated_date = DateTime.new(2012,10,28)
+    simulated_assessment = Assessable::Assessment.new(:updated_at => simulated_date, :overall_verdict => -1)
+
+    require 'csv'
+    CSV.open("data.csv", "w") do |csv|
+
+      head = ['firstview_timestamp', 'point_id',  'was_point_factchecked', 'factchecked_before_view', 'fact_check_accuracy_verdict', 'fact_check_timestamp', 'user_commented', 'user_commented_before_factcheck', 'user_commented_after_factcheck', 'user_included_point']
+
+
+      csv << head
+      [ [fc_all_views, true], [nf_all_views, false] ].each do |views, was_checked|
+        views.each do |view|
+          row = []
+
+          # Time stamp for the view
+          row.push view.created_at
+
+          # An identifier for the point that was viewed
+          row.push view.point_id
+
+          # An indicator for whether or not the point was ever fact checked (regardless of whether the particular view occurred before or after the fact check)
+          row.push was_checked
+
+          # An indicator for whether or not the point had been fact checked prior to the view
+          assessment = Assessable::Assessment.find_by_assessable_id(view.point_id)
+          if simulate_fact_check && !was_checked
+            assessment = simulated_assessment
+          end
+
+          row.push was_checked || simulate_fact_check ? assessment.updated_at > view.created_at : nil
+
+          # An indicator of the result of the fact check (if applicable) (using the 3 categories that you list in the table in Figure 2?)
+          row.push was_checked || simulate_fact_check ? assessment.overall_verdict : nil
+
+          # date of fact-check
+          row.push was_checked || simulate_fact_check ? assessment.updated_at : nil
+
+          comments = Commentable::Comment.where(:commentable_id => view.point_id, :user_id => view.user_id)
+          # An indicator for whether or not this viewer made a comment
+          row.push comments.count > 0
+
+          #made comment before fact-check
+          row.push was_checked || simulate_fact_check ? comments.where( "created_at < ?", assessment.updated_at).count > 0 : nil
+          #made comment after fact-check
+          row.push was_checked || simulate_fact_check ? comments.where( "created_at >= ?", assessment.updated_at).count > 0 : nil
+
+          # An indicator for whether or not the view resulted in an inclusion
+          inclusion = Inclusion.where(:point_id => view.point_id, :user_id => view.user_id)
+          row.push inclusion.count > 0
+
+          # inclusion timestamp
+          #row.push inclusion.count > 0 ? inclusion.first().created_at : nil
+
+          if was_checked || simulate_fact_check
+            viewed_before = assessment.updated_at > view.created_at
+
+            if viewed_before then views_before += 1 else views_after += 1 end
+
+            if assessment.overall_verdict == 0
+              if viewed_before then views_before0 += 1 else views_after0 += 1 end
+              if inclusion.count > 0 
+                if viewed_before then inclusions_before0 += 1 else inclusions_after0 += 1 end
+              end
+            elsif assessment.overall_verdict == 1
+              if viewed_before then views_before1 += 1 else views_after1 += 1 end
+              if inclusion.count > 0 
+                if viewed_before then inclusions_before1 += 1 else inclusions_after1 += 1 end
+              end
+            else
+              if viewed_before then views_before2 += 1 else views_after2 += 1 end
+              if inclusion.count > 0
+                if viewed_before then inclusions_before2 += 1 else inclusions_after2 += 1 end
+              end
+            end
+
+            if inclusion.count > 0
+              if viewed_before then inclusions_before += 1 else inclusions_after += 1 end
+            end
+            if comments.count > 0
+              if viewed_before then comments_before += 1 else comments_after += 1 end
+            end
+          end
+
+          csv << row
+        end
+      end
+
+      pp "Views Before: #{views_before}"
+      pp "Views After: #{views_after}"
+
+      pp "Inclusions Before: #{inclusions_before}"
+      pp "Inclusions After: #{inclusions_after}"
+
+      pp "Comments Before: #{comments_before}"
+      pp "Comments After: #{comments_after}"
+
+      pp 'INACCURATE'
+      pp "Views Before: #{views_before0}"
+      pp "Views After: #{views_after0}"
+
+      pp "Inclusions Before: #{inclusions_before0}"
+      pp "Inclusions After: #{inclusions_after0}"
+
+      pp 'ACCURATE'
+      pp "Views Before: #{views_before2}"
+      pp "Views After: #{views_after2}"
+
+      pp "Inclusions Before: #{inclusions_before2}"
+      pp "Inclusions After: #{inclusions_after2}"
+
+
+    end
+
+  end
+
+  task :data_for_fact_checking_timeseries => :environment do 
+
+    assessed_points = Assessable::Assessment.select('distinct(assessable_id)').map {|a| a.assessable_id }.compact
+
+    proposals = assessed_points.map {|p| Point.find(p).proposal_id}.compact.uniq
+
+    requests = Assessable::Request.all().map {|r| r.created_at}
+    assessments = Assessable::Assessment.all().map {|a| a.updated_at}
+    points = Point.published.where("proposal_id in (?)", proposals).map {|p| p.created_at}
+
+    days = {}
+
+    points.each do |p|
+      day = p.strftime('%F')
+      if !days.has_key? day
+        days[day] = {:point => 0, :requests => 0, :assessments => 0}
+      end
+      days[day][:point] += 1
+    end
+
+    requests.each do |p|
+      day = p.strftime('%F')
+      if !days.has_key? day
+        days[day] = {:point => 0, :requests => 0, :assessments => 0}
+      end
+      days[day][:requests] += 1
+    end
+
+    assessments.each do |p|
+      day = p.strftime('%F')
+      if !days.has_key? day
+        days[day] = {:point => 0, :requests => 0, :assessments => 0}
+      end
+      days[day][:assessments] += 1
+    end    
+
+    ordered_days = days.keys().sort()
+    cumulative = []
+    pp ordered_days
+
+    ordered_days.each_with_index do |day, idx|
+      if cumulative.length == 0
+        cumulative.push [day, days[day][:point], days[day][:requests], days[day][:assessments]]
+      else
+        pp cumulative
+        cumulative.push [day, days[day][:point] + cumulative[idx-1][1] , days[day][:requests] + cumulative[idx-1][2], days[day][:assessments] + cumulative[idx-1][3]]
+      end
+    end
+
+    require 'csv'
+    CSV.open("data_time.csv", "w") do |csv|
+
+      head = ['date', 'points',  'requests', 'assessments']
+
+
+      csv << head
+      cumulative.each do |data|
+        csv << data
+
+      end
+    end
+
   end
 
 

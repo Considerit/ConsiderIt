@@ -20,7 +20,7 @@
         
       = theme_stylesheet_link_tag 'application'
 
-      //%link{ :href => "/system/cache/#{current_tenant.identifier}.css", :type => 'text/css', :media => "screen", :rel => "stylesheet"}
+      -# %link{ :href => "/system/cache/#{current_tenant.identifier}.css", :type => 'text/css', :media => "screen", :rel => "stylesheet"}
 
       - ['Source+Sans+Pro'].each do |font|
         %link{ :href => "http://fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }

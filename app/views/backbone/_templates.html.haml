@@ -69,7 +69,7 @@
     .m-newpoint
 
       %a.m-newpoint-new
-        Write a new {{is_pro ? "pro" : "con"}} point
+        Write a new {{is_pro ? "Pro" : "Con"}}
 
       .m-newpoint-form
         = hidden_field_tag :is_pro, "{{is_pro}}", :class => 'm-newpoint-is_pro'
@@ -122,7 +122,7 @@
 
   %script{ :type => "text/template", :id => "tpl_pointlistbrowse" }
     %a.m-pointlist-browse-toggle
-      Browse all {{ pros ? 'pro' : 'con' }} considerations
+      Browse all {{ pros ? 'Pros' : 'Cons' }}
 
   %script{ :type => "text/template", :id => "tpl_pointlistpagination" }
     %a.m-pointlist-backward
@@ -359,10 +359,10 @@
 
   %script{ :type => "text/template", :id => "tpl_your_action_craft"}
     .l-message-recipient
-      %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
-        {{ call }}
 
     .l-message-body
+      %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+        {{ call }}
 
     .l-message-speaker
 
@@ -404,8 +404,8 @@
     .l-message-body.right.m-position-message-body
       //= render :partial => "shared/bubble", :locals => {:left => true}
 
-      %h2.m-position-heading
-        I consider these the most important pros and cons
+      %h2.m-position-heading.m-position-heading-points
+        What are the most important Pros and Cons to you?
 
       .m-reasons
         .m-reasons-peer-points.m-reasons-peer-points-pros
@@ -454,8 +454,8 @@
 
 
       .m-stance
-        %h2.m-position-heading
-          Based on these pros and cons, I lean... 
+        %h2.m-position-heading.m-position-heading-stance
+          Based on these Pros and Cons, what is your overall opinion? 
         %table
           %tr
             %td.m-stance-label-support
@@ -500,54 +500,55 @@
 
 
         .m-pro-con-list-propoints             
-          .m-pro-con-list-header
-            \#1 Pro
-            / - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
-            /   = theme_image_tag('pro_header.png')
-            / - else
-            /   = image_tag('chalk/pros.png') 
           (( if(!top_pro) { ))
           .text
             No pro arguments added yet.
           (( } else { ))
-          %ul.m-point-list
-            %li.m-point-results.pro.m-point-unexpanded{ :'data-id' => "{{top_pro.id}}", :includers => "{{ top_pro.includers }}"}
-              %a.avatar{ :'data-id' => "{{top_pro.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "m-point-author-avatar"}
-              .m-point-wrap
+          .m-top-point.m-top-pro
+            %strong
+              Top pro: 
+            {{ top_pro.nutshell }} 
+            %span.m-top-point-user
+              &ndash; {{ConsiderIt.users[top_pro.user_id].get('name')}}       
+          / %ul.m-point-list
+          /   %li.m-point-results.pro.m-point-unexpanded{ :'data-id' => "{{top_pro.id}}", :includers => "{{ top_pro.includers }}"}
+          /     / %a.avatar{ :'data-id' => "{{top_pro.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "m-point-author-avatar"}
+          /     .m-point-wrap
 
-                .m-point-nutshell-wrap
-                  .m-point-nutshell
-                    {{ top_pro.nutshell }}
+          /       .m-point-nutshell-wrap
+          /         .m-point-nutshell
+          /           {{ top_pro.nutshell }}
           (( } ))
 
         .m-pro-con-list-conpoints
-
-          .m-pro-con-list-header
-            \#1 Con
-            / - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
-            /   = theme_image_tag('con_header.png')
-            / - else
-            /   = image_tag('chalk/cons.png') 
 
           (( if(!top_con) { ))
           .text
             No con arguments added yet.
           (( } else { ))
-          %ul.m-point-list
-            %li.m-point-results.con.m-point-unexpanded{ :'data-id' => "{{top_con.id}}", :includers => "{{ top_con.includers }}"}
-              %a.avatar{ :'data-id' => "{{top_con.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "m-point-author-avatar"}
-              .m-point-wrap
-                .m-point-nutshell-wrap
-                  .m-point-nutshell
+          .m-top-point.m-top-pro
+            %strong
+              Top con: 
+            {{ top_con.nutshell }} 
+            %span.m-top-point-user
+              &ndash; {{ConsiderIt.users[top_con.user_id].get('name')}}               
 
-                    {{ top_con.nutshell }}
+          / %ul.m-point-list
+          /   %li.m-point-results.con.m-point-unexpanded{ :'data-id' => "{{top_con.id}}", :includers => "{{ top_con.includers }}"}
+          /     %a.avatar{ :'data-id' => "{{top_con.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "m-point-author-avatar"}
+          /     .m-point-wrap
+          /       .m-point-nutshell-wrap
+          /         .m-point-nutshell
+
+          /           {{ top_con.nutshell }}
           (( } ))
 
 
-    .l-message-speaker.l-group-container
-      (( _.each(participants, function(p){ ))
-      %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-      (( }); ))
+    .l-message-speaker
+      .l-group-container
+        (( _.each(participants, function(p){ ))
+        %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+        (( }); ))
 
       %a.m-results-summary-button{:href => "{{Routes.proposal_path( long_id )}}"}
         View full results
@@ -602,12 +603,12 @@
 
     .l-message-speaker
 
-      .l-group-container{ :style => 'position: absolute; top: 0; left: 0;'}
+      .l-group-container
         (( _.each( participants, function(p){ ))
         %span.avatar{ :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
         (( }); ))
-        %a.m-results-summary-button{:'data-action' => "results-explode-participants"}
-          Show their preferences
+      %a.m-results-summary-button{:'data-action' => "results-explode-participants"}
+        Show their preferences
       .clear
 
 

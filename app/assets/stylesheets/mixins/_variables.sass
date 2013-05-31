@@ -20,76 +20,9 @@ $pro-con-list-column-width: $body_width / 2 //250px
 
 $histogram_bar_width: 55px //2 * $grid_major - 4
 
-// $initiator_color: lighten(#49B1E5, 20%)
-// $dark_initiator_color: darken($initiator_color, 20%)
 
-
-$desaturate: false
-$desaturate_color: false
-
-$border_darken_amt: 10%
-
-$position_color: #414141
-$base_color: $position_color
-$base_hover_color: #000
-
-$initiator_text_color: hsl( 210, 35%, 25%)
-$initiator_color:    hsl( 210, 55%, 75%)
-$standout_text_color: hsl( 220, 35%, 25%)
-$standout_color: hsl( 220, 55%, 75%)
-
-$community_text_color: hsl( 49, 35%, 25%)
-$community_color:    hsl( 49, 55%, 75%)
-$comp_color:         hsl(  0, 0%, 25%)
-$bg_color:           hsl(   15, 0%, 30%)
-$position_color:     hsl( 0, 0%, 25%)
-$position_button_bg: darken($initiator_color, 25%) //#BAAC54
-
-
-@if $desaturate
-  $initiator_color: desaturate($initiator_color, 100%)
-  $community_color: desaturate($community_color, 100%)
-  $bg_color: desaturate($initiator_color, 100%)
-  $comp_color: desaturate($comp_color, 100%)
-  $standout_color: desaturate($standout_color, 100%)
-  $position_button_bg: desaturate($position_button_bg, 100%)
-
-@if $desaturate_color
-  $base_color: desaturate($base_color, 100%)
-  $base_hover_color: desaturate($base_hover_color, 100%)
-  $initiator_text_color: desaturate($initiator_text_color, 100%)
-  $community_text_color: desaturate($community_text_color, 100%)
-
-$dark_initiator_color: darken($initiator_color, $border_darken_amt)
-$dark_community_color: darken($community_color, $border_darken_amt)
-$dark_comp_color: darken($comp_color, $border_darken_amt)
-$dark_standout_color: darken($standout_color, $border_darken_amt)
-
-// $initiator_color: #FFFF99
-// $dark_initiator_color: darken($initiator_color, 35%)
-
-// $initiator_color: #45BF63
-// $dark_initiator_color: darken($initiator_color, 15%)
-
-// $community_color: lighten(#E5E15A, 20%)
-// $dark_community_color: darken($community_color, 35%)
-
-// $community_color: #fafafa
-// $dark_community_color: darken($community_color, 25%)
-
-
-$dark_position_color: darken($position_color, 10%) 
-
-
-$header_gray: #777
-$empty_color: #ddd
 
 //$content_background : image-url('directrep/images/brillant.png')
 
 $hex-bullet-point: '\2022'
 
-$content_bg_color: #fafafa
-
-//$bg_color: desaturate( darken($comp_color, 0%), 65%)
-//$bg_color: darken($comp_color, 0%)
-//$bg_color: $content_bg_color

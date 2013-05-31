@@ -323,18 +323,21 @@ class ConsiderIt.CraftingView extends Backbone.View
   }
 
   new_point : (ev) ->
-    $(ev.currentTarget).fadeOut 100, () ->
-      $(this).siblings('.m-newpoint-form').find('.m-newpoint-nutshell, .m-newpoint-description').trigger('keyup')
-      $(this).siblings('.m-newpoint-form').fadeIn 'fast', () ->
-        #$(this).find('iframe').focus().contents().trigger('keyup').find('#page')            
-        $(this).find('.m-newpoint-nutshell').focus()
+    #$(ev.currentTarget).fadeOut 100, () ->
+    $(ev.currentTarget).hide()
+    $form = $(ev.currentTarget).siblings('.m-newpoint-form')
+
+    $form.find('.m-newpoint-nutshell, .m-newpoint-description').trigger('keyup')
+    $form.show() # 'fast', () ->
+      #$(this).find('iframe').focus().contents().trigger('keyup').find('#page')            
+    $form.find('.m-newpoint-nutshell').focus()
   
   cancel_new_point : (ev) ->
     $form = $(ev.currentTarget).closest('.m-newpoint-form')
-    $form.fadeOut () -> 
-      $form.siblings('.m-newpoint-new').fadeIn()
-      $form.find('textarea').val('').trigger('keydown')
-      $form.find('label.inline').addClass('empty')
+    $form.hide()
+    $form.siblings('.m-newpoint-new').show()
+    $form.find('textarea').val('').trigger('keydown')
+    $form.find('label.inline').addClass('empty')
       #$('.newpoint').fadeIn()
 
   create_new_point : (ev) ->

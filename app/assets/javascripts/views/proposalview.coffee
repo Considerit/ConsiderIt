@@ -7,7 +7,7 @@
 
 class ConsiderIt.ProposalView extends Backbone.View
   @unexpanded_template: _.template( $("#tpl_unexpanded_proposal").html() )
-  @proposal_strip_template: _.template( $("#tpl_proposal_strip").html() )
+  #@proposal_strip_template: _.template( $("#tpl_proposal_strip").html() )
 
   tagName : 'li'
 
@@ -116,27 +116,27 @@ class ConsiderIt.ProposalView extends Backbone.View
         el = @position_view.show_crafting()
         el.insertAfter(@results_view.$el)
         el.fadeIn 500, =>
-          $my_position = el.find('.m-position-message-body')
-          $my_header = $my_position.find('.m-position-heading')
-          flash_color = '#be5237'
-          $my_position.queue( (next) => 
-            $my_position.css({borderColor: flash_color})
-            $my_header.css({color: flash_color})
-            next()
-          ).delay(800).queue( (next) => 
-            $my_position.css({borderColor: ''})
-            $my_header.css({color: ''})            
-            next()
-          )
+          # $my_position = el.find('.m-position-message-body')
+          # $my_header = $my_position.find('.m-position-heading')
+          # flash_color = '#be5237'
+          # $my_position.queue( (next) => 
+          #   $my_position.css({borderColor: flash_color})
+          #   $my_header.css({color: flash_color})
+          #   next()
+          # ).delay(800).queue( (next) => 
+          #   $my_position.css({borderColor: ''})
+          #   $my_header.css({color: ''})            
+          #   next()
+          # )
 
         @set_state(1)
       else if new_state == 2
         @results_view.show_explorer()
         @set_state(2)
 
-      if @$el.find('.m-proposal-strip.m-proposal-connect').length == 0
-        strip = ConsiderIt.ProposalView.proposal_strip_template( @model.attributes )
-        @$el.append(strip)
+      # if @$el.find('.m-proposal-strip.m-proposal-connect').length == 0
+      #   strip = ConsiderIt.ProposalView.proposal_strip_template( @model.attributes )
+      #   @$el.append(strip)
 
       $('.l-navigate-home').fadeIn() #TODO: handle this in userdashboard via proposal opened event
 
@@ -187,6 +187,9 @@ class ConsiderIt.ProposalView extends Backbone.View
         if @pointdetailsview
           @pointdetailsview.remove()
 
+        @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideUp()
+
+
       @set_state(0)
 
 
@@ -212,9 +215,14 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   toggle_description : (ev) ->
-    return if @can_edit() && $(ev.target).closest('.editable-click, .editable-inline').length > 0
+    if @$el.is('[data-state="0"]')
+      ConsiderIt.router.navigate(Routes.new_position_proposal_path( @model.long_id ), {trigger: true})
+    else
+      ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
 
-    @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
+    # return if @can_edit() && $(ev.target).closest('.editable-click, .editable-inline').length > 0
+
+    # @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
 
   show_details : (ev) -> 
     $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')

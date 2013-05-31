@@ -13,7 +13,7 @@
 
     for(var long_id in proposals){
       var prop = proposals[long_id];
-      proposal = new ConsiderIt.Proposal(prop.model.proposal, prop.top_con ? prop.top_con.point : null, prop.top_pro ? prop.top_pro.point : null);
+      proposal = new ConsiderIt.Proposal(prop.model.proposal, prop.top_pro ? prop.top_pro.point : null, prop.top_con ? prop.top_con.point : null);
 
 
       if( current_proposal && current_proposal.long_id == long_id) {

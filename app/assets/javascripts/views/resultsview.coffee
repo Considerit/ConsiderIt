@@ -1,6 +1,6 @@
 class ConsiderIt.ResultsView extends Backbone.View
   PARTICIPANT_WIDTH : 150
-  PARTICIPANT_HEIGHT : 150
+  PARTICIPANT_HEIGHT : 130
 
   initialize : (options) ->
 
@@ -76,7 +76,7 @@ class ConsiderIt.ResultsView extends Backbone.View
       @$el.find('.m-histogram').css 'opacity', 1
       $participants.fadeOut()
     else
-      speed = 1500
+      speed = 750
       from_tile_size = $participants.find('.avatar:first').width()
       to_tile_size = @$el.find(".m-histogram .avatar:first").width()
       ratio = to_tile_size / from_tile_size
@@ -112,21 +112,21 @@ class ConsiderIt.ResultsView extends Backbone.View
           'transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
 
       me = this
-      window.delay speed + 350, -> 
+      window.delay speed + 150, -> 
         me.$el.find('.m-histogram').css 'opacity', 1
         
-        window.delay 400, -> 
-          $participants.fadeOut()
-          me.$el.find('.m-bar-percentage').fadeIn()
+        #window.delay 25, -> 
+        $participants.fadeOut()
+        me.$el.find('.m-bar-percentage').fadeIn()
  
 
   events : 
-    'click .m-results-responders, .l-message-speaker.l-group-container' : 'transition_explorer'
+    #'click .m-results-responders, .l-message-speaker.l-group-container' : 'transition_explorer'
     'click [data-action="results-explode-participants"]' : 'explode_participants'
     'click [data-action="results-implode-participants"]' : 'implode_participants'
 
-  transition_explorer : ->
-    ConsiderIt.router.navigate(Routes.proposal_path( @model.get('long_id') ), {trigger: true}) if @state==0
+  #transition_explorer : ->
+  #  ConsiderIt.router.navigate(Routes.proposal_path( @model.get('long_id') ), {trigger: true}) if @state==0
 
 class ConsiderIt.SummaryView extends Backbone.View
   @template : _.template( $("#tpl_summary").html() )
@@ -372,6 +372,9 @@ class ConsiderIt.ExplorerView extends Backbone.View
     $(ev.currentTarget).find('.m-bar-person-details').hide()
 
   highlight_point_includers : (ev) ->
+
+    return if @$el.find('.m-point-expanded').length > 0
+
     $target = $(ev.currentTarget)
 
     includers = $.parseJSON($target.attr('includers'))

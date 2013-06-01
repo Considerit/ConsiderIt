@@ -14,8 +14,12 @@ class ConsiderIt.AppView extends Backbone.View
       ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
       @render()
 
+    ConsiderIt.router.bind 'all', (route, router) => @route_changed(route, router)
+
     @proposals = new ConsiderIt.ProposalList()
     @proposals.reset _.values(ConsiderIt.proposals)      
+
+    @crumbs = ['home']
 
   render : () -> 
     @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#m-proposals-container'}) if !@proposalview?
@@ -37,3 +41,33 @@ class ConsiderIt.AppView extends Backbone.View
         proposal = @proposals.findWhere( {long_id : long_id} )
         proposal.update_anonymous_point(id, is_pro) if proposal && proposal.data_loaded
 
+  events : 
+    'click .l-navigate-back' : 'go_back'
+
+  go_back : ->
+    window.history.go(-1)
+
+  route_changed : (route, router) ->
+    return if route == 'route'
+    console.log("Different Page: " + route)
+    loc = Backbone.history.fragment.split('/')
+    short = loc[loc.length - 1]
+    
+    if short 
+      if short in @crumbs
+        new_crumbs = []
+        for loc in @crumbs
+          break if loc == short
+          new_crumbs.push loc
+        @crumbs = new_crumbs
+      @crumbs.push short
+    else
+      @crumbs = ['home']
+    
+    $back = $('.l-navigate-back')
+    if @crumbs.length == 1 && $back.is(':visible')
+      $back.hide()
+    else if @crumbs.length > 1 && $back.is(':hidden')
+      $back.show()
+
+    console.log @crumbs

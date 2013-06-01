@@ -3,6 +3,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   template : _.template( $('#tpl_dashboard_container').html())
 
   initialize : (options) ->  
+    console.log 'INIT'
     @$dashboard_el = @$el.find('#m-dashboard')
 
     @templates = {}
@@ -11,10 +12,10 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
 
     ConsiderIt.router.on 'route:Profile', (id) => 
-
       @model = ConsiderIt.users[id]
-      @render()
+      #@render()
       @access_dashboard_profile(parseInt(id))
+
     ConsiderIt.router.on 'route:EditProfile', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_edit_profile()
@@ -49,14 +50,22 @@ class ConsiderIt.UserDashboardView extends Backbone.View
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_database()
 
+
+    # Is there a better way than just doing this for all other routes?
+
+    ConsiderIt.router.on 'route:Root', => @close() if @$dashboard_el.is(':visible')
+    ConsiderIt.router.on 'route:Aggregate', => @close() if @$dashboard_el.is(':visible')
+    ConsiderIt.router.on 'route:Consider', => @close() if @$dashboard_el.is(':visible')
+    ConsiderIt.router.on 'route:PointDetails', => @close() if @$dashboard_el.is(':visible')    
+
+
     @listenTo ConsiderIt.app, 'user:signin', => 
       @model = ConsiderIt.current_user
       if @$dashboard_el.is(':visible') && @current_context
         @render()
         Backbone.history.loadUrl(Backbone.history.fragment)
     
-    @listenTo ConsiderIt.app, 'user:signout', => 
-      @close() if @$dashboard_el.is(':visible') && @current_context
+    @listenTo ConsiderIt.app, 'user:signout', => @close() if @$dashboard_el.is(':visible') && @current_context
 
   render : ->
     visible = @$dashboard_el.is(':visible')
@@ -79,7 +88,10 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     @$content_area = @$dashboard_el.find('.m-dashboard-content')
 
     if !visible
-      @$dashboard_el.slideDown() 
+      @$dashboard_el.fadeIn() 
+      @hidden_els = $('#m-proposals-container, .l-content-wrap:visible:not(#m-dashboard)')
+      @hidden_els.hide()
+
     else
       @$dashboard_el.show()
 
@@ -228,7 +240,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
   events :
     #'click .m-dashboard_link' : 'change_context_ev' 
-    'click [data-target="close_user_dashboard"]' : 'close'
+    #'click [data-target="close_user_dashboard"]' : 'close'
     'click [data-target="user_profile_page"]' : 'view_user_profile'
 
     'click .m-dashboard-profile-activity-summary' : 'activity_toggled'
@@ -256,7 +268,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
   # handles user profile access for anyone throughout the app  
   view_user_profile : (ev) ->
-    $('body').animate {scrollTop: 0 }, 500
+    #$('body').animate {scrollTop: 0 }, 500
     ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
 
   navigate_to_profile : -> ConsiderIt.router.navigate Routes.profile_path( ConsiderIt.current_user.id ), {trigger: true}
@@ -333,11 +345,14 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
 
   close : () ->
-    @$dashboard_el.slideUp()
+    @$dashboard_el.hide()
+    @hidden_els.show()
+
     @current_context = null
 
     if @managing_dashboard_content_view
       @managing_dashboard_content_view.undelegateEvents()
 
-    window.history.go(-1)    
+
+    #window.history.go(-1)    
 

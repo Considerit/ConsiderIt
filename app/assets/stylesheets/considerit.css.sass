@@ -373,14 +373,22 @@ html
 #l-heading
   .t-logo
     position: absolute
-    left: 0px
+    left: 34px
     overflow: hidden
-    display: inline-block
+    //display: inline-block
 
-    .l-navigate-home
-      display: none
-      +font-size(-2)
-      text-transform: lowercase
+  .l-navigate-back
+    display: none
+    +font-size(-2)
+    text-transform: lowercase
+    padding: $vertical_baseline / 4 $grid_xs / 2
+    background-color: lighten($comp_color, 25%)
+    color: white
+    position: absolute
+    left: -39px
+    top: 11px
+    &:hover
+      background-color: $comp_color
 
 #m-user-nav
   position: relative
@@ -2066,7 +2074,7 @@ $m-point-expanded-width: $body_width + 150
     position: absolute
     top: auto
     bottom: -125px
-    opacity: .8
+    opacity: .9
 
     +transition(bottom .1 ease)
 

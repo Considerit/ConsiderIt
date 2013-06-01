@@ -138,7 +138,6 @@ class ConsiderIt.ProposalView extends Backbone.View
       #   strip = ConsiderIt.ProposalView.proposal_strip_template( @model.attributes )
       #   @$el.append(strip)
 
-      $('.l-navigate-home').fadeIn() #TODO: handle this in userdashboard via proposal opened event
 
 
     if @state > 0
@@ -182,7 +181,6 @@ class ConsiderIt.ProposalView extends Backbone.View
         @results_view.show_summary()
 
         @$el.find('.m-proposal-connect').remove()
-        $('.l-navigate-home').hide() 
 
         if @pointdetailsview
           @pointdetailsview.remove()

@@ -18,6 +18,11 @@ namespace :cache do
     end
   end
 
+  task :users => :environment do
+    # compute influence score
+    User.update_user_metrics()
+  end
+
   task :avatars => :environment do 
     size = 'medium'
     begin

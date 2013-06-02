@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130501000211) do
+ActiveRecord::Schema.define(:version => 20130601202443) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -542,6 +542,11 @@ ActiveRecord::Schema.define(:version => 20130501000211) do
     t.integer  "roles_mask",                            :default => 0
     t.text     "referer"
     t.datetime "reset_password_sent_at"
+    t.integer  "metric_influence"
+    t.integer  "metric_points"
+    t.integer  "metric_comments"
+    t.integer  "metric_conversations"
+    t.integer  "metric_positions"
   end
 
   add_index "users", ["account_id", "avatar_file_name"], :name => "select_user_by_avatar_name", :length => {"account_id"=>nil, "avatar_file_name"=>3}

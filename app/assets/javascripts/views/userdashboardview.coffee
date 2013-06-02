@@ -3,7 +3,6 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   template : _.template( $('#tpl_dashboard_container').html())
 
   initialize : (options) ->  
-    console.log 'INIT'
     @$dashboard_el = @$el.find('#m-dashboard')
 
     @templates = {}

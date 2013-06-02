@@ -51,6 +51,7 @@ class ConsiderIt.AppView extends Backbone.View
     return if route == 'route'
     loc = Backbone.history.fragment.split('/')
     short = loc[loc.length - 1]
+    $('.qtip').hide()
     
     if short 
       if short in @crumbs

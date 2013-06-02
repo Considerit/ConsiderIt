@@ -7,6 +7,7 @@ class ConsiderIt.Point extends Backbone.Model
     @proposal = ConsiderIt.app.proposals.get @attributes.proposal_id
     @attributes.nutshell = htmlFormat(@attributes.nutshell)
     @attributes.text = htmlFormat(@attributes.text)
+    @data_loaded = false
 
   url : () ->
     if @id
@@ -14,8 +15,20 @@ class ConsiderIt.Point extends Backbone.Model
     else
       Routes.proposal_points_path( @proposal.long_id ) 
 
+  set_data : (data) ->
+    comments = (co.comment for co in data.comments)
 
-  #is_manager : () -> false
+    @comments = new ConsiderIt.CommentList()
+    @comments.reset(comments)
+
+    if ConsiderIt.current_tenant.get('assessment_enabled')
+      @update_assessable_data(data)
+
+    @data_loaded = true
+    @trigger 'point:data_loaded'
+
+  load_data : ->
+    $.get Routes.proposal_point_path(proposal.long_id, @id), (data) => @set_data(data)
 
   has_details : -> attributes.text? && attributes.text.length > 0
 

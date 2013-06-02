@@ -28,7 +28,6 @@ class ConsiderIt.Proposal extends Backbone.Model
     else
       Routes.proposals_path( )
 
-
   set_data : (data) -> 
     @pros =  _.map(data.points.pros, (pnt) -> new ConsiderIt.Point(pnt.point))
     @cons = _.map(data.points.cons, (pnt) -> new ConsiderIt.Point(pnt.point))

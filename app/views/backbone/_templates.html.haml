@@ -31,7 +31,7 @@
       by Anonymous
     (( } else if (user) { ))
 
-    %a.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :title => "View {{user.name}}'s profile", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
+    %a.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
     .m-point-author-name{:'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
       by {{user.name}}
     (( } ))
@@ -455,7 +455,7 @@
 
       .m-stance
         %h2.m-position-heading.m-position-heading-stance
-          Based on these Pros and Cons, what is your overall opinion? 
+          What is your overall opinion given these Pros and Cons? 
         %table
           %tr
             %td.m-stance-label-support
@@ -670,6 +670,7 @@
         /   Opposers
 
         .clear  
+
 
   %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_publicity" }
     .l-dialog-detachable

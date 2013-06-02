@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   validates :name, :presence => true
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
-  attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url
+  attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_positions, :metric_comments, :metric_influence
 
   attr_accessor :avatar_url, :downloaded
 
@@ -213,5 +213,54 @@ class User < ActiveRecord::Base
       u.unique_token
     end
   end     
+
+  def update_metrics
+    referenced_proposals = {}
+    positions = 0
+
+    self.positions.published.each do |position|
+      if !referenced_proposals.has_key?(position.proposal_id)
+        proposal = Proposal.find(position.proposal_id) 
+        #if can?(:read, proposal)  
+        referenced_proposals[position.proposal_id] = proposal
+        positions += 1          
+      end
+    end
+
+    influenced_users = {}
+    accessible_points = []
+
+    my_points = self.points.published.where(:hide_name => false)
+    my_points.each do |pnt|
+      accessible_points.push pnt.id
+      pnt.inclusions.where("user_id != #{self.id}").each do |inc|
+        influenced_users[inc.user_id] = 0 if ! influenced_users.has_key?(inc.user_id)
+        influenced_users[inc.user_id] +=1
+      end
+    end
+
+    attrs = {
+      :metric_points => my_points.count,
+      :metric_positions => positions,
+      :metric_comments => self.comments.count,
+      :metric_influence => influenced_users.keys().count, 
+      :metric_conversations => self.proposals.public.count }
+
+    pp self.name, self.name.blank?
+    if self.name.blank?
+      attrs[:name] = 'Not Specified'
+    end
+    self.update_attributes! attrs
+
+  end
+
+  def self.update_user_metrics
+    Account.all.each do |accnt|
+
+      accnt.users.each do |user|
+        user.update_metrics()
+      end
+    end
+  end
       
 end

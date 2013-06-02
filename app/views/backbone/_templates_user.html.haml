@@ -65,6 +65,33 @@
               Sign out
 
 
+  %script{ :type => "text/template", :id => "tpl_user_tooltip" }
+    .l-tooltip-title.l-tooltip-user-title
+      .l-tooltip-user-name
+        {{ user.get('name') }}
+      .l-tooltip-user-joined
+        joined {{ user.get('created_at').substring(0, user.get('created_at').indexOf('T')) }}
+
+    .l-tooltip.l-tooltip-user
+
+      .l-tooltip-user-metrics
+        %ul
+          - [ ['influence', 'metric_influence'], ['pros/cons', 'metric_points'], ['votes', 'metric_positions'], ['comments', 'metric_comments']  ].each do |label, attr|
+            %li.l-tooltip-user-metric
+              .l-tooltip-user-metric-number
+                {{ user.get("#{attr}") }}
+              .l-tooltip-user-metric-desc
+                = label
+      .l-tooltip-user-actions
+        (( if(position) { ))
+        %button.l-tooltip-user-action{ :'data-target' => 'user_position_page', :'data-id' => "{{position.id}}" }
+          View their thoughts on this issue
+        (( } ))
+        %button.l-tooltip-user-action.l-tooltip-user-profile{ :'data-target' => 'user_profile_page', :'data-id' => "{{user.id}}" }
+          View their profile
+
+
+
   %script{ :type => "text/template", :id => "tpl_limited_user_sign_in"}
     %a.m-user-accounts-cancel
       &#10006;

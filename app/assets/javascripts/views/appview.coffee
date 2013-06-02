@@ -49,7 +49,6 @@ class ConsiderIt.AppView extends Backbone.View
 
   route_changed : (route, router) ->
     return if route == 'route'
-    console.log("Different Page: " + route)
     loc = Backbone.history.fragment.split('/')
     short = loc[loc.length - 1]
     
@@ -69,5 +68,3 @@ class ConsiderIt.AppView extends Backbone.View
       $back.hide()
     else if @crumbs.length > 1 && $back.is(':hidden')
       $back.show()
-
-    console.log @crumbs

@@ -84,6 +84,8 @@ class ConsiderIt.Proposal extends Backbone.Model
     [ ['long_description', 'Long Description', $.trim(htmlFormat(@attributes.long_description))], 
       ['additional_details', 'Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_details))] ]
 
+  user_participated : (user_id) -> user_id in @participants()
+
   participants : ->
     if !@participant_list?
       @participant_list = $.parseJSON(@attributes.participants) 

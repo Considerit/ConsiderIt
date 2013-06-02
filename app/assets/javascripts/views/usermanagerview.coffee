@@ -1,8 +1,9 @@
 class ConsiderIt.UserManagerView extends Backbone.View
 
 
-  @logged_in_template : _.template( $("#tpl_logged_in").html() )
-  @logged_out_template : _.template( $("#tpl_logged_out").html() )
+  logged_in_template : _.template( $("#tpl_logged_in").html() )
+  logged_out_template : _.template( $("#tpl_logged_out").html() )
+  user_tooltip_template : _.template( $("#tpl_user_tooltip").html() )
 
   initialize : (options) -> 
     @$header_el = @$el.find('#m-user-nav')
@@ -17,7 +18,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
   render : -> 
     if @model.id?
       @$header_el.html(
-        ConsiderIt.UserManagerView.logged_in_template($.extend({}, @model.attributes, {
+        @logged_in_template($.extend({}, @model.attributes, {
           is_admin : ConsiderIt.roles.is_admin
           is_moderator : ConsiderIt.roles.is_moderator
           is_analyst : ConsiderIt.roles.is_analyst
@@ -27,7 +28,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
       )
     else
       @$header_el.html(
-        ConsiderIt.UserManagerView.logged_out_template($.extend({}, @model.attributes, {
+        @logged_out_template($.extend({}, @model.attributes, {
         })) 
       )
 
@@ -55,7 +56,54 @@ class ConsiderIt.UserManagerView extends Backbone.View
     'click .m-user-options-logout' : 'handle_user_logout'
     'mouseenter .m-user-options' : 'nav_entered' 
     'mouseleave .m-user-options' : 'nav_exited' 
+    'mouseenter [data-target="user_profile_page"]' : 'tooltip_show'
+    'mouseleave [data-target="user_profile_page"]' : 'tooltip_hide'
+
     'click .m-user-options-dashboard_link' : 'access_dashboard'
+
+  tooltip_show : (ev) ->
+    $target = $(ev.currentTarget)
+    if !$target.closest('.l-tooltip-user').length > 0
+      user = ConsiderIt.users[$target.data('id')]
+      position = null
+      tooltip = @user_tooltip_template {user : user, position : position}
+      
+      $('body').append(tooltip)
+      $tooltip = $('body > .l-tooltip-user')
+      $title = $('body > .l-tooltip-user-title')
+
+      $target.qtip({
+        core: 
+          overwrite: false
+        show:
+          ready: true,
+          delay: 300
+        hide:
+          fixed: true
+          delay: 150
+        content : 
+          text : $tooltip
+          title : 
+            text: $title
+        position : 
+          container : $('#l-content')
+          my: 'top center'
+          at: 'bottom center'
+          viewport: true
+        adjust:
+          method: 'shift'
+        style : 
+          classes: 'qtip-dark qtip-shadow'
+        }, ev);
+
+      # offset = $target.offset()
+      # $tooltip.css {top: offset.top + $target.outerHeight() - $('#l-content').offset().top, left: offset.left }
+
+
+  tooltip_hide : (ev) ->
+    target = $(ev.currentTarget)
+    #if !$target.closest('.l-tooltip-user').length > 0
+    $('body > .l-tooltip-user, body > .l-tooltip-user-title').remove()
 
   access_dashboard : (ev) -> 
     $(ev.currentTarget)

@@ -164,8 +164,8 @@ class ConsiderIt.CraftingView extends Backbone.View
       mycons : new ConsiderIt.PointListView({collection : @pointlists.mycons, el : @$el.find('.m-pro-con-list-conpoints'), location: 'position', proposal : @proposal})
       peercons : new ConsiderIt.BrowsablePointListView({collection : @pointlists.peercons, el : @$el.find('.m-reasons-peer-cons'), location: 'peer', proposal : @proposal})
 
-    @listenTo @pointlists.peerpros, 'reset', @peer_point_list_reset
-    @listenTo @pointlists.peercons, 'reset', @peer_point_list_reset
+    #@listenTo @pointlists.peerpros, 'reset', @peer_point_list_reset
+    #@listenTo @pointlists.peercons, 'reset', @peer_point_list_reset
 
     @views.mypros.renderAllItems()
     @views.mycons.renderAllItems()
@@ -220,6 +220,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     'click .m-newpoint-cancel' : 'cancel_new_point'
     'click .m-newpoint-create' : 'create_new_point'
     'click .m-point-wrap' : 'navigate_point_details'
+    'mouseenter .m-point-peer' : 'log_point_view'
 
   include_point : (ev) ->
     $item = @_$item(ev.currentTarget)
@@ -380,10 +381,13 @@ class ConsiderIt.CraftingView extends Backbone.View
     follow_proposal : @$el.find('#follow_proposal').is(':checked')
   }
 
+  log_point_view : (ev) ->
+    pnt = $(ev.currentTarget).data('id')
+    @model.viewed_points[pnt] = pnt
 
-  peer_point_list_reset : (list) ->
-    for pnt in list.models
-      @model.viewed_points[pnt.id] = pnt.id
+  # peer_point_list_reset : (list) ->
+  #   for pnt in list.models
+  #     @model.viewed_points[pnt.id] = pnt.id
 
   _$item : (child) ->
     $(child).closest("[data-role=\"#{ConsiderIt.PointListView.childClass}\"]")

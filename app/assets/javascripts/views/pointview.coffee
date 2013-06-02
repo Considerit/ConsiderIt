@@ -42,26 +42,18 @@ class ConsiderIt.PointView extends Backbone.View
 
     this
 
-  # I wish this was handled in PointViewDetails
-  @load_data : (proposal, model, callback, view) ->
-    $.get Routes.proposal_point_path(proposal.long_id, model.id), (data) =>
-      comments = (co.comment for co in data.comments)
-      ConsiderIt.comments[model.id] = new ConsiderIt.CommentList()
-      ConsiderIt.comments[model.id].reset(comments)
 
-      if ConsiderIt.current_tenant.get('assessment_enabled')
-        model.update_assessable_data(data)
+  do_after_data_loaded : (callback, callback_params) ->
+    if @model.data_loaded
+      callback(this, callback_params)
+    else      
+      @listenToOnce @model, 'point:data_loaded', => 
+        callback(this, callback_params)
+      @model.load_data()
 
-      view.data_loaded = true if view
-      callback(view)
 
   show_point_details : (me) ->
     me.pointdetailsview = new ConsiderIt.PointDetailsView( {proposal : me.proposal, model: me.model, el: me.$el} )
     me.pointdetailsview.render()
 
-
-  show_point_details_handler : () ->
-    if @data_loaded
-      @show_point_details(this)
-    else
-      ConsiderIt.PointView.load_data(@proposal, @model, @show_point_details, this)
+  show_point_details_handler : () -> @do_after_data_loaded(@show_point_details)

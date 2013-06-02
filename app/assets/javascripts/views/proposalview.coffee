@@ -116,29 +116,10 @@ class ConsiderIt.ProposalView extends Backbone.View
         el = @position_view.show_crafting()
         el.insertAfter(@results_view.$el)
         el.fadeIn 500, =>
-          # $my_position = el.find('.m-position-message-body')
-          # $my_header = $my_position.find('.m-position-heading')
-          # flash_color = '#be5237'
-          # $my_position.queue( (next) => 
-          #   $my_position.css({borderColor: flash_color})
-          #   $my_header.css({color: flash_color})
-          #   next()
-          # ).delay(800).queue( (next) => 
-          #   $my_position.css({borderColor: ''})
-          #   $my_header.css({color: ''})            
-          #   next()
-          # )
-
         @set_state(1)
       else if new_state == 2
         @results_view.show_explorer()
         @set_state(2)
-
-      # if @$el.find('.m-proposal-strip.m-proposal-connect').length == 0
-      #   strip = ConsiderIt.ProposalView.proposal_strip_template( @model.attributes )
-      #   @$el.append(strip)
-
-
 
     if @state > 0
       if new_state == 1
@@ -146,49 +127,39 @@ class ConsiderIt.ProposalView extends Backbone.View
       else if new_state == 2
         @position_view.close_crafting()
 
-      callback(new_state)
-
     else
       @scroll_position = @$el.offset().top - $('.t-intro-wrap').offset().top - parseInt(@$el.css('marginTop'))
 
       @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}']), .m-proposals-list-header, .t-intro-wrap")
-      @$hidden_els.css 'display', 'none'
-      $('body').scrollTop 0 #@$el.offset().top
+      @$hidden_els.hide()
+      @$el.find('.m-proposal-description-body').slideDown()
 
-      $('body').animate {scrollTop: @scroll_position }, 300, =>
+      @$el.find('.m-proposal-description-details').slideDown()
 
-        #if @$el.find('.m-proposal-description-body').is(':hidden')
-        @$el.find('.m-proposal-description-body').slideDown()
-
-        @$el.find('.m-proposal-description-details').slideDown =>
-
-          callback(new_state)
+    callback(new_state)
         
 
   transition_unexpanded : =>
-    $('body').animate {scrollTop: @scroll_position}, =>
+    #$('body').animate {scrollTop: @scroll_position}, =>
       # TODO: remove strip at top
-      ConsiderIt.router.navigate(Routes.root_path(), {trigger: false}) if Backbone.history.fragment != ''
+    ConsiderIt.router.navigate(Routes.root_path(), {trigger: false}) if Backbone.history.fragment != ''
 
-      if @state > 0
+    if @state > 0
+      @$hidden_els.show()
+      $('body').scrollTop @scroll_position
 
-        #@$hidden_els.css 'display', ''
-        @$hidden_els.css {opacity: 0, display: ''}
-        @$hidden_els.animate {opacity: 1}, 350
-        $('body').scrollTop @scroll_position
+      @position_view.close_crafting()
+      @results_view.show_summary()
 
-        @position_view.close_crafting()
-        @results_view.show_summary()
+      #@$el.find('.m-proposal-connect').remove()
 
-        @$el.find('.m-proposal-connect').remove()
+      if @pointdetailsview
+        @pointdetailsview.remove()
 
-        if @pointdetailsview
-          @pointdetailsview.remove()
+      @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideUp()
 
-        @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideUp()
-
-
-      @set_state(0)
+    $('body').animate {scrollTop: @scroll_position}
+    @set_state(0)
 
 
   set_state : (new_state) ->

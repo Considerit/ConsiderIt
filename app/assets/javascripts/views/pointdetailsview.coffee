@@ -31,7 +31,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     $comment_el = $('<div class="m-point-discussion">')
     
     @commentsview = new ConsiderIt.CommentListView({
-      collection: ConsiderIt.comments[@model.id]
+      collection: @model.comments
       el: $comment_el
       commentable_id: @model.id
       commentable_type: 'Point'})
@@ -60,13 +60,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
           type: 'textarea'
           name: 'text'
 
-
-
-    #@hidden_els = @proposal.view.$el.find("[data-role='m-point']:not([data-id='#{@model.id}']), .m-newpoint, .m-pointlist-pagination, .m-stance, .l-message-speaker, .l-message-listener, .m-position-message-body > .t-bubble, .m-results-summary, .m-results-responders.summary, .m-position-your_action, .m-proposal-leader-response")
-    #@hidden_els.css {visibility: 'hidden'}
-
-    #$('body').stop(true, true)
-    #$('body').animate {scrollTop: @$el.offset().top - 50}, 500, =>
 
     @$el.find('.m-point-wrap').append($comment_el)
     @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
@@ -110,13 +103,10 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     trigger ?= true
     @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
 
-    #@$el.find('.m-point-discussion').slideUp 100, =>
-      #$('body').animate {scrollTop: @$el.offset().top - 50}, 400, =>
 
     @commentsview.clear()
     @commentsview.remove()
     @assessmentview.remove()
-    #@$el.find('.m-point-include-wrap').css 'display', 'none'
 
     $(document).off 'click.m-point-details' #, @close_details
     $(document).off 'keyup.m-point-details' #, @close_by_keyup
@@ -124,16 +114,10 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
     @$el.toggleClass('m-point-expanded m-point-unexpanded')
 
-    # @$el.toggleClass('m-point-expanded m-point-unexpanded').delay(600).queue (next) =>
-    
-    #@hidden_els.css {visibility: ''}
-
-
-    #@proposal.view.trigger 'point_details:closed' if trigger
-    #ConsiderIt.router.navigate(Backbone.history.fragment, {trigger: false})
-    window.history.go(-1)  
+    #window.history.go(-1)  
     
     @model.trigger 'change' #trigger a render event
+    $('.l-navigate-back').trigger 'click'
     @undelegateEvents()
     delete this
     #next()

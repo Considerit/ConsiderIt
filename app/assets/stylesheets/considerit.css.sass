@@ -279,6 +279,9 @@ blockquote
   &.m-avatar-anonymous
     cursor: default
 
+[data-target="user_profile_page"]
+  cursor: pointer
+
 .button, button, input[type="submit"]
   outline: none
   cursor: pointer
@@ -760,22 +763,21 @@ $tooltip_width: 315px
     line-height: 1
 
   .l-tooltip-user-actions
-    position: relative
-    bottom: -$vertical_baseline/2
-    left: -1px
     width: $tooltip_width
   .l-tooltip-user-action
     +sassy-button("simple", 5px, inherit, lighten($comp_color, 16%), lighten($comp_color, 4%) )
     color: white
     text-align: center
-    width: 100%
-    
+    width: $tooltip_width
+    +font-size(-2)
+    display: inline-block
+
     &:hover
       +sassy-button("simple", 5px, inherit, lighten($comp_color, 4%), darken($comp_color, 4%) )
-
+      +font-size(-2)
 
   .l-tooltip-user-profile
-    border-radius: 0 0 5px 5px
+    //border-radius: 0 0 5px 5px
 
 //////////////////////////////////////////
 // CONSIDERIT MODULES
@@ -2134,12 +2136,15 @@ $m-point-expanded-width: $body_width + 150
     position: absolute
     top: auto
     bottom: -125px
-    opacity: .9
+
+    [data-target="user_profile_page"]
+      opacity: .9
 
     +transition(bottom .1 ease)
 
     &:hover
-      opacity: 1
+      [data-target="user_profile_page"]
+        opacity: 1
 
     img
       width: 120px //$margin_width
@@ -2808,6 +2813,62 @@ $filter_width: 371px
 
       &:hover
         cursor: move
+
+
+// Static Position
+
+$static_position_width: $body_width+$grid_major
+.m-static-position
+  position: fixed
+  top: 2 * $vertical_baseline
+
+  z-index: 10000
+  left: 50%
+  margin-left: - $static_position_width / 2
+  width: $static_position_width
+  max-height: 600px
+  overflow-y: scroll
+
+  //margin-left: $margin_width - $grid_major / 2
+  z-index: 9999
+  background-color: $community_color
+  border: 1px solid desaturate(darken($comp_color, 16%), 100%)
+  border-radius: 5px
+  +single-box-shadow
+  //color: #eaeaea
+
+  .m-static-position-stance
+    +font-size(1)
+    padding: $vertical_baseline / 2 $grid_xs
+    background-color: $comp_color
+    color: #eaeaea
+    font-weight: bold
+
+    .cancel
+      float: right
+      +font-size(-3)
+
+
+  .m-static-position-reasons
+    padding: $vertical_baseline / 2 $grid_xs
+
+  .m-static-position-reasons-label
+    font-weight: bold
+
+  .m-static-position-reasons-list
+    padding: $vertical_baseline / 2 $grid_xs 0 $grid_xs
+
+  .m-static-position-point
+    +font-size(-2)
+    margin-bottom: $vertical_baseline/2
+
+  .m-point-user
+    white-space: nowrap
+    font-style: italic
+    //color: #ccc
+
+  .m-static-position-reasons-none
+    font-style: italic
 
 //////////////////////////////////////////
 // VENDOR

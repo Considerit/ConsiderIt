@@ -15,6 +15,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   initialize : (options) -> 
     #@state = 0
+    super
     @long_id = @model.long_id
     @data_loaded = false
 
@@ -22,6 +23,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     ConsiderIt.router.on 'route:Consider', (long_id) => @take_position_handler() if long_id == @model.long_id
     ConsiderIt.router.on 'route:Aggregate', (long_id) => @show_results_handler() if long_id == @model.long_id
     ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @show_point_details_handler(point_id) if long_id == @model.long_id
+    ConsiderIt.router.on 'route:StaticPosition', (long_id, user_id) => @show_static_position_handler(user_id) if long_id == @model.long_id
 
     # @on 'point_details:closed', ->
     #   if @state == 2 || @state == 4
@@ -217,10 +219,10 @@ class ConsiderIt.ProposalView extends Backbone.View
   # (e.g. if they followed a link to it). In that case, we need to create some context around it first.
   prepare_for_point_details : (me, params) ->
     me.listenToOnce me.results_view, 'ResultsExplorer:rendered', => 
-      for pnt in me.model.pros.concat me.model.cons
-        if pnt.id == parseInt(params.point_id)
-          point = pnt
-          break
+      pnt = parseInt(params.point_id)
+      point = me.model.pros.get(pnt)
+      if !point
+        point = me.model.cons.get(pnt)
 
       results_explorer = me.results_view.view
       pointlistview = if point.get('is_pro') then results_explorer.views.pros else results_explorer.views.cons
@@ -231,16 +233,37 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     me.show_results(me)
 
+  prepare_for_static_position : (me, params) ->
+    callback = (user_id) =>
+      #me.static_position.close() if me.static_position
+      me.static_position = new ConsiderIt.StaticPositionView
+        proposal : me.model
+        user_id : user_id
+        el : me.$el
+      me.static_position.render()
+
+    if me.state == 0
+      me.listenToOnce me.position_view, 'PositionCrafting:rendered', => 
+        callback(params.user_id)
+      me.take_position(me)    
+    else
+      callback(params.user_id)
+
   show_point_details_handler : (point_id) ->
+    # if data is already loaded, then the PointListView is already properly handling this
     if !@model.data_loaded
       @do_after_data_loaded(@prepare_for_point_details, {point_id : point_id})
 
-    # if data is already loaded, then the PointListView is already properly handling this
-
+  show_static_position_handler : (user_id) ->
+    console.log "YO"
+    # show the static position of another user just below the proposal details
+    if !@model.data_loaded
+      @do_after_data_loaded(@prepare_for_static_position, {user_id : user_id} )
+    else
+      @prepare_for_static_position(this, {user_id : user_id})
 
   # TODO: move to its own view
   # ADMIN methods
-
   render_admin_strip : ->
     @$el.find('.m-proposal-admin_strip').remove()
     admin_strip_el = $('<div class="m-proposal-admin_strip m-proposal-strip">')

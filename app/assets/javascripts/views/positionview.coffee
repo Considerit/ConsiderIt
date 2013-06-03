@@ -68,6 +68,8 @@ class ConsiderIt.PositionView extends Backbone.View
       @your_action_view.crafting_state()
       @state = 1
 
+      @trigger 'PositionCrafting:rendered'
+
       crafting_el
     else
       @crafting_view.$el

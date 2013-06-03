@@ -163,8 +163,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
       pros : new ConsiderIt.PaginatedPointList({perPage : 5} )
       cons : new ConsiderIt.PaginatedPointList({perPage : 5} )
 
-    @pointlists.pros.reset(@model.pros)
-    @pointlists.cons.reset(@model.cons)
+    @pointlists.pros.reset(@model.pros.models)
+    @pointlists.cons.reset(@model.cons.models)
 
 
   render : () -> 

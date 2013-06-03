@@ -252,6 +252,8 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     'click .m-user_roles-edit_form .cancel' : 'edit_role_close'
     'ajax:complete .m-user_roles-edit_form' : 'role_changed'
 
+    'click .m-dashboard-profile-activity-action a' : 'close'
+
 
     'click [data-target="profile"]' : 'navigate_to_profile'
     'click [data-target="edit_profile"]' : 'navigate_to_edit_profile'

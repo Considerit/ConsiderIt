@@ -88,8 +88,13 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
     if !visible
       @$dashboard_el.fadeIn() 
-      @hidden_els = $('#m-proposals-container, .l-content-wrap:visible:not(#m-dashboard)')
-      @hidden_els.hide()
+
+      @hidden_els = $("[data-role='m-proposal'], .m-proposals-list-header, .t-intro-wrap")
+
+      #@hidden_els = $('#m-proposals-container, .l-content-wrap:visible:not(#m-dashboard)')
+      console.log "DASHBOARD hiding all"
+
+      @hidden_els.css('display', 'none')
 
     else
       @$dashboard_el.show()
@@ -347,7 +352,8 @@ class ConsiderIt.UserDashboardView extends Backbone.View
 
   close : () ->
     @$dashboard_el.hide()
-    @hidden_els.show()
+    @hidden_els.css('display', '')
+    console.log "DASHBOARD showing all"
 
     @current_context = null
 

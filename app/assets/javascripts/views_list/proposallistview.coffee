@@ -100,9 +100,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
         new_view = @getViewByModel new_proposal
         new_view.$el.find('.m-proposal-description').trigger('click')
         new_view.$el.attr('data-visibility', 'unpublished')
-        
-        #new_view.transition_expanded(1)
-
+  
     }
 
   delete_proposal : (proposal) ->

@@ -132,8 +132,9 @@ class ConsiderIt.ProposalView extends Backbone.View
     else
       @scroll_position = @$el.offset().top - $('.t-intro-wrap').offset().top - parseInt(@$el.css('marginTop'))
 
+      console.log "hiding all but #{@model.id}"
       @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}']), .m-proposals-list-header, .t-intro-wrap")
-      @$hidden_els.hide()
+      @$hidden_els.css('display', 'none')
       @$el.find('.m-proposal-description-body').slideDown()
 
       @$el.find('.m-proposal-description-details').slideDown()
@@ -147,7 +148,9 @@ class ConsiderIt.ProposalView extends Backbone.View
     ConsiderIt.router.navigate(Routes.root_path(), {trigger: false}) if Backbone.history.fragment != ''
 
     if @state > 0
-      @$hidden_els.show()
+      console.log "showing all but #{@model.id}"
+
+      @$hidden_els.css 'display', ''
       $('body').scrollTop @scroll_position
 
       @position_view.close_crafting()

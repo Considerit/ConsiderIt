@@ -132,7 +132,6 @@ class ConsiderIt.ProposalView extends Backbone.View
     else
       @scroll_position = @$el.offset().top - $('.t-intro-wrap').offset().top - parseInt(@$el.css('marginTop'))
 
-      console.log "hiding all but #{@model.id}"
       @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}']), .m-proposals-list-header, .t-intro-wrap")
       @$hidden_els.css('display', 'none')
       @$el.find('.m-proposal-description-body').slideDown()
@@ -148,7 +147,6 @@ class ConsiderIt.ProposalView extends Backbone.View
     ConsiderIt.router.navigate(Routes.root_path(), {trigger: false}) if Backbone.history.fragment != ''
 
     if @state > 0
-      console.log "showing all but #{@model.id}"
 
       @$hidden_els.css 'display', ''
       $('body').scrollTop @scroll_position
@@ -258,12 +256,13 @@ class ConsiderIt.ProposalView extends Backbone.View
       @do_after_data_loaded(@prepare_for_point_details, {point_id : point_id})
 
   show_static_position_handler : (user_id) ->
-    console.log "YO"
     # show the static position of another user just below the proposal details
     if !@model.data_loaded
       @do_after_data_loaded(@prepare_for_static_position, {user_id : user_id} )
     else
       @prepare_for_static_position(this, {user_id : user_id})
+
+
 
   # TODO: move to its own view
   # ADMIN methods

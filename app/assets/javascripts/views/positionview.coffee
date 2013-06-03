@@ -9,6 +9,12 @@ class ConsiderIt.PositionView extends Backbone.View
     @state = 0
 
     @listenToOnce @proposal, 'proposal:data_loaded', => 
+      @model = @proposal.position
+      if @your_action_view
+        @your_action_view.model = @proposal.position
+      if @crafting_view
+        @crafting_view.model = @proposal.position
+
       @listenTo ConsiderIt.app, 'user:signin', @post_signin
       @listenTo ConsiderIt.app, 'user:signout', @post_signout  
 

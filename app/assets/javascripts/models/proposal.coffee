@@ -18,7 +18,7 @@ class ConsiderIt.Proposal extends Backbone.Model
     @top_con = if top_con? && 'proposal_id' of top_con then top_con else null
 
     @long_id = @attributes.long_id
-    @position = new ConsiderIt.Position({}, this)
+    #@position = new ConsiderIt.Position({})
 
   url : () ->
     if @id
@@ -34,8 +34,8 @@ class ConsiderIt.Proposal extends Backbone.Model
     @peer_pros = new ConsiderIt.PaginatedPointList()
     @peer_cons = new ConsiderIt.PaginatedPointList()
 
-    @positions = _.object(_.map(data.positions, (pos) -> [pos.position.user_id, new ConsiderIt.Position(pos.position, this)]))
-    @position = new ConsiderIt.Position(data.position.position, this)
+    @positions = _.object(_.map(data.positions, (pos) -> [pos.position.user_id, new ConsiderIt.Position(pos.position)]))
+    @position = new ConsiderIt.Position(data.position.position)
     @positions[@position.user_id] = @position
 
     # separating points out into peers and included

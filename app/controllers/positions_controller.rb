@@ -2,7 +2,7 @@ class PositionsController < ApplicationController
 
   protect_from_forgery
 
-  respond_to :html, :json
+  respond_to :json
   
 
   #TODO: review the consequences of this call when doing unobtrusive edit
@@ -61,25 +61,31 @@ class PositionsController < ApplicationController
 
   end
 
-  #TODO: show someone else's position through SP
   def show
-    # proposal = Proposal.find_by_long_id(params[:long_id])
-    # position = proposal.positions.published.where(:user_id => params[:user_id]).first
+    if request.xhr?
+      proposal = Proposal.find_by_long_id(params[:long_id])
+      position = proposal.positions.published.where(:user_id => params[:user_id]).first
+      user = position.user
 
-    # if position.nil?
-    #   redirect_to root_path, :notice => 'That position does not exist.'
-    #   return  
-    # end
-
-    # if cannot?(:read, position)
-    #   redirect_to root_path, :notice => 'You do not have permission to view that position.'
-    #   return  
-    # end    
-
-    # @included_pros = Point.included_by_stored(@user, @proposal, nil).includes(:user).where(:is_pro => true)
-    # @included_cons = Point.included_by_stored(@user, @proposal, nil).includes(:user).where(:is_pro => false)
-
-
+      if position.nil?
+        render :json => {
+          :result => 'failed', 
+          :reason => 'That position does not exist.'
+        }
+      elsif cannot?(:read, position)
+        render :json => {
+          :result => 'failed', 
+          :reason => 'You do not have permission to view that position.'
+        }
+      else    
+        render :json => {
+          :result => 'successful',
+          :included_pros => Point.included_by_stored(user, proposal, nil).where(:is_pro => true).map {|pnt| pnt.id},
+          :included_cons => Point.included_by_stored(user, proposal, nil).where(:is_pro => false).map {|pnt| pnt.id},
+          :stance => position.stance_bucket
+        }
+      end
+    end
 
   end
 

@@ -65,8 +65,12 @@ class ConsiderIt.UserManagerView extends Backbone.View
     $target = $(ev.currentTarget)
     if !$target.closest('.l-tooltip-user').length > 0
       user = ConsiderIt.users[$target.data('id')]
-      position = null
-      tooltip = @user_tooltip_template {user : user, position : position}
+
+      if $target.closest('[data-role="m-proposal"]').length > 0
+        proposal = ConsiderIt.app.proposals.get($target.closest('[data-role="m-proposal"]').data('id'))
+        proposal = null if !proposal.user_participated(user.id) 
+
+      tooltip = @user_tooltip_template {user : user, proposal : proposal}
       
       $('body').append(tooltip)
       $tooltip = $('body > .l-tooltip-user')
@@ -77,7 +81,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
           overwrite: false
         show:
           ready: true,
-          delay: 300
+          delay: 500
         hide:
           fixed: true
           delay: 150
@@ -87,11 +91,11 @@ class ConsiderIt.UserManagerView extends Backbone.View
             text: $title
         position : 
           container : $('#l-content')
-          my: 'top center'
-          at: 'bottom center'
+          my: 'bottom center'
+          at: 'top center'
           viewport: true
         adjust:
-          method: 'shift'
+          method: 'flip flip'
         style : 
           classes: 'qtip-dark qtip-shadow'
         }, ev);

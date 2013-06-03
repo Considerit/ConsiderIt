@@ -83,9 +83,9 @@
               .l-tooltip-user-metric-desc
                 = label
       .l-tooltip-user-actions
-        (( if(position) { ))
-        %button.l-tooltip-user-action{ :'data-target' => 'user_position_page', :'data-id' => "{{position.id}}" }
-          View their thoughts on this issue
+        (( if(proposal) { ))
+        %a.l-tooltip-user-action{ :href => "{{Routes.user_position_proposal_path(proposal.long_id, user.id)}}", :'data-target' => 'user_position_page', :'data-proposal-id' => "{{proposal.id}}", :'data-user-id' => "{{user.id}}" }
+          Read their thoughts on this issue
         (( } ))
         %button.l-tooltip-user-action.l-tooltip-user-profile{ :'data-target' => 'user_profile_page', :'data-id' => "{{user.id}}" }
           View their profile
@@ -281,7 +281,6 @@
                   %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
 
                 = f.hidden_field :avatar_url, :class => 'avatar_url'
-
 
             .clear
 
@@ -531,7 +530,7 @@
 
         .m-dashboard-profile-influenced.l-group-container
           (( _.each(_.keys(influenced_users), function(p){ ))
-          %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+          %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
           (( }); ))        
     (( } ))
 
@@ -641,7 +640,7 @@
                   This point has influenced {{influenced_users_by_point[point.id].length}} people
                 .l-group-container
                   (( _.each(influenced_users_by_point[point.id], function(p){ ))
-                  %span.avatar{ :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+                  %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
                   (( }); ))   
 
               %td.m-dashboard-profile-activity-action

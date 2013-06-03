@@ -2056,9 +2056,13 @@ $m-point-expanded-width: $body_width + 150
 .m-proposal[data-activity="proposal-no-activity"]
   .m-proposal-message > .l-message-speaker.m-proposal-initiator
     bottom: -58px
+    text-align: left
+    margin-left: 40px
+
     img
       width: 50px
       height: 50px
+
 
   .m-proposal-message.m-position-your_action
     > .l-message-recipient
@@ -2066,9 +2070,12 @@ $m-point-expanded-width: $body_width + 150
       left: 58px
       margin-top: 0
 
-      .m-position-your-action-body.join
-        +font-size(2)
-        width: $content_width - 96
+    .m-position-your-action-body.join
+      +font-size(2)
+      width: $content_width - 116
+      top: -4px
+      left: -70px
+
   .m-proposal-strip_publish
     .m-proposal-publish
       width: $content_width - 2 * $grid_xs - 58

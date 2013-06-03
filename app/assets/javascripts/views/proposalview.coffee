@@ -112,6 +112,8 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   # TODO: This should be triggered on results opened & position opened
   transition_expanded : (new_state) =>
+    
+    return if new_state == @state #can happen, e.g. when transitioning out of point details view
 
     callback = (new_state) =>
       if new_state == 1

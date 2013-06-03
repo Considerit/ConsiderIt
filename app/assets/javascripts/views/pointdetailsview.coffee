@@ -5,7 +5,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
   initialize : (options) -> 
     @proposal = options.proposal
     @listenTo @model, 'point:included', => @close_details()
-
     @listenTo @model, 'point:removed', => @close_details()
 
   render : () ->    
@@ -71,14 +70,11 @@ class ConsiderIt.PointDetailsView extends Backbone.View
   
       @$el.find('.m-point-wrap > *').css 'visibility', ''
 
-
       # when clicking outside of point, close it
-      $(document).on 'click.m-point-details', (ev)  => 
-        @close_details( !$(ev.target).data('target') )
+      $(document).on 'click.m-point-details', (ev)  => @close_details( !$(ev.target).data('target') )
 
-      @$el.on 'click.m-point-details', (ev) => 
-        if !$(ev.target).data('target')
-          ev.stopPropagation()
+      @$el.on 'click.m-point-details', (ev) => ev.stopPropagation() if !$(ev.target).data('target')
+          
       $(document).on 'keyup.m-point-details', (ev) => @close_by_keyup(ev)
 
       next()
@@ -106,15 +102,17 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     @commentsview.remove()
     @assessmentview.remove()
 
-    $(document).off 'click.m-point-details' #, @close_details
-    $(document).off 'keyup.m-point-details' #, @close_by_keyup
-    @$el.off 'click.m-point-details'
+    $(document).off '.m-point-details' #, @close_by_keyup
+    @$el.off '.m-point-details'
 
-    @$el.toggleClass('m-point-expanded m-point-unexpanded')
-    
+    @$el.removeClass('m-point-expanded')
+    @$el.addClass('m-point-unexpanded')
+
+    @undelegateEvents()
+    @stopListening()
+    delete this
+
     @model.trigger 'change' #trigger a render event
     $('.l-navigate-back').trigger 'click'
-    @undelegateEvents()
-    delete this
     #next()
 

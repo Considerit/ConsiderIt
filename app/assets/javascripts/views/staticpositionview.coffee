@@ -63,6 +63,7 @@ class ConsiderIt.StaticPositionView extends Backbone.View
     @$dialog.off 'click.m-static-position'
 
     $('.l-navigate-back:first').trigger 'click'
+    @stopListening()
     @undelegateEvents()
     @$dialog.remove()
     delete this

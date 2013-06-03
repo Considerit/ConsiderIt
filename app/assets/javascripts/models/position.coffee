@@ -23,13 +23,23 @@ class ConsiderIt.Position extends Backbone.Model
 
   @stance_name_for_bar : (d) ->
     switch parseInt(d)
-      when 0 then "adamantly oppose"
+      when 0 then "fully oppose"
       when 1 then "strongly oppose"
       when 2 then "lean oppose"
       when 3 then "are neutral"
       when 4 then "lean support"
       when 5 then "strongly support"
-      when 6 then "fervently support"
+      when 6 then "fully support"
+
+  @stance_name_adverb : (d) ->
+    switch parseInt(d)
+      when 0 then "fully opposes"
+      when 1 then "strongly opposes"
+      when 2 then "leans oppose on"
+      when 3 then "is neutral about"
+      when 4 then "leans support on"
+      when 5 then "strongly supports"
+      when 6 then "fully supports"
 
   @stance_name : (d) ->
     switch parseInt(d)

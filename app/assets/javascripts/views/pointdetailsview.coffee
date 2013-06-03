@@ -73,7 +73,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
 
       # when clicking outside of point, close it
-
       $(document).on 'click.m-point-details', (ev)  => 
         @close_details( !$(ev.target).data('target') )
 
@@ -103,7 +102,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     trigger ?= true
     @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
 
-
     @commentsview.clear()
     @commentsview.remove()
     @assessmentview.remove()
@@ -113,8 +111,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     @$el.off 'click.m-point-details'
 
     @$el.toggleClass('m-point-expanded m-point-unexpanded')
-
-    #window.history.go(-1)  
     
     @model.trigger 'change' #trigger a render event
     $('.l-navigate-back').trigger 'click'

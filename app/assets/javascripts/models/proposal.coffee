@@ -19,8 +19,6 @@ class ConsiderIt.Proposal extends Backbone.Model
 
     @long_id = @attributes.long_id
     @position = new ConsiderIt.Position({}, this)
-    
-
 
   url : () ->
     if @id
@@ -29,8 +27,8 @@ class ConsiderIt.Proposal extends Backbone.Model
       Routes.proposals_path( )
 
   set_data : (data) -> 
-    @pros =  _.map(data.points.pros, (pnt) -> new ConsiderIt.Point(pnt.point))
-    @cons = _.map(data.points.cons, (pnt) -> new ConsiderIt.Point(pnt.point))
+    @pros =  new Backbone.Collection( _.map(data.points.pros, (pnt) -> new ConsiderIt.Point(pnt.point)) )
+    @cons = new Backbone.Collection( _.map(data.points.cons, (pnt) -> new ConsiderIt.Point(pnt.point)) )
     @included_pros = new ConsiderIt.PointList()
     @included_cons = new ConsiderIt.PointList()
     @peer_pros = new ConsiderIt.PaginatedPointList()
@@ -45,7 +43,7 @@ class ConsiderIt.Proposal extends Backbone.Model
       indexed_inclusions = _.object( ([pnt.point.id, true] for pnt in source_included)  )
       peers = []
       included = []
-      for pnt in source_points
+      source_points.each (pnt) =>
         if pnt.id of indexed_inclusions
           included.push(pnt)
         else

@@ -3,6 +3,7 @@ class ConsiderIt.Router extends Backbone.Router
     ":proposal": "Consider"
     ":proposal/results": "Aggregate"
     ":proposal/points/:point" : "PointDetails"
+    ":proposal/positions/:user_id" : "StaticPosition"
 
     "dashboard/application" : "AppSettings"
     "dashboard/proposals" : "ManageProposals"

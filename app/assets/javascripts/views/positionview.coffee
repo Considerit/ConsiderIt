@@ -111,8 +111,8 @@ class ConsiderIt.YourActionView extends Backbone.View
   @craft_template : _.template( $("#tpl_your_action_craft").html() )
   @save_template : _.template( $("#tpl_your_action_save").html() )
 
-  # initialize : (options) -> 
-  #   @proposal = options.proposal
+  initialize : (options) -> 
+    @proposal = options.proposal
 
   render : () -> 
     @close_crafting()
@@ -125,7 +125,7 @@ class ConsiderIt.YourActionView extends Backbone.View
   close_crafting : ->
     @$el.html ConsiderIt.YourActionView.craft_template
       call : if true then 'What do you think?' else 'Revisit the conversation'
-      long_id : @model.proposal.long_id
+      long_id : @proposal.long_id
 
 
 class ConsiderIt.CraftingView extends Backbone.View
@@ -202,8 +202,7 @@ class ConsiderIt.CraftingView extends Backbone.View
   bindings : 
     'textarea[name="explanation"]' : 'explanation'
 
-  create_slider : () ->
-
+  create_slider : () ->    
     @slider.$el = $('<div class="noUiSlider">').appendTo(@$el.find('.m-stance-slider-container'))
     @slider.params.start = @model.get('stance') * 100  
     @slider.$el.noUiSlider('init', @slider.params)

@@ -93,26 +93,27 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
     
     @is_pro = @$el.parent().is('.m-reasons-peer-points-pros')
 
-    @$browse_el.remove() if @$browse_el?
+    if _.size(@collection.origModels) > 0
+      @$browse_el.remove() if @$browse_el?
 
-    @$browse_el = $('<div class="m-pointlist-browse">')
+      @$browse_el = $('<div class="m-pointlist-browse">')
 
-    @$browse_el.html ConsiderIt.BrowsablePointListView.browsing_template({
-      pros : @is_pro,
-      cnt : _.size(@collection.origModels)
-    })
-    @$el.append(@$browse_el)
+      @$browse_el.html ConsiderIt.BrowsablePointListView.browsing_template({
+        pros : @is_pro,
+        cnt : _.size(@collection.origModels)
+      })
+      @$el.append(@$browse_el)
 
-    @$browse_header_el.remove() if @$browse_header_el?
-    @$browse_header_el = $('<div class="m-pointlist-browse-header">')
+      @$browse_header_el.remove() if @$browse_header_el?
+      @$browse_header_el = $('<div class="m-pointlist-browse-header">')
 
-    @$browse_header_el.html ConsiderIt.BrowsablePointListView.browsing_header_template({
-      pros : @is_pro
-      selected : @selected
-    })
-    @$el.prepend(@$browse_header_el)
-    
-    @$browse_header_el.css('visibility', 'visible') if @browsing
+      @$browse_header_el.html ConsiderIt.BrowsablePointListView.browsing_header_template({
+        pros : @is_pro
+        selected : @selected
+      })
+      @$el.prepend(@$browse_header_el)
+      
+      @$browse_header_el.css('visibility', 'visible') if @browsing
   
   onAdd : (model) ->
     super

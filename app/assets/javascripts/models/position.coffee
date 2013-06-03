@@ -1,14 +1,12 @@
 class ConsiderIt.Position extends Backbone.Model
-  defaults: 
-    stance : 0
-    user_id : -1
+  defaults : () => { "stance" : 0, "user_id" : -1}
 
   name: 'position'
 
-  initialize : (options, proposal) ->
+  initialize : (options) ->
     super
     @attributes.explanation = htmlFormat(@attributes.explanation) if @attributes.explanation
-    @proposal = proposal
+    @proposal = ConsiderIt.app.proposals.get @attributes.proposal_id
     @written_points = {}
     @viewed_points = {}
 

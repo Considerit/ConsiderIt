@@ -4,6 +4,7 @@ _.templateSettings =
   interpolate : /\{\{(.+?)\}\}/g
   evaluate : /\(\((.+?)\)\)/g
 
+#X-Editable option
 $.fn.editable.defaults.mode = 'inline'
 
 window.delay = (ms, func) -> setTimeout func, ms

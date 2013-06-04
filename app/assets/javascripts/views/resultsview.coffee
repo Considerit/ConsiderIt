@@ -370,7 +370,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   highlight_point_includers : (ev) ->
 
-    return if @$el.find('.m-point-expanded').length > 0
+    #return if @$el.find('.m-point-expanded').length > 0
 
     $target = $(ev.currentTarget)
 

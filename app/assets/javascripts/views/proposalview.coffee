@@ -110,11 +110,18 @@ class ConsiderIt.ProposalView extends Backbone.View
   take_position_handler : () -> 
     @do_after_data_loaded(@take_position)
 
-  show_results_handler : () -> @do_after_data_loaded(@show_results) if @state != 4 #skip the transition if we're already on the results page
+  show_results_handler : () -> 
+    if @state == 4 #skip the transition if we're already on the results page
+      @$hidden_els.css('display', 'none')
+    else 
+      @do_after_data_loaded(@show_results) 
+
 
   # TODO: This should be triggered on results opened & position opened
   transition_expanded : (new_state) =>
-    return if new_state == @state #can happen, e.g. when transitioning out of point details view
+    if new_state == @state #can happen, e.g. when transitioning out of point details view
+      @$hidden_els.css('display', 'none')
+      return 
 
     callback = (new_state) =>
       if new_state == 1

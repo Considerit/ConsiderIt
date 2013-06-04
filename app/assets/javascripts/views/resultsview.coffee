@@ -3,7 +3,6 @@ class ConsiderIt.ResultsView extends Backbone.View
   PARTICIPANT_HEIGHT : 130
 
   initialize : (options) ->
-
     num_participants = ($.parseJSON(@model.get('participants'))||[]).length
     @tile_size = Math.min 50, ConsiderIt.utils.get_tile_size(@PARTICIPANT_WIDTH, @PARTICIPANT_HEIGHT, num_participants)
 
@@ -55,7 +54,6 @@ class ConsiderIt.ResultsView extends Backbone.View
 
 
   implode_participants : ->
-    
     @trigger 'results:implode_participants'
     $participants = @$el.find('.l-message-speaker .l-group-container')
     $participants.find('.avatar').css {position: '', zIndex: '', '-ms-transform': "", '-moz-transform': "", '-webkit-transform': "", transform: ""}
@@ -168,7 +166,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
 
   render : () -> 
-
     @hide()
 
     @$el.html ConsiderIt.ExplorerView.template _.extend {}, @model.attributes, 
@@ -181,6 +178,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
       cons : new ConsiderIt.PaginatedPointListView({collection : @pointlists.cons, el : @$el.find('.m-pro-con-list-conpoints'), location: 'results', proposal : @model})
 
     @$histogram = @$el.find('.m-histogram')
+    @$group_container = @$el.find('.l-group-container')
 
     @pointlists.pros.setSort('score', 'desc')
     @pointlists.cons.setSort('score', 'desc')
@@ -253,7 +251,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
 
   select_bar : (ev) ->
-
     $target = $(ev.currentTarget)
     hard_select = ev.type == 'click'
 
@@ -327,7 +324,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
   close_bar_key : (ev) -> @deselect_bar() if ev.keyCode == 27 && $('#registration_overlay').length == 0 && $('.m-point-expanded').length == 0
   
   deselect_bar : (ev) ->
-
     $selected_bar = @$histogram.find('.m-bar-is-selected')
     return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.m-bar-is-hard-selected'))
 
@@ -369,7 +365,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
     $(ev.currentTarget).find('.m-bar-person-details').hide()
 
   highlight_point_includers : (ev) ->
-
     #return if @$el.find('.m-point-expanded').length > 0
 
     $target = $(ev.currentTarget)
@@ -399,17 +394,16 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
       @$histogram.css 'visibility', ''
 
-    else
-      $group_container = @$el.find('.l-group-container')
-      $group_container.hide()
+    else if @$group_container.is(':visible')
+      @$group_container.hide()
 
       if ev.type == 'mouseenter'
-        $group_container.find('.avatar').hide()
-        $group_container.find( selector.join(',') ).css {'display': '', 'opacity': 1}
+        @$group_container.find('.avatar').hide()
+        @$group_container.find( selector.join(',') ).css {'display': '', 'opacity': 1}
       else
-        $group_container.find('.avatar').css {'display': '', 'opacity': ''} 
+        @$group_container.find('.avatar').css {'display': '', 'opacity': ''} 
 
-      $group_container.show()
+      @$group_container.show()
 
 
   sort_all : (ev) ->

@@ -114,7 +114,6 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   # TODO: This should be triggered on results opened & position opened
   transition_expanded : (new_state) =>
-    
     return if new_state == @state #can happen, e.g. when transitioning out of point details view
 
     callback = (new_state) =>
@@ -314,14 +313,11 @@ class ConsiderIt.ProposalView extends Backbone.View
     data = $.parseJSON(response.responseText)
     @model.set(data.proposal.proposal)
     @model.set_data
-      points: {}
-        #pros: []
-        #cons: []
-        #included_pros: []
-        #included_cons: []
-      #positions : []
       position: data.position
+      points: {}
+    @model.long_id = @model.get('long_id')
+    @data_loaded = true
+    #@$el.attr('data-visibility', '')
 
     @render()
-    @transition_expanded(1)
-    @$el.attr('data-visibility', '')
+    ConsiderIt.router.navigate(Routes.new_position_proposal_path( @model.long_id ), {trigger: true} )

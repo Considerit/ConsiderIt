@@ -65,6 +65,8 @@ class ConsiderIt.ProposalView extends Backbone.View
       position_el.insertAfter(results_el)
 
       @listenTo @position_view, 'position:canceled', @transition_unexpanded
+    else
+      @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
 
     #TODO: if user logs in as admin, need to do this
     @render_admin_strip() if @can_edit()
@@ -117,9 +119,10 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     callback = (new_state) =>
       if new_state == 1
-        el = @position_view.show_crafting()
-        el.insertAfter(@results_view.$el)
-        el.fadeIn 500, =>
+        if @model.get('published')
+          el = @position_view.show_crafting()
+          el.insertAfter(@results_view.$el)
+          el.fadeIn 500, =>
         @set_state(1)
       else if new_state == 2
         @results_view.show_explorer()
@@ -129,7 +132,7 @@ class ConsiderIt.ProposalView extends Backbone.View
       if new_state == 1
         @results_view.show_summary()
       else if new_state == 2
-        @position_view.close_crafting()
+        @position_view.close_crafting() if @model.get('published')
 
     else
       @scroll_position = @$el.offset().top - $('.t-intro-wrap').offset().top - parseInt(@$el.css('marginTop'))
@@ -189,6 +192,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   toggle_description : (ev) ->
+    return if !@model.get('published')
     if @$el.is('[data-state="0"]')
       ConsiderIt.router.navigate(Routes.new_position_proposal_path( @model.long_id ), {trigger: true})
     else
@@ -309,6 +313,15 @@ class ConsiderIt.ProposalView extends Backbone.View
   publish_proposal : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
     @model.set(data.proposal.proposal)
+    @model.set_data
+      points: {}
+        #pros: []
+        #cons: []
+        #included_pros: []
+        #included_cons: []
+      #positions : []
+      position: data.position
+
     @render()
     @transition_expanded(1)
     @$el.attr('data-visibility', '')

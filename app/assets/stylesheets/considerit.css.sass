@@ -2930,7 +2930,7 @@ label.inline
       line-height: 1.2
       padding-top: 3px
       content: 'click to edit'
-      background-color: rgba(white, .85)
+      background-color: rgba(white, .95)
       color: #444
       width: 80px
       //text-decoration: underline
@@ -2942,28 +2942,38 @@ label.inline
       height: 13px
       border-radius: 5px 5px 0 0
 
-.editableform .control-group
-  position: relative
+.editableform 
+  border: 1px solid rgba($standout_color, .7)
+  .control-group
+    position: relative
 
 .editable-buttons
   position: absolute
-  right: 0
-  bottom: -18px
-  background-color: rgba(white, .85)
+  right: -1px
+  bottom: -24px
+  background-color: rgba(white, .95)
   z-index: 999
+  border: 1px solid rgba($standout_color, .7)
+  border-top: none
 
   button
-    color: #555
     @extend %bolded
 
-    &:hover
-      color: black
+
 
   .editable-cancel
     background: none
     border: none
     margin-left: 0
+    color: #555
 
+    &:hover
+      color: black
+
+  .editable-submit
+    +sassy-button("glass", 5px, inherit, darken($standout_color, 8%), darken($standout_color, 16%))
+    +font-size(-3)
+    line-height: .5
 
 //////////////////////////////////////////
 // UNINCORPORATED

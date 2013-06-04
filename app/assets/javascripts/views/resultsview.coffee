@@ -384,7 +384,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
     #TODO: use CSS3 transitions instead    
     if @$histogram.is(':visible')
 
-      @$histogram.hide()
+      @$histogram.css 'visibility', 'hidden'
 
       if ev.type == 'mouseenter'
         @$histogram.addClass 'm-histogram-segment-selected'
@@ -397,7 +397,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
         @$histogram.find('.avatar').css {'display': '', 'opacity': ''} 
         #@$histogram.find('.m-bar-percentage').show()
 
-      @$histogram.show()
+      @$histogram.css 'visibility', ''
 
     else
       $group_container = @$el.find('.l-group-container')

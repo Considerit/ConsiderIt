@@ -1,5 +1,5 @@
 class ConsiderIt.Proposal extends Backbone.Model
-  defaults: { }
+  defaults : () => { participants : '[]'}
   name: 'proposal'
   @description_detail_fields : ['long_description', 'additional_details']
 

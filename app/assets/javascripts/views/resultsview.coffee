@@ -315,8 +315,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
       #######
       # when clicking outside of bar, close it
       if hard_select
-        $(document).click (ev) => @close_bar_click()
-        $(document).keyup (ev) => @close_bar_key(ev)
+        $(document).on 'click.histogram', (ev) => @close_bar_click(ev)
+        $(document).on 'keyup.histogram', (ev) => @close_bar_key(ev)
         ev.stopPropagation()
       #######
 
@@ -324,9 +324,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   close_bar_click : (ev) -> @deselect_bar() if $(ev.target).closest('.m-results-responders').length == 0
 
-  close_bar_key : (ev) ->
-    if ev.keyCode == 27 && $('#registration_overlay').length == 0 && $('.m-point-expanded').length == 0
-      @deselect_bar()
+  close_bar_key : (ev) -> @deselect_bar() if ev.keyCode == 27 && $('#registration_overlay').length == 0 && $('.m-point-expanded').length == 0
   
   deselect_bar : (ev) ->
 
@@ -360,8 +358,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
 
-    $(document).unbind 'click', @close_bar_click
-    $(document).unbind 'keyup', @close_bar_key
+    $(document).off 'click.histogram'
+    $(document).off 'keyup.histogram'
   
 
   show_user_explanation : (ev) ->

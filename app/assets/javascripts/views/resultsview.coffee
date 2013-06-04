@@ -72,13 +72,14 @@ class ConsiderIt.ResultsView extends Backbone.View
 
     $participants = @$el.find('.l-message-speaker .l-group-container')
 
+    $histogram = @$el.find('.m-histogram')
     if !modern
       @$el.find('.m-histogram').css 'opacity', 1
       $participants.fadeOut()
     else
       speed = 750
       from_tile_size = $participants.find('.avatar:first').width()
-      to_tile_size = @$el.find(".m-histogram .avatar:first").width()
+      to_tile_size = $histogram.find(".avatar:first").width()
       ratio = to_tile_size / from_tile_size
 
       # compute all offsets first, before applying changes, for perf reasons
@@ -86,7 +87,7 @@ class ConsiderIt.ResultsView extends Backbone.View
       for participant in $participants.find('.avatar')
         $from = $(participant)
         id = $from.data('id')
-        $to = @$el.find(".m-histogram #avatar-#{id}")
+        $to = $histogram.find("#avatar-#{id}")
 
         to_offset = $to.offset()
         from_offset = $from.offset()
@@ -113,11 +114,10 @@ class ConsiderIt.ResultsView extends Backbone.View
 
       me = this
       window.delay speed + 150, -> 
-        me.$el.find('.m-histogram').css 'opacity', 1
-        
+        $histogram.css { opacity: 1, display: '' }
         #window.delay 25, -> 
         $participants.fadeOut()
-        me.$el.find('.m-bar-percentage').fadeIn()
+        #me.$el.find('.m-bar-percentage').fadeIn()
  
 
   events : 
@@ -152,8 +152,8 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   @template : _.template( $("#tpl_results").html() )
 
-  BARHEIGHT : 235
-  BARWIDTH : 51
+  BARHEIGHT : 200
+  BARWIDTH : 78
 
   initialize : (options) -> 
     @histogram = @create_histogram()
@@ -259,7 +259,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     if ( hard_select || @$histogram.find('.m-bar-is-hard-selected').length == 0 )
       @$histogram.addClass 'm-histogram-segment-selected'
-      @$el.find('.m-bar-percentage').hide()
+      #@$el.find('.m-bar-percentage').hide()
 
       $bar = $target.closest('.m-histogram-bar')
       bubble_offset = $bar.offset().top - @$el.find('.l-message-body').offset().top + 20
@@ -322,11 +322,10 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
       @$el.show()
 
-  close_bar_click : (ev) ->
-    @deselect_bar()
+  close_bar_click : (ev) -> @deselect_bar() if $(ev.target).closest('.m-results-responders').length == 0
 
   close_bar_key : (ev) ->
-    if ev.keyCode == 27 && $('#registration_overlay').length == 0
+    if ev.keyCode == 27 && $('#registration_overlay').length == 0 && $('.m-point-expanded').length == 0
       @deselect_bar()
   
   deselect_bar : (ev) ->
@@ -335,7 +334,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
     return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.m-bar-is-hard-selected'))
 
     @$histogram.removeClass 'm-histogram-segment-selected'
-    @$el.find('.m-bar-percentage').show()
+    #@$el.find('.m-bar-percentage').show()
 
     hiding = @$el.find('.m-point-list, .m-results-pro-con-list-who')
     hiding.css 'visibility', 'hidden'
@@ -353,7 +352,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
     aggregate_heading.siblings('.m-results-pro-con-list-who-others').hide()
     aggregate_heading.show()
 
-    $('.m-bar-person-details:visible', $selected_bar).hide()
+    $selected_bar.find( '.m-bar-person-details:visible' ).hide()
 
     @$el.find('.l-message-speaker').css('z-index': '')
 
@@ -386,17 +385,19 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     #TODO: use CSS3 transitions instead    
     if @$histogram.is(':visible')
+
       @$histogram.hide()
 
       if ev.type == 'mouseenter'
         @$histogram.addClass 'm-histogram-segment-selected'
         @$histogram.find('.avatar').hide()
-        $(selector.join(','), @$histogram).css {'display': '', 'opacity': 1}
-        @$histogram.find('.m-bar-percentage').hide()
+        
+        @$histogram.find(selector.join(',')).css {'display': '', 'opacity': 1}
+        #@$histogram.find('.m-bar-percentage').hide()
       else
         @$histogram.removeClass 'm-histogram-segment-selected'
         @$histogram.find('.avatar').css {'display': '', 'opacity': ''} 
-        @$histogram.find('.m-bar-percentage').show()
+        #@$histogram.find('.m-bar-percentage').show()
 
       @$histogram.show()
 
@@ -406,7 +407,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
       if ev.type == 'mouseenter'
         $group_container.find('.avatar').hide()
-        $(selector.join(','), $group_container).css {'display': '', 'opacity': 1}
+        $group_container.find( selector.join(',') ).css {'display': '', 'opacity': 1}
       else
         $group_container.find('.avatar').css {'display': '', 'opacity': ''} 
 

@@ -1736,7 +1736,8 @@ $m-point-expanded-width: $body_width + 150
   text-align: center
 
   .m-new-proposal-submit
-    +sassy-button("glass", 5px, inherit, darken($standout_color, 32%), darken($standout_color, 40%))
+    //+sassy-button("glass", 5px, inherit, darken($standout_color, 32%), darken($standout_color, 40%))
+    +superbutton
 
     +font-size(2)
     //padding: $vertical_baseline / 2 0
@@ -1984,25 +1985,6 @@ $m-point-expanded-width: $body_width + 150
   .m-proposal-admin_label
     opacity: .5
 
-.m-proposal-strip_publish 
-  margin-top: $vertical_baseline
-  .m-proposal-publish-form
-    display: inline
-
-  .m-proposal-publish
-    +superbutton
-    display: inline-block
-    width: 94%
-    color: white
-    +font-size(3)
-    font-weight: bold
-    text-align: center
-
-  .m-delete_proposal
-    text-align: center
-    color: #666
-    width: 4%
-    display: inline-block
 
 
 .m-proposal[data-state="0"]
@@ -2048,10 +2030,16 @@ $m-point-expanded-width: $body_width + 150
     //   .t-bubble .t-bubble-inner
     //     fill: lighten($standout_color, 5%)
 
-  .m-proposal-publish
-    +sassy-button("glass", 5px, inherit, darken($standout_color, 32%), darken($standout_color, 40%))
-    +font-size(2)
-
+  .m-proposal-strip_publish
+    .m-proposal-publish
+      width: $content_width - 2 * $grid_xs - 78
+      margin-left: $grid_xs + 95
+      +sassy-button("glass", 5px, inherit, darken($standout_color, 32%), darken($standout_color, 40%))
+      +font-size(2)
+      color: white
+      font-weight: bold
+      text-align: center
+      margin-top: -4px
 
 .m-proposal[data-activity="proposal-no-activity"]
   .m-proposal-message > .l-message-speaker.m-proposal-initiator
@@ -2076,10 +2064,17 @@ $m-point-expanded-width: $body_width + 150
       top: -4px
       left: -70px
 
-  .m-proposal-strip_publish
-    .m-proposal-publish
-      width: $content_width - 2 * $grid_xs - 58
-      margin-left: $grid_xs + 58
+
+
+  &[data-state="0"]
+    .m-proposal-admin_strip
+      position: relative
+      top: 4 * $vertical_baseline
+
+  &[data-visibility="unpublished"]
+    .m-proposal-admin_strip
+      position: static
+
 
 .m-proposal[data-state="4"]
   .l-message-speaker .l-group-container

@@ -26,13 +26,8 @@ class ProposalsController < ApplicationController
 
     ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
-    position = current_user ? current_user.positions.published.where(:proposal_id => proposal.id).last : !session["position-#{proposal.id}"].nil? ? Position.find(session["position-#{proposal.id}"]) : nil
-    position ||= Position.create!( 
-      :stance => 0.0, 
-      :proposal_id => proposal.id, 
-      :user_id => current_user ? current_user.id : nil,
-      :account_id => current_tenant.id
-    )
+    position = get_position_for_user(proposal)
+
 
     #TODO: return just "points" and "included points" and let client sort through them?
     response = {
@@ -88,16 +83,16 @@ class ProposalsController < ApplicationController
 
   def update
     # TODO: this edit will fail for those who do not have an account & whose session timed out, but try to edit following admin_id link
-    @proposal = Proposal.find_by_long_id(params[:long_id])
-    authorize! :update, @proposal
+    proposal = Proposal.find_by_long_id(params[:long_id])
+    authorize! :update, proposal
     publicity_changed = params[:proposal].has_key?(:publicity) && params[:proposal][:publicity] == '0'
 
     if publicity_changed
-      before_attributes = @proposal.attributes
+      before_attributes = proposal.attributes
     end
 
     # TODO: explicitly grab params
-    @proposal.update_attributes!(params[:proposal])
+    proposal.update_attributes!(params[:proposal])
 
     if publicity_changed
       users = []
@@ -107,15 +102,15 @@ class ProposalsController < ApplicationController
         if !current_user.nil?
           inviter = current_user
         end
-        users = @proposal.access_list.gsub(' ', '').split(',')
+        users = proposal.access_list.gsub(' ', '').split(',')
       else
         before = before_attributes['access_list'].gsub(' ', '').split(',').to_set
-        after = @proposal.access_list.gsub(' ', '').split(',').to_set
+        after = proposal.access_list.gsub(' ', '').split(',').to_set
         users = after - before
       end
 
       ActiveSupport::Notifications.instrument("alert_proposal_publicity_changed", 
-        :proposal => @proposal,
+        :proposal => proposal,
         :users => users,
         :inviter => inviter,
         :current_tenant => current_tenant,
@@ -125,20 +120,36 @@ class ProposalsController < ApplicationController
 
     response = {
       :success => true,
-      :access_list => @proposal.access_list,
-      :publicity => @proposal.publicity,
-      :published => @proposal.published,
-      :active => @proposal.active,
-      :proposal => @proposal
+      :access_list => proposal.access_list,
+      :publicity => proposal.publicity,
+      :published => proposal.published,
+      :active => proposal.active,
+      :proposal => proposal,
+      :position => get_position_for_user(proposal)
     }
     render :json => response.to_json
   end
 
   def destroy
-    @proposal = Proposal.find_by_long_id(params[:long_id])
-    authorize! :destroy, @proposal
-    @proposal.destroy
+    proposal = Proposal.find_by_long_id(params[:long_id])
+    authorize! :destroy, proposal
+    proposal.destroy
     render :json => {:success => true}
   end
 
+  def get_position_for_user(proposal)
+    position = current_user ? current_user.positions.published.where(:proposal_id => proposal.id).last : !session["position-#{proposal.id}"].nil? ? Position.find(session["position-#{proposal.id}"]) : nil
+    position ||= Position.create!( 
+      :stance => 0.0, 
+      :proposal_id => proposal.id, 
+      :user_id => current_user ? current_user.id : nil,
+      :account_id => current_tenant.id
+    )
+
+    position
+
+
+  end
 end
+
+

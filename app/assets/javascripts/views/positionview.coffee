@@ -161,10 +161,10 @@ class ConsiderIt.CraftingView extends Backbone.View
         change: () => @slider_change(@slider.$el.noUiSlider('value')[1])
 
     @pointlists = 
-      mypros : @model.proposal.included_pros
-      peerpros : @model.proposal.peer_pros
-      mycons : @model.proposal.included_cons
-      peercons : @model.proposal.peer_cons
+      mypros : @proposal.included_pros
+      peerpros : @proposal.peer_pros
+      mycons : @proposal.included_cons
+      peercons : @proposal.peer_cons
 
     @views = 
       mypros : new ConsiderIt.PointListView({collection : @pointlists.mypros, el : @$el.find('.m-pro-con-list-propoints'), location: 'position', proposal : @proposal})

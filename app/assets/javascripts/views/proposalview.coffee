@@ -191,7 +191,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   toggle_description : (ev) ->
-    return if !@model.get('published')
+    return if !@model.get('published') || (@state > 0 && ( $(ev.target).is('.editable') || $(ev.target).closest('.editable-container').length > 0))
     if @$el.is('[data-state="0"]')
       ConsiderIt.router.navigate(Routes.new_position_proposal_path( @model.long_id ), {trigger: true})
     else

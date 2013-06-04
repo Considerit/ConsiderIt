@@ -27,19 +27,19 @@ class ConsiderIt.Proposal extends Backbone.Model
       Routes.proposals_path( )
 
   set_data : (data) -> 
-    @pros =  new Backbone.Collection( _.map(data.points.pros, (pnt) -> new ConsiderIt.Point(pnt.point)) )
-    @cons = new Backbone.Collection( _.map(data.points.cons, (pnt) -> new ConsiderIt.Point(pnt.point)) )
+    @pros =  new Backbone.Collection( _.map(data.points.pros||[], (pnt) -> new ConsiderIt.Point(pnt.point)) )
+    @cons = new Backbone.Collection( _.map(data.points.cons||[], (pnt) -> new ConsiderIt.Point(pnt.point)) )
     @included_pros = new ConsiderIt.PointList()
     @included_cons = new ConsiderIt.PointList()
     @peer_pros = new ConsiderIt.PaginatedPointList()
     @peer_cons = new ConsiderIt.PaginatedPointList()
 
-    @positions = _.object(_.map(data.positions, (pos) -> [pos.position.user_id, new ConsiderIt.Position(pos.position)]))
+    @positions = _.object(_.map(data.positions||[], (pos) -> [pos.position.user_id, new ConsiderIt.Position(pos.position)]))
     @position = new ConsiderIt.Position(data.position.position)
     @positions[@position.user_id] = @position
 
     # separating points out into peers and included
-    for [source_points, source_included, dest_included, dest_peer] in [[@pros, data.points.included_pros, @included_pros, @peer_pros], [@cons, data.points.included_cons, @included_cons, @peer_cons]]
+    for [source_points, source_included, dest_included, dest_peer] in [[@pros, data.points.included_pros||[], @included_pros, @peer_pros], [@cons, data.points.included_cons||[], @included_cons, @peer_cons]]
       indexed_inclusions = _.object( ([pnt.point.id, true] for pnt in source_included)  )
       peers = []
       included = []

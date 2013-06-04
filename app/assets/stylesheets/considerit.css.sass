@@ -1994,7 +1994,7 @@ $m-point-expanded-width: $body_width + 150
     top: -40px
     position: absolute
 
-.m-proposal[data-state="2"]
+.m-proposal[data-state="2"], .m-proposal[data-state="4"]
   .m-position-your-action-body.join
     //width: $body_width
     //left: $margin_width + $grid_xs / 2 - 3
@@ -2004,13 +2004,21 @@ $m-point-expanded-width: $body_width + 150
   .l-group-container
     min-height: 85px
 
+.m-proposal[data-state="2"]
   [data-action="results-implode-participants"]
     display: none
-
 .m-proposal[data-state="4"]
-  .m-position-your-action-body.join
-    right: 60px
-    top: -12px
+
+  .m-proposal-description, .m-results-responders 
+    > .t-bubble
+      display: none
+  .m-results-responders
+    border-radius: 0
+
+//.m-proposal[data-state="4"]
+  // .m-position-your-action-body.join
+  //   right: 60px
+  //   top: -12px
 
 
 .m-proposal[data-visibility="unpublished"]
@@ -2094,18 +2102,19 @@ $m-point-expanded-width: $body_width + 150
     display: block
 
   .l-message-speaker.m-proposal-initiator
-    opacity: .25
+    //opacity: .25
+    visibility: hidden
 
   .m-aggregated-results
     //> .l-message-speaker // histogram
     //width: $margin_width + 75
 
-    > .l-message-speaker
-      //top: -64px
-      right: 58px
+    // > .l-message-speaker
+    //   //top: -64px
+    //   right: 58px
 
-    > .l-message-body.m-results-responders
-      left: -60px
+    // > .l-message-body.m-results-responders
+    //   left: -60px
 
 
 .m-proposal-message
@@ -2337,15 +2346,16 @@ $histogram_bar_color: #6E6E6E
   margin: 0 auto
   position: relative
   top: 0px
-  left: -3px
+  //left: -3px
   //width: $pro_con_list_width - 6
   //height: 100%
   //z-index: 10
   //bottom: -4px
-  border-left: 2px solid $histogram_bar_border-color
+  border-bottom: 2px solid $histogram_bar_border-color
   opacity: 0
   visibility: hidden
   display: none
+  width: $body_width
   //+single-transition
 
   %m-histogram-label
@@ -2371,25 +2381,28 @@ $histogram_bar_color: #6E6E6E
 
 
   .m-histogram-bar
-    height: $histogram_bar_width
+    width: $histogram_bar_width
     position: relative
     //display: inline-block
     cursor: pointer
     //+single-box-shadow($hoff: -6px, $voff: 6px, $blur: 9px, $spread: -5px, $color: white, $inset: true)
-    margin-bottom: 2px
 
     border: 2px solid $histogram_bar_border-color
-    border-left: 0
+    border-bottom: none
     //border-bottom: none
-    background-color: $histogram_bar_color
-    +transition(background-color .5s linear, color .5s linear, border-radius .5s linear)
+    background-color: $comp_color //$histogram_bar_color
+    //+transition(background-color .5s linear, color .5s linear, border-radius .5s linear)
     +bubble($community_color, $dark_community_color, right, $include_bg: false)
     //z-index: 1
     border-radius: 0px
-    text-align: left
+    text-align: center
+    display: inline-block
+    bottom: 0
+    vertical-align: bottom
 
     .m-bar-percentage
       display: none
+      visibility: hidden
       +font-size(-1)
       color: black//$histogram_bar_color
       position: absolute
@@ -2431,53 +2444,55 @@ $histogram_bar_color: #6E6E6E
     $hue_spread: 18
 
     &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
+      background-color: $community_color
+      border-color: $dark_community_color
       //border-color: black
 
-      &#bucket-0
-        $b0: adjust-hue($base_selected_bar_color, 3 * $hue_spread)
-        background-color: $b0
-        border-color: saturate( darken($b0, $darken_amt), $darken_amt)
+      // &#bucket-0
+      //   $b0: adjust-hue($base_selected_bar_color, 3 * $hue_spread)
+      //   background-color: $b0
+      //   border-color: saturate( darken($b0, $darken_amt), $darken_amt)
 
-      &#bucket-1
-        $b1: adjust-hue($base_selected_bar_color, 2 * $hue_spread)
-        background-color: $b1
-        border-color: saturate( darken($b1, $darken_amt), $darken_amt)
+      // &#bucket-1
+      //   $b1: adjust-hue($base_selected_bar_color, 2 * $hue_spread)
+      //   background-color: $b1
+      //   border-color: saturate( darken($b1, $darken_amt), $darken_amt)
 
-      &#bucket-2
-        $b2: adjust-hue($base_selected_bar_color, 1 * $hue_spread)
-        background-color: $b2
-        border-color: saturate( darken($b2, $darken_amt), $darken_amt)
+      // &#bucket-2
+      //   $b2: adjust-hue($base_selected_bar_color, 1 * $hue_spread)
+      //   background-color: $b2
+      //   border-color: saturate( darken($b2, $darken_amt), $darken_amt)
 
-      &#bucket-3
-        $b3: $base_selected_bar_color
-        background-color: $b3
-        border-color: darken($b3, $darken_amt)
+      // &#bucket-3
+      //   $b3: $base_selected_bar_color
+      //   background-color: $b3
+      //   border-color: darken($b3, $darken_amt)
 
-      &#bucket-4
-        $b4: adjust-hue($base_selected_bar_color, - 1 * $hue_spread)
-        background-color: $b4
-        border-color: saturate( darken($b4, $darken_amt), $darken_amt)
+      // &#bucket-4
+      //   $b4: adjust-hue($base_selected_bar_color, - 1 * $hue_spread)
+      //   background-color: $b4
+      //   border-color: saturate( darken($b4, $darken_amt), $darken_amt)
 
-      &#bucket-5
-        $b5: adjust-hue($base_selected_bar_color, - 2  * $hue_spread)
-        background-color: $b5
-        border-color: saturate( darken($b5, $darken_amt), $darken_amt)
+      // &#bucket-5
+      //   $b5: adjust-hue($base_selected_bar_color, - 2  * $hue_spread)
+      //   background-color: $b5
+      //   border-color: saturate( darken($b5, $darken_amt), $darken_amt)
 
-      &#bucket-6
-        $b6: adjust-hue($base_selected_bar_color, - 3 * $hue_spread)
-        background-color: $b6
-        border-color: saturate( darken($b6, $darken_amt), $darken_amt)
+      // &#bucket-6
+      //   $b6: adjust-hue($base_selected_bar_color, - 3 * $hue_spread)
+      //   background-color: $b6
+      //   border-color: saturate( darken($b6, $darken_amt), $darken_amt)
 
       //&:after
-        //+chalkboard
-        content: ''
-        position: absolute
-        display: block
-        height: 5px
-        height: $histogram_bar_width + 3
-        left: -5px
-        bottom: -4px
-        border-radius: 0 6px 6px 0
+        // +chalkboard
+        // content: ''
+        // position: absolute
+        // display: block
+        // height: 5px
+        // height: $histogram_bar_width + 3
+        // left: -5px
+        // bottom: -4px
+        // border-radius: 0 6px 6px 0
     
     &.m-bar-is-soft-selected
       z-index: 5
@@ -2525,7 +2540,7 @@ $histogram_bar_color: #6E6E6E
       
 
 .m-bar-is-soft-selected .m-bar-people .m-bar-person .avatar
-  opacity: .6
+  opacity: .75
 
 .m-bar-is-hard-selected .m-bar-people .m-bar-person .avatar
   opacity: .9
@@ -2535,12 +2550,14 @@ $histogram_bar_color: #6E6E6E
   font-size: 0
   color: #222
   margin: auto
-
+  +rotate(180deg)
+  height: 100%
   .m-bar-ghost
     visibility: hidden
     float: right
   
   .m-bar-person
+    +rotate(180deg)  
     background-color: inherit
     margin: auto
     display: inline-block

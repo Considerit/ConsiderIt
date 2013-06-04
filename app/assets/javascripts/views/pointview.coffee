@@ -28,18 +28,7 @@ class ConsiderIt.PointView extends Backbone.View
         is_you : @user == ConsiderIt.current_user
       )
     )
-
-    #TODO: if user logs in as admin, need to do this
-    #TODO: need to allow people who haven't logged in to edit their own points
-    # if (ConsiderIt.current_user && ConsiderIt.current_user.id == @model.get('user_id')) || ConsiderIt.roles.is_admin
-    #   @$el.find('.m-point-nutshell').editable {
-    #       resource: 'point'
-    #       pk: @model.id
-    #       url: Routes.proposal_point_path @proposal.long_id, @model.id
-    #       type: 'textarea'
-    #       name: 'nutshell'
-    #     }
-
+    
     this
 
 

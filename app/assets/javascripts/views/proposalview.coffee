@@ -110,7 +110,7 @@ class ConsiderIt.ProposalView extends Backbone.View
   take_position_handler : () -> 
     @do_after_data_loaded(@take_position)
 
-  show_results_handler : () -> @do_after_data_loaded(@show_results)
+  show_results_handler : () -> @do_after_data_loaded(@show_results) if @state != 4 #skip the transition if we're already on the results page
 
   # TODO: This should be triggered on results opened & position opened
   transition_expanded : (new_state) =>
@@ -286,6 +286,7 @@ class ConsiderIt.ProposalView extends Backbone.View
         url: Routes.proposal_path @model.long_id
         type: type
         name: name
+        success : (response, new_value) => @model.set(name, new_value)
       }
 
   show_status : (ev) ->

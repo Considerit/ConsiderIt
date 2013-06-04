@@ -21,6 +21,8 @@ class ConsiderIt.CommentView extends Backbone.View
           url: Routes.update_comment_path @model.id
           type: 'textarea'
           name: 'body'
+          success : (response, new_value) => @model.set('body', new_value)
+
         }
 
     this

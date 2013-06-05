@@ -712,7 +712,7 @@
 
   %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_publicity" }
     .l-dialog-detachable
-      %h2
+      %h1
         Who can view and participate?  
 
       = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-admin_operations-settings-form'} do |f|
@@ -762,7 +762,7 @@
 
   %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_active"}
     .l-dialog-detachable
-      %h2
+      %h1
         Set the status of this proposal.  
 
       = form_for :proposal, :url => "{{ Routes.proposal_path(long_id) }}", :method => :put, :remote => true, :html => {:class => 'm-proposal-admin_operations-settings-form'} do |f|

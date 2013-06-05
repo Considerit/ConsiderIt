@@ -2350,42 +2350,20 @@ $histogram_bar_color: #6E6E6E
 
 
 .m-histogram
+  display: none
+  opacity: 0
+  visibility: hidden
   margin: 0 auto
   position: relative
   top: 0px
+  width: $body_width
   //left: -3px
   //width: $pro_con_list_width - 6
   //height: 100%
   //z-index: 10
   //bottom: -4px
-  border-bottom: 2px solid $histogram_bar_border-color
-  opacity: 0
-  visibility: hidden
-  display: none
-  width: $body_width
+  //border-bottom: 2px solid $histogram_bar_border-color  
   //+single-transition
-
-  %m-histogram-label
-    position: absolute
-    color: $histogram_bar_color
-    +font-size(-1)
-    @extend %bolded
-    margin-left: 5px
-    //width: 3 * $grid_major
-    //text-transform: uppercase
-    //bottom: 0
-
-  .m-histogram-label-support
-    @extend %m-histogram-label
-    top: -20px
-    //text-align: right
-    //left: -150px
-
-  .m-histogram-label-oppose
-    @extend %m-histogram-label
-    //text-align: left
-    //right: -150px
-
 
   .m-histogram-bar
     width: $histogram_bar_width
@@ -2399,27 +2377,26 @@ $histogram_bar_color: #6E6E6E
     //border-bottom: none
     background-color: $comp_color //$histogram_bar_color
     //+transition(background-color .5s linear, color .5s linear, border-radius .5s linear)
-    +bubble($community_color, $dark_community_color, right, $include_bg: false)
+    +bubble(lighten($community_color,10%), $dark_community_color, right, $include_bg: false)
     //z-index: 1
     border-radius: 0px
     text-align: center
     display: inline-block
-    bottom: 0
     vertical-align: bottom
 
-    .m-bar-percentage
-      display: none
-      visibility: hidden
-      +font-size(-1)
-      color: black//$histogram_bar_color
-      position: absolute
-      left: 3px
-      //top: $histogram_bar_width / 2 - 13px
-      bottom: -3px
-      width: 200px
-      font-variant: small-caps
-      .m-bar-percentage-number
-        font-weight: bold
+    // .m-bar-percentage
+    //   display: none
+    //   visibility: hidden
+    //   +font-size(-1)
+    //   color: black//$histogram_bar_color
+    //   position: absolute
+    //   left: 3px
+    //   //top: $histogram_bar_width / 2 - 13px
+    //   bottom: -3px
+    //   width: 200px
+    //   font-variant: small-caps
+    //   .m-bar-percentage-number
+    //     font-weight: bold
 
 
     &.m-bar-is-selected .t-bubble
@@ -2428,22 +2405,24 @@ $histogram_bar_color: #6E6E6E
     .t-bubble
       display: none
       position: absolute
-      left: -5.5px
-      right: auto
-      top: 50%
-      margin-top: -10px
+      left: 50%
+      margin-left: -15px
+      //top: 50%
+      //margin-top: -10px
       z-index: 999999
+      top: auto
+      bottom: -37px
+      width: 30px
+
+      .t-bubble-spacing
+        display: none
 
 
-    .m-bar-close
-      display: none
-      position: absolute
+    // &:hover, &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
+    //   +chalkboard
 
-    &:hover, &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
-      //+chalkboard
-
-    &:hover
-      //border-color: #414141
+    // &:hover
+    //   border-color: #414141
 
     $base_selected_bar_color: #B1B18F
     $base_selected_bar_color: #7F7F56
@@ -2451,8 +2430,8 @@ $histogram_bar_color: #6E6E6E
     $hue_spread: 18
 
     &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
-      background-color: $community_color
-      border-color: $dark_community_color
+      background-color: #777 //$community_color
+      border-color: #555 //$dark_community_color
       //border-color: black
 
       // &#bucket-0
@@ -2509,41 +2488,32 @@ $histogram_bar_color: #6E6E6E
       //border-radius: 0 5px 5px 0
 
 
-      .m-bar-close
-        display: block
-        display: none
-        right: -10px
-        top: -2px
-        //z-index: 1
-        +font-size(-3)
-        color: #999
-
-    //.personal_position.update
-      bottom: 0
-      left: 30px
-      position: absolute
-      z-index: 50
-      display: none
-      //left: 50%
-      //margin-left: 10px
-      .label
-        +font-size(-1)
-        position: relative
-        margin-left: 4px
-        .arrow
-          position: absolute
-          +font-size(2)
-          @extend %bolded
-          left: -25px
-          top: 8px
-      .revise 
-        position: relative
-        top: -2px
-        a
-          text-transform: lowercase
-          @extend %bolded
-          text-decoration: underline
-          +font-size(-2)
+    // .personal_position.update
+    //   bottom: 0
+    //   left: 30px
+    //   position: absolute
+    //   z-index: 50
+    //   display: none
+    //   //left: 50%
+    //   //margin-left: 10px
+    //   .label
+    //     +font-size(-1)
+    //     position: relative
+    //     margin-left: 4px
+    //     .arrow
+    //       position: absolute
+    //       +font-size(2)
+    //       @extend %bolded
+    //       left: -25px
+    //       top: 8px
+    //   .revise 
+    //     position: relative
+    //     top: -2px
+    //     a
+    //       text-transform: lowercase
+    //       @extend %bolded
+    //       text-decoration: underline
+    //       +font-size(-2)
       
 
 .m-bar-is-soft-selected .m-bar-people .m-bar-person
@@ -2564,6 +2534,26 @@ $histogram_bar_color: #6E6E6E
     +rotate(180deg)  
     opacity: .15
 
+.m-histogram-base
+  margin-left: -$grid_xs/2
+  height: $vertical_baseline
+  width: $body_width + $grid_xs
+  border-radius: 10px
+  background-color: lighten($comp_color, 25%)
+  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: #aaa, $inset: true)
+
+.m-histogram-base-label
+  +font-size(-2)
+  text-transform: uppercase
+  position: absolute
+  //bottom: -6px
+  font-weight: bold
+  color: #777
+
+.m-histogram-base-label-support
+  left: -100px
+.m-histogram-base-label-oppose
+  right: -100px
 
 
 // POINTS / WHY

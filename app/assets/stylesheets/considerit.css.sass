@@ -2546,10 +2546,10 @@ $histogram_bar_color: #6E6E6E
           +font-size(-2)
       
 
-.m-bar-is-soft-selected .m-bar-people .m-bar-person .avatar
+.m-bar-is-soft-selected .m-bar-people .m-bar-person
   opacity: .75
 
-.m-bar-is-hard-selected .m-bar-people .m-bar-person .avatar
+.m-bar-is-hard-selected .m-bar-people .m-bar-person
   opacity: .9
 
 .m-bar-people
@@ -2569,61 +2569,10 @@ $histogram_bar_color: #6E6E6E
     margin: auto
     display: inline-block
     position: relative
-
-    .avatar
-      opacity: .10
+    opacity: .15
+    
       //+grayscale
       //visibility: hidden
-
-
-  %m-bar-person-details
-    display: none
-
-    text-align: center  
-    cursor: pointer
-    //don't use +font-size here because of the earlier 0% declaration
-    font-size: 16px
-    background-color: black
-    color: #e1e1e1
-    position: absolute
-    z-index: 1
-    top: 100%
-    left: 50%
-    margin-top: 14px
-    +border-radius(5px)
-    padding: 5px $grid_xs
-    +single-box-shadow($color: #313131)
-
-    &:after
-      content: "\25B2"
-      position: absolute
-      padding: 0 4px 0
-      top: -13px
-      color: black
-      //z-index: 5
-
-    .m-bar-person-explanation
-      padding: 5px 0 0 0 
-      +font-size(-1)
-
-      p
-        margin-bottom: 6px
-        text-align: left
-
-  .m-person-has-explanation .m-bar-person-details
-    @extend %m-bar-person-details
-    margin-left: -150px
-    width: 400px
-    &:after
-      left: 200px - 12
-
-  .m-person-has-no-explanation .m-bar-person-details
-    @extend %m-bar-person-details
-    margin-left: -75px
-    width: 150px
-    &:after
-      left: 62px
-
 
 
 // POINTS / WHY

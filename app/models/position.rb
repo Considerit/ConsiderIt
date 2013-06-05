@@ -85,6 +85,24 @@ class Position < ActiveRecord::Base
     end
   end   
 
+
+  def self.purge
+    User.all.each do |u|
+      proposals = u.positions.map {|p| p.proposal_id}.uniq
+      proposals.each do |prop|
+        pos = u.positions.where(:proposal_id => prop)
+        if pos.where(:published => true).count > 1
+          last = pos.order(:updated_at).last
+          pos.where('id != (?)', last.id).each do |p|
+            p.published = false
+            pp p.user_id
+            p.save
+          end
+        end
+      end
+    end
+
+  end
 end
 
 

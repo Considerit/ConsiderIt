@@ -29,6 +29,7 @@ class Dashboard::AdminController < Dashboard::DashboardController
         :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
     end
 
+
     render :json => result
   end
 
@@ -59,6 +60,9 @@ class Dashboard::AdminController < Dashboard::DashboardController
       user.save
       result = { :role_list => user.role_list } 
     end
+
+    pp result
+
     render :json => result
   end
 

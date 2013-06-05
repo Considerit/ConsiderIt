@@ -45,7 +45,10 @@ class ConsiderIt.AppView extends Backbone.View
     'click .l-navigate-back' : 'go_back'
 
   go_back : ->
-    window.history.go(-1)
+    if @crumbs.length < 3
+      ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
+    else
+      window.history.go(-1)
 
   route_changed : (route, router) ->
     return if route == 'route'

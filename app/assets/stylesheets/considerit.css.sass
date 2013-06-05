@@ -188,20 +188,6 @@ blockquote
 
 /* SHARED STYLES */
 
-=superbutton
-  //+sassy-button("glass", 5px, 12px, lighten($comp_color, 8%), $comp_color)
-  +sassy-button("glass", 5px, inherit, darken($position_button_bg, 8%), darken($position_button_bg, 16%))
-
-  //+background-image(linear-gradient(lighten($comp_color, 5%), $comp_color))
-  // background-color: lighten($comp_color, 5%)
-  // +transition(opacity .5s linear, color .5s linear, background-color .5s linear, box-shadow .5s linear)
-
-  // +box-shadow(3px 3px 6px rgba(0, 0, 0, .20), 0px 0px 3px rgba(0, 0, 0, .40), -8px -8px 10px white inset, 0px 25px 25px #999 inset, 0px 20px 2px #777 inset, 0px 5px 12px #999 inset  )
-
-
-  // &:hover
-  //   +background-image(linear-gradient(lighten($comp_color, 15%) 0%, lighten($comp_color, 5%) 20%))
-  //   background-color: lighten($comp_color, 15%)
 
 
 %chalkboard
@@ -2779,7 +2765,6 @@ $static_position_width: $body_width+$grid_major
   position: fixed
   top: 2 * $vertical_baseline
 
-  z-index: 10000
   left: 50%
   margin-left: - $static_position_width / 2
   width: $static_position_width

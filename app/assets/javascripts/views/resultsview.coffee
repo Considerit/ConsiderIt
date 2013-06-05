@@ -239,7 +239,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
     'click .m-histogram-bar:not(.m-bar-is-hard-selected)' : 'select_bar'
     'click .m-bar-is-hard-selected' : 'deselect_bar'
 
-    'mouseleave .m-histogram' : 'deselect_bar'
+    'mouseleave .m-histogram-bar' : 'deselect_bar'
     'keypress' : 'deselect_bar'
     'click .point_filter:not(.selected)' : 'sort_all'
     'click .m-point-wrap' : 'navigate_point_details'

@@ -576,10 +576,6 @@
           %span.m-bar-percentage-group
             {{ ConsiderIt.Position.stance_name_for_bar(6-bucket) }}
 
-
-        .m-bar-close
-          x
-
         (( if (bar.positions.length > 0) { ))
         %ul.m-bar-people
           / (( _.each( _.range(bar.num_ghosts), function(ghost){  ))
@@ -592,18 +588,8 @@
 
           (( var has_explanation = position.get('explanation') && position.get('explanation').length > 0, expl_clss = has_explanation ? 'm-person-has-explanation' : 'm-person-has-no-explanation'; ))
 
-          %li.m-bar-person{:class=>"bucket-{{bucket}} {{expl_clss}}", :id=>"user-{{user.id}}", :user => "{{user.id}}"}
-            %span.avatar{ :'data-id' => "{{user.id}}", :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}   
-                   
-            .m-bar-person-details
-              
-              %strong
-                {{user.get('name')}}
+          %li.m-bar-person.avatar{:class=>"bucket-{{bucket}} {{expl_clss}}", :'data-target' => "user_profile_page", :'data-id' => "{{user.id}}", :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
 
-              (( if ( has_explanation ) { ))
-              %blockquote.m-bar-person-explanation
-                {{  position.get('explanation') }}
-              (( } ))
           (( } ))
           (( }); ))
         (( } ))

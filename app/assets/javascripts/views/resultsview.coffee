@@ -234,16 +234,20 @@ class ConsiderIt.ExplorerView extends Backbone.View
   events : 
     'mouseenter .m-point-results' : 'highlight_point_includers'
     'mouseleave .m-point-results' : 'highlight_point_includers'
-    #'mouseenter .m-bar-is-hard-selected .m-bar-person' : 'show_user_explanation' 
-    #'mouseleave .m-bar-is-hard-selected .m-bar-person' : 'hide_user_explanation' 
+
     'mouseenter .m-histogram-bar:not(.m-bar-is-selected)' : 'select_bar'
     'click .m-histogram-bar:not(.m-bar-is-hard-selected)' : 'select_bar'
     'click .m-bar-is-hard-selected' : 'deselect_bar'
-    #'mouseleave .m-bar-is-soft-selected' : 'deselect_bar'
+
     'mouseleave .m-histogram' : 'deselect_bar'
     'keypress' : 'deselect_bar'
     'click .point_filter:not(.selected)' : 'sort_all'
     'click .m-point-wrap' : 'navigate_point_details'
+    'mouseenter .m-histogram-bar:not(.m-bar-is-hard-selected) [data-target="user_profile_page"]' : 'prevent_profile'
+
+  prevent_profile : (ev) ->
+    ev.stopPropagation()
+    $(ev.currentTarget).parent().trigger('mouseenter')
 
   navigate_point_details : (ev) ->
     point_id = $(ev.currentTarget).closest('.pro, .con').data('id')
@@ -346,8 +350,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
     aggregate_heading.siblings('.m-results-pro-con-list-who-others').hide()
     aggregate_heading.show()
 
-    $selected_bar.find( '.m-bar-person-details:visible' ).hide()
-
     @$el.find('.l-message-speaker').css('z-index': '')
 
     hiding.css 'visibility', ''
@@ -357,13 +359,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
     $(document).off 'click.histogram'
     $(document).off 'keyup.histogram'
   
-
-  show_user_explanation : (ev) ->
-    $(ev.currentTarget).find('.m-bar-person-details').show()
-
-  hide_user_explanation : (ev) ->
-    $(ev.currentTarget).find('.m-bar-person-details').hide()
-
   highlight_point_includers : (ev) ->
     #return if @$el.find('.m-point-expanded').length > 0
 

@@ -215,13 +215,13 @@ class Proposal < ActiveRecord::Base
     self.num_supporters = positions.published.where("stance_bucket > ?", 3).count
     self.num_opposers = positions.published.where("stance_bucket < ?", 3).count
 
-    provocative = num_perspectives.to_f / (num_perspectives + num_unpublished_positions)
+    provocative = num_perspectives == 0 ? 0 : num_perspectives.to_f / (num_perspectives + num_unpublished_positions)
 
     latest_positions = positions.published.where(:created_at => 1.week.ago.beginning_of_week.advance(:days => -1)..1.week.ago.end_of_week).order('created_at DESC')    
     late_perspectives = latest_positions.count
     late_supporters = latest_positions.where("stance_bucket > ?", 3).count
     self.trending = late_perspectives == 0 ? 0 : Math.log2(late_supporters + 1) * late_supporters.to_f / late_perspectives
-    
+
     # combining provocative and trending for now...
     self.trending = ( self.trending + provocative ) / 2
 
@@ -231,7 +231,7 @@ class Proposal < ActiveRecord::Base
     self.contested = -4 * polarization ** 2 + 1
 
 
-    self.participants = positions(:select => [:user_id]).published.map {|x| x.user_id}.compact.to_s
+    self.participants = positions(:select => [:user_id]).published.map {|x| x.user_id}.uniq.compact.to_s
     tc = points(:select => [:id]).cons.published.order('score DESC').limit(1)[0]
     tp = points(:select => [:id]).pros.published.order('score DESC').limit(1)[0]
     self.top_con = !tc.nil? ? tc.id : nil

@@ -40,38 +40,38 @@ $default-box-shadow-inset    : false
   +scaleX(-1)
   +filter(FlipH)
 
-=curl-shadow
-  +single-box-shadow($spread: 1px, $color: rgba(black, 0.2))
-  position: relative
+// =curl-shadow
+//   +single-box-shadow($spread: 1px, $color: rgba(black, 0.2))
+//   position: relative
 
-  &:before, &:after
-    content: ""
-    position: absolute
-    width: 165px
-    height: 100px
-    z-index: -1
-    +single-box-shadow($vhoff: 14px, $color: rgba(black, 0.3))
-    bottom: 12px
+//   &:before, &:after
+//     content: ""
+//     position: absolute
+//     width: 165px
+//     height: 100px
+//     z-index: -1
+//     +single-box-shadow($vhoff: 14px, $color: rgba(black, 0.3))
+//     bottom: 12px
 
-  &:before
-    +rotate(-5)
-    +skew(-5, -5)
+//   &:before
+//     +rotate(-5)
+//     +skew(-5, -5)
 
-  &:after
-    +rotate(5)
-    +skew(5, 5)
+//   &:after
+//     +rotate(5)
+//     +skew(5, 5)
 
-  &.pro
-    &:after
-      right: 1px
-    &:before
-      left: -1px
+//   &.pro
+//     &:after
+//       right: 1px
+//     &:before
+//       left: -1px
 
-  &.con
-    &:after
-      right: -2px
-    &:before
-      left: 1px
+//   &.con
+//     &:after
+//       right: -2px
+//     &:before
+//       left: 1px
 
 // Browsers render the inset colors so differently...
 =inset-border($base_color)

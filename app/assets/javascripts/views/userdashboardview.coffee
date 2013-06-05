@@ -302,14 +302,14 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   user_updated : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
     ConsiderIt.update_current_user(data.user)
-    if @current_context
-      @change_context @current_context
+    @access_dashboard_edit_profile()
+    #@render() if @current_context
 
   account_updated : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
     ConsiderIt.current_tenant.set(data.account)
-    if @current_context
-      @render()
+    @access_dashboard_app_settings()
+    #@render() if @current_context
 
     #@$content_area.find('.save_block').append('<div class="flash_notice">Account updated</div>').delay(2000).fadeOut('slow')
 

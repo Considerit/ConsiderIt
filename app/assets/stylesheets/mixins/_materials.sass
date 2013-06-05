@@ -14,10 +14,10 @@ $yellow_postit: hsl(55, 81%, 79%)
 
 
 =post_it_button
-  color: #888
+  //color: #888
   +button(darken(desaturate($yellow_postit, 60%), 35%), desaturate($yellow_postit, 20%))
   &:hover
-    color: #333
+    //color: #333
 
 =post_it($repeated: 0)
   $color: $yellow_postit
@@ -45,10 +45,10 @@ $yellow_postit: hsl(55, 81%, 79%)
     &:hover
       color: #333  
 
-  .unobtrusive_edit_form .unobtrusive_edit .save_block input[type="submit"]
-    border-color: #777
-    font-weight: normal
-    +post_it_button  
+  // .unobtrusive_edit_form .unobtrusive_edit .save_block input[type="submit"]
+  //   border-color: #777
+  //   font-weight: normal
+  //   +post_it_button  
 
   
   input, textarea

@@ -1,3 +1,5 @@
+@import "mixins"
+
 .l-dialog-prompt
   a
     span
@@ -13,23 +15,28 @@ $dialog_width: $grid_major * 6 + $grid_minor * 6
 
 .l-dialog-detachable
   position: fixed
-  top: 0
-  z-index: 10000
+  top: 2 * $vertical_baseline
   left: 50%
   margin-left: - $dialog_width / 2
 
-  border: 1px solid #aaa
-  +single-box-shadow($voff: 0)
+  max-height: 600px
+  overflow-y: scroll
+
+  z-index: 9999
+  background-color: $community_color
+  border: 1px solid desaturate(darken($comp_color, 16%), 100%)
   border-radius: 5px
+  +single-box-shadow
+
   width: $dialog_width
   text-align: center
-  margin-top: 3 * $vertical_baseline
-  padding: $vertical_baseline $grid_minor
-  background-color: white
 
   h1 
-    +font-size(2)
-    margin-bottom: $vertical_baseline
+    +font-size(1)
+    padding: $vertical_baseline / 2 $grid_xs
+    background-color: $comp_color
+    color: #eaeaea
+
 
   .option
     margin: $vertical_baseline/2 0

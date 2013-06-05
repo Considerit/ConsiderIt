@@ -698,17 +698,15 @@
       .field
         = f.label :bio, "About you"
         = f.text_area :bio, :rows => 5, :value => "{{ user.bio }}"
-                  
-      %table
-        %tr
-          %td
-            .avatar
-              %img{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+    
+      .field
+        = f.label :avatar, "Your picture" 
+        %br
+        = f.file_field :avatar, :title => 'Upload a profile picture'
 
-          %td.fileinput           
-            .field
-              = f.label :avatar, "Your picture"
-              = f.file_field :avatar, :title => 'Upload a profile picture'
+      // .avatar
+      //   %img{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+
 
       .save_block
         = f.submit "Save changes", :class => 'button'

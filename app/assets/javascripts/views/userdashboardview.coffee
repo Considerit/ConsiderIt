@@ -324,6 +324,8 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     user = @users_by_roles_mask.get($(ev.currentTarget).data('id'))
     
     @$dashboard_el.append @templates['tpl_dashboard_user_roles_edit']({ user: user })
+    $dialog_window = @$dashboard_el.children('.l-dialog-detachable:last')
+    $dialog_window.data('parent', $(ev.currentTarget))
 
     @_check_box user, null, 'user_role_admin', user.has_role('admin') || user.has_role('superadmin')
     @_check_box user, null, 'user_role_specific', !user.has_role('admin') && user.roles_mask > 0
@@ -337,12 +339,14 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     $('.m-user_roles-edit_form').remove()
 
   role_edited : (ev) ->
-    $(ev.currentTarget).parents('.m-user_roles-edit_form').find('.option.specific input[type="radio"]').trigger('click')
+    $(ev.currentTarget).closest('.m-user_roles-edit_form').find('.option.specific input[type="radio"]').trigger('click')
 
   role_changed : (data, response, xhr) ->
-    $dialog_window = $(this).parents('.l-dialog-detachable')
-    $field = $dialog_window.data('parent').children('a').find('span')
-    role = response.role_list
+    result = $.parseJSON(response.responseText)
+
+    $dialog_window = @$dashboard_el.children('.l-dialog-detachable:last')
+    $field = $dialog_window.data('parent').find('.m-user-roles-list')
+    role = result.role_list
 
     $field.text( role )
 

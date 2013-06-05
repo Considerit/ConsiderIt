@@ -1950,13 +1950,13 @@ $m-point-expanded-width: $body_width + 150
 
 // Proposal admin strip
 .m-proposal-admin_strip
-  +font-size(-3)
   .l-dialog-prompt, .m-proposal-admin_label, .m-delete_proposal
     display: inline-block
     padding: 0 $grid_xs / 2
 
   .l-dialog-prompt-label, .m-delete_proposal, .m-proposal-admin_label
     @extend %m-proposal-strip-item
+    +font-size(-3)
 
   .l-dialog-prompt-label span, .m-delete_proposal
     text-decoration: underline
@@ -2364,6 +2364,9 @@ $histogram_bar_color: #6E6E6E
     background-color: $comp_color //$histogram_bar_color
     //+transition(background-color .5s linear, color .5s linear, border-radius .5s linear)
     +bubble(lighten($community_color,10%), $dark_community_color, right, $include_bg: false)
+  
+    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: #777, $inset: true)
+
     //z-index: 1
     border-radius: 0px
     text-align: center

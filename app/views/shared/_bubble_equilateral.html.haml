@@ -19,9 +19,9 @@
   - points_spacing = "#{xpos1 + spacingoffsetx},#{ypos1 - border_width - 1} #{xpos1 + spacingoffsetx},#{ypos3 + border_width * 2 - 2} #{xpos2 + spacingadjustx},#{ypos2} #{xpos1 + spacingoffsetx}, #{ypos1 - border_width - 1}"
 
   %svg{ :xmlns => "http://www.w3.org/2000/svg", :width => svg_size, :height => 2 * svg_size, :class => "t-bubble", :version => "1.1", :baseProfile => "full" }
-
-    %polygon{ :class => "t-bubble-spacing", :points => points_spacing }
-    %polygon{ :class => "t-bubble-border", :points => points_border }
-    %polygon{ :class => "t-bubble-inner", :points => points }
+    %g{ :transform => "translate(0, #{svg_size}) rotate(-90)" }
+      %polygon{ :class => "t-bubble-spacing", :points => points_spacing }
+      %polygon{ :class => "t-bubble-border", :points => points_border }
+      %polygon{ :class => "t-bubble-inner", :points => points }
 
 

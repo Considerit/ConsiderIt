@@ -32,7 +32,7 @@ ActiveSupport::Notifications.subscribe("new_published_proposal") do |*args|
 end
 
 def new_published_proposal_tweet(proposal)
-  proposal_link = Rails.application.routes.url_helpers.new_proposal_position_url(proposal.long_id, :host => proposal.account.host_with_port)
+  proposal_link = Rails.application.routes.url_helpers.new_position_proposal_url(proposal.long_id, :host => proposal.account.host_with_port)
   proposal_link = shorten_link(proposal_link)
 
   space_for_body = 140 - proposal_link.length - 23

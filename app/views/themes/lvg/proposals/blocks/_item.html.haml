@@ -5,7 +5,7 @@
 
 %li{ :id => "proposal_item-#{proposal.id}", :class => "proposal_item horizontal #{has_already_taken_stance ? 'finished' : 'not-finished'} #{proposal==@proposal ? 'active' : 'not-active'} #{style}" }
 
-  %a{ :href => (!proposal.active && Rails.env != 'development') || has_already_taken_stance ? proposal_path(proposal.long_id) : new_proposal_position_path(proposal.long_id), :title => "Think through #{proposal.category} #{proposal.designator}"}
+  %a{ :href => (!proposal.active && Rails.env != 'development') || has_already_taken_stance ? proposal_path(proposal.long_id) : new_position_proposal_path(proposal.long_id), :title => "Think through #{proposal.category} #{proposal.designator}"}
 
     - if style == 'vertical'
       .short_name

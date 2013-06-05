@@ -32,7 +32,7 @@ Account.all.each do |accnt|
     #   end  
 
     accnt.proposals.where(:active => true).each do |prop|
-      add new_proposal_position_path(prop.long_id), {:priority => 0.7, :changefreq => 'daily'}
+      add new_position_proposal_path(prop.long_id), {:priority => 0.7, :changefreq => 'daily'}
       add proposal_path(prop.long_id), {:priority => 0.4, :changefreq => 'daily'}
     end
 
@@ -40,7 +40,7 @@ Account.all.each do |accnt|
     add '/home/copromoters', {:priority => 0.2, :changefreq => 'daily'}
 
     accnt.proposals.where(:active => false).each do |prop|
-      add new_proposal_position_path(prop.long_id), {:priority => 0.1, :changefreq => 'yearly'}
+      add new_position_proposal_path(prop.long_id), {:priority => 0.1, :changefreq => 'yearly'}
       add proposal_path(prop.long_id), {:priority => 0.1, :changefreq => 'yearly'}
     end
 

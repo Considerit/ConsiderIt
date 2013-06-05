@@ -5,6 +5,6 @@
 %urlset{:xmlns => "http://www.sitemaps.org/schemas/sitemap/0.9"}
   - for proposal in @proposals
     %url
-      %loc #{new_proposal_position_url(proposal)}
+      %loc #{new_position_proposal_url(proposal)}
       %changefreq never
       %priority 0.5

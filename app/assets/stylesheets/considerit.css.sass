@@ -350,9 +350,9 @@ html
   font-size: 0
   line-height: 0
 
-.l-overlay
-  position: absolute
-  z-index: 9999
+// .l-overlay
+//   position: absolute
+//   z-index: 9999
 
 .l-tooltip
   display: none
@@ -461,50 +461,44 @@ html
 
 #registration_overlay
   width: 820px
-  padding: 8px
+  //padding: 8px
 
-  +wall(white)
-  +border-radius(5px)
-  +single-box-shadow
+  //+wall(white)
+  //+border-radius(5px)
+  //+single-box-shadow
 
-  .m-user-accounts-cancel
-    position: absolute
-    right: -17px
-    top: -16px
-    border-radius: 50%
-    border: 3px solid white
-    width: 30px
-    height: 30px
-    padding-top: 2px
-    +single-box-shadow
-    background-color: #555
-    color: white
-    z-index: 1
-    text-align: center
-    &:hover
-      background-color: black  
+  // .m-user-accounts-cancel
+  //   position: absolute
+  //   right: -17px
+  //   top: -16px
+  //   border-radius: 50%
+  //   border: 3px solid white
+  //   width: 30px
+  //   height: 30px
+  //   padding-top: 2px
+  //   +single-box-shadow
+  //   background-color: #555
+  //   color: white
+  //   z-index: 1
+  //   text-align: center
+  //   &:hover
+  //     background-color: black  
 
-.m-user-accounts-wrap
-  +on_chalkboard
-  +chalkboard
 
-  text-align: center
-  padding: $vertical_baseline * 2 $grid_xs * 2
-  position: relative
 
-  .m-user-accounts-heading
-    +font-size(4)
-    margin-bottom: $vertical_baseline
+// .m-user-accounts-wrap
+//   //+on_chalkboard
+//   //+chalkboard
+
+//   //text-align: center
+//   //padding: $vertical_baseline * 2 $grid_xs * 2
+//   //position: relative
+
+//   // .m-user-accounts-heading
+//   //   //+font-size(4)
+//   //   margin-bottom: $vertical_baseline
 
 .m-user-accounts-choose-method
-  .m-user-accounts-switch-method
-    position: absolute
-    right: $grid_xs
-    top: $vertical_baseline / 2
-
-    +font-size(-2)
-    span
-      text-decoration: underline
 
   .m-user-accounts-login-options
     +nude-list
@@ -537,33 +531,29 @@ $membership_card_height: 278px
   display: none
 
   .m-user-accounts-form-fields-wrap
-    input[type="text"], input[type="email"], input[type="password"], textarea
-      padding: 1px 5px
-      background-color: transparent
-      border: 1px solid rgba(white, .5)
-      margin-bottom: 2px   
-      color: white
+    margin: $vertical_baseline 0
 
     .email_field input, .password_field input
-      +font-size(2)
+      +font-size(0)
 
   input[type="submit"]
-    margin: $vertical_baseline 0
-    +button
+    margin-bottom: $vertical_baseline
+    // +button
     +superbutton
-    padding: $vertical_baseline/2 $grid_xs * 2
-    color: #eee
-    +font-size(3)
+    // padding: $vertical_baseline/2 $grid_xs * 2
+    // color: #eee
+    +font-size(0)
 
 .m-user-accounts-complete-signin
   .email_field, .password_field
-    display: inline
     position: relative
 
   .forget_password_prompt
     position: absolute
-    left: 0
-    bottom: - 2 * $vertical_baseline
+    right: 64px
+    top: $vertical_baseline/2
+    //bottom: - 2 * $vertical_baseline
+    +font-size(-3)
 
 .m-user-accounts-complete-register
   .m-user-accounts-form
@@ -571,15 +561,18 @@ $membership_card_height: 278px
 
   .m-user-accounts-form-fields-wrap
     width: $membership_card_width
-    height: $membership_card_height
-    background-image: $background
-    border-radius: 5px
-    border-top: 1px solid #ccc
-    border-bottom: 1px solid black
-    padding: $vertical_baseline $grid_xs
-    margin: auto
-
+    //height: $membership_card_height
+    //background-image: $background
+    
     box-shadow: 0 1px 2px rgba(black, .35), inset 0 0 8px 2px rgba(white, .5)
+    background-color: $initiator_color
+
+    border-radius: 5px
+    border: 1px solid $dark_initiator_color
+    border-top: 1px solid lighten($dark_initiator_color, 15%)
+    border-bottom: 1px solid darken($dark_initiator_color, 15%)
+    padding: $vertical_baseline $grid_xs
+    margin: $vertical_baseline auto 0 auto
 
     .m-user-accounts-logo
       display: block
@@ -601,6 +594,7 @@ $membership_card_height: 278px
       width: 100%
       &.ui-state-valid
         border-color: transparent
+        background-color: transparent
 
     .name_field input
       +font-size(4)
@@ -659,6 +653,7 @@ $membership_card_height: 278px
     margin: $vertical_baseline auto
 
     .m-user-accounts-pledge
+      margin-bottom: $vertical_baseline
       //.m-user-accounts-pledge-heading
       //  +font-size(2)
       //  @extend %bolded
@@ -668,7 +663,7 @@ $membership_card_height: 278px
         list-style: none
 
         li
-          color: white
+          //color: white
           padding: 0 $grid_xs
 
           &:hover
@@ -2765,37 +2760,39 @@ $filter_width: 371px
 
 $static_position_width: $body_width+$grid_major
 .m-static-position
-  position: fixed
-  top: 2 * $vertical_baseline
+  // position: fixed
+  // top: 2 * $vertical_baseline
+  
+  text-align: left
 
-  left: 50%
+  // left: 50%
   margin-left: - $static_position_width / 2
   width: $static_position_width
-  max-height: 600px
-  overflow-y: scroll
+  // max-height: 600px
+  // overflow-y: scroll
 
   //margin-left: $margin_width - $grid_major / 2
-  z-index: 9999
-  background-color: $community_color
-  border: 1px solid desaturate(darken($comp_color, 16%), 100%)
-  border-radius: 5px
-  +single-box-shadow
+  // z-index: 9999
+  // background-color: $community_color
+  // border: 1px solid desaturate(darken($comp_color, 16%), 100%)
+  // border-radius: 5px
+  // +single-box-shadow
   //color: #eaeaea
 
   .m-static-position-stance
-    +font-size(1)
-    padding: $vertical_baseline / 2 $grid_xs
-    background-color: $comp_color
-    color: #eaeaea
-    font-weight: bold
+    // +font-size(1)
+    // padding: $vertical_baseline / 2 $grid_xs
+    // background-color: $comp_color
+    // color: #eaeaea
+    // font-weight: bold
 
-    .cancel
-      float: right
-      +font-size(-3)
+    // .cancel
+    //   float: right
+    //   +font-size(-3)
 
 
-  .m-static-position-reasons
-    padding: $vertical_baseline / 2 $grid_xs
+  // .m-static-position-reasons
+  //   padding: $vertical_baseline / 2 $grid_xs
 
   .m-static-position-reasons-label
     font-weight: bold

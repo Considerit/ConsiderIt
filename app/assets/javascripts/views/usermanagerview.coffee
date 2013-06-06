@@ -135,7 +135,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
 
   add_registration_overlay : () ->
     me = ConsiderIt.app.usermanagerview
-    $overlay = $('<div class="l-overlay" id="registration_overlay">')
+    $overlay = $('<div class="l-dialog-detachable" id="registration_overlay">')
     $('#l-wrap').prepend($overlay)
     $overlay
 

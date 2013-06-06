@@ -33,11 +33,32 @@ $dialog_width: $grid_major * 6 + $grid_minor * 6
 
   +font-size(0)
 
-  h1 
+
+
+  .l-dialog-title 
     +font-size(1)
     padding: $vertical_baseline / 2 $grid_xs
     background-color: $comp_color
     color: #eaeaea
+    a:hover
+      color: white
+
+  .l-dialog-title-sub
+    color: #bbb
+    +font-size(-5)
+    span
+      text-decoration: underline
+
+  .l-dialog-close
+    position: absolute
+    right: $grid_xs
+    //float: right
+    +font-size(-4)
+
+
+  .l-dialog-body
+    padding: $vertical_baseline / 2 $grid_xs
+
 
 
   .option

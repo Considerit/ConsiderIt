@@ -3,7 +3,7 @@ class ConsiderIt.ResultsView extends Backbone.View
   PARTICIPANT_HEIGHT : 130
 
   initialize : (options) ->
-    num_participants = ($.parseJSON(@model.get('participants'))||[]).length
+    num_participants = @model.participants().length
     @tile_size = Math.min 50, ConsiderIt.utils.get_tile_size(@PARTICIPANT_WIDTH, @PARTICIPANT_HEIGHT, num_participants)
 
   render : ->     
@@ -139,7 +139,7 @@ class ConsiderIt.SummaryView extends Backbone.View
         top_pro : @model.top_pro 
         top_con : @model.top_con
         tile_size : @tile_size   
-        participants : _.sortBy($.parseJSON(@model.get('participants')), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
+        participants : _.sortBy(@model.participants(), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
         avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'original')
 
         }))
@@ -171,7 +171,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
     @$el.html ConsiderIt.ExplorerView.template _.extend {}, @model.attributes, 
       histogram : @histogram
       tile_size : @tile_size
-      participants : _.sortBy($.parseJSON(@model.get('participants')), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
+      participants : _.sortBy(@model.participants(), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
 
     @views =
       pros : new ConsiderIt.PaginatedPointListView({collection : @pointlists.pros, el : @$el.find('.m-pro-con-list-propoints'), location: 'results', proposal : @model})

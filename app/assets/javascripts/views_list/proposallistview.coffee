@@ -1,5 +1,6 @@
 class ConsiderIt.ProposalListView extends Backbone.CollectionView
   @proposals_header_template = _.template($('#tpl_proposal_list_header').html())
+  @proposals_create_template = _.template($('#tpl_proposal_list_new_conversation').html())
 
   itemView : ConsiderIt.ProposalView
   @childClass : 'm-proposal'
@@ -13,6 +14,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     @sort_proposals()
 
   render : -> 
+    # @undelegateEvents()
     super
     @render_header()
 
@@ -26,9 +28,14 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       selected_filter : @filter_selected
       })
 
+
     @$el.find('.m-proposals-list-header').remove()
       
     @$el.prepend($heading_el)
+
+    if ConsiderIt.roles.is_admin && !@$create_el?
+      @$create_el = ConsiderIt.ProposalListView.proposals_create_template()
+      @$el.prepend(@$create_el)
 
 
   # Returns an instance of the view class
@@ -89,6 +96,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     @collection.updateList()
 
   create_new_proposal : (ev) ->
+    console.log 'CREATING'
     attrs = 
       name : 'Should we ... ?'
       description : "We're thinking about ..."
@@ -97,7 +105,9 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       wait: true
       at: 0
       success: => 
+        console.log 'SUCCESS!'
         new_view = @getViewByModel new_proposal
+        console.log new_view
         new_view.$el.find('.m-proposal-description').trigger('click')
         new_view.$el.attr('data-visibility', 'unpublished')
   

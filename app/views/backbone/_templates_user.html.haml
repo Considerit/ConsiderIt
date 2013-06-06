@@ -93,13 +93,14 @@
 
 
   %script{ :type => "text/template", :id => "tpl_limited_user_sign_in"}
-    %a.m-user-accounts-cancel
-      &#10006;
 
-    .m-user-accounts-wrap.m-user-accounts-choose-method
+    %h2.l-dialog-title
+      Welcome back, {{ConsiderIt.limited_user_email}}! Please sign in. 
 
-      %h2.m-user-accounts-heading
-        Welcome back, {{ConsiderIt.limited_user_email}}! Please sign in. 
+      %a.l-dialog-close{:'data-target' => "close_dialog"}
+        close
+
+    .l-dialog-body.m-user-accounts-choose-method
 
       (( if(auth_method == 'email') { ))
       = form_for :user, :url => user_session_path, :remote => true do |f|
@@ -132,19 +133,24 @@
 
 
   %script{ :type => "text/template", :id => "tpl_user_signin"}
-    %a.m-user-accounts-cancel
-      &#10006;
 
-    .m-user-accounts-wrap.m-user-accounts-choose-method
 
-      %h2.m-user-accounts-heading
-        Welcome back! Select your sign in method below.
+    %h2.l-dialog-title
+      Welcome back! Select your sign in method.
 
-      %a.m-user-accounts-switch-method
-        New here?
+      %a.l-dialog-close{:'data-target' => "close_dialog"}
+        close
 
-        %span
-          Create Account
+      .l-dialog-title-sub
+        %a.m-user-accounts-switch-method
+          New here?
+
+          %span
+            Create Account
+          instead.
+
+    .l-dialog-body.m-user-accounts-choose-method
+
 
       %ul.m-user-accounts-login-options
         %li.m-user-accounts-login-option
@@ -157,7 +163,7 @@
               #{provider.capitalize}
 
 
-    .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-signin
+    .m-user-accounts-complete.m-user-accounts-complete-signin
 
       = form_for :user, :url => user_session_path, :remote => true do |f|
 
@@ -167,11 +173,9 @@
             .m-user-accounts-form-fields-text
 
               .email_field.inlined
-                //= f.label :email, 'Member email'
                 = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
 
               .password_field.inlined
-                //= f.label :email, 'Password'
                 = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
                 %a.forget_password_prompt
                   I forgot. Email me password instructions. 
@@ -194,19 +198,21 @@
 
   - requires_pledge = current_tenant.requires_civility_pledge_on_registration
   %script{ :type => "text/template", :id => "tpl_new_user" }      
-    %a.m-user-accounts-cancel
-      &#10006;
 
-    .m-user-accounts-wrap.m-user-accounts-choose-method
+    %h2.l-dialog-title
+      Welcome! How do you want to register?
+      %a.l-dialog-close{:'data-target' => "close_dialog"}
+        close
 
-      %h2.m-user-accounts-heading
-        Welcome! How do you want to register?
+      .l-dialog-title-sub
+        %a.m-user-accounts-switch-method
+          Returning?
 
-      %a.m-user-accounts-switch-method
-        Returning?
-
-        %span
-          Sign In
+          %span
+            Sign In
+          instead.
+          
+    .l-dialog-body.m-user-accounts-choose-method
 
       %ul.m-user-accounts-login-options
         %li.m-user-accounts-login-option
@@ -224,16 +230,16 @@
                 We don't post to your wall without permission
 
 
-    .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-register
+    .m-user-accounts-complete.m-user-accounts-complete-register
 
-      //%h2.m-user-accounts-heading
+      //%h2
       //  Complete your registration
 
       = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
         .m-user-accounts-form
           .m-user-accounts-form-fields-wrap
 
-            = image_tag current_theme_image_path("logo.png"), :class => "m-user-accounts-logo"
+            // = image_tag current_theme_image_path("logo.png"), :class => "m-user-accounts-logo"
 
             .m-user-accounts-form-fields-text
 
@@ -307,13 +313,14 @@
 
 
   %script{ :type => "text/template", :id => "tpl_new_limited_user" }      
-    %a.m-user-accounts-cancel
-      &#10006;
 
-    .m-user-accounts-wrap.m-user-accounts-complete.m-user-accounts-complete-register
+    %h2.l-dialog-title
+      Welcome, {{ConsiderIt.limited_user_email}}! Please create an account. 
+      %a.l-dialog-close{:'data-target' => "close_dialog"}
+        close
 
-      %h2.m-user-accounts-heading
-        Welcome, {{ConsiderIt.limited_user_email}}! Please create an account. 
+    .l-dialog-body.m-user-accounts-complete.m-user-accounts-complete-register
+
 
       = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
         .m-user-accounts-form
@@ -370,14 +377,15 @@
               %a
                 Terms of Use.
 
+
   %script{ :type => "text/template", :id => "tpl_user_reset_password" }
-    %a.m-user-accounts-cancel
-      &#10006;
+    %h2.l-dialog-title
+      Change your password
+      %a.l-dialog-close{:'data-target' => "close_dialog"}
+        close
 
-    .m-user-accounts-wrap
+    .l-dialog-body
 
-      %h2
-        Change your password
 
       = form_for(:user, :url => password_path(:user), :remote => true, :html => { :method => :put }) do |f|
 

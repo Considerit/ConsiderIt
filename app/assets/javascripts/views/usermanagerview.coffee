@@ -9,11 +9,9 @@ class ConsiderIt.UserManagerView extends Backbone.View
     @$header_el = @$el.find('#m-user-nav')
     #@model.on('change:id', @render)
 
-    @on 'user:signin', -> 
-      $('#registration_overlay').remove()
+    @on 'user:signin', -> $('#registration_overlay').remove()
 
-    @listenTo ConsiderIt.app, 'user:updated', ->
-      @render() #this should only be updated the user-nav
+    @listenTo ConsiderIt.app, 'user:updated', -> @render() #this should only be updated the user-nav
 
   render : -> 
     if @model.id?

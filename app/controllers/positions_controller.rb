@@ -4,8 +4,6 @@ class PositionsController < ApplicationController
 
   respond_to :json
   
-
-  #TODO: review the consequences of this call when doing unobtrusive edit
   def update
     raise 'Cannot update without a logged in user' if !current_user || !current_user.registration_complete
 
@@ -54,7 +52,8 @@ class PositionsController < ApplicationController
     position.follow!(current_user, :follow => true, :explicit => false)
     proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
 
-
+    proposal.update_metrics()
+    
     alert_new_published_position(proposal, position) unless already_published
 
     render :json => position

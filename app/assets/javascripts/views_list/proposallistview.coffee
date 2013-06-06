@@ -96,7 +96,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     @collection.updateList()
 
   create_new_proposal : (ev) ->
-    console.log 'CREATING'
     attrs = 
       name : 'Should we ... ?'
       description : "We're thinking about ..."
@@ -105,7 +104,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       wait: true
       at: 0
       success: => 
-        console.log 'SUCCESS!'
         new_view = @getViewByModel new_proposal
         console.log new_view
         new_view.$el.find('.m-proposal-description').trigger('click')

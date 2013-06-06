@@ -43,7 +43,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
           :result => 'successful',
           #TODO: filter users' to_json?
           :user => current_user,
-          :follows => current_user.follows.all
+          :follows => current_user.follows.all, 
+          :new_csrf => form_authenticity_token
         }
 
         session.delete(:access_token)
@@ -63,7 +64,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
           :result => 'successful',
           #TODO: filter users' to_json
           :user => current_user,
-          :follows => current_user.follows.all
+          :follows => current_user.follows.all, 
+          :new_csrf => form_authenticity_token
         }
 
       else

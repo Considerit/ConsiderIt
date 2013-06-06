@@ -82,10 +82,13 @@
         .m-newpoint-description-wrap
           = text_area_tag :text, nil, :placeholder => "Write a longer description (optional)", :title => "Write a longer description (optional)", :cols => 28, :class => "m-newpoint-description"
 
-        .m-newpoint-anonymous-wrap
-          = label_tag :hide_name, 'conceal your name', :title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'
+        (( var type_label = is_pro ? 'pro' : 'con', label = "hide_name-" + type_label; ))
 
-          = check_box_tag :hide_name, :class => 'm-newpoint-anonymous'
+        .m-newpoint-anonymous-wrap
+          %label{ :for => "{{label}}", :title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'}
+            conceal your name
+
+          %input.m-newpoint-anonymous{ :id => "{{label}}", :name => "{{label}}", :type => "checkbox"}
 
         .m-newpoint-submit
 

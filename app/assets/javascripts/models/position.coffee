@@ -7,7 +7,7 @@ class ConsiderIt.Position extends Backbone.Model
     super
     @attributes.explanation = htmlFormat(@attributes.explanation) if @attributes.explanation
     @proposal = ConsiderIt.app.proposals.get @attributes.proposal_id
-    @written_points = {}
+    @written_points = []
     @viewed_points = {}
 
   url : () ->
@@ -16,7 +16,7 @@ class ConsiderIt.Position extends Backbone.Model
 
   clear : ->
     super
-    @written_points = {}
+    @written_points = []
     @viewed_points = {}
 
   @stance_name_for_bar : (d) ->

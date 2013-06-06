@@ -77,8 +77,10 @@ class ConsiderIt.RegistrationView extends Backbone.View
   second_phase : (signin_method) ->
     @signin_method = signin_method
 
-    @$el.find('.password_field').hide() if signin_method != 'email'
-    @$el.find('.password_field').show() if signin_method == 'email'
+    if signin_method == 'email'
+      @$el.find('.password_field').show() 
+    else
+      @$el.find('.password_field').hide()
 
     @$el.find(".m-user-accounts-authorized-feedback").hide()
     @$el.find(".m-user-accounts-authorized-feedback[data-provider='#{signin_method}']").show()
@@ -97,10 +99,13 @@ class ConsiderIt.RegistrationView extends Backbone.View
 
   update_user : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
+    console.log data
     if data.result != 'rejected'
       ConsiderIt.update_current_user(data.user)
       if not ConsiderIt.current_user.id of ConsiderIt.users
         ConsiderIt.users[ConsiderIt.current_user.id] = ConsiderIt.current_user
+      ConsiderIt.utils.update_CSRF(data.new_csrf)
+
       @remove()
     else
       # TODO: handle gracefully

@@ -59,6 +59,8 @@ class ConsiderIt.Position extends Backbone.Model
 
     @set params
 
+  inclusions : -> $.parseJSON(@get('point_inclusions')) || []
+
 
 
 

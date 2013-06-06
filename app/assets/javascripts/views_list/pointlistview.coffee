@@ -1,5 +1,5 @@
 class ConsiderIt.PointListView extends Backbone.CollectionView
-
+  @empty_template = _.template($('#tpl_pointlist_empty').html())
   @itemView : ConsiderIt.PointView
   @childClass : 'm-point'
 
@@ -41,12 +41,22 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
 
   render : () ->
     super
+    @$el.find('.m-pointlist-empty, .m-pointlist-pagination').remove()
 
     @collection.info()
-    if @$el.find('.m-pointlist-pagination').length == 0 then @$el.append('<div class="m-pointlist-pagination">')
-
+    
+    @$el.append('<div class="m-pointlist-pagination">') if @collection.size() > 0 
+    
     @repaginate()
     @listenTo @collection, 'reset', () => @repaginate()
+
+
+    if @collection.information.totalRecords > 5 #TODO: don't hardcode number of pages
+      @$el.addClass('m-point-list-has-pagination')
+    else if @collection.information.totalRecords == 0
+      @$el.append ConsiderIt.PointListView.empty_template()
+
+
 
   onAdd : (model) ->
     super

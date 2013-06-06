@@ -112,6 +112,7 @@ class ConsiderIt.PositionView extends Backbone.View
       success : (data) =>
         @model.set( data.position )
         @proposal.updated_position @model
+        @trigger 'positionview:submitted_position'
         ConsiderIt.router.navigate(Routes.proposal_path( @model.proposal.long_id ), {trigger: true})
 
       failure : (data) =>

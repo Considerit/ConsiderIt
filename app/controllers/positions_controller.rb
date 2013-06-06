@@ -52,7 +52,8 @@ class PositionsController < ApplicationController
     position.follow!(current_user, :follow => true, :explicit => false)
     proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
 
-    proposal.update_metrics()
+
+    proposal.delay.update_metrics()
     
     alert_new_published_position(proposal, position) unless already_published
 

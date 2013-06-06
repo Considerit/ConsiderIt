@@ -36,7 +36,8 @@ class ConsiderIt.Proposal extends Backbone.Model
 
     @positions = _.object(_.map(data.positions||[], (pos) -> [pos.position.user_id, new ConsiderIt.Position(pos.position)]))
     @position = new ConsiderIt.Position(data.position.position)
-    @positions[@position.user_id] = @position
+    @positions[@position.get('user_id')] = @position
+
 
     # separating points out into peers and included
     for [source_points, source_included, dest_included, dest_peer] in [[@pros, data.points.included_pros||[], @included_pros, @peer_pros], [@cons, data.points.included_cons||[], @included_cons, @peer_cons]]
@@ -58,6 +59,7 @@ class ConsiderIt.Proposal extends Backbone.Model
   load_data : ->
     $.get Routes.proposal_path(@long_id), (data) => @set_data(data)
 
+
   update_anonymous_point : (point_id, is_pro) ->
     points = if is_pro then @pros else @cons
     for pm in points
@@ -76,7 +78,9 @@ class ConsiderIt.Proposal extends Backbone.Model
     else
       my_title
 
-    
+  updated_position : (position) ->
+    @participant_list.push @position.get('user_id') if position.get('published') && !@user_participated()
+
   description_detail_fields : ->
     [ ['long_description', 'Long Description', $.trim(htmlFormat(@attributes.long_description))], 
       ['additional_details', 'Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_details))] ]
@@ -85,7 +89,7 @@ class ConsiderIt.Proposal extends Backbone.Model
 
   participants : ->
     if !@participant_list?
-      @participant_list = $.parseJSON(@attributes.participants) 
+      @participant_list = $.parseJSON(@attributes.participants) || []
     @participant_list
 
   has_participants : -> 

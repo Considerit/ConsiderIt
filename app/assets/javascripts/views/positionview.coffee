@@ -21,7 +21,7 @@ class ConsiderIt.PositionView extends Backbone.View
 
   post_signin : () ->
     return if !@model.positions
-    
+
     point.set('user_id', ConsiderIt.current_user.id) for point in @model.written_points
     existing_position = @model.positions[ConsiderIt.current_user.id]
 
@@ -111,6 +111,7 @@ class ConsiderIt.PositionView extends Backbone.View
     Backbone.sync 'update', @model,
       success : (data) =>
         @model.set( data.position )
+        @proposal.updated_position @model
         ConsiderIt.router.navigate(Routes.proposal_path( @model.proposal.long_id ), {trigger: true})
 
       failure : (data) =>

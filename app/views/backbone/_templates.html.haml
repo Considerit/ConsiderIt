@@ -207,15 +207,14 @@
     (( } ))
 
 
+  %script{ :type => "text/template", :id => "tpl_proposal_list_new_conversation"}
+    .m-proposals-new
+      %button.m-new-proposal-submit
+        Start a new conversation
+
   %script{ :type => "text/template", :id => "tpl_proposal_list_header"}
     .m-proposals-list-header
-      (( if(is_admin){ ))
-      .m-proposals-new
-        %button.m-new-proposal-submit
-          Start a new conversation
-      (( }))
       .m-proposals-heading
-
         - sortable = [ {:name => 'Most active', :target => 'activity'}, {:name => 'Newness', :target => 'created_at'} ]
         .m-proposals-sort-container
           .title

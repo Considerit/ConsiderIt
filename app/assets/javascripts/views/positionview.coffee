@@ -4,6 +4,7 @@
 #############
 
 class ConsiderIt.PositionView extends Backbone.View
+
   initialize : (options) ->
     @proposal = options.proposal
     @state = 0
@@ -107,7 +108,7 @@ class ConsiderIt.PositionView extends Backbone.View
     _.extend(@model.attributes, @crafting_view.position_attributes())
     Backbone.sync 'update', @model,
       success : (data) =>
-        #TODO: any reason to wait for the server to respond before navigating to the results?
+        @model.set( data.position )
         ConsiderIt.router.navigate(Routes.proposal_path( @model.proposal.long_id ), {trigger: true})
 
       failure : (data) =>

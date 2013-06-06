@@ -105,7 +105,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       at: 0
       success: => 
         new_view = @getViewByModel new_proposal
-        console.log new_view
         new_view.$el.find('.m-proposal-description').trigger('click')
         new_view.$el.attr('data-visibility', 'unpublished')
   

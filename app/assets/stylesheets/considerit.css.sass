@@ -1318,6 +1318,11 @@ $arrow_height: 10px
   .m-newpoint-submit
     margin-top: 3px
 
+/* POINTLIST */
+.m-pointlist-empty
+  text-align: center
+  font-style: italic
+
 /* POINTLISTBROWSING */
 
 .m-pointlist-browse
@@ -2272,19 +2277,7 @@ $m-point-expanded-width: $body_width + 150
 
 
 .m-results-summary
-  //cursor: pointer
-
-  .m-results-responders
-    +bubble($community_color, $dark_community_color, right)
-    min-height: 120px  
-
-    // &:hover
-    //   background-color: lighten($community_color, 5%)
-    //   .t-bubble .t-bubble-inner
-    //     fill: lighten($community_color, 5%)
-
   .m-summary-heading
-    //padding-bottom: $vertical_baseline 
     font-weight: normal
 
 
@@ -2295,6 +2288,7 @@ $m-point-expanded-width: $body_width + 150
   .m-results-responders
     padding: $vertical_baseline / 2 0
     +bubble($community_color, $dark_community_color, right)
+    min-height: 120px  
 
 .m-aggregated-results
   .m-results-responders
@@ -2553,9 +2547,9 @@ $histogram_bar_color: #6E6E6E
   @extend %pro_con_list
   //width: $body_width + 20
 
-.m-results-pro-con-list
-  .m-point-list
-    min-height: 400px
+//.m-results-pro-con-list
+.m-point-list-has-pagination
+  min-height: 500px
 
 $filter_width: 371px
 .m-results-point-filters

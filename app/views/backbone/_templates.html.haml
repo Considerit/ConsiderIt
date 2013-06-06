@@ -94,6 +94,9 @@
 
           %input.m-newpoint-create.button{ :type => 'submit', :value => 'Done'}
           
+  %script{ :type => "text/template", :id => "tpl_pointlist_empty" }
+    .m-pointlist-empty
+      none recognized
 
   %script{ :type => "text/template", :id => "tpl_pointlistbrowse_header" }
     .m-pointlist-browse-header-close
@@ -208,11 +211,10 @@
 
 
   %script{ :type => "text/template", :id => "tpl_proposal_list_new_conversation"}
-    .m-proposals-list-header
 
-      .m-proposals-new
-        %button.m-new-proposal-submit
-          Start a new conversation
+    .m-proposals-new
+      %button.m-new-proposal-submit
+        Start a new conversation
 
   %script{ :type => "text/template", :id => "tpl_proposal_list_header"}
     .m-proposals-list-header
@@ -501,48 +503,32 @@
 
 
         .m-pro-con-list-propoints             
-          (( if(!top_pro) { ))
-          .text
-            No pro arguments added yet.
-          (( } else { ))
           .m-top-point.m-top-pro
+            (( if(!top_pro) { ))
+            We haven't thought of any pro arguments yet.
+            (( } else { ))
+
             %strong
               Top pro: 
             {{ top_pro.nutshell }} 
             %span.m-top-point-user
               &ndash; {{ConsiderIt.users[top_pro.user_id].get('name')}}       
-          / %ul.m-point-list
-          /   %li.m-point-results.pro.m-point-unexpanded{ :'data-id' => "{{top_pro.id}}", :includers => "{{ top_pro.includers }}"}
-          /     / %a.avatar{ :'data-id' => "{{top_pro.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_pro.user_id}}", :alt => "{{ConsiderIt.users[top_pro.user_id].get('name')}}'s profile picture", :class => "m-point-author-avatar"}
-          /     .m-point-wrap
-
-          /       .m-point-nutshell-wrap
-          /         .m-point-nutshell
-          /           {{ top_pro.nutshell }}
-          (( } ))
-
+            (( } ))
+  
         .m-pro-con-list-conpoints
 
-          (( if(!top_con) { ))
-          .text
-            No con arguments added yet.
-          (( } else { ))
           .m-top-point.m-top-pro
+            (( if(!top_con) { ))
+            We haven't thought of any con arguments yet.
+            (( } else { ))
+
             %strong
               Top con: 
             {{ top_con.nutshell }} 
             %span.m-top-point-user
               &ndash; {{ConsiderIt.users[top_con.user_id].get('name')}}               
 
-          / %ul.m-point-list
-          /   %li.m-point-results.con.m-point-unexpanded{ :'data-id' => "{{top_con.id}}", :includers => "{{ top_con.includers }}"}
-          /     %a.avatar{ :'data-id' => "{{top_con.user_id}}", :'data-target' => 'user_profile_path', :id => "avatar-{{top_con.user_id}}", :alt => "{{ConsiderIt.users[top_con.user_id].get('name')}}'s profile picture", :class => "m-point-author-avatar"}
-          /     .m-point-wrap
-          /       .m-point-nutshell-wrap
-          /         .m-point-nutshell
-
-          /           {{ top_con.nutshell }}
-          (( } ))
+            (( } ))
 
 
     .l-message-speaker

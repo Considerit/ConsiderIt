@@ -133,7 +133,7 @@ class ConsiderIt.SummaryView extends Backbone.View
     @tile_size = options.tile_size
 
   render : () ->
-    
+
     if @model.has_participants()
       this.$el.html ConsiderIt.SummaryView.template($.extend({}, @model.attributes, {
         top_pro : @model.top_pro 
@@ -154,6 +154,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
   BARWIDTH : 78
 
   initialize : (options) -> 
+    super 
     @histogram = @create_histogram()
     @tile_size = options.tile_size
 
@@ -163,7 +164,6 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
     @pointlists.pros.reset(@model.pros.models)
     @pointlists.cons.reset(@model.cons.models)
-
 
   render : () -> 
     @hide()

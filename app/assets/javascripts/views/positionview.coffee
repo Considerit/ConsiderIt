@@ -32,11 +32,16 @@ class ConsiderIt.PositionView extends Backbone.View
     delete @proposal.positions[-1]
 
     # transfer already included points from existing_position into the included lists
-    for pnt_id in $.parseJSON(existing_position.get('point_inclusions'))
-      if (model = @proposal.peer_pros.remove_from_all(pnt_id))?
+    for pnt_id in existing_position.inclusions()
+      model = @proposal.peer_pros.get(pnt_id)
+      if model?
+        @proposal.peer_pros.remove(pnt_id)
         @proposal.included_pros.add model
-      else if (model = @proposal.peer_cons.remove_from_all(pnt_id))?
+      else
+        model = @proposal.peer_cons.get(pnt_id)
+        @proposal.peer_cons.remove(pnt_id)
         @proposal.included_cons.add model
+
 
     @trigger 'position:signin_handled'
 

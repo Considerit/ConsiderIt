@@ -42,7 +42,7 @@ class PositionsController < ApplicationController
 
     save_actions(position)
 
-    position.point_inclusions = Inclusion.where(:user_id => position.user_id).where(:proposal_id => position.proposal_id).select(:point_id).map {|x| x.point_id}.compact.to_s
+    position.point_inclusions = Inclusion.where(:user_id => position.user_id, :proposal_id => position.proposal_id).select(:point_id).map {|x| x.point_id}.compact.to_s
     #position.point_inclusions = position.inclusions(:select => [:point_id]).map {|x| x.point_id}.compact.to_s       
     position.save
     

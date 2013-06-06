@@ -661,15 +661,15 @@
 
 
   %script{ :type => "text/template", :id => "tpl_static_position" }
-    .m-static-position
+    .l-dialog-detachable.m-static-position
 
-      .m-static-position-stance
+      .l-dialog-title.m-static-position-stance
         {{ user.get('name') }} {{stance_label}} this proposal.
-        %a.cancel{ :'data-target' => 'static-position-close'}
+        
+        %a.l-dialog-close.cancel{ :'data-target' => 'static-position-close'}
           close
 
-      
-      .m-static-position-reasons.m-static-position-reasons-supporting
+      .l-dialog-body.m-static-position-reasons.m-static-position-reasons-supporting
         (( if(supporting_points.length > 0){ ))
         .m-static-position-reasons-label
           ((if (stance != 3) { ))
@@ -690,7 +690,7 @@
         .m-static-position-reasons-none
           {{ user.get('name') }} does not give any supporting reasons.
         (( } ))
-      .m-static-position-reasons.m-static-position-reasons-opposing
+      .l-dialog-body.m-static-position-reasons.m-static-position-reasons-opposing
         (( if(opposing_points.length > 0){ ))
         .m-static-position-reasons-label
           At the same time, {{ user.get('name') }} recognizes these tradeoffs:          
@@ -712,84 +712,86 @@
 
   %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_publicity" }
     .l-dialog-detachable
-      %h1
+      %h1.l-dialog-title
         Who can view and participate?  
 
-      = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-admin_operations-settings-form'} do |f|
-        .radio_block
-          .option
-            (( if(publicity == 2) { ))
-            = f.radio_button :publicity, '2', :value => '2', :checked => true
-            (( } else { ))
-            = f.radio_button :publicity, '2', :value => '2'
-            (( } ))
+      .l-dialog-body
+        = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-admin_operations-settings-form'} do |f|
+          .radio_block
+            .option
+              (( if(publicity == 2) { ))
+              = f.radio_button :publicity, '2', :value => '2', :checked => true
+              (( } else { ))
+              = f.radio_button :publicity, '2', :value => '2'
+              (( } ))
 
-            = f.label :publicity, 'Public', :value => '2'
-            .sublabel
-              It will be accessible on the homepage.
+              = f.label :publicity, 'Public', :value => '2'
+              .sublabel
+                It will be accessible on the homepage.
 
-          .option
-            (( if(publicity == 1) { ))
-            = f.radio_button :publicity, '1', :value => '1', :checked => true
-            (( } else { ))
-            = f.radio_button :publicity, '1', :value => '1'
-            (( } ))
+            .option
+              (( if(publicity == 1) { ))
+              = f.radio_button :publicity, '1', :value => '1', :checked => true
+              (( } else { ))
+              = f.radio_button :publicity, '1', :value => '1'
+              (( } ))
 
-            = f.label :publicity, 'Anyone with a link', :value => '1'
-            .sublabel
-              Only people that have a link to this proposal will be able to access it.
+              = f.label :publicity, 'Anyone with a link', :value => '1'
+              .sublabel
+                Only people that have a link to this proposal will be able to access it.
 
-          .option
-            (( if(publicity == 0) { ))
-            = f.radio_button :publicity, '0', :value => '0', :checked => true
-            (( } else { ))
-            = f.radio_button :publicity, '0', :value => '0'
-            (( } ))
+            .option
+              (( if(publicity == 0) { ))
+              = f.radio_button :publicity, '0', :value => '0', :checked => true
+              (( } else { ))
+              = f.radio_button :publicity, '0', :value => '0'
+              (( } ))
 
-            = f.label :publicity, 'Private', :value => '0'
-            .sublabel
-              Restrict access to the following invited participants.
+              = f.label :publicity, 'Private', :value => '0'
+              .sublabel
+                Restrict access to the following invited participants.
 
-            .access_list
-              .label
-                Comma-separated email list of invited users:
-              = f.text_area :access_list, :rows => 2, :class => "autoResize"
+              .access_list
+                .label
+                  Comma-separated email list of invited users:
+                = f.text_area :access_list, :rows => 2, :class => "autoResize"
 
-        .save_block
-          = f.submit 'save'
-          %a.cancel
-            cancel
+          .save_block
+            = f.submit 'save'
+            %a.cancel
+              cancel
 
   %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_active"}
     .l-dialog-detachable
-      %h1
+      %h1.l-dialog-title
         Set the status of this proposal.  
 
-      = form_for :proposal, :url => "{{ Routes.proposal_path(long_id) }}", :method => :put, :remote => true, :html => {:class => 'm-proposal-admin_operations-settings-form'} do |f|
-        .radio_block
-          .option
-            (( if(active) { ))
-            = f.radio_button :active, true, :value => true, :checked => true
-            (( } else { ))
-            = f.radio_button :active, true, :value => true
-            (( } ))
-            = f.label :active, 'Active', :value => true
-            .sublabel
-              Contributions are open. People with access to this proposal can contribute to it.
-          .option
-            (( if(active) { ))
-            = f.radio_button :active, false, :value => false
-            (( } else { ))
-            = f.radio_button :active, false, :value => false, :checked => true
-            (( } ))
-            = f.label :active, 'Inactive', :value => false
-            .sublabel
-              Contributions are closed. People with access to this proposal will only be able to view it. 
+      .l-dialog-body
+        = form_for :proposal, :url => "{{ Routes.proposal_path(long_id) }}", :method => :put, :remote => true, :html => {:class => 'm-proposal-admin_operations-settings-form'} do |f|
+          .radio_block
+            .option
+              (( if(active) { ))
+              = f.radio_button :active, true, :value => true, :checked => true
+              (( } else { ))
+              = f.radio_button :active, true, :value => true
+              (( } ))
+              = f.label :active, 'Active', :value => true
+              .sublabel
+                Contributions are open. People with access to this proposal can contribute to it.
+            .option
+              (( if(active) { ))
+              = f.radio_button :active, false, :value => false
+              (( } else { ))
+              = f.radio_button :active, false, :value => false, :checked => true
+              (( } ))
+              = f.label :active, 'Inactive', :value => false
+              .sublabel
+                Contributions are closed. People with access to this proposal will only be able to view it. 
 
-        .save_block
-          = f.submit 'save'
-          %a.cancel
-            cancel
+          .save_block
+            = f.submit 'save'
+            %a.cancel
+              cancel
 
   %script{ :type => "text/template", :id => "tpl_proposal_admin_strip" }
 

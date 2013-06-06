@@ -99,7 +99,7 @@ class ConsiderIt.RegistrationView extends Backbone.View
 
   update_user : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
-    console.log data
+
     if data.result != 'rejected'
       ConsiderIt.update_current_user(data.user)
       if not ConsiderIt.current_user.id of ConsiderIt.users

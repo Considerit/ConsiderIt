@@ -34,12 +34,11 @@ class ConsiderIt.ProposalView extends Backbone.View
     #     ConsiderIt.router.navigate(Routes.proposal_path( @model.long_id ), {trigger: false})
 
   render : -> 
-
     @$el.html ConsiderIt.ProposalView.unexpanded_template($.extend({}, @model.attributes, {
         title : this.model.title()
         description_detail_fields : this.model.description_detail_fields()
         avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'original')
-        tile_size : Math.min 50, ConsiderIt.utils.get_tile_size(110, 55, ($.parseJSON(@model.get('participants'))||[]).length)
+        tile_size : Math.min 50, ConsiderIt.utils.get_tile_size(110, 55, @model.participants().length)
         participants : _.sortBy(@model.participants(), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
 
       }))

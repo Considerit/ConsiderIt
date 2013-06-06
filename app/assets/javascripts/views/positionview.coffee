@@ -20,6 +20,8 @@ class ConsiderIt.PositionView extends Backbone.View
       @listenTo ConsiderIt.app, 'user:signout', @post_signout  
 
   post_signin : () ->
+    return if !@model.positions
+    
     point.set('user_id', ConsiderIt.current_user.id) for point in @model.written_points
     existing_position = @model.positions[ConsiderIt.current_user.id]
 

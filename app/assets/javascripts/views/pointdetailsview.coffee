@@ -69,7 +69,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
     @$el.toggleClass( 'm-point-expanded m-point-unexpanded').delay(1).queue (next) =>
 
-      @assessmentview.render()
+      @assessmentview.render() if @assessmentview?
       @commentsview.renderAllItems()
   
       @$el.find('.m-point-wrap > *').css 'visibility', ''
@@ -104,7 +104,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
     @commentsview.clear()
     @commentsview.remove()
-    @assessmentview.remove()
+    @assessmentview.remove() if @assessmentview?
 
     $(document).off '.m-point-details' #, @close_by_keyup
     @$el.off '.m-point-details'

@@ -89,7 +89,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     if !visible
       @$dashboard_el.fadeIn() 
 
-      @hidden_els = $("[data-role='m-proposal'], .m-proposals-list-header, .t-intro-wrap")
+      @hidden_els = $("[data-role='m-proposal'], .m-proposals-new, .m-proposals-list-header, .t-intro-wrap")
 
       #@hidden_els = $('#m-proposals-container, .l-content-wrap:visible:not(#m-dashboard)')
 

@@ -79,7 +79,8 @@ class ConsiderIt.Proposal extends Backbone.Model
       my_title
 
   updated_position : (position) ->
-    @participant_list.push @position.get('user_id') if position.get('published') && !@user_participated()
+    user_id = @position.get('user_id')
+    @participant_list.push user_id if position.get('published') && !@user_participated(user_id)
 
   description_detail_fields : ->
     [ ['long_description', 'Long Description', $.trim(htmlFormat(@attributes.long_description))], 
@@ -93,6 +94,4 @@ class ConsiderIt.Proposal extends Backbone.Model
     @participant_list
 
   has_participants : -> 
-    if !@has_participation?
-      @has_participation = @top_pro? &&  @top_con? &&  @participants().length > 0   
-    @has_participation
+    return @participants().length > 0   

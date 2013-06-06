@@ -20,10 +20,10 @@ class ConsiderIt.PositionView extends Backbone.View
       @listenTo ConsiderIt.app, 'user:signout', @post_signout  
 
   post_signin : () ->
-    return if !@model.positions
+    return if !@proposal.positions
 
     point.set('user_id', ConsiderIt.current_user.id) for point in @model.written_points
-    existing_position = @model.positions[ConsiderIt.current_user.id]
+    existing_position = @proposal.positions[ConsiderIt.current_user.id]
 
     # need to merge old position into new
     existing_position.subsume @model

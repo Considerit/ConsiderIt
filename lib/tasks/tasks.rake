@@ -48,7 +48,7 @@ namespace :cache do
   end
 end
 
-task :compute_metrics => ["cache:points", "cache:proposals"]
+task :compute_metrics => ["cache:points", "cache:proposals", "cache:users"]
 
 namespace :alerts do
   task :check_moderation => :environment do

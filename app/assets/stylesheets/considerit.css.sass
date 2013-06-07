@@ -460,7 +460,7 @@ html
 //////////////////////////////////////////
 
 #registration_overlay
-  width: 820px
+  width: 650px
   //padding: 8px
 
   //+wall(white)
@@ -508,7 +508,7 @@ html
       display: inline
       margin-right: $grid_xs
       position: relative
-
+      +font-size(-2)
       &.hide
         display: none
 
@@ -549,12 +549,13 @@ $membership_card_height: 278px
     position: relative
 
   .forget_password_prompt
-    position: absolute
-    right: 64px
-    top: $vertical_baseline/2
+    //position: absolute
+    //right: 64px
+    //top: $vertical_baseline/2
     //bottom: - 2 * $vertical_baseline
     +font-size(-3)
-
+    display: block
+    
 .m-user-accounts-complete-register
   .m-user-accounts-form
     margin: auto

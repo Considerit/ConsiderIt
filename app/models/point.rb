@@ -44,6 +44,8 @@ class Point < ActiveRecord::Base
   # @@per_page = 4  
 
   scope :public_fields, select([:appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :position_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id, :hide_name])
+  scope :metrics_fields, select([:id, :appeal, :attention, :comment_count, :divisiveness, :includers, :is_pro, :num_inclusions, :persuasiveness, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :unique_listings])
+
   scope :published, where( :published => true )
   scope :viewable, where( 'published=1 AND (moderation_status IS NULL OR moderation_status=1)')
   #default_scope where( :published => true )  
@@ -141,8 +143,13 @@ class Point < ActiveRecord::Base
 
   end
 
-  def update_absolute_score
+  def update_absolute_score(in_batch = false)
     self.comment_count = comments.count
+    if !in_batch
+      self.num_inclusions = self.inclusions.count
+      self.unique_listings = self.point_listings.count
+    end
+
     self.includers = self.inclusions(:select => [:user_id]).map {|x| x.user_id}.compact.to_s
 
     define_appeal
@@ -164,18 +171,18 @@ class Point < ActiveRecord::Base
       metrics_per_segment[row.stance_bucket.to_i][0] = row.cnt.to_i
     end
 
-    listings_by_segment = point_listings.joins(:position).select('COUNT(distinct point_listings.user_id) AS cnt, positions.stance_bucket AS stance_bucket').group("positions.stance_bucket").order("positions.stance_bucket")        
+    listings_by_segment = point_listings.joins(:position).select('COUNT(*) AS cnt, positions.stance_bucket AS stance_bucket').group("positions.stance_bucket").order("positions.stance_bucket")        
     listings_by_segment.each do |row|
       metrics_per_segment[row.stance_bucket.to_i][1] = row.cnt.to_i
     end
     
     (0..6).each do |stance_bucket|
-      attr = "score_stance_group_#{stance_bucket}".intern
+      bucket_score = "score_stance_group_#{stance_bucket}".intern
             
       if metrics_per_segment[stance_bucket][1] == 0
-        self.attributes[attr] = 0.0
+        self[bucket_score] = 0.0
       else
-        self[attr] = metrics_per_segment[stance_bucket][0]**2 / metrics_per_segment[stance_bucket][1].to_f        
+        self[bucket_score] = metrics_per_segment[stance_bucket][0]**2 / metrics_per_segment[stance_bucket][1].to_f        
       end
     end
   end
@@ -237,7 +244,7 @@ class Point < ActiveRecord::Base
             group.each do |pnt|
               pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
               pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
-              pnt.update_absolute_score
+              pnt.update_absolute_score(true)
               relative_scores[pnt.id] = []
             end
           end
@@ -278,7 +285,7 @@ protected
     distribution = Array.new(5, 0.0001)
 
     qry = inclusions.joins(:position)   \
-                    .where("positions.published" )                                      \
+                    .where("positions.published=1" )                                      \
                     .group('positions.stance_bucket')                                            \
                     .select("COUNT(*) AS cnt, positions.stance_bucket")
                         
@@ -303,7 +310,7 @@ protected
     # point in the stance group
     scaling_distribution = Array.new(5, 0)
     qry = point_listings.joins(:position)   \
-                        .where("positions.published" )                                      \
+                        .where("positions.published=1" )                                      \
                         .group('positions.stance_bucket')                                            \
                         .select("COUNT(distinct point_listings.user_id) AS cnt, positions.stance_bucket")
                  

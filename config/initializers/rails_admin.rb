@@ -384,9 +384,6 @@ RailsAdmin.config do |config|
   #     configure :position_id, :integer         # Hidden 
   #     configure :point_id, :integer         # Hidden 
   #     configure :user_id, :integer         # Hidden 
-  #     configure :inclusion_id, :integer         # Hidden 
-  #     configure :session_id, :integer 
-  #     configure :context, :integer 
   #     configure :created_at, :datetime 
   #     configure :updated_at, :datetime 
   #     configure :account_id, :integer         # Hidden   #   # Sections:

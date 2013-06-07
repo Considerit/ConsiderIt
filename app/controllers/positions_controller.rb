@@ -15,6 +15,8 @@ class PositionsController < ApplicationController
 
     already_published = position.published
 
+    stance_changed = already_published && params[:position].has_key?(:stance) && position.stance != params[:position][:stance] 
+
     update_attrs = {
       :user_id => current_user.id,
       :proposal => proposal
@@ -40,9 +42,19 @@ class PositionsController < ApplicationController
       session[position.proposal_id][:viewed_points].push([pnt,-1])
     end
 
-    save_actions(position)
+    updated_points = save_actions(position)
+    inclusions = Inclusion.where(:user_id => position.user_id, :proposal_id => position.proposal_id).select(:point_id)
+    
+    incs = []
+    inclusions.each do |inc|
+      if stance_changed && !updated_points.include?(inc)
+        inc.point.update_absolute_score
+        updated_points.push inc.point_id
+      end
+      incs.push inc.point_id
+    end
 
-    position.point_inclusions = Inclusion.where(:user_id => position.user_id, :proposal_id => position.proposal_id).select(:point_id).map {|x| x.point_id}.compact.to_s
+    position.point_inclusions = incs.compact.to_s
     #position.point_inclusions = position.inclusions(:select => [:point_id]).map {|x| x.point_id}.compact.to_s       
     position.save
     
@@ -57,7 +69,10 @@ class PositionsController < ApplicationController
     
     alert_new_published_position(proposal, position) unless already_published
 
-    render :json => position
+    render :json => {
+      :position => position,
+      :updated_points => Point.where('id in (?)', updated_points).metrics_fields.all
+    }
 
   end
 
@@ -94,6 +109,7 @@ protected
 
   def save_actions ( position )
     actions = session[position.proposal_id]
+    updated_points = []
 
     Inclusion.transaction do
       actions[:included_points].each do |point_id, value|
@@ -109,8 +125,11 @@ protected
             pnt.update_absolute_score
             inc.track!
             pnt.follow!(current_user, :follow => true, :explicit => false)
+            updated_points.push(point_id)
           end
+
         end
+
       end
     end
     actions[:included_points] = {}
@@ -124,6 +143,8 @@ protected
       pnt.position_id = position.id
       pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001})
       pnt.update_absolute_score
+      updated_points.push(pnt_id)
+
 
       pnt.track!
       pnt.follow!(current_user, :follow => true, :explicit => false)
@@ -143,22 +164,28 @@ protected
         inc.destroy
         inc.point.update_absolute_score
       end
+      updated_points.push(point_id)
+
     end
     actions[:deleted_points] = {}
 
     point_listings = []
     actions[:viewed_points].to_set.each do |point_id, context|
-      point_listings.push("(#{position.proposal_id}, #{position.id}, #{point_id}, #{position.user_id}, #{context})")
+      point_listings.push("(#{position.proposal_id}, #{position.id}, #{point_id}, #{position.user_id}, #{current_tenant.id})")
     end
     if point_listings.length > 0
       qry = "INSERT INTO point_listings 
-              (proposal_id, position_id, point_id, user_id, context) 
-              VALUES #{point_listings.join(',')}"
+              (proposal_id, position_id, point_id, user_id, account_id) 
+              VALUES #{point_listings.join(',')}
+              ON DUPLICATE KEY UPDATE count=count+1"
 
       ActiveRecord::Base.connection.execute qry
     end
 
     actions[:viewed_points] = []
+
+
+    return updated_points
   end
 
   def alert_new_published_position ( proposal, position )

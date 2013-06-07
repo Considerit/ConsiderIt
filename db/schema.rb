@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130601202443) do
+ActiveRecord::Schema.define(:version => 20130607032519) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -219,17 +219,16 @@ ActiveRecord::Schema.define(:version => 20130601202443) do
     t.integer  "position_id"
     t.integer  "point_id"
     t.integer  "user_id"
-    t.integer  "inclusion_id"
-    t.integer  "session_id"
-    t.integer  "context"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "account_id"
+    t.integer  "count",       :default => 1
   end
 
   add_index "point_listings", ["account_id"], :name => "index_point_listings_on_account_id"
   add_index "point_listings", ["point_id"], :name => "index_point_listings_on_point_id"
   add_index "point_listings", ["position_id"], :name => "index_point_listings_on_position_id"
+  add_index "point_listings", ["user_id", "point_id"], :name => "index_point_listings_on_user_id_and_point_id", :unique => true
 
   create_table "point_similarities", :force => true do |t|
     t.integer  "p1_id"

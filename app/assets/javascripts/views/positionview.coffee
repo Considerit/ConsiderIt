@@ -23,24 +23,27 @@ class ConsiderIt.PositionView extends Backbone.View
     return if !@proposal.positions
 
     point.set('user_id', ConsiderIt.current_user.id) for point in @model.written_points
-    existing_position = @proposal.positions[ConsiderIt.current_user.id]
+    if ConsiderIt.current_user.id of @proposal.positions
+      existing_position = @proposal.positions[ConsiderIt.current_user.id]
 
-    # need to merge old position into new
-    existing_position.subsume @model
-    @model.set existing_position.attributes
-    @proposal.positions[ConsiderIt.current_user.id] = @model
-    delete @proposal.positions[-1]
+      # need to merge old position into new
+      existing_position.subsume @model
 
-    # transfer already included points from existing_position into the included lists
-    for pnt_id in existing_position.inclusions()
-      model = @proposal.peer_pros.get(pnt_id)
-      if model?
-        @proposal.peer_pros.remove(pnt_id)
-        @proposal.included_pros.add model
-      else
-        model = @proposal.peer_cons.get(pnt_id)
-        @proposal.peer_cons.remove(pnt_id)
-        @proposal.included_cons.add model
+      @model.set existing_position.attributes
+
+      @proposal.positions[ConsiderIt.current_user.id] = @model
+      delete @proposal.positions[-1]
+
+      # transfer already included points from existing_position into the included lists
+      for pnt_id in existing_position.inclusions()
+        model = @proposal.peer_pros.get(pnt_id)
+        if model?
+          @proposal.peer_pros.remove(pnt_id)
+          @proposal.included_pros.add model
+        else
+          model = @proposal.peer_cons.get(pnt_id)
+          @proposal.peer_cons.remove(pnt_id)
+          @proposal.included_cons.add model
 
 
     @trigger 'position:signin_handled'
@@ -48,7 +51,12 @@ class ConsiderIt.PositionView extends Backbone.View
 
   post_signout : () ->
     for pnt in @model.written_points
-      if pnt.get('is_pro') then @proposal.included_pros.remove(pnt) else @proposal.included_cons.remove(pnt)
+      if pnt.get('is_pro') 
+        @proposal.included_pros.remove(pnt)
+        @proposal.pros.remove(pnt)
+      else
+        @proposal.included_cons.remove(pnt)
+        @proposal.cons.remove(pnt)
 
     @model.clear()
 
@@ -113,10 +121,18 @@ class ConsiderIt.PositionView extends Backbone.View
 
   submit_position : () ->
     _.extend(@model.attributes, @crafting_view.position_attributes())
+
     Backbone.sync 'update', @model,
       success : (data) =>
-        @model.set( data.position )
+        @model.set( data.position.position )
         @proposal.updated_position @model
+        for pnt in data.updated_points
+          pnt = pnt.point
+          if pnt.is_pro
+            @proposal.pros.get(pnt.id).set(pnt)
+          else
+            @proposal.cons.get(pnt.id).set(pnt)
+
         @trigger 'positionview:submitted_position'
         ConsiderIt.router.navigate(Routes.proposal_path( @model.proposal.long_id ), {trigger: true})
 
@@ -369,6 +385,10 @@ class ConsiderIt.CraftingView extends Backbone.View
 
     new_point = pointlist.create attrs, {wait: true}
     @model.written_points.push new_point
+    if attrs.is_pro
+      @proposal.pros.add(new_point)
+    else
+      @proposal.cons.add(new_point)
 
   slider_change : (new_value) -> 
     return unless isFinite(new_value)

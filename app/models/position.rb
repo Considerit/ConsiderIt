@@ -12,7 +12,7 @@ class Position < ActiveRecord::Base
   is_followable
 
   acts_as_tenant(:account)
-  
+
   scope :published, where( :published => true )
   scope :public_fields, select( [:created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_bucket, :user_id, :explanation])
 
@@ -44,7 +44,7 @@ class Position < ActiveRecord::Base
     elsif value <= -0.05
       return 2
     end   
-  end       
+  end
 
   def stance_name
     case stance_bucket
@@ -63,8 +63,7 @@ class Position < ActiveRecord::Base
       when 6
         return "strong support"
     end
-  end      
-
+  end
 
   def stance_name_singular
     case stance_bucket
@@ -83,8 +82,7 @@ class Position < ActiveRecord::Base
       when 6
         return "strongly supports"
     end
-  end   
-
+  end
 
   def self.purge
     User.all.each do |u|
@@ -95,14 +93,16 @@ class Position < ActiveRecord::Base
           last = pos.order(:updated_at).last
           pos.where('id != (?)', last.id).each do |p|
             p.published = false
+            #p.inclusions.update_attributes!({:position_id => last.id})
             pp p.user_id
             p.save
           end
         end
       end
     end
-
   end
+
+
 end
 
 

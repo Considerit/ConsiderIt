@@ -41,10 +41,11 @@ class User < ActiveRecord::Base
 
   has_attached_file :avatar, 
       :styles => { 
-        :large => "200x200#",
-        :medium => "70x70#", 
+        :large => "250x250#",
+        #:medium => "70x70#", 
         :small => "50x50#"
-      }
+      },
+      :processors => [:thumbnail, :paperclip_optimizer]
 
   def unsubscribe!
     self.follows.update_all( {:explicit => true, :follow => false} )
@@ -123,8 +124,6 @@ class User < ActiveRecord::Base
 
       else  
         user = User.find_by_email(access_token.info.email)
-
-
     end
 
     user
@@ -157,7 +156,7 @@ class User < ActiveRecord::Base
           'bio' => access_token.info.description,
           'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
           'twitter_handle' => access_token.info.nickname,
-          'avatar_url' => access_token.info.image.gsub('_normal', '_reasonably_small'),
+          'avatar_url' => access_token.info.image.gsub('_normal', '') #'_reasonably_small'),
         }
 
       when 'facebook'

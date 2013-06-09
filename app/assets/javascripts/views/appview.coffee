@@ -1,6 +1,6 @@
 class ConsiderIt.AppView extends Backbone.View
 
-  el: '#l-wrap'
+  el: 'body'
 
   initialize : (options) -> 
 
@@ -31,6 +31,7 @@ class ConsiderIt.AppView extends Backbone.View
 
     this
 
+
   # After a user signs in, we're going to query the server and get all the points
   # that this user wrote *anonymously*. Then we'll update the data properly so
   # that the user can update them.
@@ -43,6 +44,12 @@ class ConsiderIt.AppView extends Backbone.View
 
   events : 
     'click .l-navigate-back' : 'go_back'
+    'click [data-target="user_profile_page"]' : 'view_user_profile'
+
+  # handles user profile access for anyone throughout the app  
+  view_user_profile : (ev) ->
+    #$('body').animate {scrollTop: 0 }, 500
+    ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
 
   go_back : ->
     if @crumbs.length < 3
@@ -54,7 +61,7 @@ class ConsiderIt.AppView extends Backbone.View
     return if route == 'route'
     loc = Backbone.history.fragment.split('/')
     short = loc[loc.length - 1]
-    $('.qtip').hide()
+    $('.tooltipster-base').hide()
     
     if short 
       if short in @crumbs

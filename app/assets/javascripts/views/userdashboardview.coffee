@@ -244,7 +244,6 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   events :
     #'click .m-dashboard_link' : 'change_context_ev' 
     #'click [data-target="close_user_dashboard"]' : 'close'
-    'click [data-target="user_profile_page"]' : 'view_user_profile'
 
     'click .m-dashboard-profile-activity-summary' : 'activity_toggled'
 
@@ -271,10 +270,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     'click [data-target="analyze"]' : 'navigate_to_analyze'
     'click [data-target="database"]' : 'navigate_to_database'
 
-  # handles user profile access for anyone throughout the app  
-  view_user_profile : (ev) ->
-    #$('body').animate {scrollTop: 0 }, 500
-    ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
+
 
   navigate_to_profile : -> ConsiderIt.router.navigate Routes.profile_path( ConsiderIt.current_user.id ), {trigger: true}
   navigate_to_edit_profile : -> ConsiderIt.router.navigate Routes.edit_profile_path( ConsiderIt.current_user.id ), {trigger: true}

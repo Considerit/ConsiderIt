@@ -22,8 +22,7 @@
 //= require jquery.editable-rails
 //= require jquery.copycss
 //= require jquery.touch-punch
-//= require jquery.qtip
-//= require jquery.migrate
+//= require jquery.tooltipster
 //= require sevenup.min
 //= require sevenup_black.min
 //= require ZeroClipboard

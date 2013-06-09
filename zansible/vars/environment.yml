@@ -1,13 +1,17 @@
 deps: 
+  - advancecomp
   - autoconf 
   - automake 
   - bison 
   - build-essential 
   - curl 
   - exuberant-ctags 
+  - gifsicle
   - git-core
   - imagemagick
+  - jpegoptim
   - libcurl4-openssl-dev #nginx/passenger requirement
+  - libjpeg-progs
   - libmagickcore-dev
   - libmagickwand-dev
   - libmysqlclient-dev
@@ -22,10 +26,13 @@ deps:
   - memcached
   - mysql-server
   - openssl 
+  - optipng
+  - pngcrush
   - python-mysqldb # for Ansible mysql module
   - unzip
   - zlib1g 
   - zlib1g-dev
+
 mysqld:
   bind_address: 127.0.0.1
   key_buffer: 16M

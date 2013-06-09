@@ -72,34 +72,12 @@ class ConsiderIt.UserManagerView extends Backbone.View
       
       $('body').append(tooltip)
       $tooltip = $('body > .l-tooltip-user')
-      $title = $('body > .l-tooltip-user-title')
 
-      $target.qtip({
-        core: 
-          overwrite: false
-        show:
-          ready: true,
-          delay: 500
-        hide:
-          fixed: true
-          delay: 150
-        content : 
-          text : $tooltip
-          title : 
-            text: $title
-        position : 
-          container : $('#l-content')
-          my: 'bottom center'
-          at: 'top center'
-          viewport: true
-        adjust:
-          method: 'flip flip'
-        style : 
-          classes: 'qtip-dark qtip-shadow'
-        }, ev);
+      $target.tooltipster
+        interactive: true
+        content: $tooltip
 
-      # offset = $target.offset()
-      # $tooltip.css {top: offset.top + $target.outerHeight() - $('#l-content').offset().top, left: offset.left }
+      $target.tooltipster 'show'
 
 
   tooltip_hide : (ev) ->

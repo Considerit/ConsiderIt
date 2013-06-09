@@ -359,6 +359,12 @@ html
   // position: absolute
   // z-index: 9999
 
+.tooltipster-content .l-tooltip
+  display: block
+
+.l-tooltip-title
+  padding: $vertical_baseline/4 $grid_xs/2
+
 //////////////////////////////////////////
 // HEADING 
 //////////////////////////////////////////
@@ -705,6 +711,7 @@ $membership_card_height: 278px
 
 $tooltip_width: 315px
 .l-tooltip-user-title
+
   .l-tooltip-user-name
     font-weight: bold
     display: inline-block
@@ -753,12 +760,15 @@ $tooltip_width: 315px
     width: $tooltip_width
     +font-size(-2)
     display: inline-block
+    border-radius: 0
 
     &:hover
       +sassy-button("simple", 5px, inherit, lighten($comp_color, 4%), darken($comp_color, 4%) )
       +font-size(-2)
+      border-radius: 0
 
   .l-tooltip-user-profile
+    border-bottom: 0
     //border-radius: 0 0 5px 5px
 
 //////////////////////////////////////////
@@ -2144,6 +2154,7 @@ $m-point-expanded-width: $body_width + 150
 
     [data-target="user_profile_page"]
       opacity: .9
+      display: inline-block
 
     +transition(bottom .1 ease)
 
@@ -2835,6 +2846,15 @@ label.inline
 
   &.empty
     visibility: visible !important
+
+/**
+/* for tooltipster
+/**
+
+.tooltipster-default .tooltipster-content
+  +font-size(0)
+  font-size: 16px
+  padding: 0
 
 /**
 /* for jquery.fileinput.js

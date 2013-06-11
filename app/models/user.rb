@@ -245,11 +245,18 @@ class User < ActiveRecord::Base
       :metric_influence => influenced_users.keys().count, 
       :metric_conversations => self.proposals.public.count }
 
-    pp self.name, self.name.blank?
     if self.name.blank?
       attrs[:name] = 'Not Specified'
     end
-    self.update_attributes! attrs
+
+    values_changed = false
+    attrs.keys.each do |key|
+      if self[key] != attrs[key]
+        values_changed = true
+        break
+      end
+    end
+    self.update_attributes!(attrs) if values_changed
 
   end
 

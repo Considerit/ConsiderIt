@@ -252,7 +252,6 @@ class ConsiderIt.CraftingView extends Backbone.View
     'click .m-newpoint-new' : 'new_point'
     'click .m-newpoint-cancel' : 'cancel_new_point'
     'click .m-newpoint-create' : 'create_new_point'
-    'click .m-point-wrap' : 'navigate_point_details'
     'mouseenter .m-point-peer' : 'log_point_view'
 
   include_point : (ev) ->
@@ -428,9 +427,5 @@ class ConsiderIt.CraftingView extends Backbone.View
 
   _$item : (child) ->
     $(child).closest("[data-role=\"#{ConsiderIt.PointListView.childClass}\"]")
-
-  navigate_point_details : (ev) ->
-    point_id = $(ev.currentTarget).closest('.pro, .con').data('id')
-    ConsiderIt.router.navigate(Routes.proposal_point_path(@model.proposal.long_id, point_id), {trigger: true})
 
 

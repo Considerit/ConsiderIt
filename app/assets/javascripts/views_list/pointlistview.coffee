@@ -10,8 +10,8 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
     super
     @location = options.location
     @proposal = options.proposal
-    _.bindAll this
-    ConsiderIt.router.on('route:PointDetails', @show_point_details_handler)
+    #_.bindAll this
+    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @show_point_details_handler(long_id, point_id)
 
   # Returns an instance of the view class
   getItemView: (point)->
@@ -32,12 +32,22 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
         @getViewByModel(point).show_point_details_handler()
 
 
+  @events : 
+    'click [data-target="m-point-details"]' : 'navigate_point_details'
+
+  events : @events
+
+  navigate_point_details : (ev) ->
+    point_id = $(ev.currentTarget).data('id')
+    ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.long_id, point_id), {trigger: true})
+
+
+
 class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
 
   @paging_template : _.template($('#tpl_pointlistpagination').html())
 
-  initialize : (options) ->
-    super
+  initialize : (options) -> super
 
   render : () ->
     super
@@ -56,8 +66,6 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
     else if @collection.information.totalRecords == 0
       @$el.append ConsiderIt.PointListView.empty_template()
 
-
-
   onAdd : (model) ->
     super
     @collection.pager()
@@ -73,9 +81,9 @@ class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
       total_records : @collection.information.totalRecords
     })) 
 
-  events : 
+  events : _.extend @events, {
     'click .m-pointlist-forward' : 'forward'
-    'click .m-pointlist-backward' : 'backward'
+    'click .m-pointlist-backward' : 'backward' }
 
   forward : (ev) -> 
     @collection.nextPage()
@@ -133,9 +141,9 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
     super
     @collection.pager()
 
-  events : 
+  events : _.extend @events, {
     'click .m-pointlist-browse-toggle' : 'toggle_browse_ev'
-    'click .m-pointlist-sort-option a' : 'sort_list'
+    'click .m-pointlist-sort-option a' : 'sort_list'}
 
   sort_list : (ev) ->
     @$el.find('.m-pointlist-sort-option a').removeClass('selected')
@@ -156,8 +164,10 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
 
   toggle_browse_ev : (ev) ->
     @toggle_browse(!@browsing)
+    ev.stopPropagation()
 
   toggle_browse : (browse) ->
+
     parent_position = @$el.closest('.m-position')
     if browse
       @$el.addClass 'm-pointlist-browsing'
@@ -166,11 +176,22 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
       @collection.howManyPer(1000)
       @$browse_el.find('.m-pointlist-browse-toggle').text "Stop browsing"
       @$browse_header_el.css('visibility', 'visible')
+
+      # when clicking outside of pointlist, close browsing
+      $(document).on 'click.m-pointlist-browsing', (ev)  => 
+        if $('.m-point-expanded, .l-dialog-detachable').length == 0
+          @toggle_browse(false) 
+          ev.stopPropagation()
+
+      @$el.on 'click.m-pointlist-browsing', (ev) => ev.stopPropagation() #if !$(ev.target).data('target') && $('.m-point-expanded, #registration_overlay').length == 0          
+      $(document).on 'keyup.m-pointlist-browsing', (ev) => @toggle_browse(false) if ev.keyCode == 27 && $('.m-point-expanded, .l-dialog-detachable').length == 0
+
     else
       @$el.removeClass 'm-pointlist-browsing'
       parent_position.css('margin-left' : @previous_margin)
       @collection.howManyPer(ConsiderIt.BrowsablePointListView.points_per)
       @$browse_header_el.css('visibility', 'hidden')
+      $(document).off '.m-pointlist-browsing'
+      @$el.off '.m-pointlist-browsing'
 
     @browsing = browse
-

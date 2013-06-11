@@ -19,7 +19,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       else
         $assessment_el = @$el.find('.m-point-assess')
 
-
       @assessmentview = new ConsiderIt.AssessmentView({
         model : @model
         el: $assessment_el

@@ -242,16 +242,11 @@ class ConsiderIt.ExplorerView extends Backbone.View
     'mouseleave .m-histogram-bar' : 'deselect_bar'
     'keypress' : 'deselect_bar'
     'click .point_filter:not(.selected)' : 'sort_all'
-    'click .m-point-wrap' : 'navigate_point_details'
     'mouseenter .m-histogram-bar:not(.m-bar-is-hard-selected) [data-target="user_profile_page"]' : 'prevent_profile'
 
   prevent_profile : (ev) ->
     ev.stopPropagation()
     $(ev.currentTarget).parent().trigger('mouseenter')
-
-  navigate_point_details : (ev) ->
-    point_id = $(ev.currentTarget).closest('.pro, .con').data('id')
-    ConsiderIt.router.navigate(Routes.proposal_point_path(@model.get('long_id'), point_id), {trigger: true})
 
 
   select_bar : (ev) ->

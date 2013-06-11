@@ -50,4 +50,6 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
 
     @collection.create attrs,
       wait: true
-      success : (data) ->
+      success : (data) =>
+        @$el.find('.m-new-comment-body-field').val('')
+

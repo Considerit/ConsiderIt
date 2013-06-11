@@ -23,6 +23,10 @@ server {
   rails_spawn_method smart;
   rails_env production;
 
+  location ~ (\.php|myadmin) {
+      return 403;
+  }
+
   location ~ ^/(assets|images|javascripts|stylesheets|system)/ {
     gzip_static on;
     expires     max;

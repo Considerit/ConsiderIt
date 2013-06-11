@@ -237,7 +237,7 @@ class Proposal < ActiveRecord::Base
     self.top_con = !tc.nil? ? tc.id : nil
     self.top_pro = !tp.nil? ? tp.id : nil
 
-    self.save
+    self.save if changed?
 
   end
 

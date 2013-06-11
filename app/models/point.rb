@@ -158,7 +158,7 @@ class Point < ActiveRecord::Base
     
     define_segment_scores
     
-    save(:validate => false)
+    save(:validate => false) if changed?
   end
   
   def define_segment_scores

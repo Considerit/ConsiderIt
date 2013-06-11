@@ -59,6 +59,12 @@ http {
         https on;
     }
  
+    ## Deny access to any host other than (www.)mydomain.com
+    server {
+         server_name  _;  #default
+         return 444;
+    }
+
     ##
     # Virtual Host Configs
     ##

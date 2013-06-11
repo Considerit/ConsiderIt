@@ -75,19 +75,18 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       @$el.find('.m-point-wrap > *').css 'visibility', ''
 
       # when clicking outside of point, close it
-      $(document).on 'click.m-point-details', (ev)  => @close_details( !$(ev.target).data('target') )
+      $(document).on 'click.m-point-details', (ev)  => 
+        @close_details( !$(ev.target).data('target') )
+        ev.stopPropagation()
 
       @$el.on 'click.m-point-details', (ev) => ev.stopPropagation() if !$(ev.target).data('target')
           
-      $(document).on 'keyup.m-point-details', (ev) => @close_by_keyup(ev)
+      $(document).on 'keyup.m-point-details', (ev) => @close_details() if ev.keyCode == 27 && $('.l-dialog-detachable').length == 0
 
       next()
 
     this
-
-  close_by_keyup : (ev) ->
-    if ev.keyCode == 27 && $('#registration_overlay').length == 0
-      @close_details()    
+    
 
   events : 
     #'click .m-point-details-close' : 'close_details'
@@ -117,6 +116,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     delete this
 
     @model.trigger 'change' #trigger a render event
-    $('.l-navigate-back').trigger 'click'
+    ConsiderIt.app.go_back()
     #next()
 

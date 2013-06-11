@@ -74,9 +74,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       @$el.find('.m-point-wrap > *').css 'visibility', ''
 
       # when clicking outside of point, close it
-      $(document).on 'click.m-point-details', (ev)  => 
-        @close_details( !$(ev.target).data('target') )
-        ev.stopPropagation()
+      $(document).on 'click.m-point-details', (ev)  => @close_details( $(ev.target).closest('[data-role="m-point"]').length == 0 )
 
       @$el.on 'click.m-point-details', (ev) => ev.stopPropagation() if !$(ev.target).data('target')
           
@@ -96,8 +94,8 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     $(ev.currentTarget).parent().addClass('hide').siblings('.follow, .unfollow').removeClass('hide')
     ConsiderIt.current_user.set_following(data.follow.follow)
 
-  close_details : (trigger) ->
-    trigger ?= true
+  close_details : (go_back) ->
+    go_back ?= true
     @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
 
     @commentsview.clear()
@@ -115,6 +113,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     delete this
 
     @model.trigger 'change' #trigger a render event
-    ConsiderIt.app.go_back()
+    ConsiderIt.app.go_back() if go_back
     #next()
 

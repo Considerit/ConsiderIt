@@ -193,16 +193,9 @@ Devise.setup do |config|
 
   config.omniauth :twitter, :setup => TWITTER_SETUP_PROC, :strategy_class => OmniAuth::Strategies::Twitter
 
-  GOOGLE_SETUP_PROC = lambda do |env|
-    conf = APP_CONFIG && APP_CONFIG.has_key?( 'google') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
-    request = Rack::Request.new(env)
-    current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:client_id] = conf['google']['consumer_id']
-    env['omniauth.strategy'].options[:client_secret] = conf['google']['consumer_secret']
-  end
 
   require "omniauth-google-oauth2"
-  config.omniauth :google_oauth2, :setup => GOOGLE_SETUP_PROC, :scope => 'userinfo.email,userinfo.profile', :strategy_class => OmniAuth::Strategies::GoogleOauth2, :client_options => { access_type: "offline", approval_prompt: "" }
+  config.omniauth :google_oauth2, :client_id => conf['google']['consumer_id'], :client_secret => conf['google']['consumer_secret'], :scope => 'userinfo.email,userinfo.profile', :strategy_class => OmniAuth::Strategies::GoogleOauth2, :client_options => { access_type: "offline", approval_prompt: "" }
 
   #config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo', :require => 'omniauth-openid'
   #config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'

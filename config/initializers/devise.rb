@@ -198,7 +198,7 @@ Devise.setup do |config|
   conf = APP_CONFIG && APP_CONFIG.has_key?('google') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)  
 
   #config.omniauth :google_oauth2, conf['google']['consumer_id'], conf['google']['consumer_secret'], :scope => 'userinfo.email,userinfo.profile', :strategy_class => OmniAuth::Strategies::GoogleOauth2, :client_options => { access_type: "offline", approval_prompt: "" }
-  config.omniauth :google_oauth2, conf['google']['consumer_id'], conf['google']['consumer_secret'], { :client_id => conf['google']['consumer_id'], :access_type => "offline", :approval_prompt => "", :scope => 'userinfo.email,userinfo.profile' }
+  config.omniauth :google_oauth2, conf['google']['consumer_key'], conf['google']['consumer_secret'], { :access_type => "offline", :approval_prompt => "", :scope => 'userinfo.email,userinfo.profile' }
 
   #config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo', :require => 'omniauth-openid'
   #config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'

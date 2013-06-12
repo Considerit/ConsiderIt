@@ -5,10 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   skip_before_filter :verify_authenticity_token, :if => :file_uploaded
 
   def file_uploaded
-    pp params
-    pp params[:remotipart_submitted] == "true"
-    pp session[:csrf_token]
-    params[:remotipart_submitted].present? && params[:remotipart_submitted] == "true" && params[:authenticity_token] == session[:csrf_token]
+    params[:remotipart_submitted].present? && params[:remotipart_submitted] == "true"
   end
 
   def create

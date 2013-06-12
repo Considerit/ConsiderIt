@@ -13,11 +13,11 @@ window.delay = (ms, func) -> setTimeout func, ms
 window.PaperClip =
   get_avatar_url : (user, size, fname) ->
     if fname?
-      "/system/avatars/#{user.id}/#{size}/#{fname}"
+      "#{ConsiderIt.public_root}/system/avatars/#{user.id}/#{size}/#{fname}"
     else if user? && user.get('avatar_file_name')
-      "/system/avatars/#{user.id}/#{size}/#{user.get('avatar_file_name')}"
+      "#{ConsiderIt.public_root}/system/avatars/#{user.id}/#{size}/#{user.get('avatar_file_name')}"
     else
-      "/system/default_avatar/#{size}_default-profile-pic.png"
+      "#{ConsiderIt.public_root}/system/default_avatar/#{size}_default-profile-pic.png"
 
 $(document).ready () ->
   #window.avatars = 

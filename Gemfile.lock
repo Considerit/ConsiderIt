@@ -396,7 +396,7 @@ DEPENDENCIES
   premailer-rails
   rails
   rails_admin
-  remotipart (~> 1.0.2)
+  remotipart
   rinku
   role_model
   sanitize

@@ -1,9 +1,15 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
 
-  #TODO: reevaluate whether this exception is still needed
-  # it works fine without, but need to check if it works when creating account from omniauth
-	protect_from_forgery #:except => :update
+	protect_from_forgery
+  skip_before_filter :verify_authenticity_token, :if => :file_uploaded
+
+  def file_uploaded
+    pp params
+    pp params[:remotipart_submitted] == "true"
+    pp session[:csrf_token]
+    params[:remotipart_submitted].present? && params[:remotipart_submitted] == "true" && params[:authenticity_token] == session[:csrf_token]
+  end
 
   def create
 

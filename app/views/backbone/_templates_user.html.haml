@@ -239,6 +239,9 @@
       //  Complete your registration
 
       = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
+        (( var csrfparam = $('meta[name="csrf-param"]').attr('content'), csrftoken = $('meta[name="csrf-token"]').attr('content'); ))
+        %input{ :type => "hidden", :name => "{{ csrfparam }}", :value => "{{ csrftoken }}" }
+
         .m-user-accounts-form
           .m-user-accounts-form-fields-wrap
 

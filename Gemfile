@@ -25,7 +25,7 @@ gem 'omniauth-google-oauth2'
 gem 'twitter'
 
 # https://rubygems.org/gems/remotipart
-gem "remotipart", "~> 1.0.2"
+gem "remotipart"#, "~> 1.0.2"
 
 # https://github.com/ErwinM/acts_as_tenant
 gem 'acts_as_tenant'

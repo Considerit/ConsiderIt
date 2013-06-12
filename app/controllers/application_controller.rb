@@ -82,6 +82,8 @@ class ApplicationController < ActionController::Base
         } 
       end
 
+      @public_root = Rails.application.config.action_controller.asset_host.nil? ? "" : Rails.application.config.action_controller.asset_host
+
     end
 
     super

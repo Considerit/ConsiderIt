@@ -174,8 +174,8 @@ Devise.setup do |config|
     conf = APP_CONFIG && APP_CONFIG.has_key?( 'facebook') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_client || conf['facebook']['consumer_id']
-    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret || conf['facebook']['consumer_secret']
+    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_client.nil? ? conf['facebook']['consumer_key'] : current_tenant.socmedia_facebook_client
+    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret.nil? ? conf['facebook']['consumer_secret'] : current_tenant.socmedia_facebook_secret
   end
 
   config.omniauth :facebook, :setup => FACEBOOK_SETUP_PROC, :scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook, :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
@@ -186,9 +186,8 @@ Devise.setup do |config|
     
     request = Rack::Request.new(env)
     current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:consumer_key] = current_tenant.socmedia_twitter_consumer_key || conf['twitter']['consumer_id']
-    env['omniauth.strategy'].options[:consumer_secret] = current_tenant.socmedia_twitter_consumer_secret || conf['twitter']['consumer_secret']
-    
+    env['omniauth.strategy'].options[:consumer_key] = current_tenant.socmedia_twitter_consumer_key.nil? ? conf['twitter']['consumer_key'] : current_tenant.socmedia_twitter_consumer_key
+    env['omniauth.strategy'].options[:consumer_secret] = current_tenant.socmedia_twitter_consumer_secret.nil? ? conf['twitter']['consumer_secret'] : current_tenant.socmedia_twitter_consumer_secret    
   end  
 
   config.omniauth :twitter, :setup => TWITTER_SETUP_PROC, :strategy_class => OmniAuth::Strategies::Twitter

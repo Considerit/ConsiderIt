@@ -161,7 +161,8 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
       @collection.setSort('created_at', 'desc')
 
     @collection.pager()
-
+    @$browse_el.find('.m-pointlist-browse-toggle').text "Stop browsing"
+    
   toggle_browse_ev : (ev) ->
     @toggle_browse(!@browsing)
     ev.stopPropagation()

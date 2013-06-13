@@ -24,15 +24,26 @@ namespace :cache do
   end
 
   task :avatars => :environment do 
+    require 'open-uri'
+
     size = 'medium'
     begin
       Account.all.each do |accnt|
         File.open("public/system/cache/#{accnt.identifier}.css", 'w') do |f|
 
+
           accnt.users.select([:id,:avatar_file_name]).where('avatar_file_name IS NOT NULL').each do |user|
             #data = [File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}")].pack('m')
             begin
-              data = ActiveSupport::Base64.encode64(File.read("public/system/avatars/#{user.id}/#{size}/#{user.avatar_file_name}"))
+              
+              img_path = "/system/avatars/#{user.id}/#{size}/#{user.avatar_file_name}"
+              if Rails.application.config.action_controller.asset_host.nil?
+                img_data = File.read("public#{img_path}")
+              else
+                img_data = open(URI.parse("#{Rails.application.config.action_controller.asset_host}#{img_path}").read
+              end
+
+              data = ActiveSupport::Base64.encode64(img_data)
               f.puts("#avatar-#{user.id} { background-image: url(\"data:image/jpeg;base64,#{data.gsub(/\n/," ")}\"); }")
             rescue
               Rails.logger.info "Could not generate avatar #{user.id}"
@@ -40,6 +51,7 @@ namespace :cache do
             #avatars[:small][user.id] = "data:image/jpg;base64,#{data}"
           end
         end
+        # TODO: upload resulting cached avatar file if assethost is s3 (can we add digest to it and serve through asset pipeline?)
       end
     rescue
       Rails.logger.info "Could not regenerate avatars"

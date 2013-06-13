@@ -421,11 +421,13 @@
       %ul
         %li.m-dashboard_avatar
           %img{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
+
+        (( if( is_self ) { ))
         %li
           %a.m-dashboard_link{:'data-target' => 'profile'}
             Profile
 
-        (( if( is_self ) { ))
+        
         %li
           %a.m-dashboard_link{:'data-target' => 'edit_profile'}
             Edit profile

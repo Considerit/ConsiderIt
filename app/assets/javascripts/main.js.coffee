@@ -146,10 +146,8 @@ window.handleOpenIdResponse = (parameters, redirect_to) ->
 
 $.event.special.destroyed =
   remove: (o) ->
-    if o.handler
-      o.handler()    
-
-
+    o.handler() if o.handler
+          
 $(document).on "click", "a[href^='/']", (event) ->
   href = $(event.currentTarget).attr('href')
   target = $(event.currentTarget).attr('target')

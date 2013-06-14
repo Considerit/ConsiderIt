@@ -268,5 +268,21 @@ class User < ActiveRecord::Base
       end
     end
   end
+
+  def self.purge
+    users = User.all.map {|u| u.id}
+    missing_users = []
+    classes = [Position, Point, PointListing, Inclusion]
+    classes.each do |cls|
+      cls.where("user_id IS NOT NULL AND user_id NOT IN (?)", users ).each do |r|
+        missing_users.push r.user_id
+      end
+    end
+    classes.each do |cls|
+      cls.where("user_id in (?)", missing_users.uniq).delete_all
+    end
+
+    pp missing_users.uniq
+  end
       
 end

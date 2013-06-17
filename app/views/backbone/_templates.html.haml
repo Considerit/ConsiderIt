@@ -52,13 +52,13 @@
         %a.m-point-read-more 
           //{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }        
           {{ comment_count == 1 ? "1 comment" : comment_count + " comments"}}
-        %a.m-point-remove{ :'data-target' => 'point-remove'}
+        %a.m-point-remove{ :'data-target' => 'point-remove', :'data-id' => "{{id}}"}
           Remove from your list
 
         .m-point-assess
 
       .m-point-include-wrap
-        %a.m-point-include{ :'data-target' => 'point-include'}
+        %a.m-point-include{ :'data-target' => 'point-include', :'data-id' => "{{id}}"}
           Add to your list
           %span.list_connector
 

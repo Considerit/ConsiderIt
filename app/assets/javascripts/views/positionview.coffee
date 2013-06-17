@@ -204,6 +204,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     @views.mypros.renderAllItems()
     @views.mycons.renderAllItems()
 
+
     $('.m-pro-con-list-propoints', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : true}))
     $('.m-pro-con-list-conpoints', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : false}))
 
@@ -226,6 +227,12 @@ class ConsiderIt.CraftingView extends Backbone.View
       @slider.$el.noUiSlider('destroy')
       @create_slider()
 
+    @listenTo @views.peerpros, 'pointlistview:point_included', (point_id) => @include_point(point_id, @pointlists.peerpros, @pointlists.mypros, @views.peerpros)
+    @listenTo @views.peercons, 'pointlistview:point_included', (point_id) => @include_point(point_id, @pointlists.peercons, @pointlists.mycons, @views.peercons)
+
+    @listenTo @views.mypros, 'pointlistview:point_removed', (point_id) => @remove_point(point_id, @pointlists.peerpros, @pointlists.mypros, @views.mypros)
+    @listenTo @views.mycons, 'pointlistview:point_removed', (point_id) => @remove_point(point_id, @pointlists.peercons, @pointlists.mycons, @views.mycons)
+
     @pointlists.peerpros.goTo(1)
     @pointlists.peercons.goTo(1)
 
@@ -247,24 +254,20 @@ class ConsiderIt.CraftingView extends Backbone.View
 
   #handlers
   events :
-    'click [data-target="point-include"]' : 'include_point'
-    'click [data-target="point-remove"]' : 'remove_point'
     'click .m-newpoint-new' : 'new_point'
     'click .m-newpoint-cancel' : 'cancel_new_point'
     'click .m-newpoint-create' : 'create_new_point'
     'mouseenter .m-point-peer' : 'log_point_view'
 
-  include_point : (ev) ->
-    $item = @_$item(ev.currentTarget)
-    id = $item.data('id')
 
-    [peers, mine] = if $item.hasClass('pro') then [@pointlists.peerpros, @pointlists.mypros] else [@pointlists.peercons, @pointlists.mycons]
+  include_point : (id, peers, mine, list) ->
 
     model = peers.get(id)
     included_point_model = mine.add(model).get(model)
 
     model.trigger('point:included') 
 
+    $item = list.getViewByModel(model).$el
     if $item.is('.m-point-unexpanded')
       $included_point = @$el.find(".m-point-position[data-id='#{included_point_model.id}']")
       $included_point.css 'visibility', 'hidden'
@@ -309,9 +312,6 @@ class ConsiderIt.CraftingView extends Backbone.View
     else
       peers.remove(model)
 
-
-    ev.stopPropagation()
-
     # persist the inclusion ... (in future, don't have to do this until posting...)
     params = {  }
     csrfName = $("meta[name='csrf-param']").attr('content')
@@ -319,16 +319,10 @@ class ConsiderIt.CraftingView extends Backbone.View
     params[csrfName] = csrfValue
 
     $.post Routes.proposal_point_inclusions_path( @model.proposal.long_id, model.attributes.id ), 
-      params, 
-      (data) ->
+      params, (data) ->
 
 
-  remove_point : (ev) ->
-    $item = @_$item(ev.currentTarget)
-    id = $item.data('id')
-
-    [peers, mine] = if $item.hasClass('pro') then [@pointlists.peerpros, @pointlists.mypros] else [@pointlists.peercons, @pointlists.mycons]
-
+  remove_point : (id, peers, mine, list) ->
     model = mine.get(id)
 
     model.trigger('point:removed') 
@@ -339,14 +333,10 @@ class ConsiderIt.CraftingView extends Backbone.View
     params = { }
     ConsiderIt.utils.add_CSRF(params)
 
-    ev.stopPropagation()
-
     $.post Routes.proposal_point_inclusions_path( @model.proposal.long_id, model.attributes.id, {delete : true} ), 
-      params, 
-      (data) ->
+      params, (data) ->
 
   point_attributes : ($form) ->  {
-
     nutshell : $form.find('.m-newpoint-nutshell').val()
     text : $form.find('.m-newpoint-description').val()
     is_pro : $form.find('.m-newpoint-is_pro').val() == 'true'

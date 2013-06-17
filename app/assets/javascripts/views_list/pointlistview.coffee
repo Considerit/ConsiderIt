@@ -11,7 +11,8 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
     @location = options.location
     @proposal = options.proposal
     #_.bindAll this
-    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @show_point_details_handler(long_id, point_id)
+    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => 
+      @show_point_details_handler(long_id, point_id)
 
   # Returns an instance of the view class
   getItemView: (point)->
@@ -34,6 +35,8 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
 
   @events : 
     'click [data-target="m-point-details"]' : 'navigate_point_details'
+    'click [data-target="point-include"]' : 'include_point'
+    'click [data-target="point-remove"]' : 'remove_point'
 
   events : @events
 
@@ -41,7 +44,13 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
     point_id = $(ev.currentTarget).data('id')
     ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.long_id, point_id), {trigger: true})
 
+  include_point : (ev) ->
+    ev.stopPropagation()
+    @trigger 'pointlistview:point_included', $(ev.currentTarget).data('id')
 
+  remove_point : (ev) ->
+    ev.stopPropagation()
+    @trigger 'pointlistview:point_removed', $(ev.currentTarget).data('id')
 
 class ConsiderIt.PaginatedPointListView extends ConsiderIt.PointListView
 

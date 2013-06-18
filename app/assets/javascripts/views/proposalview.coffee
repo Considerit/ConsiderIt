@@ -287,7 +287,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     admin_strip_el = $('<div class="m-proposal-admin_strip m-proposal-strip">')
     template = _.template($('#tpl_proposal_admin_strip').html())
     admin_strip_el.html( template(@model.attributes))
-    @$el.append admin_strip_el 
+    @$el.find('.m-proposal-body_wrap').append admin_strip_el 
 
     for field in ConsiderIt.ProposalView.editable_fields
       [selector, name, type] = field 

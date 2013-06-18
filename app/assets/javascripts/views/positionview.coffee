@@ -109,7 +109,8 @@ class ConsiderIt.PositionView extends Backbone.View
 
   position_canceled : ->
     # TODO: discard changes
-    @trigger 'position:canceled'
+    ConsiderIt.router.navigate(Routes.proposal_path( @model.proposal.long_id ), {trigger: true})
+    #@trigger 'position:canceled'
 
   handle_submit_position : (ev) ->
     if ConsiderIt.current_user.isNew()

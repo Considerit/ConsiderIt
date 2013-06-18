@@ -10,6 +10,11 @@ class ConsiderIt.ResultsView extends Backbone.View
     @show_summary()
     this
 
+  hide : ->
+    @$el.slideUp()
+
+    @state = -1
+
   show_summary : ->
     @view.remove if @view
 

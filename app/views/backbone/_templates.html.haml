@@ -110,7 +110,7 @@
       {{ pros ? 'Pro' : 'Con' }} considerations by other participants
 
 
-    - ranks = [ { :name => 'persuasiveness', :title => 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', :target => 'persuasiveness'}, { :name => 'Popularity', :title => 'Considerations that have been added to the most pro/con lists are ranked higher.', :target => 'popularity'}, { :name => "Newness", :title => 'Newest considerations shown first', :target => 'created_at' } ]
+    - ranks = [ { :name => 'persuasiveness', :title => 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', :target => 'persuasiveness'}, { :name => 'Popularity', :title => 'Considerations that have been added to the most pro/con lists are ranked higher.', :target => 'popularity'}, { :name => "Newest", :title => 'Newest considerations shown first', :target => 'created_at' } ]
 
 
     - #{ :name => 'Common Ground', :selected => false, :title => 'Considerations that tend to be added by both supporters and opposers are ranked higher. Low ranked considerations are more divisive.', :target => '-divisiveness'}]
@@ -248,11 +248,11 @@
       .m-proposal-body_wrap
 
         .m-proposal-message.m-proposal-introduction
-          .l-message-speaker.m-proposal-initiator
+          .l-message-speaker.left.m-proposal-initiator
             %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
               %img{:src => "{{ avatar }}"}
           .l-message-body.left.down.m-proposal-description
-            = render :partial => "shared/bubble", :locals => {:left => true, :down => true}
+            = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
             .m-proposal-description-title
               {{title}}
@@ -333,7 +333,7 @@
 
     (( if(published){ ))
     .m-proposal-message.m-proposal-leader-response
-      .l-message-speaker.m-proposal-initiator.small
+      .l-message-speaker.left.m-proposal-initiator.small
         %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
           %img{:src => "{{ avatar }}"}
 
@@ -484,7 +484,7 @@
           Optional statement that summarizes your thoughts
         %textarea.m-position-statement{ :name => :explanation}
 
-    .l-message-speaker
+    .l-message-speaker.right
       //= image_tag current_theme_image_path("you.png")
 
   %script{ :type => "text/template", :id => "tpl_summary" }      
@@ -534,7 +534,7 @@
             (( } ))
 
 
-    .l-message-speaker
+    .l-message-speaker.right
       .l-group-container
         (( _.each(participants, function(p){ ))
         %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
@@ -637,7 +637,7 @@
           %a.point_filter{ :'data-filter' => 'divisiveness'}
             Most Divisive
 
-    .l-message-speaker
+    .l-message-speaker.right
 
       .l-group-container
         (( _.each( participants, function(p){ ))

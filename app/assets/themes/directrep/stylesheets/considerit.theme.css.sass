@@ -65,7 +65,7 @@
     vertical-align: top
 
   > .l-message-speaker
-    margin-top: -3px
+    margin-top: 3px
 
   > .l-message-recipient
     margin-top: 2px
@@ -109,10 +109,13 @@
   @extend %l-message-template
   .l-message-speaker
     width: $margin_width
-    text-align: right
-    img
-      width: 120px
 
+    //text-align: right
+    img
+      width: $initiator_width //$margin_width - 3
+      left: $margin_width - $initiator_width
+      position: relative
+      
   .l-message-recipient
     width: $margin_width
 

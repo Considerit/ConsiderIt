@@ -2032,7 +2032,7 @@ $m-point-expanded-width: $body_width + 150
   //   right: 60px
   //   top: -12px
 
-.m-proposal[data-status="proposal-inactive"]
+.m-proposal[data-state="0"][data-status="proposal-inactive"]
   opacity: .75
   .m-position-your-action-body.join
     display: none
@@ -2090,10 +2090,11 @@ $m-point-expanded-width: $body_width + 150
 
 
 
-  &[data-state="0"]
+  &[data-state="0"][data-status="proposal-active"]
     .m-proposal-admin_strip
       position: relative
-      top: 4 * $vertical_baseline
+      bottom: -1.5 * $vertical_baseline
+
 
   &[data-visibility="unpublished"]
     .m-proposal-admin_strip

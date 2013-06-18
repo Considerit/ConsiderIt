@@ -891,7 +891,17 @@ $tooltip_width: 315px
 
 
 // top pro / con in summary
-
+.m-results-summary-pro-con-list
+  .m-top-point-header
+    // text-transform: lowercase
+    // font-variant: small-caps
+    // font-weight: bold
+  .m-top-point-content
+    //font-weight: bold
+  .m-top-point-user
+    //font-style: italic
+    //+font-size(-2)
+  
 .m-top-point
   +font-size(-2)
   &.m-top-pro
@@ -900,6 +910,10 @@ $tooltip_width: 315px
     padding: 0 $grid_xs 0 $grid_xs / 2
   .m-top-point-user
     white-space: nowrap
+
+// .m-top-con
+//   margin-top: $vertical_baseline/2
+
 $arrow_height: 10px
 
 
@@ -2055,15 +2069,19 @@ $m-point-expanded-width: $body_width + 150
     //     fill: lighten($standout_color, 5%)
 
   .m-proposal-strip_publish
+    position: relative
+    z-index: 2
     .m-proposal-publish
-      width: $content_width - 2 * $grid_xs - 78
-      margin-left: $grid_xs + 95
+      width: $body_width
+      margin-left: $margin_width + 5
       +sassy-button("glass", 5px, inherit, desaturate(darken($standout_color, 32%), 100%), desaturate(darken($standout_color, 40%), 100%))
-      +font-size(2)
+      +font-size(1)
       color: white
       font-weight: bold
       text-align: center
-      margin-top: -4px
+      margin-top: -7px
+      border-radius: 0 0 5px 5px
+
 
 .m-proposal[data-activity="proposal-no-activity"]
   .m-proposal-message > .l-message-speaker.m-proposal-initiator
@@ -2096,10 +2114,11 @@ $m-point-expanded-width: $body_width + 150
       bottom: -1.5 * $vertical_baseline
 
 
-  &[data-visibility="unpublished"]
+  &[data-state="0"][data-visibility="unpublished"]
     .m-proposal-admin_strip
       position: static
       +font-size(0)
+      bottom: auto
 
 
 
@@ -2318,11 +2337,13 @@ $m-point-expanded-width: $body_width + 150
 
   .m-results-responders
     padding: $vertical_baseline / 2 0
+
     +bubble($community_color, $dark_community_color, right)
     min-height: 120px  
 
 .m-aggregated-results
   .m-results-responders
+
     //.t-bubble
     //  display: none
 
@@ -2577,6 +2598,7 @@ $histogram_bar_color: #6E6E6E
   //@extend %chalkboard
   @extend %pro_con_list
   //width: $body_width + 20
+
 
 //.m-results-pro-con-list
 .m-point-list-has-pagination

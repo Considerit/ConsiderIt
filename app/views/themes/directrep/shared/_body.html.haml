@@ -11,9 +11,63 @@
       
     .t-dr-mock-dialogue
 
-      .m-proposal-message.m-proposal-introduction
-        .l-message-body.left.down.m-proposal-description
-          = render :partial => "shared/bubble", :locals => {:left => true, :down => true}
+      .l-message-speaker.rep
+        = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
+
+        .t-dr-leader-desc
+          .t-leader-desc-about
+            //= theme.rep_about
+          / .t-dr-leader-media
+          /   %a
+          /     website 
+          /   ★
+          /   %a
+          /     twitter
+          /   ★ 
+          /   %a
+          /     facebook
+      / .m-proposal-message.m-proposal-introduction
+
+
+
+      /   .l-message-body.left.m-proposal-description
+      /     = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+
+      /     .m-proposal-description-head
+      /       %h1.t-dr-heading
+      /         - if aarp
+      /           = image_tag current_theme_image_path("aarp_logo.png")
+      /           = image_tag current_theme_image_path("logo.png")
+
+      /         - else
+      /           %span.dialogue
+      /             I, #{theme.rep_name}, want to discuss these issues with You.
+
+
+      /           / %span.rep{:title => "#{theme.rep_name}"}
+      /           /   = theme.rep_name
+      /           / %span.dialogue{:title => "wants to hear from"}
+      /           /   , want to hear from
+      /           / %span.constituency{:title => "You"}
+      /           /   You
+      /       .m-proposal-description-details
+      /         Residents of Framingham and Ashland, join me in thinking through the pros and cons of these issues.
+
+
+      /     .m-proposal-description-body
+      /       -# if !aarp
+      /         I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
+
+      /       -# else
+      /         Tell us what you think about the issues below. We want to represent our members as our government consider these important policy issues that will effect the lives of our members.
+
+      /       //I want to be able to represent the residents of Moanalua, Salt Lake and Aliamanu as we consider these issues in the State House.
+
+
+
+      .l-message-body
+        .rep_statement.left
+          = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
           .m-proposal-description-head
             %h1.t-dr-heading
@@ -33,68 +87,50 @@
                 / %span.constituency{:title => "You"}
                 /   You
             .m-proposal-description-details
-              Residents of Framingham and Ashland, join me in thinking through the pros and cons of these issues.
+              As your representative for Massachusetts' 7th District, I invite you to join me in thinking through the pros and cons of these issues. I will publicly respond to the concerns you all raise here, and represent them to my fellow lawmakers. 
 
 
           .m-proposal-description-body
             -# if !aarp
-              I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. 
+              I want to be able to represent the residents of Framingham and Ashland well as we consider these issues in the State House. I will publicly respond to the concerns raised here, and represent them to my fellow lawmakers. 
 
             -# else
-              Tell us what you think about the issues below. We want to represent our members as our government consider these important policy issues that will effect the lives of our members.
+              Tell us what you think about the issues below. We want to represent our members as our government consider these important policy issues that will effect the lives of our members. I will publicly respond to the concerns you all raise here, and represent them to my fellow lawmakers. 
 
             //I want to be able to represent the residents of Moanalua, Salt Lake and Aliamanu as we consider these issues in the State House.
 
-      .l-message-speaker.rep
-        = image_tag current_theme_image_path("#{theme.rep_name.gsub(' ', '_').downcase}.png")
-
-        .t-dr-leader-desc
-          .t-leader-desc-about
-            = theme.rep_about
-          .t-dr-leader-media
-            %a
-              website 
-            ★
-            %a
-              twitter
-            ★ 
-            %a
-              facebook
-
-      .l-message-body
-        
-        .constituent_statement.right
-          //.t-bubble
-          = render :partial => "shared/bubble", :locals => {:left => false}
+        / .constituent_statement.right
+        /   //.t-bubble
+        /   = render :partial => "shared/bubble", :locals => {:left => false}
           
-          %span.light
-            - if !aarp
-              Why should we spend the time? Politicians don't care what we think.
-            - else
-              Why should we spend time?  Does the AARP really care what we think?
+        /   %span.light
+        /     - if !aarp
+        /       Why should we spend the time? Politicians don't care what we think.
+        /     - else
+        /       Why should we spend time?  Does the AARP really care what we think?
 
-        .rep_statement.left
-          = render :partial => "shared/bubble", :locals => {:left => true}
+        / .rep_statement.left
+        /   = render :partial => "shared/bubble", :locals => {:left => true}
 
-          - if !aarp
-            I care. I will publicly respond to the concerns you all raise here, and represent them to my fellow lawmakers. 
-          - else
-            Your voice powers the AARP.  
+        /   - if !aarp
+        /     I care. I will publicly respond to the concerns you all raise here, and represent them to my fellow lawmakers. 
+        /   - else
+        /     Your voice powers the AARP.  
 
-          %span.light  
-            - if !aarp
+        /   %span.light  
+        /     - if !aarp
 
-            - else
-              Your opinions help shape how we as an organization can respond to these important issues.  We care what you think.
+        /     - else
+        /       Your opinions help shape how we as an organization can respond to these important issues.  We care what you think.
 
       .l-message-recipient.l-group-container
-        - cols = 10
-        - rows = 9
-        - pics = User.where('avatar_file_name IS NOT NULL')
-        - users = pics.sample( [cols*rows, pics.count].min )
+        / - cols = 10
+        / - rows = 9
+        / - pics = User.where('avatar_file_name IS NOT NULL')
+        / - users = pics.sample( [cols*rows, pics.count].min )
 
-        - users.each do |user|
-          %span.avatar{ :id => "avatar-#{user.id}", :'data-id' => user.id }
+        / - users.each do |user|
+        /   %span.avatar{ :id => "avatar-#{user.id}", :'data-id' => user.id }
 
 
 

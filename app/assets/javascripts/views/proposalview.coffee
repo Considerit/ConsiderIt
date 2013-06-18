@@ -63,7 +63,7 @@ class ConsiderIt.ProposalView extends Backbone.View
       position_el = @position_view.render()              
       position_el.insertAfter(results_el)
 
-      @listenTo @position_view, 'position:canceled', @transition_unexpanded
+      #@listenTo @position_view, 'position:canceled', @show_results_handler
       @listenTo @position_view, 'positionview:submitted_position', @position_submitted
     else
       @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
@@ -125,6 +125,8 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     callback = (new_state) =>
       if new_state == 1
+        @results_view.hide()
+
         if @model.get('published')
           el = @position_view.show_crafting()
           el.insertAfter(@results_view.$el)
@@ -136,7 +138,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     if @state > 0
       if new_state == 1
-        @results_view.show_summary()
+        #@results_view.show_summary()
       else if new_state == 2
         @position_view.close_crafting() if @model.get('published')
 

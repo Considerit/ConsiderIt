@@ -28,7 +28,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       selected_filter : @filter_selected
       })
 
-
     @$el.find('.m-proposals-list-header').remove()
       
     @$el.prepend($heading_el)

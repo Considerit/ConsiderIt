@@ -22,19 +22,26 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   #TODO: do this when login as admin
   render_header : ->
 
+
+    #@$el.find('.m-proposals-list-header').remove()
+
     $heading_el = ConsiderIt.ProposalListView.proposals_header_template({
       is_admin : ConsiderIt.roles.is_admin
       selected_sort : @sort_selected
       selected_filter : @filter_selected
       })
 
-    @$el.find('.m-proposals-list-header').remove()
-      
-    @$el.prepend($heading_el)
+    $cur_heading = @$el.find('.m-proposals-list-header')
+    if $cur_heading.length > 0
+      $cur_heading.replaceWith $heading_el
+      console.log 'replacing'
+    else
+      @$el.prepend($heading_el)
 
     if ConsiderIt.roles.is_admin && !@$create_el?
       @$create_el = ConsiderIt.ProposalListView.proposals_create_template()
       @$el.prepend(@$create_el)
+
 
 
   # Returns an instance of the view class
@@ -50,6 +57,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
         id : "#{id}"
         class : "#{ConsiderIt.ProposalListView.childClass}"
         'data-activity': if proposal.has_participants() then 'proposal-has-activity' else 'proposal-no-activity'
+        'data-status': if proposal.get('active') then 'proposal-active' else 'proposal-inactive'
 
 
   #handlers

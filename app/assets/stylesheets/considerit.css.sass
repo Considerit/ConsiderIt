@@ -761,15 +761,16 @@ $tooltip_width: 315px
     +font-size(-2)
     display: inline-block
     border-radius: 0
+    border-bottom: 0
 
     &:hover
       +sassy-button("simple", 5px, inherit, lighten($comp_color, 4%), darken($comp_color, 4%) )
       +font-size(-2)
       border-radius: 0
 
-  .l-tooltip-user-profile
-    border-bottom: 0
-    //border-radius: 0 0 5px 5px
+  // .l-tooltip-user-profile
+  //   border-bottom: 0
+  //   //border-radius: 0 0 5px 5px
 
 //////////////////////////////////////////
 // CONSIDERIT MODULES
@@ -1731,12 +1732,13 @@ $m-point-expanded-width: $body_width + 150
 .m-proposals-new
   margin: auto
   text-align: center
+  width: $content_width
 
   .m-new-proposal-submit
     //+sassy-button("glass", 5px, inherit, darken($standout_color, 32%), darken($standout_color, 40%))
     +superbutton
 
-    +font-size(2)
+    //+font-size(2)
     //padding: $vertical_baseline / 2 0
     color: white
     display: inline-block
@@ -1745,7 +1747,7 @@ $m-point-expanded-width: $body_width + 150
     border-bottom: 1px solid 
     border-color: rgba(white,.5) rgba(black, .1) rgba(black,.25) rgba(white, .2)
     font-weight: bold
-
+    width: $body_width
 
 // Proposal
 
@@ -1762,6 +1764,7 @@ $m-point-expanded-width: $body_width + 150
   @extend %on_background
   text-align: center
   margin: $vertical_baseline auto
+  width: $content_width
 
   .m-proposals-filter-container, .m-proposals-sort-container
     display: inline-block
@@ -1783,6 +1786,7 @@ $m-point-expanded-width: $body_width + 150
 
 .m-proposal
   margin: $vertical_baseline 0
+  position: relative
   //min-height: 75px
 
   // TODO: this should probably be general ...
@@ -1862,6 +1866,8 @@ $m-point-expanded-width: $body_width + 150
       text-decoration: underline
 
 .m-proposal
+  min-height: $initiator_width
+
   //opacity: .9
   //+single-transition
   .l-content-wrap
@@ -1986,11 +1992,12 @@ $m-point-expanded-width: $body_width + 150
 
 
 .m-proposal[data-state="0"]
+  margin-bottom: $vertical_baseline * 2
   .m-position-your-action-body.join
     //width: $content_width - 2 * $grid_xs
     //width: $content_width - 2 * $grid_xs
     top: -36px
-    position: relative
+    position: absolute
 
 .m-proposal[data-state="2"], .m-proposal[data-state="4"]
   margin-bottom: $vertical_baseline * 2
@@ -2025,6 +2032,10 @@ $m-point-expanded-width: $body_width + 150
   //   right: 60px
   //   top: -12px
 
+.m-proposal[data-status="proposal-inactive"]
+  opacity: .75
+  .m-position-your-action-body.join
+    display: none
 
 .m-proposal[data-visibility="unpublished"]
   .l-message-body.m-proposal-description

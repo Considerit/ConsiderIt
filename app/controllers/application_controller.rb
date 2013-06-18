@@ -65,8 +65,8 @@ class ApplicationController < ActionController::Base
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}",  ))
       @proposals = {}
 
-      top = Proposal.active.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
-            Proposal.active.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
+      top = Proposal.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
+            Proposal.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
       
       top_points = {}
       Point.where('id in (?)', top).public_fields.each do |pnt|
@@ -74,7 +74,7 @@ class ApplicationController < ActionController::Base
       end
 
       #Proposal.active.where('activity > 0').public_fields.each do |proposal|
-      Proposal.active.order('updated_at DESC').limit(20).public_fields.each do |proposal|      
+      Proposal.order('updated_at DESC').public_fields.each do |proposal|      
         @proposals[proposal.long_id] = {
           :model => proposal,
           :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,

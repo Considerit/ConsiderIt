@@ -709,62 +709,92 @@ $membership_card_height: 278px
           margin-bottom: $vertical_baseline
 
 
-$tooltip_width: 315px
+$tooltip_width: 225px
 .l-tooltip-user-title
 
   .l-tooltip-user-name
     font-weight: bold
-    display: inline-block
+    //display: inline-block
     // padding: $vertical_baseline/2 $grid_xs 0 $grid_xs
+    line-height: .7
 
-  .l-tooltip-user-joined
-    display: inline-block
-    +font-size(-3)
-    margin-left: $grid_xs/2
-    font-weight: normal
+.l-tooltip-user-joined
+  //display: inline-block
+  +font-size(-4)
+  //margin-left: $grid_xs/2
 
 .l-tooltip-user
-  width: $tooltip_width
+  //width: $tooltip_width
+  min-width: 200px
+  
   //border: 1px solid #444
   //border-bottom: none
   // background-color: #e1e1e1
 
 
+  .l-tooltip-user-block, .l-tooltip-user-metrics
+    //display: inline-block
+
+  .l-tooltip-user-block
+    vertical-align: baseline
+
   .l-tooltip-user-metrics
+    //float: right
+    // ul
+    //   display: inline-block
 
   .l-tooltip-user-metric
     list-style: none
+    margin: 0 0 $vertical_baseline/8 $grid_xs/8
+    +font-size(-3)
+    line-height: 1
     display: inline-block
-    width: 65px
-    padding: $vertical_baseline/4 $grid_xs/2
-    margin: $vertical_baseline/4 $grid_xs/4
+
+  .l-tooltip-user-metric-major
+    
+    //margin: $vertical_baseline/4 $grid_xs/4
     color: white
-    background-color: darken($position_button_bg, 8%)
-    border: 1px solid darken($position_button_bg, 16%)
-    text-align: center
+    background-color: rgba(darken($position_button_bg, 8%), .5)
+    padding: 0 $grid_xs/4
+    margin-left: $grid_xs/4
+    //border: 1px solid darken($position_button_bg, 16%)
 
-  .l-tooltip-user-metric-number
-    +font-size(1)
-    line-height: 1
+    //text-align: center
+    //width: 65px
 
-  .l-tooltip-user-metric-desc
-    +font-size(-5)
-    line-height: 1
+    // .l-tooltip-user-metric-number,     .l-tooltip-user-metric-desc
+
+    //   +font-size(1)
+    //   line-height: 1
+
+    // .l-tooltip-user-metric-desc
+    //   +font-size(-5)
+    //   line-height: 1
+
+  .l-tooltip-user-metric-minor
+
+
+  .l-tooltip-user-metric-number, .l-tooltip-user-metric-desc
+    text-transform: lowercase
+    font-variant: small-caps
 
   .l-tooltip-user-actions
-    width: $tooltip_width
+    //width: $tooltip_width
+    clear: both
+
   .l-tooltip-user-action
-    +sassy-button("simple", 5px, inherit, lighten($comp_color, 16%), lighten($comp_color, 4%) )
+    +sassy-button("glass", 5px, inherit, lighten($position_button_bg, 8%), darken($position_button_bg, 8%) )
     color: white
     text-align: center
-    width: $tooltip_width
+    width: 100%
+    min-width: $tooltip_width
     +font-size(-2)
     display: inline-block
     border-radius: 0
     border-bottom: 0
 
     &:hover
-      +sassy-button("simple", 5px, inherit, lighten($comp_color, 4%), darken($comp_color, 4%) )
+      +sassy-button("glass", 5px, inherit, darken($position_button_bg, 4%), darken($position_button_bg, 20%) )
       +font-size(-2)
       border-radius: 0
 
@@ -2892,10 +2922,16 @@ label.inline
 /* for tooltipster
 /**
 
-.tooltipster-default .tooltipster-content
-  +font-size(0)
-  font-size: 16px
-  padding: 0
+.tooltipster-default 
+  background-color: $position_button_bg
+  border: 2px solid darken($position_button_bg, 15%)
+
+  .tooltipster-content
+    +font-size(0)
+    font-size: 16px
+    padding: 0
+
+
 
 /**
 /* for jquery.fileinput.js

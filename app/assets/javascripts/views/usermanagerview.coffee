@@ -76,6 +76,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
       $target.tooltipster
         interactive: true
         content: $tooltip
+        offsetY: -5
 
       $target.tooltipster 'show'
 

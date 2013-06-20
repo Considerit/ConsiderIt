@@ -31,6 +31,7 @@ class ProposalsController < ApplicationController
 
     #TODO: return just "points" and "included points" and let client sort through them?
     response = {
+      :proposal => proposal, #TODO: filter to public fields
       :points => {
         :pros => Point.mask_anonymous_users(proposal.points.viewable.pros.public_fields, current_user),
         :cons => Point.mask_anonymous_users(proposal.points.viewable.cons.public_fields, current_user),

@@ -20,10 +20,6 @@ class ConsiderIt.ProposalView extends Backbone.View
     @data_loaded = false
 
     ConsiderIt.router.on 'route:Root', => @transition_unexpanded() if @state > 0
-    ConsiderIt.router.on 'route:Consider', (long_id) => @take_position_handler() if long_id == @model.long_id
-    ConsiderIt.router.on 'route:Aggregate', (long_id) => @show_results_handler() if long_id == @model.long_id
-    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @show_point_details_handler(point_id) if long_id == @model.long_id
-    ConsiderIt.router.on 'route:StaticPosition', (long_id, user_id) => @show_static_position_handler(user_id) if long_id == @model.long_id
 
     # @on 'point_details:closed', ->
     #   if @state == 2 || @state == 4
@@ -82,19 +78,6 @@ class ConsiderIt.ProposalView extends Backbone.View
   can_edit : ->
     ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
 
-  do_after_data_loaded : (callback, callback_params) ->
-    if @model.data_loaded
-      callback(this, callback_params)
-    else      
-      @listenToOnce @model, 'proposal:data_loaded', => 
-        #@listenTo ConsiderIt.app, 'user:signin', @post_signin
-        @listenTo ConsiderIt.app, 'user:signout', @post_signout
-        callback(this, callback_params)
-      @model.load_data()
-
-
-  #post_signin : () ->
-
 
   post_signout : () -> 
     @data_loaded = false
@@ -107,14 +90,11 @@ class ConsiderIt.ProposalView extends Backbone.View
   show_results : (me) ->
     me.transition_expanded(2)
 
-  take_position_handler : () -> 
-    @do_after_data_loaded(@take_position)
-
   show_results_handler : () -> 
     if @state == 4 #skip the transition if we're already on the results page
       @$hidden_els.css('display', 'none')
     else 
-      @do_after_data_loaded(@show_results) 
+      @show_results()
 
 
   # TODO: This should be triggered on results opened & position opened
@@ -264,17 +244,9 @@ class ConsiderIt.ProposalView extends Backbone.View
     else
       callback(params.user_id)
 
-  show_point_details_handler : (point_id) ->
+  show_point_details_handler : (params) ->
     # if data is already loaded, then the PointListView is already properly handling this
-    if !@model.data_loaded
-      @do_after_data_loaded(@prepare_for_point_details, {point_id : point_id})
-
-  show_static_position_handler : (user_id) ->
-    # show the static position of another user just below the proposal details
-    if !@model.data_loaded
-      @do_after_data_loaded(@prepare_for_static_position, {user_id : user_id} )
-    else
-      @prepare_for_static_position(this, {user_id : user_id})
+    @prepare_for_point_details(params) if !@model.data_loaded
 
   position_submitted : ->
     if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()

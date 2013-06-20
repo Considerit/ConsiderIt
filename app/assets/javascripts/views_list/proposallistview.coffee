@@ -10,8 +10,39 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     @sort_selected = 'activity'
     @filter_selected = 'all'
     super
-    @listenTo ConsiderIt.app, 'proposal:deleted', (proposal) => @delete_proposal(proposal)
     @sort_proposals()
+
+    @listenTo ConsiderIt.app, 'proposal:deleted', (proposal) => @delete_proposal(proposal)
+
+    ConsiderIt.router.on 'route:Consider', (long_id) => @do_after_data_loaded(long_id, "take_position") 
+    ConsiderIt.router.on 'route:Aggregate', (long_id) => @do_after_data_loaded(long_id, "show_results_handler")
+    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @do_after_data_loaded(long_id, "show_point_details_handler", {point_id : point_id})
+    ConsiderIt.router.on 'route:StaticPosition', (long_id, user_id) => @do_after_data_loaded(long_id, "prepare_for_static_position", {user_id : user_id})
+
+
+  do_after_data_loaded : (long_id, callback, callback_params) ->
+    proposal = @collection.findWhere({long_id: long_id})
+    proposalview = if proposal? then @getViewByModel(proposal) else null
+
+    if proposalview? && proposal.data_loaded
+      proposalview[callback](proposalview, callback_params)
+    else if proposal?
+      $.get Routes.proposal_path(long_id), (data) => 
+        proposal.set_data(data)
+        proposalview[callback](proposalview, callback_params)
+        @listenTo ConsiderIt.app, 'user:signout', @post_signout
+    else
+      $.get Routes.proposal_path(long_id), (data) => 
+        console.log data
+        proposal = new ConsiderIt.Proposal(data.proposal)
+        @collection.add proposal
+        proposal.set_data data
+        proposalview = @getViewByModel(proposal)
+        proposalview[callback](proposalview, callback_params)
+        @listenTo ConsiderIt.app, 'user:signout', @post_signout
+
+
+  post_signout : -> view.post_signout() for own cid, view of @viewsByCid
 
   render : -> 
     # @undelegateEvents()
@@ -21,8 +52,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
   #TODO: do this when login as admin
   render_header : ->
-
-
     #@$el.find('.m-proposals-list-header').remove()
 
     $heading_el = ConsiderIt.ProposalListView.proposals_header_template({
@@ -34,7 +63,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     $cur_heading = @$el.find('.m-proposals-list-header')
     if $cur_heading.length > 0
       $cur_heading.replaceWith $heading_el
-      console.log 'replacing'
     else
       @$el.prepend($heading_el)
 

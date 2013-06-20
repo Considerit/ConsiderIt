@@ -56,8 +56,6 @@ class ConsiderIt.Proposal extends Backbone.Model
     @data_loaded = true
     @trigger 'proposal:data_loaded'
 
-  load_data : ->
-    $.get Routes.proposal_path(@long_id), (data) => @set_data(data)
 
 
   update_anonymous_point : (point_id, is_pro) ->

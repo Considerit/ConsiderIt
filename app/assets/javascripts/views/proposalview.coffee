@@ -99,6 +99,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   # TODO: This should be triggered on results opened & position opened
   transition_expanded : (new_state) =>
+    @$el.css('display', '') if !@$el.is(':visible')
     if new_state == @state #can happen, e.g. when transitioning out of point details view
       @$hidden_els.css('display', 'none')
       return 

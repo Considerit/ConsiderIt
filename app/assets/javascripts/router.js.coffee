@@ -17,3 +17,12 @@ class ConsiderIt.Router extends Backbone.Router
     "dashboard/moderate" : "Moderate"
     "dashboard/assessment" : "Assess"
     "" : "Root"
+
+  valid_endpoint : (path) ->
+    parts = path.split('/')
+    return true if parts.length == 1
+    if parts[1] == 'dashboard'
+      return _.contains(['profile', 'edit', 'account', 'application', 'proposals', 'roles', 'notifications', 'analytics', 'data', 'moderate', 'assessment'], parts[parts.length-1])  
+
+    else
+      return !_.contains(['positions', 'points'], parts[parts.length-1])

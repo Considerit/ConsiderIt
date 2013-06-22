@@ -291,8 +291,7 @@ blockquote
 $background: image-url('directrep/images/back.png')
 
 html  
-  +background-img
-
+  background-color: $product_background_color
 #l-wrap
   position: relative
 
@@ -304,18 +303,24 @@ html
 
 #l-heading
   //height: $vertical_baseline * 2
-  width: $content_width
+  //width: $content_width
   margin: auto
   //margin-bottom: $vertical_baseline
+  border-bottom: 1px solid white
 
 .l-heading-wrap
   //width: $content_width
+  width: $content_width
+  left: 50%
+  margin-left: -$content_width/2
   position: relative
   padding: 0
-  margin: 0 $grid_xs
-  height: 3 * $vertical_baseline
+  height: 2 * $vertical_baseline
 
 #l-content
+  padding: $vertical_baseline 0
+  +background-img
+  +single-box-shadow
 
 .l-content-wrap
   //padding: $vertical_baseline $grid_xs
@@ -325,9 +330,11 @@ html
   margin: 0 auto
 
 #l-footer
+  padding: $vertical_baseline 0 2 * $vertical_baseline 0
+  //border-top: 1px solid darken($product_background_color, 15%)
 
 .l-footer-wrap
-  width: $content_width
+  width: $body_width
   position: relative
   margin: 0 auto
 
@@ -372,9 +379,16 @@ html
 #l-heading
   .t-logo
     position: absolute
-    left: 34px
+    //left: 34px
+    left: 106px
+    +font-size(-2)
     overflow: hidden
     //display: inline-block
+
+    .t-logo-tagline
+      display: inline-block
+      margin-left: $grid_xs/2
+      text-transform: none
 
   .l-navigate-back
     display: none
@@ -393,7 +407,7 @@ html
   position: relative
   text-align: right
   z-index: 999
-  padding: 10px 15px
+  padding: $vertical_baseline/4 $grid_xs/2
   //width: 50%
   right: 0
   float: right

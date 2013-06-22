@@ -1,6 +1,8 @@
 class ConsiderIt.AppView extends Backbone.View
 
   el: 'body'
+  breadcrumbs_template : _.template($('#tpl_breakcrumbs').html())
+
 
   initialize : (options) -> 
 
@@ -19,7 +21,7 @@ class ConsiderIt.AppView extends Backbone.View
     @proposals = new ConsiderIt.ProposalList()
     @proposals.reset _.values(ConsiderIt.proposals)      
 
-    @crumbs = ['home']
+    @crumbs = [ ['homepage', '/'] ]
 
   render : () -> 
     @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#m-proposals-container'}) if !@proposalsview?
@@ -64,18 +66,21 @@ class ConsiderIt.AppView extends Backbone.View
     $('.tooltipster-base').hide()
     
     if short 
-      if short in @crumbs
-        new_crumbs = []
-        for loc in @crumbs
-          break if loc == short
-          new_crumbs.push loc
-        @crumbs = new_crumbs
-      @crumbs.push short
+      new_crumbs = []
+      for [loc,full] in @crumbs
+        break if loc == short
+        new_crumbs.push [loc,full]
+      @crumbs = new_crumbs
+      @crumbs.push [short, "/#{Backbone.history.fragment}"]
     else
-      @crumbs = ['home']
+      @crumbs = [['homepage','/']]
     
-    $back = $('.l-navigate-back')
+    $back = $('.l-navigate')
+
     if @crumbs.length == 1 && $back.is(':visible')
       $back.hide()
-    else if @crumbs.length > 1 && $back.is(':hidden')
+    else if @crumbs.length > 1
+      $back.find('.l-navigate-breadcrumbs').html @breadcrumbs_template({crumbs: @crumbs})
       $back.show()
+
+    console.log @crumbs

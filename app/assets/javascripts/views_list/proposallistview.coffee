@@ -33,7 +33,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
         @listenTo ConsiderIt.app, 'user:signout', @post_signout
     else
       $.get Routes.proposal_path(long_id), (data) => 
-        console.log data
         proposal = new ConsiderIt.Proposal(data.proposal)
         @collection.add proposal
         proposal.set_data data

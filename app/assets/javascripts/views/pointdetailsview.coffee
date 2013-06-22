@@ -113,6 +113,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     delete this
 
     @model.trigger 'change' #trigger a render event
-    ConsiderIt.app.go_back() if go_back
+    ConsiderIt.app.go_back_crumb() if go_back
     #next()
 

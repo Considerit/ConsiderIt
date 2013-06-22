@@ -53,9 +53,9 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     # Is there a better way than just doing this for all other routes?
 
     ConsiderIt.router.on 'route:Root', => @close() if @$dashboard_el.is(':visible')
-    ConsiderIt.router.on 'route:Aggregate', => @close() if @$dashboard_el.is(':visible')
-    ConsiderIt.router.on 'route:Consider', => @close() if @$dashboard_el.is(':visible')
-    ConsiderIt.router.on 'route:PointDetails', => @close() if @$dashboard_el.is(':visible')    
+    ConsiderIt.router.on 'route:Aggregate', => @close(false) if @$dashboard_el.is(':visible')
+    ConsiderIt.router.on 'route:Consider', => @close(false) if @$dashboard_el.is(':visible')
+    ConsiderIt.router.on 'route:PointDetails', => @close(false) if @$dashboard_el.is(':visible')    
 
 
     @listenTo ConsiderIt.app, 'user:signin', => 
@@ -89,7 +89,8 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     if !visible
       @$dashboard_el.fadeIn() 
 
-      @hidden_els = $("[data-role='m-proposal'], .m-proposals-new, .m-proposals-list-header, .t-intro-wrap")
+      @hidden_els = $("[data-role='m-proposal']:visible, .m-proposals-new, .m-proposals-list-header, .t-intro-wrap")
+      @hidden_els_visible_before = $("[data-role='m-proposal']:visible")
 
       #@hidden_els = $('#m-proposals-container, .l-content-wrap:visible:not(#m-dashboard)')
 
@@ -349,9 +350,12 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     $dialog_window.detach().appendTo($dialog_window.data('parent')).hide()
 
 
-  close : () ->
+  close : (show_everything) ->
+    show_everything ?= true
+
     @$dashboard_el.hide()
-    @hidden_els.css('display', '')
+
+    if show_everything then @hidden_els.css('display', '') else @hidden_els_visible_before.css('display', '')
 
     @current_context = null
 

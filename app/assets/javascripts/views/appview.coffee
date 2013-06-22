@@ -59,6 +59,10 @@ class ConsiderIt.AppView extends Backbone.View
     else
       window.history.go(-1)
 
+  go_back_crumb : ->
+    href = if @breadcrumbs.length > 1 then @breadcrumbs[@breadcrumbs.length - 2][1] else '/'
+    ConsiderIt.router.navigate(href, {trigger: true})
+
   route_changed : (route, router) ->
     return if route == 'route'
     loc = Backbone.history.fragment.split('/')
@@ -80,7 +84,13 @@ class ConsiderIt.AppView extends Backbone.View
     if @crumbs.length == 1 && $back.is(':visible')
       $back.hide()
     else if @crumbs.length > 1
-      $back.find('.l-navigate-breadcrumbs').html @breadcrumbs_template({crumbs: @crumbs})
+      @breadcrumbs = [['homepage', '/']]
+      path = ''
+      for loc in @crumbs[@crumbs.length-1][1].split('/')
+        continue if loc.length == 0
+        path = "#{path}/#{loc}"
+        @breadcrumbs.push [loc, path] if ConsiderIt.router.valid_endpoint(path)
+
+      $back.find('.l-navigate-breadcrumbs').html @breadcrumbs_template({crumbs: @breadcrumbs})
       $back.show()
 
-    console.log @crumbs

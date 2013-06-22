@@ -94,7 +94,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     if @state == 4 #skip the transition if we're already on the results page
       @$hidden_els.css('display', 'none')
     else 
-      @show_results()
+      @show_results(@)
 
 
   # TODO: This should be triggered on results opened & position opened

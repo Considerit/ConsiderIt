@@ -390,18 +390,34 @@ html
       margin-left: $grid_xs/2
       text-transform: none
 
-  .l-navigate-back
+  .l-navigate
     display: none
-    +font-size(-2)
-    text-transform: lowercase
-    padding: $vertical_baseline / 4 $grid_xs / 2
-    background-color: lighten($comp_color, 25%)
-    color: white
+    background-color: rgba(lighten($product_background_color, 4%), .5)
+    margin: auto
     position: absolute
-    left: -39px
-    top: 11px
-    &:hover
-      background-color: $comp_color
+    z-index: 50
+    width: 100%
+    @extend %on_background
+
+    .l-navigate-wrap
+      width: $content_width
+      margin-left: -$content_width/2
+      left: 50%
+      position: relative
+      padding-left: 98px
+    .l-navigate-back, .l-navigate-crumb
+      +font-size(-2)
+      text-transform: lowercase
+    .l-navigate-breadcrumbs
+      display: inline
+      padding-left: 50px
+    .l-navigate-crumb
+      display: inline
+      list-style: none
+    //padding: $vertical_baseline / 4 $grid_xs / 2
+    //color: white
+    // &:hover
+    //   background-color: $comp_color
 
 #m-user-nav
   position: relative

@@ -23,9 +23,10 @@
   text-transform: uppercase
   @extend %bolded
   @extend %on_background
-  top: 12px
+  //top: $vertical_baseline / 2
+  margin-top: $vertical_baseline/2
   opacity: .8
-
+  color: #8A8A8A
   //top: $vertical_baseline
   //width: 110px
   //height: 18px
@@ -149,7 +150,7 @@
     width: 100%
 
   .rep_statement
-    +bubble($initiator_color, $dark_initiator_color, left)
+    +bubble($product_background_color, darken($product_background_color, 16%), left)
 
   .constituent_statement
     +bubble($community_color, $dark_community_color, right)
@@ -173,3 +174,35 @@ $aarp: 0
 
   .t-logo
     display: none
+
+
+.l-footer-wrap
+  text-align: left
+
+.m-footer-shortdesc, .m-footer-history, .m-footer-contact
+  margin-bottom: $vertical_baseline/2
+  a
+    text-decoration: underline
+
+.m-footer-shortdesc
+  font-weight: bold
+.m-footer-shortdesc-logo
+  text-transform: uppercase
+  +font-size(-1)
+.m-footer-history
+
+.m-footer-contact
+
+.mc-subscribe
+  +sassy-button("simple", 5px, inherit, darken($product_background_color, 3%), darken($product_background_color, 5%))
+  +font-size(-3)
+  color: #666
+  text-shadow: none
+  position: relative
+  top: -2px
+  //+box-shadow(none)
+  //padding: $vertical_baseline/8 $grid_xs/2
+#mce-EMAIL
+  +font-size(0)
+  width: 200px
+

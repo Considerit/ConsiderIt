@@ -62,7 +62,7 @@ class ConsiderIt.StaticPositionView extends Backbone.View
     $(document).off 'keyup.m-static-position'
     @$dialog.off 'click.m-static-position'
 
-    ConsiderIt.app.go_back()
+    ConsiderIt.app.go_back_crumb()
     @stopListening()
     @undelegateEvents()
     @$dialog.remove()

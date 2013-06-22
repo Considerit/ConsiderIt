@@ -1,9 +1,10 @@
 @import "mixins/variables"
+@import "mixins/colors"
 
 $yellow_postit: hsl(55, 81%, 79%)
 
 %on_background
-  +single-text-shadow($hoff: -1px, $voff: -1px, $color: rgba(white,.75)) 
+  //+single-text-shadow($hoff: 1px, $voff: 1px, $color: rgba(black,.5)) 
   color: lighten($position_color, 10%)
 
   a
@@ -20,7 +21,7 @@ $yellow_postit: hsl(55, 81%, 79%)
     //color: #333
 
 =post_it($repeated: 0)
-  $color: $yellow_postit
+  $color: $base_color
   
   background-color: $community_color
   

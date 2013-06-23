@@ -84,17 +84,17 @@ class ConsiderIt.ProposalView extends Backbone.View
     @transition_unexpanded()
 
 
-  take_position : (me) ->
-    me.transition_expanded(1)
+  take_position : () ->
+    @transition_expanded(1)
 
-  show_results : (me) ->
-    me.transition_expanded(2)
+  show_results : () ->
+    @transition_expanded(2)
 
   show_results_handler : () -> 
     if @state == 4 #skip the transition if we're already on the results page
       @$hidden_els.css('display', 'none')
     else 
-      @show_results(@)
+      @show_results()
 
 
   # TODO: This should be triggered on results opened & position opened
@@ -213,35 +213,35 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   # Point details are being handled here (messily) for the case when a user directly visits the point details page without
   # (e.g. if they followed a link to it). In that case, we need to create some context around it first.
-  prepare_for_point_details : (me, params) ->
-    me.listenToOnce me.results_view, 'ResultsExplorer:rendered', => 
+  prepare_for_point_details : (params) ->
+    @listenToOnce @results_view, 'ResultsExplorer:rendered', => 
       pnt = parseInt(params.point_id)
-      point = me.model.pros.get(pnt)
+      point = @model.pros.get(pnt)
       if !point
-        point = me.model.cons.get(pnt)
+        point = @model.cons.get(pnt)
 
-      results_explorer = me.results_view.view
+      results_explorer = @results_view.view
       pointlistview = if point.get('is_pro') then results_explorer.views.pros else results_explorer.views.cons
       pointview = pointlistview.getViewByModel(point) || pointlistview.addModelView(point) # this happens if the point is being directly visited, but is not on the front page of results
 
       pointview.show_point_details_handler() if pointview?
       $('body').animate {scrollTop: pointview.$el.offset().top - 50}, 200
 
-    me.show_results(me)
+    @show_results()
 
-  prepare_for_static_position : (me, params) ->
+  prepare_for_static_position : (params) ->
     callback = (user_id) =>
       #me.static_position.close() if me.static_position
-      me.static_position = new ConsiderIt.StaticPositionView
-        proposal : me.model
+      @static_position = new ConsiderIt.StaticPositionView
+        proposal : @model
         user_id : user_id
-        el : me.$el
-      me.static_position.render()
+        el : @$el
+      @static_position.render()
 
-    if me.state == 0
-      me.listenToOnce me.position_view, 'PositionCrafting:rendered', => 
+    if @state == 0
+      @listenToOnce @position_view, 'PositionCrafting:rendered', => 
         callback(params.user_id)
-      me.take_position(me)    
+      @take_position()    
     else
       callback(params.user_id)
 

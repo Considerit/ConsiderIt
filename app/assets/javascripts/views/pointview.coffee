@@ -34,15 +34,15 @@ class ConsiderIt.PointView extends Backbone.View
 
   do_after_data_loaded : (callback, callback_params) ->
     if @model.data_loaded
-      callback(this, callback_params)
+      callback.apply(this, [callback_params])
     else      
       @listenToOnce @model, 'point:data_loaded', => 
-        callback(this, callback_params)
+        callback.apply(this, [callback_params])
       @model.load_data()
 
 
-  show_point_details : (me) ->
-    me.pointdetailsview = new ConsiderIt.PointDetailsView( {proposal : me.proposal, model: me.model, el: me.$el} )
-    me.pointdetailsview.render()
+  show_point_details : ->
+    @pointdetailsview = new ConsiderIt.PointDetailsView( {proposal : @proposal, model: @model, el: @$el} )
+    @pointdetailsview.render()
 
   show_point_details_handler : () -> @do_after_data_loaded(@show_point_details)

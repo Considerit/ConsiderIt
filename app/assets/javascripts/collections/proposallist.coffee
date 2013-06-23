@@ -4,30 +4,25 @@ class ConsiderIt.ProposalList extends Backbone.Paginator.clientPager
   paginator_ui: 
     firstPage: 1
     currentPage: 1
-    perPage: 200
-
-  # comparator : (proposal) ->
-  #   -proposal.get("activity")
+    perPage: 5
 
   initialize: (options) -> 
     super
 
     ####################################
     # patch for Backbone.paginator
-    @origModels = if @models then @models else []
+    @origModels = if @models then @models.slice() else []
     ####################################
 
     @on 'add', (model) =>
       model.long_id = model.get('long_id')
       model.set('description', htmlFormat(model.attributes.description))
 
-    if options? && options.perPage? 
-      @perPage = options.perPage    
-
   add_proposals : (proposals_data) ->
     proposals = []
 
     for prop in proposals_data
+
       if !(@get(prop.model.proposal.id)?)
         top_pro = if prop.top_pro then prop.top_pro.point else null
         top_con = if prop.top_con then prop.top_con.point else null

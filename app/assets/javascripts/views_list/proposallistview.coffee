@@ -108,11 +108,11 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     'click .m-proposallist-filter' : 'filter_proposals_to'
     'click .m-pointlist-pagination-showmore' : 'do_after_all_data_loaded'
 
-    'click .m-proposals-list-pagination-pages-first' : 'goto_first'
-    'click .m-proposals-list-pagination-pages-prev' : 'goto_prev'
-    'click .m-proposals-list-pagination-pages-next' : 'goto_next'
-    'click .m-proposals-list-pagination-pages-last' : 'goto_last'
-    'click .m-proposals-list-pagination-pages-page' : 'goto_page'
+    'click [data-target="proposallist:first"]' : 'goto_first'
+    'click [data-target="proposallist:prev"]' : 'goto_prev'
+    'click [data-target="proposallist:next"]' : 'goto_next'
+    'click [data-target="proposallist:last"]' : 'goto_last'
+    'click [data-target="proposallist:page"]' : 'goto_page'
 
   do_after_all_data_loaded : (callback) ->
 
@@ -201,6 +201,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
   goto_page : (ev) ->
     ev.preventDefault()
-    page = $(ev.target).text()
+    page = $(ev.target).data('page')
     @collection.goTo(page)
 

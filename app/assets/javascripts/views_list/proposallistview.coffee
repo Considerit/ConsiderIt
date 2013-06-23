@@ -8,28 +8,32 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
   initialize : (options) -> 
     @sort_selected = 'activity'
-    @filter_selected = 'all'
+    @filter_selected = 'active'
     super
+
+    @data_loaded = false
+
     @sort_proposals()
 
     @listenTo ConsiderIt.app, 'proposal:deleted', (proposal) => @delete_proposal(proposal)
 
-    ConsiderIt.router.on 'route:Consider', (long_id) => @do_after_data_loaded(long_id, "take_position") 
-    ConsiderIt.router.on 'route:Aggregate', (long_id) => @do_after_data_loaded(long_id, "show_results_handler")
-    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @do_after_data_loaded(long_id, "show_point_details_handler", {point_id : point_id})
-    ConsiderIt.router.on 'route:StaticPosition', (long_id, user_id) => @do_after_data_loaded(long_id, "prepare_for_static_position", {user_id : user_id})
+    ConsiderIt.router.on 'route:Consider', (long_id) => @do_after_proposal_data_loaded(long_id, "take_position") 
+    ConsiderIt.router.on 'route:Aggregate', (long_id) => @do_after_proposal_data_loaded(long_id, "show_results_handler")
+    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @do_after_proposal_data_loaded(long_id, "show_point_details_handler", [{point_id : point_id}])
+    ConsiderIt.router.on 'route:StaticPosition', (long_id, user_id) => @do_after_proposal_data_loaded(long_id, "prepare_for_static_position", [{user_id : user_id}])
 
 
-  do_after_data_loaded : (long_id, callback, callback_params) ->
+
+  do_after_proposal_data_loaded : (long_id, callback, callback_params) ->
     proposal = @collection.findWhere({long_id: long_id})
     proposalview = if proposal? then @getViewByModel(proposal) else null
 
     if proposalview? && proposal.data_loaded
-      proposalview[callback](proposalview, callback_params)
+      proposalview[callback].apply(proposalview, callback_params)
     else if proposal?
       $.get Routes.proposal_path(long_id), (data) => 
         proposal.set_data(data)
-        proposalview[callback](proposalview, callback_params)
+        proposalview[callback].apply(proposalview, callback_params)
         @listenTo ConsiderIt.app, 'user:signout', @post_signout
     else
       $.get Routes.proposal_path(long_id), (data) => 
@@ -37,7 +41,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
         @collection.add proposal
         proposal.set_data data
         proposalview = @getViewByModel(proposal)
-        proposalview[callback](proposalview, callback_params)
+        proposalview[callback].apply(proposalview, callback_params)
         @listenTo ConsiderIt.app, 'user:signout', @post_signout
 
 
@@ -93,21 +97,30 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     'click .m-proposallist-sort' : 'sort_proposals_to'
     'click .m-proposallist-filter' : 'filter_proposals_to'
 
+  do_after_all_data_loaded : (callback) ->
+
+    if !@data_loaded
+      @data_loaded = true
+      $.get Routes.proposals_path(), (data) => 
+        @collection.add_proposals data
+        @sort_proposals()
+        @filter_proposals()
+    else
+      callback.apply(@)
+
   sort_proposals_to : (ev) ->   
     @sort_selected = $(ev.target).data('target')
-    @sort_proposals()
+    @do_after_all_data_loaded(@sort_proposals)
+
+  filter_proposals_to : (ev) ->
+    @filter_selected = $(ev.target).data('target')
+    @do_after_all_data_loaded(@filter_proposals)
 
   sort_proposals : ->
-
     @collection.setSort( @sort_selected, 'desc')
 
     @render_header()
     @collection.updateList()
-
-
-  filter_proposals_to : (ev) ->
-    @filter_selected = $(ev.target).data('target')
-    @filter_proposals()
 
   filter_proposals : ->
 

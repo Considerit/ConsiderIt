@@ -39,6 +39,8 @@ Backbone.Paginator = (function ( Backbone, _, $ ) {
 
     // Default values used when sorting and/or filtering.
     initialize: function(){
+      
+
       //LISTEN FOR ADD & REMOVE EVENTS THEN REMOVE MODELS FROM ORGINAL MODELS
       this.on('add', this.addModel, this);
       this.on('remove', this.removeModel, this);

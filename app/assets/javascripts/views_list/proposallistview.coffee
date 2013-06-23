@@ -1,6 +1,7 @@
 class ConsiderIt.ProposalListView extends Backbone.CollectionView
-  @proposals_header_template = _.template($('#tpl_proposal_list_header').html())
-  @proposals_create_template = _.template($('#tpl_proposal_list_new_conversation').html())
+  proposals_header_template : _.template($('#tpl_proposal_list_header').html())
+  proposals_create_template : _.template($('#tpl_proposal_list_new_conversation').html())
+  proposals_pagination_template : _.template($('#tpl_proposal_list_pagination').html())
 
   itemView : ConsiderIt.ProposalView
   @childClass : 'm-proposal'
@@ -13,6 +14,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
     @data_loaded = false
 
+    @filter_proposals()
     @sort_proposals()
 
     @listenTo ConsiderIt.app, 'proposal:deleted', (proposal) => @delete_proposal(proposal)
@@ -21,8 +23,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     ConsiderIt.router.on 'route:Aggregate', (long_id) => @do_after_proposal_data_loaded(long_id, "show_results_handler")
     ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @do_after_proposal_data_loaded(long_id, "show_point_details_handler", [{point_id : point_id}])
     ConsiderIt.router.on 'route:StaticPosition', (long_id, user_id) => @do_after_proposal_data_loaded(long_id, "prepare_for_static_position", [{user_id : user_id}])
-
-
 
   do_after_proposal_data_loaded : (long_id, callback, callback_params) ->
     proposal = @collection.findWhere({long_id: long_id})
@@ -51,13 +51,14 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     # @undelegateEvents()
     super
     @render_header()
+    @render_pagination()
 
 
   #TODO: do this when login as admin
   render_header : ->
     #@$el.find('.m-proposals-list-header').remove()
 
-    $heading_el = ConsiderIt.ProposalListView.proposals_header_template({
+    $heading_el = @proposals_header_template({
       is_admin : ConsiderIt.roles.is_admin
       selected_sort : @sort_selected
       selected_filter : @filter_selected
@@ -70,10 +71,19 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       @$el.prepend($heading_el)
 
     if ConsiderIt.roles.is_admin && !@$create_el?
-      @$create_el = ConsiderIt.ProposalListView.proposals_create_template()
+      @$create_el = @proposals_create_template()
       @$el.prepend(@$create_el)
 
+  render_pagination : ->
+    $pagination_block = @proposals_pagination_template _.extend(@collection.info(), {
+      data_loaded : @data_loaded
+    })
 
+    $cur_pagination = @$el.find('.m-proposals-list-pagination')
+    if $cur_pagination.length > 0
+      $cur_pagination.replaceWith $pagination_block
+    else
+      @$el.append $pagination_block
 
   # Returns an instance of the view class
   getItemView: (proposal)->
@@ -96,6 +106,13 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     'click .m-new-proposal-submit' : 'create_new_proposal'
     'click .m-proposallist-sort' : 'sort_proposals_to'
     'click .m-proposallist-filter' : 'filter_proposals_to'
+    'click .m-pointlist-pagination-showmore' : 'do_after_all_data_loaded'
+
+    'click .m-proposals-list-pagination-pages-first' : 'goto_first'
+    'click .m-proposals-list-pagination-pages-prev' : 'goto_prev'
+    'click .m-proposals-list-pagination-pages-next' : 'goto_next'
+    'click .m-proposals-list-pagination-pages-last' : 'goto_last'
+    'click .m-proposals-list-pagination-pages-page' : 'goto_page'
 
   do_after_all_data_loaded : (callback) ->
 
@@ -106,7 +123,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
         @sort_proposals()
         @filter_proposals()
     else
-      callback.apply(@)
+      callback.apply(@) if callback
 
   sort_proposals_to : (ev) ->   
     @sort_selected = $(ev.target).data('target')
@@ -120,6 +137,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     @collection.setSort( @sort_selected, 'desc')
 
     @render_header()
+    @render_pagination()
     @collection.updateList()
 
   filter_proposals : ->
@@ -140,6 +158,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       }]    
 
     @render_header()
+    @render_pagination()
     @collection.updateList()
 
   create_new_proposal : (ev) ->
@@ -160,3 +179,28 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   delete_proposal : (proposal) ->
     ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
     @collection.remove proposal
+
+
+
+
+  goto_first : (ev) ->
+    ev.preventDefault()
+    @collection.goTo(1)
+
+  goto_prev : (ev) ->
+    ev.preventDefault()
+    @collection.previousPage()
+
+  goto_next : (ev) ->
+    ev.preventDefault()
+    @collection.nextPage()
+
+  goto_last : (ev) ->
+    ev.preventDefault()
+    @collection.goTo(@collection.information.lastPage)
+
+  goto_page : (ev) ->
+    ev.preventDefault()
+    page = $(ev.target).text()
+    @collection.goTo(page)
+

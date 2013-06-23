@@ -63,10 +63,11 @@ class ApplicationController < ActionController::Base
     #TODO: now that we have a global redirect to home#index for non-ajax requests, can we move this to home controller?
     if !request.xhr?
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}",  ))
-      @proposals = {}
+      @proposals = []
 
-      top = Proposal.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
-            Proposal.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
+      proposals = Proposal.active.order('updated_at DESC').limit(5)
+      top = proposals.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
+            proposals.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
       
       top_points = {}
       Point.where('id in (?)', top).public_fields.each do |pnt|
@@ -74,12 +75,12 @@ class ApplicationController < ActionController::Base
       end
 
       #Proposal.active.where('activity > 0').public_fields.each do |proposal|
-      Proposal.order('updated_at DESC').limit(5).public_fields.each do |proposal|      
-        @proposals[proposal.long_id] = {
+      proposals.public_fields.each do |proposal|      
+        @proposals.push ({
           :model => proposal,
           :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,
           :top_pro => proposal.top_pro ? top_points[proposal.top_pro] : nil,
-        } 
+        } )
       end
 
       @public_root = Rails.application.config.action_controller.asset_host.nil? ? "" : Rails.application.config.action_controller.asset_host

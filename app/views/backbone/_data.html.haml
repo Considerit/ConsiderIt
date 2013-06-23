@@ -7,25 +7,9 @@
 
     ConsiderIt.public_root = "#{@public_root}"
 
-    proposals = #{@proposals.to_json};
-    ConsiderIt.proposals = [];
+    ConsiderIt.proposals = #{@proposals.to_json};
 
-    var current_proposal = #{ @current_proposal ? @current_proposal.to_json : 'null' };
-    var current_proposal_model = null;
-
-    for(var long_id in proposals){
-      var prop = proposals[long_id];
-      proposal = new ConsiderIt.Proposal(prop.model.proposal, prop.top_pro ? prop.top_pro.point : null, prop.top_con ? prop.top_con.point : null);
-
-
-      if( current_proposal && current_proposal.long_id == long_id) {
-        current_proposal_model = proposal;
-      }
-
-      ConsiderIt.proposals.push(proposal);
-      
-
-    }
+    ConsiderIt.current_proposal = #{ @current_proposal ? @current_proposal.to_json : 'null' };
 
     //var users = { User.select("id, name, avatar_file_name").to_json };
     var users = #{@users};
@@ -68,9 +52,6 @@
 
     ConsiderIt.app = new ConsiderIt.AppView();
 
-    if (current_proposal_model ) { 
-      current_proposal_model.set_data( current_proposal.data);
-    }
 
     ConsiderIt.app.render();
 

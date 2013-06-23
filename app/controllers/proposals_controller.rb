@@ -5,6 +5,27 @@ class ProposalsController < ApplicationController
   respond_to :json, :html
   
   def index
+    proposals = []
+
+    top = Proposal.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
+          Proposal.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
+    
+    top_points = {}
+    Point.where('id in (?)', top).public_fields.each do |pnt|
+      top_points[pnt.id] = pnt
+    end
+
+    #Proposal.active.where('activity > 0').public_fields.each do |proposal|
+    Proposal.public.public_fields.each do |proposal|      
+      proposals.push ({
+              :model => proposal,
+              :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,
+              :top_pro => proposal.top_pro ? top_points[proposal.top_pro] : nil,
+            }) 
+    end
+
+    render :json => proposals
+
 
   end
 
@@ -48,7 +69,7 @@ class ProposalsController < ApplicationController
     respond_to do |format|
       format.json {render :json => response}
       format.html {
-        @current_proposal = {:long_id => proposal.long_id, :data => response }
+        @current_proposal = {:id => proposal.id, :data => response }
       }
     end
 

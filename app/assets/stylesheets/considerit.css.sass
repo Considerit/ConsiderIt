@@ -1837,28 +1837,67 @@ $m-point-expanded-width: $body_width + 150
     +nude-list
 
 
-.m-proposals-heading
+.m-proposals-heading, .m-proposals-list-pagination-wrap
   @extend %on_background
   text-align: center
   margin: $vertical_baseline auto
   width: $content_width
 
-  .m-proposals-filter-container, .m-proposals-sort-container
+.m-proposals-filter-container, .m-proposals-sort-container
+  display: inline-block
+  padding-right: $grid_xs
+  .title, a
     display: inline-block
-    padding-right: $grid_xs
-    .title, a
-      display: inline-block
-      padding-right: $grid_xs/2
+    padding-right: $grid_xs/2
 
-    a
-      color: lighten($position_color, 15%)
-      text-transform: lowercase
-      font-variant: small-caps
-      &:hover
-        color: lighten($position_color, 0%)
-      &.selected, &.selected:hover
-        @extend %bolded
-        color: lighten($position_color, 8%)
+  a
+    color: lighten($position_color, 15%)
+    text-transform: lowercase
+    font-variant: small-caps
+    &:hover
+      color: lighten($position_color, 0%)
+    &.selected, &.selected:hover
+      @extend %bolded
+      color: lighten($position_color, 8%)
+
+.m-proposals-list-pagination
+  margin-top: $vertical_baseline
+
+  .m-pointlist-pagination-showmore, .m-proposals-list-pagination-page, .m-proposals-list-pagination-jump
+    +sassy-button("simple", 5px, inherit, darken($product_background_color, 4%), darken($product_background_color, 12%))
+    color: #666
+    &:hover
+      color: #222
+
+  .selected
+    +sassy-button("simple", 5px, inherit, darken($position_button_bg, 4%), darken($position_button_bg, 12%))
+    color: #eaeaea
+
+  .m-pointlist-pagination-showmore, .m-proposals-list-pagination-page, .selected, .m-proposals-list-pagination-jump
+    border-radius: 0
+    text-shadow: none
+
+  .m-proposals-list-pagination-page, .selected, .m-proposals-list-pagination-jump
+    padding: $vertical_baseline/8 $grid_xs/4
+
+.m-proposals-list-pagination-pages
+  position: relative
+  display: inline-block
+
+.m-proposals-list-pagination-jump-left, .m-proposals-list-pagination-jump-right
+  position: absolute
+  top: 0
+
+.m-proposals-list-pagination-jump-left
+  left: -76px
+
+.m-proposals-list-pagination-jump-right
+  right: -73px
+
+.m-proposals-list-pagination-current
+  margin-top: $vertical_baseline/4
+  +font-size(-2)
+
 
 
 .m-proposal

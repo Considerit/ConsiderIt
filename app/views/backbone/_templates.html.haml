@@ -1,6 +1,8 @@
 
 - cache ['templates', current_tenant] do
 
+
+
   %script{ :type => "text/template", :id => "tpl_breadcrumbs"}
     (( _.each(crumbs, function(crumb,idx) {  ))
     (( var name=crumb[0], loc=crumb[1]; ))
@@ -251,6 +253,49 @@
             (( var selected_class = selected_filter == "#{fil[:target]}" ? 'selected': '';))
             %a{:'data-target' => fil[:target], :'data-type' => 'filter', :class => "m-proposallist-filter {{selected_class}}"}
               = fil[:name]
+
+  %script{ :type => "text/template", :id => "tpl_proposal_list_pagination"}
+    .m-proposals-list-pagination
+      .m-proposals-heading
+        (( if (data_loaded) { ))
+        .m-proposals-list-pagination-pages
+          (( if (currentPage != 1) { ))
+          %a.m-proposals-list-pagination-pages-first
+            First
+          %a.m-proposals-list-pagination-pages-prev
+            Previous
+          (( } ))
+          (( _.each (pageSet, function (p) { ))
+          (( if (currentPage == p) { ))
+          %span.selected
+            {{ p }}
+          (( } else { ))
+          %a.m-proposals-list-pagination-pages-page
+            {{ p }} 
+          (( } ))
+          (( }); ))
+          (( if (lastPage != currentPage && lastPage != 0) { ))
+          %a.m-proposals-list-pagination-pages-next
+            Next
+          %a.m-proposals-list-pagination-pages-last
+            Last
+          (( } ))
+
+        .m-proposals-list-pagination-current
+          %span.current
+            {{ startRecord }}
+          &ndash;
+          %span.perpage
+            {{ endRecord }} 
+          of
+          %span.total
+            {{ totalRecords }} 
+          shown.
+        (( } else { ))
+        %button.m-pointlist-pagination-showmore.button
+          Show more conversations
+        (( } ))
+
 
 
   %script{ :type => "text/template", :id => "tpl_unexpanded_proposal" }

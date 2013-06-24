@@ -100,7 +100,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    @current_ability ||= Ability.new(current_user, request.session_options[:id], params)
+    @current_ability ||= Ability.new(current_user, current_tenant, request.session_options[:id], params)
   end
 
   def mail_options

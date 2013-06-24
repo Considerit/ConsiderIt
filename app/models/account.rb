@@ -14,6 +14,8 @@ class Account < ActiveRecord::Base
 
   #has_one :theme#, :polymorphic => true
 
+  belongs_to :managing_account, :class_name => 'User'
+
   is_followable
 
   def host_without_subdomain

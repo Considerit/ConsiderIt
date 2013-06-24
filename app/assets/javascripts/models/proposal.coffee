@@ -36,8 +36,8 @@ class ConsiderIt.Proposal extends Backbone.Model
     @positions[@position.get('user_id')] = @position
 
     
-    @top_pro = @pros.get( @get('top_pro') ).attributes if !@top_pro
-    @top_con = @cons.get( @get('top_con') ).attributes if !@top_con
+    @top_pro = @pros.get( @get('top_pro') ).attributes if !@top_pro && @get('top_pro')
+    @top_con = @cons.get( @get('top_con') ).attributes if !@top_con && @get('top_con')
 
     # separating points out into peers and included
     for [source_points, source_included, dest_included, dest_peer] in [[@pros, data.points.included_pros||[], @included_pros, @peer_pros], [@cons, data.points.included_cons||[], @included_cons, @peer_cons]]

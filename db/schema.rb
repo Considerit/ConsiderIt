@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130607032519) do
+ActiveRecord::Schema.define(:version => 20130624181631) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -20,7 +20,6 @@ ActiveRecord::Schema.define(:version => 20130607032519) do
     t.datetime "updated_at",                                                  :null => false
     t.string   "app_title"
     t.string   "contact_email"
-    t.integer  "app_proposal_creation_permission"
     t.string   "socmedia_facebook_page"
     t.string   "socmedia_twitter_account"
     t.string   "analytics_google"
@@ -51,6 +50,10 @@ ActiveRecord::Schema.define(:version => 20130607032519) do
     t.boolean  "enable_moderation",                        :default => false
     t.boolean  "single_page",                              :default => false
     t.boolean  "assessment_enabled",                       :default => false
+    t.integer  "managing_account_id"
+    t.text     "header_text"
+    t.text     "header_details_text"
+    t.boolean  "enable_user_conversations",                :default => false
   end
 
   add_index "accounts", ["identifier"], :name => "by_identifier", :length => {"identifier"=>10}

@@ -115,6 +115,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
         @_check_box(ConsiderIt.current_tenant, 'assessment_enabled', 'account_assessment_enabled')
         @_check_box(ConsiderIt.current_tenant, 'enable_moderation', 'account_enable_moderation')
         @_check_box(ConsiderIt.current_tenant, 'enable_position_statement', 'account_enable_position_statement')
+        @_check_box(ConsiderIt.current_tenant, 'enable_user_conversations', 'account_enable_user_conversations')
 
     @_process_dashboard_context('app_settings', options)
 

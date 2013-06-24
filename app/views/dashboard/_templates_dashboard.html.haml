@@ -17,6 +17,7 @@
 
     = form_for :account, :url => account_path, :remote => true, :method => :put, :html => { :class => 'm-dashboard-edit-account'} do |f|
 
+
       .field
         = f.label :app_title, 'Application Title'
         = f.text_field :app_title, :value => "{{account.app_title}}"
@@ -24,10 +25,28 @@
           A short title that is displayed in emails and in the browser window. 
 
       .field
+        = f.label :header_text, 'Homepage Header'
+        = f.text_area :header_text, :value => "{{account.header_text}}", :rows => "3"
+        .sublabel
+          The bolded statement at the top of the homepage.
+
+      .field
+        = f.label :header_details_text, 'Homepage Header Details'
+        = f.text_area :header_details_text, :value => "{{account.header_details_text}}", :rows => "6"
+        .sublabel
+          The description shown in the header of the homepage that states the purpose of the forum. 
+
+      .field
         = f.label :contact_email, 'Contact Email'
         = f.text_field :contact_email, :value => "{{account.contact_email}}"
         .sublabel
           The email from which notification emails are set. 
+
+      .field  
+        = f.check_box :enable_user_conversations
+        = f.label :enable_user_conversations, 'Enable User Created Conversations'
+        .sublabel
+          Whether you wish to allow any registered user to start new conversations on the homepage.
 
       .field  
         = f.check_box :enable_moderation

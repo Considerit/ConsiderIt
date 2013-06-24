@@ -1,7 +1,7 @@
 class Ability
   include CanCan::Ability
 
-  def initialize(user, session_id=nil, params=nil)
+  def initialize(user, current_tenant, session_id=nil, params=nil)
     # Define abilities for the passed in user here. For example:
     #
     #   user ||= User.new # guest user (not logged in)
@@ -37,6 +37,10 @@ class Ability
     if user.has_role? :moderator
       can [:index, :create], Moderatable::Moderation
     end
+ 
+    if user.has_role? :manager
+      can [:create], Proposal
+    end
 
     if user.has_role? :evaluator
       can [:index, :create, :update], Assessable::Assessment
@@ -58,14 +62,16 @@ class Ability
       can :manage, user_facing_models
       can [:index, :create, :update, :destroy, :read], :all
     else
-
-
       #Proposal
       can :read, Proposal do |prop|
         prop.publicity != 0 || (!user.id.nil? && prop.access_list.gsub(' ', '').split(',').include?(user.email) )
       end
 
-      can [:read, :create, :update], Proposal do |prop|
+      can :create, Proposal do |prop|
+        current_tenant.enable_user_conversations || user.has_role?(:manager)
+      end
+
+      can [:read, :update], Proposal do |prop|
         (!user.id.nil? && user.id == prop.user_id) || (session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)
       end
 

@@ -26,7 +26,7 @@ namespace :cache do
   task :avatars => :environment do 
     require 'open-uri'
 
-    size = 'medium'
+    size = 'small'
     begin
       Account.all.each do |accnt|
         File.open("public/system/cache/#{accnt.identifier}.css", 'w') do |f|
@@ -38,13 +38,10 @@ namespace :cache do
               
               img_path = "/system/avatars/#{user.id}/#{size}/#{user.avatar_file_name}".gsub(' ', '_')
 
-              pp Rails.application.config.action_controller.asset_host
-              
+
               if Rails.application.config.action_controller.asset_host.nil?
                 img_data = File.read("public#{img_path}")
               else
-                pp 'fetching!'
-                pp URI.parse("#{Rails.application.config.action_controller.asset_host}#{img_path}")
                 img_data = open(URI.parse("#{Rails.application.config.action_controller.asset_host}#{img_path}")).read
               end
 

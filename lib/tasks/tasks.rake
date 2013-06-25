@@ -47,6 +47,9 @@ namespace :cache do
               f.puts("#avatar-#{user.id} { background-image: url(\"data:image/jpeg;base64,#{data.gsub(/\n/," ")}\"); }")
             rescue
               Rails.logger.info "Could not generate avatar #{user.id}"
+
+              pp img_path
+              pp img_data
             end
             #avatars[:small][user.id] = "data:image/jpg;base64,#{data}"
           end

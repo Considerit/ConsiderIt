@@ -14,24 +14,24 @@ class HomeController < ApplicationController
 
   def index
     # TODO: move this to config somehow
-    if current_tenant.theme == 'lvg'
-      @title = "Living Voters Guide: 2013 #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} Election"
-      @keywords = "voters guide 2012 ballot #{current_tenant.identifier == 'cali' ? 'california san francisco los angeles san diego riverside irvine sacramento' : 'washington state wa seattle tacoma spokane yakima vancouver'} election pamphlet ballot measures propositions"
-      @description = "#{current_tenant.identifier == 'cali' ? 'California\'s' : 'Washington\'s'} citizen-powered voters guide. Engage with your virtual neighbors about the 2012 election. Experience a better democracy."
-    elsif current_tenant.theme == 'directrep'
-      theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
-      @title = "DirectRep #{theme.rep_name.split(' ')[-1]}"
-      @keywords = "Listening Dialogue Citizen Government Representative Democracy Communication Deliberation"
-      @description = "Representative #{theme.rep_name} wants your help thinking through the issues being considered."
-    elsif current_tenant.theme == 'policyninja'
-      @title = "Educate. Deliberate. Advocate. Office of Hawaiian Affairs"
-      @keywords = "Educate, Deliberate, Advocate, hawaii, office of hawaiian affairs, oha"
-      @description = "Help us think through the issues we are considering"
-    else
-      @title = current_tenant.app_title
-      @keywords = "#{current_tenant.app_title} deliberate decide"
-      @description = "ConsiderIt: Discuss issues at #{current_tenant.app_title}"
-    end
+    # if current_tenant.theme == 'lvg'
+    #   @title = "Living Voters Guide: 2013 #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} Election"
+    #   @keywords = "voters guide 2012 ballot #{current_tenant.identifier == 'cali' ? 'california san francisco los angeles san diego riverside irvine sacramento' : 'washington state wa seattle tacoma spokane yakima vancouver'} election pamphlet ballot measures propositions"
+    #   @description = "#{current_tenant.identifier == 'cali' ? 'California\'s' : 'Washington\'s'} citizen-powered voters guide. Engage with your virtual neighbors about the 2012 election. Experience a better democracy."
+    # elsif current_tenant.theme == 'directrep'
+    #   theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
+    #   @title = "DirectRep #{theme.rep_name.split(' ')[-1]}"
+    #   @keywords = "Listening Dialogue Citizen Government Representative Democracy Communication Deliberation"
+    #   @description = "Representative #{theme.rep_name} wants your help thinking through the issues being considered."
+    # elsif current_tenant.theme == 'policyninja'
+    #   @title = "Educate. Deliberate. Advocate. Office of Hawaiian Affairs"
+    #   @keywords = "Educate, Deliberate, Advocate, hawaii, office of hawaiian affairs, oha"
+    #   @description = "Help us think through the issues we are considering"
+    # else
+    @title = current_tenant.app_title
+    @keywords = "#{current_tenant.app_title} deliberate decide"
+    @description = "ConsiderIt: Discuss issues at #{current_tenant.app_title}"
+
   end
 
   def show

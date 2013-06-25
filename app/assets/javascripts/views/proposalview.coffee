@@ -246,8 +246,8 @@ class ConsiderIt.ProposalView extends Backbone.View
       callback(params.user_id)
 
   show_point_details_handler : (params) ->
-    # if data is already loaded, then the PointListView is already properly handling this
-    @prepare_for_point_details(params) if !@model.data_loaded
+    # only do this if user has navigated directly to the point
+    @prepare_for_point_details(params) if params.data_just_loaded
 
   position_submitted : ->
     if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()

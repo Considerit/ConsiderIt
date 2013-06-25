@@ -11,8 +11,7 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
     @location = options.location
     @proposal = options.proposal
     #_.bindAll this
-    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => 
-      @show_point_details_handler(long_id, point_id)
+    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @show_point_details_handler(point_id) if @proposal.long_id == long_id
 
   # Returns an instance of the view class
   getItemView: (point)->
@@ -26,8 +25,8 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
         'data-role': 'm-point'
         includers : "#{point.get('includers')}"
 
-  show_point_details_handler : (long_id, point_id) ->
-    if @$el.is(':visible') && @proposal.long_id == long_id
+  show_point_details_handler : (point_id) ->
+    if @$el.is(':visible')
       point = @collection.get(point_id)
       if point?
         @getViewByModel(point).show_point_details_handler()

@@ -48,8 +48,8 @@ class ConsiderIt.UserManagerView extends Backbone.View
 
 
   events : 
-    'click .m-login-signin' : 'handle_user_signin'
-    'click .m-login-signup' : 'handle_user_registration'
+    'click [data-target="login"]' : 'handle_user_signin'
+    'click [data-target="create_account"]' : 'handle_user_registration'
     'click .m-user-accounts-switch-method' : 'switch_method'
     'click .m-user-options-logout' : 'handle_user_logout'
     'mouseenter .m-user-options' : 'nav_entered' 

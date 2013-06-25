@@ -6,9 +6,9 @@
 
   %script{ :type => "text/template", :id => "tpl_logged_out"}
     .m-login
-      %a.m-login-signin
+      %a.m-login-signin{:'data-target' => 'login'}
         Sign In
-      %a.m-login-signup
+      %a.m-login-signup{:'data-target' => 'create_account'}
         Create Account
 
   %script{ :type => "text/template", :id => "tpl_logged_in"}

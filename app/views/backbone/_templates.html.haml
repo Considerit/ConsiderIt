@@ -180,7 +180,7 @@
         %span.count
           1000
 
-        (( if( user ) { ))
+        (( if( ConsiderIt.current_user.is_logged_in() ) { ))
         .m-new-comment-submit-wrap
           %span.m-new-comment-civility-reminder
             Thanks for being civil!
@@ -189,11 +189,12 @@
             Add comment
 
         (( } else { ))
-        .signinrequired
-          You must 
-          %a.signin_link
-            sign in
-          to leave a comment.
+        .m-login
+          You must be logged in to leave a comment.
+          %a.m-login-signin{:'data-target' => 'login'}
+            Sign In
+          %a.m-login-signup{:'data-target' => 'create_account'}
+            Create Account
         (( } ))
 
 

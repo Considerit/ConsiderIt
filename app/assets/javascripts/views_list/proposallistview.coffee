@@ -70,9 +70,16 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     else
       @$el.prepend($heading_el)
 
-    if ( ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager || ( ConsiderIt.current_tenant.get('enable_user_conversations') && ConsiderIt.current_user.is_logged_in() ) ) && !@$create_el?
-      @$create_el = @proposals_create_template()
+
+    can_create = ConsiderIt.current_user.is_logged_in() && (ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager || ConsiderIt.current_tenant.get('enable_user_conversations'))
+
+    if can_create && !@$create_el?
+      @$create_el = $(@proposals_create_template())
       @$el.prepend(@$create_el)
+    else if !can_create && @$create_el?
+      @$create_el.remove()
+      @$create_el = null
+
 
   render_pagination : ->
     $pagination_block = @proposals_pagination_template _.extend(@collection.info(), {

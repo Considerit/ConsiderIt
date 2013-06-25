@@ -57,4 +57,4 @@ ruby_version: 1.9.3-p392
 source: . ~/.profile
 port: 3000
 environment: production
-passenger_root: ${rbenv_path}/versions/$ruby_version/lib/ruby/gems/1.9.1/gems/passenger-3.0.19
+passenger_root: ${rbenv_path}/versions/$ruby_version/lib/ruby/gems/1.9.1/gems/passenger-4.0.5

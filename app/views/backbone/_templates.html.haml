@@ -228,12 +228,12 @@
 
   %script{ :type => "text/template", :id => "tpl_proposal_list_new_conversation"}
 
-    .m-proposals-new
+    .m-proposals-new{:'data-domain' => 'homepage'}
       %button.m-new-proposal-submit
         Start a new conversation
 
   %script{ :type => "text/template", :id => "tpl_proposal_list_header"}
-    .m-proposals-list-header
+    .m-proposals-list-header{:'data-domain' => 'homepage'}
       .m-proposals-heading
         - sortable = [ {:name => 'Most active', :target => 'activity'}, {:name => 'Newness', :target => 'created_at'} ]
         .m-proposals-sort-container
@@ -255,7 +255,7 @@
               = fil[:name]
 
   %script{ :type => "text/template", :id => "tpl_proposal_list_pagination"}
-    .m-proposals-list-pagination
+    .m-proposals-list-pagination{:'data-domain' => 'homepage'}
       .m-proposals-list-pagination-wrap
         (( if (data_loaded) { ))
         %span.m-proposals-list-pagination-pages

@@ -126,7 +126,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     else
       @scroll_position = @$el.offset().top - $('.t-intro-wrap').offset().top - parseInt(@$el.css('marginTop'))
 
-      @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}']),.m-proposals-new, .m-proposals-list-header, .t-intro-wrap")
+      @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}']), [data-domain='homepage']")
       @$hidden_els.css('display', 'none')
       @$el.find('.m-proposal-description-body').slideDown()
 

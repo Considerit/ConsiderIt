@@ -37,6 +37,9 @@ namespace :cache do
             begin
               
               img_path = "/system/avatars/#{user.id}/#{size}/#{user.avatar_file_name}".gsub(' ', '_')
+
+              pp Rails.application.config.action_controller.asset_host
+              
               if Rails.application.config.action_controller.asset_host.nil?
                 img_data = File.read("public#{img_path}")
               else

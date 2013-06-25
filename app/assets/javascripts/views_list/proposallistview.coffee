@@ -31,13 +31,13 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     if proposalview? && proposal.data_loaded
       proposalview[callback].apply(proposalview, callback_params)
     else if proposal?
-      callback_params[0]['data_just_loaded'] = true
+      callback_params[0]['data_just_loaded'] = true if callback_params
       $.get Routes.proposal_path(long_id), (data) => 
         proposal.set_data(data)
         proposalview[callback].apply(proposalview, callback_params)
         @listenTo ConsiderIt.app, 'user:signout', @post_signout
     else
-      callback_params[0]['data_just_loaded'] = true
+      callback_params[0]['data_just_loaded'] = true if callback_params
 
       $.get Routes.proposal_path(long_id), (data) => 
         proposal = new ConsiderIt.Proposal(data.proposal)

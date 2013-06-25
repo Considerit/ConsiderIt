@@ -43,7 +43,7 @@ namespace :cache do
                 img_data = open(URI.parse("#{Rails.application.config.action_controller.asset_host}#{img_path}")).read
               end
 
-              data = ActiveSupport::Base64.encode64(img_data)
+              data = Base64.encode64(img_data)
               f.puts("#avatar-#{user.id} { background-image: url(\"data:image/jpeg;base64,#{data.gsub(/\n/," ")}\"); }")
             rescue
               Rails.logger.info "Could not generate avatar #{user.id}"

@@ -28,7 +28,7 @@ class ConsiderIt.Point extends Backbone.Model
     @trigger 'point:data_loaded'
 
   load_data : ->
-    $.get Routes.proposal_point_path(proposal.long_id, @id), (data) => @set_data(data)
+    $.get Routes.proposal_point_path(@proposal.long_id, @id), (data) => @set_data(data)
 
   has_details : -> attributes.text? && attributes.text.length > 0
 

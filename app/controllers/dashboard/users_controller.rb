@@ -58,7 +58,7 @@ class Dashboard::UsersController < Dashboard::DashboardController
 
     data = {
       :user_id => user.id,
-      :proposals => user.proposals.public.public_fields,
+      :proposals => user.proposals.open_to_public.public_fields,
       :referenced_proposals => referenced_proposals,
       :referenced_points => referenced_points,
       :positions => positions,

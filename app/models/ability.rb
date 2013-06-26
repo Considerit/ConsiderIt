@@ -1,7 +1,7 @@
 class Ability
   include CanCan::Ability
 
-  def initialize(user, current_tenant, session_id=nil, params=nil)
+  def initialize(user, current_tenant=nil, session_id=nil, params=nil)
     # Define abilities for the passed in user here. For example:
     #
     #   user ||= User.new # guest user (not logged in)

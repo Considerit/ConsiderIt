@@ -33,19 +33,26 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     else if proposal?
       callback_params[0]['data_just_loaded'] = true if callback_params
       $.get Routes.proposal_path(long_id), (data) => 
-        proposal.set_data(data)
-        proposalview[callback].apply(proposalview, callback_params)
-        @listenTo ConsiderIt.app, 'user:signout', @post_signout
+        if data && data['result'] == 'success'
+          proposal.set_data(data)
+          proposalview[callback].apply(proposalview, callback_params)
+          @listenTo ConsiderIt.app, 'user:signout', @post_signout
+        # else if data && data['reason'] == 'Access denied'
+        #   console.log data
+
     else
       callback_params[0]['data_just_loaded'] = true if callback_params
 
       $.get Routes.proposal_path(long_id), (data) => 
-        proposal = new ConsiderIt.Proposal(data.proposal)
-        @collection.add proposal
-        proposal.set_data data
-        proposalview = @getViewByModel(proposal)
-        proposalview[callback].apply(proposalview, callback_params)
-        @listenTo ConsiderIt.app, 'user:signout', @post_signout
+        if data && data['result'] == 'success'
+          proposal = new ConsiderIt.Proposal(data.proposal)
+          @collection.add proposal
+          proposal.set_data data
+          proposalview = @getViewByModel(proposal)
+          proposalview[callback].apply(proposalview, callback_params)
+          @listenTo ConsiderIt.app, 'user:signout', @post_signout
+        # else if data && data['reason'] == 'Access denied'
+        #   console.log data
 
 
   post_signout : -> view.post_signout() for own cid, view of @viewsByCid

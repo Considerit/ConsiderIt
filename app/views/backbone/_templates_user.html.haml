@@ -105,18 +105,18 @@
       %a.l-dialog-close{:'data-target' => "close_dialog"}
         close
 
-    .l-dialog-body.m-user-accounts-choose-method
+    .m-user-accounts-complete.m-user-accounts-complete-signin
 
       (( if(auth_method == 'email') { ))
       = form_for :user, :url => user_session_path, :remote => true do |f|
+        = f.hidden_field :email, :value => "{{ConsiderIt.limited_user_email}}"
 
         .m-user-accounts-form
           .m-user-accounts-form-fields-wrap
 
             .m-user-accounts-form-fields-text
 
-              .email_field.inlined
-                = f.hidden_field :email, :value => "{{ConsiderIt.limited_user_email}}"
+              .email_field.inlined.fixed
 
               .password_field.inlined
                 = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
@@ -327,14 +327,16 @@
       %a.l-dialog-close{:'data-target' => "close_dialog"}
         close
 
-    .l-dialog-body.m-user-accounts-complete.m-user-accounts-complete-register
+    .l-dialog-body.m-user-accounts-complete.m-user-accounts-complete-register.m-limited-user-session
 
 
       = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
+        (( var csrfparam = $('meta[name="csrf-param"]').attr('content'), csrftoken = $('meta[name="csrf-token"]').attr('content'); ))
+        %input{ :type => "hidden", :name => "{{ csrfparam }}", :value => "{{ csrftoken }}" }
+        = f.hidden_field :email,  :value => "{{ConsiderIt.limited_user_email}}"
+
         .m-user-accounts-form
           .m-user-accounts-form-fields-wrap
-
-            = image_tag current_theme_image_path("logo.png"), :class => "m-user-accounts-logo"
 
             .m-user-accounts-form-fields-text
 
@@ -342,13 +344,11 @@
                 //= f.label :name, 'Member name'
                 = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => "Your name",  :required => true, :class =>"", :pattern => "^.{1,}"
 
-              .email_field.inlined
-                //= f.label :email, 'Member email'
+              .email_field.inlined.fixed
                 {{ConsiderIt.limited_user_email}}
-                = f.hidden_field :email, :value => "{{ConsiderIt.limited_user_email}}"
+
 
               .password_field.inlined
-                //= f.label :email, 'Password'
                 = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
 
             .avatar_field

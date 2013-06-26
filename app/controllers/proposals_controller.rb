@@ -40,15 +40,21 @@ class ProposalsController < ApplicationController
     end
 
     #TODO: handle permissions
-    return if !proposal || cannot?(:read, proposal)
+    return if !proposal 
 
-    @can_update = can? :update, proposal
-    @can_destroy = can? :destroy, proposal
+    if cannot?(:read, proposal)
+      respond_to do |format|
+        format.json { render :json => {:result => 'failure', :reason => 'Access denied'}}
+        format.html {
+          @inaccessible_proposal = {:id => proposal.id, :long_id => proposal.long_id }
+        }
+      end
+      return      
+    end
 
     ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
     position = get_position_for_user(proposal)
-
 
     #TODO: return just "points" and "included points" and let client sort through them?
     response = {
@@ -59,9 +65,10 @@ class ProposalsController < ApplicationController
         :included_pros => Point.included_by_stored(current_user, proposal, session[proposal.id][:deleted_points].keys).where(:is_pro => true).select('points.id') + Point.included_by_unstored(session[proposal.id][:included_points].keys, proposal).where(:is_pro => true).select('points.id'),
         :included_cons => Point.included_by_stored(current_user, proposal, session[proposal.id][:deleted_points].keys).where(:is_pro => false).select('points.id') + Point.included_by_unstored(session[proposal.id][:included_points].keys, proposal).where(:is_pro => false).select('points.id')
         },
-      #TODO: the last where prevents db caching; can be avoided
+      #TODO: the last WHERE clause prevents db caching; can be avoided
       :positions => proposal.positions.published.where("id != #{position.id}").public_fields,
-      :position => position
+      :position => position,
+      :result => 'success'
     }
     
     #@proposal = {:data => response, :long_id => @proposal.long_id}.to_json

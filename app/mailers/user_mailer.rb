@@ -42,6 +42,7 @@ class UserMailer < ActionMailer::Base
     @email = email
     user = User.find_by_email(email)
     @unique_token = user.nil? ? '' : user.unique_token
+    @user_exists = !user.nil?
 
     @proposal = proposal
     @host = options[:host]

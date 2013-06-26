@@ -16,7 +16,7 @@ class ProposalsController < ApplicationController
     end
 
     #Proposal.active.where('activity > 0').public_fields.each do |proposal|
-    Proposal.public.public_fields.each do |proposal|      
+    Proposal.open_to_public.public_fields.each do |proposal|      
       proposals.push ({
               :model => proposal,
               :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,

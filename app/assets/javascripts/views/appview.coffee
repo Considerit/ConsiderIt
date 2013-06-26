@@ -9,7 +9,8 @@ class ConsiderIt.AppView extends Backbone.View
     #handle here because of dependency on proposal being loaded first
 
     @on 'user:signin', =>
-      @load_anonymous_data
+
+      @load_anonymous_data()
       @render()
       if ConsiderIt.inaccessible_proposal
         ConsiderIt.router.navigate(Routes.proposal_path(ConsiderIt.inaccessible_proposal.long_id), {trigger: true})
@@ -48,13 +49,15 @@ class ConsiderIt.AppView extends Backbone.View
 
     this
 
-
   # After a user signs in, we're going to query the server and get all the points
-  # that this user wrote *anonymously*. Then we'll update the data properly so
+  # that this user wrote *anonymously* and proposals they have access to. Then we'll update the data properly so
   # that the user can update them.
   load_anonymous_data : ->
-    $.get Routes.points_for_user_path(), (data) =>
-      for pnt in data
+    $.get Routes.content_for_user_path(), (data) =>
+      for proposal in data.proposals
+        @proposals.add_proposals (p for p in data.proposals)
+
+      for pnt in data.points
         [id, long_id, is_pro] = [pnt.point.id, pnt.point.long_id, pnt.point.is_pro]
         proposal = @proposals.findWhere( {long_id : long_id} )
         proposal.update_anonymous_point(id, is_pro) if proposal && proposal.data_loaded

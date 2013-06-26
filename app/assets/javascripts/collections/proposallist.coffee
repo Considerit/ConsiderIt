@@ -39,3 +39,5 @@ class ConsiderIt.ProposalList extends Backbone.Paginator.clientPager
       @add current_proposal
 
     current_proposal.set_data(proposal_data)
+
+  purge_inaccessible : -> @remove @filter( (p) -> p.get('publicity') < 2 || !p.get('published'))

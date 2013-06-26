@@ -6,13 +6,15 @@ class ConsiderIt.SignInView extends Backbone.View
     @parent = options.parent
 
   render : () -> 
-    if ConsiderIt.limited_user?
+    if ConsiderIt.limited_user_email?
 
       @$el.html(
         _.template($("#tpl_limited_user_sign_in").html(), $.extend({}, ConsiderIt.limited_user.attributes, {
           auth_method : if ConsiderIt.limited_user? then ConsiderIt.limited_user.auth_method() else null
         }))
       )
+      @$el.find('.m-user-accounts-complete').show()
+
     else
       @$el.html(
         ConsiderIt.SignInView.signin_template($.extend({}, @model.attributes, {}))

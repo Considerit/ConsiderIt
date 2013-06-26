@@ -6,13 +6,15 @@ class ConsiderIt.RegistrationView extends Backbone.View
     @parent = options.parent
 
   render : () -> 
-    if ConsiderIt.limited_user?
+    if ConsiderIt.limited_user_email?
 
       @$el.html(
-        _.template($("#tpl_new_limited_user").html(), $.extend({}, @model.attributes, {
+        _.template($("#tpl_new_limited_user").html(), {
           auth_method : if ConsiderIt.limited_user? then ConsiderIt.limited_user.auth_method() else null
-        }))
+        })
       )
+
+      @$el.find('.m-user-accounts-complete').show()
     else
       @$el.html(
         ConsiderIt.RegistrationView.new_user_template($.extend({}, @model.attributes, {

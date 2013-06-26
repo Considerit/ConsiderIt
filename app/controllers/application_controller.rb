@@ -12,21 +12,25 @@ class ApplicationController < ActionController::Base
       session[:referer] = request.referer      
     end
 
-    #pp ApplicationController.arbitrary_token("#{current_user.email}#{current_user.unique_token}#{current_tenant.identifier}")
-    #TODO: make this safer, & use a users' private token
-    if params.has_key?(:u) && params.has_key?(:t) && params[:t]
+
+
+    if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
       user = User.find_by_email(params[:u])
+
+      # pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_tenant.identifier}") if !user.nil?
+      # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") if user.nil?
+
 
       permission =   (user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") == params[:t]) \
                   ||(!user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{user.unique_token}#{current_tenant.identifier}") == params[:t]) # this user already exists, want to have a harder auth method; still not secure if user forwards their email
 
       if permission
-        session[:limited_user] = user.id
+        session[:limited_user] = user ? user.id : nil
         @limited_user_follows = user ? user.follows.all : []
         @limited_user = user
         @limited_user_email = params[:u]
       end
-    elsif session.has_key? :limited_user
+    elsif session.has_key?(:limited_user ) && !session[:limited_user].nil?
       @limited_user = User.find(session[:limited_user])
       @limited_user_follows = @limited_user.follows.all
       @limited_user_email = @limited_user.email

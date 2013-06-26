@@ -11,6 +11,10 @@ class ConsiderIt.AppView extends Backbone.View
     @on 'user:signin', =>
       @load_anonymous_data
       @render()
+      if ConsiderIt.inaccessible_proposal
+        ConsiderIt.router.navigate(Routes.proposal_path(ConsiderIt.inaccessible_proposal.long_id), {trigger: true})
+        ConsiderIt.inaccessible_proposal = null
+
           
     @on 'user:signout', => 
       ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
@@ -34,6 +38,13 @@ class ConsiderIt.AppView extends Backbone.View
 
     @proposalsview.renderAllItems()
     @usermanagerview.render()
+
+    if ConsiderIt.inaccessible_proposal
+      if ConsiderIt.limited_user
+        @$('[data-target="login"]:first').trigger('click')
+      else if ConsiderIt.limited_user_email
+        @$('[data-target="create_account"]:first').trigger('click')
+
 
     this
 
@@ -69,7 +80,7 @@ class ConsiderIt.AppView extends Backbone.View
 
   route_changed : (route, router) ->
     return if route == 'route'
-    loc = Backbone.history.fragment.split('/')
+    loc = Backbone.history.fragment.split('?')[0].split('/')
     short = loc[loc.length - 1]
     $('.tooltipster-base').hide()
     

@@ -19,6 +19,7 @@ class ConsiderIt.AppView extends Backbone.View
           
     @on 'user:signout', => 
       ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
+      @proposals.purge_inaccessible()
       @render()
 
     ConsiderIt.router.bind 'all', (route, router) => @route_changed(route, router)

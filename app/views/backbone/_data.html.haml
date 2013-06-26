@@ -3,20 +3,17 @@
 
     //var proposals = { ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select("SELECT id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active FROM proposals where account_id=#{current_tenant.id} AND active=1")) };
 
-    //var proposals = [];
-
     ConsiderIt.public_root = "#{@public_root}"
 
     ConsiderIt.proposals = #{@proposals.to_json};
 
     ConsiderIt.current_proposal = #{ @current_proposal ? @current_proposal.to_json : 'null' };
 
+
     //var users = { User.select("id, name, avatar_file_name").to_json };
     var users = #{@users};
     ConsiderIt.users = _.object(_.map(users, function(v){ return [v.id, new ConsiderIt.User(v)];})) ;
     ConsiderIt.users[-1] = new ConsiderIt.User({name: 'Anonymous'});
-
-    //ConsiderIt.current_tenant = new ConsiderIt.Account()
 
     ConsiderIt.current_tenant = new ConsiderIt.Account({
         id : "#{current_tenant.id}",
@@ -40,8 +37,10 @@
     #{current_user ? "ConsiderIt.update_current_user( { user: #{current_user.to_json(:methods => :third_party_authenticated)}.user, follows: #{current_user.follows.all.to_json} })" : ''}
     
 
+    ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };
+
     ConsiderIt.limited_user = #{@limited_user ? "ConsiderIt.users[#{@limited_user.id}]" : 'null'};
-    ConsiderIt.limited_user_email = "#{@limited_user_email ? @limited_user_email : 'null'}";
+    ConsiderIt.limited_user_email = #{@limited_user_email ? "'#{@limited_user_email}'" : 'null'};
     #{@limited_user ? "ConsiderIt.limited_user.set( { google_uid: '#{@limited_user.google_uid}', facebook_uid: '#{@limited_user.facebook_uid}', twitter_uid: '#{@limited_user.twitter_uid}'  })" : ''}
 
     #{@limited_user ? "ConsiderIt.limited_user.set_follows(#{@limited_user_follows.to_json})" : 'null'};

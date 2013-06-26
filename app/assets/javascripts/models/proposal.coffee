@@ -35,7 +35,6 @@ class ConsiderIt.Proposal extends Backbone.Model
     @position = new ConsiderIt.Position(data.position.position)
     @positions[@position.get('user_id')] = @position
 
-    
     @top_pro = @pros.get( @get('top_pro') ).attributes if !@top_pro && @get('top_pro')
     @top_con = @cons.get( @get('top_con') ).attributes if !@top_con && @get('top_con')
 

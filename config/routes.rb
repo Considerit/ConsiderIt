@@ -48,7 +48,7 @@ ConsiderIt::Application.routes.draw do
   
 
 
-  match "/points_for_user" => "points#points_for_user", :as => :points_for_user
+  match "/content_for_user" => "home#content_for_user", :as => :content_for_user
 
   resource :account, :only => [:show, :update]
   

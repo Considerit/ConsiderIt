@@ -93,7 +93,7 @@ class ConsiderIt.AppView extends Backbone.View
       for loc in @crumbs[@crumbs.length-1][1].split('/')
         continue if loc.length == 0
         path = "#{path}/#{loc}"
-        @breadcrumbs.push [loc, path] if ConsiderIt.router.valid_endpoint(path)
+        @breadcrumbs.push [loc.split('?')[0], path] if ConsiderIt.router.valid_endpoint(path)
 
       $back.find('.l-navigate-breadcrumbs').html @breadcrumbs_template({crumbs: @breadcrumbs})
       $back.show()

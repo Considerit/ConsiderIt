@@ -69,7 +69,7 @@ class ApplicationController < ActionController::Base
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}",  ))
       @proposals = []
 
-      proposals = Proposal.active.order('activity DESC').limit(3)
+      proposals = Proposal.active.public_fields.order('activity DESC').limit(3)
       top = proposals.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
             proposals.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
       
@@ -78,8 +78,17 @@ class ApplicationController < ActionController::Base
         top_points[pnt.id] = pnt
       end
 
+      if current_user
+        hidden_proposals = Proposal.content_for_user(current_user)
+        hidden_proposals.each do |hidden|          
+          top_points[hidden.top_pro] = Point.find(hidden.top_pro) if hidden.top_pro
+          top_points[hidden.top_con] = Point.find(hidden.top_con) if hidden.top_con
+        end
+        proposals += hidden_proposals
+      end
+
       #Proposal.active.where('activity > 0').public_fields.each do |proposal|
-      proposals.public_fields.each do |proposal|      
+      proposals.each do |proposal|      
         @proposals.push ({
           :model => proposal,
           :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,
@@ -175,5 +184,8 @@ private
   def current_admin_user
     current_user
   end
+
+
+
 
 end

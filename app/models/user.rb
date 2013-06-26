@@ -243,7 +243,7 @@ class User < ActiveRecord::Base
       :metric_positions => positions,
       :metric_comments => self.comments.count,
       :metric_influence => influenced_users.keys().count, 
-      :metric_conversations => self.proposals.public.count }
+      :metric_conversations => self.proposals.open_to_public.count }
 
     if self.name.blank?
       attrs[:name] = 'Not Specified'

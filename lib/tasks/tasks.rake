@@ -27,6 +27,7 @@ namespace :cache do
     require 'open-uri'
 
     size = 'small'
+    #TODO: do not automatically replace each file ... check hash at end for equality
     begin
       Account.all.each do |accnt|
         File.open("public/system/cache/#{accnt.identifier}.css", 'w') do |f|

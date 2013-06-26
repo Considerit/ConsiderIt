@@ -52,6 +52,23 @@ class HomeController < ApplicationController
     redirect_to request.referrer
   end
 
+  def content_for_user
+    # proposals that are written by this user, but not yet published; private proposals this user has access to
+    proposals = []
+    Proposal.content_for_user(current_user).each do |proposal|      
+      proposals.push ({
+        :model => proposal,
+        :top_con => proposal.top_con ? Point.where('id=(?)', proposal.top_con).public_fields.first : nil,
+        :top_pro => proposal.top_pro ? Point.where('id=(?)', proposal.top_pro).public_fields.first : nil,
+      }) 
+    end
+
+    render :json => {
+      :points => current_user.points.published.where(:hide_name => true).joins(:proposal).select('proposals.long_id, points.id, points.is_pro'),
+      :proposals => proposals
+    }
+  end
+
   def set_dev_options
     session["user_theme"] = params[:theme]
     redirect_to request.referrer

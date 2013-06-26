@@ -30,12 +30,12 @@ module ApplicationHelper
     #proposals += Proposal.where(:domain_short => 'WA state').order(:designator)
     
 
-    return Proposal.public
+    return Proposal.open_to_public
 
   end
 
   def get_proposals_by_rank(metric = 'activity')
-    return Proposal.public.order("#{metric} desc")
+    return Proposal.open_to_public.order("#{metric} desc")
     
   end
 

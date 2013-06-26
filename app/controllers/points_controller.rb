@@ -99,9 +99,6 @@ class PointsController < ApplicationController
     render :json => response
   end
 
-  def points_for_user
-    render :json => current_user.points.published.where(:hide_name => true).joins(:proposal).select('proposals.long_id, points.id, points.is_pro')
-  end
   
   
 end

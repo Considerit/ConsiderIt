@@ -19,13 +19,20 @@ class Proposal < ActiveRecord::Base
 
   scope :active, where( :active => true, :published => true )
   scope :inactive, where( :active => false )
-  scope :public, where( :publicity => 2, :published => true )
+  scope :open_to_public, where( :publicity => 2, :published => true )
+  scope :privately_shared, where( 'publicity < 2')
   scope :public_fields, select('id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active, top_pro, top_con, participants,publicity,published')
+  scope :unpublished, where( :published => false)
+
+  def self.content_for_user(user)
+    user.proposals.unpublished.public_fields.all + Proposal.privately_shared.where("access_list like '%#{user.email}%' ").public_fields.all
+  end
 
   def public?
     publicity == 2
   end
-  
+
+
   def label_proposal
     if self.entity && self.entity.length > 0 
       self.entity 

@@ -1,37 +1,25 @@
-- aarp = false
-- theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
-- cache ['theme_body', current_tenant, theme] do 
+- #aarp = false
+-# theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
+- cache ['theme_body', current_tenant] do 
 
   - if false && Rails.env.development?
     = render :partial => "shared/dev_tools"      
 
 
   .l-content-wrap.t-intro-wrap{:'data-domain' => 'homepage'}
-    - rep_user = theme.user
-      
-    .t-dr-mock-dialogue
+            
+    .m-proposal-message
+      .l-message-speaker.left.l-message-initiator
+        %a
+          = image_tag current_tenant.managing_account.avatar.url(:large)
+      .l-message-body.left.down
+        = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-      .l-message-speaker.rep
-        = image_tag current_tenant.managing_account.avatar.url(:large)
+        %span.l-message-title
+          = current_tenant.header_text
 
-      .l-message-body
-        .rep_statement.left
-          = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
-
-          .m-proposal-description-head
-            %h1.t-dr-heading
-              - if aarp
-                = image_tag current_theme_image_path("aarp_logo.png")
-                = image_tag current_theme_image_path("logo.png")
-
-              - else
-                %span.t-header-text
-                  = current_tenant.header_text
-
-            .t-header-text-details
-              = current_tenant.header_details_text
-              
-
+        .l-message-details
+          = current_tenant.header_details_text
 
 
   #m-proposals-container

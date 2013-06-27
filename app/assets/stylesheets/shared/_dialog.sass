@@ -1,19 +1,16 @@
-@import "mixins"
-
-.l-dialog-prompt
-  a
-    span
-    img
-      height: 23px
-      //vertical-align: top
-      //position: absolute
-      //right: -30px
-      //top: 0
-
+@import "compass/css3/box-shadow"
+@import "mixins/variables"
+@import "mixins/colors"
+@import "mixins/fonts"
 
 $dialog_width: $grid_major * 6 + $grid_minor * 6
 
+.l-dialog-prompt a img
+  height: 23px
+
 .l-dialog-detachable
+  +font-size(0)
+
   position: fixed
   top: 2 * $vertical_baseline
   left: 50%
@@ -30,10 +27,6 @@ $dialog_width: $grid_major * 6 + $grid_minor * 6
 
   width: $dialog_width
   text-align: center
-
-  +font-size(0)
-
-
 
   .l-dialog-title 
     +box-shadow(inset 1px 6px 5px -5px white)

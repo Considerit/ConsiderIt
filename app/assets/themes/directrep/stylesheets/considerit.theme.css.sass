@@ -1,148 +1,15 @@
 @import "mixins"
 @import "mixins/bubble"
-@import "./sprite"
+// @import "./sprite"
 
 
-.l-content-wrap
-  +content-img
+.t-intro-wrap
+  margin: $vertical_baseline auto $vertical_baseline / 2 auto
 
-
-.m-proposal-heading-wrap
-  +content-img
-  
-.t-logo
-  text-transform: uppercase
-  @extend %bolded
-  @extend %on_background
-  //top: $vertical_baseline / 2
-  margin-top: $vertical_baseline/2
-  opacity: .8
-
-
-=true_inset($color)
-  color: $color
-  position: relative
-  +single-text-shadow($hoff: -1px, $voff: -1px, $color: rgba(black, .1), $blur: 0)
-
-  &:before, &:after
-    content: attr(title)
-    color: rgba(255,255,255,0.05)
-    position: absolute
-    +text-shadow(none)
-
-  &:before
-    top: 1px
-    left: 1px
-  &:after
-    top: 2px
-    left: 2px
-
-%l-message-template
-
-  > .l-message-speaker, .l-message-recipient, .l-message-body
-    display: inline-block
-    vertical-align: top
-
-  > .l-message-speaker
-    margin-top: 3px
-
-  > .l-message-recipient
-    margin-top: 2px
-
-  > .l-message-body
-    position: relative
-    width: 100%
-
-
-
-.t-dr-mock-dialogue
-  padding: $vertical_baseline $grid_xs 0 $grid_xs
-
-  .t-dr-heading
-    +font-size(2)
-    @extend %bolded
-
-
-  .m-proposal-introduction
-    margin-bottom: $vertical_baseline / 2
-
-  .m-proposal-description.l-message-body
-    cursor: default
-
-
-  .m-proposal-description-body
-    //width: 90%
-    margin: auto
-
-  @extend %l-message-template
-  .l-message-speaker
-    width: $margin_width
-
-    //text-align: right
-    img
-      width: $initiator_width //$margin_width - 3
-      left: $margin_width - $initiator_width
-      position: relative
-
-  .l-message-recipient
-    width: $margin_width
-
-    .avatar      
-      opacity: .75
-      width: 15px
-      height: 15px
 
   .l-message-body
-    width: $body_width
-
-  .rep_statement, .constituent_statement
-    position: relative
-    padding: $vertical_baseline / 2 $grid_xs
-    margin-bottom: $vertical_baseline / 2
-    width: 100%
-
-  .rep_statement
     +bubble($product_background_color, darken($product_background_color, 16%), left)
-
-  .constituent_statement
-    +bubble($community_color, $dark_community_color, right)
-
-.light
-  //font-weight: lighter
-  //+font-size(-2)
-
-#l-footer
-  @extend %on_background
-  text-align: center
-
-
-.l-footer-wrap
-  text-align: left
-
-.m-footer-shortdesc, .m-footer-history, .m-footer-contact
-  margin-bottom: $vertical_baseline/2
-  a
-    text-decoration: underline
-
-.m-footer-shortdesc
-  font-weight: bold
-.m-footer-shortdesc-logo
-  text-transform: uppercase
-  +font-size(-1)
-.m-footer-history
-
-.m-footer-contact
-
-.mc-subscribe
-  +sassy-button("simple", 5px, inherit, darken($product_background_color, 3%), darken($product_background_color, 5%))
-  +font-size(-3)
-  color: #666
-  text-shadow: none
-  position: relative
-  top: -2px
-  //+box-shadow(none)
-  //padding: $vertical_baseline/8 $grid_xs/2
-#mce-EMAIL
-  +font-size(0)
-  width: 200px
-
+    .l-message-title
+      +font-size(2)
+    .l-message-details
+      //+font-size(-1)

@@ -349,9 +349,38 @@ html
     //margin-top: 2px
     z-index: 1
 
+  > .l-message-speaker
+    position: absolute
+
+    &.l-message-initiator
+      width: $initiator_width
+      left: $margin_width - $initiator_width + $grid_xs
+
+      [data-target="user_profile_page"]
+        opacity: .9
+        display: inline-block
+
+      &:hover
+        [data-target="user_profile_page"]
+          opacity: 1
+
+      img
+        width: $initiator_width
+
   > .l-message-body
     width: 100%
     z-index: 2
+    margin: auto
+    display: block
+
+    .l-message-title
+      +font-size(1)
+      font-weight: bold
+      //color: $position_color
+
+    .l-message-details
+      //+font-size(0)
+
 
 .l-group-container
   font-size: 0
@@ -379,11 +408,14 @@ html
 #l-heading
   .t-logo
     position: absolute
-    //left: 34px
+    margin-top: $vertical_baseline/2
     left: 106px
     +font-size(-2)
-    overflow: hidden
-    //display: inline-block
+    //overflow: hidden
+    text-transform: uppercase
+    @extend %bolded
+    @extend %on_background
+    opacity: .8
 
     .t-logo-tagline
       display: inline-block
@@ -1907,18 +1939,13 @@ $m-point-expanded-width: $body_width + 150
 .m-proposal
   margin: $vertical_baseline 0
   position: relative
+  min-height: $initiator_width
   //min-height: 75px
 
   // TODO: this should probably be general ...
   .m-proposal-message 
     position: relative
-    > .l-message-speaker
-      position: absolute
-    > .l-message-body
-      margin: auto
-      display: block
-    > .l-message-recipient
-      //display: none
+
 
     &.m-position-your_action
       //height: 0
@@ -1926,15 +1953,9 @@ $m-point-expanded-width: $body_width + 150
         padding: 0
         //width: 100% 
 
-  .m-aggregated-results
+  .m-aggregated-results, .m-results-summary
     > .l-message-speaker
-      right: 0
-      //top: $vertical_baseline
-
-  .m-results-summary
-    > .l-message-speaker
-      right: 0
-      //top: 3px
+      right: $grid_xs
 
   .right.m-proposal-message 
     > .l-message-speaker
@@ -1942,15 +1963,10 @@ $m-point-expanded-width: $body_width + 150
 
   > .l-content-wrap
     padding-bottom: 0
-    //background-image: none
-
-    //background-image: asset-data-url('directrep/images/brillant_content.png')
   
-
   .m-proposal-body_wrap
-    //margin-bottom: $vertical_baseline
-    padding: 0 $grid_xs
-    margin-bottom: $vertical_baseline / 2
+    // padding: 0 $grid_xs
+    // margin-bottom: $vertical_baseline / 2
 
   .m-proposal-heading-wrap
     //width: 104%
@@ -1975,38 +1991,19 @@ $m-point-expanded-width: $body_width + 150
     //width: $body_width + 2 * $grid_major
 
   .m-proposal-description-title
-    +font-size(1)
-    font-weight: bold
     //color: $position_color
 
   .m-proposal-description-details
     +font-size(-2)
-
     .hidden, .showing
-      text-decoration: underline
-
-.m-proposal
-  min-height: $initiator_width
-
-  //opacity: .9
-  //+single-transition
-  .l-content-wrap
-    //cursor: pointer
-    //&:hover
-      // .m-proposal_strip_toggle
-      //   background-color: #ccc
-      //   a
-      //     color: black
+      text-decoration: underline  
 
   .m-proposal-description-body, .m-proposal-description-details
     display: none
 
-
   .m-results-summary 
     .m-results-pro-con-list-who
       display: none
-
-
 
 
 
@@ -2198,27 +2195,10 @@ $m-point-expanded-width: $body_width + 150
 
 
 .m-proposal[data-activity="proposal-no-activity"]
-  .m-proposal-message > .l-message-speaker.m-proposal-initiator
-    // bottom: -58px
-    // text-align: left
-    // margin-left: 40px
-
-    // img
-    //   width: 50px
-    //   height: 50px
-
 
   .m-proposal-message.m-position-your_action
-    // > .l-message-recipient
-    //   //top: -64px
-    //   left: 58px
-    //   margin-top: 0
-
     .m-position-your-action-body.join
-      //+font-size(2)
-      //width: $content_width - 116
       top: -7px
-      //left: -70px
 
 
 
@@ -2253,21 +2233,6 @@ $m-point-expanded-width: $body_width + 150
     visibility: visible
     display: block
 
-  .l-message-speaker.m-proposal-initiator
-    //opacity: .25
-    //visibility: hidden
-
-  .m-aggregated-results
-    //> .l-message-speaker // histogram
-    //width: $margin_width + 75
-
-    // > .l-message-speaker
-    //   //top: -64px
-    //   right: 58px
-
-    // > .l-message-body.m-results-responders
-    //   left: -60px
-
 
 .m-proposal-message
   @extend %l-message-template
@@ -2281,10 +2246,6 @@ $m-point-expanded-width: $body_width + 150
   > .l-message-speaker, > .l-message-recipient
     top: 0
 
-  > .l-message-speaker.left
-    width: $initiator_width
-    left: $margin_width - $initiator_width
-    //text-align: right
 
   > .l-message-speaker.right
     width: $recipient_width
@@ -2296,33 +2257,7 @@ $m-point-expanded-width: $body_width + 150
     > .l-message-recipient
       display: none
 
-  > .l-message-speaker.m-proposal-initiator
 
-    // this is the big main proposer image
-    // text-align: right
-    // position: absolute
-    // top: auto
-    // bottom: -128px
-
-    [data-target="user_profile_page"]
-      opacity: .9
-      display: inline-block
-
-    +transition(bottom .1 ease)
-
-    &:hover
-      [data-target="user_profile_page"]
-        opacity: 1
-
-    img
-      width: $initiator_width
-      //height: //$margin_width
-      +transition(width .1s ease, height .1s ease)
-
-    &.small
-      img
-        width: 50px
-        height: 50px
 
   &.m-results-summary
     > .l-message-recipient
@@ -2974,6 +2909,44 @@ $static_position_width: $body_width+$grid_major
   .m-static-position-reasons-none
     font-style: italic
 
+
+//////////////////
+/// Footer ///////
+.m-footer-shortdesc, .m-footer-history, .m-footer-contact
+  margin-bottom: $vertical_baseline/2
+  a
+    text-decoration: underline
+
+.m-footer-shortdesc
+  font-weight: bold
+.m-footer-shortdesc-logo
+  text-transform: uppercase
+  +font-size(-1)
+.m-footer-history
+
+.m-footer-contact
+
+.mc-subscribe
+  +sassy-button("simple", 5px, inherit, darken($product_background_color, 3%), darken($product_background_color, 5%))
+  +font-size(-3)
+  color: #666
+  text-shadow: none
+  position: relative
+  top: -2px
+  //+box-shadow(none)
+  //padding: $vertical_baseline/8 $grid_xs/2
+#mce-EMAIL
+  +font-size(0)
+  width: 200px
+
+
+
+//////////////////
+//// Header //////
+
+
+
+
 //////////////////////////////////////////
 // VENDOR
 //////////////////////////////////////////
@@ -3091,6 +3064,7 @@ label.inline
     +font-size(-3)
     line-height: .5
 
+
 //////////////////////////////////////////
 // UNINCORPORATED
 //////////////////////////////////////////
@@ -3177,6 +3151,7 @@ label.inline
 
 #expanded .verdict_summary
   display: none
+
 
 
 

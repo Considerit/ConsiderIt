@@ -138,7 +138,8 @@ class ConsiderIt.ProposalView extends Backbone.View
   transition_unexpanded : =>
     #$('body').animate {scrollTop: @scroll_position}, =>
       # TODO: remove strip at top
-    ConsiderIt.router.navigate(Routes.root_path(), {trigger: false}) if Backbone.history.fragment != ''
+    
+    #ConsiderIt.router.navigate(Routes.root_path(), {trigger: false}) if Backbone.history.fragment != ''
 
     if @state > 0
 

@@ -307,6 +307,9 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     data = $.parseJSON(response.responseText)
     ConsiderIt.current_tenant.set(data.account)
     @access_dashboard_app_settings()
+    $('.t-header-text').text(ConsiderIt.current_tenant.get('header_text'))
+    $('.t-header-text-details').text(ConsiderIt.current_tenant.get('header_details_text'))
+
     #@render() if @current_context
 
     #@$content_area.find('.save_block').append('<div class="flash_notice">Account updated</div>').delay(2000).fadeOut('slow')

@@ -94,7 +94,21 @@ $yellow_postit: hsl(55, 81%, 79%)
 
 =on_paper
   background: image-url('paper.jpg') repeat left top #e1e1e1
-      
+  color: $base_color
+  //+main_font
+  
+  h1, h2, h3
+    color: $base_color
+
+  a, button
+    color: $base_color
+    
+    &:hover
+      color: black
+
+  textarea, input[type="text"], input[type="email"], input[type="password"]
+    color: $base_color
+
 =chalkboard
   background: image-url("chalk/chalkboard.jpg") repeat left top #414141
 

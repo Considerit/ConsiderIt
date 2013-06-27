@@ -197,9 +197,6 @@ blockquote
 %postit
   +on_paper
 
-%postit-background-no-repeat
-  @extend %postit
-  //+post_it
 
 %postit-background-repeat
   @extend %postit
@@ -1020,7 +1017,6 @@ $arrow_height: 10px
 %m-white-thought-bubble
   @extend %m-point-thought-bubble
   
-  //@extend %postit-background-repeat
   border-radius: 5px
   &:before, &:after
     border-color: #aaa
@@ -2802,8 +2798,9 @@ $filter_width: 371px
     margin: 0 3px
 
     @extend %pro_con_list 
-    min-height: 400px
     @extend %chalkboard
+
+    min-height: 400px
 
 
   .m-reasons-peer-points

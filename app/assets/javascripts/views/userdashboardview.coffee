@@ -306,13 +306,16 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   account_updated : (ev, response, options) ->
     data = $.parseJSON(response.responseText)
     ConsiderIt.current_tenant.set(data.account)
-    @access_dashboard_app_settings()
+
+
     $('.t-header-text').text(ConsiderIt.current_tenant.get('header_text'))
     $('.t-header-text-details').text(ConsiderIt.current_tenant.get('header_details_text'))
 
-    #@render() if @current_context
+    #@$el.find('.m-dashboard-edit-account .save_block').append('<div>Account updated</div>')
 
-    #@$content_area.find('.save_block').append('<div class="flash_notice">Account updated</div>').delay(2000).fadeOut('slow')
+    @$content_area.find('.save_block').append('<div class="flash_notice">Account updated</div>').delay(2000).fadeOut 'fast', =>
+      @access_dashboard_app_settings()  
+
 
   # change_context_ev : (ev) ->
   #   target_context = $(ev.currentTarget).data('target')

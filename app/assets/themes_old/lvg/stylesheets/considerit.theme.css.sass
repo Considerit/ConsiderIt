@@ -1,7 +1,7 @@
 //@import url(https://fonts.googleapis.com/css?family=Lobster)
 
 @import "mixins"
-@import "ribbon_banners"
+@import "constructs/ribbon_banners"
 @import "theme_mixins"
 @import "homepage"
 
@@ -149,7 +149,7 @@ html
 #craft_position
 
   > .user_opinion
-    +nude-list
+    @extend %nude_list
     //+wall
     //+box-shadow(0, 4px, 7px, black, 0.5)
     //+border-radius(5px)

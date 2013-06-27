@@ -1,52 +1,27 @@
 @import "compass/typography/vertical_rhythm"
 
-
-/* FONTS */
-
-$main_font-family: "Source Sans Pro" //, "Optima", "Optima-web-regular", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif
+$main_font-family: "Source Sans Pro", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif
+$base-font-size: 16px
+$base-line-height: 6px
+$scale: 8px 9.3px 10.7px 12px 13.3px 14.7px 16px 18.7px 21.3px 24px 28px 32px 36px 40px 44px 48px 64px 80px 90px
 
 %main_font-family
   font-family: $main_font-family
 
 %bolded
   font-weight: bold
-  font-family: "Optima-web-bold" $main_font-family
+  font-family: $main_font-family
 
 %italicized
   font-style: italic
-  font-family: "Optima-web-italic" $main_font-family
-
-
-$base-font-size: 16px
-$base-line-height: 6px
+  font-family: $main_font-family
  
 +establish-baseline
  
 html
   +adjust-leading-to(3)
 
-
-
-//$scale: .43em .5em .5833em .6667em .75em .8333em .9167em 1em 1.1667em 1.3333em 1.5em 1.75em 2em 3em 4em 5em 6em
-$scale: 8px 9.3px 10.7px 12px 13.3px 14.7px 16px 18.7px 21.3px 24px 28px 32px 36px 40px 44px 48px 64px 80px 90px
 =font-size($size:0)
   $fontsize: nth($scale, $size + 7)
   +adjust-font-size-to($fontsize)
-
-  // for 12pt/16px base, these work out to:
-  //     -6    -5     -4   -3     -2     -1    0      1      2    3    4    5    6    7    8    9
-  //    8px 9.3px 10.7px 12px 13.3px 14.7px 16px 18.7px 21.3px 24px 28px 32px 48px 64px 80px 90px
-  //    6pt 7.0pt  8.0pt  9pt 10.0pt 11.0pt 12pt 14.0pt 16.0pt 18pt 21pt 24pt 36pt 48pt 60pt 72pt
-
-  //$fontsize: nth($scale, $size + 8)
-  //font-size: $fontsize
-  //line-height: ($vertical_baseline) / $fontsize * ceil( $fontsize / $vertical_baseline )
-
-=heading
-  //font-family: "Patua One", Georgia, Times, "Times New Roman", serif
-  //letter-spacing: -1px
-  //font-family: Optima, Calibri, "Lucida Grande", "Lucida Sans Unicode", Georgia, Times, "Times New Roman", serif
-
-// =main_font
-//   font-family: Optima, "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif
 

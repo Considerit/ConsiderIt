@@ -4,17 +4,8 @@
 
 
 .l-content-wrap
-  //background: $content_bg_color repeat top left
   +content-img
-  //+single-box-shadow($color: rgba(black, .05))
-  //z-index: 26
-  //border-top: 1px solid white
-  //border-bottom: 1px solid #aaa
-  //background-color: rgba(white, .25)
 
-// body #l-wrap > div#l-content .l-content-wrap-no-background
-//   background: rgba(white, .15)
-//   +box-shadow(none)
 
 .m-proposal-heading-wrap
   +content-img
@@ -26,13 +17,6 @@
   //top: $vertical_baseline / 2
   margin-top: $vertical_baseline/2
   opacity: .8
-  //color: #8A8A8A
-  //top: $vertical_baseline
-  //width: 110px
-  //height: 18px
-  //+logo
-  //img 
-  //  width: 110px
 
 
 =true_inset($color)
@@ -52,12 +36,6 @@
   &:after
     top: 2px
     left: 2px
-
-  // background-color: darken($color, 20%)
-  // +background-clip(text)
-  // text-shadow: rgba(255,255,255,0.2) 0px 3px 3px
-  // color: transparent
-
 
 %l-message-template
 
@@ -81,20 +59,9 @@
   padding: $vertical_baseline $grid_xs 0 $grid_xs
 
   .t-dr-heading
-    //margin-bottom: $vertical_baseline
     +font-size(2)
     @extend %bolded
-    //text-align: center
-    //margin-bottom: $vertical_baseline / 2
 
-    .rep, .dialogue, .constituency
-      //+true_inset($initiator_text_color)
-
-    // .dialogue
-    //   +true_inset($base_color)
-
-    // .constituency 
-    //   +true_inset($community_text_color)
 
   .m-proposal-introduction
     margin-bottom: $vertical_baseline / 2
@@ -147,18 +114,6 @@
 #l-footer
   @extend %on_background
   text-align: center
-
-// FOR AARP VERSION OF THE SITE
-$aarp: 0
-@if $aarp > 0
-  .t-dr-mock-dialogue
-    .t-dr-heading
-      img
-        height: 42px
-        vertical-align: -2px
-
-  .t-logo
-    display: none
 
 
 .l-footer-wrap

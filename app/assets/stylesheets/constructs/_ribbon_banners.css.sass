@@ -1,3 +1,6 @@
+@import "compass/css3/box-shadow"
+@import "mixins/variables"
+
 =banner
   background: image-url('banner.png') repeat left top white
   //width: 978px
@@ -23,12 +26,8 @@
   &:before
     right: -33px
     border-left: none
-    +flip-horizontal
-
-  form
-    // .unobtrusive_edit
-    //   textarea
-    //     padding: 0
+    +scaleX(-1)
+    +filter(FlipH)
 
 =banner-single
   +banner

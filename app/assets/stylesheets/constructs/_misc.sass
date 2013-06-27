@@ -1,0 +1,57 @@
+@import "sassy-buttons"
+@import "compass/css3/background-size"
+@import "compass/css3/images"
+@import "compass/css3/box-shadow"
+
+=stripe($stripe-color, $height)
+  +background-image(linear-gradient(transparent 50%, $stripe-color 50%))
+  +background-size($height $height)
+
+=grayscale
+  #filter: url('/filters.svg#grayscale')  //FF 3.5+
+  filter: gray  // IE6-9
+  -webkit-filter: grayscale(1) // Google Chrome & Safari 6+ 
+
+=grayscale_off
+  filter: none
+  -webkit-filter: grayscale(0)
+
+=grayscale_hover
+  +grayscale
+  &:hover
+    +grayscale_off
+
+%nude_list
+  list-style: none outside none
+
+// Browsers render the inset colors so differently...
+=inset-border($base_color)
+  border-top-color: darken($base_color, 10%)
+  border-left-color: darken($base_color, 10%)
+  border-bottom-color: lighten($base_color, 10%)
+  border-right-color: lighten($base_color, 10%)
+
+
+=outset-text($transparency:.1)
+  +single-text-shadow($hoff: 1px, $voff: 1px, $color: rgba(black, $transparency), $blur: 0)
+
+=superbutton
+  +sassy-button("glass", 5px, inherit, darken($position_button_bg, 8%), darken($position_button_bg, 16%))
+
+=button($text_color: hsl(0,0,80%), $bground_color: hsl(0,0,45%), $darken_amt: 10%)
+  +sassy-button("glass", 5px, inherit, $bground_color, darken($bground_color, $darken_amt))
+
+=pressable_button
+  margin: 2px 5px
+  padding: 2px 8px
+  cursor: pointer
+  color: #555
+  background-color: #efefef
+  border: 1px solid
+  border-radius: 5px
+  border-color: white #ccc #ccc white
+  +single-box-shadow
+
+  &.selected
+    border-color: #ccc white white #ccc
+    +single-box-shadow($inset: true, $blur: 4px, $color: rgba(0, 0, 0, .2))

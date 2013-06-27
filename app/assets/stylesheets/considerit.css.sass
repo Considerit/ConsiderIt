@@ -2,14 +2,41 @@
 // BASE
 //////////////////////////////////////////
 
+
+/* COMPASS DEFAULTS */
+$default-transition-property : all
+$default-transition-duration : .4s
+$default-transition-function : false
+$default-transition-delay    : false
+
+$default-box-shadow-color    : rgba(black, .4)
+$default-box-shadow-h-offset : 0px
+$default-box-shadow-v-offset : 1px
+$default-box-shadow-blur     : 2px
+$default-box-shadow-spread   : false
+$default-box-shadow-inset    : false
+
+@import "compass/css3/box-shadow"
+@import "compass/css3/box-sizing"
+@import "compass/css3/transform"
+@import "compass/css3/transition"
+
+@import "sassy-buttons"
+
+@import "mixins/fonts"
+@import "mixins/variables"
+@import "mixins/colors"
+@import "mixins/materials"
+
+@import "constructs/misc"
+@import "constructs/bubble"
+
+@import "shared/dialog" 
+
+
 /* VARIABLES */
 
 
-@import "mixins"
-@import "mixins/bubble"
-@import "sprite"
-// only used by admins, but for inline proposal editing
-@import "shared/dialog" 
 
 
 //+font-face("ModernPictogramsNormal", font-files("modernpics-webfont.woff", "modernpics-webfont.eot",  "modernpics-webfont.ttf", "modernpics-webfont.svg#ModernPictogramsNormal"), $eot: "modernpics-webfont.eot")
@@ -189,20 +216,6 @@ blockquote
 /* SHARED STYLES */
 
 
-
-%chalkboard
-  +on_chalkboard
-  //+chalkboard
-
-%postit
-  +on_paper
-
-
-%postit-background-repeat
-  @extend %postit
-  //+post_it($repeated: 1)
-
-
 %pro_con_list
   vertical-align: top
   margin: auto
@@ -319,7 +332,7 @@ html
 
 #l-content
   padding: $vertical_baseline 0
-  +background-img
+  background-image: $bg_image
   +single-box-shadow
 
 .l-content-wrap
@@ -502,7 +515,7 @@ html
     right: -$grid_minor
 
   .m-user-options-menu
-    +nude-list
+    @extend %nude_list
     margin-left: 0
     display: inline-block
     +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
@@ -534,7 +547,7 @@ html
 .m-user-accounts-choose-method
 
   .m-user-accounts-login-options
-    +nude-list
+    @extend %nude_list
     padding-bottom: $vertical_baseline
 
     .m-user-accounts-login-option
@@ -919,7 +932,7 @@ $tooltip_width: 225px
 
 
 %m-point
-  +nude-list
+  @extend %nude_list
   position: relative
   cursor: pointer
 
@@ -987,14 +1000,14 @@ $arrow_height: 10px
   border-radius: 5px
   &:before, &:after
     border-color: #aaa
-    @extend %postit-background-repeat
+    @extend %on_paper
 
   .m-point-wrap
     +single-box-shadow($color: rgba(black, .2))
     //+single-box-shadow($color: #fff, $hoff: 1px, $voff: 6px, $blur: 9px, $spread: -5px, $inset: true) 
     border-radius: 8px
     border: 1px solid #ccc //$dark_community_color
-    @extend %postit-background-repeat
+    @extend %on_paper
 
 .m-point-peer
   @extend %m-point
@@ -1169,9 +1182,6 @@ $arrow_height: 10px
 
           &:after
             border-right-color: $position_button_bg
-
-  &:hover .m-point_operations a
-    //color: darken(desaturate($yellow_postit, 100%), 70%)
 
   ////////////////////
 
@@ -1439,7 +1449,7 @@ $expansion_size: 250px
   margin: 0px 0 $vertical_baseline 0
 
 .m-point-comments
-  +nude-list
+  @extend %nude_list
 
 /* EXPANDED POINT */
 $m-point-expanded-width: $body_width + 150
@@ -1489,7 +1499,7 @@ $m-point-expanded-width: $body_width + 150
     font-weight: bold
     text-transform: uppercase
     cursor: pointer
-    @extend %postit-background-repeat
+    @extend %on_paper
 
   &.pro
     .m-point-author-name
@@ -1602,16 +1612,12 @@ $m-point-expanded-width: $body_width + 150
 .m-point-assessment
   //display: none
   //width: 100%
-  +on_paper
+  @extend %on_paper
   padding: $vertical_baseline $grid_minor
   +single-box-shadow($color: rgba(black, 0.2))
   +font-size(-2)
-  //font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace
   color: #777
   margin-top: $vertical_baseline
-
-  a 
-    //font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace
 
   .m-point-metadata
     display: inline-block
@@ -1749,7 +1755,7 @@ $m-point-expanded-width: $body_width + 150
   //z-index: 1
 
   .m-proposal-list
-    +nude-list
+    @extend %nude_list
 
 
 .m-proposals-heading, .m-proposals-list-pagination-wrap
@@ -2364,15 +2370,10 @@ $histogram_bar_color: #6E6E6E
   text-align: center
   +font-size(1)
   margin-bottom: $vertical_baseline/2
-  //height: 2 * $vertical_baseline
 
 .m-results-pro-con-list, .m-results-summary-pro-con-list
-  //@extend %chalkboard
   @extend %pro_con_list
-  //width: $body_width + 20
 
-
-//.m-results-pro-con-list
 .m-point-list-has-pagination
   min-height: 500px
 
@@ -2426,7 +2427,7 @@ $filter_width: 371px
     padding: $vertical_baseline / 2 0 $vertical_baseline/2 0
     margin-bottom: $vertical_baseline/2
     text-align: center
-    @extend %chalkboard
+    @extend %on_chalkboard
     +transition(color .8s linear)
 
   .m-position-heading-points
@@ -2464,7 +2465,7 @@ $filter_width: 371px
     margin: 0 3px
 
     @extend %pro_con_list 
-    @extend %chalkboard
+    @extend %on_chalkboard
 
     min-height: 400px
 
@@ -2493,7 +2494,7 @@ $filter_width: 371px
 // SLIDER
 .m-stance
   margin: auto auto 2 * $vertical_baseline auto 
-  @extend %chalkboard
+  @extend %on_chalkboard
 
       
   %m-stance-label

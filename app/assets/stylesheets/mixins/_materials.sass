@@ -1,72 +1,14 @@
-@import "mixins/variables"
 @import "mixins/colors"
-
-$yellow_postit: hsl(55, 81%, 79%)
+@import "constructs/misc"
 
 %on_background
-  //+single-text-shadow($hoff: 1px, $voff: 1px, $color: rgba(black,.5)) 
   color: lighten($position_color, 10%)
-
   a
     color: lighten($position_color, 10%)
-
     &:hover
       color: black
 
-
-=post_it_button
-  //color: #888
-  +button(darken(desaturate($yellow_postit, 60%), 35%), desaturate($yellow_postit, 20%))
-  &:hover
-    //color: #333
-
-=post_it($repeated: 0)
-  $color: $base_color
-  
-  background-color: $community_color
-  
-  // @if $repeated == 0
-  //   background: asset-data-url('yellow_postit.png') no-repeat top left transparent
-
-  // @else
-  //   background: asset-data-url('yellow_postit_no_shadow.png') repeat top left transparent  
-
-  .button
-    +post_it_button
-
-
-=on_post_it
-  color: #333
-  h1, h2, h3
-    color: #111
-
-  a, input, button
-    color: #333  
-    
-    &:hover
-      color: #333  
-
-  // .unobtrusive_edit_form .unobtrusive_edit .save_block input[type="submit"]
-  //   border-color: #777
-  //   font-weight: normal
-  //   +post_it_button  
-
-  
-  input, textarea
-    +inset-border(#666)
-    background-color: white
-    border: 1px solid
-    display: inline-block
-    color: #333
-
-    &.error 
-      //border: 1px solid #993333 !important
-      border-color: red
-      &:focus
-        +inset-border(#666)
-        //border: inherit !important
-
-=on_chalkboard
+%on_chalkboard
   color: #ddd
   //+main_font
   
@@ -91,8 +33,7 @@ $yellow_postit: hsl(55, 81%, 79%)
       &:focus
         +inset-border(#414141)
 
-
-=on_paper
+%on_paper
   background: image-url('paper.jpg') repeat left top #e1e1e1
   color: $base_color
   //+main_font
@@ -109,9 +50,9 @@ $yellow_postit: hsl(55, 81%, 79%)
   textarea, input[type="text"], input[type="email"], input[type="password"]
     color: $base_color
 
-=chalkboard
-  background: image-url("chalk/chalkboard.jpg") repeat left top #414141
+// %chalkboard
+//   background: image-url("chalk/chalkboard.jpg") repeat left top #414141
 
-=wall($bground_color:#ccc)
-  background: image-url('wall_texture.png') repeat scroll 0 0 $bground_color
+// =wall($bground_color:#ccc)
+//   background: image-url('wall_texture.png') repeat scroll 0 0 $bground_color
 

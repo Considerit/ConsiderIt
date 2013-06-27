@@ -693,11 +693,11 @@
         (( _.each( participants, function(p){ ))
         %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
         (( }); ))
-      %a.m-results-summary-button{:'data-action' => "results-explode-participants"}
-        Show their preferences
+      / %a.m-results-summary-button{:'data-action' => "results-explode-participants"}
+      /   Show their preferences
 
-      %a.m-results-summary-button{:'data-action' => "results-implode-participants"}
-        Hide their preferences
+      / %a.m-results-summary-button{:'data-action' => "results-implode-participants"}
+      /   Hide their preferences
 
 
   %script{ :type => "text/template", :id => "tpl_static_position" }

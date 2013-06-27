@@ -50,10 +50,11 @@ class ConsiderIt.ResultsView extends Backbone.View
 
     @$el.show()
 
-    if window.location.href.indexOf('explode=true')
-      me = this
-      window.delay 500, -> 
-       me.explode_participants()
+    #if window.location.href.indexOf('explode=true')
+    me = this
+    window.delay 500, -> 
+     me.explode_participants()
+
     @trigger 'ResultsExplorer:rendered'
     
     @state = 1

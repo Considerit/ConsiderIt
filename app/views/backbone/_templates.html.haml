@@ -314,8 +314,10 @@
           .l-message-body.left.down.m-proposal-description
             = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-            .m-proposal-description-title
+            %span.m-proposal-description-title
               {{title}}
+            %span.m-proposal-description-title-readmore
+              [read more]
             .m-proposal-description-body
               {{description}}
             .m-proposal-description-details

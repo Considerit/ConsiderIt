@@ -2147,6 +2147,14 @@ $m-point-expanded-width: $body_width + 150
   .m-results-responders
     border-radius: 0
 
+.m-proposal
+  .m-proposal-description-title-readmore
+    +font-size(-3)
+    white-space: nowrap
+
+  &[data-state="1"], &[data-state="2"], &[data-state="4"]
+    .m-proposal-description-title-readmore
+      display: none
 //.m-proposal[data-state="4"]
   // .m-position-your-action-body.join
   //   right: 60px

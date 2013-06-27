@@ -47,6 +47,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
         if data && data['result'] == 'success'
           proposal = new ConsiderIt.Proposal(data.proposal)
           @collection.add proposal
+          proposal = @collection.get(proposal.id) #sometimes the collection won't keep the same proposal object
           proposal.set_data data
           proposalview = @getViewByModel(proposal)
           proposalview[callback].apply(proposalview, callback_params)

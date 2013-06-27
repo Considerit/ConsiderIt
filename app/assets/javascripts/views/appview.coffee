@@ -94,7 +94,7 @@ class ConsiderIt.AppView extends Backbone.View
         break if loc == short
         new_crumbs.push [loc,full]
       @crumbs = new_crumbs
-      @crumbs.push [short, "/#{Backbone.history.fragment}"]
+      @crumbs.push [short, "/#{Backbone.history.fragment.split('?')[0]}"]
     else
       @crumbs = [['homepage','/']]
     

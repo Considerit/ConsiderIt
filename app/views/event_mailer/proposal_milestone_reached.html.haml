@@ -82,7 +82,7 @@
           %td.spanner
             - if user_position && user_position.stance_bucket == 6 - index
               .personal_position.update
-                #{link_to 'You', edit_proposal_position_url(@proposal.long_id, user_position)} &#8593;
+                #{link_to 'You', new_position_proposal_url(@proposal.long_id)} &#8593;
                   
         %td.oppose
           = oppose_pole

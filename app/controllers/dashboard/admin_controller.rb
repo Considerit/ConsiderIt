@@ -61,8 +61,6 @@ class Dashboard::AdminController < Dashboard::DashboardController
       result = { :role_list => user.role_list } 
     end
 
-    pp result
-
     render :json => result
   end
 

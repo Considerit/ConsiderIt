@@ -69,42 +69,42 @@ namespace :test do
     end
 
     ###### Comment level ######
-    notification_types = ['your comment', 'other summarizer']
-    notification_types.each do |nt|
-      bullet = account.reflect_bullets.sample
-      next if bullet.nil?
-      bullet_rev = bullet.revisions.last
+    # notification_types = ['your comment', 'other summarizer']
+    # notification_types.each do |nt|
+    #   bullet = account.reflect_bullets.sample
+    #   next if bullet.nil?
+    #   bullet_rev = bullet.revisions.last
 
-      comment = bullet_rev.comment
-      pp "****************"
-      pp "reflect_new_bullet"
-      pp "Comment: #{comment.id}"
-      pp "Bullet: #{bullet.id}" 
-      pp "Notification_type: #{nt}"   
-      if bullet && bullet_rev && comment   
-        email = EventMailer.reflect_new_bullet(user, bullet_rev, comment, mail_options, nt).deliver!
-      end
-    end
+    #   comment = bullet_rev.comment
+    #   pp "****************"
+    #   pp "reflect_new_bullet"
+    #   pp "Comment: #{comment.id}"
+    #   pp "Bullet: #{bullet.id}" 
+    #   pp "Notification_type: #{nt}"   
+    #   if bullet && bullet_rev && comment   
+    #     email = EventMailer.reflect_new_bullet(user, bullet_rev, comment, mail_options, nt).deliver!
+    #   end
+    # end
 
-    notification_types = ['your bullet', 'other summarizer']
-    notification_types.each do |nt|
-      response = account.reflect_responses.sample
-      if response
-        response_rev = response.revisions.last
-        bullet = response.bullet
-        bullet_rev = bullet.revisions.last
-        comment = bullet_rev.comment
+    # notification_types = ['your bullet', 'other summarizer']
+    # notification_types.each do |nt|
+    #   response = account.reflect_responses.sample
+    #   if response
+    #     response_rev = response.revisions.last
+    #     bullet = response.bullet
+    #     bullet_rev = bullet.revisions.last
+    #     comment = bullet_rev.comment
 
-        pp "****************"
-        pp "reflect_new_response"
-        pp "Comment: #{comment.id}"
-        pp "Bullet: #{bullet.id}" 
-        pp "Notification_type: #{nt}"    
-        if response_rev && bullet && bullet_rev && comment   
-          email = EventMailer.reflect_new_response(user, response_rev, bullet_rev, comment, mail_options, nt).deliver!
-        end
-      end
-    end
+    #     pp "****************"
+    #     pp "reflect_new_response"
+    #     pp "Comment: #{comment.id}"
+    #     pp "Bullet: #{bullet.id}" 
+    #     pp "Notification_type: #{nt}"    
+    #     if response_rev && bullet && bullet_rev && comment   
+    #       email = EventMailer.reflect_new_response(user, response_rev, bullet_rev, comment, mail_options, nt).deliver!
+    #     end
+    #   end
+    # end
 
 
   end

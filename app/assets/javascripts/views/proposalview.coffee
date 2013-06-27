@@ -64,12 +64,13 @@ class ConsiderIt.ProposalView extends Backbone.View
     else
       @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
 
+    @$main_content_el = @$el.children('.l-content-wrap:first')
+
     #TODO: if user logs in as admin, need to do this
     @render_admin_strip() if @can_edit()
 
     @transition_unexpanded()
 
-    @$main_content_el = @$el.find('.m-proposal-body_wrap')
 
     this
 
@@ -261,7 +262,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     admin_strip_el = $('<div class="m-proposal-admin_strip m-proposal-strip">')
     template = _.template($('#tpl_proposal_admin_strip').html())
     admin_strip_el.html( template(@model.attributes))
-    @$el.find('.m-proposal-body_wrap').append admin_strip_el 
+    @$main_content_el.append admin_strip_el 
 
     for field in ConsiderIt.ProposalView.editable_fields
       [selector, name, type] = field 

@@ -305,57 +305,55 @@
   %script{ :type => "text/template", :id => "tpl_unexpanded_proposal" }
     .l-content-wrap
 
-      .m-proposal-body_wrap
+      .m-proposal-message.m-proposal-introduction
+        .l-message-speaker.left.l-message-initiator
+          %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+            %img{:src => "{{ avatar }}"}
+        .l-message-body.left.down.m-proposal-description
+          = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-        .m-proposal-message.m-proposal-introduction
-          .l-message-speaker.left.m-proposal-initiator
-            %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
-              %img{:src => "{{ avatar }}"}
-          .l-message-body.left.down.m-proposal-description
-            = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+          %span.l-message-title.m-proposal-description-title
+            {{title}}
+          %span.m-proposal-description-title-readmore
+            [read more]
+          .l-message-details.m-proposal-description-body
+            {{description}}
+          .m-proposal-description-details
 
-            %span.m-proposal-description-title
-              {{title}}
-            %span.m-proposal-description-title-readmore
-              [read more]
-            .m-proposal-description-body
-              {{description}}
-            .m-proposal-description-details
+            (( _.each(description_detail_fields, function(field) {  ))
 
-              (( _.each(description_detail_fields, function(field) {  ))
+            (( if( field[2] != '') { ))
+            .m-proposal-description-detail-field
+              .m-proposal-description-detail-field-heading
+                {{ field[1] }}
+                %a.hidden
+                  show
+              .m-proposal-description-detail-field-full.hide
+                %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
+                  {{ field[2] }}
+                %a.hidden
+                  show
+            (( } ))
 
-              (( if( field[2] != '') { ))
-              .m-proposal-description-detail-field
-                .m-proposal-description-detail-field-heading
-                  {{ field[1] }}
-                  %a.hidden
-                    show
-                .m-proposal-description-detail-field-full.hide
-                  %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
-                    {{ field[2] }}
-                  %a.hidden
-                    show
-              (( } ))
-
-              (( }); ))
+            (( }); ))
 
 
-          .l-message-recipient
+        .l-message-recipient
 
 
 
 
-        (( if(!published){ ))
+      (( if(!published){ ))
 
-        .m-proposal-strip_publish
-          = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
-            = f.hidden_field :published, :value => true
+      .m-proposal-strip_publish
+        = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
+          = f.hidden_field :published, :value => true
 
-            = f.submit 'Publish this new conversation', :class => 'm-proposal-publish'
+          = f.submit 'Publish this new conversation', :class => 'm-proposal-publish'
 
-          -# = link_to "cancel", "{{Routes.proposal_path(long_id)}}", :confirm => "Canceling will permanently delete this conversation. Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
+        -# = link_to "cancel", "{{Routes.proposal_path(long_id)}}", :confirm => "Canceling will permanently delete this conversation. Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
 
-        (( } ))
+      (( } ))
 
   %script{ :type => "text/template", :id => "tpl_proposal_strip" }
     (( if(published){ ))
@@ -388,7 +386,7 @@
 
     (( if(published){ ))
     .m-proposal-message.m-proposal-leader-response
-      .l-message-speaker.left.m-proposal-initiator.small
+      .l-message-speaker.left.l-message-initiator.small
         %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
           %img{:src => "{{ avatar }}"}
 

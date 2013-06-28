@@ -3,39 +3,43 @@
 //////////////////////////////////////////
 
 
-/* COMPASS DEFAULTS */
-$default-transition-property : all
-$default-transition-duration : .4s
-$default-transition-function : false
-$default-transition-delay    : false
-
-$default-box-shadow-color    : rgba(black, .4)
-$default-box-shadow-h-offset : 0px
-$default-box-shadow-v-offset : 1px
-$default-box-shadow-blur     : 2px
-$default-box-shadow-spread   : false
-$default-box-shadow-inset    : false
-
+@import "grooves/base/compass_defaults"
 @import "compass/css3/box-shadow"
 @import "compass/css3/box-sizing"
 @import "compass/css3/transform"
 @import "compass/css3/transition"
-
 @import "sassy-buttons"
 
-@import "mixins/fonts"
-@import "mixins/variables"
-@import "mixins/colors"
-@import "mixins/materials"
+
+
+/* FONTS */
+%main_font-family
+  font-family: $main_font-family
+
+%bolded
+  font-weight: bold
+  font-family: $main_font-family
+
+%italicized
+  font-style: italic
+  font-family: $main_font-family
+
++establish-baseline
+ 
+html
+  +adjust-leading-to(3)
+
+=font-size($size:0)
+  //$scale defined in grooves/base/fonts
+  +adjust-font-size-to(nth($scale, $size + 7))
+
+
+@import "grooves/base/materials"
 
 @import "constructs/misc"
 @import "constructs/bubble"
 
 @import "shared/dialog" 
-
-
-/* VARIABLES */
-
 
 
 

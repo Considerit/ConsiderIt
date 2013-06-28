@@ -1,5 +1,3 @@
-@import "mixins/fonts"
-
 $histogram_bar_width: 50px
 $blue: #2B6FAE
 $green: #418A00
@@ -7,7 +5,7 @@ $red: #A72C26
 
 
 p.intro
-  +font-size(1)  
+  font-size: 16px
 
 #histogram 
   max-width: $histogram_bar_width * 7 + 100
@@ -31,7 +29,7 @@ p.intro
 
       .support, .oppose 
         color: #888
-        +font-size(0)
+        font-size: 12px
 
       .support
         padding-right: 8px
@@ -41,7 +39,7 @@ p.intro
         color: #666
 
 .text_supporters
-  +font-size(-2)  
+  font-size: 9px
   padding-top: 10px
   th
     color: #666

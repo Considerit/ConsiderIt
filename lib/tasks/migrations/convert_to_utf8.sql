@@ -98,6 +98,13 @@ alter table accounts change entity entity VARCHAR(255) character set latin1;
 alter table accounts change entity entity VARBINARY(255);
 alter table accounts change entity entity VARCHAR(255) character set utf8;
 
+alter table accounts change header_text header_text TEXT character set latin1;
+alter table accounts change header_text header_text BLOB;
+alter table accounts change header_text header_text TEXT character set utf8;
+
+alter table accounts change header_details_text header_details_text TEXT character set latin1;
+alter table accounts change header_details_text header_details_text BLOB;
+alter table accounts change header_details_text header_details_text TEXT character set utf8;
 
 
 
@@ -270,37 +277,37 @@ alter table positions change explanation explanation TEXT character set latin1;
 alter table positions change explanation explanation BLOB;
 alter table positions change explanation explanation TEXT character set utf8;
 
-alter table reflect_response_revisions change text text TEXT character set latin1;
-alter table reflect_response_revisions change text text BLOB;
-alter table reflect_response_revisions change text text TEXT character set utf8;
+-- alter table reflect_response_revisions change text text TEXT character set latin1;
+-- alter table reflect_response_revisions change text text BLOB;
+-- alter table reflect_response_revisions change text text TEXT character set utf8;
 
-alter table reflect_bullet_revisions change text text TEXT character set latin1;
-alter table reflect_bullet_revisions change text text BLOB;
-alter table reflect_bullet_revisions change text text TEXT character set utf8;
+-- alter table reflect_bullet_revisions change text text TEXT character set latin1;
+-- alter table reflect_bullet_revisions change text text BLOB;
+-- alter table reflect_bullet_revisions change text text TEXT character set utf8;
 
-alter table reflect_bullet_revisions change comment_type comment_type TEXT character set latin1;
-alter table reflect_bullet_revisions change comment_type comment_type BLOB;
-alter table reflect_bullet_revisions change comment_type comment_type TEXT character set utf8;
+-- alter table reflect_bullet_revisions change comment_type comment_type TEXT character set latin1;
+-- alter table reflect_bullet_revisions change comment_type comment_type BLOB;
+-- alter table reflect_bullet_revisions change comment_type comment_type TEXT character set utf8;
 
 alter table requests change suggestion suggestion TEXT character set latin1;
 alter table requests change suggestion suggestion BLOB;
 alter table requests change suggestion suggestion TEXT character set utf8;
 
-alter table taggings change taggable_type taggable_type VARCHAR(255) character set latin1;
-alter table taggings change taggable_type taggable_type VARBINARY(255);
-alter table taggings change taggable_type taggable_type VARCHAR(255) character set utf8;
+-- alter table taggings change taggable_type taggable_type VARCHAR(255) character set latin1;
+-- alter table taggings change taggable_type taggable_type VARBINARY(255);
+-- alter table taggings change taggable_type taggable_type VARCHAR(255) character set utf8;
 
-alter table taggings change tagger_type tagger_type VARCHAR(255) character set latin1;
-alter table taggings change tagger_type tagger_type VARBINARY(255);
-alter table taggings change tagger_type tagger_type VARCHAR(255) character set utf8;
+-- alter table taggings change tagger_type tagger_type VARCHAR(255) character set latin1;
+-- alter table taggings change tagger_type tagger_type VARBINARY(255);
+-- alter table taggings change tagger_type tagger_type VARCHAR(255) character set utf8;
 
-alter table taggings change context context VARCHAR(255) character set latin1;
-alter table taggings change context context VARBINARY(255);
-alter table taggings change context context VARCHAR(255) character set utf8;
+-- alter table taggings change context context VARCHAR(255) character set latin1;
+-- alter table taggings change context context VARBINARY(255);
+-- alter table taggings change context context VARCHAR(255) character set utf8;
 
-alter table tags change name name VARCHAR(255) character set latin1;
-alter table tags change name name VARBINARY(255);
-alter table tags change name name VARCHAR(255) character set utf8;
+-- alter table tags change name name VARCHAR(255) character set latin1;
+-- alter table tags change name name VARBINARY(255);
+-- alter table tags change name name VARCHAR(255) character set utf8;
 
 
 alter table users change email email VARCHAR(255) character set latin1;

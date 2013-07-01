@@ -1,0 +1,64 @@
+
+// ///////// BASE BACKGROUND ///////
+// $base_text_color: #414141
+// $base_hover_color: darken($base_text_color, 25%)
+// // approximate color of basic background, used for default fill for bubbles
+$base_bg_color: #fafafa
+// // background for header and footer
+// $header_footer_bg_color: hsl( 0, 0%, 92%)
+// $header_footer_text_color: hsl( 0, 0%, 20%)
+$bg_declaration: asset-data-url('policyninja/images/bg-main.jpg') repeat #e6e6e6
+$main_content_bg_declaration: asset-data-url('policyninja/images/bg-bottom.jpg') repeat-y
+
+// /////////////////// BACKGROUND COMPLEMENTS
+// $comp_color:       invert($base_bg_color)  //hsl(  0, 0%, 25%)
+// $comp_text_color:  invert($base_text_color)  //hsl( 0, 0%, 92%)
+
+// $mid_bg_color: #666
+
+
+// ////////// CHALKBOARD SLATE
+// $decision_board_color: hsl( 0, 0%, 25%)
+// $decision_board_text_color: hsl(0, 0%, 80%)
+
+// ////////////// SPECIAL PROPOSALS
+$standout_text_color: $base_text_color
+$standout_color: hsl( 0, 0%, 98%)
+
+// // /////////////// PROPOSAL INITIATORS
+$initiator_text_color: #fafafa
+$initiator_color:    hsl( 5, 60%, 52%)
+
+// // ///////////////// PROPOSAL RESPONDERS
+$community_text_color: hsl( 5, 30%, 15%)
+$community_color:    hsl( 5, 30%, 92%)
+
+// // ///////////////// ATTENTION GRABBING COLOR
+$callout_bg_color: hsl( 5, 5%, 52%)
+//$callout_text_color: #fafafa
+
+// /////////////////////////
+
+// // determines how much each base color is darkened for their dark counterpart
+// $border_darken_amt: 10%
+
+$desaturate: false
+$desaturate_color: false
+
+@if $desaturate
+  $initiator_color: desaturate($initiator_color, 100%)
+  $community_color: desaturate($community_color, 100%)
+  $comp_color: desaturate($comp_color, 100%)
+  $standout_color: desaturate($standout_color, 100%)
+  $callout_bg_color: desaturate($callout_bg_color, 100%)
+
+@if $desaturate_color
+  $base_text_color: desaturate($base_text_color, 100%)
+  $base_hover_color: desaturate($base_hover_color, 100%)
+  $initiator_text_color: desaturate($initiator_text_color, 100%)
+  $community_text_color: desaturate($community_text_color, 100%)
+
+$dark_initiator_color: darken($initiator_color, $border_darken_amt)
+$dark_community_color: darken($community_color, $border_darken_amt)
+$dark_comp_color: darken($comp_color, $border_darken_amt)
+$dark_standout_color: darken($standout_color, $border_darken_amt)

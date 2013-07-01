@@ -61,7 +61,7 @@ class ConsiderIt.PositionView extends Backbone.View
     @model.clear()
 
   render : ->
-    your_action_el = $('<div class="m-proposal-message m-position-your_action">')
+    your_action_el = $('<div class="l-message m-proposal-message m-position-your_action">')
 
     @your_action_view = new ConsiderIt.YourActionView 
       el : your_action_el
@@ -80,7 +80,7 @@ class ConsiderIt.PositionView extends Backbone.View
 
   show_crafting : ->
     if @state != 1
-      crafting_el = $('<div class="m-proposal-message m-position">')
+      crafting_el = $('<div class="l-message m-proposal-message m-position">')
       @crafting_view = new ConsiderIt.CraftingView
         el : crafting_el
         proposal : @proposal
@@ -171,7 +171,9 @@ class ConsiderIt.CraftingView extends Backbone.View
   render : () -> 
 
     @$el.hide()
-    @$el.html ConsiderIt.CraftingView.template($.extend({}, @model.attributes, {proposal : @model.proposal.attributes}))
+    @$el.html ConsiderIt.CraftingView.template($.extend({}, @model.attributes, {
+      proposal : @model.proposal.attributes
+    }))
 
     @slider = 
       max_effect : 65 

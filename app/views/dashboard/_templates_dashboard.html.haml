@@ -101,14 +101,14 @@
                   Default is "oppose"
         .field
           = f.label :considerations_prompt, 'Header for pro/con list'
-          = f.text_field :considerations_prompt, :value => "{{account.considerations_prompt}}"
+          = f.text_field :considerations_prompt, :value => "{{account.considerations_prompt}}", :size => 50
           .sublabel
             Default is "What are the most important pros and cons to you?"
         .field
           = f.label :slider_prompt, 'Header for stance slider'
-          = f.text_field :slider_prompt, :value => "{{account.slider_prompt}}"
+          = f.text_field :slider_prompt, :value => "{{account.slider_prompt}}", :size => 50
           .sublabel
-            Default is  "Do you support this proposal?"
+            Default is  "What is your overall opinion given these Pros and Cons?"
 
       .save_block
         = f.submit 'Save', :class => 'button'

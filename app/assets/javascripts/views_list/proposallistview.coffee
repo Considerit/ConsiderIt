@@ -117,7 +117,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
         class : "#{ConsiderIt.ProposalListView.childClass}"
         'data-activity': if proposal.has_participants() then 'proposal-has-activity' else 'proposal-no-activity'
         'data-status': if proposal.get('active') then 'proposal-active' else 'proposal-inactive'
-
+        'data-visibility': if proposal.get('published') then 'published' else 'unpublished'
 
   #handlers
   events :

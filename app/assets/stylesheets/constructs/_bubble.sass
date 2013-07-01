@@ -18,7 +18,6 @@ $bubble_shadow_color: white
 
 %bubble_right
   @extend %bubble
-  color: $community_text_color
   border-radius: 5px 0 5px 5px
   > .t-bubble
     right: $banchor_adjustx 
@@ -26,11 +25,10 @@ $bubble_shadow_color: white
 %bubble_left
   @extend %bubble
   border-radius: 0 5px 5px 5px
-  color: $initiator_text_color
   > .t-bubble
     left: $banchor_adjustx 
 
-= bubble($light, $dark, $direction, $bg_image: false, $bg-color: $content_bg_color, $bborder-width: 1px, $include_bg: true)
+= bubble($light, $dark, $direction, $text_color: $base_text_color, $bg_image: false, $bg-color: $base_bg_color, $bborder-width: 1px, $include_bg: true)
 
   @if $include_bg
     @if $bg_image
@@ -39,6 +37,7 @@ $bubble_shadow_color: white
       background-color: $light
     border: $bborder-width solid $dark
 
+  color: $text_color
   @if $direction == left
     @extend %bubble_left
 

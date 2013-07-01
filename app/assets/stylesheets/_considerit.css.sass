@@ -8,6 +8,7 @@
 @import "compass/css3/box-sizing"
 @import "compass/css3/transform"
 @import "compass/css3/transition"
+@import "compass/typography/vertical_rhythm"
 @import "sassy-buttons"
 
 
@@ -29,9 +30,15 @@
 html
   +adjust-leading-to(3)
 
+
+#l-wrap
+  font-size: $base-font-size
+
+
+$font-size-scale: $base-font-size - 5 * $base_unit $base-font-size - 4 * $base_unit $base-font-size - 3 * $base_unit $base-font-size - 2 * $base_unit $base-font-size - 1 * $base_unit $base-font-size $base-font-size + 2 * $base_unit $base-font-size + 4 * $base_unit $base-font-size + 6 * $base_unit $base-font-size + 8 * $base_unit $base-font-size + 10 * $base_unit $base-font-size + 12 * $base_unit $base-font-size + 14 * $base_unit $base-font-size + 16 * $base_unit $base-font-size + 20 * $base_unit $base-font-size + 25 * $base_unit $base-font-size + 30 * $base_unit $base-font-size + 35 * $base_unit
 =font-size($size:0)
-  //$scale defined in grooves/base/fonts
-  +adjust-font-size-to(nth($scale, $size + 7))
+  //$base_unit defined in grooves/base/fonts
+  +adjust-font-size-to(nth($font-size-scale, $size + 5))
 
 
 @import "grooves/base/materials"
@@ -42,6 +49,7 @@ html
 @import "shared/dialog" 
 
 
+$hex-bullet-point: '\2022'
 
 //+font-face("ModernPictogramsNormal", font-files("modernpics-webfont.woff", "modernpics-webfont.eot",  "modernpics-webfont.ttf", "modernpics-webfont.svg#ModernPictogramsNormal"), $eot: "modernpics-webfont.eot")
 
@@ -125,7 +133,7 @@ table
 
 
 body, h1, h2, h3, h4, h5, h6, a, input, button
-  color: $base_color
+  color: $base_text_color
 
 
 
@@ -150,7 +158,7 @@ html
   +box_sizing(border-box)
 
 
-a, input, button
+a
   &:hover
     color: $base_hover_color
 
@@ -170,7 +178,6 @@ table
   border-collapse: separate  
 
 p
-  //margin-bottom: $vertical_baseline
 
 ul
   margin: 0
@@ -225,13 +232,6 @@ blockquote
   margin: auto
   position: relative
                    
-  //width: $pro_con_list_width
-  //border: $chalkboard_border_width solid
-  //border-color: hsl(0, 0%, 80%) hsl(0, 0%, 10%) hsl(0, 0%, 10%) hsl(0, 0%, 50%)
-  
-
-  //padding: 2 * $vertical_baseline 0 0 $grid_xs
-
   %m-pro-con-list-column
     position: relative
     vertical-align: top
@@ -240,30 +240,17 @@ blockquote
 
   .m-pro-con-list-propoints, .m-pro-con-list-conpoints
     @extend %m-pro-con-list-column
-    //margin: 0 0 0 $grid_minor
-    //padding: 0 $grid_xs
 
   .m-pro-con-list-propoints 
-    //padding: 0 $grid_xs
-    //margin-right: $grid_xs
 
   .m-pro-con-list-conpoints 
-    //margin-right: $grid_major - $chalkboard_border_width
-    //margin-left: $grid_xs
-    //padding-left: $grid_minor
     
   .m-pro-con-list-header   
     margin-bottom: $vertical_baseline/2
     text-align: center
     +font-size(1)
     background-color: rgba(black, .05)
-    color: $position_color
     font-weight: bold
-    //border-radius: 5px
-    //position: relative
-
-    //img
-    //  width: 80px
 
 
 .avatar
@@ -288,10 +275,7 @@ blockquote
   text-align: center
 
 .button
-  +button($text_color: hsl(0,0,85%), $bground_color: hsl(0,0,35%))
-  color: #eaeaea
-  &:hover
-    color: white
+  +button($bground_color: hsl(0,0,35%))
 
 .icon:before 
   content: attr(data-icon)
@@ -305,10 +289,8 @@ blockquote
 
 /* CONTAINERS */
 
-$background: image-url('directrep/images/back.png')
-
 html  
-  background-color: $product_background_color
+  background-color: $header_footer_bg_color
 #l-wrap
   position: relative
 
@@ -319,14 +301,10 @@ html
   position: relative
 
 #l-heading
-  //height: $vertical_baseline * 2
-  //width: $content_width
   margin: auto
-  //margin-bottom: $vertical_baseline
   border-bottom: 1px solid white
 
 .l-heading-wrap
-  //width: $content_width
   width: $content_width
   left: 50%
   margin-left: -$content_width/2
@@ -335,20 +313,23 @@ html
   height: 2 * $vertical_baseline
 
 #l-content
-  padding: $vertical_baseline 0
-  background-image: $bg_image
+  //padding: $vertical_baseline 0
+  background: $bg_declaration
   +single-box-shadow
 
-.l-content-wrap
-  //padding: $vertical_baseline $grid_xs
-  //margin-bottom: $vertical_baseline
-  position: relative
-  width: $content_width
+#l-content-main, .l-content-wrap
+  position: relative  
   margin: 0 auto
+
+.l-content-wrap
+  width: $content_width
+
+#l-content-main
+  background: $main_content_bg_declaration
+  width: $content_width + 118 * 2
 
 #l-footer
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
-  //border-top: 1px solid darken($product_background_color, 15%)
 
 .l-footer-wrap
   width: $body_width
@@ -357,6 +338,8 @@ html
 
 
 %l-message-template
+  position: relative
+
   > .l-message-speaker, > .l-message-recipient, > .l-message-body
     display: inline-block
     vertical-align: top
@@ -393,24 +376,14 @@ html
     .l-message-title
       +font-size(1)
       font-weight: bold
-      //color: $position_color
-
-    .l-message-details
-      //+font-size(0)
 
 
 .l-group-container
   font-size: 0
   line-height: 0
 
-// .l-overlay
-//   position: absolute
-//   z-index: 9999
-
 .l-tooltip
   display: none
-  // position: absolute
-  // z-index: 9999
 
 .tooltipster-content .l-tooltip
   display: block
@@ -424,15 +397,18 @@ html
 
 #l-heading
   .t-logo
-    position: absolute
-    margin-top: $vertical_baseline/2
-    left: 106px
-    +font-size(-2)
-    //overflow: hidden
+    position: relative
+    padding: $vertical_baseline/2 $grid_xs/2
+    float: left
+    vertical-align: baseline
+
+    // left: 106px
+    +font-size(-1)
     text-transform: uppercase
     @extend %bolded
-    @extend %on_background
+    @extend %on_header_footer
     opacity: .8
+    z-index: 1
 
     .t-logo-tagline
       display: inline-block
@@ -441,13 +417,12 @@ html
 
   .l-navigate
     display: none
-    // background-color: rgba(lighten($product_background_color, 4%), .5)
     margin: auto
     position: absolute
     top: 7px
     z-index: 50
     width: 100%
-    @extend %on_background
+    @extend %on_header_footer
 
     .l-navigate-wrap
       width: $content_width
@@ -464,17 +439,12 @@ html
     .l-navigate-crumb
       display: inline
       list-style: none
-    //padding: $vertical_baseline / 4 $grid_xs / 2
-    //color: white
-    // &:hover
-    //   background-color: $comp_color
 
 #m-user-nav
   position: relative
   text-align: right
   z-index: 999
   padding: $vertical_baseline/4 $grid_xs/2
-  //width: 50%
   right: 0
   float: right
 
@@ -482,13 +452,10 @@ html
   display: inline-block
 
 .m-login, .m-user-options-display
-  @extend %on_background
+  @extend %on_header_footer
 
 .m-login a, .m-user-options-display a
-  //color: #a6a6a6
-  @extend %bolded
-  +font-size(-4)
-  text-transform: uppercase
+  +font-size(-1)
 
 .m-login-signin:after
   position: relative
@@ -506,11 +473,6 @@ html
       width: $vertical_baseline * 1.5
       height: $vertical_baseline * 1.5
       display: inline-block
-
-    .m-user-options-triangle
-
-    &:hover, &:hover a
-      //color: white
   
 
   .m-user-options-menu-wrap
@@ -524,9 +486,9 @@ html
     display: inline-block
     +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
     border-radius: 5px
-    background-color: white
+    background-color: $base_bg_color
     padding: $vertical_baseline / 2 0
-    border: 1px solid #aaa
+    border: 1px solid darken($base_bg_color, 20%)
 
     a
       width: 100%
@@ -535,9 +497,8 @@ html
       cursor: pointer
       +font-size(-3)
       font-weight: bold
-      //color: #444
       &:hover
-        color: white
+        color: $comp_text_color
         background-color: $dark_comp_color
 
 
@@ -588,10 +549,7 @@ $membership_card_height: 278px
 
   input[type="submit"]
     margin-bottom: $vertical_baseline
-    // +button
     +superbutton
-    // padding: $vertical_baseline/2 $grid_xs * 2
-    // color: #eee
     +font-size(0)
 
 .m-user-accounts-complete-signin
@@ -599,10 +557,6 @@ $membership_card_height: 278px
     position: relative
 
   .forget_password_prompt
-    //position: absolute
-    //right: 64px
-    //top: $vertical_baseline/2
-    //bottom: - 2 * $vertical_baseline
     +font-size(-3)
     display: block
     
@@ -612,8 +566,6 @@ $membership_card_height: 278px
 
   .m-user-accounts-form-fields-wrap
     width: $membership_card_width
-    //height: $membership_card_height
-    //background-image: $background
     
     box-shadow: 0 1px 2px rgba(black, .35), inset 0 0 8px 2px rgba(white, .5)
     background-color: $initiator_color
@@ -638,7 +590,6 @@ $membership_card_height: 278px
     label
       +font-size(-2)
       text-align: left
-      //margin-left: $grid_xs
       float: left
 
     input[type="text"], input[type="email"], input[type="password"], textarea
@@ -659,7 +610,6 @@ $membership_card_height: 278px
       vertical-align: top
       text-align: left
       margin-top: $vertical_baseline / 2
-      //color: #333
 
     .m-user-accounts-pledge-taken
       display: none
@@ -696,8 +646,6 @@ $membership_card_height: 278px
       .import_from_third_party
         span, a
           +font-size(-4)          
-        //a
-        //  +font-size(-1)
 
   .m-user-accounts-finish-wrap
     width: $membership_card_width
@@ -705,16 +653,12 @@ $membership_card_height: 278px
 
     .m-user-accounts-pledge
       margin-bottom: $vertical_baseline
-      //.m-user-accounts-pledge-heading
-      //  +font-size(2)
-      //  @extend %bolded
 
       ol
         text-align: left
         list-style: none
 
         li
-          //color: white
           padding: 0 $grid_xs
 
           &:hover
@@ -765,34 +709,20 @@ $tooltip_width: 225px
 
   .l-tooltip-user-name
     font-weight: bold
-    //display: inline-block
-    // padding: $vertical_baseline/2 $grid_xs 0 $grid_xs
     line-height: .7
 
 .l-tooltip-user-joined
-  //display: inline-block
   +font-size(-4)
-  //margin-left: $grid_xs/2
 
 .l-tooltip-user
-  //width: $tooltip_width
   min-width: 200px
-  
-  //border: 1px solid #444
-  //border-bottom: none
-  // background-color: #e1e1e1
-
 
   .l-tooltip-user-block, .l-tooltip-user-metrics
-    //display: inline-block
 
   .l-tooltip-user-block
     vertical-align: baseline
 
   .l-tooltip-user-metrics
-    //float: right
-    // ul
-    //   display: inline-block
 
   .l-tooltip-user-metric
     list-style: none
@@ -801,26 +731,11 @@ $tooltip_width: 225px
     line-height: 1
     display: inline-block
 
-  .l-tooltip-user-metric-major
-    
-    //margin: $vertical_baseline/4 $grid_xs/4
+  .l-tooltip-user-metric-major    
     color: white
-    background-color: rgba(darken($position_button_bg, 8%), .5)
+    background-color: rgba(darken($callout_bg_color, 8%), .5)
     padding: 0 $grid_xs/4
     margin-left: $grid_xs/4
-    //border: 1px solid darken($position_button_bg, 16%)
-
-    //text-align: center
-    //width: 65px
-
-    // .l-tooltip-user-metric-number,     .l-tooltip-user-metric-desc
-
-    //   +font-size(1)
-    //   line-height: 1
-
-    // .l-tooltip-user-metric-desc
-    //   +font-size(-5)
-    //   line-height: 1
 
   .l-tooltip-user-metric-minor
 
@@ -830,11 +745,10 @@ $tooltip_width: 225px
     font-variant: small-caps
 
   .l-tooltip-user-actions
-    //width: $tooltip_width
     clear: both
 
   .l-tooltip-user-action
-    +sassy-button("glass", 5px, inherit, lighten($position_button_bg, 8%), darken($position_button_bg, 8%) )
+    +sassy-button("glass", 5px, inherit, lighten($callout_bg_color, 8%), darken($callout_bg_color, 8%) )
     color: white
     text-align: center
     width: 100%
@@ -845,13 +759,11 @@ $tooltip_width: 225px
     border-bottom: 0
 
     &:hover
-      +sassy-button("glass", 5px, inherit, darken($position_button_bg, 4%), darken($position_button_bg, 20%) )
+      +sassy-button("glass", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 20%) )
       +font-size(-2)
       border-radius: 0
 
   // .l-tooltip-user-profile
-  //   border-bottom: 0
-  //   //border-radius: 0 0 5px 5px
 
 //////////////////////////////////////////
 // CONSIDERIT MODULES
@@ -913,12 +825,11 @@ $tooltip_width: 225px
     top: 2 * $vertical_baseline
     opacity: .85
     border: 1px solid transparent
-    +single-box-shadow
-    //+transition(width .1s ease .25s, height .1s ease .25s)
+    +single-box-shadow    
     opacity: .8
 
     &:hover
-      opacity: 1 //border-color: darken($community_color, 85%)
+      opacity: 1
 
 
   // &.m-point-unexpanded
@@ -943,15 +854,12 @@ $tooltip_width: 225px
   +transition(background-color .1s ease, top .5s linear)
 
   .m-point-nutshell
-    //+transition(font-weight .5s ease, font-size .5s ease)
-    //+single-transition
 
   .m-point-nutshell-wrap
 
     .m-point-user
       white-space: nowrap
       display: inline-block
-      //+font-size(-6)
 
   .m-point-details-description 
     display: none
@@ -964,14 +872,8 @@ $tooltip_width: 225px
 // top pro / con in summary
 .m-results-summary-pro-con-list
   .m-top-point-header
-    // text-transform: lowercase
-    // font-variant: small-caps
-    // font-weight: bold
   .m-top-point-content
-    //font-weight: bold
   .m-top-point-user
-    //font-style: italic
-    //+font-size(-2)
   
 .m-top-point
   +font-size(-2)
@@ -982,14 +884,11 @@ $tooltip_width: 225px
   .m-top-point-user
     white-space: nowrap
 
-// .m-top-con
-//   margin-top: $vertical_baseline/2
-
 $arrow_height: 10px
 
 
 %point_operation_button
-  +sassy-button("simple", 5px, inherit, lighten($position_button_bg, 8%), $position_button_bg)
+  +sassy-button("simple", 5px, inherit, lighten($callout_bg_color, 8%), $callout_bg_color)
   +font-size(-3)
   padding: $vertical_baseline/4 $grid_xs / 2
   text-align: center
@@ -1008,7 +907,6 @@ $arrow_height: 10px
 
   .m-point-wrap
     +single-box-shadow($color: rgba(black, .2))
-    //+single-box-shadow($color: #fff, $hoff: 1px, $voff: 6px, $blur: 9px, $spread: -5px, $inset: true) 
     border-radius: 8px
     border: 1px solid #ccc //$dark_community_color
     @extend %on_paper
@@ -1017,7 +915,6 @@ $arrow_height: 10px
   @extend %m-point
   @extend %m-white-thought-bubble
 
-  //border-radius: 8px
   width: $peer-point-width
 
   .m-point-wrap
@@ -1033,7 +930,7 @@ $arrow_height: 10px
   .m-point-nutshell-wrap
 
   .m-point-nutshell, .m-point-user, .details_indicator
-    +font-size(-4)
+    +font-size(-3)
 
   .m-point-operations        
     position: absolute
@@ -1051,17 +948,15 @@ $arrow_height: 10px
       bottom: $vertical_baseline / 4
 
     .m-point-wrap:hover
-      border-color: #aaa //darken($dark_community_color, 25%) 
+      border-color: #aaa
       .m-point-operations a
-        color: #666 //darken(desaturate($dark_community_color, 25%), 85%)
+        color: #666
 
   &.pro
     .m-point-operations
-      //left: $grid_xs / 2
       text-align: left
   &.con
     .m-point-operations
-      //right: $grid_xs / 2
       text-align: right
 
 
@@ -1084,16 +979,11 @@ $arrow_height: 10px
     border-right: $size solid $color
 
   .m-point-include-wrap
-
-    //display: inline-block
     position: absolute
     bottom: 0
-    //opacity: .5
-    //+single-transition
 
     .m-point-include
       @extend %point_operation_button
-      //+single-transition
       display: inline-block
       position: relative
       z-index: 2
@@ -1101,7 +991,6 @@ $arrow_height: 10px
 
     .list_connector
       +transition(left .5s ease, right .5s ease)
-      //display: inline-block
       position: absolute      
       bottom: -1px
       z-index: -1
@@ -1120,7 +1009,7 @@ $arrow_height: 10px
 
         .list_connector
           +triangle-right($arrow_height + 2)
-          right: 0//right: -$arrow_height - 3
+          right: 0
 
           &:after
             right: 2px
@@ -1131,12 +1020,11 @@ $arrow_height: 10px
           border-right-color: transparent
 
           .list_connector
-            //left: auto
             right: -$arrow_height - 2
-            border-left-color: $position_button_bg
+            border-left-color: $callout_bg_color
 
             &:after
-              border-left-color: $position_button_bg
+              border-left-color: $callout_bg_color
 
     &.m-point-expanded
       .m-point-include-wrap .m-point-include 
@@ -1144,10 +1032,10 @@ $arrow_height: 10px
         border-right-color: transparent    
         .list_connector
           right: -$arrow_height - 2
-          border-left-color: $position_button_bg
+          border-left-color: $callout_bg_color
 
           &:after
-            border-left-color: $position_button_bg
+            border-left-color: $callout_bg_color
 
   &.con
     .m-point-include-wrap
@@ -1171,10 +1059,10 @@ $arrow_height: 10px
 
           .list_connector
             left: -$arrow_height - 2
-            border-right-color: $position_button_bg
+            border-right-color: $callout_bg_color
 
             &:after
-              border-right-color: $position_button_bg
+              border-right-color: $callout_bg_color
 
     &.m-point-expanded
       .m-point-include-wrap .m-point-include 
@@ -1182,15 +1070,14 @@ $arrow_height: 10px
         border-left-color: transparent    
         .list_connector
           left: -$arrow_height - 2
-          border-right-color: $position_button_bg
+          border-right-color: $callout_bg_color
 
           &:after
-            border-right-color: $position_button_bg
+            border-right-color: $callout_bg_color
 
   ////////////////////
 
 .m-point-results, .m-point-position
-  //border-color: transparent
   @extend %m-point
   
   .m-point-wrap
@@ -1219,7 +1106,6 @@ $arrow_height: 10px
       padding: 0 $grid_xs
 
       %point_operation
-        //display: inline-block          
         +font-size(-3)
         padding: 0
         margin: 0
@@ -1297,7 +1183,6 @@ $arrow_height: 10px
       display: inline-block
       position: absolute
       top: 1px
-      //left: -10px
 
   .m-newpoint-new
     +font-size(1)
@@ -1306,7 +1191,6 @@ $arrow_height: 10px
     padding: 0
     position: relative
     text-align: left
-    //text-decoration: underline
     @extend %bolded
     display: inline-block
 
@@ -1365,7 +1249,6 @@ $arrow_height: 10px
 .m-pointlist-browse
   .m-pointlist-browse-toggle
     +superbutton
-    color: white
     +font-size(-2)
     width: $peer-point-width
     text-align: center
@@ -1416,21 +1299,19 @@ $expansion_size: 250px
       @extend %bolded
       
       &:hover
-        background-color: darken($position_button_bg, 10%)
-        color: white
+        background-color: darken($callout_bg_color, 10%)
+        color: lighten($callout_text_color, 10%)
 
       &.selected
-        background-color: darken($position_button_bg, 8%)
-        color: #e1e1e1
+        background-color: darken($callout_bg_color, 8%)
+        color: $callout_text_color
 
 
 /* POINTLISTPAGINATION */
 
 .m-pointlist-pagination
   text-align: center
-  //color: #444
   a
-    //color: #444
     display: inline-block
     width: 100%
     &:hover
@@ -1512,19 +1393,14 @@ $m-point-expanded-width: $body_width + 150
     .m-point-author-name
       right: 5px
 
-  //&.m-point-position, &.m-point-results
-  @extend %m-point-thought-bubble
 
   &.m-point-position, &.m-point-results  
-    color: $base_color
+    color: $base_text_color
 
   &.m-point-position  
     .m-point-operations 
       .m-point-assessment-request-initiate, .m-point-remove, .m-point-follow input[type="submit"]
         @extend %point_operation_button
-        //background-color: #444
-        //border-color: #222
-        //color: #e1e1e1
   
   .m-point-author-name
     border-radius: 5px 5px 0px 0px
@@ -1573,7 +1449,6 @@ $m-point-expanded-width: $body_width + 150
 // Assessment request
 // requesting fact check
 .m-point-assessment-request
-  //display: none
   .m-point-assessment-request-form
     +single-box-shadow($color: rgba(black, 0.2))
     border-radius: 5px
@@ -1614,8 +1489,6 @@ $m-point-expanded-width: $body_width + 150
 
 // Assessment
 .m-point-assessment
-  //display: none
-  //width: 100%
   @extend %on_paper
   padding: $vertical_baseline $grid_minor
   +single-box-shadow($color: rgba(black, 0.2))
@@ -1737,14 +1610,9 @@ $m-point-expanded-width: $body_width + 150
   width: $content_width
 
   .m-new-proposal-submit
-    //+sassy-button("glass", 5px, inherit, darken($standout_color, 32%), darken($standout_color, 40%))
     +superbutton
     border-radius: 0
-    //+font-size(2)
-    //padding: $vertical_baseline / 2 0
-    color: white
     display: inline-block
-    //width: $content_width
     border: 1px solid 
     border-bottom: 1px solid 
     border-color: rgba(white,.5) rgba(black, .1) rgba(black,.25) rgba(white, .2)
@@ -1754,9 +1622,8 @@ $m-point-expanded-width: $body_width + 150
 // Proposal
 
 #m-proposals-container
-  //margin-top: $vertical_baseline
   position: relative
-  //z-index: 1
+  padding: $vertical_baseline 0
 
   .m-proposal-list
     @extend %nude_list
@@ -1776,27 +1643,23 @@ $m-point-expanded-width: $body_width + 150
     padding-right: $grid_xs/2
 
   a
-    color: lighten($position_color, 15%)
     text-transform: lowercase
     font-variant: small-caps
-    &:hover
-      color: lighten($position_color, 0%)
     &.selected, &.selected:hover
       @extend %bolded
-      color: lighten($position_color, 8%)
 
 .m-proposals-list-pagination
   margin-top: $vertical_baseline
 
   .m-pointlist-pagination-showmore, .m-proposals-list-pagination-page, .m-proposals-list-pagination-jump
-    +sassy-button("simple", 5px, inherit, darken($product_background_color, 4%), darken($product_background_color, 12%))
-    color: #666
+    +sassy-button("simple", 5px, inherit, darken($base_bg_color, 4%), darken($base_bg_color, 12%))
+    color: lighten($base_text_color, 12%)
     &:hover
-      color: black
+      color: darken($base_text_color, 12%)
 
   .selected
-    +sassy-button("simple", 5px, inherit, darken($position_button_bg, 4%), darken($position_button_bg, 12%))
-    color: #eaeaea
+    +sassy-button("simple", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 12%))
+    color: $callout_text_color
 
   .m-pointlist-pagination-showmore, .m-proposals-list-pagination-page, .selected, .m-proposals-list-pagination-jump
     border-radius: 0
@@ -1829,18 +1692,10 @@ $m-point-expanded-width: $body_width + 150
   margin: $vertical_baseline 0
   position: relative
   min-height: $initiator_width
-  //min-height: 75px
 
-  // TODO: this should probably be general ...
-  .m-proposal-message 
-    position: relative
-
-
-    &.m-position-your_action
-      //height: 0
-      > .l-message-body
-        padding: 0
-        //width: 100% 
+  .m-position-your_action
+    > .l-message-body
+      padding: 0
 
   .m-aggregated-results, .m-results-summary
     > .l-message-speaker
@@ -1853,34 +1708,18 @@ $m-point-expanded-width: $body_width + 150
   > .l-content-wrap
     padding-bottom: 0
   
-  .m-proposal-body_wrap
-    // padding: 0 $grid_xs
-    // margin-bottom: $vertical_baseline / 2
-
   .m-proposal-heading-wrap
-    //width: 104%
-    //position: relative
     padding: $vertical_baseline $grid_xs
-    //left: -$grid_xs
-    //top: -$vertical_baseline
     cursor: pointer
-    //background-color: #333
     text-align: center
     +single-box-shadow
 
   .m-proposal-heading
     text-align: center
-    //color: #222
     text-transform: capitalize
     margin: auto
     @extend %bolded
     +font-size(2)
-    //color: white
-    //padding-right: $grid_minor
-    //width: $body_width + 2 * $grid_major
-
-  .m-proposal-description-title
-    //color: $position_color
 
   .m-proposal-description-details
     +font-size(-2)
@@ -1897,70 +1736,40 @@ $m-point-expanded-width: $body_width + 150
 
 
 %m-proposal-strip-item
-  color: #444
   display: inline-block
   padding: $vertical_baseline / 2 0
   text-transform: uppercase
   +font-size(-1)
-  +border-radius(0 0 5px 5px)
+  //+border-radius(0 0 5px 5px)
   font-weight: bold
 
 .m-proposal-strip
-  //text-align: center
   margin: 0 $grid_xs
-  //margin-top: $vertical_baseline
-  // border-top: 1px solid #ddd
-  //position: absolute
-  //top: -75px
   text-align: center
-  //margin-left: -246px
-  //left: 50%
 
-.m-proposal-connect
-  margin-top: $vertical_baseline
-  padding-top: 3px
-  ul
-    text-align: center
-  li
-    display: inline-block
-    vertical-align: middle
+// .m-proposal-connect
+//   margin-top: $vertical_baseline
+//   padding-top: 3px
+//   ul
+//     text-align: center
+//   li
+//     display: inline-block
+//     vertical-align: middle
   
-  .m-proposal-action-label
-    //padding: 0 $grid_xs / 2
-    +font-size(-4)
-    @extend %m-proposal-strip-item
-    //text-transform: uppercase
-    //color: #aaa
-    width: 175px
-    text-align: center
-    opacity: .5
+//   .m-proposal-action-label
+//     +font-size(-4)
+//     @extend %m-proposal-strip-item
+//     width: 175px
+//     text-align: center
+//     opacity: .5
 
-  .m-proposal-action-link
-    cursor: pointer
-    +single-transition
-    +font-size(-3)
-    //+grayscale
-    //opacity: .6
-    &:hover
-      //+grayscale_off
-      //opacity: 1
+//   .m-proposal-action-link
+//     cursor: pointer
+//     +single-transition
+//     +font-size(-3)
 
-  .m-proposal-follow_conversation
-    +pressable_button
-
-
-
-.m-proposal_strip_toggle
-
-  .m-proposal-toggle
-    +superbutton
-    text-align: center
-    width: $margin_width    
-    color: #ddd
-    font-weight: bold
-    &:hover
-      background-color: auto
-      color: white
+//   .m-proposal-follow_conversation
+//     +pressable_button
 
 
 // Proposal admin strip
@@ -1978,8 +1787,7 @@ $m-point-expanded-width: $body_width + 150
 
   .l-dialog-prompt-label, .m-delete_proposal
     &:hover
-      background-color: rgba(black, .15)
-      color: black
+      background-color: rgba(black, .05)
 
   .m-delete_proposal
     padding: $vertical_baseline/2 inherit
@@ -1992,8 +1800,8 @@ $m-point-expanded-width: $body_width + 150
 .m-proposal[data-state="0"]
   margin-bottom: $vertical_baseline * 2
   .m-position-your-action-body.join
-    top: -36px
-    position: absolute
+    top: -9px
+    //position: absolute
 
 .m-proposal[data-state="2"], .m-proposal[data-state="4"]
   margin-bottom: $vertical_baseline * 2
@@ -2037,25 +1845,26 @@ $m-point-expanded-width: $body_width + 150
 
 .m-proposal[data-visibility="unpublished"]
   .l-message-body.m-proposal-description
-    background-color: lighten(desaturate($standout_color, 100%), 20%)
-    border-color: lighten(desaturate($dark_standout_color, 100%), 20%)
-    color: lighten(desaturate($standout_text_color, 100%), 10%)
+    background-color: $standout_color
+    border-color: $dark_standout_color
+    color: $standout_text_color
 
     > .t-bubble 
       .t-bubble-border
-        fill: lighten(desaturate($dark_standout_color, 100%), 20%)
+        fill: $dark_standout_color
       .t-bubble-inner
-        fill: lighten(desaturate($standout_color, 100%), 20%)
+        fill: $standout_color
 
   .m-proposal-strip_publish
     position: relative
     z-index: 2
+    text-align: center
     .m-proposal-publish
       width: $body_width
-      margin-left: $margin_width + 5
-      +sassy-button("glass", 5px, inherit, desaturate(darken($standout_color, 32%), 100%), desaturate(darken($standout_color, 40%), 100%))
+      //margin-left: $margin_width + 5
+      +sassy-button("glass", 5px, inherit, desaturate($callout_bg_color, 100%), darken( desaturate($standout_color, 100%), 8%) )
       +font-size(1)
-      color: white
+      color: desaturate($callout_text_color, 100%)
       font-weight: bold
       text-align: center
       margin-top: -7px
@@ -2102,10 +1911,9 @@ $m-point-expanded-width: $body_width + 150
     display: block
 
 
-.m-proposal-message
+.l-message
   @extend %l-message-template
   margin-top: $vertical_baseline / 4
-  //padding-left: $grid_xs
 
   > .l-message-body
     width: $body_width
@@ -2116,7 +1924,7 @@ $m-point-expanded-width: $body_width + 150
 
 
   > .l-message-speaker.right
-    width: $recipient_width
+    width: $margin_width
 
   > .l-group-container
     height: 160px
@@ -2139,7 +1947,7 @@ $m-point-expanded-width: $body_width + 150
       right: -20px
 
   .m-proposal-description.l-message-body
-    +bubble($initiator_color, $dark_initiator_color, left)
+    +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
     cursor: pointer
 
     p
@@ -2152,14 +1960,10 @@ $m-point-expanded-width: $body_width + 150
 .m-position-your-action-body
   +superbutton
   +font-size(-2)
-  color: #fafafa
   text-align: center
   font-weight: bold
   border-radius: 0 0 5px 5px
   position: relative
-
-  &:hover
-    color: white
 
   &.join
     +font-size(-2)
@@ -2184,9 +1988,9 @@ $m-point-expanded-width: $body_width + 150
     margin-right: $grid_xs
     float: right
     +font-size(-2)
-    color: #999
+    color: lighten($base_text_color, 25%)
     &:hover
-      color: #777
+      color: $base_text_color
 
 // YOUR_ACTION_CRAFT
 
@@ -2200,12 +2004,9 @@ $m-point-expanded-width: $body_width + 150
 
 .m-results-summary, .m-aggregated-results
   .m-results-summary-button
-    //margin-top: 3px
     +sassy-button("glass", 5px, inherit, saturate($community_color, 8%), darken(saturate($community_color, 8%), 5%))
-    //+sassy-button("glass", 5px, 12px, darken(saturate($community_color, 8%), 38%), darken(saturate($community_color, 8%), 46%))
     +font-size(-2)
     display: block
-    //line-height: 1.2
     font-weight: bold
     color: $community_text_color
     text-align: center
@@ -2230,14 +2031,14 @@ $m-point-expanded-width: $body_width + 150
   .m-results-responders
     padding: $vertical_baseline / 2 0
 
-    +bubble($community_color, $dark_community_color, right)
+    +bubble($community_color, $dark_community_color, right, $text_color: $community_text_color)
     min-height: 120px  
 
 .m-results-summary  
   .m-results-responders
     .t-bubble.t-bubble-bar
       font-size: 13px
-      right: -10px //$pos 
+      right: -10px 
       +scaleY(1.75)
 
       &:after
@@ -2258,10 +2059,8 @@ $m-point-expanded-width: $body_width + 150
 
 // HISTOGRAM / WHAT
 
-$histogram_bar_border-color: #555
-$histogram_bar_color: #6E6E6E
 
-
+$histogram_bar_color: darken($mid_bg_color, 15%)
 .m-histogram
   display: none
   opacity: 0
@@ -2274,20 +2073,13 @@ $histogram_bar_color: #6E6E6E
   .m-histogram-bar
     width: $histogram_bar_width
     position: relative
-    //display: inline-block
     cursor: pointer
-    //+single-box-shadow($hoff: -6px, $voff: 6px, $blur: 9px, $spread: -5px, $color: white, $inset: true)
-
-    border: 2px solid $histogram_bar_border-color
+    border: 2px solid darken($histogram_bar_color, 10%)
     border-bottom: none
-    //border-bottom: none
-    background-color: $comp_color //$histogram_bar_color
-    //+transition(background-color .5s linear, color .5s linear, border-radius .5s linear)
-    +bubble(lighten($community_color,10%), $dark_community_color, right, $include_bg: false)
-  
-    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: #777, $inset: true)
+    background-color: $histogram_bar_color
+    +bubble(lighten($community_color,10%), $dark_community_color, right, $include_bg: false, $text_color: $community_text_color)
+    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($histogram_bar_color, 25%), $inset: true)
 
-    //z-index: 1
     border-radius: 0px
     text-align: center
     display: inline-block
@@ -2302,8 +2094,6 @@ $histogram_bar_color: #6E6E6E
       position: absolute
       left: 50%
       margin-left: -15px
-      //top: 50%
-      //margin-top: -10px
       z-index: 999999
       top: auto
       bottom: -37px
@@ -2312,14 +2102,9 @@ $histogram_bar_color: #6E6E6E
       .t-bubble-spacing
         display: none
 
-    $base_selected_bar_color: #B1B18F
-    $base_selected_bar_color: #7F7F56
-    $darken_amt: 10%
-    $hue_spread: 18
-
     &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
-      background-color: #777 //$community_color
-      border-color: #555 //$dark_community_color
+      background-color: lighten($histogram_bar_color, 16%)
+      border-color: darken($histogram_bar_color, 2%)
     
     &.m-bar-is-soft-selected
       z-index: 5
@@ -2337,7 +2122,6 @@ $histogram_bar_color: #6E6E6E
 .m-bar-people
   background-color: transparent
   font-size: 0
-  color: #222
   margin: auto
   +rotate(180deg)
   height: 100%
@@ -2351,21 +2135,19 @@ $histogram_bar_color: #6E6E6E
   height: $vertical_baseline
   width: $body_width + $grid_xs
   border-radius: 10px
-  background-color: lighten($comp_color, 25%)
-  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: #aaa, $inset: true)
+  background-color: lighten($mid_bg_color, 10%)
+  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: lighten($mid_bg_color, 25%), $inset: true)
 
 .m-histogram-base-label
   +font-size(-2)
   text-transform: uppercase
   position: absolute
-  //bottom: -6px
   font-weight: bold
-  color: #777
 
 .m-histogram-base-label-support
   left: -100px
 .m-histogram-base-label-oppose
-  right: -100px
+  right: -84px
 
 
 // POINTS / WHY
@@ -2381,36 +2163,6 @@ $histogram_bar_color: #6E6E6E
 .m-point-list-has-pagination
   min-height: 500px
 
-$filter_width: 371px
-.m-results-point-filters
-  display: none
-  +font-size(-3)
-  text-transform: uppercase
-  text-align: center
-  //font-variant: small-caps
-  @extend %bolded
-  position: absolute
-  bottom: $vertical_baseline/4
-
-  left: 50%
-  margin-left: -$filter_width/2
-
-  .label
-    color: #999
-    font-weight: normal
-
-  .point_filter
-    padding: $vertical_baseline/4 $grid_xs / 2
-
-    &:hover
-      cursor: pointer
-
-    &.selected
-      background-color: #666
-      background-color: rgba(black, .1)
-      +border-radius(5px)
-
-
 
 /* POSITION */  
 
@@ -2419,34 +2171,30 @@ $filter_width: 371px
   +transition(margin-left .4s ease) // for point browsing
 
   .m-position-message-body
-    +bubble($position_color, $dark_position_color, left )
+    +bubble($decision_board_color, darken($decision_board_color, 10%), left )
     border-radius: 0
-    //+single-box-shadow($hoff: 1px, $voff: 6px, $blur: 6px, $spread: -5px, $color: #fff, $inset: true)
     border-width: 3px
-    border-color: black
-    +transition(border-color .8s linear)
+    //+transition(border-color .8s linear)
 
   .m-position-heading
     +font-size(2)
-    padding: $vertical_baseline / 2 0 $vertical_baseline/2 0
+    padding: $vertical_baseline / 2 $grid_xs
     margin-bottom: $vertical_baseline/2
     text-align: center
     @extend %on_chalkboard
-    +transition(color .8s linear)
 
   .m-position-heading-points
-    background-color: darken($position_button_bg, 16%)
-    border-top: 1px solid lighten($position_button_bg, 5%)
-    border-bottom: 1px solid darken($position_button_bg, 24%)
-    border-left: 3px solid darken($position_button_bg, 35%)
-    border-right: 3px solid darken($position_button_bg, 35%)
-
-    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: white, $inset: true)
+    background-color: darken($callout_bg_color, 16%)
+    border-top: 1px solid lighten($callout_bg_color, 5%)
+    border-bottom: 1px solid darken($callout_bg_color, 24%)
+    border-left: 3px solid darken($callout_bg_color, 35%)
+    border-right: 3px solid darken($callout_bg_color, 35%)
+    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($callout_bg_color, 25%), $inset: true)
     position: relative
     top: -$vertical_baseline/2
     width: $body_width
     left: -$grid_xs - 3
-    color: #eaeaea
+    color: $callout_text_color
 
   .m-position-heading-stance
     text-decoration: underline
@@ -2457,15 +2205,12 @@ $filter_width: 371px
 // REASONS
 .m-reasons
   position: relative
-  //margin-left: -$peer-point-width
-  //width: $content_width
   width: 1300px
-  left: -250px //-$peer-point-width - $grid_minor
+  left: -250px 
   .m-reasons-pro-con-list, .m-reasons-peer-points
     display: inline-block
 
   .m-reasons-pro-con-list
-    //margin: 0 $grid_minor
     margin: 0 3px
 
     @extend %pro_con_list 
@@ -2482,28 +2227,14 @@ $filter_width: 371px
     .m-reasons-peer-cons
       margin-left: 3px
 
-  %m-reasons-peer-points-heading
-    opacity: .8
-    h3
-      +font-size(0)
-      text-transform: uppercase
-      letter-spacing: -1px
-      color: #777
-      font-weight: normal
-
-    .sublead
-      +font-size(-3)
-      margin-top: -3
 
 // SLIDER
 .m-stance
   margin: auto auto 2 * $vertical_baseline auto 
   @extend %on_chalkboard
-
       
   %m-stance-label
     vertical-align: middle
-    //height: 40px
     +font-size(0)
     div
       width: $slider_label_width
@@ -2532,7 +2263,7 @@ $filter_width: 371px
   .noUiSlider
     margin: 10px
     background: none
-    background-color: #666
+    background-color: $mid_bg_color
     background-color: rgba(black, .15)
 
     +box-shadow(none)
@@ -2579,7 +2310,6 @@ $static_position_width: $body_width+$grid_major
   .m-point-user
     white-space: nowrap
     font-style: italic
-    //color: #ccc
 
   .m-static-position-reasons-none
     font-style: italic
@@ -2589,27 +2319,32 @@ $static_position_width: $body_width+$grid_major
 /// Footer ///////
 .m-footer-shortdesc, .m-footer-history, .m-footer-contact
   margin-bottom: $vertical_baseline/2
+  +font-size(-1)
+
   a
     text-decoration: underline
 
 .m-footer-shortdesc
   font-weight: bold
+
 .m-footer-shortdesc-logo
   text-transform: uppercase
-  +font-size(-1)
+
 .m-footer-history
 
 .m-footer-contact
 
 .mc-subscribe
-  +sassy-button("simple", 5px, inherit, darken($product_background_color, 3%), darken($product_background_color, 5%))
+  +sassy-button("simple", 5px, inherit, darken($header_footer_bg_color, 3%), darken($header_footer_bg_color, 5%))
   +font-size(-3)
-  color: #666
+  color: $header_footer_text_color
   text-shadow: none
   position: relative
   top: -2px
-  //+box-shadow(none)
-  //padding: $vertical_baseline/8 $grid_xs/2
+  &:hover
+    color: $header_footer_text_color
+
+
 #mce-EMAIL
   +font-size(0)
   width: 200px
@@ -2619,6 +2354,21 @@ $static_position_width: $body_width+$grid_major
 //////////////////
 //// Header //////
 
+.t-intro-wrap
+
+.t-intro
+  padding: $vertical_baseline 0 $vertical_baseline / 2 0
+  margin: 0 auto
+
+  .l-message
+    @extend %l-message-template  
+
+  .l-message-body
+    +bubble($standout_color, $dark_standout_color, left, $text_color: $standout_text_color)
+    .l-message-title
+      +font-size(2)
+    .l-message-details
+      //+font-size(-1)
 
 
 
@@ -2634,7 +2384,6 @@ $static_position_width: $body_width+$grid_major
   position: relative
 
 label.inline
-  //opacity: 1
   color: inherit
   &.focus
     color: #777
@@ -2656,8 +2405,8 @@ label.inline
 /**
 
 .tooltipster-default 
-  background-color: $position_button_bg
-  border: 2px solid darken($position_button_bg, 15%)
+  background-color: $callout_bg_color
+  border: 2px solid darken($callout_bg_color, 15%)
 
   .tooltipster-content
     +font-size(0)
@@ -2677,7 +2426,6 @@ label.inline
 .editable.editable-click, a.editable.editable-click
   border-bottom: none
   position: relative
-  //display: inline-block
   width: 100%
   &:hover
     cursor: pointer
@@ -2697,7 +2445,6 @@ label.inline
       background-color: rgba(white, .95)
       color: #444
       width: 80px
-      //text-decoration: underline
       border: 1px solid #777
       border-bottom: 0
       font-weight: normal
@@ -2748,7 +2495,6 @@ label.inline
 // verdict on point in margin
 .m-point-results, .m-point-position
   .verdict_summary
-    //display: none
 
 .m-point-peer, .m-point-results:hover, .m-point-position:hover
   
@@ -2761,7 +2507,6 @@ label.inline
 
   &.m-point-results, &.m-point-position
     .verdict_summary .assessment
-      //color: #CBBE31
       right: 0px
       bottom: 0px
 
@@ -2774,7 +2519,6 @@ label.inline
       z-index: 10
 
       .assessment_details
-        //display: none
         position: absolute
         +font-size(-3)
         width: 200px
@@ -2826,12 +2570,6 @@ label.inline
 
 #expanded .verdict_summary
   display: none
-
-
-
-
-// fact checking
-
 
 // user dashboard
 @import "dashboard/dashboard"

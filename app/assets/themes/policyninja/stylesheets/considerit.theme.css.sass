@@ -1,0 +1,52 @@
+//////////////////////////////////////////////////////////////
+// These must be included at the top of all theme stylesheets
+@import "grooves/base/variables"
+@import "grooves/base/colors"
+@import "grooves/base/fonts"
+////////////////////////////
+
+////////////////////////////////////////
+// Overide any base style variables here
+@import "grooves/simple/variables"
+@import "grooves/simple/colors"
+@import "grooves/simple/fonts"
+
+$main_font-family: "Armata", "Source Sans Pro", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif
+$base-font-size: 14px
+$browser-default-font-size: $base-font-size
+
+$base-line-height: 4px
+//$font-size-scale: 4.7px 6.7px 8px 9.3px 10.7px 12px 14.7px 15.3px 18px 22px 28px
+
+@font-face
+  font-family: 'Armata'
+  font-style: normal
+  font-weight: 400
+  src: local('Armata'), local('Armata-Regular'), url(https://themes.googleusercontent.com/static/fonts/armata/v3/jtA73b1gNr8_YTaAbvb4uuvvDin1pK8aKteLpeZ5c0A.woff) format('woff')
+
+
+// required for all themes
+@import "considerit" 
+/////////
+
+
+#l-heading
+  position: absolute
+  margin-left: -$content_width/2
+  left: 50%
+  width: $content_width
+
+.t-intro-wrap
+  text-align: center
+  background: asset-data-url('policyninja/images/page-bck-top.jpg') no-repeat
+
+  .t-intro
+    padding-top: 4 * $vertical_baseline
+  .t-logo
+    width: $body_width
+
+.l-message-title
+  font-weight: bold
+  +font-size(0)
+  margin: $vertical_baseline 0
+

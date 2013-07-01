@@ -6,7 +6,7 @@ $dialog_width: $grid_major * 6 + $grid_minor * 6
   height: 23px
 
 .l-dialog-detachable
-  +font-size(0)
+  +font-size(1)
 
   position: fixed
   top: 2 * $vertical_baseline
@@ -27,7 +27,7 @@ $dialog_width: $grid_major * 6 + $grid_minor * 6
 
   .l-dialog-title 
     +box-shadow(inset 1px 6px 5px -5px white)
-    +font-size(1)
+    +font-size(2)
     padding: $vertical_baseline / 2 $grid_xs
     background-color: $comp_color
     color: #eaeaea
@@ -36,7 +36,7 @@ $dialog_width: $grid_major * 6 + $grid_minor * 6
 
   .l-dialog-title-sub
     color: #bbb
-    +font-size(-4)
+    +font-size(-3)
     display: inline-block
     font-weight: normal
     span
@@ -46,7 +46,7 @@ $dialog_width: $grid_major * 6 + $grid_minor * 6
     position: absolute
     right: $grid_xs
     //float: right
-    +font-size(-4)
+    +font-size(-3)
 
 
   .l-dialog-body
@@ -68,11 +68,11 @@ $dialog_width: $grid_major * 6 + $grid_minor * 6
       font-weight: bold
 
     .sublabel
-      +font-size(-2)
+      +font-size(-1)
 
       .suboption
         padding: $vertical_baseline/2 0
-        +font-size(-1)
+        +font-size(0)
         .sublabel
           padding-left: $grid_xs
 

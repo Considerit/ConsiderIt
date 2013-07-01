@@ -16,7 +16,6 @@ $base-font-size: 14px
 $browser-default-font-size: $base-font-size
 
 $base-line-height: 4px
-//$font-size-scale: 4.7px 6.7px 8px 9.3px 10.7px 12px 14.7px 15.3px 18px 22px 28px
 
 @font-face
   font-family: 'Armata'
@@ -26,6 +25,7 @@ $base-line-height: 4px
 
 
 // required for all themes
+@import "grooves/base/color_processor"
 @import "considerit" 
 /////////
 
@@ -42,8 +42,6 @@ $base-line-height: 4px
 
   .t-intro
     padding-top: 4 * $vertical_baseline
-  .t-logo
-    width: $body_width
 
 .l-message-title
   font-weight: bold

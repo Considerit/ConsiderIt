@@ -31,7 +31,7 @@ class ConsiderIt.SignInView extends Backbone.View
     'ajax:complete form' : 'sign_in'
     'click [data-target="close_dialog"]' : 'cancel'    
     'click a.forget_password_prompt' : 'handle_forgetten_password'
-    'click .m-user-accounts-login-option a.email' : 'login_option_choosen'
+    'click .m-user-accounts-login-option .email' : 'login_option_choosen'
 
   login_option_choosen : (ev) ->
     choice = $(ev.currentTarget).data('provider')

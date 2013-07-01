@@ -132,7 +132,7 @@
         - providers.each do |(provider, path)|
           (( var provider_class = "#{provider}" != auth_method ? 'hide' : ''; ))
           %li{ :class => "m-user-accounts-login-option {{ provider_class }}"} 
-            %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
+            %button{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
               #{provider.capitalize}
       (( } ))
 
@@ -159,12 +159,12 @@
 
       %ul.m-user-accounts-login-options
         %li.m-user-accounts-login-option
-          %a.email.zocial{:'data-provider' => 'email'}
+          %button.email.zocial{:'data-provider' => 'email'}
             Old-fashioned email
 
         - providers.each do |(provider, path)|
           %li.m-user-accounts-login-option
-            %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
+            %button{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
               #{provider.capitalize}
 
 
@@ -221,14 +221,14 @@
 
       %ul.m-user-accounts-login-options
         %li.m-user-accounts-login-option
-          %a.email.zocial{:'data-provider' => 'email'}
+          %button.email.zocial{:'data-provider' => 'email'}
             Old-fashioned email
           .m-user-accounts-fineprint.m-fineprint-email
             Email confirmation step required
 
         - providers.each do |(provider, path)|
           %li.m-user-accounts-login-option
-            %a{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
+            %button{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
               #{provider.capitalize}
             - if provider == 'facebook'
               .m-user-accounts-fineprint.m-fineprint-social
@@ -290,9 +290,9 @@
 
                 .import_from_third_parties
 
-                  %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
+                  %button{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
 
-                  %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
+                  %button{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
 
                 = f.hidden_field :avatar_url, :class => 'avatar_url'
 
@@ -360,9 +360,9 @@
 
                 .import_from_third_parties
 
-                  %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
+                  %button{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
 
-                  %a{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
+                  %button{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
 
                 = f.hidden_field :avatar_url, :class => 'avatar_url'
 

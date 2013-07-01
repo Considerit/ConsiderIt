@@ -155,7 +155,8 @@ private
   end
 
   def theme_resolver
-    if !session.has_key?('user_theme')
+
+    if !session.has_key?('user_theme') || current_tenant.theme != session["user_theme"]
       session["user_theme"] = current_tenant.theme
     end
     

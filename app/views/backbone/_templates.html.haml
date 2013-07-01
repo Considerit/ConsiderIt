@@ -82,7 +82,7 @@
     .m-newpoint
 
       %a.m-newpoint-new
-        Write a new {{is_pro ? "Pro" : "Con"}}
+        Write a new {{is_pro ? ConsiderIt.current_tenant.get('pro_label') : ConsiderIt.current_tenant.get('con_label') }}
 
       .m-newpoint-form
         = hidden_field_tag :is_pro, "{{is_pro}}", :class => 'm-newpoint-is_pro'
@@ -305,7 +305,7 @@
   %script{ :type => "text/template", :id => "tpl_unexpanded_proposal" }
     .l-content-wrap
 
-      .m-proposal-message.m-proposal-introduction
+      .l-message.m-proposal-message.m-proposal-introduction
         .l-message-speaker.left.l-message-initiator
           %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
             %img{:src => "{{ avatar }}"}
@@ -385,7 +385,7 @@
   %script{ :type => "text/template", :id => "tpl_initiator_response" }
 
     (( if(published){ ))
-    .m-proposal-message.m-proposal-leader-response
+    .l-message.m-proposal-message.m-proposal-leader-response
       .l-message-speaker.left.l-message-initiator.small
         %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
           %img{:src => "{{ avatar }}"}
@@ -464,16 +464,10 @@
       //= render :partial => "shared/bubble", :locals => {:left => true}
 
       %h2.m-position-heading.m-position-heading-points
-        What are the most important Pros and Cons to you?
+        {{ ConsiderIt.current_tenant.get('considerations_prompt') }}
 
       .m-reasons
         .m-reasons-peer-points.m-reasons-peer-points-pros
-
-          / .m-reasons-peer-pros-heading
-          /   %h3
-          /     Pros by other users
-          /   .sublead
-          /     add good ones to your list
 
           .m-reasons-peer-pros
             %ul.m-point-list
@@ -481,32 +475,12 @@
         .m-reasons-pro-con-list
           .m-pro-con-list-propoints
            
-            / .m-pro-con-list-header
-            /   Pros
-            //  - if theme_image_path('pro_header.png') && File.exists?(theme_image_path('pro_header.png'))
-            //    = theme_image_tag('pro_header.png')
-            //  - else
-            //    = image_tag('chalk/pros.png') 
-
             %ul.m-point-list
 
           .m-pro-con-list-conpoints
-
-            / .m-pro-con-list-header
-            /   Cons
-            //   - if theme_image_path('con_header.png') && File.exists?(theme_image_path('con_header.png'))
-            //     = theme_image_tag('con_header.png')
-            //   - else
-            //     = image_tag('chalk/cons.png') 
-
             %ul.m-point-list
 
         .m-reasons-peer-points.m-reasons-peer-points-cons
-          / .m-reasons-peer-cons-heading
-          /   %h3
-          /     cons by other users
-          /   .sublead
-          /     add good ones to your list
 
           .m-reasons-peer-cons
             %ul.m-point-list
@@ -514,18 +488,19 @@
 
       .m-stance
         %h2.m-position-heading.m-position-heading-stance
-          What is your overall opinion given these Pros and Cons? 
+          {{ ConsiderIt.current_tenant.get('slider_prompt') }}
         %table
           %tr
             %td.m-stance-label-support
               %div
-                Support
+                {{ ConsiderIt.current_tenant.get('slider_left') }}
+
 
             %td.m-stance-slider-container
               
             %td.m-stance-label-oppose
               %div
-                Oppose
+                {{ ConsiderIt.current_tenant.get('slider_right') }}
           %tr
             %td.m-stance-label-neutral{ :colspan => 3 }
               Neutral / Undecided
@@ -556,11 +531,11 @@
         .m-pro-con-list-propoints             
           .m-top-point.m-top-pro
             (( if(!top_pro) { ))
-            We haven't thought of any pro arguments yet.
+            We haven't thought of any {{ ConsiderIt.current_tenant.get('pro_label') }} arguments yet.
             (( } else { ))
 
             %span.m-top-point-header
-              Our Top Pro is 
+              Our Top {{ ConsiderIt.current_tenant.get('pro_label') }} is 
             %span.m-top-point-content
               &ldquo;{{ top_pro.nutshell }}&rdquo; 
             %span.m-top-point-user
@@ -571,11 +546,11 @@
 
           .m-top-point.m-top-con
             (( if(!top_con) { ))
-            We haven't thought of any con arguments yet.
+            We haven't thought of any {{ ConsiderIt.current_tenant.get('con_label') }} arguments yet.
             (( } else { ))
 
             %span.m-top-point-header
-              Our Top Con is
+              Our Top {{ ConsiderIt.current_tenant.get('con_label') }} is
             %span.m-top-point-content
               &ldquo;{{ top_con.nutshell }}&rdquo;  
             %span.m-top-point-user
@@ -676,16 +651,7 @@
 
           %ul.m-point-list
 
-        .m-results-point-filters
-          %span.label
-            order by 
 
-          %a.point_filter.selected{ :'data-filter' => 'score'}
-            Popularity
-          %a.point_filter{ :'data-filter' => 'appeal'}
-            Most Unifying
-          %a.point_filter{ :'data-filter' => 'divisiveness'}
-            Most Divisive
 
     .l-message-speaker.right
 

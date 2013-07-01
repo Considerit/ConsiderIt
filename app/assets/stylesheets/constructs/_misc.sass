@@ -25,21 +25,27 @@
   list-style: none outside none
 
 // Browsers render the inset colors so differently...
-=inset-border($base_color)
-  border-top-color: darken($base_color, 10%)
-  border-left-color: darken($base_color, 10%)
-  border-bottom-color: lighten($base_color, 10%)
-  border-right-color: lighten($base_color, 10%)
+=inset-border($base_text_color)
+  border-top-color: darken($base_text_color, 10%)
+  border-left-color: darken($base_text_color, 10%)
+  border-bottom-color: lighten($base_text_color, 10%)
+  border-right-color: lighten($base_text_color, 10%)
 
 
 =outset-text($transparency:.1)
   +single-text-shadow($hoff: 1px, $voff: 1px, $color: rgba(black, $transparency), $blur: 0)
 
 =superbutton
-  +sassy-button("glass", 5px, inherit, darken($position_button_bg, 8%), darken($position_button_bg, 16%))
-
-=button($text_color: hsl(0,0,80%), $bground_color: hsl(0,0,45%), $darken_amt: 10%)
+  +sassy-button("glass", 5px, inherit, darken($callout_bg_color, 8%), darken($callout_bg_color, 16%))
+  color: $callout_text_color
+  &:hover
+    color: lighten($callout_text_color, 20%)
+    
+=button($bground_color: hsl(0,0,45%), $darken_amt: 10%)
   +sassy-button("glass", 5px, inherit, $bground_color, darken($bground_color, $darken_amt))
+  // color: invert($bground_color)
+  // &:hover
+  //   color: darken( invert($bground_color), 20%)
 
 =pressable_button
   margin: 2px 5px

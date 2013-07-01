@@ -39,7 +39,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
       }))
 
-    results_el = $('<div class="m-proposal-message">')
+    results_el = $('<div class="l-message m-proposal-message">')
     @results_view = new ConsiderIt.ResultsView
       el : results_el
       model : @model

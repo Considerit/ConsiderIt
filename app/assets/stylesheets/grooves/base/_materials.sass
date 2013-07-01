@@ -1,53 +1,59 @@
 @import "constructs/misc"
 
-%on_background
-  color: lighten($position_color, 10%)
+%on_header_footer
+  color: $header_footer_text_color
+  //background-color: $header_footer_bg_color
   a
-    color: lighten($position_color, 10%)
+    color: darken($header_footer_text_color, 10%)
     &:hover
-      color: black
+      color: darken($header_footer_text_color, 25%)
+
+%on_background
+  color: $base_text_color
+  a
+    color: darken($base_text_color, 10%)
+    &:hover
+      color: darken($base_text_color, 25%)
+
 
 %on_chalkboard
-  color: #ddd
-  //+main_font
+  color: $decision_board_text_color
+  //background-color: $decision_board_color
+  a, button
+    color: lighten($decision_board_text_color, 10%)
+    &:hover
+      color: lighten($decision_board_text_color, 20%)
   
   h1, h2, h3
-    color: #ddd
-
-  a, button
-    color: #ddd  
-    
-    &:hover
-      color: #fff
+    color: $decision_board_text_color
 
   textarea, input[type="text"], input[type="email"], input[type="password"]
     background-color: transparent
     border: 1px solid
-    +inset-border(#414141)
+    +inset-border($decision_board_color)
     display: inline-block
-    color: #ddd
+    color: $decision_board_text_color
 
     &.error 
       border-color: #883333
       &:focus
-        +inset-border(#414141)
+        +inset-border($decision_board_color)
 
 %on_paper
   background: image-url('paper.jpg') repeat left top #e1e1e1
-  color: $base_color
-  //+main_font
+  color: $base_text_color
   
   h1, h2, h3
-    color: $base_color
+    color: $base_text_color
 
   a, button
-    color: $base_color
+    color: $base_text_color
     
     &:hover
-      color: black
+      color: darken($base_text_color, 25%)
 
   textarea, input[type="text"], input[type="email"], input[type="password"]
-    color: $base_color
+    color: $base_text_color
 
 // %chalkboard
 //   background: image-url("chalk/chalkboard.jpg") repeat left top #414141

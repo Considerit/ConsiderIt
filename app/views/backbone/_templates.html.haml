@@ -82,7 +82,7 @@
     .m-newpoint
 
       %a.m-newpoint-new
-        Write a new {{is_pro ? ConsiderIt.current_tenant.get('pro_label') : ConsiderIt.current_tenant.get('con_label') }}
+        Write a new {{is_pro ? ConsiderIt.current_tenant.get_pro_label({capitalize: true}) : ConsiderIt.current_tenant.get_con_label({capitalize: true}) }}
 
       .m-newpoint-form
         = hidden_field_tag :is_pro, "{{is_pro}}", :class => 'm-newpoint-is_pro'
@@ -141,7 +141,7 @@
 
   %script{ :type => "text/template", :id => "tpl_pointlistbrowse" }
     %a.m-pointlist-browse-toggle
-      View all {{cnt}} {{ pros ? 'Pros' : 'Cons' }}
+      View all {{cnt}} {{ pros ? ConsiderIt.current_tenant.get_pro_label({capitalize: true, plural: true}) : ConsiderIt.current_tenant.get_con_label({capitalize: true, plural: true}) }}
 
   %script{ :type => "text/template", :id => "tpl_pointlistpagination" }
     %a.m-pointlist-backward
@@ -531,7 +531,7 @@
         .m-pro-con-list-propoints             
           .m-top-point.m-top-pro
             (( if(!top_pro) { ))
-            We haven't thought of any {{ ConsiderIt.current_tenant.get('pro_label') }} arguments yet.
+            We haven't thought of any {{ ConsiderIt.current_tenant.get_pro_label() }} arguments yet.
             (( } else { ))
 
             %span.m-top-point-header
@@ -546,7 +546,7 @@
 
           .m-top-point.m-top-con
             (( if(!top_con) { ))
-            We haven't thought of any {{ ConsiderIt.current_tenant.get('con_label') }} arguments yet.
+            We haven't thought of any {{ ConsiderIt.current_tenant.get_pro_label() }} arguments yet.
             (( } else { ))
 
             %span.m-top-point-header

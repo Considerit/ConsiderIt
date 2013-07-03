@@ -17,8 +17,8 @@ class ApplicationController < ActionController::Base
     if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
       user = User.find_by_email(params[:u])
 
-      pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_tenant.identifier}") if !user.nil?
-      pp ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") if user.nil?
+      # pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_tenant.identifier}") if !user.nil?
+      # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") if user.nil?
 
 
       permission =   (user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") == params[:t]) \
@@ -107,7 +107,7 @@ class ApplicationController < ActionController::Base
   def self.find_current_tenant(rq)
     tenant = Account.find_by_identifier(rq.session[:user_account_identifier]) 
     if tenant.nil?
-      tenant = Account.find(2026)
+      tenant = Account.find(1)
     end
     tenant
   end
@@ -147,7 +147,7 @@ private
 
   def get_current_tenant(rq = nil)
     rq ||= request
-    current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(2026) : Account.find_by_identifier(rq.subdomain)
+    current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(1) : Account.find_by_identifier(rq.subdomain)
 
     set_current_tenant(current_account)
     session["user_account_identifier"] = current_tenant.identifier

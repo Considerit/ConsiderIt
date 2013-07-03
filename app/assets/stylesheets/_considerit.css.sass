@@ -290,7 +290,8 @@ blockquote
 /* CONTAINERS */
 
 html  
-  background-color: $header_footer_bg_color
+  background: $bg_declaration
+
 #l-wrap
   position: relative
 
@@ -301,7 +302,7 @@ html
   position: relative
 
 #l-heading
-  margin: auto
+  margin: 0 auto $vertical_baseline auto
   border-bottom: 1px solid white
 
 .l-heading-wrap
@@ -315,7 +316,8 @@ html
 #l-content
   //padding: $vertical_baseline 0
   background: $bg_declaration
-  +single-box-shadow
+  +single-box-shadow($voff: 2px, $color: rgba(black,.15))
+  z-index: 2
 
 #l-content-main, .l-content-wrap
   position: relative  
@@ -330,6 +332,7 @@ html
 
 #l-footer
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
+  background-color: $header_footer_bg_color
 
 .l-footer-wrap
   width: $body_width
@@ -888,13 +891,17 @@ $arrow_height: 10px
 
 
 %point_operation_button
-  +sassy-button("simple", 5px, inherit, lighten($callout_bg_color, 8%), $callout_bg_color)
+  +sassy-button("simple", 5px, inherit, $callout_bg_color)
   +font-size(-3)
   padding: $vertical_baseline/4 $grid_xs / 2
   text-align: center
   display: inline-block
   vertical-align: top
   margin: 0
+  color: $callout_text_color
+  &:hover
+    color: $callout_text_color
+
 
 
 %m-white-thought-bubble
@@ -988,6 +995,8 @@ $arrow_height: 10px
       position: relative
       z-index: 2
       border-radius: 0
+      +transition(border-radius 1s ease)
+
 
     .list_connector
       +transition(left .5s ease, right .5s ease)
@@ -1016,26 +1025,26 @@ $arrow_height: 10px
             +triangle-right($arrow_height)
 
         &:hover
-          border-bottom-right-radius: 0px
+          border-bottom-right-radius: 1px
           border-right-color: transparent
 
           .list_connector
             right: -$arrow_height - 2
-            border-left-color: $callout_bg_color
+            border-left-color: darken($callout_bg_color, 8%)
 
             &:after
-              border-left-color: $callout_bg_color
+              border-left-color: darken($callout_bg_color, 8%)
 
     &.m-point-expanded
       .m-point-include-wrap .m-point-include 
-        border-bottom-right-radius: 0px
+        border-bottom-right-radius: 1px
         border-right-color: transparent    
         .list_connector
           right: -$arrow_height - 2
-          border-left-color: $callout_bg_color
+          border-left-color: darken($callout_bg_color, 8%)
 
           &:after
-            border-left-color: $callout_bg_color
+            border-left-color: darken($callout_bg_color, 8%)
 
   &.con
     .m-point-include-wrap
@@ -1054,26 +1063,26 @@ $arrow_height: 10px
 
 
         &:hover
-          border-bottom-left-radius: 0px
+          border-bottom-left-radius: 1px
           border-left-color: transparent 
 
           .list_connector
             left: -$arrow_height - 2
-            border-right-color: $callout_bg_color
+            border-right-color: darken($callout_bg_color, 8%)
 
             &:after
-              border-right-color: $callout_bg_color
+              border-right-color: darken($callout_bg_color, 8%)
 
     &.m-point-expanded
       .m-point-include-wrap .m-point-include 
-        border-bottom-left-radius: 0px
+        border-bottom-left-radius: 1px
         border-left-color: transparent    
         .list_connector
           left: -$arrow_height - 2
-          border-right-color: $callout_bg_color
+          border-right-color: darken($callout_bg_color, 8%)
 
           &:after
-            border-right-color: $callout_bg_color
+            border-right-color: darken($callout_bg_color, 8%)
 
   ////////////////////
 
@@ -1623,7 +1632,7 @@ $m-point-expanded-width: $body_width + 150
 
 #m-proposals-container
   position: relative
-  padding: 2 * $vertical_baseline 0
+  padding: 1 * $vertical_baseline 0
 
   .m-proposal-list
     @extend %nude_list
@@ -1672,15 +1681,15 @@ $m-point-expanded-width: $body_width + 150
   position: relative
   display: inline-block
 
-.m-proposals-list-pagination-jump-left, .m-proposals-list-pagination-jump-right
-  position: absolute
-  top: 0
+// .m-proposals-list-pagination-jump-left, .m-proposals-list-pagination-jump-right
+//   position: absolute
+//   top: 0
 
-.m-proposals-list-pagination-jump-left
-  left: -76px
+// .m-proposals-list-pagination-jump-left
+//   left: -76px
 
-.m-proposals-list-pagination-jump-right
-  right: -73px
+// .m-proposals-list-pagination-jump-right
+//   right: -73px
 
 .m-proposals-list-pagination-current
   margin-top: $vertical_baseline/4
@@ -1798,7 +1807,7 @@ $m-point-expanded-width: $body_width + 150
 
 
 .m-proposal[data-state="0"]
-  margin-bottom: $vertical_baseline * 2
+  margin-bottom: $vertical_baseline * 1
   .m-position-your-action-body.join
     top: -9px
     //position: absolute

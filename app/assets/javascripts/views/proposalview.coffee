@@ -259,7 +259,7 @@ class ConsiderIt.ProposalView extends Backbone.View
   # ADMIN methods
   render_admin_strip : ->
     @$el.find('.m-proposal-admin_strip').remove()
-    admin_strip_el = $('<div class="m-proposal-admin_strip m-proposal-strip">')
+    admin_strip_el = $('<div data-domain="homepage" class="m-proposal-admin_strip m-proposal-strip">')
     template = _.template($('#tpl_proposal_admin_strip').html())
     admin_strip_el.html( template(@model.attributes))
     @$main_content_el.append admin_strip_el 

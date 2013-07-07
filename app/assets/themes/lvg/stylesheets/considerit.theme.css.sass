@@ -17,25 +17,6 @@
 /////////
 
 
-// #l-heading
-//   position: absolute
-//   margin-left: -$content_width/2
-//   left: 50%
-//   width: $content_width
-
-// .t-intro-wrap
-//   text-align: center
-//   //background: asset-data-url('policyninja/images/page-bck-top.jpg') no-repeat
-
-//   .t-intro
-//     padding-top: 4 * $vertical_baseline
-
-// .l-message-title
-//   font-weight: bold
-//   +font-size(0)
-//   margin: $vertical_baseline 0
-
-
 #t-bg-content
   +single-box-shadow
   border-radius: 2px
@@ -43,6 +24,17 @@
 #t-bg-content
   margin-top: 2 * $vertical_baseline
 
+#t-bg-top
+  &:before
+    content: ""
+    height: 7 * $vertical_baseline
+    +single-box-shadow
+    position: absolute
+    width: 100%
+    top: 13 * $vertical_baseline
+    +background(linear-gradient(top, #888, #777))
+    border-top: 1px solid #919191
+    border-bottom: 1px solid #555
 
 .t-intro-wrap
   #t-intro-people
@@ -63,21 +55,18 @@
   .t-logo
     position: absolute
     left: 50%
-    top: -4 * $vertical_baseline
+    top: -3.5 * $vertical_baseline
     margin-left: -145px
     z-index: 2
 
   .l-message-title
-    +font-size(8)
+    +font-size(9)
     @extend %bolded
     text-align: center
     margin-top: $vertical_baseline / 2
+    color: #222
+    +single-text-shadow($voff: 1px, $color: rgba(black,.25))
 
   .t-intro-get-started
     text-align: center
     +font-size(2)
-
-#l-footer
-  background-color: transparent
-#l-content
-  +box-shadow(none)

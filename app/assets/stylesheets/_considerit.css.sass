@@ -313,7 +313,6 @@ html
   height: 2 * $vertical_baseline
 
 #l-content
-  +single-box-shadow($voff: 2px, $color: rgba(black,.15))
   z-index: 2
 
 #l-content-main, .l-content-wrap
@@ -328,7 +327,6 @@ html
 
 #l-footer
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
-  background-color: $header_footer_bg_color
 
 .l-footer-wrap
   width: $body_width
@@ -407,7 +405,7 @@ html
     @extend %bolded
     @extend %on_header_footer
     opacity: .8
-    z-index: 1
+    z-index: 10
 
     .t-logo-tagline
       display: inline-block

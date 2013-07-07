@@ -290,7 +290,6 @@ blockquote
 /* CONTAINERS */
 
 html  
-  background: $bg_declaration
 
 #l-wrap
   position: relative
@@ -303,7 +302,7 @@ html
 
 #l-heading
   margin: 0 auto $vertical_baseline auto
-  border-bottom: 1px solid white
+  //border-bottom: 1px solid white
 
 .l-heading-wrap
   width: $content_width
@@ -314,8 +313,6 @@ html
   height: 2 * $vertical_baseline
 
 #l-content
-  //padding: $vertical_baseline 0
-  background: $bg_declaration
   +single-box-shadow($voff: 2px, $color: rgba(black,.15))
   z-index: 2
 
@@ -327,8 +324,7 @@ html
   width: $content_width
 
 #l-content-main
-  background: $main_content_bg_declaration
-  width: $content_width + 118 * 2
+  width: $content_width
 
 #l-footer
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
@@ -401,7 +397,7 @@ html
 #l-heading
   .t-logo
     position: relative
-    padding: $vertical_baseline/2 $grid_xs/2
+    margin: $vertical_baseline/2 $grid_xs/2
     float: left
     vertical-align: baseline
 

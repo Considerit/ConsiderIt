@@ -7,44 +7,77 @@
 
 ////////////////////////////////////////
 // Overide any base style variables here
-@import "grooves/simple/variables"
-@import "grooves/simple/colors"
-@import "grooves/simple/fonts"
-
-$main_font-family: "Armata", "Source Sans Pro", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif
-$base-font-size: 14px
-$browser-default-font-size: $base-font-size
-
-$base-line-height: 4px
-
-@font-face
-  font-family: 'Armata'
-  font-style: normal
-  font-weight: 400
-  src: local('Armata'), local('Armata-Regular'), url(https://themes.googleusercontent.com/static/fonts/armata/v3/jtA73b1gNr8_YTaAbvb4uuvvDin1pK8aKteLpeZ5c0A.woff) format('woff')
-
+@import "variables"
+@import "colors"
+@import "fonts"
 
 // required for all themes
-@import "grooves/base/color_processor"
+@import "grooves/base/processor"
 @import "considerit" 
 /////////
 
 
-#l-heading
-  position: absolute
-  margin-left: -$content_width/2
-  left: 50%
-  width: $content_width
+// #l-heading
+//   position: absolute
+//   margin-left: -$content_width/2
+//   left: 50%
+//   width: $content_width
+
+// .t-intro-wrap
+//   text-align: center
+//   //background: asset-data-url('policyninja/images/page-bck-top.jpg') no-repeat
+
+//   .t-intro
+//     padding-top: 4 * $vertical_baseline
+
+// .l-message-title
+//   font-weight: bold
+//   +font-size(0)
+//   margin: $vertical_baseline 0
+
+
+#t-bg-content
+  +single-box-shadow
+  border-radius: 2px
+
+#t-bg-content
+  margin-top: 2 * $vertical_baseline
+
 
 .t-intro-wrap
-  text-align: center
-  background: asset-data-url('policyninja/images/page-bck-top.jpg') no-repeat
+  #t-intro-people
+    text-align: center
+    padding-top: $vertical_baseline
+    .row
+      font-size: 0
+    .avatar
+      width: 25px
+      height: 25px
+      +grayscale
+      opacity: .5
 
-  .t-intro
-    padding-top: 4 * $vertical_baseline
+      &.hovered
+        +grayscale_off
+        opacity: 1
 
-.l-message-title
-  font-weight: bold
-  +font-size(0)
-  margin: $vertical_baseline 0
+  .t-logo
+    position: absolute
+    left: 50%
+    top: -4 * $vertical_baseline
+    margin-left: -145px
+    z-index: 2
 
+  .l-message-title
+    +font-size(8)
+    @extend %bolded
+    text-align: center
+    margin-top: $vertical_baseline / 2
+
+  .t-intro-get-started
+    text-align: center
+    +font-size(2)
+
+#l-footer
+  background-color: transparent
+#l-content
+  +box-shadow(none)

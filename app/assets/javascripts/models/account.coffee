@@ -16,13 +16,13 @@ class ConsiderIt.Account extends Backbone.Model
   url : () ->
     Routes.account_path()
 
-  get_pro_label : ({capitalize, plural}) ->
+  get_pro_label : ({capitalize, plural} = {}) ->
     capitalize ?= false
     plural ?= false
 
     @get_label(true, capitalize, plural)
 
-  get_con_label : ({capitalize, plural}) ->
+  get_con_label : ({capitalize, plural} = {}) ->
     capitalize ?= false
     plural ?= false
 

@@ -114,31 +114,31 @@
                 %feOffset{ :dy => ".2", :dx => "0" }  
                 %feComposite{ :in2 => "SourceGraphic", :operator => "over" }
 
-        #l-wrap
-          = render :partial => "shared/flash_messages"
-          = render :partial => "shared/header/container"
+          #l-wrap
+            =# render :partial => "shared/flash_messages"
+            = render :partial => "shared/header/container"
 
-          #l-content
-            #l-content-main
-              #t-bg-content
-                #t-bg-content-top
-                  #m-dashboard.l-content-wrap
+            #l-content
+              #l-content-main
+                #t-bg-content
+                  #t-bg-content-top
+                    #m-dashboard.l-content-wrap
 
-                  = render :partial => "shared/body"
-          = render :partial => "shared/footer/container"
+                    = render :partial => "shared/body"
+            = render :partial => "shared/footer/container"
 
-          = render :partial => 'backbone/data'        
+            = render :partial => 'backbone/data'        
 
-          - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
-            :javascript
-              var _gaq = _gaq || [];
-              _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-              _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
-              _gaq.push(['_trackPageview']);
+            - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+              :javascript
+                var _gaq = _gaq || [];
+                _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+                _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
+                _gaq.push(['_trackPageview']);
 
 
-          - if current_tenant.analytics_google && current_tenant.analytics_google != ''
-            :javascript
-              var _gaq_account = _gaq_account || [];
-              _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-              _gaq_account.push(['_trackPageview']);
+            - if current_tenant.analytics_google && current_tenant.analytics_google != ''
+              :javascript
+                var _gaq_account = _gaq_account || [];
+                _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+                _gaq_account.push(['_trackPageview']);

@@ -1,6 +1,6 @@
 class ConsiderIt.ResultsView extends Backbone.View
   PARTICIPANT_WIDTH : 150
-  PARTICIPANT_HEIGHT : 130
+  PARTICIPANT_HEIGHT : 110
 
   initialize : (options) ->
     num_participants = @model.participants().length
@@ -12,7 +12,6 @@ class ConsiderIt.ResultsView extends Backbone.View
 
   hide : ->
     @$el.slideUp()
-
     @state = -1
 
   show_summary : ->

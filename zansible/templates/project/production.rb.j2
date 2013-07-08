@@ -97,9 +97,11 @@ ConsiderIt::Application.configure do
   config.active_support.deprecation = :notify
 
   # Exception Notification
-  config.middleware.use ExceptionNotifier,
-    :email_prefix => "[ConsiderIt Error] ",
-    :sender_address => "\"Notifier\" <{{config.admin_email}}>",
-    :exception_recipients => ['{{ config.exception_notifier.email_recipients }}']
+  Whatever::Application.config.middleware.use ExceptionNotification::Rack,
+    :email => {
+      :email_prefix => "[ConsiderIt Error] ",
+      :sender_address => "\"Notifier\" <{{config.admin_email}}>",
+      :exception_recipients => ['{{ config.exception_notifier.email_recipients }}']
+    }
 
 end

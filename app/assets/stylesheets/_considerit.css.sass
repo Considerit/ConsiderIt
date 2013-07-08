@@ -19,11 +19,11 @@
 
 %bolded
   font-weight: bold
-  font-family: $main_font-family
+  //font-family: $main_font-family
 
 %italicized
   font-style: italic
-  font-family: $main_font-family
+  //font-family: $main_font-family
 
 +establish-baseline
  
@@ -202,26 +202,19 @@ blockquote
 
 .clear
   clear: both
-  
-
-.fl
-  float: left
-
-.fr
-  float: right
 
 .hide
   display: none
 
-#lightbox
-  display: none
-  background-color: rgba(black, .85)
-  position: fixed
-  top: 0
-  left: 0
-  width: 100%
-  height: 100%
-  z-index: 100
+// #lightbox
+//   display: none
+//   background-color: rgba(black, .85)
+//   position: fixed
+//   top: 0
+//   left: 0
+//   width: 100%
+//   height: 100%
+//   z-index: 100
 
 
 /* SHARED STYLES */
@@ -334,20 +327,22 @@ html
   margin: 0 auto
 
 
-%l-message-template
+.l-message
   position: relative
-
+  margin-top: $vertical_baseline / 4
+    
   > .l-message-speaker, > .l-message-recipient, > .l-message-body
     display: inline-block
     vertical-align: top
     position: relative
 
   > .l-message-speaker, > .l-message-recipient
-    //margin-top: 2px
+    top: 0
     z-index: 1
 
   > .l-message-speaker
     position: absolute
+    width: $margin_width
 
     &.l-message-initiator
       width: $initiator_width
@@ -369,6 +364,8 @@ html
     z-index: 2
     margin: auto
     display: block
+    width: $body_width
+    padding: $vertical_baseline / 2 $grid_xs
 
     .l-message-title
       +font-size(1)
@@ -525,8 +522,8 @@ html
     +font-size(-2)
     display: inline-block
     position: absolute
-    bottom: -2 * $vertical_baseline
-    left: 40px
+    bottom: -2.5 * $vertical_baseline
+    left: 5px
     width: 250px
     text-align: left
 
@@ -546,7 +543,7 @@ $membership_card_height: 278px
 
   input[type="submit"]
     margin-bottom: $vertical_baseline
-    +superbutton
+    @extend %superbutton
     +font-size(0)
 
 .m-user-accounts-complete-signin
@@ -746,18 +743,18 @@ $tooltip_width: 225px
 
   .l-tooltip-user-action
     +sassy-button("glass", 5px, inherit, lighten($callout_bg_color, 8%), darken($callout_bg_color, 8%) )
+    +font-size(-2)
     color: white
     text-align: center
     width: 100%
     min-width: $tooltip_width
-    +font-size(-2)
     display: inline-block
     border-radius: 0
     border-bottom: 0
 
     &:hover
-      +sassy-button("glass", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 20%) )
-      +font-size(-2)
+      //+sassy-button("glass", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 20%) )
+      //+font-size(-2)
       border-radius: 0
 
   // .l-tooltip-user-profile
@@ -1087,7 +1084,7 @@ $arrow_height: 10px
     width: $pro-con-list-column-width - 3 * $grid_xs
 
   .m-point-nutshell, .details_indicator, .m-point-user
-    +font-size(-2)
+    +font-size(-1)
 
 
   &.m-point-unexpanded
@@ -1191,9 +1188,9 @@ $arrow_height: 10px
     +font-size(1)
     width: 95%
     border: none
-    padding: 0
+    //padding: 0
     position: relative
-    text-align: left
+    //text-align: left
     @extend %bolded
     display: inline-block
 
@@ -1211,7 +1208,7 @@ $arrow_height: 10px
     display: none
     margin-left: $grid_xs
     input, textarea
-      +font-size(-3)
+      +font-size(-1)
   
     &:before
       left: -9px    
@@ -1251,7 +1248,7 @@ $arrow_height: 10px
 
 .m-pointlist-browse
   .m-pointlist-browse-toggle
-    +superbutton
+    @extend %superbutton
     +font-size(-2)
     width: $peer-point-width
     text-align: center
@@ -1613,7 +1610,7 @@ $m-point-expanded-width: $body_width + 150
   width: $content_width
 
   .m-new-proposal-submit
-    +superbutton
+    @extend %superbutton
     border-radius: 0
     display: inline-block
     border: 1px solid 
@@ -1724,6 +1721,13 @@ $m-point-expanded-width: $body_width + 150
     @extend %bolded
     +font-size(2)
 
+  .m-proposal-description
+    +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
+    cursor: pointer
+
+    p
+      margin-bottom: $vertical_baseline
+
   .m-proposal-description-details
     +font-size(-2)
     .hidden, .showing
@@ -1736,103 +1740,6 @@ $m-point-expanded-width: $body_width + 150
     .m-results-pro-con-list-who
       display: none
 
-
-
-%m-proposal-strip-item
-  display: inline-block
-  padding: $vertical_baseline / 2 0
-  text-transform: uppercase
-  +font-size(-1)
-  //+border-radius(0 0 5px 5px)
-  font-weight: bold
-
-.m-proposal-strip
-  margin: 0 $grid_xs
-  text-align: center
-
-// .m-proposal-connect
-//   margin-top: $vertical_baseline
-//   padding-top: 3px
-//   ul
-//     text-align: center
-//   li
-//     display: inline-block
-//     vertical-align: middle
-  
-//   .m-proposal-action-label
-//     +font-size(-4)
-//     @extend %m-proposal-strip-item
-//     width: 175px
-//     text-align: center
-//     opacity: .5
-
-//   .m-proposal-action-link
-//     cursor: pointer
-//     +single-transition
-//     +font-size(-3)
-
-//   .m-proposal-follow_conversation
-//     +pressable_button
-
-
-// Proposal admin strip
-.m-proposal-admin_strip
-  .l-dialog-prompt, .m-proposal-admin_label, .m-delete_proposal
-    display: inline-block
-    padding: 0 $grid_xs / 2
-
-  .l-dialog-prompt-label, .m-delete_proposal, .m-proposal-admin_label
-    @extend %m-proposal-strip-item
-    +font-size(-3)
-
-  .l-dialog-prompt-label span, .m-delete_proposal
-    text-decoration: underline
-
-  .l-dialog-prompt-label, .m-delete_proposal
-    &:hover
-      background-color: rgba(black, .05)
-
-  .m-delete_proposal
-    padding: $vertical_baseline/2 inherit
-
-  .m-proposal-admin_label
-    opacity: .5
-
-
-
-.m-proposal[data-state="0"]
-  margin-bottom: $vertical_baseline * 1
-  .m-position-your-action-body.join
-    top: -9px
-    //position: absolute
-
-.m-proposal[data-state="2"], .m-proposal[data-state="4"]
-  margin-bottom: $vertical_baseline * 2
-
-  .m-position-your-action-body.join
-    top: -$vertical_baseline
-    position: absolute
-
-  .l-group-container
-    min-height: 85px
-
-  .m-proposal-admin_strip
-    position: relative
-    top: 2 * $vertical_baseline
-
-.m-proposal[data-state="2"]
-  [data-action="results-implode-participants"]
-    display: none
-
-.m-proposal[data-state="4"]
-
-  .m-results-responders 
-    > .t-bubble
-      display: none
-  .m-results-responders
-    border-radius: 0
-
-.m-proposal
   .m-proposal-description-title-readmore
     +font-size(-3)
     white-space: nowrap
@@ -1841,13 +1748,63 @@ $m-point-expanded-width: $body_width + 150
     .m-proposal-description-title-readmore
       display: none
 
+
+// unexpanded proposal
+.m-proposal[data-state="0"]
+  .m-position-your-action-body.join
+    top: -9px
+
+
+// results view of proposal
+.m-proposal[data-state="2"], .m-proposal[data-state="4"]
+  margin-bottom: $vertical_baseline * 2
+
+  .m-position-your-action-body.join
+    top: -$vertical_baseline
+
+  .l-group-container
+    min-height: 85px
+
+  .m-proposal-admin_strip
+    position: relative
+    top: 2 * $vertical_baseline
+
+  [data-action="results-implode-participants"]
+    display: none
+
+// results view of proposal, exploded
+.m-proposal[data-state="4"]
+
+  .m-results-responders 
+    > .t-bubble
+      display: none
+  .m-results-responders
+    border-radius: 0
+
+  .l-group-container
+    // position: absolute
+    // z-index: 99
+
+    .avatar // for the explode transition
+      -ms-transition: -ms-transform .75s ease
+      -moz-transition: -moz-transform .75s ease
+      -webkit-transition: -webkit-transform .75s ease
+      transition: transform .75s ease
+
+  .m-histogram
+    visibility: visible
+    display: block
+
+
+// unexpanded inactive proposal
 .m-proposal[data-state="0"][data-status="proposal-inactive"]
   opacity: .75
   .m-position-your-action-body.join
     display: none
 
+// unpublished proposal
 .m-proposal[data-visibility="unpublished"]
-  .l-message-body.m-proposal-description
+  .m-proposal-description
     background-color: $standout_color
     border-color: $dark_standout_color
     color: $standout_text_color
@@ -1873,7 +1830,7 @@ $m-point-expanded-width: $body_width + 150
       margin-top: -7px
       border-radius: 0 0 5px 5px
 
-
+// proposals with no activity
 .m-proposal[data-activity="proposal-no-activity"]
 
   .m-proposal-message.m-position-your_action
@@ -1881,13 +1838,13 @@ $m-point-expanded-width: $body_width + 150
       top: -7px
 
 
-
+  // active, unexpanded proposals with no activity
   &[data-state="0"][data-status="proposal-active"]
     .m-proposal-admin_strip
       position: relative
       bottom: -1.5 * $vertical_baseline
 
-
+  // unpublished, unexpanded proposals without any activity
   &[data-state="0"][data-visibility="unpublished"]
     .m-proposal-admin_strip
       position: static
@@ -1896,72 +1853,84 @@ $m-point-expanded-width: $body_width + 150
 
 
 
-.m-proposal[data-state="4"]
-  .l-message-speaker .l-group-container
-    position: absolute
-    z-index: 99
 
-    .avatar // for the explode transition
-      -ms-transition: -ms-transform .75s ease
-      -moz-transition: -moz-transform .75s ease
-      -webkit-transition: -webkit-transform .75s ease
-      transition: transform .75s ease
 
-  [data-action="results-explode-participants"]
-    display: none
-  .m-histogram
-    visibility: visible
-    display: block
+
+// .m-proposal-connect
+//   margin-top: $vertical_baseline
+//   padding-top: 3px
+//   ul
+//     text-align: center
+//   li
+//     display: inline-block
+//     vertical-align: middle
+  
+//   .m-proposal-action-label
+//     +font-size(-4)
+//     @extend %m-proposal-strip-item
+//     width: 175px
+//     text-align: center
+//     opacity: .5
+
+//   .m-proposal-action-link
+//     cursor: pointer
+//     +single-transition
+//     +font-size(-3)
+
+//   .m-proposal-follow_conversation
+//     +pressable_button
+
+%m-proposal-strip-item
+  display: inline-block
+  padding: $vertical_baseline / 2 0
+  text-transform: uppercase
+  +font-size(-1)
+  //+border-radius(0 0 5px 5px)
+  font-weight: bold
+
+.m-proposal-strip
+  margin: 0 $grid_xs
+  text-align: center
+
+// Proposal admin strip
+.m-proposal-admin_strip
+  .l-dialog-prompt, .m-proposal-admin_label, .m-delete_proposal
+    display: inline-block
+    padding: 0 $grid_xs / 2
+
+  .l-dialog-prompt-label, .m-delete_proposal, .m-proposal-admin_label
+    @extend %m-proposal-strip-item
+    +font-size(-3)
+
+  .l-dialog-prompt-label span, .m-delete_proposal
+    text-decoration: underline
+
+  .l-dialog-prompt-label, .m-delete_proposal
+    &:hover
+      background-color: rgba(black, .05)
+
+  .m-delete_proposal
+    padding: $vertical_baseline/2 inherit
+
+  .m-proposal-admin_label
+    opacity: .5
 
 
 .l-message
-  @extend %l-message-template
-  margin-top: $vertical_baseline / 4
-
-  > .l-message-body
-    width: $body_width
-    padding: $vertical_baseline / 2 $grid_xs
-    
-  > .l-message-speaker, > .l-message-recipient
-    top: 0
-
-
-  > .l-message-speaker.right
-    width: $margin_width
-
-  > .l-group-container
-    height: 160px
-
-  &.m-proposal-introduction, &.m-position, &.m-aggregated-results, &.m-position-your_action
+  &.m-proposal-introduction, &.m-position, &.m-aggregated-results, &.m-position-your_action, &.m-results-summary
     > .l-message-recipient
       display: none
-
-
 
   &.m-results-summary
-    > .l-message-recipient
-      display: none
     > .l-message-speaker .l-group-container
       height: 120px
-
-  &.m-results-summary, &.m-aggregated-results  
-    > .l-message-speaker .l-group-container
-      width: 180px
-      right: -20px
-
-  .m-proposal-description.l-message-body
-    +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
-    cursor: pointer
-
-    p
-      margin-bottom: $vertical_baseline
 
 
 /* YOUR_ACTION */
 
 
 .m-position-your-action-body
-  +superbutton
+  @extend %superbutton
   +font-size(-2)
   text-align: center
   font-weight: bold
@@ -2015,7 +1984,7 @@ $m-point-expanded-width: $body_width + 150
     text-align: center
     +text-shadow(none)
     border-radius: 0 0 5px 5px
-    width: $margin_width + 16
+    width: $margin_width // + 16
     position: absolute
 
     &:hover
@@ -2363,8 +2332,6 @@ $static_position_width: $body_width+$grid_major
 .t-intro
   margin: 0 auto
 
-  .l-message
-    @extend %l-message-template  
 
   .l-message-body
     +bubble($standout_color, $dark_standout_color, left, $text_color: $standout_text_color)

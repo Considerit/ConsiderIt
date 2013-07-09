@@ -122,7 +122,6 @@ class ConsiderIt.ProposalView extends Backbone.View
         for field in ConsiderIt.ProposalView.editable_fields
           [selector, name, type] = field 
           @$el.find(selector).editable('enable')
-          console.log 'enable'
 
     if @state > 0
       if new_state == 1
@@ -167,7 +166,6 @@ class ConsiderIt.ProposalView extends Backbone.View
         for field in ConsiderIt.ProposalView.editable_fields
           [selector, name, type] = field 
           @$el.find(selector).editable('disable')
-          console.log 'disable'
 
 
     $('body').animate {scrollTop: @scroll_position}

@@ -11,7 +11,7 @@ class ConsiderIt.Account extends Backbone.Model
     @set( 'slider_prompt', 'What is your overall opinion given these Pros and Cons?') if !!!@get( 'slider_prompt')
     @set( 'statement_prompt', 'support') if !!!@get('statement_prompt')
     @set( 'pro_label', 'pro') if !!!@get('pro_label')
-    @set( 'con_label', 'pro') if !!!@get('con_label')
+    @set( 'con_label', 'con') if !!!@get('con_label')
 
   url : () ->
     Routes.account_path()

@@ -1744,6 +1744,10 @@ $m-point-expanded-width: $body_width + 150
     +font-size(-3)
     white-space: nowrap
 
+  &[data-state="0"][data-visibility="published"]
+    .m-proposal-description-title
+      display: inline  
+
   &[data-state="1"], &[data-state="2"], &[data-state="4"]
     .m-proposal-description-title-readmore
       display: none
@@ -1804,10 +1808,12 @@ $m-point-expanded-width: $body_width + 150
 
 // unpublished proposal
 .m-proposal[data-visibility="unpublished"]
+
   .m-proposal-description
     background-color: $standout_color
     border-color: $dark_standout_color
     color: $standout_text_color
+    border-radius: 0 5px 0 0
 
     > .t-bubble 
       .t-bubble-border
@@ -1815,9 +1821,11 @@ $m-point-expanded-width: $body_width + 150
       .t-bubble-inner
         fill: $standout_color
 
+    .m-proposal-description-title-readmore
+      display: none
+
   .m-proposal-strip_publish
     position: relative
-    z-index: 2
     text-align: center
     .m-proposal-publish
       width: $body_width
@@ -2394,34 +2402,37 @@ label.inline
 /** 
 
 .editable.editable-click, a.editable.editable-click
-  border-bottom: none
-  position: relative
-  width: 100%
   &:hover
     cursor: pointer
-    background-color: rgba(white, .85)
-    color: #333
 
-    &:after
-      position: absolute
-      text-align: center
-      left: 50%
-      margin-left: -40px
-      top: -17px
-      font-size: 10px
-      line-height: 1.2
-      padding-top: 3px
-      content: 'click to edit'
-      background-color: rgba(white, .95)
-      color: #444
-      width: 80px
-      border: 1px solid #777
-      border-bottom: 0
-      font-weight: normal
-      font-style: normal
-      text-transform: none
-      height: 13px
-      border-radius: 5px 5px 0 0
+  &:not(.editable-disabled)
+    border-bottom: none
+    position: relative
+    width: 100%
+    &:hover
+      background-color: rgba(white, .85)
+      color: #333
+
+      &:after
+        position: absolute
+        text-align: center
+        left: 50%
+        margin-left: -40px
+        top: -17px
+        font-size: 10px
+        line-height: 1.2
+        padding-top: 3px
+        content: 'click to edit'
+        background-color: rgba(white, .95)
+        color: #444
+        width: 80px
+        border: 1px solid #777
+        border-bottom: 0
+        font-weight: normal
+        font-style: normal
+        text-transform: none
+        height: 13px
+        border-radius: 5px 5px 0 0
 
 .editableform 
   border: 1px solid rgba($standout_color, .7)

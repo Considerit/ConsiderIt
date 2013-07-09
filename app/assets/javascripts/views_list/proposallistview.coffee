@@ -61,14 +61,12 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   render : -> 
     # @undelegateEvents()
     super
-    @render_header()
     @render_pagination()
+    @render_header()
 
 
   #TODO: do this when login as admin
   render_header : ->
-    #@$el.find('.m-proposals-list-header').remove()
-
     $heading_el = @proposals_header_template({
       is_admin : ConsiderIt.roles.is_admin
       selected_sort : @sort_selected
@@ -79,7 +77,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     if $cur_heading.length > 0
       $cur_heading.replaceWith $heading_el
     else
-      @$el.prepend($heading_el)
+      @$el.append($heading_el)
 
 
     can_create = ConsiderIt.current_user.is_logged_in() && (ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager || ConsiderIt.current_tenant.get('enable_user_conversations'))

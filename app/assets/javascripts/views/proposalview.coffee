@@ -275,8 +275,6 @@ class ConsiderIt.ProposalView extends Backbone.View
     admin_strip_el.html( template(@model.attributes))
     @$main_content_el.append admin_strip_el 
 
-    console.log @state
-    console.log @state?
     for field in ConsiderIt.ProposalView.editable_fields
       [selector, name, type] = field 
       @$el.find(selector).editable {

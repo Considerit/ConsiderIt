@@ -2678,10 +2678,6 @@ $(function(){
             if(!html) {
                 return '';
             }
-
-            //TRAVIS EDIT
-            html = html.replace(/<br>/gi,'');
-            /////////////
             
             var regex = new RegExp(String.fromCharCode(10), 'g');
             var lines = html.split(/<br\s*\/?>/i);

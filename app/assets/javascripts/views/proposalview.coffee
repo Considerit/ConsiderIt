@@ -118,6 +118,12 @@ class ConsiderIt.ProposalView extends Backbone.View
         @results_view.show_explorer()
         @set_state(2)
 
+      if @can_edit()
+        for field in ConsiderIt.ProposalView.editable_fields
+          [selector, name, type] = field 
+          @$el.find(selector).editable('enable')
+          console.log 'enable'
+
     if @state > 0
       if new_state == 1
         #@results_view.show_summary()
@@ -157,6 +163,13 @@ class ConsiderIt.ProposalView extends Backbone.View
 
       @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideUp()
 
+      if @can_edit()
+        for field in ConsiderIt.ProposalView.editable_fields
+          [selector, name, type] = field 
+          @$el.find(selector).editable('disable')
+          console.log 'disable'
+
+
     $('body').animate {scrollTop: @scroll_position}
     @set_state(0)
 
@@ -183,13 +196,11 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   toggle_description : (ev) ->
-    return if !@model.get('published') || (@state > 0 && ( $(ev.target).is('.editable') || $(ev.target).closest('.editable-container').length > 0))
+    return if !@model.get('published') || (@state > 0 && ( $(ev.target).closest('.editable').length > 0 || $(ev.target).closest('.editable-container').length > 0))
     if @$el.is('[data-state="0"]')
       ConsiderIt.router.navigate(Routes.new_position_proposal_path( @model.long_id ), {trigger: true})
     else
       ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
-
-    # return if @can_edit() && $(ev.target).closest('.editable-click, .editable-inline').length > 0
 
     # @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
 
@@ -209,7 +220,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     $block.find('.m-proposal-description-detail-field-full').slideUp(1000);
     $block.find('.showing')
       .text('show')
-      .toggleClass('hidden showing');      
+      .toggleClass('hidden showing');
     ev.stopPropagation()
 
 
@@ -264,11 +275,14 @@ class ConsiderIt.ProposalView extends Backbone.View
     admin_strip_el.html( template(@model.attributes))
     @$main_content_el.append admin_strip_el 
 
+    console.log @state
+    console.log @state?
     for field in ConsiderIt.ProposalView.editable_fields
       [selector, name, type] = field 
       @$el.find(selector).editable {
         resource: 'proposal'
         pk: @long_id
+        disabled: !@state? && @model.get('published')
         url: Routes.proposal_path @model.long_id
         type: type
         name: name

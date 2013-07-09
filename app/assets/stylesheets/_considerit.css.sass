@@ -1848,17 +1848,17 @@ $m-point-expanded-width: $body_width + 150
 
 
   // active, unexpanded proposals with no activity
-  &[data-state="0"][data-status="proposal-active"]
-    .m-proposal-admin_strip
-      position: relative
-      bottom: -1.5 * $vertical_baseline
+  // &[data-state="0"][data-status="proposal-active"]
+  //   .m-proposal-admin_strip
+  //     position: relative
+  //     bottom: -1.5 * $vertical_baseline
 
   // unpublished, unexpanded proposals without any activity
-  &[data-state="0"][data-visibility="unpublished"]
-    .m-proposal-admin_strip
-      position: static
-      +font-size(0)
-      bottom: auto
+  // &[data-state="0"][data-visibility="unpublished"]
+  //   .m-proposal-admin_strip
+  //     position: static
+  //     +font-size(0)
+  //     bottom: auto
 
 
 
@@ -2198,6 +2198,9 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
     @extend %on_chalkboard
 
     min-height: 400px
+
+    .m-point-expanded
+      @extend %on_paper
 
 
   .m-reasons-peer-points

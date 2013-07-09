@@ -43,7 +43,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       )))
 
     #TODO: if user logs in as admin, need to do this
-    if ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.roles.is_admin
+    if ConsiderIt.current_user.id == @model.get('user_id') #|| ConsiderIt.roles.is_admin
       @$el.find('.m-point-nutshell ').editable
           resource: 'point'
           pk: @model.id
@@ -110,8 +110,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
     @undelegateEvents()
     @stopListening()
-    delete this
-
+    
     @model.trigger 'change' #trigger a render event
     ConsiderIt.app.go_back_crumb() if go_back
     #next()

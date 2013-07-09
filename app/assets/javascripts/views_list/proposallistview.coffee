@@ -24,14 +24,14 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @do_after_proposal_data_loaded(long_id, "show_point_details_handler", [{point_id : point_id}])
     ConsiderIt.router.on 'route:StaticPosition', (long_id, user_id) => @do_after_proposal_data_loaded(long_id, "prepare_for_static_position", [{user_id : user_id}])
 
-  do_after_proposal_data_loaded : (long_id, callback, callback_params) ->
+  do_after_proposal_data_loaded : (long_id, callback, callback_params = []) ->
     proposal = @collection.findWhere({long_id: long_id})
     proposalview = if proposal? then @getViewByModel(proposal) else null
 
     if proposalview? && proposal.data_loaded
       proposalview[callback].apply(proposalview, callback_params)
     else if proposal?
-      callback_params[0]['data_just_loaded'] = true if callback_params
+      callback_params[0]['data_just_loaded'] = true if callback_params.length > 0
       $.get Routes.proposal_path(long_id), (data) => 
         if data && data['result'] == 'success'
           proposal.set_data(data)
@@ -41,7 +41,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
         #   console.log data
 
     else
-      callback_params[0]['data_just_loaded'] = true if callback_params
+      callback_params[0]['data_just_loaded'] = true if callback_params.length > 0
 
       $.get Routes.proposal_path(long_id), (data) => 
         if data && data['result'] == 'success'

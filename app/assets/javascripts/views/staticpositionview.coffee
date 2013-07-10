@@ -66,4 +66,3 @@ class ConsiderIt.StaticPositionView extends Backbone.View
     @stopListening()
     @undelegateEvents()
     @$dialog.remove()
-    delete this

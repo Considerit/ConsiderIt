@@ -7,8 +7,10 @@ class ProposalsController < ApplicationController
   def index
     proposals = []
 
-    top = Proposal.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
-          Proposal.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
+    active = params.has_key?(:active) && params[:active] == 'true'
+
+    top = Proposal.where("top_con IS NOT NULL AND active=#{active}").select(:top_con).map {|x| x.top_con}.compact +
+          Proposal.where("top_pro IS NOT NULL AND active=#{active}").select(:top_pro).map {|x| x.top_pro}.compact 
     
     top_points = {}
     Point.where('id in (?)', top).public_fields.each do |pnt|
@@ -16,7 +18,7 @@ class ProposalsController < ApplicationController
     end
 
     #Proposal.active.where('activity > 0').public_fields.each do |proposal|
-    Proposal.open_to_public.public_fields.each do |proposal|      
+    Proposal.open_to_public.where("active=#{active}").public_fields.each do |proposal|      
       proposals.push ({
               :model => proposal,
               :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,

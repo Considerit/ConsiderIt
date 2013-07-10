@@ -1,4 +1,5 @@
 class ConsiderIt.ProposalListView extends Backbone.CollectionView
+
   proposals_header_template : _.template($('#tpl_proposal_list_header').html())
   proposals_create_template : _.template($('#tpl_proposal_list_new_conversation').html())
   proposals_pagination_template : _.template($('#tpl_proposal_list_pagination').html())
@@ -9,52 +10,16 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
   initialize : (options) -> 
     @sort_selected = 'activity'
-    @filter_selected = 'active'
+    # @filter_selected = 'active'
     super
-
     @data_loaded = false
+    @is_active = options.active
 
-    @filter_proposals()
+    #@filter_proposals()
     @sort_proposals()
 
+    @listenTo ConsiderIt.app, 'user:signout', @post_signout
     @listenTo ConsiderIt.app, 'proposal:deleted', (proposal) => @delete_proposal(proposal)
-
-    ConsiderIt.router.on 'route:Consider', (long_id) => @do_after_proposal_data_loaded(long_id, "take_position") 
-    ConsiderIt.router.on 'route:Aggregate', (long_id) => @do_after_proposal_data_loaded(long_id, "show_results_handler")
-    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @do_after_proposal_data_loaded(long_id, "show_point_details_handler", [{point_id : point_id}])
-    ConsiderIt.router.on 'route:StaticPosition', (long_id, user_id) => @do_after_proposal_data_loaded(long_id, "prepare_for_static_position", [{user_id : user_id}])
-
-  do_after_proposal_data_loaded : (long_id, callback, callback_params = []) ->
-    proposal = @collection.findWhere({long_id: long_id})
-    proposalview = if proposal? then @getViewByModel(proposal) else null
-
-    if proposalview? && proposal.data_loaded
-      proposalview[callback].apply(proposalview, callback_params)
-    else if proposal?
-      callback_params[0]['data_just_loaded'] = true if callback_params.length > 0
-      $.get Routes.proposal_path(long_id), (data) => 
-        if data && data['result'] == 'success'
-          proposal.set_data(data)
-          proposalview[callback].apply(proposalview, callback_params)
-          @listenTo ConsiderIt.app, 'user:signout', @post_signout
-        # else if data && data['reason'] == 'Access denied'
-        #   console.log data
-
-    else
-      callback_params[0]['data_just_loaded'] = true if callback_params.length > 0
-
-      $.get Routes.proposal_path(long_id), (data) => 
-        if data && data['result'] == 'success'
-          proposal = new ConsiderIt.Proposal(data.proposal)
-          @collection.add proposal
-          proposal = @collection.get(proposal.id) #sometimes the collection won't keep the same proposal object
-          proposal.set_data data
-          proposalview = @getViewByModel(proposal)
-          proposalview[callback].apply(proposalview, callback_params)
-          @listenTo ConsiderIt.app, 'user:signout', @post_signout
-        # else if data && data['reason'] == 'Access denied'
-        #   console.log data
-
 
   post_signout : -> view.post_signout() for own cid, view of @viewsByCid
 
@@ -82,7 +47,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
     can_create = ConsiderIt.current_user.is_logged_in() && (ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager || ConsiderIt.current_tenant.get('enable_user_conversations'))
 
-    if can_create && !@$create_el?
+    if @is_active && can_create && !@$create_el?
       @$create_el = $(@proposals_create_template())
       @$el.prepend(@$create_el)
     else if !can_create && @$create_el?
@@ -93,6 +58,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   render_pagination : ->
     $pagination_block = @proposals_pagination_template _.extend(@collection.info(), {
       data_loaded : @data_loaded
+      prompt: if @is_active then "Show more open issues" else "Show completed issues"
     })
 
     $cur_pagination = @$el.find('.m-proposals-list-pagination')
@@ -121,7 +87,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   events :
     'click .m-new-proposal-submit' : 'create_new_proposal'
     'click .m-proposallist-sort' : 'sort_proposals_to'
-    'click .m-proposallist-filter' : 'filter_proposals_to'
+    #'click .m-proposallist-filter' : 'filter_proposals_to'
     'click .m-pointlist-pagination-showmore' : 'do_after_all_data_loaded'
 
     'click [data-target="proposallist:first"]' : 'goto_first'
@@ -134,10 +100,10 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
     if !@data_loaded
       @data_loaded = true
-      $.get Routes.proposals_path(), (data) => 
-        @collection.add_proposals data
+      $.get Routes.proposals_path(), { active: @is_active }, (data) => 
+        @collection.add_proposals data        
         @sort_proposals()
-        @filter_proposals()
+        #@filter_proposals()
     else
       callback.apply(@) if callback
 
@@ -145,37 +111,38 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     @sort_selected = $(ev.target).data('target')
     @do_after_all_data_loaded(@sort_proposals)
 
-  filter_proposals_to : (ev) ->
-    @filter_selected = $(ev.target).data('target')
-    @do_after_all_data_loaded(@filter_proposals)
+  # filter_proposals_to : (ev) ->
+  #   @filter_selected = $(ev.target).data('target')
+  #   @do_after_all_data_loaded(@filter_proposals)
 
   sort_proposals : ->
     @collection.setSort( @sort_selected, 'desc')
 
     @render_header()
     @render_pagination()
+
     @collection.updateList()
 
-  filter_proposals : ->
+  # filter_proposals : ->
 
-    if @filter_selected == 'all'
-      @collection.setFieldFilter()
-    else if @filter_selected == '-active'
-      @collection.setFieldFilter [{
-        field : 'active'
-        type : 'equalTo' 
-        value : false
-      }]
-    else if @filter_selected == 'active'
-      @collection.setFieldFilter [{
-        field : 'active'
-        type : 'equalTo' 
-        value : true
-      }]    
+  #   if @filter_selected == 'all'
+  #     @collection.setFieldFilter()
+  #   else if @filter_selected == '-active'
+  #     @collection.setFieldFilter [{
+  #       field : 'active'
+  #       type : 'equalTo' 
+  #       value : false
+  #     }]
+  #   else if @filter_selected == 'active'
+  #     @collection.setFieldFilter [{
+  #       field : 'active'
+  #       type : 'equalTo' 
+  #       value : true
+  #     }]    
 
-    @render_header()
-    @render_pagination()
-    @collection.updateList()
+  #   @render_header()
+  #   @render_pagination()
+  #   @collection.updateList()
 
   create_new_proposal : (ev) ->
     attrs = 
@@ -193,10 +160,9 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     }
 
   delete_proposal : (proposal) ->
-    ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
-    @collection.remove proposal
-
-
+    if @collection.get proposal.id
+      ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
+      @collection.remove proposal
 
 
   goto_first : (ev) ->

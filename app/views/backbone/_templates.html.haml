@@ -239,21 +239,21 @@
         - sortable = [ {:name => 'Most active', :target => 'activity'}, {:name => 'Newness', :target => 'created_at'} ]
         .m-proposals-sort-container
           .title
-            Sort conversations by: 
+            Sort by: 
           - sortable.each do |sort|
             (( var selected_class = selected_sort == "#{sort[:target]}" ? 'selected': '';))
             %a{:'data-target' => sort[:target], :'data-type' => 'sort', :class => "m-proposallist-sort {{selected_class}}"}
               = sort[:name]
 
-        - filterable = [ {:name => 'All', :target => 'all'}, {:name => 'Open', :target => 'active'}, {:name => 'Completed', :target => '-active'} ]
+        / - filterable = [ {:name => 'All', :target => 'all'}, {:name => 'Open', :target => 'active'}, {:name => 'Completed', :target => '-active'} ]
 
-        .m-proposals-filter-container
-          .title
-            Filter to: 
-          - filterable.each do |fil|
-            (( var selected_class = selected_filter == "#{fil[:target]}" ? 'selected': '';))
-            %a{:'data-target' => fil[:target], :'data-type' => 'filter', :class => "m-proposallist-filter {{selected_class}}"}
-              = fil[:name]
+        / .m-proposals-filter-container
+        /   .title
+        /     Filter to: 
+        /   - filterable.each do |fil|
+        /     (( var selected_class = selected_filter == "#{fil[:target]}" ? 'selected': '';))
+        /     %a{:'data-target' => fil[:target], :'data-type' => 'filter', :class => "m-proposallist-filter {{selected_class}}"}
+        /       = fil[:name]
 
   %script{ :type => "text/template", :id => "tpl_proposal_list_pagination"}
     .m-proposals-list-pagination{:'data-domain' => 'homepage'}
@@ -297,7 +297,7 @@
           shown.
         (( } else { ))
         %button.m-pointlist-pagination-showmore
-          Show more conversations
+          {{ prompt }} 
         (( } ))
 
 

@@ -34,11 +34,12 @@ class ConsiderIt.AppView extends Backbone.View
       @proposals.add_proposal(ConsiderIt.current_proposal.data) 
       ConsiderIt.current_proposal = null
 
-    @proposalsview = new ConsiderIt.ProposalListView({collection : @proposals, el : '#m-proposals-container'}) if !@proposalsview?
     @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#l-wrap'}) if !@usermanagerview?
     @dashboardview = new ConsiderIt.UserDashboardView({ model : ConsiderIt.current_user, el : '#l-wrap'}) if !@dashboardview?
 
-    @proposalsview.renderAllItems()
+    @proposals_manager = new ConsiderIt.ProposalsManagerView({active_collection : @proposals, el : '#l-wrap'}) if !@proposals_manager?
+
+    @proposals_manager.render()
     @usermanagerview.render()
 
     if ConsiderIt.inaccessible_proposal

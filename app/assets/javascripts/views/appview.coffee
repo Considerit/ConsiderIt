@@ -126,7 +126,6 @@ class ConsiderIt.AppView extends Backbone.View
 
       $("[data-domain='homepage']:visible").hide()
 
-      console.log @last_page
       $('body').scrollTop(0) if @last_page == '/' && !_.contains(['route:PointDetails', 'route:StaticPosition'], route)
         
 

@@ -68,6 +68,8 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
     @$el.toggleClass( 'm-point-expanded m-point-unexpanded').delay(1).queue (next) =>
 
+      window.ensure_el_in_view(@$el, .5, 100)
+
       @assessmentview.render() if @assessmentview?
       @commentsview.renderAllItems()
   

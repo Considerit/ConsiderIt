@@ -27,11 +27,12 @@ class ConsiderIt.StaticPositionView extends Backbone.View
 
       @$dialog = @$el.find('.m-static-position')
 
+      window.ensure_el_in_view(@$dialog, .5, 100)
+
       # when clicking outside of point, close it
       $(document).on 'click.m-static-position', (ev) => @close()
       
-      @$dialog.on 'click.m-static-position', (ev) => 
-        ev.stopPropagation() if !$(ev.target).data('target')
+      @$dialog.on 'click.m-static-position', (ev) => ev.stopPropagation() if !$(ev.target).data('target')
       $(document).on 'keyup.m-static-position', (ev) => @close_by_keyup(ev)
 
 

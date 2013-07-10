@@ -17,7 +17,6 @@ class ConsiderIt.ProposalView extends Backbone.View
     #@state = 0
     super
     @long_id = @model.long_id
-    @data_loaded = false
 
     ConsiderIt.router.on 'route:Root', => @transition_unexpanded() if @state > 0
 
@@ -47,7 +46,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     @results_view.render()
     results_el.insertAfter(@$el.find('.m-proposal-introduction'))
     @listenTo @results_view, 'results:implode_participants', => @set_state(2)
-    @listenTo @results_view, 'results:explode_participants', => @set_state(4)
+    @listenTo @results_view, 'results:explode_participants', => @set_state(2)
 
 
     if @model.get('published') #|| @can_edit()
@@ -81,9 +80,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   post_signout : () -> 
-    @data_loaded = false
     @transition_unexpanded()
-
 
   take_position : () ->
     @transition_expanded(1)
@@ -132,7 +129,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     else
       @scroll_position = @$el.offset().top - $('.t-intro-wrap').offset().top - parseInt(@$el.css('marginTop'))
 
-      @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}']), [data-domain='homepage']")
+      @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}'])")
       @$hidden_els.css('display', 'none')
       @$el.find('.m-proposal-description-body').slideDown()
 
@@ -225,20 +222,33 @@ class ConsiderIt.ProposalView extends Backbone.View
   # Point details are being handled here (messily) for the case when a user directly visits the point details page without
   # (e.g. if they followed a link to it). In that case, we need to create some context around it first.
   prepare_for_point_details : (params) ->
-    @listenToOnce @results_view, 'ResultsExplorer:rendered', => 
+
+    cb = =>
       pnt = parseInt(params.point_id)
       point = @model.pros.get(pnt)
       if !point
         point = @model.cons.get(pnt)
 
-      results_explorer = @results_view.view
-      pointlistview = if point.get('is_pro') then results_explorer.views.pros else results_explorer.views.cons
-      pointview = pointlistview.getViewByModel(point) || pointlistview.addModelView(point) # this happens if the point is being directly visited, but is not on the front page of results
+      if @state == 0 || @state == 2
+        pointlistview = if point.get('is_pro') then @results_view.view.views.pros else @results_view.view.views.cons
+      else
+        if point.get('is_pro') 
+          pointlistview = if @position_view.crafting_view.pointlists.mypros.get(point.id) then @position_view.crafting_view.views.mypros else @position_view.crafting_view.views.peerpros
+        else 
+          pointlistview = if @position_view.crafting_view.pointlists.mycons.get(point.id) then @position_view.crafting_view.views.mycons else @position_view.crafting_view.views.peercons
 
-      pointview.show_point_details_handler() if pointview?
-      $('body').animate {scrollTop: pointview.$el.offset().top - 50}, 200
+      pointlistview.show_point_details_handler(pnt)
 
-    @show_results()
+      # pointview = pointlistview.getViewByModel(point) || pointlistview.addModelView(point) # this happens if the point is being directly visited, but is not on the front page of results
+      # pointview.show_point_details_handler() if pointview?
+      # $('body').animate {scrollTop: pointview.$el.offset().top - 50}, 200
+
+    if @state == 0
+      @show_results() 
+      @listenToOnce @results_view, 'ResultsExplorer:rendered', => cb()
+    else
+      cb()
+
 
   prepare_for_static_position : (params) ->
     callback = (user_id) =>
@@ -258,7 +268,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   show_point_details_handler : (params) ->
     # only do this if user has navigated directly to the point
-    @prepare_for_point_details(params) if params.data_just_loaded
+    @prepare_for_point_details(params) #if params.data_just_loaded
 
   position_submitted : ->
     if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()
@@ -313,7 +323,6 @@ class ConsiderIt.ProposalView extends Backbone.View
       position: data.position
       points: {}
     @model.long_id = @model.get('long_id')
-    @data_loaded = true
     #@$el.attr('data-visibility', '')
 
     @render()

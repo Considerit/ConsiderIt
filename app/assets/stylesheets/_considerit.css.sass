@@ -1626,23 +1626,42 @@ $m-point-expanded-width: $body_width + 150
 
 // Proposal
 
-#m-proposals-container
+#m-proposals-container, #m-proposals-container-completed
   position: relative
   padding: 1 * $vertical_baseline 0
 
   .m-proposal-list
     @extend %nude_list
 
+#m-proposals-container-completed
+  hr
+    margin-bottom: $vertical_baseline
+    border-top: 1px dashed $base_text_color
+    height: 1px
+
+  h2
+    text-align: center
+
+  &.is-empty
+
+    > h2, .m-proposals-heading
+      display: none
+
+.m-proposals-list-pagination-wrap
+  padding-bottom: $vertical_baseline
+
+.m-proposals-heading
+  padding-top: $vertical_baseline
 
 .m-proposals-heading, .m-proposals-list-pagination-wrap
   @extend %on_background
   text-align: center
-  margin: $vertical_baseline auto
+  margin: 0 auto
   width: $content_width
 
 .m-proposals-filter-container, .m-proposals-sort-container
   display: inline-block
-  padding-right: $grid_xs
+
   .title, a
     display: inline-block
     padding-right: $grid_xs/2
@@ -1808,7 +1827,6 @@ $m-point-expanded-width: $body_width + 150
 // inactive proposal
 .m-proposal[data-status="proposal-inactive"]
   &[data-state="0"]
-    opacity: .75
   .m-position-your-action-body, .m-position-submit-footer-wrap
     display: none
 

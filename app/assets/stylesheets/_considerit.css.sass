@@ -423,9 +423,9 @@ html
       margin-left: -$content_width/2
       left: 50%
       position: relative
-      padding-left: 98px
+      //padding-left: 98px
     .l-navigate-back, .l-navigate-crumb
-      +font-size(-2)
+      +font-size(0)
       text-transform: lowercase
     .l-navigate-breadcrumbs
       display: inline
@@ -1781,6 +1781,7 @@ $m-point-expanded-width: $body_width + 150
 .m-proposal[data-state="0"]
   .m-position-your-action-body.join
     top: -9px
+    +font-size(-2)
 
 
 // results view of proposal
@@ -1963,14 +1964,13 @@ $m-point-expanded-width: $body_width + 150
 
 .m-position-your-action-body
   @extend %superbutton
-  +font-size(-2)
   text-align: center
   font-weight: bold
   border-radius: 0 0 5px 5px
   position: relative
 
   &.join
-    +font-size(-2)
+    
     width: 100%
     padding: $vertical_baseline / 2 0
     text-align: center
@@ -2497,6 +2497,54 @@ label.inline
 // UNINCORPORATED
 //////////////////////////////////////////
 
+$home_size: 16
+$home_scale: $home_size / 32
+$home_height: 16px
+// css3 home icon
+.css3_icon
+  height: $home_height
+  width: $home_height
+  position: relative
+  overflow: hidden
+  display: inline-block
+
+.css3_icon_home
+  height: 0px
+  width: 0px
+  border-width: 16px * $home_scale
+  border-style: solid
+  border-color: transparent transparent $header_footer_text_color transparent
+  position: absolute
+  bottom: 16px * $home_scale
+  left: 0
+
+  &:after
+    content: ''
+    width: 5px * $home_scale
+    height: 16px * $home_scale
+    background-color: transparent
+    position: absolute
+    top: 16px * $home_scale
+    right: -11px * $home_scale
+    border-left: 8px * $home_scale solid $header_footer_text_color
+    border-right: 8px * $home_scale solid $header_footer_text_color
+
+  &:before
+    content: ''
+    width: 9px * $home_scale
+    height: 6px * $home_scale
+    background-color: $header_footer_text_color
+    position: absolute
+    top: 16px * $home_scale
+    right: -5px * $home_scale
+
+.css3_icon_chimney
+  width: 4px * $home_scale
+  height: 10px * $home_scale
+  background: $header_footer_text_color
+  position: absolute
+  right: 6px * $home_scale
+  top: 3px * $home_scale
 
 // verdict on point in margin
 .m-point-results, .m-point-position

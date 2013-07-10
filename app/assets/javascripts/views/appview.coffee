@@ -28,6 +28,7 @@ class ConsiderIt.AppView extends Backbone.View
     @proposals.add_proposals ConsiderIt.proposals
 
     @history = [ ['homepage', '/'] ]
+    @last_page = '/'
 
   render : () -> 
     if ConsiderIt.current_proposal
@@ -125,9 +126,14 @@ class ConsiderIt.AppView extends Backbone.View
 
       $("[data-domain='homepage']:visible").hide()
 
+      console.log @last_page
+      $('body').scrollTop(0) if @last_page == '/' && !_.contains(['route:PointDetails', 'route:StaticPosition'], route)
+        
+
       $back.find('.l-navigate-breadcrumbs').html @breadcrumbs_template({crumbs: @breadcrumbs})
       $back.show()
 
+    @last_page = _.last(@history)[1]
     # console.log route
     # console.log router
     # console.log @history

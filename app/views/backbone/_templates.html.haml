@@ -4,6 +4,13 @@
 
 
   %script{ :type => "text/template", :id => "tpl_breadcrumbs"}
+
+
+    %a{ :href => '/', :title => "Go to homepage"}
+      .css3_icon
+        .css3_icon_home
+        .css3_icon_chimney
+
     (( _.each(crumbs, function(crumb,idx) {  ))
     (( var name=crumb[0], loc=crumb[1]; ))
 

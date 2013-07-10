@@ -58,7 +58,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   render_pagination : ->
     $pagination_block = @proposals_pagination_template _.extend(@collection.info(), {
       data_loaded : @data_loaded
-      prompt: if @is_active then "Show more open issues" else "Show completed issues"
+      prompt: if @is_active then "Show more ongoing conversations" else "Show completed conversations"
     })
 
     $cur_pagination = @$el.find('.m-proposals-list-pagination')

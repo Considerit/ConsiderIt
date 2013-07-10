@@ -74,7 +74,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       @$el.find('.m-point-wrap > *').css 'visibility', ''
 
       # when clicking outside of point, close it
-      $(document).on 'click.m-point-details', (ev)  => @close_details( $(ev.target).closest('[data-role="m-point"]').length == 0 ) if !$(ev.target).data('target')
+      $(document).on 'click.m-point-details', (ev)  => @close_details( $(ev.target).closest('[data-role="m-point"]').length == 0 && $(ev.target).closest('.l-navigate-wrap').length == 0 ) if !$(ev.target).data('target')
 
       @$el.on 'click.m-point-details', (ev) => ev.stopPropagation() if !$(ev.target).data('target')
           

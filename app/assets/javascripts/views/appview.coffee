@@ -27,7 +27,7 @@ class ConsiderIt.AppView extends Backbone.View
     @proposals = new ConsiderIt.ProposalList()
     @proposals.add_proposals ConsiderIt.proposals
 
-    @crumbs = [ ['homepage', '/'] ]
+    @history = [ ['homepage', '/'] ]
 
   render : () -> 
     if ConsiderIt.current_proposal
@@ -74,43 +74,61 @@ class ConsiderIt.AppView extends Backbone.View
     ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
 
   go_back : ->
-    if @crumbs.length < 3
+    @history.pop()
+    if @history.length < 2
       ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
     else
-      window.history.go(-1)
+      route = @history.pop()[1]
+      ConsiderIt.router.navigate(route, {trigger: true})
 
   go_back_crumb : ->
     href = if @breadcrumbs.length > 1 then @breadcrumbs[@breadcrumbs.length - 2][1] else '/'
-    ConsiderIt.router.navigate(href, {trigger: true})
+    ConsiderIt.router.navigate(href, {trigger: true, replace: false})
 
   route_changed : (route, router) ->
     return if route == 'route'
+    ## wait for endpoint to finish rendering ...
+
     loc = Backbone.history.fragment.split('?')[0].split('/')
     short = loc[loc.length - 1]
     $('.tooltipster-base').hide()
     
     if short 
       new_crumbs = []
-      for [loc,full] in @crumbs
+      for [loc,full] in @history
         break if loc == short
         new_crumbs.push [loc,full]
-      @crumbs = new_crumbs
-      @crumbs.push [short, "/#{Backbone.history.fragment.split('?')[0]}"]
+      @history = new_crumbs
+      @history.push [short, "/#{Backbone.history.fragment.split('?')[0]}"]
     else
-      @crumbs = [['homepage','/']]
+      @history = [['homepage','/']]
     
     $back = $('.l-navigate')
 
-    if @crumbs.length == 1 && $back.is(':visible')
+    if @history.length == 1 && $back.is(':visible')
+      $("[data-domain='homepage']:hidden").show()
+
       $back.hide()
-    else if @crumbs.length > 1
+    else if @history.length > 1
       @breadcrumbs = [['homepage', '/']]
       path = ''
-      for loc in @crumbs[@crumbs.length-1][1].split('/')
+      for loc in @history[@history.length-1][1].split('/')
         continue if loc.length == 0
         path = "#{path}/#{loc}"
         @breadcrumbs.push [loc.split('?')[0], path] if ConsiderIt.router.valid_endpoint(path)
 
+      ######################
+      #### HACK: if static position or point details, need to insert "results" into breadcrumbs if loaded from results page
+      if _.contains(['route:PointDetails', 'route:StaticPosition'], route) && ($('.m-position:visible').length == 0)
+        @breadcrumbs.splice(@breadcrumbs.length - 1, 0, ['results', "#{@breadcrumbs[@breadcrumbs.length - 2][1]}/results"])
+      ######
+
+      $("[data-domain='homepage']:visible").hide()
+
       $back.find('.l-navigate-breadcrumbs').html @breadcrumbs_template({crumbs: @breadcrumbs})
       $back.show()
 
+    # console.log route
+    # console.log router
+    # console.log @history
+    #console.log @breadcrumbs

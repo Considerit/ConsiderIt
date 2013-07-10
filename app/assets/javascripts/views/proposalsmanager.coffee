@@ -34,11 +34,13 @@ class ConsiderIt.ProposalsManagerView extends Backbone.View
       $.get Routes.proposal_path(long_id), (data) => 
         if data && data['result'] == 'success'
           proposal = new ConsiderIt.Proposal(data.proposal)
-          
+          proposallistview = if proposal.get('active') then @proposalsview else @proposalsview_completed
+
           proposallistview.collection.add proposal
           proposal = proposallistview.collection.get(proposal.id) #sometimes the collection won't keep the same proposal object
-          proposal.set_data data
           ConsiderIt.app.proposals.add proposal
+
+          proposal.set_data data
           proposalview = proposallistview.getViewByModel(proposal)
           proposalview[callback].apply(proposalview, callback_params)
         # else if data && data['reason'] == 'Access denied'

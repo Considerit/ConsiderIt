@@ -78,7 +78,7 @@ class ConsiderIt.PositionView extends Backbone.View
     @your_action_view.render()
     @crafting_view.model = model if @state == 1
 
-  show_crafting : ->
+  show_crafting : (from_homepage=false) ->
     if @state != 1
       crafting_el = $('<div class="l-message m-proposal-message m-position">')
       @crafting_view = new ConsiderIt.CraftingView
@@ -89,6 +89,11 @@ class ConsiderIt.PositionView extends Backbone.View
       @crafting_view.render()
       @your_action_view.crafting_state()
       @state = 1
+
+      if !from_homepage
+        scroll_position = $('.m-proposal-description:visible').height() + $('.m-proposal-description:visible').offset().top * .75
+        console.log scroll_position
+        $('body').animate {scrollTop: scroll_position}  
 
       @trigger 'PositionCrafting:rendered'
 

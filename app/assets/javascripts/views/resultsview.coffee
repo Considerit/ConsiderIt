@@ -32,7 +32,7 @@ class ConsiderIt.ResultsView extends Backbone.View
 
     @state = 0
 
-  show_explorer : ->
+  show_explorer : (from_homepage=false) ->
     @view.remove if @view
     @view = new ConsiderIt.ExplorerView
       el : @$el
@@ -49,9 +49,14 @@ class ConsiderIt.ResultsView extends Backbone.View
 
     @$el.show()
 
+    if !from_homepage
+      scroll_position = $('.m-proposal-description:visible').height() + $('.m-proposal-description:visible').offset().top * .75
+      $('body').animate {scrollTop: scroll_position}
+
+
     #if window.location.href.indexOf('explode=true')
     me = this
-    window.delay 500, -> 
+    window.delay 750, -> 
       me.explode_participants()
       me.trigger 'ResultsExplorer:rendered'
     

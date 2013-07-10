@@ -62,7 +62,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
           success : (response, new_value) => @model.set('text', new_value)
 
 
-
     @$el.find('.m-point-wrap').append($comment_el)
     @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
 
@@ -76,9 +75,12 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       @$el.find('.m-point-wrap > *').css 'visibility', ''
 
       # when clicking outside of point, close it
-      $(document).on 'click.m-point-details', (ev)  => @close_details( $(ev.target).closest('[data-role="m-point"]').length == 0 && $(ev.target).closest('.l-navigate-wrap').length == 0 ) if !$(ev.target).data('target')
+      $(document).on 'click.m-point-details', (ev)  => 
+        if $(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id 
+          @close_details( $(ev.target).closest('[data-role="m-point"]').length == 0 && $(ev.target).closest('.l-navigate-wrap').length == 0 ) 
 
-      @$el.on 'click.m-point-details', (ev) => ev.stopPropagation() if !$(ev.target).data('target')
+      @$el.on 'click.m-point-details', (ev) => 
+        ev.stopPropagation() if !$(ev.target).data('target')
           
       $(document).on 'keyup.m-point-details', (ev) => @close_details() if ev.keyCode == 27 && $('.l-dialog-detachable').length == 0
 

@@ -46,7 +46,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     @results_view.render()
     results_el.insertAfter(@$el.find('.m-proposal-introduction'))
     @listenTo @results_view, 'results:implode_participants', => @set_state(2)
-    @listenTo @results_view, 'results:explode_participants', => @set_state(2)
+    @listenTo @results_view, 'results:explode_participants', => @set_state(4)
 
 
     if @model.get('published') #|| @can_edit()
@@ -102,17 +102,18 @@ class ConsiderIt.ProposalView extends Backbone.View
       @$hidden_els.css('display', 'none')
       return 
 
+
     callback = (new_state) =>
       if new_state == 1
         @results_view.hide()
 
         if @model.get('published')
-          el = @position_view.show_crafting()
+          el = @position_view.show_crafting(@state == 0)
           el.insertAfter(@results_view.$el)
           el.fadeIn 500, =>
         @set_state(1)
       else if new_state == 2
-        @results_view.show_explorer()
+        @results_view.show_explorer(@state == 0)
         @set_state(2)
 
       if @can_edit()
@@ -126,6 +127,7 @@ class ConsiderIt.ProposalView extends Backbone.View
       else if new_state == 2
         @position_view.close_crafting() if @model.get('published')
 
+
     else
       @scroll_position = @$el.offset().top - $('.t-intro-wrap').offset().top - parseInt(@$el.css('marginTop'))
 
@@ -134,8 +136,12 @@ class ConsiderIt.ProposalView extends Backbone.View
       @$el.find('.m-proposal-description-body').slideDown()
 
       @$el.find('.m-proposal-description-details').slideDown()
-
+      
     callback(new_state)
+
+    #$('body').animate {scrollTop: 0}
+    
+
         
 
   transition_unexpanded : =>
@@ -212,10 +218,14 @@ class ConsiderIt.ProposalView extends Backbone.View
   hide_details : (ev) -> 
     $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
+    if $('body').scrollTop() > $block.offset().top
+      $('body').animate {scrollTop: $block.offset().top}, 1000
+
     $block.find('.m-proposal-description-detail-field-full').slideUp(1000);
     $block.find('.showing')
       .text('show')
       .toggleClass('hidden showing');
+
     ev.stopPropagation()
 
 
@@ -229,13 +239,15 @@ class ConsiderIt.ProposalView extends Backbone.View
       if !point
         point = @model.cons.get(pnt)
 
-      if @state == 0 || @state == 2
-        pointlistview = if point.get('is_pro') then @results_view.view.views.pros else @results_view.view.views.cons
-      else
+      if @state == 1
         if point.get('is_pro') 
           pointlistview = if @position_view.crafting_view.pointlists.mypros.get(point.id) then @position_view.crafting_view.views.mypros else @position_view.crafting_view.views.peerpros
         else 
           pointlistview = if @position_view.crafting_view.pointlists.mycons.get(point.id) then @position_view.crafting_view.views.mycons else @position_view.crafting_view.views.peercons
+
+      else
+        pointlistview = if point.get('is_pro') then @results_view.view.views.pros else @results_view.view.views.cons
+
 
       pointlistview.show_point_details_handler(pnt)
 

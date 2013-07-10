@@ -174,3 +174,14 @@ String.prototype.toCamel = -> @replace(/(\-[a-z])/g, ($1) -> $1.toUpperCase().re
 
 String.prototype.toUnderscore = -> @replace(/([A-Z])/g, ($1) -> "_" + $1.toLowerCase() )
 
+
+window.ensure_el_in_view = ($el, amount_of_viewport_taken_by_el=.5, offset_top=100) ->
+  el_top = $el.offset().top
+  doc_top = $(window).scrollTop()
+  doc_bottom = doc_top + $(window).height()
+  #if less than 50% of the viewport is taken up by the el...
+  in_viewport = el_top > doc_top && el_top < doc_bottom && (doc_bottom - el_top) > amount_of_viewport_taken_by_el * (doc_bottom - doc_top)  
+  target = el_top - offset_top
+  distance_to_travel = Math.abs( doc_top - target )
+  if !in_viewport
+    $('body').animate {scrollTop: target}, distance_to_travel

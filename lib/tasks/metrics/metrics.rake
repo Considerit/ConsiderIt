@@ -553,11 +553,12 @@ namespace :metrics do
     simulate_fact_check = true
     simulated_date = DateTime.new(2012,10,28)
     simulated_assessment = Assessable::Assessment.new(:updated_at => simulated_date, :overall_verdict => -1)
+    simulated_request = Assessable::Request.new(:created_at => simulated_date)
 
     require 'csv'
     CSV.open("data.csv", "w") do |csv|
 
-      head = ['firstview_timestamp', 'point_id', 'initiative_id', 'is_pro',  'was_point_factchecked', 'factchecked_before_view', 'fact_check_accuracy_verdict', 'fact_check_timestamp', 'user_commented', 'user_commented_before_factcheck', 'user_commented_after_factcheck', 'user_included_point']
+      head = ['firstview_timestamp', 'point_id', 'initiative_id', 'is_pro',  'was_point_factchecked', 'factchecked_before_view', 'fact_check_accuracy_verdict', 'first_request_timestamp', 'fact_check_timestamp', 'user_commented', 'user_commented_before_factcheck', 'user_commented_after_factcheck', 'user_included_point']
 
 
       csv << head
@@ -582,14 +583,21 @@ namespace :metrics do
 
           # An indicator for whether or not the point had been fact checked prior to the view
           assessment = Assessable::Assessment.find_by_assessable_id(view.point_id)
+          if assessment
+            request = assessment.requests.first
+          end
           if simulate_fact_check && !was_checked
             assessment = simulated_assessment
+            request = simulated_request
           end
 
           row.push was_checked || simulate_fact_check ? assessment.updated_at > view.created_at : nil
 
           # An indicator of the result of the fact check (if applicable) (using the 3 categories that you list in the table in Figure 2?)
           row.push was_checked || simulate_fact_check ? assessment.overall_verdict : nil
+
+          # date of first request timestamp
+          row.push was_checked || simulate_fact_check ? request.created_at : nil
 
           # date of fact-check
           row.push was_checked || simulate_fact_check ? assessment.updated_at : nil

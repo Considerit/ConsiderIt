@@ -494,6 +494,10 @@ namespace :metrics do
     nf_inclusions_all = Inclusion.where("proposal_id in (?) and point_id not in (?)  AND created_at < (?)", proposals, points, election_date)
 
     nf_all_points = Point.where("proposal_id in (?)", proposals)
+    is_pros = {}
+    nf_all_points.each do |p|
+      is_pros[p.id] = p
+    end
     nf_comments_all = Commentable::Comment.where("commentable_id in (?) and commentable_id not in (?) AND created_at < (?)", all_points.map {|p| p.id}.compact, points, election_date)
 
     nf_all_views = PointListing.where("point_id in (?) and point_id not in (?) and created_at is not null  AND created_at < (?)", all_points.map {|p| p.id}.compact, points, election_date)
@@ -553,7 +557,7 @@ namespace :metrics do
     require 'csv'
     CSV.open("data.csv", "w") do |csv|
 
-      head = ['firstview_timestamp', 'point_id',  'was_point_factchecked', 'factchecked_before_view', 'fact_check_accuracy_verdict', 'fact_check_timestamp', 'user_commented', 'user_commented_before_factcheck', 'user_commented_after_factcheck', 'user_included_point']
+      head = ['firstview_timestamp', 'point_id', 'initiative_id', 'is_pro',  'was_point_factchecked', 'factchecked_before_view', 'fact_check_accuracy_verdict', 'fact_check_timestamp', 'user_commented', 'user_commented_before_factcheck', 'user_commented_after_factcheck', 'user_included_point']
 
 
       csv << head
@@ -566,6 +570,12 @@ namespace :metrics do
 
           # An identifier for the point that was viewed
           row.push view.point_id
+
+          #initiative_id
+          row.push view.proposal_id
+
+          #is_pro
+          row.push is_pros[view.point_id].is_pro
 
           # An indicator for whether or not the point was ever fact checked (regardless of whether the particular view occurred before or after the fact check)
           row.push was_checked

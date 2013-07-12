@@ -9,9 +9,14 @@ class ConsiderIt.UserManagerView extends Backbone.View
     @$header_el = @$el.find('#m-user-nav')
     #@model.on('change:id', @render)
 
-    @on 'user:signin', -> $('#registration_overlay').remove()
+    @listenTo ConsiderIt.router, 'user:signin', => 
+      @render()
+      #$('#registration_overlay').remove()
 
-    @listenTo ConsiderIt.app, 'user:updated', -> @render() #this should only be updated the user-nav
+    @listenTo ConsiderIt.router, 'user:signout', => 
+      @render()
+
+    @listenTo ConsiderIt.router, 'user:updated', -> @render() #this should only be updated the user-nav
 
   render : -> 
     if @model.id?
@@ -65,7 +70,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
       user = ConsiderIt.users[$target.data('id')]
 
       if $target.closest('[data-role="m-proposal"]').length > 0
-        proposal = ConsiderIt.app.proposals.get($target.closest('[data-role="m-proposal"]').data('id'))
+        proposal = ConsiderIt.all_proposals.get($target.closest('[data-role="m-proposal"]').data('id'))
         proposal = null if !proposal.user_participated(user.id) 
 
       tooltip = @user_tooltip_template {user : user, proposal : proposal}
@@ -108,7 +113,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
       @model = ConsiderIt.clear_current_user()
       @render()
       #ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
-      ConsiderIt.app.trigger('user:signout')      
+      ConsiderIt.router.trigger('user:signout')      
 
   add_registration_overlay : () ->
     me = ConsiderIt.app.usermanagerview
@@ -130,7 +135,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
     if !ConsiderIt.current_user.isNew()
       @model = ConsiderIt.current_user
       @render()
-      ConsiderIt.app.trigger('user:signin')
+      ConsiderIt.router.trigger('user:signin')
 
   handle_user_registration : (ev) ->
     me = ConsiderIt.app.usermanagerview

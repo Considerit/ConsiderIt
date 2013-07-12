@@ -45,7 +45,7 @@ class ConsiderIt.Assessable.AssessmentsView extends Backbone.View
     # Routes.edit_assessment_path(obj.id)
     assessment = @assessments.get($(ev.currentTarget).data('id'))
     assessable = @assessable_objects[assessment.get('assessable_id')]
-    proposal = ConsiderIt.app.proposals.get(assessable.proposal_id)
+    proposal = ConsiderIt.all_proposals.get(assessable.proposal_id)
 
     all_claims = @claims.filter((clm) => clm.get('assessment_id') != assessment.id && proposal.id == @assessable_objects[@assessments.get(clm.get('assessment_id')).get('assessable_id')].proposal_id)
 

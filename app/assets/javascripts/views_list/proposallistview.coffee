@@ -18,10 +18,18 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     #@filter_proposals()
     @sort_proposals()
 
-    @listenTo ConsiderIt.app, 'user:signout', @post_signout
-    @listenTo ConsiderIt.app, 'proposal:deleted', (proposal) => @delete_proposal(proposal)
+    @listenTo ConsiderIt.router, 'user:signin', => 
+      view.post_signin() for own cid, view of @viewsByCid
+      @render()
 
-  post_signout : -> view.post_signout() for own cid, view of @viewsByCid
+    @listenTo ConsiderIt.router, 'user:signout', =>
+      view.post_signout() for own cid, view of @viewsByCid
+      @render()
+
+    @listenTo ConsiderIt.router, 'proposal:deleted', (proposal) => @delete_proposal(proposal)
+
+    @listenTo ConsiderIt.router, 'route:Root', => @renderAllItems()
+
 
   render : -> 
     # @undelegateEvents()
@@ -101,7 +109,12 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     if !@data_loaded
       @data_loaded = true
       $.get Routes.proposals_path(), { active: @is_active }, (data) => 
+
+        # HACK: we don't want to trigger a render event for every proposal
+        ConsiderIt.BackboneCollectionViewIgnoreAdd = true
         @collection.add_proposals data        
+        ConsiderIt.BackboneCollectionViewIgnoreAdd = false
+
         @sort_proposals()
         #@filter_proposals()
     else
@@ -110,6 +123,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   sort_proposals_to : (ev) ->   
     @sort_selected = $(ev.target).data('target')
     @do_after_all_data_loaded(@sort_proposals)
+    window.ensure_el_in_view(@$el.find('.m-proposals-list-pagination'))
 
   # filter_proposals_to : (ev) ->
   #   @filter_selected = $(ev.target).data('target')
@@ -156,7 +170,6 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
         new_view = @getViewByModel new_proposal
         new_view.$el.find('.m-proposal-description').trigger('click')
         new_view.$el.attr('data-visibility', 'unpublished')
-  
     }
 
   delete_proposal : (proposal) ->
@@ -168,21 +181,26 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   goto_first : (ev) ->
     ev.preventDefault()
     @collection.goTo(1)
+    window.ensure_el_in_view(@$el.find('.m-proposals-list-pagination'))
 
   goto_prev : (ev) ->
     ev.preventDefault()
     @collection.previousPage()
+    window.ensure_el_in_view(@$el.find('.m-proposals-list-pagination'))
 
   goto_next : (ev) ->
     ev.preventDefault()
     @collection.nextPage()
+    window.ensure_el_in_view(@$el.find('.m-proposals-list-pagination'))
 
   goto_last : (ev) ->
     ev.preventDefault()
     @collection.goTo(@collection.information.lastPage)
+    window.ensure_el_in_view(@$el.find('.m-proposals-list-pagination'))
 
   goto_page : (ev) ->
     ev.preventDefault()
     page = $(ev.target).data('page')
     @collection.goTo(page)
+    window.ensure_el_in_view(@$el.find('.m-proposals-list-pagination'))
 

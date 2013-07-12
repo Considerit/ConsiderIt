@@ -16,8 +16,8 @@ class ConsiderIt.PositionView extends Backbone.View
       if @crafting_view
         @crafting_view.model = @proposal.position
 
-      @listenTo ConsiderIt.app, 'user:signin', @post_signin
-      @listenTo ConsiderIt.app, 'user:signout', @post_signout  
+      @listenTo ConsiderIt.router, 'user:signin', @post_signin
+      @listenTo ConsiderIt.router, 'user:signout', @post_signout  
 
   post_signin : () ->
     return if !@proposal.positions
@@ -92,7 +92,6 @@ class ConsiderIt.PositionView extends Backbone.View
 
       if !from_homepage
         scroll_position = $('.m-proposal-description:visible').height() + $('.m-proposal-description:visible').offset().top * .75
-        console.log scroll_position
         $('body').animate {scrollTop: scroll_position}  
 
       @trigger 'PositionCrafting:rendered'
@@ -375,7 +374,6 @@ class ConsiderIt.CraftingView extends Backbone.View
     $form = $(ev.currentTarget).closest('.m-newpoint-form')
 
     attrs = @point_attributes($form)
-
 
     pointlist = if attrs.is_pro then @pointlists.mypros else @pointlists.mycons
     @cancel_new_point({currentTarget: $form.find('.m-newpoint-cancel')})

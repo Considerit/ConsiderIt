@@ -38,7 +38,7 @@
             (( assessments.each( function(obj) { ))
 
             (( var pass_class = obj.get('complete') ? "completed" : obj.get('reviewable') ? 'reviewable' : 'incomplete'; ))
-            (( var root_object = ConsiderIt.app.proposals.get(assessable_objects[obj.get('assessable_id')].proposal_id).attributes; ))
+            (( var root_object = ConsiderIt.all_proposals.get(assessable_objects[obj.get('assessable_id')].proposal_id).attributes; ))
             (( var rqs = requests.where({assessment_id: obj.id}); ))
 
             %tr{ :class => "{{pass_class}} assessment_row" }

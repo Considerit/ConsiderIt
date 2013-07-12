@@ -130,7 +130,7 @@
       {{ pros ? 'Pro' : 'Con' }} considerations by other participants
 
 
-    - ranks = [ { :name => 'persuasiveness', :title => 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', :target => 'persuasiveness'}, { :name => 'Popularity', :title => 'Considerations that have been added to the most pro/con lists are ranked higher.', :target => 'popularity'}, { :name => "Newest", :title => 'Newest considerations shown first', :target => 'created_at' } ]
+    - ranks = [ { :name => 'persuasiveness', :title => 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', :target => 'persuasiveness'}, { :name => 'Popularity', :title => 'Considerations that have been added to the most pro/con lists are ranked higher.', :target => 'popularity'}, { :name => "Newest", :title => 'The newest considerations are shown first.', :target => 'created_at' } ]
 
 
     - #{ :name => 'Common Ground', :selected => false, :title => 'Considerations that tend to be added by both supporters and opposers are ranked higher. Low ranked considerations are more divisive.', :target => '-divisiveness'}]

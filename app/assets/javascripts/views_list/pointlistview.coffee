@@ -214,5 +214,7 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
       @$browse_header_el.css('visibility', 'hidden')
       $(document).off '.m-pointlist-browsing'
       @$el.off '.m-pointlist-browsing'
+      window.ensure_el_in_view(@$el.find('.m-pointlist-browse-toggle'), .5, 100)
+
 
     @browsing = browse

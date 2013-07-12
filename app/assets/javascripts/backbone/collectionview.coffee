@@ -108,7 +108,9 @@ class Backbone.CollectionView extends Backbone.View
   # When a model is added to the collection we add an item views to the list
   # in the correct position
   onAdd: (model) =>
-    @addModelView(model)
+    # TRAVIS EDIT
+    if !ConsiderIt.BackboneCollectionViewIgnoreAdd
+      @addModelView(model)
 
   # When a model is removed from the collection, remove the view from the list
   onRemove: (model) =>

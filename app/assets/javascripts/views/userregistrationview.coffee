@@ -48,7 +48,7 @@ class ConsiderIt.RegistrationView extends Backbone.View
 
   events : 
     'ajax:complete form' : 'update_user'    
-    'click .m-user-accounts-login-option a' : 'login_option_choosen'
+    'click .m-user-accounts-login-option button' : 'login_option_choosen'
     'click [data-target="close_dialog"]' : 'cancel'
     'change .m-user-accounts-pledge input' : 'pledge_clicked'
     'click .m-user-terms-show' : 'show_terms_of_use'

@@ -6,7 +6,7 @@ class ConsiderIt.Position extends Backbone.Model
   initialize : (options) ->
     super
     @attributes.explanation = htmlFormat(@attributes.explanation) if @attributes.explanation
-    @proposal = ConsiderIt.app.proposals.get @attributes.proposal_id
+    @proposal = ConsiderIt.all_proposals.get @attributes.proposal_id
     @written_points = []
     @viewed_points = {}
 

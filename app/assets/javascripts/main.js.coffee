@@ -105,8 +105,8 @@ window.ConsiderIt.update_current_user = (parameters) ->
     is_evaluator : ConsiderIt.current_user.has_role('evaluator')  
     is_manager : ConsiderIt.current_user.has_role('manager')  
 
-  if ConsiderIt.app
-    ConsiderIt.app.trigger('user:updated')
+  ConsiderIt.router.trigger('user:updated') if ConsiderIt.router
+
 
 window.ConsiderIt.clear_current_user = ->
   ConsiderIt.current_user = new ConsiderIt.User

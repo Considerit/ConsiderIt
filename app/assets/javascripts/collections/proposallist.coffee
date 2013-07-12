@@ -18,6 +18,12 @@ class ConsiderIt.ProposalList extends Backbone.Paginator.clientPager
       model.long_id = model.get('long_id')
       model.set('description', htmlFormat(model.attributes.description))
 
+    @listenTo ConsiderIt.router, 'user:signin', =>
+    @listenTo ConsiderIt.router, 'user:signout', => 
+      @purge_inaccessible()
+
+
+
   add_proposals : (proposals_data) ->
     proposals = []
 
@@ -30,8 +36,8 @@ class ConsiderIt.ProposalList extends Backbone.Paginator.clientPager
         proposals.push(proposal)
 
     @add proposals
-    ConsiderIt.app.proposals.add proposals if ConsiderIt.app? && ConsiderIt.app.proposals != @
-    # Watchout! sometimes the collection won't keep the same proposal object, so ConsiderIt.app.proposals might be out of sync with @collection
+    ConsiderIt.all_proposals.add proposals if ConsiderIt.app? && ConsiderIt.all_proposals != @
+    # Watchout! sometimes the collection won't keep the same proposal object, so ConsiderIt.all_proposals might be out of sync with @collection
 
   add_proposal : (proposal_data) ->  
     current_proposal = @get proposal_data.proposal.id

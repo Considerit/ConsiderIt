@@ -58,13 +58,13 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     ConsiderIt.router.on 'route:PointDetails', => @close(false) if @$dashboard_el.is(':visible')    
 
 
-    @listenTo ConsiderIt.app, 'user:signin', => 
+    @listenTo ConsiderIt.router, 'user:signin', => 
       @model = ConsiderIt.current_user
       if @$dashboard_el.is(':visible') && @current_context
         @render()
         Backbone.history.loadUrl(Backbone.history.fragment)
     
-    @listenTo ConsiderIt.app, 'user:signout', => @close() if @$dashboard_el.is(':visible') && @current_context
+    @listenTo ConsiderIt.router, 'user:signout', => @close() if @$dashboard_el.is(':visible') && @current_context
 
   render : ->
     visible = @$dashboard_el.is(':visible')
@@ -123,8 +123,8 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     options = 
       admin_template_needed: true
       params : { 
-        active_proposals: ConsiderIt.app.proposals.where {active: true}
-        inactive_proposals: ConsiderIt.app.proposals.where {active: false}
+        active_proposals: ConsiderIt.all_proposals.where {active: true}
+        inactive_proposals: ConsiderIt.all_proposals.where {active: false}
       }
     @_process_dashboard_context('manage_proposals', options)
 
@@ -272,6 +272,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     'click [data-target="analyze"]' : 'navigate_to_analyze'
     'click [data-target="database"]' : 'navigate_to_database'
 
+    'click [data-target="user_profile_page"]' : 'view_user_profile'
 
 
   navigate_to_profile : -> ConsiderIt.router.navigate Routes.profile_path( ConsiderIt.current_user.id ), {trigger: true}
@@ -285,6 +286,9 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   navigate_to_assess : -> ConsiderIt.router.navigate Routes.assessment_index_path(), {trigger: true}
   navigate_to_analyze : -> ConsiderIt.router.navigate Routes.analytics_path(), {trigger: true}
   navigate_to_database : -> ConsiderIt.router.navigate 'dashboard/data', {trigger: true}
+
+  # handles user profile access for anyone throughout the app  
+  view_user_profile : (ev) -> ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
 
 
   activity_toggled : (ev) ->

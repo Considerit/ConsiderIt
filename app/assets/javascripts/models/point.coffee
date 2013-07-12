@@ -4,7 +4,7 @@ class ConsiderIt.Point extends Backbone.Model
 
   initialize : ->
     super
-    @proposal = ConsiderIt.app.proposals.get @attributes.proposal_id
+    @proposal = ConsiderIt.all_proposals.get @attributes.proposal_id
     @attributes.nutshell = htmlFormat(@attributes.nutshell)
     @attributes.text = htmlFormat(@attributes.text)
     @data_loaded = false

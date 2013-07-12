@@ -36,8 +36,8 @@ class ConsiderIt.ProposalList extends Backbone.Paginator.clientPager
         proposals.push(proposal)
 
     @add proposals
-    ConsiderIt.all_proposals.add proposals if ConsiderIt.app? && ConsiderIt.all_proposals != @
-    # Watchout! sometimes the collection won't keep the same proposal object, so ConsiderIt.all_proposals might be out of sync with @collection
+    ConsiderIt.all_proposals.add proposals if ConsiderIt.all_proposals != @
+    # Watchout! sometimes the collection won't keep the same proposal model, so ConsiderIt.all_proposals might be out of sync with @collection
 
   add_proposal : (proposal_data) ->  
     current_proposal = @get proposal_data.proposal.id

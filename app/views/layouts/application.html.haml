@@ -125,9 +125,8 @@
                     #m-dashboard.l-content-wrap
 
                     = render :partial => "shared/body"
-            = render :partial => "shared/footer/container"
 
-            = render :partial => 'backbone/data'        
+            = render :partial => "shared/footer/container"
 
             - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
               :javascript
@@ -142,3 +141,5 @@
                 var _gaq_account = _gaq_account || [];
                 _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
                 _gaq_account.push(['_trackPageview']);
+
+        = render :partial => 'backbone/data'        

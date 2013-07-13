@@ -272,7 +272,7 @@
               - providers.each do |(provider, path)|
                 .m-user-accounts-authorized-feedback{:'data-provider' => "#{provider}" }
 
-                  %a{ :class => "zocial #{provider} icon" }
+                  %button{ :class => "zocial #{provider} icon" }
 
                   Registering via #{provider}
 

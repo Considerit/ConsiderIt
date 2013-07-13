@@ -76,7 +76,7 @@ $.fn.customFileInput = function(){
   //create custom control feedback
   var uploadFeedback = $('<span class="customfile-feedback" aria-hidden="true">No file selected...</span>').appendTo(upload);
 
-  var uploadPreview = $('<div class="customfile-preview-wrap"><img src="/system/default_avatar/medium_default-profile-pic.png" class="customfile-preview" aria-hidden="true"></div>').appendTo(upload);
+  var uploadPreview = $('<div class="customfile-preview-wrap"><img src="/system/default_avatar/large_default-profile-pic.png" class="customfile-preview" aria-hidden="true"></div>').appendTo(upload);
   //create custom control button
   var uploadButton = $('<span class="customfile-button" aria-hidden="true">change picture</span>').appendTo(upload);
   

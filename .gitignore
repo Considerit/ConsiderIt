@@ -59,3 +59,5 @@ public/system/default_avatar/avatar.sketch*
 zansible/group_vars/consideritus
 
 zansible/hosts-consideritus
+
+considerit_pristine_transition.sql

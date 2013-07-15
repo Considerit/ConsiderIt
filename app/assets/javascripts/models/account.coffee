@@ -3,7 +3,9 @@ class ConsiderIt.Account extends Backbone.Model
   
   initialize : (attrs) ->
     super #attrs
-
+    @attributes.header_text = htmlFormat(@attributes.header_text)
+    @attributes.header_details_text = htmlFormat(@attributes.header_details_text)
+    
     @set( 'slider_right', 'oppose') if !!!@get( 'slider_right')
     @set( 'slider_left', 'support') if !!!@get( 'slider_left')
 

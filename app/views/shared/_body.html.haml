@@ -14,10 +14,10 @@
           = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
           %span.l-message-title
-            = current_tenant.header_text
+            = simple_format current_tenant.header_text
 
           .l-message-details
-            = current_tenant.header_details_text
+            = simple_format current_tenant.header_details_text
 
 
   #m-proposals-container

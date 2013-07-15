@@ -329,7 +329,7 @@
 
             (( _.each(description_detail_fields, function(field) {  ))
 
-            (( if( field[2] != '') { ))
+            (( if( $.trim(field[2]) != '') { ))
             .m-proposal-description-detail-field
               .m-proposal-description-detail-field-heading
                 {{ field[1] }}

@@ -10,7 +10,7 @@
       = theme_image_tag 'logo_large.png', :class => 't-logo'
               
       .l-message-title
-        = current_tenant.header_text
+        = simple_format current_tenant.header_text
 
 
       / = theme_image_tag 'shadow-big.png', :style => "margin-top: 4px"

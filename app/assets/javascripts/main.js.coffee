@@ -145,15 +145,10 @@ window.openPopupWindow = (url) ->
   , 200
 
 window.pollLoginPopup = ->
-  console.log window.openidpopup.open_id_params
-  if window.openidpopup && window.openidpopup.open_id_params
-    console.log 'INSIDE'
-    console.log window.openidpopup.open_id_params
+  if window.openidpopup? && window.openidpopup.open_id_params?
     window.handleOpenIdResponse(window.openidpopup.open_id_params)
-    console.log 'INSIDE2'
     window.openidpopup.close()
     window.openidpopup = null
-    console.log 'INSIDE3'
     window.clearInterval(window.polling_interval)
 
 window.handleOpenIdResponse = (parameters) ->  

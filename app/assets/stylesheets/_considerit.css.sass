@@ -573,6 +573,10 @@ $membership_card_height: 278px
     padding: $vertical_baseline $grid_xs
     margin: $vertical_baseline auto 0 auto
 
+    color: $initiator_text_color
+
+
+
     .m-user-accounts-logo
       display: block
       margin-bottom: $vertical_baseline
@@ -593,6 +597,7 @@ $membership_card_height: 278px
       &.ui-state-valid
         border-color: transparent
         background-color: transparent
+        color: $initiator_text_color
 
     .name_field input
       +font-size(4)
@@ -1749,7 +1754,6 @@ $m-point-expanded-width: $body_width + 150
 
   .m-proposal-description
     +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
-    cursor: pointer
 
     p
       margin-bottom: $vertical_baseline
@@ -1781,6 +1785,8 @@ $m-point-expanded-width: $body_width + 150
 
 // unexpanded proposal
 .m-proposal[data-state="0"]
+  .m-proposal-description
+    cursor: pointer
   .m-position-your-action-body.join
     top: -9px
     +font-size(-2)

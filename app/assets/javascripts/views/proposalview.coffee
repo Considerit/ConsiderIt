@@ -210,8 +210,8 @@ class ConsiderIt.ProposalView extends Backbone.View
     return if !@model.get('published') || (@state > 0 && ( $(ev.target).closest('.editable').length > 0 || $(ev.target).closest('.editable-container').length > 0))
     if @$el.is('[data-state="0"]')
       ConsiderIt.router.navigate(Routes.new_position_proposal_path( @model.long_id ), {trigger: true})
-    else
-      ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
+    #else
+    #  ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
 
     # @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
 

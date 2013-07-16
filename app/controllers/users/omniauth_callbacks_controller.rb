@@ -33,9 +33,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     render :inline =>
       "<script type=\"text/javascript\">" +
-      "  var opener = window.opener;" +
+      "  window.open_id_params = #{params.to_json};  " + 
       "  window.close();" +
-      "  opener.handleOpenIdResponse(#{params.to_json}, '#{form_authenticity_token}');"   +
       "</script>"
 
   end

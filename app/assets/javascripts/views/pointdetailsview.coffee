@@ -34,6 +34,8 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       commentable_id: @model.id
       commentable_type: 'Point'})
 
+    @listenTo @commentsview, 'CommentListView:new_comment_added', => @model.set('comment_count', @model.comments.length )
+
 
     if ConsiderIt.current_user.is_logged_in()
       if !ConsiderIt.PointDetailsView.follow_tpl
@@ -43,7 +45,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       )))
 
     #TODO: if user logs in as admin, need to do this
-    if ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.roles.is_admin
+    if ConsiderIt.current_user.id == @model.get('user_id') #|| ConsiderIt.roles.is_admin
       @$el.find('.m-point-nutshell ').editable
           resource: 'point'
           pk: @model.id

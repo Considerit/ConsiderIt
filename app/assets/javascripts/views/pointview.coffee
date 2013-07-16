@@ -29,8 +29,13 @@ class ConsiderIt.PointView extends Backbone.View
       )
     )
     
+    @stickit()
     this
 
+  bindings : 
+    '.m-point-read-more' : 
+      observe : 'comment_count'
+      onGet : -> if @model.get('comment_count') == 1 then "1 comment" else "#{@model.get('comment_count')} comments"
 
   do_after_data_loaded : (callback, callback_params) ->
     if @model.data_loaded

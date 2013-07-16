@@ -143,10 +143,10 @@ window.openPopupWindow = (url) ->
   , 200
 
 window.pollLoginPopup = ->
-  if params = window.openidpopup.open_id_params
-    window.clearInterval(window.polling_interval)
+  if window.openidpopup && params = window.openidpopup.open_id_params
     window.handleOpenIdResponse(params)
     window.openidpopup = null
+    window.clearInterval(window.polling_interval)
 
 window.handleOpenIdResponse = (parameters) ->  
   parameters.user = parameters.user.user

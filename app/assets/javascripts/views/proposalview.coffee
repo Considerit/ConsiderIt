@@ -36,13 +36,11 @@ class ConsiderIt.ProposalView extends Backbone.View
   render : -> 
     if !@rendered
       @$el.html ConsiderIt.ProposalView.unexpanded_template($.extend({}, @model.attributes, {
-          title : this.model.title()
-          description_detail_fields : this.model.description_detail_fields()
-          avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'large')
-          tile_size : Math.min 50, ConsiderIt.utils.get_tile_size(110, 55, @model.participants().length)
-          participants : _.sortBy(@model.participants(), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
-
-        }))
+        description_detail_fields : this.model.description_detail_fields()
+        avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'large')
+        tile_size : Math.min 50, ConsiderIt.utils.get_tile_size(110, 55, @model.participants().length)
+        participants : _.sortBy(@model.participants(), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
+      }))
 
       results_el = $('<div class="l-message m-proposal-message">')
       @results_view = new ConsiderIt.ResultsView
@@ -71,15 +69,25 @@ class ConsiderIt.ProposalView extends Backbone.View
 
       @$main_content_el = @$el.children('.l-content-wrap:first')
 
+      @transition_unexpanded()
+
+      @stickit()
+
       #TODO: if user logs in as admin, need to do this
       @render_admin_strip()
-
-      @transition_unexpanded()
 
       @rendered = true
 
     this
 
+  bindings : 
+    '.m-proposal-description-title' : 
+      observe : ['name', 'description']
+      onGet : (values) -> @model.title()
+    '.m-proposal-description-body' : 
+      observe : 'description'
+      updateMethod: 'html'
+      onGet : (value) => htmlFormat(value)
 
 
   can_edit : ->
@@ -307,9 +315,10 @@ class ConsiderIt.ProposalView extends Backbone.View
       admin_strip_el.html( template(@model.attributes))
       @$main_content_el.append admin_strip_el 
 
-      for field in ConsiderIt.ProposalView.editable_fields
+      _.each ConsiderIt.ProposalView.editable_fields, (field) =>
         [selector, name, type] = field 
-        @$el.find(selector).editable {
+
+        @$el.find(selector).editable
           resource: 'proposal'
           pk: @long_id
           disabled: !@state? && @model.get('published')
@@ -317,7 +326,7 @@ class ConsiderIt.ProposalView extends Backbone.View
           type: type
           name: name
           success : (response, new_value) => @model.set(name, new_value)
-        }
+        
     else if @has_been_admin_in_past
       for field in ConsiderIt.ProposalView.editable_fields
         [selector, name, type] = field 

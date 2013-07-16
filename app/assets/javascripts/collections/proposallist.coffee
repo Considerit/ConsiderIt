@@ -16,7 +16,7 @@ class ConsiderIt.ProposalList extends Backbone.Paginator.clientPager
 
     @on 'add', (model) =>
       model.long_id = model.get('long_id')
-      model.set('description', htmlFormat(model.attributes.description))
+      #model.set('description', htmlFormat(model.attributes.description))
 
     @listenTo ConsiderIt.router, 'user:signin', =>
     @listenTo ConsiderIt.router, 'user:signout', => 

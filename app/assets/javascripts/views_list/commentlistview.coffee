@@ -52,4 +52,6 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
       wait: true
       success : (data) =>
         @$el.find('.m-new-comment-body-field').val('')
+        @trigger 'CommentListView:new_comment_added'
+
 

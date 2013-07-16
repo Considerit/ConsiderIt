@@ -5,7 +5,7 @@ class ConsiderIt.Proposal extends Backbone.Model
 
   initialize : (options, top_pro, top_con) ->
     super options
-    @attributes.description = htmlFormat(@attributes.description)
+    #@attributes.description = htmlFormat(@attributes.description)
 
     @data_loaded = false
 

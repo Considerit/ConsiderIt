@@ -136,13 +136,16 @@ window.getCenteredCoords = (width, height) ->
 
 window.openPopupWindow = (url) ->
   window.openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
+  window.openidpopup.open_id_params = null
   coords = getCenteredCoords(450,500)  
   openidpopup.moveTo(coords[0],coords[1])
+  console.log window.openidpopup
   window.polling_interval = window.setInterval -> 
     window.pollLoginPopup()
   , 200
 
 window.pollLoginPopup = ->
+  console.log window.openidpopup
   if window.openidpopup && params = window.openidpopup.open_id_params
     window.handleOpenIdResponse(params)
     window.openidpopup = null

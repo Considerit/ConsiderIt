@@ -138,15 +138,22 @@ window.openPopupWindow = (url) ->
   window.openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
   coords = getCenteredCoords(450,500)  
   openidpopup.moveTo(coords[0],coords[1])
+  window.polling_interval = window.setInterval -> 
+    window.pollLoginPopup()
+  , 200
 
-window.handleOpenIdResponse = (parameters, redirect_to) ->  
+window.pollLoginPopup = ->
+  if params = window.openidpopup.open_id_params
+    window.clearInterval(window.polling_interval)
+    window.handleOpenIdResponse(params)
+    window.openidpopup = null
+
+window.handleOpenIdResponse = (parameters) ->  
   parameters.user = parameters.user.user
-
   ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
 
 $.event.special.destroyed =
-  remove: (o) ->
-    o.handler() if o.handler
+  remove: (o) -> o.handler() if o.handler
           
 $(document).on "click", "a[href^='/']", (event) ->
   href = $(event.currentTarget).attr('href')

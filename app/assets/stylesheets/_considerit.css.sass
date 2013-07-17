@@ -390,6 +390,13 @@ html
 // HEADING 
 //////////////////////////////////////////
 
+.t-logo-name, .t-logo-separator
+  display: inline-block
+.t-logo-name
+  text-transform: uppercase
+.t-logo-separator
+
+
 #l-heading
   .t-logo
     position: relative
@@ -399,7 +406,6 @@ html
 
     // left: 106px
     +font-size(-1)
-    text-transform: uppercase
     @extend %bolded
     @extend %on_header_footer
     opacity: .8
@@ -408,7 +414,6 @@ html
     .t-logo-tagline
       display: inline-block
       margin-left: $grid_xs/2
-      text-transform: none
 
   .l-navigate
     display: none

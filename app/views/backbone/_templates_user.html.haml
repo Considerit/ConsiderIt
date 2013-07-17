@@ -119,6 +119,7 @@
               .email_field.inlined.fixed
 
               .password_field.inlined
+                = f.label :email, 'Password'              
                 = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
                 %a.forget_password_prompt
                   I forgot. Email me password instructions. 

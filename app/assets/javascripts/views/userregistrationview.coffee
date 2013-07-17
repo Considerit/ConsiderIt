@@ -24,7 +24,7 @@ class ConsiderIt.RegistrationView extends Backbone.View
     @$el.find('input[type="file"]').customFileInput()
     @$el.find('form').h5Validate({errorClass : 'error'});
 
-    @$el.find('[placeholder]').simplePlaceholder()
+    @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
 
     @signin_method = null
     @stickit()

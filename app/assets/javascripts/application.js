@@ -21,8 +21,8 @@
 //= require jquery.editable-rails
 //= require jquery.copycss
 //= require jquery.tooltipster
-//= require sevenup.min
-//= require sevenup_black.min
+// require sevenup.min
+// require sevenup_black.min
 //= require format
 
 //= require js-routes

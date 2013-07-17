@@ -92,11 +92,15 @@ class ConsiderIt.RegistrationView extends Backbone.View
     @$el.find('.m-user-accounts-complete').show()
 
     @update_avatar_file(ConsiderIt.current_user.attributes.avatar_url)
+    
+    @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
+    
+    if signin_method == 'email'
+      if Modernizr.input.placeholder
+        @$el.find('#user_name').focus() 
+      else
+        @$el.find('.password_field').prepend('<label for="user_password">Password</label>')
 
-    if !Modernizr.input.placeholder
-      @$el.find('[placeholder]').simplePlaceholder()
-    else if signin_method == 'email'
-      @$el.find('#user_name').focus()
 
 
   update_user : (ev, response, options) ->

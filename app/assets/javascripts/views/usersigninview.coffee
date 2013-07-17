@@ -23,8 +23,6 @@ class ConsiderIt.SignInView extends Backbone.View
     @$el.find('input[type="file"]').customFileInput()
     @$el.find('form').h5Validate({errorClass : 'error'})
 
-    @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
-
     this
 
   events : 
@@ -43,6 +41,7 @@ class ConsiderIt.SignInView extends Backbone.View
     @$el.find('.m-user-accounts-complete').show()
 
     if choice == 'email'
+      @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
       @$el.find('#user_email').focus()
 
 

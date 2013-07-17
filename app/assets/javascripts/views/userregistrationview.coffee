@@ -24,8 +24,6 @@ class ConsiderIt.RegistrationView extends Backbone.View
     @$el.find('input[type="file"]').customFileInput()
     @$el.find('form').h5Validate({errorClass : 'error'});
 
-    @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
-
     @signin_method = null
     @stickit()
     this
@@ -94,6 +92,8 @@ class ConsiderIt.RegistrationView extends Backbone.View
     @$el.find('.m-user-accounts-complete').show()
 
     @update_avatar_file(ConsiderIt.current_user.attributes.avatar_url)
+
+    @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
 
     if signin_method == 'email'
       @$el.find('#user_name').focus()

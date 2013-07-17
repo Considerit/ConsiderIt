@@ -139,9 +139,6 @@ window.handleOpenIdResponse = (parameters) ->
   ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
 
 window.pollLoginPopup = ->
-  console.log '*'
-  console.log window.location
-  console.log window.openidpopup.location
   if window.location.origin == window.openidpopup.location.origin && window.openidpopup? && window.openidpopup.open_id_params?
     window.handleOpenIdResponse(window.openidpopup.open_id_params)
     window.openidpopup.close()

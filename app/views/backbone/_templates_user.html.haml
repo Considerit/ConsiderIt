@@ -178,9 +178,11 @@
             .m-user-accounts-form-fields-text
 
               .email_field.inlined
+                = f.label :email, 'Email'
                 = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
 
               .password_field.inlined
+                = f.label :email, 'Password'              
                 = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
                 %a.forget_password_prompt
                   I forgot. Email me password instructions. 

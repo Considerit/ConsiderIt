@@ -41,8 +41,10 @@ class ConsiderIt.SignInView extends Backbone.View
     @$el.find('.m-user-accounts-complete').show()
 
     if choice == 'email'
-      @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
-      @$el.find('#user_email').focus()
+      if !Modernizr.input.placeholder
+        @$el.find('[placeholder]').simplePlaceholder() 
+      else
+        @$el.find('#user_email').focus()
 
 
   handle_forgetten_password : (ev) =>
@@ -108,9 +110,10 @@ class ConsiderIt.PasswordResetView extends ConsiderIt.SignInView
 
     @$el.find('input[type="file"]').customFileInput()
     @$el.find('form').h5Validate({errorClass : 'error'})
-    @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
-
-    @$el.find('#user_password').focus()
+    if !Modernizr.input.placeholder
+      @$el.find('[placeholder]').simplePlaceholder() 
+    else
+      @$el.find('#user_password').focus()
 
     this
 

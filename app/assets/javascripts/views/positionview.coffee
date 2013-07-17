@@ -219,7 +219,6 @@ class ConsiderIt.CraftingView extends Backbone.View
     @$el.find('.m-newpoint-description').autoResize {extraSpace: 10, minHeight: 100 }
 
     @$el.find('.m-position-statement').autoResize {extraSpace: 5}
-    @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
 
     for el in @$el.find('.m-newpoint-form .is_counted')
       $(el).NobleCount $(el).siblings('.count'), {
@@ -360,6 +359,9 @@ class ConsiderIt.CraftingView extends Backbone.View
     $form.find('.m-newpoint-nutshell, .m-newpoint-description').trigger('keyup')
     $form.show() # 'fast', () ->
       #$(this).find('iframe').focus().contents().trigger('keyup').find('#page')            
+
+    $form.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
+
     $form.find('.m-newpoint-nutshell').focus()
   
   cancel_new_point : (ev) ->

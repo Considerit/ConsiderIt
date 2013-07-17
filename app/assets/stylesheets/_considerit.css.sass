@@ -543,7 +543,7 @@ $membership_card_height: 278px
   display: none
 
   .m-user-accounts-form-fields-wrap
-    margin: $vertical_baseline 0
+    padding: $vertical_baseline 0
 
     .email_field input, .password_field input
       +font-size(0)
@@ -566,6 +566,8 @@ $membership_card_height: 278px
   .forget_password_prompt
     +font-size(-3)
     display: block
+    &:hover
+      text-decoration: underline
     
 .m-user-accounts-complete-register
   .m-user-accounts-form

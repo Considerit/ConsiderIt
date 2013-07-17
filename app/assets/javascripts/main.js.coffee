@@ -134,26 +134,29 @@ window.getCenteredCoords = (width, height) ->
   yPos = 100
   [xPos, yPos]
 
-window.openPopupWindow = (url) ->
-  window.openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
-  window.openidpopup.open_id_params = null
-  coords = getCenteredCoords(450,500)  
-  openidpopup.moveTo(coords[0],coords[1])
-  console.log window.openidpopup
-  window.polling_interval = window.setInterval -> 
-    window.pollLoginPopup()
-  , 200
+window.handleOpenIdResponse = (parameters) ->  
+  parameters.user = parameters.user.user
+  ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
 
 window.pollLoginPopup = ->
-  if window.openidpopup? && window.openidpopup.open_id_params?
+  console.log '*'
+  console.log window.location
+  console.log window.openidpopup.location
+  if window.location.origin == window.openidpopup.origin && window.openidpopup? && window.openidpopup.open_id_params?
     window.handleOpenIdResponse(window.openidpopup.open_id_params)
     window.openidpopup.close()
     window.openidpopup = null
     window.clearInterval(window.polling_interval)
 
-window.handleOpenIdResponse = (parameters) ->  
-  parameters.user = parameters.user.user
-  ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
+window.openPopupWindow = (url) ->
+  window.openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
+  window.openidpopup.open_id_params = null
+  coords = getCenteredCoords(450,500)  
+  openidpopup.moveTo(coords[0],coords[1])
+  window.polling_interval = window.setInterval -> 
+    window.pollLoginPopup()
+  , 200
+
 
 $.event.special.destroyed =
   remove: (o) -> o.handler() if o.handler

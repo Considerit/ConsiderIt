@@ -19,7 +19,7 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
 
     @$el.append(ConsiderIt.CommentListView.newcomment_template({user : ConsiderIt.current_user }))
 
-    @$el.find('[placeholder]').simplePlaceholder()
+    @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
 
     for el in @$el.find('.m-new-comment .is_counted')
       $(el).NobleCount $(el).siblings('.count'), {

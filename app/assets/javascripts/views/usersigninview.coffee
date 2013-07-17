@@ -23,7 +23,7 @@ class ConsiderIt.SignInView extends Backbone.View
     @$el.find('input[type="file"]').customFileInput()
     @$el.find('form').h5Validate({errorClass : 'error'})
 
-    @$el.find('[placeholder]').simplePlaceholder()
+    @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
 
     this
 
@@ -109,7 +109,7 @@ class ConsiderIt.PasswordResetView extends ConsiderIt.SignInView
 
     @$el.find('input[type="file"]').customFileInput()
     @$el.find('form').h5Validate({errorClass : 'error'})
-    @$el.find('[placeholder]').simplePlaceholder()
+    @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
 
     @$el.find('#user_password').focus()
 

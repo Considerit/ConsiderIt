@@ -39,7 +39,7 @@
         (function(w,d,u){w.readyQ=[];w.bindReadyQ=[];function p(x,y){if(x=="ready"){w.bindReadyQ.push(y);}else{w.readyQ.push(x);}};var a={ready:p,bind:p};w.$=w.jQuery=function(f){if(f===d||f===u){return a}else{p(f)}}})(window,document)
 
         $(document).ready(function(){
-          sevenUp.plugin.black.test({});    
+          //sevenUp.plugin.black.test({});    
 
           var stylesheet = document.createElement('link');
           stylesheet.href = "/system/cache/#{current_tenant.identifier}.css";
@@ -144,3 +144,15 @@
                 _gaq_account.push(['_trackPageview']);
 
     = render :partial => 'backbone/data'        
+
+
+    :javascript
+      var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
+      $buoop.ol = window.onload; 
+      window.onload=function(){ 
+        try {if ($buoop.ol) $buoop.ol();}catch (e) {} 
+        var e = document.createElement("script"); 
+        e.setAttribute("type", "text/javascript"); 
+        e.setAttribute("src", "http://browser-update.org/update.js"); 
+        document.body.appendChild(e); 
+      } 

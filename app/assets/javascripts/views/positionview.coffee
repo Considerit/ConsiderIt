@@ -360,9 +360,10 @@ class ConsiderIt.CraftingView extends Backbone.View
     $form.show() # 'fast', () ->
       #$(this).find('iframe').focus().contents().trigger('keyup').find('#page')            
 
-    $form.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
-
-    $form.find('.m-newpoint-nutshell').focus()
+    if !Modernizr.input.placeholder
+      $form.find('[placeholder]').simplePlaceholder() 
+    else
+      $form.find('.m-newpoint-nutshell').focus()
   
   cancel_new_point : (ev) ->
     $form = $(ev.currentTarget).closest('.m-newpoint-form')

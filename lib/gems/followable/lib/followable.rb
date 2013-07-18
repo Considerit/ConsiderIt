@@ -28,7 +28,6 @@ module Followable
         if user.nil?
           return
         end
-        pp 'HI'
         follow = params[:follow]
         explicit = params[:explicit]
 

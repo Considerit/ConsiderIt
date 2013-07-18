@@ -176,7 +176,7 @@ class ConsiderIt.CraftingView extends Backbone.View
 
     @$el.hide()
     @$el.html ConsiderIt.CraftingView.template($.extend({}, @model.attributes, {
-      proposal : @model.proposal.attributes
+      proposal : @proposal.attributes
     }))
 
     @slider = 

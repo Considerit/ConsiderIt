@@ -23,6 +23,10 @@ class ConsiderIt.ProposalList extends Backbone.Paginator.clientPager
       @purge_inaccessible()
 
 
+  create : ->
+    prop = super
+    ConsiderIt.all_proposals.add prop if ConsiderIt.all_proposals != @
+    prop
 
   add_proposals : (proposals_data) ->
     proposals = []

@@ -322,7 +322,7 @@ class ConsiderIt.ProposalView extends Backbone.View
         @$el.find(selector).editable
           resource: 'proposal'
           pk: @long_id
-          disabled: !@state? && @model.get('published')
+          disabled: @state == 0 && @model.get('published')
           url: Routes.proposal_path @model.long_id
           type: type
           name: name

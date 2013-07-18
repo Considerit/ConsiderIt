@@ -156,12 +156,12 @@ class ConsiderIt.YourActionView extends Backbone.View
 
   crafting_state : ->
     @$el.html ConsiderIt.YourActionView.save_template
-      updating : false
+      updating : @model && @model.get('published')
       follows : ConsiderIt.current_user.is_following('Proposal', @model.id)
 
   close_crafting : ->
     @$el.html ConsiderIt.YourActionView.craft_template
-      call : if true then 'What do you think?' else 'Revisit the conversation'
+      call : if @model && @model.get('published') then 'What do you think?' else 'Update your position'
       long_id : @proposal.long_id
 
 

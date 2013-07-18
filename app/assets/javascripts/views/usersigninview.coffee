@@ -41,10 +41,10 @@ class ConsiderIt.SignInView extends Backbone.View
     @$el.find('.m-user-accounts-complete').show()
 
     if choice == 'email'
+      @$el.find('#user_email').focus()
+
       if !Modernizr.input.placeholder
         @$el.find('[placeholder]').simplePlaceholder() 
-      else
-        @$el.find('#user_email').focus()
 
 
   handle_forgetten_password : (ev) =>

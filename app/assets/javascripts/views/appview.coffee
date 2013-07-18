@@ -22,7 +22,6 @@ class ConsiderIt.AppView extends Backbone.View
 
   render : () ->
     @usermanagerview.render()
-    @dashboardview.render()
     @proposals_manager.render()    
 
     # kick off events for the current path

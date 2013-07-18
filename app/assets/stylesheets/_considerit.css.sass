@@ -1777,9 +1777,6 @@ $m-point-expanded-width: $body_width + 150
     .hidden, .showing
       text-decoration: underline  
 
-  .m-proposal-description-body, .m-proposal-description-details
-    display: none
-
   .m-results-summary 
     .m-results-pro-con-list-who
       display: none
@@ -1804,7 +1801,8 @@ $m-point-expanded-width: $body_width + 150
   .m-position-your-action-body.join
     top: -9px
     +font-size(-2)
-
+  .m-proposal-description-body, .m-proposal-description-details
+    display: none
 
 // results view of proposal
 .m-proposal[data-state="2"], .m-proposal[data-state="4"]
@@ -1871,19 +1869,29 @@ $m-point-expanded-width: $body_width + 150
     .m-proposal-description-title-readmore
       display: none
 
+
   .m-proposal-strip_publish
-    position: relative
-    text-align: center
-    .m-proposal-publish
-      width: $body_width
-      //margin-left: $margin_width + 5
-      +sassy-button("glass", 5px, inherit, desaturate($callout_bg_color, 100%), darken( desaturate($standout_color, 100%), 8%) )
-      +font-size(1)
-      color: desaturate($callout_text_color, 100%)
-      font-weight: bold
+    display: none
+  &[data-state="0"]
+    .m-proposal-description-body
+      display: block
+    .m-position-your_action
+      display: none
+
+    .m-proposal-strip_publish
+      position: relative
       text-align: center
-      margin-top: -7px
-      border-radius: 0 0 5px 5px
+      display: block
+      .m-proposal-publish
+        width: $body_width
+        //margin-left: $margin_width + 5
+        +sassy-button("glass", 5px, inherit, desaturate($callout_bg_color, 100%), darken( desaturate($standout_color, 100%), 8%) )
+        +font-size(1)
+        color: desaturate($callout_text_color, 100%)
+        font-weight: bold
+        text-align: center
+        margin-top: -7px
+        border-radius: 0 0 5px 5px
 
 // proposals with no activity
 .m-proposal[data-activity="proposal-no-activity"]

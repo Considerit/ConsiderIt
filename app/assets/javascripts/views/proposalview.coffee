@@ -53,7 +53,7 @@ class ConsiderIt.ProposalView extends Backbone.View
       @listenTo @results_view, 'results:explode_participants', => @set_state(4)
 
 
-      if @model.get('published') #|| @can_edit()
+      if @model.get('published') || @can_edit()
         @position_view = new ConsiderIt.PositionView
           proposal : @model
           model : @model.position
@@ -117,6 +117,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   # TODO: This should be triggered on results opened & position opened
   transition_expanded : (new_state) =>
+
     @$el.css('display', '') if !@$el.is(':visible')
     if new_state == @state #can happen, e.g. when transitioning out of point details view
       @$hidden_els.css('display', 'none')

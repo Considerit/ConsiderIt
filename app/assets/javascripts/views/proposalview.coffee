@@ -236,7 +236,7 @@ class ConsiderIt.ProposalView extends Backbone.View
   hide_details : (ev) -> 
     $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
-    if $('body').scrollTop() > $block.offset().top
+    if $(document).scrollTop() > $block.offset().top
       $('body').animate {scrollTop: $block.offset().top}, 1000
 
     $block.find('.m-proposal-description-detail-field-full').slideUp(1000);

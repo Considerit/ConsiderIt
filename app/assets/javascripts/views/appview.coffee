@@ -84,7 +84,7 @@ class ConsiderIt.AppView extends Backbone.View
 
       $("[data-domain='homepage']:visible").hide()
 
-      $('body').scrollTop(0) if @last_page == '/' && !_.contains(['route:PointDetails', 'route:StaticPosition'], route)
+      $(document).scrollTop(0) if @last_page == '/' && !_.contains(['route:PointDetails', 'route:StaticPosition'], route)
         
 
       $back.find('.l-navigate-breadcrumbs').html @breadcrumbs_template({crumbs: @breadcrumbs})

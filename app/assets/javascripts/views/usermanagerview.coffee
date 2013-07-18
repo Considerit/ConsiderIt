@@ -122,11 +122,13 @@ class ConsiderIt.UserManagerView extends Backbone.View
     $overlay
 
   center_overlay : () ->
+
     $overlay = $('#registration_overlay')
+
     $overlay.offset 
-      #top: $('body').scrollTop() + window.innerHeight / 2 - $overlay.outerHeight() / 2     
-      top: $('body').scrollTop() + 50
-      left: window.innerWidth / 2 - $overlay.outerWidth() / 2
+      #top: $(document).scrollTop() + window.innerHeight / 2 - $overlay.outerHeight() / 2     
+      top: $(document).scrollTop() + 50
+      left: $(window).innerWidth() / 2 - $overlay.outerWidth() / 2
 
 
   post_signin : () ->
@@ -148,6 +150,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
       parent : me
 
     me.registrationview.render()
+
     me.registrationview.$el.bind 'destroyed', () => @post_signin()
 
     me.center_overlay()

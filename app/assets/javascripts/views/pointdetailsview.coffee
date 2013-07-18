@@ -81,9 +81,6 @@ class ConsiderIt.PointDetailsView extends Backbone.View
         if $(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id 
           @close_details( $(ev.target).closest('[data-role="m-point"]').length == 0 && $(ev.target).closest('.l-navigate-wrap').length == 0 ) 
 
-      @$el.on 'click.m-point-details', (ev) => 
-        ev.stopPropagation() if !$(ev.target).data('target')
-          
       $(document).on 'keyup.m-point-details', (ev) => @close_details() if ev.keyCode == 27 && $('.l-dialog-detachable').length == 0
 
       next()

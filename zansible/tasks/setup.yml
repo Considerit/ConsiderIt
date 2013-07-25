@@ -189,6 +189,10 @@
   sudo: True
   only_if: is_set('${server.name}')
 
+- name: Add nginx bootup script to bootup process
+  shell: update-rc.d nginx defaults
+  sudo: True
+
 
 # Setup SSL
 - name: Make ssl directory

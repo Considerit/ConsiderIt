@@ -104,17 +104,17 @@
         (( var type_label = is_pro ? 'pro' : 'con', label = "hide_name-" + type_label; ))
 
         .m-newpoint-anonymous-wrap
-          %label{ :for => "{{label}}", :title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'}
-            conceal your name
-
           %input.m-newpoint-anonymous{ :id => "{{label}}", :name => "{{label}}", :type => "checkbox"}
 
+          %label{ :for => "{{label}}", :title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'}
+            Conceal your name
+
         .m-newpoint-submit
+          %input.m-newpoint-create.button{ :type => 'submit', :value => 'Done'}
 
           %a.m-newpoint-cancel
             cancel
 
-          %input.m-newpoint-create.button{ :type => 'submit', :value => 'Done'}
           
   %script{ :type => "text/template", :id => "tpl_pointlist_empty" }
     .m-pointlist-empty

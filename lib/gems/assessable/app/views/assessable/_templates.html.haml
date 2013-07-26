@@ -207,7 +207,7 @@
               = f.hidden_field :reviewable, :value => true
               = f.hidden_field :id, :value => "{{ assessment.id }}"
               = f.hidden_field :user_id, :value => "{{ ConsiderIt.current_user.id }}"
-              = f.submit "{{ submit_text }}"
+              = f.submit "{{ submit_text }}", :class => "button"
           (( } ))
 
           .add_claim_form

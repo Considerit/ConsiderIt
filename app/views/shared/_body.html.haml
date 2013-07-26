@@ -9,7 +9,11 @@
       .l-message
         .l-message-speaker.left.l-message-initiator
           %a
-            = image_tag current_tenant.managing_account ? current_tenant.managing_account.avatar.url(:large): '/system/default_avatar/large_default-profile-pic.png'
+            - if current_tenant.managing_account
+              = image_tag current_tenant.managing_account.avatar.url(:large)
+            - else
+              %img{ :src => '/system/default_avatar/large_default-profile-pic.png'}
+
         .l-message-body.left.down
           = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 

@@ -11,7 +11,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   tagName : 'li'
 
-  @editable_fields : _.union([ ['.m-proposal-description-title', 'name', 'text'], ['.m-proposal-description-body', 'description', 'textarea'] ], ([".m-proposal-description-detail-field-#{f}", f, 'textarea'] for f in ConsiderIt.Proposal.description_detail_fields ))
+  @editable_fields : _.union([ ['.m-proposal-description-title', 'name', 'textarea'], ['.m-proposal-description-body', 'description', 'textarea'] ], ([".m-proposal-description-detail-field-#{f}", f, 'textarea'] for f in ConsiderIt.Proposal.description_detail_fields ))
 
   initialize : (options) -> 
     #@state = 0

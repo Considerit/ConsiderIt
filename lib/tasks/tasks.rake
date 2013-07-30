@@ -27,7 +27,6 @@ namespace :cache do
     beginning_time = Time.now
     ttime = 0
 
-    require 'open-uri'
 
     size = 'small'
     #TODO: do not automatically replace each file ... check hash at end for equality

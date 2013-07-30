@@ -53,7 +53,7 @@ rbenv_path: /home/$user/.rbenv #/usr/local/.rbenv
 ruby_home: /home/$user/.rbenv/shims
 rbenv_home: ${rbenv_path}/bin
 path: PATH="${rbenv_path}/bin:${rbenv_path}/plugins/ruby-build/bin:/home/$user/.rbenv/shims:$PATH"
-ruby_version: 1.9.3-p392
+ruby_version: 2.0.0-p247 #1.9.3-p392
 source: . ~/.profile
 port: 3000
 environment: production

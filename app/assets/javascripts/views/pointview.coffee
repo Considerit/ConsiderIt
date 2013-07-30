@@ -19,6 +19,7 @@ class ConsiderIt.PointView extends Backbone.View
       @user.on('change', @render, this)
 
   render : () -> 
+    return if @$el.is('.m-point-expanded')
     @reset_listeners()
     @$el.html(
       ConsiderIt.PointView.template $.extend({}, @model.attributes,

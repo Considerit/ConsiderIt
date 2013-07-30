@@ -24,6 +24,8 @@ namespace :cache do
   end
 
   task :avatars => :environment do 
+    beginning_time = Time.now
+
     require 'open-uri'
 
     size = 'small'
@@ -38,7 +40,6 @@ namespace :cache do
             begin
               
               img_path = "/system/avatars/#{user.id}/#{size}/#{user.avatar_file_name}".gsub(' ', '_')
-
 
               if Rails.application.config.action_controller.asset_host.nil?
                 img_data = File.read("public#{img_path}")
@@ -59,6 +60,10 @@ namespace :cache do
     rescue
       Rails.logger.info "Could not regenerate avatars"
     end
+
+    end_time = Time.now
+    puts "Time elapsed #{(end_time - beginning_time)*1000} milliseconds"
+
 
   end
 end

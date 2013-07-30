@@ -7,7 +7,10 @@ class ApplicationController < ActionController::Base
   before_filter :theme_resolver
 
   def render(*args)
-
+    if Rails.cache.read("avatar-digest-#{current_tenant.id}").nil?
+      Rails.cache.write("avatar-digest-#{current_tenant.id}", 0)
+    end
+    
     if !session.has_key?(:referer)
       session[:referer] = request.referer      
     end
@@ -186,7 +189,11 @@ private
     current_user
   end
 
-
+protected
+  def dirty_avatar_cache
+    current = Rails.cache.read("avatar-digest-#{current_tenant.id}")
+    Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)
+  end
 
 
 end

@@ -55,11 +55,13 @@ ConsiderIt::Application.routes.draw do
   match "/feed" => "activities#feed"
 
   #match "/theme" => "theme#set", :via => :post
+  match '/home/avatars' => "home#avatars", :via => :get, :as => :get_avatars
   match "/home/domain" => "home#set_domain", :via => :post
   match "/home/theme" => "home#set_dev_options", :via => :post, :as => :set_dev_options
 
 
   match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|videos|help|fact_check|copromoters/ } 
+
 
   #match '/home/study/:category' => "home#study", :via => :post  
   scope :module => "dashboard" do

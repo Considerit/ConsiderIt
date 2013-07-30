@@ -39,66 +39,13 @@
         (function(w,d,u){w.readyQ=[];w.bindReadyQ=[];function p(x,y){if(x=="ready"){w.bindReadyQ.push(y);}else{w.readyQ.push(x);}};var a={ready:p,bind:p};w.$=w.jQuery=function(f){if(f===d||f===u){return a}else{p(f)}}})(window,document)
 
         $(document).ready(function(){
-          //sevenUp.plugin.black.test({});    
-
-          var stylesheet = document.createElement('link');
-          stylesheet.href = "/system/cache/#{current_tenant.identifier}.css";
-          stylesheet.rel = 'stylesheet';
-          stylesheet.type = 'text/css';
-          document.getElementsByTagName('head')[0].appendChild(stylesheet);
-
-
+          $.get(Routes.get_avatars_path(), function(data){
+            console.log(data);
+            $('head').append(data.avatars);
+          });
         });   
 
       = render :partial => 'backbone/templates'
-
-      :javascript
-        window.cached_avatars_loaded = false;
-
-        (function() {
-          var httpRequest;
-         
-          function makeRequest(url) {
-            if (window.XMLHttpRequest) { // Mozilla, Safari, ...
-              httpRequest = new XMLHttpRequest();
-            } else if (window.ActiveXObject) { // IE
-              try {
-                httpRequest = new ActiveXObject("Msxml2.XMLHTTP");
-              } 
-              catch (e) {
-                try {
-                  httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
-                } 
-                catch (e) {}
-              }
-            }
-         
-            if (!httpRequest) {
-              alert('Giving up :( Cannot create an XMLHTTP instance');
-              return false;
-            }
-            httpRequest.onreadystatechange = alertContents;
-            httpRequest.open('GET', url);
-            httpRequest.send();
-          }
-         
-          function alertContents() {
-            if (httpRequest.readyState === 4) {
-              if (httpRequest.status === 200) {
-                window.avatar_data = (JSON && JSON.parse(httpRequest.responseText)) || ($ && $.parseJSON(httpRequest.responseText)); 
-                window.cached_avatars_loaded = true;
-
-                if(window.avatars) { 
-                  window.avatars.load_avatars();
-                }
-              } else {
-                console.log('Could not fetch avatars');
-              }
-            }
-          }
-          //makeRequest("/system/cache/#{current_tenant.identifier}.json");
-
-        })();
 
       = theme_javascript_include_tag 'application', :async => true # => Rails.env.production?
 

@@ -57,9 +57,7 @@ class HomeController < ApplicationController
   end
 
   def avatars
-    render :json => {
-      :avatars => render_to_string(:partial => 'home/avatars')
-    }
+    render :partial => 'home/avatars'
   end
 
   def content_for_user

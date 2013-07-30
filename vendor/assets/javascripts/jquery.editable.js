@@ -1086,8 +1086,13 @@ Applied as jQuery method.
 
             /////////////////
             // TRAVIS EDIT //
-            if(this.options.type == 'text') this.$form.find('.editable-input input').css(mystyle);
-            else if(this.options.type == 'textarea') this.$form.find('.editable-input textarea').css(mystyle);
+            var $el;
+            if(this.options.type == 'text'){$el = this.$form.find('.editable-input input');}
+            else if(this.options.type == 'textarea'){
+                $el = this.$form.find('.editable-input textarea');
+                $el.autoResize( {extraSpace: 5});
+            }
+            $el.css(mystyle);
             /////////////////            
         },
 

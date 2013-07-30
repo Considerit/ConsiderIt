@@ -106,6 +106,8 @@ window.ConsiderIt.update_current_user = (parameters) ->
     is_manager : ConsiderIt.current_user.has_role('manager')  
 
   ConsiderIt.router.trigger('user:updated') if ConsiderIt.router
+  if ConsiderIt.current_user.get('b64_thumbnail')
+    $('head').append("<style>#avatar-#{ConsiderIt.current_user.id}{background-image:url('#{ConsiderIt.current_user.get('b64_thumbnail')}');}</style>")
 
 
 window.ConsiderIt.clear_current_user = ->

@@ -161,7 +161,7 @@ class ConsiderIt.YourActionView extends Backbone.View
 
   close_crafting : ->
     @$el.html ConsiderIt.YourActionView.craft_template
-      call : if @model && @model.get('published') then 'What do you think?' else 'Update your position'
+      call : if @model && @model.get('published') then 'Update your position' else 'What do you think?'
       long_id : @proposal.long_id
 
 

@@ -88,14 +88,24 @@ class Users::RegistrationsController < Devise::RegistrationsController
     #current_user.skip_confirmation!
 
     # TODO: explicitly grab params
+
+
+
     if current_user.update_attributes(params[:user])
 
-      #sign_in @user, :bypass => true if params[:user].has_key?(:password)
-      render :json => {
+      results = {
         :result => 'successful',
         #TODO: filter users' to_json
         :user => current_user
       }
+      
+      if params[:user].has_key? :avatar
+        current = Rails.cache.read("avatar-digest-#{current_tenant.id}")
+        Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)      
+      end
+
+      #sign_in @user, :bypass => true if params[:user].has_key?(:password)
+      render :json => results
     else 
       render :json => {
         :result => 'failed',

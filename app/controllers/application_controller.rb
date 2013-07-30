@@ -189,11 +189,4 @@ private
     current_user
   end
 
-protected
-  def dirty_avatar_cache
-    current = Rails.cache.read("avatar-digest-#{current_tenant.id}")
-    Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)
-  end
-
-
 end

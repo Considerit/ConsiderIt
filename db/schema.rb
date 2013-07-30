@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130702065855) do
+ActiveRecord::Schema.define(:version => 20130730041225) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.string   "socmedia_twitter_oauth_token"
     t.string   "socmedia_twitter_oauth_token_secret"
     t.boolean  "requires_civility_pledge_on_registration", :default => false
-    t.integer  "followable_last_notification_milestone",   :default => 0
+    t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
     t.string   "default_hashtags"
     t.boolean  "tweet_notifications",                      :default => false
@@ -57,6 +57,21 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
   end
 
   add_index "accounts", ["identifier"], :name => "by_identifier", :length => {"identifier"=>10}
+
+  create_table "active_admin_comments", :force => true do |t|
+    t.string   "resource_id",   :null => false
+    t.string   "resource_type", :null => false
+    t.integer  "author_id"
+    t.string   "author_type"
+    t.text     "body"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+    t.string   "namespace"
+  end
+
+  add_index "active_admin_comments", ["author_type", "author_id"], :name => "index_active_admin_comments_on_author_type_and_author_id"
+  add_index "active_admin_comments", ["namespace"], :name => "index_active_admin_comments_on_namespace"
+  add_index "active_admin_comments", ["resource_type", "resource_id"], :name => "index_admin_notes_on_resource_type_and_resource_id"
 
   create_table "activities", :force => true do |t|
     t.string   "action_type"
@@ -95,14 +110,14 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
   end
 
   create_table "comments", :force => true do |t|
-    t.integer  "commentable_id"
+    t.integer  "commentable_id",                         :default => 0
     t.string   "commentable_type"
     t.string   "title"
     t.text     "body"
     t.string   "subject"
     t.integer  "user_id",                                :default => 0, :null => false
-    t.datetime "created_at",                                            :null => false
-    t.datetime "updated_at",                                            :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "passes_moderation"
     t.integer  "account_id"
     t.integer  "followable_last_notification_milestone", :default => 0
@@ -131,23 +146,6 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
-
-  create_table "domain_maps", :force => true do |t|
-    t.integer "proposal_id"
-    t.integer "domain_id"
-    t.integer "account_id"
-  end
-
-  add_index "domain_maps", ["account_id"], :name => "index_domain_maps_on_account_id"
-
-  create_table "domains", :force => true do |t|
-    t.integer "identifier"
-    t.string  "name"
-    t.integer "account_id"
-  end
-
-  add_index "domains", ["account_id"], :name => "index_domains_on_account_id"
-  add_index "domains", ["identifier"], :name => "index_domains_on_identifier"
 
   create_table "emails", :force => true do |t|
     t.string   "from_address"
@@ -180,8 +178,8 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.integer  "user_id"
     t.integer  "session_id"
     t.boolean  "included_as_pro"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "account_id"
   end
 
@@ -204,8 +202,8 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.integer  "position_id"
     t.integer  "point_id"
     t.integer  "user_id"
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "account_id"
     t.integer  "count",       :default => 1
   end
@@ -215,16 +213,6 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
   add_index "point_listings", ["position_id"], :name => "index_point_listings_on_position_id"
   add_index "point_listings", ["user_id", "point_id"], :name => "index_point_listings_on_user_id_and_point_id", :unique => true
 
-  create_table "point_similarities", :force => true do |t|
-    t.integer  "p1_id"
-    t.integer  "p2_id"
-    t.integer  "proposal_id"
-    t.integer  "user_id"
-    t.integer  "value"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-  end
-
   create_table "points", :force => true do |t|
     t.integer  "proposal_id"
     t.integer  "position_id"
@@ -233,8 +221,8 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.text     "nutshell"
     t.text     "text"
     t.boolean  "is_pro"
-    t.datetime "created_at",                                                :null => false
-    t.datetime "updated_at",                                                :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "num_inclusions"
     t.integer  "unique_listings"
     t.float    "score"
@@ -253,7 +241,7 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.boolean  "share",                                  :default => true
     t.boolean  "passes_moderation"
     t.integer  "account_id"
-    t.integer  "followable_last_notification_milestone", :default => 0
+    t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
     t.integer  "comment_count",                          :default => 0
     t.integer  "point_link_count",                       :default => 0
@@ -266,6 +254,7 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
   add_index "points", ["account_id", "proposal_id", "published", "id", "is_pro"], :name => "select_published_included_points"
   add_index "points", ["account_id", "proposal_id", "published", "is_pro"], :name => "select_published_pros_or_cons"
   add_index "points", ["account_id", "proposal_id", "published", "moderation_status", "is_pro"], :name => "select_acceptable_pros_or_cons"
+  add_index "points", ["account_id"], :name => "index_points_on_account_id"
   add_index "points", ["is_pro"], :name => "index_points_on_is_pro"
   add_index "points", ["proposal_id"], :name => "index_points_on_option_id"
 
@@ -277,15 +266,16 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.float    "stance"
     t.integer  "stance_bucket"
     t.boolean  "published",                              :default => false
-    t.datetime "created_at",                                                :null => false
-    t.datetime "updated_at",                                                :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "account_id"
-    t.integer  "followable_last_notification_milestone", :default => 0
+    t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
     t.text     "point_inclusions"
   end
 
-  add_index "positions", ["account_id", "proposal_id", "published"], :name => "select_published_positions"
+  add_index "positions", ["account_id", "proposal_id", "published"], :name => "index_positions_on_account_id_and_proposal_id_and_published"
+  add_index "positions", ["account_id"], :name => "index_positions_on_account_id"
   add_index "positions", ["proposal_id"], :name => "index_positions_on_option_id"
   add_index "positions", ["published"], :name => "index_positions_on_published"
   add_index "positions", ["stance_bucket"], :name => "index_positions_on_stance_bucket"
@@ -299,8 +289,8 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.text     "description"
     t.string   "image"
     t.string   "url"
-    t.datetime "created_at",                                                                    :null => false
-    t.datetime "updated_at",                                                                    :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "domain"
     t.string   "domain_short"
     t.text     "long_description"
@@ -333,8 +323,9 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.integer  "num_perspectives"
     t.integer  "num_supporters"
     t.integer  "num_opposers"
+    t.integer  "num_views"
     t.integer  "num_unpublished_positions"
-    t.integer  "followable_last_notification_milestone",                     :default => 0
+    t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
     t.datetime "start_date"
     t.datetime "end_date"
@@ -346,12 +337,12 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.integer  "top_pro"
     t.text     "participants"
     t.boolean  "published",                                                  :default => false
-    t.integer  "num_views",                                                  :default => 0
   end
 
   add_index "proposals", ["account_id", "active"], :name => "select_proposal_by_active"
   add_index "proposals", ["account_id", "id"], :name => "select_proposal"
   add_index "proposals", ["account_id", "long_id"], :name => "select_proposal_by_long_id"
+  add_index "proposals", ["account_id"], :name => "index_proposals_on_account_id"
   add_index "proposals", ["long_id"], :name => "index_proposals_on_long_id", :unique => true
 
   create_table "rails_admin_histories", :force => true do |t|
@@ -361,70 +352,11 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.string   "table"
     t.integer  "month",      :limit => 2
     t.integer  "year",       :limit => 8
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "rails_admin_histories", ["item", "table", "month", "year"], :name => "index_histories_on_item_and_table_and_month_and_year"
-
-  create_table "reflect_bullet_revisions", :force => true do |t|
-    t.integer  "bullet_id"
-    t.integer  "comment_id"
-    t.text     "text"
-    t.integer  "user_id"
-    t.boolean  "active",       :default => true
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
-    t.integer  "account_id"
-    t.text     "comment_type"
-  end
-
-  add_index "reflect_bullet_revisions", ["account_id"], :name => "index_reflect_bullet_revisions_on_account_id"
-
-  create_table "reflect_bullets", :force => true do |t|
-    t.integer  "comment_id"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
-    t.integer  "account_id"
-    t.text     "comment_type"
-  end
-
-  add_index "reflect_bullets", ["account_id"], :name => "index_reflect_bullets_on_account_id"
-
-  create_table "reflect_highlights", :force => true do |t|
-    t.integer  "bullet_id"
-    t.integer  "bullet_rev"
-    t.string   "element_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-    t.integer  "account_id"
-  end
-
-  add_index "reflect_highlights", ["account_id"], :name => "index_reflect_highlights_on_account_id"
-
-  create_table "reflect_response_revisions", :force => true do |t|
-    t.integer  "bullet_id"
-    t.integer  "bullet_rev"
-    t.integer  "response_id"
-    t.text     "text"
-    t.integer  "user_id"
-    t.integer  "signal"
-    t.boolean  "active",      :default => true
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
-    t.integer  "account_id"
-  end
-
-  add_index "reflect_response_revisions", ["account_id"], :name => "index_reflect_response_revisions_on_account_id"
-
-  create_table "reflect_responses", :force => true do |t|
-    t.integer  "bullet_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-    t.integer  "account_id"
-  end
-
-  add_index "reflect_responses", ["account_id"], :name => "index_reflect_responses_on_account_id"
 
   create_table "requests", :force => true do |t|
     t.integer  "user_id"
@@ -438,39 +370,22 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false
     t.text     "data"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
 
-  create_table "taggings", :force => true do |t|
-    t.integer  "tag_id"
-    t.integer  "account_id"
-    t.integer  "taggable_id"
-    t.string   "taggable_type"
-    t.integer  "tagger_id"
-    t.string   "tagger_type"
-    t.string   "context"
-    t.datetime "created_at"
-  end
-
-  add_index "taggings", ["tag_id"], :name => "index_taggings_on_tag_id"
-  add_index "taggings", ["taggable_id", "taggable_type", "context"], :name => "index_taggings_on_taggable_id_and_taggable_type_and_context"
-
-  create_table "tags", :force => true do |t|
-    t.string  "name"
-    t.integer "account_id"
-  end
-
   create_table "users", :force => true do |t|
+    t.integer  "account_id"
+    t.string   "unique_token"
     t.string   "email"
-    t.string   "encrypted_password"
+    t.string   "unconfirmed_email"
+    t.string   "encrypted_password",     :limit => 128, :default => ""
     t.string   "reset_password_token"
-    t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          :default => 0
+    t.integer  "sign_in_count",                         :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
@@ -478,9 +393,8 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
-    t.string   "unconfirmed_email"
-    t.datetime "created_at",                                :null => false
-    t.datetime "updated_at",                                :null => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text     "sessions"
     t.string   "avatar_file_name"
     t.string   "avatar_content_type"
@@ -496,23 +410,22 @@ ActiveRecord::Schema.define(:version => 20130702065855) do
     t.string   "openid_uid"
     t.string   "twitter_uid"
     t.string   "twitter_handle"
-    t.boolean  "registration_complete",  :default => false
+    t.boolean  "registration_complete",                 :default => false
     t.integer  "domain_id"
-    t.integer  "account_id"
-    t.string   "unique_token"
-    t.integer  "roles_mask",             :default => 0
+    t.integer  "roles_mask",                            :default => 0
     t.text     "referer"
+    t.datetime "reset_password_sent_at"
     t.integer  "metric_influence"
     t.integer  "metric_points"
     t.integer  "metric_comments"
     t.integer  "metric_conversations"
     t.integer  "metric_positions"
+    t.text     "b64_thumbnail"
   end
 
   add_index "users", ["account_id", "avatar_file_name"], :name => "select_user_by_avatar_name", :length => {"account_id"=>nil, "avatar_file_name"=>3}
-  add_index "users", ["account_id", "id"], :name => "select_user"
   add_index "users", ["account_id", "id"], :name => "select_user_by_account_and_id"
-  add_index "users", ["account_id"], :name => "index_users_on_account_id"
+  add_index "users", ["account_id"], :name => "account_id"
   add_index "users", ["account_id"], :name => "select_user_by_account"
   add_index "users", ["email"], :name => "index_users_on_email"
 

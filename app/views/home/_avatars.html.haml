@@ -1,0 +1,3 @@
+%style{:type => "text/css"}
+  - current_tenant.users.where('avatar_file_name IS NOT NULL').select([:id,:b64_thumbnail]).each do |user|
+    \#avatar-#{user.id} { background-image: url("#{user.b64_thumbnail}");}

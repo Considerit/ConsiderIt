@@ -78,7 +78,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
       # when clicking outside of point, close it
       $(document).on 'click.m-point-details', (ev)  => 
-        if $(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id 
+        if ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id) && $(ev.target).closest('.editable-buttons').length == 0
           @close_details( $(ev.target).closest('[data-role="m-point"]').length == 0 && $(ev.target).closest('.l-navigate-wrap').length == 0 ) 
 
       $(document).on 'keyup.m-point-details', (ev) => @close_details() if ev.keyCode == 27 && $('.l-dialog-detachable').length == 0

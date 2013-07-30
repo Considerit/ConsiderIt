@@ -954,7 +954,7 @@ $arrow_height: 10px
   .m-point-operations        
     position: absolute
     width: 90%
-    
+
     a
       +font-size(-3)
       +transition(opacity .5s linear, color .5s linear, background-color .5s linear)
@@ -1404,8 +1404,12 @@ $m-point-expanded-width: $body_width + 150
   .m-point-follow, .m-point-assess
     display: inline-block
 
+  .m-point-operations
+    margin-top: $vertical_baseline/2
+
 
   .m-point-author-name
+    display: none
     position: absolute
     top: -1.5 * $vertical_baseline
     font-weight: bold
@@ -1609,7 +1613,7 @@ $m-point-expanded-width: $body_width + 150
     height: 50px
 
   .m-new-comment-body
-    +font-size(-1)    
+    //+font-size(-1)    
     display: inline-block
     width: 80%
     margin-left: $grid_xs    
@@ -1773,7 +1777,7 @@ $m-point-expanded-width: $body_width + 150
 
   .m-proposal-description
     +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
-
+    z-index: 3
     p
       margin-bottom: $vertical_baseline
 
@@ -2463,6 +2467,21 @@ $static_position_width: $body_width+$grid_major
 /* for jquery.editable.js
 /** 
 
+
+.editableform, .editable.editable-click:not(.editable-disabled):hover, a.editable.editable-click:not(.editable-disabled):hover,
+  &:before
+    background-color: rgba(white, .35)
+    width: 100%
+    content: ''
+    height: 100%
+    z-index: 1
+    position: absolute
+    left: -5px
+    top: -1px
+    padding: 1px 5px
+    border: 1px solid #777
+
+
 .editable.editable-click, a.editable.editable-click
   &:hover
     cursor: pointer
@@ -2472,8 +2491,20 @@ $static_position_width: $body_width+$grid_major
     position: relative
     width: 100%
     &:hover
-      background-color: rgba(white, .85)
-      color: #333
+      color: black
+      position: relative
+
+      &:before
+        background-color: rgba(white, .35)
+        width: 100%
+        content: ''
+        height: 100%
+        z-index: 1
+        position: absolute
+        left: -5px
+        top: -1px
+        padding: 1px 5px
+        border: 1px solid #777
 
       &:after
         position: absolute
@@ -2496,8 +2527,11 @@ $static_position_width: $body_width+$grid_major
         height: 13px
         border-radius: 5px 5px 0 0
 
+.editable-container
+  position: relative
+
 .editableform 
-  border: 1px solid rgba($standout_color, .7)
+  //border: 1px solid rgba($standout_color, .7)
   .control-group
     position: relative
 

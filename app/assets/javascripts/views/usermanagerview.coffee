@@ -210,8 +210,7 @@ class ConsiderIt.UserManagerView extends Backbone.View
       parent : this
 
     @signinview.render()
-    @signinview.$el.bind 'destroyed', () => 
-      @post_signin()
+    @signinview.$el.bind 'destroyed', () => @post_signin()
 
     @center_overlay()
 

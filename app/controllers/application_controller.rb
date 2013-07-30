@@ -69,7 +69,8 @@ class ApplicationController < ActionController::Base
 
     #TODO: now that we have a global redirect to home#index for non-ajax requests, can we move this to home controller?
     if !request.xhr?
-      @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}",  ))
+      @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
+      pp @users
       @proposals = []
 
       proposals = Proposal.active.public_fields.order('activity DESC').limit(3)

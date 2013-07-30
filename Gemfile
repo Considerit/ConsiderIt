@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
 gem "therubyracer", :require => 'v8'
-gem 'rails'#, '~>3.2.11'
+gem 'rails', '~>3'
 #gem 'turbolinks'
 
 gem "mysql2"
@@ -51,7 +51,8 @@ gem 'kaminari'
 gem 'whenever'
 
 # https://github.com/collectiveidea/delayed_job
-gem 'delayed_job_active_record'
+gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' #TODO: remove git location after they release new version
+gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
 gem "daemons"
 
 # https://github.com/cerebris/mailhopper

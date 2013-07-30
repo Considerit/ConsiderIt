@@ -25,6 +25,7 @@ namespace :cache do
 
   task :avatars => :environment do 
     beginning_time = Time.now
+    ttime = 0
 
     require 'open-uri'
 
@@ -32,19 +33,21 @@ namespace :cache do
     #TODO: do not automatically replace each file ... check hash at end for equality
     begin
       Account.all.each do |accnt|
+        internal = Rails.application.config.action_controller.asset_host.nil?
         File.open("public/system/cache/#{accnt.identifier}.css", 'w') do |f|
-
 
           accnt.users.select([:id,:avatar_file_name]).where('avatar_file_name IS NOT NULL').each do |user|
             #data = [File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}")].pack('m')
             begin
-              
+
               img_path = "/system/avatars/#{user.id}/#{size}/#{user.avatar_file_name}".gsub(' ', '_')
 
-              if Rails.application.config.action_controller.asset_host.nil?
+              if internal
                 img_data = File.read("public#{img_path}")
               else
+                i_time = Time.now
                 img_data = open(URI.parse("http:#{Rails.application.config.action_controller.asset_host}#{img_path}")).read
+                ttime += (Time.now - i_time)*1000
               end
 
               data = Base64.encode64(img_data)

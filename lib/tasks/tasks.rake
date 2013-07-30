@@ -66,6 +66,7 @@ namespace :cache do
 
     end_time = Time.now
     puts "Time elapsed #{(end_time - beginning_time)*1000} milliseconds"
+    puts "In big block #{ttime} milliseconds"
 
 
   end

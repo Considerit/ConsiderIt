@@ -30,7 +30,7 @@ class ConsiderIt.Assessable.AssessmentEditView extends Backbone.View
     @claimsview = new ConsiderIt.Assessable.ClaimsListView({el: @$el, collection: @claims, assessment: @model})
     @claimsview.renderAllItems()
 
-    @$el.find('.autoResize').autoResize {extraSpace: 10, minHeight: 50}
+    @$el.find('.autosize').autosize()
 
     num_claims = @claims.length
     num_answered_claims = @claims.filter((clm) -> clm.get('verdict')? ).length
@@ -56,11 +56,11 @@ class ConsiderIt.Assessable.AssessmentEditView extends Backbone.View
   toggle_edit : (ev) ->
     $claim = $(ev.currentTarget).parents('.claim')
     $claim.find('.open, .closed, .head .answer').toggleClass('hide')
-    $claim.find('.autoResize').trigger('keyup')
+    $claim.find('.autosize').trigger('keyup')
 
   toggle_claim_form : (ev) ->
     $(ev.currentTarget).parents('#evaluate').find('.add_claim, .add_claim_form form, .add_claim_form #other_claims').toggleClass('hide')
-    @$el.find('.add_claim_form').find('.autoResize').trigger('keyup')
+    @$el.find('.add_claim_form').find('.autosize').trigger('keyup')
 
   assessment_updated : (ev, response, options) ->
     params = $.parseJSON(response.responseText).assessment

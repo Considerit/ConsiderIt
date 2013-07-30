@@ -1041,8 +1041,23 @@ Applied as jQuery method.
         show: function (closeAll) {
             /////////////////
             // TRAVIS EDIT //
+
+            // constrain to background-color, color, padding, margin
             var mystyle = this.$element.getStyles();
-            _.extend(mystyle, {cursor: 'auto'})
+            mystyle = {
+                color: mystyle['color'],
+                fontSize: mystyle['fontSize'],
+                width: mystyle['width'],
+                paddingRight: mystyle['paddingRight'],
+                paddingLeft: mystyle['paddingLeft'],
+                paddingTop: mystyle['paddingTop'],
+                paddingBottom: mystyle['paddingBottom'],
+                background: mystyle['background'],
+                backgroundColor: mystyle['backgroundColor'],
+                outline: 'none',
+                border: 'none',
+                cursor: 'auto'
+            };
             /////////////////
 
 
@@ -1087,12 +1102,15 @@ Applied as jQuery method.
             /////////////////
             // TRAVIS EDIT //
             var $el;
-            if(this.options.type == 'text'){$el = this.$form.find('.editable-input input');}
+            if(this.options.type == 'text'){
+                $el = this.$form.find('.editable-input input');
+                $el.css(mystyle);
+            }
             else if(this.options.type == 'textarea'){
                 $el = this.$form.find('.editable-input textarea');
-                $el.autoResize( {extraSpace: 5});
+                $el.css(mystyle);
+                $el.autosize();
             }
-            $el.css(mystyle);
             /////////////////            
         },
 
@@ -2928,7 +2946,7 @@ $(function(){
         render: function () {
             this.setClass();
             this.setAttr('placeholder');
-            this.setAttr('rows');                        
+            // this.setAttr('rows');  TRAVIS COMMENTED THIS OUT
             
             //ctrl + enter
             this.$input.keydown(function (e) {

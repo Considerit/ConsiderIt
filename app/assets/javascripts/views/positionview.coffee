@@ -215,10 +215,10 @@ class ConsiderIt.CraftingView extends Backbone.View
     $('.m-pro-con-list-propoints', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : true}))
     $('.m-pro-con-list-conpoints', @$el).append(ConsiderIt.CraftingView.newpoint_template({is_pro : false}))
 
-    @$el.find('.m-newpoint-nutshell').autoResize {extraSpace: 10, minHeight: 50}
-    @$el.find('.m-newpoint-description').autoResize {extraSpace: 10, minHeight: 100 }
-
-    @$el.find('.m-position-statement').autoResize {extraSpace: 5}
+    #{extraSpace: 10, minHeight: 50}
+    @$el.find('.m-newpoint-nutshell').autosize()
+    @$el.find('.m-newpoint-description').autosize()
+    @$el.find('.m-position-statement').autosize()
 
     for el in @$el.find('.m-newpoint-form .is_counted')
       $(el).NobleCount $(el).siblings('.count'), {

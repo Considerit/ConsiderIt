@@ -37,6 +37,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
       user.skip_confirmation! 
 
+      is_dirty = user.avatar_url_provided?
+
+
       if user.save
         sign_in(resource_name, user)
 
@@ -51,6 +54,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
         }
 
         session.delete(:access_token)
+        if is_dirty
+          dirty_avatar_cache     
+        end
+
       end
 
 
@@ -60,6 +67,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if user.save
         sign_in(resource_name, user)
         current_user.track!
+
+        if params[:user].has_key? :avatar
+          dirty_avatar_cache     
+        end
 
         # set_flash_message :notice, :signed_up
 
@@ -89,8 +100,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     # TODO: explicitly grab params
 
-
-
     if current_user.update_attributes(params[:user])
 
       results = {
@@ -98,10 +107,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
         #TODO: filter users' to_json
         :user => current_user
       }
-      
+
       if params[:user].has_key? :avatar
-        current = Rails.cache.read("avatar-digest-#{current_tenant.id}")
-        Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)      
+        dirty_avatar_cache   
       end
 
       #sign_in @user, :bypass => true if params[:user].has_key?(:password)
@@ -142,4 +150,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #  render :json => { :valid => !email_in_use || user.valid_password?(password) }
   #end
 
+protected
+  def dirty_avatar_cache
+    current = Rails.cache.read("avatar-digest-#{current_tenant.id}")
+    Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)   
+  end
 end

@@ -936,12 +936,16 @@ Applied as jQuery method.
                        return; 
                     }
                     
+                    // COMMENTED OUT BY TRAVIS
                     //if click inside one of exclude classes --> no nothing
-                    for(i=0; i<exclude_classes.length; i++) {
-                         if($target.is(exclude_classes[i]) || $target.parents(exclude_classes[i]).length) {
-                             return;
-                         }
-                    }
+                    // for(i=0; i<exclude_classes.length; i++) {
+                    //      if($target.is(exclude_classes[i]) || $target.parents(exclude_classes[i]).length) {
+                    //          if($target.closest('.editable-container').length){
+                    //             console.log('SHOULD RESELECT')
+                    //          }
+                    //          //return;
+                    //      }
+                    // }
                       
                     //close all open containers (except one - target)
                     Popup.prototype.closeOthers(e.target);
@@ -2808,7 +2812,7 @@ $(function(){
 
     $.extend(Text.prototype, {
         render: function() {
-           this.renderClear();
+           //this.renderClear();  commented out by TRAVIS
            this.setClass();
            this.setAttr('placeholder');
         },

@@ -117,6 +117,10 @@ class ConsiderIt.UserDashboardView extends Backbone.View
         @_check_box(ConsiderIt.current_tenant, 'enable_position_statement', 'account_enable_position_statement')
         @_check_box(ConsiderIt.current_tenant, 'enable_user_conversations', 'account_enable_user_conversations')
 
+        @$el.find('#account_header_text').autoResize {extraSpace: 10, minHeight: 50}
+        @$el.find('#account_header_details_text').autoResize {extraSpace: 10, minHeight: 100}
+
+
     @_process_dashboard_context('app_settings', options)
 
   access_dashboard_manage_proposals : -> 

@@ -40,8 +40,7 @@
 
         $(document).ready(function(){
           $.get(Routes.get_avatars_path(), function(data){
-            console.log(data);
-            $('head').append(data.avatars);
+            $('head').append(data);
           });
         });   
 

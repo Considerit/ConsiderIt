@@ -33,7 +33,19 @@ class User < ActiveRecord::Base
   before_save do 
     self.name = Sanitize.clean(self.name) if self.name   
     self.bio = Sanitize.clean(self.bio, Sanitize::Config::RELAXED) if self.bio
+    if self.avatar_file_name_changed?
+      img_data = self.avatar.queued_for_write[:small].read
+      self.avatar.queued_for_write[:small].rewind
+      data = Base64.encode64(img_data)
+
+      thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
+      self.b64_thumbnail = thumbnail
+
+    end
+
   end
+
+
 
   #validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
   after_create :add_token

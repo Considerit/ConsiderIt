@@ -7,6 +7,10 @@ class HomeController < ApplicationController
     {:tag => "is_logged_in-#{current_user ? "#{current_user.id}-#{current_user.registration_complete}-#{current_user.avatar_file_name}"  : '-1'}-#{updated_at}-#{current_tenant.updated_at}-#{session.has_key?(:domain) ? session[:domain] : -1}"}
   }
 
+  caches_action :avatars, :cache_path => proc {|c|
+    {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}"}
+  }
+
   def render(*args)
     @current_page = 'homepage'
     super
@@ -53,9 +57,11 @@ class HomeController < ApplicationController
   end
 
   def avatars
-    
+    render :json => {
+      :avatars => render_to_string(:partial => 'home/avatars')
+    }
   end
-  
+
   def content_for_user
     # proposals that are written by this user, but not yet published; private proposals this user has access to
     proposals = []

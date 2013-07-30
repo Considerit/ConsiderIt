@@ -13,7 +13,7 @@ gem 'sass-rails'#,   "3.2.6"
 gem "js-routes"
 
 # https://github.com/plataformatec/devise
-gem 'devise'
+gem 'devise', "2.2.4"
 
 gem "omniauth"
 #gem 'omniauth-openid'

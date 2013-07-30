@@ -3,12 +3,13 @@
 
 require 'csv'
 require 'pp'
-require 'iconv'
 
 namespace :admin do
   task :create_sensible_seo_long_ids => :environment do
     #they need to be 10 chars ...
     # CALI: "cal_prop_30"
+
+
     Proposal.all.each do |prop|
         if prop.account_id == 1
             des = prop.designator.gsub(' ', '_')
@@ -67,6 +68,7 @@ namespace :admin do
 
   desc "Loads LVG local data for 2012"
   task :load_local_measures => :environment do
+    require 'iconv'
 
     # parse jurisdictions
     contents = File.read("lib/tasks/lvg/2012.Districts.Precincts.csv")
@@ -202,6 +204,8 @@ namespace :admin do
 
   desc "Loads LVG state data for 2012"
   task :load_state_measures => :environment do
+    require 'iconv'
+    
     contents = File.read("lib/tasks/lvg/measures2012_state.csv")
     ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
     valid_contents = ic.iconv(contents)

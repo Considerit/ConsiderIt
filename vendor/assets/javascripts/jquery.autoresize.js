@@ -158,9 +158,6 @@
 				// Using scrollTop rather than scrollHeight because scrollHeight is non-standard and includes padding.
 				height = mirror.scrollTop; // TRAVIS EDIT for the additional increment
 
-				console.log(mirror);
-				console.log(mirror.scrollTop);
-
 				if (maxHeight && height > maxHeight) {
 					ta.style.overflowY = 'scroll';
 					height = maxHeight;

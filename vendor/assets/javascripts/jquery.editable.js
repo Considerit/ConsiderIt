@@ -874,7 +874,7 @@ Applied as jQuery method.
         this.init(element, options);
     };
     
-    var Inline = function (element, options) {
+    var Inline = function (element, options) {        
         this.init(element, options);
     };    
 
@@ -936,16 +936,12 @@ Applied as jQuery method.
                        return; 
                     }
                     
-                    // COMMENTED OUT BY TRAVIS
                     //if click inside one of exclude classes --> no nothing
-                    // for(i=0; i<exclude_classes.length; i++) {
-                    //      if($target.is(exclude_classes[i]) || $target.parents(exclude_classes[i]).length) {
-                    //          if($target.closest('.editable-container').length){
-                    //             console.log('SHOULD RESELECT')
-                    //          }
-                    //          //return;
-                    //      }
-                    // }
+                    for(i=0; i<exclude_classes.length; i++) {
+                         if($target.is(exclude_classes[i]) || $target.parents(exclude_classes[i]).length) {
+                             return;
+                         }
+                    }
                       
                     //close all open containers (except one - target)
                     Popup.prototype.closeOthers(e.target);
@@ -1418,6 +1414,7 @@ Applied as jQuery method.
         containerClass: 'editable-container editable-inline', //css class applied to container element
                  
         initContainer: function(){
+
             //container is <span> element
             this.$tip = $('<span></span>');
             
@@ -2969,6 +2966,7 @@ $(function(){
                 }
                 html = lines.join('<br>');
             }
+
             $(element).html(html);
         },
 
@@ -2979,11 +2977,12 @@ $(function(){
 
             // TRAVIS MODIFICATIONS
             var regex = new RegExp(String.fromCharCode(10), 'g'),
-                html_split_regex = new RegExp(/<br\s*\/?>/i);
+                html_split_regex = new RegExp(/<br\s*\/?>/gi);
 
             // Remove newline characters (\n) to avoid them being converted by value2html() method
             // thus adding extra <br> tags
             html = html.replace(regex, '').replace(html_split_regex, '\n');
+
             return $('<div>').html(html).text();
         },
 

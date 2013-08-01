@@ -154,9 +154,9 @@ class ConsiderIt.ProposalView extends Backbone.View
 
       @$hidden_els = $("[data-role='m-proposal']:not([data-id='#{@model.id}'])")
       @$hidden_els.css('display', 'none')
-      @$el.find('.m-proposal-description-body').slideDown()
+      @$el.find('.m-proposal-description-body').show() #slideDown()
 
-      @$el.find('.m-proposal-description-details').slideDown()
+      @$el.find('.m-proposal-description-details').show() #slideDown()
       
     callback(new_state)
 

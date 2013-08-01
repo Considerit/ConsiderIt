@@ -12,11 +12,14 @@ gem 'sass-rails'#,   "3.2.6"
 # https://github.com/railsware/js-routes
 gem "js-routes"
 
+# https://github.com/ohler55/oj
+gem "oj"
+
+
 # https://github.com/plataformatec/devise
 gem 'devise', "2.2.4"
 
 gem "omniauth"
-#gem 'omniauth-openid'
 gem 'omniauth-oauth2'
 gem 'omniauth-twitter' 
 gem 'omniauth-facebook'
@@ -40,7 +43,6 @@ gem 'cancan'
 gem 'role_model'
 
 # https://github.com/thoughtbot/paperclip
-#gem 'rmagick'
 gem 'paperclip'
 gem 'paperclip-optimizer'
 

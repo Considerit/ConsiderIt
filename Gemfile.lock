@@ -230,6 +230,7 @@ GEM
       jwt (~> 0.1.4)
       multi_json (~> 1.0)
       rack (~> 1.2)
+    oj (2.1.4)
     omniauth (1.1.4)
       hashie (>= 1.2, < 3)
       rack
@@ -401,6 +402,7 @@ DEPENDENCIES
   moderatable!
   mysql2
   newrelic_rpm
+  oj
   omniauth
   omniauth-facebook
   omniauth-google-oauth2

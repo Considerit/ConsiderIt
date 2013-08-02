@@ -2,7 +2,7 @@ class ConsiderIt.AppView extends Backbone.View
 
   el: 'body'
   breadcrumbs_template : _.template($('#tpl_breadcrumbs').html())
-
+  homepage_heading : _.template($('#tpl_homepage_heading').html())
 
   initialize : (options) -> 
 
@@ -16,13 +16,15 @@ class ConsiderIt.AppView extends Backbone.View
     @history = [ ['homepage', '/'] ]
     @last_page = '/'
 
+  render : () ->
+    @$el.find('#t-bg-content-top').append(@homepage_heading())
+
     @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#l-wrap'})
     @dashboardview = new ConsiderIt.UserDashboardView({ model : ConsiderIt.current_user, el : '#l-wrap'})
     @proposals_manager = new ConsiderIt.ProposalsManagerView({el : '#l-wrap'}) 
 
-  render : () ->
     @usermanagerview.render()
-    @proposals_manager.render()    
+    @proposals_manager.render()
 
     # kick off events for the current path
     #ConsiderIt.router.navigate @last_page, {trigger: true}

@@ -1,6 +1,18 @@
 
 - cache ['templates', current_tenant] do
 
+  %script{ :type => "text/template", :id => "tpl_proposal_list" }
+    (( if(completed) { ))
+    #m-proposals-container-completed
+      .m-proposals-container-completed-header{:'data-domain' => 'homepage'}
+        %hr
+        %h2
+          Completed conversations
+      %ul.m-proposal-list
+    (( } else { ))
+    #m-proposals-container
+      %ul.m-proposal-list
+    (( } ))
 
 
   %script{ :type => "text/template", :id => "tpl_breadcrumbs"}
@@ -832,6 +844,9 @@
 
     = link_to "Delete conversation", "{{Routes.proposal_path(long_id)}}", :confirm => "Are you sure you wish to permanently delete this conversation?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
 
+  = render :partial => 'backbone/homepage_heading'
+  = render :partial => 'backbone/footer'
+  = render :partial => 'backbone/header'
 
   = render :partial => 'assessable/templates_user_facing'
 

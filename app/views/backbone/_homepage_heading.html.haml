@@ -1,4 +1,5 @@
-- cache ['theme_body', current_tenant] do 
+%script{ :type => "text/template", :id => "tpl_homepage_heading" }
+
 
   - if false && Rails.env.development?
     = render :partial => "shared/dev_tools"      
@@ -24,12 +25,3 @@
             = simple_format current_tenant.header_details_text
 
 
-  #m-proposals-container
-    %ul.m-proposal-list
-
-  #m-proposals-container-completed
-    .m-proposals-container-completed-header{:'data-domain' => 'homepage'}
-      %hr
-      %h2
-        Completed conversations
-    %ul.m-proposal-list

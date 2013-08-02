@@ -1,4 +1,4 @@
-window.ConsiderIt = {} #global namespace for ConsiderIt js methods
+#window.ConsiderIt = {} #global namespace for ConsiderIt js methods
 
 _.templateSettings =  
   interpolate : /\{\{(.+?)\}\}/g
@@ -20,18 +20,8 @@ window.PaperClip =
       "#{ConsiderIt.public_root}/system/default_avatar/#{size}_default-profile-pic.png"
 
 $(document).ready () ->
-  #window.avatars = 
-    # load_avatars : ->
-    #   $('img.avatar-replace-small').each ->
-    #     user_id = $(this).data('id')
-    #     if window.avatar_data['small'][user_id]?
-    #       this.src = window.avatar_data['small'][user_id];
-    #     else if ConsiderIt.users?
-    #       this.src = window.PaperClip.get_avatar_url(ConsiderIt.users[user_id], 'small')
-  # if window.cached_avatars_loaded
-  #   window.avatars.load_avatars()
 
-    # google analytics
+  # google analytics
   ( () ->
     ga = document.createElement('script')
     ga.type = 'text/javascript'

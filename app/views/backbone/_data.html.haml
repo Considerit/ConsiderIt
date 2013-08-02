@@ -55,14 +55,7 @@
     ConsiderIt.password_reset_token = #{@reset_password_token ? "'#{@reset_password_token}'" : 'null'};  
 
 
-    ConsiderIt.router = new ConsiderIt.Router();
-
-    ConsiderIt.app = new ConsiderIt.AppView();
-
-
-    ConsiderIt.app.render();
-
-    Backbone.history.start({pushState: true});
+    //Backbone.history.start({pushState: true});
 
 
 

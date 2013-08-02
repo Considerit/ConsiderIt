@@ -1,4 +1,4 @@
-- cache ['theme_body', current_tenant] do 
+%script{ :type => "text/template", :id => "tpl_homepage_heading" }
 
   - if false && Rails.env.development?
     = render :partial => "shared/dev_tools"      
@@ -11,9 +11,6 @@
               
       .l-message-title
         = simple_format current_tenant.header_text
-
-
-      / = theme_image_tag 'shadow-big.png', :style => "margin-top: 4px"
 
   #m-proposals-container
     %ul.m-proposal-list

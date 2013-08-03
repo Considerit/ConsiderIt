@@ -2,10 +2,10 @@ class ConsiderIt.ProposalsManagerView extends Backbone.View
   proposal_list_template : _.template($('#tpl_proposal_list').html())
 
   initialize : (options) ->
-    ConsiderIt.router.on 'route:Consider', (long_id) => @do_after_proposal_data_loaded(long_id, "take_position") 
-    ConsiderIt.router.on 'route:Aggregate', (long_id) => @do_after_proposal_data_loaded(long_id, "show_results_handler")
-    ConsiderIt.router.on 'route:PointDetails', (long_id, point_id) => @do_after_proposal_data_loaded(long_id, "show_point_details_handler", [{point_id : point_id}])
-    ConsiderIt.router.on 'route:StaticPosition', (long_id, user_id) => @do_after_proposal_data_loaded(long_id, "prepare_for_static_position", [{user_id : user_id}])
+    ConsiderIt.vent.on 'route:Consider', (long_id) => @do_after_proposal_data_loaded(long_id, "take_position") 
+    ConsiderIt.vent.on 'route:Aggregate', (long_id) => @do_after_proposal_data_loaded(long_id, "show_results_handler")
+    ConsiderIt.vent.on 'route:PointDetails', (long_id, point_id) => @do_after_proposal_data_loaded(long_id, "show_point_details_handler", [{point_id : point_id}])
+    ConsiderIt.vent.on 'route:StaticPosition', (long_id, user_id) => @do_after_proposal_data_loaded(long_id, "prepare_for_static_position", [{user_id : user_id}])
 
     @listenTo ConsiderIt.router, 'user:signin', =>
       @load_anonymous_data()
@@ -35,7 +35,6 @@ class ConsiderIt.ProposalsManagerView extends Backbone.View
 
 
   render : ->
-
     @proposalsview.render()
     @proposalsview_completed.render()
     if ConsiderIt.inaccessible_proposal

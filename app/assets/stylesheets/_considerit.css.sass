@@ -30,9 +30,21 @@
 html
   +adjust-leading-to(3)
 
+html, body
+  min-height: 100%
 
 #l-wrap
   font-size: $base-font-size
+
+#t-bg
+  min-height: 100%
+
+#t-bg-top
+
+#t-bg-content
+
+#t-bg-content-top
+  min-height: 500px
 
 
 $font-size-scale: $base-font-size - 5 * $base_unit $base-font-size - 4 * $base_unit $base-font-size - 3 * $base_unit $base-font-size - 2 * $base_unit $base-font-size - 1 * $base_unit $base-font-size $base-font-size + 2 * $base_unit $base-font-size + 4 * $base_unit $base-font-size + 6 * $base_unit $base-font-size + 8 * $base_unit $base-font-size + 10 * $base_unit $base-font-size + 12 * $base_unit $base-font-size + 14 * $base_unit $base-font-size + 16 * $base_unit $base-font-size + 20 * $base_unit $base-font-size + 25 * $base_unit $base-font-size + 30 * $base_unit $base-font-size + 35 * $base_unit
@@ -197,7 +209,15 @@ blockquote
     content: close-quote
     @extend %bolded
 
-
+#l-preloader
+  width: 16px
+  height: 16px
+  background-image: inline-image("ajax-loader.gif")
+  left: 50%
+  margin-left: -8px
+  top: 50%
+  margin-top: -8px
+  position: absolute
 
 /* HELPERS */
 
@@ -297,6 +317,8 @@ html
 
 #l-header
   margin: 0 auto $vertical_baseline auto
+  min-height: 32px
+
   //border-bottom: 1px solid white
 
 .l-heading-wrap

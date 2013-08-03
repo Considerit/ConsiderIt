@@ -116,7 +116,6 @@ class ConsiderIt.UserManagerView extends Backbone.View
       ConsiderIt.router.trigger('user:signout')      
 
   add_registration_overlay : () ->
-    me = ConsiderIt.app.usermanagerview
     $overlay = $('<div class="l-dialog-detachable" id="registration_overlay">')
     $('#l-wrap').prepend($overlay)
     $overlay
@@ -140,40 +139,38 @@ class ConsiderIt.UserManagerView extends Backbone.View
       ConsiderIt.router.trigger('user:signin')
 
   handle_user_registration : (ev) ->
-    me = ConsiderIt.app.usermanagerview
 
-    me.registration_overlay = me.add_registration_overlay()
+    @registration_overlay = @add_registration_overlay()
 
-    me.registrationview = new ConsiderIt.RegistrationView
+    @registrationview = new ConsiderIt.RegistrationView
       model : ConsiderIt.current_user
-      el : me.registration_overlay
-      parent : me
+      el : @registration_overlay
+      parent : @
 
-    me.registrationview.render()
+    @registrationview.render()
 
-    me.registrationview.$el.bind 'destroyed', () => @post_signin()
+    @registrationview.$el.bind 'destroyed', () => @post_signin()
 
-    me.center_overlay()
+    @center_overlay()
 
-    me.registrationview
+    @registrationview
 
 
   handle_user_signin : (ev) ->  
-    me = ConsiderIt.app.usermanagerview
 
-    me.registration_overlay = me.add_registration_overlay()
+    @registration_overlay = @add_registration_overlay()
 
-    me.signinview = new ConsiderIt.SignInView
+    @signinview = new ConsiderIt.SignInView
       model : ConsiderIt.current_user
-      el : me.registration_overlay
-      parent : me
+      el : @registration_overlay
+      parent : @
 
-    me.signinview.render()
-    me.signinview.$el.bind 'destroyed', () => @post_signin()
+    @signinview.render()
+    @signinview.$el.bind 'destroyed', () => @post_signin()
 
-    me.center_overlay()
+    @center_overlay()
 
-    me.signinview
+    @signinview
 
   switch_method : ->
     if @registrationview && @registrationview.$el.is(':visible')

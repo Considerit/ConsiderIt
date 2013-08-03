@@ -18,7 +18,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     super
     @long_id = @model.long_id
 
-    ConsiderIt.router.on 'route:Root', => 
+    ConsiderIt.vent.on 'route:Root', => 
       if @state > 0
         @transition_unexpanded()
         $('body').animate {scrollTop: @scroll_position}

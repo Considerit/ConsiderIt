@@ -32,4 +32,3 @@
 
 //= require views/assessmentview
 //= require javascripts/acts_as_followable
-

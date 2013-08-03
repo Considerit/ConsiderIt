@@ -147,6 +147,7 @@ window.openPopupWindow = (url) ->
   , 200
 
 
+# http://danielarandaochoa.com/backboneexamples/blog/2012/08/02/backbone-view-listening-for-a-remove-event-the-missing-item/
 $.event.special.destroyed =
   remove: (o) -> o.handler() if o.handler
           

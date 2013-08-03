@@ -12,6 +12,7 @@
 
 //= require_tree ./backbone/config
 //= require backbone/app
+
 //= require_tree ./backbone/controllers
 //= require_tree ./backbone/views
 //= require_tree ./backbone/entities
@@ -22,7 +23,7 @@
 // TO BE REFACTORED: 
 
 //= require main
-//= require router
+// require router
 
 //= require_tree ./models
 //= require_tree ./collections

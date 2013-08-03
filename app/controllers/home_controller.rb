@@ -17,6 +17,7 @@ class HomeController < ApplicationController
   end
 
   def index
+
     # TODO: move this to config somehow
     # if current_tenant.theme == 'lvg'
     #   @title = "Living Voters Guide: 2013 #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} Election"

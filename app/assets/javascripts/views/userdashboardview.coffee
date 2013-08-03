@@ -10,52 +10,52 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     @rendered = false
 
 
-    ConsiderIt.router.on 'route:Profile', (id) => 
+    ConsiderIt.vent.on 'route:Profile', (id) => 
       @model = ConsiderIt.users[id]
       #@render()
       @access_dashboard_profile(parseInt(id))
 
-    ConsiderIt.router.on 'route:EditProfile', => 
+    ConsiderIt.vent.on 'route:EditProfile', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_edit_profile()
-    ConsiderIt.router.on 'route:AccountSettings', => 
+    ConsiderIt.vent.on 'route:AccountSettings', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_account_settings()
-    ConsiderIt.router.on 'route:EmailNotifications', => 
+    ConsiderIt.vent.on 'route:EmailNotifications', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_email_notifications()
 
 
-    ConsiderIt.router.on 'route:AppSettings', => 
+    ConsiderIt.vent.on 'route:AppSettings', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_app_settings()
-    ConsiderIt.router.on 'route:ManageProposals', => 
+    ConsiderIt.vent.on 'route:ManageProposals', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_manage_proposals()
-    ConsiderIt.router.on 'route:UserRoles', => 
+    ConsiderIt.vent.on 'route:UserRoles', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_user_roles()
 
-    ConsiderIt.router.on 'route:Analyze', => 
+    ConsiderIt.vent.on 'route:Analyze', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_analyze()
-    ConsiderIt.router.on 'route:Moderate', => 
+    ConsiderIt.vent.on 'route:Moderate', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_moderate()
-    ConsiderIt.router.on 'route:Assess', => 
+    ConsiderIt.vent.on 'route:Assess', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_assess()
-    ConsiderIt.router.on 'route:Database', => 
+    ConsiderIt.vent.on 'route:Database', => 
       @model = ConsiderIt.current_user if @model.id != ConsiderIt.current_user
       @access_dashboard_database()
 
 
     # Is there a better way than just doing this for all other routes?
 
-    ConsiderIt.router.on 'route:Root', => @close() if @$dashboard_el.is(':visible')
-    ConsiderIt.router.on 'route:Aggregate', => @close(false) if @$dashboard_el.is(':visible')
-    ConsiderIt.router.on 'route:Consider', => @close(false) if @$dashboard_el.is(':visible')
-    ConsiderIt.router.on 'route:PointDetails', => @close(false) if @$dashboard_el.is(':visible')    
+    ConsiderIt.vent.on 'route:Root', => @close() if @$dashboard_el.is(':visible')
+    ConsiderIt.vent.on 'route:Aggregate', => @close(false) if @$dashboard_el.is(':visible')
+    ConsiderIt.vent.on 'route:Consider', => @close(false) if @$dashboard_el.is(':visible')
+    ConsiderIt.vent.on 'route:PointDetails', => @close(false) if @$dashboard_el.is(':visible')    
 
 
     @listenTo ConsiderIt.router, 'user:signin', => 

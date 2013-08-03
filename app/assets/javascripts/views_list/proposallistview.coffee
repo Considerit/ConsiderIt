@@ -28,11 +28,13 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
 
     @listenTo ConsiderIt.router, 'proposal:deleted', (proposal) => @delete_proposal(proposal)
 
-    @listenTo ConsiderIt.router, 'route:Root', => @renderAllItems()
+    ConsiderIt.vent.on 'route:Root', => 
+      @renderAllItems()
 
 
   render : -> 
     # @undelegateEvents()
+
     super
     @render_pagination()
     @render_header()

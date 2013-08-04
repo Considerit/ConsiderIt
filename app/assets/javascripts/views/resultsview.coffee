@@ -121,7 +121,7 @@ class ConsiderIt.ResultsView extends Backbone.View
           '-webkit-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
           'transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
 
-      _.delay , => 
+      _.delay => 
         $histogram.css { opacity: 1, display: '' }
         #window.delay 25, -> 
         $participants.fadeOut()

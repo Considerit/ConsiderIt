@@ -21,6 +21,7 @@
 
     set_current_user : (user) ->
       @current_user = user
+      @current_user
 
     clear_current_user : ->
       API.get_current_user().clear()
@@ -29,7 +30,7 @@
       current_user = API.get_current_user()
 
       if user_data.user.id of ConsiderIt.users
-        API.set_current_user ConsiderIt.users[user_data.user.id] 
+        current_user = API.set_current_user ConsiderIt.users[user_data.user.id] if current_user.id != user_data.user.id
       else if current_user.is_logged_in() 
         ConsiderIt.users[user_data.user.id] = current_user
 
@@ -129,7 +130,6 @@
   #   API.show()
 
   App.on 'initialize:before', ->
-    console.log 'INITIALIZING'
     API.set_current_user(ConsiderIt.request('user:current') || new ConsiderIt.User())
 
     if ConsiderIt.current_user_data

@@ -55,10 +55,11 @@ class ConsiderIt.ResultsView extends Backbone.View
 
 
     #if window.location.href.indexOf('explode=true')
-    me = this
-    window.delay 750, -> 
-      me.explode_participants()
-      me.trigger 'ResultsExplorer:rendered'
+
+    _.delay =>
+      @explode_participants()
+      @trigger 'ResultsExplorer:rendered'
+    , 750
     
     @state = 1
 
@@ -120,13 +121,12 @@ class ConsiderIt.ResultsView extends Backbone.View
           '-webkit-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
           'transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
 
-      me = this
-      window.delay speed + 150, -> 
+      _.delay , => 
         $histogram.css { opacity: 1, display: '' }
         #window.delay 25, -> 
         $participants.fadeOut()
-        #me.$el.find('.m-bar-percentage').fadeIn()
- 
+        #@$el.find('.m-bar-percentage').fadeIn()
+      , speed + 150
 
   events : 
     #'click .m-results-responders, .l-message-speaker.l-group-container' : 'transition_explorer'
@@ -150,7 +150,7 @@ class ConsiderIt.SummaryView extends Backbone.View
         top_con : @model.top_con
         tile_size : @tile_size   
         participants : _.sortBy(@model.participants(), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
-        avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'original')
+        avatar : ConsiderIt.users[@model.get('user_id')].get_avatar_url 'original'
 
         }))
 

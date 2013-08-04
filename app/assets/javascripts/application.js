@@ -23,7 +23,6 @@
 // TO BE REFACTORED: 
 
 //= require main
-// require router
 
 //= require_tree ./models
 //= require_tree ./collections

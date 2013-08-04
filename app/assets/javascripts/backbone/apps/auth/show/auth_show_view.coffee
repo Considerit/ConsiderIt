@@ -4,7 +4,7 @@
     template: "#tpl_logged_in"
 
     serializeData : ->
-      _.extend @model.attributes, 
+      _.extend {}, @model.attributes, 
         is_admin: @model.is_admin()
         is_analyst: @model.is_analyst()
         is_evaluator: @model.is_evaluator()
@@ -36,8 +36,6 @@
       @$el.find('.m-user-options-menu-wrap')
         .stop(true,false)
         .slideUp()
-
-
 
 
   class Show.LoggedOut extends App.Views.ItemView

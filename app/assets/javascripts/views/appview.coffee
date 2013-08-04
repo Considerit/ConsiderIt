@@ -1,14 +1,14 @@
 class ConsiderIt.AppView extends Backbone.View
 
-  el: 'body'
+  el: '#l-content'
   breadcrumbs_template : _.template($('#tpl_breadcrumbs').html())
   homepage_heading : _.template($('#tpl_homepage_heading').html())
 
   initialize : (options) -> 
 
-    @listenTo ConsiderIt.router, 'user:signin', =>
+    @listenTo ConsiderIt.vent, 'user:signin', =>
  
-    @listenTo ConsiderIt.router, 'user:signout', => 
+    @listenTo ConsiderIt.vent, 'user:signout', => 
       ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
 
     ConsiderIt.router.bind 'all', (route, router) => @route_changed(route, router)
@@ -17,13 +17,12 @@ class ConsiderIt.AppView extends Backbone.View
     @last_page = '/'
 
   render : () ->
+
     @$el.find('#t-bg-content-top').append(@homepage_heading())
 
-    @usermanagerview = new ConsiderIt.UserManagerView({model: ConsiderIt.current_user, el : '#l-wrap'})
-    @dashboardview = new ConsiderIt.UserDashboardView({ model : ConsiderIt.current_user, el : '#l-wrap'})
-    @proposals_manager = new ConsiderIt.ProposalsManagerView({el : '#l-wrap'}) 
+    @proposals_manager = new ConsiderIt.ProposalsManagerView({el : '#t-bg-content-top'}) 
 
-    @usermanagerview.render()
+
     @proposals_manager.render()
 
     # kick off events for the current path
@@ -32,6 +31,8 @@ class ConsiderIt.AppView extends Backbone.View
 
   events : 
     'click .l-navigate-back' : 'go_back'
+    'mouseenter [data-target="user_profile_page"]' : 'tooltip_show'
+    'mouseleave [data-target="user_profile_page"]' : 'tooltip_hide'
 
   go_back : ->
     @history.pop()
@@ -96,3 +97,34 @@ class ConsiderIt.AppView extends Backbone.View
     # console.log router
     # console.log @history
     #console.log @breadcrumbs
+
+
+  user_tooltip_template : _.template( $("#tpl_user_tooltip").html() )
+
+  tooltip_show : (ev) ->
+    $target = $(ev.currentTarget)
+    if !$target.closest('.l-tooltip-user').length > 0
+      user = ConsiderIt.users[$target.data('id')]
+
+      if $target.closest('[data-role="m-proposal"]').length > 0
+        proposal = ConsiderIt.all_proposals.get($target.closest('[data-role="m-proposal"]').data('id'))
+        proposal = null if !proposal.user_participated(user.id) 
+
+      tooltip = @user_tooltip_template {user : user, proposal : proposal}
+      
+      $('body').append(tooltip)
+      $tooltip = $('body > .l-tooltip-user')
+
+      $target.tooltipster
+        interactive: true
+        content: $tooltip
+        offsetY: -5
+        delay: 400
+      $target.tooltipster 'show'
+
+
+  tooltip_hide : (ev) ->
+    target = $(ev.currentTarget)
+    #if !$target.closest('.l-tooltip-user').length > 0
+    $('body > .l-tooltip-user, body > .l-tooltip-user-title').remove()
+

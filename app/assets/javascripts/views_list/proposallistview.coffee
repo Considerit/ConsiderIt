@@ -43,7 +43,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
   #TODO: do this when login as admin
   render_header : ->
     $heading_el = @proposals_header_template({
-      is_admin : ConsiderIt.current_user.is_admin()
+      is_admin : ConsiderIt.request('user:current').is_admin()
       selected_sort : @sort_selected
       selected_filter : @filter_selected
       })
@@ -55,7 +55,7 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
       @$el.append($heading_el)
 
 
-    can_create = ConsiderIt.current_user.is_logged_in() && (ConsiderIt.current_user.is_admin() || ConsiderIt.current_user.is_manager() || ConsiderIt.current_tenant.get('enable_user_conversations'))
+    can_create = ConsiderIt.request('user:current').is_logged_in() && (ConsiderIt.request('user:current').is_admin() || ConsiderIt.request('user:current').is_manager() || ConsiderIt.current_tenant.get('enable_user_conversations'))
 
     if @is_active && can_create && !@$create_el?
       @$create_el = $(@proposals_create_template())

@@ -8,7 +8,8 @@
 
       @dialog_overlay = @getOverlay @layout
       @listenTo @dialog_overlay, 'dialog:canceled', =>
-        ConsiderIt.current_user.clear()
+        ConsiderIt.request('user:current').clear()
+        App.request 'user:current:clear'
         @close()
 
       @listenTo App.vent, 'user:signin', =>

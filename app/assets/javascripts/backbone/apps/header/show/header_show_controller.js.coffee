@@ -3,8 +3,8 @@
   class Show.Controller extends App.Controllers.Base
     
     initialize: ->
-      showView = @getShowView()
-      @show showView
+      @layout = @getLayout()
+      @show @layout
     
-    getShowView: ->
-      new Show.Header
+    getLayout: ->
+      new Show.Layout

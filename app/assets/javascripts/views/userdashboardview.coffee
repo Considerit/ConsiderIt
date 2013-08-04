@@ -58,13 +58,13 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     ConsiderIt.vent.on 'route:PointDetails', => @close(false) if @$dashboard_el.is(':visible')    
 
 
-    @listenTo ConsiderIt.router, 'user:signin', => 
+    @listenTo ConsiderIt.vent, 'user:signin', => 
       @model = ConsiderIt.current_user
       if @$dashboard_el.is(':visible') && @current_context
         @render()
         Backbone.history.loadUrl(Backbone.history.fragment)
     
-    @listenTo ConsiderIt.router, 'user:signout', => @close() if @$dashboard_el.is(':visible') && @current_context
+    @listenTo ConsiderIt.vent, 'user:signout', => @close() if @$dashboard_el.is(':visible') && @current_context
 
   render : ->
     visible = @$dashboard_el.is(':visible')
@@ -76,11 +76,11 @@ class ConsiderIt.UserDashboardView extends Backbone.View
         is_self : is_self
         user : @model.attributes
         avatar : window.PaperClip.get_avatar_url(@model, 'original')
-        is_admin : is_self && ConsiderIt.roles.is_admin
-        is_moderator : is_self && ConsiderIt.roles.is_moderator
-        is_analyst : is_self && ConsiderIt.roles.is_analyst
-        is_evaluator : is_self && ConsiderIt.roles.is_evaluator
-        is_manager : is_self && ConsiderIt.roles.is_manager
+        is_admin : is_self && ConsiderIt.current_user.is_admin()
+        is_moderator : is_self && ConsiderIt.current_user.is_moderator()
+        is_analyst : is_self && ConsiderIt.current_user.is_analyst()
+        is_evaluator : is_self && ConsiderIt.current_user.is_evaluator()
+        is_manager : is_self && ConsiderIt.current_user.is_manager()
       } ) )
     )
 
@@ -336,7 +336,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
     user = @users_by_roles_mask.get($(ev.currentTarget).data('id'))
     
     @$dashboard_el.append @templates['tpl_dashboard_user_roles_edit']({ user: user })
-    $dialog_window = @$dashboard_el.children('.l-dialog-detachable:last')
+    $dialog_window = @$dashboard_el.children('#l-dialog-detachable:last')
     $dialog_window.data('parent', $(ev.currentTarget))
 
     @_check_box user, null, 'user_role_admin', user.has_role('admin') || user.has_role('superadmin')
@@ -356,7 +356,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
   role_changed : (data, response, xhr) ->
     result = $.parseJSON(response.responseText)
 
-    $dialog_window = @$dashboard_el.children('.l-dialog-detachable:last')
+    $dialog_window = @$dashboard_el.children('#l-dialog-detachable:last')
     $field = $dialog_window.data('parent').find('.m-user-roles-list')
     role = result.role_list
 

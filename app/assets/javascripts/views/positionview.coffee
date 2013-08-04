@@ -16,8 +16,8 @@ class ConsiderIt.PositionView extends Backbone.View
       if @crafting_view
         @crafting_view.model = @proposal.position
 
-      @listenTo ConsiderIt.router, 'user:signin', @post_signin
-      @listenTo ConsiderIt.router, 'user:signout', @post_signout  
+      @listenTo ConsiderIt.vent, 'user:signin', @post_signin
+      @listenTo ConsiderIt.vent, 'user:signout', @post_signout  
 
   post_signin : () ->
     return if !@proposal.positions

@@ -14,7 +14,7 @@
       new Auth.Register.Controller
 
     begin_password_reset : ->
-      new Auth.PasswordReset.Controller
+      new Auth.Signin.PasswordResetController
 
     current_user : ->
       ConsiderIt.current_user

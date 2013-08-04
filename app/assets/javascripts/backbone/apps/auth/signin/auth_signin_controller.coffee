@@ -94,3 +94,17 @@
         model: @getUser()
 
 
+  class Signin.PasswordResetController extends Signin.Controller
+    initialize : ->
+      super
+
+      @listenTo @layout, 'before:close', ->
+        App.request 'user:password_reset:handled' 
+
+    setupLayout : (layout) ->
+      @listenTo layout, 'signinCompleted', @handleSigninCompleted
+
+    getSigninLayout : ->
+      new Signin.PasswordResetView
+        model: @getUser()
+

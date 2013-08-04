@@ -79,24 +79,6 @@ window.ConsiderIt.utils =
     tileSize - 1
 
 
-window.ConsiderIt.update_current_user = (parameters) ->
-  if parameters.user.id of ConsiderIt.users
-    ConsiderIt.current_user = ConsiderIt.users[parameters.user.id] 
-  else
-    ConsiderIt.users[parameters.user.id] = ConsiderIt.current_user
-
-  ConsiderIt.current_user.set(parameters.user)
-  ConsiderIt.current_user.set_follows(parameters.follows) if 'follows' of parameters
-
-  ConsiderIt.vent.trigger('user:updated') #if ConsiderIt.router
-  if ConsiderIt.current_user.get('b64_thumbnail')
-    $('head').append("<style>#avatar-#{ConsiderIt.current_user.id}{background-image:url('#{ConsiderIt.current_user.get('b64_thumbnail')}');}</style>")
-
-
-window.ConsiderIt.clear_current_user = ->
-  ConsiderIt.current_user = new ConsiderIt.User
-
-  return ConsiderIt.current_user
 
 
 

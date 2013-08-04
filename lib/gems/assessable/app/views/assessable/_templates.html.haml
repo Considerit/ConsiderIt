@@ -54,7 +54,7 @@
               %td
 
                 (( if( obj.get('user_id') > 0 ) { ))
-                (( if( ConsiderIt.current_user.id == obj.get('user_id') ) { ))
+                (( if( ConsiderIt.request('user:current').id == obj.get('user_id') ) { ))
                 = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path(obj.id)}}" do |f|
                   = f.hidden_field :id, :value => "{{obj.id}}"
                   = f.hidden_field :user_id, :value => nil
@@ -66,7 +66,7 @@
                 (( } else { ))
                 = form_for :assessment, :method => :put, :remove => true, :url => "{{Routes.assessment_path(obj.id)}}" do |f|
                   = f.hidden_field :id, :value => "{{obj.id}}"
-                  = f.hidden_field :user_id, :value => "{{ConsiderIt.current_user.id}}"
+                  = f.hidden_field :user_id, :value => "{{ConsiderIt.request('user:current').id}}"
 
                   = f.submit 'I\'ll do it', :class => 'take_responsibility'
                 (( } ))
@@ -191,7 +191,7 @@
           %button.button.add_claim
             + Add a claim to check
 
-          (( if( assessment.reviewable && ConsiderIt.current_user.id != assessment.user_id){ ))
+          (( if( assessment.reviewable && ConsiderIt.request('user:current').id != assessment.user_id){ ))
           (( var submit_text = claims.length == 0 ? 'Correct, there are no verifiable claims, publish it' : 'Publish fact check'; ))  
           .complete
             = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path(assessment.id)}}", :html => {:class => 'm-assessment-update'} do |f|
@@ -206,7 +206,7 @@
             = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path(assessment.id)}}", :html => {:class => 'm-assessment-update'} do |f|
               = f.hidden_field :reviewable, :value => true
               = f.hidden_field :id, :value => "{{ assessment.id }}"
-              = f.hidden_field :user_id, :value => "{{ ConsiderIt.current_user.id }}"
+              = f.hidden_field :user_id, :value => "{{ ConsiderIt.request('user:current').id }}"
               = f.submit "{{ submit_text }}", :class => "button"
           (( } ))
 

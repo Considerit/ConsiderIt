@@ -30,14 +30,6 @@
         con_label : "#{current_tenant.con_label}"        
     });
 
-    ConsiderIt.roles = {
-      is_admin : false,
-      is_moderator : false,
-      is_analyst : false,
-      is_evaluator : false,
-      is_manager : false
-    }
-
     ConsiderIt.current_user = #{current_user ? "ConsiderIt.users[#{current_user.id}]" : 'new ConsiderIt.User'};
 
     //TODO: filter data

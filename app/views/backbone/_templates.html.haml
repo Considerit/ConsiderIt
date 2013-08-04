@@ -1,6 +1,15 @@
 
 - cache ['templates', current_tenant] do
 
+  %script{ :type => "text/template", :id => "tpl_dialog_detachable"}
+    .l-dialog-title
+      {{ title }} 
+      
+      %a.l-dialog-close.cancel{ :'data-target' => 'dialog-close'}
+        {{ close_label }}
+
+    .l-dialog-body
+    
   %script{ :type => "text/template", :id => "tpl_proposal_list" }
     (( if(completed) { ))
     #m-proposals-container-completed
@@ -682,7 +691,7 @@
 
 
   %script{ :type => "text/template", :id => "tpl_static_position" }
-    .l-dialog-detachable.m-static-position
+    #l-dialog-detachable.m-static-position
 
       .l-dialog-title.m-static-position-stance
         {{ user.get('name') }} {{stance_label}} this proposal.
@@ -732,7 +741,7 @@
 
 
   %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_publicity" }
-    .l-dialog-detachable
+    #l-dialog-detachable
       %h1.l-dialog-title
         Who can view and participate?  
 
@@ -783,7 +792,7 @@
               cancel
 
   %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_active"}
-    .l-dialog-detachable
+    #l-dialog-detachable
       %h1.l-dialog-title
         Set the status of this proposal.  
 

@@ -42,7 +42,7 @@ class ConsiderIt.StaticPositionView extends Backbone.View
       @once 'StaticPosition:DataLoaded', => callback()
       @load_data()
 
-  close_by_keyup : (ev) -> @close() if ev.keyCode == 27 && $('#registration_overlay').length == 0
+  close_by_keyup : (ev) -> @close() if ev.keyCode == 27 && $('#l-dialog-detachable').children().length == 0
 
   set_data : (data) ->
     @included_pros = (@proposal.pros.get(p) for p in data.included_pros)

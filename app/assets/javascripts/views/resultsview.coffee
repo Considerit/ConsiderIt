@@ -331,7 +331,7 @@ class ConsiderIt.ExplorerView extends Backbone.View
 
   close_bar_click : (ev) -> @deselect_bar() if $(ev.target).closest('.m-results-responders').length == 0
 
-  close_bar_key : (ev) -> @deselect_bar() if ev.keyCode == 27 && $('#registration_overlay').length == 0 && $('.m-point-expanded').length == 0
+  close_bar_key : (ev) -> @deselect_bar() if ev.keyCode == 27 && $('#l-dialog-detachable').children().length == 0 && $('.m-point-expanded').length == 0
   
   deselect_bar : (ev) ->
 

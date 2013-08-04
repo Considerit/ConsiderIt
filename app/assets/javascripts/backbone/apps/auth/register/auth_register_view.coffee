@@ -23,12 +23,18 @@
     template: "#tpl_auth_options"
 
     serializeData : -> 
-      {providers : @options.providers}
+      providers : @options.providers
+      switch_label : 'Returning?'
+      switch_prompt : 'Sign In'
 
     events:
       'click [data-target="third_party_auth"]' : 'thirdPartyAuthRequest'
       'click [data-provider="email"]' : 'emailAuthRequest'
+      'click .m-user-accounts-switch-method' : 'switchMethod'
 
+    switchMethod : ->
+      @trigger 'switch_method_requested'
+      
     thirdPartyAuthRequest : (ev) ->
       provider = $(ev.target).data('provider')
       @trigger 'third_party_auth_request', provider

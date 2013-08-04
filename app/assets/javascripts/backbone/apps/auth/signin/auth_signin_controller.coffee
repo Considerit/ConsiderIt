@@ -9,14 +9,15 @@
       @dialog_overlay = @getOverlay @layout
       @listenTo @dialog_overlay, 'dialog:canceled', =>
         ConsiderIt.current_user.clear()
-        @layout.close()
         @close()
 
       @listenTo App.vent, 'user:signin', =>
-        @layout.close()
-        @dialog_overlay.close()
         @close()
 
+    close : ->
+      @dialog_overlay.close()
+      @layout.close()
+      super
 
     setupLayout : (layout) ->
       user = layout.model
@@ -46,6 +47,10 @@
             fixed: false
           layout.authOptionsRegion.close()
           layout.emailAuthRegion.show email_view
+
+        @listenTo auth_options_view, 'switch_method_requested', ->
+          @close()
+          App.vent.trigger 'registration:requested'
 
         layout.authOptionsRegion.show auth_options_view
 

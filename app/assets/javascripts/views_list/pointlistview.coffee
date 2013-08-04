@@ -200,11 +200,11 @@ class ConsiderIt.BrowsablePointListView extends ConsiderIt.PointListView
 
       # when clicking outside of pointlist, close browsing
       $(document).on 'click.m-pointlist-browsing', (ev)  => 
-        if $(ev.target).closest('.m-pointlist-sort-option').length == 0 && $(ev.target).closest('.m-pointlist-browsing')[0] != @$el[0] && $('.m-point-expanded, .l-dialog-detachable').length == 0
+        if $(ev.target).closest('.m-pointlist-sort-option').length == 0 && $(ev.target).closest('.m-pointlist-browsing')[0] != @$el[0] && $('.m-point-expanded, #l-dialog-detachable').length == 0
           @toggle_browse(false) 
           ev.stopPropagation()
 
-      $(document).on 'keyup.m-pointlist-browsing', (ev) => @toggle_browse(false) if ev.keyCode == 27 && $('.m-point-expanded, .l-dialog-detachable').length == 0
+      $(document).on 'keyup.m-pointlist-browsing', (ev) => @toggle_browse(false) if ev.keyCode == 27 && $('.m-point-expanded, #l-dialog-detachable').length == 0
 
     else
       @$el.removeClass 'm-pointlist-browsing'

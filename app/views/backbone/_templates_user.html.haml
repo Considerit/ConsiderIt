@@ -1,8 +1,7 @@
 
 - cache ['user_templates', current_tenant] do 
 
-  - providers = [ ['google', user_omniauth_authorize_path(:google_oauth2)], ['facebook',user_omniauth_authorize_path(:facebook)], ['twitter',user_omniauth_authorize_path(:twitter, :x_auth_access_type => "read")] ]
-
+  - providers = ['google', 'facebook', 'twitter']
 
   %script{ :type => "text/template", :id => "tpl_logged_out"}
     .m-login
@@ -39,19 +38,19 @@
               App settings
           (( } ))
 
-          (( if( (is_admin || is_moderator ) && ConsiderIt.current_tenant.get('enable_moderation') ) { ))
+          (( if( is_moderator && ConsiderIt.current_tenant.get('enable_moderation') ) { ))
           %li
             %a.m-user-options-dashboard_link.moderate{:'data-target' => 'moderate'}
               Moderate
           (( } ))
 
-          (( if( (is_admin || is_evaluator ) && ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
+          (( if( is_evaluator && ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
           %li
             %a.m-user-options-dashboard_link.assess{:'data-target' => 'assess'}
               Assess
           (( } ))
 
-          (( if( (is_admin || is_analyst ) ) { ))
+          (( if( is_analyst ) { ))
           %li
             %a.m-user-options-dashboard_link.analyze{:'data-target' => 'analyze'}
               Analyze
@@ -97,111 +96,58 @@
 
 
 
-  %script{ :type => "text/template", :id => "tpl_limited_user_sign_in"}
+  %script{ :type => "text/template", :id => "tpl_auth_options"}
+    %ul.m-user-accounts-auth-options
+      (( _.each(providers, function(provider) { ))
+      (( var is_email = provider.name == 'email', dataTarget = is_email ? '' : 'third_party_auth', provider_label = is_email ? 'Old-fashioned email' : provider.name; ))
 
-    %h2.l-dialog-title
-      Welcome back, {{ConsiderIt.limited_user_email}}! Please sign in. 
+      %li.m-user-accounts-login-option
+        %button{ :'data-target' => "{{dataTarget}}", :class => "zocial {{provider.name}}", :'data-provider' => "{{provider.name}}" }
+          {{provider_label}}
+        (( if(provider.fineprint) { ))
+        .m-user-accounts-fineprint.m-fineprint-social
+          {{provider.fineprint}}
+        (( } ))
 
-      %a.l-dialog-close{:'data-target' => "close_dialog"}
-        close
+      (( }) ))
 
-    .m-user-accounts-complete.m-user-accounts-complete-signin
 
-      (( if(auth_method == 'email') { ))
-      = form_for :user, :url => user_session_path, :remote => true do |f|
-        = f.hidden_field :email, :value => "{{ConsiderIt.limited_user_email}}"
+  %script{ :type => "text/template", :id => "tpl_signin_via_email"}
+    = form_for :user, :url => user_session_path, :remote => true do |f|
+      .m-user-accounts-form
+        .m-user-accounts-form-fields-wrap
 
-        .m-user-accounts-form
-          .m-user-accounts-form-fields-wrap
+          .m-user-accounts-form-fields-text
+            (( if(fixed) { ))
+            = f.hidden_field :email, :value => "{{email}}"
+            .email_field.inlined.fixed
+            (( } else { ))
+            .email_field.inlined
+              = f.label :email, 'Email'
+              = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
+            (( } ))
+            .password_field.inlined
+              = f.label :email, 'Password'              
+              = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+              %a.forget_password_prompt
+                I forgot. Email me password instructions. 
+              
+        .m-user-accounts-finish-wrap
+          = f.submit "Sign in!"
 
-            .m-user-accounts-form-fields-text
+  %script{ :type => "text/template", :id => "tpl_user_signin_dialog_sub"}
+    .l-dialog-title-sub
+      %a.m-user-accounts-switch-method
+        New here?
 
-              .email_field.inlined.fixed
-
-              .password_field.inlined
-                = f.label :email, 'Password'              
-                = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
-                %a.forget_password_prompt
-                  I forgot. Email me password instructions. 
-                
-          .m-user-accounts-finish-wrap
-
-            = f.submit "Sign in!"
-
-      (( } else { ))
-      %ul.m-user-accounts-login-options
-        - providers.each do |(provider, path)|
-          (( var provider_class = "#{provider}" != auth_method ? 'hide' : ''; ))
-          %li{ :class => "m-user-accounts-login-option {{ provider_class }}"} 
-            %button{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
-              #{provider.capitalize}
-      (( } ))
-
+        %span
+          Create Account
+        instead.
 
   %script{ :type => "text/template", :id => "tpl_user_signin"}
-
-
-    %h2.l-dialog-title
-      Sign in
-
-      %a.l-dialog-close{:'data-target' => "close_dialog"}
-        close
-
-      .l-dialog-title-sub
-        %a.m-user-accounts-switch-method
-          New here?
-
-          %span
-            Create Account
-          instead.
-
-    .l-dialog-body.m-user-accounts-choose-method
-
-
-      %ul.m-user-accounts-login-options
-        %li.m-user-accounts-login-option
-          %button.email.zocial{:'data-provider' => 'email'}
-            Old-fashioned email
-
-        - providers.each do |(provider, path)|
-          %li.m-user-accounts-login-option
-            %button{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
-              #{provider.capitalize}
-
-
-    .m-user-accounts-complete.m-user-accounts-complete-signin
-
-      = form_for :user, :url => user_session_path, :remote => true do |f|
-
-        .m-user-accounts-form
-          .m-user-accounts-form-fields-wrap
-
-            .m-user-accounts-form-fields-text
-
-              .email_field.inlined
-                = f.label :email, 'Email'
-                = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
-
-              .password_field.inlined
-                = f.label :email, 'Password'              
-                = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
-                %a.forget_password_prompt
-                  I forgot. Email me password instructions. 
-                
-              - providers.each do |(provider, path)|
-                .m-user-accounts-authorized-feedback{:'data-provider' => "#{provider}" }
-
-                  %a{ :class => "zocial #{provider} icon" }
-
-                  Registering via #{provider}
-
-
-
-          .m-user-accounts-finish-wrap
-
-            = f.submit "Sign in!"
+    .m-user-accounts-email-auth-region
+    .m-user-accounts-auth-options-region
         
-
 
 
   - requires_pledge = current_tenant.requires_civility_pledge_on_registration
@@ -221,22 +167,7 @@
           instead.
           
     .l-dialog-body.m-user-accounts-choose-method
-
-      %ul.m-user-accounts-login-options
-        %li.m-user-accounts-login-option
-          %button.email.zocial{:'data-provider' => 'email'}
-            Old-fashioned email
-          .m-user-accounts-fineprint.m-fineprint-email
-            Email confirmation step required
-
-        - providers.each do |(provider, path)|
-          %li.m-user-accounts-login-option
-            %button{ :onclick => "javascript:openPopupWindow('#{path}')", :class => "zocial #{provider}", :'data-provider' => provider }
-              #{provider.capitalize}
-            - if provider == 'facebook'
-              .m-user-accounts-fineprint.m-fineprint-social
-                We don't post to your wall without permission
-
+      .m-user-accounts-auth-options-region
 
     .m-user-accounts-complete.m-user-accounts-complete-register
 
@@ -272,7 +203,7 @@
                   
                 Registering via email
                 
-              - providers.each do |(provider, path)|
+              - providers.each do |provider|
                 .m-user-accounts-authorized-feedback{:'data-provider' => "#{provider}" }
 
                   %button{ :class => "zocial #{provider} icon" }
@@ -292,10 +223,8 @@
                   Import pic from: 
 
                 .import_from_third_parties
-
-                  %button{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
-
-                  %button{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
+                  - ['facebook', 'twitter'].each do |provider|
+                    %button{ :'data-target' => 'third_party_auth', :class => "zocial #{provider} icon import_from_third_party", :'data-provider' => "#{provider}" }
 
                 = f.hidden_field :avatar_url, :class => 'avatar_url'
 
@@ -363,9 +292,8 @@
 
                 .import_from_third_parties
 
-                  %button{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:facebook)}')", :class => "zocial facebook icon import_from_third_party", :'data-provider' => 'facebook' }
-
-                  %button{ :onclick => "javascript:openPopupWindow('#{user_omniauth_authorize_path(:twitter)}')", :class => "zocial twitter icon import_from_third_party", :'data-provider' => 'twitter' }
+                  - ['facebook', 'twitter'].each do |provider|
+                    %button{ :'data-target' => 'third_party_auth', :class => "zocial #{provider} icon import_from_third_party", :'data-provider' => "#{provider}" }
 
                 = f.hidden_field :avatar_url, :class => 'avatar_url'
 

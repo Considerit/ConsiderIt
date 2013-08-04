@@ -37,6 +37,15 @@ class ConsiderIt.User extends Backbone.Model
   is_logged_in : ->
     'id' of @attributes
 
+  paperwork_completed : ->
+    @get('registration_complete')
+
+  is_admin : -> @has_role('admin')
+  is_moderator : -> @is_admin || @has_role('moderator')
+  is_analyst : -> @is_admin || @has_role('analyst')
+  is_evaluator : -> @is_admin || @has_role('evaluator')
+  is_manager : -> @is_admin || @has_role('manager')
+
   has_role : (role) ->
     _.indexOf(@roles(), role) >= 0
 

@@ -7,17 +7,23 @@
   
   App.addRegions
     headerRegion: "#l-header"
-    #mainRegion:    "#main-region"
+    mainRegion:    "#l-content"
     footerRegion: "#l-footer"
   
   App.rootRoute = Routes.root_path()
   
   App.addInitializer ->
-    App.module("HeaderApp").start()
+    headerApp = App.module("HeaderApp")
+
+    @listenTo headerApp, 'start', => 
+      App.module("Auth").start()
+
+    headerApp.start()
     App.module("FooterApp").start()
+
   
-  # App.reqres.setHandler "default:region", ->
-  #   App.mainRegion
+  App.reqres.setHandler "default:region", ->
+    App.mainRegion
   
   App.commands.setHandler "register:instance", (instance, id) ->
     App.register instance, id if App.environment is "development"
@@ -31,8 +37,14 @@
 
     # REFACTOR
     # ConsiderIt.router = new ConsiderIt.Router();
-    appview = new ConsiderIt.AppView();
-    appview.render();
+
+    appview = new ConsiderIt.AppView()
+    #@mainRegion.show appview
+
+    @dashboardview = new ConsiderIt.UserDashboardView({ model : ConsiderIt.current_user, el : '#l-wrap'})
+
+    appview.render()
+
     #####
     
     @startHistory()

@@ -29,7 +29,7 @@ class ConsiderIt.AssessmentView extends Backbone.View
         @$el.find('.m-point-assessment-requested-feedback').hide()
 
     #TODO: if user logs in as admin, need to do this
-    # if ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.roles.is_admin || ConsiderIt.roles.is_evaluator
+    # if ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.current_user.is_admin() || ConsiderIt.current_user.is_evaluator()
     #   @$el.find('.m-comment-body').editable {
     #       resource: 'comment'
     #       pk: @model.id

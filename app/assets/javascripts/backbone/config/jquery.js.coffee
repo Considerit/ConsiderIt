@@ -24,3 +24,10 @@ do ($) ->
                 backgroundColor: obj.backgroundColor
     else
       $("[data-wrapper]").remove()
+
+  # http://danielarandaochoa.com/backboneexamples/blog/2012/08/02/backbone-view-listening-for-a-remove-event-the-missing-item/
+  $.event.special.destroyed =
+    remove: (o) -> o.handler() if o.handler
+
+  #X-Editable option
+  $.fn.editable.defaults.mode = 'inline'

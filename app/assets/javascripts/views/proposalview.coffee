@@ -37,7 +37,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     if !@rendered
       @$el.html ConsiderIt.ProposalView.unexpanded_template($.extend({}, @model.attributes, {
         description_detail_fields : this.model.description_detail_fields()
-        avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[@model.get('user_id')], 'large')
+        avatar : ConsiderIt.users[@model.get('user_id')].get_avatar_url 'large'
         tile_size : Math.min 50, ConsiderIt.utils.get_tile_size(110, 55, @model.participants().length)
         participants : _.sortBy(@model.participants(), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
       }))

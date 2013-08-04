@@ -145,121 +145,103 @@
         instead.
 
   %script{ :type => "text/template", :id => "tpl_user_signin"}
-    .m-user-accounts-email-auth-region
     .m-user-accounts-auth-options-region
-        
+    .m-user-accounts-email-auth-region
 
-
-  - requires_pledge = current_tenant.requires_civility_pledge_on_registration
   %script{ :type => "text/template", :id => "tpl_new_user" }      
+    .m-user-accounts-auth-options-region
+    .m-user-accounts-complete-paperwork-form
 
-    %h2.l-dialog-title
-      Hi! How do you want to register?
-      %a.l-dialog-close{:'data-target' => "close_dialog"}
-        close
+  %script{ :type => "text/template", :id => "tpl_user_complete_paperwork" }      
+    = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
+      (( var csrfparam = $('meta[name="csrf-param"]').attr('content'), csrftoken = $('meta[name="csrf-token"]').attr('content'); ))
+      %input{ :type => "hidden", :name => "{{ csrfparam }}", :value => "{{ csrftoken }}" }
+      = f.hidden_field :registration_complete, :value => true
 
-      .l-dialog-title-sub
-        %a.m-user-accounts-switch-method
-          Returning?
+      .m-user-accounts-complete-paperwork-card
+      .m-user-accounts-complete-paperwork-pledge
+      .m-user-accounts-complete-paperwork-footer
 
+  %script{ :type => "text/template", :id => "tpl_user_paperwork_card" }      
+
+    .m-user-accounts-form-fields-wrap
+      .m-user-accounts-form-fields-text
+
+        .name_field.inlined
+          %input{ :id => "user_name", :name => "user[name]", :pattern => "^.{1,}", :placeholder => "Your name", :required => "required", :title => "Give yourself a name, please!", :type => "text"}
+
+        .email_field.inlined
+          / = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
+
+          %input{ :id => "user_email", :name => "user[email]", :placeholder => "Your email address", :required => "required", :title => "We need an email address, thanks.", :type => "email", :class => 'h5-email'}
+
+
+        .password_field.inlined
+          / = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+
+          %input{ :id => "user_password", :name => "user[password]", :placeholder => "Password", :required => "required", :title => "Password is required.", :type => "password"}
+
+
+        .m-user-accounts-authorized-feedback{:'data-provider' => "{{auth_method}}" }
+          %button{ :class => "zocial {{auth_method}} icon" }
+          Registering via {{auth_method}}
+
+        .m-user-accounts-pledge-taken
+          &#10004; Civility pledge taken
+
+      .avatar_field
+        %input{:id => "user_avatar", :name => "user[avatar]", :title => "Upload a profile picture (optional)", :type => "file", :class => "customfile-input ui-state-valid"}
+
+        .selected.hide
+
+        .import_from_third_party
           %span
-            Sign In
-          instead.
-          
-    .l-dialog-body.m-user-accounts-choose-method
-      .m-user-accounts-auth-options-region
+            Import pic from: 
 
-    .m-user-accounts-complete.m-user-accounts-complete-register
+          .import_from_third_parties
+            - ['facebook', 'twitter'].each do |provider|
+              %button{ :'data-target' => 'third_party_auth', :class => "zocial #{provider} icon import_from_third_party", :'data-provider' => "#{provider}" }
 
-      //%h2
-      //  Complete your registration
+          %input{ :class => "avatar_url", :id => "user_avatar_url", :name => "user[avatar_url]", :type => "hidden", :value => "" }
 
-      = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
-        (( var csrfparam = $('meta[name="csrf-param"]').attr('content'), csrftoken = $('meta[name="csrf-token"]').attr('content'); ))
-        %input{ :type => "hidden", :name => "{{ csrfparam }}", :value => "{{ csrftoken }}" }
+      .clear
 
-        .m-user-accounts-form
-          .m-user-accounts-form-fields-wrap
-
-            // = image_tag current_theme_image_path("logo.png"), :class => "m-user-accounts-logo"
-
-            .m-user-accounts-form-fields-text
-
-              .name_field.inlined
-                //= f.label :name, 'Member name'
-                = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => "Your name",  :required => true, :class =>"", :pattern => "^.{1,}"
-
-              .email_field.inlined
-                //= f.label :email, 'Member email'
-                = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
-
-              .password_field.inlined
-                //= f.label :email, 'Password'
-                = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+  %script{ :type => "text/template", :id => "tpl_user_paperwork_pledge" }   
+    %ol
+      %li
+        %input{:id => 'pledge1', :name => "pledge1", :type => "checkbox", :value =>"1", :title => "All participants must make this pledge to join"}
+        %label{ :for => "pledge1"}
+          I will not attack or mock other participants or groups.
+  
+      %li
+        %input{:id => 'pledge2', :name => "pledge2", :type => "checkbox", :value =>"2", :title => "All participants must make this pledge to join"}
+        %label{ :for => "pledge2"}
+          I will speak only on behalf of myself, not an organization.
+  
+      %li
+        %input{:id => 'pledge3', :name => "pledge3", :type => "checkbox", :value =>"3", :title => "All participants must make this pledge to join"}
+        %label{ :for => "pledge3"}
+          I will use only one account to participate.
 
 
-              .m-user-accounts-authorized-feedback{:'data-provider' => 'email'}
-                %a.email.zocial.icon
-                  
-                Registering via email
-                
-              - providers.each do |provider|
-                .m-user-accounts-authorized-feedback{:'data-provider' => "#{provider}" }
+  %script{ :type => "text/template", :id => "tpl_user_paperwork_footer" }     
 
-                  %button{ :class => "zocial #{provider} icon" }
+    %input{ :name => "commit", :type => "submit", :value => "Create my account!", :class => "ui-state-valid" }
 
-                  Registering via #{provider}
+    .m-user-accounts-tos
+      %span
+        Signing up acknowledges that you agree to the 
+      %a.m-user-terms-show
+        Terms of Use
 
-              .m-user-accounts-pledge-taken
-                &#10004; Civility pledge taken
-
-
-            .avatar_field
-              = f.file_field :avatar, :title => 'Upload a profile picture (optional)'
-              .selected.hide
-    
-              .import_from_third_party
-                %span
-                  Import pic from: 
-
-                .import_from_third_parties
-                  - ['facebook', 'twitter'].each do |provider|
-                    %button{ :'data-target' => 'third_party_auth', :class => "zocial #{provider} icon import_from_third_party", :'data-provider' => "#{provider}" }
-
-                = f.hidden_field :avatar_url, :class => 'avatar_url'
-
-            .clear
-
-          .m-user-accounts-finish-wrap
-            - if requires_pledge
-              .m-user-accounts-pledge
-                //.m-user-accounts-pledge-heading
-                //  To participate, we ask for your pledge
-                = render :partial => "users/registrations/pledge"
-
-            = f.hidden_field :registration_complete, :value => true
-
-            = f.submit "Create my account!"
-
-            .m-user-accounts-tos
-              %span
-                Signing up acknowledges that you agree to the 
-              %a.m-user-terms-show
-                Terms of Use
-
-              .m-user-the-terms-of-use
-                = render :partial => "home/terms-of-use"
+      .m-user-the-terms-of-use
+        = render :partial => "home/terms-of-use"
 
 
 
   %script{ :type => "text/template", :id => "tpl_new_limited_user" }      
 
-    %h2.l-dialog-title
-      Welcome, {{ConsiderIt.limited_user_email}}! Please create an account. 
-      %a.l-dialog-close{:'data-target' => "close_dialog"}
-        close
-
-    .l-dialog-body.m-user-accounts-complete.m-user-accounts-complete-register.m-limited-user-session
+    .l-dialog-body.m-user-accounts-complete.m-user-accounts-complete-paperwork-form.m-limited-user-session
 
 
       = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
@@ -301,11 +283,7 @@
             .clear
 
           .m-user-accounts-finish-wrap
-            - if requires_pledge
-              .m-user-accounts-pledge
-                //.m-user-accounts-pledge-heading
-                //  To participate, we ask for your pledge
-                = render :partial => "users/registrations/pledge"
+
 
             = f.hidden_field :registration_complete, :value => true
 

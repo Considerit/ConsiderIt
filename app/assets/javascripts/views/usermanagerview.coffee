@@ -6,7 +6,6 @@ class ConsiderIt.UserManagerView extends Backbone.View
     if ConsiderIt.password_reset_token?
       @handle_password_reset()
 
-
     this
 
   events : 
@@ -23,20 +22,20 @@ class ConsiderIt.UserManagerView extends Backbone.View
       throw 'Bad application state'
 
 
-  handle_third_party_callback : (user_data) ->
-    if @registrationview && @registrationview.$el.is(':visible')
-      @registrationview.handle_third_party_callback(user_data)
+  # handle_third_party_callback : (user_data) ->
+  #   if @registrationview && @registrationview.$el.is(':visible')
+  #     @registrationview.handle_third_party_callback(user_data)
       
-    else if @signinview && @signinview.$el.is(':visible')
-      @signinview.finish(user_data)
-    else
-      throw 'Bad application state'
+  #   else if @signinview && @signinview.$el.is(':visible')
+  #     @signinview.finish(user_data)
+  #   else
+  #     throw 'Bad application state'
 
   # Handles the edge case where the user tries to "sign in" with a third party when 
   # they really should have tried to "create an account"
-  quick_register : () ->
-    @handle_user_registration()
-    @registrationview.second_phase()
+  # quick_register : () ->
+  #   @handle_user_registration()
+  #   @registrationview.second_phase()
 
   handle_password_reset : ->
     @auth_overlay = @add_auth_overlay()
@@ -52,9 +51,5 @@ class ConsiderIt.UserManagerView extends Backbone.View
     @center_overlay()
 
     @signinview
-
-
-
-
 
 

@@ -1,7 +1,11 @@
 @ConsiderIt.module "Components.ThirdPartyAuth", (ThirdPartyAuth, App, Backbone, Marionette, $, _) ->
   class ThirdPartyAuth.Controller extends App.Controllers.Base
     
-    initialize: (provider, callback, options = {}) ->
+    initialize : (options = {}) ->
+      provider = options.provider
+      callback = options.callback
+      console.log options
+
       if provider == 'twitter'
         url = Routes.user_omniauth_authorize_path provider,
           x_auth_access_type : 'read'
@@ -11,31 +15,31 @@
       @callback = callback
       @popup = @openPopupWindow(url)
 
-    handleOpenIdResponse = (parameters) ->  
+    handleOpenIdResponse : (parameters) ->  
       parameters.user = parameters.user.user
       @callback parameters
       #ConsiderIt.app.vent 'auth:third_party_auth', parameters
       #ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
 
-    pollLoginPopup = ->
+    pollLoginPopup : ->
       if @popup? && window.location.origin == @popup.location.origin && @popup.open_id_params?
         @handleOpenIdResponse(@popup.open_id_params)
         @popup.close()
         @popup = null
         clearInterval(@polling_interval)
 
-    openPopupWindow = (url) ->
-      openidpopup = window.open(@options.url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
+    openPopupWindow : (url) ->
+      openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
       openidpopup.open_id_params = null
       coords = @getCenteredCoords(450,500)  
       openidpopup.moveTo(coords[0],coords[1])
-      @polling_interval = setInterval -> 
+      @polling_interval = setInterval => 
         @pollLoginPopup()
       , 200
 
       openidpopup
 
-    getCenteredCoords = (width, height) ->
+    getCenteredCoords : (width, height) ->
       if (window.ActiveXObject)
         xPos = window.event.screenX - (width/2) + 100
         yPos = window.event.screenY - (height/2) - 100
@@ -50,11 +54,8 @@
       [xPos, yPos]
 
 
-  App.reqres.setHandler "third_party_auth:new", (provider, callback, options = {}) ->
+  App.reqres.setHandler "third_party_auth:new", (options = {}) ->
 
-    @controller = new ThirdPartyAuth.Controller
-      provider: provider
-      callback: callback
-      options: options
+    @controller = new ThirdPartyAuth.Controller options
 
     @controller

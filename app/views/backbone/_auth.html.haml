@@ -11,7 +11,7 @@
 
   .m-user-options
     .m-user-options-display
-      %img{ :src => "{{PaperClip.get_avatar_url(ConsiderIt.request('user:current'), 'small')}}", :alt => "your profile picture"}
+      %img{ :src => "{{ConsiderIt.request('user:current').get_avatar_url('small')}}", :alt => "your profile picture"}
 
       %a
         {{ name }} 

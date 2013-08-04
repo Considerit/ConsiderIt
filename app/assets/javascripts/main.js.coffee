@@ -1,24 +1,3 @@
-#window.ConsiderIt = {} #global namespace for ConsiderIt js methods
-
-_.templateSettings =  
-  interpolate : /\{\{(.+?)\}\}/g
-  evaluate : /\(\((.+?)\)\)/g
-
-#X-Editable option
-$.fn.editable.defaults.mode = 'inline'
-
-window.delay = (ms, func) -> setTimeout func, ms
-
-
-window.PaperClip =
-  get_avatar_url : (user, size, fname) ->
-    if fname?
-      "#{ConsiderIt.public_root}/system/avatars/#{user.id}/#{size}/#{fname}"
-    else if user? && user.get('avatar_file_name')
-      "#{ConsiderIt.public_root}/system/avatars/#{user.id}/#{size}/#{user.get('avatar_file_name')}"
-    else
-      "#{ConsiderIt.public_root}/system/default_avatar/#{size}_default-profile-pic.png"
-
 $(document).ready () ->
 
   # google analytics
@@ -30,9 +9,7 @@ $(document).ready () ->
     s = document.getElementsByTagName('script')[0] 
     s.parentNode.insertBefore(ga, s)
 
-
   )()
-
 
 window.ConsiderIt.utils = 
   add_CSRF : (params) ->
@@ -79,13 +56,6 @@ window.ConsiderIt.utils =
     tileSize - 1
 
 
-
-
-
-# http://danielarandaochoa.com/backboneexamples/blog/2012/08/02/backbone-view-listening-for-a-remove-event-the-missing-item/
-$.event.special.destroyed =
-  remove: (o) -> o.handler() if o.handler
-          
 $(document).on "click", "a[href^='/']", (event) ->
   href = $(event.currentTarget).attr('href')
   target = $(event.currentTarget).attr('target')
@@ -106,11 +76,6 @@ $(document).on "click", "a[href^='/']", (event) ->
   $(f) for f, i in readyQ
   $(d).bind("ready",f) for f,i in bindReadyQ
 )(jQuery, document)
-
-
-String.prototype.toCamel = -> @replace(/(\-[a-z])/g, ($1) -> $1.toUpperCase().replace('-','')  )
-
-String.prototype.toUnderscore = -> @replace(/([A-Z])/g, ($1) -> "_" + $1.toLowerCase() )
 
 
 window.ensure_el_in_view = ($el, amount_of_viewport_taken_by_el=.5, offset_top=100) ->

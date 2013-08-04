@@ -62,7 +62,6 @@
       email_view
 
     handleThirdPartyAuthRequest : (provider) ->
-      # handle setting up third party request...
       App.request 'third_party_auth:new',
         provider : provider
         callback : (user_data) ->
@@ -84,22 +83,14 @@
       App.request 'dialog:new', view, 
         class: 'auth_overlay'
 
-    getSigninLayout : ->
-
+    getUser : ->
       if App.request 'user:fixed:exists'
-        user = App.request 'user:fixed'
+        App.request 'user:fixed'
       else
-        user = App.request 'user:current'
+        App.request 'user:current'
 
-      layout = new Signin.Layout
-        model: user
-
-      layout
-      # signinview.render()
-      # signinview.$el.bind 'destroyed', () => 
-      #   App.request 'dialog:close'
-      #   #@post_signin()
-
-      #signinview
+    getSigninLayout : ->
+      new Signin.Layout
+        model: @getUser()
 
 

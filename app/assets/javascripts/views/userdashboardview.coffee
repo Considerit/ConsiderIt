@@ -75,7 +75,7 @@ class ConsiderIt.UserDashboardView extends Backbone.View
       @template( $.extend( {}, {
         is_self : is_self
         user : @model.attributes
-        avatar : window.PaperClip.get_avatar_url(@model, 'original')
+        avatar : @model.get_avatar_url 'original'
         is_admin : is_self && ConsiderIt.request('user:current').is_admin()
         is_moderator : is_self && ConsiderIt.request('user:current').is_moderator()
         is_analyst : is_self && ConsiderIt.request('user:current').is_analyst()
@@ -173,13 +173,13 @@ class ConsiderIt.UserDashboardView extends Backbone.View
       params: 
         is_self : user_id == ConsiderIt.request('user:current').id
         user : ConsiderIt.users[user_id].attributes
-        avatar : window.PaperClip.get_avatar_url(ConsiderIt.users[user_id], 'original')
+        avatar : ConsiderIt.users[user_id].get_avatar_url 'original'
       data_callback : (data, params) =>
         _.extend params, { tile_size: Math.min 50, ConsiderIt.utils.get_tile_size(400, 42, _.keys(data.influenced_users).length) }
 
     @_process_dashboard_context('profile', options)
 
-  access_dashboard_edit_profile : -> @_process_dashboard_context('edit_profile', {params: {user : @model.attributes, avatar : window.PaperClip.get_avatar_url(@model, 'original')}})
+  access_dashboard_edit_profile : -> @_process_dashboard_context('edit_profile', {params: {user : @model.attributes, avatar : @model.get_avatar_url('original')}})
   access_dashboard_account_settings : -> @_process_dashboard_context('account_settings', {params: {user : @model.attributes}})
   access_dashboard_email_notifications : -> 
     user = if ConsiderIt.request('user:current').is_logged_in() then ConsiderIt.request('user:current') else ConsiderIt.limited_user

@@ -83,3 +83,11 @@ class ConsiderIt.User extends Backbone.Model
       for follow in _.values(fgroup)
         follow.explicit = true
         follow.follow = false
+
+  get_avatar_url : (size, fname) ->
+    if fname?
+      "#{ConsiderIt.public_root}/system/avatars/#{@id}/#{size}/#{fname}"
+    else if @get('avatar_file_name')
+      "#{ConsiderIt.public_root}/system/avatars/#{@id}/#{size}/#{@get('avatar_file_name')}"
+    else
+      "#{ConsiderIt.public_root}/system/default_avatar/#{size}_default-profile-pic.png"

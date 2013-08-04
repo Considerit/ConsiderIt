@@ -14,7 +14,7 @@ class ConsiderIt.CommentView extends Backbone.View
     )
 
     #TODO: if user logs in as admin, need to do this
-    if ConsiderIt.current_user.id == @model.get('user_id') #|| ConsiderIt.current_user.is_admin()
+    if ConsiderIt.request('user:current').id == @model.get('user_id') #|| ConsiderIt.request('user:current').is_admin()
       @$el.find('.m-comment-body').editable {
           resource: 'comment'
           pk: @model.id

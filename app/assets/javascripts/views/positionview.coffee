@@ -22,16 +22,16 @@ class ConsiderIt.PositionView extends Backbone.View
   post_signin : () ->
     return if !@proposal.positions
 
-    point.set('user_id', ConsiderIt.current_user.id) for point in @model.written_points
-    if ConsiderIt.current_user.id of @proposal.positions
-      existing_position = @proposal.positions[ConsiderIt.current_user.id]
+    point.set('user_id', ConsiderIt.request('user:current').id) for point in @model.written_points
+    if ConsiderIt.request('user:current').id of @proposal.positions
+      existing_position = @proposal.positions[ConsiderIt.request('user:current').id]
 
       # need to merge old position into new
       existing_position.subsume @model
 
       @model.set existing_position.attributes
 
-      @proposal.positions[ConsiderIt.current_user.id] = @model
+      @proposal.positions[ConsiderIt.request('user:current').id] = @model
       delete @proposal.positions[-1]
 
       # transfer already included points from existing_position into the included lists
@@ -117,7 +117,7 @@ class ConsiderIt.PositionView extends Backbone.View
     #@trigger 'position:canceled'
 
   handle_submit_position : (ev) ->
-    if ConsiderIt.current_user.isNew()
+    if ConsiderIt.request('user:current').isNew()
       regview = ConsiderIt.app.usermanagerview.handle_user_registration(ev)
       # if user cancels login, then we could later submit this position unexpectedly when signing in to submit a different position!      
       @on 'position:signin_handled', => @submit_position()
@@ -157,7 +157,7 @@ class ConsiderIt.YourActionView extends Backbone.View
   crafting_state : ->
     @$el.html ConsiderIt.YourActionView.save_template
       updating : @model && @model.get('published')
-      follows : ConsiderIt.current_user.is_following('Proposal', @model.id)
+      follows : ConsiderIt.request('user:current').is_following('Proposal', @model.id)
 
   close_crafting : ->
     @$el.html ConsiderIt.YourActionView.craft_template

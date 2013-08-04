@@ -57,7 +57,7 @@ class ConsiderIt.Proposal extends Backbone.Model
 
   update_anonymous_point : (point_id, is_pro) ->
     points = if is_pro then @pros else @cons
-    points.each (pm) => pm.set('user_id', ConsiderIt.current_user.id) if pm.id == point_id
+    points.each (pm) => pm.set('user_id', ConsiderIt.request('user:current').id) if pm.id == point_id
 
   title : (max_len = 140) ->
     if @get('name') && @get('name').length > 0

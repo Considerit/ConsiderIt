@@ -17,7 +17,7 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
   render : () ->     
     super
 
-    @$el.append(ConsiderIt.CommentListView.newcomment_template({user : ConsiderIt.current_user }))
+    @$el.append(ConsiderIt.CommentListView.newcomment_template({user : ConsiderIt.request('user:current') }))
 
     @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
 
@@ -40,7 +40,7 @@ class ConsiderIt.CommentListView extends Backbone.CollectionView
 
   comment_attributes : -> 
     body : @$el.find('.m-new-comment-body-field').val()
-    user_id : ConsiderIt.current_user.id
+    user_id : ConsiderIt.request('user:current').id
     commentable_type : @commentable_type
     commentable_id : @commentable_id
 

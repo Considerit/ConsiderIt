@@ -31,10 +31,10 @@
         pledge_enabled : #{current_tenant.requires_civility_pledge_on_registration}   
     });
 
-    ConsiderIt.current_user = #{current_user ? "ConsiderIt.users[#{current_user.id}]" : 'new ConsiderIt.User'};
+    ConsiderIt.current_user = #{current_user ? "ConsiderIt.users[#{current_user.id}]" : 'null'};
 
     //TODO: filter data
-    #{current_user ? "ConsiderIt.update_current_user( { user: #{current_user.to_json(:methods => :third_party_authenticated)}.user, follows: #{current_user.follows.all.to_json} })" : ''}
+    #{current_user ? "ConsiderIt.current_user_data = { user: #{current_user.to_json(:methods => :third_party_authenticated)}.user, follows: #{current_user.follows.all.to_json} }" : ''}
     
 
     ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };

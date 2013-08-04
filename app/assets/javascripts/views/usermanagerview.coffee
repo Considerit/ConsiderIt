@@ -1,12 +1,12 @@
 class ConsiderIt.UserManagerView extends Backbone.View
 
-  initialize : (options) -> 
+  # initialize : (options) -> 
 
-  render : -> 
-    if ConsiderIt.password_reset_token?
-      @handle_password_reset()
+  # render : -> 
+  #   if ConsiderIt.password_reset_token?
+  #     @handle_password_reset()
 
-    this
+  #   this
 
   events : 
     'click .m-user-accounts-switch-method' : 'switch_method'
@@ -37,19 +37,19 @@ class ConsiderIt.UserManagerView extends Backbone.View
   #   @handle_user_registration()
   #   @registrationview.second_phase()
 
-  handle_password_reset : ->
-    @auth_overlay = @add_auth_overlay()
+  # handle_password_reset : ->
+  #   @auth_overlay = @add_auth_overlay()
 
-    @signinview = new ConsiderIt.PasswordResetView
-      model : ConsiderIt.current_user
-      el : @auth_overlay
-      parent : this
+  #   @signinview = new ConsiderIt.PasswordResetView
+  #     model : ConsiderIt.current_user
+  #     el : @auth_overlay
+  #     parent : this
 
-    @signinview.render()
-    @signinview.$el.bind 'destroyed', () => @post_signin()
+  #   @signinview.render()
+  #   @signinview.$el.bind 'destroyed', () => @post_signin()
 
-    @center_overlay()
+  #   @center_overlay()
 
-    @signinview
+  #   @signinview
 
 

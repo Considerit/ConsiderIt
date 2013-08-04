@@ -10,6 +10,9 @@
     begin_signin: ->
       new Auth.Signin.Controller
 
+    begin_registration: ->
+      new Auth.Register.Controller
+
     current_user: ->
       ConsiderIt.current_user
 
@@ -26,19 +29,23 @@
     fixed_user_exists: ->
       !!ConsiderIt.limited_user
 
-    complete_paperwork: -> 
-      user = API.current_user()
-      # start user registration card ...
+    complete_paperwork: (controller = null) -> 
+      controller ?= API.begin_registration()
+      App.vent.trigger 'registration:complete_paperwork'
 
-    signin: (user_data) ->
-      ConsiderIt.update_current_user(user_data)
+
+    signin: (user_data, controller = null) ->
+      ConsiderIt.update_current_user user_data
 
       user = App.request 'user:current'
       if user.paperwork_completed() 
+        if not user.id of ConsiderIt.users
+          ConsiderIt.users[user.id] = user
+
         API.show()
         App.vent.trigger 'user:signin'              
       else
-        API.complete_paperwork()
+        API.complete_paperwork controller
 
     signout: ->
       $.get Routes.destroy_user_session_path(), (data) =>
@@ -60,32 +67,23 @@
   App.reqres.setHandler "user:fixed:exists", ->
     API.fixed_user_exists()
 
-  App.reqres.setHandler "user:signin", (user_data) ->
-    API.signin(user_data)
+  App.reqres.setHandler "user:signin", (user_data, controller = null) ->
+    API.signin(user_data, controller)
+
+  App.reqres.setHandler 'registration:complete_paperwork', (controller = null) -> 
+    API.complete_paperwork controller
 
   App.vent.on 'signin:requested', -> 
     API.begin_signin()  
+
+  App.vent.on 'registration:requested', -> 
+    API.begin_registration()
 
   App.vent.on 'signout:requested', ->
     API.signout()
 
   # App.vent.on 'user:updated', => 
   #   API.show()
-
-
-  App.vent.on 'registration:requested', -> 
-
-    registrationview = new ConsiderIt.RegistrationView
-      model : ConsiderIt.current_user
-      el : add_auth_overlay()
-      parent : @
-
-    registrationview.render()
-
-    registrationview.$el.bind 'destroyed', () => @post_signin()
-
-
-    registrationview
 
   Auth.on "start", ->
     API.show()

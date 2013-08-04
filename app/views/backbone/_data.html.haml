@@ -27,7 +27,8 @@
         considerations_prompt : "#{current_tenant.considerations_prompt}", 
         statement_prompt : "#{current_tenant.statement_prompt}", 
         pro_label : "#{current_tenant.pro_label}",
-        con_label : "#{current_tenant.con_label}"        
+        con_label : "#{current_tenant.con_label}",
+        pledge_enabled : #{current_tenant.requires_civility_pledge_on_registration}   
     });
 
     ConsiderIt.current_user = #{current_user ? "ConsiderIt.users[#{current_user.id}]" : 'new ConsiderIt.User'};

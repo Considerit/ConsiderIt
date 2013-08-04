@@ -243,14 +243,6 @@
         %a{ :href => "{{Routes.profile_path(user.id)}}", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page"}
           {{ user.get('name') }}
 
-    - if false && can_update
-      .m-comment-edit-wrap
-        %a.m-comment-edit
-          edit
-        .m-comment-edit-form.hide
-          -#= render :partial => 'commentable/make_editable', :locals => { :comment => comment, :validations => {:maxlength => 1000} }
-          %a
-            cancel
     (( } ))
 
 

@@ -136,11 +136,17 @@
       .name_field.inlined
         %input{ :id => "user_name", :name => "user[name]", :pattern => "^.{1,}", :placeholder => "Your name", :required => "required", :title => "Give yourself a name, please!", :type => "text"}
 
+      (( if( fixed ) { ))
+      %input{ :id => "user_email", :name => "user[email]", :type => "hidden"}
+      .email_field.inlined.fixed
+        {{ email }}
+      (( } else { ))
       .email_field.inlined
         / = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
 
         %input{ :id => "user_email", :name => "user[email]", :placeholder => "Your email address", :required => "required", :title => "We need an email address, thanks.", :type => "email", :class => 'h5-email'}
 
+      (( } ))
 
       .password_field.inlined
         / = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
@@ -202,63 +208,6 @@
 
     .m-user-the-terms-of-use
       = render :partial => "home/terms-of-use"
-
-
-
-%script{ :type => "text/template", :id => "tpl_new_limited_user" }      
-
-  .l-dialog-body.m-user-accounts-complete.m-user-accounts-complete-paperwork-form.m-limited-user-session
-
-
-    = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
-      (( var csrfparam = $('meta[name="csrf-param"]').attr('content'), csrftoken = $('meta[name="csrf-token"]').attr('content'); ))
-      %input{ :type => "hidden", :name => "{{ csrfparam }}", :value => "{{ csrftoken }}" }
-      = f.hidden_field :email,  :value => "{{ConsiderIt.limited_user_email}}"
-
-      .m-user-accounts-form
-        .m-user-accounts-form-fields-wrap
-
-          .m-user-accounts-form-fields-text
-
-            .name_field.inlined
-              //= f.label :name, 'Member name'
-              = f.text_field :name, :title => 'Give yourself a name, please!', :placeholder => "Your name",  :required => true, :class =>"", :pattern => "^.{1,}"
-
-            .email_field.inlined.fixed
-              {{ConsiderIt.limited_user_email}}
-
-
-            .password_field.inlined
-              = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
-
-          .avatar_field
-            = f.file_field :avatar, :title => 'Upload a profile picture (optional)'
-            .selected.hide
-  
-            .import_from_third_party
-              Import pic from: 
-
-              .import_from_third_parties
-
-                - ['facebook', 'twitter'].each do |provider|
-                  %button{ :'data-target' => 'third_party_auth', :class => "zocial #{provider} icon import_from_third_party", :'data-provider' => "#{provider}" }
-
-              = f.hidden_field :avatar_url, :class => 'avatar_url'
-
-
-          .clear
-
-        .m-user-accounts-finish-wrap
-
-
-          = f.hidden_field :registration_complete, :value => true
-
-          = f.submit "Create my account!"
-
-          .m-user-accounts-tos
-            Signing up acknowledges that you agree to the 
-            %a
-              Terms of Use.
 
 
 %script{ :type => "text/template", :id => "tpl_user_reset_password" }

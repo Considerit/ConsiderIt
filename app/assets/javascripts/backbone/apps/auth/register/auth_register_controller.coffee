@@ -26,36 +26,24 @@
 
     setupLayout : (layout) ->
       user = layout.model
-
-      if App.request 'user:fixed:exists'
-        if user.auth_method() == 'email'
-          email_view = @setupEmailView
-            model: user
-            fixed: third_party_auth_request
-          layout.emailAuthRegion.show email_view
-
-        else
-          auth_options_view = new Register.AuthOptions
-            model: user
-            providers: [ {name: user.auth_method()} ]
-          layout.authOptionsRegion.show auth_options_view
-
-      else
         
-        auth_options_view = new Register.AuthOptions
-          model: user
-          providers: [ {name: 'email'}, {name: 'google'}, {name: 'facebook'}, {name: 'twitter'} ]
+      auth_options_view = new Register.AuthOptions
+        model: user
+        providers: [ {name: 'email'}, {name: 'google'}, {name: 'facebook'}, {name: 'twitter'} ]
 
-        @listenTo auth_options_view, 'email_auth_request', ->
-          App.request 'registration:complete_paperwork', @
+      @listenTo auth_options_view, 'email_auth_request', ->
+        App.request 'registration:complete_paperwork', @
 
-        @listenTo auth_options_view, 'switch_method_requested', ->
-          @close()
-          App.vent.trigger 'signin:requested'
+      @listenTo auth_options_view, 'switch_method_requested', ->
+        @close()
+        App.vent.trigger 'signin:requested'
 
-        layout.authOptionsRegion.show auth_options_view
+      layout.authOptionsRegion.show auth_options_view
 
       @listenTo auth_options_view, 'third_party_auth_request', @handleThirdPartyAuthRequest
+
+      if App.request 'user:fixed:exists'
+        App.request 'registration:complete_paperwork', @        
 
     completePaperwork : () ->
       @layout.authOptionsRegion.close()
@@ -65,6 +53,7 @@
 
         @paperwork_view = new Register.PaperworkView
           model : @layout.model
+          fixed : App.request 'user:fixed:exists'
 
         @listenTo @paperwork_view, 'third_party_auth_request', @handleImportThirdPartyImage
 
@@ -119,13 +108,6 @@
     getRegisterLayout : ->
       new Register.Layout
         model: @getUser()
-
-      # signinview.render()
-      # signinview.$el.bind 'destroyed', () => 
-      #   App.request 'dialog:close'
-      #   #@post_signin()
-
-      #signinview
 
     getPaperworkLayout : (user) ->
       new Register.PaperworkLayout

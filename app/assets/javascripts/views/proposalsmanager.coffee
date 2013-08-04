@@ -7,14 +7,14 @@ class ConsiderIt.ProposalsManagerView extends Backbone.View
     ConsiderIt.vent.on 'route:PointDetails', (long_id, point_id) => @do_after_proposal_data_loaded(long_id, "show_point_details_handler", [{point_id : point_id}])
     ConsiderIt.vent.on 'route:StaticPosition', (long_id, user_id) => @do_after_proposal_data_loaded(long_id, "prepare_for_static_position", [{user_id : user_id}])
 
-    @listenTo ConsiderIt.router, 'user:signin', =>
+    @listenTo ConsiderIt.vent, 'user:signin', =>
       @load_anonymous_data()
 
       if ConsiderIt.inaccessible_proposal
         ConsiderIt.router.navigate(Routes.proposal_path(ConsiderIt.inaccessible_proposal.long_id), {trigger: true})
         ConsiderIt.inaccessible_proposal = null
 
-    @listenTo ConsiderIt.router, 'user:signout', =>
+    @listenTo ConsiderIt.vent, 'user:signout', =>
 
     ConsiderIt.all_proposals = new ConsiderIt.ProposalList()
     ConsiderIt.all_proposals.add_proposals ConsiderIt.proposals
@@ -23,12 +23,12 @@ class ConsiderIt.ProposalsManagerView extends Backbone.View
       ConsiderIt.current_proposal = null
 
 
-    @$el.find('#t-bg-content-top').append(@proposal_list_template({completed: false}))
+    @$el.append(@proposal_list_template({completed: false}))
     proposals_collection = new ConsiderIt.ProposalList()
     proposals_collection.add ConsiderIt.all_proposals.where({active: true})
     @proposalsview = new ConsiderIt.ProposalListView({collection : proposals_collection, el : '#m-proposals-container', active : true}) 
 
-    @$el.find('#t-bg-content-top').append(@proposal_list_template({completed: true}))
+    @$el.append(@proposal_list_template({completed: true}))
     proposals_completed_collection = new ConsiderIt.ProposalList()
     proposals_completed_collection.add ConsiderIt.all_proposals.where({active: false}) 
     @proposalsview_completed = new ConsiderIt.ProposalListView({collection : proposals_completed_collection, el : '#m-proposals-container-completed', active : false})     

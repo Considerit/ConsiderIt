@@ -45,7 +45,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       )))
 
     #TODO: if user logs in as admin, need to do this
-    if ConsiderIt.current_user.id == @model.get('user_id') #|| ConsiderIt.roles.is_admin
+    if ConsiderIt.current_user.id == @model.get('user_id') #|| ConsiderIt.current_user.is_admin()
       @$el.find('.m-point-nutshell ').editable
           resource: 'point'
           pk: @model.id
@@ -81,7 +81,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
         if ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id) && $(ev.target).closest('.editable-buttons').length == 0
           @close_details( $(ev.target).closest('[data-role="m-point"]').length == 0 && $(ev.target).closest('.l-navigate-wrap').length == 0 ) 
 
-      $(document).on 'keyup.m-point-details', (ev) => @close_details() if ev.keyCode == 27 && $('.l-dialog-detachable').length == 0
+      $(document).on 'keyup.m-point-details', (ev) => @close_details() if ev.keyCode == 27 && $('#l-dialog-detachable').length == 0
 
       next()
 

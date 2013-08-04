@@ -91,7 +91,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   can_edit : ->
-    can = ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.roles.is_admin || ConsiderIt.roles.is_manager
+    can = ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.current_user.is_admin() || ConsiderIt.current_user.is_manager()
     @has_been_admin_in_past = true if can
     can
 
@@ -208,7 +208,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     'click .m-proposal-admin_operations-status' : 'show_status'
     'click .m-proposal-admin_operations-publicity' : 'show_publicity'
     'ajax:complete .m-proposal-admin_operations-settings-form' : 'change_settings'
-    'click .l-dialog-detachable a.cancel' : 'cancel_dialog'
+    'click #l-dialog-detachable a.cancel' : 'cancel_dialog'
     'ajax:complete .m-delete_proposal' : 'delete_proposal'
 
     'ajax:complete .m-proposal-publish-form' : 'publish_proposal'
@@ -348,7 +348,7 @@ class ConsiderIt.ProposalView extends Backbone.View
     @render_admin_strip()
 
   cancel_dialog : (ev) ->
-    $(ev.currentTarget).closest('.l-dialog-detachable').remove()
+    $(ev.currentTarget).closest('#l-dialog-detachable').remove()
 
   delete_proposal : (ev, response, options) ->
     data = $.parseJSON(response.responseText)

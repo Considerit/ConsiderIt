@@ -10,8 +10,9 @@
       @listenTo @dialog_overlay, 'dialog:canceled', =>
         ConsiderIt.current_user.clear()
         @layout.close()
+        @close()
 
-      App.vent.on 'user:signin', =>
+      @listenTo App.vent, 'user:signin', =>
         @layout.close()
         @dialog_overlay.close()
         @close()
@@ -48,8 +49,7 @@
 
         layout.authOptionsRegion.show auth_options_view
 
-      @listenTo auth_options_view, 'third_party_auth_request', (provider) ->
-        # handle setting up third party request...
+      @listenTo auth_options_view, 'third_party_auth_request', @handleThirdPartyAuthRequest
 
     setupEmailView : (options) ->
       email_view = new Signin.ViaEmail
@@ -60,6 +60,13 @@
       @listenTo email_view, 'signinCompleted', @handleSigninCompleted
 
       email_view
+
+    handleThirdPartyAuthRequest : (provider) ->
+      # handle setting up third party request...
+      App.request 'third_party_auth:new',
+        provider : provider
+        callback : (user_data) ->
+          App.request "user:signin", user_data
 
     handlePasswordReminderRequested : (email) ->
       $.post Routes.user_password_path(), {user : {email: email}}, (data) =>

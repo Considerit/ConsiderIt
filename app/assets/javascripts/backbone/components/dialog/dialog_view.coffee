@@ -13,5 +13,4 @@
       'click [data-target="dialog-close"]' : 'closeRequested'
 
     closeRequested : => 
-      console.log 'TRIGGERED'
       @trigger 'closeRequested'      

@@ -592,7 +592,7 @@ $membership_card_height: 278px
     &:hover
       text-decoration: underline
     
-.m-user-accounts-complete-register
+.m-user-accounts-complete-paperwork-form
   .m-user-accounts-form
     margin: auto
 
@@ -641,7 +641,6 @@ $membership_card_height: 278px
 
 
     .m-user-accounts-authorized-feedback
-      display: none
       a
         +font-size(-4)
       vertical-align: top
@@ -684,54 +683,55 @@ $membership_card_height: 278px
         span, a
           +font-size(-4)          
 
-  .m-user-accounts-finish-wrap
-    width: $membership_card_width
-    margin: $vertical_baseline auto
+  .m-user-accounts-complete-paperwork-footer, .m-user-accounts-complete-paperwork-pledge
+    margin: $vertical_baseline auto      
 
-    .m-user-accounts-pledge
-      margin-bottom: $vertical_baseline
 
-      ol
-        text-align: left
-        list-style: none
+  .m-user-accounts-complete-paperwork-pledge
+    margin-bottom: $vertical_baseline
 
-        li
-          padding: 0 $grid_xs
+    ol
+      text-align: left
+      list-style: none
 
-          &:hover
-            background-color: rgba(white, .25)
+      li
+        padding: 0 $grid_xs
 
-          label, input
-            cursor: pointer
-            padding: $vertical_baseline / 2 0
+        &:hover
+          background-color: rgba(white, .25)
 
-    .m-user-accounts-tos
-      span, p, a
-        +font-size(-2)
-
-      .m-user-terms-show
-        text-decoration: underline
-
-      .m-user-the-terms-of-use
-        display: none
-        text-align: left
-        background-color: white
-        padding: $vertical_baseline $grid_xs
-        margin: $vertical_baseline
-        border-radius: 5px
-
-        color: #333
-        h1,h2,h3
-          color: #333
-          margin-top: $vertical_baseline
-        a
-          color: #333
-          text-decoration: underline
+        label, input
           cursor: pointer
+          padding: $vertical_baseline / 2 0
 
-        li
-          list-style-position: inside
-          margin-bottom: $vertical_baseline
+
+  .m-user-accounts-tos
+    span, p, a
+      +font-size(-2)
+
+    .m-user-terms-show
+      text-decoration: underline
+
+    .m-user-the-terms-of-use
+      display: none
+      text-align: left
+      background-color: white
+      padding: $vertical_baseline $grid_xs
+      margin: $vertical_baseline
+      border-radius: 5px
+
+      color: #333
+      h1,h2,h3
+        color: #333
+        margin-top: $vertical_baseline
+      a
+        color: #333
+        text-decoration: underline
+        cursor: pointer
+
+      li
+        list-style-position: inside
+        margin-bottom: $vertical_baseline
 
 .m-limited-user-session
   .inlined.fixed

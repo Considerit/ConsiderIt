@@ -18,7 +18,7 @@
 
     getDialogLayout: (options = {}) ->
       config = @getDefaultConfig _.result(@contentView, "dialog")
-      _.extend config, options
+      _.extend {}, config, options
 
       new Dialog.DialogWrapper
         config: config

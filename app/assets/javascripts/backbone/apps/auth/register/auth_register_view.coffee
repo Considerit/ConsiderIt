@@ -9,15 +9,10 @@
     dialog:
       title : 'Hi! How do you want to register?'
 
-    onRender: ->
-      #TODO: deal with "new here? register instead" interaction
-
   class Register.FixedLayout extends Register.Layout
 
     dialog: -> 
       title : "Welcome, #{model.get('email')}! Please create an account."
-
-    onRender: ->
 
   class Register.AuthOptions extends App.Views.ItemView
     template: "#tpl_auth_options"
@@ -34,7 +29,7 @@
 
     switchMethod : ->
       @trigger 'switch_method_requested'
-      
+
     thirdPartyAuthRequest : (ev) ->
       provider = $(ev.target).data('provider')
       @trigger 'third_party_auth_request', provider
@@ -55,6 +50,7 @@
     serializeData : -> 
       _.extend {}, @model.attributes, 
         auth_method : @model.auth_method()
+        fixed : @options.fixed
 
     onShow : ->
       @$el.find('input[type="file"]').customFileInput()

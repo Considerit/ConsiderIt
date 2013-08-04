@@ -9,9 +9,6 @@
     dialog:
       title : 'Sign in'
 
-    onRender: ->
-      #TODO: deal with "new here? register instead" interaction
-
   class Signin.FixedLayout extends Signin.Layout
 
     dialog: -> 

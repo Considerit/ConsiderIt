@@ -26,7 +26,6 @@
         .delay 100, => @nav_exited()
 
     nav_entered : (ev) -> 
-      console.log @$el.find('.m-user-options-menu-wrap')
       @$el.find('.m-user-options-menu-wrap')
         .stop(true,false)
         .css('height', '')

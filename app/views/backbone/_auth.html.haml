@@ -76,6 +76,14 @@
 
     (( }) ))
 
+  .m-user-accounts-switch-method-wrapper
+    %a.m-user-accounts-switch-method
+      {{switch_label}}
+
+      %span
+        {{switch_prompt}}
+      instead.
+
 
 %script{ :type => "text/template", :id => "tpl_signin_via_email"}
   = form_for :user, :url => user_session_path, :remote => true do |f|
@@ -100,14 +108,7 @@
       .m-user-accounts-finish-wrap
         = f.submit "Sign in!"
 
-%script{ :type => "text/template", :id => "tpl_user_signin_dialog_sub"}
-  .l-dialog-title-sub
-    %a.m-user-accounts-switch-method
-      New here?
 
-      %span
-        Create Account
-      instead.
 
 %script{ :type => "text/template", :id => "tpl_user_signin"}
   .m-user-accounts-auth-options-region

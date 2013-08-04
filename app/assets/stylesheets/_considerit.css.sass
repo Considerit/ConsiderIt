@@ -209,16 +209,19 @@ blockquote
     content: close-quote
     @extend %bolded
 
+
+$preloadersize_width: 32px
+$preloadersize_height: 10.5px
 #l-preloader
-  width: 16px
-  height: 16px
+  width: $preloadersize_width
+  height: $preloadersize_height
   background-image: inline-image("ajax-loader.gif")
   left: 50%
-  margin-left: -8px
+  margin-left: -$preloadersize_width/2
   top: 50%
-  margin-top: -8px
+  margin-top: -$preloadersize_height/2
   position: absolute
-
+  +background-size(cover)
 /* HELPERS */
 
 .clear

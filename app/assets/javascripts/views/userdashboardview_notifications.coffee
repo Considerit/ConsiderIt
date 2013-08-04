@@ -4,7 +4,7 @@ class ConsiderIt.UserDashboardViewNotifications extends Backbone.View
   initialize : (options) -> 
     @template = _.template( $("#tpl_dashboard_email_notifications").html() )
     @followable_objects = options.data.followable_objects
-    @user = if ConsiderIt.limited_user && !ConsiderIt.current_user.is_logged_in() then ConsiderIt.limited_user else ConsiderIt.current_user 
+    @user = if ConsiderIt.limited_user && !ConsiderIt.request('user:current').is_logged_in() then ConsiderIt.limited_user else ConsiderIt.request('user:current') 
     super
 
   render : () -> 

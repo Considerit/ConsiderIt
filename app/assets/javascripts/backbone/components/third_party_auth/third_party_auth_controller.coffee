@@ -4,7 +4,6 @@
     initialize : (options = {}) ->
       provider = options.provider
       callback = options.callback
-      console.log options
 
       if provider == 'twitter'
         url = Routes.user_omniauth_authorize_path provider,

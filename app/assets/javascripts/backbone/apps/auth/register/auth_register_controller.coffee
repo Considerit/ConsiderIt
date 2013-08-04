@@ -11,17 +11,18 @@
 
       @listenTo @dialog_overlay, 'dialog:canceled', =>
         ConsiderIt.current_user.clear()
-        @layout.close()
-        @dialog_overlay.close()        
         @close()
 
       @listenTo App.vent, 'registration:complete_paperwork', =>
         @completePaperwork()
 
       @listenTo App.vent, 'user:signin', =>
-        @layout.close()
-        @dialog_overlay.close()
         @close()
+
+    close : ->
+      @dialog_overlay.close()
+      @layout.close()
+      super
 
     setupLayout : (layout) ->
       user = layout.model
@@ -47,6 +48,10 @@
 
         @listenTo auth_options_view, 'email_auth_request', ->
           App.request 'registration:complete_paperwork', @
+
+        @listenTo auth_options_view, 'switch_method_requested', ->
+          @close()
+          App.vent.trigger 'signin:requested'
 
         layout.authOptionsRegion.show auth_options_view
 

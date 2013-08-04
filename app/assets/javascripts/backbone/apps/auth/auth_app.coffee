@@ -2,39 +2,48 @@
   @startWithParent = false
   
   API =
-    show: ->
+    show : ->
       region = App.request 'userNavRegion'
       new Auth.Show.Controller
         region: region
 
-    begin_signin: ->
+    begin_signin : ->
       new Auth.Signin.Controller
 
-    begin_registration: ->
+    begin_registration : ->
       new Auth.Register.Controller
 
-    current_user: ->
+    begin_password_reset : ->
+      new Auth.PasswordReset.Controller
+
+    current_user : ->
       ConsiderIt.current_user
 
-    fixed_user: -> 
+    fixed_user : -> 
       if API.fixed_user_exists
         ConsiderIt.limited_user.set 'email', API.fixed_user_email
         ConsiderIt.limited_user
       else
         throw 'Fixed user does not exist'
 
-    fixed_user_email: ->
+    fixed_user_email : ->
       ConsiderIt.limited_user_email
 
-    fixed_user_exists: ->
+    fixed_user_exists : ->
       !!ConsiderIt.limited_user
 
-    complete_paperwork: (controller = null) -> 
+    password_reset_token : ->
+      ConsiderIt.password_reset_token
+
+    password_reset_handled : ->
+      ConsiderIt.password_reset_token = null
+
+    complete_paperwork : (controller = null) -> 
       controller ?= API.begin_registration()
       App.vent.trigger 'registration:complete_paperwork'
 
 
-    signin: (user_data, controller = null) ->
+    signin : (user_data, controller = null) ->
       ConsiderIt.update_current_user user_data
 
       user = App.request 'user:current'
@@ -47,7 +56,7 @@
       else
         API.complete_paperwork controller
 
-    signout: ->
+    signout : ->
       $.get Routes.destroy_user_session_path(), (data) =>
         ConsiderIt.utils.update_CSRF(data.new_csrf)
         ConsiderIt.clear_current_user()
@@ -67,8 +76,14 @@
   App.reqres.setHandler "user:fixed:exists", ->
     API.fixed_user_exists()
 
+  App.reqres.setHandler "user:reset_password", => 
+    API.password_reset_token()
+
+  App.reqres.setHandler 'user:password_reset:handled', =>
+    API.password_reset_handled()
+
   App.reqres.setHandler "user:signin", (user_data, controller = null) ->
-    API.signin(user_data, controller)
+    API.signin user_data, controller
 
   App.reqres.setHandler 'registration:complete_paperwork', (controller = null) -> 
     API.complete_paperwork controller
@@ -87,3 +102,6 @@
 
   Auth.on "start", ->
     API.show()
+
+    if token = API.password_reset_token()
+      API.begin_password_reset()

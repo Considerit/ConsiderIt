@@ -296,29 +296,22 @@
 
 
   %script{ :type => "text/template", :id => "tpl_user_reset_password" }
-    %h2.l-dialog-title
-      Change your password
-      %a.l-dialog-close{:'data-target' => "close_dialog"}
-        close
 
-    .l-dialog-body
+    = form_for(:user, :url => password_path(:user), :remote => true, :html => { :method => :put }) do |f|
 
+      = f.hidden_field :reset_password_token, :value => "{{password_reset_token}}"
 
-      = form_for(:user, :url => password_path(:user), :remote => true, :html => { :method => :put }) do |f|
+      %p
+        = f.label :password, "New password"
 
-        = f.hidden_field :reset_password_token, :value => "{{password_reset_token}}"
+      = f.password_field :password
 
-        %p
-          = f.label :password, "New password"
+      %p
+        = f.label :password_confirmation, "Confirm new password" 
+      = f.password_field :password_confirmation
 
-        = f.password_field :password
-
-        %p
-          = f.label :password_confirmation, "Confirm new password" 
-        = f.password_field :password_confirmation
-
-        .m-user-accounts-finish-wrap
-          = f.submit "Change my password and sign in", :class => 'button'
+      .m-user-accounts-finish-wrap
+        = f.submit "Change my password and sign in", :class => 'button'
 
 
 

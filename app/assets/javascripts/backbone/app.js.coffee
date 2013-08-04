@@ -44,7 +44,7 @@
     appview = new ConsiderIt.AppView()
     #@mainRegion.show appview
 
-    @dashboardview = new ConsiderIt.UserDashboardView({ model : ConsiderIt.current_user, el : '#l-wrap'})
+    @dashboardview = new ConsiderIt.UserDashboardView({ model : ConsiderIt.request('user:current'), el : '#l-wrap'})
 
     appview.render()
 

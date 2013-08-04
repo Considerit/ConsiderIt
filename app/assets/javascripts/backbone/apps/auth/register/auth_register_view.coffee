@@ -83,7 +83,7 @@
         observe : 'avatar_file_name'
         onGet : (values) ->
           return if !values? || $.trim(values)==''
-          @$el('.avatar_field img.customfile-preview').attr('src', PaperClip.get_avatar_url(ConsiderIt.current_user, 'original', values))
+          @$el('.avatar_field img.customfile-preview').attr('src', PaperClip.get_avatar_url(ConsiderIt.request('user:current'), 'original', values))
 
     events : 
       'click [data-target="third_party_auth"]' : 'thirdPartyAuthRequest'

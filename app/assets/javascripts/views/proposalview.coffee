@@ -91,7 +91,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
   can_edit : ->
-    can = ConsiderIt.current_user.id == @model.get('user_id') || ConsiderIt.current_user.is_admin() || ConsiderIt.current_user.is_manager()
+    can = ConsiderIt.request('user:current').id == @model.get('user_id') || ConsiderIt.request('user:current').is_admin() || ConsiderIt.request('user:current').is_manager()
     @has_been_admin_in_past = true if can
     can
 

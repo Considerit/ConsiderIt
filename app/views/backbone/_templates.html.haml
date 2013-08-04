@@ -44,7 +44,7 @@
     (( }); ))
 
   %script{ :type => "text/template", :id => "tpl_point_follows"}
-    (( if( published && ConsiderIt.current_user.is_logged_in() ) { ))
+    (( if( published && ConsiderIt.request('user:current').is_logged_in() ) { ))
 
     (( var follows_class = already_follows ? 'hide' : ''; ))
     (( var unfollows_class = already_follows ? '' : 'hide'; ))
@@ -56,7 +56,7 @@
 
     %div{ :class => "unfollow {{ unfollows_class }}"}
       = form_for :follows, :url => "{{ Routes.unfollow_path() }}", :as => :follow, :remote => true do |f|
-        = f.hidden_field :user_id, :value => "{{ ConsiderIt.current_user.id }}"
+        = f.hidden_field :user_id, :value => "{{ ConsiderIt.request('user:current').id }}"
         = f.hidden_field :followable_id, :value => "{{ id }}"
         = f.hidden_field :followable_type, :value => "Point"
         = f.submit "Unfollow this point" #, :class => 'button'
@@ -207,7 +207,7 @@
         %span.count
           1000
 
-        (( if( ConsiderIt.current_user.is_logged_in() ) { ))
+        (( if( ConsiderIt.request('user:current').is_logged_in() ) { ))
         .m-new-comment-submit-wrap
           %span.m-new-comment-civility-reminder
             Thanks for being civil!
@@ -379,8 +379,8 @@
     .m-proposal-connect.m-proposal-strip
 
       %ul
-        / (( if( ConsiderIt.current_user.is_logged_in() ) { ))
-        / (( var selected_class = ConsiderIt.current_user.is_following('Proposal', id) ? 'selected' : ''; ))
+        / (( if( ConsiderIt.request('user:current').is_logged_in() ) { ))
+        / (( var selected_class = ConsiderIt.request('user:current').is_following('Proposal', id) ? 'selected' : ''; ))
         / %li.m-proposal-action-label
         /   Follow this conversation:
         / %li

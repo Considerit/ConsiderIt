@@ -12,7 +12,7 @@ class ConsiderIt.PointView extends Backbone.View
     @reset_listeners()
 
   reset_listeners : () ->
-    user = if this.model.get('user_id') then ConsiderIt.users[this.model.get('user_id')] else ConsiderIt.current_user
+    user = if this.model.get('user_id') then ConsiderIt.users[this.model.get('user_id')] else ConsiderIt.request('user:current')
     if !@user? || user.id != @user.id
       @user.off('change', @render, this) if @user?
       @user = user
@@ -26,7 +26,7 @@ class ConsiderIt.PointView extends Backbone.View
         adjusted_nutshell : this.model.adjusted_nutshell()
         user : @user.attributes
         proposal : @proposal.attributes,
-        is_you : @user == ConsiderIt.current_user
+        is_you : @user == ConsiderIt.request('user:current')
       )
     )
     

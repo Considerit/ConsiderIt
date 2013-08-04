@@ -26,7 +26,7 @@
 
       = f.text_area :suggestion
 
-      (( if( ConsiderIt.current_user ) { ))
+      (( if( ConsiderIt.request('user:current') ) { ))
       .submit_block
         = f.submit 'Submit your request', :class => 'button hide'
         %a.m-point-assessment-cancel-request

@@ -20,6 +20,8 @@
         
       = theme_stylesheet_link_tag 'application'
 
+      = image_tag "ajax-loader.gif", :style => 'display: none'
+
       - ['Source+Sans+Pro'].each do |font|
         %link{ :href => "http://fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
 
@@ -60,12 +62,14 @@
           #l-wrap
             #l-header
             #l-content
+
               #l-content-main
                 #t-bg-content
                   #t-bg-content-top
                     #m-dashboard.l-content-wrap
 
-                    #l-preloader
+                    = image_tag "ajax-loader.gif", :id => 'l-preloader'
+
             #l-footer
 
             - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''

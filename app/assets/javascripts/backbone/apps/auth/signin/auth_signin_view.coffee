@@ -48,7 +48,7 @@
 
     onShow : ->
       @$el.find('input[type="file"]').customFileInput()
-      @$el.find('form').h5Validate({errorClass : 'error'})
+      @$el.h5Validate({errorClass : 'error'})
       if !Modernizr.input.placeholder
         @$el.find('[placeholder]').simplePlaceholder() 
 

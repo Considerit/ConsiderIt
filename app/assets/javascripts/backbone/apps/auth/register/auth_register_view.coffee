@@ -53,8 +53,9 @@
         fixed : @options.fixed
 
     onShow : ->
+
       @$el.find('input[type="file"]').customFileInput()
-      @$el.find('form').h5Validate({errorClass : 'error'})
+      @$el.closest('form').h5Validate({errorClass : 'error'})
       @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
 
       auth_method = @model.auth_method()
@@ -64,8 +65,6 @@
           @$el.find('#user_name').focus() 
         else
           @$el.find('.password_field').prepend('<label for="user_password">Password</label>')
-
-
       else
         @$el.find('.password_field').hide()
 

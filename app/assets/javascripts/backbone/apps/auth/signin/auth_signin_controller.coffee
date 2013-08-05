@@ -75,7 +75,7 @@
 
     handlePasswordReminderRequested : (email) ->
       $.post Routes.user_password_path(), {user : {email: email}}, (data) =>
-        email_view.respondToPasswordReminderRequest data.result == 'success'
+        @layout.emailAuthRegion.currentView.respondToPasswordReminderRequest data.result == 'success'
 
     handleSigninCompleted : (data) =>
       if data.result == 'successful'

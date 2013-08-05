@@ -35,8 +35,7 @@
     App.unregister instance, id if App.environment is "development"
   
   App.on "initialize:after", ->
-
-    $('#l-preloader').fadeOut()
+    $('#l-preloader').hide()
 
     # REFACTOR
     # ConsiderIt.router = new ConsiderIt.Router();

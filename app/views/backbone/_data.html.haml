@@ -40,15 +40,19 @@
     ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };
 
     ConsiderIt.limited_user = #{@limited_user ? "ConsiderIt.users[#{@limited_user.id}]" : 'null'};
-    ConsiderIt.limited_user_email = #{@limited_user_email ? "'#{@limited_user_email}'" : 'null'};
+
+    #{@limited_user.nil? && @limited_user_email ? "ConsiderIt.limited_user = new ConsiderIt.User({email : '#{@limited_user_email}'})" : ''}
+
     #{@limited_user ? "ConsiderIt.limited_user.set( { google_uid: '#{@limited_user.google_uid}', facebook_uid: '#{@limited_user.facebook_uid}', twitter_uid: '#{@limited_user.twitter_uid}'  })" : ''}
 
     #{@limited_user ? "ConsiderIt.limited_user.set_follows(#{@limited_user_follows.to_json})" : 'null'};
 
     ConsiderIt.password_reset_token = #{@reset_password_token ? "'#{@reset_password_token}'" : 'null'};  
 
-
-    //Backbone.history.start({pushState: true});
+    ConsiderIt.admin_files = {
+      js_tag : "#{j(javascript_include_tag("admin"))}",
+      style_tag : "#{j(theme_stylesheet_link_tag("admin"))}"
+    };
 
 
 

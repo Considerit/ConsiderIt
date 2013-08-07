@@ -2,9 +2,7 @@
 
 - cache ['admin_dashboard', current_tenant] do 
 
-  = theme_stylesheet_link_tag 'admin'
 
-  = javascript_include_tag 'admin'
 
   %script{ :type => "text/template", :id => "tpl_dashboard_app_settings"}
 
@@ -198,61 +196,58 @@
 
   %script{ :type => "text/template", :id => "tpl_dashboard_user_roles_edit"}
     = form_for :user, :url => "{{Routes.update_role_path(user.id)}}", :remote => true, :method => :post, :html => { :class => 'm-user_roles-edit_form l-dialog-detachable' } do |f|
-      %h1.l-dialog-title
-        Authorized roles for {{ user.get('name') && user.get('name').length > 0 ? user.get('name') : user.get('email') }}
 
-      .l-dialog-body
-        .radio_block
-          .option
-            = f.radio_button :role, 'admin'
-            = f.label :role, 'Admin', :value => 'admin'
-            .sublabel
-              Grants all permissions to this user.
-          .option.specific
-            = f.radio_button :role, 'specific'
-            = f.label :role, 'Specific roles', :value => 'specific'
-            .sublabel
-              Choose amongst the available roles.
+      .radio_block
+        .option
+          = f.radio_button :role, 'admin'
+          = f.label :role, 'Admin', :value => 'admin'
+          .sublabel
+            Grants all permissions to this user.
+        .option.specific
+          = f.radio_button :role, 'specific'
+          = f.label :role, 'Specific roles', :value => 'specific'
+          .sublabel
+            Choose amongst the available roles.
 
-              .suboption
-                = f.check_box 'manager'
-                = f.label 'manager', 'Manager'
-                .sublabel
-                  Can create and edit all proposals.
-
-              (( if( ConsiderIt.current_tenant.get('enable_moderation') ) { ))
-              .suboption
-                = f.check_box 'moderator'
-                = f.label 'moderator', 'Moderator'
-                .sublabel
-                  Can approve/disapprove user contributed content.
-              (( } ))
-
-              (( if( ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
-              .suboption
-                = f.check_box 'evaluator'
-                = f.label 'evaluator', 'Evaluator'
-                .sublabel
-                  Create official responses (like fact-checks) to pro/con points.
-              (( } ))
-
-              .suboption
-                = f.check_box 'analyst'
-                = f.label 'analyst', 'Analyst'
+            .suboption
+              = f.check_box 'manager'
+              = f.label 'manager', 'Manager'
               .sublabel
-                Can explore data trends.
+                Can create and edit all proposals.
 
+            (( if( ConsiderIt.current_tenant.get('enable_moderation') ) { ))
+            .suboption
+              = f.check_box 'moderator'
+              = f.label 'moderator', 'Moderator'
+              .sublabel
+                Can approve/disapprove user contributed content.
+            (( } ))
 
-          .option
-            = f.radio_button :role, 'user'
-            = f.label :role, 'User', :value => 'user'
+            (( if( ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
+            .suboption
+              = f.check_box 'evaluator'
+              = f.label 'evaluator', 'Evaluator'
+              .sublabel
+                Create official responses (like fact-checks) to pro/con points.
+            (( } ))
+
+            .suboption
+              = f.check_box 'analyst'
+              = f.label 'analyst', 'Analyst'
             .sublabel
-              Has no special permissions.
+              Can explore data trends.
 
-        .save_block
-          = f.submit 'Save'
-          %a.cancel
-            cancel  
+
+        .option
+          = f.radio_button :role, 'user'
+          = f.label :role, 'User', :value => 'user'
+          .sublabel
+            Has no special permissions.
+
+      .save_block
+        = f.submit 'Save'
+        %a.cancel{ :'data-target' => "dialog-close" }
+          cancel  
 
 
 

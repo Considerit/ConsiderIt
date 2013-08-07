@@ -19,6 +19,9 @@
       @listenTo App.vent, 'user:signin', =>
         @close()
 
+      if App.request 'user:fixed:exists'
+        App.request 'registration:complete_paperwork', @        
+
     close : ->
       @dialog_overlay.close()
       @layout.close()
@@ -26,10 +29,11 @@
 
     setupLayout : (layout) ->
       user = layout.model
-        
+      
       auth_options_view = new Register.AuthOptions
         model: user
         providers: [ {name: 'email'}, {name: 'google'}, {name: 'facebook'}, {name: 'twitter'} ]
+        fixed : App.request 'user:fixed:exists'
 
       @listenTo auth_options_view, 'email_auth_request', ->
         App.request 'registration:complete_paperwork', @
@@ -42,8 +46,6 @@
 
       @listenTo auth_options_view, 'third_party_auth_request', @handleThirdPartyAuthRequest
 
-      if App.request 'user:fixed:exists'
-        App.request 'registration:complete_paperwork', @        
 
     completePaperwork : () ->
       @layout.authOptionsRegion.close()

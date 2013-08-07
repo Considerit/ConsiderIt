@@ -4,12 +4,7 @@
     template: "#tpl_logged_in"
 
     serializeData : ->
-      _.extend {}, @model.attributes, 
-        is_admin: @model.is_admin()
-        is_analyst: @model.is_analyst()
-        is_evaluator: @model.is_evaluator()
-        is_manager: @model.is_manager()
-        is_moderator: @model.is_moderator()
+      _.extend {}, @model.attributes, @model.permissions()
 
     events:
       'click .m-user-options-logout' : 'signoutRequested'
@@ -49,3 +44,9 @@
 
     user_registration_clicked : ->
       @trigger 'registration:requested'
+
+    serializeData : ->
+
+      _.extend {}, @model.attributes, 
+        show_signin : @options.show_signin
+        show_register : @options.show_register

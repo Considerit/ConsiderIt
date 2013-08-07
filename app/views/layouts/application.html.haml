@@ -20,8 +20,6 @@
         
       = theme_stylesheet_link_tag 'application'
 
-      = image_tag "ajax-loader.gif", :style => 'display: none'
-
       - ['Source+Sans+Pro'].each do |font|
         %link{ :href => "http://fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
 
@@ -44,9 +42,11 @@
 
       = render :partial => 'backbone/templates'
 
-      = theme_javascript_include_tag 'application', :async => true # => Rails.env.production?
+      = theme_javascript_include_tag 'application', :async => true
+
 
   %body
+    / = image_tag "ajax-loader.gif", :style => 'display: none'
 
     - cache ['main_body', current_tenant] do
 
@@ -66,6 +66,7 @@
               #l-content-main
                 #t-bg-content
                   #t-bg-content-top
+                    #l-content-main-wrap
                     #m-dashboard.l-content-wrap
 
                     = image_tag "ajax-loader.gif", :id => 'l-preloader'

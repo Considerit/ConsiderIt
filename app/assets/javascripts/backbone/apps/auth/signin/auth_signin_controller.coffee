@@ -34,6 +34,7 @@
           auth_options_view = new Signin.AuthOptions
             model: user
             providers: [ {name: user.auth_method()} ]
+            fixed: true
           layout.authOptionsRegion.show auth_options_view
 
       else

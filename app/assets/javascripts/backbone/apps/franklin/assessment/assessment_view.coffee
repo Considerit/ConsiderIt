@@ -10,6 +10,8 @@
 
   class Franklin.AssessmentRequestView extends App.Views.ItemView
     template : "#tpl_assessment_request"
+
+    serializeData : ->
       already_requested_assessment : @options.already_requested_assessment
 
     onShow : ->
@@ -59,7 +61,6 @@
         else
           '-'
 
-      this
 
 
 

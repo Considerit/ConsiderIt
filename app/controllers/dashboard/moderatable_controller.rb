@@ -1,4 +1,4 @@
-class Moderatable::ModeratableController < Dashboard::DashboardController
+class Dashboard::ModeratableController < Dashboard::DashboardController
 
   rescue_from CanCan::AccessDenied do |exception|
     result = {
@@ -10,7 +10,7 @@ class Moderatable::ModeratableController < Dashboard::DashboardController
 
   # list all the objects to be moderated; allow seeing the existing moderations
   def index
-    authorize! :index, Moderatable::Moderation
+    authorize! :index, Moderation
 
     if !current_tenant.enable_moderation
       redirect_to root_path, :notice => "Moderation is disabled for this application."
@@ -18,7 +18,7 @@ class Moderatable::ModeratableController < Dashboard::DashboardController
     end
 
     moderatable_classes = []
-    @classes_to_moderate = Moderatable::Moderation.classes_to_moderate
+    @classes_to_moderate = Moderation.classes_to_moderate
 
     @existing_moderations = {}
     @objs_to_moderate = {}
@@ -41,7 +41,7 @@ class Moderatable::ModeratableController < Dashboard::DashboardController
       @objs_to_moderate[class_name] = objects
       objs = @objs_to_moderate[class_name].map{|x| x["id"]}.compact
 
-      records = Moderatable::Moderation.where(:moderatable_type => mc.name)
+      records = Moderation.where(:moderatable_type => mc.name)
       if objs.length > 0
         records = records.where("moderatable_id in (#{objs.join(',')})")
       end
@@ -59,19 +59,19 @@ class Moderatable::ModeratableController < Dashboard::DashboardController
 
   # create a new moderation
   def create
-    authorize! :create, Moderatable::Moderation
+    authorize! :create, Moderation
 
-    #params[:moderate][:status] = Moderatable::Moderation.STATUSES.index(params[:moderate].delete(:moderation_status))
+    #params[:moderate][:status] = Moderation.STATUSES.index(params[:moderate].delete(:moderation_status))
     params[:moderate][:user_id] = current_user.id
     params[:moderate][:account_id] = current_tenant.id
 
-    moderation = Moderatable::Moderation.where(:moderatable_type => params[:moderate][:moderatable_type], :moderatable_id => params[:moderate][:moderatable_id], :user_id => current_user.id).first
+    moderation = Moderation.where(:moderatable_type => params[:moderate][:moderatable_type], :moderatable_id => params[:moderate][:moderatable_id], :user_id => current_user.id).first
     
     if moderation
       moderation.status = params[:moderate][:status]
       moderation.save
     else
-      moderation = Moderatable::Moderation.create!(params[:moderate])
+      moderation = Moderation.create!(params[:moderate])
     end
 
     moderatable = moderation.root_object

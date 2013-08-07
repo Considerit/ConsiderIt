@@ -12,7 +12,7 @@ module Moderatable
 
   module Moderatable
     def is_moderatable(options = {})
-      has_many :moderations, :as => :moderatable, :class_name => 'Moderatable::Moderation', :dependent => :destroy
+      has_many :moderations, :as => :moderatable, :class_name => 'Moderation', :dependent => :destroy
       
       class_attribute :text_fields
       self.text_fields = options[:text_fields]

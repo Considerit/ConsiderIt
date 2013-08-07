@@ -1,128 +1,92 @@
 - providers = ['google', 'facebook', 'twitter']
 
-%script{ :type => "text/template", :id => "tpl_user_tooltip" }
-
-  .l-tooltip.l-tooltip-user
-    .l-tooltip-user-block
-      .l-tooltip-title.l-tooltip-user-title
-        .l-tooltip-user-name
-          {{ user.get('name') }}
-        .l-tooltip-user-joined
-          joined {{ user.get('created_at').substring(0, user.get('created_at').indexOf('T')) }}
-
-
-
-    .l-tooltip-user-metrics
-
-      %ul
-        - [ ['influence', 'metric_influence', 'major'], ['points', 'metric_points', 'minor'], ['votes', 'metric_positions', 'minor'], ['comments', 'metric_comments', 'minor']  ].each do |label, attr, style|
-          %li.l-tooltip-user-metric{ :class => "l-tooltip-user-metric-#{style}" }
-            %span.l-tooltip-user-metric-number
-              {{ user.get("#{attr}") }}
-            %span.l-tooltip-user-metric-desc
-              = label          
-
-    .l-tooltip-user-actions
-      (( if(proposal) { ))
-      %a.l-tooltip-user-action{ :href => "{{Routes.user_position_proposal_path(proposal.long_id, user.id)}}", :'data-target' => 'user_position_page', :'data-proposal-id' => "{{proposal.id}}", :'data-user-id' => "{{user.id}}" }
-        Read their thoughts on this issue
-      (( } ))
-      / %a.l-tooltip-user-action.l-tooltip-user-profile{ :'data-target' => 'user_profile_page', :'data-id' => "{{user.id}}" }
-      /   View their profile
 
 
 
 
+%script{ :type => "text/template", :id => "tpl_dashboard_sidebar"}
+  %ul
+    %li.m-dashboard_avatar
+      %img{:src => "{{ avatar }}"}
+
+    (( if( is_self ) { ))
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.profile_path(id)}}", :'data-target' => 'profile'}
+        Profile
+    
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
+        Edit profile
+
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.edit_account_path(id)}}", :'data-target' => 'account_settings'}
+        Account settings
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.edit_notifications_path(id)}}", :'data-target' => 'email_notifications'}        
+        Email notifications        
+
+    (( } ))
+
+  %hr
+
+  // if admin ...
+  %ul
+    (( if(is_admin) { ))
+    %li
+      %a.m-dashboard_link{:href => "/dashboard/application", :'data-target' => 'app_settings'}
+        App settings
+
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.manage_roles_path()}}", :'data-target' => 'user_roles'}
+        User roles
+
+    (( } ))
 
 
+    (( if( false && is_manager ) { ))
+
+    %li
+      %a.m-dashboard_link{:href => "/dashboard/proposals", :'data-target' => 'manage_proposals'}
+        Manage proposals
+
+    (( } ))
+
+    (( if( (is_moderator ) && tenant.get('enable_moderation') ) { ))
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.dashboard_moderate_path()}}", :'data-target' => 'moderate'}
+        Moderate content
+    (( } ))
+
+    (( if( (is_evaluator ) && tenant.get('assessment_enabled') ) { ))
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.assessment_index_path()}}", :'data-target' => 'assess'}
+        Assess claims
+    (( } ))
+
+    (( if(  is_analyst ) { ))
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.analytics_path()}}", :'data-target' => 'analyze'}
+        Analyze trends
+    (( } ))
+
+    (( if(is_admin) { ))
+    %li
+      %a.m-dashboard_link{:href => "/dashboard/data", :'data-target' => 'database'}
+        Database
+    (( } ))
+
+    - if Rails.env.development?
+      %li
+        = link_to 'Tune', '/newrelic', :target => "_blank", :class => 'm-dashboard_link'
 
 %script{ :type => "text/template", :id => "tpl_dashboard_container"}
-  / %a.m-dashboard-close{ :'data-target' => "close_user_dashboard"}
-  /   &#10006;
+  #m-dashboard
 
-  .m-dashboard-sidebar
+    .m-dashboard-sidebar-region
 
+    .m-dashboard-main-region
 
-    %ul
-      %li.m-dashboard_avatar
-        %img{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
-
-      (( if( is_self ) { ))
-      %li
-        %a.m-dashboard_link{:'data-target' => 'profile'}
-          Profile
-
-      
-      %li
-        %a.m-dashboard_link{:'data-target' => 'edit_profile'}
-          Edit profile
-
-      %li
-        %a.m-dashboard_link{:'data-target' => 'account_settings'}
-          Account settings
-      %li
-        %a.m-dashboard_link{:'data-target' => 'email_notifications'}        
-          Email notifications        
-
-      (( } ))
-
-    %hr
-
-    // if admin ...
-    %ul
-      (( if(is_admin) { ))
-      %li
-        %a.m-dashboard_link{:'data-target' => 'app_settings'}
-          App settings
-
-      %li
-        %a.m-dashboard_link{:'data-target' => 'user_roles'}
-          User roles
-
-      (( } ))
-
-
-      (( if( is_admin || is_manager ) { ))
-
-      %li
-        %a.m-dashboard_link{:'data-target' => 'manage_proposals'}
-          Manage proposals
-
-      (( } ))
-
-      (( if( (is_admin || is_moderator ) && ConsiderIt.current_tenant.get('enable_moderation') ) { ))
-      %li
-        %a.m-dashboard_link{:'data-target' => 'moderate'}
-          Moderate content
-      (( } ))
-
-      (( if( (is_admin || is_evaluator ) && ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
-      %li
-        %a.m-dashboard_link{:'data-target' => 'assess'}
-          Assess claims
-      (( } ))
-
-      (( if( is_admin || is_analyst ) { ))
-      %li
-        %a.m-dashboard_link{:'data-target' => 'analyze'}
-          Analyze trends
-      (( } ))
-
-      (( if(is_admin) { ))
-      %li
-        %a.m-dashboard_link{:'data-target' => 'database'}
-          Database
-
-        // = link_to 'Database', rails_admin_path, :target => "_blank", :class => 'm-dashboard_link'
-      (( } ))
-
-      - if Rails.env.development?
-        %li
-          = link_to 'Tune', '/newrelic', :target => "_blank", :class => 'm-dashboard_link'
-
-  .m-dashboard-content
-
-  .clear
+    .clear
 
 %script{ :type => "text/template", :id => "tpl_dashboard_unauthorized"}
 
@@ -131,7 +95,7 @@
       Not allowed!
 
     .m-dashboard-subheading
-      Sorry, but only signed in users with proper authorization can access this functionality. 
+      Please sign in first to access this functionality.
 
 
 %script{ :type => "text/template", :id => "tpl_dashboard_profile"}
@@ -139,11 +103,11 @@
 
   .m-dashboard-heading
     %h2
-      {{ user.name }} 
+      {{ name }} 
 
     .m-dashboard-subheading
-      (( if(user.bio && user.bio.length > 0) { ))
-      {{ user.bio }} 
+      (( if(bio && bio.length > 0) { ))
+      {{ bio }} 
       (( } else { ))
       %span.empty
         No details provided
@@ -151,7 +115,7 @@
 
       (( if ( is_self ) { ))
       = surround '(', ')' do
-        %a.m-dashboard-profile-edit_profile{:'data-target' => 'edit_profile'}
+        %a.m-dashboard-profile-edit_profile{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
           edit
       (( } ))
 
@@ -167,7 +131,7 @@
 
     .m-dashboard-profile-influence-details
       .m-dashboard-profile-influence-description
-        People influenced by {{ user.name }}'s pro & con considerations
+        People influenced by {{ name }}'s pro & con considerations
 
       .m-dashboard-profile-influenced.l-group-container
         (( _.each(_.keys(influenced_users), function(p){ ))
@@ -334,20 +298,16 @@
 
     .field
       = f.label :name, "Name"
-      = f.text_field :name, :pattern => "^.{1,}", :value => "{{ user.name }}"
+      = f.text_field :name, :pattern => "^.{1,}", :value => "{{ name }}"
 
     .field
       = f.label :bio, "About you"
-      = f.text_area :bio, :rows => 5, :value => "{{ user.bio }}"
+      = f.text_area :bio, :rows => 5, :value => "{{ bio }}"
   
     .field
       = f.label :avatar, "Your picture" 
       %br
       = f.file_field :avatar, :title => 'Upload a profile picture'
-
-    // .avatar
-    //   %img{:src => "{{ avatar }}", :alt => "{{user.username}}'s profile picture"}
-
 
     .save_block
       = f.submit "Save changes", :class => 'button'
@@ -366,13 +326,13 @@
 
     .field
       = f.label :email, "Email address"
-      = f.email_field :email, :value => "{{ user.email }}"
+      = f.email_field :email, :value => "{{ email }}"
       .sublabel
         Your email will never be shared with other users or third parties
 
-    (( if ( user.third_party_authenticated ) { ))
+    (( if ( third_party_authenticated ) { ))
     .field
-      Authorized via {{user.third_party_authenticated}}
+      Authorized via {{third_party_authenticated}}
     (( } else { ))
     .field
       = f.label :password, "New password"
@@ -391,12 +351,12 @@
     %h2
       Email Notification Settings
     .m-dashboard-subheading
-      Control when email updates are sent to {{ user.email }}
+      Control when email updates are sent to {{ email }}
     
 
   .field
     = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => { :class => 'm-dashboard-notifications-unfollow_all'} do |f|
-      = f.hidden_field :user_id, :value => "{{user.id}}"
+      = f.hidden_field :user_id, :value => "{{id}}"
       = f.hidden_field :unsubscribe_all, :value => true
       = f.submit "Unsubscribe to all notifications", :class => 'button', data: { confirm: "Are you sure you want to unsubscribe to all notifications? This is irreversable." }
 
@@ -411,7 +371,7 @@
       (( var account_followerer = _.has(follows, 'Account') && _.has(follows['Account'], ConsiderIt.current_tenant.id ) && follows['Account'][ConsiderIt.current_tenant.id].follow; ))
       (( var submit_text = account_followerer ? 'Unsubscribe' : 'Subscribe'; ))
       = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => {:class => "m-dashboard-notifications-unfollow"} do |f|
-        = f.hidden_field :user_id, :value => "{{ user.id }}"
+        = f.hidden_field :user_id, :value => "{{ id }}"
         = f.hidden_field :followable_type, :value => "Account"
         = f.hidden_field :followable_id, :value => "{{ ConsiderIt.current_tenant.id }}"  
         = f.hidden_field :follow, :value => "{{ !account_followerer }}"
@@ -448,7 +408,7 @@
 
             %td
               = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => {:class => "m-dashboard-notifications-unfollow"} do |f|
-                = f.hidden_field :user_id, :value => "{{user.id}}"
+                = f.hidden_field :user_id, :value => "{{id}}"
                 = f.hidden_field :followable_type, :value => "{{obj.followable_type}}"
                 = f.hidden_field :followable_id, :value => "{{obj.followable_id}}"  
                 = f.submit "Unsubscribe", :class => 'button'

@@ -23,7 +23,7 @@
   +font-size(-1)
   font-weight: bold
 
-.m-login-signin:after
+.m-login-signin.has_register:after
   position: relative
   content: $hex-bullet-point
   right: 0
@@ -123,6 +123,13 @@ $membership_card_height: 278px
     @extend %superbutton
     +font-size(0)
 
+  .email_field.fixed
+    text-align: left
+    padding-left: 3px
+
+    input
+      display: none  
+
 .m-user-accounts-email-auth-region
 
   .email_field input, .password_field input
@@ -148,12 +155,7 @@ $membership_card_height: 278px
     &:hover
       text-decoration: underline
 
-  .email_field.fixed
-    text-align: left
-    padding-left: 3px
 
-    input
-      display: none  
 
   .m-user-accounts-finish-wrap
     margin-top: $vertical_baseline

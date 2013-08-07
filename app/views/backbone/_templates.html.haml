@@ -1,6 +1,36 @@
 
 - cache ['templates', current_tenant] do
 
+  %script{ :type => "text/template", :id => "tpl_user_tooltip" }
+
+    .l-tooltip.l-tooltip-user
+      .l-tooltip-user-block
+        .l-tooltip-title.l-tooltip-user-title
+          .l-tooltip-user-name
+            {{ user.get('name') }}
+          .l-tooltip-user-joined
+            joined {{ user.get('created_at').substring(0, user.get('created_at').indexOf('T')) }}
+
+
+
+      .l-tooltip-user-metrics
+
+        %ul
+          - [ ['influence', 'metric_influence', 'major'], ['points', 'metric_points', 'minor'], ['votes', 'metric_positions', 'minor'], ['comments', 'metric_comments', 'minor']  ].each do |label, attr, style|
+            %li.l-tooltip-user-metric{ :class => "l-tooltip-user-metric-#{style}" }
+              %span.l-tooltip-user-metric-number
+                {{ user.get("#{attr}") }}
+              %span.l-tooltip-user-metric-desc
+                = label          
+
+      .l-tooltip-user-actions
+        (( if(proposal) { ))
+        %a.l-tooltip-user-action{ :href => "{{Routes.user_position_proposal_path(proposal.long_id, user.id)}}", :'data-target' => 'user_position_page', :'data-proposal-id' => "{{proposal.id}}", :'data-user-id' => "{{user.id}}" }
+          Read their thoughts on this issue
+        (( } ))
+        / %a.l-tooltip-user-action.l-tooltip-user-profile{ :'data-target' => 'user_profile_page', :'data-id' => "{{user.id}}" }
+        /   View their profile
+      
   %script{ :type => "text/template", :id => "tpl_dialog_detachable"}
     .l-dialog-title
       {{ title }} 
@@ -44,7 +74,7 @@
     (( }); ))
 
   %script{ :type => "text/template", :id => "tpl_point_follows"}
-    (( if( published && ConsiderIt.request('user:current').is_logged_in() ) { ))
+    (( if( published && ConsiderIt.request('user:current:logged_in?') ) { ))
 
     (( var follows_class = already_follows ? 'hide' : ''; ))
     (( var unfollows_class = already_follows ? '' : 'hide'; ))
@@ -207,7 +237,7 @@
         %span.count
           1000
 
-        (( if( ConsiderIt.request('user:current').is_logged_in() ) { ))
+        (( if( ConsiderIt.request('user:current:logged_in?') ) { ))
         .m-new-comment-submit-wrap
           %span.m-new-comment-civility-reminder
             Thanks for being civil!
@@ -379,16 +409,6 @@
     .m-proposal-connect.m-proposal-strip
 
       %ul
-        / (( if( ConsiderIt.request('user:current').is_logged_in() ) { ))
-        / (( var selected_class = ConsiderIt.request('user:current').is_following('Proposal', id) ? 'selected' : ''; ))
-        / %li.m-proposal-action-label
-        /   Follow this conversation:
-        / %li
-        /   %button{ :class => "{{ selected_class }} m-proposal-follow_conversation" }
-        /     Get email updates
-
-        / (( } ))
-
         %li.m-proposal-action-label
           Help spread the word
         %li.m-proposal-action-link
@@ -852,4 +872,4 @@
   = render :partial => 'assessable/templates_user_facing'
 
   = render :partial => 'backbone/auth'
-  = render :partial => 'backbone/templates_user'
+  = render :partial => 'backbone/dash'

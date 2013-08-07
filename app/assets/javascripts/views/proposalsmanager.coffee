@@ -7,20 +7,12 @@ class ConsiderIt.ProposalsManagerView extends Backbone.View
     ConsiderIt.vent.on 'route:PointDetails', (long_id, point_id) => @do_after_proposal_data_loaded(long_id, "show_point_details_handler", [{point_id : point_id}])
     ConsiderIt.vent.on 'route:StaticPosition', (long_id, user_id) => @do_after_proposal_data_loaded(long_id, "prepare_for_static_position", [{user_id : user_id}])
 
-    @listenTo ConsiderIt.vent, 'user:signin', =>
-      @load_anonymous_data()
-
-      if ConsiderIt.inaccessible_proposal
-        ConsiderIt.router.navigate(Routes.proposal_path(ConsiderIt.inaccessible_proposal.long_id), {trigger: true})
-        ConsiderIt.inaccessible_proposal = null
+    if ConsiderIt.inaccessible_proposal
+      ConsiderIt.request 'user:signin:set_redirect', Routes.proposal_path(ConsiderIt.inaccessible_proposal.long_id)
+      ConsiderIt.inaccessible_proposal = null
 
     @listenTo ConsiderIt.vent, 'user:signout', =>
 
-    ConsiderIt.all_proposals = new ConsiderIt.ProposalList()
-    ConsiderIt.all_proposals.add_proposals ConsiderIt.proposals
-    if ConsiderIt.current_proposal
-      ConsiderIt.all_proposals.add_proposal(ConsiderIt.current_proposal.data) 
-      ConsiderIt.current_proposal = null
 
 
     @$el.append(@proposal_list_template({completed: false}))
@@ -38,12 +30,7 @@ class ConsiderIt.ProposalsManagerView extends Backbone.View
     @proposalsview.render()
     @proposalsview_completed.render()
     if ConsiderIt.inaccessible_proposal
-      if ConsiderIt.limited_user
-        @$('[data-target="login"]:first').trigger('click')
-      else if ConsiderIt.limited_user_email
-        @$('[data-target="create_account"]:first').trigger('click')
-
-
+      ConsiderIt.vent.trigger 'signin:requested'
 
   do_after_proposal_data_loaded : (long_id, callback, callback_params = []) ->
 
@@ -86,16 +73,3 @@ class ConsiderIt.ProposalsManagerView extends Backbone.View
           proposalview[callback].apply(proposalview, callback_params)
         # else if data && data['reason'] == 'Access denied'
         #   console.log data
-
-  # After a user signs in, we're going to query the server and get all the points
-  # that this user wrote *anonymously* and proposals they have access to. Then we'll update the data properly so
-  # that the user can update them.
-  load_anonymous_data : ->
-    $.get Routes.content_for_user_path(), (data) =>
-      for proposal in data.proposals
-        ConsiderIt.all_proposals.add_proposals (p for p in data.proposals)
-
-      for pnt in data.points
-        [id, long_id, is_pro] = [pnt.point.id, pnt.point.long_id, pnt.point.is_pro]
-        proposal = ConsiderIt.all_proposals.findWhere( {long_id : long_id} )
-        proposal.update_anonymous_point(id, is_pro) if proposal && proposal.data_loaded

@@ -37,7 +37,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     @listenTo @commentsview, 'CommentListView:new_comment_added', => @model.set('comment_count', @model.comments.length )
 
 
-    if ConsiderIt.request('user:current').is_logged_in()
+    if ConsiderIt.request "user:current:logged_in?"
       if !ConsiderIt.PointDetailsView.follow_tpl
         ConsiderIt.PointDetailsView.follow_tpl = _.template( $('#tpl_point_follows').html() )
       @$el.find('.m-point-follow').append( ConsiderIt.PointDetailsView.follow_tpl( _.extend( {}, @model.attributes,

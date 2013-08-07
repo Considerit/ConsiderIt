@@ -117,7 +117,7 @@ namespace :import do
         :fks => []
       }],      
       ['moderations', {
-        :max_id => Moderatable::Moderation.last.id + 1000,
+        :max_id => Moderation.last.id + 1000,
         :fks => []
       }],
       ['point_listings', {

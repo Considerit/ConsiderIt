@@ -82,7 +82,7 @@ namespace :alerts do
       # Find out how many objects need to be moderated
       # this section is horribly coded and inefficient ... TODO fix
       content_to_moderate = 0
-      Moderatable::Moderation.classes_to_moderate.each do |mc|
+      Moderation.classes_to_moderate.each do |mc|
         existing = {}
         objs_to_moderate = {}
         if mc == Commentable::Comment
@@ -93,13 +93,13 @@ namespace :alerts do
             end
           end
           objs_to_moderate = comments.map{|x| x.id}.compact
-          records = Moderatable::Moderation.where(:moderatable_type => mc.name)
+          records = Moderation.where(:moderatable_type => mc.name)
           if objs_to_moderate.length > 0
             records = records.where("moderatable_id in (#{objs_to_moderate.join(',')})")
           end
         else
           objs_to_moderate = mc.moderatable_objects.call
-          records = Moderatable::Moderation.where(:moderatable_type => mc.name)
+          records = Moderation.where(:moderatable_type => mc.name)
         end
         records.each do |mod|
           existing[mod.moderatable_id] = mod

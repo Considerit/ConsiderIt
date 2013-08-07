@@ -1,4 +1,4 @@
-class Moderatable::Moderation < ActiveRecord::Base
+class Moderation < ActiveRecord::Base
   class_attribute :classes_to_moderate
   self.classes_to_moderate = [Point, Commentable::Comment]
 

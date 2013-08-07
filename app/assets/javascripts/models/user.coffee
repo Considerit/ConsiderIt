@@ -1,7 +1,10 @@
 class ConsiderIt.User extends Backbone.Model
   @available_roles = ['superadmin', 'admin', 'analyst', 'moderator', 'manager', 'evaluator', 'developer']
 
-  defaults: { }
+  defaults: { 
+    bio : ''
+  }
+  
   name: 'user'
 
   initialize : ->
@@ -34,7 +37,14 @@ class ConsiderIt.User extends Backbone.Model
 
     user_roles
 
+  is_persisted : ->
+    'id' of @attributes
+
   is_logged_in : ->
+    #TODO: this method is technically incorrect...having a user id does not mean
+    # that the user is logged in, only in the limited auth scenario where this
+    # method is being used to detect whether a user has been created or not...
+    # need to update this so there is an authoritative indicator from the server
     'id' of @attributes
 
   paperwork_completed : ->
@@ -46,8 +56,19 @@ class ConsiderIt.User extends Backbone.Model
   is_evaluator : -> @is_admin || @has_role('evaluator')
   is_manager : -> @is_admin || @has_role('manager')
 
+  permissions : ->
+    is_admin: @is_admin()
+    is_analyst: @is_analyst()
+    is_evaluator: @is_evaluator()
+    is_manager: @is_manager()
+    is_moderator: @is_moderator()
+
+
   has_role : (role) ->
     _.indexOf(@roles(), role) >= 0
+
+  update_role : (roles_mask) ->
+    @set 'roles_mask', roles_mask
 
   role_list: ->
     @roles().join(', ')
@@ -91,3 +112,9 @@ class ConsiderIt.User extends Backbone.Model
       "#{ConsiderIt.public_root}/system/avatars/#{@id}/#{size}/#{@get('avatar_file_name')}"
     else
       "#{ConsiderIt.public_root}/system/default_avatar/#{size}_default-profile-pic.png"
+
+  set_meta_data : (data) ->
+    @meta = data
+
+  is_meta_data_loaded : -> 
+    !!@meta

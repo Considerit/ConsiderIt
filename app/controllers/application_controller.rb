@@ -16,6 +16,19 @@ class ApplicationController < ActionController::Base
     end
 
 
+    #############
+    # for testing pinned users: 
+    test_fixed_user = false
+    if Rails.env == 'development' && test_fixed_user
+      if false
+        @limited_user = User.find(6)
+        @limited_user_email = @limited_user.email
+        @limited_user_follows = @limited_user.follows.all
+      else
+        @limited_user_email = 'test@testing.dev'
+      end
+    end
+    ###################
 
     if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
       user = User.find_by_email(params[:u])

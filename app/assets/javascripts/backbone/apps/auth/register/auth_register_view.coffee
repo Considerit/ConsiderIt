@@ -21,6 +21,7 @@
       providers : @options.providers
       switch_label : 'Returning?'
       switch_prompt : 'Sign In'
+      fixed : App.request 'user:fixed:exists'
 
     events:
       'click [data-target="third_party_auth"]' : 'thirdPartyAuthRequest'

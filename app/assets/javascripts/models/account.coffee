@@ -38,3 +38,7 @@ class ConsiderIt.Account extends Backbone.Model
     if plural #TODO: better solution
       label = label + 's'
     label
+
+  add_full_data : (data) ->
+    @set data
+    @fully_loaded = true

@@ -7,7 +7,7 @@
   
   App.addRegions
     headerRegion: "#l-header"
-    mainRegion:    "#l-content"
+    mainRegion:    "#l-content-main-wrap"
     footerRegion: "#l-footer"
   
   App.rootRoute = Routes.root_path()
@@ -28,6 +28,10 @@
   App.reqres.setHandler "tenant:get", ->
     ConsiderIt.current_tenant
 
+  App.reqres.setHandler "tenant:update", (data) ->
+    ConsiderIt.current_tenant.set data
+    App.vent.trigger "tenant:updated"
+
   App.commands.setHandler "register:instance", (instance, id) ->
     App.register instance, id if App.environment is "development"
   
@@ -35,6 +39,8 @@
     App.unregister instance, id if App.environment is "development"
   
   App.on "initialize:after", ->
+    
+    #TODO: don't remove this until everything loaded
     $('#l-preloader').hide()
 
     # REFACTOR
@@ -43,12 +49,19 @@
     appview = new ConsiderIt.AppView()
     #@mainRegion.show appview
 
-    @dashboardview = new ConsiderIt.UserDashboardView({ model : ConsiderIt.request('user:current'), el : '#l-wrap'})
+    #@dashboardview = new ConsiderIt.UserDashView({ model : ConsiderIt.request('user:current'), el : '#l-wrap'})
 
-    appview.render()
+    #appview.render()
 
     #####
     
+    ConsiderIt.all_proposals = new ConsiderIt.ProposalList()
+    ConsiderIt.all_proposals.add_proposals ConsiderIt.proposals
+    if ConsiderIt.current_proposal
+      ConsiderIt.all_proposals.add_proposal(ConsiderIt.current_proposal.data) 
+      ConsiderIt.current_proposal = null
+
+
     @startHistory()
     @navigate(@rootRoute, trigger: true) unless @getCurrentRoute()
 
@@ -63,18 +76,7 @@
       ":proposal/points/:point" : "PointDetails"
       ":proposal/positions/:user_id" : "StaticPosition"
 
-      # "dashboard/application" : "AppSettings"
-      # "dashboard/proposals" : "ManageProposals"
-      # "dashboard/roles" : "UserRoles"
-      # "dashboard/users/:id/profile" : "Profile"
-      # "dashboard/users/:id/profile/edit" : "EditProfile"
-      # "dashboard/users/:id/profile/edit/account" : "AccountSettings"
-      # "dashboard/users/:id/profile/edit/notifications" : "EmailNotifications"
-      # "dashboard/analytics" : "Analyze"
-      # "dashboard/data" : "Database"
-      # "dashboard/moderate" : "Moderate"
-      # "dashboard/assessment" : "Assess"
-
+    # TODO: distribute this to each module with valid routes
     valid_endpoint : (path) ->
       parts = path.split('/')
       return true if parts.length == 1

@@ -23,7 +23,8 @@
       providers : @options.providers
       switch_label : 'New here?'
       switch_prompt : 'Create Account'
-
+      fixed : @options.fixed
+      
     events:
       'click [data-target="third_party_auth"]' : 'thirdPartyAuthRequest'
       'click [data-provider="email"]' : 'emailAuthRequest'

@@ -1,8 +1,8 @@
 class ConsiderIt.AssessmentView extends Backbone.View
 
   tagName : 'li'
-  @assessment_template : _.template( $("#tpl_assessment").html() )
-  @request_template : _.template( $("#tpl_assessment_request").html() )
+  assessment_template : "#tpl_assessment"
+  request_template : "#tpl_assessment_request"
 
   initialize : (options) -> 
     @proposal = options.proposal
@@ -10,7 +10,7 @@ class ConsiderIt.AssessmentView extends Backbone.View
   render : () -> 
     if @model.assessment 
 
-      @$el.html ConsiderIt.AssessmentView.assessment_template($.extend({}, @model.attributes, {
+      @$el.html @assessment_template($.extend({}, @model.attributes, {
           user : ConsiderIt.users[@model.get('user_id')]
           proposal : @proposal.attributes
           assessment : @model.assessment
@@ -20,7 +20,7 @@ class ConsiderIt.AssessmentView extends Backbone.View
         }))
     
     else
-      @$el.html ConsiderIt.AssessmentView.request_template($.extend({}, @model.attributes, {
+      @$el.html @request_template($.extend({}, @model.attributes, {
           proposal : @proposal.attributes
           already_requested_assessment : @model.already_requested_assessment
 

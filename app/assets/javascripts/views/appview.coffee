@@ -20,19 +20,24 @@ class ConsiderIt.AppView extends Backbone.View
 
     @$el.find('#t-bg-content-top').append(@homepage_heading())
 
-    @proposals_manager = new ConsiderIt.ProposalsManagerView({el : '#t-bg-content-top'}) 
+    ConsiderIt.vent.on 'tenant:updated', ->
+      @$el.find('.t-intro-wrap').replaceWith @homepage_heading()
 
+    @proposals_manager = new ConsiderIt.ProposalsManagerView({el : '#t-bg-content-top'}) 
 
     @proposals_manager.render()
 
     # kick off events for the current path
-    #ConsiderIt.router.navigate @last_page, {trigger: true}
+    # ConsiderIt.router.navigate @last_page, {trigger: true}
     this
 
   events : 
     'click .l-navigate-back' : 'go_back'
     'mouseenter [data-target="user_profile_page"]' : 'tooltip_show'
     'mouseleave [data-target="user_profile_page"]' : 'tooltip_hide'
+    'click [data-target="user_profile_page"]' : 'view_user_profile'
+
+  view_user_profile : (ev) -> ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
 
   go_back : ->
     @history.pop()
@@ -93,10 +98,6 @@ class ConsiderIt.AppView extends Backbone.View
       $back.show()
 
     @last_page = _.last(@history)[1]
-    # console.log route
-    # console.log router
-    # console.log @history
-    #console.log @breadcrumbs
 
 
   user_tooltip_template : _.template( $("#tpl_user_tooltip").html() )

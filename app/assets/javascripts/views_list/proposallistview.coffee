@@ -54,8 +54,8 @@ class ConsiderIt.ProposalListView extends Backbone.CollectionView
     else
       @$el.append($heading_el)
 
-
-    can_create = ConsiderIt.request('user:current').is_logged_in() && (ConsiderIt.request('user:current').is_admin() || ConsiderIt.request('user:current').is_manager() || ConsiderIt.current_tenant.get('enable_user_conversations'))
+    user = ConsiderIt.request('user:current')
+    can_create = ConsiderIt.request('user:current:logged_in?') && (user.is_admin() || user.is_manager() || ConsiderIt.current_tenant.get('enable_user_conversations'))
 
     if @is_active && can_create && !@$create_el?
       @$create_el = $(@proposals_create_template())

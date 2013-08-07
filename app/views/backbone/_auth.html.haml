@@ -2,10 +2,14 @@
 
 %script{ :type => "text/template", :id => "tpl_logged_out"}
   .m-login
-    %a.m-login-signin{:'data-target' => 'login'}
+    (( if(show_signin){ ))
+    (( var also_register_class = show_register ? 'has_register' : ''; ))
+    %a{:'data-target' => 'login', :class => "m-login-signin {{also_register_class}}"}
       Sign In
+    (( } if(show_register){ ))
     %a.m-login-signup{:'data-target' => 'create_account'}
       Create Account
+    (( } ))
 
 %script{ :type => "text/template", :id => "tpl_logged_in"}
 
@@ -23,35 +27,35 @@
 
       %ul.m-user-options-menu
         %li
-          %a.m-user-options-dashboard_link{:'data-target' => 'profile'}
+          %a.m-user-options-dashboard_link{:href => "{{Routes.profile_path(ConsiderIt.request('user:current').id)}}"}
             Profile
         %li
-          %a.m-user-options-dashboard_link{:'data-target' => 'edit_profile'}
+          %a.m-user-options-dashboard_link{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
             Edit Profile
 
         (( if(is_admin) { ))
         %li
-          %a.m-user-options-dashboard_link.application{:'data-target' => 'app_settings'}
+          %a.m-user-options-dashboard_link.application{:href => "/dashboard/application", :'data-target' => 'app_settings'}
             App settings
         (( } ))
 
         (( if( is_moderator && ConsiderIt.current_tenant.get('enable_moderation') ) { ))
         %li
-          %a.m-user-options-dashboard_link.moderate{:'data-target' => 'moderate'}
+          %a.m-user-options-dashboard_link.moderate{:href => "{{Routes.dashboard_moderate_path()}}", :'data-target' => 'moderate'}
             Moderate
         (( } ))
 
         (( if( is_evaluator && ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
         %li
-          %a.m-user-options-dashboard_link.assess{:'data-target' => 'assess'}
+          %a.m-user-options-dashboard_link.assess{:href => "{{Routes.assessment_index_path()}}", :'data-target' => 'assess'}
             Assess
         (( } ))
 
-        (( if( is_analyst ) { ))
-        %li
-          %a.m-user-options-dashboard_link.analyze{:'data-target' => 'analyze'}
-            Analyze
-        (( } ))
+        / (( if( is_analyst ) { ))
+        / %li
+        /   %a.m-user-options-dashboard_link.analyze{:href => "{{Routes.analytics_path()}}", :'data-target' => 'analyze'}
+        /     Analyze
+        / (( } ))
 
         - if Rails.env.development?
           %li
@@ -77,13 +81,17 @@
     (( }) ))
 
   .m-user-accounts-switch-method-wrapper
+
+    (( if(fixed){ ))
+    Please signin through {{providers[0].name}}, the option you previously chose.
+    (( } else { ))
     %a.m-user-accounts-switch-method
       {{switch_label}}
 
       %span
         {{switch_prompt}}
       instead.
-
+    (( } ))
 
 %script{ :type => "text/template", :id => "tpl_signin_via_email"}
   = form_for :user, :url => user_session_path, :remote => true do |f|

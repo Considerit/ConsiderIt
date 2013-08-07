@@ -58,7 +58,7 @@ class Dashboard::AdminController < Dashboard::DashboardController
       end
 
       user.save
-      result = { :role_list => user.role_list } 
+      result = { :roles_mask => user.roles_mask, :role_list => user.role_list } 
     end
 
     render :json => result

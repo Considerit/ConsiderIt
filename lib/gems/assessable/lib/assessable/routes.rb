@@ -6,10 +6,10 @@ module Assessable
     def assessable_routes
       # user facing
       
-      resources :assessment, :path => "dashboard/assessment", :controller => "assessable::assessable", :only => [:index, :create, :edit, :update] do 
-        match "claim/create" => 'assessable::assessable#create_claim', :via => :post, :as => 'create_claim'
-        match "claim/:id/update" => 'assessable::assessable#update_claim', :via => :put, :as => 'update_claim'
-        match "claim/:id/destroy" => 'assessable::assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
+      resources :assessment, :path => "dashboard/assessment", :controller => "dashboard::assessable", :only => [:index, :create, :edit, :update] do 
+        match "claim/create" => 'dashboard::assessable#create_claim', :via => :post, :as => 'create_claim'
+        match "claim/:id/update" => 'dashboard::assessable#update_claim', :via => :put, :as => 'update_claim'
+        match "claim/:id/destroy" => 'dashboard::assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
       end
 
     end

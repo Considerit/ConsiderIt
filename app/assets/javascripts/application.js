@@ -30,5 +30,4 @@
 //= require_tree ./views
 //= require_tree ./views_list
 
-// require views/assessmentview
 //= require javascripts/acts_as_followable

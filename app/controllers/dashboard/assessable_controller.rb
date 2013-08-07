@@ -1,4 +1,4 @@
-class Assessable::AssessableController < Dashboard::DashboardController
+class Dashboard::AssessableController < Dashboard::DashboardController
 
   rescue_from CanCan::AccessDenied do |exception|
     result = {

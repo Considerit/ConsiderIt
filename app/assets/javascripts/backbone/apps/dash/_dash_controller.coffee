@@ -3,7 +3,6 @@
   class Dash.Controller extends App.Controllers.Base
 
     initialize : (options = {}) ->
-
       @layout = @getLayout()
 
       App.vent.on 'user:updated', =>

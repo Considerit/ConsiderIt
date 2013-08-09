@@ -1,6 +1,6 @@
-@ConsiderIt.module "Dash", (Dash, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Dash.Admin", (Admin, App, Backbone, Marionette, $, _) ->
 
-  class Dash.AppSettingsView extends Dash.View
+  class Admin.AppSettingsView extends App.Dash.View
     dash_name : 'app_settings'
     checkboxes : [
       ['account', 'assessment_enabled', 'account_assessment_enabled'],
@@ -26,7 +26,7 @@
         @trigger 'account:updated', data.account
 
 
-  # class Dash.ManageProposalsView extends Dash.View
+  # class Admin.ManageProposalsView extends App.Dash.View
   #   dash_name : 'manage_proposals'
 
   #   serializeData : ->
@@ -34,7 +34,7 @@
   #     inactive_proposals : @options.inactive_proposals
 
 
-  class Dash.UserRolesView extends Dash.View
+  class Admin.UserRolesView extends App.Dash.View
     dash_name : 'user_roles'
     templates : {}
 
@@ -54,7 +54,7 @@
       @trigger 'role:edit:requested', $(ev.currentTarget).data('id')
 
 
-  class Dash.EditUserRoleView extends Dash.View
+  class Admin.EditUserRoleView extends App.Dash.View
     dash_name : 'user_roles_edit'
 
     dialog: =>
@@ -87,10 +87,10 @@
       @trigger 'role:changed', result
 
 
-  class Dash.DatabaseView extends Dash.View
+  class Admin.DatabaseView extends App.Dash.View
     dash_name : 'database'
 
-  class Dash.AnalyticsView extends Dash.View
+  class Admin.AnalyticsView extends App.Dash.View
     dash_name : 'analyze'
   
     initialize : (options) -> 

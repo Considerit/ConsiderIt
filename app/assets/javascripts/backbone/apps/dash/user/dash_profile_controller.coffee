@@ -1,6 +1,6 @@
-@ConsiderIt.module "Dash", (Dash, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Dash.User", (User, App, Backbone, Marionette, $, _) ->
 
-  class Dash.ProfileController extends Dash.RegionController
+  class User.ProfileController extends App.Dash.RegionController
     data_uri : -> 
       if @options.model.is_meta_data_loaded()
         null
@@ -12,16 +12,16 @@
       data
 
 
-  class Dash.UserProfileController extends Dash.ProfileController
+  class User.UserProfileController extends User.ProfileController
 
     setupLayout : ->
       @getLayout()
 
     getLayout : ->
-      new Dash.UserProfileView
+      new User.UserProfileView
         model : @options.model
 
-  class Dash.EditProfileController extends Dash.ProfileController
+  class User.EditProfileController extends User.ProfileController
 
     setupLayout : ->
       layout = @getLayout()
@@ -32,19 +32,19 @@
 
 
     getLayout : ->
-      new Dash.EditProfileView
+      new User.EditProfileView
         model : @options.model
 
-  class Dash.AccountSettingsController extends Dash.ProfileController
+  class User.AccountSettingsController extends User.ProfileController
 
     setupLayout : ->
       @getLayout()
 
     getLayout : ->
-      new Dash.AccountSettingsView
+      new User.AccountSettingsView
         model : @options.model
 
-  class Dash.EmailNotificationsController extends Dash.RegionController
+  class User.EmailNotificationsController extends App.Dash.RegionController
     data_uri : -> 
       Routes.followable_index_path({user_id : @options.model.id})
 
@@ -63,6 +63,6 @@
       layout
 
     getLayout : ->
-      new Dash.EmailNotificationsView
+      new User.EmailNotificationsView
         model : @options.model
         followable_objects : @followable_objects

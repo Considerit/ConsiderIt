@@ -12,24 +12,17 @@ class Dashboard::AssessableController < Dashboard::DashboardController
   def index
     authorize! :index, Assessable::Assessment
 
-    # need to return:
-    #   - all assessment objects
-    #   - all claims
-    #   - all requests
-    #   - all assessable objects
-
-
     assessments = Assessable::Assessment.order(:complete)
     assessable_ids = assessments.map{ |assessment| assessment.assessable_id }.compact
-    assessable_objects = Point.where("id in (?)", assessable_ids).all
-
+    assessable_objects = Point.where("id in (?)", assessable_ids).public_fields.all
+    root_objects_ids = assessable_objects.map{ |assessed| assessed.proposal_id }.compact
+    root_objects = Proposal.where("id in (?)", root_objects_ids).public_fields.all
 
     render :json => { 
       :assessments => assessments,
-      :requests => Assessable::Request.all,
-      :claims => Assessable::Claim.all,
       :assessable_objects => assessable_objects,
-      :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil
+      :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,
+      :root_objects => root_objects
     }
   end
 
@@ -38,7 +31,15 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     @assessment = Assessable::Assessment.find(params[:id])
 
-    render :json => {:assessment => @assessment}
+    render :json => {
+      :assessment => @assessment,
+      :requests => @assessment.requests.all,
+      :claims => @assessment.claims.all,
+      :all_claims => Assessable::Claim.all,
+      :assessable_obj => @assessment.root_object, 
+      :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,      
+      :root_object => Proposal.find(@assessment.root_object.proposal_id)
+    }
   end
 
   def create_claim

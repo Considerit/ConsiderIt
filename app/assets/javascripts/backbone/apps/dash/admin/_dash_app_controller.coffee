@@ -25,13 +25,13 @@
     setupLayout : ->
       layout = @getLayout()
       @listenTo layout, 'account:updated', (data) ->
-        App.request "tenant:update", data.user
-        layout.render()
+        App.request "tenant:update", data
+        @region.show layout
       layout
 
     getLayout : ->
       new Admin.AppSettingsView
-
+        model: ConsiderIt.current_tenant
 
   # class Admin.ManageProposalsController extends Dash.AdminController
   #   setupLayout : ->

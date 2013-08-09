@@ -8,22 +8,37 @@
       ['account', 'enable_position_statement', 'account_enable_position_statement'],
       ['account', 'enable_user_conversations', 'account_enable_user_conversations']]
 
+    radioboxes : [
+      ['account', 'moderate_points_mode', 'account_moderate_points_mode'],
+      ['account', 'moderate_comments_mode', 'account_moderate_comments_mode'],
+      ['account', 'moderate_proposals_mode', 'account_moderate_proposals_mode'],      
+    ]
+
     serializeData : ->
-      account : ConsiderIt.current_tenant.attributes
+      @model.attributes
 
     onShow : ->
       super
       @$el.find('#account_header_text').autosize()
       @$el.find('#account_header_details_text').autosize()
+      @toggleModeration()
 
     events : 
       'ajax:complete .m-dashboard-edit-account' : 'accountUpdated'
+      'click #account_enable_moderation' : 'toggleModeration'
 
     accountUpdated : (ev, response, options) ->
       data = $.parseJSON(response.responseText)
 
       @$el.find('.save_block').append('<div class="flash_notice">Account updated</div>').delay(1500).fadeOut 'fast', =>
         @trigger 'account:updated', data.account
+
+
+    toggleModeration : ->
+      if @$el.find('#account_enable_moderation').is(':checked')
+        @$el.find('.m-moderation-settings').slideDown()
+      else
+        @$el.find('.m-moderation-settings').slideUp()
 
 
   # class Admin.ManageProposalsView extends App.Dash.View

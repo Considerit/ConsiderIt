@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130730041225) do
+ActiveRecord::Schema.define(:version => 20130809204819) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -54,6 +54,9 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.text     "header_text"
     t.text     "header_details_text"
     t.boolean  "enable_user_conversations",                :default => false
+    t.integer  "moderate_points_mode",                     :default => 0
+    t.integer  "moderate_comments_mode",                   :default => 0
+    t.integer  "moderate_proposals_mode",                  :default => 0
   end
 
   add_index "accounts", ["identifier"], :name => "by_identifier", :length => {"identifier"=>10}
@@ -118,7 +121,6 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.integer  "user_id",                                :default => 0, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "passes_moderation"
     t.integer  "account_id"
     t.integer  "followable_last_notification_milestone", :default => 0
     t.datetime "followable_last_notification"
@@ -239,7 +241,6 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.boolean  "published",                              :default => true
     t.boolean  "hide_name",                              :default => false
     t.boolean  "share",                                  :default => true
-    t.boolean  "passes_moderation"
     t.integer  "account_id"
     t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"

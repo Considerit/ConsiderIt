@@ -35,11 +35,23 @@
       if condition || (!condition? && model.get(attribute))
         input = document.getElementById(selector).checked = true
 
+    radioBox : (model, attribute, selector) ->
+      if model == 'user'
+        model = @model
+      else if model == 'account'
+        model = ConsiderIt.current_tenant
+
+      input = document.getElementById("#{selector}_#{model.get(attribute)}").checked = true
+
+
     onShow : ->
       @$el.addClass("m-dashboard-#{@dash_name}")
       
       _.each @checkboxes, (checkbox) =>
         @checkBox(checkbox...)
+
+      _.each @radioboxes, (radiobox) =>
+        @radioBox(radiobox...)
 
 
   class Dash.UnauthorizedView extends Dash.View

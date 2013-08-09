@@ -11,80 +11,63 @@
       "dashboard/analytics" : "analyze"
       "dashboard/data" : "database"
       "dashboard/moderate" : "moderate"
-      "dashboard/assessment" : "assess"
 
   API =
 
     userProfile : (user_id) ->
       user = ConsiderIt.users[user_id]
-      dashboard_controller = @_getDash()      
-      new Dash.UserProfileController
-        region : dashboard_controller.layout.mainRegion
+      new Dash.User.UserProfileController
+        region : @_getMainRegion()  
         model : user      
     
     editProfile : (user_id) ->
       user = ConsiderIt.request('user:current')
-      dashboard_controller = @_getDash()      
-      new Dash.EditProfileController
-        region : dashboard_controller.layout.mainRegion
+      new Dash.User.EditProfileController
+        region : @_getMainRegion()  
         model : user   
 
     accountSettings : (user_id) ->
       user = ConsiderIt.request('user:current')
-      dashboard_controller = @_getDash()      
-      new Dash.AccountSettingsController
-        region : dashboard_controller.layout.mainRegion
+      new Dash.User.AccountSettingsController
+        region : @_getMainRegion()  
         model : user   
 
     emailNotifications : (user_id) ->
       user = if ConsiderIt.request("user:current:logged_in?") then ConsiderIt.request('user:current') else ConsiderIt.request("user:fixed")
-      dashboard_controller = @_getDash()      
-      new Dash.EmailNotificationsController
-        region : dashboard_controller.layout.mainRegion
+      new Dash.User.EmailNotificationsController
+        region : @_getMainRegion()  
         model : user
 
     appSettings : ->
-      dashboard_controller = @_getDash()      
-      new Dash.AppSettingsController
-        region : dashboard_controller.layout.mainRegion
+      new Dash.Admin.AppSettingsController
+        region : @_getMainRegion()  
 
     manageProposals : ->
-      dashboard_controller = @_getDash()      
-      new Dash.ManageProposalsController
-        region : dashboard_controller.layout.mainRegion
+      new Dash.Admin.ManageProposalsController
+        region : @_getMainRegion()  
 
     userRoles : ->
-      dashboard_controller = @_getDash()      
-      new Dash.UserRolesController
-        region : dashboard_controller.layout.mainRegion
+      new Dash.Admin.UserRolesController
+        region : @_getMainRegion()  
 
     analyze : ->
-      dashboard_controller = @_getDash()      
-      new Dash.AnalyticsController
-        region : dashboard_controller.layout.mainRegion
+      new Dash.Admin.AnalyticsController
+        region : @_getMainRegion()  
 
     database : ->
-      dashboard_controller = @_getDash()      
-      new Dash.DatabaseController
-        region : dashboard_controller.layout.mainRegion        
-
-    assess : ->
-      dashboard_controller = @_getDash()      
-      new Dash.AssessmentController
-        region : dashboard_controller.layout.mainRegion
+      new Dash.Admin.DatabaseController
+        region : @_getMainRegion()        
 
     moderate : ->
-      dashboard_controller = @_getDash()      
-      new Dash.ModerationController
-        region : dashboard_controller.layout.mainRegion
+      new Dash.Admin.Moderation.ModerationController
+        region : @_getMainRegion()  
 
     unauthorizedPage : ->
-      @current_region_controller = @_getDash() 
       new Dash.UnauthorizedController
-        region : dashboard_controller.layout.mainRegion
+        region : @_getMainRegion()  
 
 
-    _getDash : ->
+    _getMainRegion : ->
       if !@dashboard
         @dashboard = new Dash.Controller()
         App.vent.on 'dashboard:region:rendered', (model, dash_name) =>
@@ -92,7 +75,10 @@
           @dashboard.renderSidebar(model, dash_name)
         @dashboard.region.show @dashboard.layout
 
-      @dashboard
+      @dashboard.layout.mainRegion
+
+  App.reqres.setHandler "dashboard:mainRegion", ->
+    API._getMainRegion()
 
   App.reqres.setHandler "admin_templates_loaded?", ->
     $('#tpl_dashboard_app_settings').length > 0

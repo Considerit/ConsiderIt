@@ -1,6 +1,41 @@
 - cache ['templates_assessable', current_tenant] do 
 
-  %script{ :type => "text/template", :id => "tpl_dashboard_assess"}
+  %script{ :type => "text/template", :id => "tpl_assess_list_item"}
+
+    %td
+      I-{{ root_object.designator }}
+    %td.desc
+      {{ root_object.short_name }}
+    %td
+      {{ created_at }}
+
+    %td
+
+      (( if( claimed ) { ))
+      (( if( claimed_by_logged_in_user ) { ))
+      = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path( id )}}" do |f|
+        = f.hidden_field :id, :value => "{{ id }}"
+        = f.hidden_field :user_id, :value => nil
+
+        = f.submit 'Unclaim it', :class => 'take_responsibility'
+      (( } else { ))                                 
+      {{ claimed_by }}
+      (( } ))
+      (( } else { ))
+      = form_for :assessment, :method => :put, :remove => true, :url => "{{Routes.assessment_path(id)}}" do |f|
+        = f.hidden_field :id, :value => "{{ id }}"
+        = f.hidden_field :user_id, :value => "{{ current_user }}"
+
+        = f.submit 'I\'ll do it', :class => 'take_responsibility'
+      (( } ))
+
+    %td
+      {{ status }}
+    %td
+      %a.m-assessment-edit{ :'data-id' => "{{ id }}", :href => "{{ Routes.edit_assessment_path(id) }}"}
+        Edit
+
+  %script{ :type => "text/template", :id => "tpl_assess_list"}
 
     #assess
 
@@ -35,89 +70,67 @@
 
                 
           %tbody
-            (( assessments.each( function(obj) { ))
-
-            (( var pass_class = obj.get('complete') ? "completed" : obj.get('reviewable') ? 'reviewable' : 'incomplete'; ))
-            (( var root_object = ConsiderIt.all_proposals.get(assessable_objects[obj.get('assessable_id')].proposal_id).attributes; ))
-            (( var rqs = requests.where({assessment_id: obj.id}); ))
-
-            %tr{ :class => "{{pass_class}} assessment_row" }
-
-              %td
-                I-{{ root_object.designator }}
-              %td.desc
-                {{ root_object.short_name }}
-              %td
-                // requests[0].created_at.localtime.strftime("%m/%d/%Y %I:%M%p")
-                {{ rqs[0].get('created_at') }}
-
-              %td
-
-                (( if( obj.get('user_id') > 0 ) { ))
-                (( if( ConsiderIt.request('user:current').id == obj.get('user_id') ) { ))
-                = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path(obj.id)}}" do |f|
-                  = f.hidden_field :id, :value => "{{obj.id}}"
-                  = f.hidden_field :user_id, :value => nil
-
-                  = f.submit 'Unclaim it', :class => 'take_responsibility'
-                (( } else { ))                                 
-                {{ ConsiderIt.users[obj.get('user_id')].get('name') }}
-                (( } ))
-                (( } else { ))
-                = form_for :assessment, :method => :put, :remove => true, :url => "{{Routes.assessment_path(obj.id)}}" do |f|
-                  = f.hidden_field :id, :value => "{{obj.id}}"
-                  = f.hidden_field :user_id, :value => "{{ConsiderIt.request('user:current').id}}"
-
-                  = f.submit 'I\'ll do it', :class => 'take_responsibility'
-                (( } ))
-
-              %td
-                {{ obj.get('complete') ? 'complete' : obj.get('reviewable') ? 'reviewable' : 'incomplete' }}
-              %td
-                %a.m-assessment-edit{ :'data-id' => "{{obj.id}}"}
-                  Edit
-            (( }); ))
 
 
 
-  %script{ :type => "text/template", :id => "tpl_dashboard_assess_claim" }
+  %script{ :type => "text/template", :id => "tpl_assess_edit_layout"}
+
+    #edit_assessment
+      .back
+        %a.m-assessment-back{ :href => "{{Routes.assessment_index_path()}}"}
+          back to index
+
+      .m-dashboard-heading
+        %h2
+          Leave expert response
+
+        .m-dashboard-subheading
+          Conduct a fact check
+
+      #main
+        #to_be_checked
+        #requester_sidebar
+        #claims
+        #evaluate
+
+  %script{ :type => "text/template", :id => "tpl_claim" }
     .heading
       .statement
-        {{ claim.claim_restatement }}
+        {{ claim_restatement }}
 
       .actions
         
         %button.button.answer
-          {{ !claim.verdict ? 'Answer' :'Edit' }}
+          {{ !verdict ? 'Answer' :'Edit' }}
 
         (( if(!assessment.complete){ ))
         .destroy
-          = form_for :claim, :method => :delete, :remote => true, :url => "{{Routes.assessment_destroy_claim_path(assessment.id, claim.id)}}", :html => {:class => "m-assessment-claim-delete"} do |f|
+          = form_for :claim, :method => :delete, :remote => true, :url => "{{Routes.assessment_destroy_claim_path(assessment.id, id)}}", :html => {:class => "m-assessment-claim-delete"} do |f|
             = f.submit 'Delete'
         (( } ))
 
     .closed
 
       .body
-        (( if( claim.verdict ){ ))
+        (( if( verdict ){ ))
         %strong
-          {{ formatted_verdict }}
-        {{ claim.result }}
+          {{ format_verdict }}
+        {{ result }}
         (( } ))
-      (( if( claim.notes ){ ))
+      (( if( notes ){ ))
       .notes
         %strong
           Private notes. 
-        {{ claim.notes }} 
+        {{ notes }} 
 
       (( } ))
 
     .open.hide
-      = form_for :claim, :remote => true, :url => "{{Routes.assessment_update_claim_path(assessment.id, claim.id)}}", :html => { :class => 'm-assessment-claim-update'} do |f|
+      = form_for :claim, :remote => true, :url => "{{Routes.assessment_update_claim_path(assessment.id, id)}}", :html => { :class => 'm-assessment-claim-update'} do |f|
 
         .claim_block
           = f.label :claim, 'The claim restatement'
-          = f.text_area :claim, :class => 'autoResize', :value => "{{ claim.claim_restatement }}"
+          = f.text_area :claim, :class => 'autoResize', :value => "{{ claim_restatement }}"
 
         .radio_block
           = f.radio_button :verdict, 'accurate', :value => '2'
@@ -131,108 +144,99 @@
 
         .assessment_block
           = f.label :result, 'The assessment'
-          = f.text_area :result, :class => 'autoResize', :value => "{{ claim.result }}"
+          = f.text_area :result, :class => 'autoResize', :value => "{{ result }}"
 
         .private_note_block
           = f.label :notes, 'Private notes'
-          = f.text_area :notes, :class => 'autoResize', :value => "{{ claim.notes }}"
+          = f.text_area :notes, :class => 'autoResize', :value => "{{ notes }}"
 
         = f.submit :class => 'button'
         %a.cancel
           cancel
 
-  %script{ :type => "text/template", :id => "tpl_dashboard_assess_edit"}
-    #edit_assessment
-      .back
-        %a.m-assessment-back
-          back to index
+  %script{ :type => "text/template", :id => "tpl_claims_list"}
+    %ul
 
-      .m-dashboard-heading
-        %h2
-          Leave expert response
+    %button.button.add_claim
+      + Add a claim to check
 
-        .m-dashboard-subheading
-          Conduct a fact check
+    .add_claim_form
+      = form_for :claim, :url => "{{Routes.assessment_create_claim_path(id)}}", :remote => true, :html => {:class => 'hide m-assessment-create_claim'} do |f|
+        = f.label :claim, 'Restate a specific claim as a factual (yes-or-no) question that you will check'
+        = f.text_area :claim, :class => 'autoResize'
+        .submit_block
+          = f.submit 'Add'
+          %a.cancel
+            cancel
 
-      #main
+      #other_claims.hide
 
-        #to_be_checked
-          %p
-            %strong
-              I-{{proposal.designator}}
-            {{assessable.is_pro ? 'Pro' : 'Con'}} point
+        .options
 
-          %p.text
-            {{ assessable.nutshell }}
+          = form_for :claim, :url => "{{Routes.assessment_create_claim_path(id)}}", :remote => true, :html => {:class => 'hide m-assessment-create_claim'} do |f|
+            = f.hidden_field :copy, :value => true
 
-          (( if (assessable.text && assessable.text.length > 0) { ))
-          %p.text
-            {{ assessable.text }} 
-          (( } ))
+            = f.label :copy_id, '...or copy a claim from a different pro/con point'
+            .block
+              %select{ :id => "claim_copy_id", :name => "claim[copy_id]" } 
+                (( all_claims.each(function(clm){ ))
+                %option{ :value => "{{clm.id}}"}
+                  {{ clm.get('claim_restatement') }}
+                (( }); ))
 
-          .full_context
-            = link_to 'Read full post', "{{Routes.proposal_point_path(proposal.long_id, assessable.id)}}", :target => "_blank"
+              = f.submit 'Copy this claim'
 
-        #requester_sidebar
-          %h3
-            Suggestions by requesters...
 
-          (( _.each(requests, function(rq){ ))
-          .request
-            .body
-              {{ rq.get('suggestion') }}
-            .user
-              &ndash; {{ ConsiderIt.users[rq.get('user_id')].get('name') }}
-          (( }); ))
 
-        %ul#claims
+  %script{ :type => "text/template", :id => "tpl_assess_edit_context"}
 
-        #evaluate
-          %button.button.add_claim
-            + Add a claim to check
+    %p
+      %strong
+        I-{{root_object.designator}}
+      {{assessable.is_pro ? 'Pro' : 'Con'}} point
 
-          (( if( assessment.reviewable && ConsiderIt.request('user:current').id != assessment.user_id){ ))
-          (( var submit_text = claims.length == 0 ? 'Correct, there are no verifiable claims, publish it' : 'Publish fact check'; ))  
-          .complete
-            = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path(assessment.id)}}", :html => {:class => 'm-assessment-update'} do |f|
-              = f.hidden_field :complete, :value => true
-              = f.hidden_field :id, :value => "{{ assessment.id }}"
-              = f.submit "{{ submit_text }}", :class => 'button'
-          (( } ))
+    %p.text
+      {{ assessable.nutshell }}
 
-          (( if( assessment.reviewable ){ ))
-          (( var submit_text = claims.length == 0 ? 'There are no verifiable claims' : 'Submit for review'; ))
-          .review
-            = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path(assessment.id)}}", :html => {:class => 'm-assessment-update'} do |f|
-              = f.hidden_field :reviewable, :value => true
-              = f.hidden_field :id, :value => "{{ assessment.id }}"
-              = f.hidden_field :user_id, :value => "{{ ConsiderIt.request('user:current').id }}"
-              = f.submit "{{ submit_text }}", :class => "button"
-          (( } ))
+    (( if (assessable.text && assessable.text.length > 0) { ))
+    %p.text
+      {{ assessable.text }} 
+    (( } ))
 
-          .add_claim_form
-            = form_for :claim, :url => "{{Routes.assessment_create_claim_path(assessment.id)}}", :remote => true, :html => {:class => 'hide m-assessment-create_claim'} do |f|
-              = f.label :claim, 'Restate a specific claim as a factual (yes-or-no) question that you will check'
-              = f.text_area :claim, :class => 'autoResize'
-              .submit_block
-                = f.submit 'Add'
-                %a.cancel
-                  cancel
+    .full_context
+      = link_to 'Read full post', "{{Routes.proposal_point_path(root_object.long_id, assessable.id)}}", :target => "_blank"
 
-            #other_claims.hide
 
-              .options
+  %script{ :type => "text/template", :id => "tpl_assess_request"}
+    .body
+      {{ suggestion }}
+    .user
+      &ndash; {{ ConsiderIt.users[user_id].get('name') }}
 
-                = form_for :claim, :url => "{{Routes.assessment_create_claim_path(assessment.id)}}", :remote => true, :html => {:class => 'hide m-assessment-create_claim'} do |f|
-                  = f.hidden_field :copy, :value => true
+  %script{ :type => "text/template", :id => "tpl_assess_edit_requesters"}
+    %h3
+      Suggestions by requesters...
+    .requests
 
-                  = f.label :copy_id, '...or copy a claim from a different pro/con point'
-                  .block
-                    %select{ :id => "claim_copy_id", :name => "claim[copy_id]" } 
-                      (( _.each(all_claims, function(clm){ ))
-                      %option{ :value => "{{clm.id}}"}
-                        {{ clm.get('claim_restatement') }}
-                      (( }); ))
 
-                    = f.submit 'Copy this claim'
+  %script{ :type => "text/template", :id => "tpl_assess_edit_forms"}
+
+    (( if( can_publish ){ ))
+    .complete
+      = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path(id)}}", :html => {:class => 'm-assessment-update'} do |f|
+        = f.hidden_field :complete, :value => true
+        = f.hidden_field :id, :value => "{{ id }}"
+        = f.submit "{{ submit_text }}", :class => 'button'
+    (( } else if ( reviewable ){ ))
+    .review
+      = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path(id)}}", :html => {:class => 'm-assessment-update'} do |f|
+        = f.hidden_field :reviewable, :value => true
+        = f.hidden_field :id, :value => "{{ id }}"
+        = f.hidden_field :user_id, :value => "{{ current_user }}"
+        = f.submit "{{ submit_text }}", :class => "button"
+    (( } ))
+
+
+
+
 

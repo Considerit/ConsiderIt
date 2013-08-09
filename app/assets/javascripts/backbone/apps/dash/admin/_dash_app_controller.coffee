@@ -1,6 +1,6 @@
-@ConsiderIt.module "Dash", (Dash, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Dash.Admin", (Admin, App, Backbone, Marionette, $, _) ->
 
-  class Dash.AdminController extends Dash.RegionController
+  class Admin.AdminController extends App.Dash.RegionController
     admin_template_needed : true
 
     initialize : (options = {} ) ->
@@ -9,7 +9,7 @@
         $('head').append ConsiderIt.admin_files.js_tag
       super options
 
-  class Dash.AppSettingsController extends Dash.AdminController
+  class Admin.AppSettingsController extends Admin.AdminController
     admin_template_needed : true
 
     data_uri : -> 
@@ -30,21 +30,21 @@
       layout
 
     getLayout : ->
-      new Dash.AppSettingsView
+      new Admin.AppSettingsView
 
 
-  # class Dash.ManageProposalsController extends Dash.AdminController
+  # class Admin.ManageProposalsController extends Dash.AdminController
   #   setupLayout : ->
   #     layout = @getLayout()
   #     layout
 
   #   getLayout : ->
-  #     new Dash.ManageProposalsView
+  #     new Admin.ManageProposalsView
   #       active_proposals : ConsiderIt.all_proposals.where {active: true}
   #       inactive_proposals : ConsiderIt.all_proposals.where {active: false}
 
 
-  class Dash.UserRolesController extends Dash.AdminController
+  class Admin.UserRolesController extends Admin.AdminController
 
     #TODO: cache this data
     data_uri : -> 
@@ -58,7 +58,7 @@
       layout = @getLayout()
       @listenTo layout, 'role:edit:requested', (user_id) =>
         user = @collection.get user_id
-        view = new Dash.EditUserRoleView
+        view = new Admin.EditUserRoleView
           model : user
 
         @listenTo view, 'role:changed', (data) =>
@@ -72,10 +72,10 @@
       layout
 
     getLayout : ->
-      new Dash.UserRolesView
+      new Admin.UserRolesView
         collection : @collection
 
-  class Dash.AnalyticsController extends Dash.AdminController
+  class Admin.AnalyticsController extends Admin.AdminController
     data_uri : ->
       Routes.analytics_path()
 
@@ -87,13 +87,13 @@
       @getLayout()
 
     getLayout : ->
-      new Dash.AnalyticsView
+      new Admin.AnalyticsView
         analytics_data : @analytics_data
 
 
-  class Dash.DatabaseController extends Dash.AdminController
+  class Admin.DatabaseController extends Admin.AdminController
     setupLayout : ->
       @getLayout()
     
     getLayout : ->
-      new Dash.DatabaseView
+      new Admin.DatabaseView

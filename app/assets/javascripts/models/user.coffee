@@ -25,17 +25,20 @@ class ConsiderIt.User extends Backbone.Model
       return 'email'
 
   roles : ->
-    return [] if !@attributes.roles_mask? || @attributes.roles_mask == 0
 
-    all_roles = ConsiderIt.User.available_roles
+    if !@my_roles?
+      return [] if !@attributes.roles_mask? || @attributes.roles_mask == 0
 
-    user_roles = []
-    me = this
-    for element, idx in all_roles
-      if (me.attributes.roles_mask & Math.pow(2, idx)) > 0
-        user_roles.push element
+      all_roles = ConsiderIt.User.available_roles
 
-    user_roles
+      user_roles = []
+      me = this
+      for element, idx in all_roles
+        if (me.attributes.roles_mask & Math.pow(2, idx)) > 0
+          user_roles.push element
+
+      @my_roles = user_roles
+    @my_roles
 
   is_persisted : ->
     'id' of @attributes
@@ -50,11 +53,11 @@ class ConsiderIt.User extends Backbone.Model
   paperwork_completed : ->
     @get('registration_complete')
 
-  is_admin : -> @has_role('admin')
-  is_moderator : -> @is_admin || @has_role('moderator')
-  is_analyst : -> @is_admin || @has_role('analyst')
-  is_evaluator : -> @is_admin || @has_role('evaluator')
-  is_manager : -> @is_admin || @has_role('manager')
+  is_admin : -> @has_role('admin') || @has_role('superadmin')
+  is_moderator : -> @is_admin() || @has_role('moderator')
+  is_analyst : -> @is_admin() || @has_role('analyst')
+  is_evaluator : -> @is_admin() || @has_role('evaluator')
+  is_manager : -> @is_admin() || @has_role('manager')
 
   permissions : ->
     is_admin: @is_admin()

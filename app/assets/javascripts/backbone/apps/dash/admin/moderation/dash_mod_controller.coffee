@@ -1,5 +1,5 @@
-@ConsiderIt.module "Dash", (Dash, App, Backbone, Marionette, $, _) ->
-  class Dash.ModerationController extends Dash.AdminController
+@ConsiderIt.module "Dash.Admin.Moderation", (Moderation, App, Backbone, Marionette, $, _) ->
+  class Moderation.ModerationController extends App.Dash.Admin.AdminController
     data_uri : ->
       Routes.dashboard_moderate_path()
 
@@ -15,7 +15,7 @@
       layout
 
     getLayout : ->
-      new Dash.ModerationView
+      new Moderation.ModerationView
         objs_to_moderate : @data.objs_to_moderate
         existing_moderations : @data.existing_moderations
         classes_to_moderate : @data.classes_to_moderate

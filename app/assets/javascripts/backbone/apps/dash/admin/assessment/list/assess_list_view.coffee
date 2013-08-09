@@ -43,3 +43,9 @@
       hm = @$el.find('#hide_completed')
       if hm.is(':checked')
         hm.trigger('click')
+
+  class Assessment.AssessmentListLayout extends App.Dash.View
+    dash_name : 'assess'
+
+    regions : 
+      listRegion : '#assess'

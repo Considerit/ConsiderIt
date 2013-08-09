@@ -1,8 +1,8 @@
 #TODO: make sure that list view kept in sync with updated assessment
 @ConsiderIt.module "Dash.Admin.Assessment", (Assessment, App, Backbone, Marionette, $, _) ->
 
-  class Assessment.EditLayout extends App.Views.Layout
-    template : '#tpl_assess_edit_layout'
+  class Assessment.EditLayout extends App.Dash.View
+    dash_name : 'assess_edit_layout'
     regions : 
       contextRegion : '#to_be_checked'
       requestsRegion : '#requester_sidebar'

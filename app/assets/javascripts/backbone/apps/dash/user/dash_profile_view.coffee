@@ -1,6 +1,6 @@
-@ConsiderIt.module "Dash", (Dash, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Dash.User", (User, App, Backbone, Marionette, $, _) ->
 
-  class Dash.UserProfileView extends Dash.View
+  class User.UserProfileView extends App.Dash.View
     dash_name : 'profile'
 
     serializeData : ->
@@ -24,7 +24,7 @@
         $(ev.currentTarget).addClass('selected')
 
 
-  class Dash.EditProfileView extends Dash.View
+  class User.EditProfileView extends App.Dash.View
     dash_name : 'edit_profile'
 
     serializeData : ->
@@ -38,13 +38,13 @@
       data = $.parseJSON(response.responseText)
       @trigger 'user:update:requested', data
 
-  class Dash.AccountSettingsView extends Dash.View
+  class User.AccountSettingsView extends App.Dash.View
     dash_name : 'account_settings'
 
     serializeData : ->
       @model.attributes
 
-  class Dash.EmailNotificationsView extends Dash.View
+  class User.EmailNotificationsView extends App.Dash.View
     dash_name : 'email_notifications'
 
     serializeData : ->

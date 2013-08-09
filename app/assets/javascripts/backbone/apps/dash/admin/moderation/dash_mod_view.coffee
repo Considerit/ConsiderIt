@@ -1,6 +1,6 @@
-@ConsiderIt.module "Dash", (Dash, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Dash.Admin.Moderation", (Moderation, App, Backbone, Marionette, $, _) ->
 
-  class Dash.ModerationView extends Dash.View
+  class Moderation.ModerationView extends App.Dash.View
     dash_name : 'moderate'
 
     serializeData : ->

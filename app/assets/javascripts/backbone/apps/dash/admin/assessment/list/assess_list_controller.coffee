@@ -27,6 +27,12 @@
 
     setupLayout : ->
       layout = @getLayout()
+      @listenTo layout, 'show', ->
+        list = new Assessment.AssessmentListView
+          collection : @assessments
+
+        layout.listRegion.show list
+
       # @listenTo layout, 'account:updated', (data) ->
       #   App.request "tenant:update", data.user
       #   layout.render()
@@ -34,5 +40,4 @@
 
     getLayout : ->
       
-      new Assessment.AssessmentListView
-        collection : @assessments
+      new Assessment.AssessmentListLayout

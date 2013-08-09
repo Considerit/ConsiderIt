@@ -18,25 +18,25 @@
 
       .field
         = f.label :app_title, 'Application Title'
-        = f.text_field :app_title, :value => "{{account.app_title}}"
+        = f.text_field :app_title, :value => "{{app_title}}"
         .sublabel
           A short title that is displayed in emails and in the browser window. 
 
       .field
         = f.label :header_text, 'Homepage Header'
-        = f.text_area :header_text, :value => "{{account.header_text}}", :rows => "3"
+        = f.text_area :header_text, :value => "{{header_text}}", :rows => "3"
         .sublabel
           The bolded statement at the top of the homepage.
 
       .field
         = f.label :header_details_text, 'Homepage Header Details'
-        = f.text_area :header_details_text, :value => "{{account.header_details_text}}", :rows => "6"
+        = f.text_area :header_details_text, :value => "{{header_details_text}}", :rows => "6"
         .sublabel
           The description shown in the header of the homepage that states the purpose of the forum. 
 
       .field
         = f.label :contact_email, 'Contact Email'
-        = f.text_field :contact_email, :value => "{{account.contact_email}}"
+        = f.text_field :contact_email, :value => "{{contact_email}}"
         .sublabel
           The email from which notification emails are set. 
 
@@ -45,12 +45,6 @@
         = f.label :enable_user_conversations, 'Enable User Created Conversations'
         .sublabel
           Whether you wish to allow any registered user to start new conversations on the homepage.
-
-      .field  
-        = f.check_box :enable_moderation
-        = f.label :enable_moderation, 'Enable Moderation'
-        .sublabel
-          Whether you wish to moderate user contributed content like comments and pro and con points. 
 
       .field  
         = f.check_box :assessment_enabled
@@ -65,6 +59,37 @@
         .sublabel
           Allow users to write a summary of their position, in addition to their pro/con list and stance. 
 
+      %fieldset
+        %legend 
+          Content Moderation
+
+        .field  
+          = f.check_box :enable_moderation
+          = f.label :enable_moderation, 'Enable Moderation'
+          .sublabel
+            Whether you wish to moderate user contributed content like comments and pro and con points. 
+
+        .m-moderation-settings
+          - ['points', 'comments', 'proposals'].each do |model|
+            %fieldset
+              %legend
+                #{model.capitalize} moderation settings
+
+              .field          
+                = f.radio_button "moderate_#{model}_mode", 0
+                = f.label "moderate_#{model}_mode_0", "Do not moderate #{model.capitalize}"
+              .field          
+                = f.radio_button "moderate_#{model}_mode", 1
+                = f.label "moderate_#{model}_mode_1", "Do not publicly post #{model.capitalize} until moderation"
+              .field          
+                = f.radio_button "moderate_#{model}_mode", 2
+                = f.label "moderate_#{model}_mode_2", "Post #{model.capitalize} immediately, but withhold email notifications until moderation"
+              .field          
+                = f.radio_button "moderate_#{model}_mode", 3
+                = f.label "moderate_#{model}_mode_3", "Post #{model.capitalize} immediately"
+
+
+
 
       %fieldset
         %legend
@@ -75,36 +100,37 @@
             %td
               .field
                 = f.label :pro_label, 'Supporting point label'
-                = f.text_field :pro_label, :value => "{{account.pro_label}}"
+                = f.text_field :pro_label, :value => "{{pro_label}}"
                 .sublabel
                   Default is "pro"              
             %td
               .field
                 = f.label :con_label, 'Opposing point label'
-                = f.text_field :con_label, :value => "{{account.con_label}}"
+                = f.text_field :con_label, :value => "{{con_label}}"
                 .sublabel
                   Default is "con"
           %tr
             %td
               .field
                 = f.label :slider_left, 'Supporting slider label'
-                = f.text_field :slider_left, :value => "{{account.slider_left}}"
+                = f.text_field :slider_left, :value => "{{slider_left}}"
                 .sublabel
                   Default is "support"
             %td
               .field
                 = f.label :slider_right, 'Opposing slider label'
-                = f.text_field :slider_right, :value => "{{account.slider_right}}"
+                = f.text_field :slider_right, :value => "{{slider_right}}"
                 .sublabel
                   Default is "oppose"
+
         .field
           = f.label :considerations_prompt, 'Header for pro/con list'
-          = f.text_field :considerations_prompt, :value => "{{account.considerations_prompt}}", :size => 50
+          = f.text_field :considerations_prompt, :value => "{{considerations_prompt}}", :size => 50
           .sublabel
             Default is "What are the most important pros and cons to you?"
         .field
           = f.label :slider_prompt, 'Header for stance slider'
-          = f.text_field :slider_prompt, :value => "{{account.slider_prompt}}", :size => 50
+          = f.text_field :slider_prompt, :value => "{{slider_prompt}}", :size => 50
           .sublabel
             Default is  "What is your overall opinion given these Pros and Cons?"
 

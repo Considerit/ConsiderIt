@@ -9,7 +9,7 @@ module Commentable
 
   module Commentable
     def is_commentable
-      has_many :comments, :as=>:commentable, :class_name => 'Commentable::Comment', :dependent=>:destroy
+      has_many :comments, :as=>:commentable, :class_name => 'Comment', :dependent=>:destroy
       include InstanceMethods
     end
     module InstanceMethods

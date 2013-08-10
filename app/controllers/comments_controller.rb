@@ -1,23 +1,23 @@
 
-class Commentable::CommentsController < ApplicationController
+class CommentsController < ApplicationController
   protect_from_forgery
 
   respond_to :json
 
   def create
-    authorize! :create, Commentable::Comment
+    authorize! :create, Comment
 
     commentable_id = params[:comment][:commentable_id]
     commentable_type = params[:comment][:commentable_type]
 
     commentable = commentable_type.constantize.find commentable_id
 
-    comment = Commentable::Comment.where(:commentable_id => commentable_id).where(:commentable_type => commentable_type).find_by_body(params[:comment][:body])
+    comment = Comment.where(:commentable_id => commentable_id).where(:commentable_type => commentable_type).find_by_body(params[:comment][:body])
 
     is_new = comment.nil?
 
     if is_new
-      comment = Commentable::Comment.build_from(commentable, current_user.id, params[:comment][:body] )
+      comment = Comment.build_from(commentable, current_user.id, params[:comment][:body] )
       if commentable_type == 'Point'
         commentable.comment_count = commentable.comments.count
         commentable.save
@@ -52,8 +52,8 @@ class Commentable::CommentsController < ApplicationController
   end
 
   def update
-    comment = Commentable::Comment.find(params[:id])
-    authorize! :update, Commentable::Comment
+    comment = Comment.find(params[:id])
+    authorize! :update, Comment
 
     update_attributes = {
       :body => params[:comment][:body]

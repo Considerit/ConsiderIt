@@ -5,73 +5,64 @@
       Moderation Interface
 
     .m-dashboard-subheading
-      Fail posts with personal attacks, or wildly offtopic/inappropriate material.        
+      Fail posts with personal attacks, or wildly off-topic/inappropriate material.        
 
   .m-moderate_hide-moderated
-    = check_box_tag 'hide_moderated'
+    = check_box_tag 'hide_moderated', nil, true
     = label_tag 'hide_moderated', 'hide already moderated content'
 
   #tabs
-    (( _.each(classes_to_moderate, function(mc, idx){  ))
-    %a{:class => 'inactive', :class_name => "{{mc.name}}"}
-      %span.name
-        {{mc.name}}
-      = surround '(', ')' do
-        {{ _.size(objs_to_moderate[mc.name]) - _.size(existing_moderations[mc.name]) }}
-    (( }); ))
-
-  (( _.each( classes_to_moderate, function(mc){ ))   
-
-  %div{:id => "moderate_{{mc.name}}", :class_name => "{{mc.name}}", :class => 'm-moderate-content'}
-
-    (( _.each( objs_to_moderate[mc.name], function(obj){ ))
-
-    (( var existing_moderation = obj.id in existing_moderations[mc.name] ? existing_moderations[mc.name][obj.id].moderation : null, status = ''; ))
-    (( var cclass = existing_moderation ? 'moderated' : 'not_moderated'; ))
-    (( if(existing_moderation){ status = existing_moderation.status == 1 ? 'passed' : 'failed'; } ))
-    %div{:class => "m-moderate-row {{ cclass }} {{ status }}" }
-
-      .m-moderatable-fields
-        (( _.each( mc.text_fields, function(tf) {  ))
-        (( if( obj[tf].length > 0 ) { ))
-        .m-moderatable-field
-          {{ obj[tf].replace(/(<([^>]+)>)/ig,"") }}
-        (( } ))              
-        (( }); ))
-
-      .meta
-        (( if( mc.name == 'Point' ) { ))
-        = link_to 'View this Point', "{{Routes.proposal_point_path(obj.proposal_id, obj.id)}}", :target => '_blank', :class => 'm-moderate-context_link'
-        (( } else { ))
-        = link_to 'View this Comment', "{{Routes.proposal_point_path(obj.proposal_id, obj.root_id)}}", :target => '_blank', :class => 'm-moderate-context_link'
-        (( } ))
-
-        (( if (existing_moderation) { ))
-        |
-        %span.by
-          moderated by {{ existing_moderation.user_id in ConsiderIt.users ? ConsiderIt.users[existing_moderation.user_id].get('name') : existing_moderation.user_id }}
-        (( } ))
-
-      = form_for :moderate, :url => dashboard_moderate_create_path, :method => :post, :remote => true, :html => { :class => 'm-moderate-form' } do |f|
-        = f.hidden_field :moderatable_id, :value => "{{obj.id}}"
-        = f.hidden_field :moderatable_type, :value => "{{mc.name}}"
-        = f.hidden_field :status, :value => "{{existing_moderation ? existing_moderation.status : null}}"
-
-        (( var pass_class = existing_moderation && existing_moderation.status == 1 ? 'selected' : ''; ))
-        (( var fail_class = existing_moderation && existing_moderation.status == 0 ? 'selected' : ''; ))
-
-        %button{:class => "pressable_button pass {{ pass_class }}"}
-          Pass
-        %button{:class => "pressable_button fail {{ fail_class }}"}
-          Fail
-
-        = f.submit 'done', :class => 'hide'
+  #moderations
 
 
-
-
-    (( }) ))
+%script{ :type => "text/template", :id => "tpl_moderate_tab"}
+  (( _.each(classes_to_moderate, function(mc, idx){  ))
+  %a{:class => 'm-moderation-tab inactive', :class_name => "{{ mc }}"}
+    %span.name
+      {{ mc }}
+    = surround '(', ')' do
+      {{ unmoderated[mc] }}
   (( }); ))
 
+
+
+
+
+%script{ :type => "text/template", :id => "tpl_moderate_item_view"}
+
+  #m-moderatable-text-region
+
+    .m-moderatable-fields
+      (( _.each( moderated_fields, function(field) {  ))
+      (( if( field.length > 0 ) { ))
+      .m-moderatable-field
+        {{ field.replace(/(<([^>]+)>)/ig,"") }}
+      (( } ))              
+      (( }); ))
+
+    .meta
+      %a.m-moderate-context_link{ :href => "{{ url }}"}
+        {{ anchor }}
+
+      (( if (user) { ))
+      |
+      %span.by
+        moderated by {{ user.name }}
+      (( } ))
+
+
+  #m-moderatable-form-region
+    = form_for :moderate, :url => "{{Routes.dashboard_moderate_create_path()}}", :method => :post, :remote => true, :html => { :class => 'm-moderate-form' } do |f|
+      = f.hidden_field :moderatable_id, :value => "{{moderatable_id}}"
+      = f.hidden_field :moderatable_type, :value => "{{moderatable_type}}"
+      = f.hidden_field :status, :value => "{{ status }}"
+
+
+      %button{:class => "pressable_button pass"}
+        Pass
+      %button{:class => "pressable_button fail"}
+        Fail
+
+      = f.submit 'done', :class => 'hide'
 
 

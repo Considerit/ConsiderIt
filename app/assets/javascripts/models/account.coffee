@@ -1,6 +1,7 @@
 class ConsiderIt.Account extends Backbone.Model
   name: 'account'
-  
+  CLASSES_TO_MODERATE : [ ['points','Point'], ['comments','Comment'], ['proposals', 'Proposal']]
+
   initialize : (attrs) ->
     super #attrs
     @attributes.header_text = htmlFormat(@attributes.header_text)
@@ -42,3 +43,12 @@ class ConsiderIt.Account extends Backbone.Model
   add_full_data : (data) ->
     @set data
     @fully_loaded = true
+
+  classesToModerate : ->
+    classes = []
+
+    if @get('enable_moderation')
+      _.each @CLASSES_TO_MODERATE, (table) =>
+        classes.push(table) if @get("moderate_#{table[0]}_mode") > 0
+
+    classes

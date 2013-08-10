@@ -33,6 +33,8 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
         # Assumes Commentable_type is Point!!!
         # select all comments of points of active proposals
         qry = "SELECT c.id, c.body AS body, pnt.id AS root_id, prop.long_id AS proposal_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.commentable_id=pnt.id"
+      elsif mc == Proposal
+        qry = "SELECT id, short_name, description, long_description from proposals where account_id=#{current_tenant.id}"
       elsif mc == Point
         qry = "SELECT pnt.id, pnt.nutshell AS nutshell, pnt.text AS text, prop.long_id AS proposal_id FROM points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
       end
@@ -47,9 +49,11 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
       end
       records = records.includes(:user)
 
-      records.select([:user_id, :id, :status, :moderatable_id]).each do |mod|
+      records.select([:user_id, :id, :status, :moderatable_id, :moderatable_type]).each do |mod|
         @existing_moderations[class_name][mod.moderatable_id] = mod unless @existing_moderations[class_name].has_key?(mod.moderatable_id) && @existing_moderations[class_name][mod.moderatable_id].user_id == current_user.id
       end
+
+      @existing_moderations[class_name] = @existing_moderations[class_name].values
     end
 
     rendered_admin_template = params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil

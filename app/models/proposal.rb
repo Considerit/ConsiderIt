@@ -14,6 +14,8 @@ class Proposal < ActiveRecord::Base
   is_trackable
   is_followable
   
+  is_moderatable :text_fields => [:short_name, :description, :long_description], :moderatable_objects => lambda { Proposal.published }
+
   #before_save :extract_tags
 
   scope :active, where( :active => true, :published => true )

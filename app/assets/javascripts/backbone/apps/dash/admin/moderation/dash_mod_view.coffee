@@ -1,36 +1,94 @@
 @ConsiderIt.module "Dash.Admin.Moderation", (Moderation, App, Backbone, Marionette, $, _) ->
 
-  class Moderation.ModerationView extends App.Dash.View
+  class Moderation.ModerationLayout extends App.Dash.View
     dash_name : 'moderate'
-
-    serializeData : ->
-      objs_to_moderate : @options.objs_to_moderate
-      existing_moderations : @options.existing_moderations
-      classes_to_moderate : @options.classes_to_moderate      
+    regions :
+      tabsRegion : '#tabs'
+      moderationsRegion : '#moderations'
 
     onShow : ->
       super
-
-      @$el.find('#tabs a:first').trigger('click')
       if @$el.find('#hide_moderated').is(':checked')
-        @$el.find('#hide_moderated').trigger('click')
+        @toggleModerated()
 
     events : 
-      'click #tabs a.inactive' : 'changeModel'
       'click #hide_moderated' : 'toggleModerated'
-      'click .m-moderate-row button' : 'moderation'
 
-    changeModel : (ev) ->
+    toggleModerated : ->
+      @$el.toggleClass('hide_moderated')
+
+
+  class Moderation.ModerationTabView extends App.Views.ItemView
+    template : '#tpl_moderate_tab'
+
+    serializeData : ->
+      unmoderated = {}
+      for mc in @options.classes_to_moderate
+        unmoderated[mc] = _.size(@options.moderations[mc].where({status: null})) 
+      
+      params = 
+        classes_to_moderate : @options.classes_to_moderate
+        unmoderated : unmoderated
+      params
+
+    onShow : ->
+      @$el.find('.m-moderation-tab:first').trigger('click')
+
+    events : 
+      'click .m-moderation-tab.inactive' : 'tabChanged'
+
+    tabChanged : (ev) ->
       $target = $(ev.currentTarget)
       cls = $target.attr('class_name')
       $target.siblings('.active').toggleClass('active inactive')
       $target.toggleClass('active inactive')
 
-      @$el.find('.m-moderate-content').hide()
-      @$el.find('.m-moderate-content[class_name="' + cls + '"]').show()
+      @trigger 'tab:changed', cls
 
-    toggleModerated : ->
-      @$el.find('.m-moderate-content').toggleClass('hide_moderated')
+
+  class Moderation.ModerationItemView extends App.Views.ItemView
+    template : '#tpl_moderate_item_view'
+    tagName : 'div'
+    className : 'm-moderate-row'
+
+    serializeData : ->
+
+      if @model.moderatable_type == 'Point'
+        url = Routes.proposal_point_path obj.proposal_id, obj.root_id
+        anchor = 'View this Point'
+      else if @model.moderatable_type == 'Comment'
+        url = Routes.proposal_point_path obj.proposal_id, obj.root_id
+        anchor = 'View this Comment'
+      else if @model.moderatable_type == 'Proposal'
+        url = Routes.proposal_path obj.proposal_id
+        anchor = 'View this Proposal'
+
+      _.extend {}, @model.attributes,
+        user : if @model.user_id then ConsiderIt.users[@model.user_id] else null
+        anchor : anchor
+        url : url
+        prior_moderation : @model.get 'status'
+
+
+    onShow : ->
+      status = @model.get('status')
+
+      if status? || status == 0
+        if status == 0
+          @$el.find('.fail').addClass 'selected'
+          @$el.addClass 'failed'
+
+        else if status == 1
+          @$el.find('.pass').addClass 'selected'
+          @$el.addClass 'passed'
+
+        @$el.addClass 'moderated' 
+      else 
+        @$el.addClass 'not_moderated'
+
+
+    events : 
+      'click .m-moderate-row button' : 'moderation'
 
     moderation : (ev) ->
       $target = $(ev.currentTarget)
@@ -40,3 +98,12 @@
       $target.parents('form:first, .m-moderate-row').removeClass('not_moderated').addClass('moderated')
       $target.parents('form:first').find('#moderate_status').val($target.hasClass('pass') ? 1 : 0)
       $target.parents('form:first').find('input[type="submit"]').trigger('click')
+
+
+  class Moderation.ModerationListView extends App.Views.CollectionView
+    tagName : "div"
+    className : 'm-moderate-content'
+    itemView : Moderation.ModerationItemView
+
+
+

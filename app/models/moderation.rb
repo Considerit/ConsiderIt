@@ -1,6 +1,6 @@
 class Moderation < ActiveRecord::Base
   class_attribute :classes_to_moderate
-  self.classes_to_moderate = [Point, Commentable::Comment, Proposal]
+  self.classes_to_moderate = [Point, Comment, Proposal]
 
   class_attribute :STATUSES
   self.STATUSES = %w(fails passes)

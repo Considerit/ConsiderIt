@@ -85,7 +85,7 @@ namespace :alerts do
       Moderation.classes_to_moderate.each do |mc|
         existing = {}
         objs_to_moderate = {}
-        if mc == Commentable::Comment
+        if mc == Comment
           comments = []
           mc.moderatable_objects.call.each do |comment|
             if comment.commentable_type != 'Point' || comment.root_object.proposal.active 

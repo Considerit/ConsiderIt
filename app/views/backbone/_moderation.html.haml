@@ -34,7 +34,7 @@
 
     .m-moderatable-fields
       (( _.each( moderated_fields, function(field) {  ))
-      (( if( field.length > 0 ) { ))
+      (( if( field && field.length > 0 ) { ))
       .m-moderatable-field
         {{ field.replace(/(<([^>]+)>)/ig,"") }}
       (( } ))              

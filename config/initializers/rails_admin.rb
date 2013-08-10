@@ -54,8 +54,8 @@ RailsAdmin.config do |config|
   # end
   #
 
-  #classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Commentable::Comment', 'Moderation', 'Reflect::ReflectBullet', 'Reflect::ReflectBulletRevision', 'Reflect::ReflectHighlight', 'Reflect::ReflectResponse', 'Reflect::ReflectResponseRevision', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment']
-  classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Commentable::Comment', 'Moderation', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment']
+  #classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Comment', 'Moderation', 'Reflect::ReflectBullet', 'Reflect::ReflectBulletRevision', 'Reflect::ReflectHighlight', 'Reflect::ReflectResponse', 'Reflect::ReflectResponseRevision', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment']
+  classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Comment', 'Moderation', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment']
   
   classes.each do |cls|
     config.model cls do

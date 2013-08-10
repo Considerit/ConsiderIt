@@ -3,7 +3,7 @@ class Account < ActiveRecord::Base
   has_many :points, :dependent => :destroy
   has_many :positions, :dependent => :destroy
   has_many :users, :dependent => :destroy
-  has_many :comments, :dependent => :destroy, :class_name => 'Commentable::Comment'
+  has_many :comments, :dependent => :destroy
 
   #TODO: replace with activity gem 
   has_many :activities, :class_name => 'Activity', :dependent => :destroy

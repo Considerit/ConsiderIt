@@ -1,9 +1,9 @@
-class Commentable::Comment < ActiveRecord::Base
+class Comment < ActiveRecord::Base
   #is_reflectable
   is_trackable
   is_followable
   is_moderatable :text_fields => [:body], :moderatable_objects => lambda {
-    Commentable::Comment.where('id > -1') #tacked on this where in order to enable chaining
+    Comment.where('id > -1') #tacked on this where in order to enable chaining
   }
 
   scope :public_fields, select('id, body, user_id, commentable_type, commentable_id, moderation_status')

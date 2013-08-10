@@ -82,11 +82,11 @@ namespace :import do
         ]
       }],
       ['comments', {
-        :max_id => Commentable::Comment.last.id + 1000,
+        :max_id => Comment.last.id + 1000,
         :fks => [
-          ['activities', ['action_id', "action_type='Commentable::Comment'"]],
-          ['follows', ['followable_id', "followable_type='Commentable::Comment'"]],
-          ['moderations', ['moderatable_id', "moderatable_type='Commentable::Comment'"]]
+          ['activities', ['action_id', "action_type='Comment'"]],
+          ['follows', ['followable_id', "followable_type='Comment'"]],
+          ['moderations', ['moderatable_id', "moderatable_type='Comment'"]]
         ]
       }],
       ['activities', {

@@ -29,7 +29,7 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
 
       @existing_moderations[class_name] = {}
 
-      if mc == Commentable::Comment
+      if mc == Comment
         # Assumes Commentable_type is Point!!!
         # select all comments of points of active proposals
         qry = "SELECT c.id, c.body AS body, pnt.id AS root_id, prop.long_id AS proposal_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.commentable_id=pnt.id"

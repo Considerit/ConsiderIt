@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
   has_many :positions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
-  has_many :comments, :dependent => :destroy, :class_name => 'Commentable::Comment'
+  has_many :comments, :dependent => :destroy
   has_many :proposals
   has_many :follows, :dependent => :destroy, :class_name => 'Followable::Follow'
 

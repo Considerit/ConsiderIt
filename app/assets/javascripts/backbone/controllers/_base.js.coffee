@@ -9,7 +9,7 @@
       App.execute "register:instance", @, @_instance_id
     
     close: (args...) ->
-      console.log "removing Controller:", @
+      #console.log "removing Controller:", @
       delete @region
       delete @options
       super args

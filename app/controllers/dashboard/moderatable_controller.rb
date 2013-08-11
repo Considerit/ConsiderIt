@@ -82,7 +82,7 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
     moderatable.moderation_status = moderation.status
     moderatable.save
 
-    render :json => {:success => true}.to_json
+    render :json => {:success => true, :moderation => moderation}
   end
 
 end

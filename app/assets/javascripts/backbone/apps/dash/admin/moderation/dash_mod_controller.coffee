@@ -51,10 +51,32 @@
 
         @listenTo tabs, 'tab:changed', (cls) ->
 
+          initial_collection = new Backbone.Collection @moderations[cls].filter((mod) -> !mod.isCompleted()),
+            model : App.Entities.Moderation
+
           moderations = new Moderation.ModerationListView
-            collection : @moderations[cls]
+            collection : initial_collection
+
+
+          @listenTo moderations, 'childview:moderation:updated', (data, view, model) ->
+            model.set data
+
+          @listenTo moderations, 'filter:changed', (filter) ->
+            if filter == 'all'
+              filtered_collection = @moderations[cls].filter (mod) -> true
+            else if filter == 'quarantine'
+              filtered_collection = @moderations[cls].filter (mod) -> mod.quarantined()
+            else if filter == 'pass'
+              filtered_collection = @moderations[cls].filter (mod) -> mod.passed()
+            else if filter == 'fail'
+              filtered_collection = @moderations[cls].filter (mod) -> mod.failed()
+            else if filter == 'incomplete'
+              filtered_collection = @moderations[cls].filter (mod) -> !mod.isCompleted()
+
+            moderations.collection.reset filtered_collection
 
           layout.moderationsRegion.show moderations
+          moderations.setFilter 'incomplete'
 
         layout.tabsRegion.show tabs
 

@@ -6,17 +6,6 @@
       tabsRegion : '#tabs'
       moderationsRegion : '#moderations'
 
-    onShow : ->
-      super
-      if @$el.find('#hide_moderated').is(':checked')
-        @toggleModerated()
-
-    events : 
-      'click #hide_moderated' : 'toggleModerated'
-
-    toggleModerated : ->
-      @$el.toggleClass('hide_moderated')
-
 
   class Moderation.ModerationTabView extends App.Views.ItemView
     template : '#tpl_moderate_tab'
@@ -51,6 +40,14 @@
     tagName : 'div'
     className : 'm-moderate-row'
 
+    radioboxes : [
+      ['account', 'moderate_points_mode', 'account_moderate_points_mode']
+    ]
+
+    radioBox : (model, attribute, selector) ->
+      input = @$el.find("#{selector}_#{model.get(attribute)}")[0].checked = true
+
+
     serializeData : ->
 
       if @model.moderatable_type == 'Point'
@@ -68,42 +65,60 @@
         anchor : anchor
         url : url
         prior_moderation : @model.get 'status'
-
+        evaluation_options : [
+          {label: 'Fail', val: 0},
+          {label: 'Quarantine', val: 2},
+          {label: 'Pass', val: 1}
+        ]
 
     onShow : ->
-      status = @model.get('status')
+      if @model.isCompleted() || @model.quarantined()
+        @radioBox @model, 'status', "#moderate_status_#{@model.get('moderatable_id')}"
 
-      if status? || status == 0
-        if status == 0
-          @$el.find('.fail').addClass 'selected'
-          @$el.addClass 'failed'
 
-        else if status == 1
-          @$el.find('.pass').addClass 'selected'
-          @$el.addClass 'passed'
-
+      if @model.passed() || @model.failed()
         @$el.addClass 'moderated' 
+      else if @model.quarantined()
+        @$el.addClass 'quarantined' 
       else 
         @$el.addClass 'not_moderated'
 
-
     events : 
-      'click .m-moderate-row button' : 'moderation'
+      'click .m-moderatable-evaluation-option input' : 'moderation'
+      'ajax:complete form' : 'moderationSubmitted'
 
     moderation : (ev) ->
-      $target = $(ev.currentTarget)
-      $target.addClass('selected')
-      $target.siblings('button').removeClass('selected')
-      $target.parents('.m-moderate-row').removeClass('passed failed').addClass($target.hasClass('pass') ? 'passed' : 'failed')
-      $target.parents('form:first, .m-moderate-row').removeClass('not_moderated').addClass('moderated')
-      $target.parents('form:first').find('#moderate_status').val($target.hasClass('pass') ? 1 : 0)
-      $target.parents('form:first').find('input[type="submit"]').trigger('click')
+      @$el.find('input[type="submit"]').trigger('click')
 
+    moderationSubmitted : (ev, response, options) ->
+      response = $.parseJSON(response.responseText)
+      @$el.append('<div class="flash_notice">Saved</div>').delay(1000).fadeOut 'fast', =>
+        @trigger 'moderation:updated', response.moderation, @, @model
 
-  class Moderation.ModerationListView extends App.Views.CollectionView
-    tagName : "div"
-    className : 'm-moderate-content'
+  class Moderation.ModerationListView extends App.Views.CompositeView
+    template : '#tpl_moderate_list_view'
     itemView : Moderation.ModerationItemView
+    itemViewContainer : '.m-moderate-content'
 
+    setFilter : (filter) ->
+      @$el.find('.m-moderate-filter').removeClass('selected')
+      @$el.find(".m-moderate-filter[data-target='#{filter}']").addClass('selected')
+      @current_filter = filter
+      @trigger 'filter:changed', filter
 
+    events : 
+      'click .m-moderate-filter' : 'toggleFilter'
+
+    toggleFilter : (ev) ->
+      $target = $(ev.currentTarget)
+
+      if $target.data('target') == 'all' && $target.is('.selected')
+        return
+
+      if $target.is('.selected')
+        filter = 'all'
+      else
+        filter = $target.data('target')
+
+      @setFilter filter
 

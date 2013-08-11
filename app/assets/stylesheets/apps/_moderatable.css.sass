@@ -30,40 +30,51 @@
       .name
         font-weight: bold
 
-  .m-moderate_hide-moderated
-    margin-bottom: $vertical_baseline
 
   .m-moderate-content
-    border-top: 1px solid $comp_color
     //border-radius: 8px
 
   &.hide_moderated .moderated
     display: none
 
+  .m-moderate-filters
+    margin-bottom: $vertical_baseline
+    padding-top: $vertical_baseline
+    padding-left: $grid_xs
+    color: rgba($base_text_color, .5)
+    border-top: 1px solid $comp_color
+
+  .m-moderate-filter
+    color: rgba($base_text_color, .7)
+
+    &.selected
+      opacity: 1
+      font-weight: bold
+      color: $base_text_color
+      
+    &:hover
+      color: $base_text_color
+
   .m-moderate-row
     padding: $vertical_baseline $grid_xs
     border-bottom: 1px solid #aaa
 
-    &.passed
-      background-color: #efe
-      td
-        background-color: #efe
 
-    &.failed
-      background-color: #fee
-      td
-        background-color: #fee
+  .m-moderatable-evaluation-option
+    &:hover
+      background-color: rgba(yellow, .15)
+    label
+      width: 80%
+      cursor: pointer
+      display: inline-block
+    input
+      cursor: pointer
+
 
   .m-moderatable-field
     margin-bottom: $vertical_baseline/2
 
-  .m-moderate-form
 
-    .pressable_button
-      //+font-size(1)
-      padding: 3px $grid_xs
-      margin-left: 0
-      margin-right: $grid_xs
 
   .meta
     text-transform: uppercase

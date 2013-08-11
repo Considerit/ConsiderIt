@@ -7,10 +7,6 @@
     .m-dashboard-subheading
       Fail posts with personal attacks, or wildly off-topic/inappropriate material.        
 
-  .m-moderate_hide-moderated
-    = check_box_tag 'hide_moderated', nil, true
-    = label_tag 'hide_moderated', 'hide already moderated content'
-
   #tabs
   #moderations
 
@@ -25,12 +21,31 @@
   (( }); ))
 
 
+%script{ :type => "text/template", :id => "tpl_moderate_list_view"}
 
+  .m-moderate-filters
+    %span.m-moderate-filters-label
+      Show: 
+    %a.m-moderate-filter{:'data-target' => 'all'}
+      all
+    |
+    %a.m-moderate-filter{:'data-target' => 'incomplete'}
+      incomplete
+    |
+    %a.m-moderate-filter{:'data-target' => 'pass'}
+      passing
+    |
+    %a.m-moderate-filter{:'data-target' => 'quarantine'}
+      quarantined
+    |
+    %a.m-moderate-filter{:'data-target' => 'fail'}
+      failed
 
+  .m-moderate-content
 
 %script{ :type => "text/template", :id => "tpl_moderate_item_view"}
 
-  #m-moderatable-text-region
+  .m-moderatable-text-region
 
     .m-moderatable-fields
       (( _.each( moderated_fields, function(field) {  ))
@@ -51,17 +66,19 @@
       (( } ))
 
 
-  #m-moderatable-form-region
+  .m-moderatable-form-region
     = form_for :moderate, :url => "{{Routes.dashboard_moderate_create_path()}}", :method => :post, :remote => true, :html => { :class => 'm-moderate-form' } do |f|
       = f.hidden_field :moderatable_id, :value => "{{moderatable_id}}"
       = f.hidden_field :moderatable_type, :value => "{{moderatable_type}}"
-      = f.hidden_field :status, :value => "{{ status }}"
 
+      .m-moderatable-evaluation
+        (( _.each(evaluation_options, function(option) { ))
+        .m-moderatable-evaluation-option
+          %input{ :id => "moderate_status_{{moderatable_id}}_{{option.val}}", :name => "moderate[status]", :type => "radio", :value => "{{option.val}}" }
+          %label{ :for => "moderate_status_{{moderatable_id}}_{{option.val}}"}
+            {{option.label}}
+        (( }); ))
 
-      %button{:class => "pressable_button pass"}
-        Pass
-      %button{:class => "pressable_button fail"}
-        Fail
 
       = f.submit 'done', :class => 'hide'
 

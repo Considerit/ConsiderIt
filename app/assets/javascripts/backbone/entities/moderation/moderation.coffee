@@ -8,3 +8,15 @@
 
     setModeratedFields : (fields) ->
       @set 'moderated_fields', fields
+
+    failed : ->
+      @get('status') == 0
+
+    passed : ->
+      @get('status') == 1
+
+    quarantined : ->
+      @get('status') == 2
+
+    isCompleted : ->
+      @get('status') == 1 || @get('status') == 0

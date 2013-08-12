@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130809204819) do
+ActiveRecord::Schema.define(:version => 20130812053655) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -249,6 +249,7 @@ ActiveRecord::Schema.define(:version => 20130809204819) do
     t.text     "includers"
     t.float    "divisiveness"
     t.integer  "moderation_status"
+    t.string   "long_id"
   end
 
   add_index "points", ["account_id", "proposal_id", "id", "is_pro"], :name => "select_included_points"
@@ -273,6 +274,7 @@ ActiveRecord::Schema.define(:version => 20130809204819) do
     t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
     t.text     "point_inclusions"
+    t.string   "long_id"
   end
 
   add_index "positions", ["account_id", "proposal_id", "published"], :name => "index_positions_on_account_id_and_proposal_id_and_published"

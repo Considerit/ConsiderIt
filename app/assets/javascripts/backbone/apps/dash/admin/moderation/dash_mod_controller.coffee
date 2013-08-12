@@ -104,7 +104,7 @@
       recipient : @options.model.get 'user_id'
       body : "(write your message)\n\n--\n\nPlease edit your #{@options.model.name} at #{window.location.origin}#{@options.model.url()}" 
       subject : "Concerning your #{@options.model.name}" 
-      sender : 'moderators@{{domain}}'
+      sender : 'moderator@{{domain}}'
 
     dialog : 
       title : 'Email the content author'

@@ -36,7 +36,7 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
       elsif mc == Proposal
         qry = "SELECT id, long_id, user_id, short_name, description, long_description from proposals where account_id=#{current_tenant.id}"
       elsif mc == Point
-        qry = "SELECT pnt.id, pnt.user_id, pnt.nutshell AS nutshell, pnt.text AS text, prop.long_id AS proposal_id FROM points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
+        qry = "SELECT pnt.id, pnt.long_id, pnt.user_id, pnt.nutshell AS nutshell, pnt.text AS text, prop.long_id AS proposal_id FROM points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
       end
       objects = ActiveRecord::Base.connection.select(qry)
 

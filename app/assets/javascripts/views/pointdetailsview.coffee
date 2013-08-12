@@ -49,7 +49,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       @$el.find('.m-point-nutshell ').editable
           resource: 'point'
           pk: @model.id
-          url: Routes.proposal_point_path @proposal.long_id, @model.id
+          url: Routes.proposal_point_path @model.get('long_id'), @model.id
           type: 'textarea'
           name: 'nutshell'
           success : (response, new_value) => @model.set('nutshell', new_value)
@@ -58,7 +58,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       @$el.find('.m-point-details-description ').editable
           resource: 'point'
           pk: @model.id
-          url: Routes.proposal_point_path @proposal.long_id, @model.id
+          url: Routes.proposal_point_path @model.get('long_id'), @model.id
           type: 'textarea'
           name: 'text'
           success : (response, new_value) => @model.set('text', new_value)

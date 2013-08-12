@@ -86,6 +86,7 @@
     events : 
       'click .m-moderatable-evaluation-option input' : 'moderation'
       'ajax:complete form' : 'moderationSubmitted'
+      'click .m-moderatable-email button' : 'emailRequest'
 
     moderation : (ev) ->
       @$el.find('input[type="submit"]').trigger('click')
@@ -93,7 +94,11 @@
     moderationSubmitted : (ev, response, options) ->
       response = $.parseJSON(response.responseText)
       @$el.append('<div class="flash_notice">Saved</div>').delay(1000).fadeOut 'fast', =>
-        @trigger 'moderation:updated', response.moderation, @, @model
+        @trigger 'moderation:updated', response.moderation
+
+    emailRequest : ->
+      @trigger 'mod:emailRequest'
+
 
   class Moderation.ModerationListView extends App.Views.CompositeView
     template : '#tpl_moderate_list_view'
@@ -122,3 +127,7 @@
 
       @setFilter filter
 
+
+  class Moderation.EmailDialogView extends App.Dash.EmailDialogView
+    dialog: 
+      title: 'Emailing author...'

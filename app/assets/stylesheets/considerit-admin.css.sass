@@ -1,8 +1,13 @@
 @import "grooves/base/variables"
 @import "grooves/base/colors"
+@import "grooves/base/fonts"
+
 @import "constructs/misc"
 @import "apps/moderatable"
 @import "apps/assessable"
+
+@import "grooves/base/fonts"
+@import "core"
 
 .pressable_button
   +pressable_button
@@ -17,3 +22,21 @@ fieldset
     color: #777
     //+font-size(-3)
     padding: 0 $grid_xs / 2
+
+
+.m-message
+  textarea
+    display: block
+    +font-size(0)
+
+  .m-message-subject, .m-message-body
+    margin-bottom: $vertical_baseline/2
+
+  label
+    display: block
+    text-align: left
+
+  .m-message-footer
+    text-align: right
+
+  input[type="submit"]

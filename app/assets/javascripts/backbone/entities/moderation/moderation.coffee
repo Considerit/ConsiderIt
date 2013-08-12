@@ -9,6 +9,9 @@
     setModeratedFields : (fields) ->
       @set 'moderated_fields', fields
 
+    setModeratedObject : (obj) ->
+      @moderated_object = obj
+
     failed : ->
       @get('status') == 0
 

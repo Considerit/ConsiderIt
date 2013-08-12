@@ -319,12 +319,15 @@ class ConsiderIt.CraftingView extends Backbone.View
       peers.remove(model)
 
     # persist the inclusion ... (in future, don't have to do this until posting...)
-    params = {  }
+    params = { 
+      proposal_id : @model.proposal_id,
+      point_id : @model.id
+    }
     csrfName = $("meta[name='csrf-param']").attr('content')
     csrfValue = $("meta[name='csrf-token']").attr('content')
     params[csrfName] = csrfValue
 
-    $.post Routes.proposal_point_inclusions_path( @model.proposal.long_id, model.attributes.id ), 
+    $.post Routes.proposal_point_inclusions_path( ), 
       params, (data) ->
 
 
@@ -336,10 +339,13 @@ class ConsiderIt.CraftingView extends Backbone.View
     mine.remove(model)
     peers.add(model)
 
-    params = { }
+    params = { 
+      proposal_id : @model.proposal_id,
+      point_id : @model.id
+    }
     ConsiderIt.utils.add_CSRF(params)
 
-    $.post Routes.proposal_point_inclusions_path( @model.proposal.long_id, model.attributes.id, {delete : true} ), 
+    $.post Routes.proposal_point_inclusions_path( {delete : true} ), 
       params, (data) ->
 
   point_attributes : ($form) ->  {

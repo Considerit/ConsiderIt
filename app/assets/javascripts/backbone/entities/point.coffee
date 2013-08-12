@@ -11,10 +11,8 @@
 
 
     url : () ->
-      proposal = ConsiderIt.all_proposals.get @attributes.proposal_id
-
 
       if @id
-        Routes.proposal_point_path( proposal.get('long_id'), @id) 
+        Routes.proposal_point_path( @get('long_id'), @id) 
       else
-        Routes.proposal_points_path( proposal.get('long_id') ) 
+        Routes.proposal_points_path( @get('long_id') ) 

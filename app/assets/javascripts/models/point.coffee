@@ -11,9 +11,9 @@ class ConsiderIt.Point extends Backbone.Model
 
   url : () ->
     if @id
-      Routes.proposal_point_path( @proposal.long_id, @id) 
+      Routes.proposal_point_path( @get('long_id'), @id) 
     else
-      Routes.proposal_points_path( @proposal.long_id ) 
+      Routes.proposal_points_path( @get('long_id') ) 
 
   set_data : (data) ->
     comments = (co.comment for co in data.comments)
@@ -28,7 +28,7 @@ class ConsiderIt.Point extends Backbone.Model
     @trigger 'point:data_loaded'
 
   load_data : ->
-    $.get Routes.proposal_point_path(@proposal.long_id, @id), (data) => @set_data(data)
+    $.get Routes.proposal_point_path(@get('long_id'), @id), (data) => @set_data(data)
 
   has_details : -> attributes.text? && attributes.text.length > 0
 

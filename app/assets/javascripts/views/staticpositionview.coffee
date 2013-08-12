@@ -53,7 +53,7 @@ class ConsiderIt.StaticPositionView extends Backbone.View
     @trigger 'StaticPosition:DataLoaded'
 
   load_data : ->
-    $.get Routes.user_position_proposal_path(@proposal.long_id, @user.id), (data) => @set_data(data)
+    $.get Routes.user_position_proposal_path(@model.get('long_id'), @user.id), (data) => @set_data(data)
 
   events : 
     'click [data-target="static-position-close"]' : 'close'

@@ -113,7 +113,7 @@ class ConsiderIt.PositionView extends Backbone.View
 
   position_canceled : ->
     # TODO: discard changes
-    ConsiderIt.router.navigate(Routes.proposal_path( @model.proposal.long_id ), {trigger: true})
+    ConsiderIt.router.navigate(Routes.proposal_path( @model.get('long_id') ), {trigger: true})
     #@trigger 'position:canceled'
 
   handle_submit_position : (ev) ->
@@ -327,7 +327,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     csrfValue = $("meta[name='csrf-token']").attr('content')
     params[csrfName] = csrfValue
 
-    $.post Routes.proposal_point_inclusions_path( ), 
+    $.post Routes.inclusions_path( ), 
       params, (data) ->
 
 
@@ -345,7 +345,7 @@ class ConsiderIt.CraftingView extends Backbone.View
     }
     ConsiderIt.utils.add_CSRF(params)
 
-    $.post Routes.proposal_point_inclusions_path( {delete : true} ), 
+    $.post Routes.inclusions_path( {delete : true} ), 
       params, (data) ->
 
   point_attributes : ($form) ->  {

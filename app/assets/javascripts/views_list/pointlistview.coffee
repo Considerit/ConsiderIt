@@ -53,7 +53,8 @@ class ConsiderIt.PointListView extends Backbone.CollectionView
 
   navigate_point_details : (ev) ->
     point_id = $(ev.currentTarget).data('id')
-    ConsiderIt.router.navigate(Routes.proposal_point_path(@proposal.long_id, point_id), {trigger: true})
+    point = @get point_id
+    ConsiderIt.router.navigate(Routes.proposal_point_path(point.get('long_id'), point_id), {trigger: true})
 
   include_point : (ev) ->
     ev.stopPropagation()

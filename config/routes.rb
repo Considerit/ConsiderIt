@@ -19,6 +19,8 @@ ConsiderIt::Application.routes.draw do
     :confirmations => "users/confirmations"
   }
 
+  resources :inclusions, :only => [:create] 
+
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
@@ -28,10 +30,10 @@ ConsiderIt::Application.routes.draw do
 
     match '/positions/:user_id' => "positions#show", :as => :user_position
 
-    resources :points, :only => [:index, :create, :update, :destroy, :show] do 
-      resources :inclusions, :only => [:create] 
-    end
+    resources :points, :only => [:index, :create, :update, :destroy, :show]
   end
+
+
   
   # route all non-ajax requests to home controller, with a few exceptions
   match '(*url)' => 'home#index', :constraints => XHRConstraint.new

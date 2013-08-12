@@ -13,8 +13,8 @@ class InclusionsController < ApplicationController
       return
     end
 
-    @proposal = Proposal.find_by_long_id(params[:long_id])
-    @point = Point.published.find(params[:point_id])
+    @proposal = Proposal.find params[:proposal_id]
+    @point = Point.published.find params[:point_id]
 
     ApplicationController.reset_user_activities(session, @proposal) if !session.has_key?(@proposal.id)
 

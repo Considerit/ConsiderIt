@@ -4,6 +4,10 @@ class CommentsController < ApplicationController
 
   respond_to :json
 
+  def show 
+
+  end  
+
   def create
     authorize! :create, Comment
 

@@ -36,6 +36,7 @@
 
           field_vals = (moderated_obj[fld] for fld in text_fields)
           prior.setModeratedFields field_vals
+          prior.setModeratedObject new App.Entities[cls] moderated_obj
 
       @moderations = moderations
       data
@@ -58,8 +59,8 @@
             collection : initial_collection
 
 
-          @listenTo moderations, 'childview:moderation:updated', (data, view, model) ->
-            model.set data
+          @listenTo moderations, 'childview:moderation:updated', (view, data) ->
+            view.model.set data
 
           @listenTo moderations, 'filter:changed', (filter) ->
             if filter == 'all'
@@ -75,6 +76,9 @@
 
             moderations.collection.reset filtered_collection
 
+          @listenTo moderations, 'childview:mod:emailRequest', (view) -> 
+            email_controller = @getEmailDialog view.model
+
           layout.moderationsRegion.show moderations
           moderations.setFilter 'incomplete'
 
@@ -83,5 +87,28 @@
 
       layout
 
+
     getLayout : ->
       new Moderation.ModerationLayout()
+
+    getEmailDialog : (moderation) ->
+      new Moderation.EmailDialogController
+        model : moderation.moderated_object
+
+  class Moderation.EmailDialogController extends App.Dash.EmailDialogController
+
+    initialize : (options = {}) -> 
+      super options
+
+    email : -> 
+      recipient : @options.model.get 'user_id'
+      body : "(write your message)\n\n--\n\nPlease edit your #{@options.model.name} at #{window.location.origin}#{@options.model.url()}" 
+      subject : "Concerning your #{@options.model.name}" 
+      sender : 'moderators@{{domain}}'
+
+    dialog : 
+      title : 'Email the content author'
+
+    getEmailView : ->
+      new Moderation.EmailDialogView
+        model : @getMessage()

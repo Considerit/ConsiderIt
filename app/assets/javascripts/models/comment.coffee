@@ -9,4 +9,7 @@ class ConsiderIt.Comment extends Backbone.Model
     @attributes.body = htmlFormat(@attributes.body)
 
   url : () ->
-    Routes.comments_path( )
+    if @id
+      Routes.show_comment_path(@id)
+    else
+      Routes.comments_path( )

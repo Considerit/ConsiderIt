@@ -62,6 +62,7 @@ ConsiderIt::Application.routes.draw do
 
   match '/home/:page' => "home#show", :via => :get, :constraints => { :page => /terms-of-use|considerit|media|videos|help|fact_check|copromoters/ } 
 
+  match '/dashboard/message' => 'message#create', :as => 'message', :via => :post
 
   #match '/home/study/:category' => "home#study", :via => :post  
   scope :module => "dashboard" do

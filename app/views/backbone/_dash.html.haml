@@ -420,3 +420,23 @@
           (( } ))
   (( }); ))
 
+%script{ :id => 'tpl_dash_email_dialog_view', :type => 'text/template'}
+  .m-message
+    .m-message-preamble
+      {{ preamble }}
+
+    = form_for :message, :url => message_path, :remote => true, :as => :message, :html => { :class => 'm-message-form'} do |f|
+      = f.hidden_field :sender, :value => "{{ sender }}"
+      = f.hidden_field :recipient, :value => "{{ recipient }}"
+
+      .m-message-subject
+        = f.label :subject, 'Subject'
+        = f.text_area :subject, :rows => 1, :value => "{{ subject }}"
+
+      .m-message-body
+        = f.label :body, 'Body'    
+        = f.text_area :body, :rows => 10, :value => "{{ body }}"
+
+      .m-message-footer
+        = f.submit "Send", :class => 'button'
+

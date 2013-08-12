@@ -58,6 +58,32 @@
     dash_name : 'unauthorized'
 
 
-
+  class Dash.EmailDialogView extends App.Views.ItemView
+    template : '#tpl_dash_email_dialog_view'
     
+    dialog : 
+      title : 'Send Email'
+
+    onShow : ->
+      @$el.find('textarea').autosize()
+
+
+    serializeData : ->
+      _.extend {}, @model.attributes
+
+    events : 
+      'ajax:complete form' : 'emailReturned'
+
+    emailReturned : (ev, response, options) ->
+
+      data = $.parseJSON(response.responseText)
+      if data.result == 'success'
+        toastr.success 'Email sent!'
+      else
+        toastr.error 'Failed to send email'
+
+      @trigger 'email:returned', data
+
+
+
 

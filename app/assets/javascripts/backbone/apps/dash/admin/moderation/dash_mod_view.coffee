@@ -51,13 +51,13 @@
     serializeData : ->
 
       if @model.moderatable_type == 'Point'
-        url = Routes.proposal_point_path obj.proposal_id, obj.root_id
+        url = Routes.proposal_point_path obj.long_id, obj.root_id
         anchor = 'View this Point'
       else if @model.moderatable_type == 'Comment'
-        url = Routes.proposal_point_path obj.proposal_id, obj.root_id
+        url = Routes.proposal_point_path obj.long_id, obj.root_id
         anchor = 'View this Comment'
       else if @model.moderatable_type == 'Proposal'
-        url = Routes.proposal_path obj.proposal_id
+        url = Routes.proposal_path obj.long_id
         anchor = 'View this Proposal'
 
       _.extend {}, @model.attributes,

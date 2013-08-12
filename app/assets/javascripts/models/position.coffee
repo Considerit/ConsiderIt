@@ -12,7 +12,7 @@ class ConsiderIt.Position extends Backbone.Model
 
   url : () ->
     if @attributes.proposal_id #avoid url if this is a new proposal
-      Routes.proposal_position_path( @proposal.long_id, @id) 
+      Routes.proposal_position_path( @get('long_id'), @id) 
 
   clear : ->
     super

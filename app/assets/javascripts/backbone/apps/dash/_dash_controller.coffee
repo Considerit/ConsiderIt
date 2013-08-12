@@ -77,3 +77,42 @@
     setupLayout : ->
       new Dash.UnauthorizedView
 
+  class Dash.EmailDialogController extends App.Controllers.Base
+    email_defaults : 
+      sender : null
+      recipient : null
+      preamble : ''      
+      body : ''
+      subject : ''
+
+    email : ->
+      @email_defaults
+
+    initialize : ->
+      view = @getEmailView()
+      @listenTo view, 'show', =>
+        @setupLayout view
+
+      dialog_overlay = @getOverlay view
+
+      @listenTo view, 'email:returned', (response) ->
+        dialog_overlay.close()
+        @close()
+
+      @listenTo dialog_overlay, 'dialog:canceled', =>
+        @close()
+
+    setupLayout : ->
+
+    getMessage : ->
+      new App.Entities.Message _.extend(@email_defaults, @email())
+
+    getOverlay : (view) ->
+      App.request 'dialog:new', view, 
+        class: 'overlay_email_dialog'
+
+    getEmailView : ->
+      new Dash.EmailDialogView
+        model : @getMessage()
+
+

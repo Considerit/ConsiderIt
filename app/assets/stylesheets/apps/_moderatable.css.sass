@@ -1,5 +1,6 @@
 @import "grooves/base/colors"
 @import "grooves/base/variables"
+@import "core"
 
 .m-dashboard-moderate
 
@@ -38,7 +39,6 @@
     display: none
 
   .m-moderate-filters
-    margin-bottom: $vertical_baseline
     padding-top: $vertical_baseline
     padding-left: $grid_xs
     color: rgba($base_text_color, .5)
@@ -74,7 +74,8 @@
   .m-moderatable-field
     margin-bottom: $vertical_baseline/2
 
-
+  .m-moderatable-email button
+    +font-size(-3)
 
   .meta
     text-transform: uppercase

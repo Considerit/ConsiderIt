@@ -14,44 +14,37 @@ class CommentsController < ApplicationController
     commentable_id = params[:comment][:commentable_id]
     commentable_type = params[:comment][:commentable_type]
 
-    commentable = commentable_type.constantize.find commentable_id
-
     comment = Comment.where(:commentable_id => commentable_id).where(:commentable_type => commentable_type).find_by_body(params[:comment][:body])
 
-    is_new = comment.nil?
-
-    if is_new
+    if comment.nil?
+      commentable = commentable_type.constantize.find commentable_id
       comment = Comment.build_from(commentable, current_user.id, params[:comment][:body] )
+
+      #TODO: implement this as instrumentation
       if commentable_type == 'Point'
         commentable.comment_count = commentable.comments.count
         commentable.save
       end
-    end
 
-    if comment.save
-      if is_new
+      if comment.save
 
-        ActiveSupport::Notifications.instrument("new_comment_on_#{commentable_type}", 
+        ActiveSupport::Notifications.instrument("comment:#{commentable_type.downcase}:created", 
           :commentable => commentable,
           :comment => comment, 
           :current_tenant => current_tenant,
           :mail_options => mail_options
         )
 
-        #comment.notify_parties(current_tenant, mail_options)
+        #TODO: implement this as instrumentation        
         comment.track!
         comment.follow!(current_user, :follow => true, :explicit => false)
+
         if commentable.respond_to? :follow!
           commentable.follow!(current_user, :follow => true, :explicit => false)
         end
-      end
 
-      #follows = commentable.follows.where(:user_id => current_user.id).first
-
-      #response = { :new_point => new_comment, :comment_id => @comment.id, :is_following => follows && follows.follow }
-
-      render :json => comment     
     end
+    render :json => comment     
 
   end
 
@@ -65,9 +58,19 @@ class CommentsController < ApplicationController
 
     comment.update_attributes!(update_attributes)
 
+    commentable = comment.root_object
+
+    ActiveSupport::Notifications.instrument("comment:#{comment.commentable_type}:updated", 
+      :model => comment, 
+      :current_tenant => current_tenant,
+      :mail_options => mail_options
+    )
+
     render :json => comment
 
   end
+
+
 
 
 

@@ -1,0 +1,50 @@
+user: tempcheck
+ansible_ssh_user: $user
+app_name: tempcheck
+app_home: ~/tempcheck.occupy.net/web/$app_name
+
+
+server:
+  name: "tempcheck.mayfirst.org"
+  ssl: false
+
+code:
+  repo: git@github.com:alanborning/ConsiderIt.git
+  branch: master
+
+deploy_key: github_consideritbsd
+
+database:
+  name: tempcheck_production
+  user: root
+  password: tempcheck3r
+
+config:
+  admin_email: tempcheck@mayfirst.org
+
+  google_analytics:
+  bitly:
+    user_name: 
+    api_key: 
+  new_relic: 
+  aws:
+    enabled: false
+    access_key_id: 
+    secret_access_key: 
+    fog_directory: 
+    cloudfront: 
+    
+  exception_notifier:
+    email_recipients: tempcheck@mayfirst.org
+
+  facebook:
+    consumer_key: 
+    consumer_secret: 
+
+  twitter:
+    consumer_key: 
+    consumer_secret: 
+
+  google:
+    consumer_key: 
+    consumer_secret: 

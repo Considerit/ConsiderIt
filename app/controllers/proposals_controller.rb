@@ -147,6 +147,12 @@ class ProposalsController < ApplicationController
         :current_tenant => current_tenant,
         :mail_options => mail_options
       )
+    elsif proposal.published
+      ActiveSupport::Notifications.instrument("proposal:updated", 
+        :model => proposal,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )      
     end
 
     response = {

@@ -75,8 +75,15 @@ class PointsController < ApplicationController
       update_params[:hide_name] = params[:point][:hide_name]
     end
 
-
     point.update_attributes! update_params
+    
+    if point.published
+      ActiveSupport::Notifications.instrument("point:updated", 
+        :model => point,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )
+    end
 
     render :json => point
 

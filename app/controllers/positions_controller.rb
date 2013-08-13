@@ -150,7 +150,7 @@ protected
       pnt.follow!(current_user, :follow => true, :explicit => false)
 
       #TODO: aggregate these into one email
-      ActiveSupport::Notifications.instrument("new_published_Point", 
+      ActiveSupport::Notifications.instrument("point:published", 
         :point => pnt,
         :current_tenant => current_tenant,
         :mail_options => mail_options
@@ -197,7 +197,7 @@ protected
 
     # send out notification of a new proposal only after first position is made on it
     if proposal.positions.published.count == 1
-      ActiveSupport::Notifications.instrument("new_published_proposal", 
+      ActiveSupport::Notifications.instrument("proposal:created", 
         :proposal => proposal,
         :current_tenant => current_tenant,
         :mail_options => mail_options

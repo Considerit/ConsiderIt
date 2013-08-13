@@ -58,23 +58,14 @@
           moderations = new Moderation.ModerationListView
             collection : initial_collection
 
-
-          @listenTo moderations, 'childview:moderation:updated', (view, data) ->
+          @listenTo moderations, 'childview:moderation:updated', (view, data) =>
             view.model.set data
+            id = view.model.id
+            @filterCollection @filter, moderations, moderations.collection, cls
 
-          @listenTo moderations, 'filter:changed', (filter) ->
-            if filter == 'all'
-              filtered_collection = @moderations[cls].filter (mod) -> true
-            else if filter == 'quarantine'
-              filtered_collection = @moderations[cls].filter (mod) -> mod.quarantined()
-            else if filter == 'pass'
-              filtered_collection = @moderations[cls].filter (mod) -> mod.passed()
-            else if filter == 'fail'
-              filtered_collection = @moderations[cls].filter (mod) -> mod.failed()
-            else if filter == 'incomplete'
-              filtered_collection = @moderations[cls].filter (mod) -> !mod.isCompleted()
-
-            moderations.collection.reset filtered_collection
+          @listenTo moderations, 'filter:changed', (filter) => 
+            @filter = filter
+            @filterCollection @filter, moderations, @moderations[cls], cls
 
           @listenTo moderations, 'childview:mod:emailRequest', (view) -> 
             email_controller = @getEmailDialog view.model
@@ -87,6 +78,21 @@
 
       layout
 
+    filterCollection : (filter, collectionview, source_collection, cls) ->
+      if filter == 'all'
+        filtered_collection = source_collection.filter (mod) -> true
+      else if filter == 'quarantine'
+        filtered_collection = source_collection.filter (mod) -> mod.quarantined()
+      else if filter == 'pass'
+        filtered_collection = source_collection.filter (mod) -> mod.passed()
+      else if filter == 'fail'
+        filtered_collection = source_collection.filter (mod) -> mod.failed()
+      else if filter == 'incomplete'
+        filtered_collection = source_collection.filter (mod) -> !mod.isCompleted()
+      else if filter == 'updated'
+        filtered_collection = source_collection.filter (mod) -> mod.hasBeenUpdatedSinceLastEvaluation()
+
+      collectionview.collection.reset filtered_collection
 
     getLayout : ->
       new Moderation.ModerationLayout()

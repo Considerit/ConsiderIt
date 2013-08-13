@@ -49,16 +49,17 @@
 
 
     serializeData : ->
-
-      if @model.moderatable_type == 'Point'
-        url = Routes.proposal_point_path obj.long_id, obj.root_id
-        anchor = 'View this Point'
-      else if @model.moderatable_type == 'Comment'
-        url = Routes.proposal_point_path obj.long_id, obj.root_id
-        anchor = 'View this Comment'
-      else if @model.moderatable_type == 'Proposal'
-        url = Routes.proposal_path obj.long_id
-        anchor = 'View this Proposal'
+      obj = @model.getRootObject()
+      switch @model.get 'moderatable_type'
+        when 'Point'
+          url = Routes.proposal_point_path obj.get('long_id'), obj.id
+          anchor = 'View this Point'
+        when 'Comment'
+          url = Routes.proposal_point_path obj.get('proposal_id'), obj.get('root_id')
+          anchor = 'View this Comment'
+        when 'Proposal'
+          url = Routes.proposal_path obj.get('long_id')
+          anchor = 'View this Proposal'
 
       _.extend {}, @model.attributes,
         user : if @model.user_id then ConsiderIt.users[@model.user_id] else null
@@ -74,7 +75,6 @@
     onShow : ->
       if @model.isCompleted() || @model.quarantined()
         @radioBox @model, 'status', "#moderate_status_#{@model.get('moderatable_id')}"
-
 
       if @model.passed() || @model.failed()
         @$el.addClass 'moderated' 
@@ -93,8 +93,13 @@
 
     moderationSubmitted : (ev, response, options) ->
       response = $.parseJSON(response.responseText)
-      @$el.append('<div class="flash_notice">Saved</div>').delay(1000).fadeOut 'fast', =>
-        @trigger 'moderation:updated', response.moderation
+
+      if response.result == 'success'
+        toastr.success 'Moderation saved'
+      else
+        toastr.error 'Failed to save'
+
+      @trigger 'moderation:updated', response.moderation.moderation
 
     emailRequest : ->
       @trigger 'mod:emailRequest'

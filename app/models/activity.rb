@@ -96,17 +96,17 @@ class Activity < ActiveRecord::Base
     when 'Proposal'
       helper.proposal_url(obj.long_id, :host => host)
     when 'Point'
-      helper.proposal_point_url(obj.proposal.long_id, obj.id, :host => host)
+      helper.proposal_point_url(obj.long_id, obj.id, :host => host)
     when 'Position'
       ""
     when 'Inclusion'
-      helper.proposal_point_url(obj.proposal.long_id, obj.point_id, :host => host)
+      helper.proposal_point_url(obj.long_id, obj.point_id, :host => host)
     #when 'Reflect::ReflectBulletRevision'
       #obj.comment.commentable_path
       #helper.proposal_url(obj.comment.root_object.proposal.long_id, :host => host)
     when 'Comment'
       #obj.comment.commentable_path
-      helper.proposal_url(obj.root_object.proposal.long_id, :host => host)
+      helper.proposal_url(obj.root_object.long_id, :host => host)
     when 'User'
       helper.root_url(:host => host)  
     else

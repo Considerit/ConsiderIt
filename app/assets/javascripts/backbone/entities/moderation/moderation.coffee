@@ -3,6 +3,11 @@
   class Entities.Moderation extends App.Entities.Model
     name: 'moderation'
 
+    defaults: 
+      moderation_status : 1
+      updated_since_last_evaluation : false
+      notification_sent : false
+
     initialize : (options = {}) ->
       super options
 
@@ -11,6 +16,9 @@
 
     setModeratedObject : (obj) ->
       @moderated_object = obj
+
+    getRootObject : -> 
+      @moderated_object
 
     failed : ->
       @get('status') == 0
@@ -23,3 +31,6 @@
 
     isCompleted : ->
       @get('status') == 1 || @get('status') == 0
+
+    hasBeenUpdatedSinceLastEvaluation : ->
+      @get 'updated_since_last_evaluation'

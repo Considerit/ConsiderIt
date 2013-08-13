@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130812053655) do
+ActiveRecord::Schema.define(:version => 20130812220827) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -194,9 +194,11 @@ ActiveRecord::Schema.define(:version => 20130812053655) do
     t.integer  "moderatable_id"
     t.string   "moderatable_type"
     t.integer  "status"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
     t.integer  "account_id"
+    t.boolean  "updated_since_last_evaluation", :default => false
+    t.boolean  "notification_sent",             :default => false
   end
 
   create_table "point_listings", :force => true do |t|

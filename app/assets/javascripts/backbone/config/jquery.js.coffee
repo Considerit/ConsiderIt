@@ -31,3 +31,5 @@ do ($) ->
 
   #X-Editable option
   $.fn.editable.defaults.mode = 'inline'
+
+  toastr.options.fadeOut = 2500

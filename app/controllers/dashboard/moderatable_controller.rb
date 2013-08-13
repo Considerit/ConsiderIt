@@ -49,7 +49,7 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
       end
       records = records.includes(:user)
 
-      records.select([:user_id, :id, :status, :moderatable_id, :moderatable_type]).each do |mod|
+      records.select([:user_id, :id, :status, :moderatable_id, :moderatable_type, :updated_since_last_evaluation, :notification_sent]).each do |mod|
         @existing_moderations[class_name][mod.moderatable_id] = mod unless @existing_moderations[class_name].has_key?(mod.moderatable_id) && @existing_moderations[class_name][mod.moderatable_id].user_id == current_user.id
       end
 
@@ -69,20 +69,54 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
     params[:moderate][:user_id] = current_user.id
     params[:moderate][:account_id] = current_tenant.id
 
-    moderation = Moderation.where(:moderatable_type => params[:moderate][:moderatable_type], :moderatable_id => params[:moderate][:moderatable_id], :user_id => current_user.id).first
+    moderation = Moderation.where(:moderatable_type => params[:moderate][:moderatable_type], :moderatable_id => params[:moderate][:moderatable_id]).last
     
     if moderation
-      moderation.status = params[:moderate][:status]
-      moderation.save
+      moderation.update_attributes!(
+        :user_id => params[:moderate][:user_id],
+        :status => params[:moderate][:status],
+        :updated_since_last_evaluation => false
+      )
     else
       moderation = Moderation.create!(params[:moderate])
+    end
+
+    if !moderation.notification_sent && moderation.status == 1
+      ActiveSupport::Notifications.instrument("moderation:#{moderation.moderatable_type.downcase}:passed", 
+        :model => moderation.root_object,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )      
+
+      moderation.notification_sent = true
+      moderation.save
     end
 
     moderatable = moderation.root_object
     moderatable.moderation_status = moderation.status
     moderatable.save
 
-    render :json => {:success => true, :moderation => moderation}
+    render :json => {:result => 'success', :moderation => moderation}
   end
 
+end
+
+
+def handle_moderatable_model_update(model)
+  model.moderations.each do |mod|
+    mod.updated_since_last_evaluation = true
+    mod.save
+  end
+end
+
+ActiveSupport::Notifications.subscribe("proposal:updated") do |*args|
+  handle_moderatable_model_update args.last[:model]
+end
+
+ActiveSupport::Notifications.subscribe("point:updated") do |*args|
+  handle_moderatable_model_update args.last[:model]
+end
+
+ActiveSupport::Notifications.subscribe("comment:updated") do |*args|
+  handle_moderatable_model_update args.last[:model]
 end

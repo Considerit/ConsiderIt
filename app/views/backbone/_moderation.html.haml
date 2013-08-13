@@ -26,9 +26,6 @@
   .m-moderate-filters
     %span.m-moderate-filters-label
       Show: 
-    %a.m-moderate-filter{:'data-target' => 'all'}
-      all
-    |
     %a.m-moderate-filter{:'data-target' => 'incomplete'}
       incomplete
     |
@@ -40,6 +37,13 @@
     |
     %a.m-moderate-filter{:'data-target' => 'fail'}
       failed
+    |
+    %a.m-moderate-filter{:'data-target' => 'updated'}
+      updated
+    |
+    %a.m-moderate-filter{:'data-target' => 'all'}
+      all
+
 
   .m-moderate-content
 
@@ -66,6 +70,7 @@
       (( } ))
 
 
+
   .m-moderatable-form-region
     = form_for :moderate, :url => "{{Routes.dashboard_moderate_create_path()}}", :method => :post, :remote => true, :html => { :class => 'm-moderate-form' } do |f|
       = f.hidden_field :moderatable_id, :value => "{{moderatable_id}}"
@@ -81,6 +86,14 @@
 
 
       = f.submit 'done', :class => 'hide'
+
+    (( if( updated_since_last_evaluation ) { ))
+    .m-moderate-updated
+      Updated since last moderation
+      .m-moderate-updated-fineprint
+        Click the appropriate moderation, even if the evaluation hasn't changed
+    (( } ))
+
 
     .m-moderatable-email
       %button.button

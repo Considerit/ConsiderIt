@@ -41,11 +41,11 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       if !ConsiderIt.PointDetailsView.follow_tpl
         ConsiderIt.PointDetailsView.follow_tpl = _.template( $('#tpl_point_follows').html() )
       @$el.find('.m-point-follow').append( ConsiderIt.PointDetailsView.follow_tpl( _.extend( {}, @model.attributes,
-        already_follows : ConsiderIt.request('user:current').is_following('Point', @model.id)
+        already_follows : ConsiderIt.request('user:current').isFollowing('Point', @model.id)
       )))
 
     #TODO: if user logs in as admin, need to do this
-    if ConsiderIt.request('user:current').id == @model.get('user_id') #|| ConsiderIt.request('user:current').is_admin()
+    if ConsiderIt.request('user:current').id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
       @$el.find('.m-point-nutshell ').editable
           resource: 'point'
           pk: @model.id
@@ -95,7 +95,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
   toggle_follow : (ev, data) -> 
     $(ev.currentTarget).parent().addClass('hide').siblings('.follow, .unfollow').removeClass('hide')
-    ConsiderIt.request('user:current').set_following(data.follow.follow)
+    ConsiderIt.request('user:current').setFollowing(data.follow.follow)
 
   close_details : (go_back) ->
     go_back ?= true

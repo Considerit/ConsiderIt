@@ -72,6 +72,12 @@
   class Admin.EditUserRoleView extends App.Dash.View
     dash_name : 'user_roles_edit'
 
+    serializeData : ->
+      tenant = App.request 'tenant:get'
+      _.extend {}, @model.attributes,
+        enable_moderation : tenant.get 'enable_moderation'
+        enable_assessment : tenant.get 'assessment_enabled'
+
     dialog: =>
       name = if @model.get('name') && @model.get('name').length > 0 then @model.get('name') else @model.get('email')
 
@@ -81,12 +87,12 @@
 
     onShow : ->
       super
-      @checkBox @model, null, 'user_role_admin', @model.has_role('admin') || @model.has_role('superadmin')
-      @checkBox @model, null, 'user_role_specific', !@model.has_role('admin') && @model.roles_mask > 0
-      @checkBox @model, null, 'user_manager', @model.has_role('manager')
-      @checkBox @model, null, 'user_moderator', @model.has_role('moderator')
-      @checkBox @model, null, 'user_evaluator', @model.has_role('evaluator')    
-      @checkBox @model, null, 'user_analyst', @model.has_role('analyst')
+      @checkBox @model, null, 'user_role_admin', @model.hasRole('admin') || @model.hasRole('superadmin')
+      @checkBox @model, null, 'user_role_specific', !@model.hasRole('admin') && @model.roles_mask > 0
+      @checkBox @model, null, 'user_manager', @model.hasRole('manager')
+      @checkBox @model, null, 'user_moderator', @model.hasRole('moderator')
+      @checkBox @model, null, 'user_evaluator', @model.hasRole('evaluator')    
+      @checkBox @model, null, 'user_analyst', @model.hasRole('analyst')
       @checkBox @model, null, 'user_role_user', @model.roles_mask == 0
 
     events : 

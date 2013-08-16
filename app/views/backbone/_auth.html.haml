@@ -15,7 +15,7 @@
 
   .m-user-options
     .m-user-options-display
-      %img{ :src => "{{ConsiderIt.request('user:current').get_avatar_url('small')}}", :alt => "your profile picture"}
+      %img{ :src => "{{ avatar }}", :alt => "your profile picture"}
 
       %a
         {{ name }} 
@@ -39,13 +39,13 @@
             App settings
         (( } ))
 
-        (( if( is_moderator && ConsiderIt.current_tenant.get('enable_moderation') ) { ))
+        (( if( can_moderate ) { ))
         %li
           %a.m-user-options-dashboard_link.moderate{:href => "{{Routes.dashboard_moderate_path()}}", :'data-target' => 'moderate'}
             Moderate
         (( } ))
 
-        (( if( is_evaluator && ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
+        (( if( can_assess ) { ))
         %li
           %a.m-user-options-dashboard_link.assess{:href => "{{Routes.assessment_index_path()}}", :'data-target' => 'assess'}
             Assess

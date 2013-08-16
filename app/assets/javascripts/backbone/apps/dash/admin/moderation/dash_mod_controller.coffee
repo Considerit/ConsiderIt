@@ -2,7 +2,7 @@
   class Moderation.ModerationController extends App.Dash.Admin.AdminController
     initialize : (options = {} ) ->
       super options
-      @classes_to_moderate = ConsiderIt.current_tenant.classesToModerate()
+      @classes_to_moderate = App.request("tenant:get").classesToModerate()
 
     data_uri : ->
       Routes.dashboard_moderate_path()
@@ -42,7 +42,7 @@
       data
 
     setupLayout : ->
-      @classes_to_moderate = ConsiderIt.current_tenant.classesToModerate()
+      @classes_to_moderate = App.request("tenant:get").classesToModerate()
 
       layout = @getLayout()
       @listenTo layout, 'show', ->

@@ -9,13 +9,13 @@
 
     ConsiderIt.current_proposal = #{ @current_proposal ? @current_proposal.to_json : 'null' };
 
+    ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };
+
 
     //var users = { User.select("id, name, avatar_file_name").to_json };
-    var users = #{@users};
-    ConsiderIt.users = _.object(_.map(users, function(v){ return [v.id, new ConsiderIt.User(v)];})) ;
-    ConsiderIt.users[-1] = new ConsiderIt.User({name: 'Anonymous'});
+    ConsiderIt.users = #{@users};
 
-    ConsiderIt.current_tenant = new ConsiderIt.Account({
+    ConsiderIt.current_tenant_data = {
         id : "#{current_tenant.id}",
         identifier : "#{current_tenant.identifier}",
         assessment_enabled : #{current_tenant.assessment_enabled},
@@ -33,24 +33,24 @@
         moderate_comments_mode : #{current_tenant.moderate_comments_mode}, 
         moderate_proposals_mode : #{current_tenant.moderate_proposals_mode}
 
-    });
+    };
 
-    ConsiderIt.current_user = #{current_user ? "ConsiderIt.users[#{current_user.id}]" : 'null'};
 
-    //TODO: filter data
+    // CURRENT USER
+    ConsiderIt.current_user = #{current_user ? current_user.id : 'null'};
+
     #{current_user ? "ConsiderIt.current_user_data = { user: #{current_user.to_json(:methods => :third_party_authenticated)}.user, follows: #{current_user.follows.all.to_json} }" : ''}
     
+    // LIMITED USER
 
-    ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };
+    var limited_user_data = #{@limited_user_email ? {email: '#{@limited_user_email}'} : 'null'};
 
-    ConsiderIt.limited_user = #{@limited_user ? "ConsiderIt.users[#{@limited_user.id}]" : 'null'};
+    ConsiderIt.limited_user_data = #{@limited_user ? "{ id: #{@limited_user.id} , google_uid: '#{@limited_user.google_uid}', facebook_uid: '#{@limited_user.facebook_uid}', twitter_uid: '#{@limited_user.twitter_uid}'}" : 'limited_user_data'};
 
-    #{@limited_user.nil? && @limited_user_email ? "ConsiderIt.limited_user = new ConsiderIt.User({email : '#{@limited_user_email}'})" : ''}
+    ConsiderIt.limited_user_follows = #{@limited_user ? @limited_user_follows.to_json : 'null'};
 
-    #{@limited_user ? "ConsiderIt.limited_user.set( { google_uid: '#{@limited_user.google_uid}', facebook_uid: '#{@limited_user.facebook_uid}', twitter_uid: '#{@limited_user.twitter_uid}'  })" : ''}
 
-    #{@limited_user ? "ConsiderIt.limited_user.set_follows(#{@limited_user_follows.to_json})" : 'null'};
-
+    // AUTH
     ConsiderIt.password_reset_token = #{@reset_password_token ? "'#{@reset_password_token}'" : 'null'};  
 
     ConsiderIt.admin_files = {

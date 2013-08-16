@@ -4,7 +4,8 @@
     
     initialize: ->
       user = App.request "user:current"
-      if user.is_persisted()
+      if user.isLoggedIn()
+
         @view = @getLoggedInView user
 
         @view.on 'signout:requested', =>
@@ -35,5 +36,5 @@
       fixed = if App.request('user:fixed:exists') then App.request('user:fixed') else null      
       new Show.LoggedOut
         model: user
-        show_signin : !fixed || fixed.is_persisted()
-        show_register : !fixed || !fixed.is_persisted()
+        show_signin : !fixed || fixed.isPersisted()
+        show_register : !fixed || !fixed.isPersisted()

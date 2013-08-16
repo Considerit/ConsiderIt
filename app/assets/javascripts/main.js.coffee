@@ -67,7 +67,7 @@ $(document).on "click", "a[href^='/']", (event) ->
   if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
     event.preventDefault()
     # Instruct Backbone to trigger routing events
-    ConsiderIt.router.navigate(href, { trigger : true })
+    ConsiderIt.navigate(href, { trigger : true })
     return false
 
 

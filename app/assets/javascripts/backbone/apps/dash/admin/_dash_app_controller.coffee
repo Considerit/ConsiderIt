@@ -13,13 +13,13 @@
     admin_template_needed : true
 
     data_uri : -> 
-      if ConsiderIt.current_tenant.fully_loaded
+      if App.request("tenant:get").fully_loaded
         null
       else 
         Routes.account_path()
 
     process_data_from_server : (data) ->
-      ConsiderIt.current_tenant.add_full_data(data.account.account)
+      App.request("tenant:get").add_full_data(data.account.account)
       data
 
     setupLayout : ->
@@ -31,7 +31,7 @@
 
     getLayout : ->
       new Admin.AppSettingsView
-        model: ConsiderIt.current_tenant
+        model: App.request("tenant:get")
 
   # class Admin.ManageProposalsController extends Dash.AdminController
   #   setupLayout : ->
@@ -51,7 +51,8 @@
       Routes.manage_roles_path()
 
     process_data_from_server : (data) ->
-      @collection = new Backbone.Collection( (new ConsiderIt.User(user.user) for user in data.users_by_roles_mask)  )
+      App.request 'users:update', (user.user for user in data.users_by_roles_mask)
+      @collection = App.request 'users'
       data
 
     setupLayout : ->
@@ -62,7 +63,7 @@
           model : user
 
         @listenTo view, 'role:changed', (data) =>
-          user.update_role data.roles_mask
+          user.updateRole data.roles_mask
           dialog.close()          
           layout.render()
 

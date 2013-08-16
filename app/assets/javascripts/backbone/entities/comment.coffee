@@ -8,6 +8,7 @@
 
     initialize : (options = {}) ->
       super options
+      #TODO: revisit htmlformat
       @attributes.body = htmlFormat(@attributes.body)
 
     url : () ->
@@ -15,3 +16,44 @@
         Routes.show_comment_path(@id)
       else
         Routes.comments_path( )
+
+    # relations
+    getRoot : ->
+      if !@root 
+        @root = App.request "#{@get('commentable_type').toLowerCase()}:get", @get('commentable_id')
+      @root
+      
+    getUser : ->
+      if !@user 
+        @user = App.request 'user', @get('user_id')
+      @user
+
+  class Entities.Comments extends App.Entities.Collection
+    model: Entities.Comment
+
+  API = 
+    all_comments : new Entities.Comments()
+
+    getComment : (id) ->
+      @all_comments.get id
+
+    addComments : (comments) ->
+      @all_comments.set comments
+
+    getCommentsByUser : (user_id) ->
+      new Entities.Comments @all_comments.where({user_id : user_id})
+
+    getCommentsByPoint : (point_id) ->
+      new Entities.Comments @all_comments.where({commentable_type : 'Point', commentable_id : point_id})
+
+  App.reqres.setHandler 'comment:get', (id) ->
+    API.getComment id
+
+  App.vent.on 'comments:fetched', (comments) ->
+    API.addComments comments
+
+  App.reqres.setHandler 'comments:get:user', (model_id) ->
+    API.getCommentsByUser model_id
+
+  App.reqres.setHandler 'comments:get:point', (model_id) ->
+    API.getCommentsByUser model_id

@@ -2,13 +2,13 @@
 
   class User.ProfileController extends App.Dash.RegionController
     data_uri : -> 
-      if @options.model.is_meta_data_loaded()
+      if @options.model.isFetched()
         null
       else 
         Routes.profile_path @options.model.id
 
     process_data_from_server : (data) ->
-      @options.model.set_meta_data data
+      @options.model.parse data
       data
 
 
@@ -46,7 +46,7 @@
 
   class User.EmailNotificationsController extends App.Dash.RegionController
     data_uri : -> 
-      Routes.followable_index_path({user_id : @options.model.id})
+      Routes.followable_index_path {user_id : @options.model.id}
 
     process_data_from_server : (data) ->
       @followable_objects = data.followable_objects
@@ -55,10 +55,10 @@
     setupLayout : ->
       layout = @getLayout()
       @listenTo layout, 'unfollow', (follow) ->
-        @options.model.set_following(follow)
+        @options.model.setFollowing follow
         layout.render()
       @listenTo layout, 'unfollow:all', ->
-        @options.model.unfollow_all()
+        @options.model.unfollowAll()
         layout.render()
       layout
 

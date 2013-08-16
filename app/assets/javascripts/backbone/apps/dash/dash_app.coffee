@@ -15,7 +15,7 @@
   API =
 
     userProfile : (user_id) ->
-      user = ConsiderIt.users[user_id]
+      user = App.request 'user', user_id
       new Dash.User.UserProfileController
         region : @_getMainRegion()  
         model : user      

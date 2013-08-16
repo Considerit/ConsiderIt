@@ -62,7 +62,7 @@
           anchor = 'View this Proposal'
 
       _.extend {}, @model.attributes,
-        user : if @model.user_id then ConsiderIt.users[@model.user_id] else null
+        user : if @model.user_id then App.request('user', @model.user_id) else null
         anchor : anchor
         url : url
         prior_moderation : @model.get 'status'

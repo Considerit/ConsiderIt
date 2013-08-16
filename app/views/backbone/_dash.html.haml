@@ -135,7 +135,7 @@
 
       .m-dashboard-profile-influenced.l-group-container
         (( _.each(_.keys(influenced_users), function(p){ ))
-        %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+        %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :alt => "{{App.request('user',p).get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
         (( }); ))        
   (( } ))
 
@@ -176,18 +176,17 @@
       (( if(proposals.length > 0) { ))
       %table.table.table-condensed.table-striped
         %tbody
-          (( _.each(proposals, function(proposal){ ))
-          (( var proposal = proposal.proposal; ))
+          (( proposals.each(function(proposal){ ))
           %tr
             %td.m-dashboard-profile-activity-substance-wrap
               .m-dashboard-profile-activity-substance
-                {{ proposal.name }}
+                {{ proposal.get('name') }}
             %td.m-dashboard-profile-activity-action
               = link_to 'View and consider', "{{Routes.proposal_path(proposal.long_id)}}"
           (( }); ))
       (( } else { ))
       .m-dashboard-profile-activity-empty
-        {{ConsiderIt.users[user_id].first_name}} has not put forward any proposals.
+        {{name}} has not put forward any proposals.
       (( } ))
 
 
@@ -200,28 +199,28 @@
       (( if(positions.length > 0){ ))
       %table.table.table-condensed.table-striped
         %tbody
-          (( _.each(positions, function(position){ ))
-          (( var position = position.position; ))
-          (( var proposal = referenced_proposals[position.proposal_id].proposal; ))
+          (( positions.each(function(position){ ))
+          (( var proposal = position.getProposal(); ))
+          (( var route = Routes.user_position_proposal_path(proposal.get('long_id'), id); ))
           %tr
             %td.m-dashboard-profile-activity-substance-wrap
               .m-dashboard-profile-activity-substance
-                (( if( position.stance < -.05 ) { ))
+                (( if( position.get('stance') < -.05 ) { ))
                 Opposed
-                (( } else if( position.stance > .05 ) { ))
+                (( } else if( position.get('stance') > .05 ) { ))
                 Supported
                 ((} else{ ))
                 Neutral / undecided
                 (( }))
               .m-dashboard-profile-activity-substance-context
-                Re: {{ proposal.name }}
+                Re: {{ proposal.get('name') }}
 
             %td.m-dashboard-profile-activity-action
-              = link_to 'See why', "{{Routes.user_position_proposal_path(proposal.long_id, user_id)}}"
+              = link_to 'See why', "{{ route }}"
           (( }); ))
       (( } else { ))
       .m-dashboard-profile-activity-empty
-        {{ConsiderIt.users[user_id].first_name}} has not taken any positions.
+        {{name}} has not taken any positions.
       (( } ))
 
     .m-dashboard-profile-activity-block{ :'data-target' => 'points-details'}
@@ -231,29 +230,29 @@
       (( if(points.length > 0){ ))
       %table.table.table-condensed.table-striped
         %tbody
-          (( _.each(points, function(point){ ))
-          (( var point = point.point; ))
-          (( var proposal = referenced_proposals[point.proposal_id].proposal; ))            
+          (( points.each(function(point){ ))
+          (( var proposal = point.getProposal(); ))  
+          (( var route = Routes.proposal_point_path(proposal.get('long_id'), point.id); ))          
           %tr
             %td.m-dashboard-profile-activity-substance-wrap
               .m-dashboard-profile-activity-substance
-                {{ point.category}} {{ point.nutshell }}
+                {{ point.get('category') }} {{ point.get('nutshell') }}
               .m-dashboard-profile-activity-substance-context
-                Re: {{ proposal.name }}
+                Re: {{ proposal.get('name') }}
 
               .m-dashboard-profile-activity-influence
                 This point has influenced {{influenced_users_by_point[point.id].length}} people
               .l-group-container
                 (( _.each(influenced_users_by_point[point.id], function(p){ ))
-                %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+                %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :alt => "{{App.request('user', p).get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
                 (( }); ))   
 
             %td.m-dashboard-profile-activity-action
-              = link_to 'Read and discuss', "{{Routes.proposal_point_path(proposal.long_id, point.id)}}"
+              = link_to 'Read and discuss', "{{ route }}"
           (( }); ))
       (( } else { ))
       .m-dashboard-profile-activity-empty
-        {{ConsiderIt.users[user_id].first_name}} has not contributed any points.
+        {{name}} has not contributed any points.
       (( } ))
 
     .m-dashboard-profile-activity-block{ :'data-target' => 'comments-details'}
@@ -263,24 +262,24 @@
       (( if(comments.length > 0){ ))
       %table.table.table-condensed.table-striped
         %tbody
-          (( _.each(comments, function(comment){ ))
-          (( var comment = comment.comment; ))
-          (( var point = referenced_points[comment.commentable_id].point; ))
-          (( var proposal = referenced_proposals[point.proposal_id].proposal; ))
+          (( comments.each(function(comment){ ))
+          (( var point = comment.getRoot(); ))
+          (( var proposal = point.getProposal(); ))
+          (( var route = Routes.proposal_point_path(proposal.get('long_id'), point.id); ))
           %tr
             %td.m-dashboard-profile-activity-substance-wrap
               .m-dashboard-profile-activity-substance
-                {{ comment.body}}
+                {{ comment.get('body')}}
               .m-dashboard-profile-activity-substance-context
-                Re: {{ point.is_pro ? 'Pro' : 'Con' }} point "{{ point.nutshell }}"
+                Re: {{ point.get('is_pro') ? 'Pro' : 'Con' }} point "{{ point.get('nutshell') }}"
               .m-dashboard-profile-activity-substance-context
-                Re: {{ proposal.name }}
+                Re: {{ proposal.get('name') }}
             %td.m-dashboard-profile-activity-action
-              = link_to 'Join in', "{{Routes.proposal_point_path(proposal.long_id, point.id)}}", :anchor => "comment-{{comment.id}}"
+              = link_to 'Join in', "{{ route }}", :anchor => "comment-{{comment.id}}"
           (( }); ))
       (( } else { ))
       .m-dashboard-profile-activity-empty
-        {{ConsiderIt.users[user_id].first_name}} has not made any comments.
+        {{name}} has not made any comments.
       (( } ))
 
 
@@ -368,18 +367,12 @@
       .m-dashboard-subheading
         Receive an email whenever a new conversation is started.
 
-      (( var account_followerer = _.has(follows, 'Account') && _.has(follows['Account'], ConsiderIt.current_tenant.id ) && follows['Account'][ConsiderIt.current_tenant.id].follow; ))
-      (( var submit_text = account_followerer ? 'Unsubscribe' : 'Subscribe'; ))
       = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => {:class => "m-dashboard-notifications-unfollow"} do |f|
         = f.hidden_field :user_id, :value => "{{ id }}"
         = f.hidden_field :followable_type, :value => "Account"
-        = f.hidden_field :followable_id, :value => "{{ ConsiderIt.current_tenant.id }}"  
-        = f.hidden_field :follow, :value => "{{ !account_followerer }}"
+        = f.hidden_field :followable_id, :value => "{{ tenant_id }}"  
+        = f.hidden_field :follow, :value => "{{ !account_follower }}"
         = f.submit "{{ submit_text }}", :class => 'button'      
-
-
-
-  (( var followable_types = [ {label: 'Proposals', model: 'Proposal', explanation: 'When following a Proposal, you receive an email for each new pro/con point, as well as periodic email summaries of how the discussion is progressing.', attribute: 'name'}, {label: 'Points', model: 'Point', explanation: 'When following a pro or con point, you receive an email whenever someone comments on it', attribute: 'nutshell'}]; ))
 
   (( _.each( followable_types, function(followable_type){  ))
   .m-dashboard-notifications-followable_group

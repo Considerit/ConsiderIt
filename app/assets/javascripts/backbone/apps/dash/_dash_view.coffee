@@ -12,8 +12,8 @@
 
     serializeData : ->
       _.extend {}, @model.attributes, @model.permissions(),
-        avatar : @model.get_avatar_url 'original'
-        tenant : ConsiderIt.current_tenant
+        avatar : App.request('user:avatar', @model, 'original')
+        tenant : App.request("tenant:get")
         is_self : @model.id == ConsiderIt.request('user:current').id
 
     updateActiveLink : (dash_name) ->
@@ -30,7 +30,7 @@
       if model == 'user'
         model = @model
       else if model == 'account'
-        model = ConsiderIt.current_tenant
+        model = App.request("tenant:get")
 
       if condition || (!condition? && model.get(attribute))
         input = document.getElementById(selector).checked = true
@@ -39,7 +39,7 @@
       if model == 'user'
         model = @model
       else if model == 'account'
-        model = ConsiderIt.current_tenant
+        model = App.request("tenant:get")
 
       input = document.getElementById("#{selector}_#{model.get(attribute)}").checked = true
 

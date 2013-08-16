@@ -99,7 +99,7 @@
 
     serializeView : ->
       _.extend {}, @model.attributes, 
-        password_reset_token : App.request "user:reset_password"
+        password_reset_token : App.request "auth:reset_password"
 
     onShow : ->
       @$el.find('input[type="file"]').customFileInput()

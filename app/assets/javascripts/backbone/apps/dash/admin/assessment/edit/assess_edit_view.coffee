@@ -23,7 +23,8 @@
     tagName : 'div'
 
     serializeData : ->
-      @model.attributes
+      _.extend {}, @model.attributes,
+        user_name : App.request('user', @model.get('user_id')).get('name')
 
   class Assessment.RequestsView extends App.Views.CollectionView
     template: '#tpl_assess_edit_requesters'

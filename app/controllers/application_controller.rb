@@ -104,13 +104,18 @@ class ApplicationController < ActionController::Base
       end
 
       #Proposal.active.where('activity > 0').public_fields.each do |proposal|
-      proposals.each do |proposal|      
-        @proposals.push ({
-          :model => proposal,
-          :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,
-          :top_pro => proposal.top_pro ? top_points[proposal.top_pro] : nil,
-        } )
-      end
+      # proposals.each do |proposal|      
+      #   @proposals.push ({
+      #     :model => proposal,
+      #     :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,
+      #     :top_pro => proposal.top_pro ? top_points[proposal.top_pro] : nil,
+      #   } )
+      # end
+
+      @proposals = {
+        :proposals => proposals,
+        :top_points => top_points
+      }
 
       @public_root = Rails.application.config.action_controller.asset_host.nil? ? "" : Rails.application.config.action_controller.asset_host
 

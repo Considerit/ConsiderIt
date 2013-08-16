@@ -13,8 +13,6 @@ class ConsiderIt.ProposalsManagerView extends Backbone.View
 
     @listenTo ConsiderIt.vent, 'user:signout', =>
 
-
-
     @$el.append(@proposal_list_template({completed: false}))
     proposals_collection = new ConsiderIt.ProposalList()
     proposals_collection.add ConsiderIt.all_proposals.where({active: true})

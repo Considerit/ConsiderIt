@@ -214,14 +214,14 @@
               %a.m-user_roles-invoke_role_change{ :'data-id' => "{{ user.id }}"}
                 Roles:
                 %span.m-user-roles-list
-                  {{ user.role_list() }}
+                  {{ user.roleList() }}
                 %span.m-user_roles-roles_triangle
                   &#x25BE;
 
         (( }) ))  
 
   %script{ :type => "text/template", :id => "tpl_dashboard_user_roles_edit"}
-    = form_for :user, :url => "{{Routes.update_role_path(user.id)}}", :remote => true, :method => :post, :html => { :class => 'm-user_roles-edit_form l-dialog-detachable' } do |f|
+    = form_for :user, :url => "{{Routes.update_role_path(id)}}", :remote => true, :method => :post, :html => { :class => 'm-user_roles-edit_form l-dialog-detachable' } do |f|
 
       .radio_block
         .option
@@ -241,7 +241,7 @@
               .sublabel
                 Can create and edit all proposals.
 
-            (( if( ConsiderIt.current_tenant.get('enable_moderation') ) { ))
+            (( if( enable_moderation ) { ))
             .suboption
               = f.check_box 'moderator'
               = f.label 'moderator', 'Moderator'
@@ -249,7 +249,7 @@
                 Can approve/disapprove user contributed content.
             (( } ))
 
-            (( if( ConsiderIt.current_tenant.get('assessment_enabled') ) { ))
+            (( if( enable_assessment ) { ))
             .suboption
               = f.check_box 'evaluator'
               = f.label 'evaluator', 'Evaluator'

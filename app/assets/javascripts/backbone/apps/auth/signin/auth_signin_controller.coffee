@@ -24,7 +24,7 @@
       user = layout.model
 
       if App.request 'user:fixed:exists'
-        if user.auth_method() == 'email'
+        if user.authMethod() == 'email'
           email_view = @setupEmailView
             model: user
             fixed: true
@@ -33,7 +33,7 @@
         else
           auth_options_view = new Signin.AuthOptions
             model: user
-            providers: [ {name: user.auth_method()} ]
+            providers: [ {name: user.authMethod()} ]
             fixed: true
           layout.authOptionsRegion.show auth_options_view
 
@@ -106,7 +106,7 @@
       super
 
       @listenTo @layout, 'before:close', ->
-        App.request 'user:password_reset:handled' 
+        App.request 'auth:password_reset:handled' 
 
     setupLayout : (layout) ->
       @listenTo layout, 'signinCompleted', @handleSigninCompleted

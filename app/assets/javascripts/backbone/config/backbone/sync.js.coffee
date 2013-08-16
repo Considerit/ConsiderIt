@@ -1,19 +1,26 @@
 do (Backbone) ->
-  _sync = Backbone.sync
+  for override in [Backbone] #, Backbone.Paginator.clientPager.prototype]
 
-  Backbone.sync = (method, entity, options = {}) ->
+    _sync = override.sync
+
+    override.sync = (method, entity, options = {}) ->
+      _.defaults options,
+        beforeSend: _.bind(methods.beforeSend,   entity)
+        complete:    _.bind(methods.complete,    entity)
+            
+      if override == Backbone
+        sync = _sync method, entity, options
+      else
+        sync = _sync.apply entity, [method, entity, options]
+
+      if !entity._fetch and method is "read"
+        entity._fetch = sync
     
-    _.defaults options,
-      beforeSend: _.bind(methods.beforeSend,   entity)
-      complete:    _.bind(methods.complete,    entity)
-    
-    sync = _sync(method, entity, options)
-    if !entity._fetch and method is "read"
-      entity._fetch = sync
-  
-  methods =
-    beforeSend: ->
-      @trigger "sync:start", @
-    
-    complete: ->
-      @trigger "sync:stop", @
+    methods =
+      beforeSend: ->
+        @trigger "sync:start", @
+      
+      complete: ->
+        @trigger "sync:stop", @
+
+

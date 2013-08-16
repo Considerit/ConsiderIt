@@ -25,9 +25,9 @@
 
 //= require main
 
-//= require_tree ./models
-//= require_tree ./collections
-//= require_tree ./views
-//= require_tree ./views_list
+// require_tree ./models
+// require_tree ./collections
+// require_tree ./views
+// require_tree ./views_list
 
 //= require javascripts/acts_as_followable

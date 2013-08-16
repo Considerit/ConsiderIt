@@ -4,11 +4,20 @@
     dash_name : 'profile'
 
     serializeData : ->
-      influenced_users = _.keys(@model.meta.influenced_users) || []
 
-      _.extend {}, @model.attributes, @model.meta, 
+      [influenced_users, influenced_users_by_point] = @model.getInfluencedUsers()
+
+      params = _.extend {}, @model.attributes,
+        influenced_users : influenced_users
+        influenced_users_by_point : influenced_users_by_point
+        comments : @model.getComments()
+        positions : @model.getPositions()
+        proposals : @model.getProposals()
+        points : @model.getPoints() 
         is_self : @model.id == ConsiderIt.request('user:current').id
         tile_size : Math.min 50, ConsiderIt.utils.get_tile_size 400, 42, influenced_users.length
+
+      params
 
     events : 
       'click .m-dashboard-profile-activity-summary' : 'activityToggled'
@@ -29,7 +38,7 @@
 
     serializeData : ->
       _.extend {}, @model.attributes, @model.permissions(),
-        avatar : @model.get_avatar_url 'original'
+        avatar : App.request('user:avatar', @model, 'original')
 
     events : 
       'ajax:complete .m-dashboard-edit-user' : 'userUpdated'
@@ -47,11 +56,22 @@
   class User.EmailNotificationsView extends App.Dash.View
     dash_name : 'email_notifications'
 
-    serializeData : ->
-      _.extend {}, @model.attributes,
-        followable_objects: @options.followable_objects
-        follows : @model.follows
 
+    serializeData : ->
+      tenant = App.request 'tenant:get'
+      follows = @model.follows
+      account_follower = _.has(follows, 'Account') && _.has(follows['Account'], tenant.id ) && follows['Account'][tenant.id].follow
+
+      _.extend {}, @model.attributes,
+        followable_objects : @options.followable_objects
+        followable_types : [ 
+          {label: 'Proposals', model: 'Proposal', explanation: 'When following a Proposal, you receive an email for each new pro/con point, as well as periodic email summaries of how the discussion is progressing.', attribute: 'name'}, 
+          {label: 'Points', model: 'Point', explanation: 'When following a pro or con point, you receive an email whenever someone comments on it', attribute: 'nutshell'}]
+        follows : follows
+        account_follower : account_follower
+        submit_text : if account_follower then 'Unsubscribe' else 'Subscribe'
+        tenant_id : tenant.id
+        
     events : 
       'ajax:complete .m-dashboard-notifications-unfollow_all' : 'unfollowed_all'
       'ajax:complete .m-dashboard-notifications-unfollow' : 'unfollow'

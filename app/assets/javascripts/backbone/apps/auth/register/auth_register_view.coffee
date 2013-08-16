@@ -50,7 +50,7 @@
 
     serializeData : -> 
       _.extend {}, @model.attributes, 
-        auth_method : @model.auth_method()
+        auth_method : @model.authMethod()
         fixed : @options.fixed
 
     onShow : ->
@@ -59,7 +59,7 @@
       @$el.closest('form').h5Validate({errorClass : 'error'})
       @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
 
-      auth_method = @model.auth_method()
+      auth_method = @model.authMethod()
       if auth_method == 'email'
         @$el.find('.password_field').show() 
         if Modernizr.input.placeholder
@@ -83,7 +83,7 @@
         observe : 'avatar_file_name'
         onGet : (values) ->
           return if !values? || $.trim(values)==''
-          @$el.find('.avatar_field img.customfile-preview').attr('src', ConsiderIt.request('user:current').get_avatar_url('original', values))
+          @$el.find('.avatar_field img.customfile-preview').attr('src', App.request("user:current:avatar", 'original', values))
 
     events : 
       'click [data-target="third_party_auth"]' : 'thirdPartyAuthRequest'

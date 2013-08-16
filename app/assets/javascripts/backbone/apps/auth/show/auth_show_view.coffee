@@ -4,7 +4,14 @@
     template: "#tpl_logged_in"
 
     serializeData : ->
-      _.extend {}, @model.attributes, @model.permissions()
+      tenant = App.request 'tenant:get'
+      _.extend {}, @model.attributes, @model.permissions(),
+        avatar : App.request('user:current:avatar')
+        can_moderate : App.request('auth:can_moderate')
+        can_assess : App.request('auth:can_assess')
+
+
+
 
     events:
       'click .m-user-options-logout' : 'signoutRequested'

@@ -11,9 +11,10 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   tagName : 'li'
 
-  @editable_fields : _.union([ ['.m-proposal-description-title', 'name', 'textarea'], ['.m-proposal-description-body', 'description', 'textarea'] ], ([".m-proposal-description-detail-field-#{f}", f, 'textarea'] for f in ConsiderIt.Proposal.description_detail_fields ))
 
   initialize : (options) -> 
+    @editable_fields = _.union([ ['.m-proposal-description-title', 'name', 'textarea'], ['.m-proposal-description-body', 'description', 'textarea'] ], ([".m-proposal-description-detail-field-#{f}", f, 'textarea'] for f in ConsiderIt.Proposal.description_detail_fields ))
+
     #@state = 0
     super
     @long_id = @model.long_id
@@ -35,12 +36,12 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   render : -> 
     if !@rendered
-      @$el.html ConsiderIt.ProposalView.unexpanded_template($.extend({}, @model.attributes, {
-        description_detail_fields : this.model.description_detail_fields()
-        avatar : ConsiderIt.users[@model.get('user_id')].get_avatar_url 'large'
-        tile_size : Math.min 50, ConsiderIt.utils.get_tile_size(110, 55, @model.participants().length)
-        participants : _.sortBy(@model.participants(), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
-      }))
+      # @$el.html ConsiderIt.ProposalView.unexpanded_template($.extend({}, @model.attributes, {
+      #   description_detail_fields : this.model.description_detail_fields()
+      #   avatar : ConsiderIt.users[@model.get('user_id')].get_avatar_url 'large'
+      #   tile_size : Math.min 50, ConsiderIt.utils.get_tile_size(110, 55, @model.participants().length)
+      #   participants : _.sortBy(@model.participants(), (user) -> !ConsiderIt.users[user].get('avatar_file_name')?  )
+      # }))
 
       results_el = $('<div class="l-message m-proposal-message">')
       @results_view = new ConsiderIt.ResultsView
@@ -71,7 +72,7 @@ class ConsiderIt.ProposalView extends Backbone.View
 
       @transition_unexpanded()
 
-      @stickit()
+      # @stickit()
 
       #TODO: if user logs in as admin, need to do this
       @render_admin_strip()
@@ -80,18 +81,18 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     this
 
-  bindings : 
-    '.m-proposal-description-title' : 
-      observe : ['name', 'description']
-      onGet : (values) -> @model.title()
-    '.m-proposal-description-body' : 
-      observe : 'description'
-      updateMethod: 'html'
-      onGet : (value) => htmlFormat(value)
+  # bindings : 
+  #   '.m-proposal-description-title' : 
+  #     observe : ['name', 'description']
+  #     onGet : (values) -> @model.title()
+  #   '.m-proposal-description-body' : 
+  #     observe : 'description'
+  #     updateMethod: 'html'
+  #     onGet : (value) => htmlFormat(value)
 
 
   can_edit : ->
-    can = ConsiderIt.request('user:current').id == @model.get('user_id') || ConsiderIt.request('user:current').is_admin() || ConsiderIt.request('user:current').is_manager()
+    can = ConsiderIt.request('user:current').id == @model.get('user_id') || ConsiderIt.request('user:current').isAdmin() || ConsiderIt.request('user:current').isManager()
     @has_been_admin_in_past = true if can
     can
 
@@ -205,13 +206,13 @@ class ConsiderIt.ProposalView extends Backbone.View
 
     #'click .m-proposal-follow_conversation' : 'toggle_follow_proposal'
 
-    'click .m-proposal-admin_operations-status' : 'show_status'
-    'click .m-proposal-admin_operations-publicity' : 'show_publicity'
-    'ajax:complete .m-proposal-admin_operations-settings-form' : 'change_settings'
-    'click #l-dialog-detachable a.cancel' : 'cancel_dialog'
-    'ajax:complete .m-delete_proposal' : 'delete_proposal'
+    # 'click .m-proposal-admin_operations-status' : 'show_status'
+    # 'click .m-proposal-admin_operations-publicity' : 'show_publicity'
+    # 'ajax:complete .m-proposal-admin_operations-settings-form' : 'change_settings'
+    # 'click #l-dialog-detachable a.cancel' : 'cancel_dialog'
+    # 'ajax:complete .m-delete_proposal' : 'delete_proposal'
 
-    'ajax:complete .m-proposal-publish-form' : 'publish_proposal'
+    # 'ajax:complete .m-proposal-publish-form' : 'publish_proposal'
 
 
 
@@ -307,62 +308,63 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   # TODO: move to its own view
   # ADMIN methods
-  render_admin_strip : ->
-    @$el.find('.m-proposal-admin_strip').remove()
+  # render_admin_strip : ->
+  #   @$el.find('.m-proposal-admin_strip').remove()
 
-    if @can_edit()
-      admin_strip_el = $('<div data-domain="homepage" class="m-proposal-admin_strip m-proposal-strip">')
-      template = _.template($('#tpl_proposal_admin_strip').html())
-      admin_strip_el.html( template(@model.attributes))
-      @$main_content_el.append admin_strip_el 
+  #   # if @can_edit()
+  #   #   admin_strip_el = $('<div data-domain="homepage" class="m-proposal-admin_strip m-proposal-strip">')
+  #   #   template = _.template($('#tpl_proposal_admin_strip').html())
+  #   #   admin_strip_el.html( template(@model.attributes))
+  #   #   @$main_content_el.append admin_strip_el 
 
-      _.each ConsiderIt.ProposalView.editable_fields, (field) =>
-        [selector, name, type] = field 
+  #   if @can_edit()
+  #     _.each ConsiderIt.ProposalView.editable_fields, (field) =>
+  #       [selector, name, type] = field 
 
-        @$el.find(selector).editable
-          resource: 'proposal'
-          pk: @long_id
-          disabled: @state == 0 && @model.get('published')
-          url: Routes.proposal_path @model.long_id
-          type: type
-          name: name
-          success : (response, new_value) => @model.set(name, new_value)
+  #       @$el.find(selector).editable
+  #         resource: 'proposal'
+  #         pk: @long_id
+  #         disabled: @state == 0 && @model.get('published')
+  #         url: Routes.proposal_path @model.long_id
+  #         type: type
+  #         name: name
+  #         success : (response, new_value) => @model.set(name, new_value)
         
-    else if @has_been_admin_in_past
-      for field in ConsiderIt.ProposalView.editable_fields
-        [selector, name, type] = field 
-        @$el.find(selector).editable('disable')
+  #   else if @has_been_admin_in_past
+  #     for field in ConsiderIt.ProposalView.editable_fields
+  #       [selector, name, type] = field 
+  #       @$el.find(selector).editable('disable')
 
 
-  show_status : (ev) ->
-    tpl = _.template( $('#tpl_proposal_admin_strip_edit_active').html() )
-    @$el.find('.m-proposal-admin-status').append tpl(@model.attributes)
+  # show_status : (ev) ->
+  #   tpl = _.template( $('#tpl_proposal_admin_strip_edit_active').html() )
+  #   @$el.find('.m-proposal-admin-status').append tpl(@model.attributes)
 
-  show_publicity : (ev) ->
-    tpl = _.template( $('#tpl_proposal_admin_strip_edit_publicity').html() )
-    @$el.find('.m-proposal-admin-publicity').append tpl(@model.attributes)
+  # show_publicity : (ev) ->
+  #   tpl = _.template( $('#tpl_proposal_admin_strip_edit_publicity').html() )
+  #   @$el.find('.m-proposal-admin-publicity').append tpl(@model.attributes)
 
-  change_settings : (ev, response, options) ->
-    data = $.parseJSON(response.responseText)
-    @model.set({access_list: data.access_list, active: data.active, publicity: data.publicity})
-    @render_admin_strip()
+  # change_settings : (ev, response, options) ->
+  #   data = $.parseJSON(response.responseText)
+  #   @model.set({access_list: data.access_list, active: data.active, publicity: data.publicity})
+  #   @render_admin_strip()
 
-  cancel_dialog : (ev) ->
-    $(ev.currentTarget).closest('#l-dialog-detachable').remove()
+  # cancel_dialog : (ev) ->
+  #   $(ev.currentTarget).closest('#l-dialog-detachable').remove()
 
-  delete_proposal : (ev, response, options) ->
-    data = $.parseJSON(response.responseText)
-    if data.success
-      ConsiderIt.router.trigger('proposal:deleted', @model )
+  # delete_proposal : (ev, response, options) ->
+  #   data = $.parseJSON(response.responseText)
+  #   if data.success
+  #     ConsiderIt.router.trigger('proposal:deleted', @model )
 
-  publish_proposal : (ev, response, options) ->
-    data = $.parseJSON(response.responseText)
-    @model.set(data.proposal.proposal)
-    @model.set_data
-      position: data.position
-      points: {}
-    @model.long_id = @model.get('long_id')
-    #@$el.attr('data-visibility', '')
+  # publish_proposal : (ev, response, options) ->
+  #   data = $.parseJSON(response.responseText)
+  #   @model.set(data.proposal.proposal)
+  #   @model.set_data
+  #     position: data.position
+  #     points: {}
+  #   @model.long_id = @model.get('long_id')
+  #   #@$el.attr('data-visibility', '')
 
-    @render()
-    ConsiderIt.router.navigate(Routes.new_position_proposal_path( @model.long_id ), {trigger: true} )
+  #   @render()
+  #   ConsiderIt.router.navigate(Routes.new_position_proposal_path( @model.long_id ), {trigger: true} )

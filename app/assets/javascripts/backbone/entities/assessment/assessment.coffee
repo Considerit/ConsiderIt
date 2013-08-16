@@ -25,6 +25,11 @@
   class Entities.Claim extends App.Entities.Model
     name: 'claim'
 
+    initialize : (options = {}) ->
+      super options
+      #TODO: store this as an html attribute...
+      @attributes.result = htmlFormat @attributes.result
+
     format_verdict : ->
 
       switch @get('verdict')

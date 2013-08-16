@@ -157,7 +157,7 @@ class ConsiderIt.YourActionView extends Backbone.View
   crafting_state : ->
     @$el.html ConsiderIt.YourActionView.save_template
       updating : @model && @model.get('published')
-      follows : ConsiderIt.request('user:current').is_following('Proposal', @model.id)
+      follows : ConsiderIt.request('user:current').isFollowing('Proposal', @model.id)
 
   close_crafting : ->
     @$el.html ConsiderIt.YourActionView.craft_template

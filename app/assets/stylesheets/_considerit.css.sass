@@ -250,12 +250,9 @@ $preloadersize_height: 10.5px
     display: inline-block
     width: $pro-con-list-column-width - 3
 
-  .m-pro-con-list-propoints, .m-pro-con-list-conpoints
+  .m-points-list-region, .m-pro-con-list-header
     @extend %m-pro-con-list-column
 
-  .m-pro-con-list-propoints 
-
-  .m-pro-con-list-conpoints 
     
   .m-pro-con-list-header   
     margin-bottom: $vertical_baseline/2
@@ -1403,10 +1400,11 @@ $m-point-expanded-width: $body_width + 150
 
 // Proposal
 
-#m-proposals-container, #m-proposals-container-completed
+#m-proposals-container, #m-proposals-container-completed, #p-aggregate-proposal, #p-position-proposal
   position: relative
   padding: 1 * $vertical_baseline 0
 
+#m-proposals-container, #m-proposals-container-completed
   .m-proposal-list
     @extend %nude_list
 

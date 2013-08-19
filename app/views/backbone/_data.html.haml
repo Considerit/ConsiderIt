@@ -7,7 +7,7 @@
 
     ConsiderIt.proposals = #{@proposals.to_json};
 
-    ConsiderIt.current_proposal = #{ @current_proposal ? @current_proposal.to_json : 'null' };
+    ConsiderIt.current_proposal = #{ @current_proposal ? @current_proposal : 'null' };
 
     ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };
 

@@ -8,7 +8,6 @@
     initialize : (options = {}) ->
       super options
       @long_id = @attributes.long_id
-      [@top_pro, @top_con] = App.request 'proposal:top_points', [@get('top_pro'), @get('top_con')]
 
     urlRoot : ''
 
@@ -22,25 +21,25 @@
     parse : (response) ->
       if 'positions' of response
         @parseAssociated response
-      return response.proposal
+        proposal_attrs = response.proposal.proposal
+      else
+        proposal_attrs = response.proposal
+
+      proposal_attrs
 
     parseAssociated : (params) ->
-      @points = params.points
+
+      App.vent.trigger 'points:fetched',
+        (p.point for p in params.points)
 
       App.vent.trigger 'positions:fetched', 
         (p.position for p in params.positions), params.position.position
 
       @setUserPosition params.position.position.id
 
-    user_participated : (user_id) -> user_id in @participants()
+      position = @getUserPosition()
+      position.setIncludedPoints (p.point.id for p in params.included_points)
 
-    participants : ->
-      if !@participant_list?
-        @participant_list = $.parseJSON(@attributes.participants) || []
-      @participant_list
-
-    has_participants : -> 
-      return @participants().length > 0   
 
     description_detail_fields : ->
       [ ['long_description', 'Long Description', $.trim(htmlFormat(@attributes.long_description))], 
@@ -59,20 +58,57 @@
       else
         my_title
 
+    user_participated : (user_id) -> user_id in @participants()
+
+    participants : ->
+      if !@participant_list?
+        @participant_list = $.parseJSON(@attributes.participants) || []
+      @participant_list
+
+    has_participants : -> 
+      return @participants().length > 0   
+
+    getParticipants : ->
+      if !@all_participants
+        @all_participants = (App.request('user', u) for u in @participants())
+      @all_participants
+
+
     # Relations
     getUser : ->
-      App.request 'user', @get('user_id')
+      user = App.request 'user', @get('user_id')
+      user
 
     getUserPosition : ->
-      @position
+      if !@position
+        null
+      else
+        @position
 
     getPositions : ->
       if !@positions
         @positions = App.request 'positions:get:proposal', @id
       @positions
 
+    getPoints : ->
+      if !@points
+        @points = App.request 'points:get:proposal', @id
+      @points
+
+    updatePosition : (attrs) ->
+      @getUserPosition().set attrs
+      @getUserPosition
+
     setUserPosition : (position_id) ->
       @position = App.request 'position:get', position_id
+
+    # TODO: refactor this method out...handles what happens when 
+    # current user saves a new position
+    newPositionSaved : (position) ->
+      user_id = @position.get('user_id')
+      if position.get('published') && !@user_participated(user_id)
+        @positions = null
+        @participant_list.push user_id 
 
 
   class Entities.Proposals extends App.Entities.Collection
@@ -88,12 +124,11 @@
       Routes.proposals_path( )
 
     parse : (response) ->
-      @top_points = response.top_points
+      if 'top_points' of response
+        App.vent.trigger 'points:fetched', (p.point for p in response.top_points)
+
       proposals = response.proposals
       proposals
-
-    topPoints : (points) ->
-      (if pnt of @top_points then @top_points[pnt].point else null for pnt in points)
 
     purge_inaccessible : -> 
       @remove @filter (p) -> 
@@ -111,24 +146,27 @@
 
 
     bootstrapProposal : (proposal_attrs) ->
-      proposal = @all_proposals.findWhere {long_id : long_id}
+      proposal = @all_proposals.findWhere {long_id : proposal_attrs.proposal.long_id}
       if proposal
         proposal.set proposal_attrs.proposal
       else
-        API.newProposal proposal_attrs.proposal
+        proposal = API.newProposal proposal_attrs.proposal
       proposal.parseAssociated proposal_attrs
+      proposal
     
-    getProposal: (long_id) ->
+    getProposal: (long_id, fetch = false) ->
       proposal = @all_proposals.findWhere {long_id : long_id}
       if !proposal
         proposal = API.newProposal {long_id : long_id}
         proposal.fetch()
-  
+      else if fetch
+        proposal.fetch()
       proposal
     
     newProposal: (attrs = {}, add_to_all = true ) ->
       proposal = new Entities.Proposal attrs
       @all_proposals.add proposal if add_to_all
+      proposal
 
     createProposal: (attrs, options) ->
       proposal = @all_proposals.create attrs, options
@@ -137,9 +175,6 @@
     removeProposal: (model) ->
       @all_proposals.remove model
   
-    topPoints : (points) ->
-      @all_proposals.topPoints points
-
     proposalDescriptionFields : ->
       ['long_description', 'additional_details']     
 
@@ -151,9 +186,8 @@
     addProposals : (proposals) ->
       @all_proposals.set proposals
 
-    bootstrapProposals : (proposals_attrs) ->
-      @all_proposals.top_points = proposals_attrs.top_points if 'top_points' of proposals_attrs
-      @all_proposals.set (prop.proposal for prop in proposals_attrs.proposals) 
+    bootstrapProposals : (proposals_attrs) ->      
+      @all_proposals.set @all_proposals.parse(proposals_attrs)
 
     getProposals: (fetch = false) ->
       if fetch && !@proposals_fetched
@@ -173,17 +207,14 @@
   App.reqres.setHandler "proposal:bootstrap", (proposal_attrs) ->
     API.bootstrapProposal proposal_attrs
 
-  App.reqres.setHandler "proposal:get", (long_id) ->
-    API.getProposal long_id
+  App.reqres.setHandler "proposal:get", (long_id, fetch = false) ->
+    API.getProposal long_id, fetch
   
   App.reqres.setHandler "proposal:new", (attrs = {}, add_to_all = true)->
     API.newProposal attrs, add_to_all
 
   App.reqres.setHandler "proposal:create", (attrs, options) ->
     API.createProposal(attrs, options)
-
-  App.reqres.setHandler "proposal:top_points", (points) ->
-    API.topPoints points
   
   App.reqres.setHandler "proposal:description_fields", ->
     API.proposalDescriptionFields()

@@ -19,7 +19,8 @@ class PositionsController < ApplicationController
 
     update_attrs = {
       :user_id => current_user.id,
-      :proposal => proposal
+      :proposal => proposal, 
+      :long_id => proposal.long_id
     }
 
     if params[:position].has_key? :explanation

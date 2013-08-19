@@ -20,19 +20,9 @@ class ProposalsController < ApplicationController
       top_points[pnt.id] = pnt
     end
 
-    #Proposal.active.where('activity > 0').public_fields.each do |proposal|
-    # Proposal.open_to_public.where("active=#{active}").public_fields.each do |proposal|      
-    #   proposals.push ({
-    #           :model => proposal,
-    #           :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,
-    #           :top_pro => proposal.top_pro ? top_points[proposal.top_pro] : nil,
-    #         }) 
-    # end
-
     render :json => {
       :proposals => Proposal.open_to_public.public_fields,
-      #:proposals => Proposal.open_to_public.where("active=#{active}").public_fields,
-      :top_points => top_points
+      :top_points => top_points.values
     }
 
 
@@ -65,15 +55,10 @@ class ProposalsController < ApplicationController
 
     position = get_position_for_user(proposal)
 
-    #TODO: return just "points" and "included points" and let client sort through them?
     response = {
       :proposal => proposal, #TODO: filter to public fields
-      :points => {
-        :pros => Point.mask_anonymous_users(proposal.points.viewable.pros.public_fields, current_user),
-        :cons => Point.mask_anonymous_users(proposal.points.viewable.cons.public_fields, current_user),
-        :included_pros => Point.included_by_stored(current_user, proposal, session[proposal.id][:deleted_points].keys).where(:is_pro => true).select('points.id') + Point.included_by_unstored(session[proposal.id][:included_points].keys, proposal).where(:is_pro => true).select('points.id'),
-        :included_cons => Point.included_by_stored(current_user, proposal, session[proposal.id][:deleted_points].keys).where(:is_pro => false).select('points.id') + Point.included_by_unstored(session[proposal.id][:included_points].keys, proposal).where(:is_pro => false).select('points.id')
-        },
+      :points => Point.mask_anonymous_users(proposal.points.viewable.public_fields, current_user),
+      :included_points => Point.included_by_stored(current_user, proposal, session[proposal.id][:deleted_points].keys).select('points.id') + Point.included_by_unstored(session[proposal.id][:included_points].keys, proposal).select('points.id'),
       :positions => proposal.positions.published.public_fields,
       :position => position,
       :result => 'success'
@@ -84,7 +69,8 @@ class ProposalsController < ApplicationController
     respond_to do |format|
       format.json {render :json => response}
       format.html {
-        @current_proposal = {:id => proposal.id, :data => response }
+        #@current_proposal = {:id => proposal.id, :data => response }
+        @current_proposal = response.to_json
       }
     end
 
@@ -185,6 +171,7 @@ class ProposalsController < ApplicationController
     position ||= Position.create!( 
       :stance => 0.0, 
       :proposal_id => proposal.id, 
+      :long_id => proposal.long_id,
       :user_id => current_user ? current_user.id : nil,
       :account_id => current_tenant.id
     )

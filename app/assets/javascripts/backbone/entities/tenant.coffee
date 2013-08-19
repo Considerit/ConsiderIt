@@ -19,6 +19,10 @@
     initialize : (options = {}) ->
       super options
 
+      # Overwrite null and blank values for default fields
+      _.each _.keys(@defaults), (key) =>
+        @set(key, @defaults[key]) if !!!@get(key)
+
       #TODO: create HTML version of each of these fields and use those to render when appropriate
       @attributes.header_text = htmlFormat(@attributes.header_text)
       @attributes.header_details_text = htmlFormat(@attributes.header_details_text)
@@ -37,6 +41,28 @@
     add_full_data : (data) ->
       @set data
       @fully_loaded = true
+
+
+    getProLabel : ({capitalize, plural} = {}) ->
+      capitalize ?= false
+      plural ?= false
+
+      @_getLabel true, capitalize, plural
+
+    getConLabel : ({capitalize, plural} = {}) ->
+      capitalize ?= false
+      plural ?= false
+
+      @_getLabel false, capitalize, plural
+
+    _getLabel : (is_pro, capitalize, plural) ->
+      label = if is_pro then @get('pro_label') else @get('con_label')
+      if capitalize
+        label = label.charAt(0).toUpperCase() + label.slice(1)
+      if plural #TODO: better solution
+        label = label + 's'
+
+      label
 
 
 

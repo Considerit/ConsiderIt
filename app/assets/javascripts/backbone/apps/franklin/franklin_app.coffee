@@ -20,14 +20,22 @@
   
   API =
     Root: -> 
-      @homepage_controller = new Franklin.Root.Controller
+      new Franklin.Root.Controller
         region : App.request "default:region"
 
     Consider: (long_id) -> 
-      App.vent.trigger 'route:Consider', long_id
+      proposal = App.request 'proposal:get', long_id, true
+      App.execute 'when:fetched', proposal, ->
+        new Franklin.Proposal.PositionController
+          region : App.request "default:region"
+          model : proposal
 
     Aggregate: (long_id) -> 
-      App.vent.trigger 'route:Aggregate', long_id
+      proposal = App.request 'proposal:get', long_id, true
+      App.execute 'when:fetched', proposal, ->
+        new Franklin.Proposal.AggregateController
+          region : App.request "default:region"
+          model : proposal
 
     PointDetails: (long_id, point_id) -> 
       App.vent.trigger 'route:PointDetails', long_id, point_id

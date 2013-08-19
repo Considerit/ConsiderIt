@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130812220827) do
+ActiveRecord::Schema.define(:version => 20130819215938) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -342,6 +342,8 @@ ActiveRecord::Schema.define(:version => 20130812220827) do
     t.integer  "top_pro"
     t.text     "participants"
     t.boolean  "published",                                                  :default => false
+    t.text     "tags"
+    t.boolean  "targettable",                                                :default => false
   end
 
   add_index "proposals", ["account_id", "active"], :name => "select_proposal_by_active"
@@ -426,6 +428,7 @@ ActiveRecord::Schema.define(:version => 20130812220827) do
     t.integer  "metric_conversations"
     t.integer  "metric_positions"
     t.text     "b64_thumbnail"
+    t.text     "tags"
   end
 
   add_index "users", ["account_id", "avatar_file_name"], :name => "select_user_by_avatar_name", :length => {"account_id"=>nil, "avatar_file_name"=>3}

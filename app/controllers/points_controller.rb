@@ -19,6 +19,7 @@ class PointsController < ApplicationController
         :hide_name => params[:point][:hide_name],
         :comment_count => 0,
         :proposal_id => proposal.id,
+        :long_id => proposal.long_id,
         :user_id => current_user ? current_user.id : nil,
         :published => false
     }

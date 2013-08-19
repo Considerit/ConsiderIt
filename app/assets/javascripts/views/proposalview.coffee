@@ -199,10 +199,10 @@ class ConsiderIt.ProposalView extends Backbone.View
     @state = new_state
     @$el.attr('data-state', new_state)
 
-  events : 
-    'click .m-proposal-description' : 'toggle_description'
-    'click .hidden' : 'show_details'
-    'click .showing' : 'hide_details'
+  # events : 
+  #   'click .m-proposal-description' : 'toggle_description'
+  #   'click .hidden' : 'show_details'
+  #   'click .showing' : 'hide_details'
 
     #'click .m-proposal-follow_conversation' : 'toggle_follow_proposal'
 
@@ -216,37 +216,37 @@ class ConsiderIt.ProposalView extends Backbone.View
 
 
 
-  toggle_description : (ev) ->
-    return if !@model.get('published') || (@state > 0 && ( $(ev.target).closest('.editable').length > 0 || $(ev.target).closest('.editable-container').length > 0))
-    if @$el.is('[data-state="0"]')
-      ConsiderIt.router.navigate(Routes.new_position_proposal_path( @model.long_id ), {trigger: true})
-    #else
-    #  ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
+  # toggle_description : (ev) ->
+  #   return if !@model.get('published') || (@state > 0 && ( $(ev.target).closest('.editable').length > 0 || $(ev.target).closest('.editable-container').length > 0))
+  #   if @$el.is('[data-state="0"]')
+  #     ConsiderIt.router.navigate(Routes.new_position_proposal_path( @model.long_id ), {trigger: true})
+  #   #else
+  #   #  ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
 
-    # @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
+  #   # @$el.find('.m-proposal-description-body, .m-proposal-description-details').slideToggle()
 
-  show_details : (ev) -> 
-    $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
+  # show_details : (ev) -> 
+  #   $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
-    $block.find('.m-proposal-description-detail-field-full').slideDown();
-    $block.find('.hidden')
-      .text('hide')
-      .toggleClass('hidden showing');
+  #   $block.find('.m-proposal-description-detail-field-full').slideDown();
+  #   $block.find('.hidden')
+  #     .text('hide')
+  #     .toggleClass('hidden showing');
 
-    ev.stopPropagation()
+  #   ev.stopPropagation()
 
-  hide_details : (ev) -> 
-    $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
+  # hide_details : (ev) -> 
+  #   $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
-    if $(document).scrollTop() > $block.offset().top
-      $('body').animate {scrollTop: $block.offset().top}, 1000
+  #   if $(document).scrollTop() > $block.offset().top
+  #     $('body').animate {scrollTop: $block.offset().top}, 1000
 
-    $block.find('.m-proposal-description-detail-field-full').slideUp(1000);
-    $block.find('.showing')
-      .text('show')
-      .toggleClass('hidden showing');
+  #   $block.find('.m-proposal-description-detail-field-full').slideUp(1000);
+  #   $block.find('.showing')
+  #     .text('show')
+  #     .toggleClass('hidden showing');
 
-    ev.stopPropagation()
+  #   ev.stopPropagation()
 
 
   # Point details are being handled here (messily) for the case when a user directly visits the point details page without

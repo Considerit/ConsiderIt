@@ -1,0 +1,37 @@
+%script{ :type => "text/template", :id => "tpl_point_view" } 
+
+  (( if (hide_name || user.name == 'Anonymous' ) { ))
+  %span.avatar.m-point-author-avatar.m-avatar-anonymous{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)", :title => "This user has requested to remain anonymous"}
+  .m-point-author-name
+    by Anonymous
+  (( } else if (user) { ))
+
+  %a.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
+  .m-point-author-name{:'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
+    by {{user.name}}
+  (( } ))
+
+  .m-point-wrap{ :'data-target' => "m-point-details", :'data-id' => "{{id}}" }
+
+    .m-point-nutshell-wrap
+      .m-point-nutshell
+        {{ adjusted_nutshell }}
+
+    .m-point-details-description 
+      {{ text }}
+
+    .m-point-operations
+
+      .m-point-follow
+
+      %a.m-point-read-more 
+        //{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }        
+      %a.m-point-remove{ :'data-target' => 'point-remove', :'data-id' => "{{id}}"}
+        Remove
+
+      .m-point-assess
+
+    .m-point-include-wrap
+      %a.m-point-include{ :'data-target' => 'point-include', :'data-id' => "{{id}}"}
+        Add to your list
+        %span.list_connector

@@ -61,18 +61,15 @@
       # that this user wrote *anonymously* and proposals they have access to. Then we'll update the data properly so
       # that the user can update them.
       $.get Routes.content_for_user_path(), (data) =>
-        proposals = App.request 'proposals:get'
-        proposals.set data.proposals
 
-        for pnt in data.points
-          [id, long_id, is_pro] = [pnt.point.id, pnt.point.long_id, pnt.point.is_pro]
-          proposal = App.request 'proposal:get', long_id
-          #TODO: need to accommodate this
-          proposal.update_anonymous_point(id, is_pro) if proposal && proposal.data_loaded
+        #TODO: check if all the unpublished proposals of this user show up
+        App.vent.trigger 'proposals:fetched', data.proposals
+
+        #TODO: check if the appropriate points are updated in all views        
+        App.vent.trigger 'points:fetched', 
+          (p.point for p in data.points)
 
       App.vent.trigger 'user:signin'     
-
-
 
 
   App.reqres.setHandler "auth:reset_password", => 
@@ -108,3 +105,10 @@
 
     if token = API.password_reset_token()
       API.begin_password_reset()
+
+
+    if ConsiderIt.inaccessible_proposal
+      App.request 'user:signin:set_redirect', Routes.proposal_path(ConsiderIt.inaccessible_proposal.long_id)
+      ConsiderIt.vent.trigger 'signin:requested'
+      ConsiderIt.inaccessible_proposal = null
+

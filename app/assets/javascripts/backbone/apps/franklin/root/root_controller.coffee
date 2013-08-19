@@ -18,7 +18,6 @@
     getHeader : ->
       new Root.HeaderView
 
-
     getProposalsController : (layout) ->
-      new Root.ProposalsList.RegionController
+      new App.Franklin.Proposals.RegionController
           region: layout.proposalsRegion

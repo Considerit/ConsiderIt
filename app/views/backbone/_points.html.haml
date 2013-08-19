@@ -1,0 +1,97 @@
+%script{ :type => "text/template", :id => "tpl_points_empty"}
+  .m-pointlist-empty
+    none recognized
+
+%script{ :type => "text/template", :id => "tpl_points"}
+  %ul.m-point-list
+
+
+%script{ :type => "text/template", :id => "tpl_points_paginated"}
+  %ul.m-point-list
+  .m-pointlist-pagination
+    %a.m-pointlist-backward
+      (( if(currentPage > 1){ ))
+      &#9650;
+      (( } ))
+
+    .m-pointlist-status
+
+      %span.m-pointlist-start
+        {{ (currentPage - 1) * pageSize }}
+      %span &ndash;
+      %span.m-pointlist-end
+        {{ currentPage * pageSize }}
+      %span
+        = surround ' ' do
+          of
+      %span.m-pointlist-total
+        {{totalRecords}}
+
+    %a.m-pointlist-forward
+      (( if(lastPage != currentPage && lastPage != 0){ ))
+      &#9660;
+      (( } ))
+
+
+%script{ :type => "text/template", :id => "tpl_points_expandable"}
+  .m-pointlist-browse-header  
+    .m-pointlist-browse-header-close
+      %a.m-pointlist-browse-toggle
+        {{ pros ? '&laquo;' : '' }} stop browsing points {{ pros ? '' : '&raquo;' }}
+    
+    %h3.m-pointlist-browse-heading
+      {{ pros ? 'Pro' : 'Con' }} considerations by other participants
+
+    .m-pointlist-browse-sort
+      %span.m-pointlist-browse-sort-label
+        sort by: 
+      %ul
+        (( _.each(sorts, function(sort){  ))
+        %li.m-pointlist-sort-option
+          %a{ :title => "{{ sort.title }}", :'data-target' => "{{ sort.target }}" }
+            {{ sort.name }}
+        (( }); ))
+
+
+  %ul.m-point-list
+
+  .m-pointlist-browse
+    %a.m-pointlist-browse-toggle
+      (( if( browsing_all ) { ))
+      Stop browsing
+      (( } else { ))
+      View all {{ cnt }} {{ label }}
+      (( } ))
+
+
+%script{ :type => "text/template", :id => "tpl_points_user_reasons"}
+  %ul.m-point-list
+
+
+  .m-newpoint
+
+    %a.m-newpoint-new
+      Write a new {{ label }}
+
+    .m-newpoint-form
+      = hidden_field_tag :is_pro, "{{is_pro}}", :class => 'm-newpoint-is_pro'
+
+      .m-newpoint-nutshell-wrap
+        = text_area_tag :nutshell, nil, :placeholder => 'Summarize your point (required)', :cols => 28, :class => "m-newpoint-nutshell is_counted", :required=>true, :maxlength => 140, :pattern => "^.{3,}"
+        %span.count
+          140
+
+      .m-newpoint-description-wrap
+        = text_area_tag :text, nil, :placeholder => "Write a longer description (optional)", :title => "Write a longer description (optional)", :cols => 28, :class => "m-newpoint-description"
+
+      .m-newpoint-anonymous-wrap
+        %input.m-newpoint-anonymous{ :id => "{{hide_label}}", :name => "{{hide_label}}", :type => "checkbox"}
+
+        %label{ :for => "{{hide_label}}", :title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'}
+          Conceal your name
+
+      .m-newpoint-submit
+        %input.m-newpoint-create.button{ :type => 'submit', :value => 'Done'}
+
+          %a.m-newpoint-cancel
+            cancel

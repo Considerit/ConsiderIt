@@ -36,6 +36,21 @@
       @written_points = []
       @viewed_points = {}
 
+    setIncludedPoints : (points) ->
+      @included_points = points
+
+    getIncludedPoints : ->
+      if !@included_points
+        throw 'Included points never created'
+      @included_points
+
+    includePoint : (point) ->
+      @included_points.push point.id
+
+    removePoint : (point) ->
+      @setIncludedPoints _.without @included_points, [point.id]
+
+      
     # relations
 
     inclusions : ->

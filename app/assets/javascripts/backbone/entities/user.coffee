@@ -175,7 +175,10 @@
       @all_users
 
     getUser : (user_id) ->
-      @all_users.get user_id
+      user = @all_users.get user_id
+      if !user
+        user = new Entities.User {name : '<removed>'}
+      user
 
     getAvatar : (user, size = 'small', fname = null) ->
       if fname?

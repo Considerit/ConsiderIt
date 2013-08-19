@@ -6,14 +6,14 @@
     initialize : (options = {}) ->
       super options
 
-      @attributes.nutshell = htmlFormat(@attributes.nutshell)
+      #@attributes.nutshell = htmlFormat(@attributes.nutshell)
       @attributes.text = htmlFormat(@attributes.text)
 
     url : () ->
       if @id
-        Routes.proposal_point_path( @get('long_id'), @id) 
+        Routes.proposal_point_path @get('long_id'), @id
       else
-        Routes.proposal_points_path( @get('long_id') ) 
+        Routes.proposal_points_path @get('long_id') 
 
     parse : (response) ->
       if 'comments' of response
@@ -36,6 +36,11 @@
         # and pick up on the "already_requested_assessment" field
         @already_requested_assessment = data.already_requested_assessment
 
+    getIncluders : ->
+      $.parseJSON @get 'includers'
+
+    isPro : ->
+      @get 'is_pro'
 
     has_details : -> attributes.text? && attributes.text.length > 0
 
@@ -85,25 +90,37 @@
     initialize : (options = {}) ->
       @setPageSize options.perPage if 'perPage' of options
 
-
-
   API = 
     all_points : new Entities.Points
 
-    getPoint : (id) ->
-      @all_points.get id
+    getPoint : (id, fetch = false) ->
+      point = @all_points.get id
+      if fetch
+        point.fetch()
+      point
+
+    createPoint : (attrs, options = {wait: true}) ->
+      point = @all_points.create attrs, options
+      point
 
     addPoints : (points) ->
       @all_points.set points
 
+    getPointsBy : (filters) ->
+      new Entities.Points @all_points.where filters
+
     getPointsByUser : (user_id) ->
-      new Entities.Points @all_points.where({user_id : user_id})
+      @getPointsBy {user_id : user_id}
 
     getPointsByProposal : (proposal_id) ->
-      new Entities.Points @all_points.where({proposal_id : proposal_id})
+      points = @getPointsBy {proposal_id : proposal_id}
+      points
 
-  App.reqres.setHandler 'point:get', (id) ->
-    API.getPoint id
+  App.reqres.setHandler 'point:get', (id, fetch = false) ->
+    API.getPoint id, fetch
+
+  App.reqres.setHandler 'point:create', (attrs, options = {wait: true}) ->
+    API.createPoint attrs, options
 
   App.vent.on 'points:fetched', (points) ->
     API.addPoints points
@@ -113,6 +130,9 @@
 
   App.reqres.setHandler 'points:get:proposal', (model_id) ->
     API.getPointsByProposal model_id
+
+  App.reqres.setHandler 'points:get', (filter = {}) ->
+    API.getPointsBy filter
 
 
 

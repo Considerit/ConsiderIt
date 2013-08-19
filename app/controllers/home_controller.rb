@@ -73,7 +73,7 @@ class HomeController < ApplicationController
     end
 
     render :json => {
-      :points => current_user.points.published.where(:hide_name => true).joins(:proposal).select('proposals.long_id, points.id, points.is_pro'),
+      :points => current_user.points.published.where(:hide_name => true).select([:id, :user_id]),
       :proposals => proposals
     }
   end

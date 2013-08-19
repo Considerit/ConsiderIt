@@ -114,7 +114,7 @@ class ApplicationController < ActionController::Base
 
       @proposals = {
         :proposals => proposals,
-        :top_points => top_points
+        :top_points => top_points.values
       }
 
       @public_root = Rails.application.config.action_controller.asset_host.nil? ? "" : Rails.application.config.action_controller.asset_host

@@ -242,6 +242,8 @@
 
     set_current_user : (user_id) ->
       @current_user = App.request 'user', user_id
+      if !(@current_user instanceof Entities.OperatingUser)
+        @current_user.__proto__ = Entities.OperatingUser.prototype
       @current_user
 
     set_fixed_user : (user_data) ->
@@ -273,6 +275,8 @@
         current_user = App.request 'user', user_id
         AUTH_API.set_current_user user_id
 
+
+
       current_user.set user_data.user
       current_user.setFollows user_data.follows if 'follows' of user_data
 
@@ -301,8 +305,8 @@
   # App.reqres.setHandler "user:current:set", (user) ->
   #   AUTH_API.set_current_user user
 
-  # App.reqres.setHandler "user:current:clear", ->
-  #   AUTH_API.clear_current_user()
+  App.reqres.setHandler "user:current:clear", ->
+    AUTH_API.clear_current_user()
 
   App.reqres.setHandler "user:current:update", (user_data) ->
     AUTH_API.update_current_user user_data

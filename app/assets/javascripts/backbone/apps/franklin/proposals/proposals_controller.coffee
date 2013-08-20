@@ -24,30 +24,33 @@
 
       layout = @getLayout()
 
-      @listenTo layout, 'show', =>
+      @listenTo layout, 'show', => @handleShow layout
 
-        proposals_view = @getProposals @is_active
+      @listenTo App.vent, 'user:signin user:signout', => @handleShow layout
 
-        @sortCollection {collection: proposals_view.collection, sort_by: 'activity'}
-
-        pagination_view = @getPaginationView proposals_view.collection
-        filter_view = @getFilterView proposals_view.collection
-
-        @listenTo proposals_view, 'before:item:added', (view) -> @handleBeforeViewAdded(view)
-        @listenTo proposals_view, 'childview:proposal:deleted', (model) => @handleProposalDeleted(model)
-        @listenTo filter_view, 'sort:requested', (sort_by) => @handleSortRequested(proposals_view.collection, sort_by)
-        @listenTo pagination_view, 'pagination:show_more', => @handleShowMore proposals_view.collection
-        @listenTo App.vent, 'proposals:reset', => @handleReset proposals_view.collection, @is_active
-
-        layout.proposalsRegion.show proposals_view
-        layout.filtersRegion.show filter_view
-        layout.paginationRegion.show pagination_view
-
-        @proposals_view = proposals_view
-
-      @listenTo App.vent, 'user:signin user:signout', => @render()
-
+      @region.show layout
       @layout = layout
+
+    handleShow : (layout) ->
+      proposals_view = @getProposals @is_active
+
+      @sortCollection {collection: proposals_view.collection, sort_by: 'activity'}
+
+      pagination_view = @getPaginationView proposals_view.collection
+      filter_view = @getFilterView proposals_view.collection
+
+      @listenTo proposals_view, 'before:item:added', (view) -> @handleBeforeViewAdded(view)
+      @listenTo proposals_view, 'childview:proposal:deleted', (model) => @handleProposalDeleted(model)
+      @listenTo filter_view, 'sort:requested', (sort_by) => @handleSortRequested(proposals_view.collection, sort_by)
+      @listenTo pagination_view, 'pagination:show_more', => @handleShowMore proposals_view.collection
+      @listenTo App.vent, 'proposals:reset', => @handleReset proposals_view.collection, @is_active
+
+      layout.proposalsRegion.show proposals_view
+      layout.filtersRegion.show filter_view
+      layout.paginationRegion.show pagination_view
+
+      @proposals_view = proposals_view
+
 
     handleBeforeViewAdded : (view) ->
       new App.Franklin.Proposal.SummaryController
@@ -116,26 +119,21 @@
   class Proposals.InactiveListController extends Proposals.AbstractListController
     is_active : false
 
-    initialize : (options = {}) ->
-      super options
-      @region.show @layout       
-
 
   class Proposals.ActiveListController extends Proposals.AbstractListController
     is_active : true
 
-    initialize : (options = {} ) ->
 
-      super options
+    handleShow : (layout) ->
+      super layout
+      can_create = App.request "auth:can_create_proposal"
+      if can_create
+        create_view = @getCreateView()
+        @listenTo create_view, 'proposal:new:requested', => @handleNewProposal()
+        @layout.createRegion.show create_view
+      else
+        @layout.createRegion.reset()
 
-      @listenTo @layout, 'show', =>
-        can_create = App.request "auth:can_create_proposal"
-        if can_create
-          create_view = @getCreateView()
-          @listenTo create_view, 'proposal:new:requested', => @handleNewProposal()
-          @layout.createRegion.show create_view
-
-      @region.show @layout
 
     handleNewProposal : ->
       attrs = 

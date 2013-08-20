@@ -33,9 +33,9 @@
       App.vent.trigger 'registration:complete_paperwork'
 
     signin : (user_data, controller = null) ->
-      API.update_current_user user_data
+      App.request "user:current:update", user_data
       user = App.request 'user:current'
-      if user.paperwork_completed() 
+      if App.request "user:paperwork_completed"
         @_handle_signin()         
       else
         API.complete_paperwork controller
@@ -43,7 +43,7 @@
     signout : ->
       $.get Routes.destroy_user_session_path(), (data) =>
         ConsiderIt.utils.update_CSRF(data.new_csrf)
-        API.clear_current_user()
+        App.request "user:current:clear"
         API.show()
         App.vent.trigger 'user:signout'
 

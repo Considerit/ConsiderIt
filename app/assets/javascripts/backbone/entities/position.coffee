@@ -104,7 +104,7 @@
     all_positions : new Entities.Positions()
 
     addPositions : (positions, position = null) ->
-      @all_positions.set positions
+      @all_positions.add @all_positions.parse(positions), {merge: true}
 
       if position
         @all_positions.add position, {merge: true}

@@ -8,13 +8,13 @@
         region: region
 
     begin_signin : ->
-      if !API.fixed_user_exists() || API.fixed_user.isPersisted()
+      if !App.request("user:fixed:exists") || App.request("user:fixed").isPersisted()
         new Auth.Signin.Controller
       else
         API.begin_registration()
 
     begin_registration : ->
-      if !API.fixed_user_exists() || !API.fixed_user.isPersisted()
+      if !App.request("user:fixed:exists") || !App.request("user:fixed").isPersisted()
         new Auth.Register.Controller
       else
         API.begin_signin()
@@ -63,7 +63,7 @@
       $.get Routes.content_for_user_path(), (data) =>
 
         #TODO: check if all the unpublished proposals of this user show up
-        App.vent.trigger 'proposals:fetched', data.proposals
+        App.vent.trigger 'proposals:fetched', data
 
         #TODO: check if the appropriate points are updated in all views        
         App.vent.trigger 'points:fetched', 

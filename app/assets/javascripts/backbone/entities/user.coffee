@@ -15,7 +15,8 @@
       details = 'proposals' of data
 
       if details
-        App.vent.trigger 'proposals:fetched', (p.proposal for p in data.proposals.concat(_.values(data.referenced_proposals)))
+        data.proposals = data.proposals.concat(_.values(data.referenced_proposals))
+        App.vent.trigger 'proposals:fetched', data.proposals
         App.vent.trigger 'positions:fetched', (p.position for p in data.positions)
         App.vent.trigger 'points:fetched', (p.point for p in data.points.concat(_.values(data.referenced_points)))        
         App.vent.trigger 'comments:fetched', (c.comment for c in data.comments)
@@ -72,6 +73,12 @@
 
         @my_roles = user_roles
       @my_roles
+
+    getTags : ->
+      if tags = @get('tags')
+        tags.split(';')
+      else
+        []
 
     ### Relations ###
     getProposals : ->
@@ -276,7 +283,8 @@
 
 
     current_user_logged_in : ->
-      AUTH_API.get_current_user().isPersisted()
+      current_user = AUTH_API.get_current_user()
+      current_user && current_user.isPersisted()
 
     paperworkCompleted : ->
       current_user = AUTH_API.get_current_user()
@@ -315,17 +323,20 @@
     AUTH_API.paperworkCompleted()
 
   App.reqres.setHandler "auth:can_moderate", ->
-    AUTH_API.get_current_user().isModerator() || App.request("tenant:get").get('enable_moderation')
+    current_user = AUTH_API.get_current_user()
+    current_user && current_user.isModerator() && App.request("tenant:get").get('enable_moderation')
 
   App.reqres.setHandler "auth:can_assess", ->
-    AUTH_API.get_current_user().isEvaluator() || App.request("tenant:get").get('assessment_enabled')
+    current_user = AUTH_API.get_current_user()
+    current_user && current_user.isEvaluator() && App.request("tenant:get").get('assessment_enabled')
 
   App.reqres.setHandler "auth:can_create_proposal", ->
-    AUTH_API.get_current_user().isManager() || App.request("tenant:get").get('enable_user_conversations')
+    current_user = AUTH_API.get_current_user()
+    current_user && ( current_user.isManager() || App.request("tenant:get").get('enable_user_conversations') )
 
   App.reqres.setHandler "auth:can_edit_proposal", (proposal) ->
     current_user = AUTH_API.get_current_user() 
-    current_user.id == proposal.get('user_id') || current_user.isManager()    
+    current_user && ( current_user.id == proposal.get('user_id') || current_user.isManager() )   
 
   App.on 'initialize:before', ->
 

@@ -126,7 +126,6 @@
     parse : (response) ->
       if 'top_points' of response
         App.vent.trigger 'points:fetched', (p.point for p in response.top_points)
-
       proposals = response.proposals
       proposals
 
@@ -181,13 +180,11 @@
     areProposalsFetched : () ->
       @proposals_fetched
     
-
-    #TODO: harmonize addProposals and bootstrapProposals
     addProposals : (proposals) ->
-      @all_proposals.set proposals
+      @all_proposals.add @all_proposals.parse(proposals), {merge: true}
 
     bootstrapProposals : (proposals_attrs) ->      
-      @all_proposals.set @all_proposals.parse(proposals_attrs)
+      @all_proposals.set @all_proposals.parse proposals_attrs
 
     getProposals: (fetch = false) ->
       if fetch && !@proposals_fetched

@@ -24,6 +24,7 @@ class Proposal < ActiveRecord::Base
   scope :privately_shared, where( 'publicity < 2')
   scope :public_fields, select('id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active, top_pro, top_con, participants,publicity,published')
   scope :unpublished, where( :published => false)
+  scope :browsable, where( :targettable => false)
 
   def self.content_for_user(user)
     user.proposals.unpublished.public_fields.all + Proposal.privately_shared.where("access_list like '%#{user.email}%' ").public_fields.all

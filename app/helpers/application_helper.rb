@@ -15,36 +15,4 @@ module ApplicationHelper
     end
   end
 
-
-  def get_proposals
-    proposals = []
-    #TODO: do a join here instead???
-    #if session.has_key?(:domain)
-    #  domain = Domain.find(session[:domain])
-    #  domain.domain_maps.each do |dm|
-    #    proposals.push(dm.proposal)
-    #  end
-    #end
-    #TODO: add a "show_all, :integer" field to Option 
-    # that can be queried here instead
-    #proposals += Proposal.where(:domain_short => 'WA state').order(:designator)
-    
-
-    return Proposal.open_to_public
-
-  end
-
-  def get_proposals_by_rank(metric = 'activity')
-    return Proposal.open_to_public.order("#{metric} desc")
-    
-  end
-
-  def has_stance(proposal)
-    return current_user && current_user.positions.published.where(:proposal_id => proposal.id).count > 0
-  end
-
-
-  def selected_navigation(element)
-    element == @selected_navigation ? "current" : ""
-  end
 end

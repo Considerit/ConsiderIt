@@ -80,6 +80,9 @@
   class Entities.Points extends App.Entities.Collection
     model : Entities.Point
 
+    parse : (attrs) ->
+      attrs
+
   class Entities.PaginatedPoints extends App.Entities.PaginatedCollection
     model : Entities.Point
 
@@ -104,10 +107,13 @@
       point
 
     addPoints : (points) ->
-      @all_points.set points
+      @all_points.add @all_points.parse(points), {merge: true}
 
-    getPointsBy : (filters) ->
-      new Entities.Points @all_points.where filters
+    getPointsBy : (filters = {}) ->
+      if _.keys(filters).length > 0
+        new Entities.Points @all_points.where filters
+      else
+        @all_points
 
     getPointsByUser : (user_id) ->
       @getPointsBy {user_id : user_id}

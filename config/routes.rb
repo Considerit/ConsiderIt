@@ -51,6 +51,7 @@ ConsiderIt::Application.routes.draw do
 
 
   match "/content_for_user" => "home#content_for_user", :as => :content_for_user
+  match "/users/set_tag" => "home#set_tag", :via => :post, :as => :set_tag
 
   resource :account, :only => [:show, :update]
   

@@ -53,7 +53,7 @@
       @trigger 'registration:requested'
 
     serializeData : ->
-
-      _.extend {}, @model.attributes, 
+      model_data = if @model then @model.attributes else {}
+      _.extend {}, model_data, 
         show_signin : @options.show_signin
         show_register : @options.show_register

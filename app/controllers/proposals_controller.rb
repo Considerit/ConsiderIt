@@ -11,9 +11,15 @@ class ProposalsController < ApplicationController
 
     # top = Proposal.where("top_con IS NOT NULL AND active=#{active}").select(:top_con).map {|x| x.top_con}.compact +
     #       Proposal.where("top_pro IS NOT NULL AND active=#{active}").select(:top_pro).map {|x| x.top_pro}.compact 
+    if params.has_key?(:target)
+      target = params[:target]
+      proposals = Proposal.open_to_public.where(:targettable => true).where("tags LIKE '%#{target}%'")
+    else
+      proposals = Proposal.open_to_public.browsable
+    end
 
-    top = Proposal.where("top_con IS NOT NULL").select(:top_con).map {|x| x.top_con}.compact +
-          Proposal.where("top_pro IS NOT NULL").select(:top_pro).map {|x| x.top_pro}.compact 
+    top = proposals.where("top_con IS NOT NULL").select(:top_con).map {|x| x.top_con}.compact +
+          proposals.where("top_pro IS NOT NULL").select(:top_pro).map {|x| x.top_pro}.compact 
     
     top_points = {}
     Point.where('id in (?)', top).public_fields.each do |pnt|
@@ -21,7 +27,7 @@ class ProposalsController < ApplicationController
     end
 
     render :json => {
-      :proposals => Proposal.open_to_public.public_fields,
+      :proposals => proposals.public_fields,
       :top_points => top_points.values
     }
 

@@ -85,7 +85,7 @@ class ApplicationController < ActionController::Base
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
       @proposals = []
 
-      proposals = Proposal.active.public_fields.order('activity DESC').limit(3)
+      proposals = Proposal.open_to_public.active.browsable.public_fields.order('activity DESC').limit(3)
       top = proposals.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
             proposals.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
       

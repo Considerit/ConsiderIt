@@ -37,6 +37,7 @@
         @listenTo proposals_view, 'childview:proposal:deleted', (model) => @handleProposalDeleted(model)
         @listenTo filter_view, 'sort:requested', (sort_by) => @handleSortRequested(proposals_view.collection, sort_by)
         @listenTo pagination_view, 'pagination:show_more', => @handleShowMore proposals_view.collection
+        @listenTo App.vent, 'proposals:reset', => @handleReset proposals_view.collection, @is_active
 
         layout.proposalsRegion.show proposals_view
         layout.filtersRegion.show filter_view
@@ -65,13 +66,19 @@
       @collection.remove model
       App.vent.trigger 'proposal:deleted', model
 
+    handleReset : (collection, is_active) ->
+      proposals = App.request 'proposals:get'
+      @resetCollection proposals, collection, is_active
+
     requestProposals : (collection, is_active, callback = null, callback_params = {}) ->
       proposals = App.request 'proposals:get', true
       App.execute "when:fetched", proposals, =>
-        filtered_collection = proposals.where {active : is_active}
-        collection.fullCollection.reset filtered_collection
-
+        @resetCollection proposals, collection, is_active
         callback(callback_params) if callback
+
+    resetCollection : (proposals, collection, is_active) ->        
+      filtered_collection = proposals.where {active : is_active}
+      collection.fullCollection.reset filtered_collection
 
     sortCollection : ({collection, sort_by}) ->
       collection.setSorting sort_by, 1

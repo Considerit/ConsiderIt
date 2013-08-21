@@ -2,7 +2,7 @@
 %script{ :type => "text/template", :id => "tpl_proposal_description"}
   .l-message.m-proposal-message.m-proposal-introduction
     .l-message-speaker.left.l-message-initiator
-      %a{ :'data-id' => "{{user_id}}", :'data-target' => "user_profile_page" }
+      %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
         %img{:src => "{{ avatar }}"}
 
     .l-message-body.left.down.m-proposal-description
@@ -13,6 +13,9 @@
       (( if(!show_details){ ))
       %span.m-proposal-description-title-readmore
         [read more]
+      (( } else if(!published) { ))
+      .l-message-details.m-proposal-description-body
+
       (( } else { ))
       .l-message-details.m-proposal-description-body
 
@@ -294,7 +297,7 @@
 
       .m-results-summary-pro-con-list
 
-        .m-pro-con-list-propoints             
+        .m-points-list-region         
           .m-top-point.m-top-pro
             (( if(!top_pro) { ))
             We haven't thought of any {{ pro_label }} arguments yet.
@@ -305,11 +308,10 @@
             %span.m-top-point-content
               &ldquo;{{ top_pro.nutshell }}&rdquo; 
             %span.m-top-point-user
-              &ndash; {{ top_con_user.name }}       
+              &ndash; {{ top_pro_user.name }}       
             (( } ))
 
-        .m-pro-con-list-conpoints
-
+        .m-points-list-region
           .m-top-point.m-top-con
             (( if(!top_con) { ))
             We haven't thought of any {{ con_label }} arguments yet.
@@ -347,7 +349,8 @@
 
     .m-results-summary-region
 
-    (( if(active){ ))
+    (( if(active && published){ ))
+
     .m-take-position-region
       .l-message.m-proposal-message.m-position-your_action    
         .l-message-recipient
@@ -360,7 +363,6 @@
     (( } ))
 
     (( if(!published){ ))
-
     .m-proposal-strip_publish
       = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
         = f.hidden_field :published, :value => true

@@ -141,10 +141,6 @@
   class Proposals.ActiveProposalsList extends Proposals.ProposalsListView
     is_active : true
 
-    prepareNewProposal : (proposal) ->
-      childview = @children.findByModel proposal
-      childview.transitionCreated()
-
 
   class Proposals.PastProposalsList extends Proposals.ProposalsListView
     is_active : false

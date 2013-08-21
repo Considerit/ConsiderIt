@@ -383,15 +383,13 @@
 
       @listenTo layout, 'show', =>
         proposal_view = @getProposalDescription @model
-
-        summary_view = @getSummaryView @model
-
         @setupProposal proposal_view
-
-        @setupSummary summary_view
-
         layout.proposalRegion.show proposal_view
-        layout.summaryRegion.show summary_view
+
+        if @model.get 'published'
+          summary_view = @getSummaryView @model
+          @setupSummary summary_view
+          layout.summaryRegion.show summary_view
 
         if @modifiable
           @setupModifiable layout, @model
@@ -408,7 +406,10 @@
     setupModifiable : (view, model) ->
       @listenTo view, 'proposal:published', (proposal_attrs, position_attrs) =>
         model.set proposal_attrs
-        model.setUserPosition position_attrs            
+        position = App.request 'position:create', position_attrs
+        model.setUserPosition position.id  
+        App.navigate Routes.new_position_proposal_path(model.long_id), {trigger: true}
+
 
       @listenTo view, 'status_dialog', =>
 
@@ -436,8 +437,13 @@
           class : 'm-proposal-admin-publicity'
 
     getProposalDescription : (proposal) ->
-      new Proposal.SummaryProposalDescription
-        model : proposal
+      if proposal.get 'published'
+        new Proposal.SummaryProposalDescription
+          model : proposal
+      else
+        new Proposal.UnpublishedProposalDescription
+          model : proposal
+
 
     getSummaryView : (model) ->
       new Proposal.SummaryResultsView

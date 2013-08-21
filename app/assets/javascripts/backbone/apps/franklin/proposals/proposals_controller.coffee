@@ -39,9 +39,9 @@
       pagination_view = @getPaginationView proposals_view.collection
       filter_view = @getFilterView proposals_view.collection
 
-      @listenTo proposals_view, 'before:item:added', (view) -> @handleBeforeViewAdded(view)
-      @listenTo proposals_view, 'childview:proposal:deleted', (model) => @handleProposalDeleted(model)
-      @listenTo filter_view, 'sort:requested', (sort_by) => @handleSortRequested(proposals_view.collection, sort_by)
+      @listenTo proposals_view, 'before:item:added', (view) -> @handleBeforeViewAdded view
+      @listenTo proposals_view, 'childview:proposal:deleted', (view) => @handleProposalDeleted proposals_view.collection, view.model
+      @listenTo filter_view, 'sort:requested', (sort_by) => @handleSortRequested proposals_view.collection, sort_by
       @listenTo pagination_view, 'pagination:show_more', => @handleShowMore proposals_view.collection
       @listenTo App.vent, 'proposals:reset', => @handleReset proposals_view.collection, @is_active
 
@@ -65,8 +65,8 @@
     handleShowMore : (collection) ->
       @requestProposals collection, @is_active
 
-    handleProposalDeleted : (model) ->
-      @collection.remove model
+    handleProposalDeleted : (collection, model) ->
+      collection.fullCollection.remove model
       App.vent.trigger 'proposal:deleted', model
 
     handleReset : (collection, is_active) ->
@@ -130,9 +130,9 @@
       if can_create
         create_view = @getCreateView()
         @listenTo create_view, 'proposal:new:requested', => @handleNewProposal()
-        @layout.createRegion.show create_view
+        layout.createRegion.show create_view
       else
-        @layout.createRegion.reset()
+        layout.createRegion.reset()
 
 
     handleNewProposal : ->
@@ -143,8 +143,8 @@
       proposal = App.request "proposal:create", attrs, 
         wait: true
         success: => 
-          @proposals_view.prepareNewProposal proposal
-      @proposals_view.collection.add proposal, { at : 0 }
+          @proposals_view.collection.fullCollection.add proposal
+
 
     getCreateView : ->
       new Proposals.CreateProposalView

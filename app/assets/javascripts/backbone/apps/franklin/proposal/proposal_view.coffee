@@ -18,7 +18,7 @@
 
     initialize : ->
       if @editable()
-        if !Proposal.ModifiableProposalSummaryView.editable_fields
+        if !Proposal.ProposalDescriptionView.editable_fields
           fields = [
             ['.m-proposal-description-title', 'name', 'textarea'], 
             ['.m-proposal-description-body', 'description', 'textarea'] ]
@@ -26,9 +26,9 @@
           editable_fields = _.union fields,
             ([".m-proposal-description-detail-field-#{f}", f, 'textarea'] for f in App.request('proposal:description_fields'))          
 
-          Proposal.ModifiableProposalSummaryView.editable_fields = editable_fields
+          Proposal.ProposalDescriptionView.editable_fields = editable_fields
 
-        @editable_fields = Proposal.ModifiableProposalSummaryView.editable_fields
+        @editable_fields = Proposal.ProposalDescriptionView.editable_fields
 
     onRender : ->
       @stickit()
@@ -477,27 +477,25 @@
       params
 
     onRender : ->
-      @$el.data('state', 0)
-
-    transitionCreated : ->
-      #TODO: handle this in the controller and actually use a route...
-      @$el.find('.m-proposal-description').trigger('click')
-      @$el.attr('data-visibility', 'unpublished')
+      @$el.attr('data-state', 0)
+      @$el.attr('data-visibility', 'unpublished') if !@model.get 'published'
 
 
   class Proposal.SummaryProposalDescription extends Proposal.ProposalDescriptionView
     show_details : false
- 
-    editable : =>
-      App.request('auth:can_edit_proposal', @model) && !@model.get('published')
+  
+    editable : => false
 
-    initialize : ->
+    initialize : (options = {}) ->
+      super options
       _.extend @events, 
         'click .m-proposal-description' : 'toggleDescription'
 
     toggleDescription : (ev) ->
-      if @model.get('published')
-        @trigger 'proposal:clicked'
+      @trigger 'proposal:clicked'
+
+  class Proposal.UnpublishedProposalDescription extends Proposal.ProposalDescriptionView
+
 
   class Proposal.SummaryResultsView extends App.Views.ItemView
 
@@ -531,9 +529,6 @@
     onShow : ->
 
 
-
-
-
   class Proposal.ModifiableProposalSummaryView extends Proposal.ProposalSummaryView
     admin_template : '#tpl_proposal_admin_strip'
 
@@ -548,14 +543,6 @@
       params = _.extend {}, @model.attributes
       @$admin_el = Proposal.ModifiableProposalSummaryView.compiled_admin_template params
       @$el.append @$admin_el
-
-
-      #TODO: can this just be removed???          
-      # else if @has_been_admin_in_past
-      #   for field in ConsiderIt.ProposalView.editable_fields
-      #     [selector, name, type] = field 
-      #     @$el.find(selector).editable('disable')
-
 
 
     events : 
@@ -580,7 +567,12 @@
 
     publishProposal : (ev, response, options) ->
       data = $.parseJSON response.responseText
-      @trigger 'proposal:published', data.proposal.proposal, data.position
+      if data.success
+        toastr.success 'Published!'
+      else
+        toastr.error 'Failed to publish'
+
+      @trigger 'proposal:published', data.proposal.proposal, data.position.position
 
   class Proposal.ProposalStatusDialogView extends App.Views.ItemView
     template : '#tpl_proposal_admin_strip_edit_active'

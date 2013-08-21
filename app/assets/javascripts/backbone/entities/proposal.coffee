@@ -4,10 +4,13 @@
     name: 'proposal'
     defaults : 
       participants : '[]'
+      active : true
+      published : false
 
     initialize : (options = {}) ->
       super options
-      @long_id = @attributes.long_id
+      @long_id = @get 'long_id'
+      @on 'change:long_id', (model, value) -> model.long_id = value      
 
     urlRoot : ''
 

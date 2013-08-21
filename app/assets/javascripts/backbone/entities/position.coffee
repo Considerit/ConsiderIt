@@ -7,6 +7,7 @@
       user_id : -1
 
     urlRoot : ''
+    included_points : []
 
     url : () ->
       if @attributes.proposal_id #avoid url if this is a new proposal
@@ -40,8 +41,6 @@
       @included_points = points
 
     getIncludedPoints : ->
-      if !@included_points
-        throw 'Included points never created'
       @included_points
 
     includePoint : (point) ->
@@ -103,14 +102,19 @@
   API = 
     all_positions : new Entities.Positions()
 
+    getPosition : (position_id) ->
+      @all_positions.get position_id
+
+    createPosition : (position_attrs = {}) ->
+      position = new Entities.Position position_attrs
+      @all_positions.add position
+      position
+
     addPositions : (positions, position = null) ->
       @all_positions.add @all_positions.parse(positions), {merge: true}
 
       if position
         @all_positions.add position, {merge: true}
-
-    getPosition : (position_id) ->
-      @all_positions.get position_id
 
     getPositionsByProposal : (proposal_id) ->
       new Entities.Positions @all_positions.where({proposal_id: proposal_id})
@@ -119,14 +123,20 @@
       new Entities.Positions @all_positions.where({user_id: user_id})
 
 
+
+
   App.vent.on 'positions:fetched', (positions, position = null) ->
     API.addPositions positions, position
 
   App.reqres.setHandler 'position:get', (position_id) ->
     API.getPosition position_id
 
+  App.reqres.setHandler 'position:create', (attrs = {}) ->
+    API.createPosition attrs
+
   App.reqres.setHandler 'positions:get:proposal', (model_id) ->
     API.getPositionsByProposal model_id
 
   App.reqres.setHandler 'positions:get:user', (model_id) ->
     API.getPositionsByUser model_id
+

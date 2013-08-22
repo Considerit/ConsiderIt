@@ -17,15 +17,15 @@
     .m-pointlist-status
 
       %span.m-pointlist-start
-        {{ (currentPage - 1) * pageSize }}
+        {{ (currentPage - 1) * pageSize + 1 }}
       %span &ndash;
       %span.m-pointlist-end
-        {{ currentPage * pageSize }}
+        {{ Math.min(currentPage * pageSize, totalRecords) }}
       %span
         = surround ' ' do
           of
       %span.m-pointlist-total
-        {{totalRecords}}
+        {{ totalRecords }}
 
     %a.m-pointlist-forward
       (( if(lastPage != currentPage && lastPage != 0){ ))

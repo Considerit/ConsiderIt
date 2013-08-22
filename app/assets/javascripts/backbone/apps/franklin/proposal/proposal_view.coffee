@@ -91,6 +91,10 @@
   class Proposal.PositionLayout extends App.Views.Layout
     template : '#tpl_position_layout'
     className : 'm-proposal'
+    attributes : ->
+      "data-role": 'm-proposal'
+      "data-id": "#{@model.id}"
+
 
     regions : 
       proposalRegion : '.m-proposal-description-region'
@@ -232,6 +236,11 @@
   class Proposal.AggregateLayout extends App.Views.Layout
     template : '#tpl_aggregate_layout'
     className : 'm-proposal'
+    attributes : ->
+      "data-role": 'm-proposal'
+      "data-id": "#{@model.id}"
+
+
     regions : 
       proposalRegion : '.m-proposal-description-region'
       histogramRegion : '.m-histogram-region'
@@ -462,7 +471,10 @@
     template : '#tpl_proposal_summary'
     tagName: 'li'
     className : 'm-proposal'
-
+    attributes : ->
+      "data-role": 'm-proposal'
+      "data-id": "#{@model.id}"
+      
     regions : 
       summaryRegion : '.m-results-summary-region'
       proposalRegion : '.m-proposal-description-region'

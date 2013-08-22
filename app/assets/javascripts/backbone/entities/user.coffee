@@ -38,7 +38,13 @@
 
     isFetched : -> @fetched
 
-
+    joinedAt : ->
+      created_at = @get('created_at')
+      if created_at
+        joined_at = created_at.substring(0, created_at.indexOf('T'))      
+      else
+        null
+        
     ### AUTH ###
     hasRole : (role) -> _.indexOf(@roles(), role) >= 0
     updateRole : (roles_mask) -> @set 'roles_mask', roles_mask

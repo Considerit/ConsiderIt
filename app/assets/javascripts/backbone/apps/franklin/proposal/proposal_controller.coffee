@@ -5,7 +5,7 @@
       @proposal = options.model
       @model = @proposal.getUserPosition()
 
-      layout = @getLayout()
+      layout = @getLayout @proposal
       @listenTo layout, 'show', =>
         proposal_view = @getProposalDescription @proposal
         crafting_layout = @getCraftingLayout @proposal, @model
@@ -208,8 +208,9 @@
 
     setupStanceView : (view) ->
 
-    getLayout : ->
+    getLayout : (proposal) ->
       new Proposal.PositionLayout
+        model : proposal
 
     getProposalDescription : (proposal) ->
       new Proposal.PositionProposalDescription

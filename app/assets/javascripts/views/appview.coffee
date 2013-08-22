@@ -33,11 +33,11 @@ class ConsiderIt.AppView extends Backbone.View
 
   events : 
     'click .l-navigate-back' : 'go_back'
-    'mouseenter [data-target="user_profile_page"]' : 'tooltip_show'
-    'mouseleave [data-target="user_profile_page"]' : 'tooltip_hide'
-    'click [data-target="user_profile_page"]' : 'view_user_profile'
+    # 'mouseenter [data-target="user_profile_page"]' : 'tooltip_show'
+    # 'mouseleave [data-target="user_profile_page"]' : 'tooltip_hide'
+    # 'click [data-target="user_profile_page"]' : 'view_user_profile'
 
-  view_user_profile : (ev) -> ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
+  # view_user_profile : (ev) -> ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
 
   go_back : ->
     @history.pop()
@@ -100,32 +100,32 @@ class ConsiderIt.AppView extends Backbone.View
     @last_page = _.last(@history)[1]
 
 
-  user_tooltip_template : _.template( $("#tpl_user_tooltip").html() )
+  # user_tooltip_template : _.template( $("#tpl_user_tooltip").html() )
 
-  tooltip_show : (ev) ->
-    $target = $(ev.currentTarget)
-    if !$target.closest('.l-tooltip-user').length > 0
-      user = ConsiderIt.users[$target.data('id')]
+  # tooltip_show : (ev) ->
+  #   $target = $(ev.currentTarget)
+  #   if !$target.closest('.l-tooltip-user').length > 0
+  #     user = ConsiderIt.users[$target.data('id')]
 
-      if $target.closest('[data-role="m-proposal"]').length > 0
-        proposal = ConsiderIt.all_proposals.get($target.closest('[data-role="m-proposal"]').data('id'))
-        proposal = null if !proposal.user_participated(user.id) 
+  #     if $target.closest('[data-role="m-proposal"]').length > 0
+  #       proposal = ConsiderIt.all_proposals.get($target.closest('[data-role="m-proposal"]').data('id'))
+  #       proposal = null if !proposal.user_participated(user.id) 
 
-      tooltip = @user_tooltip_template {user : user, proposal : proposal}
+  #     tooltip = @user_tooltip_template {user : user, proposal : proposal}
       
-      $('body').append(tooltip)
-      $tooltip = $('body > .l-tooltip-user')
+  #     $('body').append(tooltip)
+  #     $tooltip = $('body > .l-tooltip-user')
 
-      $target.tooltipster
-        interactive: true
-        content: $tooltip
-        offsetY: -5
-        delay: 400
-      $target.tooltipster 'show'
+  #     $target.tooltipster
+  #       interactive: true
+  #       content: $tooltip
+  #       offsetY: -5
+  #       delay: 400
+  #     $target.tooltipster 'show'
 
 
-  tooltip_hide : (ev) ->
-    target = $(ev.currentTarget)
-    #if !$target.closest('.l-tooltip-user').length > 0
-    $('body > .l-tooltip-user, body > .l-tooltip-user-title').remove()
+  # tooltip_hide : (ev) ->
+  #   target = $(ev.currentTarget)
+  #   #if !$target.closest('.l-tooltip-user').length > 0
+  #   $('body > .l-tooltip-user, body > .l-tooltip-user-title').remove()
 

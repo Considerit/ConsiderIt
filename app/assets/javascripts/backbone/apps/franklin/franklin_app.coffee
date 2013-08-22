@@ -41,7 +41,20 @@
       App.vent.trigger 'route:PointDetails', long_id, point_id
 
     StaticPosition: (long_id, user_id) -> 
-      App.vent.trigger 'route:StaticPosition', long_id, user_id
+      proposal = App.request 'proposal:get', long_id, true
+      App.execute 'when:fetched', proposal, -> 
+        #TODO: check first to see if it already exists
+        new Franklin.Proposal.AggregateController
+          region : App.request "default:region"
+          model : proposal
+
+        position = App.request('positions:get').findWhere {long_id : long_id, user_id : parseInt(user_id) }
+        new Franklin.Position.PositionController
+          model : position
+          region: new Backbone.Marionette.Region
+            el: $("body")
+
+
 
   Franklin.on "start", ->
 

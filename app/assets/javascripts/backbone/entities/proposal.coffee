@@ -61,7 +61,8 @@
       else
         my_title
 
-    user_participated : (user_id) -> user_id in @participants()
+    user_participated : (user_id) -> 
+      user_id in @participants()
 
     participants : ->
       if !@participant_list?
@@ -74,6 +75,7 @@
     getParticipants : ->
       if !@all_participants
         @all_participants = (App.request('user', u) for u in @participants())
+
       @all_participants
 
 
@@ -164,7 +166,16 @@
       else if fetch
         proposal.fetch()
       proposal
-    
+
+    getProposalById: (id, fetch = false) ->
+      proposal = @all_proposals.get id
+      if !proposal
+        proposal = API.newProposal {long_id : long_id}
+        proposal.fetch()
+      else if fetch
+        proposal.fetch()
+      proposal
+
     newProposal: (attrs = {}, add_to_all = true ) ->
       proposal = new Entities.Proposal attrs
       @all_proposals.add proposal if add_to_all
@@ -209,7 +220,10 @@
 
   App.reqres.setHandler "proposal:get", (long_id, fetch = false) ->
     API.getProposal long_id, fetch
-  
+
+  App.reqres.setHandler "proposal:get:id", (id, fetch = false) ->
+    API.getProposalById id, fetch
+
   App.reqres.setHandler "proposal:new", (attrs = {}, add_to_all = true)->
     API.newProposal attrs, add_to_all
 

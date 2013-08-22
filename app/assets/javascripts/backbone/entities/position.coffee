@@ -52,6 +52,9 @@
       
     # relations
 
+    getInclusions : ->
+      new App.Entities.Points (App.request('point:get', p) for p in @inclusions())
+
     inclusions : ->
       if @get('point_inclusions') then $.parseJSON(@get('point_inclusions')) else []
 
@@ -65,6 +68,8 @@
         @user = App.request 'user', @get('user_id')
       @user
 
+    stanceLabel : ->
+      Entities.Position.stance_name_adverb @get('stance')
 
     @stance_name_for_bar : (d) ->
       switch parseInt(d)
@@ -122,6 +127,9 @@
     getPositionsByUser : (user_id) ->
       new Entities.Positions @all_positions.where({user_id: user_id})
 
+    getPositions : ->
+      @all_positions
+
 
 
 
@@ -133,6 +141,9 @@
 
   App.reqres.setHandler 'position:create', (attrs = {}) ->
     API.createPosition attrs
+
+  App.reqres.setHandler 'positions:get', ->
+    API.getPositions()
 
   App.reqres.setHandler 'positions:get:proposal', (model_id) ->
     API.getPositionsByProposal model_id

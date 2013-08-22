@@ -1,0 +1,39 @@
+%script{ :type => "text/template", :id => "tpl_user_tooltip" }
+
+  .l-tooltip.l-tooltip-user
+    .l-tooltip-user-block
+      .l-tooltip-title.l-tooltip-user-title
+        .l-tooltip-user-name
+          {{ user.get('name') }}
+        .l-tooltip-user-joined
+          joined {{ user.get('created_at').substring(0, user.get('created_at').indexOf('T')) }}
+
+
+
+    .l-tooltip-user-metrics
+
+      %ul
+        - [ ['influence', 'metric_influence', 'major'], ['points', 'metric_points', 'minor'], ['votes', 'metric_positions', 'minor'], ['comments', 'metric_comments', 'minor']  ].each do |label, attr, style|
+          %li.l-tooltip-user-metric{ :class => "l-tooltip-user-metric-#{style}" }
+            %span.l-tooltip-user-metric-number
+              {{ user.get("#{attr}") }}
+            %span.l-tooltip-user-metric-desc
+              = label          
+
+    .l-tooltip-user-actions
+      (( if(proposal) { ))
+      %a.l-tooltip-user-action{ :href => "{{Routes.user_position_proposal_path(proposal.long_id, user.id)}}", :'data-target' => 'user_position_page', :'data-proposal-id' => "{{proposal.id}}", :'data-user-id' => "{{user.id}}" }
+        Read their thoughts on this issue
+      (( } ))
+      / %a.l-tooltip-user-action.l-tooltip-user-profile{ :'data-target' => 'user_profile_page', :'data-id' => "{{user.id}}" }
+      /   View their profile
+
+
+%script{ :type => "text/template", :id => "tpl_dialog_detachable"}
+  .l-dialog-title
+    {{ title }} 
+    
+    %a.l-dialog-close.cancel{ :'data-target' => 'dialog-close'}
+      {{ close_label }}
+
+  .l-dialog-body

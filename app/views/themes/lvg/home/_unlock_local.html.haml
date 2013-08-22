@@ -39,14 +39,12 @@
 
   - else
 
-    .no_measures.unlock_this
-      Unlock your local measures
     .reset
       .reset_form
         .unlock
           %span.inlined
             = text_field_tag :domain, '', :placeholder => 'Your address', :title => 'your address'
-          = submit_tag 'Unlock', :class => 'button'
+          = submit_tag 'Unlock your local measures', :class => 'button'
 
           = form_tag home_domain_path, :class => 'hide hidden_form' do |f|
             = text_field_tag :domain, ''

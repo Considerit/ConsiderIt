@@ -331,6 +331,7 @@
 
   class Proposal.AggregateHistogram extends App.Views.ItemView
     template : '#tpl_aggregate_histogram'
+    className : 'm-histogram'
 
     serializeData : ->
       _.extend {}, @model.attributes,

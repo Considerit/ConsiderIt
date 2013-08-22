@@ -131,6 +131,13 @@
       parent_position.css
         marginLeft : @previous_margin
       @collection.setPageSize @previous_page_size
+      @collection.getPage(1)
+
+      tenant = App.request 'tenant:get'
+      cnt = _.size @collection.fullCollection
+      label = if @options.valence == 'pro' then tenant.getProLabel({capitalize:true, plural:true}) else tenant.getConLabel({capitalize:false, plural:true})        
+
+      @ui.browse_footer.find('.m-pointlist-browse-toggle').text "View all #{cnt} #{label}"      
       @ui.browse_header.css
         visibility: 'hidden'
 

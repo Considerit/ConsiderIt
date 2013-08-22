@@ -79,7 +79,7 @@
         {{ (currentPage - 1) * pageSize + 1 }}
       &ndash;
       %span.perpage
-        {{ currentPage * pageSize }} 
+        {{ Math.min(currentPage * pageSize, totalRecords) }} 
       of
       %span.total
         {{ totalRecords }} 

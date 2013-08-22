@@ -135,7 +135,7 @@
 
       .m-dashboard-profile-influenced.l-group-container
         (( _.each(_.keys(influenced_users), function(p){ ))
-        %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :alt => "{{App.request('user',p).get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+        %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
         (( }); ))        
   (( } ))
 
@@ -244,7 +244,7 @@
                 This point has influenced {{influenced_users_by_point[point.id].length}} people
               .l-group-container
                 (( _.each(influenced_users_by_point[point.id], function(p){ ))
-                %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :alt => "{{App.request('user', p).get('name')}}'s profile picture", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+                %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
                 (( }); ))   
 
             %td.m-dashboard-profile-activity-action

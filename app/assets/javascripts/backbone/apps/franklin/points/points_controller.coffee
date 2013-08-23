@@ -6,7 +6,22 @@
         @listenTo layout, 'sort', (sort_by) =>
           @sortPoints sort_by
 
+        @listenTo layout, 'childview:point:clicked', (view) =>
+          point = view.model
+          App.navigate Routes.proposal_point_path(point.get('long_id'), point.id), {trigger : true}
+
       @layout = layout
+      @listenTo @options.parent, 'point:show_details', (point) =>
+        is_paginated = @options.collection.fullCollection?
+        collection = if is_paginated then @options.collection.fullCollection else @options.collection
+        if point = collection.get point
+          # ensure that point is currently displayed
+          if is_paginated
+            page = @options.collection.pageOf point
+            @options.collection.getPage page
+
+          pointview = layout.children.findByModel point
+
 
     sortPoints : (sort_by) ->
       @options.collection.setSorting sort_by, 1

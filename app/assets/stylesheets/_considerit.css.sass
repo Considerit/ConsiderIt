@@ -668,11 +668,11 @@ $arrow_height: 10px
     border-color: #aaa
     @extend %on_paper
 
-  .m-point-wrap
-    +single-box-shadow($color: rgba(black, .2))
-    border-radius: 8px
-    border: 1px solid #ccc //$dark_community_color
-    @extend %on_paper
+%m-white-thought-bubble-inner
+  +single-box-shadow($color: rgba(black, .2))
+  border-radius: 8px
+  border: 1px solid #ccc //$dark_community_color
+  @extend %on_paper
 
 .m-point-peer
   @extend %m-point
@@ -681,6 +681,7 @@ $arrow_height: 10px
   width: $peer-point-width
 
   .m-point-wrap
+    @extend %m-white-thought-bubble-inner
     width: $peer-point-width 
 
     padding: $vertical_baseline / 2 $grid_xs / 2 2 * $vertical_baseline $grid_xs / 2
@@ -791,7 +792,7 @@ $arrow_height: 10px
             &:after
               border-left-color: darken($callout_bg_color, 8%)
 
-    &.m-point-expanded
+    .m-point-expanded
       .m-point-include-wrap .m-point-include 
         border-bottom-right-radius: 1px
         border-right-color: transparent    
@@ -829,7 +830,7 @@ $arrow_height: 10px
             &:after
               border-right-color: darken($callout_bg_color, 8%)
 
-    &.m-point-expanded
+    .m-point-expanded
       .m-point-include-wrap .m-point-include 
         border-bottom-left-radius: 1px
         border-left-color: transparent    
@@ -1108,28 +1109,30 @@ $expansion_size: 250px
 
 /* EXPANDED POINT */
 $m-point-expanded-width: $body_width + 150
+.con
+  &.m-point-position, .m-point-results
+    .m-point-expanded
+      left: $pro-con-list-column-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
+  &.m-point-peer
+    .m-point-expanded
+      right: $m-point-expanded-width - $peer-point-width
+.pro
+  &.m-point-position, &.m-point-results
+    .m-point-expanded
+      left: - ($m-point-expanded-width - $body_width) / 2
+
+
 .m-point-expanded
   position: relative
   z-index: 999
   cursor: auto
   width: $m-point-expanded-width  
   @extend %m-white-thought-bubble
+  @extend %m-white-thought-bubble-inner
+  cursor: auto
+  width: $m-point-expanded-width
 
-  &.con
-    &.m-point-position, &.m-point-results
-      left: $pro-con-list-column-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
-    &.m-point-peer
-      right: $m-point-expanded-width - $peer-point-width
-  &.pro
-    &.m-point-position, &.m-point-results
-      left: - ($m-point-expanded-width - $body_width) / 2
-
-
-  .m-point-wrap
-    cursor: auto
-    width: $m-point-expanded-width
-
-    padding: $vertical_baseline / 2 $grid_xs
+  padding: $vertical_baseline / 2 $grid_xs
 
   .m-point-nutshell, .m-point-details-description, .m-point-operations
     padding-bottom: $vertical_baseline / 2

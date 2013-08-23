@@ -21,6 +21,14 @@
             @options.collection.getPage page
 
           pointview = layout.children.findByModel point
+          controller = new App.Franklin.Point.ExpandedPointController
+            model : point
+            region : new Backbone.Marionette.Region
+              el : pointview.el
+
+
+          @listenTo controller, 'close', =>
+            pointview.render()
 
 
     sortPoints : (sort_by) ->

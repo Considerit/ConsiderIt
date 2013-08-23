@@ -26,15 +26,15 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       })
 
 
-    $comment_el = $('<div class="m-point-discussion">')
+    # $comment_el = $('<div class="m-point-discussion">')
     
-    @commentsview = new ConsiderIt.CommentListView({
-      collection: @model.comments
-      el: $comment_el
-      commentable_id: @model.id
-      commentable_type: 'Point'})
+    # @commentsview = new ConsiderIt.CommentListView({
+    #   collection: @model.comments
+    #   el: $comment_el
+    #   commentable_id: @model.id
+    #   commentable_type: 'Point'})
 
-    @listenTo @commentsview, 'CommentListView:new_comment_added', => @model.set('comment_count', @model.comments.length )
+    # @listenTo @commentsview, 'CommentListView:new_comment_added', => @model.set('comment_count', @model.comments.length )
 
 
     if ConsiderIt.request "user:current:logged_in?"
@@ -45,23 +45,23 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       )))
 
     #TODO: if user logs in as admin, need to do this
-    if ConsiderIt.request('user:current').id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
-      @$el.find('.m-point-nutshell ').editable
-          resource: 'point'
-          pk: @model.id
-          url: Routes.proposal_point_path @model.get('long_id'), @model.id
-          type: 'textarea'
-          name: 'nutshell'
-          success : (response, new_value) => @model.set('nutshell', new_value)
+    # if ConsiderIt.request('user:current').id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
+    #   @$el.find('.m-point-nutshell ').editable
+    #       resource: 'point'
+    #       pk: @model.id
+    #       url: Routes.proposal_point_path @model.get('long_id'), @model.id
+    #       type: 'textarea'
+    #       name: 'nutshell'
+    #       success : (response, new_value) => @model.set('nutshell', new_value)
 
 
-      @$el.find('.m-point-details-description ').editable
-          resource: 'point'
-          pk: @model.id
-          url: Routes.proposal_point_path @model.get('long_id'), @model.id
-          type: 'textarea'
-          name: 'text'
-          success : (response, new_value) => @model.set('text', new_value)
+    #   @$el.find('.m-point-details-description ').editable
+    #       resource: 'point'
+    #       pk: @model.id
+    #       url: Routes.proposal_point_path @model.get('long_id'), @model.id
+    #       type: 'textarea'
+    #       name: 'text'
+    #       success : (response, new_value) => @model.set('text', new_value)
 
 
     @$el.find('.m-point-wrap').append($comment_el)
@@ -77,11 +77,11 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       @$el.find('.m-point-wrap > *').css 'visibility', ''
 
       # when clicking outside of point, close it
-      $(document).on 'click.m-point-details', (ev)  => 
-        if ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id) && $(ev.target).closest('.editable-buttons').length == 0
-          @close_details( $(ev.target).closest('[data-role="m-point"]').length == 0 && $(ev.target).closest('.l-navigate-wrap').length == 0 ) 
+      # $(document).on 'click.m-point-details', (ev)  => 
+      #   if ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id) && $(ev.target).closest('.editable-buttons').length == 0
+      #     @close_details( $(ev.target).closest('[data-role="m-point"]').length == 0 && $(ev.target).closest('.l-navigate-wrap').length == 0 ) 
 
-      $(document).on 'keyup.m-point-details', (ev) => @close_details() if ev.keyCode == 27 && $('#l-dialog-detachable').length == 0
+      # $(document).on 'keyup.m-point-details', (ev) => @close_details() if ev.keyCode == 27 && $('#l-dialog-detachable').length == 0
 
       next()
 
@@ -97,24 +97,24 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     $(ev.currentTarget).parent().addClass('hide').siblings('.follow, .unfollow').removeClass('hide')
     ConsiderIt.request('user:current').setFollowing(data.follow.follow)
 
-  close_details : (go_back) ->
-    go_back ?= true
-    @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
+  # close_details : (go_back) ->
+  #   go_back ?= true
+  #   @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
 
-    @commentsview.clear()
-    @commentsview.remove()
-    @assessmentview.remove() if @assessmentview?
+  #   @commentsview.clear()
+  #   @commentsview.remove()
+  #   @assessmentview.remove() if @assessmentview?
 
-    $(document).off '.m-point-details' #, @close_by_keyup
-    @$el.off '.m-point-details'
+  #   $(document).off '.m-point-details' #, @close_by_keyup
+  #   @$el.off '.m-point-details'
 
-    @$el.removeClass('m-point-expanded')
-    @$el.addClass('m-point-unexpanded')
+  #   @$el.removeClass('m-point-expanded')
+  #   @$el.addClass('m-point-unexpanded')
 
-    @undelegateEvents()
-    @stopListening()
+  #   @undelegateEvents()
+  #   @stopListening()
     
-    @model.trigger 'change' #trigger a render event
-    ConsiderIt.app.go_back_crumb() if go_back
-    #next()
+  #   @model.trigger 'change' #trigger a render event
+  #   ConsiderIt.app.go_back_crumb() if go_back
+  #   #next()
 

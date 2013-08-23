@@ -25,26 +25,33 @@
         observe : 'comment_count'
         onGet : -> if @model.get('comment_count') == 1 then "1 comment" else "#{@model.get('comment_count')} comments"
 
+    @events : 
+      'click' : 'pointClicked'
+
+    pointClicked : (ev) ->
+      @trigger 'point:clicked'
 
   class Point.PeerPointView extends Point.PointView
 
-    events : 
+    events : _.extend @events,
       'click [data-target="point-include"]' : 'includePoint'
 
     includePoint : (ev) ->
       @trigger 'point:include'
+      ev.stopPropagation()
 
   class Point.PositionPointView extends Point.PointView
 
-    events : 
+    events : _.extend @events,
       'click [data-target="point-remove"]' : 'removePoint'
 
     removePoint : (ev) ->
       @trigger 'point:remove'
+      ev.stopPropagation()
 
   class Point.AggregatePointView extends Point.PointView
 
-    events : 
+    events : _.extend @events,
       'mouseenter' : 'highlightIncluders'
       'mouseleave' : 'unhighlightIncluders'
 
@@ -56,6 +63,7 @@
 
 
   class Point.PointDetailsView extends App.Views.ItemView
+    template : '#tpl_point_details_view'
 
 
   # class Point.NewPointView extends App.Views.ItemView

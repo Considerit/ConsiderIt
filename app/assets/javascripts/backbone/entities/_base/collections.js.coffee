@@ -13,3 +13,10 @@
 
     initialize : (options = {}) ->
       super options
+
+    pageOf : (model) ->
+      idx = _.indexOf @fullCollection.models, model
+      if idx > -1
+        Math.floor(idx / @state.pageSize + 1)
+      else
+        null

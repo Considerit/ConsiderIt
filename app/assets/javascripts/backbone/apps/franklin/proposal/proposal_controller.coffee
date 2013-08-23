@@ -1,6 +1,7 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
+  class Proposal.AbstractProposalController extends App.Controllers.Base
 
-  class Proposal.PositionController extends App.Controllers.Base
+  class Proposal.PositionController extends Proposal.AbstractProposalController
     initialize : (options = {}) ->
       @proposal = options.model
       @model = @proposal.getUserPosition()
@@ -96,23 +97,27 @@
         valence : 'pro'
         collection : peer_pros
         region : layout.peerProsRegion
+        parent : @
 
       peer_cons_controller = new App.Franklin.Points.PeerPointsController
         valence : 'con'
         collection : peer_cons
         region : layout.peerConsRegion
+        parent : @
 
       position_pros_controller = new App.Franklin.Points.UserReasonsController
         valence : 'pro'
         collection : position_pros
         region : layout.positionProsRegion
         proposal : @proposal
+        parent : @
 
       position_cons_controller = new App.Franklin.Points.UserReasonsController
         valence : 'con'
         collection : position_cons
         region : layout.positionConsRegion
         proposal : @proposal
+        parent : @
 
       _.each [position_pros_controller, position_cons_controller], (position_list) =>
 
@@ -198,11 +203,11 @@
 
       # persist the inclusion ... (in future, don't have to do this until posting...)
       params = { 
-        proposal_id : model.proposal_id,
+        proposal_id : model.get('proposal_id'),
         point_id : model.id
       }
       ConsiderIt.utils.add_CSRF params
-      $.post Routes.inclusions_path( ), 
+      $.post Routes.inclusions_path(), 
         params, (data) ->
 
 
@@ -238,7 +243,7 @@
       new Proposal.PositionFooterView
         model : position
 
-  class Proposal.AggregateController extends App.Controllers.Base
+  class Proposal.AggregateController extends Proposal.AbstractProposalController
     initialize : (options = {}) ->
       @model = options.model
 
@@ -294,8 +299,8 @@
         layout.histogramRegion.show histogram_view #has to be shown after reasons
 
         # TODO: make transition optional
-        transition = true
-        if transition
+        @options.transition ?= true
+        if @options.transition
           _.delay ->
             layout.explodeParticipants()
           , 750
@@ -311,11 +316,13 @@
         valence : 'pro'
         collection : aggregated_pros
         region : layout.prosRegion
+        parent : @
 
       cons = new App.Franklin.Points.AggregatedReasonsController
         valence : 'con'
         collection : aggregated_cons
         region : layout.consRegion
+        parent : @
 
       [pros, cons]
 

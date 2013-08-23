@@ -1,0 +1,53 @@
+%script{ :type => "text/template", :id => "tpl_comments_view" } 
+
+  .m-point-discussion-heading
+    Discussion
+
+  %ul.m-point-comments
+
+  .m-new-comment            
+
+    %span.avatar.m-new-comment-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
+
+    .m-new-comment-body
+      %textarea.m-new-comment-body-field.is_counted{ :name => :body, :placeholder => 'Type your comment here...', :title => 'Type your comment here...' }
+      %span.count
+        1000
+
+      (( if( is_logged_in ) { ))
+      .m-new-comment-submit-wrap
+        %span.m-new-comment-civility-reminder
+          Thanks for being civil!
+
+        %button.m-new-comment-submit.button
+          Add comment
+
+      (( } else { ))
+      .m-login
+        You must be logged in to leave a comment.
+        %a.m-login-signin{:'data-target' => 'login'}
+          Sign In
+        %a.m-login-signup{:'data-target' => 'create_account'}
+          Create Account
+      (( } ))
+
+
+%script{ :type => "text/template", :id => "tpl_comment_view" }   
+  
+  (( if( moderation_status == 0 ){ ))
+  %i
+    This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.
+  ((} else { ))
+
+  %a.avatar.m-comment-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page"}
+
+  .m-comment-body-wrap
+    .m-comment-body
+      {{body}}
+
+    %span.m-comment-author
+      &ndash; 
+      %a{ :href => "{{Routes.profile_path(user.id)}}", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page"}
+        {{ user.get('name') }}
+
+  (( } ))

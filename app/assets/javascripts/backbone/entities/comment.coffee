@@ -40,6 +40,9 @@
     addComments : (comments) ->
       @all_comments.set comments
 
+    createComment : (attrs, options = {wait : true}) ->
+      @all_comments.create attrs, options
+
     getCommentsByUser : (user_id) ->
       new Entities.Comments @all_comments.where({user_id : user_id})
 
@@ -48,6 +51,9 @@
 
   App.reqres.setHandler 'comment:get', (id) ->
     API.getComment id
+
+  App.reqres.setHandler 'comment:create', (attrs, options = {wait : true}) ->
+    API.createComment attrs, options
 
   App.vent.on 'comments:fetched', (comments) ->
     API.addComments comments

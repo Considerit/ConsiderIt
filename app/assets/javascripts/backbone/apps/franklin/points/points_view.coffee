@@ -18,13 +18,15 @@
     serializeData : -> {}
 
     buildItemView : (point) ->
+      valence = if point.attributes.is_pro then 'pro' else 'con'
       view = new @itemView
         model : point
         attributes : 
           'data-id': "#{point.id}"
           'data-role': 'm-point'
           includers : "#{point.get('includers')}"
-          class : "m-point m-point-unexpanded m-point-#{@location}"
+          class : "m-point m-point-unexpanded m-point-#{@location} #{valence}"
+
       view
 
     requestSort : (sort_by) ->

@@ -42,6 +42,7 @@ class CommentsController < ApplicationController
         if commentable.respond_to? :follow!
           commentable.follow!(current_user, :follow => true, :explicit => false)
         end
+      end
 
     end
     render :json => comment     

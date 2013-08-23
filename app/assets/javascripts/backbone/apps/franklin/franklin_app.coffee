@@ -46,6 +46,7 @@
           @franklin_controller = new Franklin.Proposal.AggregateController
             region : region
             model : proposal
+            transition : false
 
         point = App.request 'point:get', parseInt(point_id)
         @franklin_controller.trigger 'point:show_details', point

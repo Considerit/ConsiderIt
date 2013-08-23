@@ -20,40 +20,52 @@
   
   API =
     Root: -> 
-      new Franklin.Root.Controller
+      @franklin_controller = new Franklin.Root.Controller
         region : App.request "default:region"
 
     Consider: (long_id) -> 
       proposal = App.request 'proposal:get', long_id, true
       App.execute 'when:fetched', proposal, ->
-        new Franklin.Proposal.PositionController
+        @franklin_controller = new Franklin.Proposal.PositionController
           region : App.request "default:region"
           model : proposal
 
     Aggregate: (long_id) -> 
       proposal = App.request 'proposal:get', long_id, true
       App.execute 'when:fetched', proposal, ->
-        new Franklin.Proposal.AggregateController
+        @franklin_controller = new Franklin.Proposal.AggregateController
           region : App.request "default:region"
           model : proposal
 
     PointDetails: (long_id, point_id) -> 
-      App.vent.trigger 'route:PointDetails', long_id, point_id
+      proposal = App.request 'proposal:get', long_id, true
+      App.execute 'when:fetched', proposal, -> 
+        region = App.request "default:region"
+        if !(region.currentView instanceof Franklin.Proposal.PositionLayout || 
+             region.currentView instanceof Franklin.Proposal.AggregateLayout)
+          @franklin_controller = new Franklin.Proposal.AggregateController
+            region : region
+            model : proposal
+
+        point = App.request 'point:get', parseInt(point_id)
+        @franklin_controller.trigger 'point:show_details', point
 
     StaticPosition: (long_id, user_id) -> 
       proposal = App.request 'proposal:get', long_id, true
       App.execute 'when:fetched', proposal, -> 
-        #TODO: check first to see if it already exists
-        new Franklin.Proposal.AggregateController
-          region : App.request "default:region"
-          model : proposal
+        region = App.request "default:region"
+        if !(region.currentView instanceof Franklin.Proposal.PositionLayout || 
+             region.currentView instanceof Franklin.Proposal.AggregateLayout)
+          @franklin_controller = new Franklin.Proposal.AggregateController
+            region : region
+            model : proposal
+            transition : false
 
         position = App.request('positions:get').findWhere {long_id : long_id, user_id : parseInt(user_id) }
         new Franklin.Position.PositionController
           model : position
           region: new Backbone.Marionette.Region
             el: $("body")
-
 
 
   Franklin.on "start", ->

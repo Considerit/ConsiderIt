@@ -1,8 +1,17 @@
 @ConsiderIt.module "Franklin.Point", (Point, App, Backbone, Marionette, $, _) ->
   
-  class Point.PointView extends App.Views.Layout
-    tagName : 'li'
-    template : '#tpl_point_view'
+  class Point.PointHeaderView extends App.Views.ItemView
+    template : '#tpl_point_view_header'
+    tagName : 'span'
+
+    serializeData : ->
+      params = _.extend {}, 
+        user : @model.getUser().attributes
+        hide_name : @model.get 'hide_name'
+      params
+
+  class Point.PointBodyView extends App.Views.ItemView
+    template : '#tpl_point_view_body'
 
     serializeData : ->
       params = _.extend {}, @model.attributes, 
@@ -12,18 +21,33 @@
 
       params
 
-    expand : ->
-
     onRender : ->
-      #TODO: in previous scheme, this change was intended to trigger render on point details close
-      @listenTo @model, 'change', @render
-
       @stickit()
 
     bindings : 
       '.m-point-read-more' : 
         observe : 'comment_count'
-        onGet : -> if @model.get('comment_count') == 1 then "1 comment" else "#{@model.get('comment_count')} comments"
+        onGet : -> 
+          if @model.get('comment_count') == 1 then "1 comment" else "#{@model.get('comment_count')} comments"
+
+
+  class Point.PointView extends App.Views.Layout
+    tagName : 'li'
+    template : '#tpl_point_view'
+
+    regions :
+      headerRegion : '.m-point-header-region'
+      bodyRegion : '.m-point-wrap'
+      expansionRegion : '.m-point-expansion-region'
+
+    serializeData : ->
+      params = _.extend {}, @model.attributes
+
+      params
+
+    onRender : ->
+      #TODO: in previous scheme, this change was intended to trigger render on point details close
+      @listenTo @model, 'change', @render
 
     @events : 
       'click' : 'pointClicked'
@@ -62,15 +86,12 @@
     unhighlightIncluders : ->
       @trigger 'point:unhighlight_includers'
 
-  class Point.ExpandedPointView extends Point.PointView
-    template : '#tpl_expanded_point'
-    className : 'm-point-expanded'
+  class Point.ExpandedView extends App.Views.Layout
+    template : '#tpl_point_expanded'
     regions :
-      pointHeaderRegion : '.m-point-header'
+      followRegion : '.m-point-follow'
       assessmentRegion : '.m-point-assessment'
       discussionRegion : '.m-point-discussion'
-
-
 
     onShow : ->
       # when clicking outside of point, close it      
@@ -80,7 +101,7 @@
 
       $(document).on 'keyup.m-point-details', (ev) => @closeDetails() if ev.keyCode == 27 && $('#l-dialog-detachable').length == 0
 
-      current_user = ConsiderIt.request('user:current')
+      current_user = App.request 'user:current'
       if current_user.id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
         @$el.find('.m-point-nutshell ').editable
           resource: 'point'
@@ -89,7 +110,6 @@
           type: 'textarea'
           name: 'nutshell'
           success : (response, new_value) => @model.set('nutshell', new_value)
-
 
         @$el.find('.m-point-details-description ').editable
           resource: 'point'
@@ -100,11 +120,7 @@
           success : (response, new_value) => @model.set('text', new_value)
 
     closeDetails : (go_back) ->
-      $(document).off '.m-point-details'
-      
-      App.navigate Routes.root_path(), {trigger : true}
-
-
+      @trigger 'details:close'
       # go_back ?= true
       # @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
 
@@ -122,5 +138,22 @@
       # @model.trigger 'change' #trigger a render event
       # ConsiderIt.app.go_back_crumb() if go_back
 
+  class Point.FollowView extends App.Views.ItemView
+    template : '#tpl_point_follow'
 
-  # class Point.NewPointView extends App.Views.ItemView
+    serializeData : ->
+      current_user = App.request 'user:current'
+      params = _.extend {}, @model.attributes,
+        already_follows : current_user.isFollowing 'Point', @model.id
+        current_user_id : current_user.id
+      params
+
+    events : 
+      'ajax:success .follow form' : 'toggleFollow'
+      'ajax:success .unfollow form' : 'toggleFollow'
+
+    toggleFollow : (ev, data) ->
+      @trigger 'point:follow', data
+      $(ev.currentTarget).parent().addClass('hide').siblings('.follow, .unfollow').removeClass('hide')
+
+

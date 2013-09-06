@@ -3,7 +3,7 @@
   class Show.Controller extends App.Controllers.Base
     
     initialize: ->
-      user = App.request "user:current"
+      user = App.request 'user:current'
 
       if App.request 'user:current:logged_in?'
 

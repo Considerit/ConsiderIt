@@ -129,10 +129,11 @@
     className : 'm-position-footer l-message m-position-your_action'
 
     serializeData : ->
+      current_user = App.request 'user:current'
       _.extend {},
         active : @model.getProposal().get 'active'
         updating : @model && @model.get 'published'
-        follows : @model.getUser().isFollowing('Proposal', @model.id)
+        follows : current_user.isFollowing 'Proposal', @model.id
 
     events : 
       'click .submit' : 'handleSubmitPosition'

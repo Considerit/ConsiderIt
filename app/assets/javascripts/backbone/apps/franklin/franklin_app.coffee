@@ -48,10 +48,11 @@
             model : proposal
             transition : false
 
-        point = App.request 'point:get', parseInt(point_id)
-        @franklin_controller.trigger 'point:show_details', point
+        point = App.request 'point:get', parseInt(point_id), true
+        App.execute 'when:fetched', point, =>
+          @franklin_controller.trigger 'point:show_details', point
 
-    StaticPosition: (long_id, user_id) -> 
+    StaticPosition: (long_id, user_id) ->
       proposal = App.request 'proposal:get', long_id, true
       App.execute 'when:fetched', proposal, -> 
         region = App.request "default:region"

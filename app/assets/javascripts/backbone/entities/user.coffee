@@ -218,7 +218,8 @@
     API.getAvatar user, size, fname
 
   App.reqres.setHandler "user:current:avatar", (size = 'small', fname = null) ->
-    API.getAvatar App.request('user:current'), size, fname
+    current_user = App.request 'user:current'
+    API.getAvatar current_user, size, fname
 
   App.reqres.setHandler 'users:add', (params) ->
     API.addUser params
@@ -229,9 +230,6 @@
     limited_user = ConsiderIt.limited_user_id
 
     API.createUsers ConsiderIt.users, [current_user, limited_user]
-
-
-
 
 
   #### AUTH APP INTERFACE ######
@@ -263,7 +261,7 @@
       @fixed_user
 
     clear_current_user : ->
-      @current_user = null
+      @current_user = new App.Entities.OperatingUser {}
 
     clear_fixed_user : ->
       @fixed_user = null
@@ -271,33 +269,28 @@
     fixed_user_exists : ->
       !!@fixed_user
 
-
     update_current_user : (user_data) ->
       user_id = user_data.user.id
 
-      if @current_user && @current_user.id == user_id
-        current_user = @current_user
-      else
-        current_user = App.request 'user', user_id
-        AUTH_API.set_current_user user_id
+      AUTH_API.set_current_user user_id if @current_user.id != user_id
 
-
+      current_user = @current_user
 
       current_user.set user_data.user
       current_user.setFollows user_data.follows if 'follows' of user_data
 
       if current_user.get 'b64_thumbnail'
-        $('head').append("<style>#avatar-#{ConsiderIt.request('user:current').id}{background-image:url('#{ConsiderIt.request('user:current').get('b64_thumbnail')}');}</style>")
+        $('head').append("<style>#avatar-#{current_user.id}{background-image:url('#{current_user.get('b64_thumbnail')}');}</style>")
 
       App.vent.trigger 'user:updated'
 
 
     current_user_logged_in : ->
-      current_user = AUTH_API.get_current_user()
+      current_user = App.request 'user:current'
       current_user && current_user.isPersisted()
 
     paperworkCompleted : ->
-      current_user = AUTH_API.get_current_user()
+      current_user = App.request 'user:current'
       current_user.get 'registration_complete'
 
 
@@ -305,7 +298,7 @@
 
 
     
-  App.reqres.setHandler "user:current", ->
+  App.reqres.setHandler 'user:current', ->
     AUTH_API.get_current_user()
 
   # App.reqres.setHandler "user:current:set", (user) ->
@@ -353,6 +346,8 @@
     if ConsiderIt.current_user_data
       AUTH_API.set_current_user ConsiderIt.current_user
       AUTH_API.update_current_user ConsiderIt.current_user_data
+    else
+      AUTH_API.clear_current_user()
 
     if ConsiderIt.limited_user_data
       AUTH_API.set_fixed_user { user : ConsiderIt.limited_user_data, follows : ConsiderIt.limited_user_follows }

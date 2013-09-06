@@ -406,8 +406,6 @@
       @listenTo view, 'proposal:clicked', =>
         App.navigate Routes.new_position_proposal_path( @model.long_id ), {trigger: true}
 
-
-
     setupSummary : (view) ->
       view
 

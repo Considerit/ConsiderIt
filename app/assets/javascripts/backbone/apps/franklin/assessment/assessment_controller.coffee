@@ -1,27 +1,29 @@
-@ConsiderIt.module "Franklin", (Franklin, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Franklin.Assessment", (Assessment, App, Backbone, Marionette, $, _) ->
 
-  class Franklin.AssessmentController extends App.Controllers.Base
+  class Assessment.AssessmentController extends App.Controllers.Base
 
     initialize : (options = {}) ->
-      super options
       @layout = @getLayout()
       @listenTo @layout, 'show', ->
-        if @options.model.assessment
+        if @options.model
           view = @getCompletedAssessment()
           @layout.assessmentRegion.show view
-        else
+        else if @options.assessable.getProposal().get('active') 
           view = @getRequestAssessment()
           @layout.assessmentRequestRegion.show view
 
+      @region.show @layout
+
     getLayout : ->
-      new Franklin.AssessmentLayout
+      new Assessment.AssessmentLayout
 
     getRequestAssessment : ->
-      new Franklin.AssessmentRequestView
-        already_requested_assessment : @options.point.already_requested_assessment
-    
+      new Assessment.AssessmentRequestView
+        model : @options.model
+        assessable : @options.assessable
+
     getCompletedAssessment : ->
-      new Franklin.AssessmentView
-        assessment : @options.point.assessment
-        claims : @options.point.claims
-        num_assessment_requests : @options.point.num_assessment_requests
+      new Assessment.AssessmentView
+        model : @options.model
+        claims : @options.model.getClaims()
+        assessable : @options.assessable

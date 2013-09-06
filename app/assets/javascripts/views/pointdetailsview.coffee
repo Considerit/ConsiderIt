@@ -37,12 +37,12 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     # @listenTo @commentsview, 'CommentListView:new_comment_added', => @model.set('comment_count', @model.comments.length )
 
 
-    if ConsiderIt.request "user:current:logged_in?"
-      if !ConsiderIt.PointDetailsView.follow_tpl
-        ConsiderIt.PointDetailsView.follow_tpl = _.template( $('#tpl_point_follows').html() )
-      @$el.find('.m-point-follow').append( ConsiderIt.PointDetailsView.follow_tpl( _.extend( {}, @model.attributes,
-        already_follows : ConsiderIt.request('user:current').isFollowing('Point', @model.id)
-      )))
+    # if ConsiderIt.request "user:current:logged_in?"
+    #   if !ConsiderIt.PointDetailsView.follow_tpl
+    #     ConsiderIt.PointDetailsView.follow_tpl = _.template( $('#tpl_point_follows').html() )
+    #   @$el.find('.m-point-follow').append( ConsiderIt.PointDetailsView.follow_tpl( _.extend( {}, @model.attributes,
+    #     already_follows : ConsiderIt.request('user:current').isFollowing('Point', @model.id)
+    #   )))
 
     #TODO: if user logs in as admin, need to do this
     # if ConsiderIt.request('user:current').id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
@@ -72,7 +72,7 @@ class ConsiderIt.PointDetailsView extends Backbone.View
       window.ensure_el_in_view(@$el, .5, 100)
 
       @assessmentview.render() if @assessmentview?
-      @commentsview.renderAllItems()
+      # @commentsview.renderAllItems()
   
       @$el.find('.m-point-wrap > *').css 'visibility', ''
 
@@ -88,14 +88,14 @@ class ConsiderIt.PointDetailsView extends Backbone.View
     this
     
 
-  events : 
-    #'click .m-point-details-close' : 'close_details'
-    'ajax:success .follow form' : 'toggle_follow'
-    'ajax:success .unfollow form' : 'toggle_follow'
+  # events : 
+  #   #'click .m-point-details-close' : 'close_details'
+  #   'ajax:success .follow form' : 'toggle_follow'
+  #   'ajax:success .unfollow form' : 'toggle_follow'
 
-  toggle_follow : (ev, data) -> 
-    $(ev.currentTarget).parent().addClass('hide').siblings('.follow, .unfollow').removeClass('hide')
-    ConsiderIt.request('user:current').setFollowing(data.follow.follow)
+  # toggle_follow : (ev, data) -> 
+  #   $(ev.currentTarget).parent().addClass('hide').siblings('.follow, .unfollow').removeClass('hide')
+  #   ConsiderIt.request('user:current').setFollowing(data.follow.follow)
 
   # close_details : (go_back) ->
   #   go_back ?= true

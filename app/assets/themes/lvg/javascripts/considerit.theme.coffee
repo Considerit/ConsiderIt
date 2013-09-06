@@ -8,11 +8,10 @@ $(document).ready ->
       ConsiderIt.vent.trigger 'proposals:fetched', data
       ConsiderIt.vent.trigger 'proposals:reset'
 
-  current_user = ConsiderIt.request('user:current');
-  if current_user
-    tags = current_user.getTags()
-    if tags.length > 0
-      fetch_targetable_proposals tags[tags.length-1]
+  current_user = ConsiderIt.request 'user:current'
+  tags = current_user.getTags()
+  if tags.length > 0
+    fetch_targetable_proposals tags[tags.length-1]
 
   
   $(document).on 'click', '#t-unlock-measures-button', (ev) ->

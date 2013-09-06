@@ -62,4 +62,4 @@
     API.getCommentsByUser model_id
 
   App.reqres.setHandler 'comments:get:point', (model_id) ->
-    API.getCommentsByUser model_id
+    API.getCommentsByPoint model_id

@@ -27,7 +27,7 @@
 
       %ul.m-user-options-menu
         %li
-          %a.m-user-options-dashboard_link{:href => "{{Routes.profile_path(ConsiderIt.request('user:current').id)}}"}
+          %a.m-user-options-dashboard_link{:href => "{{Routes.profile_path(current_user.id)}}"}
             Profile
         %li
           %a.m-user-options-dashboard_link{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}

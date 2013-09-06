@@ -11,13 +11,14 @@
         claimed : @model.get('user_id') > 0
         status : @model.status()
 
+      current_user = App.request 'user:current'
       if params.claimed
         params = _.extend params, 
-          claimed_by_logged_in_user : ConsiderIt.request('user:current').id == @model.get('user_id')
+          claimed_by_logged_in_user : current_user.id == @model.get('user_id')
           claimed_by : App.request('user', @model.get('user_id')).get('name')
       else
         params = _.extend params,
-          current_user : ConsiderIt.request('user:current').id
+          current_user : current_user.id
 
       params
 

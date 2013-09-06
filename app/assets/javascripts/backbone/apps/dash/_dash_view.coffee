@@ -11,10 +11,11 @@
     template: '#tpl_dashboard_sidebar'
 
     serializeData : ->
+      current_user = App.request 'user:current' 
       _.extend {}, @model.attributes, @model.permissions(),
         avatar : App.request('user:avatar', @model, 'original')
         tenant : App.request("tenant:get")
-        is_self : @model.id == ConsiderIt.request('user:current').id
+        is_self : @model.id == current_user.id
 
     updateActiveLink : (dash_name) ->
       @$el.find('.m-dashboard_link').removeClass('current').filter("[data-target='#{dash_name}']").addClass('current')

@@ -7,7 +7,7 @@ class Assessable::Assessment < ActiveRecord::Base
   
   acts_as_tenant :account
 
-  scope :public_fields, select([:id, :overall_verdict, :created_at, :updated_at])
+  scope :public_fields, select([:id, :overall_verdict, :created_at, :updated_at, :assessable_id, :assessable_type])
 
   #TODO: sanitize before_validation
   #self.text = Sanitize.clean(self.text, Sanitize::Config::RELAXED)
@@ -38,7 +38,9 @@ class Assessable::Assessment < ActiveRecord::Base
       :id => self.id,
       :overall_verdict => self.overall_verdict,
       :created_at => self.created_at,
-      :updated_at => self.updated_at
+      :updated_at => self.updated_at,
+      :assessable_type => self.assessable_type,
+      :assessable_id => self.assessable_id
     }
   end
 

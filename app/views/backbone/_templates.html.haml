@@ -22,29 +22,6 @@
     (( }); ))
 
 
-  %script{ :type => "text/template", :id => "tpl_point_follows"}
-    (( if( published && ConsiderIt.request('user:current:logged_in?') ) { ))
-
-    (( var follows_class = already_follows ? 'hide' : ''; ))
-    (( var unfollows_class = already_follows ? '' : 'hide'; ))
-    %div{ :class => "follow {{ follows_class }}"}
-      = form_for :follows, :url => "{{ Routes.follow_path() }}", :as => :follow, :method => :get, :remote => true do |f|
-        = f.hidden_field :followable_id, :value => "{{id}}"
-        = f.hidden_field :followable_type, :value => "Point"
-        = f.submit "Follow this point", :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.' #, :class => 'button'
-
-    %div{ :class => "unfollow {{ unfollows_class }}"}
-      = form_for :follows, :url => "{{ Routes.unfollow_path() }}", :as => :follow, :remote => true do |f|
-        = f.hidden_field :user_id, :value => "{{ ConsiderIt.request('user:current').id }}"
-        = f.hidden_field :followable_id, :value => "{{ id }}"
-        = f.hidden_field :followable_type, :value => "Point"
-        = f.submit "Unfollow this point" #, :class => 'button'
-
-    (( } ))
-
-
-
-
   %script{ :type => "text/template", :id => "tpl_proposal_strip" }
     (( if(published){ ))
     .m-proposal-connect.m-proposal-strip

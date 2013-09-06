@@ -5,10 +5,12 @@
 
     serializeData : ->
       tenant = App.request 'tenant:get'
+      current_user = App.request 'user:current'
       _.extend {}, @model.attributes, @model.permissions(),
         avatar : App.request('user:current:avatar')
         can_moderate : App.request('auth:can_moderate')
         can_assess : App.request('auth:can_assess')
+        current_user : current_user
 
 
 

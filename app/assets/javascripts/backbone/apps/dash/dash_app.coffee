@@ -21,16 +21,16 @@
         model : user      
     
     editProfile : (user_id) ->
-      user = ConsiderIt.request('user:current')
+      current_user = ConsiderIt.request 'user:current'
       new Dash.User.EditProfileController
         region : @_getMainRegion()  
-        model : user   
+        model : current_user   
 
     accountSettings : (user_id) ->
-      user = ConsiderIt.request('user:current')
+      current_user = ConsiderIt.request 'user:current'
       new Dash.User.AccountSettingsController
         region : @_getMainRegion()  
-        model : user   
+        model : current_user   
 
     emailNotifications : (user_id) ->
       user = if ConsiderIt.request("user:current:logged_in?") then ConsiderIt.request('user:current') else ConsiderIt.request("user:fixed")
@@ -72,7 +72,7 @@
         @dashboard = new Dash.Controller()
         App.vent.on 'dashboard:region:rendered', (model, dash_name) =>
           model ?= App.request 'user:current'
-          @dashboard.renderSidebar(model, dash_name)
+          @dashboard.renderSidebar model, dash_name
         @dashboard.region.show @dashboard.layout
 
       @dashboard.layout.mainRegion

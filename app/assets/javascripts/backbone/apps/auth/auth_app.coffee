@@ -34,7 +34,6 @@
 
     signin : (user_data, controller = null) ->
       App.request "user:current:update", user_data
-      user = App.request 'user:current'
       if App.request "user:paperwork_completed"
         @_handle_signin()         
       else

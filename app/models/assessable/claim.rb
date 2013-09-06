@@ -4,7 +4,7 @@ class Assessable::Claim < ActiveRecord::Base
   
   acts_as_tenant :account
 
-  scope :public_fields, select( [:id, :verdict, :claim_restatement, :result])
+  scope :public_fields, select( [:id, :verdict, :claim_restatement, :result, :assessment_id])
 
   #TODO: sanitize before_validation
   #self.text = Sanitize.clean(self.text, Sanitize::Config::RELAXED)

@@ -9,8 +9,17 @@
       'click .m-new-comment-submit' : 'createNew'
 
     serializeData : ->
-      is_logged_in : ConsiderIt.request('user:current:logged_in?')
-      user : App.request 'user:current'
+      current_user = App.request 'user:current'
+      _.extend {}, 
+        is_logged_in : ConsiderIt.request 'user:current:logged_in?'
+        user : current_user
+
+    onShow : ->
+      for el in @$el.find('.is_counted')
+        $(el).NobleCount $(el).siblings('.count'), 
+          block_negative: true,
+          max_chars : parseInt $(el).siblings('.count').text()       
+
 
     createNew : (ev) ->
       attrs = {

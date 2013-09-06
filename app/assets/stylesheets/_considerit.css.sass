@@ -602,6 +602,7 @@ $tooltip_width: 225px
   &.con .m-point-author-avatar
     right: -42px
 
+
   //////////////////////
 
 
@@ -680,15 +681,16 @@ $arrow_height: 10px
 
   width: $peer-point-width
 
-  .m-point-wrap
-    @extend %m-white-thought-bubble-inner
-    width: $peer-point-width 
+  &.m-point-unexpanded
+    .m-point-wrap
+      @extend %m-white-thought-bubble-inner
+      width: $peer-point-width 
 
-    padding: $vertical_baseline / 2 $grid_xs / 2 2 * $vertical_baseline $grid_xs / 2
-    margin-bottom: $vertical_baseline
+      padding: $vertical_baseline / 2 $grid_xs / 2 2 * $vertical_baseline $grid_xs / 2
+      margin-bottom: $vertical_baseline
 
-    //these transitions are for point inclusion effect
-    +transition(top .5s ease, left .5s ease, color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
+      //these transitions are for point inclusion effect
+      +transition(top .5s ease, left .5s ease, color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
 
 
   .m-point-nutshell-wrap
@@ -846,8 +848,9 @@ $arrow_height: 10px
 .m-point-results, .m-point-position
   @extend %m-point
   
-  .m-point-wrap
-    width: $pro-con-list-column-width - 3 * $grid_xs
+  &.m-point-unexpanded
+    .m-point-wrap
+      width: $pro-con-list-column-width - 3 * $grid_xs
 
   .m-point-nutshell, .details_indicator, .m-point-user
     +font-size(-1)
@@ -1021,10 +1024,11 @@ $arrow_height: 10px
 
 $expansion_size: 250px
 .m-pointlist-browsing
-  .m-point-peer:not(.m-point-expanded)
-    width: $peer-point-width + $expansion_size
-    .m-point-wrap
+  .m-point-peer
+    &.m-point-unexpanded
       width: $peer-point-width + $expansion_size
+      .m-point-wrap
+        width: $peer-point-width + $expansion_size
 
   .m-point-peer.pro
     margin-left: -$expansion_size
@@ -1109,16 +1113,14 @@ $expansion_size: 250px
 
 /* EXPANDED POINT */
 $m-point-expanded-width: $body_width + 150
-.con
-  &.m-point-position, .m-point-results
-    .m-point-expanded
+.m-point-expanded
+  &.con
+    &.m-point-position, &.m-point-results
       left: $pro-con-list-column-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
-  &.m-point-peer
-    .m-point-expanded
+    &.m-point-peer
       right: $m-point-expanded-width - $peer-point-width
-.pro
-  &.m-point-position, &.m-point-results
-    .m-point-expanded
+  &.pro
+    &.m-point-position, &.m-point-results
       left: - ($m-point-expanded-width - $body_width) / 2
 
 
@@ -1268,7 +1270,7 @@ $m-point-expanded-width: $body_width + 150
 // Assessment
 .m-point-assessment
   @extend %on_paper
-  padding: $vertical_baseline $grid_minor
+  //padding: $vertical_baseline $grid_minor
   +single-box-shadow($color: rgba(black, 0.2))
   +font-size(-2)
   color: #777

@@ -14,7 +14,7 @@
 
   (( if( !already_requested_assessment ) { ))
   = form_for :request, :url => assessment_index_path, :method => :post, :remote => true, :html => {:class => "hide m-point-assessment-request-form"} do |f|
-    = f.hidden_field :assessable_id, :value => "{{id}}"
+    = f.hidden_field :assessable_id, :value => "{{ assessable.id}}"
     = f.hidden_field :assessable_type, :value => "Point"
 
     %strong.ask
@@ -30,7 +30,7 @@
 
     = f.text_area :suggestion
 
-    (( if( ConsiderIt.request('user:current') ) { ))
+    (( if( ConsiderIt.request('user:current:logged_in?') ) { ))
     .submit_block
       = f.submit 'Submit your request', :class => 'button hide'
       %a.m-point-assessment-cancel-request
@@ -56,12 +56,12 @@
 
         .m-point-assessment-claim-header
           %span.claim_desc
-            {{ clm.claim_restatement }}
+            {{ clm.get('claim_restatement') }}
           %span.claim_verdict
-            {{ format_verdict(clm.verdict) }}
+            {{ format_assessment_verdict(clm.get('verdict')) }}
 
         .m-point-assessment-claim-details
-          {{ clm.result }}
+          {{ clm.get('result') }}
 
       (( }) ))
 

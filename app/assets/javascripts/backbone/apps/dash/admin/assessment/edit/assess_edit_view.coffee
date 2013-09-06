@@ -98,10 +98,11 @@
     template : '#tpl_assess_edit_forms'
 
     serializeData : ->
+      current_user = ConsiderIt.request 'user:current'
       params = _.extend {}, @model.attributes, 
         assessable : @model.assessable_obj.attributes
-        can_publish : @model.get('reviewable') && ConsiderIt.request('user:current').id != @model.get('user_id')
-        current_user : ConsiderIt.request('user:current').id
+        can_publish : @model.get('reviewable') && current_user.id != @model.get('user_id')
+        current_user : current_user.id
 
       if params.can_publish
         params.submit_text = if @model.claims.length == 0 then 'Correct, there are no verifiable claims, publish it' else 'Publish fact check'

@@ -11,8 +11,9 @@
       @region.show layout
 
     handleCreate : (attrs) ->
+      current_user = App.request 'user:current'
       _.extend attrs, 
-        user_id : ConsiderIt.request('user:current').id
+        user_id : current_user.id
         commentable_type : @options.commentable_type
         commentable_id : @options.commentable_id
 
@@ -22,13 +23,7 @@
           @layout.commentCreated()
           @trigger 'comment:created'
           @options.collection.add comment
-
-
       }
-
-
-
-
 
     getLayout : (collection) ->
       new Comments.CommentsView

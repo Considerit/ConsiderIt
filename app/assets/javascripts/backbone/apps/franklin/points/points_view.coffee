@@ -128,12 +128,12 @@
           @toggle_browse false 
 
     toggleBrowseOff : ->
-      parent_position = @$el.closest('.m-position')
+      parent_position = @$el.closest '.m-position'
       @$el.removeClass 'm-pointlist-browsing'
       parent_position.css
         marginLeft : @previous_margin
       @collection.setPageSize @previous_page_size
-      @collection.getPage(1)
+      @collection.getPage 1
 
       tenant = App.request 'tenant:get'
       cnt = _.size @collection.fullCollection

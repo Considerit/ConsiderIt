@@ -6,7 +6,8 @@
     serializeData : ->
 
       [influenced_users, influenced_users_by_point] = @model.getInfluencedUsers()
-
+      current_user = ConsiderIt.request 'user:current'
+      
       params = _.extend {}, @model.attributes,
         influenced_users : influenced_users
         influenced_users_by_point : influenced_users_by_point
@@ -14,7 +15,7 @@
         positions : @model.getPositions()
         proposals : @model.getProposals()
         points : @model.getPoints() 
-        is_self : @model.id == ConsiderIt.request('user:current').id
+        is_self : @model.id == current_user.id
         tile_size : Math.min 50, ConsiderIt.utils.get_tile_size 400, 42, influenced_users.length
 
       params

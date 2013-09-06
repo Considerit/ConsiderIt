@@ -1,18 +1,21 @@
-@ConsiderIt.module "Franklin", (Franklin, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Franklin.Assessment", (Assessment, App, Backbone, Marionette, $, _) ->
 
-
-  class Franklin.AssessmentLayout extends App.Views.Layout
+  class Assessment.AssessmentLayout extends App.Views.Layout
     template : '#tpl_assessment_layout'
 
     regions : 
       assessmentRequestRegion : '.m-point-assessment-request'
       assessmentRegion : '.m-point-assessment'
 
-  class Franklin.AssessmentRequestView extends App.Views.ItemView
+
+  class Assessment.AssessmentRequestView extends App.Views.ItemView
     template : "#tpl_assessment_request"
 
     serializeData : ->
-      already_requested_assessment : @options.already_requested_assessment
+      current_user = App.request 'user:current'
+      _.extend {}, 
+        already_requested_assessment : App.request 'assessment:request:by_user', current_user.id 
+        assessable : @options.assessable
 
     onShow : ->
       if !@options.already_requested_assessment
@@ -36,17 +39,13 @@
       @$el.find('.m-point-assessment-request-form').remove()
 
 
-  class Franklin.AssessmentView extends App.Views.ItemView
+  class Assessment.AssessmentView extends App.Views.ItemView
     template : "#tpl_assessment"
 
-    initialize : (options = {} ) ->
-      @claims = options.claims
-      @assessment = options.assessment
-
     serializeData : ->
-      assessment : @assessment
-      claims : @claims
-      num_assessment_requests : @options.num_assessment_requests
+      assessment : @model.attributes
+      claims : @options.claims
+      num_assessment_requests : @options.assessable.get('num_assessment_requests')
 
     templateHelpers: 
       format_assessment_verdict : (verdict) ->
@@ -60,10 +59,3 @@
           'No checkable claims'
         else
           '-'
-
-
-
-
-
-
-

@@ -2,6 +2,12 @@
   class Points.AbstractPointsController extends App.Controllers.Base
     initialize : (options = {}) ->
       layout = @getLayout options.location
+      @listenTo layout, 'before:item:added', (view) => 
+        new App.Franklin.Point.PointController
+          view : view
+          model : view.model
+          region : new Backbone.Marionette.Region { el : view.el }          
+
       @listenTo layout, 'show', =>
         @listenTo layout, 'sort', (sort_by) =>
           @sortPoints sort_by
@@ -9,6 +15,7 @@
         @listenTo layout, 'childview:point:clicked', (view) =>
           point = view.model
           App.navigate Routes.proposal_point_path(point.get('long_id'), point.id), {trigger : true}
+
 
       @layout = layout
       @listenTo @options.parent, 'point:show_details', (point) =>
@@ -21,14 +28,10 @@
             @options.collection.getPage page
 
           pointview = layout.children.findByModel point
-          controller = new App.Franklin.Point.ExpandedPointController
-            model : point
-            region : new Backbone.Marionette.Region
-              el : pointview.el
+          pointview.trigger 'point:show_details'
 
-
-          @listenTo controller, 'close', =>
-            pointview.render()
+          # @listenTo controller, 'close', =>
+          #   pointview.render()
 
 
     sortPoints : (sort_by) ->

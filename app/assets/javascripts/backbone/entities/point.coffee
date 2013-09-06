@@ -25,16 +25,26 @@
       comments = (co.comment for co in data.comments)
       App.vent.trigger 'comments:fetched', comments
 
-      if App.request('tenant:get').get 'assessment_enabled'
-        App.vent.trigger 'assessment:client:fetched', 
-          assessment : data.assessment
-          claims : (c.claim for c in data.claims)
-          num_requests : data.num_assessment_requests
-          already_requested_assessment : data.already_requested_assessment
+      console.log data
+      tenant = App.request('tenant:get')
+
+      if tenant.get('assessment_enabled') && data.assessment
+        App.request 'assessments:add', [data.assessment]
+        App.request 'claims:add', (c.claim for c in data.claims)
+
+        current_user = App.request 'user:current'
+        if data.already_requested_assessment
+          App.request 'assessment:request:add', {assessment_id : data.assessment.id, user_id : current_user.id}
+
+        # App.vent.trigger 'assessment:client:fetched', 
+        #   assessment : data.assessment
+        #   claims : (c.claim for c in data.claims)
+        #   num_requests : data.num_assessment_requests
+        #   already_requested_assessment : data.already_requested_assessment
 
         #TODO: the pointview should listen for assessment:client:fetched
         # and pick up on the "already_requested_assessment" field
-        @already_requested_assessment = data.already_requested_assessment
+        #@already_requested_assessment = data.already_requested_assessment
 
     getIncluders : ->
       $.parseJSON @get 'includers'

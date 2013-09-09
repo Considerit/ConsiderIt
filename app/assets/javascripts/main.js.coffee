@@ -78,7 +78,7 @@ $(document).on "click", "a[href^='/']", (event) ->
 )(jQuery, document)
 
 
-window.ensure_el_in_view = ($el, amount_of_viewport_taken_by_el=.5, offset_buffer=100) ->
+window.ensure_el_in_view = ($el, amount_of_viewport_taken_by_el=.5, offset_buffer=50) ->
   el_top = $el.offset().top
   doc_top = $(window).scrollTop()
   doc_bottom = doc_top + $(window).height()

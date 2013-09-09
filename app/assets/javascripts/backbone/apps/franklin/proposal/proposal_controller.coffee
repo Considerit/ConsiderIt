@@ -42,13 +42,12 @@
         # TODO: discard changes
         App.navigate Routes.proposal_path(@proposal.long_id), {trigger: true}
 
-      @listenTo view, 'position:submit-requested', => 
+      @listenTo view, 'position:submit-requested', (follow_proposal) => 
         submitPosition = =>
           params = _.extend @model.toJSON(),    
             included_points : @model.getIncludedPoints()
             viewed_points : _.keys(@model.viewed_points)
-            #TODO: @$el isn't defined here...
-            #follow_proposal : @$el.find('#follow_proposal').is(':checked')
+            follow_proposal : follow_proposal
 
           Backbone.sync 'update', @model,
             data : JSON.stringify params

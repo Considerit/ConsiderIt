@@ -128,10 +128,6 @@
           success : (response, new_value) => @model.set('text', new_value)
 
 
-      window.ensure_el_in_view @$el, .5, 150
-
-
-
     closeDetails : (go_back) ->
       go_back ?= true
       @trigger 'details:close', go_back

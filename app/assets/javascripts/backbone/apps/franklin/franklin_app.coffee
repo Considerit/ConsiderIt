@@ -20,8 +20,11 @@
   
   API =
     Root: -> 
-      @franklin_controller = new Franklin.Root.Controller
-        region : App.request "default:region"
+      already_viewing = @franklin_controller && @franklin_controller instanceof Franklin.Root.Controller
+      if !already_viewing
+        @franklin_controller.close() if @franklin_controller
+        @franklin_controller = new Franklin.Root.Controller
+          region : App.request "default:region"
 
       App.vent.trigger 'route:completed', [ ['homepage', '/'] ]
 
@@ -35,6 +38,7 @@
 
         already_viewing = @franklin_controller && @franklin_controller.options.model == proposal && @franklin_controller instanceof Franklin.Proposal.PositionController
         if !already_viewing
+          @franklin_controller.close() if @franklin_controller
           $(document).scrollTop(0)
           @franklin_controller = new Franklin.Proposal.PositionController
             region : region
@@ -54,8 +58,9 @@
 
         already_viewing = @franklin_controller && @franklin_controller.options.model == proposal && @franklin_controller instanceof Franklin.Proposal.AggregateController
 
-        if !already_viewing      
+        if !already_viewing    
           $(document).scrollTop(0)
+          @franklin_controller.close() if @franklin_controller
 
           @franklin_controller = new Franklin.Proposal.AggregateController
             region : App.request "default:region"

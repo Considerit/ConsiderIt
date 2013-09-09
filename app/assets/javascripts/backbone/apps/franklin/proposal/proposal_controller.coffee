@@ -102,12 +102,14 @@
         collection : peer_pros
         region : layout.peerProsRegion
         parent : @
+        parent_controller : @
 
       peer_cons_controller = new App.Franklin.Points.PeerPointsController
         valence : 'con'
         collection : peer_cons
         region : layout.peerConsRegion
         parent : @
+        parent_controller : @
 
       position_pros_controller = new App.Franklin.Points.UserReasonsController
         valence : 'pro'
@@ -115,6 +117,7 @@
         region : layout.positionProsRegion
         proposal : @proposal
         parent : @
+        parent_controller : @
 
       position_cons_controller = new App.Franklin.Points.UserReasonsController
         valence : 'con'
@@ -122,6 +125,7 @@
         region : layout.positionConsRegion
         proposal : @proposal
         parent : @
+        parent_controller : @
 
       _.each [position_pros_controller, position_cons_controller], (position_list) =>
 
@@ -321,12 +325,14 @@
         collection : aggregated_pros
         region : layout.prosRegion
         parent : @
+        parent_controller : @
 
       cons = new App.Franklin.Points.AggregatedReasonsController
         valence : 'con'
         collection : aggregated_cons
         region : layout.consRegion
         parent : @
+        parent_controller : @
 
       [pros, cons]
 

@@ -4,7 +4,7 @@
   API =
     show : ->
       region = App.request 'userNavRegion'
-      new Auth.Show.Controller
+      new Auth.Show.AuthShowController
         region: region
 
     begin_signin : ->

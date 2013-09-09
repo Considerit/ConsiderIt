@@ -60,6 +60,8 @@
         model : assessment
         assessable_type : 'Point'
         assessable : @options.model
+        parent_controller : @
+
 
     setupCommentsView : (region) ->
       comments = new App.Franklin.Comments.CommentsController
@@ -67,6 +69,7 @@
         commentable_id : @options.model.id
         region: region
         collection : @options.model.getComments()
+        parent_controller : @
 
       @listenTo comments, 'comment:created', =>
         @options.model.set 'comment_count', @options.model.getComments().length

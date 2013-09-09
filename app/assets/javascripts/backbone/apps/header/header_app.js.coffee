@@ -3,7 +3,7 @@
   
   API =
     show: ->
-      @controller = new HeaderApp.Show.Controller
+      @controller = new HeaderApp.Show.HeaderShowController
         region: App.headerRegion
 
     getUserNav: ->

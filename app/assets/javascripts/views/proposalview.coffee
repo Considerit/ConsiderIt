@@ -19,10 +19,10 @@ class ConsiderIt.ProposalView extends Backbone.View
     super
     @long_id = @model.long_id
 
-    ConsiderIt.vent.on 'route:Root', => 
-      if @state > 0
-        @transition_unexpanded()
-        $('body').animate {scrollTop: @scroll_position}
+    # ConsiderIt.vent.on 'route:Root', => 
+    #   if @state > 0
+    #     @transition_unexpanded()
+    #     $('body').animate {scrollTop: @scroll_position}
 
     @rendered = false
 
@@ -91,29 +91,29 @@ class ConsiderIt.ProposalView extends Backbone.View
   #     onGet : (value) => htmlFormat(value)
 
 
-  can_edit : ->
-    can = ConsiderIt.request('user:current').id == @model.get('user_id') || ConsiderIt.request('user:current').isAdmin() || ConsiderIt.request('user:current').isManager()
-    @has_been_admin_in_past = true if can
-    can
+  # can_edit : ->
+  #   can = ConsiderIt.request('user:current').id == @model.get('user_id') || ConsiderIt.request('user:current').isAdmin() || ConsiderIt.request('user:current').isManager()
+  #   @has_been_admin_in_past = true if can
+  #   can
 
-  post_signin : () -> 
-    @render_admin_strip()
+  # post_signin : () -> 
+  #   @render_admin_strip()
 
-  post_signout : () -> 
-    @render_admin_strip()
-    @transition_unexpanded()
+  # post_signout : () -> 
+  #   @render_admin_strip()
+  #   @transition_unexpanded()
 
-  take_position : () ->
-    @transition_expanded(1)
+  # take_position : () ->
+  #   @transition_expanded(1)
 
-  show_results : () ->
-    @transition_expanded(2)
+  # show_results : () ->
+  #   @transition_expanded(2)
 
-  show_results_handler : () -> 
-    if @state == 4 #skip the transition if we're already on the results page
-      @$hidden_els.css('display', 'none')
-    else 
-      @show_results()
+  # show_results_handler : () -> 
+  #   if @state == 4 #skip the transition if we're already on the results page
+  #     @$hidden_els.css('display', 'none')
+  #   else 
+  #     @show_results()
 
 
   # TODO: This should be triggered on results opened & position opened
@@ -195,9 +195,9 @@ class ConsiderIt.ProposalView extends Backbone.View
     @set_state(0)
 
 
-  set_state : (new_state) ->
-    @state = new_state
-    @$el.attr('data-state', new_state)
+  # set_state : (new_state) ->
+  #   @state = new_state
+  #   @$el.attr('data-state', new_state)
 
   # events : 
   #   'click .m-proposal-description' : 'toggle_description'
@@ -251,60 +251,60 @@ class ConsiderIt.ProposalView extends Backbone.View
 
   # Point details are being handled here (messily) for the case when a user directly visits the point details page without
   # (e.g. if they followed a link to it). In that case, we need to create some context around it first.
-  prepare_for_point_details : (params) ->
+  # prepare_for_point_details : (params) ->
 
-    cb = =>
-      pnt = parseInt(params.point_id)
-      point = @model.pros.get(pnt)
-      if !point
-        point = @model.cons.get(pnt)
+  #   cb = =>
+  #     pnt = parseInt(params.point_id)
+  #     point = @model.pros.get(pnt)
+  #     if !point
+  #       point = @model.cons.get(pnt)
 
-      if @state == 1
-        if point.get('is_pro') 
-          pointlistview = if @position_view.crafting_view.pointlists.mypros.get(point.id) then @position_view.crafting_view.views.mypros else @position_view.crafting_view.views.peerpros
-        else 
-          pointlistview = if @position_view.crafting_view.pointlists.mycons.get(point.id) then @position_view.crafting_view.views.mycons else @position_view.crafting_view.views.peercons
+  #     if @state == 1
+  #       if point.get('is_pro') 
+  #         pointlistview = if @position_view.crafting_view.pointlists.mypros.get(point.id) then @position_view.crafting_view.views.mypros else @position_view.crafting_view.views.peerpros
+  #       else 
+  #         pointlistview = if @position_view.crafting_view.pointlists.mycons.get(point.id) then @position_view.crafting_view.views.mycons else @position_view.crafting_view.views.peercons
 
-      else
-        pointlistview = if point.get('is_pro') then @results_view.view.views.pros else @results_view.view.views.cons
-
-
-      pointlistview.show_point_details_handler(pnt)
-
-      # pointview = pointlistview.getViewByModel(point) || pointlistview.addModelView(point) # this happens if the point is being directly visited, but is not on the front page of results
-      # pointview.show_point_details_handler() if pointview?
-      # $('body').animate {scrollTop: pointview.$el.offset().top - 50}, 200
-
-    if @state == 0
-      @show_results() 
-      @listenToOnce @results_view, 'ResultsExplorer:rendered', => cb()
-    else
-      cb()
+  #     else
+  #       pointlistview = if point.get('is_pro') then @results_view.view.views.pros else @results_view.view.views.cons
 
 
-  prepare_for_static_position : (params) ->
-    callback = (user_id) =>
-      #me.static_position.close() if me.static_position
-      @static_position = new ConsiderIt.StaticPositionView
-        proposal : @model
-        user_id : user_id
-        el : @$el
-      @static_position.render()
+  #     pointlistview.show_point_details_handler(pnt)
 
-    if @state == 0
-      @listenToOnce @position_view, 'PositionCrafting:rendered', => 
-        callback(params.user_id)
-      @take_position()    
-    else
-      callback(params.user_id)
+  #     # pointview = pointlistview.getViewByModel(point) || pointlistview.addModelView(point) # this happens if the point is being directly visited, but is not on the front page of results
+  #     # pointview.show_point_details_handler() if pointview?
+  #     # $('body').animate {scrollTop: pointview.$el.offset().top - 50}, 200
 
-  show_point_details_handler : (params) ->
-    # only do this if user has navigated directly to the point
-    @prepare_for_point_details(params) #if params.data_just_loaded
+  #   if @state == 0
+  #     @show_results() 
+  #     @listenToOnce @results_view, 'ResultsExplorer:rendered', => cb()
+  #   else
+  #     cb()
 
-  position_submitted : ->
-    if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()
-      @$el.attr('data-activity', 'proposal-has-activity')
+
+  # prepare_for_static_position : (params) ->
+  #   callback = (user_id) =>
+  #     #me.static_position.close() if me.static_position
+  #     @static_position = new ConsiderIt.StaticPositionView
+  #       proposal : @model
+  #       user_id : user_id
+  #       el : @$el
+  #     @static_position.render()
+
+  #   if @state == 0
+  #     @listenToOnce @position_view, 'PositionCrafting:rendered', => 
+  #       callback(params.user_id)
+  #     @take_position()    
+  #   else
+  #     callback(params.user_id)
+
+  # show_point_details_handler : (params) ->
+  #   # only do this if user has navigated directly to the point
+  #   @prepare_for_point_details(params) #if params.data_just_loaded
+
+  # position_submitted : ->
+  #   if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()
+  #     @$el.attr('data-activity', 'proposal-has-activity')
 
   # TODO: move to its own view
   # ADMIN methods

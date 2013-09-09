@@ -1,55 +1,55 @@
 class ConsiderIt.AppView extends Backbone.View
 
-  el: '#l-content'
-  breadcrumbs_template : _.template($('#tpl_breadcrumbs').html())
-  homepage_heading : _.template($('#tpl_homepage_heading').html())
+  # el: '#l-content'
+  # breadcrumbs_template : _.template($('#tpl_breadcrumbs').html())
+  # homepage_heading : _.template($('#tpl_homepage_heading').html())
 
-  initialize : (options) -> 
+  # initialize : (options) -> 
 
-    @listenTo ConsiderIt.vent, 'user:signin', =>
+  #   @listenTo ConsiderIt.vent, 'user:signin', =>
  
-    @listenTo ConsiderIt.vent, 'user:signout', => 
-      ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
+  #   @listenTo ConsiderIt.vent, 'user:signout', => 
+  #     ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
 
-    ConsiderIt.router.bind 'all', (route, router) => @route_changed(route, router)
+  #   ConsiderIt.router.bind 'all', (route, router) => @route_changed(route, router)
 
-    @history = [ ['homepage', '/'] ]
-    @last_page = '/'
+  #   @history = [ ['homepage', '/'] ]
+  #   @last_page = '/'
 
-  render : () ->
+  # render : () ->
 
-    @$el.find('#t-bg-content-top').append(@homepage_heading())
+  #   @$el.find('#t-bg-content-top').append(@homepage_heading())
 
-    ConsiderIt.vent.on 'tenant:updated', ->
-      @$el.find('.t-intro-wrap').replaceWith @homepage_heading()
+  #   ConsiderIt.vent.on 'tenant:updated', ->
+  #     @$el.find('.t-intro-wrap').replaceWith @homepage_heading()
 
-    @proposals_manager = new ConsiderIt.ProposalsManagerView({el : '#t-bg-content-top'}) 
+  #   @proposals_manager = new ConsiderIt.ProposalsManagerView({el : '#t-bg-content-top'}) 
 
-    @proposals_manager.render()
+  #   @proposals_manager.render()
 
-    # kick off events for the current path
-    # ConsiderIt.router.navigate @last_page, {trigger: true}
-    this
+  #   # kick off events for the current path
+  #   # ConsiderIt.router.navigate @last_page, {trigger: true}
+  #   this
 
-  events : 
-    'click .l-navigate-back' : 'go_back'
-    # 'mouseenter [data-target="user_profile_page"]' : 'tooltip_show'
-    # 'mouseleave [data-target="user_profile_page"]' : 'tooltip_hide'
-    # 'click [data-target="user_profile_page"]' : 'view_user_profile'
+  # events : 
+  #   'click .l-navigate-back' : 'go_back'
+  #   # 'mouseenter [data-target="user_profile_page"]' : 'tooltip_show'
+  #   # 'mouseleave [data-target="user_profile_page"]' : 'tooltip_hide'
+  #   # 'click [data-target="user_profile_page"]' : 'view_user_profile'
 
   # view_user_profile : (ev) -> ConsiderIt.router.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
 
-  go_back : ->
-    @history.pop()
-    if @history.length < 2
-      ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
-    else
-      route = @history.pop()[1]
-      ConsiderIt.router.navigate(route, {trigger: true})
+  # go_back : ->
+  #   @history.pop()
+  #   if @history.length < 2
+  #     ConsiderIt.router.navigate(Routes.root_path(), {trigger: true})
+  #   else
+  #     route = @history.pop()[1]
+  #     ConsiderIt.router.navigate(route, {trigger: true})
 
-  go_back_crumb : ->
-    href = if @breadcrumbs.length > 1 then @breadcrumbs[@breadcrumbs.length - 2][1] else '/'
-    ConsiderIt.router.navigate(href, {trigger: true, replace: false})
+  # go_back_crumb : ->
+  #   href = if @breadcrumbs.length > 1 then @breadcrumbs[@breadcrumbs.length - 2][1] else '/'
+  #   ConsiderIt.router.navigate(href, {trigger: true, replace: false})
 
   route_changed : (route, router) ->
     return if route == 'route'
@@ -83,11 +83,11 @@ class ConsiderIt.AppView extends Backbone.View
         path = "#{path}/#{loc}"
         @breadcrumbs.push [loc.split('?')[0], path] if ConsiderIt.router.valid_endpoint(path)
 
-      ######################
-      #### HACK: if static position or point details, need to insert "results" into breadcrumbs if loaded from results page
-      if _.contains(['route:PointDetails', 'route:StaticPosition'], route) && ($('.m-position:visible').length == 0)
-        @breadcrumbs.splice(@breadcrumbs.length - 1, 0, ['results', "#{@breadcrumbs[@breadcrumbs.length - 2][1]}/results"])
-      ######
+      # ######################
+      # #### HACK: if static position or point details, need to insert "results" into breadcrumbs if loaded from results page
+      # if _.contains(['route:PointDetails', 'route:StaticPosition'], route) && ($('.m-position:visible').length == 0)
+      #   @breadcrumbs.splice(@breadcrumbs.length - 1, 0, ['results', "#{@breadcrumbs[@breadcrumbs.length - 2][1]}/results"])
+      # ######
 
       $("[data-domain='homepage']:visible").hide()
 

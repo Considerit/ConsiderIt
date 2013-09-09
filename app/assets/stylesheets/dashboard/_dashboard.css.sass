@@ -5,14 +5,13 @@ $dashboard_content_width: $content_width - $dashboard_sidebar_width - 2 * $grid_
 html body #m-dashboard
   margin-bottom: $vertical_baseline
   padding: 3 * $vertical_baseline $grid_xs
-  display: none
 
   .m-dashboard-close
     position: absolute
     top: 5px
     right: 5px
 
-  .m-dashboard-sidebar
+  .m-dashboard-sidebar-region
     float: left
     //margin-top: 4 * $vertical_baseline
     //position: absolute
@@ -59,7 +58,7 @@ html body #m-dashboard
         color: white
 
 
-  .m-dashboard-content
+  .m-dashboard-main-region
     padding-left: $grid_minor
     float: left
     width: $dashboard_content_width
@@ -80,9 +79,8 @@ html body #m-dashboard
     margin-bottom: $vertical_baseline
     
     label
-      +font-size(-3)
-      text-transform: uppercase
-      font-weight: bold
+      +font-size(-1)
+      //font-weight: bold
 
     input[type="text"], input[type="email"], textarea
       display: block
@@ -223,6 +221,7 @@ html body #m-dashboard
     //display: none
 
   .m-dashboard-database
+    height: 100%
     iframe
       width: 100%
       height: 100%

@@ -1,7 +1,7 @@
 
 class Users::SessionsController < Devise::SessionsController
   #TODO: reevaluate whether this exception is still needed
-	protect_from_forgery #:except => :create
+  protect_from_forgery #:except => :create
 
   def create
     user = User.find_by_email(params[:user][:email])

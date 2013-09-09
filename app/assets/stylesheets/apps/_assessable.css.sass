@@ -1,0 +1,160 @@
+
+#assess
+
+  .assessment_block
+    border: 1px solid #ddd
+    border-radius: 8px
+    padding: 0 16px
+
+    &.hide_completed
+      .assessment_row.completed
+        display: none
+
+    .assessment_row
+      &.complete
+        opacity: .7
+        //background-color: #efe
+        //td
+        //  background-color: #efe
+
+      &.reviewable
+        background-color: #efe
+        td
+          background-color: #efe
+
+
+      &.incomplete
+        background-color: #ffe
+        td
+          background-color: #ffe
+
+
+      .submit_col
+        padding-right: 20px
+        min-width: 150px
+
+
+#edit_assessment
+  padding: 50px
+
+  .back
+    padding-bottom: 1em
+    font-size: 70%
+    a
+      text-decoration: underline
+
+  h1
+    font-size: 200%
+
+  #main
+    margin: 1em 1em
+
+
+    #requester_sidebar
+      background-color: #ddd
+      padding: 1em
+      vertical-align: top
+      margin-top: 1em
+
+      h3
+        padding-bottom: 1em
+
+      .request
+        margin-bottom: 1em
+        .body
+        .user
+          font-style: italic
+
+
+    #to_be_checked
+      padding: 1em 1em
+      border: 3px solid #eee
+      margin-bottom: 1em
+
+      .full_context
+        a
+          text-decoration: underline
+          text-transform: lowercase
+
+    #other_claims
+      #claim_copy_id
+        width: 800px
+        font-size: 12px
+
+    #claims
+      margin-bottom: 1em
+
+      .add_claim_form
+        margin-top: 1em        
+        width: 900px
+
+        textarea
+          width: 60%
+          display: block
+
+        label
+          font-size: 80%
+        .submit_block
+          text-align: left
+          padding-bottom: 1em
+          
+      li.claim
+        padding: .5em 1em
+        background-color: #eee
+        margin: .5em 0
+        border: 1px solid #ddd
+        list-style: none
+
+        .heading
+          .statement
+            width: 71%
+            display: inline-block
+            text-align: left
+
+          .actions
+            display: inline-block
+            width: 24%
+            text-align: right
+            font-size: 80%
+
+            .destroy, .destroy form
+              display: inline-block
+
+        .closed
+          font-size: 80%
+
+          .body
+
+          .notes
+
+        .open
+          padding-left: 1em
+          font-size: 80%
+          .assessment_block, .private_note_block, .claim_block
+            label
+              display: block
+              font-weight: bold
+              padding-top: 1em
+
+          .radio_block
+            margin-top: 1em
+            label
+              padding-right: 1em
+
+      p 
+        margin-bottom: 4px
+
+    #evaluate
+      > *
+        float: left
+
+
+
+
+
+
+
+#assess, #edit_assessment
+  button, input[type="submit"]
+    font-size: 1em
+

@@ -20,12 +20,8 @@
         
       = theme_stylesheet_link_tag 'application'
 
-      -# %link{ :href => "/system/cache/#{current_tenant.identifier}.css", :type => 'text/css', :media => "screen", :rel => "stylesheet"}
-
       - ['Source+Sans+Pro'].each do |font|
         %link{ :href => "http://fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
-
-
 
       /[if IE 9]
         = stylesheet_link_tag 'browser/ie/ie9'
@@ -46,9 +42,11 @@
 
       = render :partial => 'backbone/templates'
 
-      = theme_javascript_include_tag 'application', :async => true # => Rails.env.production?
+      = theme_javascript_include_tag 'application', :async => true
+
 
   %body
+    / = image_tag "ajax-loader.gif", :style => 'display: none'
 
     - cache ['main_body', current_tenant] do
 
@@ -62,18 +60,19 @@
                 %feComposite{ :in2 => "SourceGraphic", :operator => "over" }
 
           #l-wrap
-            =# render :partial => "shared/flash_messages"
-            = render :partial => "shared/header/container"
-
+            #l-loading-indicator
+            #l-header
             #l-content
+
               #l-content-main
                 #t-bg-content
                   #t-bg-content-top
+                    #l-content-main-wrap
                     #m-dashboard.l-content-wrap
 
-                    = render :partial => "shared/body"
+                    = image_tag "ajax-loader.gif", :id => 'l-preloader'
 
-            = render :partial => "shared/footer/container"
+            #l-footer
 
             - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
               :javascript
@@ -91,6 +90,12 @@
 
     = render :partial => 'backbone/data'        
 
+    :javascript
+      $(function() {
+        ConsiderIt.start({
+          environment: "#{Rails.env}"
+        });
+      });
 
     :javascript
       var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;

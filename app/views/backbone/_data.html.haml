@@ -7,19 +7,18 @@
 
     ConsiderIt.proposals = #{@proposals.to_json};
 
-    ConsiderIt.current_proposal = #{ @current_proposal ? @current_proposal.to_json : 'null' };
+    ConsiderIt.current_proposal = #{ @current_proposal ? @current_proposal : 'null' };
+
+    ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };
 
 
     //var users = { User.select("id, name, avatar_file_name").to_json };
-    var users = #{@users};
-    ConsiderIt.users = _.object(_.map(users, function(v){ return [v.id, new ConsiderIt.User(v)];})) ;
-    ConsiderIt.users[-1] = new ConsiderIt.User({name: 'Anonymous'});
+    ConsiderIt.users = #{@users};
 
-    ConsiderIt.current_tenant = new ConsiderIt.Account({
+    ConsiderIt.current_tenant_data = {
         id : "#{current_tenant.id}",
         identifier : "#{current_tenant.identifier}",
         assessment_enabled : #{current_tenant.assessment_enabled},
-        enable_moderation : #{current_tenant.enable_moderation}, 
         enable_user_conversations : #{current_tenant.enable_user_conversations},
         slider_right : "#{current_tenant.slider_right}", 
         slider_left : "#{current_tenant.slider_left}", 
@@ -27,42 +26,37 @@
         considerations_prompt : "#{current_tenant.considerations_prompt}", 
         statement_prompt : "#{current_tenant.statement_prompt}", 
         pro_label : "#{current_tenant.pro_label}",
-        con_label : "#{current_tenant.con_label}"        
-    });
+        con_label : "#{current_tenant.con_label}",
+        pledge_enabled : #{current_tenant.requires_civility_pledge_on_registration},   
+        enable_moderation : #{current_tenant.enable_moderation}, 
+        moderate_points_mode : #{current_tenant.moderate_points_mode}, 
+        moderate_comments_mode : #{current_tenant.moderate_comments_mode}, 
+        moderate_proposals_mode : #{current_tenant.moderate_proposals_mode}
 
-    ConsiderIt.roles = {
-      is_admin : false,
-      is_moderator : false,
-      is_analyst : false,
-      is_evaluator : false,
-      is_manager : false
-    }
+    };
 
-    ConsiderIt.current_user = #{current_user ? "ConsiderIt.users[#{current_user.id}]" : 'new ConsiderIt.User'};
 
-    //TODO: filter data
-    #{current_user ? "ConsiderIt.update_current_user( { user: #{current_user.to_json(:methods => :third_party_authenticated)}.user, follows: #{current_user.follows.all.to_json} })" : ''}
+    // CURRENT USER
+    ConsiderIt.current_user = #{current_user ? current_user.id : 'null'};
+
+    #{current_user ? "ConsiderIt.current_user_data = { user: #{current_user.to_json(:methods => :third_party_authenticated)}.user, follows: #{current_user.follows.all.to_json} }" : ''}
     
+    // LIMITED USER
 
-    ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };
+    var limited_user_data = #{@limited_user_email ? {email: '#{@limited_user_email}'} : 'null'};
 
-    ConsiderIt.limited_user = #{@limited_user ? "ConsiderIt.users[#{@limited_user.id}]" : 'null'};
-    ConsiderIt.limited_user_email = #{@limited_user_email ? "'#{@limited_user_email}'" : 'null'};
-    #{@limited_user ? "ConsiderIt.limited_user.set( { google_uid: '#{@limited_user.google_uid}', facebook_uid: '#{@limited_user.facebook_uid}', twitter_uid: '#{@limited_user.twitter_uid}'  })" : ''}
+    ConsiderIt.limited_user_data = #{@limited_user ? "{ id: #{@limited_user.id} , google_uid: '#{@limited_user.google_uid}', facebook_uid: '#{@limited_user.facebook_uid}', twitter_uid: '#{@limited_user.twitter_uid}'}" : 'limited_user_data'};
 
-    #{@limited_user ? "ConsiderIt.limited_user.set_follows(#{@limited_user_follows.to_json})" : 'null'};
+    ConsiderIt.limited_user_follows = #{@limited_user ? @limited_user_follows.to_json : 'null'};
 
+
+    // AUTH
     ConsiderIt.password_reset_token = #{@reset_password_token ? "'#{@reset_password_token}'" : 'null'};  
 
-
-    ConsiderIt.router = new ConsiderIt.Router();
-
-    ConsiderIt.app = new ConsiderIt.AppView();
-
-
-    ConsiderIt.app.render();
-
-    Backbone.history.start({pushState: true});
+    ConsiderIt.admin_files = {
+      js_tag : "#{j(javascript_include_tag("admin"))}",
+      style_tag : "#{j(theme_stylesheet_link_tag("admin"))}"
+    };
 
 
 

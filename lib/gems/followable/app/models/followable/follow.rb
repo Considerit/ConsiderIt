@@ -21,4 +21,17 @@ class Followable::Follow < ActiveRecord::Base
   def root_object
     followable_type.constantize.find(followable_id)
   end
+
+  def self.purge
+    Followable::Follow.all.each do |u|
+      begin
+        obj = u.root_object
+      rescue
+        u.destroy
+      end
+
+    end
+  end
+
+
 end

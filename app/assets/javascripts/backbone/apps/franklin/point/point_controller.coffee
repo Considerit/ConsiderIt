@@ -34,8 +34,11 @@
 
         @listenTo expanded_view, 'details:close', (go_back) => @unexpand go_back
         @listenTo App.vent, 'point:expanded', => @unexpand false
+        @listenTo App.vent, 'navigated_to_base', => @unexpand false
 
-        @layout.$el.toggleClass 'm-point-expanded m-point-unexpanded'
+        @layout.$el
+          .addClass('m-point-expanded')
+          .removeClass('m-point-unexpanded')
 
       @layout.expansionRegion.show expanded_view
 
@@ -67,7 +70,9 @@
 
     unexpand : (go_back) ->
       $(document).off '.m-point-details'
-      @layout.$el.toggleClass 'm-point-expanded m-point-unexpanded'
+      @layout.$el
+        .addClass('m-point-unexpanded')
+        .removeClass('m-point-expanded')
 
       @layout.expansionRegion.reset() if @layout.expansionRegion
 

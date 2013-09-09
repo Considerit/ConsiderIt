@@ -49,10 +49,12 @@ memcached:
 nginx:
   connections: 1024
 
-rbenv_path: /home/$user/.rbenv #/usr/local/.rbenv
-ruby_home: /home/$user/.rbenv/shims
+#userhome: /home/$user
+userhome: /home/members/interoccupynet/sites/tempcheck.occupy.net/users/tempcheck
+rbenv_path: ${userhome}/.rbenv #/usr/local/.rbenv
+ruby_home: ${userhome}/.rbenv/shims
 rbenv_home: ${rbenv_path}/bin
-path: PATH="${rbenv_path}/bin:${rbenv_path}/plugins/ruby-build/bin:/home/$user/.rbenv/shims:$PATH"
+path: PATH="${rbenv_path}/bin:${rbenv_path}/plugins/ruby-build/bin:$HOME/.rbenv/shims:$PATH"
 ruby_version: 2.0.0-p247 #1.9.3-p392
 source: . ~/.profile
 port: 3000

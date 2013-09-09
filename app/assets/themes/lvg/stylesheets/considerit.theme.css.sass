@@ -16,7 +16,9 @@
 @import "considerit" 
 /////////
 
-
+#l-header
+  min-height: 32px
+  
 #t-bg-content
   +single-box-shadow
   border-radius: 2px
@@ -71,3 +73,48 @@
   .t-intro-get-started
     text-align: center
     +font-size(2)
+
+
+
+/// local...
+
+#t-unlock-measures-zip, #t-unlock-measures-button
+  +font-size(3)
+
+#t-unlock-measures-zip
+  padding: $vertical_baseline/4 $grid_xs/4
+
+.t-unlock-local
+  color: #777
+  padding: 6px 30px 0 30px
+  margin: 0 auto
+  text-align: center
+
+  h3 
+    color: #333
+
+  .no_measures
+    width: 650px
+    margin: auto
+    padding-bottom: $vertical_baseline/2
+    a
+      text-decoration: underline
+
+  .not_perfect
+    +font-size(-3)
+    a
+      text-decoration: underline
+  .reset
+    display: inline-block
+    +font-size(-3)
+
+  a
+    color: inherit
+    text-decoration: underline
+
+  #domain
+    width: 350px
+
+  .unlock_this
+    +font-size(1)
+/////

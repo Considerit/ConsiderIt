@@ -145,7 +145,7 @@
 
       $(document).off '.m-pointlist-browsing'
       @$el.off '.m-pointlist-browsing'
-      window.ensure_el_in_view(@$el.find('.m-pointlist-browse-toggle'), .5, 100)
+      window.ensure_el_in_view @$el.find('.m-pointlist-browse-toggle'), .5
 
     ###### end hack #####
 

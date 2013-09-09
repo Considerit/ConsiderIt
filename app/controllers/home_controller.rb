@@ -4,7 +4,7 @@ class HomeController < ApplicationController
 
   caches_action :index, :cache_path => proc {|c|
     updated_at = current_tenant.proposals.count > 0 ? current_tenant.proposals.order('updated_at DESC').limit(1).first.updated_at.to_i : 0
-    {:tag => "is_logged_in-#{current_user ? "#{current_user.id}-#{current_user.registration_complete}-#{current_user.avatar_file_name}"  : '-1'}-#{updated_at}-#{current_tenant.updated_at}-#{session.has_key?(:domain) ? session[:domain] : -1}"}
+    {:tag => "is_logged_in-#{current_user ? "#{current_user.id}-#{current_user.registration_complete}-#{current_user.avatar_file_name}"  : '-1'}-#{updated_at}-#{current_tenant.updated_at}}"}
   }
 
   caches_action :avatars, :cache_path => proc {|c|
@@ -17,6 +17,7 @@ class HomeController < ApplicationController
   end
 
   def index
+
     # TODO: move this to config somehow
     # if current_tenant.theme == 'lvg'
     #   @title = "Living Voters Guide: 2013 #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} Election"
@@ -46,16 +47,6 @@ class HomeController < ApplicationController
     end
   end  
 
-  def set_domain
-    
-    session[:domain] = params[:domain]
-    if current_user
-      current_user.save
-    end
-    
-    redirect_to request.referrer
-  end
-
   def avatars
     render :partial => 'home/avatars'
   end
@@ -72,10 +63,23 @@ class HomeController < ApplicationController
     end
 
     render :json => {
-      :points => current_user.points.published.where(:hide_name => true).joins(:proposal).select('proposals.long_id, points.id, points.is_pro'),
+      :points => current_user.points.published.where(:hide_name => true).select([:id, :user_id]),
       :proposals => proposals
     }
   end
+
+  # right now this is only used by LVG for zip codes...
+  def set_tag
+    session[:tags] ||= []
+    session[:tags] |= params[:tags].split(';')
+    if current_user
+      current_user.addTags session[:tags]
+      tags = current_user.getTags()
+    else
+      tags = session[:tags]
+    end
+    render :json => { :success => true, :user_tags => tags}
+  end  
 
   def set_dev_options
     session["user_theme"] = params[:theme]

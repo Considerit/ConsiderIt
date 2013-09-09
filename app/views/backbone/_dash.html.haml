@@ -1,0 +1,435 @@
+- providers = ['google', 'facebook', 'twitter']
+
+
+
+
+
+%script{ :type => "text/template", :id => "tpl_dashboard_sidebar"}
+  %ul
+    %li.m-dashboard_avatar
+      %img{:src => "{{ avatar }}"}
+
+    (( if( is_self ) { ))
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.profile_path(id)}}", :'data-target' => 'profile'}
+        Profile
+    
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
+        Edit profile
+
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.edit_account_path(id)}}", :'data-target' => 'account_settings'}
+        Account settings
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.edit_notifications_path(id)}}", :'data-target' => 'email_notifications'}        
+        Email notifications        
+
+    (( } ))
+
+  %hr
+
+  // if admin ...
+  %ul
+    (( if(is_admin) { ))
+    %li
+      %a.m-dashboard_link{:href => "/dashboard/application", :'data-target' => 'app_settings'}
+        App settings
+
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.manage_roles_path()}}", :'data-target' => 'user_roles'}
+        User roles
+
+    (( } ))
+
+
+    (( if( false && is_manager ) { ))
+
+    %li
+      %a.m-dashboard_link{:href => "/dashboard/proposals", :'data-target' => 'manage_proposals'}
+        Manage proposals
+
+    (( } ))
+
+    (( if( (is_moderator ) && tenant.get('enable_moderation') ) { ))
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.dashboard_moderate_path()}}", :'data-target' => 'moderate'}
+        Moderate content
+    (( } ))
+
+    (( if( (is_evaluator ) && tenant.get('assessment_enabled') ) { ))
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.assessment_index_path()}}", :'data-target' => 'assess'}
+        Assess claims
+    (( } ))
+
+    (( if(  is_analyst ) { ))
+    %li
+      %a.m-dashboard_link{:href => "{{Routes.analytics_path()}}", :'data-target' => 'analyze'}
+        Analyze trends
+    (( } ))
+
+    (( if(is_admin) { ))
+    %li
+      %a.m-dashboard_link{:href => "/dashboard/data", :'data-target' => 'database'}
+        Database
+    (( } ))
+
+    - if Rails.env.development?
+      %li
+        = link_to 'Tune', '/newrelic', :target => "_blank", :class => 'm-dashboard_link'
+
+%script{ :type => "text/template", :id => "tpl_dashboard_container"}
+  #m-dashboard
+
+    .m-dashboard-sidebar-region
+
+    .m-dashboard-main-region
+
+    .clear
+
+%script{ :type => "text/template", :id => "tpl_dashboard_unauthorized"}
+
+  .m-dashboard-heading
+    %h2
+      Not allowed!
+
+    .m-dashboard-subheading
+      Please sign in first to access this functionality.
+
+
+%script{ :type => "text/template", :id => "tpl_dashboard_profile"}
+  (( var max_length_root = 35, max_length_content = 65; ))
+
+  .m-dashboard-heading
+    %h2
+      {{ name }} 
+
+    .m-dashboard-subheading
+      (( if(bio && bio.length > 0) { ))
+      {{ bio }} 
+      (( } else { ))
+      %span.empty
+        No details provided
+      (( } ))
+
+      (( if ( is_self ) { ))
+      = surround '(', ')' do
+        %a.m-dashboard-profile-edit_profile{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
+          edit
+      (( } ))
+
+  .m-dashboard-profile-bio
+
+  (( if(_.keys(influenced_users).length > 0){ ))
+  .m-dashboard-profile-influence
+    .m-dashboard-profile-influence-summary
+      .m-dashboard-profile-influence-count
+        {{ _.keys(influenced_users).length }}
+      .m-dashboard-profile-influence-label
+        Influence
+
+    .m-dashboard-profile-influence-details
+      .m-dashboard-profile-influence-description
+        People influenced by {{ name }}'s pro & con considerations
+
+      .m-dashboard-profile-influenced.l-group-container
+        (( _.each(_.keys(influenced_users), function(p){ ))
+        %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+        (( }); ))        
+  (( } ))
+
+  .m-dashboard-profile-activities
+
+    %ul.m-dashboard-profile-activity-summaries
+      %li
+        %a.m-dashboard-profile-activity-summary{ :'data-target' => 'proposals'}
+          %span.m-activity-summary-count
+            {{ proposals.length }}
+          %span.m-activity-summary-label
+            Conversations
+
+      %li
+        %a.m-dashboard-profile-activity-summary{ :'data-target' => 'positions'}
+          %span.m-activity-summary-count
+            {{ positions.length }}
+          %span.m-activity-summary-label
+            Votes
+
+      %li
+        %a.m-dashboard-profile-activity-summary{ :'data-target' => 'points'}
+          %span.m-activity-summary-count
+            {{ points.length }}
+          %span.m-activity-summary-label
+            Pros & cons
+
+      %li
+        %a.m-dashboard-profile-activity-summary{ :'data-target' => 'comments'}
+          %span.m-activity-summary-count
+            {{ comments.length }}
+          %span.m-activity-summary-label
+            Comments
+
+    .m-dashboard-profile-activity-block{ :'data-target' => 'proposals-details'}
+      %h3
+        Conversations started
+      (( if(proposals.length > 0) { ))
+      %table.table.table-condensed.table-striped
+        %tbody
+          (( proposals.each(function(proposal){ ))
+          %tr
+            %td.m-dashboard-profile-activity-substance-wrap
+              .m-dashboard-profile-activity-substance
+                {{ proposal.get('name') }}
+            %td.m-dashboard-profile-activity-action
+              = link_to 'View and consider', "{{Routes.proposal_path(proposal.long_id)}}"
+          (( }); ))
+      (( } else { ))
+      .m-dashboard-profile-activity-empty
+        {{name}} has not put forward any proposals.
+      (( } ))
+
+
+    .m-dashboard-profile-activity-block{ :'data-target' => 'positions-details'}
+
+
+      %h3
+        Positions taken
+
+      (( if(positions.length > 0){ ))
+      %table.table.table-condensed.table-striped
+        %tbody
+          (( positions.each(function(position){ ))
+          (( var proposal = position.getProposal(); ))
+          (( var route = Routes.user_position_proposal_path(proposal.get('long_id'), id); ))
+          %tr
+            %td.m-dashboard-profile-activity-substance-wrap
+              .m-dashboard-profile-activity-substance
+                (( if( position.get('stance') < -.05 ) { ))
+                Opposed
+                (( } else if( position.get('stance') > .05 ) { ))
+                Supported
+                ((} else{ ))
+                Neutral / undecided
+                (( }))
+              .m-dashboard-profile-activity-substance-context
+                Re: {{ proposal.get('name') }}
+
+            %td.m-dashboard-profile-activity-action
+              = link_to 'See why', "{{ route }}"
+          (( }); ))
+      (( } else { ))
+      .m-dashboard-profile-activity-empty
+        {{name}} has not taken any positions.
+      (( } ))
+
+    .m-dashboard-profile-activity-block{ :'data-target' => 'points-details'}
+      %h3
+        Pro/con points written
+
+      (( if(points.length > 0){ ))
+      %table.table.table-condensed.table-striped
+        %tbody
+          (( points.each(function(point){ ))
+          (( var proposal = point.getProposal(); ))  
+          (( var route = Routes.proposal_point_path(proposal.get('long_id'), point.id); ))          
+          %tr
+            %td.m-dashboard-profile-activity-substance-wrap
+              .m-dashboard-profile-activity-substance
+                {{ point.get('category') }} {{ point.get('nutshell') }}
+              .m-dashboard-profile-activity-substance-context
+                Re: {{ proposal.get('name') }}
+
+              .m-dashboard-profile-activity-influence
+                This point has influenced {{influenced_users_by_point[point.id].length}} people
+              .l-group-container
+                (( _.each(influenced_users_by_point[point.id], function(p){ ))
+                %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+                (( }); ))   
+
+            %td.m-dashboard-profile-activity-action
+              = link_to 'Read and discuss', "{{ route }}"
+          (( }); ))
+      (( } else { ))
+      .m-dashboard-profile-activity-empty
+        {{ name }} has not contributed any points.
+      (( } ))
+
+    .m-dashboard-profile-activity-block{ :'data-target' => 'comments-details'}
+      %h3
+        Comments
+
+      (( if(comments.length > 0){ ))
+      %table.table.table-condensed.table-striped
+        %tbody
+          (( comments.each(function(comment){ ))
+          (( var point = comment.getRoot(); ))
+          (( var proposal = point.getProposal(); ))
+          (( var route = Routes.proposal_point_path(proposal.get('long_id'), point.id); ))
+          %tr
+            %td.m-dashboard-profile-activity-substance-wrap
+              .m-dashboard-profile-activity-substance
+                {{ comment.get('body')}}
+              .m-dashboard-profile-activity-substance-context
+                Re: {{ point.get('is_pro') ? 'Pro' : 'Con' }} point "{{ point.get('nutshell') }}"
+              .m-dashboard-profile-activity-substance-context
+                Re: {{ proposal.get('name') }}
+            %td.m-dashboard-profile-activity-action
+              = link_to 'Join in', "{{ route }}", :anchor => "comment-{{comment.id}}"
+          (( }); ))
+      (( } else { ))
+      .m-dashboard-profile-activity-empty
+        {{name}} has not made any comments.
+      (( } ))
+
+
+%script{ :type => "text/template", :id => "tpl_dashboard_edit_profile"}
+
+  .m-dashboard-heading
+    %h2
+      Edit your Profile
+
+    .m-dashboard-subheading
+      Control the information that other people can see.
+
+
+  = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
+
+    .field
+      = f.label :name, "Name"
+      = f.text_field :name, :pattern => "^.{1,}", :value => "{{ name }}"
+
+    .field
+      = f.label :bio, "About you"
+      = f.text_area :bio, :rows => 5, :value => "{{ bio }}"
+  
+    .field
+      = f.label :avatar, "Your picture" 
+      %br
+      = f.file_field :avatar, :title => 'Upload a profile picture'
+
+    .save_block
+      = f.submit "Save changes", :class => 'button'
+
+
+%script{ :type => "text/template", :id => "tpl_dashboard_account_settings"}
+
+  .m-dashboard-heading
+    %h2
+      Account Settings
+
+    .m-dashboard-subheading
+      Modify your authentication options.
+
+  = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
+
+    .field
+      = f.label :email, "Email address"
+      = f.email_field :email, :value => "{{ email }}"
+      .sublabel
+        Your email will never be shared with other users or third parties
+
+    (( if ( third_party_authenticated ) { ))
+    .field
+      Authorized via {{third_party_authenticated}}
+    (( } else { ))
+    .field
+      = f.label :password, "New password"
+      = f.password_field :password
+    .field
+      = f.label :password_confirmation, "Confirm new password" 
+      = f.password_field :password_confirmation
+    (( } ))
+
+    .save_block
+      = f.submit "Save changes", :class => 'button'
+
+%script{ :type => "text/template", :id => "tpl_dashboard_email_notifications"}
+
+  .m-dashboard-heading
+    %h2
+      Email Notification Settings
+    .m-dashboard-subheading
+      Control when email updates are sent to {{ email }}
+    
+
+  .field
+    = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => { :class => 'm-dashboard-notifications-unfollow_all'} do |f|
+      = f.hidden_field :user_id, :value => "{{id}}"
+      = f.hidden_field :unsubscribe_all, :value => true
+      = f.submit "Unsubscribe to all notifications", :class => 'button', data: { confirm: "Are you sure you want to unsubscribe to all notifications? This is irreversable." }
+
+  .m-dashboard-notifications-followable_group
+    .m-dashboard-heading
+      %h2
+        Site-wide notifications
+
+      .m-dashboard-subheading
+        Receive an email whenever a new conversation is started.
+
+      = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => {:class => "m-dashboard-notifications-unfollow"} do |f|
+        = f.hidden_field :user_id, :value => "{{ id }}"
+        = f.hidden_field :followable_type, :value => "Account"
+        = f.hidden_field :followable_id, :value => "{{ tenant_id }}"  
+        = f.hidden_field :follow, :value => "{{ !account_follower }}"
+        = f.submit "{{ submit_text }}", :class => 'button'      
+
+  (( _.each( followable_types, function(followable_type){  ))
+  .m-dashboard-notifications-followable_group
+    .m-dashboard-heading
+      %h2
+        {{followable_type.label}}
+
+      .m-dashboard-subheading
+        {{followable_type.explanation}}
+
+    .m-dashboard-notifications-table_wrap
+      %table.table.table-condensed.table-striped
+        %tbody
+          (( var is_following = false; ))
+          (( _.each( _.values(follows[followable_type.model]), function(obj){ ))
+
+          (( if( obj.follow ){ ))
+          (( is_following = true; ))
+
+          (( var root_object = followable_objects[obj.followable_type][obj.followable_id][followable_type.model.toLowerCase()]; ))
+
+          %tr.follow_row
+
+            %td
+              {{ root_object[followable_type.attribute] }}
+
+            %td
+              = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => {:class => "m-dashboard-notifications-unfollow"} do |f|
+                = f.hidden_field :user_id, :value => "{{id}}"
+                = f.hidden_field :followable_type, :value => "{{obj.followable_type}}"
+                = f.hidden_field :followable_id, :value => "{{obj.followable_id}}"  
+                = f.submit "Unsubscribe", :class => 'button'
+
+          (( } ))
+          (( }); ))
+          (( if( !is_following ){ ))
+          Not following any {{followable_type.label}}
+          (( } ))
+  (( }); ))
+
+%script{ :id => 'tpl_dash_email_dialog_view', :type => 'text/template'}
+  .m-message
+    .m-message-preamble
+      {{ preamble }}
+
+    = form_for :message, :url => message_path, :remote => true, :as => :message, :html => { :class => 'm-message-form'} do |f|
+      = f.hidden_field :sender, :value => "{{ sender }}"
+      = f.hidden_field :recipient, :value => "{{ recipient }}"
+
+      .m-message-subject
+        = f.label :subject, 'Subject'
+        = f.text_area :subject, :rows => 1, :value => "{{ subject }}"
+
+      .m-message-body
+        = f.label :body, 'Body'    
+        = f.text_area :body, :rows => 10, :value => "{{ body }}"
+
+      .m-message-footer
+        = f.submit "Send", :class => 'button'
+

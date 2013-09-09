@@ -35,7 +35,7 @@ class Ability
     end
 
     if user.has_role? :moderator
-      can [:index, :create], Moderatable::Moderation
+      can [:index, :create], Moderation
     end
  
     if user.has_role? :manager
@@ -110,10 +110,10 @@ class Ability
 
       #Comment
       if !user.id.nil?
-        can :create, Commentable::Comment
+        can :create, Comment
       end
 
-      can :update, Commentable::Comment, :user_id => user.id
+      can :update, Comment, :user_id => user.id
       
     end
   end

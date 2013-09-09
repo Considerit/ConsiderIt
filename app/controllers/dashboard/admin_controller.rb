@@ -58,7 +58,7 @@ class Dashboard::AdminController < Dashboard::DashboardController
       end
 
       user.save
-      result = { :role_list => user.role_list } 
+      result = { :roles_mask => user.roles_mask, :role_list => user.role_list } 
     end
 
     render :json => result
@@ -76,7 +76,7 @@ class Dashboard::AdminController < Dashboard::DashboardController
       @series = []
 
       has_permission = current_user && (current_user.is_admin? || current_user.has_role?(:analyst) )
-      classes = has_permission ? [Session, User, Position, Inclusion, Point, Commentable::Comment] : []
+      classes = has_permission ? [Session, User, Position, Inclusion, Point, Comment] : []
 
       classes.each_with_index do |data, idx|
         dates = {}

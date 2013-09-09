@@ -1,0 +1,102 @@
+%script{ :type => "text/template", :id => "tpl_dashboard_moderate"}
+
+  .m-dashboard-heading
+    %h2
+      Moderation Interface
+
+    .m-dashboard-subheading
+      Fail posts with personal attacks, or wildly off-topic/inappropriate material.        
+
+  #tabs
+  #moderations
+
+
+%script{ :type => "text/template", :id => "tpl_moderate_tab"}
+  (( _.each(classes_to_moderate, function(mc, idx){  ))
+  %a{:class => 'm-moderation-tab inactive', :class_name => "{{ mc }}"}
+    %span.name
+      {{ mc }}
+    = surround '(', ')' do
+      {{ unmoderated[mc] }}
+  (( }); ))
+
+
+%script{ :type => "text/template", :id => "tpl_moderate_list_view"}
+
+  .m-moderate-filters
+    %span.m-moderate-filters-label
+      Show: 
+    %a.m-moderate-filter{:'data-target' => 'incomplete'}
+      incomplete
+    |
+    %a.m-moderate-filter{:'data-target' => 'pass'}
+      passing
+    |
+    %a.m-moderate-filter{:'data-target' => 'quarantine'}
+      quarantined
+    |
+    %a.m-moderate-filter{:'data-target' => 'fail'}
+      failed
+    |
+    %a.m-moderate-filter{:'data-target' => 'updated'}
+      updated
+    |
+    %a.m-moderate-filter{:'data-target' => 'all'}
+      all
+
+
+  .m-moderate-content
+
+%script{ :type => "text/template", :id => "tpl_moderate_item_view"}
+
+  .m-moderatable-text-region
+
+    .m-moderatable-fields
+      (( _.each( moderated_fields, function(field) {  ))
+      (( if( field && field.length > 0 ) { ))
+      .m-moderatable-field
+        {{ field.replace(/(<([^>]+)>)/ig,"") }}
+      (( } ))              
+      (( }); ))
+
+    .meta
+      %a.m-moderate-context_link{ :href => "{{ url }}"}
+        {{ anchor }}
+
+      (( if (user) { ))
+      |
+      %span.by
+        moderated by {{ user.name }}
+      (( } ))
+
+
+
+  .m-moderatable-form-region
+    = form_for :moderate, :url => "{{Routes.dashboard_moderate_create_path()}}", :method => :post, :remote => true, :html => { :class => 'm-moderate-form' } do |f|
+      = f.hidden_field :moderatable_id, :value => "{{moderatable_id}}"
+      = f.hidden_field :moderatable_type, :value => "{{moderatable_type}}"
+
+      .m-moderatable-evaluation
+        (( _.each(evaluation_options, function(option) { ))
+        .m-moderatable-evaluation-option
+          %input{ :id => "moderate_status_{{moderatable_id}}_{{option.val}}", :name => "moderate[status]", :type => "radio", :value => "{{option.val}}" }
+          %label{ :for => "moderate_status_{{moderatable_id}}_{{option.val}}"}
+            {{option.label}}
+        (( }); ))
+
+
+      = f.submit 'done', :class => 'hide'
+
+    (( if( updated_since_last_evaluation ) { ))
+    .m-moderate-updated
+      Updated since last moderation
+      .m-moderate-updated-fineprint
+        Click the appropriate moderation, even if the evaluation hasn't changed
+    (( } ))
+
+
+    .m-moderatable-email
+      %button.button
+        Email content author
+
+

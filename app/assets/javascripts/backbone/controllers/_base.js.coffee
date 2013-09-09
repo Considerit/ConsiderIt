@@ -13,7 +13,7 @@
         options.parent_controller.addController @
 
     close: (args...) ->
-      console.log "removing Controller:", @
+      #console.log "removing Controller:", @
 
       while @controllers.length > 0
         c = @controllers.pop()

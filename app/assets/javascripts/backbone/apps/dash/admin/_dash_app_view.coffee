@@ -29,9 +29,9 @@
 
     accountUpdated : (ev, response, options) ->
       data = $.parseJSON(response.responseText)
+      @trigger 'account:updated', data.account
 
-      @$el.find('.save_block').append('<div class="flash_notice">Account updated</div>').delay(1500).fadeOut 'fast', =>
-        @trigger 'account:updated', data.account
+      toastr.success 'Account updated'
 
 
     toggleModeration : ->

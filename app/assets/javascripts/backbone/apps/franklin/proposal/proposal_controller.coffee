@@ -49,7 +49,7 @@
             viewed_points : _.keys(@model.viewed_points)
             follow_proposal : follow_proposal
 
-          Backbone.sync 'update', @model,
+          xhr = Backbone.sync 'update', @model,
             data : JSON.stringify params
             contentType : 'application/json'
 
@@ -63,12 +63,25 @@
               # if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()
               #   @$el.attr('data-activity', 'proposal-has-activity')
 
+              current_user = App.request 'user:current'
+              toastr.success "Thanks for your contribution #{current_user.firstName()}. Now explore the results!", null,
+                positionClass: "toast-top-full-width"
+                fadeIn: 100
+                fadeOut: 100
+                timeOut: 15000
+                extendedTimeOut: 100
+
               App.navigate Routes.proposal_path( @model.get('long_id') ), {trigger: true}
-              #TODO: Toastr notification!
+
 
             failure : (data) =>
-              #TODO: Toastr notification!
-              throw 'Something went wrong syncing position'
+              toastr.error "We're sorry, something went wrong saving your position :-(", null,
+                positionClass: "toast-top-full-width"
+
+          App.execute 'show:loading',
+            loading:
+              entities : xhr
+              xhr: true
 
         user = @model.getUser()
         if user.isNew() || user.id < 0
@@ -252,6 +265,8 @@
         model : position
 
   class Proposal.AggregateController extends Proposal.AbstractProposalController
+    exploded : false
+
     initialize : (options = {}) ->
       @model = options.model
 
@@ -274,9 +289,11 @@
 
           _.each [@pros_controller, @cons_controller], (controller) =>
             @listenTo controller, 'point:highlight_includers', (view) =>
-              includers = view.model.getIncluders()
-              includers.push view.model.get('user_id')
-              histogram_view.highlightUsers includers
+              if @exploded
+                # don't highlight users on point mouseover unless the histogram is fully visible
+                includers = view.model.getIncluders()
+                includers.push view.model.get('user_id')
+                histogram_view.highlightUsers includers
 
             @listenTo controller, 'point:unhighlight_includers', (view) =>
               includers = view.model.getIncluders()
@@ -306,14 +323,20 @@
         layout.reasonsRegion.show reasons_layout
         layout.histogramRegion.show histogram_view #has to be shown after reasons
 
-        # TODO: make transition optional
         @options.transition ?= true
         if @options.transition
-          _.delay ->
+          _.delay =>
             layout.explodeParticipants()
+            @exploded = true
           , 750
         else
           layout.explodeParticipants false
+          @exploded = true
+
+        @options.move_to_results ?= false
+        if @options.move_to_results
+          layout.moveToResults()
+
 
       @region.show layout
 

@@ -123,11 +123,23 @@
 
 
     _getMainRegion : ->
+
+      region = App.request 'default:region'
+
+      if @dashboard && region.controlled_by != @dashboard
+        @dashboard.close() 
+        @dashboard = null
+
       if !@dashboard
-        @dashboard = new Dash.Controller()
+        @dashboard = new Dash.DashController
+          region : region
+
+        region.controlled_by = @dashboard
+        
         App.vent.on 'dashboard:region:rendered', (model, dash_name) =>
           model ?= App.request 'user:current'
           @dashboard.renderSidebar model, dash_name
+
         @dashboard.region.show @dashboard.layout
 
       @dashboard.layout.mainRegion

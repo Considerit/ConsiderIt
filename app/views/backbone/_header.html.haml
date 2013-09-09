@@ -1,0 +1,44 @@
+
+%script{ :type => "text/template", :id => "tpl_header" }
+
+  .l-heading-wrap
+
+    #m-header-logo-region
+
+    #m-user-nav
+
+  .l-navigate
+
+%script{  :type => "text/template", :id => "tpl_header_nav" }
+  %a.l-navigate-back
+    &laquo; go back
+
+  %ul.l-navigate-breadcrumbs  
+    %a{ :href => '/', :title => "Go to homepage"}
+      .css3_icon
+        .css3_icon_home
+        .css3_icon_chimney
+
+    (( _.each(crumbs, function(crumb,idx) {  ))
+    (( var name=crumb[0], loc=crumb[1]; ))
+
+    %li.l-navigate-crumb
+      %a{:href => "{{loc}}"}
+        {{name}}
+      (( if( idx != crumbs.length - 1) { ))
+      \/
+      (( } ))
+    (( }); ))
+
+%script{ :type => "text/template", :id => "tpl_header_logo" }
+
+  %a.t-logo{ :href => '/#l-footer', :title => 'Learn more about ConsiderIt', :'data-domain' => 'homepage'}
+    
+    %span.t-logo-name
+      Consider
+    %span.t-logo-separator
+      &#9733;
+    %span.t-logo-name
+      It
+    %span.t-logo-tagline
+      Technology for good dialogue

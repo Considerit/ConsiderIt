@@ -8,12 +8,11 @@ class User < ActiveRecord::Base
   has_many :positions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
-  has_many :comments, :dependent => :destroy, :class_name => 'Commentable::Comment'
+  has_many :comments, :dependent => :destroy
   has_many :proposals
   has_many :follows, :dependent => :destroy, :class_name => 'Followable::Follow'
 
   acts_as_tenant(:account)
-  #attr_taggable :tags
   is_trackable
 
   #devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
@@ -213,6 +212,19 @@ class User < ActiveRecord::Base
       return "#{split[0][0]}. #{split[-1]}"
     end
     return split[0]  
+  end
+
+  def addTags(tags)
+    self.tags ||= ''
+
+    existing_tags = self.tags.split(';')
+    self.tags = (existing_tags | tags).join(';')
+    self.save
+  end
+
+  def getTags
+    tags = self.tags ||= ''
+    tags.split(';')
   end
 
   def add_token

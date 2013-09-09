@@ -47,8 +47,8 @@ en:
     actions:
       dashboard:
         title: "Site administration"
-        menu: "Dashboard"
-        breadcrumb: "Dashboard"
+        menu: "Dash"
+        breadcrumb: "Dash"
       index:
         title: "List of %{model_label_plural}"
         menu: "List"

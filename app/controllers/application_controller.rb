@@ -16,6 +16,19 @@ class ApplicationController < ActionController::Base
     end
 
 
+    #############
+    # for testing pinned users: 
+    test_fixed_user = false
+    if Rails.env == 'development' && test_fixed_user
+      if false
+        @limited_user = User.find(6)
+        @limited_user_email = @limited_user.email
+        @limited_user_follows = @limited_user.follows.all
+      else
+        @limited_user_email = 'test@testing.dev'
+      end
+    end
+    ###################
 
     if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
       user = User.find_by_email(params[:u])
@@ -72,7 +85,7 @@ class ApplicationController < ActionController::Base
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
       @proposals = []
 
-      proposals = Proposal.active.public_fields.order('activity DESC').limit(3)
+      proposals = Proposal.open_to_public.active.browsable.public_fields.order('activity DESC').limit(3)
       top = proposals.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
             proposals.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
       
@@ -91,13 +104,18 @@ class ApplicationController < ActionController::Base
       end
 
       #Proposal.active.where('activity > 0').public_fields.each do |proposal|
-      proposals.each do |proposal|      
-        @proposals.push ({
-          :model => proposal,
-          :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,
-          :top_pro => proposal.top_pro ? top_points[proposal.top_pro] : nil,
-        } )
-      end
+      # proposals.each do |proposal|      
+      #   @proposals.push ({
+      #     :model => proposal,
+      #     :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,
+      #     :top_pro => proposal.top_pro ? top_points[proposal.top_pro] : nil,
+      #   } )
+      # end
+
+      @proposals = {
+        :proposals => proposals,
+        :top_points => top_points.values
+      }
 
       @public_root = Rails.application.config.action_controller.asset_host.nil? ? "" : Rails.application.config.action_controller.asset_host
 

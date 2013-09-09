@@ -3,10 +3,12 @@
     initialize : (options = {}) ->
       layout = @getLayout options.location
       @listenTo layout, 'before:item:added', (view) => 
-        new App.Franklin.Point.PointController
+        c = new App.Franklin.Point.PointController
           view : view
           model : view.model
-          region : new Backbone.Marionette.Region { el : view.el }          
+          region : new Backbone.Marionette.Region { el : view.el }     
+          parent_controller : @
+     
 
       @listenTo layout, 'show', =>
         @listenTo layout, 'sort', (sort_by) =>

@@ -129,9 +129,13 @@
       Routes.proposals_path( )
 
     parse : (response) ->
-      if 'top_points' of response
-        App.vent.trigger 'points:fetched', (p.point for p in response.top_points)
-      proposals = response.proposals
+      if !(response instanceof Array)
+        if 'top_points' of response
+          App.vent.trigger 'points:fetched', (p.point for p in response.top_points)
+        proposals = response.proposals
+      else
+        proposals = response
+
       proposals
 
     purge_inaccessible : -> 
@@ -255,10 +259,10 @@
 
   App.addInitializer ->
     if ConsiderIt.proposals
-      API.bootstrapProposals ConsiderIt.proposals
+      App.request 'proposals:bootstrap', ConsiderIt.proposals
 
     if ConsiderIt.current_proposal
-      API.bootstrapProposal ConsiderIt.current_proposal
+      App.request 'proposal:bootstrap', ConsiderIt.current_proposal
 
 
 

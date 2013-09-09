@@ -15,8 +15,9 @@
   API =
 
     userProfile : (user_id) ->
+      @current_controller.close() if @current_controller      
       user = App.request 'user', user_id
-      new Dash.User.UserProfileController
+      @current_controller = new Dash.User.UserProfileController
         region : @_getMainRegion()  
         model : user  
 
@@ -26,8 +27,9 @@
 
     
     editProfile : (user_id) ->
+      @current_controller.close() if @current_controller      
       current_user = ConsiderIt.request 'user:current'
-      new Dash.User.EditProfileController
+      @current_controller = new Dash.User.EditProfileController
         region : @_getMainRegion()  
         model : current_user   
 
@@ -35,11 +37,10 @@
         ['homepage', '/'], 
         ["profile", Routes.edit_profile_path(current_user.id)] ]
 
-
-
     accountSettings : (user_id) ->
+      @current_controller.close() if @current_controller      
       current_user = ConsiderIt.request 'user:current'
-      new Dash.User.AccountSettingsController
+      @current_controller = new Dash.User.AccountSettingsController
         region : @_getMainRegion()  
         model : current_user   
 
@@ -49,8 +50,9 @@
 
 
     emailNotifications : (user_id) ->
+      @current_controller.close() if @current_controller      
       user = if ConsiderIt.request("user:current:logged_in?") then ConsiderIt.request('user:current') else ConsiderIt.request("user:fixed")
-      new Dash.User.EmailNotificationsController
+      @current_controller = new Dash.User.EmailNotificationsController
         region : @_getMainRegion()  
         model : user
 
@@ -60,7 +62,8 @@
 
 
     appSettings : ->
-      new Dash.Admin.AppSettingsController
+      @current_controller.close() if @current_controller      
+      @current_controller = new Dash.Admin.AppSettingsController
         region : @_getMainRegion()  
 
       App.vent.trigger 'route:completed', [ 
@@ -77,7 +80,8 @@
     #     ["Manage proposals", Routes.account_path()]         
 
     userRoles : ->
-      new Dash.Admin.UserRolesController
+      @current_controller.close() if @current_controller      
+      @current_controller = new Dash.Admin.UserRolesController
         region : @_getMainRegion()  
 
       App.vent.trigger 'route:completed', [ 
@@ -86,7 +90,8 @@
 
 
     analyze : ->
-      new Dash.Admin.AnalyticsController
+      @current_controller.close() if @current_controller      
+      @current_controller = new Dash.Admin.AnalyticsController
         region : @_getMainRegion()  
 
       App.vent.trigger 'route:completed', [ 
@@ -94,7 +99,8 @@
         ["Analytics", Routes.analytics_path()] ]
 
     database : ->
-      new Dash.Admin.DatabaseController
+      @current_controller.close() if @current_controller      
+      @current_controller = new Dash.Admin.DatabaseController
         region : @_getMainRegion()        
 
       App.vent.trigger 'route:completed', [ 
@@ -102,7 +108,8 @@
         ["Database", Routes.rails_admin_path()] ]
 
     moderate : ->
-      new Dash.Admin.Moderation.ModerationController
+      @current_controller.close() if @current_controller      
+      @current_controller = new Dash.Admin.Moderation.ModerationController
         region : @_getMainRegion()  
 
       App.vent.trigger 'route:completed', [ 
@@ -110,7 +117,8 @@
         ["moderate", Routes.dashboard_moderate_path()] ]
 
     unauthorizedPage : ->
-      new Dash.UnauthorizedController
+      @current_controller.close() if @current_controller
+      @current_controller = new Dash.UnauthorizedController
         region : @_getMainRegion()  
 
 

@@ -8,9 +8,11 @@
       @listenTo layout, 'show', =>
         active_controller = new Proposals.ActiveListController
           region : layout.activeRegion
+          parent_controller : @
 
         inactive_controller = new Proposals.InactiveListController
           region : layout.pastRegion
+          parent_controller : @
 
       @region.show layout
 
@@ -58,6 +60,7 @@
       new App.Franklin.Proposal.SummaryController
         view : view
         region : new Backbone.Marionette.Region { el : view.el }      
+        parent_controller : @
 
     handleSortRequested : (collection, sort_by) ->
       @requestProposals collection, @is_active, @sortCollection, 

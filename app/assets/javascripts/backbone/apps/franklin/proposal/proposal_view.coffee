@@ -140,7 +140,7 @@
       'click .m-position-cancel' : 'handleCanceled'
 
     handleSubmitPosition : (ev) ->
-      @trigger 'position:submit-requested'
+      @trigger 'position:submit-requested', @$el.find('#follow_proposal').is(':checked')
 
     handleCanceled : (ev) ->
       @trigger 'position:canceled'

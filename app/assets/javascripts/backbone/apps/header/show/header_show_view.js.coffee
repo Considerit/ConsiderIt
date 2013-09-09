@@ -5,3 +5,23 @@
 
     regions:
       userNavRegion: "#m-user-nav"
+      navRegion : '.l-navigate'
+      logoRegion : '#m-header-logo-region'
+
+  class Show.NavView extends App.Views.ItemView
+    template: '#tpl_header_nav'
+    className : 'l-navigate-wrap'
+
+    serializeData : ->
+      _.extend {},
+        crumbs : @options.crumbs
+
+    events : 
+      'click .l-navigate-back' : 'goBack'
+
+    goBack : ->
+      App.request 'nav:back:history'
+
+  class Show.LogoView extends App.Views.ItemView
+    template: '#tpl_header_logo'
+    className : 'm-header-logo'

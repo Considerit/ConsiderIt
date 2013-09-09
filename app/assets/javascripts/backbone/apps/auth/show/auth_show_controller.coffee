@@ -1,6 +1,6 @@
 @ConsiderIt.module "Auth.Show", (Show, App, Backbone, Marionette, $, _) ->
   
-  class Show.Controller extends App.Controllers.Base
+  class Show.AuthShowController extends App.Controllers.Base
     
     initialize: ->
       user = App.request 'user:current'

@@ -46,6 +46,7 @@
           loadingView.close()
         else if !config.debug
           @show realView 
+        @close()
     
     getEntities: (view) ->
       ## return the entities manually set during configuration, or just pull 

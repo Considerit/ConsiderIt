@@ -24,7 +24,7 @@
 
     setupPositionLayout : (layout) ->
       @listenTo layout, 'point:viewed', (point_id) =>
-        @model.viewed_points[pnt] = pnt
+        @model.addViewedPoint point_id
 
       reasons_layout = @getPositionReasons @proposal, @model
       stance_view = @getPositionStance @model
@@ -44,20 +44,22 @@
 
       @listenTo view, 'position:submit-requested', => 
         submitPosition = =>
+          params = _.extend @model.toJSON(),    
+            included_points : @model.getIncludedPoints()
+            viewed_points : _.keys(@model.viewed_points)
+            #TODO: @$el isn't defined here...
+            #follow_proposal : @$el.find('#follow_proposal').is(':checked')
 
-          #TODO: check out the request headers and make sure the proper stuff is being submitted
-          included_points : ( pnt.id for pnt in @model.includedPoints() )
-          viewed_points : _.values(@model.viewed_points)
-
-          #TODO: @$el isn't defined here...
-          follow_proposal : @$el.find('#follow_proposal').is(':checked')
           Backbone.sync 'update', @model,
+            data : JSON.stringify params
+            contentType : 'application/json'
+
             success : (data) =>
               @model.set data.position.position
               @model.getProposal().newPositionSaved @model
 
               #TODO: make sure points getting updated properly in all containers
-              App.trigger 'points:fetched', (p.point in data.updated_points)
+              App.trigger 'points:fetched', (p.point for p in data.updated_points)
 
               # if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()
               #   @$el.attr('data-activity', 'proposal-has-activity')
@@ -69,10 +71,13 @@
               #TODO: Toastr notification!
               throw 'Something went wrong syncing position'
 
-        if @model.getUser().isNew()        
+        user = @model.getUser()
+        if user.isNew() || user.id < 0
           App.vent.trigger 'registration:requested'
           # if user cancels login, then we could later submit this position unexpectedly when signing in to submit a different position!      
-          @listenToOnce App.vent, 'user:signin', => submitPosition()
+          @listenToOnce App.vent, 'user:signin', => 
+            @model.setUser App.request 'user:current'
+            submitPosition()
         else
           submitPosition()
 
@@ -82,16 +87,16 @@
       #TODO: make sure included points is correct
 
       position_pros = new App.Entities.Points points.filter (point) ->
-        point.id of included_points && point.isPro()
+        point.id in included_points && point.isPro()
 
       position_cons = new App.Entities.Points points.filter (point) ->
-        point.id of included_points && !point.isPro()
+        point.id in included_points && !point.isPro()
 
       peer_pros = new App.Entities.PaginatedPoints points.filter (point) ->
-        !(point.id of included_points) && point.isPro()
+        !(point.id in included_points) && point.isPro()
 
       peer_cons = new App.Entities.PaginatedPoints points.filter (point) ->
-        !(point.id of included_points) && !point.isPro()
+        !(point.id in included_points) && !point.isPro()
 
       peer_pros_controller = new App.Franklin.Points.PeerPointsController
         valence : 'pro'

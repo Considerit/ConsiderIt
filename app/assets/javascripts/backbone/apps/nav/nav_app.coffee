@@ -35,6 +35,9 @@
         route = @nav_history.pop()[1]
         App.navigate route, {trigger: true}
 
+    historyLength : ->
+      @nav_history.length
+
   App.vent.on 'route:completed', (crumbs) =>
     API.trackHistory crumbs
 
@@ -43,3 +46,6 @@
 
   App.reqres.setHandler "nav:back:history", ->
     API.backByHistory()
+
+  App.reqres.setHandler "nav:history:length", ->
+    API.historyLength()

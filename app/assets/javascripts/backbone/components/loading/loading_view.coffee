@@ -8,15 +8,13 @@
     
     onShow: ->
       opts = @_getOptions()
-      console.log @$el, @
-
       @$el.spin opts
     
     onClose: ->
-      console.log @$el
       @$el.spin false
 
     render : ->
+
     
     _getOptions: ->
       lines: 10 # The number of lines to draw

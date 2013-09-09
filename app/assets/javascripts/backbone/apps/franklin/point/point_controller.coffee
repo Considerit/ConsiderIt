@@ -32,7 +32,8 @@
 
         @setupCommentsView expanded_view.discussionRegion
 
-        @listenTo expanded_view, 'details:close', (go_back) => @unexpand(go_back)
+        @listenTo expanded_view, 'details:close', (go_back) => @unexpand go_back
+        @listenTo App.vent, 'point:expanded', => @unexpand false
 
         @layout.$el.toggleClass 'm-point-expanded m-point-unexpanded'
 
@@ -68,7 +69,7 @@
       $(document).off '.m-point-details'
       @layout.$el.toggleClass 'm-point-expanded m-point-unexpanded'
 
-      @layout.expansionRegion.reset()
+      @layout.expansionRegion.reset() if @layout.expansionRegion
 
       App.request 'nav:back:crumb' if go_back
       # App.navigate Routes.root_path(), {trigger : true}

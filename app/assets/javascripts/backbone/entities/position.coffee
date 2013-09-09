@@ -22,15 +22,15 @@
       @written_points = []
       @viewed_points = {}
 
-    subsume : (other_pos) ->
-      params = 
-        stance : if other_pos.get('stance') != 0 then other_pos.get('stance') else @get('stance')
-        stance_bucket : other_pos.get('stance_bucket')
+    # subsume : (other_pos) ->
+    #   params = 
+    #     stance : if other_pos.get('stance') != 0 then other_pos.get('stance') else @get('stance')
+    #     stance_bucket : other_pos.get('stance_bucket')
 
-      explanation = other_pos.get('explanation')
-      params.explanation = explanation if explanation? and explanation.length > 0
+    #   explanation = other_pos.get('explanation')
+    #   params.explanation = explanation if explanation? and explanation.length > 0
 
-      @set params
+    #   @set params
 
     clear : ->
       super
@@ -49,6 +49,8 @@
     removePoint : (point) ->
       @setIncludedPoints _.without @included_points, [point.id]
 
+    addViewedPoint : (point) ->
+      @viewed_points[point.id] = 1
       
     # relations
 
@@ -67,6 +69,10 @@
       if !@user 
         @user = App.request 'user', @get('user_id')
       @user
+
+    setUser : (user) ->
+      @set 'user_id', user.id
+      @user = user
 
     stanceLabel : ->
       Entities.Position.stance_name_adverb @get('stance')

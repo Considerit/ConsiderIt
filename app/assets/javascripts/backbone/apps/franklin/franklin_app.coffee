@@ -28,16 +28,14 @@
     Consider: (long_id) -> 
       proposal = App.request 'proposal:get', long_id, true
 
-      region = App.request "default:region"
+      history_length = App.request('nav:history:length')
+      @_loading [proposal]
 
-      if region.currentView
-        App.execute "show:loading", region.currentView,
-          region : region
-          loading : 
-            entities : [proposal]
-            #loadingType : 'opacity'
+      App.execute 'when:fetched', proposal, =>
+        region = App.request 'default:region'
 
-      App.execute 'when:fetched', proposal, ->
+        $(document).scrollTop(0) if history_length < 2
+
         @franklin_controller = new Franklin.Proposal.PositionController
           region : region
           model : proposal
@@ -47,7 +45,15 @@
 
     Aggregate: (long_id) -> 
       proposal = App.request 'proposal:get', long_id, true
-      App.execute 'when:fetched', proposal, ->
+
+      history_length = App.request('nav:history:length')
+      @_loading [proposal]
+
+      App.execute 'when:fetched', proposal, =>
+        region = App.request 'default:region'
+
+        $(document).scrollTop(0) if history_length < 2
+
         @franklin_controller = new Franklin.Proposal.AggregateController
           region : App.request "default:region"
           model : proposal
@@ -61,8 +67,10 @@
 
     PointDetails: (long_id, point_id) -> 
       proposal = App.request 'proposal:get', long_id, true
-      App.execute 'when:fetched', proposal, -> 
-        region = App.request "default:region"
+      region = App.request "default:region"
+      @_loading [proposal]
+
+      App.execute 'when:fetched', proposal, => 
         if !(region.currentView instanceof Franklin.Proposal.PositionLayout || 
              region.currentView instanceof Franklin.Proposal.AggregateLayout)
           @franklin_controller = new Franklin.Proposal.AggregateController
@@ -71,22 +79,24 @@
             transition : false
 
         point = App.request 'point:get', parseInt(point_id), true
+        @_loading [point]
+
         App.execute 'when:fetched', point, =>
           @franklin_controller.trigger 'point:show_details', point
 
-        crumbs = [ 
-          ['homepage', '/'], 
-          ["#{proposal.long_id}", Routes.new_position_proposal_path(long_id)]
-          ["#{ if point.isPro() then 'Pro' else 'Con'} point", Routes.proposal_point_path(long_id, point_id)] ]
+          crumbs = [ 
+            ['homepage', '/'], 
+            ["#{proposal.long_id}", Routes.new_position_proposal_path(long_id)]
+            ["#{ if point.isPro() then 'Pro' else 'Con'} point", Routes.proposal_point_path(long_id, point_id)] ]
 
-        if region.currentView instanceof Franklin.Proposal.AggregateLayout
-          crumbs.splice crumbs.length -1, 0, ['results', Routes.proposal_path(long_id)]
+          if region.currentView instanceof Franklin.Proposal.AggregateLayout
+            crumbs.splice crumbs.length - 1, 0, ['results', Routes.proposal_path(long_id)]
 
-        App.vent.trigger 'route:completed', crumbs
+          App.vent.trigger 'route:completed', crumbs
 
     StaticPosition: (long_id, user_id) ->
       proposal = App.request 'proposal:get', long_id, true
-      App.execute 'when:fetched', proposal, -> 
+      App.execute 'when:fetched', proposal, => 
         region = App.request "default:region"
         if !(region.currentView instanceof Franklin.Proposal.PositionLayout || 
              region.currentView instanceof Franklin.Proposal.AggregateLayout)
@@ -108,9 +118,21 @@
           ["#{user.get('name')}", Routes.proposal_position_path(long_id, position.id)] ]
 
         if region.currentView instanceof Franklin.Proposal.AggregateLayout
-          crumbs.splice crumbs.length -1, 0, ['results', Routes.proposal_path(long_id)]
+          crumbs.splice crumbs.length - 1, 0, ['results', Routes.proposal_path(long_id)]
 
         App.vent.trigger 'route:completed', crumbs
+
+    _loading : (entities, region) ->
+      region ?= App.request 'default:region'
+      if region.currentView
+        App.execute "show:loading",
+          #view : region.currentView
+          #region : region
+          loading : 
+            entities : entities
+            #loadingType : 'opacity'
+
+
 
 
   Franklin.on "start", ->

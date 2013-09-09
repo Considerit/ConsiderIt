@@ -42,7 +42,10 @@
             return realView.close() if @region.currentView isnt loadingView
         
         ## show the real view unless we've set debug in the loading options
-        @show realView unless config.debug
+        if realView instanceof Loading.LoadingView
+          loadingView.close()
+        else if !config.debug
+          @show realView 
     
     getEntities: (view) ->
       ## return the entities manually set during configuration, or just pull 
@@ -52,8 +55,8 @@
     getLoadingView: ->
       new Loading.LoadingView
   
-  App.commands.setHandler "show:loading", (view, options) ->
+  App.commands.setHandler "show:loading", (options) ->
     new Loading.LoadingController
-      view: view
-      region: options.region
+      view: options.view || new Loading.LoadingView
+      region: options.region || new Backbone.Marionette.Region { el: $('#l-loading-indicator') }
       config: options.loading

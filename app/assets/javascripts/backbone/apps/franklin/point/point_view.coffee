@@ -93,10 +93,15 @@
       assessmentRegion : '.m-point-assessment'
       discussionRegion : '.m-point-discussion'
 
+    onRender : ->
+      App.vent.trigger 'point:expanded'
+
+
     onShow : ->
       # when clicking outside of point, close it      
       $(document).on 'click.m-point-details', (ev)  => 
-        if ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id) && $(ev.target).closest('.editable-buttons').length == 0
+        is_not_clicking_this_point = ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id)
+        if is_not_clicking_this_point && $(ev.target).closest('.editable-buttons').length == 0
           is_click_within_a_point = $(ev.target).closest('[data-role="m-point"]').length > 0
           is_clicking_nav = $(ev.target).closest('.l-navigate-wrap').length > 0
           @closeDetails(  !is_click_within_a_point && !is_clicking_nav ) 
@@ -121,6 +126,11 @@
           type: 'textarea'
           name: 'text'
           success : (response, new_value) => @model.set('text', new_value)
+
+
+      window.ensure_el_in_view @$el, .5, 150
+
+
 
     closeDetails : (go_back) ->
       go_back ?= true

@@ -97,7 +97,10 @@
       # when clicking outside of point, close it      
       $(document).on 'click.m-point-details', (ev)  => 
         if ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id) && $(ev.target).closest('.editable-buttons').length == 0
-          @closeDetails( $(ev.target).closest('[data-role="m-point"]').length == 0 && $(ev.target).closest('.l-navigate-wrap').length == 0 ) 
+          is_click_within_a_point = $(ev.target).closest('[data-role="m-point"]').length > 0
+          is_clicking_nav = $(ev.target).closest('.l-navigate-wrap').length > 0
+          @closeDetails(  !is_click_within_a_point && !is_clicking_nav ) 
+
 
       $(document).on 'keyup.m-point-details', (ev) => @closeDetails() if ev.keyCode == 27 && $('#l-dialog-detachable').length == 0
 
@@ -120,8 +123,8 @@
           success : (response, new_value) => @model.set('text', new_value)
 
     closeDetails : (go_back) ->
-      @trigger 'details:close'
-      # go_back ?= true
+      go_back ?= true
+      @trigger 'details:close', go_back
       # @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
 
       # @commentsview.clear()

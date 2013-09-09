@@ -52,9 +52,6 @@
     _handle_signin : ->
       API.show()
       App.request 'user:fixed:clear'
-      if @redirect_after_signin
-        App.navigate @redirect_after_signin, {trigger: true}
-        @redirect_after_signin = null
 
       # After a user signs in, we're going to query the server and get all the points
       # that this user wrote *anonymously* and proposals they have access to. Then we'll update the data properly so
@@ -67,6 +64,10 @@
         #TODO: check if the appropriate points are updated in all views        
         App.vent.trigger 'points:fetched', 
           (p.point for p in data.points)
+
+      if @redirect_after_signin
+        App.navigate @redirect_after_signin, {trigger: true}
+        @redirect_after_signin = null
 
       App.vent.trigger 'user:signin'     
 

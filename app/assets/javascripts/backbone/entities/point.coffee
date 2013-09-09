@@ -25,7 +25,6 @@
       comments = (co.comment for co in data.comments)
       App.vent.trigger 'comments:fetched', comments
 
-      console.log data
       tenant = App.request('tenant:get')
 
       if tenant.get('assessment_enabled') && data.assessment

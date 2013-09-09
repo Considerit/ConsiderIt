@@ -21,8 +21,9 @@
   App.commands.setHandler "unregister:instance", (instance, id) ->
     App.unregister instance, id if App.environment is "development"
   
-
   App.addInitializer ->
+    nav_app = App.module 'NavApp'
+
     header_app = App.module("HeaderApp")
 
     @listenTo header_app, 'start', => 
@@ -30,7 +31,6 @@
 
     header_app.start()
     App.module("FooterApp").start()
-
 
   App.on "initialize:after", ->
     
@@ -43,6 +43,5 @@
     shared = new App.Shared.SharedController
       region: new Backbone.Marionette.Region
         el: $("body")
-
 
   App

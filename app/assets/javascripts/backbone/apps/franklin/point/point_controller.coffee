@@ -32,8 +32,7 @@
 
         @setupCommentsView expanded_view.discussionRegion
 
-        @listenTo expanded_view, 'details:close', =>
-          @unexpand()
+        @listenTo expanded_view, 'details:close', (go_back) => @unexpand(go_back)
 
         @layout.$el.toggleClass 'm-point-expanded m-point-unexpanded'
 
@@ -65,12 +64,30 @@
       @listenTo comments, 'comment:created', =>
         @options.model.set 'comment_count', @options.model.getComments().length
 
-    unexpand : ->
+    unexpand : (go_back) ->
       $(document).off '.m-point-details'
       @layout.$el.toggleClass 'm-point-expanded m-point-unexpanded'
 
       @layout.expansionRegion.reset()
-      App.navigate Routes.root_path(), {trigger : true}
+
+      App.request 'nav:back:crumb' if go_back
+      # App.navigate Routes.root_path(), {trigger : true}
+      # go_back ?= true
+      # @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
+
+      # @commentsview.clear()
+      # @commentsview.remove()
+      # @assessmentview.remove() if @assessmentview?
+
+
+      # @$el.removeClass('m-point-expanded')
+      # @$el.addClass('m-point-unexpanded')
+
+      # @undelegateEvents()
+      # @stopListening()
+      
+      # @model.trigger 'change' #trigger a render event
+      # ConsiderIt.app.go_back_crumb() if go_back
 
 
     getLayout : (model) ->

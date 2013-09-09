@@ -32,6 +32,8 @@
       @layout = layout
 
     handleShow : (layout) ->
+      return if layout.isClosed
+
       proposals_view = @getProposals @is_active
 
       @sortCollection {collection: proposals_view.collection, sort_by: 'activity'}

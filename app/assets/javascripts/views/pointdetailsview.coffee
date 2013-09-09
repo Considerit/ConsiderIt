@@ -2,28 +2,28 @@ class ConsiderIt.PointDetailsView extends Backbone.View
 
   #@template : _.template $("#tpl_point_details").html()
 
-  initialize : (options) -> 
-    @proposal = options.proposal
-    @listenTo @model, 'point:included', => @close_details()
-    @listenTo @model, 'point:removed', => @close_details()
+  # initialize : (options) -> 
+  #   @proposal = options.proposal
+  #   @listenTo @model, 'point:included', => @close_details()
+  #   @listenTo @model, 'point:removed', => @close_details()
 
   render : () ->    
 
     # @$el.hide()
 
-    if ConsiderIt.current_tenant.get('assessment_enabled') && @proposal.get('active') 
+    # if ConsiderIt.current_tenant.get('assessment_enabled') && @proposal.get('active') 
       
-      if @model.assessment
-        $assessment_el = $('<div class="m-point-assessment-wrap">')
-        @$el.find('.m-point-wrap').append($assessment_el)
-      else
-        $assessment_el = @$el.find('.m-point-assess')
+    #   if @model.assessment
+    #     $assessment_el = $('<div class="m-point-assessment-wrap">')
+    #     @$el.find('.m-point-wrap').append($assessment_el)
+    #   else
+    #     $assessment_el = @$el.find('.m-point-assess')
 
-      @assessmentview = new ConsiderIt.AssessmentView({
-        model : @model
-        el: $assessment_el
-        proposal : @proposal
-      })
+    #   @assessmentview = new ConsiderIt.AssessmentView({
+    #     model : @model
+    #     el: $assessment_el
+    #     proposal : @proposal
+    #   })
 
 
     # $comment_el = $('<div class="m-point-discussion">')

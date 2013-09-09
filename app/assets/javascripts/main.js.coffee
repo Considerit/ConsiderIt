@@ -1,37 +1,6 @@
-window.ConsiderIt = {} #global namespace for ConsiderIt js methods
-
-_.templateSettings =  
-  interpolate : /\{\{(.+?)\}\}/g
-  evaluate : /\(\((.+?)\)\)/g
-
-#X-Editable option
-$.fn.editable.defaults.mode = 'inline'
-
-window.delay = (ms, func) -> setTimeout func, ms
-
-
-window.PaperClip =
-  get_avatar_url : (user, size, fname) ->
-    if fname?
-      "#{ConsiderIt.public_root}/system/avatars/#{user.id}/#{size}/#{fname}"
-    else if user? && user.get('avatar_file_name')
-      "#{ConsiderIt.public_root}/system/avatars/#{user.id}/#{size}/#{user.get('avatar_file_name')}"
-    else
-      "#{ConsiderIt.public_root}/system/default_avatar/#{size}_default-profile-pic.png"
-
 $(document).ready () ->
-  #window.avatars = 
-    # load_avatars : ->
-    #   $('img.avatar-replace-small').each ->
-    #     user_id = $(this).data('id')
-    #     if window.avatar_data['small'][user_id]?
-    #       this.src = window.avatar_data['small'][user_id];
-    #     else if ConsiderIt.users?
-    #       this.src = window.PaperClip.get_avatar_url(ConsiderIt.users[user_id], 'small')
-  # if window.cached_avatars_loaded
-  #   window.avatars.load_avatars()
 
-    # google analytics
+  # google analytics
   ( () ->
     ga = document.createElement('script')
     ga.type = 'text/javascript'
@@ -40,9 +9,7 @@ $(document).ready () ->
     s = document.getElementsByTagName('script')[0] 
     s.parentNode.insertBefore(ga, s)
 
-
   )()
-
 
 window.ConsiderIt.utils = 
   add_CSRF : (params) ->
@@ -89,77 +56,6 @@ window.ConsiderIt.utils =
     tileSize - 1
 
 
-window.ConsiderIt.update_current_user = (parameters) ->
-  if parameters.user.id of ConsiderIt.users
-    ConsiderIt.current_user = ConsiderIt.users[parameters.user.id] 
-  else
-    ConsiderIt.users[parameters.user.id] = ConsiderIt.current_user
-
-  ConsiderIt.current_user.set(parameters.user)
-  ConsiderIt.current_user.set_follows(parameters.follows) if 'follows' of parameters
-
-  ConsiderIt.roles =
-    is_admin : ConsiderIt.current_user.has_role('admin') || ConsiderIt.current_user.has_role('superadmin')
-    is_moderator : ConsiderIt.current_user.has_role('moderator')
-    is_analyst : ConsiderIt.current_user.has_role('analyst')
-    is_evaluator : ConsiderIt.current_user.has_role('evaluator')  
-    is_manager : ConsiderIt.current_user.has_role('manager')  
-
-  ConsiderIt.router.trigger('user:updated') if ConsiderIt.router
-  if ConsiderIt.current_user.get('b64_thumbnail')
-    $('head').append("<style>#avatar-#{ConsiderIt.current_user.id}{background-image:url('#{ConsiderIt.current_user.get('b64_thumbnail')}');}</style>")
-
-
-window.ConsiderIt.clear_current_user = ->
-  ConsiderIt.current_user = new ConsiderIt.User
-  ConsiderIt.roles =
-    is_admin : ConsiderIt.current_user.has_role('admin') || ConsiderIt.current_user.has_role('superadmin')
-    is_moderator : ConsiderIt.current_user.has_role('moderator')
-    is_analyst : ConsiderIt.current_user.has_role('analyst')
-    is_evaluator : ConsiderIt.current_user.has_role('evaluator')  
-    is_manager : ConsiderIt.current_user.has_role('manager')  
-      
-  return ConsiderIt.current_user
-
-
-window.getCenteredCoords = (width, height) ->
-  if (window.ActiveXObject)
-    xPos = window.event.screenX - (width/2) + 100
-    yPos = window.event.screenY - (height/2) - 100
-  else
-    parentSize = [window.outerWidth, window.outerHeight]
-    parentPos = [window.screenX, window.screenY]
-    xPos = parentPos[0] +
-        Math.max(0, Math.floor((parentSize[0] - width) / 2))
-    yPos = parentPos[1] +
-        Math.max(0, Math.floor((parentSize[1] - (height*1.25)) / 2))
-  yPos = 100
-  [xPos, yPos]
-
-window.handleOpenIdResponse = (parameters) ->  
-  parameters.user = parameters.user.user
-  ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
-
-window.pollLoginPopup = ->
-  if window.openidpopup? && window.location.origin == window.openidpopup.location.origin && window.openidpopup.open_id_params?
-    window.handleOpenIdResponse(window.openidpopup.open_id_params)
-    window.openidpopup.close()
-    window.openidpopup = null
-    window.clearInterval(window.polling_interval)
-
-window.openPopupWindow = (url) ->
-  window.openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
-  window.openidpopup.open_id_params = null
-  coords = getCenteredCoords(450,500)  
-  openidpopup.moveTo(coords[0],coords[1])
-  window.polling_interval = window.setInterval -> 
-    window.pollLoginPopup()
-  , 200
-
-
-$.event.special.destroyed =
-  remove: (o) -> o.handler() if o.handler
-          
 $(document).on "click", "a[href^='/']", (event) ->
   href = $(event.currentTarget).attr('href')
   target = $(event.currentTarget).attr('target')
@@ -171,7 +67,7 @@ $(document).on "click", "a[href^='/']", (event) ->
   if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
     event.preventDefault()
     # Instruct Backbone to trigger routing events
-    ConsiderIt.router.navigate(href, { trigger : true })
+    ConsiderIt.navigate(href, { trigger : true })
     return false
 
 
@@ -182,18 +78,13 @@ $(document).on "click", "a[href^='/']", (event) ->
 )(jQuery, document)
 
 
-String.prototype.toCamel = -> @replace(/(\-[a-z])/g, ($1) -> $1.toUpperCase().replace('-','')  )
-
-String.prototype.toUnderscore = -> @replace(/([A-Z])/g, ($1) -> "_" + $1.toLowerCase() )
-
-
-window.ensure_el_in_view = ($el, amount_of_viewport_taken_by_el=.5, offset_top=100) ->
+window.ensure_el_in_view = ($el, amount_of_viewport_taken_by_el=.5, offset_buffer=50) ->
   el_top = $el.offset().top
   doc_top = $(window).scrollTop()
   doc_bottom = doc_top + $(window).height()
   #if less than 50% of the viewport is taken up by the el...
   in_viewport = el_top > doc_top && el_top < doc_bottom && (doc_bottom - el_top) > amount_of_viewport_taken_by_el * (doc_bottom - doc_top)  
-  target = el_top - offset_top
+  target = el_top - offset_buffer
   distance_to_travel = Math.abs( doc_top - target )
   if !in_viewport
     $('body').animate {scrollTop: target}, distance_to_travel

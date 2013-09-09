@@ -30,16 +30,24 @@
 html
   +adjust-leading-to(3)
 
+html, body
+  min-height: 100%
 
 #l-wrap
   font-size: $base-font-size
 
+#t-bg
+  min-height: 100%
 
-$font-size-scale: $base-font-size - 5 * $base_unit $base-font-size - 4 * $base_unit $base-font-size - 3 * $base_unit $base-font-size - 2 * $base_unit $base-font-size - 1 * $base_unit $base-font-size $base-font-size + 2 * $base_unit $base-font-size + 4 * $base_unit $base-font-size + 6 * $base_unit $base-font-size + 8 * $base_unit $base-font-size + 10 * $base_unit $base-font-size + 12 * $base_unit $base-font-size + 14 * $base_unit $base-font-size + 16 * $base_unit $base-font-size + 20 * $base_unit $base-font-size + 25 * $base_unit $base-font-size + 30 * $base_unit $base-font-size + 35 * $base_unit
-=font-size($size:0)
-  //$base_unit defined in grooves/base/fonts
-  +adjust-font-size-to(nth($font-size-scale, $size + 5))
+#t-bg-top
 
+#t-bg-content
+
+#t-bg-content-top
+  min-height: 500px
+
+
+@import "core"
 
 @import "grooves/base/materials"
 
@@ -198,7 +206,23 @@ blockquote
     @extend %bolded
 
 
+$preloadersize_width: 32px
+$preloadersize_height: 10.5px
+#l-preloader
+  width: $preloadersize_width
+  height: $preloadersize_height
+  left: 50%
+  margin-left: -$preloadersize_width/2
+  top: 50%
+  margin-top: -$preloadersize_height/2
+  position: absolute
 
+.loading-container
+  position: fixed
+  top: 50%
+  left: 50%
+  margin-left: -15px
+  z-index: 9999
 /* HELPERS */
 
 .clear
@@ -232,12 +256,9 @@ blockquote
     display: inline-block
     width: $pro-con-list-column-width - 3
 
-  .m-pro-con-list-propoints, .m-pro-con-list-conpoints
+  .m-points-list-region, .m-pro-con-list-header
     @extend %m-pro-con-list-column
 
-  .m-pro-con-list-propoints 
-
-  .m-pro-con-list-conpoints 
     
   .m-pro-con-list-header   
     margin-bottom: $vertical_baseline/2
@@ -289,14 +310,16 @@ html
 #l-wrap
   position: relative
 
-#l-heading, #l-content, #l-footer
+#l-header, #l-content, #l-footer
   position: relative
 
 .l-heading-wrap, .l-content-wrap, .l-footer-wrap
   position: relative
 
-#l-heading
+#l-header
   margin: 0 auto $vertical_baseline auto
+  min-height: 32px
+
   //border-bottom: 1px solid white
 
 .l-heading-wrap
@@ -398,7 +421,7 @@ html
 .t-logo-separator
 
 
-#l-heading
+#l-header
   .t-logo
     position: relative
     margin: $vertical_baseline/2 $grid_xs/2
@@ -417,7 +440,6 @@ html
       margin-left: $grid_xs/2
 
   .l-navigate
-    display: none
     margin: auto
     position: absolute
     top: 7px
@@ -441,283 +463,10 @@ html
       display: inline
       list-style: none
 
-#m-user-nav
-  position: relative
-  text-align: right
-  z-index: 999
-  padding: $vertical_baseline/4 $grid_xs/2
-  right: 0
-  float: right
 
-.m-login, .m-user-options
-  display: inline-block
-
-.m-login, .m-user-options-display
-  @extend %on_header_footer
-
-.m-login a, .m-user-options-display a
-  +font-size(-1)
-
-.m-login-signin:after
-  position: relative
-  content: $hex-bullet-point
-  right: 0
-
-.m-user-options
-  cursor: pointer
-  position: relative
-
-  .m-user-options-display
-    img
-      vertical-align: middle 
-      margin: 2px 0 0px 15px
-      width: $vertical_baseline * 1.5
-      height: $vertical_baseline * 1.5
-      display: inline-block
-  
-
-  .m-user-options-menu-wrap
-    display: none
-    position: absolute
-    right: -$grid_minor
-
-  .m-user-options-menu
-    min-width: 140px
-    @extend %nude_list
-    margin-left: 0
-    display: inline-block
-    +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
-    border-radius: 5px
-    background-color: $base_bg_color
-    padding: $vertical_baseline / 2 0
-    border: 1px solid darken($base_bg_color, 20%)
-
-    a
-      width: 100%
-      padding: 2px $grid_minor
-      display: block
-      cursor: pointer
-      +font-size(-3)
-      font-weight: bold
-      &:hover
-        color: $comp_text_color
-        background-color: $dark_comp_color
+@import "apps/auth"
 
 
-//////////////////////////////////////////
-// USER MODULES
-//////////////////////////////////////////
-
-#registration_overlay
-  width: 670px
-
-.m-user-accounts-choose-method
-
-  .m-user-accounts-login-options
-    @extend %nude_list
-    padding-bottom: $vertical_baseline
-
-    .m-user-accounts-login-option
-      display: inline
-      margin-right: $grid_xs
-      position: relative
-      +font-size(-1)
-      &.hide
-        display: none
-
-
-  .m-user-accounts-fineprint
-    +font-size(-2)
-    display: inline-block
-    position: absolute
-    bottom: -2.5 * $vertical_baseline
-    left: 5px
-    width: 250px
-    text-align: left
-
-
-$avatar_preview_height: 120px
-$membership_card_width: 450px
-$membership_card_height: 278px
-
-.m-user-accounts-complete
-  display: none
-
-  .m-user-accounts-form-fields-wrap
-    padding: $vertical_baseline 0
-
-    .email_field input, .password_field input
-      +font-size(0)
-
-  input[type="submit"]
-    margin-bottom: $vertical_baseline
-    @extend %superbutton
-    +font-size(0)
-
-.m-user-accounts-complete-signin
-
-  .email_field, .password_field
-    position: relative
-
-    label
-      width: 70px
-      text-align: right
-      display: inline-block
-
-  .forget_password_prompt
-    +font-size(-3)
-    display: block
-    &:hover
-      text-decoration: underline
-    
-.m-user-accounts-complete-register
-  .m-user-accounts-form
-    margin: auto
-
-  .m-user-accounts-form-fields-wrap
-    width: $membership_card_width
-    
-    box-shadow: 0 1px 2px rgba(black, .35), inset 0 0 8px 2px rgba(white, .5)
-    background-color: $initiator_color
-
-    border-radius: 5px
-    border: 1px solid $dark_initiator_color
-    border-top: 1px solid lighten($dark_initiator_color, 15%)
-    border-bottom: 1px solid darken($dark_initiator_color, 15%)
-    padding: $vertical_baseline $grid_xs
-    margin: $vertical_baseline auto 0 auto
-
-    color: $initiator_text_color
-
-
-
-    .m-user-accounts-logo
-      display: block
-      margin-bottom: $vertical_baseline
-      max-width: $membership_card_width - 2 * $grid_xs
-      max-height: 45px
-
-    .m-user-accounts-form-fields-text
-      width: $membership_card_width - $avatar_preview_height - $grid_xs * 3
-      float: right
-
-    label
-      +font-size(-2)
-      text-align: left
-      float: left
-
-    input[type="text"], input[type="email"], input[type="password"], textarea
-      width: 100%
-      &.ui-state-valid
-        border-color: transparent
-        background-color: transparent
-        color: $initiator_text_color
-
-    .name_field input
-      +font-size(4)
-      @extend %bolded
-
-
-    .m-user-accounts-authorized-feedback
-      display: none
-      a
-        +font-size(-4)
-      vertical-align: top
-      text-align: left
-      margin-top: $vertical_baseline / 2
-
-    .m-user-accounts-pledge-taken
-      display: none
-      text-align: left
-
-    // this is overriding some CSS from the jquery.fileinput plugin
-    .avatar_field
-      float: left
-      width: $avatar_preview_height + 2
-      .customfile
-        background: transparent
-        width: $avatar_preview_height + 2
-        border: none
-
-      .customfile-preview-wrap
-        width: $avatar_preview_height
-        height: $avatar_preview_height
-        overflow: hidden
-        border: 1px solid #333
-        border-radius: 5px
-        background-color: rgba(black, .25)      
-        img.customfile-preview
-          height: $avatar_preview_height
-
-
-      .customfile-button
-        float: none
-        +font-size(-2)
-        text-decoration: underline
-
-      .customfile-feedback
-        display: none
-
-      .import_from_third_party
-        span, a
-          +font-size(-4)          
-
-  .m-user-accounts-finish-wrap
-    width: $membership_card_width
-    margin: $vertical_baseline auto
-
-    .m-user-accounts-pledge
-      margin-bottom: $vertical_baseline
-
-      ol
-        text-align: left
-        list-style: none
-
-        li
-          padding: 0 $grid_xs
-
-          &:hover
-            background-color: rgba(white, .25)
-
-          label, input
-            cursor: pointer
-            padding: $vertical_baseline / 2 0
-
-    .m-user-accounts-tos
-      span, p, a
-        +font-size(-2)
-
-      .m-user-terms-show
-        text-decoration: underline
-
-      .m-user-the-terms-of-use
-        display: none
-        text-align: left
-        background-color: white
-        padding: $vertical_baseline $grid_xs
-        margin: $vertical_baseline
-        border-radius: 5px
-
-        color: #333
-        h1,h2,h3
-          color: #333
-          margin-top: $vertical_baseline
-        a
-          color: #333
-          text-decoration: underline
-          cursor: pointer
-
-        li
-          list-style-position: inside
-          margin-bottom: $vertical_baseline
-
-.m-limited-user-session
-  .inlined.fixed
-    text-align: left
-    padding-left: 3px
-
-    input
-      display: none
 
 $tooltip_width: 225px
 .l-tooltip-user-title
@@ -858,6 +607,7 @@ $tooltip_width: 225px
   &.con .m-point-author-avatar
     right: -42px
 
+
   //////////////////////
 
 
@@ -924,11 +674,11 @@ $arrow_height: 10px
     border-color: #aaa
     @extend %on_paper
 
-  .m-point-wrap
-    +single-box-shadow($color: rgba(black, .2))
-    border-radius: 8px
-    border: 1px solid #ccc //$dark_community_color
-    @extend %on_paper
+%m-white-thought-bubble-inner
+  +single-box-shadow($color: rgba(black, .2))
+  border-radius: 8px
+  border: 1px solid #ccc //$dark_community_color
+  @extend %on_paper
 
 .m-point-peer
   @extend %m-point
@@ -936,14 +686,16 @@ $arrow_height: 10px
 
   width: $peer-point-width
 
-  .m-point-wrap
-    width: $peer-point-width 
+  &.m-point-unexpanded
+    .m-point-wrap
+      @extend %m-white-thought-bubble-inner
+      width: $peer-point-width 
 
-    padding: $vertical_baseline / 2 $grid_xs / 2 2 * $vertical_baseline $grid_xs / 2
-    margin-bottom: $vertical_baseline
+      padding: $vertical_baseline / 2 $grid_xs / 2 2 * $vertical_baseline $grid_xs / 2
+      margin-bottom: $vertical_baseline
 
-    //these transitions are for point inclusion effect
-    +transition(top .5s ease, left .5s ease, color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
+      //these transitions are for point inclusion effect
+      +transition(top .5s ease, left .5s ease, color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
 
 
   .m-point-nutshell-wrap
@@ -1047,7 +799,7 @@ $arrow_height: 10px
             &:after
               border-left-color: darken($callout_bg_color, 8%)
 
-    &.m-point-expanded
+    .m-point-expanded
       .m-point-include-wrap .m-point-include 
         border-bottom-right-radius: 1px
         border-right-color: transparent    
@@ -1085,7 +837,7 @@ $arrow_height: 10px
             &:after
               border-right-color: darken($callout_bg_color, 8%)
 
-    &.m-point-expanded
+    .m-point-expanded
       .m-point-include-wrap .m-point-include 
         border-bottom-left-radius: 1px
         border-left-color: transparent    
@@ -1101,8 +853,9 @@ $arrow_height: 10px
 .m-point-results, .m-point-position
   @extend %m-point
   
-  .m-point-wrap
-    width: $pro-con-list-column-width - 3 * $grid_xs
+  &.m-point-unexpanded
+    .m-point-wrap
+      width: $pro-con-list-column-width - 3 * $grid_xs
 
   .m-point-nutshell, .details_indicator, .m-point-user
     +font-size(-1)
@@ -1276,10 +1029,11 @@ $arrow_height: 10px
 
 $expansion_size: 250px
 .m-pointlist-browsing
-  .m-point-peer:not(.m-point-expanded)
-    width: $peer-point-width + $expansion_size
-    .m-point-wrap
+  .m-point-peer
+    &.m-point-unexpanded
       width: $peer-point-width + $expansion_size
+      .m-point-wrap
+        width: $peer-point-width + $expansion_size
 
   .m-point-peer.pro
     margin-left: -$expansion_size
@@ -1365,12 +1119,6 @@ $expansion_size: 250px
 /* EXPANDED POINT */
 $m-point-expanded-width: $body_width + 150
 .m-point-expanded
-  position: relative
-  z-index: 999
-  cursor: auto
-  width: $m-point-expanded-width  
-  @extend %m-white-thought-bubble
-
   &.con
     &.m-point-position, &.m-point-results
       left: $pro-con-list-column-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
@@ -1381,11 +1129,17 @@ $m-point-expanded-width: $body_width + 150
       left: - ($m-point-expanded-width - $body_width) / 2
 
 
-  .m-point-wrap
-    cursor: auto
-    width: $m-point-expanded-width
+.m-point-expanded
+  position: relative
+  z-index: 999
+  cursor: auto
+  width: $m-point-expanded-width  
+  @extend %m-white-thought-bubble
+  @extend %m-white-thought-bubble-inner
+  cursor: auto
+  width: $m-point-expanded-width
 
-    padding: $vertical_baseline / 2 $grid_xs
+  padding: $vertical_baseline / 2 $grid_xs
 
   .m-point-nutshell, .m-point-details-description, .m-point-operations
     padding-bottom: $vertical_baseline / 2
@@ -1521,7 +1275,7 @@ $m-point-expanded-width: $body_width + 150
 // Assessment
 .m-point-assessment
   @extend %on_paper
-  padding: $vertical_baseline $grid_minor
+  //padding: $vertical_baseline $grid_minor
   +single-box-shadow($color: rgba(black, 0.2))
   +font-size(-2)
   color: #777
@@ -1656,10 +1410,11 @@ $m-point-expanded-width: $body_width + 150
 
 // Proposal
 
-#m-proposals-container, #m-proposals-container-completed
+#m-proposals-container, #m-proposals-container-completed, #p-aggregate-proposal, #p-position-crafting
   position: relative
   padding: 1 * $vertical_baseline 0
 
+#m-proposals-container, #m-proposals-container-completed
   .m-proposal-list
     @extend %nude_list
 
@@ -1674,16 +1429,16 @@ $m-point-expanded-width: $body_width + 150
 
   &.is-empty
 
-    > h2, .m-proposals-heading
+    > h2, .m-proposals-filters
       display: none
 
 .m-proposals-list-pagination-wrap
   padding-bottom: $vertical_baseline
 
-.m-proposals-heading
+.m-proposals-filters
   padding-top: $vertical_baseline
 
-.m-proposals-heading, .m-proposals-list-pagination-wrap
+.m-proposals-filters, .m-proposals-list-pagination-wrap
   @extend %on_background
   text-align: center
   margin: 0 auto
@@ -1881,6 +1636,7 @@ $m-point-expanded-width: $body_width + 150
 
   .m-proposal-strip_publish
     display: none
+
   &[data-state="0"]
     .m-proposal-description-body
       display: block
@@ -2061,6 +1817,8 @@ $m-point-expanded-width: $body_width + 150
     &:hover
       color: darken($community_text_color, 5%)
 
+.m-aggregated-results
+  margin-top: 0
 
 .m-results-summary
   .m-summary-heading
@@ -2108,7 +1866,7 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
   display: none
   opacity: 0
   visibility: hidden
-  margin: 0 auto
+  margin: $vertical_baseline auto 0 auto
   position: relative
   top: 0px
   width: $body_width

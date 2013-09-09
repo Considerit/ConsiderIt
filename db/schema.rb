@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130730041225) do
+ActiveRecord::Schema.define(:version => 20130819215938) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -54,6 +54,9 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.text     "header_text"
     t.text     "header_details_text"
     t.boolean  "enable_user_conversations",                :default => false
+    t.integer  "moderate_points_mode",                     :default => 0
+    t.integer  "moderate_comments_mode",                   :default => 0
+    t.integer  "moderate_proposals_mode",                  :default => 0
   end
 
   add_index "accounts", ["identifier"], :name => "by_identifier", :length => {"identifier"=>10}
@@ -118,7 +121,6 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.integer  "user_id",                                :default => 0, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "passes_moderation"
     t.integer  "account_id"
     t.integer  "followable_last_notification_milestone", :default => 0
     t.datetime "followable_last_notification"
@@ -192,9 +194,11 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.integer  "moderatable_id"
     t.string   "moderatable_type"
     t.integer  "status"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.datetime "created_at",                                       :null => false
+    t.datetime "updated_at",                                       :null => false
     t.integer  "account_id"
+    t.boolean  "updated_since_last_evaluation", :default => false
+    t.boolean  "notification_sent",             :default => false
   end
 
   create_table "point_listings", :force => true do |t|
@@ -239,7 +243,6 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.boolean  "published",                              :default => true
     t.boolean  "hide_name",                              :default => false
     t.boolean  "share",                                  :default => true
-    t.boolean  "passes_moderation"
     t.integer  "account_id"
     t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
@@ -248,6 +251,7 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.text     "includers"
     t.float    "divisiveness"
     t.integer  "moderation_status"
+    t.string   "long_id"
   end
 
   add_index "points", ["account_id", "proposal_id", "id", "is_pro"], :name => "select_included_points"
@@ -272,6 +276,7 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
     t.text     "point_inclusions"
+    t.string   "long_id"
   end
 
   add_index "positions", ["account_id", "proposal_id", "published"], :name => "index_positions_on_account_id_and_proposal_id_and_published"
@@ -337,6 +342,8 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.integer  "top_pro"
     t.text     "participants"
     t.boolean  "published",                                                  :default => false
+    t.text     "tags"
+    t.boolean  "targettable",                                                :default => false
   end
 
   add_index "proposals", ["account_id", "active"], :name => "select_proposal_by_active"
@@ -421,6 +428,7 @@ ActiveRecord::Schema.define(:version => 20130730041225) do
     t.integer  "metric_conversations"
     t.integer  "metric_positions"
     t.text     "b64_thumbnail"
+    t.text     "tags"
   end
 
   add_index "users", ["account_id", "avatar_file_name"], :name => "select_user_by_avatar_name", :length => {"account_id"=>nil, "avatar_file_name"=>3}

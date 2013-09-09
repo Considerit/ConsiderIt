@@ -1,0 +1,95 @@
+%script{ :type => "text/template", :id => "tpl_proposals_region_layout"}
+
+  #m-homepage-proposals
+    #m-proposals-container
+    #m-proposals-container-completed
+
+%script{ :type => "text/template", :id => "tpl_proposals_list_create"}
+  .m-proposals-new
+    %button.m-new-proposal-submit
+      Start a new conversation
+
+
+%script{ :type => "text/template", :id => 'tpl_proposals_list_layout'}
+  .m-proposal-list-region
+
+  .m-proposals-operations
+    .m-proposals-filters
+    .m-proposals-list-pagination
+
+  .m-proposals-create
+  
+
+%script{ :type => "text/template", :id => 'tpl_proposals_list'}
+
+
+  (( if( !is_active ){ ))
+  .m-proposals-container-completed-header
+    %hr
+    %h2
+      Past conversations
+  (( } ))
+
+  %ul.m-proposal-list
+
+
+
+%script{ :type => "text/template", :id => 'tpl_proposals_list_filters'}
+  .m-proposals-sort-container
+    .title
+      Sort by: 
+    (( _.each(sortable_fields, function(sort) { ))
+    %a{:'data-target' => "{{ sort.target }}", :'data-type' => 'sort', :class => "m-proposallist-sort"}
+      {{ sort.name }}
+    (( }) ))
+
+
+
+%script{ :type => "text/template", :id => "tpl_proposal_list_pagination"}
+  .m-proposals-list-pagination-wrap
+    (( if (data_loaded) { ))
+    %span.m-proposals-list-pagination-pages
+      (( if (currentPage > 1) { ))
+      %span.m-proposals-list-pagination-jump-left
+        %a.m-proposals-list-pagination-jump{:'data-target'=> 'proposallist:first'}
+          &laquo; First
+        %a.m-proposals-list-pagination-jump{:'data-target'=> 'proposallist:prev'}
+          &laquo;
+      (( } ))
+      (( _.each (page_set, function (p) { ))
+      (( if (currentPage == p) { ))
+      %span.selected
+        {{ p }}
+      (( } else { ))
+      %a.m-proposals-list-pagination-page{:'data-target' => 'proposallist:page', :'data-page' => "{{p}}"}
+        {{ p }} 
+      (( } ))
+      (( }); ))
+      (( if (lastPage != currentPage && lastPage != 0) { ))
+      %span.m-proposals-list-pagination-jump-right
+        %a.m-proposals-list-pagination-jump{:'data-target'=> 'proposallist:next'}
+          &raquo;
+        %a.m-proposals-list-pagination-jump{:'data-target'=> 'proposallist:last'}
+          Last &raquo;
+
+      (( } ))
+
+    .m-proposals-list-pagination-current
+      %span.current
+        {{ (currentPage - 1) * pageSize + 1 }}
+      &ndash;
+      %span.perpage
+        {{ Math.min(currentPage * pageSize, totalRecords) }} 
+      of
+      %span.total
+        {{ totalRecords }} 
+      shown.
+    (( } else { ))
+    %button.m-pointlist-pagination-showmore
+      {{ prompt }} 
+    (( } ))
+
+
+
+
+

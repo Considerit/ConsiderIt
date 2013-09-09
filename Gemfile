@@ -113,8 +113,6 @@ gem "assessable", :path => "lib/gems/assessable"
 gem 'sitemap_generator'
 gem 'newrelic_rpm'
 
-
-
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:

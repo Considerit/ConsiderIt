@@ -46,17 +46,19 @@
     Aggregate: (long_id) -> 
       proposal = App.request 'proposal:get', long_id, true
 
-      history_length = App.request('nav:history:length')
       @_loading [proposal]
 
       App.execute 'when:fetched', proposal, =>
         region = App.request 'default:region'
 
-        $(document).scrollTop(0) if history_length < 2
+        already_viewing = @franklin_controller && @franklin_controller.options.model == proposal && @franklin_controller instanceof Franklin.Proposal.AggregateController
 
-        @franklin_controller = new Franklin.Proposal.AggregateController
-          region : App.request "default:region"
-          model : proposal
+        if !already_viewing      
+          $(document).scrollTop(0)
+
+          @franklin_controller = new Franklin.Proposal.AggregateController
+            region : App.request "default:region"
+            model : proposal
 
       App.vent.trigger 'route:completed', [ 
         ['homepage', '/'], 

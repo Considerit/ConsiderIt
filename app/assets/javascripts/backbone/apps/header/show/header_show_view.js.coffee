@@ -19,7 +19,8 @@
     events : 
       'click .l-navigate-back' : 'goBack'
 
-    goBack : ->
+    goBack : (ev) ->
+      ev.stopPropagation()
       App.request 'nav:back:history'
 
   class Show.LogoView extends App.Views.ItemView

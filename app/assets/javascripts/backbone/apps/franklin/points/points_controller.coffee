@@ -73,6 +73,11 @@
             @options.collection.add new_point          
             @trigger 'point:created', new_point
 
+          # App.execute 'show:loading',
+          #   loading:
+          #     entities : [new_point]
+
+
       @region.show @layout
 
     getLayout : ->

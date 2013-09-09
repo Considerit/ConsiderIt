@@ -267,6 +267,9 @@
       @$el.attr('data-state', 4)
 
 
+    moveToResults : ->
+      window.moveToTop @histogramRegion.currentView.$el
+
     implodeParticipants : ->
       @trigger 'results:implode_participants'
       $participants = @$el.find('.l-message-speaker .l-group-container')
@@ -332,7 +335,6 @@
           $participants.fadeOut()
           #@$el.find('.m-bar-percentage').fadeIn()
         , speed + 150
-
 
 
 

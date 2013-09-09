@@ -2204,7 +2204,7 @@ $static_position_width: $body_width+$grid_major
 
 /**
 /* for tooltipster
-/**
+/**/
 
 .tooltipster-default 
   background-color: $callout_bg_color
@@ -2216,6 +2216,18 @@ $static_position_width: $body_width+$grid_major
     padding: 0
 
 
+/**
+/* for jquery.toastr.js
+/**/
+
+#toast-container.toast-top-full-width 
+  left: 50%
+  width: $content_width
+  margin-left: -$content_width / 2
+
+  > div
+    text-align: center
+    opacity: 1
 
 /**
 /* for jquery.fileinput.js
@@ -2223,7 +2235,7 @@ $static_position_width: $body_width+$grid_major
 
 /**
 /* for jquery.editable.js
-/** 
+/**/
 
 
 .editableform, .editable.editable-click:not(.editable-disabled):hover, a.editable.editable-click:not(.editable-disabled):hover,

@@ -78,13 +78,29 @@ $(document).on "click", "a[href^='/']", (event) ->
 )(jQuery, document)
 
 
-window.ensure_el_in_view = ($el, amount_of_viewport_taken_by_el=.5, offset_buffer=50) ->
+window.ensure_el_in_view = ($el, amount_of_viewport_taken_by_el=.5, offset_buffer=50, scroll = true) ->
   el_top = $el.offset().top
   doc_top = $(window).scrollTop()
   doc_bottom = doc_top + $(window).height()
   #if less than 50% of the viewport is taken up by the el...
   in_viewport = el_top > doc_top && el_top < doc_bottom && (doc_bottom - el_top) > amount_of_viewport_taken_by_el * (doc_bottom - doc_top)  
   target = el_top - offset_buffer
-  distance_to_travel = Math.abs( doc_top - target )
   if !in_viewport
+    if scroll
+      distance_to_travel = Math.abs( doc_top - target )
+      $('body').animate {scrollTop: target}, distance_to_travel
+    else 
+      $('body').scrollTop target
+
+window.moveToTop = ($el, offset_buffer = 50, scroll = false) ->
+  el_top = $el.offset().top
+  target = el_top - offset_buffer
+  doc_top = $(window).scrollTop()
+
+  console.log el_top, $el
+  if scroll
+    distance_to_travel = Math.abs( doc_top - target )
     $('body').animate {scrollTop: target}, distance_to_travel
+  else
+    $('body').scrollTop target
+

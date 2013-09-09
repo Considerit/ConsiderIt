@@ -1,6 +1,6 @@
 @ConsiderIt.module "Dash", (Dash, App, Backbone, Marionette, $, _) ->
 
-  class Dash.Controller extends App.Controllers.Base
+  class Dash.DashController extends App.Controllers.Base
 
     initialize : (options = {}) ->
       @layout = @getLayout()
@@ -56,7 +56,7 @@
 
       if path
         request_params = _.extend @request_params, {admin_template_needed : load_admin_template}
-        $.get path, request_params, (data, status, xhr) =>
+        xhr = $.get path, request_params, (data, status, xhr) =>
           if load_admin_template
             $('head').append(data.admin_template)
 
@@ -65,6 +65,12 @@
           else
             data = @process_data_from_server(data) if @process_data_from_server
             @trigger 'preload_complete', data
+        
+        App.execute 'show:loading',
+          loading:
+            entities : xhr
+            xhr: true
+
       else
         @trigger 'preload_complete', {}
 

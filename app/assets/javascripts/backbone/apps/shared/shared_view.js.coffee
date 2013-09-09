@@ -8,7 +8,8 @@
       'mouseleave [data-target="user_profile_page"]' : 'tooltipHide'
       'click [data-target="user_profile_page"]' : 'viewProfile'
 
-    viewProfile : (ev) -> App.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
+    viewProfile : (ev) -> 
+      App.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
 
     tooltipShow : (ev) ->
       $target = $(ev.currentTarget)

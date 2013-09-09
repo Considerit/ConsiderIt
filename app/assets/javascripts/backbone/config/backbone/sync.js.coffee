@@ -16,6 +16,8 @@ do (Backbone) ->
       if !entity._fetch and method in ["read", "create"]
         entity._fetch = sync
 
+      sync
+
     methods =
       beforeSend: ->
         @trigger "sync:start", @

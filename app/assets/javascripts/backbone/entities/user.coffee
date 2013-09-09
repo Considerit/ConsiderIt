@@ -107,6 +107,9 @@
         @comments = App.request 'comments:get:user', @id
       @comments
 
+    firstName : ->
+      @get('name').split(' ')[0]
+
   class Entities.OperatingUser extends Entities.User
     ##### Follows #####
     setFollows : (follows) ->

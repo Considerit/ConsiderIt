@@ -92,7 +92,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
 
     #HACKY!
-    if user && :tags in session[:tags] && session[:tags]
+    if user && (session[:tags].has_key? :tags) && session[:tags]
       user.addTags params[:tags]
     end
 

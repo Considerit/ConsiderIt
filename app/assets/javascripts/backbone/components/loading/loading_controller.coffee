@@ -26,7 +26,8 @@
       @showRealView view, loadingView, config
       
     showRealView: (realView, loadingView, config) ->
-      App.execute "when:fetched", config.entities, =>
+      method = if config.xhr then 'when:completed' else 'when:fetched'
+      App.execute method, config.entities, =>
         ## ...after the entities are fetched, execute this callback
         ## ================================================================ ##
         ## If the region we are trying to insert is not the loadingView then
@@ -46,8 +47,10 @@
           loadingView.close()
         else if !config.debug
           @show realView 
+
         @close()
-    
+      , false # by default, when:fetched will invoke a loading screen, so skip that here
+
     getEntities: (view) ->
       ## return the entities manually set during configuration, or just pull 
       ## off the model and collection from the view (if they exist)
@@ -61,3 +64,4 @@
       view: options.view || new Loading.LoadingView
       region: options.region || new Backbone.Marionette.Region { el: $('#l-loading-indicator') }
       config: options.loading
+

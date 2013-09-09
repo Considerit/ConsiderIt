@@ -1,6 +1,6 @@
 @ConsiderIt.module "HeaderApp.Show", (Show, App, Backbone, Marionette, $, _) ->
   
-  class Show.Controller extends App.Controllers.Base
+  class Show.HeaderShowController extends App.Controllers.Base
     
     initialize: ->
       layout = @getLayout()

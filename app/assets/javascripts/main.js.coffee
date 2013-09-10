@@ -12,10 +12,12 @@ $(document).ready () ->
   )()
 
 window.ConsiderIt.utils = 
+
   add_CSRF : (params) ->
     csrfName = $("meta[name='csrf-param']").attr('content')
     csrfValue = $("meta[name='csrf-token']").attr('content')
     params[csrfName] = csrfValue
+
   update_CSRF : (new_csrf) ->
     $("meta[name='csrf-token']").attr('content', new_csrf)
 
@@ -82,8 +84,11 @@ window.ensure_el_in_view = ($el, amount_of_viewport_taken_by_el=.5, offset_buffe
   el_top = $el.offset().top
   doc_top = $(window).scrollTop()
   doc_bottom = doc_top + $(window).height()
+  is_onscreen = el_top > doc_top && el_top < doc_bottom
+
   #if less than 50% of the viewport is taken up by the el...
-  in_viewport = el_top > doc_top && el_top < doc_bottom && (doc_bottom - el_top) > amount_of_viewport_taken_by_el * (doc_bottom - doc_top)  
+  in_viewport = is_onscreen || (doc_bottom - el_top) > amount_of_viewport_taken_by_el * (doc_bottom - doc_top)  
+
   target = el_top - offset_buffer
   if !in_viewport
     if scroll

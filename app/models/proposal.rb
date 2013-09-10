@@ -4,6 +4,9 @@ class Proposal < ActiveRecord::Base
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
 
+  has_many :assessments, :through => :points, :dependent => :destroy
+  has_many :claims, :through => :assessments, :dependent => :destroy
+
   belongs_to :user
   
   acts_as_tenant(:account)

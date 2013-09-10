@@ -29,16 +29,17 @@ class Dashboard::AssessableController < Dashboard::DashboardController
   def edit
     authorize! :index, Assessable::Assessment
 
-    @assessment = Assessable::Assessment.find(params[:id])
+    assessment = Assessable::Assessment.find(params[:id])
+    root_object = assessment.proposal #Proposal.find(@assessment.root_object.proposal_id)
 
     render :json => {
-      :assessment => @assessment,
-      :requests => @assessment.requests.all,
-      :claims => @assessment.claims.all,
-      :all_claims => Assessable::Claim.all,
-      :assessable_obj => @assessment.root_object, 
+      :assessment => assessment,
+      :requests => assessment.requests.all,
+      :claims => assessment.claims.all,
+      :all_claims => root_object.claims,
+      :assessable_obj => assessment.root_object, 
       :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,      
-      :root_object => Proposal.find(@assessment.root_object.proposal_id)
+      :root_object => root_object
     }
   end
 

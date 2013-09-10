@@ -1,6 +1,5 @@
 class Assessable::Request < ActiveRecord::Base
 
-  belongs_to :assessable, :polymorphic=>true
   belongs_to :user
   belongs_to :assessment, :class_name => 'Assessable::Assessment'
 

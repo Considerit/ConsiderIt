@@ -1,7 +1,6 @@
 class Assessable::Claim < ActiveRecord::Base
 
   belongs_to :assessment, :class_name => 'Assessable::Assessment'
-  
   acts_as_tenant :account
 
   scope :public_fields, select( [:id, :verdict, :claim_restatement, :result, :assessment_id])

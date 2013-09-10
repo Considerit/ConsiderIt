@@ -41,7 +41,7 @@
         {name: 'Newness', target: 'created_at'} ]
 
     updateSelectedFilter : ->
-      @$el.find(".m-proposallist-sort.selected").removeClass 'selected'      
+      @$el.find(".m-proposallist-sort.selected").removeClass 'selected'    
       @$el.find("[data-target='#{@sort_by}']").addClass 'selected'
 
     onShow : ->
@@ -51,9 +51,8 @@
       'click .m-proposallist-sort' : 'sortProposalsTo'
 
     sortProposalsTo : (ev) ->  
-      sort_by = $(ev.target).data('target')
-      @trigger 'sort:requested', sort_by
-      @sort_by = sort_by
+      @sort_by = $(ev.target).data('target')
+      @trigger 'sort:requested', @sort_by
       window.ensure_el_in_view @$el
 
 

@@ -32,6 +32,8 @@
     header_app.start()
     App.module("FooterApp").start()
 
+    theme_app = App.module('Theme')
+
   App.on "initialize:after", ->
     
     #TODO: don't remove this until everything loaded

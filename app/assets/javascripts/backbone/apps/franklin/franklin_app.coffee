@@ -83,13 +83,12 @@
 
 
     PointDetails: (long_id, point_id) -> 
-      proposal = App.request 'proposal:get', long_id, true
-      point = App.request 'point:get', parseInt(point_id), true
 
-      region = App.request "default:region"
-      # @_loading [proposal]
+      proposal = App.request 'proposal:get', long_id, true
+      point = App.request 'point:get', parseInt(point_id), true, long_id
 
       App.execute 'when:fetched', [proposal, point], => 
+        region = App.request "default:region"
         if !(region.currentView instanceof Franklin.Proposal.PositionLayout || 
              region.currentView instanceof Franklin.Proposal.AggregateLayout)
           @franklin_controller.close() if @franklin_controller

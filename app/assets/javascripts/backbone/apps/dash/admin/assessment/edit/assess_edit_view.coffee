@@ -9,6 +9,9 @@
       claimsRegion : '#claims'
       formRegion : '#evaluate'
 
+    serializeData : ->
+      @model.attributes
+
   class Assessment.EditContextView extends App.Views.ItemView
     template : '#tpl_assess_edit_context'
 

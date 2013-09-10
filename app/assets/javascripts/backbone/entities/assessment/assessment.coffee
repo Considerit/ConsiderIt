@@ -81,7 +81,6 @@
       if proposal_id
         if !(proposal_id of @claims_by_proposal)
           @claims_by_proposal[proposal_id] = new Entities.Claims
-        console.log claims
         _.each claims, (c) =>
           @claims_by_proposal[proposal_id].add @all_claims.get(c.id)
 
@@ -93,13 +92,13 @@
       if proposal_id of @claims_by_proposal
         claims = @claims_by_proposal[proposal_id]
       else
-        # DISCLAIMER: This method doesn't work unless a whole chain of data is actually loaded.
+        # This method doesn't work unless a whole chain of data is actually loaded.
         throw 'claims not loaded for this proposal'
-        claims = new Entities.Claims
-        @all_claims.each (claim) ->
-          assessment = claim.getAssessment()
-          proposal = assessment.getRoot()
-          claims.add(claim) if proposal && proposal.id == proposal_id
+        # claims = new Entities.Claims
+        # @all_claims.each (claim) ->
+        #   assessment = claim.getAssessment()
+        #   proposal = assessment.getRoot()
+        #   claims.add(claim) if proposal && proposal.id == proposal_id
       claims
 
   App.reqres.setHandler 'claims:get', (assessment_id) ->

@@ -78,16 +78,13 @@
 %script{ :type => "text/template", :id => "tpl_dashboard_assess_edit_layout"}
 
   #edit_assessment
-    .back
-      %a.m-assessment-back{ :href => "{{Routes.assessment_index_path()}}"}
-        back to index
 
     .m-dashboard-heading
       %h2
-        Leave expert response
+        Assess claims
 
       .m-dashboard-subheading
-        Conduct a fact check
+        Check the claims made in this point
 
     #main
       #to_be_checked
@@ -164,7 +161,7 @@
 
   .add_claim_form
     = form_for :claim, :url => "{{Routes.assessment_create_claim_path(id)}}", :remote => true, :html => {:class => 'hide m-assessment-create_claim'} do |f|
-      = f.label :claim, 'Restate a specific claim as a factual (yes-or-no) question that you will check'
+      = f.label :claim, 'Restate the specific claim that you will research and evaluate'
       = f.text_area :claim, :class => 'autoResize'
       .submit_block
         = f.submit 'Add'

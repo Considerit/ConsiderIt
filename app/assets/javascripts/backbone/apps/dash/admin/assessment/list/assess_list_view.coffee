@@ -7,7 +7,7 @@
 
     serializeData : ->
       params = _.extend {}, @model.attributes,
-        root_object : @model.root_obj.attributes
+        root_object : @model.getRoot().attributes
         claimed : @model.get('user_id') > 0
         status : @model.status()
 

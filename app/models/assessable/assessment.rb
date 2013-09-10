@@ -1,7 +1,13 @@
 class Assessable::Assessment < ActiveRecord::Base
   belongs_to :user
 
+  belongs_to :assessable, :polymorphic => true
 
+  #These would have to be revised if more than just Points could be assessed
+  belongs_to :point, :foreign_key => 'assessable_id'
+  has_one :proposal, :through => :point
+  ###
+  
   has_many :claims, :class_name => 'Assessable::Claim'
   has_many :requests, :class_name => 'Assessable::Request'
   

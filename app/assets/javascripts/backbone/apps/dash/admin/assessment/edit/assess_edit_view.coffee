@@ -14,8 +14,8 @@
 
     serializeData : ->
       _.extend {}, @model.attributes,
-        root_object : @options.root_object.attributes
-        assessable : @options.assessable.attributes
+        root_object : @model.getRoot().attributes
+        assessable : @model.getAssessable().attributes
 
   class Assessment.RequestView extends App.Views.ItemView
     template : '#tpl_assess_request'
@@ -39,7 +39,7 @@
 
     serializeData : ->
       _.extend {}, @model.attributes, 
-        assessment : @model.assessment.attributes
+        assessment : @model.getAssessment().attributes
         format_verdict : @model.format_verdict()
 
     onShow : ->
@@ -100,7 +100,7 @@
     serializeData : ->
       current_user = ConsiderIt.request 'user:current'
       params = _.extend {}, @model.attributes, 
-        assessable : @model.assessable_obj.attributes
+        assessable : @model.getAssessable().attributes
         can_publish : @model.get('reviewable') && current_user.id != @model.get('user_id')
         current_user : current_user.id
 

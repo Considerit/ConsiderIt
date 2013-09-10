@@ -52,7 +52,7 @@ class HomeController < ApplicationController
   end
 
   def content_for_user
-    # proposals that are written by this user, but not yet published; private proposals this user has access to
+    # proposals that are written by this user; private proposals this user has access to
     proposals = []
     Proposal.content_for_user(current_user).each do |proposal|      
       proposals.push ({

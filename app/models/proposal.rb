@@ -27,7 +27,7 @@ class Proposal < ActiveRecord::Base
   scope :browsable, where( :targettable => false)
 
   def self.content_for_user(user)
-    user.proposals.unpublished.public_fields.all + Proposal.privately_shared.where("access_list like '%#{user.email}%' ").public_fields.all
+    user.proposals.public_fields.all + Proposal.privately_shared.where("access_list like '%#{user.email}%' ").public_fields.all
   end
 
   def public?

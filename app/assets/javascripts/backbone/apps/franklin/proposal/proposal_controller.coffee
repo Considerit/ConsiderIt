@@ -447,6 +447,7 @@
         model.set proposal_attrs
         position = App.request 'position:create', position_attrs
         model.setUserPosition position.id  
+
         App.navigate Routes.new_position_proposal_path(model.long_id), {trigger: true}
 
 

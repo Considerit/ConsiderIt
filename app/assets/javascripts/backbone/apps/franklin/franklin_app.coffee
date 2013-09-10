@@ -84,10 +84,12 @@
 
     PointDetails: (long_id, point_id) -> 
       proposal = App.request 'proposal:get', long_id, true
+      point = App.request 'point:get', parseInt(point_id), true
+
       region = App.request "default:region"
       # @_loading [proposal]
 
-      App.execute 'when:fetched', proposal, => 
+      App.execute 'when:fetched', [proposal, point], => 
         if !(region.currentView instanceof Franklin.Proposal.PositionLayout || 
              region.currentView instanceof Franklin.Proposal.AggregateLayout)
           @franklin_controller.close() if @franklin_controller
@@ -98,21 +100,17 @@
           region.controlled_by = @franklin_controller
 
 
-        point = App.request 'point:get', parseInt(point_id), true
-        # @_loading [point]
+        @franklin_controller.trigger 'point:show_details', point
 
-        App.execute 'when:fetched', point, =>
-          @franklin_controller.trigger 'point:show_details', point
+        crumbs = [ 
+          ['homepage', '/'], 
+          ["#{proposal.long_id}", Routes.new_position_proposal_path(long_id)]
+          ["#{ if point.isPro() then 'Pro' else 'Con'} point", Routes.proposal_point_path(long_id, point_id)] ]
 
-          crumbs = [ 
-            ['homepage', '/'], 
-            ["#{proposal.long_id}", Routes.new_position_proposal_path(long_id)]
-            ["#{ if point.isPro() then 'Pro' else 'Con'} point", Routes.proposal_point_path(long_id, point_id)] ]
+        if region.currentView instanceof Franklin.Proposal.AggregateLayout
+          crumbs.splice crumbs.length - 1, 0, ['results', Routes.proposal_path(long_id)]
 
-          if region.currentView instanceof Franklin.Proposal.AggregateLayout
-            crumbs.splice crumbs.length - 1, 0, ['results', Routes.proposal_path(long_id)]
-
-          App.vent.trigger 'route:completed', crumbs
+        App.vent.trigger 'route:completed', crumbs
 
     StaticPosition: (long_id, user_id) ->
       proposal = App.request 'proposal:get', long_id, true

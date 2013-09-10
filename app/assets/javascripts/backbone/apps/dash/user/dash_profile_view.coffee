@@ -52,7 +52,8 @@
     dash_name : 'account_settings'
 
     serializeData : ->
-      @model.attributes
+      _.extend {}, @model.attributes, 
+        third_party_authenticated : @model.authMethod() != 'email'
 
   class User.EmailNotificationsView extends App.Dash.View
     dash_name : 'email_notifications'

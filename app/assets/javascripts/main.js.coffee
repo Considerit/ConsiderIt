@@ -102,7 +102,6 @@ window.moveToTop = ($el, offset_buffer = 50, scroll = false) ->
   target = el_top - offset_buffer
   doc_top = $(window).scrollTop()
 
-  console.log el_top, $el
   if scroll
     distance_to_travel = Math.abs( doc_top - target )
     $('body').animate {scrollTop: target}, distance_to_travel

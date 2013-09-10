@@ -5,7 +5,7 @@
       point = @options.model
       layout = @getLayout point
 
-      @listenTo layout, 'show', => 
+      @listenTo layout, 'render', => 
         header_view = @getHeaderView point
         layout.headerRegion.show header_view
 
@@ -42,7 +42,6 @@
 
         window.ensure_el_in_view @layout.$el, .5
 
-
       @layout.expansionRegion.show expanded_view
 
     setupFollowView : ->
@@ -61,7 +60,6 @@
         assessable_type : 'Point'
         assessable : @options.model
         parent_controller : @
-
 
     setupCommentsView : (region) ->
       comments = new App.Franklin.Comments.CommentsController

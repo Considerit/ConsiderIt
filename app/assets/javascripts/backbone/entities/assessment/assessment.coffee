@@ -65,8 +65,6 @@
     all_claims : new Entities.Claims
 
     addClaims : (claims) ->
-      console.log claims
-
       @all_claims.add @all_claims.parse(claims)
 
     getClaims : (assessment_id) ->

@@ -105,8 +105,8 @@
   API = 
     all_points : new Entities.Points
 
-    getPoint : (id, fetch = false) ->
-      point = @all_points.get id
+    getPoint : (id, fetch = false, long_id = null) ->
+      point = @all_points.get(id) || new Entities.Point({id : id, long_id : long_id})
       if fetch
         point.fetch()
       point
@@ -131,8 +131,8 @@
       points = @getPointsBy {proposal_id : proposal_id}
       points
 
-  App.reqres.setHandler 'point:get', (id, fetch = false) ->
-    API.getPoint id, fetch
+  App.reqres.setHandler 'point:get', (id, fetch = false, proposal_id = null) ->
+    API.getPoint id, fetch, proposal_id
 
   App.reqres.setHandler 'point:create', (attrs, options = {wait: true}) ->
     API.createPoint attrs, options

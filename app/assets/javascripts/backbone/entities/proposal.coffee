@@ -15,7 +15,7 @@
     urlRoot : ''
 
     url : () ->
-      if @id
+      if @long_id
         Routes.proposal_path( @attributes.long_id ) 
       else
         # for create

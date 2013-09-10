@@ -3,7 +3,7 @@
     initialize : (options = {}) ->
       layout = @getLayout options.location
       @listenTo layout, 'before:item:added', (view) => 
-        c = new App.Franklin.Point.PointController
+        new App.Franklin.Point.PointController
           view : view
           model : view.model
           region : new Backbone.Marionette.Region { el : view.el }     
@@ -18,8 +18,6 @@
           point = view.model
           App.navigate Routes.proposal_point_path(point.get('long_id'), point.id), {trigger : true}
 
-
-      @layout = layout
       @listenTo @options.parent, 'point:show_details', (point) =>
         is_paginated = @options.collection.fullCollection?
         collection = if is_paginated then @options.collection.fullCollection else @options.collection
@@ -35,6 +33,7 @@
           # @listenTo controller, 'close', =>
           #   pointview.render()
 
+      @layout = layout
 
     sortPoints : (sort_by) ->
       @options.collection.setSorting sort_by, 1

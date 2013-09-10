@@ -266,9 +266,8 @@
     onRender : ->
       @$el.attr('data-state', 4)
 
-
     moveToResults : ->
-      window.moveToTop @histogramRegion.currentView.$el
+      window.moveToTop @histogramRegion.currentView.$el, 100
 
     implodeParticipants : ->
       @trigger 'results:implode_participants'

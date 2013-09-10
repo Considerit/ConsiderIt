@@ -1,3 +1,5 @@
+@ConsiderIt.module "Theme", (Theme, App, Backbone, Marionette, $, _) ->
+
 // $(document).ready(function(){
   
 //   per_request();

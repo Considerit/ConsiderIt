@@ -51,8 +51,8 @@
       Fact Check
 
     %ul.m-point-assessment-claims
-      (( _.each(claims, function(clm){ ))
-      %li.m-point-assessment-claim{ :'data-verdict' => "{{clm.verdict}}"}
+      (( claims.each(function(clm){ ))
+      %li.m-point-assessment-claim{ :'data-verdict' => "{{clm.get('verdict')}}"}
 
         .m-point-assessment-claim-header
           %span.claim_desc

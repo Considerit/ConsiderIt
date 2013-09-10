@@ -12,8 +12,9 @@
       App.request 'assessment:requests:add', (r.request for r in data.requests)
 
     setupLayout : ->
-      layout = @getLayout()
       assessment = App.request 'assessment:get', @options.model_id
+
+      layout = @getLayout assessment
 
       @listenTo layout, 'show', ->
         context = new Assessment.EditContextView
@@ -55,5 +56,6 @@
       layout
 
 
-    getLayout : ->
+    getLayout : (model) ->
       new Assessment.EditLayout
+        model : model

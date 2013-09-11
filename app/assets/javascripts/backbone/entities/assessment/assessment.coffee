@@ -45,6 +45,12 @@
       #TODO: store this as an html attribute...
       @attributes.result = htmlFormat @attributes.result
 
+    url : ->
+      if @id
+        Routes.assessment_destroy_claim_path @get('assessment_id'), @id
+      else 
+        Routes.assessment_create_claim_path @get('assessment_id')
+
     format_verdict : ->
 
       switch @get 'verdict'
@@ -59,8 +65,15 @@
         @assessment = App.request 'assessment:get', @get('assessment_id')
       @assessment
 
-    # set_assessment : (assessment) ->
-    #   @assessment = assessment
+    getCreator : ->
+      if !@creator
+        @creator = App.request 'user', @get('creator')
+      @creator
+
+    getApprover : ->
+      if !@approver
+        @approver = App.request 'user', @get('approver')
+      @approver
 
   class Entities.Claims extends App.Entities.Collection
     model : Entities.Claim
@@ -74,6 +87,10 @@
   CLAIMS_API = 
     all_claims : new Entities.Claims
     claims_by_proposal : {}
+
+    createClaim : (attrs, options) ->
+      claim = @all_claims.create attrs, options
+      claim
 
     addClaims : (claims, proposal_id = null) ->
       claims = @all_claims.parse(claims)
@@ -109,6 +126,9 @@
 
   App.reqres.setHandler 'claims:add', (claims, proposal_id = null) ->
     CLAIMS_API.addClaims claims, proposal_id
+
+  App.reqres.setHandler 'claim:create', (attrs, options = {wait: true}) ->
+    CLAIMS_API.createClaim attrs, options
 
   REQUEST_API = 
     all_requests : new Entities.Requests

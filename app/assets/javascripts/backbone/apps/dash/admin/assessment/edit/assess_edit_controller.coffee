@@ -17,7 +17,7 @@
       layout = @getLayout assessment
 
       @listenTo layout, 'show', ->
-        context = new Assessment.EditContextView
+        context = new Assessment.ContextView
           model : assessment
           root_object : assessment.getRoot()
           assessable : assessment.getAssessable()
@@ -29,16 +29,22 @@
 
         layout.requestsRegion.show requests
 
+        claims_collection = assessment.getClaims()
         claims = new Assessment.ClaimsView
-          collection: assessment.getClaims()
+          collection: claims_collection
           assessment : assessment
-          all_claims : App.request 'claims:get:proposal', assessment.getRoot().id  #all claims for this proposal
 
         # @listenTo claims, 'claim:created', (claim) ->
         #   claims.collection.add claim
 
-        # @listenTo claims, 'childview:claim:deleted', (claim) -> 
-        #   claims.collection.remove claim
+        @listenTo claims, 'claim:new', => @setupNewClaimView assessment, claims_collection
+
+
+        @listenTo claims, 'childview:claim:delete', (view) -> 
+          view.model.destroy()
+
+        @listenTo claims, 'childview:claim:edit', (view) => @setupEditClaimView view.model
+
 
         # @listenTo claims, 'childview:claim:updated', (claim, params) ->
         #   claim.set params
@@ -51,10 +57,41 @@
         # @listenTo forms, 'assessment:updated', (assessment) ->
         #   assessment.set assessment
 
-        layout.formRegion.show forms
+        layout.footerRegion.show forms
 
       layout
 
+    setupNewClaimView : (assessment, claims_collection) ->
+      new_claim_view = @getNewClaimView assessment
+
+      @listenTo new_claim_view, 'show', =>
+        @listenTo new_claim_view, 'claim:create', (attrs) =>
+          attrs.assessment_id = assessment.id
+          claim = App.request 'claim:create', attrs
+          App.execute 'when:fetched', claim, =>
+            claims_collection.add claim
+            new_claim_view.close()
+
+      overlay = App.request 'dialog:new', new_claim_view, 
+        class: 'overlay_claim_view'
+
+    setupEditClaimView : (claim) ->
+      edit_claim_view = @getEditClaimView claim
+
+      @listenTo edit_claim_view, 'show', =>
+
+      overlay = App.request 'dialog:new', edit_claim_view,
+        class: 'overlay_claim_view'
+
+
+    getNewClaimView : (assessment) ->
+      new Assessment.ClaimForm
+        assessment: assessment
+        all_claims: App.request 'claims:get:proposal', assessment.getRoot().id
+
+    getEditClaimView : (model) ->
+      new Assessment.EditClaimForm
+        model : model
 
     getLayout : (model) ->
       new Assessment.EditLayout

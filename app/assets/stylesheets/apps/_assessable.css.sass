@@ -35,116 +35,90 @@
 
 
 #edit_assessment
+  .assessment-gutter, .assessment-context
+    display: inline-block
+
+  .assessment-context
+    width: 80%
+
+  .assessment-gutter
+    width: 40px
+    margin-right: $grid_xs
+    vertical-align: top
+
+    .avatar
+      width: 40px
+      height: 40px
+
+  .assessment-footer-link
+    font-weight: bold
+
+  a
+    text-decoration: underline
 
   // h1
   //   font-size: 200%
 
   #main
-    margin: 1em 1em
+    margin: $vertical_baseline
 
 
-    #requester_sidebar
-      background-color: #ddd
-      padding: 1em
-      vertical-align: top
-      margin-top: 1em
+  #context-region, #requests-region, #claims-region
+    margin-bottom: $vertical_baseline
 
-      h3
-        padding-bottom: 1em
+    .assessment-header
+      font-weight: bold
+      +font-size(-1)
 
-      .request
-        margin-bottom: 1em
-        .body
-        .user
-          font-style: italic
+    .assessment-context-content
+      padding: $vertical_baseline / 2 0
 
+    .assessment-nutshell
+      //font-weight: bold
 
-    #to_be_checked
-      padding: 1em 1em
-      border: 3px solid #eee
-      margin-bottom: 1em
+    .assessment-body
+      +font-size(-1)
 
-      .full_context
-        a
-          text-decoration: underline
-          text-transform: lowercase
+    .assessment-footer
+      +font-size(-2)
 
-    #other_claims
-      #claim_copy_id
-        width: 800px
-        font-size: 12px
+  #claims-region
+    margin-top: $vertical_baseline
 
-    #claims
-      margin-bottom: 1em
+    .claim
+      display: block
+      margin-bottom: $vertical_baseline
 
-      .add_claim_form
-        margin-top: 1em        
-        width: 900px
+    .assessment-claim
+      font-weight: bold
 
-        textarea
-          width: 60%
-          display: block
-
-        label
-          font-size: 80%
-        .submit_block
-          text-align: left
-          padding-bottom: 1em
-          
-      li.claim
-        padding: .5em 1em
-        background-color: #eee
-        margin: .5em 0
-        border: 1px solid #ddd
-        list-style: none
-
-        .heading
-          .statement
-            width: 71%
-            display: inline-block
-            text-align: left
-
-          .actions
-            display: inline-block
-            width: 24%
-            text-align: right
-            font-size: 80%
-
-            .destroy, .destroy form
-              display: inline-block
-
-        .closed
-          font-size: 80%
-
-          .body
-
-          .notes
-
-        .open
-          padding-left: 1em
-          font-size: 80%
-          .assessment_block, .private_note_block, .claim_block
-            label
-              display: block
-              font-weight: bold
-              padding-top: 1em
-
-          .radio_block
-            margin-top: 1em
-            label
-              padding-right: 1em
-
-      p 
-        margin-bottom: 4px
-
-    #evaluate
-      > *
-        float: left
+    .assessment-result
+      font-style: italic
 
 
+  #assessment-footer-region
 
 
+#l-dialog-detachable .add_claim_form
+  text-align: left
+  margin-bottom: $vertical_baseline
 
+  blockquote
+    +font-size(-2)
+    width: 500px
+    display: block
+
+  textarea, select
+    display: block
+    width: 500px
+
+  #other_claims
+    margin-top: $vertical_baseline
+    #claim_copy_id
+      +font-size(-2)
+
+  .button
+    +font-size(-2)
 
 
 #assess, #edit_assessment

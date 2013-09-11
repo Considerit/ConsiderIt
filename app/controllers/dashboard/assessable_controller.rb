@@ -30,7 +30,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     authorize! :index, Assessable::Assessment
 
     assessment = Assessable::Assessment.find(params[:id])
-    root_object = assessment.proposal #Proposal.find(@assessment.root_object.proposal_id)
+    root_object = assessment.proposal 
 
     render :json => {
       :assessment => assessment,
@@ -46,18 +46,22 @@ class Dashboard::AssessableController < Dashboard::DashboardController
   def create_claim
     authorize! :index, Assessable::Assessment
 
-    @assessment = Assessable::Assessment.find(params[:assessment_id])
+    assessment = Assessable::Assessment.find(params[:assessment_id])
 
     if params[:claim].has_key?(:copy) && params[:claim][:copy]
       copyable_attributes = Assessable::Claim.find(params[:claim][:copy_id]).attributes
-      copyable_attributes[:assessment_id] = @assessment.id
-      claim = Assessable::Claim.create!(copyable_attributes)
+      copyable_attributes[:assessment_id] = assessment.id
+      attrs = copyable_attributes
     else
       params[:claim][:account_id] = current_tenant.id
       params[:claim][:assessment_id] = params[:assessment_id]
-      claim = Assessable::Claim.create!(params[:claim])
+      attrs = params[:claim]
     end
-    redirect_to edit_assessment_path(@assessment)
+
+    attrs[:creator] = current_user.id
+    claim = Assessable::Claim.create!(attrs)
+
+    render :json => claim
 
   end
 
@@ -79,6 +83,8 @@ class Dashboard::AssessableController < Dashboard::DashboardController
       claim.assessment.save
     end
 
+    render :json => claim
+
   end
 
   def destroy_claim
@@ -86,9 +92,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     claim = Assessable::Claim.find(params[:id])
 
-    if !claim.assessment.complete
-      claim.destroy
-    end
+    claim.destroy
 
     render :json => {:id => params[:id]}
   end

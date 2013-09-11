@@ -8,6 +8,11 @@
       @listenTo @dialogLayout, "show", =>
         @dialogLayout.contentRegion.show @contentView
         @center()
+
+        @listenTo @contentView, 'close', ->
+          @dialogLayout.trigger 'dialog:canceled'
+          @close()  
+        
         @listenTo @dialogLayout, 'closeRequested', ->
           @dialogLayout.trigger 'dialog:canceled'
           @close()

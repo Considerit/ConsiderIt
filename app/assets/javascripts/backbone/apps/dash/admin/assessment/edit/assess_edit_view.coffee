@@ -4,21 +4,23 @@
   class Assessment.EditLayout extends App.Dash.View
     dash_name : 'assess_edit_layout'
     regions : 
-      contextRegion : '#to_be_checked'
-      requestsRegion : '#requester_sidebar'
-      claimsRegion : '#claims'
-      formRegion : '#evaluate'
+      contextRegion : '#context-region'
+      requestsRegion : '#requests-region'
+      claimsRegion : '#claims-region'
+      footerRegion : '#assessment-footer-region'
 
     serializeData : ->
       @model.attributes
 
-  class Assessment.EditContextView extends App.Views.ItemView
+  class Assessment.ContextView extends App.Views.ItemView
     template : '#tpl_assess_edit_context'
 
     serializeData : ->
+      assessable = @model.getAssessable()
       _.extend {}, @model.attributes,
         root_object : @model.getRoot().attributes
-        assessable : @model.getAssessable().attributes
+        assessable : assessable.attributes
+        author : assessable.getUser()
 
   class Assessment.RequestView extends App.Views.ItemView
     template : '#tpl_assess_request'
@@ -27,12 +29,11 @@
 
     serializeData : ->
       _.extend {}, @model.attributes,
-        user_name : App.request('user', @model.get('user_id')).get('name')
+        requester : App.request('user', @model.get('user_id'))
 
   class Assessment.RequestsView extends App.Views.CollectionView
-    template: '#tpl_assess_edit_requesters'
+    className : 'assessment-requests'
     itemView : Assessment.RequestView
-    itemViewContainer : '.requests'
 
 
   class Assessment.ClaimListItem extends App.Views.ItemView
@@ -42,7 +43,9 @@
 
     serializeData : ->
       _.extend {}, @model.attributes, 
-        assessment : @model.getAssessment().attributes
+        assessment : @model.getAssessment()
+        creator : @model.getCreator()
+        approver : @model.getApprover()
         format_verdict : @model.format_verdict()
 
     onShow : ->
@@ -56,22 +59,15 @@
         input = @$el.find('#' + selector).attr('checked', 'checked')
 
     events : 
-      'click .actions .answer' : 'toggleEdit'
-      'click .open .cancel' : 'toggleEdit'
-      'ajax:complete .m-assessment-claim-update' : 'claimUpdated'
-      'ajax:complete .m-assessment-claim-delete' : 'claimDeleted'
+      'click .answer' : 'editRequested'
+      'click .delete' : 'claimDeleteRequest'
+      
+    editRequested : (ev) ->
+      @trigger 'claim:edit'
 
-    toggleEdit : (ev) ->
-      $claim = $(ev.currentTarget).parents('.claim')
-      $claim.find('.open, .closed, .head .answer').toggleClass('hide')
-      $claim.find('.autosize').trigger('keyup')
-
-    claimUpdated : (ev, response, options) ->
-      params = $.parseJSON(response.responseText).claim
-      @trigger 'claim:updated', @model, params
-
-    claimDeleted : (ev, response, options) ->
-      @trigger 'claim:deleted', @model
+    claimDeleteRequest : (ev) ->    
+      if confirm('Are you sure you want to delete this?')
+        @trigger 'claim:delete'
 
 
   class Assessment.ClaimsView extends App.Views.CompositeView
@@ -79,22 +75,73 @@
     itemView : Assessment.ClaimListItem
     itemViewContainer : 'ul' 
 
+
+    events : 
+      'click .add_claim' : 'addNewClaim'
+
+    addNewClaim : (ev) ->
+      @trigger 'claim:new'
+
+
+  class Assessment.EditClaimForm extends App.Views.ItemView
+    template: '#tpl_edit_claim_form'
+
+    dialog:
+      title : 'Research and Evaluate Claim'
+
+    serializeData : ->
+      _.extend @model.attributes,
+        assessment : @model.getAssessment().attributes
+
+    events : 
+      'ajax:complete .m-assessment-claim-update' : 'claimUpdated'
+
+    claimUpdated : (ev, response, options) ->
+      params = $.parseJSON(response.responseText).claim
+      @trigger 'claim:updated', @model, params
+
+
+  class Assessment.ClaimForm extends App.Views.ItemView  
+    template: '#tpl_claim_form'
+    className: 'add_claim_form'
+    dialog:
+      title : 'Create new claim'
+
     serializeData : ->
       _.extend {}, @options.assessment.attributes,
         all_claims : @options.all_claims
+        assessable: @options.assessment.getAssessable()
 
     events : 
-      'ajax:complete .m-assessment-create_claim' : 'createClaim'
-      'click .add_claim' : 'toggleClaimForm'
-      'click .add_claim_form .cancel' : 'toggleClaimForm'
+      'click .create_new_claim' : 'createNewClaim'
+      'click .copy_new_claim' : 'copyNewClaim'
 
-    createClaim : (ev, response, options) ->
-      claim = $.parseJSON(response.responseText).claim
-      @trigger 'claim:created', claim
+    createNewClaim : (ev) ->
+      attrs = 
+        claim_restatement : @$el.find('.claim-restatement textarea').val()
 
-    toggleClaimForm : (ev) ->
-      @$el.find('.add_claim, .add_claim_form form, .add_claim_form #other_claims').toggleClass('hide')
-      @$el.find('.add_claim_form').find('.autosize').trigger('keyup')
+      @trigger 'claim:create', attrs
+
+    copyNewClaim : (ev) ->
+      attrs = 
+        copy_id : @$el.find('#other_claims select').val()
+        copy : true
+      
+      @trigger 'claim:create', attrs
+
+
+  #   events : 
+  #     'ajax:complete .m-assessment-create_claim' : 'createClaim'
+  #     'click .add_claim' : 'toggleClaimForm'
+  #     'click .add_claim_form .cancel' : 'toggleClaimForm'
+
+  #   createClaim : (ev, response, options) ->
+  #     claim = $.parseJSON(response.responseText).claim
+  #     @trigger 'claim:created', claim
+
+  #   toggleClaimForm : (ev) ->
+  #     @$el.find('.add_claim, .add_claim_form form, .add_claim_form #other_claims').toggleClass('hide')
+  #     @$el.find('.add_claim_form').find('.autosize').trigger('keyup')
 
 
   class Assessment.EditFormsView extends App.Views.ItemView

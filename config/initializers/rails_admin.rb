@@ -16,7 +16,7 @@ RailsAdmin.config do |config|
   config.audit_with :paper_trail, User
 
   # Set the admin name here (optional second array element will appear in a beautiful RailsAdmin red ©)
-  config.main_app_name = ['Consider It', 'Admin']
+  config.main_app_name = ['ConsiderIt', 'Admin']
   # or for a dynamic name:
   # config.main_app_name = Proc.new { |controller| [Rails.application.engine_name.titleize, controller.params['action'].titleize] }
 
@@ -55,7 +55,7 @@ RailsAdmin.config do |config|
   #
 
   #classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Comment', 'Moderation', 'Reflect::ReflectBullet', 'Reflect::ReflectBulletRevision', 'Reflect::ReflectHighlight', 'Reflect::ReflectResponse', 'Reflect::ReflectResponseRevision', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment']
-  classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Comment', 'Moderation', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment']
+  classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Comment', 'Moderation', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment', 'Assessable::Verdict']
   
   classes.each do |cls|
     config.model cls do

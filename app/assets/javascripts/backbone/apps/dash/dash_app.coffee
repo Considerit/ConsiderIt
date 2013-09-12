@@ -105,7 +105,7 @@
 
       App.vent.trigger 'route:completed', [ 
         ['homepage', '/'], 
-        ["Database", Routes.rails_admin_path()] ]
+        ["Database", Routes.rails_admin_dashboard_path()] ]
 
     moderate : ->
       @current_controller.close() if @current_controller      

@@ -1,5 +1,6 @@
 @ConsiderIt.module "Entities", (Entities, App, Backbone, Marionette, $, _) ->
 
+
   class Entities.Assessment extends App.Entities.Model
     name: 'assessment'
 
@@ -36,6 +37,14 @@
         return false if !c.getApprover()
       true
 
+    getVerdict : ->
+      return null if !@get('verdict_id')
+
+      if !@verdict
+        @verdict = App.request 'verdict:get', @get('verdict_id')
+      @verdict
+
+
   class Entities.Assessments extends App.Entities.Collection
     model : Entities.Assessment
 
@@ -56,15 +65,6 @@
       else 
         Routes.assessment_create_claim_path @get('assessment_id')
 
-    format_verdict : ->
-
-      switch @get 'verdict'
-        when 2 then 'Accurate'
-        when 1 then 'Unverifiable'
-        when 0 then 'Questionable'
-        when -1 then 'No checkable claims'
-        else '-'
-
     getAssessment : ->
       if !@assessment
         @assessment = App.request 'assessment:get', @get('assessment_id')
@@ -82,6 +82,13 @@
         @approver = App.request 'user', @get('approver')
       @approver
 
+    getVerdict : ->
+      return null if !@get('verdict_id')
+
+      if !@verdict
+        @verdict = App.request 'verdict:get', @get('verdict_id')
+      @verdict
+
   class Entities.Claims extends App.Entities.Collection
     model : Entities.Claim
 
@@ -90,6 +97,37 @@
 
   class Entities.Requests extends App.Entities.Collection
     model : Entities.Request
+
+  class Entities.Verdict extends App.Entities.Model
+    name : 'verdict'
+
+    getIcon : ->
+      url = "#{ConsiderIt.public_root}/system/icons/#{@id}/square/#{@get('icon_file_name')}"
+      url
+
+  class Entities.Verdicts extends App.Entities.Collection
+    model : Entities.Verdict
+
+  VERDICTS_API = 
+    all_verdicts : new Entities.Verdicts
+
+    addVerdicts : (verdicts) ->
+      @all_verdicts.add verdicts
+
+    getVerdict : (verdict_id) ->
+      @all_verdicts.get verdict_id
+
+    getVerdicts : ->
+      @all_verdicts
+
+  App.reqres.setHandler 'verdicts:add', (verdicts) ->
+    VERDICTS_API.addVerdicts verdicts
+
+  App.reqres.setHandler 'verdict:get', (verdict_id) ->
+    VERDICTS_API.getVerdict verdict_id
+
+  App.reqres.setHandler 'verdicts:get', ->
+    VERDICTS_API.getVerdicts()
 
   CLAIMS_API = 
     all_claims : new Entities.Claims

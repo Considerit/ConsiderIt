@@ -10,10 +10,13 @@ class Assessable::Assessment < ActiveRecord::Base
   
   has_many :claims, :class_name => 'Assessable::Claim'
   has_many :requests, :class_name => 'Assessable::Request'
+  belongs_to :verdict, :class_name => 'Assessable::Verdict'
   
   acts_as_tenant :account
 
-  scope :public_fields, select([:id, :overall_verdict, :created_at, :updated_at, :assessable_id, :assessable_type])
+  scope :public_fields, select([:id, :verdict_id, :created_at, :updated_at, :assessable_id, :assessable_type])
+
+
 
   #TODO: sanitize before_validation
   #self.text = Sanitize.clean(self.text, Sanitize::Config::RELAXED)
@@ -30,11 +33,11 @@ class Assessable::Assessment < ActiveRecord::Base
     assessable_type.constantize.find(assessable_id)
   end
 
-  def update_overall_verdict
+  def update_verdict
     if self.claims.count == 0
-      self.overall_verdict = -1
+      self.verdict_id = -1
     else
-      self.overall_verdict = self.claims.map{|x| x.verdict}.compact.min
+      self.verdict_id = self.claims.map{|x| x.verdict}.compact.min
     end
 
   end
@@ -42,7 +45,7 @@ class Assessable::Assessment < ActiveRecord::Base
   def public_fields
     {
       :id => self.id,
-      :overall_verdict => self.overall_verdict,
+      :verdict_id => self.verdict_id,
       :created_at => self.created_at,
       :updated_at => self.updated_at,
       :assessable_type => self.assessable_type,

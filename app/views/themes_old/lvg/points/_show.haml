@@ -79,7 +79,7 @@
       - assessment = point.assessment
       .verdict_summary
 
-        .assessment{:class => "#{assessment.overall_verdict == 2 ? 'truth' : assessment.overall_verdict == 1 ? 'unverified' : 'questionable'}"}
+        .assessment{:class => "#{assessment.verdict_id == 2 ? 'truth' : assessment.verdict_id == 1 ? 'unverified' : 'questionable'}"}
           .wrap
             - if assessment.overall_verdict == 2
               &#10003;

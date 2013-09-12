@@ -19,6 +19,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     root_objects = Proposal.where("id in (?)", root_objects_ids).public_fields.all
 
     render :json => { 
+      :verdicts => Assessable::Verdict.all,
       :assessments => assessments,
       :assessable_objects => assessable_objects,
       :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,
@@ -33,6 +34,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     root_object = assessment.proposal 
 
     render :json => {
+      :verdicts => Assessable::Verdict.all,
       :assessment => assessment,
       :requests => assessment.requests.all,
       :claims => assessment.claims.all,
@@ -68,12 +70,11 @@ class Dashboard::AssessableController < Dashboard::DashboardController
   def update_claim
     authorize! :index, Assessable::Assessment
 
-
     claim = Assessable::Claim.find(params[:id])
-    if params[:claim].has_key? :verdict
-      verdict = params[:claim][:verdict]
-      params[:claim][:verdict] = Assessable::Claim.translate(verdict)
-    end 
+    # if params[:claim].has_key? :verdict
+    #   verdict = params[:claim][:verdict]
+    #   params[:claim][:verdict] = Assessable::Claim.translate(verdict)
+    # end 
 
     params[:claim].delete :account_id
     params[:claim].delete :id
@@ -83,7 +84,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     #redirect_to edit_assessment_path(claim.assessment)
 
     if claim.assessment.complete
-      claim.assessment.update_overall_verdict
+      claim.assessment.update_verdict
       claim.assessment.save
     end
 
@@ -109,7 +110,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     complete = assessment.complete
 
     if assessment.complete
-      assessment.update_overall_verdict
+      assessment.update_verdict
       params[:assessment][:published_at] = Time.now.to_i
     end
     assessment.update_attributes(params[:assessment])

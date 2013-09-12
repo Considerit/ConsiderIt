@@ -22,6 +22,12 @@
         assessable : assessable.attributes
         author : assessable.getUser()
 
+    events : 
+      'click .email_author' : 'emailAuthor'
+
+    emailAuthor : (ev) ->
+      @trigger 'email:author'
+
   class Assessment.RequestView extends App.Views.ItemView
     template : '#tpl_assess_request'
     className : 'request'
@@ -30,6 +36,12 @@
     serializeData : ->
       _.extend {}, @model.attributes,
         requester : App.request('user', @model.get('user_id'))
+
+    events : 
+      'click .email_requester' : 'emailRequester'
+
+    emailRequester : (ev) ->
+      @trigger 'email:requester'
 
   class Assessment.RequestsView extends App.Views.CollectionView
     className : 'assessment-requests'
@@ -41,27 +53,29 @@
     tagName: 'li'
     className : 'claim'
 
+    initialize : (options = {}) ->
+      super options
+      @listenTo @model, 'change', =>
+        @render()
+
     serializeData : ->
-      _.extend {}, @model.attributes, 
+      params = _.extend {}, @model.attributes, 
         assessment : @model.getAssessment()
         creator : @model.getCreator()
         approver : @model.getApprover()
         format_verdict : @model.format_verdict()
+        is_creator : @model.getCreator().id == App.request('user:current').id
+        params
+
 
     onShow : ->
       @$el.find('.autosize').autosize()
-      @_check_box @model, null, 'claim_verdict_accurate', @model.get('verdict') == 2
-      @_check_box @model, null, 'claim_verdict_unverifiable', @model.get('verdict') == 1
-      @_check_box @model, null, 'claim_verdict_questionable', @model.get('verdict') == 0
-
-    _check_box : (model, attribute, selector, condition) ->
-      if condition || (!condition? && model.get(attribute))
-        input = @$el.find('#' + selector).attr('checked', 'checked')
 
     events : 
       'click .answer' : 'editRequested'
       'click .delete' : 'claimDeleteRequest'
-      
+      'click .approve' : 'claimApproved'
+
     editRequested : (ev) ->
       @trigger 'claim:edit'
 
@@ -69,15 +83,19 @@
       if confirm('Are you sure you want to delete this?')
         @trigger 'claim:delete'
 
+    claimApproved : (ev) ->
+      @trigger 'claim:approved'
 
   class Assessment.ClaimsView extends App.Views.CompositeView
     template: '#tpl_claims_list'
     itemView : Assessment.ClaimListItem
     itemViewContainer : 'ul' 
 
-
     events : 
       'click .add_claim' : 'addNewClaim'
+
+    serializeData : ->
+      assessment : @options.assessment.attributes
 
     addNewClaim : (ev) ->
       @trigger 'claim:new'
@@ -85,25 +103,36 @@
 
   class Assessment.EditClaimForm extends App.Views.ItemView
     template: '#tpl_edit_claim_form'
+    className: 'claim_form'
 
     dialog:
       title : 'Research and Evaluate Claim'
 
     serializeData : ->
-      _.extend @model.attributes,
+      params = _.extend {}, @model.attributes,
         assessment : @model.getAssessment().attributes
+      params
+
+    onShow : ->
+      @$el.find('textarea').autosize()
+      document.getElementById("verdict_#{@model.format_verdict().toLowerCase()}").checked = true if @model.get('verdict')
 
     events : 
-      'ajax:complete .m-assessment-claim-update' : 'claimUpdated'
+      'click .save_claim' : 'updateClaim'
 
-    claimUpdated : (ev, response, options) ->
-      params = $.parseJSON(response.responseText).claim
-      @trigger 'claim:updated', @model, params
+    updateClaim : (ev) ->
+      attrs = 
+        claim_restatement : @$el.find('.claim-restatement textarea').val()
+        verdict : @$el.find('.radio_block input:checked').val()
+        result : @$el.find('.assessment_block textarea').val()
+        notes : @$el.find('.private_note_block textarea').val()
+
+      @trigger 'claim:updated', attrs
 
 
   class Assessment.ClaimForm extends App.Views.ItemView  
     template: '#tpl_claim_form'
-    className: 'add_claim_form'
+    className: 'claim_form'
     dialog:
       title : 'Create new claim'
 
@@ -130,34 +159,23 @@
       @trigger 'claim:create', attrs
 
 
-  #   events : 
-  #     'ajax:complete .m-assessment-create_claim' : 'createClaim'
-  #     'click .add_claim' : 'toggleClaimForm'
-  #     'click .add_claim_form .cancel' : 'toggleClaimForm'
-
-  #   createClaim : (ev, response, options) ->
-  #     claim = $.parseJSON(response.responseText).claim
-  #     @trigger 'claim:created', claim
-
-  #   toggleClaimForm : (ev) ->
-  #     @$el.find('.add_claim, .add_claim_form form, .add_claim_form #other_claims').toggleClass('hide')
-  #     @$el.find('.add_claim_form').find('.autosize').trigger('keyup')
-
-
   class Assessment.EditFormsView extends App.Views.ItemView
     template : '#tpl_assess_edit_forms'
 
     serializeData : ->
       current_user = ConsiderIt.request 'user:current'
+      can_publish = @model.allClaimsApproved()
+
+      if can_publish
+        submit_text = if @model.getClaims().length == 0 then 'Correct, there are no verifiable claims, publish it' else 'Publish fact check'
+      else
+        submit_text = "Can't publish until all claims approved"
+
       params = _.extend {}, @model.attributes, 
         assessable : @model.getAssessable().attributes
-        can_publish : @model.get('reviewable') && current_user.id != @model.get('user_id')
+        can_publish : can_publish
         current_user : current_user.id
-
-      if params.can_publish
-        params.submit_text = if @model.claims.length == 0 then 'Correct, there are no verifiable claims, publish it' else 'Publish fact check'
-      else if @model.get 'reviewable'
-        params.submit_text = if @model.claims.length == 0 then 'There are no verifiable claims' else 'Submit for review'
+        submit_text : submit_text
 
       params 
 
@@ -169,9 +187,11 @@
         @$el.find('.complete, #evaluate .review').hide()
 
     events :
-      'ajax:complete .m-assessment-update' : 'assessmentUpdated'
+      'click .publish' : 'publish'
 
-    assessmentUpdated : (ev, response, options) ->
-      params = $.parseJSON(response.responseText).assessment
-      @trigger 'assessment:updated', params
+    publish : (ev) ->
+      @trigger 'publish'
 
+  class Assessment.EmailDialogView extends App.Dash.EmailDialogView
+    dialog: 
+      title: "Emailing author..."

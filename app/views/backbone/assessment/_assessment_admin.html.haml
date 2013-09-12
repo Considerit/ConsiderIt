@@ -114,10 +114,23 @@
         {{ notes }} 
       (( } ))
 
+    .assessment-status-wrap
+      .assessment-status
+        created by {{ creator.get('name') }}    
+      (( if(approver) { ))
+      .assessment-status
+        approved by {{ approver.get('name') }}
+      (( } ))
     .assessment-footer
       %span.assessment-footer-link
         %a.answer
           {{ !verdict ? 'Answer' :'Edit' }}
+
+      (( if(!approver && !is_creator ){ ))  
+      %span.assessment-footer-link
+        %a.approve
+          Approve
+      (( } ))
 
       (( if(!assessment.complete){ ))  
       %span.assessment-footer-link
@@ -131,38 +144,36 @@
 %script{ :type => "text/template", :id => "tpl_claims_list"}
   %ul
 
+  (( if(!assessment.complete) { ))
   %button.button.add_claim
     Add a new claim to research and evaluate
+  (( } ))
 
 %script{ :type => "text/template", :id => "tpl_edit_claim_form"}
 
-  = form_for :claim, :remote => true, :url => "{{Routes.assessment_update_claim_path(assessment.id, id)}}", :html => { :class => 'm-assessment-claim-update'} do |f|
+  .claim-restatement
+    = label_tag :claim_restatement, 'The claim to research'
+    = text_area_tag :claim_restatement, "{{claim_restatement}}"
 
-    .claim_block
-      = f.label :claim, 'The claim restatement'
-      = f.text_area :claim, :class => 'autoResize', :value => "{{ claim_restatement }}"
+  .radio_block
+    = radio_button_tag :verdict, 'accurate', false, :value => '2'
+    = label_tag :verdict_accurate, 'accurate', :value => '2'
 
-    .radio_block
-      = f.radio_button :verdict, 'accurate', :value => '2'
-      = f.label :verdict, 'accurate', :value => 'accurate'
+    = radio_button_tag :verdict, 'unverifiable', false, :value => '1'
+    = label_tag :verdict_unverifiable, 'unverifiable', :value => '1'
 
-      = f.radio_button :verdict, 'unverifiable', :value => '1'
-      = f.label :verdict, 'unverifiable', :value => 'unverifiable'
+    = radio_button_tag :verdict, 'questionable', false, :value => '0'
+    = label_tag :verdict_questionable, 'questionable', :value => '0'
 
-      = f.radio_button :verdict, 'questionable', :value => '0'
-      = f.label :verdict, 'questionable', :value => 'questionable'
+  .assessment_block
+    = label_tag :result, 'The assessment'
+    = text_area_tag :result, "{{ result }}"
+  .private_note_block
+    = label_tag :notes, 'Private notes'
+    = text_area_tag :notes, "{{ notes }}"
 
-    .assessment_block
-      = f.label :result, 'The assessment'
-      = f.text_area :result, :class => 'autoResize', :value => "{{ result }}"
-
-    .private_note_block
-      = f.label :notes, 'Private notes'
-      = f.text_area :notes, :class => 'autoResize', :value => "{{ notes }}"
-
-    = f.submit :class => 'button'
-    %a.cancel
-      cancel
+  %button.button.save_claim
+    Update
 
 
 %script{ :type => "text/template", :id => "tpl_claim_form"}
@@ -173,7 +184,7 @@
 
   .claim-restatement
     = label_tag :claim_restatement, 'Restate the specific claim that you will research and evaluate'
-    = text_area_tag :claim_restatement, nil, :required=>true, :maxlength => 140, :pattern => "^.{3,}", :class => 'autoResize'
+    = text_area_tag :claim_restatement, nil, :required=>true, :maxlength => 140, :pattern => "^.{3,}"
 
   .submit_block
     %button.button.create_new_claim
@@ -218,7 +229,7 @@
       .assessment-footer-link
         = link_to 'Read point in context', "{{Routes.proposal_point_path(root_object.long_id, assessable.id)}}", :target => "_blank"
       .assessment-footer-link
-        %a
+        %a.email_author
           Email the author
 
 
@@ -236,28 +247,18 @@
 
     .assessment-footer
       .assessment-footer-link
-        %a
+        %a.email_requester
           Email the requester
 
 
 %script{ :type => "text/template", :id => "tpl_assess_edit_forms"}
-
-  (( if( can_publish ){ ))
-  .complete
-    = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path(id)}}", :html => {:class => 'm-assessment-update'} do |f|
-      = f.hidden_field :complete, :value => true
-      = f.hidden_field :id, :value => "{{ id }}"
-      = f.submit "{{ submit_text }}", :class => 'button'
-  (( } else if ( reviewable ){ ))
-  .review
-    = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path(id)}}", :html => {:class => 'm-assessment-update'} do |f|
-      = f.hidden_field :reviewable, :value => true
-      = f.hidden_field :id, :value => "{{ id }}"
-      = f.hidden_field :user_id, :value => "{{ current_user }}"
-      = f.submit "{{ submit_text }}", :class => "button"
+  
+  (( if(complete){ ))
+  .assessment_published_at
+    Assessment published on {{new Date(published_at).toDateString()}}
+  (( } else{ ))
+  %button.button.publish{ :disabled => "{{!can_publish || complete}}" }
+    Publish fact-check
   (( } ))
-
-
-
 
 

@@ -169,7 +169,7 @@
     slider_ui_init : 
       handles: 1
       connect: "lower"
-      scale: [100, -100]
+      range: [-100, 100]
       width: 300
 
     ui : 
@@ -178,24 +178,27 @@
       support_label : '.m-stance-label-support'
       oppose_label : '.m-stance-label-oppose'
 
+    _stance_val : ->
+      @model.get('stance') * 100
+
     onShow : ->
       @bindUIElements()
       @listenTo @model, 'change:stance', => 
-        @ui.slider.noUiSlider('destroy')
-        @createSlider()
+        @ui.slider.val -@_stance_val()
 
       @createSlider()
 
     createSlider : ->
-      @value = @model.get('stance') * 100
+      @value = @_stance_val()
 
-      @ui.slider.noUiSlider 'init',
-        _.extend {}, @slider_ui_init, 
-          start : @model.get('stance') * 100  
-          change : =>
-            @sliderChange(@ui.slider.noUiSlider('value')[1])
+      params = _.extend {}, @slider_ui_init, 
+          start : -@_stance_val()
+          slide : =>
+            @sliderChange @ui.slider.val()
 
-      is_neutral = Math.abs(@model.get('stance') * 100) < 5
+      @ui.slider.noUiSlider params
+
+      is_neutral = Math.abs(@_stance_val()) < 5
       if !is_neutral
         @ui.neutral_label.css('opacity', 0)
 
@@ -211,11 +214,11 @@
 
       @value = new_value
 
-      @model.set('stance', @value / 100, {silent : true})
+      @model.set('stance', -@value / 100, {silent : true})
 
       size = @slider.max_effect / 100 * @value
-      @ui.oppose_label.css('font-size', 100 - size + '%')
-      @ui.support_label.css('font-size', 100 + size + '%')
+      @ui.oppose_label.css('font-size', 100 + size + '%')
+      @ui.support_label.css('font-size', 100 - size + '%')
 
 
 

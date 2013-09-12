@@ -57,7 +57,8 @@
           model : @layout.model
           fixed : App.request 'user:fixed:exists'
 
-        @listenTo @paperwork_view, 'third_party_auth_request', @handleImportThirdPartyImage
+        @listenTo @paperwork_view, 'show', =>
+          @listenTo @paperwork_view, 'third_party_auth_request', @handleImportThirdPartyImage
 
         paperwork_layout.cardRegion.show @paperwork_view
 
@@ -69,8 +70,12 @@
         paperwork_footer_view = new Register.PaperworkFooterView
           model : @layout.model
 
-        @listenTo paperwork_footer_view, 'registration:returned', @handleRegistrationResponse
+        @listenTo paperwork_footer_view, 'show', =>
+
         paperwork_layout.footerRegion.show paperwork_footer_view
+
+        @listenTo paperwork_layout, 'registration:returned', @handleRegistrationResponse
+
 
       @layout.completePaperworkRegion.show paperwork_layout
 

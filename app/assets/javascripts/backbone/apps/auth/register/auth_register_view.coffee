@@ -45,6 +45,13 @@
       pledgeRegion : '.m-user-accounts-complete-paperwork-pledge'
       footerRegion : '.m-user-accounts-complete-paperwork-footer'
 
+    events:
+      'ajax:complete form' : 'registrationReturned'
+
+    registrationReturned : (ev, response, options) ->
+      @trigger 'registration:returned', $.parseJSON(response.responseText)
+
+
   class Register.PaperworkView extends App.Views.ItemView
     template: "#tpl_user_paperwork_card"
 
@@ -113,11 +120,7 @@
     template: "#tpl_user_paperwork_footer"
 
     events:
-      'ajax:complete form' : 'registrationReturned'
       'click .m-user-terms-show' : 'show_terms_of_use'
-
-    registrationReturned : (ev, response, options) ->
-      @trigger 'registration:returned', $.parseJSON(response.responseText)
 
     show_terms_of_use : ->
       @$el.find('.m-user-the-terms-of-use').slideToggle()

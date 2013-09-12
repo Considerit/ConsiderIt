@@ -92,8 +92,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
 
     #HACKY!
-    if user && (session[:tags].has_key? :tags) && session[:tags]
-      user.addTags params[:tags]
+    if user && (session.has_key? :tags) && session[:tags]
+      user.addTags session[:tags]
     end
 
     render :json => response

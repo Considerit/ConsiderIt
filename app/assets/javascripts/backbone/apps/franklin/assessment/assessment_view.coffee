@@ -46,16 +46,3 @@
       assessment : @model.attributes
       claims : @options.claims
       num_assessment_requests : @options.assessable.get('num_assessment_requests')
-
-    templateHelpers: 
-      format_assessment_verdict : (verdict) ->
-        if verdict == 2
-          'Accurate'
-        else if verdict == 1
-          'Unverifiable'
-        else if verdict == 0
-          'Questionable'
-        else if verdict == -1
-          'No checkable claims'
-        else
-          '-'

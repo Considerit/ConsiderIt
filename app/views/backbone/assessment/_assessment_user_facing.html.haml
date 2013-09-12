@@ -58,7 +58,7 @@
           %span.claim_desc
             {{ clm.get('claim_restatement') }}
           %span.claim_verdict
-            {{ format_assessment_verdict(clm.get('verdict')) }}
+            {{ clm.getVerdict().get('short_name') }}
 
         .m-point-assessment-claim-details
           {{ clm.get('result') }}
@@ -67,7 +67,7 @@
 
     %p.explanation
 
-      (( if( assessment.overall_verdict > -1) { ))
+      (( if( assessment.verdict_id > -1) { ))
         
       Prepared in response to {{num_assessment_requests}} {{num_assessment_requests == 1 ? 'request' : 'requests'}}. We hope that this information will be useful to this discussion!
 

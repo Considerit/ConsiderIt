@@ -4,6 +4,7 @@
       Routes.edit_assessment_path @options.model_id
 
     process_data_from_server : (data) ->
+      App.request 'verdicts:add', (v.verdict for v in data.verdicts)      
       App.request 'assessments:add', [data.assessment]
       App.vent.trigger 'points:fetched', [data.assessable_obj.point]
       App.vent.trigger 'proposals:fetched', [data.root_object.proposal]

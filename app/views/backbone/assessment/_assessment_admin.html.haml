@@ -100,8 +100,7 @@
       (( if( verdict ){ ))
       .assessment-result
         %img.verdict{:src => "{{verdict.getIcon()}}"}
-        {{ verdict.get('short_name') }}
-
+        {{ verdict.get('name') }}
       (( } ))
 
       .assessment-body

@@ -100,6 +100,7 @@
     getEmailDialog : (moderation) ->
       new Moderation.EmailDialogController
         model : moderation.moderated_object
+        parent_controller : @
 
   class Moderation.EmailDialogController extends App.Dash.EmailDialogController
 
@@ -111,9 +112,6 @@
       body : "(write your message)\n\n--\n\nPlease edit your #{@options.model.name} at #{window.location.origin}#{@options.model.url()}" 
       subject : "Concerning your #{@options.model.name}" 
       sender : 'moderator@{{domain}}'
-
-    dialog : 
-      title : 'Email the content author'
 
     getEmailView : ->
       new Moderation.EmailDialogView

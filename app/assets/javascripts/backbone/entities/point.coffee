@@ -29,6 +29,7 @@
 
       if tenant.get('assessment_enabled') && data.assessment
         App.request 'assessments:add', [data.assessment]
+        App.request 'verdicts:add', (v.verdict for v in data.verdicts)
         App.request 'claims:add', (c.claim for c in data.claims)
 
         current_user = App.request 'user:current'

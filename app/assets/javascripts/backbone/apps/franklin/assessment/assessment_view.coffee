@@ -43,6 +43,8 @@
     template : "#tpl_assessment"
 
     serializeData : ->
-      assessment : @model.attributes
-      claims : @options.claims
-      num_assessment_requests : @options.assessable.get('num_assessment_requests')
+      params = 
+        assessment : @model.attributes
+        claims : @options.claims
+        num_assessment_requests : @options.assessable.get('num_assessment_requests')
+      params

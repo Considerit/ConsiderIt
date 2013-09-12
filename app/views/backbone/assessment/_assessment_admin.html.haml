@@ -99,8 +99,9 @@
     .assessment-context-content
       (( if( verdict ){ ))
       .assessment-result
-        %emph
-          Evaluation: {{ format_verdict }}
+        %img.verdict{:src => "{{verdict.getIcon()}}"}
+        {{ verdict.get('short_name') }}
+
       (( } ))
 
       .assessment-body
@@ -156,14 +157,13 @@
     = text_area_tag :claim_restatement, "{{claim_restatement}}"
 
   .radio_block
-    = radio_button_tag :verdict, 'accurate', false, :value => '2'
-    = label_tag :verdict_accurate, 'accurate', :value => '2'
+    (( verdicts.each(function(verdict){ ))
 
-    = radio_button_tag :verdict, 'unverifiable', false, :value => '1'
-    = label_tag :verdict_unverifiable, 'unverifiable', :value => '1'
+    %input{:id => "verdict_id_{{verdict.id}}", :name => "verdict_id", :type => "radio", :value => "{{verdict.id}}"}
+    %label{ :for => "verdict_id_{{verdict.id}}" }
+      {{ verdict.get("short_name") }}
 
-    = radio_button_tag :verdict, 'questionable', false, :value => '0'
-    = label_tag :verdict_questionable, 'questionable', :value => '0'
+    (( }); ))
 
   .assessment_block
     = label_tag :result, 'The assessment'

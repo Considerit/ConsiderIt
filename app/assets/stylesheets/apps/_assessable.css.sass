@@ -52,12 +52,17 @@
 
   .assessment-footer-link
     font-weight: bold
+    padding-right: $grid_xs / 2
 
   a
     text-decoration: underline
 
-  // h1
-  //   font-size: 200%
+  .assessment_published_at
+    font-weight: bold
+    padding: $grid_xs / 2 $vertical_baseline / 2
+    background-color: $callout_bg_color
+    display: inline-block
+    color: $callout_text_color
 
   #main
     margin: $vertical_baseline
@@ -95,11 +100,14 @@
     .assessment-result
       font-style: italic
 
+    .assessment-status
+      +font-size(-3)
+
 
   #assessment-footer-region
 
 
-#l-dialog-detachable .add_claim_form
+#l-dialog-detachable .claim_form
   text-align: left
   margin-bottom: $vertical_baseline
 
@@ -121,7 +129,7 @@
     +font-size(-2)
 
 
-#assess, #edit_assessment
-  button, input[type="submit"]
-    font-size: 1em
+// #assess, #edit_assessment
+//   button, input[type="submit"]
+//     font-size: 1em
 

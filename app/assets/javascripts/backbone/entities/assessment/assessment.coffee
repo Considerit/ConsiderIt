@@ -31,6 +31,11 @@
     status : ->
       if @get('complete') then "completed" else if @get('reviewable') then 'reviewable' else 'incomplete'
 
+    allClaimsApproved : ->
+      @getClaims().each (c) ->
+        return false if !c.getApprover()
+      true
+
   class Entities.Assessments extends App.Entities.Collection
     model : Entities.Assessment
 
@@ -47,7 +52,7 @@
 
     url : ->
       if @id
-        Routes.assessment_destroy_claim_path @get('assessment_id'), @id
+        Routes.assessment_update_claim_path @get('assessment_id'), @id
       else 
         Routes.assessment_create_claim_path @get('assessment_id')
 
@@ -71,6 +76,8 @@
       @creator
 
     getApprover : ->
+      return null if !@get('approver')
+
       if !@approver
         @approver = App.request 'user', @get('approver')
       @approver

@@ -63,7 +63,7 @@
         assessment : @model.getAssessment()
         creator : @model.getCreator()
         approver : @model.getApprover()
-        format_verdict : @model.format_verdict()
+        verdict : @model.getVerdict()
         is_creator : @model.getCreator().id == App.request('user:current').id
         params
 
@@ -111,11 +111,12 @@
     serializeData : ->
       params = _.extend {}, @model.attributes,
         assessment : @model.getAssessment().attributes
+        verdicts : App.request 'verdicts:get'
       params
 
     onShow : ->
       @$el.find('textarea').autosize()
-      document.getElementById("verdict_#{@model.format_verdict().toLowerCase()}").checked = true if @model.get('verdict')
+      document.getElementById("verdict_id_#{@model.getVerdict().id}").checked = true if @model.get('verdict_id')
 
     events : 
       'click .save_claim' : 'updateClaim'
@@ -123,7 +124,7 @@
     updateClaim : (ev) ->
       attrs = 
         claim_restatement : @$el.find('.claim-restatement textarea').val()
-        verdict : @$el.find('.radio_block input:checked').val()
+        verdict_id : @$el.find('.radio_block input:checked').val()
         result : @$el.find('.assessment_block textarea').val()
         notes : @$el.find('.private_note_block textarea').val()
 
@@ -178,13 +179,6 @@
         submit_text : submit_text
 
       params 
-
-    onShow : ->
-      num_claims = @model.claims.length
-      num_answered_claims = @model.claims.filter((clm) -> clm.get('verdict')? ).length
-
-      if num_claims > 0 && num_answered_claims != num_claims
-        @$el.find('.complete, #evaluate .review').hide()
 
     events :
       'click .publish' : 'publish'

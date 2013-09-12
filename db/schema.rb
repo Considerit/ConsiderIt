@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130912052656) do
+ActiveRecord::Schema.define(:version => 20130912193123) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -94,7 +94,7 @@ ActiveRecord::Schema.define(:version => 20130912052656) do
     t.string   "assessable_type"
     t.boolean  "qualifies"
     t.string   "qualifies_reason"
-    t.integer  "overall_verdict"
+    t.integer  "verdict_id"
     t.boolean  "complete",         :default => false
     t.datetime "created_at",                          :null => false
     t.datetime "updated_at",                          :null => false
@@ -107,7 +107,7 @@ ActiveRecord::Schema.define(:version => 20130912052656) do
     t.integer  "account_id"
     t.text     "result"
     t.text     "claim_restatement"
-    t.integer  "verdict"
+    t.integer  "verdict_id"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
     t.text     "notes"
@@ -439,6 +439,19 @@ ActiveRecord::Schema.define(:version => 20130912052656) do
   add_index "users", ["account_id"], :name => "account_id"
   add_index "users", ["account_id"], :name => "select_user_by_account"
   add_index "users", ["email"], :name => "index_users_on_email"
+
+  create_table "verdicts", :force => true do |t|
+    t.string   "short_name"
+    t.string   "name"
+    t.text     "desc"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.string   "icon_file_name"
+    t.string   "icon_content_type"
+    t.integer  "icon_file_size"
+    t.datetime "icon_updated_at"
+    t.integer  "account_id"
+  end
 
   create_table "versions", :force => true do |t|
     t.string   "item_type",  :null => false

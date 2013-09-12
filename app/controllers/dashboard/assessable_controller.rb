@@ -68,14 +68,18 @@ class Dashboard::AssessableController < Dashboard::DashboardController
   def update_claim
     authorize! :index, Assessable::Assessment
 
+
     claim = Assessable::Claim.find(params[:id])
-    if params[:assessable_claim].has_key? :verdict
-      verdict = params[:assessable_claim][:verdict]
-      params[:assessable_claim][:verdict] = Assessable::Claim.translate(verdict)
+    if params[:claim].has_key? :verdict
+      verdict = params[:claim][:verdict]
+      params[:claim][:verdict] = Assessable::Claim.translate(verdict)
     end 
 
+    params[:claim].delete :account_id
+    params[:claim].delete :id
+
     # TODO: explicitly grab params  
-    claim.update_attributes(params[:assessable_claim])
+    claim.update_attributes(params[:claim])
     #redirect_to edit_assessment_path(claim.assessment)
 
     if claim.assessment.complete
@@ -103,11 +107,12 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     # TODO: explicitly grab params    
     assessment = Assessable::Assessment.find(params[:assessment][:id])
     complete = assessment.complete
-    assessment.update_attributes(params[:assessment])
+
     if assessment.complete
       assessment.update_overall_verdict
+      params[:assessment][:published_at] = Time.now.to_i
     end
-
+    assessment.update_attributes(params[:assessment])
     assessment.save
 
     if !complete && assessment.complete

@@ -22,10 +22,26 @@
           root_object : assessment.getRoot()
           assessable : assessment.getAssessable()
 
+        @listenTo context, 'show', =>
+          @listenTo context, 'email:author', (view) -> 
+            new Assessment.EmailDialogController
+              model : assessment.getAssessable()
+              title : 'Clarification regarding your point'
+              parent_controller : @
+
+
         layout.contextRegion.show context
 
         requests = new Assessment.RequestsView
           collection : assessment.getRequests()
+
+        @listenTo requests, 'show', =>
+          @listenTo requests, 'childview:email:requester', (view) -> 
+            new Assessment.EmailDialogController
+              model : view.model
+              title : 'Question regarding your fact-check request'
+              parent_controller : @
+              link : assessment.getAssessable().url()
 
         layout.requestsRegion.show requests
 
@@ -34,28 +50,36 @@
           collection: claims_collection
           assessment : assessment
 
-        # @listenTo claims, 'claim:created', (claim) ->
-        #   claims.collection.add claim
+        @listenTo claims, 'show', =>
+          @listenTo claims, 'claim:new', => 
+            @setupNewClaimView assessment, claims_collection
 
-        @listenTo claims, 'claim:new', => @setupNewClaimView assessment, claims_collection
+          @listenTo claims, 'childview:claim:delete', (view) -> 
+            view.model.destroy()
 
+          @listenTo claims, 'childview:claim:approved', (view) ->
+            claim = view.model
+            claim.save {approver : App.request('user:current').id}
+            App.execute 'when:fetched', claim, =>
+              toastr.success 'Claim approved'
+              @trigger 'claim:approved'
 
-        @listenTo claims, 'childview:claim:delete', (view) -> 
-          view.model.destroy()
-
-        @listenTo claims, 'childview:claim:edit', (view) => @setupEditClaimView view.model
-
-
-        # @listenTo claims, 'childview:claim:updated', (claim, params) ->
-        #   claim.set params
+          @listenTo claims, 'childview:claim:edit', (view) => @setupEditClaimView view.model
 
         layout.claimsRegion.show claims
 
         forms = new Assessment.EditFormsView
           model : assessment
 
-        # @listenTo forms, 'assessment:updated', (assessment) ->
-        #   assessment.set assessment
+        @listenTo forms, "show", =>
+          @listenTo forms, 'publish', =>
+            assessment.save {complete : true}
+            App.execute 'when:fetched', assessment, =>
+              toastr.success 'Assessment published.'
+              forms.render()
+
+          @listenTo @, 'claim:approved', ->
+            forms.render()
 
         layout.footerRegion.show forms
 
@@ -70,6 +94,7 @@
           claim = App.request 'claim:create', attrs
           App.execute 'when:fetched', claim, =>
             claims_collection.add claim
+            toastr.success 'Claim added'            
             new_claim_view.close()
 
       overlay = App.request 'dialog:new', new_claim_view, 
@@ -79,6 +104,11 @@
       edit_claim_view = @getEditClaimView claim
 
       @listenTo edit_claim_view, 'show', =>
+        @listenTo edit_claim_view, 'claim:updated', (attrs) =>
+          claim.save attrs
+          App.execute 'when:fetched', claim, =>
+            toastr.success 'Claim updated'
+            edit_claim_view.close()
 
       overlay = App.request 'dialog:new', edit_claim_view,
         class: 'overlay_claim_view'
@@ -96,3 +126,19 @@
     getLayout : (model) ->
       new Assessment.EditLayout
         model : model
+
+  class Assessment.EmailDialogController extends App.Dash.EmailDialogController
+
+    initialize : (options = {}) -> 
+      options.link ?= options.model.url()
+      super options
+
+    email : -> 
+      recipient : @options.model.get 'user_id'
+      body : "(write your message)\n\n--\n\nThe point referred to can be found at #{window.location.origin}#{@options.link}" 
+      subject : @options.title
+      sender : 'factcheckers@{{domain}}'
+
+    getEmailView : ->
+      new Assessment.EmailDialogView
+        model : @getMessage()

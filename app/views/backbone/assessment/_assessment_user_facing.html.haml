@@ -58,6 +58,7 @@
           %span.claim_desc
             {{ clm.get('claim_restatement') }}
           %span.claim_verdict
+            (( console.log( clm, clm.getVerdict() ); ))
             {{ clm.getVerdict().get('short_name') }}
 
         .m-point-assessment-claim-details

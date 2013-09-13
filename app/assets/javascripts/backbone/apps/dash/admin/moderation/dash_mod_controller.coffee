@@ -111,7 +111,7 @@
       recipient : @options.model.get 'user_id'
       body : "(write your message)\n\n--\n\nPlease edit your #{@options.model.name} at #{window.location.origin}#{@options.model.url()}" 
       subject : "Concerning your #{@options.model.name}" 
-      sender : 'moderator@{{domain}}'
+      sender : 'moderator@livingvotersguide.org' #'moderator@{{domain}}' #TODO: move back to more general
 
     getEmailView : ->
       new Moderation.EmailDialogView

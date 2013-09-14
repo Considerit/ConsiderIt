@@ -12,10 +12,12 @@
 
     serializeData : ->
       current_user = App.request 'user:current' 
-      _.extend {}, @model.attributes, @model.permissions(),
+      params = _.extend {}, @model.attributes, @model.permissions(),
         avatar : App.request('user:avatar', @model, 'original')
         tenant : App.request("tenant:get")
         is_self : @model.id == current_user.id
+
+      params
 
     updateActiveLink : (dash_name) ->
       @$el.find('.m-dashboard_link').removeClass('current').filter("[data-target='#{dash_name}']").addClass('current')

@@ -28,13 +28,15 @@
 
       @listenTo layout, 'show', => @handleShow layout
 
-      @listenTo App.vent, 'user:signin user:signout', => @handleShow layout
+      @listenTo App.vent, 'user:signin user:signout', => 
+        @region.reset()
+        @region.show layout
 
       @region.show layout
       @layout = layout
 
     handleShow : (layout) ->
-      return if layout.isClosed
+      #return if layout.isClosed
 
       proposals_view = @getProposals @is_active
 

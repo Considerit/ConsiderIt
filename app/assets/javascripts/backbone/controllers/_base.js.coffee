@@ -8,7 +8,7 @@
       super options
       @_instance_id = _.uniqueId("controller")
 
-      # console.log 'adding controller:', @
+      #console.log 'adding controller:', @
 
       App.execute "register:instance", @, @_instance_id
       
@@ -16,12 +16,13 @@
         options.parent_controller.addController @
 
     close: (args...) ->
-      # console.log "removing Controller:", @
+      #console.log "removing Controller:", @
 
       while @controllers.length > 0
         c = @controllers.pop()
         c.close()
 
+      #@region.close() if @region
       delete @region
       delete @options
       super args

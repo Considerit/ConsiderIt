@@ -13,11 +13,12 @@
 
       App.vent.on 'user:signout', =>
         @layout.close()
+        App.navigate Routes.root_path(), {trigger : true}
         @close()
 
     renderSidebar : (model, dash_name) ->
       if !@sidebar || @sidebar.model.id != model.id 
-        @sidebar = @getSidebar(model)
+        @sidebar = @getSidebar model
         @layout.sidebarRegion.show @sidebar
 
       @sidebar.updateActiveLink dash_name
@@ -42,7 +43,6 @@
         view = @setupLayout()
         @region.show view
         App.vent.trigger 'dashboard:region:rendered', @options.model, view.dash_name
-
 
       @preload()
 

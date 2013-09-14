@@ -13,10 +13,10 @@
     Root: -> 
       region = App.request "default:region"
 
-      if @franklin_controller && region.controlled_by != @franklin_controller
+      if @franklin_controller && (region.controlled_by != @franklin_controller || !(@franklin_controller instanceof Franklin.Root.RootController))
         @franklin_controller.close()
 
-      @franklin_controller = new Franklin.Root.Controller
+      @franklin_controller = new Franklin.Root.RootController
         region : region
 
       region.controlled_by = @franklin_controller

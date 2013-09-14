@@ -12,7 +12,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     by_third_party = session.has_key? :access_token
 
-    user = by_third_party ? User.find_by_third_party_token(session[:access_token]) : User.find_by_email(params[:user][:email])
+    user = by_third_party ? User.find_by_third_party_token(session[:access_token]) : User.find_by_lower_email(params[:user][:email])
 
     if user && user.registration_complete && (by_third_party || user.valid_password?(params[:user][:password]) )
       sign_in(resource_name, user)
@@ -150,7 +150,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #  email = params[:user][:email]
   #  password = params[:user][:password]
 
-  #  user = User.find_by_email(email)
+  #  user = User.find_by_lower_email(email)
   #  email_in_use = !user.nil?
 
   #  render :json => { :valid => !email_in_use || user.valid_password?(password) }

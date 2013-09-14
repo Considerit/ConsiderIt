@@ -30,6 +30,8 @@ class User < ActiveRecord::Base
 
   before_validation :download_remote_image, :if => :avatar_url_provided?
   before_save do 
+    self.email.downcase! if self.email
+
     self.name = Sanitize.clean(self.name) if self.name   
     self.bio = Sanitize.clean(self.bio, Sanitize::Config::RELAXED) if self.bio
     if self.avatar_file_name_changed?
@@ -112,30 +114,34 @@ class User < ActiveRecord::Base
 
   end
 
+  def self.find_by_lower_email(email)
+    find_by_email email.downcase
+  end
+
   def self.find_by_third_party_token(access_token)
     case access_token.provider
       when 'twitter'
         user = User.find_by_twitter_uid(access_token.uid)
       when 'facebook'
-        user = User.find_by_facebook_uid(access_token.uid) || User.find_by_email(access_token.info.email)
+        user = User.find_by_facebook_uid(access_token.uid) || User.find_by_lower_email(access_token.info.email)
         if user
           user.facebook_uid = access_token.uid
         end
       when 'google'
-        user = User.find_by_google_uid(access_token.uid) || User.find_by_email(access_token.info.email)
+        user = User.find_by_google_uid(access_token.uid) || User.find_by_lower_email(access_token.info.email)
         if user
           user.google_uid = access_token.uid
         end
 
       when 'google_oauth2'
-        user = User.find_by_google_uid(access_token.uid) || User.find_by_email(access_token.info.email)  #for_google_oauth2(request.env["omniauth.auth"], current_user)
+        user = User.find_by_google_uid(access_token.uid) || User.find_by_lower_email(access_token.info.email)  #for_google_oauth2(request.env["omniauth.auth"], current_user)
 
         if user
           user.google_uid = access_token.uid
         end
 
       else  
-        user = User.find_by_email(access_token.info.email)
+        user = User.find_by_lower_email(access_token.info.email)
     end
 
     user

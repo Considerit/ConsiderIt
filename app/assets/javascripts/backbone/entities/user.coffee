@@ -248,10 +248,17 @@
       @fixed_user
 
     set_current_user : (user_id) ->
-      @current_user = App.request 'user', user_id
-      if !(@current_user instanceof Entities.OperatingUser)
-        _.extend @current_user, Entities.OperatingUser.prototype
+      existing_user = App.request 'user', user_id
+      if !(existing_user instanceof Entities.OperatingUser)
+        _.extend existing_user, Entities.OperatingUser.prototype
 
+      # This is hacky. Updating both prior references to current user while also upgrading old. Could lead to some probs.
+      if !(@current_user instanceof Entities.OperatingUser)
+        _.extend @current_user, Entities.OperatingUser.prototype if @current_user
+      @current_user.set existing_user.attributes if @current_user
+      ######
+
+      @current_user = existing_user
       @current_user
 
     set_fixed_user : (user_data) ->
@@ -276,10 +283,11 @@
     update_current_user : (user_data) ->
       user_id = user_data.user.id
 
-      AUTH_API.set_current_user user_id if @current_user.id != user_id
-
-      current_user = @current_user
-
+      if @current_user.id != user_id
+        current_user = AUTH_API.set_current_user user_id 
+      else 
+        current_user = @current_user
+        
       current_user.set user_data.user
 
       current_user.setFollows user_data.follows if 'follows' of user_data

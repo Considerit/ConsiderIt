@@ -1,5 +1,7 @@
 @ConsiderIt.module "Dash.Admin.Assessment", (Assessment, App, Backbone, Marionette, $, _) ->
   class Assessment.AssessmentEditController extends App.Dash.Admin.AdminController
+    auth : 'is_evaluator'
+
     data_uri : ->
       Routes.edit_assessment_path @options.model_id
 

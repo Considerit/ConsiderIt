@@ -15,12 +15,12 @@
 
       if @franklin_controller && (region.controlled_by != @franklin_controller || !(@franklin_controller instanceof Franklin.Root.RootController))
         @franklin_controller.close()
+        @franklin_controller = null
 
       @franklin_controller = new Franklin.Root.RootController
         region : region
 
-      region.controlled_by = @franklin_controller
-
+      region.controlled_by = @franklin_controller      
 
       App.vent.trigger 'route:completed', [ ['homepage', '/'] ]
 
@@ -145,11 +145,8 @@
       region ?= App.request 'default:region'
       if region.currentView
         App.execute "show:loading",
-          #view : region.currentView
-          #region : region
           loading : 
             entities : entities
-            #loadingType : 'opacity'
 
 
 

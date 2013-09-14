@@ -1,6 +1,6 @@
 @ConsiderIt.module "Franklin.Root", (Root, App, Backbone, Marionette, $, _) ->
 
-  class Root.Controller extends App.Controllers.Base
+  class Root.RootController extends App.Controllers.Base
 
     initialize : (options = {}) ->
       layout = @getLayout()

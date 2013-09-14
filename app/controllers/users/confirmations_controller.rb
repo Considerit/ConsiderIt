@@ -2,7 +2,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
 
   # POST /resource/confirmation
   def create
-    user = User.find_by_email(params[:user][:email])
+    user = User.find_by_lower_email(params[:user][:email])
     proposal = Proposal.find_by_id(params[:proposal_id])
 
     UserMailer.confirmation_instructions(user, proposal, mail_options).deliver!

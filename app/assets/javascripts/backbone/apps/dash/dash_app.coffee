@@ -130,6 +130,9 @@
         @dashboard.close() 
         @dashboard = null
 
+      if region.controlled_by && region.controlled_by != @dashboard
+        region.controlled_by.close()
+
       if !@dashboard
         @dashboard = new Dash.DashController
           region : region

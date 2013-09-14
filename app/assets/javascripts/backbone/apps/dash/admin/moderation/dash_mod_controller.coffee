@@ -1,5 +1,7 @@
 @ConsiderIt.module "Dash.Admin.Moderation", (Moderation, App, Backbone, Marionette, $, _) ->
   class Moderation.ModerationController extends App.Dash.Admin.AdminController
+    auth : 'is_moderator'
+
     initialize : (options = {} ) ->
       super options
       @classes_to_moderate = App.request("tenant:get").classesToModerate()

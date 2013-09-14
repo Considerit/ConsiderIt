@@ -10,7 +10,6 @@
         @center()
 
         @listenTo @contentView, 'close', ->
-          @dialogLayout.trigger 'dialog:canceled'
           @close()  
         
         @listenTo @dialogLayout, 'closeRequested', ->

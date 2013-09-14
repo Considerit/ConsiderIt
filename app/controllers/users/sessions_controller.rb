@@ -4,7 +4,7 @@ class Users::SessionsController < Devise::SessionsController
   protect_from_forgery #:except => :create
 
   def create
-    user = User.find_by_email(params[:user][:email])
+    user = User.find_by_lower_email(params[:user][:email])
     if user && user.valid_password?(params[:user][:password])
       self.resource = warden.authenticate!(auth_options)
       sign_in resource_name, resource

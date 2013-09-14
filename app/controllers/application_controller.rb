@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
     ###################
 
     if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
-      user = User.find_by_email(params[:u])
+      user = User.find_by_lower_email(params[:u])
 
       # pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_tenant.identifier}") if !user.nil?
       # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") if user.nil?

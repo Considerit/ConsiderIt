@@ -2,7 +2,7 @@ class Users::PasswordsController < Devise::PasswordsController
 
   # POST /resource/password
   def create
-    user = User.find_by_email(params[:user][:email]) if params[:user][:email].strip.length > 0
+    user = User.find_by_lower_email(params[:user][:email]) if params[:user][:email].strip.length > 0
     if !user.nil?
       UserMailer.reset_password_instructions(user, mail_options).deliver!
       render :json => {

@@ -2,15 +2,28 @@
 
   class Admin.AdminController extends App.Dash.RegionController
     admin_template_needed : true
+    auth : 'is_admin'
 
     initialize : (options = {} ) ->
+      if !@hasPermission()
+        App.navigate Routes.root_path(), {trigger : true}
+        return
+
       if !App.request("admin_templates_loaded?")
         $('head').append ConsiderIt.admin_files.style_tag
         $('head').append ConsiderIt.admin_files.js_tag
       super options
 
+      current_user = App.request('user:current')
+
+
+    hasPermission : (user) ->
+      current_user = App.request 'user:current'
+      current_user && current_user.permissions()[@auth]
+
   class Admin.AppSettingsController extends Admin.AdminController
     admin_template_needed : true
+    auth : 'is_admin'
 
     data_uri : -> 
       if App.request("tenant:get").fully_loaded
@@ -45,6 +58,7 @@
 
 
   class Admin.UserRolesController extends Admin.AdminController
+    auth : 'is_admin'
 
     #TODO: cache this data
     data_uri : -> 
@@ -77,6 +91,8 @@
         collection : @collection
 
   class Admin.AnalyticsController extends Admin.AdminController
+    auth : 'is_analyst'
+
     data_uri : ->
       Routes.analytics_path()
 
@@ -93,6 +109,8 @@
 
 
   class Admin.DatabaseController extends Admin.AdminController
+    auth : 'is_admin'
+
     setupLayout : ->
       @getLayout()
     

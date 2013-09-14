@@ -1,6 +1,7 @@
 @ConsiderIt.module "Dash.Admin.Assessment", (Assessment, App, Backbone, Marionette, $, _) ->
   class Assessment.AssessmentsController extends App.Dash.Admin.AdminController
-    
+    auth : 'is_evaluator'
+
     setupLayout : ->
       collection = new App.Entities.Assessments App.request('assessments:get').models,
         comparator : (assessment) -> - new Date(assessment.get("created_at")).getTime()

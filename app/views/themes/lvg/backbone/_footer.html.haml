@@ -1,0 +1,92 @@
+
+%script{ :type => "text/template", :id => "tpl_footer" }
+
+  #l-footer_segments
+    #service
+
+      .heading.what
+        A free, non-partisan service
+
+      .who.line
+        by #{link_to 'Seattle CityClub', "http://www.seattlecityclub.org"}
+
+      .help.line
+        = link_to 'Donate', 'https://www.seattlecityclub.org/civicrm/contribute/transact?reset=1&id=10'        
+
+      .line
+        = link_to 'Media', '/home/media'
+
+
+    #powered
+
+      .contact
+        .heading
+          Contact us
+
+        .line
+          %span
+            #{link_to 'Email', 'mailto:info@livingvotersguide.org?subject=I have a question or comment about the Living Voters Guide'},
+          
+          - if current_tenant.socmedia_facebook_page
+            %span
+              -#= link_to image_tag( 'facebook.png'), current_tenant.socmedia_facebook_page
+              #{link_to 'Facebook', current_tenant.socmedia_facebook_page}
+      .power  
+        .heading
+          Powered by #{link_to "ConsiderIt", "https://github.com/tkriplean/ConsiderIt"}
+
+        %span.use_considerit.line
+          #{link_to 'Use this technology','mailto:info@livingvotersguide.org?subject=I am interested in using ConsiderIt'} in your organization.
+
+    #contact
+      
+      .partners
+        .heading
+          Partners
+
+        .partner.line 
+          = link_to "ConsiderIt", "http://consider.it"
+
+        .partner.line 
+          = link_to "UW Engage", "http://engage.cs.washington.edu"
+
+        .partner.line
+          = link_to 'The Seattle Public Library', 'http://www.spl.org'
+
+        .partner.line
+          = link_to "Center for Comm & Civic Engagement", "http://ccce.com.washington.edu/", :rel => 'nofollow'
+
+
+      .partners
+        .heading
+          Funders
+
+        .partner.line
+          = link_to "Hewlett Foundation", "http://www.hewlett.org/", :rel => 'nofollow'
+
+        .partner.line
+          = link_to "National Science Foundation", "http://www.nsf.gov", :rel => 'nofollow'
+
+        .partner.line
+          = link_to "Google Research Award", "http://research.google.com/university/relations/research_awards.html", :rel => 'nofollow'
+
+      .partners
+        .heading
+          Co-promoters
+        .partner.line
+          Thanks to all of our #{link_to "co-promoters", "/home/copromoters"}
+
+    #voter_info
+      .heading
+        Additional voter resources
+
+      - links = [{:anchor => 'Responsible Choices Washington', :link=>'http://www.responsiblechoiceswa.org/', :title=>'Responsible Choices Washington'}, {:anchor=>'League of Women Voters of Gr. Seattle',:link=>'http://www.lwvwa.org/positions.html#positions', :title=>'Voters Guide by the League of Women Voters'},  {:anchor=>'Progressive Voters Guide', :link=>'http://progressivevotersguide.com/', :title=>'Voters Guide by Fuse'}, {:anchor=>'Washington Policy Center', :link=>'http://www.myelectionresource.com', :title=>'Voters Guide by the Washington Policy Center'}, {:anchor=>'Washington Secretary of State', :link=>'https://wei.sos.wa.gov/agency/osos/en/press_and_research/PreviousElections/2012/General-Election/Pages/Online-Voters-Guide.aspx', :title=>'Voters Guide by the Secretary of State'}, {:anchor=>'TVW Video Voters Guide', :link=>'http://www.tvw.org/2012-video-voters-guide-general-election', :title=>'A video Voters Guide by TVW'}, {:anchor => 'Ballotpedia', :link=>'http://ballotpedia.org/wiki/index.php/Washington', :title=>'Ballotpedia'}, {:anchor => "About the initiative process", :link => "http://www.ncsl.org/default.aspx?tabid=16600", :title => 'About the initiative process'}, {:anchor => "History of WA ballot measures", :link => "http://www.sos.wa.gov/elections/initiatives/statistics.aspx", :title => 'History of WA ballot measures'}, {:anchor => "Filing an initiative in WA", :link => "http://www.sos.wa.gov/_assets/elections/Initiative%20and%20Referenda%20Manual.pdf", :title => 'Filing an initiative in WA'} ]
+
+
+      - links.each do |link|
+        .line
+          = link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:title], :rel => 'nofollow')
+
+
+
+

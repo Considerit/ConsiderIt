@@ -118,3 +118,135 @@
   .unlock_this
     +font-size(1)
 /////
+
+
+html body #m-dashboard
+  margin-bottom: 0
+
+/// footer
+#l-footer
+  padding: 0 0 2 * $vertical_baseline 0
+
+.l-footer-wrap
+  padding: 0 0 $vertical_baseline 0
+  z-index: 25
+  width: $content_width
+  +font-size(2)
+
+  #l-footer_segments
+    color: #555
+
+    a
+      text-decoration: underline
+      cursor: pointer
+      color: #555     
+      &:hover
+        color: #222       
+
+    .heading
+      font-weight: bold
+      +font-size(2)
+      color: #555
+      font-variant: small-caps
+      text-transform: lowercase
+      letter-spacing: 0
+      line-height: 1.3
+
+    .line
+      +font-size(-1)
+      line-height: 1.3
+
+    #service, #powered, #contact, #voter_info
+      text-align: center
+
+    #service
+      background: image-url('lvg/images/footer_triangle.png') no-repeat top center transparent
+      padding: $vertical_baseline 0 5 * $vertical_baseline 0
+      .line, h3
+        line-height: 1.5
+      h3
+        +font-size(2)
+    #powered
+      .power
+        margin-top: $vertical_baseline
+      > .line
+        padding-bottom: $vertical_baseline
+
+    #contact, #voter_info
+      position: absolute
+      top: 4 * $vertical_baseline
+    #contact
+      right: 5%
+      padding-bottom: $vertical_baseline
+
+      iframe
+        height: 20px
+
+      .partners, .past
+        padding-bottom: $vertical_baseline
+
+    #voter_info
+      left: 5%
+
+
+
+///
+
+
+
+#static
+  &.media
+    h3
+      padding-top: $vertical_baseline
+      +font-size(2)
+    a
+      //+font-size(1)
+      font-weight: bold
+    .loc
+      font-variant: small-caps
+      text-transform: lowercase
+
+  &.centerpad
+    padding: 0 2 * $grid_major + 2 * $grid_minor $vertical_baseline 2 * $grid_major + 2 * $grid_minor
+
+    h1
+      +font-size(3)
+
+    ul
+      li
+        padding: $vertical_baseline / 2 0
+
+  a
+    text-decoration: underline
+
+
+// /home/fact_check
+#fact_check
+  padding: 3 * $vertical_baseline $grid_xs $vertical_baseline $grid_xs
+
+  .spl_logo
+    display: inline-block
+    width: 30%
+    vertical-align: top
+    text-align: right
+    padding-top: 0 * $vertical_baseline
+
+    img
+      width: 150px
+
+  .statement
+    //padding: 3 * $vertical_baseline $grid_minor $vertical_baseline $grid_minor
+    //+on_paper
+    //+box-shadow(0, 1px, 2px, black, 0.2)
+    display: inline-block
+    width: 55%
+
+    h3
+      padding-bottom: $vertical_baseline
+
+    li
+      list-style: disc outside
+      margin-left: $grid_xs
+      padding-bottom: $vertical_baseline
+      //display: inline-block
+

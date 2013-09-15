@@ -3,22 +3,22 @@
       
 
 
-  %script{ :type => "text/template", :id => "tpl_proposal_strip" }
-    (( if(published){ ))
-    .m-proposal-connect.m-proposal-strip
+  / %script{ :type => "text/template", :id => "tpl_proposal_strip" }
+  /   (( if(published){ ))
+  /   .m-proposal-connect.m-proposal-strip
 
-      %ul
-        %li.m-proposal-action-label
-          Help spread the word
-        %li.m-proposal-action-link
-          .zocial.icon.facebook
-        %li.m-proposal-action-link
-          .zocial.icon.twitter
-        %li.m-proposal-action-link
-          .zocial.icon.permalink
-        %li.m-proposal-action-label
-          Link to this conversation
-    (( } ))
+  /     %ul
+  /       %li.m-proposal-action-label
+  /         Help spread the word
+  /       %li.m-proposal-action-link
+  /         .zocial.icon.facebook
+  /       %li.m-proposal-action-link
+  /         .zocial.icon.twitter
+  /       %li.m-proposal-action-link
+  /         .zocial.icon.permalink
+  /       %li.m-proposal-action-label
+  /         Link to this conversation
+  /   (( } ))
 
 
 
@@ -40,3 +40,4 @@
 
   = render :partial => 'backbone/auth'
   = render :partial => 'backbone/dash'
+  = render :partial => 'backbone/static'

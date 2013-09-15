@@ -34,6 +34,8 @@
 
     theme_app = App.module('Theme')
 
+    static_app = App.module('Static')
+
   App.on "initialize:after", ->
     
     #TODO: don't remove this until everything loaded

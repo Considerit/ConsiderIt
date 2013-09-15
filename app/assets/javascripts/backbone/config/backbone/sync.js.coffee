@@ -13,7 +13,7 @@ do (Backbone) ->
       else
         sync = _sync.apply entity, [method, entity, options]
 
-      if !entity._fetch and method in ["read", "create"]
+      if !entity._fetch and method in ["read", "create", "update"]
         entity._fetch = sync
 
       sync

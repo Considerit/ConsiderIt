@@ -1,23 +1,117 @@
+%script{ :type => "text/template", :id => "tpl_static_sidebar" }
+  %ul
+    %li.m-sidebar-image
+      = theme_image_tag 'logo_large.png'
+
+    %li
+      %a.m-sidebar_link{:href => "/home/fact_check", :'data-target' => 'fact_check'}
+        Fact-checking by SPL
+
+    %li
+      %a.m-sidebar_link{:href => "/home/media", :'data-target' => 'media'}
+        News stories about LVG
+
+    %li
+      %a.m-sidebar_link{:href => "/home/awards", :'data-target' => 'awards'}
+        Awards
+
+    %li
+      %a.m-sidebar_link{:href => "/home/publications", :'data-target' => 'publications'}
+        Peer-reviewed Publications
+
+    %li
+      %a.m-sidebar_link{:href => "/home/videos", :'data-target' => 'videos'}
+        Video tutorials
+
+%script{ :type => "text/template", :id => "tpl_static_publications" }
+
+  #static-header
+    %h1 
+      Peer-reviewed Publications
+
+  #static-main.pubs
+
+    %p.history
+      The Living Voters Guide started in 2010 as a collaboration between Seattle CityClub and a team of Computer Science and Political Science researchers at the University of Washington, funded by a National Science Foundation grant. These are some of the academic publications that describe the design of the technology and analyze the outcomes.
+
+    %ul
+
+      %li.media-story
+        %a{ :href => "https://dl.dropboxusercontent.com/u/3403211/paper431.pdf", :target => "_blank", :rel => "nofollow"}
+          Integrating On-demand Fact-checking with Public Dialogue.
+        .loc
+          Forthcoming, ACM Conference on Computer-Supported Cooperative Work, 2013
+
+
+      %li.media-story
+        %a{ :href => "http://dub.washington.edu/djangosite/media/papers/kriplean-cscw2012.pdf", :target => "_blank", :rel => "nofollow"}
+          Supporting Reflective Public Thought with ConsiderIt.
+        .loc
+          ACM Conference on Computer-Supported Cooperative Work, 2011
+
+
+
+      %li.media-story
+        %a{ :href => "http://dx.doi.org/10.1080/19331681.2012.665755", :target => "_blank", :rel => "nofollow"}
+          Facilitating Diverse Political Engagement with the Living Voters Guide
+        .loc
+          Journal of Information Technology & Politics, 9 (3) 2011
+
+
+    
+  
+
+%script{ :type => "text/template", :id => "tpl_static_awards" }
+  #static-header
+    %h1 
+      Awards
+
+  #static-main.awards
+    %ul
+      %li.media-story
+        %a{ :href => "http://www.geekwire.com/2012/local-developers-awarded-government-app-challenge/", :target => "_blank", :rel => "nofollow"}
+          Grand Prize, Best State-wide 
+        .loc
+          Evergreen Apps Challenge, 2012
+
+      %li.media-story
+        %a{ :href => "http://sifp.net/content/official-list-sifp-winners-2012", :target => "_blank", :rel => "nofollow"}
+          1st place, Established Non-profit
+        .loc
+          Seattle Social Innovators Fast Pitch, 2012
+
+      %iframe{:width => "560", :height => "315", :src => "//www.youtube.com/embed/RIUD4Ty2ZAE", :frameborder => "0", :allowfullscreen => 'true'}
+
 %script{ :type => "text/template", :id => "tpl_static_videos" }
-  #tutorial
-    #console
-      .frame
-        .what
+  #static-header
+    %h1
+      Video tutorials
 
-          %iframe{ :src => "http://player.vimeo.com/video/30497537?title=1&byline=0&portrait=0", :width => "400", :height => "225", :frameborder => "0", :webkitAllowFullScreen => true, :allowFullScreen => true }
+  #static-main.videos
+    .what
+      %iframe{ :src => "http://player.vimeo.com/video/74482559?title=1&byline=0&portrait=0", :width => "400", :height => "225", :frameborder => "0", :webkitAllowFullScreen => true, :allowFullScreen => true }
 
-        .how
-          %iframe{ :src => "http://player.vimeo.com/video/31315280?title=1&byline=0&portrait=0", :width => "400", :height => "225", :frameborder => "0", :webkitAllowFullScreen => true, :allowFullScreen => true }
+    .how
+      %iframe{ :src => "http://player.vimeo.com/video/74482398?title=1&byline=0&portrait=0", :width => "400", :height => "225", :frameborder => "0", :webkitAllowFullScreen => true, :allowFullScreen => true }
+
+    /   %iframe{ :src => "http://player.vimeo.com/video/30497537?title=1&byline=0&portrait=0", :width => "400", :height => "225", :frameborder => "0", :webkitAllowFullScreen => true, :allowFullScreen => true }
+
+    / .how
+    /   %iframe{ :src => "http://player.vimeo.com/video/31315280?title=1&byline=0&portrait=0", :width => "400", :height => "225", :frameborder => "0", :webkitAllowFullScreen => true, :allowFullScreen => true }
 
 
 %script{ :type => "text/template", :id => "tpl_static_fact_check" }
-  #fact_check
+  #static-header
+    %h1
+      On-demand Fact-checking Service by Seattle Public Library
+
+  #static-main.fact_check
     .spl_logo
       = link_to image_tag('lvg/images/spl-logo.png'), 'http://spl.org'
 
     .statement
       %h3
-        The Seattle Public Library is partnering with CityClub to provide reference assistance for users of the Living Voters Guide.
+        The Seattle Public Library is providing on-demand reference assistance for users of the Living Voters Guide.
 
       %p
         To ask a librarian to check the facts of a claim on the Living Voters Guide, click the &#8220;Ask a Librarian&#8221; button at the bottom of each post. Librarians will respond to each request within 48 hours. We will assign each claim a status of &#8220;accurate,&#8221; &#8220;questionable,&#8221; or &#8220;unverifiable&#8221; and will post a response with further information and the sources used to evaluate the claim.
@@ -49,14 +143,13 @@
 
 
 %script{ :type => "text/template", :id => "tpl_static_copromoters" }
-
   - links = [{:anchor=>'501 Commons',:link=>'http://www.501commons.org/'}, {:anchor=>'American Society for Public Administration, Evergreen',:link=>'http://www.evergreenaspaonline.org/'}, {:anchor=>'City Year Seattle/ King County',:link=>'http://www.cityyear.org/seattle.aspx'}, {:anchor=>'Dumas and Associates',:link=>'http://www.dumasassoc.com/'}, {:anchor=>'Everett Public Library',:link=>'http://www.epls.org/'}, {:anchor=>'Global Washington',:link=>'http://globalwa.org/'}, {:anchor=>'Greater Seattle Business Association',:link=>'http://www.thegsba.org/'}, {:anchor=>'Guiding Lights Network',:link=>'http://www.guidinglightsnetwork.com/'}, {:anchor=>'Humanities Washington',:link=>'http://www.humanities.org/'}, {:anchor=>'King County Elections',:link=>'http://www.kingcounty.gov/elections.aspx'}, {:anchor=>'King County Library System',:link=>'http://www.kcls.org/>'}, {:anchor=>'Kitsap Regional Library',:link=>'http://www.krl.org/index.php'}, {:anchor=>'Leadership Eastside',:link=>'http://www.leadershipeastside.com/'}, {:anchor=>'Leadership Tomorrow',:link=>'http://www.leadershiptomorrowseattle.org/index.html'}, {:anchor=>'League of Education Voters',:link=>'http://www.educationvoters.org/'}, {:anchor=>'Lopez Island Library District',:link=>'http://www.lopezlibrary.org/'}, {:anchor=>'Municipal League of King County',:link=>'http://www.munileague.org/'}, {:anchor=>'North Olympic Library System',:link=>'http://www.nols.org/'}, {:anchor=>'Northwest Progressive Institute',:link=>'http://www.nwprogressive.org/'}, {:anchor=>'Orcas Island Library District',:link=>'http://www.orcaslibrary.org/',:link=>''}, {:anchor=>'Pend Oreille County Library District',:link=>'http://www.pocld.org/'}, {:anchor=>'Philanthropy Northwest',:link=>'http://www.philanthropynw.org/'}, {:anchor=>'Pierce County Library System',:link=>'http://www.piercecountylibrary.org/'}, {:anchor=>'Seattle Center Next Fifty', :link => 'http://www.seattlecenter.com/thenextfifty/home.aspx>'}, {:anchor=>'Seattle Public Library',:link=>'http://www.spl.lib.wa.us/'}, {:anchor=>'Seattle Works',:link=>'http://www.seattleworks.org/'}, {:anchor=>'Sno-Isle Libraries',:link=>'http://www.sno-isle.org/'}, {:anchor=>'Spokane Public Library',:link=>'http://www.spokanelibrary.org/'}, {:anchor=>'Tacoma Public Library',:link=>'http://www.tpl.lib.wa.us/Default.aspx'}, {:anchor=>'United Way of King County',:link=>'http://www.uwkc.org/'}, {:anchor=>'University of Washington Department of Communication',:link=>'http://www.com.washington.edu/'}, {:anchor=>'Washington News Council',:link=>'http://wanewscouncil.org/'}, {:anchor=>'Washington Policy Center',:link=>'http://www.washingtonpolicy.org/'}, {:anchor=>'Washington State Broadband Office',:link=>'http://broadband.wa.gov/'}, {:anchor=>'Washington Women\'s Foundation',:link=>'http://www.wawomensfoundation.org/'}, {:anchor=>'Whatcom County Library System',:link=>'http://www.wcls.org/'}, {:anchor=>'Whitman County Rural Library District',:link=>'http://www.whitco.lib.wa.us/'}, {:anchor=>'Women’s Funding Alliance',:link=>'http://www.wfalliance.org/'}, {:anchor=>'YWCA Seattle | King | Snohomish',:link=>'https://www.ywcaworks.org/netcommunity/'} ]
 
-
-  #static.copromoters.centerpad
-
+  #static-header
     %h1
-      Thanks to all of our co-promoters!
+      Thanks to our Living Voters Guide Co-promoters!
+
+  #static-main.copromoters
 
     %ul
       - links.each do |link|
@@ -68,21 +161,17 @@
 
 
 %script{ :type => "text/template", :id => "tpl_static_media" }
-  #static.media.centerpad
-
+  #static-header
     %h1
-      Media    
+      News articles about Living Voters Guide
 
-    .desc
-    
+  #static-main.media
+    .desc    
       %p
         The Living Voters Guide brings together 
         voters to discuss and explore their positions on ballot measures. Unlike traditional voters’ guides issued by governments, advocacy groups, and other organizations, 
         it is co-created solely by its participants. It will evolve continuously throughout the election season as citizens consider the tradeoffs for each measure. 
 
-      %h2
-        Contact us
-                    
       %p
         Please send all media inquiries to
         %strong
@@ -99,88 +188,88 @@
       %ul
 
 
-        %li
+        %li.media-story
           %a{ :href => "http://www.phinneywood.com/2012/10/31/crowd-sourced-voters-guide-gets-librarian-fact-checkers/", :target => "_blank", :rel => "nofollow"}
             Crowd-sourced Voters Guide gets librarian fact-checkers
           .loc
             PhinneyWood, 10/31/12
 
-        %li
+        %li.media-story
           %a{ :href => "http://blogs.seattletimes.com/monica-guzman/2012/10/27/seattle-library-fact-check-experiment-risky-but-valuable/", :target => "_blank", :rel => "nofollow"}
             Seattle library fact check experiment risky, but valuable
           .loc
             Seattle Times, 10/27/12
 
 
-        %li
+        %li.media-story
           %a{ :href => "http://readwrite.com/2012/10/26/need-accurate-political-fact-checking-ask-a-librarian", :target => "_blank", :rel => "nofollow"}
             Need Accurate Political Fact-Checking? Ask a Librarian
           .loc
             ReadWrite, 10/26/12
 
             
-        %li
+        %li.media-story
           %a{ :href => "http://www.kplu.org/post/living-voters-guide-just-facts", :target => "_blank", :rel => "nofollow"}
             Living Voters Guide – Just the Facts
           .loc
             KPLU, 10/26/12
 
-        %li
+        %li.media-story
           %a{ :href => "http://www.artsci.washington.edu/newsletter/Oct12/LVG.asp", :target => "_blank", :rel => "nofollow"}
             A Resource for Discussion, Civic and Civil
           .loc
             UW Arts & Sciences Perspectives Newsletter, 10/23/12
 
-        %li
+        %li.media-story
           %a{ :href => "http://americanlibrariesmagazine.org/news/10232012/seattle-librarians-elected-fact-check-living-voters-guide", :target => "_blank", :rel => "nofollow"}
             Seattle Librarians Elected to Fact-Check the Living Voters Guide
           .loc
             American Libraries Magazine, 10/23/12
 
-        %li
+        %li.media-story
           %a{ :href => "http://lj.libraryjournal.com/2012/10/library-services/seattle-librarians-fact-checking-voter-guide/", :target => "_blank", :rel => "nofollow"}
             Seattle Librarians Fact Checking Voter Guide
           .loc
             Library Journal, 10/19/12
 
-        %li
+        %li.media-story
           %a{ :href => "http://www.geekwire.com/2012/living-voters-guide/", :target => "_blank", :rel => "nofollow"}
             Librarians as political fact-checkers: New feature in online voters guide
           .loc
             Geekwire, 10/17/12   
 
-        %li
+        %li.media-story
           %a{ :href => "http://seattletimes.com/html/technologybrierdudleysblog/2019458742_online_voter_guide_gets_fact-c.html", :target => "_blank", :rel => "nofollow"}
             Online voter guide gets fact-checking librarians
           .loc
             Seattle Times, 10/17/12   
 
-        %li
+        %li.media-story
           %a{ :href => "http://www.washington.edu/news/2012/10/17/living-voters-guide-adds-fact-checking-by-seattle-librarians-for-2012-election/", :target => "_blank", :rel => "nofollow"}
             Living Voters Guide adds fact-checking by Seattle librarians for 2012 election
           .loc
             University of Washington, 10/17/12   
 
-        %li
+        %li.media-story
           %a{ :href => "http://www.sacbee.com/2012/10/17/4918941/award-winning-living-voters-guide.html", :target => "_blank", :rel => "nofollow"}
             Award-Winning Living Voters Guide 2012 Launched in Washington & California
           .loc
             Sacramento Bee, 10/17/12   
 
-        %li
+        %li.media-story
           %a{ :href => "http://www.thegatesnotes.com/Personal/Social-Innovation-Fast-Pitch-American-Idol-for-Non-Profits", :target => "_blank", :rel => "nofollow"}
             Bill Gates likes the Living Voters Guide
           .loc
             The Gates Notes, 10/8/12   
 
 
-        %li
+        %li.media-story
           %a{ :href => "http://blogs.seattletimes.com/monica-guzman/2012/10/02/living-voters-guide-whichbus-win-top-honors-in-state-app-contest/", :rel => "nofollow"}
             Living Voters Guide, WhichBus win top honors in state app contest
           .loc
             Seattle Times, 10/2/12
 
-        %li
+        %li.media-story
           %a{ :href => "http://www.geekwire.com/2012/local-developers-awarded-government-app-challenge/", :target => "_blank", :rel => "nofollow"}
             Meet the winners of the state’s first-ever app challenge
           .loc
@@ -190,37 +279,37 @@
         2011
 
       %ul
-        %li
+        %li.media-story
           %a{ :href => "http://www.washington.edu/news/articles/living-voters-guide-updated-for-november-election", :target => "_blank", :rel => "nofollow"}
             Living Voters Guide updated for November election
           .loc
             UW Today, 10/26/11   
 
-        %li
+        %li.media-story
           %a{ :href => "http://blogs.sos.wa.gov/FromOurCorner/index.php/2011/10/cityclub-uw-offer-living-voters-guide/", :target => "_blank", :rel => "nofollow"}
             CityClub, UW offer Living Voters Guide
           .loc
             Secretary of State blog, 10/13/11   
 
-        %li
+        %li.media-story
           %a{ :href => "http://www.spokesman.com/stories/2011/oct/09/guest-opinion-a-guide-of-by-and-for-voters/", :target => "_blank", :rel => "nofollow"}
             A guide of, by and for voters
           .loc
             The Spokesman, 10/9/11   
 
-        %li
+        %li.media-story
           %a{ :href => "http://news.cs.washington.edu/2011/10/06/the-living-voters-guide-a-citizen-generated-guide-to-the-washington-state-2011-election/", :target => "_blank", :rel => "nofollow"}
             The Living Voters Guide: A citizen-generated guide to the Washington State 2011 election
           .loc
             Computer Science & Engineering News, 10/6/11   
 
-        %li
+        %li.media-story
           %a{ :href => "http://www.seattle24x7.com/community/e-city/2011/10/05/2011-living-voters-guide-wants-you/", :target => "_blank", :rel => "nofollow"}
             2011 Living Voters Guide Wants You!
           .loc
             Seattle 24x7, 10/5/11   
 
-        %li
+        %li.media-story
           %a{ :href => "http://seattletimes.nwsource.com/html/politicsnorthwest/2016416220_votersguide.html", :target => "_blank", :rel => "nofollow"}
             CityClub, UW launch Living Voters Guide
           .loc
@@ -231,58 +320,58 @@
         
       %ul
 
-        %li
+        %li.media-story
           %a{ :href => "http://dailyuw.com/2010/10/20/uw-project-offers-new-online-discussion-platform-s/", :target => "_blank", :rel => "nofollow"}
             UW project offers new online discussion platform for state initiatives
           .loc
             The UW Daily, 10/20/10   
-        %li
+        %li.media-story
           %a{ :href => "http://shelftalk.spl.org/2010/10/05/crowdsourcing-or-cloudsourcing-politics-%E2%80%93-seattle-style/", :target => "_blank", :rel => "nofollow"}
             Crowdsourcing or Cloudsourcing Politics – Seattle Style
           .loc
             Shelf Talk, Seattle Public Library, 10/5/10               
-        %li
+        %li.media-story
           %a{ :href => "http://www.mynorthwest.com/category/local_news_articles/20101005/Site-hopes-to-capture-the-wisdom-of-Washingtonians-on-ballot-measures/", :target => "_blank", :rel => "nofollow"}
             Site hopes to capture the wisdom of Washingtonians on ballot measures
           .loc
             KIRO Radio, MyNorthwest.com, 10/5/10 
-        %li
+        %li.media-story
           %a{ :href => "http://uwnews.org/article.asp?articleID=60616", :target => "_blank", :rel => "nofollow"}
             'Living Voters Guide' invites Washington voters to hash out ballot initiatives 
           .loc
             UW News, 10/4/10               
 
                     
-        %li
+        %li.media-story
           %a{ :href => "http://legalinformatics.wordpress.com/2010/09/29/crowdsourcing-ballot-initiative-voters-guides-living-voters-guides/", :target => "_blank", :rel => "nofollow"}
             Crowdsourcing Ballot Initiative Voters’ Guides: Living Voters’ Guides
           .loc
             Legal Informatics Blog, 9/29/10 
 
-        %li
+        %li.media-story
           %a{ :href => "http://www.bessettepitney.net/2010/09/civic-life-and-deliberation.html", :target => "_blank", :rel => "nofollow"}
             Civic Life and Deliberation
           .loc
             John Pitney, 9/28/10
 
-        %li
+        %li.media-story
           %a{ :href => "http://socialcapitalreview.org/living-voters-guide-stokes-debate-on-wa-ballot-measures/", :target => "_blank", :rel => "nofollow"}
             Living Voters Guide Stokes Debate On WA Ballot Measures
           .loc
             Social Capital Review, 9/27/10
 
-        %li
+        %li.media-story
           %a{ :href => "http://blogs.bellinghamherald.com/politics/election/seattle-developers-unveil-living-voters-guide/", :target => "_blank", :rel => "nofollow"}
             Seattle developers unveil ‘Living Voters Guide’
           .loc
             Politics Blog @ The Bellingham Herald, 9/27/10
-        %li
+        %li.media-story
           %a{ :href => "http://seattletimes.nwsource.com/html/opinion/2013012215_guest28douglas.html?prmid=op_ed", :target => "_blank", :rel => "nofollow"}
             New voters guide will heal rifts through voter education and dialogue
           .loc
             Seattle Times op-ed, 9/27/10
 
-        %li
+        %li.media-story
           %a{ :href => "http://wanewscouncil.org/2010/09/24/seattle-developers-release-new-open-source-tool-to-combat-ballot-fatigue/", :target => "_blank", :rel => "nofollow"}
             Seattle developers release new open source tool to combat ballot fatigue
           .loc

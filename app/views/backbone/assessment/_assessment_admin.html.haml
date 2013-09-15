@@ -14,20 +14,14 @@
 
     (( if( claimed ) { ))
     (( if( claimed_by_logged_in_user ) { ))
-    = form_for :assessment, :method => :put, :remote => true, :url => "{{Routes.assessment_path( id )}}" do |f|
-      = f.hidden_field :id, :value => "{{ id }}"
-      = f.hidden_field :user_id, :value => nil
-
-      = f.submit 'Unclaim it', :class => 'take_responsibility'
+    %button.unclaim.take_responsibility
+      Unclaim it
     (( } else { ))                                 
     {{ claimed_by }}
     (( } ))
     (( } else { ))
-    = form_for :assessment, :method => :put, :remove => true, :url => "{{Routes.assessment_path(id)}}" do |f|
-      = f.hidden_field :id, :value => "{{ id }}"
-      = f.hidden_field :user_id, :value => "{{ current_user }}"
-
-      = f.submit 'I\'ll do it', :class => 'take_responsibility'
+    %button.claim.take_responsibility
+      I'll do it
     (( } ))
 
   %td

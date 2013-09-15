@@ -26,6 +26,12 @@
       status = if @model.get('complete') then "completed" else if @model.get('reviewable') then 'reviewable' else 'incomplete'
       @$el.addClass @model.status()
 
+    events : 
+      'click .take_responsibility' : 'takeResponsibility'
+
+    takeResponsibility : (ev) ->
+      @trigger 'assessment:claim'
+
 
   class Assessment.AssessmentListView extends App.Views.CompositeView
     template : '#tpl_assess_list'

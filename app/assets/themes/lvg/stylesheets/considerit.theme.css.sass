@@ -38,6 +38,15 @@
     border-top: 1px solid #919191
     border-bottom: 1px solid #555
 
+.t-logo-name
+  text-transform: none
+
+.t-logo-tagline  
+  font-variant: small-caps
+  +font-size(1)
+// #l-header .t-logo
+//   float: none
+
 .t-intro-wrap
   #t-intro-people
     text-align: center
@@ -53,6 +62,7 @@
       &.hovered
         //+grayscale_off
         opacity: 1
+
 
   .t-logo
     pointer-events: none
@@ -74,7 +84,21 @@
     text-align: center
     +font-size(2)
 
+#follow
+  position: absolute
+  right: 0px
+  top: 224px
 
+.t-introduce-fact-checkers
+  text-align: center
+  +font-size(-1)
+  margin-top: $vertical_baseline/4
+  a
+    color: #666
+    text-shadow: none    
+    text-align: center
+    &:hover
+      color: #222
 
 /// local...
 

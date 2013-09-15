@@ -6,6 +6,7 @@
 
   API =    
     show: (page) ->
+      $(document).scrollTop(0)
       region = App.request 'default:region'
       
       region.controlled_by.close() if region.controlled_by

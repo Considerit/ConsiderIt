@@ -6,23 +6,23 @@
 
 %script{ :type => "text/template", :id => "tpl_dashboard_sidebar"}
   %ul
-    %li.m-dashboard_avatar
+    %li.m-sidebar-image
       %img{:src => "{{ avatar }}"}
 
     (( if( is_self ) { ))
     %li
-      %a.m-dashboard_link{:href => "{{Routes.profile_path(id)}}", :'data-target' => 'profile'}
+      %a.m-sidebar_link{:href => "{{Routes.profile_path(id)}}", :'data-target' => 'profile'}
         Profile
     
     %li
-      %a.m-dashboard_link{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
+      %a.m-sidebar_link{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
         Edit profile
 
     %li
-      %a.m-dashboard_link{:href => "{{Routes.edit_account_path(id)}}", :'data-target' => 'account_settings'}
+      %a.m-sidebar_link{:href => "{{Routes.edit_account_path(id)}}", :'data-target' => 'account_settings'}
         Account settings
     %li
-      %a.m-dashboard_link{:href => "{{Routes.edit_notifications_path(id)}}", :'data-target' => 'email_notifications'}        
+      %a.m-sidebar_link{:href => "{{Routes.edit_notifications_path(id)}}", :'data-target' => 'email_notifications'}        
         Email notifications        
 
     (( } ))
@@ -33,11 +33,11 @@
   %ul
     (( if(is_admin) { ))
     %li
-      %a.m-dashboard_link{:href => "/dashboard/application", :'data-target' => 'app_settings'}
+      %a.m-sidebar_link{:href => "/dashboard/application", :'data-target' => 'app_settings'}
         App settings
 
     %li
-      %a.m-dashboard_link{:href => "{{Routes.manage_roles_path()}}", :'data-target' => 'user_roles'}
+      %a.m-sidebar_link{:href => "{{Routes.manage_roles_path()}}", :'data-target' => 'user_roles'}
         User roles
 
     (( } ))
@@ -46,38 +46,38 @@
     (( if( false && is_manager ) { ))
 
     %li
-      %a.m-dashboard_link{:href => "/dashboard/proposals", :'data-target' => 'manage_proposals'}
+      %a.m-sidebar_link{:href => "/dashboard/proposals", :'data-target' => 'manage_proposals'}
         Manage proposals
 
     (( } ))
 
     (( if( (is_moderator ) && tenant.get('enable_moderation') ) { ))
     %li
-      %a.m-dashboard_link{:href => "{{Routes.dashboard_moderate_path()}}", :'data-target' => 'moderate'}
+      %a.m-sidebar_link{:href => "{{Routes.dashboard_moderate_path()}}", :'data-target' => 'moderate'}
         Moderate content
     (( } ))
 
     (( if( (is_evaluator ) && tenant.get('assessment_enabled') ) { ))
     %li
-      %a.m-dashboard_link{:href => "{{Routes.assessment_index_path()}}", :'data-target' => 'assess'}
+      %a.m-sidebar_link{:href => "{{Routes.assessment_index_path()}}", :'data-target' => 'assess'}
         Assess claims
     (( } ))
 
     (( if(  is_analyst ) { ))
     %li
-      %a.m-dashboard_link{:href => "{{Routes.analytics_path()}}", :'data-target' => 'analyze'}
+      %a.m-sidebar_link{:href => "{{Routes.analytics_path()}}", :'data-target' => 'analyze'}
         Analyze trends
     (( } ))
 
     (( if(is_admin) { ))
     %li
-      %a.m-dashboard_link{:href => "/dashboard/data", :'data-target' => 'database'}
+      %a.m-sidebar_link{:href => "/dashboard/data", :'data-target' => 'database'}
         Database
     (( } ))
 
     - if Rails.env.development?
       %li
-        = link_to 'Tune', '/newrelic', :target => "_blank", :class => 'm-dashboard_link'
+        = link_to 'Tune', '/newrelic', :target => "_blank", :class => 'm-sidebar_link'
 
 %script{ :type => "text/template", :id => "tpl_dashboard_container"}
   #m-dashboard

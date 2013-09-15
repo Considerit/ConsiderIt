@@ -212,65 +212,26 @@ html body #m-dashboard
     #voter_info
       left: 5%
 
+#static-main-region
+  .media-story
+    margin-bottom: $vertical_baseline
 
-
-///
-
-
-
-#static
-  &.media
-    h3
-      padding-top: $vertical_baseline
-      +font-size(2)
+    list-style: none
     a
-      //+font-size(1)
-      font-weight: bold
+      text-decoration: underline
     .loc
       font-variant: small-caps
       text-transform: lowercase
 
-  &.centerpad
-    padding: 0 2 * $grid_major + 2 * $grid_minor $vertical_baseline 2 * $grid_major + 2 * $grid_minor
-
-    h1
-      +font-size(3)
-
-    ul
-      li
-        padding: $vertical_baseline / 2 0
-
-  a
-    text-decoration: underline
-
 
 // /home/fact_check
-#fact_check
-  padding: 3 * $vertical_baseline $grid_xs $vertical_baseline $grid_xs
+.fact_check
 
   .spl_logo
     display: inline-block
-    width: 30%
-    vertical-align: top
-    text-align: right
-    padding-top: 0 * $vertical_baseline
-
+    position: relative
+    float: right
     img
-      width: 150px
+      width: 100px
 
-  .statement
-    //padding: 3 * $vertical_baseline $grid_minor $vertical_baseline $grid_minor
-    //+on_paper
-    //+box-shadow(0, 1px, 2px, black, 0.2)
-    display: inline-block
-    width: 55%
-
-    h3
-      padding-bottom: $vertical_baseline
-
-    li
-      list-style: disc outside
-      margin-left: $grid_xs
-      padding-bottom: $vertical_baseline
-      //display: inline-block
 

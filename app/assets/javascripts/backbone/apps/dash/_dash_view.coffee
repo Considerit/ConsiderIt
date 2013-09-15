@@ -9,6 +9,7 @@
 
   class Dash.Sidebar extends App.Views.ItemView
     template: '#tpl_dashboard_sidebar'
+    className : 'm-sidebar'
 
     serializeData : ->
       current_user = App.request 'user:current' 
@@ -20,7 +21,7 @@
       params
 
     updateActiveLink : (dash_name) ->
-      @$el.find('.m-dashboard_link').removeClass('current').filter("[data-target='#{dash_name}']").addClass('current')
+      @$el.find('.m-sidebar_link').removeClass('current').filter("[data-target='#{dash_name}']").addClass('current')
 
 
   # Abstract view to be extended by main region specific views

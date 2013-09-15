@@ -65,7 +65,7 @@
         approver : @model.getApprover()
         verdict : @model.getVerdict()
         is_creator : @model.getCreator().id == App.request('user:current').id
-        params
+      params
 
 
     onShow : ->

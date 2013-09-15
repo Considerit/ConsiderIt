@@ -7,6 +7,8 @@
   API =
 
     list : ->
+      $(document).scrollTop(0)
+
       new Assessment.AssessmentsController
         region : App.request 'dashboard:mainRegion'
 
@@ -15,6 +17,8 @@
         ["Assess", Routes.assessment_index_path()] ]     
 
     edit : (id, model = null) ->
+      $(document).scrollTop(0)
+      
       new Assessment.AssessmentEditController
         region : App.request 'dashboard:mainRegion'
         model_id : id

@@ -15,6 +15,8 @@
   API =
 
     userProfile : (user_id) ->
+      $(document).scrollTop(0)
+
       @current_controller.close() if @current_controller      
       user = App.request 'user', user_id
       @current_controller = new Dash.User.UserProfileController
@@ -27,6 +29,8 @@
 
     
     editProfile : (user_id) ->
+      $(document).scrollTop(0)
+
       @current_controller.close() if @current_controller      
       current_user = ConsiderIt.request 'user:current'
       @current_controller = new Dash.User.EditProfileController
@@ -38,6 +42,8 @@
         ["profile", Routes.edit_profile_path(current_user.id)] ]
 
     accountSettings : (user_id) ->
+      $(document).scrollTop(0)
+
       @current_controller.close() if @current_controller      
       current_user = ConsiderIt.request 'user:current'
       @current_controller = new Dash.User.AccountSettingsController
@@ -50,6 +56,8 @@
 
 
     emailNotifications : (user_id) ->
+      $(document).scrollTop(0)
+
       @current_controller.close() if @current_controller      
       user = if ConsiderIt.request("user:current:logged_in?") then ConsiderIt.request('user:current') else ConsiderIt.request("user:fixed")
       @current_controller = new Dash.User.EmailNotificationsController
@@ -62,6 +70,8 @@
 
 
     appSettings : ->
+      $(document).scrollTop(0)
+
       @current_controller.close() if @current_controller      
       @current_controller = new Dash.Admin.AppSettingsController
         region : @_getMainRegion()  
@@ -80,6 +90,8 @@
     #     ["Manage proposals", Routes.account_path()]         
 
     userRoles : ->
+      $(document).scrollTop(0)
+
       @current_controller.close() if @current_controller      
       @current_controller = new Dash.Admin.UserRolesController
         region : @_getMainRegion()  
@@ -90,6 +102,8 @@
 
 
     analyze : ->
+      $(document).scrollTop(0)
+
       @current_controller.close() if @current_controller      
       @current_controller = new Dash.Admin.AnalyticsController
         region : @_getMainRegion()  
@@ -99,6 +113,8 @@
         ["Analytics", Routes.analytics_path()] ]
 
     database : ->
+      $(document).scrollTop(0)
+
       @current_controller.close() if @current_controller      
       @current_controller = new Dash.Admin.DatabaseController
         region : @_getMainRegion()        
@@ -108,6 +124,8 @@
         ["Database", Routes.rails_admin_dashboard_path()] ]
 
     moderate : ->
+      $(document).scrollTop(0)
+      
       @current_controller.close() if @current_controller      
       @current_controller = new Dash.Admin.Moderation.ModerationController
         region : @_getMainRegion()  

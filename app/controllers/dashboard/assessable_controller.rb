@@ -109,6 +109,9 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     assessment = Assessable::Assessment.find(params[:assessment][:id])
     complete = assessment.complete
 
+    params[:assessment].delete :id
+    params[:assessment].delete :account_id
+
     if assessment.complete
       assessment.update_verdict
       params[:assessment][:published_at] = Time.now.to_i
@@ -124,7 +127,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
       )
     end
 
-    render :json => { :assessment => assessment}
+    render :json => assessment
   end
 
   ### User facing

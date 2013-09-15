@@ -7,6 +7,12 @@
     initialize : (options = {}) ->
       super options
 
+    url : ->
+      if @id
+        Routes.assessment_path( @id )
+      else
+        Routes.assessment_index_path()
+
     getAssessable : ->
       if !@assessable
         @assessable = App.request "#{@get('assessable_type').toLowerCase()}:get", @get('assessable_id')

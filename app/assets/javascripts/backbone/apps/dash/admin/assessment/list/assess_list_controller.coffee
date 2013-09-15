@@ -11,6 +11,15 @@
         list = new Assessment.AssessmentListView
           collection : collection
 
+        @listenTo list, 'show', ->
+          @listenTo list, 'childview:assessment:claim', (view) ->
+            assessment = view.model
+            assessment.save 
+              user_id: if assessment.get('user_id') then null else App.request('user:current').id
+            App.execute 'when:fetched', assessment, ->
+              view.render()
+
+
         layout.listRegion.show list
 
       # @listenTo layout, 'account:updated', (data) ->

@@ -111,7 +111,7 @@
           claim.save attrs
           App.execute 'when:fetched', claim, =>
             toastr.success 'Claim updated'
-            edit_claim_view.close()
+            edit_claim_view.close()            
 
       overlay = App.request 'dialog:new', edit_claim_view,
         class: 'overlay_claim_view'

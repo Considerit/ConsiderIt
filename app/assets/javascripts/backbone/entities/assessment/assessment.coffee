@@ -46,10 +46,8 @@
     getVerdict : ->
       return null if !@get('verdict_id')
 
-      if !@verdict
-        @verdict = App.request 'verdict:get', @get('verdict_id')
-      @verdict
-
+      verdict = App.request 'verdict:get', @get('verdict_id')
+      verdict
 
   class Entities.Assessments extends App.Entities.Collection
     model : Entities.Assessment
@@ -91,9 +89,8 @@
     getVerdict : ->
       return null if !@get('verdict_id')
 
-      if !@verdict
-        @verdict = App.request 'verdict:get', @get('verdict_id')
-      @verdict
+      verdict = App.request 'verdict:get', @get('verdict_id')
+      verdict
 
   class Entities.Claims extends App.Entities.Collection
     model : Entities.Claim

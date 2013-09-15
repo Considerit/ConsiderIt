@@ -23,7 +23,7 @@
 %script{ :type => "text/template", :id => 'tpl_proposals_list'}
 
 
-  (( if( !is_active ){ ))
+  (( if( !is_active && data_loaded ){ ))
   .m-proposals-container-completed-header
     %hr
     %h2
@@ -35,6 +35,7 @@
 
 
 %script{ :type => "text/template", :id => 'tpl_proposals_list_filters'}
+  (( if(data_loaded) { ))
   .m-proposals-sort-container
     .title
       Sort by: 
@@ -42,7 +43,7 @@
     %a{:'data-target' => "{{ sort.target }}", :'data-type' => 'sort', :class => "m-proposallist-sort"}
       {{ sort.name }}
     (( }) ))
-
+  (( } ))
 
 
 %script{ :type => "text/template", :id => "tpl_proposal_list_pagination"}

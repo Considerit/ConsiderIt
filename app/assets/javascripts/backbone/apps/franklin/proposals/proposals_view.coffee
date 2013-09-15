@@ -35,10 +35,15 @@
       @listenTo @collection, 'reset', =>
         @updateSelectedFilter()
 
+      @listenTo App.vent, 'proposals:fetched:done', =>
+        @render() 
+
+
     serializeData : ->
       sortable_fields : [ 
         {name: 'Most active', target: 'activity'}, 
         {name: 'Newness', target: 'created_at'} ]
+      data_loaded : App.request "proposals:are_fetched"
 
     updateSelectedFilter : ->
       @$el.find(".m-proposallist-sort.selected").removeClass 'selected'    
@@ -118,6 +123,7 @@
 
     serializeData : ->
       is_active : @is_active
+      data_loaded : App.request "proposals:are_fetched"
 
     buildItemView : (proposal) ->
       if App.request "auth:can_edit_proposal", proposal

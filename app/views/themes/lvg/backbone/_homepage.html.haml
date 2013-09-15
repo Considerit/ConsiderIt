@@ -3,7 +3,7 @@
   - if false && Rails.env.development?
     = render :partial => "shared/dev_tools"      
 
-  .t-intro-wrap{:'data-domain' => 'homepage'}
+  .t-intro-wrap
     .l-content-wrap.t-intro
 
       = theme_image_tag 'logo_large.png', :class => 't-logo'
@@ -20,13 +20,37 @@
           .row{:row => row}
             - users[row*users_per_row..(row+1)*users_per_row-1].each do |user|
               .avatar{:id => "avatar-#{user.id}"}
-              
+   
+
       .l-message-title
         //= current_tenant.header_text
         Washington's Citizen-powered Voters Guide
+
+      #follow
+        %span.facebook
+
+          %iframe{:src => "//www.facebook.com/plugins/like.php?href=#{current_tenant.socmedia_facebook_page}&send=false&layout=button_count&width=450&show_faces=false&action=like&colorscheme=light&font=lucida+grande&height=21&appId=#{current_tenant.socmedia_facebook_client}", :scrolling => "no", :frameborder => "0", :style => "border:none; overflow:hidden; width:90px; height:21px;", :allowTransparency => "true"}
+
 
       .t-intro-get-started
         Click a ballot measure below. Then decide for yourself, with the help of fellow voters.
 
     .t-unlock-local
       = render :partial => "home/unlock_local_measures"
+
+      
+    .t-introduce-fact-checkers
+      %a{:href => "/home/fact_check"}
+        Fact-checking by Seattle Public Library
+
+
+
+  // - if APP_CONFIG['socmedia']['twitter']['include_follow']
+  //   %span.twitter
+  //     - if true
+  //       %a.twitter-follow-button{:href => "https://twitter.com/lvguide", "data-show-count".intern => "false", "data-width".intern => "70px"}
+  //         Follow
+  //       %script{:src => "//platform.twitter.com/widgets.js", :type => "text/javascript"}
+  //     - else
+  //       %a.twitter_page{ :href => "#{APP_CONFIG['socmedia']['twitter']['twitter_page']}", :target => "_blank", :title => "Follow us on Twitter" }
+  //         = image_tag "Twitter_button.png", :alt => "Twitter logo"

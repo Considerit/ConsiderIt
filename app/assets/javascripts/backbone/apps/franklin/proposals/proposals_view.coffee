@@ -150,6 +150,12 @@
   class Proposals.PastProposalsList extends Proposals.ProposalsListView
     is_active : false
 
+    initialize : (options = {}) ->
+      super options
+      @listenTo App.vent, 'proposals:fetched:done', =>
+        @render() 
+
+
 
 
 

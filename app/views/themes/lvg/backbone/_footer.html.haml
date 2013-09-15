@@ -33,7 +33,7 @@
               #{link_to 'Facebook', current_tenant.socmedia_facebook_page}
       .power  
         .heading
-          Powered by #{link_to "ConsiderIt", "https://github.com/tkriplean/ConsiderIt"}
+          Powered by #{link_to "ConsiderIt", "http://consider.it"}
 
         %span.use_considerit.line
           Use ConsiderIt #{link_to 'in your organization','mailto:info@livingvotersguide.org?subject=I am interested in using ConsiderIt'}.
@@ -44,16 +44,16 @@
         .heading
           Partners
 
+        .partner.line
+          = link_to 'The Seattle Public Library', 'http://www.spl.org'
+
         .partner.line 
           = link_to "ConsiderIt", "http://consider.it"
 
         .partner.line 
           = link_to "UW Engage", "http://engage.cs.washington.edu"
 
-        .partner.line
-          = link_to 'The Seattle Public Library', 'http://www.spl.org'
-
-        .partner.line
+        -# .partner.line
           = link_to "Center for Comm & Civic Engagement", "http://ccce.com.washington.edu/", :rel => 'nofollow'
 
 

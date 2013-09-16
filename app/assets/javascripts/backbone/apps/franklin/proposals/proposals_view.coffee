@@ -58,7 +58,7 @@
     sortProposalsTo : (ev) ->  
       @sort_by = $(ev.target).data('target')
       @trigger 'sort:requested', @sort_by
-      window.ensure_el_in_view @$el
+      @$el.ensureInView()
 
 
   class Proposals.PaginationView extends App.Views.ItemView
@@ -89,29 +89,29 @@
     gotoFirst : (ev) ->
       ev.preventDefault()
       @collection.getFirstPage()
-      window.ensure_el_in_view @$el
+      @$el.ensureInView()
 
     gotoPrev : (ev) ->
       ev.preventDefault()
       @collection.getPreviousPage()
-      window.ensure_el_in_view @$el
+      @$el.ensureInView()
 
     gotoNext : (ev) ->
       ev.preventDefault()
       @collection.getNextPage()
-      window.ensure_el_in_view @$el
+      @$el.ensureInView()
 
     gotoLast : (ev) ->
       ev.preventDefault()
       @collection.getLastPage()
-      window.ensure_el_in_view @$el
+      @$el.ensureInView()
 
     gotoPage : (ev) ->
       ev.preventDefault()
       page = $(ev.target).data('page')
 
       @collection.getPage(page)
-      window.ensure_el_in_view @$el
+      @$el.ensureInView()
 
 
   class Proposals.ProposalsListView extends App.Views.CompositeView

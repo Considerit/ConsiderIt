@@ -41,13 +41,16 @@
 
     signout : ->
       $.get Routes.destroy_user_session_path(), (data) =>
-        ConsiderIt.utils.update_CSRF(data.new_csrf)
+        App.vent.trigger 'csrf:new', data.new_csrf
         App.request "user:current:clear"
         API.show()
         App.vent.trigger 'user:signout'
 
     set_redirect_path_post_signin : (path) ->
       @redirect_after_signin = path
+
+    updateCSRF : (token_val) ->
+      $("meta[name='csrf-token']").attr 'content', token_val
 
     _handle_signin : ->
       API.show()
@@ -95,6 +98,10 @@
 
   App.vent.on 'signout:requested', ->
     API.signout()
+
+  App.vent.on 'csrf:new', (token_val) ->
+    API.updateCSRF token_val
+
 
   # App.vent.on 'user:updated', => 
   #   API.show()

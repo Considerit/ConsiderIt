@@ -40,7 +40,7 @@
           .addClass('m-point-expanded')
           .removeClass('m-point-unexpanded')
 
-        window.ensure_el_in_view @layout.$el, .5
+        @layout.$el.ensureInView .5
 
       @layout.expansionRegion.show expanded_view
 
@@ -84,7 +84,7 @@
 
       @layout.expansionRegion.reset() if @layout.expansionRegion
 
-      window.ensure_el_in_view @layout.$el, .5
+      @layout.$el.ensureInView .5
 
       App.request 'nav:back:crumb' if go_back
       # App.navigate Routes.root_path(), {trigger : true}

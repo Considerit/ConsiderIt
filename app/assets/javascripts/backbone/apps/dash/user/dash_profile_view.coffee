@@ -16,7 +16,7 @@
         proposals : @model.getProposals()
         points : @model.getPoints() 
         is_self : @model.id == current_user.id
-        tile_size : Math.min 50, ConsiderIt.utils.get_tile_size 400, 42, influenced_users.length
+        tile_size : Math.min 50, window.getTileSize 400, 42, influenced_users.length
 
       params
 

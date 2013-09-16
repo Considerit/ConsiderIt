@@ -24,7 +24,7 @@
   App.addInitializer ->
     nav_app = App.module 'NavApp'
 
-    header_app = App.module("HeaderApp")
+    header_app = App.module "HeaderApp"
 
     @listenTo header_app, 'start', => 
       App.module("Auth").start()
@@ -32,9 +32,9 @@
     header_app.start()
     App.module("FooterApp").start()
 
-    theme_app = App.module('Theme')
+    theme_app = App.module 'Theme'
 
-    static_app = App.module('Static')
+    static_app = App.module 'Static'
 
   App.on "initialize:after", ->
     

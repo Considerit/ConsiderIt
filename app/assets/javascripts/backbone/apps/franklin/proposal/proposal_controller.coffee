@@ -172,7 +172,7 @@
         point_id : model.id
       }
 
-      ConsiderIt.utils.add_CSRF params
+      window.addCSRF params
       @model.removePoint model
       $.post Routes.inclusions_path( {delete : true} ), params
 
@@ -227,7 +227,7 @@
         proposal_id : model.get('proposal_id'),
         point_id : model.id
       }
-      ConsiderIt.utils.add_CSRF params
+      window.addCSRF params
       $.post Routes.inclusions_path(), 
         params, (data) ->
 
@@ -397,7 +397,7 @@
         full_size = Math.ceil(height * BARHEIGHT)
         empty_size = BARHEIGHT * (1 - height)
 
-        tile_size = ConsiderIt.utils.get_tile_size(BARWIDTH, full_size, bar.positions.length)
+        tile_size = window.getTileSize(BARWIDTH, full_size, bar.positions.length)
 
         tiles_per_row = Math.floor( BARWIDTH / tile_size)
 

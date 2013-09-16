@@ -97,7 +97,7 @@
     handleRegistrationResponse : (data) =>
       if data.result == 'successful'
         App.request 'user:signin', data.user
-        ConsiderIt.utils.update_CSRF data.new_csrf
+        App.vent.trigger 'csrf:new', data.new_csrf
       else
         # TODO: handle gracefully
         throw 'Registration rejected from server'        

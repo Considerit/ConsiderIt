@@ -264,13 +264,13 @@
       PARTICIPANT_HEIGHT = 110
 
       Math.min 50, 
-        ConsiderIt.utils.get_tile_size(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)
+        window.getTileSize(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)
 
     onRender : ->
       @$el.attr('data-state', 4)
 
     moveToResults : ->
-      window.moveToTop @histogramRegion.currentView.$el, 100
+      @histogramRegion.currentView.$el.moveToTop 100
 
     implodeParticipants : ->
       @trigger 'results:implode_participants'
@@ -542,7 +542,7 @@
       PARTICIPANT_HEIGHT = 110
 
       Math.min 50, 
-        ConsiderIt.utils.get_tile_size(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)
+        window.getTileSize(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)
 
     onShow : ->
 

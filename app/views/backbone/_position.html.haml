@@ -13,7 +13,7 @@
 
       %li.m-static-position-point
         {{ pnt.get('nutshell') }} 
-        %span.m-point-user
+        %span.m-username
           &ndash; {{ pnt.getUser().get('name') }}
       (( }); ))
 
@@ -29,7 +29,7 @@
       (( _.each(opposing_points, function(pnt){ ))
       %li.m-static-position-point
         {{ pnt.get('nutshell') }} 
-        %span.m-point-user
+        %span.m-username
           &ndash; {{ pnt.getUser().get('name') }}
       (( }) ))
 

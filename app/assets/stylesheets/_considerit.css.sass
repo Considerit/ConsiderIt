@@ -1254,8 +1254,21 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
       +single-transition('none')
       margin-left: -19.5px
 
+      cursor: move
+      cursor: ew-resize
+      cursor: -webkit-grab
+      cursor: -moz-grab
+
       &:hover
         cursor: move
+        cursor: ew-resize
+        cursor: -webkit-grab
+        cursor: -moz-grab
+
+      &:active:hover
+        cursor: -webkit-grabbing
+        cursor: -moz-grabbing
+
 
 
 // Static Position

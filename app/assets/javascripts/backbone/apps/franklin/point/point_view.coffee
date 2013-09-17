@@ -18,7 +18,8 @@
         adjusted_nutshell : @model.adjusted_nutshell()
         user : @model.getUser().attributes
         proposal : @model.getProposal().attributes
-
+        actions : @options.actions
+      
       params
 
     onRender : ->
@@ -32,6 +33,8 @@
 
 
   class Point.PointView extends App.Views.Layout
+    actions : []
+
     tagName : 'li'
     template : '#tpl_point_view'
 
@@ -41,7 +44,8 @@
       expansionRegion : '.m-point-expansion-region'
 
     serializeData : ->
-      params = _.extend {}, @model.attributes
+      params = _.extend {}, @model.attributes, 
+        actions : @actions
 
       params
 
@@ -57,6 +61,7 @@
       ev.stopPropagation()
 
   class Point.PeerPointView extends Point.PointView
+    actions : ['include']
 
     events : _.extend @events,
       'click [data-target="point-include"]' : 'includePoint'
@@ -66,6 +71,7 @@
       ev.stopPropagation()
 
   class Point.PositionPointView extends Point.PointView
+    actions : ['remove']
 
     events : _.extend @events,
       'click [data-target="point-remove"]' : 'removePoint'
@@ -89,7 +95,7 @@
   class Point.ExpandedView extends App.Views.Layout
     template : '#tpl_point_expanded'
     regions :
-      followRegion : '.m-point-follow'
+      followRegion : '.m-point-follow-region'
       assessmentRegion : '.m-point-assessment'
       discussionRegion : '.m-point-discussion'
 
@@ -131,21 +137,7 @@
     closeDetails : (go_back) ->
       go_back ?= true
       @trigger 'details:close', go_back
-      # @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
 
-      # @commentsview.clear()
-      # @commentsview.remove()
-      # @assessmentview.remove() if @assessmentview?
-
-
-      # @$el.removeClass('m-point-expanded')
-      # @$el.addClass('m-point-unexpanded')
-
-      # @undelegateEvents()
-      # @stopListening()
-      
-      # @model.trigger 'change' #trigger a render event
-      # ConsiderIt.app.go_back_crumb() if go_back
 
   class Point.FollowView extends App.Views.ItemView
     template : '#tpl_point_follow'
@@ -158,11 +150,8 @@
       params
 
     events : 
-      'ajax:success .follow form' : 'toggleFollow'
-      'ajax:success .unfollow form' : 'toggleFollow'
+      'click .m-point-follow' : 'toggleFollow'
 
-    toggleFollow : (ev, data) ->
-      @trigger 'point:follow', data
-      $(ev.currentTarget).parent().addClass('hide').siblings('.follow, .unfollow').removeClass('hide')
-
+    toggleFollow : (ev) ->
+      @trigger 'point:follow'
 

@@ -1,0 +1,96 @@
+/* ASSESSMENT */
+
+// Assessment request
+// requesting fact check
+.m-point-assessment-request
+  .m-point-assessment-request-form
+    +single-box-shadow($color: rgba(black, 0.2))
+    border-radius: 5px
+    padding: $vertical_baseline $grid_xs
+    background-color: #FEFFCC
+    color: #777
+    width: 550px
+    margin-top: $vertical_baseline
+
+    strong
+      color: #555
+
+    .ask
+      +font-size(2)
+    p
+      +font-size(-2)
+      a
+        text-decoration: underline
+
+    .subheader
+      +font-size(-4)
+      font-weight: normal
+      color: #777
+
+    textarea
+      height: 3em
+
+    a
+      color: #777
+
+    .m-point-assessment-cancel-request
+      +font-size(-2)
+
+  a.signin_link
+    @extend %bolded
+
+
+
+// Assessment
+
+.m-point-assessment
+  @extend %on_paper
+  //padding: $vertical_baseline $grid_minor
+  +single-box-shadow($color: rgba(black, 0.2))
+  color: #777
+  margin-top: $vertical_baseline
+
+  .m-point-metadata
+    display: inline-block
+    width: 15%
+    margin-right: $grid_xs
+    text-align: left
+    vertical-align: top
+    +font-size(-2)
+    list-style: none
+
+  .m-point-assessment-inner-wrap
+    display: inline-block
+    width: 80%
+    h1
+      +font-size(3)
+      padding-bottom: $vertical_baseline
+      color: #555
+
+    a 
+      text-decoration: underline
+      color: #777
+
+  .m-point-assessment-claim
+    list-style: none
+    padding-bottom: $vertical_baseline
+    position: relative
+
+    &:before
+      position: absolute
+      left: -$grid_xs
+      top: 0
+
+    &[data-verdict="2"]:before
+      content: "\2713\0020"
+    &[data-verdict='1']:before
+      content: '&hellip;'
+    &[data-verdict='0']:before
+      content: '?'
+
+    .m-point-assessment-claim-header
+      @extend %bolded
+      .claim_verdict
+        @extend %italicized
+
+

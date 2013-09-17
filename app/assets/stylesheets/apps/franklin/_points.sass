@@ -1,0 +1,167 @@
+/* NEWPOINT */
+
+.m-pro-con-list-propoints .m-newpoint
+  margin-left: $grid_xs
+
+.m-pro-con-list-conpoints .m-newpoint
+  margin-right: $grid_xs
+
+
+.m-newpoint
+  position: relative
+  margin-top: $vertical_baseline
+
+  .m-newpoint-new, .m-newpoint-form
+
+    // bullet point
+    &:before
+      content: $hex-bullet-point
+      display: inline-block
+      position: absolute
+      top: 7px
+
+  .m-newpoint-new
+    +font-size(1)
+    width: 95%
+    border: none
+    position: relative
+    @extend %bolded
+    display: inline-block
+
+    border: 1px solid
+    +inset-border(#414141)
+    padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_xs
+    padding-left: $grid_xs
+    margin-left: 3px
+
+    &:before
+      left: 4px
+      +font-size(-4)
+
+  .m-newpoint-form
+    position: relative
+    display: none
+    margin-left: $grid_xs
+    input, textarea
+      +font-size(-1)
+  
+    &:before
+      left: -9px    
+      +font-size(-4)
+
+  .m-newpoint-description
+    width: 94%
+    min-height: 40px
+
+  .m-newpoint-nutshell-wrap
+    .m-newpoint-nutshell
+      width: 94%
+      min-height: 40px
+
+    .count
+      +font-size(-3)
+      vertical-align: middle
+      position: absolute
+      right: 20px
+      top: -16px
+
+  .m-newpoint-submit, .m-newpoint-anonymous-wrap
+    //text-align: right
+    //margin-left: 10px
+
+  .m-newpoint-anonymous-wrap
+    label, input
+      +font-size(-1)
+
+  .m-newpoint-submit
+    margin-top: 3px
+
+/* POINTLIST */
+.m-pointlist-empty
+  text-align: center
+  font-style: italic
+
+/* POINTLISTBROWSING */
+
+.m-pointlist-browse
+  .m-pointlist-browse-toggle
+    @extend %superbutton
+    +font-size(-2)
+    width: $peer-point-width
+    text-align: center
+
+$expansion_size: 250px
+.m-pointlist-browsing
+  .m-point-peer
+    &.m-point-unexpanded
+      width: $peer-point-width + $expansion_size
+      .m-point-wrap
+        width: $peer-point-width + $expansion_size
+
+  .m-point-peer.pro
+    margin-left: -$expansion_size
+
+  .m-point-peer.con.m-point-expanded
+    right: 525 - $expansion_size
+
+.m-reasons-peer-pros .m-pointlist-browse-header
+  left: -$expansion_size
+
+.m-reasons-peer-cons .m-pointlist-browse-header
+  text-align: right
+
+.m-pointlist-browse-header
+  visibility: hidden
+  width: $peer-point-width + $expansion_size
+  position: relative
+  margin-bottom: $vertical_baseline
+
+  .m-pointlist-browse-toggle
+    +font-size(-2)
+    margin-bottom: $vertical_baseline / 2
+
+.m-pointlist-browse-heading
+  +font-size(2)
+  margin-bottom: $vertical_baseline / 4
+
+.m-pointlist-browse-sort
+  ul
+    display: inline
+
+  .m-pointlist-browse-sort-label
+    +font-size(-2)
+
+  .m-pointlist-sort-option
+    display: inline-block
+    list-style: none
+
+    a
+      padding: $vertical_baseline / 2 $grid_xs / 2
+      text-transform: uppercase
+      +font-size(-4)
+      @extend %bolded
+      
+      &:hover
+        background-color: darken($callout_bg_color, 10%)
+        color: lighten($callout_text_color, 10%)
+
+      &.selected
+        background-color: darken($callout_bg_color, 8%)
+        color: $callout_text_color
+
+
+/* POINTLISTPAGINATION */
+
+.m-pointlist-pagination
+  text-align: center
+  a
+    display: inline-block
+    width: 100%
+    &:hover
+      background-color: rgba(black, .3)
+
+
+  .m-pointlist-status
+    span
+      +font-size(-3)
+      @extend %bolded

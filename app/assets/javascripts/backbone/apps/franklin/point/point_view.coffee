@@ -107,13 +107,16 @@
       # when clicking outside of point, close it      
       $(document).on 'click.m-point-details', (ev)  => 
         is_not_clicking_this_point = ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id)
-        if is_not_clicking_this_point && $(ev.target).closest('.editable-buttons').length == 0
+        dialog_not_open = $('#l-dialog-detachable').length == 0
+        if is_not_clicking_this_point && $(ev.target).closest('.editable-buttons').length == 0 && dialog_not_open
           is_click_within_a_point = $(ev.target).closest('[data-role="m-point"]').length > 0
           is_clicking_nav = $(ev.target).closest('.l-navigate-wrap').length > 0
           @closeDetails(  !is_click_within_a_point && !is_clicking_nav ) 
 
 
-      $(document).on 'keyup.m-point-details', (ev) => @closeDetails() if ev.keyCode == 27 && $('#l-dialog-detachable').length == 0
+      $(document).on 'keyup.m-point-details', (ev) => 
+        dialog_not_open = $('#l-dialog-detachable').length == 0
+        @closeDetails() if ev.keyCode == 27 && dialog_not_open
 
       current_user = App.request 'user:current'
       if current_user.id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()

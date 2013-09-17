@@ -29,7 +29,7 @@
           expanded_view.followRegion.show follow_view
 
         current_tenant = App.request 'tenant:get'
-        if current_tenant.get('assessment_enabled')
+        if current_tenant.get 'assessment_enabled'
           @setupAssessmentView expanded_view.assessmentRegion
 
         @setupCommentsView expanded_view.discussionRegion
@@ -83,11 +83,20 @@
         parent_controller : @
 
     setupCommentsView : (region) ->
+      collection = @options.model.getComments()
+
+      # collection will be polymorphic with fact-checks mixed in      
+      current_tenant = App.request 'tenant:get'
+      if current_tenant.get 'assessment_enabled'
+        assessment = @options.model.getAssessment()
+        if assessment
+          collection = new App.Entities.DiscussionCollection _.compact(_.flatten([assessment.getClaims().models, collection.models]))
+
       comments = new App.Franklin.Comments.CommentsController
         commentable_type : 'Point'
         commentable_id : @options.model.id
         region: region
-        collection : @options.model.getComments()
+        collection : collection
         parent_controller : @
 
       @listenTo comments, 'comment:created', =>

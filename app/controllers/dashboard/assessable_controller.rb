@@ -138,13 +138,10 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     params[:request][:user_id] = current_user.id
     params[:request][:account_id] = current_tenant.id
 
-    assessable_type = params[:request].delete(:assessable_type)
-    assessable_id = params[:request].delete(:assessable_id)
+    assessable_type = params[:request][:assessable_type]
+    assessable_id = params[:request][:assessable_id]
 
-    #request = Assessable::Request.where(:user_id => current_user.id, :assessable_type => assessable_type, :assessable_id => assessable_id).first
-    #if request.nil?
     request = Assessable::Request.new(params[:request])
-    #end
 
     assessment = Assessable::Assessment.where(:assessable_type => assessable_type, :assessable_id => assessable_id).first
     if !assessment
@@ -166,7 +163,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     rescue
     end
 
-    render :json => {:success => true}.to_json
+    render :json => {:request => request, :assessment => assessment}
   end
 
 

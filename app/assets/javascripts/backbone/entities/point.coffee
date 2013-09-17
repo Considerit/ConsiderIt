@@ -25,26 +25,27 @@
       comments = (co.comment for co in data.comments)
       App.vent.trigger 'comments:fetched', comments
 
-      tenant = App.request('tenant:get')
+      tenant = App.request 'tenant:get'
 
-      if tenant.get('assessment_enabled') && data.assessment
-        App.request 'assessments:add', [data.assessment]
-        App.request 'verdicts:add', (v.verdict for v in data.verdicts)
-        App.request 'claims:add', (c.claim for c in data.claims)
-
+      if tenant.get 'assessment_enabled'
         current_user = App.request 'user:current'
+
+        if data.assessment
+          App.request 'assessments:add', [data.assessment]
+          App.request 'verdicts:add', (v.verdict for v in data.verdicts)
+          App.request 'claims:add', (c.claim for c in data.claims)
+
+
         if data.already_requested_assessment
-          App.request 'assessment:request:add', {assessment_id : data.assessment.id, user_id : current_user.id}
+          params = 
+            assessable_id : @id
+            assessable_type : 'Point'
+            user_id : current_user.id
+          if data.assessment
+            _.extend params, 
+              assessment_id : data.assessment.id
 
-        # App.vent.trigger 'assessment:client:fetched', 
-        #   assessment : data.assessment
-        #   claims : (c.claim for c in data.claims)
-        #   num_requests : data.num_assessment_requests
-        #   already_requested_assessment : data.already_requested_assessment
-
-        #TODO: the pointview should listen for assessment:client:fetched
-        # and pick up on the "already_requested_assessment" field
-        #@already_requested_assessment = data.already_requested_assessment
+          App.request 'assessment:request:add', params
 
     getIncluders : ->
       $.parseJSON @get 'includers'
@@ -82,10 +83,8 @@
       @comments
 
     getAssessment : ->
-      if !@assessment
-        @assessment = App.request 'assessment:get:point', @id
+      @assessment = App.request 'assessment:get:point', @id
       @assessment
-
 
   class Entities.Points extends App.Entities.Collection
     model : Entities.Point

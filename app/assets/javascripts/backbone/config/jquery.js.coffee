@@ -39,14 +39,16 @@ do ($) ->
     $el = $(this)
 
     el_top = $el.offset().top
+    el_bottom = el_top + $el.height()
     doc_top = $(window).scrollTop()
     doc_bottom = doc_top + $(window).height()
-    is_onscreen = el_top > doc_top && el_top < doc_bottom
+    is_onscreen = el_top > doc_top && el_bottom < doc_bottom
 
     #if less than 50% of the viewport is taken up by the el...
     in_viewport = is_onscreen || (doc_bottom - el_top) > amount_of_viewport_taken_by_el * (doc_bottom - doc_top)  
 
     target = el_top - offset_buffer
+
     if !in_viewport
       if scroll
         distance_to_travel = Math.abs( doc_top - target )
@@ -65,3 +67,9 @@ do ($) ->
       $('body').animate {scrollTop: target}, distance_to_travel
     else
       $('body').scrollTop target
+
+  $.fn.putBehindLightbox = ->
+    $(this).after '<div id="lightbox">'
+
+  $.fn.removeLightbox = ->
+    $('#lightbox').remove()

@@ -1,0 +1,63 @@
+/* COMMENTS */
+.m-comment
+  margin: 8px 0 25px 0
+
+  .m-comment-avatar
+    width: 50px
+    height: 50px
+    
+  .m-comment-body-wrap
+    +font-size(-2)    
+    display: inline-block
+    width: 80%
+    margin-left: $grid_xs    
+    p, br
+      margin-bottom: 6px
+
+  .m-comment-author
+    @extend %italicized
+    white-space: nowrap
+
+    a:hover
+      text-decoration: underline
+
+
+  .m-comment-edit
+    +font-size(-2)
+
+  .m-comment-edit-form
+    .save_block
+      top: auto
+      left: 50px
+      bottom: -30px
+
+/* NEWCOMMENT */
+
+.m-new-comment
+  margin: 8px 0 25px 0
+
+  .m-new-comment-avatar
+    width: 50px
+    height: 50px
+
+  .m-new-comment-body
+    //+font-size(-1)    
+    display: inline-block
+    width: 80%
+    margin-left: $grid_xs    
+
+  .m-new-comment-body-field
+    height: 60px
+    width: 90%
+
+  .m-new-comment-submit-wrap
+    text-align: right
+    width: 90%
+
+  .m-new-comment-civility-reminder
+    +font-size(-2)
+    width: 150px
+    padding-right: $grid_xs
+
+  a.signin_link
+    @extend %bolded

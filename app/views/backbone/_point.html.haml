@@ -6,13 +6,9 @@
 %script{ :type => "text/template", :id => "tpl_point_view_header"}
   (( if (hide_name || user.name == 'Anonymous' ) { ))
   %span.avatar.m-point-author-avatar.m-avatar-anonymous{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)", :title => "This user has requested to remain anonymous"}
-  .m-point-author-name
-    by Anonymous
   (( } else if (user) { ))
 
   %a.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
-  .m-point-author-name{:'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
-    by {{user.name}}
   (( } ))
 
 
@@ -26,39 +22,30 @@
 
   .m-point-operations
 
-    .m-point-follow
-
     %a.m-point-read-more 
-      //{ :href => "{{Routes.proposal_point_path(proposal.long_id, id)}}" }        
-    %a.m-point-remove{ :'data-target' => 'point-remove', :'data-id' => "{{id}}"}
+
+    (( if( _.contains(actions, 'remove') ){ ))
+    %button.m-point-remove{ :'data-target' => 'point-remove', :'data-id' => "{{id}}"}
       Remove
+    (( } ))
 
-    .m-point-assess
-
+  (( if( _.contains(actions, 'include') ){ ))
   .m-point-include-wrap
     %button.m-point-include{ :'data-target' => 'point-include', :'data-id' => "{{id}}"}
       Add to your list
       %span.list_connector
-
+  (( } ))
 
 %script{ :type => "text/template", :id => "tpl_point_expanded"}
-  .m-point-follow
+  .m-point-follow-region
   .m-point-assessment
   .m-point-discussion
 
 %script{ :type => "text/template", :id => "tpl_point_follow"}
-  (( var follows_class = already_follows ? 'hide' : ''; ))
-  (( var unfollows_class = already_follows ? '' : 'hide'; ))
-  %div{ :class => "follow {{ follows_class }}"}
-    = form_for :follows, :url => "{{ Routes.follow_path() }}", :as => :follow, :method => :get, :remote => true do |f|
-      = f.hidden_field :followable_id, :value => "{{id}}"
-      = f.hidden_field :followable_type, :value => "Point"
-      = f.submit "Follow this point", :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.' #, :class => 'button'
-
-  %div{ :class => "unfollow {{ unfollows_class }}"}
-    = form_for :follows, :url => "{{ Routes.unfollow_path() }}", :as => :follow, :remote => true do |f|
-      = f.hidden_field :user_id, :value => "{{ current_user_id }}"
-      = f.hidden_field :followable_id, :value => "{{ id }}"
-      = f.hidden_field :followable_type, :value => "Point"
-      = f.submit "Unfollow this point" #, :class => 'button'
-
+  (( if(already_follows){ ))
+  %button.m-point-follow
+    Unfollow this point
+  (( } else{ ))
+  %button.m-point-follow{ :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
+    Follow this point
+  (( } ))

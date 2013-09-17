@@ -9,10 +9,11 @@
         header_view = @getHeaderView point
         layout.headerRegion.show header_view
 
-        body_view = @getBodyView point
+        body_view = @getBodyView point, layout.actions
         layout.bodyRegion.show body_view
 
       @listenTo layout, 'point:show_details', =>
+
         @expand()
 
       @layout = layout
@@ -24,6 +25,7 @@
 
         if App.request("user:current:logged_in?") && @options.model.get 'published'
           follow_view = @setupFollowView()
+
           expanded_view.followRegion.show follow_view
 
         current_tenant = App.request 'tenant:get'
@@ -32,7 +34,10 @@
 
         @setupCommentsView expanded_view.discussionRegion
 
-        @listenTo expanded_view, 'details:close', (go_back) => @unexpand go_back
+        @listenTo expanded_view, 'details:close', (go_back) => 
+          @layout.$el.removeLightbox()
+          @unexpand go_back
+          
         @listenTo App.vent, 'point:expanded', => @unexpand false
         @listenTo App.vent, 'navigated_to_base', => @unexpand false
 
@@ -41,15 +46,31 @@
           .removeClass('m-point-unexpanded')
 
         @layout.$el.ensureInView .5
+        @layout.$el.putBehindLightbox()
 
       @layout.expansionRegion.show expanded_view
 
     setupFollowView : ->
       follow_view = @getFollowView @options.model
       @listenTo follow_view, 'show', =>
-        @listenTo follow_view, 'point:follow', (data) =>
-          current_user = App.request 'user:current'
-          current_user.setFollowing data.follow.follow
+
+        @listenTo follow_view, 'point:follow', =>
+          current_user = App.request 'user:current'          
+          already_following = current_user.isFollowing 'Point', @options.model.id
+
+          params = 
+            follows :
+              followable_id : @options.model.id
+              followable_type : 'Point'
+              user_id : current_user.id
+
+          path = if already_following then Routes.unfollow_path() else Routes.follow_path()
+
+          $.post path, params, (data) => 
+            toastr.success 'Success'
+            current_user.setFollowing data.follow.follow
+            follow_view.render()
+
       follow_view
 
     setupAssessmentView : (region) ->
@@ -113,9 +134,10 @@
       new Point.PointHeaderView
         model : model
 
-    getBodyView : (model) ->
+    getBodyView : (model, actions) ->
       new Point.PointBodyView
         model : model
+        actions : actions
 
     getExpandedView : (model) ->
       new Point.ExpandedView

@@ -52,8 +52,7 @@ class PointsController < ApplicationController
           :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
           :verdicts => Assessable::Verdict.all,
           :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
-          :num_assessment_requests => point.assessment ? point.assessment.requests.count : nil,
-          :already_requested_assessment => point.assessment ? !current_user.nil? && point.assessment.requests.where(:user_id => current_user.id).count > 0 : nil
+          :already_requested_assessment => Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
         })
       end
 

@@ -4,6 +4,17 @@
     itemView : Comments.CommentView
     itemViewContainer : 'ul.m-point-comments'
 
+    buildItemView : (item) ->
+      if item instanceof App.Entities.Comment 
+        view = new Comments.CommentView
+          model : item
+      else if item instanceof App.Entities.Claim
+        view = new Comments.ClaimView
+          model : item
+          attributes : 
+            id : "claim-comment-#{item.id}"
+
+      view
 
     events : 
       'click .m-new-comment-submit' : 'createNew'

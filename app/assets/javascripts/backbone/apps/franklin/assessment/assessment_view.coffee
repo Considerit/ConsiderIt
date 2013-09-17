@@ -14,29 +14,35 @@
     serializeData : ->
       current_user = App.request 'user:current'
       _.extend {}, 
-        already_requested_assessment : App.request 'assessment:request:by_user', current_user.id 
-        assessable : @options.assessable
-
-    onShow : ->
-      if !@options.already_requested_assessment
-        @$el.find('.m-point-assessment-requested-feedback').hide()
+        already_requested_assessment : App.request 'assessment:request:by_user', @options.assessable.id, current_user.id 
 
     events : 
       'click .m-point-assessment-request-initiate' : 'showRequestForm'
-      'click .m-point-assessment-cancel-request' : 'cancelRequest'
-      'ajax:success .m-point-assessment-request-form' : 'requestMade'
 
-    showRequestForm : ->
-      @$el.find('.m-point-assessment-request-initiate').hide()
-      @$el.find('.m-point-assessment-request-form').show()
+    showRequestForm : (ev) ->
+      @trigger 'assessment:request'
 
-    cancelRequest : ->
-      @$el.find('.m-point-assessment-request-form').hide()
-      @$el.find('.m-point-assessment-request-initiate').show()
 
-    requestmade : ->
-      @$el.find('.m-point-assessment-requested-feedback').show()
-      @$el.find('.m-point-assessment-request-form').remove()
+  class Assessment.AssessmentRequestFormView extends App.Views.ItemView
+    template : "#tpl_assessment_request_form"
+    dialog:
+      title : 'Request a fact check of this point'
+
+    serializeData : ->
+      current_user = App.request 'user:current'
+      _.extend {}, 
+        assessable : @options.assessable
+
+    onShow : ->
+
+
+    events : 
+      'click input[type="submit"]' : 'createRequest'
+
+    createRequest : (ev) ->
+      attrs = 
+        suggestion : @$el.find('#request_suggestion').val()
+      @trigger 'assessment:request:create', attrs
 
 
   class Assessment.AssessmentView extends App.Views.ItemView
@@ -46,5 +52,4 @@
       params = 
         assessment : @model.attributes
         claims : @options.claims
-        num_assessment_requests : @options.assessable.get('num_assessment_requests')
       params

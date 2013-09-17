@@ -98,8 +98,16 @@
   class Entities.Request extends App.Entities.Model
     name: 'request'
 
+    parse : (attrs) ->
+      App.request 'assessments:add', [attrs.assessment.assessment]
+      attrs.request.request
+
   class Entities.Requests extends App.Entities.Collection
     model : Entities.Request
+
+    url : ->
+      Routes.assessment_index_path()
+
 
   class Entities.Verdict extends App.Entities.Model
     name : 'verdict'
@@ -181,11 +189,17 @@
   REQUEST_API = 
     all_requests : new Entities.Requests
 
-    requestByUser : (assessment_id, user_id) ->
-      @all_requests.findWhere { assessment_id : assessment_id, user_id : user_id }
+    requestByUser : (assessable_id, user_id) ->
+
+      result = @all_requests.findWhere { assessable_id : assessable_id, user_id : user_id }
+      result
 
     addRequest : (request) ->
       @all_requests.add request
+
+    createRequest : (attrs) ->
+      rq = @all_requests.create attrs, {wait: true}
+      rq
 
     addRequests : (requests) ->
       @all_requests.add @all_requests.parse(requests)
@@ -203,7 +217,7 @@
       @all_assessments.get id
 
     addAssessments : (assessments) ->
-      @all_assessments.add @all_assessments.parse(assessments)
+      @all_assessments.add @all_assessments.parse(assessments), {merge: true}
 
     getAssessmentByPoint : (point_id) ->
       assessment = @all_assessments.findWhere {assessable_type : 'Point', assessable_id : point_id}
@@ -221,8 +235,11 @@
   App.reqres.setHandler 'assessment:get:point', (point_id) ->
     ASSESSMENT_API.getAssessmentByPoint point_id
 
-  App.reqres.setHandler 'assessment:request:by_user', (assessment_id, user_id) ->
-    REQUEST_API.requestByUser assessment_id, user_id
+  App.reqres.setHandler 'assessment:request:by_user', (assessable_id, user_id) ->
+    REQUEST_API.requestByUser assessable_id, user_id
+
+  App.reqres.setHandler 'assessment:request:create', (attrs) ->
+    REQUEST_API.createRequest attrs
 
   App.reqres.setHandler 'assessment:request:add', (request) ->
     REQUEST_API.addRequest request

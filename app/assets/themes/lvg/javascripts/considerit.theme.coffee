@@ -19,7 +19,6 @@
       target = "zip:#{$('#t-unlock-measures-zip').val()}"
       fetch_targetable_proposals(target);
       $.post Routes.set_tag_path(), {tags:"#{target}"}, (data, status, xhr) ->
-        console.log data
 
     ##################
 

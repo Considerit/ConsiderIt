@@ -15,7 +15,8 @@ module Assessable
   module Assessable
     def is_assessable(options = {})
       has_one :assessment, :as => :assessable, :class_name => 'Assessable::Assessment', :dependent => :destroy
-      
+      has_many :requests, :class_name => "Assessable::Request", :dependent => :destroy
+
       class_attribute :text_fields
       self.text_fields = options[:text_fields]
 

@@ -7,81 +7,60 @@
   (( if( !already_requested_assessment ) { ))
   %button.m-point-assessment-request-initiate
     Request a fact check of this point
-  (( } ))
-
+  (( } else { ))
   .m-point-assessment-requested-feedback
     Your fact check request has been registered.
-
-  (( if( !already_requested_assessment ) { ))
-  = form_for :request, :url => assessment_index_path, :method => :post, :remote => true, :html => {:class => "hide m-point-assessment-request-form"} do |f|
-    = f.hidden_field :assessable_id, :value => "{{ assessable.id}}"
-    = f.hidden_field :assessable_type, :value => "Point"
-
-    %strong.ask
-      Request a fact check of this point
-
-    %p
-      Only falsifiable statements can be checked. See the #{link_to 'guidelines', '/home/fact_check', :target => "_blank"} for more details.
-
-    %strong
-      Which claims do you wish to have fact checked?
-      .subheader
-        Please link to reliable information that is helpful for verfiying the claim, if available.
-
-    = f.text_area :suggestion
-
-    (( if( ConsiderIt.request('user:current:logged_in?') ) { ))
-    .submit_block
-      = f.submit 'Submit your request', :class => 'button hide'
-      %a.m-point-assessment-cancel-request
-        cancel
-    (( } else { ))
-    .login
-      You must 
-      %a.signin_link
-        sign in
-      to request a fact check.
-    (( } ))
   (( } ))
 
+
+%script{ :type => "text/template", :id => "tpl_assessment_request_form"}
+  %p
+    Only falsifiable statements can be checked. See the #{link_to 'guidelines', '/home/fact_check', :target => "_blank"} for more details.
+
+  %strong
+    Which claims do you wish to have fact checked?
+    .subheader
+      Please link to reliable information that is helpful for verfiying the claim, if available.
+
+  %textarea#request_suggestion{ :cols => "40", :name => "request[suggestion]", :rows => "5"}
+
+  (( if( ConsiderIt.request('user:current:logged_in?') ) { ))
+  .submit_block
+    %input.button{ :name => "commit", :type => "submit", :value => "Submit your request"}
+  (( } else { ))
+  .login
+    You must 
+    %a.signin_link
+      sign in
+    to request a fact check.
+  (( } ))
+
+
+
 %script{ :type => "text/template", :id => "tpl_assessment"}
+  (( claims.each(function(claim){ ))
+  .m-claim-summary-restatement
+    Fact-check: {{ claim.get('claim_restatement') }}
+  .m-claim-summary-evaluation
+    Rated: {{ claim.getVerdict().get('name') }}
+  .m-claim-summary-link
+    = link_to 'Read the full report', "#claim-comment-{{claim.id}}"
+  (( }) ))
 
-  .m-point-assessment-inner-wrap
-    %h1
-      Fact Check
+%script{ :type => "text/template", :id => "tpl_claim_comment_view"}
+  %img.m-comment-avatar.m-claim-evaluation{:src => "{{verdict.getIcon()}}", :title => "{{verdict.get('desc')}}"}
 
-    %ul.m-point-assessment-claims
-      (( claims.each(function(clm){ ))
-      %li.m-point-assessment-claim{ :'data-verdict' => "{{clm.get('verdict')}}"}
+  .m-comment-body-wrap
+    .m-comment-claim-restatement
+      Fact-check: {{ claim.get('claim_restatement') }}
+    .m-comment-claim-evaluation
+      Rated: {{ verdict.get('name') }}
+    .m-comment-claim-report
+      {{ claim.get('result') }}
 
-        .m-point-assessment-claim-header
-          %span.claim_desc
-            {{ clm.get('claim_restatement') }}
-          %span.claim_verdict
-            (( console.log( clm, clm.getVerdict() ); ))
-            {{ clm.getVerdict().get('short_name') }}
+    %span.m-comment-author
+      &ndash; 
+      = link_to 'Seattle Public Library', '/home/fact_check', :target => '_blank'
+    .process       
+      = link_to 'Read about the fact-checking process', '/home/fact_check', :target => '_blank' 
 
-        .m-point-assessment-claim-details
-          {{ clm.get('result') }}
-
-      (( }) ))
-
-    %p.explanation
-
-      (( if( assessment.verdict_id > -1) { ))
-        
-      Prepared in response to {{num_assessment_requests}} {{num_assessment_requests == 1 ? 'request' : 'requests'}}. We hope that this information will be useful to this discussion!
-
-      (( } else { ))
-      This point does not make any verifiable claims.
-      (( } ))
-
-      //.signature
-      //  Sincerely, 
-      //  %br
-      //  The Seattle Public Library
-
-      .process
-        = link_to 'Read about the fact-checking process', '/home/fact_check', :target => '_blank' 
-
-          

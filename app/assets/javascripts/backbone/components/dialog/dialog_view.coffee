@@ -12,5 +12,6 @@
     events : 
       'click [data-target="dialog-close"]' : 'closeRequested'
 
-    closeRequested : => 
+    closeRequested : (ev) => 
       @trigger 'closeRequested'      
+      ev.stopPropagation()

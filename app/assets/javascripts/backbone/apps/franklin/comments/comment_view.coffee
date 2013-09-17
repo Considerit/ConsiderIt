@@ -18,3 +18,15 @@
             name: 'body'
             success : (response, new_value) => @model.set('body', new_value)
           }
+
+  class Comments.ClaimView extends App.Views.ItemView
+    template : '#tpl_claim_comment_view' 
+    className : 'm-claim-comment m-comment'
+
+
+    serializeData : ->
+      params = 
+        claim : @model
+        assessment : @model.getAssessment()
+        verdict : @model.getVerdict()
+      params

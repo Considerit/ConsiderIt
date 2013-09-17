@@ -14,7 +14,7 @@ class Assessable::Assessment < ActiveRecord::Base
   
   acts_as_tenant :account
 
-  scope :public_fields, select([:id, :verdict_id, :created_at, :updated_at, :assessable_id, :assessable_type])
+  scope :public_fields, select([:id, :verdict_id, :created_at, :updated_at, :published_at, :assessable_id, :assessable_type])
 
 
 
@@ -48,6 +48,7 @@ class Assessable::Assessment < ActiveRecord::Base
       :verdict_id => self.verdict_id,
       :created_at => self.created_at,
       :updated_at => self.updated_at,
+      :published_at => self.published_at,
       :assessable_type => self.assessable_type,
       :assessable_id => self.assessable_id
     }

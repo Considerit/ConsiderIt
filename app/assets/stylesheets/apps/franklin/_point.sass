@@ -27,7 +27,7 @@
 
   .m-point-operations        
     position: absolute
-    width: 90%
+    width: 93%
 
     a
       +font-size(-1)
@@ -175,8 +175,8 @@ $m-point-expanded-width: $body_width + 150
   .m-point-operations
     display: none
 
-  .m-point-action
-    display: inline-block
+  .m-point-follow-region
+    margin-bottom: $vertical_baseline / 2
 
   &.m-point-peer
 
@@ -207,7 +207,7 @@ $m-point-expanded-width: $body_width + 150
 
 .m-point-discussion-heading
   +font-size(3)
-  margin: 0px 0 $vertical_baseline 0
+  margin: $vertical_baseline 0
 
 .m-point-comments
   @extend %nude_list
@@ -337,10 +337,15 @@ $arrow_height: 9px
 
 
 .m-point-peer
+  // &.m-point-expanded
+  //   .m-point-include-wrap
+  //     top: 14px
 
   .m-point-include-wrap
     position: absolute
     bottom: 0
+
+
 
     .m-point-include
       position: relative

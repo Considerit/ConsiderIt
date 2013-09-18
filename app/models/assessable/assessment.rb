@@ -14,9 +14,7 @@ class Assessable::Assessment < ActiveRecord::Base
   
   acts_as_tenant :account
 
-  scope :public_fields, select([:id, :verdict_id, :created_at, :updated_at, :published_at, :assessable_id, :assessable_type])
-
-
+  scope :public_fields, select('assessments.id, assessments.verdict_id, assessments.created_at, assessments.updated_at, assessments.published_at, assessments.assessable_id, assessments.assessable_type, assessments.complete')
 
   #TODO: sanitize before_validation
   #self.text = Sanitize.clean(self.text, Sanitize::Config::RELAXED)

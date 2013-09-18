@@ -410,6 +410,7 @@ html
 .l-tooltip-title
   padding: $vertical_baseline/4 $grid_xs/2
 
+
 //////////////////////////////////////////
 // HEADING 
 //////////////////////////////////////////
@@ -469,6 +470,17 @@ html
 @import "apps/static"
 
 
+.m-point-assessment-verdict-tooltip
+  width: 280px
+  padding: $vertical_baseline/2 $grid_xs/2
+
+  .m-verdict-tooltip-title
+    +font-size(-2)
+    font-weight: bold
+  .m-verdict-tooltip-content
+    +font-size(-3)
+  .m-verdict-tooltip-readmore
+    +font-size(-4)
 
 $tooltip_width: 225px
 .l-tooltip-user-title

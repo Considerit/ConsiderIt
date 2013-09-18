@@ -13,7 +13,6 @@
         layout.bodyRegion.show body_view
 
       @listenTo layout, 'point:show_details', =>
-
         @expand()
 
       @layout = layout

@@ -11,6 +11,11 @@
   %a.avatar.m-point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
   (( } ))
 
+  (( if(has_assessment){ ))
+  .m-point-assessment-indicator-region
+    %img{:src => "{{verdict.getIcon()}}"}
+
+  (( } ))
 
 %script{ :type => "text/template", :id => "tpl_point_view_body"}
   .m-point-nutshell-wrap
@@ -29,6 +34,8 @@
       Remove
     (( } ))
 
+
+
   (( if( _.contains(actions, 'include') ){ ))
   .m-point-include-wrap
     %button.m-point-include{ :'data-target' => 'point-include', :'data-id' => "{{id}}"}
@@ -39,7 +46,7 @@
 %script{ :type => "text/template", :id => "tpl_point_expanded"}
   .m-point-actions
     .m-point-follow-region.m-point-action
-    .m-point-assessment.m-point-action
+    .m-point-assessment-region.m-point-action
   .m-point-discussion
 
 %script{ :type => "text/template", :id => "tpl_point_follow"}

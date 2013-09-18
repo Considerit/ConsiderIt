@@ -1,3 +1,12 @@
+%script{ :type => "text/template", :id => "tpl_verdict_tooltip"}
+  .m-point-assessment-verdict-tooltip
+    .m-verdict-tooltip-title
+      This point has been fact-checked
+    .m-verdict-tooltip-content
+      {{ content }}
+    .m-verdict-tooltip-readmore
+      Click to read more.
+
 %script{ :type => "text/template", :id => "tpl_assessment_layout"}
   .m-point-assessment-request
   .m-point-assessment
@@ -14,15 +23,11 @@
 
 
 %script{ :type => "text/template", :id => "tpl_assessment_request_form"}
-  %p
-    Only falsifiable statements can be checked. See the #{link_to 'guidelines', '/home/fact_check', :target => "_blank"} for more details.
 
-  %strong
-    Which claims do you wish to have fact checked?
-    .subheader
-      Please link to reliable information that is helpful for verfiying the claim, if available.
+  .m-assessment-request-prompt
+    Which claims do you wish to have researched and evaluated by a librarian?
 
-  %textarea#request_suggestion{ :cols => "40", :name => "request[suggestion]", :rows => "5"}
+  %textarea#request_suggestion{ :name => "request[suggestion]"}
 
   (( if( ConsiderIt.request('user:current:logged_in?') ) { ))
   .submit_block
@@ -35,16 +40,20 @@
     to request a fact check.
   (( } ))
 
+  %p.guidelines
+    Only falsifiable statements can be checked. See the #{link_to 'guidelines', '/home/fact_check', :target => "_blank"} for help.
 
 
-%script{ :type => "text/template", :id => "tpl_assessment"}
+%script{ :type => "text/template", :id => "tpl_assessment_header"}
   (( claims.each(function(claim){ ))
-  .m-claim-summary-restatement
-    Fact-check: {{ claim.get('claim_restatement') }}
-  .m-claim-summary-evaluation
-    Rated: {{ claim.getVerdict().get('name') }}
-  .m-claim-summary-link
-    = link_to 'Read the full report', "#claim-comment-{{claim.id}}"
+  .m-claim-summary
+
+    .m-claim-summary-restatement
+      Fact-check: {{ claim.get('claim_restatement') }}
+    .m-claim-summary-evaluation
+      Rated: {{ claim.getVerdict().get('name') }}.
+    .m-claim-summary-link
+      = link_to 'Read the full report', "#claim-comment-{{claim.id}}"
   (( }) ))
 
 %script{ :type => "text/template", :id => "tpl_claim_comment_view"}
@@ -60,7 +69,7 @@
 
     %span.m-comment-author
       &ndash; 
-      = link_to 'Seattle Public Library', '/home/fact_check', :target => '_blank'
-    .process       
+      = link_to 'Seattle Public Library', 'http://spl.org', :target => '_blank'
+    .m-comment-claim-process       
       = link_to 'Read about the fact-checking process', '/home/fact_check', :target => '_blank' 
 

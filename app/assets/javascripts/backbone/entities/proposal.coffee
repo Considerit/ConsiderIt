@@ -43,6 +43,12 @@
       position = @getUserPosition()
       position.setIncludedPoints (p.point.id for p in params.included_points)
 
+      current_tenant = App.request 'tenant:get'
+      if current_tenant.get 'assessment_enabled'
+        App.request 'assessments:add', (a.assessment for a in params.assessments)
+        App.request 'claims:add', (c.claim for c in params.claims)
+        App.request 'verdicts:add', (v.verdict for v in params.verdicts)
+
 
     description_detail_fields : ->
       [ ['long_description', 'Long Description', $.trim(htmlFormat(@attributes.long_description))], 

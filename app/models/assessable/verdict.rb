@@ -7,7 +7,7 @@ class Assessable::Verdict < ActiveRecord::Base
 
   has_attached_file :icon, 
     :styles => { 
-      :square => "25x25#"
+      :square => "50x50#"
     },
     :processors => [:thumbnail, :paperclip_optimizer]
 

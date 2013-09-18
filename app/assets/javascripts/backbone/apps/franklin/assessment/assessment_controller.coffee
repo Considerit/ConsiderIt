@@ -49,7 +49,7 @@
         assessable : @options.assessable
 
     getCompletedAssessment : ->
-      new Assessment.AssessmentView
+      new Assessment.AssessmentHeaderView
         model : @options.model
         claims : @options.model.getClaims()
         assessable : @options.assessable

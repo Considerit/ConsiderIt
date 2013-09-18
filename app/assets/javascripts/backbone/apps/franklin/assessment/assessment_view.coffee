@@ -34,7 +34,9 @@
         assessable : @options.assessable
 
     onShow : ->
-
+      $textarea = @$el.find('textarea')
+      $textarea.autosize()
+      $textarea.focus()
 
     events : 
       'click input[type="submit"]' : 'createRequest'
@@ -45,8 +47,9 @@
       @trigger 'assessment:request:create', attrs
 
 
-  class Assessment.AssessmentView extends App.Views.ItemView
-    template : "#tpl_assessment"
+  class Assessment.AssessmentHeaderView extends App.Views.ItemView
+    template : "#tpl_assessment_header"
+    className : 'assessment-header'
 
     serializeData : ->
       params = 

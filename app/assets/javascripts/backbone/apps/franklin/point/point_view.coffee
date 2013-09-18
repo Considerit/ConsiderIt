@@ -5,10 +5,57 @@
     tagName : 'span'
 
     serializeData : ->
+      assessment = @model.getAssessment()
+      tenant = App.request 'tenant:get'
+      has_assessment = tenant.get('assessment_enabled') && assessment && assessment.get('complete')
+
       params = _.extend {}, 
         user : @model.getUser().attributes
         hide_name : @model.get 'hide_name'
+        has_assessment : has_assessment
+
+      if has_assessment
+        _.extend params, 
+          assessment : assessment
+          verdict : assessment.getVerdict()
+          claims : assessment.getClaims() 
       params
+
+    events : 
+      'mouseover .m-point-assessment-indicator-region' : 'showVerdictTooltip'
+
+    showVerdictTooltip : (ev) ->
+
+      $target = $(ev.currentTarget)
+      assessment = @model.getAssessment()
+      verdict = assessment.getVerdict()
+
+      template = _.template($('#tpl_verdict_tooltip').html())
+
+
+      content = switch verdict.id
+        when 1
+          "Warning: may contain unsubstantiated claims."
+        when 2
+          "Contains some unverified claims."
+        when 3
+          "Makes accurate claims."          
+        else
+          null
+
+      html = template
+        content : content
+
+
+      if content
+        $target.tooltipster
+          content: html
+          offsetY: 25
+          delay: 200
+          title : 'This point has been fact-checked'
+
+        $target.tooltipster 'show'
+
 
   class Point.PointBodyView extends App.Views.ItemView
     template : '#tpl_point_view_body'
@@ -96,7 +143,7 @@
     template : '#tpl_point_expanded'
     regions :
       followRegion : '.m-point-follow-region'
-      assessmentRegion : '.m-point-assessment'
+      assessmentRegion : '.m-point-assessment-region'
       discussionRegion : '.m-point-discussion'
 
     onRender : ->

@@ -67,9 +67,17 @@ class ProposalsController < ApplicationController
       :included_points => Point.included_by_stored(current_user, proposal, session[proposal.id][:deleted_points].keys).select('points.id') + Point.included_by_unstored(session[proposal.id][:included_points].keys, proposal).select('points.id'),
       :positions => proposal.positions.published.public_fields,
       :position => position,
-      :result => 'success'
+      :result => 'success',
     }
-    
+
+    if current_tenant.assessment_enabled
+      response.update({
+        :claims => proposal.claims.public_fields,
+        :assessments => proposal.assessments.public_fields,
+        :verdicts => Assessable::Verdict.all        
+      })
+    end
+
     #@proposal = {:data => response, :long_id => @proposal.long_id}.to_json
 
     respond_to do |format|

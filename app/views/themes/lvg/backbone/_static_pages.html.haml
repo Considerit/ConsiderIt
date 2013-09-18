@@ -4,6 +4,10 @@
       = theme_image_tag 'logo_large.png'
 
     %li
+      %a.m-sidebar_link{:href => "/home/about", :'data-target' => 'about'}
+        About LVG
+
+    %li
       %a.m-sidebar_link{:href => "/home/fact_check", :'data-target' => 'fact_check'}
         Fact-checking by SPL
 
@@ -27,6 +31,19 @@
       %a.m-sidebar_link{:href => "/home/copromoters", :'data-target' => 'copromoters'}
         Co-promoters
 
+%script{ :type => "text/template", :id => "tpl_static_about"}
+  #static-header
+    %h1
+      About the Living Voters Guide
+
+  #static-main
+    %p.history
+      The Living Voters Guide started in 2010 as a collaboration between Seattle CityClub and a team of Computer Science and Political Science researchers at the University of Washington, funded by a National Science Foundation grant. These are some of the academic publications that describe the design of the technology and analyze the outcomes.
+
+    %p.history
+      more to be added...
+
+
 %script{ :type => "text/template", :id => "tpl_static_publications" }
 
   #static-header
@@ -36,7 +53,7 @@
   #static-main.pubs
 
     %p.history
-      The Living Voters Guide started in 2010 as a collaboration between Seattle CityClub and a team of Computer Science and Political Science researchers at the University of Washington, funded by a National Science Foundation grant. These are some of the academic publications that describe the design of the technology and analyze the outcomes.
+      These are some of the academic publications that describe the design of the technology and analyze the outcomes.
 
     %ul
 

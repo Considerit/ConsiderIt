@@ -1,21 +1,30 @@
 %script{ :type => "text/template", :id => "tpl_header_logo" }
   
-  .cityclub
-    %a.t-logo{ :href => 'http://www.seattlecityclub.org/', :title => 'Learn more about Seattle CityClub'}
-      %span.t-logo-tagline
-        brought to you by 
+  .t-logo
 
-      %span.t-logo-name
-        Seattle CityClub
+    / %a.t-logo-tagline{ :href => '/home/about', :title => 'Learn more about Living Voters Guide'}
+    /   Washington's Citizen-powered Voters Guide
 
-  .considerit
-    %a.t-logo{ :href => 'http://consider.it', :title => 'Learn more about ConsiderIt'}
+    / %a.t-logo-name{ :href => 'http://www.seattlecityclub.org/', :title => 'Learn more about Seattle CityClub'}
+    /   by Seattle CityClub
 
-      %span.t-logo-tagline
-        powered by 
+
+    / %a.t-logo-name.t-logo-read-more{ :href => '/home/about', :title => 'Learn more about Living Voters Guide'}
+    %a.t-logo-tagline{ :href => '/home/about', :title => 'Learn more about Living Voters Guide'}
+
+      Learn more
+
+
+
+
+  / .considerit
+  /   %a.t-logo{ :href => 'http://consider.it', :title => 'Learn more about ConsiderIt'}
+
+  /     %span.t-logo-tagline
+  /       powered by 
       
-      %span.t-logo-name
-        Consider
-      %span.t-logo-name
-        It
+  /     %span.t-logo-name
+  /       Consider
+  /     %span.t-logo-name
+  /       It
 

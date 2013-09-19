@@ -120,7 +120,7 @@
         %a.answer
           {{ !verdict ? 'Answer' :'Edit' }}
 
-      (( if(!approver && !is_creator ){ ))  
+      (( if(!approver && !is_creator && is_answered ){ ))  
       %span.assessment-footer-link
         %a.approve
           Approve
@@ -249,9 +249,12 @@
   (( if(complete){ ))
   .assessment_published_at
     Assessment published on {{new Date(published_at).toDateString()}}
-  (( } else{ ))
-  %button.button.publish{ :disabled => "{{!can_publish || complete}}" }
+  (( } else if (can_publish) { ))
+  %button.button.publish
     Publish fact-check
+  (( } else if (all_answered && !reviewable){ ))
+  %button.button.request_approval
+    Request approval    
+  (( } else if (all_answered && reviewable){ ))
+  Awaiting approval
   (( } ))
-
-

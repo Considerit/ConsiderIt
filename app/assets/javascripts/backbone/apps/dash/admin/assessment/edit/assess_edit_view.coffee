@@ -65,6 +65,7 @@
         approver : @model.getApprover()
         verdict : @model.getVerdict()
         is_creator : @model.getCreator().id == App.request('user:current').id
+        is_answered : !!@model.get('verdict_id') && !!@model.get('result')
       params
 
 
@@ -165,26 +166,25 @@
 
     serializeData : ->
       current_user = ConsiderIt.request 'user:current'
-      can_publish = @model.allClaimsApproved()
-
-      if can_publish
-        submit_text = if @model.getClaims().length == 0 then 'Correct, there are no verifiable claims, publish it' else 'Publish fact check'
-      else
-        submit_text = "Can't publish until all claims approved"
 
       params = _.extend {}, @model.attributes, 
         assessable : @model.getAssessable().attributes
-        can_publish : can_publish
         current_user : current_user.id
-        submit_text : submit_text
+        can_publish : @model.allClaimsApproved()
+        all_answered : @model.allClaimsAnswered()
 
       params 
 
+
     events :
       'click .publish' : 'publish'
+      'click .request_approval' : 'requestApproval'
 
     publish : (ev) ->
       @trigger 'publish'
+
+    requestApproval : (ev) ->
+      @trigger 'request_approval'
 
   class Assessment.EmailDialogView extends App.Dash.EmailDialogView
     dialog: 

@@ -38,10 +38,18 @@
     status : ->
       if @get('complete') then "completed" else if @get('reviewable') then 'reviewable' else 'incomplete'
 
-    allClaimsApproved : ->
+    allClaimsAnswered : ->
+      ret = true
       @getClaims().each (c) ->
-        return false if !c.getApprover()
-      true
+        return ret = false if !c.getVerdict() || !c.get('result')
+      ret
+
+
+    allClaimsApproved : ->
+      ret = true
+      @getClaims().each (c) ->
+        return ret = false if !c.getApprover()
+      ret
 
     getVerdict : ->
       return null if !@get('verdict_id')

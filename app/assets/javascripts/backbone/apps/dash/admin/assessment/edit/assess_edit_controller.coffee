@@ -65,7 +65,10 @@
             claim.save {approver : App.request('user:current').id}
             App.execute 'when:fetched', claim, =>
               toastr.success 'Claim approved'
-              @trigger 'claim:approved'
+              App.vent.trigger 'claim:approved'
+
+          @listenTo assessment, 'change', ->
+            claims.render()
 
           @listenTo claims, 'childview:claim:edit', (view) => @setupEditClaimView view.model
 
@@ -81,8 +84,32 @@
               toastr.success 'Assessment published.'
               forms.render()
 
-          @listenTo @, 'claim:approved', ->
+          @listenTo forms, 'request_approval', =>
+            assessment.save {reviewable : true}
+            App.execute 'when:fetched', assessment, => 
+              toastr.success 'Submitted for approval'
+              forms.render()
+
+          @listenTo assessment, 'change', ->
             forms.render()
+
+
+          @listenTo App.vent, 'claim:approved claim:created claim:updated', ->
+            forms.render()
+
+          rerender_forms_on_claim_change =  (claim) =>
+            @listenTo claim, 'sync:stop', ->
+              forms.render()
+
+          claims_collection.each (claim) =>
+            rerender_forms_on_claim_change claim
+
+          @listenTo claims_collection, 'add', (claim) ->
+            rerender_forms_on_claim_change claim
+
+          @listenTo claims_collection, 'remove', ->
+            forms.render()
+
 
         layout.footerRegion.show forms
 
@@ -99,6 +126,8 @@
             claims_collection.add claim
             toastr.success 'Claim added'            
             new_claim_view.close()
+            App.vent.trigger 'claim:created'
+
 
       overlay = App.request 'dialog:new', new_claim_view, 
         class: 'overlay_claim_view'
@@ -111,7 +140,8 @@
           claim.save attrs
           App.execute 'when:fetched', claim, =>
             toastr.success 'Claim updated'
-            edit_claim_view.close()            
+            edit_claim_view.close()         
+            App.vent.trigger 'claim:updated'
 
       overlay = App.request 'dialog:new', edit_claim_view,
         class: 'overlay_claim_view'

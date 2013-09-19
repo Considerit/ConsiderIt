@@ -166,12 +166,13 @@
 
     serializeData : ->
       current_user = ConsiderIt.request 'user:current'
-
+      has_claims = @model.getClaims().length > 0
+      
       params = _.extend {}, @model.attributes, 
         assessable : @model.getAssessable().attributes
         current_user : current_user.id
-        can_publish : @model.allClaimsApproved()
-        all_answered : @model.allClaimsAnswered()
+        can_publish : @model.allClaimsApproved() && has_claims
+        all_answered : @model.allClaimsAnswered() && has_claims
 
       params 
 

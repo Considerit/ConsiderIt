@@ -43,7 +43,7 @@
     display: inline-block
     position: absolute
     top: 194px
-    left: 127px
+    left: 115px
     z-index: 20
 
     .t-logo-name
@@ -53,6 +53,7 @@
       //margin-left: 220px
       //margin-top: 20px
       font-style: bold
+      margin-left: 0
 
       &:hover
         color: #444
@@ -80,34 +81,43 @@
       //+grayscale
       opacity: .2
 
-      &.hovered
+      &.highlightable
+        opacity: .4
+
+      &.hovered.highlightable
         //+grayscale_off
         opacity: .6
 
 
   .t-logo
-    pointer-events: none
     position: absolute
-    left: 15%
+    left: 12%
     top: -2.5 * $vertical_baseline
     margin-left: -145px
     z-index: 2
 
   .t-intro-text
-    position: absolute
-    z-index: 1
-    top: 59px
-    left: 284px
     //background-color: rgba(white, .6)
 
   .l-message-title
+    position: absolute
+    z-index: 1
+    top: 65px
+    left: 284px
+
     +font-size(10)
     @extend %bolded
     //margin-top: $vertical_baseline / 4
     +single-text-shadow( $voff: 1px, $color: rgba(white, .75)) 
     color: #222
+    pointer-events: none
 
   .t-introduce-fact-checkers
+    position: absolute
+    z-index: 1
+    top: 110px
+    left: 284px
+
     margin-top: $vertical_baseline/4
 
     a

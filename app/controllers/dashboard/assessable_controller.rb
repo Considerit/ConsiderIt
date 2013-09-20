@@ -110,13 +110,15 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     params[:assessment].delete :account_id
 
     if assessment.complete
-      assessment.update_verdict
+      assessment.update_verdict()
       params[:assessment][:published_at] = Time.now.to_i
     end
     assessment.update_attributes(params[:assessment])
     assessment.save
 
     if !complete && assessment.complete
+      assessment.verdict_id = 
+      assessment.save
       ActiveSupport::Notifications.instrument("assessment_completed", 
         :assessment => assessment,
         :current_tenant => current_tenant,

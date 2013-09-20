@@ -35,7 +35,7 @@ class Assessable::Assessment < ActiveRecord::Base
     if self.claims.count == 0
       self.verdict_id = -1
     else
-      self.verdict_id = self.claims.map{|x| x.verdict}.compact.min
+      self.verdict_id = self.claims.map{|x| x.verdict_id}.compact.min
     end
 
   end

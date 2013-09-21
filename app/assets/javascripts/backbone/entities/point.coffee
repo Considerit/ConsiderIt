@@ -23,8 +23,10 @@
 
     parseAssociated : (data) ->
       comments = (co.comment for co in data.comments)
+      thanks = (t.thank for t in data.thanks)
       App.vent.trigger 'comments:fetched', comments
-
+      App.vent.trigger 'comments:thanks:fetched', thanks
+ 
       tenant = App.request 'tenant:get'
 
       if tenant.get 'assessment_enabled'

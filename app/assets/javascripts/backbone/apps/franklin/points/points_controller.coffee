@@ -38,7 +38,8 @@
     sortPoints : (sort_by) ->
       @options.collection.setSorting sort_by, 1
       @options.collection.fullCollection.sort()
-
+      @options.collection.fullCollection.each (pnt) ->
+        console.log pnt.get(sort_by), sort_by
 
   class Points.PeerPointsController extends Points.AbstractPointsController
 

@@ -19,7 +19,3 @@
 //= require_tree ./backbone/views
 //= require_tree ./backbone/components
 //= require_tree ./backbone/apps
-
-// TO BE REFACTORED: 
-
-//= require javascripts/acts_as_followable

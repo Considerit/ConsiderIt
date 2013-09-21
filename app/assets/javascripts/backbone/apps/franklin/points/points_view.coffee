@@ -8,10 +8,13 @@
 
     initialize : (options = {}) ->
       super options
+      @sort = options.sort || @sort
+
       @listenTo @collection, 'reset', =>
         @render()
 
-      @sort = options.sort || @sort
+
+    onShow : ->
       if @sort
         @requestSort @sort
 
@@ -81,12 +84,13 @@
         label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true, plural:true}) else tenant.getConLabel({capitalize:false, plural:true})        
         sorts : [ 
           { name: 'Persuasiveness', title: 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', target: 'persuasiveness'}, 
-          { name: 'Popularity', title: 'Considerations that have been added to the most pro/con lists are ranked higher.', target: 'popularity'}, 
+          { name: 'Popularity', title: 'Considerations that have been added to the most pro/con lists are ranked higher.', target: 'score'}, 
           { name: "Newest", title: 'The newest considerations are shown first.', target: 'created_at' } ]
           # { name: 'Common Ground', title: 'Considerations that tend to be added by both supporters and opposers are ranked higher. Low ranked considerations are more divisive.', target: '-divisiveness'}]
       params
 
     onShow : ->
+      super
       @bindUIElements()      
       @selectSort()
       @ui.browse_header.css('visibility', 'visible') if @browsing
@@ -188,7 +192,8 @@
         hide_label : "hide_name-#{@options.valence}"
         is_pro : @options.valence == 'pro'
 
-    onShow : ->      
+    onShow : ->     
+      super 
       @$el.find('.m-newpoint-nutshell').autosize()
       @$el.find('.m-newpoint-description').autosize()
       @$el.find('.m-position-statement').autosize()

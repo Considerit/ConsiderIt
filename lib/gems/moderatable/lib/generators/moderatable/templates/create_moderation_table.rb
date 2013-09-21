@@ -9,6 +9,10 @@ class CreateModerationTable < ActiveRecord::Migration
       t.integer :status
 
       t.timestamps
+
+      t.boolean :updated_since_last_evaluation, :default => false
+      t.boolean :notification_sent, :default => false
+
     end
                     
   end

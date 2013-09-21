@@ -57,6 +57,8 @@
       verdict = App.request 'verdict:get', @get('verdict_id')
       verdict
 
+
+
   class Entities.Assessments extends App.Entities.Collection
     model : Entities.Assessment
 
@@ -99,6 +101,10 @@
 
       verdict = App.request 'verdict:get', @get('verdict_id')
       verdict
+
+    getThanks : ->
+      @thanks = App.request 'thanks', 'Claim', @id
+
 
   class Entities.Claims extends App.Entities.Collection
     model : Entities.Claim

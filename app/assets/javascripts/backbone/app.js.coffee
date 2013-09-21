@@ -44,7 +44,7 @@
     @startHistory()
     @navigate(@rootRoute, trigger: true) unless @getCurrentRoute()
 
-    shared = new App.Shared.SharedController
+    shared = new App.Shared.UserTooltipController
       region: new Backbone.Marionette.Region
         el: $("body")
 

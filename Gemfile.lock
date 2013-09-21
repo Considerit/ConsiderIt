@@ -51,6 +51,11 @@ PATH
     moderatable (0.0.1)
 
 PATH
+  remote: lib/gems/thankable
+  specs:
+    thankable (0.0.1)
+
+PATH
   remote: lib/gems/trackable
   specs:
     trackable (0.0.1)
@@ -421,6 +426,7 @@ DEPENDENCIES
   sass-rails
   sassy-buttons
   sitemap_generator
+  thankable!
   themes_for_rails (= 0.5.0.2)!
   therubyracer
   thin

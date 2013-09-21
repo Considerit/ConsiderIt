@@ -67,9 +67,35 @@
     .m-comment-claim-report
       {{ claim.get('result') }}
 
-    %span.m-comment-author
-      &ndash; 
-      = link_to 'Seattle Public Library', 'http://spl.org', :target => '_blank'
-    .m-comment-claim-process       
-      = link_to 'Read about the fact-checking process', '/home/fact_check', :target => '_blank' 
+    .m-comment-footer
+      %span.m-comment-author
+        &ndash; 
+        = link_to 'Seattle Public Library', 'http://spl.org', :target => '_blank'
+
+      .m-thank
+
+        (( if(can_thank && !user_thanked){ ))
+        %button.thank
+          thanks
+
+        (( } else if(user_thanked){ ))
+
+        %a.unthank
+          undo thank
+        (( } )) 
+
+      (( if(thanks.length > 0 ) { ))
+      .m-thank-given      
+
+        %ul
+          (( thanks.each( function(thank){ ))
+          %li.l-thanks-item
+            %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{thank.get('user_id')}}", :id => "avatar-{{thank.get('user_id')}}", :class => "participant"}
+          (( }); ))
+        %span.given_thanks
+          {{ thanks.length }} {{ thanks.length == 1 ? 'person says' : 'people say' }} thanks
+      (( } ))
+
+      .m-comment-claim-process       
+        = link_to 'Read about the fact-checking process', '/home/fact_check', :target => '_blank' 
 

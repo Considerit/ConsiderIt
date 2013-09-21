@@ -100,6 +100,14 @@
     .m-point-author-avatar
       display: none
 
+    .m-point-remove
+      margin-top: $grid_xs/4
+      padding: 0 $grid_xs/2
+      opacity: .7
+
+      &:hover
+        opacity: 1
+
 
   &.m-point-results, &.m-point-position  
 
@@ -112,13 +120,13 @@
       left: 0
       position: relative
       visibility: hidden
-      padding: 0 $grid_xs
+      padding: $vertical_baseline/8 $grid_xs
 
-      .m-point-remove, .m-point-read-more
+      .m-point-read-more
         +font-size(-3)
         margin: 0
-        @extend %bolded
-        padding: 2px 8px
+        padding: 1px 8px
+
 
 
   &.m-point-peer

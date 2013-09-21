@@ -27,7 +27,7 @@ class Ability
 
     user ||= User.new # guest user (not logged in)
 
-    user_facing_models = [User, Point, Position, Inclusion, Proposal]
+    user_facing_models = [User, Point, Position, Inclusion, Proposal, Thank]
         
 
     if user.has_role? :superadmin
@@ -111,9 +111,21 @@ class Ability
       #Comment
       if !user.id.nil?
         can :create, Comment
+        can :update, Comment, :user_id => user.id
       end
 
-      can :update, Comment, :user_id => user.id
+  
+      # Thank
+      if !user.id.nil?
+        can :create, Thank do |thank|
+          root = thank.root_object
+          thank.user_id != root.user_id #no thanking one's own posts
+        end
+        can :destroy, Thank do |thk|
+          thk.user_id == user.id
+        end
+      end
+
       
     end
   end

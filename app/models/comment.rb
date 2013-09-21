@@ -2,6 +2,7 @@ class Comment < ActiveRecord::Base
   #is_reflectable
   is_trackable
   is_followable
+  is_thankable
   is_moderatable :text_fields => [:body], :moderatable_objects => lambda {
     Comment.where('id > -1') #tacked on this where in order to enable chaining
   }
@@ -17,7 +18,7 @@ class Comment < ActiveRecord::Base
   belongs_to :user
   belongs_to :commentable, :polymorphic=>true, :touch => true
 
-  acts_as_tenant(:account)
+  acts_as_tenant :account
 
   before_save do 
     self.body = Sanitize.clean(self.body, Sanitize::Config::RELAXED)

@@ -1,5 +1,6 @@
 class Assessable::Claim < ActiveRecord::Base
-
+  is_thankable
+  
   belongs_to :assessment, :class_name => 'Assessable::Assessment'
   acts_as_tenant :account
 

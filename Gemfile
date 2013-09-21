@@ -109,6 +109,7 @@ gem "trackable", :path => "lib/gems/trackable"
 gem "commentable", :path => "lib/gems/commentable"
 gem "moderatable", :path => "lib/gems/moderatable"
 gem "assessable", :path => "lib/gems/assessable"
+gem "thankable", :path => "lib/gems/thankable"
 
 gem 'sitemap_generator'
 gem 'newrelic_rpm'

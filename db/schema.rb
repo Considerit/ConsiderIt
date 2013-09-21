@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130917205138) do
+ActiveRecord::Schema.define(:version => 20130921020615) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -128,6 +128,7 @@ ActiveRecord::Schema.define(:version => 20130917205138) do
     t.integer  "followable_last_notification_milestone", :default => 0
     t.datetime "followable_last_notification"
     t.integer  "moderation_status"
+    t.integer  "thanks_count",                           :default => 0
   end
 
   add_index "comments", ["account_id", "commentable_id", "commentable_type", "moderation_status"], :name => "select_comments"
@@ -388,6 +389,15 @@ ActiveRecord::Schema.define(:version => 20130917205138) do
 
   add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
   add_index "sessions", ["updated_at"], :name => "index_sessions_on_updated_at"
+
+  create_table "thanks", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "account_id"
+    t.integer  "thankable_id"
+    t.string   "thankable_type"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.integer  "account_id"

@@ -18,6 +18,7 @@
   .m-comment-author
     @extend %italicized
     white-space: nowrap
+    display: inline-block
 
     a:hover
       text-decoration: underline
@@ -31,6 +32,27 @@
       top: auto
       left: 50px
       bottom: -30px
+
+.m-thank
+  display: inline-block
+  margin-left: $grid_xs / 2 
+
+  .thank
+    +sassy-button("glass", 5px, inherit, #eee, #ccc)  
+    padding: $vertical_baseline/4 $grid_xs/2
+    color: $base_text_color
+    text-shadow: none
+
+.m-thank-given
+  margin-top: $vertical_baseline / 2
+  ul
+    display: inline
+  .l-thanks-item
+    display: inline
+
+    .avatar
+      width: 20px
+      height: 20px
 
 /* NEWCOMMENT */
 

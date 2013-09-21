@@ -43,6 +43,8 @@
     
 =button($bground_color: hsl(0,0,45%), $darken_amt: 10%)
   +sassy-button("glass", 5px, inherit, $bground_color, darken($bground_color, $darken_amt))
+  padding: $vertical_baseline / 4 $grid_xs/2
+
   // color: invert($bground_color)
   // &:hover
   //   color: darken( invert($bground_color), 20%)

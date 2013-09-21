@@ -30,7 +30,7 @@ ConsiderIt::Application.routes.draw do
 
     match '/positions/:user_id' => "positions#show", :as => :user_position
 
-    resources :points, :only => [:index, :create, :update, :destroy, :show]
+    resources :points, :only => [:create, :update, :destroy, :show]
   end
 
 
@@ -43,6 +43,7 @@ ConsiderIt::Application.routes.draw do
   commentable_routes
   moderatable_routes
   assessable_routes
+  thankable_routes
 
   devise_scope :user do 
     match "users/check_login_info" => "users/registrations#check_login_info", :via => :post

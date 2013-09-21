@@ -49,10 +49,36 @@
     .m-comment-body
       {{body}}
 
-    %span.m-comment-author
-      &ndash; 
-      %a{ :href => "{{Routes.profile_path(user.id)}}", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page"}
-        {{ user.name }}
+    .m-comment-footer
+      .m-comment-author
+        &ndash; 
+        %a{ :href => "{{Routes.profile_path(user.id)}}", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page"}
+          {{ user.name }}
+
+      .m-thank
+
+        (( if(can_thank && !user_thanked){ ))
+        %button.thank
+          thanks
+
+        (( } else if(user_thanked){ ))
+
+        %a.unthank
+          undo thank
+        (( } )) 
+
+      (( if(thanks.length > 0 ) { ))
+      .m-thank-given      
+
+        %ul
+          (( thanks.each( function(thank){ ))
+          %li.l-thanks-item
+            %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{thank.get('user_id')}}", :id => "avatar-{{thank.get('user_id')}}", :class => "participant"}
+          (( }); ))
+        %span.given_thanks
+          {{ thanks.length }} {{ thanks.length == 1 ? 'person says' : 'people say' }} thanks
+      (( } ))
+
 
   (( } ))
 

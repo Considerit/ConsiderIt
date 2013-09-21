@@ -1,13 +1,7 @@
 class PointsController < ApplicationController
 
   protect_from_forgery
-
-  respond_to :json #, :html
-  
-  def index
-
-
-  end
+  respond_to :json
   
   def create
     proposal = Proposal.find_by_long_id(params[:long_id])
@@ -43,8 +37,15 @@ class PointsController < ApplicationController
     if request.xhr?
       point = Point.find params[:id]
       authorize! :read, point
+
+      #todo: make this more efficient and natural
+      comments = point.comments
+      thanks = point.comments.map {|x| x.thanks.public_fields.all}.compact.flatten
+      thanks.concat point.claims.map {|x| x.thanks.public_fields.all}.compact.flatten
+      
       response = {
-        :comments => point.comments.public_fields
+        :comments => comments.public_fields,
+        :thanks => thanks
       }
 
       if current_tenant.assessment_enabled

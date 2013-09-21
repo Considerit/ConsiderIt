@@ -28,8 +28,13 @@
         @user = App.request 'user', @get('user_id')
       @user
 
+    getThanks : ->
+      @thanks = App.request 'thanks', 'Comment', @id
+
   class Entities.Comments extends App.Entities.Collection
     model: Entities.Comment
+
+
 
   API = 
     all_comments : new Entities.Comments()

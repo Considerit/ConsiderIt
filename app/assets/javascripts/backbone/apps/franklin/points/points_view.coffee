@@ -10,11 +10,15 @@
       super options
       @sort = options.sort || @sort
 
+
+    onShow : ->
+
       @listenTo @collection, 'reset', =>
         @render()
 
+      @listenTo @collection, 'add', =>
+        @requestSort @sort
 
-    onShow : ->
       if @sort
         @requestSort @sort
 
@@ -43,6 +47,8 @@
 
     initialize : (options = {}) ->
       super options
+      @listenTo @collection.fullCollection, 'reset add', =>
+        @render()      
 
     serializeData : ->
       data = super
@@ -70,7 +76,8 @@
       browse_header : '.m-pointlist-browse-header'
       browse_footer : '.m-pointlist-browse'
 
-    initialize : ->
+    initialize : (options = {}) ->
+      super options
       @browsing = false
 
     serializeData : ->
@@ -89,8 +96,7 @@
           # { name: 'Common Ground', title: 'Considerations that tend to be added by both supporters and opposers are ranked higher. Low ranked considerations are more divisive.', target: '-divisiveness'}]
       params
 
-    onShow : ->
-      super
+    onRender : ->
       @bindUIElements()      
       @selectSort()
       @ui.browse_header.css('visibility', 'visible') if @browsing
@@ -192,8 +198,8 @@
         hide_label : "hide_name-#{@options.valence}"
         is_pro : @options.valence == 'pro'
 
-    onShow : ->     
-      super 
+    onShow : ->  
+      super   
       @$el.find('.m-newpoint-nutshell').autosize()
       @$el.find('.m-newpoint-description').autosize()
       @$el.find('.m-position-statement').autosize()

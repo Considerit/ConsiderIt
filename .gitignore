@@ -13,6 +13,7 @@ public/images/old
 .sass-cache/
 public/system/avatars
 public/assets/
+public/system/icons
 public/system/cache/*.css
 *.bk
 config/newrelic.yml

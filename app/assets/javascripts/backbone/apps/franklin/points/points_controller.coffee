@@ -20,6 +20,7 @@
 
       @listenTo @options.parent, 'point:show_details', (point) =>
         is_paginated = @options.collection.fullCollection?
+
         collection = if is_paginated then @options.collection.fullCollection else @options.collection
         if point = collection.get point
           # ensure that point is currently displayed
@@ -36,10 +37,10 @@
       @layout = layout
 
     sortPoints : (sort_by) ->
-      @options.collection.setSorting sort_by, 1
-      @options.collection.fullCollection.sort()
-      @options.collection.fullCollection.each (pnt) ->
-        console.log pnt.get(sort_by), sort_by
+      if @options.collection.setSorting #if its pageable...
+        @options.collection.setSorting sort_by, 1
+        @options.collection.fullCollection.sort()
+
 
   class Points.PeerPointsController extends Points.AbstractPointsController
 

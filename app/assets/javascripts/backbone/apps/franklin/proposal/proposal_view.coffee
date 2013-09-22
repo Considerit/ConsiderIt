@@ -421,12 +421,11 @@
     closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('#l-dialog-detachable').children().length == 0 && $('.m-point-expanded').length == 0
     
     deselectBar : (ev) ->
-
+      @$el.hide()
       $selected_bar = @$el.find('.m-bar-is-selected')
       return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.m-bar-is-hard-selected')) || $('.m-point-expanded').length > 0
 
       @$el.removeClass 'm-histogram-segment-selected'
-      #@$el.find('.m-bar-percentage').show()
 
       hiding = @$el.find('.m-point-list, .m-results-pro-con-list-who')
       hiding.css 'visibility', 'hidden'
@@ -441,7 +440,7 @@
 
       $(document).off 'click.histogram'
       $(document).off 'keyup.histogram'
-
+      @$el.show()
 
 
   class Proposal.AggregateReasons extends App.Views.Layout

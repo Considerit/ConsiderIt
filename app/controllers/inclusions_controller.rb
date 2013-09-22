@@ -55,10 +55,14 @@ class InclusionsController < ApplicationController
       session[@proposal.id][:included_points].delete(params[:point_id])    
 
     else
-      authorize! :destroy, @point
       session[@point.proposal_id][:written_points].delete(@point.id)
       session[@point.proposal_id][:included_points].delete(@point.id)  
-      @point.destroy
+
+      if @point.user_id == current_user.id && can?(:destroy, @point)
+        authorize! :destroy, @point
+        @point.destroy
+      end
+
     end
 
     render :json => { :success => true }

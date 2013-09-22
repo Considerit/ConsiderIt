@@ -175,6 +175,8 @@
       window.addCSRF params
       @model.removePoint model
       $.post Routes.inclusions_path( {delete : true} ), params
+      App.vent.trigger 'point:removal', model.id
+
 
     handleIncludePoint : (view, model, source, dest, layout) ->
       dest.add model

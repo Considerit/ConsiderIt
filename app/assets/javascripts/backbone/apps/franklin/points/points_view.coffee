@@ -12,15 +12,16 @@
 
 
     onShow : ->
+      if @sort
+        @requestSort @sort
 
       @listenTo @collection, 'reset', =>
         @render()
 
-      @listenTo @collection, 'add', =>
-        @requestSort @sort
+      # @listenTo @collection, 'add', =>
+      #   @requestSort @sort
 
-      if @sort
-        @requestSort @sort
+    onRender : ->
 
     serializeData : -> {}
 
@@ -55,6 +56,7 @@
       _.extend data, @collection.state
 
     onRender : ->
+      super
       if @collection.state.totalRecords > @collection.state.pageSize
         @$el.addClass('m-point-list-has-pagination')
 
@@ -97,6 +99,7 @@
       params
 
     onRender : ->
+      super
       @bindUIElements()      
       @selectSort()
       @ui.browse_header.css('visibility', 'visible') if @browsing

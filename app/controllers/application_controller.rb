@@ -12,8 +12,8 @@ class ApplicationController < ActionController::Base
     end
     
 
-    pp "Referer: ", request.referer
-    
+    logger.info "Referer: #{request.referer}"
+
     if !session.has_key?(:referer)
       session[:referer] = request.referer      
     end

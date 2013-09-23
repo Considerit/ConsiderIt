@@ -127,7 +127,7 @@
     name : 'verdict'
 
     getIcon : ->
-      url = "#{ConsiderIt.public_root}/system/icons/#{@id}/square/#{@get('icon_file_name')}"
+      url = "#{ConsiderIt.public_root}/system/icons/#{@id}/original/#{@get('icon_file_name')}"
       url
 
   class Entities.Verdicts extends App.Entities.Collection

@@ -57,8 +57,8 @@ zansible/hosts-chlkit
 
 public/system/default_avatar/avatar.sketch*
 
-zansible/group_vars/consideritus
+zansible/group_vars/considerit
 
-zansible/hosts-consideritus
+zansible/hosts-considerit
 
 considerit_pristine_transition.sql

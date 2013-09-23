@@ -58,25 +58,18 @@
 
     respondToPasswordReminderRequest : (success) ->
       if success
-        note = 'Reminder has been sent.'
+        toastr.success 'Reminder has been sent.'
       else
-        note = 'We couldn\'t find an account matching that email.'
-
-      @$el.find('.note').remove()
-      @$el.prepend( "<div class='note'>#{note}</div>")
+        toastr.error 'We couldn\'t find an account matching that email.'
 
     signinFailed : (reason) ->
       if reason == 'wrong password'
         # TODO: help users if they previously signed in via third party
-        note = "<div class='note'>Incorrect password.</div>"
-        @$el.prepend(note)
+        toastr.error 'Incorrect password'
       else if reason == 'no user'
-        note = "<div class='note'>There is no user with that email address.</div>"
-        @$el.prepend(note)
+        toastr.error 'There is no user with that email address'
       else if reason == 'password token expired'
-        note = "<div class='note'>That link has expired, you need to request a new password reminder.</div>"
-        @$el.prepend(note)
-
+        toastr.error 'That link has expired, you need to request a new password reminder'
 
     events : 
       'click a.forget_password_prompt' : 'passwordReminderRequested'

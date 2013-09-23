@@ -21,7 +21,7 @@
       = theme_stylesheet_link_tag 'application'
 
       - ['Source+Sans+Pro'].each do |font|
-        %link{ :href => "http://fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
+        %link{ :href => "//fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
 
       /[if IE 9]
         = stylesheet_link_tag 'browser/ie/ie9'
@@ -95,15 +95,14 @@
         ConsiderIt.start({
           environment: "#{Rails.env}"
         });
-      });
 
-    :javascript
-      var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
-      $buoop.ol = window.onload; 
-      window.onload=function(){ 
+        console.log('HIHI');
+        var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
+        $buoop.ol = window.onload; 
         try {if ($buoop.ol) $buoop.ol();}catch (e) {} 
         var e = document.createElement("script"); 
         e.setAttribute("type", "text/javascript"); 
-        e.setAttribute("src", "http://browser-update.org/update.js"); 
+        e.setAttribute("src", "/browser-update.js"); 
         document.body.appendChild(e); 
-      } 
+
+      });

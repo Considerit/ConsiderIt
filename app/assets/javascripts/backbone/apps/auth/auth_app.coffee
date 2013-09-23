@@ -2,6 +2,8 @@
   @startWithParent = false
   
   API =
+    password_reset_token : null
+
     show : ->
       region = App.request 'userNavRegion'
       new Auth.Show.AuthShowController
@@ -22,11 +24,14 @@
     begin_password_reset : ->
       new Auth.Signin.PasswordResetController
 
-    password_reset_token : ->
-      ConsiderIt.password_reset_token
+    set_password_token : (token) ->
+      @password_reset_token = token
+
+    get_password_reset_token : ->
+      @password_reset_token
 
     password_reset_handled : ->
-      ConsiderIt.password_reset_token = null
+      @password_reset_token = null
 
     complete_paperwork : (controller = null) -> 
       controller ?= API.begin_registration()
@@ -76,7 +81,7 @@
 
 
   App.reqres.setHandler "auth:reset_password", => 
-    API.password_reset_token()
+    API.get_password_reset_token()
 
   App.reqres.setHandler 'auth:password_reset:handled', =>
     API.password_reset_handled()
@@ -110,7 +115,10 @@
   Auth.on "start", ->
     API.show()
 
-    if token = API.password_reset_token()
+    API.set_password_token ConsiderIt.password_reset_token
+    ConsiderIt.password_reset_token = null
+
+    if API.get_password_reset_token()
       API.begin_password_reset()
 
 

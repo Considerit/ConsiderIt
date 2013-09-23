@@ -63,7 +63,7 @@
         fixed: options.fixed
       
       @listenTo email_view, 'passwordReminderRequested', @handlePasswordReminderRequested      
-      @listenTo email_view, 'signinCompleted', @handleSigninCompleted
+      @listenTo email_view, 'signinCompleted', (data) => @handleSigninCompleted(data, email_view)
 
       email_view
 
@@ -77,12 +77,12 @@
       $.post Routes.user_password_path(), {user : {email: email}}, (data) =>
         @layout.emailAuthRegion.currentView.respondToPasswordReminderRequest data.result == 'success'
 
-    handleSigninCompleted : (data) =>
+    handleSigninCompleted : (data, view) =>
       if data.result == 'successful'
         data.user = data.user.user
         App.request 'user:signin', data
       else
-        email_view.signinFailed data.reason
+        view.signinFailed data.reason
 
 
     getOverlay : (view) ->
@@ -108,9 +108,11 @@
         App.request 'auth:password_reset:handled' 
 
     setupLayout : (layout) ->
-      @listenTo layout, 'signinCompleted', @handleSigninCompleted
+      @listenTo layout, 'reset:complete', (data) => @handleSigninCompleted(data, layout)
 
     getSigninLayout : ->
       new Signin.PasswordResetView
         model: @getUser()
+
+
 

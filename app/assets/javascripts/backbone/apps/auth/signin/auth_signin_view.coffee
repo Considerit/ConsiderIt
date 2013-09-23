@@ -90,9 +90,21 @@
     dialog:
       title : 'Change your password'
 
-    serializeView : ->
+    serializeData : ->
+      token = App.request "auth:reset_password"
+
       _.extend {}, @model.attributes, 
-        password_reset_token : App.request "auth:reset_password"
+        password_reset_token : token
+
+    signinFailed : (reason) ->
+      if reason == 'wrong password'
+        # TODO: help users if they previously signed in via third party
+        toastr.error 'Incorrect password'
+      else if reason == 'no user'
+        toastr.error 'There is no user with that email address'
+      else if reason == 'password token expired'
+        toastr.error 'That link has expired, you need to request a new password reminder'
+
 
     onShow : ->
       @$el.find('input[type="file"]').customFileInput()
@@ -104,4 +116,8 @@
         @$el.find('#user_password').focus()
       
     events : 
-      'ajax:complete form' : 'signinCompleted'
+      'ajax:complete form' : 'resetComplete'
+
+    resetComplete : (ev, response, options) ->
+      data = $.parseJSON(response.responseText)
+      @trigger 'reset:complete', data

@@ -2,7 +2,10 @@
 .reset
   .reset_form
     .unlock
+      %span.subtext
+        Reveal your local measures below:  
       %span.inlined
         = text_field_tag :zip, '', :placeholder => 'Your zip code', :title => 'Type your zip code to unlock your local ballot measures', :id => 't-unlock-measures-zip'
-      = submit_tag 'View local', :class => 'button', :id => 't-unlock-measures-button'
+      = submit_tag 'Show', :class => 'button', :id => 't-unlock-measures-button'
+
 

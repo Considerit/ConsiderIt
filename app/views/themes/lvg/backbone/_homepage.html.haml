@@ -10,7 +10,7 @@
 
       #t-intro-people  
         - rows = 7
-        - users_per_row = 38
+        - users_per_row = 37
 
 
 
@@ -33,7 +33,7 @@
 
         %span.twitter
 
-          %a{ :href => "https://twitter.com/share", :class => "twitter-share-button", :'data-text' => "I took the civic challenge at @lvguide.", :'data-related' => "lvguide", :'data-count' => "none", :'data-hashtags' => "lvguide"}
+          %a{ :href => "https://twitter.com/share", :class => "twitter-share-button", :'data-text' => "I flexed my civic muscle @lvguide.", :'data-related' => "lvguide", :'data-count' => "none", :'data-hashtags' => "lvguide"}
             Tweet
           {{'<' + 'script src="//platform.twitter.com/widgets.js" type="text/javascript"' + '><' + '/script>'}}
 
@@ -41,8 +41,8 @@
 
       .l-message-title
         //= current_tenant.header_text
-        //Washington's Citizen-powered Voters Guide
-        Inform your vote here
+        Washington's Citizen-powered Voters Guide
+        //Inform your vote here
 
       .t-introduce-fact-checkers
         %a{:href => "http://seattlecityclub.org"}
@@ -56,12 +56,13 @@
           by Seattle Public Library.
 
 
-
-
-
-
     .t-intro-get-started
-      Click a ballot measure below. Then decide for yourself, with the help of fellow Washington voters.
+      Click a ballot measure below. Then decide for yourself, with the help of fellow voters. 
+
+
+      .t-intro-learn-more
+        %a.t-logo-tagline{ :href => '/home/about', :title => 'Learn more about Living Voters Guide'}
+          Learn more
 
     .t-unlock-local
       = render :partial => "home/unlock_local_measures"

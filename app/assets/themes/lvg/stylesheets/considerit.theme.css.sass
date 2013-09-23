@@ -42,18 +42,21 @@
   .t-logo
     display: inline-block
     position: absolute
-    top: 194px
-    left: 115px
+    top: 183px
+    left: 88px
     z-index: 20
 
     .t-logo-name
       text-transform: none
 
     .t-logo-tagline  
+      display: none
       //margin-left: 220px
       //margin-top: 20px
-      font-style: bold
+      font-weight: bold
       margin-left: 0
+      +font-size(-1)
+      color: #888
 
       &:hover
         color: #444
@@ -73,17 +76,18 @@
   #t-intro-people
     text-align: center
     padding-top: $vertical_baseline
+    margin-left: 25px
     .row
       font-size: 0
     .avatar
       width: 25px
       height: 25px
       //+grayscale
-      opacity: .15
+      opacity: .05
 
       &.hovered
         //+grayscale_off
-        opacity: .25
+        opacity: .10
 
       &.highlightable
         opacity: .4
@@ -95,10 +99,11 @@
 
   .t-logo
     position: absolute
-    left: 12%
-    top: -2.5 * $vertical_baseline
+    left: 111px
+    top: -1.5 * $vertical_baseline
     margin-left: -145px
     z-index: 2
+    width: 250px
 
   .t-intro-text
     //background-color: rgba(white, .6)
@@ -106,10 +111,10 @@
   .l-message-title
     position: absolute
     z-index: 1
-    top: 65px
-    left: 284px
+    top: 68px
+    left: 212px
 
-    +font-size(10)
+    +font-size(8)
     @extend %bolded
     //margin-top: $vertical_baseline / 4
     +single-text-shadow( $voff: 1px, $color: rgba(white, .75)) 
@@ -119,8 +124,8 @@
   .t-introduce-fact-checkers
     position: absolute
     z-index: 1
-    top: 110px
-    left: 284px
+    top: 106px
+    left: 258px
 
     margin-top: $vertical_baseline/4
 
@@ -138,41 +143,50 @@
 
   .t-intro-get-started
     text-align: center
-    font-weight: bold
-    margin-top: $vertical_baseline * 2
+    //font-weight: bold
+    margin-top: $vertical_baseline 
     position: relative
     z-index: 10
+    +font-size(3)
 
 #follow
   position: absolute
   right: $grid_xs
-  top: 78px
+  top: 113px
   //background-color: rgba(white, .6)
   z-index: 3
 
 /// local...
 
 #t-unlock-measures-zip, #t-unlock-measures-button
-  +font-size(3)
+  +font-size(1)
 
 #t-unlock-measures-zip
   padding: $vertical_baseline/4 $grid_xs/4
-  width: 75px
+  width: 110px
+
+.t-intro-learn-more
+  position: absolute
+  right: 28px
+  top: 4px
+  +font-size(-3)
+  text-decoration: underline
+  color: #aaa
+
+
 
 .t-unlock-local
   color: #777
-  padding: $vertical_baseline/2 $grid_xs/2
-  margin: 0 auto
+  padding: $vertical_baseline/4 $grid_xs/2
+  margin: $vertical_baseline/2 auto 0 auto
   text-align: center
-  position: absolute
-  top: 210px 
-  width: 100px
   background-color: #eee
   border-radius: 5px
   z-index: 20
-  right: 17px
+  width: 390px
 
-  +font-size(-2)
+  .subtext
+    padding-right: $grid_xs / 2
 
   h3 
     color: #333
@@ -190,7 +204,7 @@
       text-decoration: underline
   .reset
     display: inline-block
-    +font-size(-3)
+    +font-size(-2)
 
   a
     color: inherit

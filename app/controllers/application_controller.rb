@@ -11,6 +11,9 @@ class ApplicationController < ActionController::Base
       Rails.cache.write("avatar-digest-#{current_tenant.id}", 0)
     end
     
+
+    pp "Referer: ", request.referer
+    
     if !session.has_key?(:referer)
       session[:referer] = request.referer      
     end

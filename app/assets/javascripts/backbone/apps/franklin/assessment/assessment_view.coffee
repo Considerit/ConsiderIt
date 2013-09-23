@@ -26,7 +26,7 @@
   class Assessment.AssessmentRequestFormView extends App.Views.ItemView
     template : "#tpl_assessment_request_form"
     dialog:
-      title : 'Request a fact check of this point'
+      title : 'Ask a librarian about this point'
 
     serializeData : ->
       current_user = App.request 'user:current'

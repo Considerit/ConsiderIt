@@ -51,8 +51,8 @@
 
 
     description_detail_fields : ->
-      [ ['long_description', 'Long Description', $.trim(htmlFormat(@attributes.long_description))], 
-        ['additional_details', 'Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_details))] ]
+      [ ['additional_description1', 'Long Description', $.trim(htmlFormat(@attributes.additional_description1))], 
+        ['additional_description2', 'Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_description2))] ]
 
     title : (max_len = 140) ->
       if @get('name') && @get('name').length > 0
@@ -199,7 +199,7 @@
       @all_proposals.remove model
   
     proposalDescriptionFields : ->
-      ['long_description', 'additional_details']     
+      ['additional_description1', 'additional_description2']     
 
     areProposalsFetched : () ->
       @proposals_fetched

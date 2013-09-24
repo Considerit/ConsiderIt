@@ -1,8 +1,6 @@
 :javascript
   $(document).ready(function(){
 
-    //var proposals = { ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select("SELECT id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active FROM proposals where account_id=#{current_tenant.id} AND active=1")) };
-
     ConsiderIt.public_root = "#{@public_root}"
 
     ConsiderIt.proposals = #{@proposals.to_json};

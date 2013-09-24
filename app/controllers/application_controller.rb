@@ -12,14 +12,6 @@ class ApplicationController < ActionController::Base
       Rails.cache.write("avatar-digest-#{current_tenant.id}", 0)
     end
     
-
-    logger.info "Referer: #{request.referer}"
-
-    if !session.has_key?(:referer)
-      session[:referer] = request.referer      
-    end
-
-
     #############
     # for testing pinned users: 
     test_fixed_user = false
@@ -196,15 +188,6 @@ private
 
   def store_location(path)
     session[:return_to] = path
-  end
-
-  def authenticate_admin_user!
-    if ! (current_user && current_user.is_admin?)
-      #raise 'YOU DO NOT HAVE ADMIN PRIVILEGES'
-      redirect_to root_path
-      return false
-    end
-    true
   end
 
   def current_admin_user

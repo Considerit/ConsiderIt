@@ -34,7 +34,7 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
         # select all comments of points of active proposals
         qry = "SELECT c.id, c.user_id, c.body AS body, pnt.id AS root_id, prop.long_id AS proposal_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.commentable_id=pnt.id"
       elsif mc == Proposal
-        qry = "SELECT id, long_id, user_id, short_name, description, long_description from proposals where account_id=#{current_tenant.id}"
+        qry = "SELECT id, long_id, user_id, name, description, additional_description1, additional_description2 from proposals where account_id=#{current_tenant.id}"
       elsif mc == Point
         qry = "SELECT pnt.id, pnt.long_id, pnt.user_id, pnt.nutshell AS nutshell, pnt.text AS text, prop.long_id AS proposal_id FROM points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
       end

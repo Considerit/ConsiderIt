@@ -17,7 +17,7 @@ class Proposal < ActiveRecord::Base
   is_trackable
   is_followable
   
-  is_moderatable :text_fields => [:short_name, :description, :long_description], :moderatable_objects => lambda { Proposal.published }
+  is_moderatable :text_fields => [:name, :description, :long_description], :moderatable_objects => lambda { Proposal.published }
 
   #before_save :extract_tags
 
@@ -25,7 +25,7 @@ class Proposal < ActiveRecord::Base
   scope :inactive, where( :active => false )
   scope :open_to_public, where( :publicity => 2, :published => true )
   scope :privately_shared, where( 'publicity < 2')
-  scope :public_fields, select('id, long_id, activity, additional_details,category,created_at,contested,description,designator,long_description,name,short_name,trending,updated_at,url,user_id, active, top_pro, top_con, participants,publicity,published')
+  scope :public_fields, select('id, long_id, activity, additional_description2,category,created_at,contested,description,designator,additional_description1,additional_description3,name,trending,updated_at,url1,url2,user_id, active, top_pro, top_con, participants,publicity,published')
   scope :unpublished, where( :published => false)
   scope :browsable, where( :targettable => false)
 

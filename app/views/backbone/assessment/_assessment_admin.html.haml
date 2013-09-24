@@ -6,7 +6,7 @@
 %script{ :type => "text/template", :id => "tpl_assess_list_item"}
 
   %td.desc
-    {{ root_object.short_name }}
+    {{ root_object.name }}
   %td
     {{ new Date(created_at).toDateString() }}
 
@@ -209,7 +209,7 @@
       {{author.firstName()}} writes, regarding 
       = succeed ':' do
         %a{ :href => "{{Routes.proposal_path(root_object.long_id)}}", :target => "_blank" }
-          {{root_object.short_name}}
+          {{root_object.name}}
 
     .assessment-context-content
       .assessment-nutshell

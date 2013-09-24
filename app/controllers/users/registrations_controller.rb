@@ -33,12 +33,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
       user_params = User.create_from_third_party_token(session[:access_token]).update params[:user]
       
       user = User.new user_params #build_resource user_params
-      user.referer = session[:referer] if session.has_key?(:referer)
+      user.referer = user.page_views.first.referer if user.page_views.count > 0
 
       user.skip_confirmation! 
 
       is_dirty = user.avatar_url_provided?
-
 
       if user.save
         sign_in(resource_name, user)
@@ -63,7 +62,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     else #registration via email
       user = build_resource
-      user.referer = session[:referer] if session.has_key?(:referer)
+      user.referer = user.page_views.first.referer if user.page_views.count > 0
       if user.save
         sign_in(resource_name, user)
         current_user.track!
@@ -126,15 +125,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
         :reason => 'could not save user'
       }
     end
-
-    #current_user.skip_confirmation!
-    #current_user.save
-
-    #if params[:user].has_key?(:proposal_id)
-    #  # this is for caching purposes, particularly the histogram
-    #  Proposal.find_by_id(params[:user].delete(:proposal_id)).touch
-    #end
-    #redirect_to !request.referer.nil? ? request.referer : root_path
 
   end
 

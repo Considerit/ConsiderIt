@@ -2,7 +2,21 @@ require 'csv'
 require 'pp'
 
 namespace :lvg do
-  
+
+  task :add_zips_for_proposals => :environment do 
+
+    # parse statemeasures file for long_id & lookup jurisdictions
+    # parse zips table...
+
+    # for each zip
+      # grab measures with this lookup jurisdiction
+
+      # set targettable to true & add zip tags for this zip
+      # if row.has_key? 'lookup_jurisdiction' && row['lookup_jurisdiction'] != 'Statewide'
+      #   measure[:targettable] = true
+        # TODO: add zip tags
+  end
+
   task :import_proposals => :environment do
     domains = {}
     measures = []
@@ -31,12 +45,9 @@ namespace :lvg do
       if !proposal
         proposal = Proposal.new measure
         proposal.save
-        pp proposal
-
       else
         measure.delete :account_id
         proposal.update_attributes measure
-        pp 'PROPOSAL ALREADY EXISTS'
       end
 
 
@@ -66,61 +77,61 @@ namespace :lvg do
 
     end
 
-#     zip_to_jurisdiction_map = {}
-#     CSV.foreach("lib/tasks/zip-jurisdiction.csv") do |row|
-#         if row[0] != 'Zip'
-#             domains[row[1].strip][:zips].push(row[0].strip)
-#         end
-#     end
+  #     zip_to_jurisdiction_map = {}
+  #     CSV.foreach("lib/tasks/zip-jurisdiction.csv") do |row|
+  #         if row[0] != 'Zip'
+  #             domains[row[1].strip][:zips].push(row[0].strip)
+  #         end
+  #     end
 
-#     seedf = File.new('db/seeds.lvg2.root.rb', "w")
+  #     seedf = File.new('db/seeds.lvg2.root.rb', "w")
 
-#     zips = {}
-#     CSV.foreach("lib/tasks/zips.csv") do |row|
-#         if row[0] != ''
-#             zips[row[0]] = 1
-#             seedf.puts "
-# z#{row[0]} = Domain.create!(
-#   :identifier => #{row[0]},
-#   :name => '#{row[2].capitalize}'
-# )".force_encoding('utf-8').encode
+  #     zips = {}
+  #     CSV.foreach("lib/tasks/zips.csv") do |row|
+  #         if row[0] != ''
+  #             zips[row[0]] = 1
+  #             seedf.puts "
+  # z#{row[0]} = Domain.create!(
+  #   :identifier => #{row[0]},
+  #   :name => '#{row[2].capitalize}'
+  # )".force_encoding('utf-8').encode
 
-#         end
-#     end
+  #         end
+  #     end
 
-#     cnt = 0
-#     zip_cnt = 0
-#     domains.each_pair do |k,v|
-#         v[:measures].each do |measure|
-#             seedf.puts "
-# o#{cnt} = Option.create!(
-#   :name => '#{measure[:name]}',
-#   :short_name => '#{measure[:short_name]}',
-#   :description => '#{measure[:description].sub("'", "\\\'")}',
-#   :domain => '#{measure[:domain]}',
-#   :domain_short => '#{measure[:domain_short]}',
-#   :url => '#{measure[:url]}',
-#   :category => '#{measure[:category]}',
-#   :designator => '#{measure[:designator]}',
-#   :long_description => '#{measure[:long_description]}',
-#   :additional_details => '#{measure[:additional_details]}'
-# )".force_encoding('utf-8').encode
-#             zips_added = {}
-#             v[:zips].each do |zip|
-#                 if zips.has_key?(zip) && !zips_added.has_key?(zip)
-#                     seedf.puts "
-#     z#{zip_cnt} = DomainMap.create!(
-#       :domain => z#{zip},
-#       :option => o#{cnt}
-#     )".force_encoding('utf-8').encode
-#                     zip_cnt += 1
-#                     zips_added[zip] = 1
-#                 end
-#             end
-#         cnt += 1
-#         end
+  #     cnt = 0
+  #     zip_cnt = 0
+  #     domains.each_pair do |k,v|
+  #         v[:measures].each do |measure|
+  #             seedf.puts "
+  # o#{cnt} = Option.create!(
+  #   :name => '#{measure[:name]}',
+  #   :short_name => '#{measure[:short_name]}',
+  #   :description => '#{measure[:description].sub("'", "\\\'")}',
+  #   :domain => '#{measure[:domain]}',
+  #   :domain_short => '#{measure[:domain_short]}',
+  #   :url => '#{measure[:url]}',
+  #   :category => '#{measure[:category]}',
+  #   :designator => '#{measure[:designator]}',
+  #   :long_description => '#{measure[:long_description]}',
+  #   :additional_details => '#{measure[:additional_details]}'
+  # )".force_encoding('utf-8').encode
+  #             zips_added = {}
+  #             v[:zips].each do |zip|
+  #                 if zips.has_key?(zip) && !zips_added.has_key?(zip)
+  #                     seedf.puts "
+  #     z#{zip_cnt} = DomainMap.create!(
+  #       :domain => z#{zip},
+  #       :option => o#{cnt}
+  #     )".force_encoding('utf-8').encode
+  #                     zip_cnt += 1
+  #                     zips_added[zip] = 1
+  #                 end
+  #             end
+  #         cnt += 1
+  #         end
 
-#     end
+  #     end
 
 
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130924054438) do
+ActiveRecord::Schema.define(:version => 20130924155210) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -212,6 +212,7 @@ ActiveRecord::Schema.define(:version => 20130924054438) do
     t.string   "user_agent"
     t.string   "ip_address"
     t.datetime "created_at"
+    t.string   "url"
   end
 
   create_table "point_listings", :force => true do |t|

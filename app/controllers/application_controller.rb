@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   set_current_tenant_through_filter
   prepend_before_filter :get_current_tenant
   before_filter :theme_resolver
+  after_filter  :pageview
 
   def render(*args)
     if Rails.cache.read("avatar-digest-#{current_tenant.id}").nil?
@@ -209,5 +210,21 @@ private
   def current_admin_user
     current_user
   end
+
+  def pageview
+    user = current_user ? current_user.id : nil
+    params = {
+      :account_id           => current_tenant.id,
+      :user_id              => user,
+      :referer              => request.referrer,
+      :session              => request.session_options[:id],
+      :ip_address           => request.remote_ip,
+      :user_agent           => request.env["HTTP_USER_AGENT"],
+      :created_at           => Time.current
+    }  
+
+    PageView.create! params
+  end
+
 
 end

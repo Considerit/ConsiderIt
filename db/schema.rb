@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130923224854) do
+ActiveRecord::Schema.define(:version => 20130924054438) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -202,6 +202,16 @@ ActiveRecord::Schema.define(:version => 20130923224854) do
     t.integer  "account_id"
     t.boolean  "updated_since_last_evaluation", :default => false
     t.boolean  "notification_sent",             :default => false
+  end
+
+  create_table "page_views", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "account_id"
+    t.text     "referer"
+    t.string   "session"
+    t.string   "user_agent"
+    t.string   "ip_address"
+    t.datetime "created_at"
   end
 
   create_table "point_listings", :force => true do |t|

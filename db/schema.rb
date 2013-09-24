@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130921020615) do
+ActiveRecord::Schema.define(:version => 20130923224854) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -128,7 +128,6 @@ ActiveRecord::Schema.define(:version => 20130921020615) do
     t.integer  "followable_last_notification_milestone", :default => 0
     t.datetime "followable_last_notification"
     t.integer  "moderation_status"
-    t.integer  "thanks_count",                           :default => 0
   end
 
   add_index "comments", ["account_id", "commentable_id", "commentable_type", "moderation_status"], :name => "select_comments"
@@ -297,13 +296,13 @@ ActiveRecord::Schema.define(:version => 20130921020615) do
     t.string   "short_name"
     t.text     "description"
     t.string   "image"
-    t.string   "url"
+    t.string   "url1"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "domain"
     t.string   "domain_short"
-    t.text     "long_description"
-    t.text     "additional_details"
+    t.text     "additional_description1"
+    t.text     "additional_description2"
     t.string   "slider_prompt"
     t.string   "considerations_prompt"
     t.string   "statement_prompt"
@@ -348,6 +347,9 @@ ActiveRecord::Schema.define(:version => 20130921020615) do
     t.boolean  "published",                                                  :default => false
     t.text     "tags"
     t.boolean  "targettable",                                                :default => false
+    t.string   "url2"
+    t.string   "url3"
+    t.text     "additional_description3"
   end
 
   add_index "proposals", ["account_id", "active"], :name => "select_proposal_by_active"

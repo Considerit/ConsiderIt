@@ -18,7 +18,7 @@
         else if cls == 'Comment'
           text_fields = ['body']
         else if cls == 'Proposal'
-          text_fields = ['short_name', 'description', 'long_description']
+          text_fields = ['name', 'description', 'additional_description1', 'additional_description2']
 
         else
           throw "#{cls} is not a valid moderatable class"

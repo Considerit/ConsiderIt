@@ -214,13 +214,14 @@ private
   def pageview
     user = current_user ? current_user.id : nil
     params = {
-      :account_id           => current_tenant.id,
-      :user_id              => user,
-      :referer              => request.referrer,
-      :session              => request.session_options[:id],
-      :ip_address           => request.remote_ip,
-      :user_agent           => request.env["HTTP_USER_AGENT"],
-      :created_at           => Time.current
+      :account_id => current_tenant.id,
+      :user_id => user,
+      :referer => request.referrer,
+      :session => request.session_options[:id],
+      :url => request.fullpath,
+      :ip_address => request.remote_ip,
+      :user_agent => request.env["HTTP_USER_AGENT"],
+      :created_at => Time.current
     }  
 
     PageView.create! params

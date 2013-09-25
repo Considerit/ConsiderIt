@@ -1,15 +1,15 @@
 GIT
   remote: git://github.com/collectiveidea/delayed_job.git
-  revision: 44edd9473adbc415a3e51ead60a63107a9ad41e4
+  revision: 02c7032148b131e710d18f9fb03b373f20e3b326
   specs:
-    delayed_job (4.0.0.beta2)
+    delayed_job (4.0.0)
       activesupport (>= 3.0, < 4.1)
 
 GIT
   remote: git://github.com/collectiveidea/delayed_job_active_record.git
-  revision: ba49bf6c5eb2a4c5197630b24702a06e7c61a416
+  revision: 711f08d9ad4388086840c5205784a3b2adb49e21
   specs:
-    delayed_job_active_record (4.0.0.beta3)
+    delayed_job_active_record (4.0.0)
       activerecord (>= 3.0, < 4.1)
       delayed_job (>= 3.0, < 4.1)
 
@@ -107,17 +107,17 @@ GEM
     backup (3.0.27)
       open4 (~> 1.3.0)
       thor (>= 0.15.4, < 2)
-    bcrypt-ruby (3.1.1)
+    bcrypt-ruby (3.1.2)
     bitly (0.9.0)
       httparty (>= 0.7.6)
       multi_json (~> 1.3)
       oauth2 (>= 0.5.0, < 0.9)
-    bootstrap-sass (2.3.2.1)
+    bootstrap-sass (2.3.2.2)
       sass (~> 3.2)
     builder (3.0.4)
     callsite (0.0.11)
     cancan (1.6.10)
-    chronic (0.9.1)
+    chronic (0.10.2)
     chunky_png (1.2.8)
     climate_control (0.0.3)
       activesupport (>= 3.0)
@@ -136,7 +136,7 @@ GEM
       sass (~> 3.1)
     compass-rails (1.0.3)
       compass (>= 0.12.2, < 0.14)
-    css_parser (1.3.4)
+    css_parser (1.3.5)
       addressable
     daemons (1.1.9)
     dalli (2.6.4)
@@ -150,15 +150,15 @@ GEM
       warden (~> 1.2.1)
     erubis (2.7.0)
     eventmachine (1.0.3)
-    exception_notification (4.0.0)
+    exception_notification (4.0.1)
       actionmailer (>= 3.0.4)
       activesupport (>= 3.0.4)
     excon (0.25.3)
-    execjs (1.4.0)
-      multi_json (~> 1.0)
+    execjs (2.0.1)
+    exifr (1.1.3)
     faraday (0.8.8)
       multipart-post (~> 1.2.0)
-    fog (1.14.0)
+    fog (1.15.0)
       builder
       excon (~> 0.25.0)
       formatador (~> 0.2.0)
@@ -168,10 +168,10 @@ GEM
       net-ssh (>= 2.1.3)
       nokogiri (~> 1.5)
       ruby-hmac
-    font-awesome-rails (3.2.1.2)
+    font-awesome-rails (3.2.1.3)
       railties (>= 3.2, < 5.0)
     formatador (0.2.4)
-    fspath (2.0.4)
+    fspath (2.0.5)
     fssm (0.2.10)
     haml (4.0.3)
       tilt
@@ -182,14 +182,15 @@ GEM
       multi_json (~> 1.0)
       multi_xml (>= 0.5.2)
     httpauth (0.2.0)
-    i18n (0.6.4)
-    image_optim (0.8.1)
-      fspath (~> 2.0.3)
+    i18n (0.6.5)
+    image_optim (0.9.1)
+      exifr (~> 1.1.3)
+      fspath (~> 2.0.5)
       image_size (~> 1.1.2)
-      in_threads (~> 1.1.1)
-      progress (~> 2.4.0)
+      in_threads (~> 1.2.0)
+      progress (~> 3.0.0)
     image_size (1.1.3)
-    in_threads (1.1.1)
+    in_threads (1.2.0)
     journey (1.0.4)
     jquery-rails (3.0.4)
       railties (>= 3.0, < 5.0)
@@ -205,27 +206,27 @@ GEM
     kaminari (0.14.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
-    libv8 (3.11.8.17)
+    libv8 (3.16.14.3)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mailhopper (0.2.0)
       rails (>= 3.1.0)
-    meta_request (0.2.7)
+    meta_request (0.2.8)
       callsite
       rack-contrib
       railties
-    mime-types (1.23)
+    mime-types (1.25)
     mini_portile (0.5.1)
-    multi_json (1.7.7)
-    multi_xml (0.5.4)
+    multi_json (1.8.0)
+    multi_xml (0.5.5)
     multipart-post (1.2.0)
     mysql2 (0.3.13)
     nested_form (0.3.2)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
-    net-ssh (2.6.8)
-    newrelic_rpm (3.6.6.147)
+    net-ssh (2.7.0)
+    newrelic_rpm (3.6.7.159)
     nokogiri (1.6.0)
       mini_portile (~> 0.5.0)
     oauth (0.4.7)
@@ -241,7 +242,7 @@ GEM
       rack
     omniauth-facebook (1.4.1)
       omniauth-oauth2 (~> 1.1.0)
-    omniauth-google-oauth2 (0.2.0)
+    omniauth-google-oauth2 (0.2.1)
       omniauth (~> 1.0)
       omniauth-oauth2
     omniauth-oauth (1.0.1)
@@ -275,7 +276,7 @@ GEM
     premailer-rails (1.4.0)
       premailer (~> 1.7)
       rails (>= 3)
-    progress (2.4.0)
+    progress (3.0.0)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -327,7 +328,7 @@ GEM
     rinku (1.7.3)
     role_model (0.8.1)
     ruby-hmac (0.4.0)
-    safe_yaml (0.9.4)
+    safe_yaml (0.9.7)
     sanitize (2.0.6)
       nokogiri (>= 1.4.4)
     sass (3.2.10)
@@ -335,17 +336,18 @@ GEM
       railties (~> 3.2.0)
       sass (>= 3.1.10)
       tilt (~> 1.3)
-    sassy-buttons (0.2)
+    sassy-buttons (0.2.6)
+      compass (>= 0.12.2)
     simple_oauth (0.2.0)
-    sitemap_generator (4.1.1)
+    sitemap_generator (4.2.0)
       builder
     sprockets (2.2.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
-    therubyracer (0.11.4)
-      libv8 (~> 3.11.8.12)
+    therubyracer (0.12.0)
+      libv8 (~> 3.16.14.0)
       ref
     thin (1.5.1)
       daemons (>= 1.0.9)
@@ -353,7 +355,7 @@ GEM
       rack (>= 1.0.0)
     thor (0.18.1)
     tilt (1.4.1)
-    treetop (1.4.14)
+    treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
     twitter (4.8.1)
@@ -361,7 +363,7 @@ GEM
       multi_json (~> 1.0)
       simple_oauth (~> 0.2)
     tzinfo (0.3.37)
-    uglifier (2.1.2)
+    uglifier (2.2.1)
       execjs (>= 0.3.0)
       multi_json (~> 1.0, >= 1.0.2)
     uuidtools (2.1.4)
@@ -386,7 +388,7 @@ DEPENDENCIES
   backup (~> 3.0.24)
   bitly
   cancan
-  coffee-rails
+  coffee-rails (~> 3.2.2)
   commentable!
   compass
   compass-rails

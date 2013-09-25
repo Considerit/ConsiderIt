@@ -30,9 +30,15 @@
           layout.emailAuthRegion.show email_view
 
         else
+          provider = switch user.authMethod()
+            when 'google'
+              'google_oauth2'
+            else
+              user.authMethod()
+
           auth_options_view = new Signin.AuthOptions
             model: user
-            providers: [ {name: user.authMethod()} ]
+            providers: [ {name: user.authMethod(), provider: provider} ]
             fixed: true
           layout.authOptionsRegion.show auth_options_view
 
@@ -40,7 +46,7 @@
         
         auth_options_view = new Signin.AuthOptions
           model: user
-          providers: [ {name: 'email'}, {name: 'google'}, {name: 'facebook'}, {name: 'twitter'} ]
+          providers: [ {name: 'email', provider: 'email'}, {name: 'google', provider: "google_oauth2"}, {name: 'facebook', provider: 'facebook'}, {name: 'twitter', provider: 'twitter'} ]
 
         @listenTo auth_options_view, 'email_auth_request', ->
           email_view = @setupEmailView

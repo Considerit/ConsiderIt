@@ -15,17 +15,7 @@ default:
     fog_directory: '{{ config.aws.fog_directory }}'
     cloudfront: '{{ config.aws.cloudfront }}'
 
-  facebook: 
-    consumer_key: '{{ config.facebook.consumer_key }}'
-    consumer_secret: '{{ config.facebook.consumer_secret }}'
-
-  twitter: 
-    consumer_key: '{{ config.twitter.consumer_key }}'
-    consumer_secret: '{{ config.twitter.consumer_secret }}'
-
-  google:
-    consumer_key: '{{ config.google.consumer_key }}'
-    consumer_secret: '{{ config.google.consumer_secret }}'
+  domain: {{ config.domain }}
 
 development: 
   default_to: default

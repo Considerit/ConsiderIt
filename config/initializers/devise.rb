@@ -169,35 +169,36 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
 
+  require "omniauth-google-oauth2"
 
-  FACEBOOK_SETUP_PROC = lambda do |env| 
-    conf = APP_CONFIG && APP_CONFIG.has_key?( 'facebook') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
+  OAUTH_SETUP_PROC = lambda do |env|
+    case env['omniauth.strategy'].name()
+    when 'google_oauth2'
+      provider = 'google'
+    else
+      provider = env['omniauth.strategy'].name()
+    end
+
+    conf = APP_CONFIG && APP_CONFIG.has_key?('domain') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)  
+
     request = Rack::Request.new(env)
-    current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:client_id] = current_tenant.socmedia_facebook_client.nil? ? conf['facebook']['consumer_key'] : current_tenant.socmedia_facebook_client
-    env['omniauth.strategy'].options[:client_secret] = current_tenant.socmedia_facebook_secret.nil? ? conf['facebook']['consumer_secret'] : current_tenant.socmedia_facebook_secret
+    host = request.host.split('.')
+    if host.length > 2
+      host = host[host.length-2..host.length-1]
+    end
+    host = host.join('.')
+
+    settings = conf['domain'][host][provider]
+    env['omniauth.strategy'].options[:client_id] = settings['consumer_key']
+    env['omniauth.strategy'].options[:client_secret] = settings['consumer_secret']
+
   end
 
-  config.omniauth :facebook, :setup => FACEBOOK_SETUP_PROC, :scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook, :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
-
-
-  TWITTER_SETUP_PROC = lambda do |env| 
-    conf = APP_CONFIG && APP_CONFIG.has_key?('twitter') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)
-    
-    request = Rack::Request.new(env)
-    current_tenant = ApplicationController.find_current_tenant(request)
-    env['omniauth.strategy'].options[:consumer_key] = current_tenant.socmedia_twitter_consumer_key.nil? ? conf['twitter']['consumer_key'] : current_tenant.socmedia_twitter_consumer_key
-    env['omniauth.strategy'].options[:consumer_secret] = current_tenant.socmedia_twitter_consumer_secret.nil? ? conf['twitter']['consumer_secret'] : current_tenant.socmedia_twitter_consumer_secret    
-  end  
-
-  config.omniauth :twitter, :setup => TWITTER_SETUP_PROC, :strategy_class => OmniAuth::Strategies::Twitter
-
-
-  require "omniauth-google-oauth2"
-  conf = APP_CONFIG && APP_CONFIG.has_key?('google') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)  
-
+  config.omniauth :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :strategy_class => OmniAuth::Strategies::Facebook, :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
+  config.omniauth :twitter, :setup => OAUTH_SETUP_PROC, :strategy_class => OmniAuth::Strategies::Twitter
+  config.omniauth :google_oauth2, :setup => OAUTH_SETUP_PROC, :client_options => { :access_type => "offline", :approval_prompt => "", :scope => 'userinfo.email,userinfo.profile' }
   #config.omniauth :google_oauth2, conf['google']['consumer_id'], conf['google']['consumer_secret'], :scope => 'userinfo.email,userinfo.profile', :strategy_class => OmniAuth::Strategies::GoogleOauth2, :client_options => { access_type: "offline", approval_prompt: "" }
-  config.omniauth :google_oauth2, conf['google']['consumer_key'], conf['google']['consumer_secret'], { :access_type => "offline", :approval_prompt => "", :scope => 'userinfo.email,userinfo.profile' }
+
 
   #config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('./tmp'), :name => 'yahoo', :require => 'omniauth-openid'
   #config.omniauth :open_id, :store => OpenID::Store::Filesystem.new('/tmp'), :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id', :require => 'omniauth-openid'

@@ -157,6 +157,8 @@
     all_proposals : new Entities.Proposals()
     proposals_fetched : false
     proposals_created : false
+    total_active : 0
+    total_inactive : 0
 
 
     bootstrapProposal : (proposal_attrs) ->
@@ -224,6 +226,13 @@
     getProposalsByUser : (user_id) ->
       new Entities.Proposals @all_proposals.where({user_id : user_id})
 
+    initializeTotalCounts : (total_active, total_inactive) ->
+      @total_inactive = total_inactive
+      @total_active = total_active
+
+    getTotalCounts : ->
+      [@total_active, @total_inactive]
+
 
   App.reqres.setHandler "proposal:bootstrap", (proposal_attrs) ->
     API.bootstrapProposal proposal_attrs
@@ -246,7 +255,6 @@
   App.vent.on 'proposal:deleted', (model) ->
     API.removeProposal model
 
-
   App.vent.on "proposals:fetched", (proposals) ->
     API.addProposals proposals
 
@@ -262,10 +270,14 @@
   App.reqres.setHandler "proposals:are_fetched", ->
     API.areProposalsFetched()
 
+  App.reqres.setHandler 'proposals:totals', ->
+    API.getTotalCounts()
+
 
   App.addInitializer ->
     if ConsiderIt.proposals
       App.request 'proposals:bootstrap', ConsiderIt.proposals
+      API.initializeTotalCounts ConsiderIt.proposals.proposals_active_count, ConsiderIt.proposals.proposals_inactive_count
 
     if ConsiderIt.current_proposal
       App.request 'proposal:bootstrap', ConsiderIt.current_proposal

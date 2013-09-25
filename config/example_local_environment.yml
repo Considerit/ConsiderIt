@@ -15,6 +15,35 @@ default:
     fog_directory: ''
     cloudfront: ''
 
+  domain: 
+    localhost: 
+      facebook:
+        consumer_key: ''
+        consumer_secret: ''
+
+      twitter:
+        consumer_key: ''
+        consumer_secret: ''
+
+      google:
+        consumer_key: ''
+        consumer_secret: ''
+
+    127.0.0.1:
+      facebook:
+        consumer_key: ''
+        consumer_secret: ''
+
+      twitter:
+        consumer_key: ''
+        consumer_secret: ''
+
+      google:
+        consumer_key: ''
+        consumer_secret: ''
+
+
+
 development: 
   default_to: default
 

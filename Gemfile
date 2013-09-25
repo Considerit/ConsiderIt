@@ -134,7 +134,7 @@ end
 group :assets do
   gem 'aws-sdk'
   gem 'sass-rails'#,   "3.2.6"
-  gem 'coffee-rails'#, "~> 3.2.1"
+  gem 'coffee-rails', "~> 3.2.2"
   gem 'uglifier'
   gem "asset_sync"
   gem 'compass'

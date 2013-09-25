@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   prepend_before_filter :get_current_tenant
   before_filter :theme_resolver
   after_filter  :pageview
+  include CacheableCSRFTokenRails
 
   def render(*args)
     if Rails.cache.read("avatar-digest-#{current_tenant.id}").nil?

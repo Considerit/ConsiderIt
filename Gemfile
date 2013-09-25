@@ -17,7 +17,7 @@ gem "oj"
 
 
 # https://github.com/plataformatec/devise
-gem 'devise', "2.2.4"
+gem 'devise', "~> 2.2"
 
 gem "omniauth"
 gem 'omniauth-oauth2'

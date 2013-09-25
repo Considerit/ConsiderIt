@@ -30,7 +30,6 @@
         moderate_points_mode : #{current_tenant.moderate_points_mode}, 
         moderate_comments_mode : #{current_tenant.moderate_comments_mode}, 
         moderate_proposals_mode : #{current_tenant.moderate_proposals_mode}
-
     };
 
 
@@ -56,6 +55,9 @@
       style_tag : "#{j(stylesheet_link_tag("admin"))}"
     };
 
+
+    $("meta[name='csrf-token']").attr('content', "#{Rack::Utils.escape_html(request_forgery_protection_token)}");
+    $("meta[name='csrf-param']").attr('content', "#{Rack::Utils.escape_html(form_authenticity_token)}");
 
 
   });

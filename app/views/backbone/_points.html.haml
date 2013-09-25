@@ -1,12 +1,13 @@
-%script{ :type => "text/template", :id => "tpl_points_empty"}
-  .m-pointlist-empty
-    none recognized
 
 %script{ :type => "text/template", :id => "tpl_points"}
   %ul.m-point-list
 
 
 %script{ :type => "text/template", :id => "tpl_points_paginated"}
+  ((if(is_empty){ ))
+  .m-pointlist-empty
+    none recognized
+  (( } else { ))
   %ul.m-point-list
   .m-pointlist-pagination
     %a.m-pointlist-backward
@@ -31,6 +32,7 @@
       (( if(lastPage != currentPage && lastPage != 0){ ))
       &#9660;
       (( } ))
+  (( } ))
 
 
 %script{ :type => "text/template", :id => "tpl_points_expandable"}
@@ -55,6 +57,7 @@
 
   %ul.m-point-list
 
+  (( if(has_points){ ))
   .m-pointlist-browse
     %a.m-pointlist-browse-toggle
       (( if( browsing_all ) { ))
@@ -62,7 +65,7 @@
       (( } else { ))
       View all {{ cnt }} {{ label }}
       (( } ))
-
+  (( } ))
 
 %script{ :type => "text/template", :id => "tpl_points_user_reasons"}
   %ul.m-point-list

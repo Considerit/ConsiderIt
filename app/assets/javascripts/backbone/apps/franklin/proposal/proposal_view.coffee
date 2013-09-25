@@ -521,6 +521,10 @@
     serializeData : ->
       top_pro = App.request 'point:get', @model.get('top_pro')
       top_con = App.request 'point:get', @model.get('top_con')
+
+      top_pro = null if !top_pro.id
+      top_con = null if !top_con.id
+
       tenant = App.request 'tenant:get'
       participants = @model.getParticipants()
       

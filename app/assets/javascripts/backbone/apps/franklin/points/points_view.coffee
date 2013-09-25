@@ -53,7 +53,8 @@
 
     serializeData : ->
       data = super
-      _.extend data, @collection.state
+      _.extend data, @collection.state,
+        is_empty : @collection.length == 0
 
     onRender : ->
       super
@@ -91,6 +92,7 @@
         sort_by : @sort
         browsing_all : @browsing
         label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true, plural:true}) else tenant.getConLabel({capitalize:false, plural:true})        
+        has_points : @collection.length > 0
         sorts : [ 
           { name: 'Persuasiveness', title: 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', target: 'persuasiveness'}, 
           { name: 'Popularity', title: 'Considerations that have been added to the most pro/con lists are ranked higher.', target: 'score'}, 
@@ -255,17 +257,15 @@
     location : 'results'
     className : => "m-pro-con-list-#{@options.valence}points"
     sort : 'score'
-    emptyView : Points.EmptyList
     itemView : App.Franklin.Point.AggregatePointView
 
     events : _.extend {}, Points.PaginatedPointList.prototype.events
 
     initialize : (options = {}) ->
       super options
+
       # @listenTo @collection, 'add remove', =>
       #   console.log 'render'
       #   @render()
 
 
-  class Points.EmptyList extends App.Views.ItemView
-    template : '#tpl_points_empty'

@@ -81,7 +81,9 @@ class ApplicationController < ActionController::Base
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
       @proposals = []
 
-      proposals = Proposal.open_to_public.active.browsable.public_fields.order('activity DESC').limit(3)
+      proposals = Proposal.open_to_public.active.browsable
+      proposals_active_count = proposals.count
+      proposals = proposals.public_fields.order('activity DESC').limit(3)
       top = proposals.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
             proposals.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
       
@@ -99,18 +101,13 @@ class ApplicationController < ActionController::Base
         proposals += hidden_proposals
       end
 
-      #Proposal.active.where('activity > 0').public_fields.each do |proposal|
-      # proposals.each do |proposal|      
-      #   @proposals.push ({
-      #     :model => proposal,
-      #     :top_con => proposal.top_con ? top_points[proposal.top_con] : nil,
-      #     :top_pro => proposal.top_pro ? top_points[proposal.top_pro] : nil,
-      #   } )
-      # end
+      proposals_inactive_count = Proposal.open_to_public.inactive.browsable.count
 
       @proposals = {
         :proposals => proposals,
-        :top_points => top_points.values
+        :top_points => top_points.values,
+        :proposals_active_count => proposals_active_count,
+        :proposals_inactive_count => proposals_inactive_count
       }
 
       @public_root = Rails.application.config.action_controller.asset_host.nil? ? "" : Rails.application.config.action_controller.asset_host

@@ -11,7 +11,7 @@
       @dialog_overlay = @getOverlay view
 
       @listenTo @dialog_overlay, 'close', ->
-        #TODO: navigate back
+        App.request 'nav:back:crumb'
 
     setupView : (view) ->
 

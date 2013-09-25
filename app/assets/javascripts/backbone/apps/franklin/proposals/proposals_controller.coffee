@@ -9,10 +9,12 @@
         active_controller = new Proposals.ActiveListController
           region : layout.activeRegion
           parent_controller : @
+          total_models : App.request('proposals:totals')[0]
 
         inactive_controller = new Proposals.InactiveListController
           region : layout.pastRegion
           parent_controller : @
+          total_models : App.request('proposals:totals')[1]
 
       @region.show layout
 
@@ -40,18 +42,21 @@
 
       @sortCollection {collection: proposals_view.collection, sort_by: 'activity'}
 
-      pagination_view = @getPaginationView proposals_view.collection
       filter_view = @getFilterView proposals_view.collection
 
       @listenTo proposals_view, 'before:item:added', (view) -> @handleBeforeViewAdded view
       @listenTo proposals_view, 'childview:proposal:deleted', (view) => @handleProposalDeleted proposals_view.collection, view.model
       @listenTo filter_view, 'sort:requested', (sort_by) => @handleSortRequested proposals_view.collection, sort_by
-      @listenTo pagination_view, 'pagination:show_more', => @handleShowMore proposals_view.collection
       @listenTo App.vent, 'proposals:reset', => @handleReset proposals_view.collection, @is_active
+
 
       layout.proposalsRegion.show proposals_view
       layout.filtersRegion.show filter_view
-      layout.paginationRegion.show pagination_view
+
+      if @options.total_models > proposals_view.collection.state.pageSize
+        pagination_view = @getPaginationView proposals_view.collection
+        @listenTo pagination_view, 'pagination:show_more', => @handleShowMore proposals_view.collection
+        layout.paginationRegion.show pagination_view
 
       @proposals_view = proposals_view
 

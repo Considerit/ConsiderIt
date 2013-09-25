@@ -146,7 +146,6 @@
         @$el.addClass 'm-histogram-segment-selected'
         #@$el.find('.m-bar-percentage').hide()
 
-
         $bar = $target.closest('.m-histogram-bar')
         # bubble_offset = $bar.offset().top - @$el.closest('.l-message-body').offset().top + 20
 
@@ -160,7 +159,6 @@
         fld = "score_stance_group_#{bucket}"
 
         @trigger 'histogram:segment_results', bucket
-
 
         @$el.find('.l-message-speaker').css('z-index': 999)
 
@@ -179,9 +177,10 @@
     closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('#l-dialog-detachable').children().length == 0 && $('.m-point-expanded').length == 0
     
     deselectBar : (ev) ->
-      @$el.hide()
       $selected_bar = @$el.find('.m-bar-is-selected')
       return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.m-bar-is-hard-selected')) || $('.m-point-expanded').length > 0
+
+      @$el.hide()
 
       @$el.removeClass 'm-histogram-segment-selected'
 

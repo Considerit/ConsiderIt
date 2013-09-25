@@ -143,7 +143,7 @@ GEM
     delayed_mailhopper (0.0.7)
       delayed_job
       mailhopper (>= 0.0.1)
-    devise (2.2.4)
+    devise (2.2.7)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
       railties (~> 3.1)
@@ -397,7 +397,7 @@ DEPENDENCIES
   delayed_job!
   delayed_job_active_record!
   delayed_mailhopper
-  devise (= 2.2.4)
+  devise (~> 2.2)
   exception_notification
   followable!
   haml

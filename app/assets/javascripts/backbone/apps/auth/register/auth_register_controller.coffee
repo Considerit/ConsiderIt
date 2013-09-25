@@ -32,7 +32,7 @@
       
       auth_options_view = new Register.AuthOptions
         model: user
-        providers: [ {name: 'email'}, {name: 'google'}, {name: 'facebook'}, {name: 'twitter'} ]
+        providers: [ {name: 'email', provider: 'email'}, {name: 'google', provider: "google_oauth2"}, {name: 'facebook', provider: 'facebook'}, {name: 'twitter', provider: 'twitter'} ]
         fixed : App.request 'user:fixed:exists'
 
       @listenTo auth_options_view, 'email_auth_request', ->

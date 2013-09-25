@@ -179,6 +179,15 @@ Devise.setup do |config|
       provider = env['omniauth.strategy'].name()
     end
 
+    case provider
+    when 'twitter'
+      key = :consumer_key
+      secret = :consumer_secret
+    else
+      key = :client_id
+      secret = :client_secret
+    end      
+
     conf = APP_CONFIG && APP_CONFIG.has_key?('domain') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)  
 
     request = Rack::Request.new(env)
@@ -189,8 +198,8 @@ Devise.setup do |config|
     host = host.join('.')
 
     settings = conf['domain'][host][provider]
-    env['omniauth.strategy'].options[:client_id] = settings['consumer_key']
-    env['omniauth.strategy'].options[:client_secret] = settings['consumer_secret']
+    env['omniauth.strategy'].options[key] = settings['consumer_key']
+    env['omniauth.strategy'].options[secret] = settings['consumer_secret']
 
   end
 

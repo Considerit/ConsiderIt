@@ -11,6 +11,7 @@ class User < ActiveRecord::Base
   has_many :comments, :dependent => :destroy
   has_many :proposals
   has_many :follows, :dependent => :destroy, :class_name => 'Followable::Follow'
+  has_many :page_views, :dependent => :destroy
 
   acts_as_tenant(:account)
   is_trackable

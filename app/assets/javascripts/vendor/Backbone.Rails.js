@@ -70,6 +70,6 @@ _.extend(Backbone.Model.prototype, Backbone.RailsJSON, {
   // A new default initializer which handles data directly from Rails as
   // well as unnested data.
   initialize : function(args) {
-    this.maybeUnwrap(args);
+    if(args){ this.maybeUnwrap(args); }
   }
 }); 

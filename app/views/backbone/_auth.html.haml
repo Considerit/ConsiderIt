@@ -209,11 +209,8 @@
   .m-user-accounts-tos
     %span
       Signing up acknowledges that you agree to the 
-    %a.m-user-terms-show
+    %a.m-user-terms-show{:href => "/home/terms-of-use", :target => "_blank"}
       Terms of Use
-
-    .m-user-the-terms-of-use
-      = render :partial => "home/terms-of-use"
 
 
 %script{ :type => "text/template", :id => "tpl_user_reset_password" }

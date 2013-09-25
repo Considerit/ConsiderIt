@@ -119,9 +119,3 @@
   class Register.PaperworkFooterView extends App.Views.ItemView
     template: "#tpl_user_paperwork_footer"
 
-    events:
-      'click .m-user-terms-show' : 'show_terms_of_use'
-
-    show_terms_of_use : ->
-      @$el.find('.m-user-the-terms-of-use').slideToggle()
-

@@ -114,6 +114,9 @@ gem "thankable", :path => "lib/gems/thankable"
 gem 'sitemap_generator'
 gem 'newrelic_rpm'
 
+# https://github.com/cmer/cacheable-csrf-token-rails
+gem 'cacheable-csrf-token-rails'
+
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:

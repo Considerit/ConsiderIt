@@ -43,15 +43,16 @@
             fld = if segment == 'all' then 'score' else "score_stance_group_#{segment}"
             reasons_layout.updateHeader segment            
             _.each [aggregated_pros, aggregated_cons], (collection, idx) =>
-              collection.setSorting fld, 1
-              collection.fullCollection.sort()
+              if collection.length > 0
+                collection.setSorting fld, 1
+                collection.fullCollection.sort()
 
-              if idx of @removed_points
-                collection.fullCollection.add @removed_points[idx]
+                if idx of @removed_points
+                  collection.fullCollection.add @removed_points[idx]
 
-              @removed_points[idx] = collection.fullCollection.filter( (point) -> !point.get(fld) || point.get(fld) == 0 )
+                @removed_points[idx] = collection.fullCollection.filter( (point) -> !point.get(fld) || point.get(fld) == 0 )
 
-              collection.fullCollection.remove @removed_points[idx]
+                collection.fullCollection.remove @removed_points[idx]
             @pros_controller.layout.render()
             @cons_controller.layout.render()
 

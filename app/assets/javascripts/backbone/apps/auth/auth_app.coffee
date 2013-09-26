@@ -39,6 +39,8 @@
 
     signin : (user_data, controller = null) ->
       App.request "user:current:update", user_data
+      App.vent.trigger 'csrf:new', user_data.new_csrf if user_data.new_csrf
+
       if App.request "user:paperwork_completed"
         @_handle_signin()         
       else
@@ -106,10 +108,6 @@
 
   App.vent.on 'csrf:new', (token_val) ->
     API.updateCSRF token_val
-
-
-  # App.vent.on 'user:updated', => 
-  #   API.show()
 
 
   Auth.on "start", ->

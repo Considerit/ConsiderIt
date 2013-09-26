@@ -24,11 +24,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if user && user.registration_complete
       sign_in user, :event => :authentication
-      params = { :user => user, :follows => user.follows.all } #TODO: filter this down (actually, it might not be needed)
+      params = { :user => user, :follows => user.follows.all, :new_csrf => form_authenticity_token } #TODO: filter this down (actually, it might not be needed)
     else
       session[:access_token] = access_token
       user = User.create_from_third_party_token(access_token)
-      params = { :user => {:user => user, :follows => [] } }
+      params = { :user => {:user => user, :follows => [], :new_csrf => form_authenticity_token } }
     end
 
     render :inline =>

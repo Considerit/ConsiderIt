@@ -9,7 +9,6 @@
       "data-role": 'm-proposal'
       "data-id": "#{@model.id}"
 
-
     regions : 
       proposalRegion : '.m-proposal-description-region'
       positionRegion : '.m-position-crafting-region'
@@ -26,7 +25,7 @@
 
     serializeData : ->
       tenant = App.request 'tenant:get'
-      _.extend {}, tenant.attributes
+      _.extend {}, tenant.attributes, _.compactObject(@options.proposal.attributes)
 
     # Hacky to put this here...need to log point views for peer points
     events : 
@@ -73,7 +72,8 @@
 
     serializeData : ->
       tenant = App.request 'tenant:get'
-      _.extend {}, tenant.attributes
+      params = _.extend {}, tenant.attributes, _.compactObject(@options.proposal.attributes)
+      params
 
     slider : 
       max_effect : 65 

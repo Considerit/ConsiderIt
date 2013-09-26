@@ -72,7 +72,14 @@
 
     participants : ->
       if !@participant_list?
-        @participant_list = $.parseJSON(@attributes.participants) || []
+        try 
+          if !@attributes.participants || @attributes.participants == ""
+            @participant_list = []
+          else 
+            @participant_list = $.parseJSON(@attributes.participants)
+        catch e 
+          console.log 'Error parsing participants', e, @attributes.participants
+          @participant_list = []
 
       @participant_list
 

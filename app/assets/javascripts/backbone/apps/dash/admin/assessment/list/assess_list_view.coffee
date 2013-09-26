@@ -45,7 +45,7 @@
       @$el.find('.assessment_block').toggleClass('hide_completed')
 
     onShow : ->
-      @$el.find('.table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false })
+      # @$el.find('.table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false })
       hm = @$el.find('#hide_completed')
       if hm.is(':checked')
         hm.trigger('click')

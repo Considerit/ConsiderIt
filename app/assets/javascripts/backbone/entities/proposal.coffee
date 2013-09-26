@@ -73,6 +73,7 @@
     participants : ->
       if !@participant_list?
         @participant_list = $.parseJSON(@attributes.participants) || []
+
       @participant_list
 
     has_participants : -> 

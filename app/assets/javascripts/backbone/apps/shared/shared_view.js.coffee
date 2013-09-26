@@ -23,7 +23,8 @@
 
     viewProfile : (ev) -> 
       App.navigate(Routes.profile_path($(ev.currentTarget).data('id')), {trigger: true})
-
+      ev.stopPropagation()
+      
     tooltipShow : (ev) ->
       $target = $(ev.currentTarget)
       if !$target.closest('.l-tooltip-user').length > 0

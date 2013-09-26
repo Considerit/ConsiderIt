@@ -21,7 +21,7 @@
         user : @model.getUser().attributes
         thanks : @model.getThanks()
         user_thanked : App.request 'thanks:exists_for_user', 'Comment', @model.id, current_user.id
-        can_thank : current_user.isLoggedIn()
+        can_thank : current_user.isLoggedIn() && current_user.id != @model.get('user_id')
 
     onShow : ->
       current_user = App.request 'user:current'

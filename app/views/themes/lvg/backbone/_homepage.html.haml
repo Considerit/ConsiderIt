@@ -6,14 +6,12 @@
   .t-intro-wrap
     .l-content-wrap.t-intro
 
-      = theme_image_tag 'logo_large.png', :class => 't-logo'
+      %a{:href => "/home/about", :title => "Learn more about the Living Voters Guide"}
+        = theme_image_tag 'logo_large.png', :class => 't-logo'
 
       #t-intro-people  
         - rows = 7
         - users_per_row = 37
-
-
-
 
         - pics = current_tenant.id == 2 ? User.unscoped.where('avatar_file_name IS NOT NULL AND account_id in (1,2)') : User.where('avatar_file_name IS NOT NULL')
         - users = pics.sample( [rows * users_per_row, pics.count].min )

@@ -4,11 +4,12 @@
 
 
 %script{ :type => "text/template", :id => "tpl_points_paginated"}
+  %ul.m-point-list
+
   ((if(is_empty){ ))
   .m-pointlist-empty
     none recognized
   (( } else { ))
-  %ul.m-point-list
   .m-pointlist-pagination
     %a.m-pointlist-backward
       (( if(currentPage > 1){ ))

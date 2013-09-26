@@ -18,9 +18,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
       sign_in(resource_name, user)
 
       response = { 
-        :result => 'logged_in',
+        :result => 'successful',
         :reason => 'email_password_success', 
-        :new_csrf => form_authenticity_token
+        :new_csrf => form_authenticity_token,
+        #TODO: filter users' to_json?
+        :user => current_user,
+        :follows => current_user.follows.all,         
       }
 
     elsif user

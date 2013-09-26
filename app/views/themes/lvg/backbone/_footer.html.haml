@@ -23,10 +23,13 @@
 
       .power  
         .heading
-          Powered by #{link_to "ConsiderIt", "http://consider.it"}
+          Powered by 
+          %br
+          %a{:href => "http://consider.it", :target => "_blank"}
+            = image_tag 'considerit_logo.png'
 
         %span.use_considerit.line
-          Use ConsiderIt #{link_to 'in your organization','mailto:travis@consider.it?subject=I am interested in using ConsiderIt'}.
+          Use #{link_to 'in your organization','mailto:travis@consider.it?subject=I am interested in using ConsiderIt'}.
 
     #contact
       

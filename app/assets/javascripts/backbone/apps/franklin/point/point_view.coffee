@@ -21,6 +21,10 @@
           claims : assessment.getClaims() 
       params
 
+    onRender : ->
+      #TODO: in previous scheme, this change was intended to trigger render on point details close
+      @listenTo @model, 'change', @render
+
     events : 
       'mouseover .m-point-assessment-indicator-region' : 'showVerdictTooltip'
 
@@ -60,6 +64,10 @@
   class Point.PointBodyView extends App.Views.ItemView
     template : '#tpl_point_view_body'
 
+    onRender : ->
+      #TODO: in previous scheme, this change was intended to trigger render on point details close
+      @listenTo @model, 'change', @render
+
     serializeData : ->
       params = _.extend {}, @model.attributes, 
         adjusted_nutshell : @model.adjusted_nutshell()
@@ -95,10 +103,6 @@
         actions : @actions
 
       params
-
-    onRender : ->
-      #TODO: in previous scheme, this change was intended to trigger render on point details close
-      @listenTo @model, 'change', @render
 
     @events : 
       'click' : 'pointClicked'

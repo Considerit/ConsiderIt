@@ -22,7 +22,6 @@
 
           _.each @model.written_points, (pnt) =>
             pnt.set 'user_id', current_user.id
-            console.log pnt
 
         @listenTo ConsiderIt.vent, 'user:signout', => 
           @region.reset()

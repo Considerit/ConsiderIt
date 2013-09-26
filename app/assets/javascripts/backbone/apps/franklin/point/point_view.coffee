@@ -105,8 +105,13 @@
       'click' : 'pointClicked'
 
     pointClicked : (ev) ->
-      @trigger 'point:clicked'
-      ev.stopPropagation()
+      pass_through = false
+      _.each App.request('shared:targets'), (target) ->
+        pass_through ||= $(ev.target).is("[data-target='#{target}']")
+
+      if !pass_through
+        @trigger 'point:clicked'
+        ev.stopPropagation()
 
   class Point.PeerPointView extends Point.PointView
     actions : ['include']
@@ -150,7 +155,6 @@
     onRender : ->
       App.vent.trigger 'point:expanded'
 
-
     onShow : ->
       # when clicking outside of point, close it      
       $(document).on 'click.m-point-details', (ev)  => 
@@ -160,7 +164,6 @@
           is_click_within_a_point = $(ev.target).closest('[data-role="m-point"]').length > 0
           is_clicking_nav = $(ev.target).closest('.l-navigate-wrap').length > 0
           @closeDetails(  !is_click_within_a_point && !is_clicking_nav ) 
-
 
       $(document).on 'keyup.m-point-details', (ev) => 
         dialog_not_open = $('#l-dialog-detachable').length == 0

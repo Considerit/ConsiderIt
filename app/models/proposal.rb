@@ -25,7 +25,7 @@ class Proposal < ActiveRecord::Base
   scope :inactive, where( :active => false, :published => true )
   scope :open_to_public, where( :publicity => 2, :published => true )
   scope :privately_shared, where( 'publicity < 2')
-  scope :public_fields, select('id, long_id, activity, additional_description2,category,created_at,contested,description,designator,additional_description1,additional_description3,name,trending,updated_at,url1,url2,user_id, active, top_pro, top_con, participants,publicity,published')
+  scope :public_fields, select('id, long_id, activity, additional_description2,category,created_at,contested,description,designator,additional_description1,additional_description3,name,trending,updated_at,url1,url2,user_id, active, top_pro, top_con, participants,publicity,published,slider_right,slider_left,considerations_prompt,slider_prompt')
   scope :unpublished, where( :published => false)
   scope :browsable, where( :targettable => false)
 

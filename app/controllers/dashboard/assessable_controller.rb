@@ -117,7 +117,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     if !complete && assessment.complete
       assessment.update_verdict()
-      assessment.published_at = Time.now.to_i      
+      assessment.published_at = Time.now.utc      
       assessment.save
       ActiveSupport::Notifications.instrument("assessment_completed", 
         :assessment => assessment,

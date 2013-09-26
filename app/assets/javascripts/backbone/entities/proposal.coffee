@@ -121,6 +121,9 @@
         @positions = null
         @participant_list.push user_id 
 
+    isActive : ->
+      @get('active')
+
 
   class Entities.Proposals extends App.Entities.Collection
 

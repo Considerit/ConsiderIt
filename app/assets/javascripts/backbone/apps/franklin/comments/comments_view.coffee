@@ -24,6 +24,7 @@
       _.extend {}, 
         is_logged_in : ConsiderIt.request 'user:current:logged_in?'
         user : current_user
+        comments_open : @options.proposal.isActive()
 
     onShow : ->
       for el in @$el.find('.is_counted')

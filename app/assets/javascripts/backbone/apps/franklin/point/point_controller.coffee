@@ -96,6 +96,7 @@
         commentable_id : @options.model.id
         region: region
         collection : collection
+        proposal : @options.model.getProposal()
         parent_controller : @
 
       @listenTo comments, 'comment:created', =>

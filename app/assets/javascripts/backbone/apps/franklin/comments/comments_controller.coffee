@@ -46,3 +46,4 @@
     getLayout : (collection) ->
       new Comments.CommentsView
         collection : collection
+        proposal : @options.proposal

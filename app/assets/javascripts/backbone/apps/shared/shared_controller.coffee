@@ -3,3 +3,6 @@
     initialize : ->
       view = new Shared.ProfileView
         el : @region.el
+
+      loginview = new Shared.AuthView
+        el : @region.el

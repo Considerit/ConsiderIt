@@ -117,24 +117,7 @@
       @layout.$el.ensureInView .5
 
       App.request 'nav:back:crumb' if go_back
-      # App.navigate Routes.root_path(), {trigger : true}
-      # go_back ?= true
-      # @$el.find('.m-point-wrap > *').css 'visibility', 'hidden'
-
-      # @commentsview.clear()
-      # @commentsview.remove()
-      # @assessmentview.remove() if @assessmentview?
-
-
-      # @$el.removeClass('m-point-expanded')
-      # @$el.addClass('m-point-unexpanded')
-
-      # @undelegateEvents()
-      # @stopListening()
       
-      # @model.trigger 'change' #trigger a render event
-      # ConsiderIt.app.go_back_crumb() if go_back
-
 
     getLayout : (model) ->
       @options.view

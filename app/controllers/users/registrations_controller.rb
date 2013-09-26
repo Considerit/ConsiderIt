@@ -19,7 +19,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
       response = { 
         :result => 'logged_in',
-        :reason => 'email_password_success'
+        :reason => 'email_password_success', 
+        :new_csrf => form_authenticity_token
       }
 
     elsif user

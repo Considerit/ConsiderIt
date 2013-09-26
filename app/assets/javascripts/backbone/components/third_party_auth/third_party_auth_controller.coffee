@@ -21,7 +21,7 @@
       #ConsiderIt.app.usermanagerview.handle_third_party_callback(parameters)
 
     pollLoginPopup : ->
-      if @popup? && window.location.origin == @popup.location.origin && @popup.open_id_params?
+      if @popup? && @popup.location && window.location && window.location.origin == @popup.location.origin && @popup.open_id_params?
         @handleOpenIdResponse(@popup.open_id_params)
         @popup.close()
         @popup = null

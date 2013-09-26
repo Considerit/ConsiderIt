@@ -716,9 +716,11 @@ $tooltip_width: 225px
     +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
     //z-index: 3
     p
-      margin-bottom: $vertical_baseline
+      margin-bottom: $vertical_baseline / 2
     h1, h2, h3
       color: $initiator_text_color
+    td
+      padding: 0 3px
 
   .m-proposal-description-details
     +font-size(-2)

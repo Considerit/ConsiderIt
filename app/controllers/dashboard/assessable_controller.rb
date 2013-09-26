@@ -111,13 +111,13 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     if assessment.complete
       assessment.update_verdict()
-      params[:assessment][:published_at] = Time.now.to_i
     end
     assessment.update_attributes(params[:assessment])
     assessment.save
 
     if !complete && assessment.complete
-      assessment.verdict_id = 
+      assessment.update_verdict()
+      assessment.published_at = Time.now.to_i      
       assessment.save
       ActiveSupport::Notifications.instrument("assessment_completed", 
         :assessment => assessment,

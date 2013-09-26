@@ -129,7 +129,7 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
   data = args.last
 
   if send_notification_on_create(moderatable_type, data[:current_tenant])
-    notification_method data
+    notification_method.call data
   end
 
 end

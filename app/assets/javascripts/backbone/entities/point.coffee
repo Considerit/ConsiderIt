@@ -70,9 +70,7 @@
 
     #relations
     getUser : ->
-      if !@user
-        @user = App.request 'user', @get 'user_id'
-      @user
+      App.request 'user', @get 'user_id'
 
     getProposal : ->
       if !@proposal

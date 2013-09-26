@@ -292,9 +292,10 @@
     .m-dashboard-subheading
       Control the information that other people can see.
 
+  .m-dashboard-edit-user
 
   = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'm-dashboard-edit-user' }) do |f|
-
+  
     .field
       = f.label :name, "Name"
       = f.text_field :name, :pattern => "^.{1,}", :value => "{{ name }}"

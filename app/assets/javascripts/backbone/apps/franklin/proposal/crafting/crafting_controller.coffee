@@ -35,7 +35,7 @@
         @model.addViewedPoint point_id
 
       reasons_layout = @getPositionReasons @proposal, @model
-      stance_view = @getPositionStance @model
+      stance_view = @getPositionStance @proposal, @model
       # explanation_view = @getPositionExplanation @model
 
       @listenTo reasons_layout, 'show', => @setupReasonsLayout reasons_layout
@@ -263,9 +263,10 @@
         model : position
         proposal : proposal
 
-    getPositionStance : (position) ->
+    getPositionStance : (proposal, position) ->
       new Proposal.PositionStance
         model : position
+        proposal : proposal
 
     getPositionExplanation : (position) ->
       new Proposal.PositionExplanation

@@ -108,8 +108,13 @@
     className : 'm-histogram'
 
     serializeData : ->
+      supporter_label = _.compact([@model.get('slider_left')]) || 'Supporters'
+      opposer_label = _.compact([@model.get('slider_right')]) || 'Opposers'
+
       _.extend {}, @model.attributes,
         histogram : @options.histogram
+        supporter_label : supporter_label
+        opposer_label : opposer_label
 
     events : 
       'mouseenter .m-histogram-bar:not(.m-bar-is-selected)' : 'selectBar'

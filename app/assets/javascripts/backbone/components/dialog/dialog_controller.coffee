@@ -16,9 +16,14 @@
           @dialogLayout.trigger 'dialog:canceled'
           @close()
 
-      # @listenTo @dialogLayout, "show", @formContentRegion
-      # @listenTo @dialogLayout, "form:submit", @formSubmit
-      # @listenTo @dialogLayout, "form:cancel", @formCancel
+        App.vent.trigger 'dialog:opened', @
+
+        @listenTo App.vent, 'dialog:opened', (dialog) =>
+          if dialog != @
+            @close()
+
+        @$el = @region.$el
+
 
     getDialogLayout: (options = {}) ->
       config = @getDefaultConfig _.result(@contentView, "dialog")
@@ -41,7 +46,8 @@
     close: ->
       @dialogLayout.close()
       super
-      $('#l-dialog-detachable').remove()
+      @$el.remove()
+      #$('#l-dialog-detachable').remove()
 
   App.reqres.setHandler "dialog:new", (contentView, options = {}) ->
     options.class ?= ''

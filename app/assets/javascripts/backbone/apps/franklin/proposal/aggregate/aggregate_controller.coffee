@@ -44,8 +44,6 @@
 
             reasons_layout.updateHeader segment            
             _.each [aggregated_pros, aggregated_cons], (collection, idx) =>
-              #if collection.length > 0
-
               if idx of @removed_points
                 collection.fullCollection.add @removed_points[idx]
 
@@ -54,7 +52,6 @@
 
               collection.setSorting fld, 1
               collection.fullCollection.sort()
-
 
             @pros_controller.layout.render()
             @cons_controller.layout.render()

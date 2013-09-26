@@ -29,7 +29,7 @@
         @$el.find('.m-comment-body').editable 
           resource: 'comment'
           pk: @model.id
-          url: Routes.update_comment_path @model.id
+          url: Routes.comment_path @model.id
           type: 'textarea'
           name: 'body'
           success : (response, new_value) => @model.set('body', new_value)

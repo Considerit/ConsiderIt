@@ -1,12 +1,8 @@
 
-class CommentsController < ApplicationController
+class CommentController < ApplicationController
   protect_from_forgery
 
   respond_to :json
-
-  def show 
-
-  end  
 
   def create
     authorize! :create, Comment

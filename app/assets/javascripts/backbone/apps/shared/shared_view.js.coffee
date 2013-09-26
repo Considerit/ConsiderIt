@@ -1,4 +1,15 @@
 @ConsiderIt.module "Shared", (Shared, App, Backbone, Marionette, $, _) ->
+  class Shared.AuthView extends Backbone.View
+
+    events : 
+      'click [data-target="login"]' : 'loginDialogRequested'
+      'click [data-target="create_account"]' : 'createDialogRequested'
+
+    loginDialogRequested : (ev) ->
+      App.vent.trigger 'signin:requested'
+
+    createDialogRequested : (ev) ->
+      App.vent.trigger 'registration:requested'
 
   class Shared.ProfileView extends Backbone.View
     template : _.template $('#tpl_user_tooltip').html()

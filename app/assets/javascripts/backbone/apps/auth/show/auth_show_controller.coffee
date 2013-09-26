@@ -18,12 +18,6 @@
       else
         @view = @getLoggedOutView user
 
-        @view.on 'signin:requested', =>
-          App.vent.trigger 'signin:requested'
-
-        @view.on 'registration:requested', => 
-          App.vent.trigger 'registration:requested'
-
       @show @view
 
       # if ConsiderIt.password_reset_token?

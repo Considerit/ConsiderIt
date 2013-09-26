@@ -124,6 +124,6 @@
 
     if ConsiderIt.inaccessible_proposal
       App.request 'user:signin:set_redirect', Routes.proposal_path(ConsiderIt.inaccessible_proposal.long_id)
-      ConsiderIt.vent.trigger 'signin:requested'
+      App.vent.trigger 'signin:requested'
       ConsiderIt.inaccessible_proposal = null
 

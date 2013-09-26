@@ -17,6 +17,17 @@
         layout.positionRegion.show crafting_layout
         layout.footerRegion.show footer_view
 
+        @listenTo App.vent, 'user:signin', =>
+          current_user = App.request 'user:current'
+
+          _.each @model.written_points, (pnt) =>
+            pnt.set 'user_id', current_user.id
+            console.log pnt
+
+        @listenTo ConsiderIt.vent, 'user:signout', => 
+          @region.reset()
+          @region.show layout
+
       @region.show layout
       @layout = layout
 

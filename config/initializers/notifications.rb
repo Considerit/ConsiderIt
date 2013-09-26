@@ -9,19 +9,21 @@
 
 notify_proposal = Proc.new do |data|
   #params : proposal, current_tenant, mail_options
-  proposal = data[:model]
+  proposal = data[:proposal] || data[:model]
   current_tenant = data[:current_tenant]
   mail_options = data[:mail_options]
 
   current_tenant.follows.where(:follow => true).each do |follow|
     # if follower's action triggered event, skip...
-    if follow.user_id == proposal.user_id 
-      next
-    # if follower doesn't have an email address, skip...
-    elsif !follow.user.email || follow.user.email.length == 0
-      next
-    else 
-      EventMailer.discussion_new_proposal(follow.user, proposal, mail_options, '').deliver!
+    if follow
+      if follow.user_id == proposal.user_id 
+        next
+      # if follower doesn't have an email address, skip...
+      elsif !follow.user.email || follow.user.email.length == 0
+        next
+      else 
+        EventMailer.discussion_new_proposal(follow.user, proposal, mail_options, '').deliver!
+      end
     end
   end
 
@@ -35,7 +37,7 @@ end
 notify_point = Proc.new do |data|
   #params : point, current_tenant, mail_options
 
-  point = data[:model]
+  point = data[:point] || data[:model]
 
   proposal = point.proposal
   current_tenant = data[:current_tenant]
@@ -76,7 +78,7 @@ end
 
 notify_comment = Proc.new do |args|
   #params: comment, current_tenant, mail_options
-  comment = args[:model]
+  comment = args[:model] || args[:comment]
   commentable = comment.root_object
   current_tenant = args[:current_tenant]
   mail_options = args[:mail_options]

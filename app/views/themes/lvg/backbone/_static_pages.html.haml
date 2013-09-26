@@ -63,14 +63,21 @@
       describing the design and evolution of the technology, while also analyzing the outcomes. For example, we have found that LVG encourages citizens to consider tradeoffs. Despite the contentious nature of many of these ballot measures, 45.0% of all pro/con lists include both pros and cons, demonstrating that it is possible to encourage citizens to consider tradeoffs and shed light on those more nuanced deliberations. In summative user studies, we've also found that citizens are surprised and encouraged when LVG shows people with whom they disagreed recognizing the importance of both pros and cons, especially when the “disagreers” included some of the same points they themselves thought important. Citizens could thus unexpectedly find common ground.
 
     %p.history
-      %a{:href => "http://spl.org", :target => "_blank"}
-        Seattle Public Library 
-      joined the partnership in 2012 to offer a popular
-      %a{:href => "/home/fact_check", :'data-target' => 'fact_check'}
-        on-demand fact-checking service 
-      to help citizens understand which statements are trustworthy. Any registered LVG participant can ask a librarian to do further research on claims made on any pro or con point contributed by other citizens. 
+      %a.t-about-image.fl{:href => "http://www.seattlecityclub.org", :target => "_blank"}
+        = theme_image_tag 'cityclub.png', :width => '100'
+
+      The LVG is brought to you by 
+      = succeed '.' do
+        %a{:href => "http://seattlecityclub.org", :target => "_blank"}
+          Seattle CityClub
+      Seattle CityClub provides a place for civic conversation, inspiration and action, and the LVG brings this mission of fostering an informed, engaged and healty community to statewide voters. 
+      Seattle CityClub is a non-profit organization that is passionately nonpartisan, and is committed to strengthening the civic health of our region.    
+
+
 
     %p.history
+      %a.t-about-image.fr{:href => "http://consider.it", :target => "_blank", :title => "ConsiderIt homepage"}
+        = image_tag 'considerit_logo.png', :width => '130'    
       The creator of the LVG,
       = succeed ',' do 
         %a{:href => "http://about.me/travis.kriplean", :target=>"_blank"}
@@ -79,6 +86,22 @@
       %a{:href => "http://consider.it", :target => "_blank"}
         started a company 
       to expand the use of ConsiderIt to cooperatives, governments, businesses, networks of organizations and elsewhere to help large groups make decisions more effectively. 
+
+
+
+    %p.history
+      %a.t-about-image.fl{ :href => "http://spl.org", :target=>"_blank"}
+        = theme_image_tag 'spl-logo.png', :width => '100'
+      %a{:href => "http://spl.org", :target => "_blank"}
+        Seattle Public Library 
+      joined the partnership in 2012 to offer a popular
+      %a{:href => "/home/fact_check", :'data-target' => 'fact_check'}
+        on-demand fact-checking service 
+      to help citizens understand which statements are trustworthy. Any registered LVG participant can ask a librarian to do further research on claims made on any pro or con point contributed by other citizens. 
+
+
+
+
 
 %script{ :type => "text/template", :id => "tpl_static_publications" }
 

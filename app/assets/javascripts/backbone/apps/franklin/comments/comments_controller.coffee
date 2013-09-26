@@ -13,8 +13,6 @@
             thankable_id : model.id
           thank = App.request 'thanks:create', attrs
           App.execute 'when:fetched', thank, ->
-            console.log 'rendering', thank
-
             layout.render()
 
         @listenTo layout, 'childview:revoke_thanks', (view) =>
@@ -40,10 +38,10 @@
       comment = App.request 'comment:create', attrs,
         wait : true
         success : (data) =>
+          @options.collection.add comment
           @layout.commentCreated()
           @trigger 'comment:created'
-          @options.collection.add comment
-      
+
 
     getLayout : (collection) ->
       new Comments.CommentsView

@@ -13,7 +13,11 @@
     %span.avatar.m-new-comment-avatar
     (( } ))
 
+
     .m-new-comment-body
+
+      (( if( comments_open) { ))
+
       %textarea.m-new-comment-body-field.is_counted{ :name => :body, :placeholder => 'Type your comment here...', :title => 'Type your comment here...' }
       %span.count
         1000
@@ -33,6 +37,9 @@
           Sign In
         %a.m-login-signup{:'data-target' => 'create_account'}
           Create Account
+      (( } ))
+      (( } else { ))
+      This conversation has concluded.
       (( } ))
 
 

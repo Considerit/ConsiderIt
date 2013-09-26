@@ -12,9 +12,6 @@
         can_assess : App.request('auth:can_assess')
         current_user : current_user
 
-
-
-
     events:
       'click .m-user-options-logout' : 'signoutRequested'
       'mouseenter .m-user-options' : 'nav_entered' 
@@ -43,16 +40,6 @@
 
   class Show.LoggedOut extends App.Views.ItemView
     template: "#tpl_logged_out"
-
-    events : 
-      'click [data-target="login"]' : 'user_signin_clicked'
-      'click [data-target="create_account"]' : 'user_registration_clicked'
-
-    user_signin_clicked : ->
-      @trigger 'signin:requested'
-
-    user_registration_clicked : ->
-      @trigger 'registration:requested'
 
     serializeData : ->
       model_data = if @model then @model.attributes else {}

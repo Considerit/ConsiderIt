@@ -12,7 +12,7 @@
         @setupProposal proposal_view
         layout.proposalRegion.show proposal_view
 
-        if @model.get 'published'
+        if @model.get('published') && @model.has_participants()
           summary_view = @getSummaryView @model
           @setupSummary summary_view
           layout.summaryRegion.show summary_view

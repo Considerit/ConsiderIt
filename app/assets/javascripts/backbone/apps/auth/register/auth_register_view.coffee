@@ -72,6 +72,10 @@
         if Modernizr.input.placeholder
           @$el.find('#user_name').focus() 
         else
+          #IE hack
+          @$el.find('.name_field').prepend('<label for="user_name">Your name</label>')
+          @$el.find('.email_field').prepend('<label for="user_email">Email address</label>')
+
           @$el.find('.password_field').prepend('<label for="user_password">Password</label>')
       else
         @$el.find('.password_field').hide()

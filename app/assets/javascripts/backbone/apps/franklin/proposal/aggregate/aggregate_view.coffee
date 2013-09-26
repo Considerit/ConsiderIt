@@ -1,4 +1,6 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
+  class Proposal.AggregateProposalDescription extends Proposal.ProposalDescriptionView
+
   class Proposal.AggregateLayout extends App.Views.Layout
     template : '#tpl_aggregate_layout'
     className : 'm-proposal'

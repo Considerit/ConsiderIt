@@ -1,5 +1,7 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
+  class Proposal.PositionProposalDescription extends Proposal.ProposalDescriptionView
+
   class Proposal.PositionLayout extends App.Views.Layout
     template : '#tpl_position_layout'
     className : 'm-proposal'

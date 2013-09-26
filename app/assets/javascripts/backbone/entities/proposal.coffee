@@ -118,9 +118,20 @@
     # current user saves a new position
     newPositionSaved : (position) ->
       user_id = @position.get('user_id')
-      if position.get('published') && !@user_participated(user_id)
-        @positions = null
-        @participant_list.push user_id 
+      if position.get('published') 
+
+        if !@user_participated(user_id)
+          @positions = null
+          @participant_list.push user_id 
+
+        if !@get('top_pro')
+          _.each position.written_points, (pnt) =>
+            if pnt.isPro()
+              @set('top_pro', pnt.id)
+        if !@get('top_con')
+          _.each position.written_points, (pnt) =>
+            if !pnt.isPro()
+              @set('top_con', pnt.id)
 
     isActive : ->
       @get('active')

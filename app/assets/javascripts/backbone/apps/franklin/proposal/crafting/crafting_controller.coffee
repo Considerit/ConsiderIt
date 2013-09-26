@@ -63,10 +63,11 @@
 
             success : (data) =>
               @model.set data.position.position
+              App.trigger 'points:fetched', (p.point for p in data.updated_points)
+
               @model.getProposal().newPositionSaved @model
 
               #TODO: make sure points getting updated properly in all containers
-              App.trigger 'points:fetched', (p.point for p in data.updated_points)
 
               # if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()
               #   @$el.attr('data-activity', 'proposal-has-activity')

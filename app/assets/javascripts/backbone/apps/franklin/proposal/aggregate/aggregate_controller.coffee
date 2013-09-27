@@ -46,7 +46,10 @@
               if idx of @removed_points
                 collection.fullCollection.add @removed_points[idx]
 
-              @removed_points[idx] = collection.fullCollection.filter( (point) -> !point.get(fld) || point.get(fld) == 0 )
+              @removed_points[idx] = collection.fullCollection.filter (point) ->
+                !point.get(fld) || point.get(fld) == 0
+
+
               collection.fullCollection.remove @removed_points[idx]
 
               collection.setSorting fld, 1

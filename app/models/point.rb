@@ -157,8 +157,6 @@ class Point < ActiveRecord::Base
     define_persuasiveness
     
     define_segment_scores
-
-    score = 0.000000001 if score.nil?
     
     save(:validate => false) if changed?
   end

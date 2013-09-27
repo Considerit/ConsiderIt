@@ -21,11 +21,14 @@ class Proposal < ActiveRecord::Base
 
   #before_save :extract_tags
 
+  class_attribute :my_public_fields
+  self.my_public_fields = [:id, :long_id, :activity, :additional_description2, :category, :created_at, :contested, :description, :designator, :additional_description1, :additional_description3, :name, :trending, :updated_at, :url1,:url2, :user_id, :active, :top_pro, :top_con, :participants, :publicity, :published, :slider_right, :slider_left, :considerations_prompt, :slider_prompt]
+  
   scope :active, where( :active => true, :published => true )
   scope :inactive, where( :active => false, :published => true )
   scope :open_to_public, where( :publicity => 2, :published => true )
   scope :privately_shared, where( 'publicity < 2')
-  scope :public_fields, select('id, long_id, activity, additional_description2,category,created_at,contested,description,designator,additional_description1,additional_description3,name,trending,updated_at,url1,url2,user_id, active, top_pro, top_con, participants,publicity,published,slider_right,slider_left,considerations_prompt,slider_prompt')
+  scope :public_fields, select(self.my_public_fields)
   scope :unpublished, where( :published => false)
   scope :browsable, where( :targettable => false)
 
@@ -33,8 +36,17 @@ class Proposal < ActiveRecord::Base
     user.proposals.public_fields.all + Proposal.privately_shared.where("access_list like '%#{user.email}%' ").public_fields.all
   end
 
+  def as_json(options={})
+    options[:only] ||= Proposal.my_public_fields
+    super(options)
+  end
+
   def public?
     publicity == 2
+  end
+
+  def only_public_fields
+    self.to_json :only => Proposal.my_public_fields
   end
 
 

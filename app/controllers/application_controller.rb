@@ -83,7 +83,7 @@ class ApplicationController < ActionController::Base
 
       proposals = Proposal.open_to_public.active.browsable
       proposals_active_count = proposals.count
-      proposals = proposals.public_fields.order('activity DESC').limit(3)
+      proposals = proposals.public_fields.order('activity DESC').limit(7)
       top = proposals.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
             proposals.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
       

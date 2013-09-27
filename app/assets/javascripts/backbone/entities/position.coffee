@@ -128,7 +128,7 @@
         @all_positions.add position, {merge: true}
 
     getPositionsByProposal : (proposal_id) ->
-      new Entities.Positions @all_positions.where({proposal_id: proposal_id})
+      new Entities.Positions @all_positions.where({proposal_id: proposal_id, published : true})
 
     getPositionsByUser : (user_id) ->
       new Entities.Positions @all_positions.where({user_id: user_id})

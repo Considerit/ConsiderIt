@@ -51,6 +51,12 @@ do (_) ->
       csrfValue = $("meta[name='csrf-token']").attr('content')
       params[csrfName] = csrfValue
 
+    trace : ->
+      try
+        throw new Error("myError")
+      catch e
+        console.log e.stack
+
 
 #http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
 (($, d) ->

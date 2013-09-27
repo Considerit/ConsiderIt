@@ -74,10 +74,8 @@ class ApplicationController < ActionController::Base
     #TODO: now that we have a global redirect to home#index for non-ajax requests, can we move this to home controller?
     if !request.xhr?
 
-      pp params
       if params.has_key? :reset_password_token
         @reset_password_token = params[:reset_password_token]
-        pp "Setting reset password token #{@reset_password_token}"
       end
 
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))

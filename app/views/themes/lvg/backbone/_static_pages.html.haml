@@ -219,18 +219,38 @@
 
 
 %script{ :type => "text/template", :id => "tpl_static_copromoters" }
-  - links = [{:anchor=>'501 Commons',:link=>'http://www.501commons.org/'}, {:anchor=>'American Society for Public Administration, Evergreen',:link=>'http://www.evergreenaspaonline.org/'}, {:anchor=>'City Year Seattle/ King County',:link=>'http://www.cityyear.org/seattle.aspx'}, {:anchor=>'Dumas and Associates',:link=>'http://www.dumasassoc.com/'}, {:anchor=>'Everett Public Library',:link=>'http://www.epls.org/'}, {:anchor=>'Global Washington',:link=>'http://globalwa.org/'}, {:anchor=>'Greater Seattle Business Association',:link=>'http://www.thegsba.org/'}, {:anchor=>'Guiding Lights Network',:link=>'http://www.guidinglightsnetwork.com/'}, {:anchor=>'Humanities Washington',:link=>'http://www.humanities.org/'}, {:anchor=>'King County Elections',:link=>'http://www.kingcounty.gov/elections.aspx'}, {:anchor=>'King County Library System',:link=>'http://www.kcls.org/>'}, {:anchor=>'Kitsap Regional Library',:link=>'http://www.krl.org/index.php'}, {:anchor=>'Leadership Eastside',:link=>'http://www.leadershipeastside.com/'}, {:anchor=>'Leadership Tomorrow',:link=>'http://www.leadershiptomorrowseattle.org/index.html'}, {:anchor=>'League of Education Voters',:link=>'http://www.educationvoters.org/'}, {:anchor=>'Lopez Island Library District',:link=>'http://www.lopezlibrary.org/'}, {:anchor=>'Municipal League of King County',:link=>'http://www.munileague.org/'}, {:anchor=>'North Olympic Library System',:link=>'http://www.nols.org/'}, {:anchor=>'Northwest Progressive Institute',:link=>'http://www.nwprogressive.org/'}, {:anchor=>'Orcas Island Library District',:link=>'http://www.orcaslibrary.org/',:link=>''}, {:anchor=>'Pend Oreille County Library District',:link=>'http://www.pocld.org/'}, {:anchor=>'Philanthropy Northwest',:link=>'http://www.philanthropynw.org/'}, {:anchor=>'Pierce County Library System',:link=>'http://www.piercecountylibrary.org/'}, {:anchor=>'Seattle Center Next Fifty', :link => 'http://www.seattlecenter.com/thenextfifty/home.aspx>'}, {:anchor=>'Seattle Public Library',:link=>'http://www.spl.lib.wa.us/'}, {:anchor=>'Seattle Works',:link=>'http://www.seattleworks.org/'}, {:anchor=>'Sno-Isle Libraries',:link=>'http://www.sno-isle.org/'}, {:anchor=>'Spokane Public Library',:link=>'http://www.spokanelibrary.org/'}, {:anchor=>'Tacoma Public Library',:link=>'http://www.tpl.lib.wa.us/Default.aspx'}, {:anchor=>'United Way of King County',:link=>'http://www.uwkc.org/'}, {:anchor=>'University of Washington Department of Communication',:link=>'http://www.com.washington.edu/'}, {:anchor=>'Washington News Council',:link=>'http://wanewscouncil.org/'}, {:anchor=>'Washington Policy Center',:link=>'http://www.washingtonpolicy.org/'}, {:anchor=>'Washington State Broadband Office',:link=>'http://broadband.wa.gov/'}, {:anchor=>'Washington Women\'s Foundation',:link=>'http://www.wawomensfoundation.org/'}, {:anchor=>'Whatcom County Library System',:link=>'http://www.wcls.org/'}, {:anchor=>'Whitman County Rural Library District',:link=>'http://www.whitco.lib.wa.us/'}, {:anchor=>'Women’s Funding Alliance',:link=>'http://www.wfalliance.org/'}, {:anchor=>'YWCA Seattle | King | Snohomish',:link=>'https://www.ywcaworks.org/netcommunity/'} ]
+  - media_links = [{:anchor=>'Wenatchee World',:link=>'http://www.wenatcheeworld.com/'},{:anchor=>'Tri-City Herald',:link=>'http://www.tri-cityherald.com/'},{:anchor=>'The Daily Herald',:link=>'http://www.heraldnet.com/'},{:anchor=>'The Daily World',:link=>'http://thedailyworld.com/'},{:anchor=>'Crosscut',:link=>'http://crosscut.com/'},{:anchor=>'The Chronicle',:link=>'http://www.chronline.com/'},{:anchor=>'Centralia Battle Ground Reflector',:link=>'http://www.thereflector.com/'},{:anchor=>'Nisqually Valley News',:link=>'http://www.yelmonline.com/'}]
+
+  - copromoters = [{:anchor=>'AARP',:link=>'http://www.aarp.org/'},{:anchor=>'American Society for Public Administration - Evergreen Chapter',:link=>'http://www.evergreenaspaonline.org/'},{:anchor=>'Anacortes Public Library',:link=>'http://library.cityofanacortes.org/client/default'},{:anchor=>'Asotin County Library',:link=>'http://www.aclib.org/'},{:anchor=>'Everett Public Library',:link=>'http://www.epls.org/'},{:anchor=>'Grays Harbor County Republican Central Committee',:link=>'http://www.ghgop.net/'},{:anchor=>'King County Elections',:link=>'http://www.kingcounty.gov/elections.aspx'},{:anchor=>'Leadership Eastside',:link=>'http://www.leadershipeastside.com/'},{:anchor=>'Leadership Tomorrow',:link=>'http://www.leadershiptomorrowseattle.org/index.html'},{:anchor=>'Longview Public Library',:link=>'http://www.longviewlibrary.org/'},{:anchor=>'Municipal League Foundation',:link=>'http://www.munileague.org/'},{:anchor=>'Northwest Progressive Institute',:link=>'http://www.nwprogressive.org/'},{:anchor=>'Office of the Secretary of State',:link=>'http://www.sos.wa.gov/'},{:anchor=>'Orcas Island Library District',:link=>'http://www.orcaslibrary.org/'},{:anchor=>'Philanthropy NW',:link=>'http://www.philanthropynw.org/s_pnw/index.asp'},{:anchor=>'Pierce County Library System',:link=>'http://www.piercecountylibrary.org/'},{:anchor=>'Responsible Choices',:link=>'http://www.responsiblechoiceswa.org/'},{:anchor=>'Seattle Public Library',:link=>'http://www.spl.org/'},{:anchor=>'Seattle Works',:link=>'http://www.seattleworks.org/'},{:anchor=>'Washington News Council',:link=>'http://wanewscouncil.org/'},{:anchor=>'Win/Win Network',:link=>'http://winwinnetwork.org/'},{:anchor=>'Women\'s Funding Alliance',:link=>'http://www.wfalliance.org/'}]
 
   #static-header
     %h1
       Thanks to our Living Voters Guide Co-promoters!
 
-  #static-main.copromoters
+  #static-header
+    %h2
+      Media partners
 
+  #static-main.copromoters
     %ul
-      - links.each do |link|
+      - media_links.each do |link|
         %li
           = link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:anchor], :rel => 'nofollow')
+
+
+  #static-header
+    %h2
+      Co-promoting partners
+
+  #static-main.copromoters
+
+
+    %ul
+      - copromoters.each do |link|
+        %li
+          = link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:anchor], :rel => 'nofollow')
+
+
 
 
 

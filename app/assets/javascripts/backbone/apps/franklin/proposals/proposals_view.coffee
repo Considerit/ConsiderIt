@@ -58,7 +58,7 @@
     sortProposalsTo : (ev) ->  
       @sort_by = $(ev.target).data('target')
       @trigger 'sort:requested', @sort_by
-      @$el.ensureInView()
+      @$el.moveToBottom()
 
 
   class Proposals.PaginationView extends App.Views.ItemView
@@ -83,35 +83,39 @@
       'click [data-target="proposallist:last"]' : 'gotoLast'
       'click [data-target="proposallist:page"]' : 'gotoPage'
 
+    proposalsLoaded : ->
+      @$el.moveToBottom()
+      
     showMoreRequested : (ev) ->
       @trigger 'pagination:show_more'
+
 
     gotoFirst : (ev) ->
       ev.preventDefault()
       @collection.getFirstPage()
-      @$el.ensureInView()
+      @$el.moveToBottom()
 
     gotoPrev : (ev) ->
       ev.preventDefault()
       @collection.getPreviousPage()
-      @$el.ensureInView()
+      @$el.moveToBottom()
 
     gotoNext : (ev) ->
       ev.preventDefault()
       @collection.getNextPage()
-      @$el.ensureInView()
+      @$el.moveToBottom() 
 
     gotoLast : (ev) ->
       ev.preventDefault()
       @collection.getLastPage()
-      @$el.ensureInView()
+      @$el.moveToBottom() 
 
     gotoPage : (ev) ->
       ev.preventDefault()
       page = $(ev.target).data('page')
 
       @collection.getPage(page)
-      @$el.ensureInView()
+      @$el.moveToBottom() 
 
 
   class Proposals.ProposalsListView extends App.Views.CompositeView

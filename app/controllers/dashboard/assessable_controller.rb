@@ -178,7 +178,7 @@ ActiveSupport::Notifications.subscribe("new_assessment_request") do |*args|
   # send to all users with moderator status
   evaluators = []
   current_tenant.users.where('roles_mask > 0').each do |u|
-    if u.has_any_role? :evaluator, :admin, :superadmin
+    if u.has_any_role? :evaluator, :superadmin
       evaluators.push(u)
     end
   end

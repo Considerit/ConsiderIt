@@ -66,13 +66,10 @@
       @proposal
 
     getUser : ->
-      if !@user 
-        @user = App.request 'user', @get('user_id')
-      @user
+      App.request 'user', @get('user_id')
 
     setUser : (user) ->
       @set 'user_id', user.id
-      @user = user
 
     stanceLabel : ->
       Entities.Position.stance_name_adverb @get('stance')

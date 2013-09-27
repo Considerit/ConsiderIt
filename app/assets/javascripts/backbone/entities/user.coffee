@@ -210,6 +210,11 @@
     addUser : (params) ->
       @users.add params
 
+    handleUpdatedCurrentUser : (current_user) ->
+      old_user = @all_users.remove current_user.id
+      @all_users.add current_user
+
+
   App.reqres.setHandler "user", (user_id) ->
     API.getUser user_id
 
@@ -228,6 +233,9 @@
 
   App.reqres.setHandler 'users:add', (params) ->
     API.addUser params
+
+  App.vent.on 'current_user:set', (current_user) ->
+    API.handleUpdatedCurrentUser current_user
 
 
   App.on 'initialize:before', ->
@@ -261,6 +269,8 @@
       ######
 
       @current_user = existing_user
+
+      App.vent.trigger 'current_user:set', @current_user
       @current_user
 
     set_fixed_user : (user_data) ->

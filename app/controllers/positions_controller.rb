@@ -65,15 +65,22 @@ class PositionsController < ApplicationController
     position.follow!(current_user, :follow => true, :explicit => false)
     proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
 
+    updated_points = Point.where('id in (?)', updated_points)
+    updated_points.each do |pnt|
+      pnt.update_absolute_score
+    end
 
-    proposal.delay.update_metrics()
-    
+    proposal.update_metrics()
+
     alert_new_published_position(proposal, position) unless already_published
 
-    render :json => {
+    results = {
       :position => position,
-      :updated_points => Point.where('id in (?)', updated_points).metrics_fields.all
+      :updated_points => updated_points.metrics_fields,
+      :proposal => proposal
     }
+        
+    render :json => results
 
   end
 
@@ -123,7 +130,6 @@ protected
           } )
           if !actions[:written_points].include?(point_id) 
             pnt = Point.find(point_id)
-            pnt.update_absolute_score
             inc.track!
             pnt.follow!(current_user, :follow => true, :explicit => false)
             updated_points.push(point_id)
@@ -142,8 +148,9 @@ protected
       pnt.published = 1
       
       pnt.position_id = position.id
-      pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001})
-      pnt.update_absolute_score
+      pp "score_stance_group_#{position.stance_bucket}"
+      pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001, :score => 0.0000001})
+
       updated_points.push(pnt_id)
 
 
@@ -166,8 +173,8 @@ protected
         inc.point.update_absolute_score
       end
       updated_points.push(point_id)
-
     end
+
     actions[:deleted_points] = {}
 
     point_listings = []

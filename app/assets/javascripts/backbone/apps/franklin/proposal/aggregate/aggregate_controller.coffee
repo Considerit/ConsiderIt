@@ -41,7 +41,6 @@
 
           @listenTo histogram_view, 'histogram:segment_results', (segment) =>
             fld = if segment == 'all' then 'score' else "score_stance_group_#{segment}"
-
             reasons_layout.updateHeader segment            
             _.each [aggregated_pros, aggregated_cons], (collection, idx) =>
               if idx of @removed_points
@@ -52,9 +51,6 @@
 
               collection.setSorting fld, 1
               collection.fullCollection.sort()
-
-            @pros_controller.layout.render()
-            @cons_controller.layout.render()
 
         layout.proposalRegion.show proposal_view
         layout.reasonsRegion.show reasons_layout

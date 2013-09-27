@@ -48,8 +48,8 @@
 
     initialize : (options = {}) ->
       super options
-      @listenTo @collection.fullCollection, 'reset add', =>
-        @render()      
+      # @listenTo @collection.fullCollection, 'reset', =>
+      #   @render()      
 
     serializeData : ->
       data = super
@@ -58,6 +58,7 @@
 
     onRender : ->
       super
+
       if @collection.state.totalRecords > @collection.state.pageSize
         @$el.addClass('m-point-list-has-pagination')
 

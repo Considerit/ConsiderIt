@@ -47,7 +47,9 @@
         
     ### AUTH ###
     hasRole : (role) -> _.indexOf(@roles(), role) >= 0
-    updateRole : (roles_mask) -> @set 'roles_mask', roles_mask
+    updateRole : (roles_mask) -> 
+      @set 'roles_mask', roles_mask
+      @my_roles = null
 
     isAdmin : -> @hasRole('admin') || @hasRole('superadmin')
     isModerator : -> @isAdmin() || @hasRole('moderator')

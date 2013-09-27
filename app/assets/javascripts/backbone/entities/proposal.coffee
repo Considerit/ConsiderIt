@@ -165,7 +165,7 @@
 
   class Entities.PaginatedProposals extends window.mixOf Entities.Proposals, App.Entities.PaginatedCollection 
     state:
-      pageSize: 5
+      pageSize: 7
       currentPage: 1
 
   API =

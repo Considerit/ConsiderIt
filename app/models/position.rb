@@ -14,7 +14,7 @@ class Position < ActiveRecord::Base
   acts_as_tenant(:account)
 
   scope :published, where( :published => true )
-  scope :public_fields, select( [:long_id, :created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_bucket, :user_id, :explanation])
+  scope :public_fields, select( [:long_id, :created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_bucket, :user_id, :explanation, :published])
 
   before_save do 
     self.explanation = Sanitize.clean(self.explanation, Sanitize::Config::RELAXED)

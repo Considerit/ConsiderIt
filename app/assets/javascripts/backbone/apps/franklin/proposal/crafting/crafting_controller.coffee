@@ -67,7 +67,7 @@
 
               @model.set data.position.position
 
-              App.trigger 'points:fetched', (p.point for p in data.updated_points)
+              App.vent.trigger 'points:fetched', (p.point for p in data.updated_points)
               proposal.set(data.proposal) if 'proposal' of data
 
               proposal.newPositionSaved @model

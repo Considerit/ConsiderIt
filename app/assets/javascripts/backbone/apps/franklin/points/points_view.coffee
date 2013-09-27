@@ -161,7 +161,7 @@
 
       $(document).off '.m-pointlist-browsing'
       @$el.off '.m-pointlist-browsing'
-      @$el.find('.m-pointlist-browse-toggle').ensureInView .5
+      @$el.find('.m-pointlist-browse-toggle').ensureInView {fill_threshold: .5}
 
     ###### end hack #####
 

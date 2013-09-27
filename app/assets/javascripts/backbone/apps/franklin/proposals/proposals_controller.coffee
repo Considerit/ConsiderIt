@@ -55,7 +55,7 @@
 
       if @options.total_models > proposals_view.collection.state.pageSize
         pagination_view = @getPaginationView proposals_view.collection
-        @listenTo pagination_view, 'pagination:show_more', => @handleShowMore proposals_view.collection
+        @listenTo pagination_view, 'pagination:show_more', => @handleShowMore proposals_view.collection, pagination_view
         layout.paginationRegion.show pagination_view
 
       @proposals_view = proposals_view
@@ -72,8 +72,9 @@
         collection: collection
         sort_by: sort_by
 
-    handleShowMore : (collection) ->
-      @requestProposals collection, @is_active
+    handleShowMore : (collection, view) ->
+      @requestProposals collection, @is_active, ->
+        view.proposalsLoaded()
 
     handleProposalDeleted : (collection, model) ->
       collection.fullCollection.remove model

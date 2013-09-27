@@ -62,10 +62,14 @@
             contentType : 'application/json'
 
             success : (data) =>
+              #TODO : move this to Position.coffee
               @model.set data.position.position
-              App.trigger 'points:fetched', (p.point for p in data.updated_points)
+              proposal = @model.getProposal()
 
-              @model.getProposal().newPositionSaved @model
+              App.trigger 'points:fetched', (p.point for p in data.updated_points)
+              proposal.set(data.proposal) if 'proposal' of data
+
+              proposal.newPositionSaved @model
 
               #TODO: make sure points getting updated properly in all containers
 

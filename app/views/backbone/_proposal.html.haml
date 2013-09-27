@@ -131,21 +131,12 @@
 
 %script{ :type => "text/template", :id => "tpl_aggregate_histogram"}
 
-  / .m-histogram-label-support
-  /   Supporters
-
   (( _.each(histogram.breakdown, function(bar){ ))
 
   (( var bucket = bar.bucket; ))
   .m-histogram-bar{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}"}
 
     = render :partial => "shared/bubble_equilateral", :locals => {:left => false}
-
-    // .m-bar-percentage
-    //   %span.m-bar-percentage-number
-    //     (Math.ceil(bar.positions.length / participants.length * 1000)/10).toFixed(1) % 
-    //   %span.m-bar-percentage-group
-    //     ConsiderIt.Position.stance_name_for_bar(6-bucket) 
 
     (( if (bar.positions.length > 0) { ))
     %ul.m-bar-people

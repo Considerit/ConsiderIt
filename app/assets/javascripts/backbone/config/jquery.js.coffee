@@ -94,9 +94,9 @@ do ($) ->
 
     target = el_bottom - doc_height + offset_buffer
 
-    console.log "el_top: #{el_top}, el_bottom: #{el_bottom}"
-    console.log "doc_top: #{doc_top}, doc_bottom: #{doc_bottom}"
-    console.log "target: #{target}"
+    # console.log "el_top: #{el_top}, el_bottom: #{el_bottom}"
+    # console.log "doc_top: #{doc_top}, doc_bottom: #{doc_bottom}"
+    # console.log "target: #{target}"
 
     if scroll
       distance_to_travel = Math.abs( doc_top - target )

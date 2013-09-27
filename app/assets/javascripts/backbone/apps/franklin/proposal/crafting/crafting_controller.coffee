@@ -63,8 +63,9 @@
 
             success : (data) =>
               #TODO : move this to Position.coffee
-              @model.set data.position.position
               proposal = @model.getProposal()
+
+              @model.set data.position.position
 
               App.trigger 'points:fetched', (p.point for p in data.updated_points)
               proposal.set(data.proposal) if 'proposal' of data
@@ -81,7 +82,7 @@
                 positionClass: "toast-top-full-width"
                 fadeIn: 100
                 fadeOut: 100
-                timeOut: 15000
+                timeOut: 10000
                 extendedTimeOut: 100
 
               App.navigate Routes.proposal_path( @model.get('long_id') ), {trigger: true}

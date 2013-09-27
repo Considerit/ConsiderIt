@@ -118,7 +118,6 @@
     #   @getUserPosition
 
     setUserPosition : (position_id) ->
-      trace()
       @position = App.request 'position:get', position_id
 
     # TODO: refactor this method out...handles what happens when 

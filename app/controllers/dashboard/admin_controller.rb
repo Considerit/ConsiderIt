@@ -49,7 +49,7 @@ class Dashboard::AdminController < Dashboard::DashboardController
       elsif params[:user][:role] == 'user'
         user.roles = nil
       else
-        [:moderator, :manager, :analyst].each do |role|
+        [:moderator, :evaluator, :manager, :analyst].each do |role|
           user.roles.delete(role)
           if params[:user][role] == '1'
             user.roles << role

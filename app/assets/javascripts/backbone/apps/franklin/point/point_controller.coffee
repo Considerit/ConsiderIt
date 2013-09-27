@@ -44,7 +44,7 @@
           .addClass('m-point-expanded')
           .removeClass('m-point-unexpanded')
 
-        @layout.$el.ensureInView .5
+        @layout.$el.ensureInView {fill_threshold: .5}
         @layout.$el.putBehindLightbox()
 
       @layout.expansionRegion.show expanded_view
@@ -114,7 +114,7 @@
 
       @layout.expansionRegion.reset() if @layout.expansionRegion
 
-      @layout.$el.ensureInView .5
+      @layout.$el.ensureInView {fill_threshold: .5}
 
       App.request 'nav:back:crumb' if go_back
       

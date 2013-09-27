@@ -2,6 +2,7 @@
 
   class Entities.Proposal extends App.Entities.Model
     name: 'proposal'
+    fetched: false
     defaults : 
       participants : '[]'
       active : true
@@ -48,6 +49,8 @@
         App.request 'assessments:add', (a.assessment for a in params.assessments)
         App.request 'claims:add', (c.claim for c in params.claims)
         App.request 'verdicts:add', (v.verdict for v in params.verdicts)
+
+      @fetched = true
 
 
     description_detail_fields : ->
@@ -105,20 +108,17 @@
         @position
 
     getPositions : ->
-      if !@positions
-        @positions = App.request 'positions:get:proposal', @id
-      @positions
+      App.request 'positions:get:proposal', @id
 
     getPoints : ->
-      if !@points
-        @points = App.request 'points:get:proposal', @id
-      @points
-
-    updatePosition : (attrs) ->
-      @getUserPosition().set attrs
-      @getUserPosition
+      App.request 'points:get:proposal', @id
+      
+    # updatePosition : (attrs) ->
+    #   @getUserPosition().set attrs
+    #   @getUserPosition
 
     setUserPosition : (position_id) ->
+      trace()
       @position = App.request 'position:get', position_id
 
     # TODO: refactor this method out...handles what happens when 
@@ -194,10 +194,11 @@
     
     getProposal: (long_id, fetch = false) ->
       proposal = @all_proposals.findWhere {long_id : long_id}
+
       if !proposal
         proposal = API.newProposal {long_id : long_id}
         proposal.fetch()
-      else if fetch
+      else if fetch && !proposal.fetched #don't double fetch, else end up with multiple user positions
         proposal.fetch()
       proposal
 

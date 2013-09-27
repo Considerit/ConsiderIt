@@ -49,10 +49,6 @@ class ApplicationController < ActionController::Base
       @limited_user_email = @limited_user.email
     end
 
-    if params.has_key?(:reset_password_token)
-      @reset_password_token = params[:reset_password_token]
-    end
-
     #TODO: what does this do?
     if args && args.first.respond_to?('has_key?')
       args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
@@ -66,8 +62,6 @@ class ApplicationController < ActionController::Base
       current_tenant.save
     end
 
-    @host_with_port = request.host_with_port
-
     # Destroy the current user if a request is made to the server when the user has yet
     # to complete their registration. There are no legit reasons for a refresh to occur, 
     # and many illegimate ones. 
@@ -79,6 +73,13 @@ class ApplicationController < ActionController::Base
 
     #TODO: now that we have a global redirect to home#index for non-ajax requests, can we move this to home controller?
     if !request.xhr?
+
+      pp params
+      if params.has_key? :reset_password_token
+        @reset_password_token = params[:reset_password_token]
+        pp "Setting reset password token #{@reset_password_token}"
+      end
+
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
       @proposals = []
 

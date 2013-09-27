@@ -2,11 +2,6 @@ class HomeController < ApplicationController
   #caches_page :index
   respond_to :json, :html
 
-  caches_action :index, :cache_path => proc {|c|
-    updated_at = current_tenant.proposals.count > 0 ? current_tenant.proposals.order('updated_at DESC').limit(1).first.updated_at.to_i : 0
-    {:tag => "is_logged_in-#{current_user ? "#{current_user.id}-#{current_user.registration_complete}-#{current_user.avatar_file_name}"  : '-1'}-#{updated_at}-#{current_tenant.updated_at}}"}
-  }
-
   caches_action :avatars, :cache_path => proc {|c|
     {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}"}
   }

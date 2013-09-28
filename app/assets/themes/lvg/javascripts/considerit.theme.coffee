@@ -19,7 +19,7 @@
     current_user = ConsiderIt.request 'user:current'
     tags = current_user.getTags()
     if tags.length > 0
-      fetch_targetable_proposals tags[tags.length-1]
+      fetch_targetable_proposals tags[0]
 
     
     $(document).on 'click', '#t-unlock-measures-button', (ev) ->

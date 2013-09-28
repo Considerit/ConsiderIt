@@ -8,7 +8,7 @@ class Proposal < ActiveRecord::Base
   has_many :claims, :through => :assessments, :dependent => :destroy
 
   belongs_to :user
-  
+
   acts_as_tenant(:account)
   #attr_taggable :tags
 
@@ -189,12 +189,22 @@ class Proposal < ActiveRecord::Base
 
   end
 
-  def get_tags
-    description.split.find_all{|word| /^#.+/.match word}
+  # def get_tags
+  #   description.split.find_all{|word| /^#.+/.match word}
+  # end
+
+  # def extract_tags
+  #   self.tags += get_tags
+  # end
+
+
+  def has_tag(tag)
+    self.tags && self.tags.index("#{tag};")
   end
 
-  def extract_tags
-    self.tags += get_tags
+  def add_tag(tag)
+    self.tags ||= ""
+    self.tags << "#{tag};" if !has_tag(tag)
   end
 
   def add_long_id

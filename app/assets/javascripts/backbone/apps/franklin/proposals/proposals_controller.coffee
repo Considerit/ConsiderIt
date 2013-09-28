@@ -35,31 +35,44 @@
         @region.show layout
 
       @region.show layout
+
+      @listenTo App.vent, 'proposals:fetched:done proposals:added', => 
+        @region.reset()
+        @region.show layout
+
       @layout = layout
 
     handleShow : (layout) ->
-      proposals_view = @getProposals @is_active
+      proposals_view = @setupProposalsView @is_active
+      filter_view = @setupFilterView proposals_view.collection
+      pagination_view = @setupPaginationView proposals_view.collection
 
-      @sortCollection {collection: proposals_view.collection, sort_by: 'activity'}
-
-      filter_view = @getFilterView proposals_view.collection
-
-      @listenTo proposals_view, 'before:item:added', (view) -> @handleBeforeViewAdded view
-      @listenTo proposals_view, 'childview:proposal:deleted', (view) => @handleProposalDeleted proposals_view.collection, view.model
-      @listenTo filter_view, 'sort:requested', (sort_by) => @handleSortRequested proposals_view.collection, sort_by
-      @listenTo App.vent, 'proposals:reset', => @handleReset proposals_view.collection, @is_active
-
+      @listenTo App.vent, "proposals:show_more_handled:#{@is_active}", ->
+        pagination_view.proposalsLoaded()
 
       layout.proposalsRegion.show proposals_view
       layout.filtersRegion.show filter_view
-
-      if @options.total_models > proposals_view.collection.state.pageSize
-        pagination_view = @getPaginationView proposals_view.collection
-        @listenTo pagination_view, 'pagination:show_more', => @handleShowMore proposals_view.collection, pagination_view
-        layout.paginationRegion.show pagination_view
+      layout.paginationRegion.show pagination_view
 
       @proposals_view = proposals_view
 
+    setupProposalsView : (is_active) ->
+      view = @getProposals @is_active
+      @sortCollection {collection: view.collection, sort_by: 'activity'}
+      @listenTo view, 'before:item:added', (vw) -> @handleBeforeViewAdded vw
+      @listenTo view, 'childview:proposal:deleted', (vw) => @handleProposalDeleted view.collection, vw.model
+      @listenTo App.vent, 'proposals:reset', => @handleReset view.collection, @is_active
+      view
+
+    setupPaginationView : (collection) ->
+      view = @getPaginationView collection
+      @listenTo view, 'pagination:show_more', => @handleShowMore collection, view
+      view
+
+    setupFilterView : (collection) ->
+      view = @getFilterView collection
+      @listenTo view, 'sort:requested', (sort_by) => @handleSortRequested collection, sort_by
+      view
 
     handleBeforeViewAdded : (view) ->
       new App.Franklin.Proposal.SummaryController
@@ -74,7 +87,7 @@
 
     handleShowMore : (collection, view) ->
       @requestProposals collection, @is_active, ->
-        view.proposalsLoaded()
+        App.vent.trigger "proposals:show_more_handled:#{@is_active}"
 
     handleProposalDeleted : (collection, model) ->
       collection.fullCollection.remove model
@@ -113,10 +126,11 @@
 
     getProposals : (is_active) ->
       all_proposals = App.request('proposals:get')
-      filtered_collection = all_proposals.where({active : is_active})
 
+      filtered_collection = all_proposals.where({active : is_active})
       collection = new App.Entities.PaginatedProposals filtered_collection,
         fullCollection : filtered_collection
+        total_models : @options.total_models
 
       if is_active
         list = new Proposals.ActiveProposalsList

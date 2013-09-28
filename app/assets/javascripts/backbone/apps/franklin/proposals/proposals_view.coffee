@@ -38,7 +38,6 @@
       @listenTo App.vent, 'proposals:fetched:done', =>
         @render() 
 
-
     serializeData : ->
       sortable_fields : [ 
         {name: 'Most active', target: 'activity'}, 
@@ -70,10 +69,12 @@
         @render()
 
     serializeData : ->
-      _.extend {}, @collection.state,
+      params = _.extend {}, @collection.state,
         page_set : (page for page in [@collection.state.firstPage..@collection.state.lastPage])
         data_loaded : App.request "proposals:are_fetched"
         prompt: if @options.is_active then "Show more ongoing conversations" else "Show past conversations"
+        has_more_models : @options.total_models > @collection.state.pageSize || @collection.state.totalPages > 1
+      params
 
     events : 
       'click .m-pointlist-pagination-showmore' : 'showMoreRequested'
@@ -113,7 +114,6 @@
     gotoPage : (ev) ->
       ev.preventDefault()
       page = $(ev.target).data('page')
-
       @collection.getPage(page)
       @$el.moveToBottom() 
 

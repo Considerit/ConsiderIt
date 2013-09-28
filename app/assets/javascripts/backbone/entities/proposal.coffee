@@ -224,14 +224,16 @@
     
     addProposals : (proposals) ->
       @all_proposals.add @all_proposals.parse(proposals), {merge: true}
+      App.vent.trigger 'proposals:added'
 
-    bootstrapProposals : (proposals_attrs) ->      
+    bootstrapProposals : (proposals_attrs) ->  
       @all_proposals.set @all_proposals.parse proposals_attrs
 
     getProposals: (fetch = false) ->
       if fetch && !@proposals_fetched
         @all_proposals.fetch
-          reset: true
+          remove: false
+
         @proposals_fetched = true
 
         App.execute "when:fetched", @all_proposals, ->

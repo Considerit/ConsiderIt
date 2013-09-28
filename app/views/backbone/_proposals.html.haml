@@ -47,9 +47,9 @@
 
 %script{ :type => "text/template", :id => "tpl_proposal_list_pagination"}
   .m-proposals-list-pagination-wrap
-    (( if (data_loaded) { ))
+    (( if (data_loaded || has_more_models) { ))
     %span.m-proposals-list-pagination-pages
-      (( if (currentPage > 1) { ))
+      (( if (currentPage > 1 && false) { ))
       %span.m-proposals-list-pagination-jump-left
         %a.m-proposals-list-pagination-jump{:'data-target'=> 'proposallist:first'}
           &laquo; First
@@ -65,7 +65,7 @@
         {{ p }} 
       (( } ))
       (( }); ))
-      (( if (lastPage != currentPage && lastPage != 0) { ))
+      (( if (lastPage != currentPage && lastPage != 0 && false) { ))
       %span.m-proposals-list-pagination-jump-right
         %a.m-proposals-list-pagination-jump{:'data-target'=> 'proposallist:next'}
           &raquo;

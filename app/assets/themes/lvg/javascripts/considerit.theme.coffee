@@ -4,10 +4,17 @@
     #################
     ## LOCAL MEASURES
 
-    fetch_targetable_proposals = (target) ->
+    fetch_targetable_proposals = (target, initial = false) ->
       $.get Routes.proposals_path(), {target: target}, (data, status, xhr) ->
         ConsiderIt.vent.trigger 'proposals:fetched', data
         ConsiderIt.vent.trigger 'proposals:reset'
+
+        if initial
+          zip = target.split(':')[1]
+          proposals = data.proposals
+          msg = if data.proposals.length > 0 then "#{data.proposals.length} ballot measures for #{zip} are now accessible." else "Sorry, we do not have any local measures on file for #{zip}."
+          toastr.success(msg) if initial
+
 
     current_user = ConsiderIt.request 'user:current'
     tags = current_user.getTags()
@@ -16,8 +23,9 @@
 
     
     $(document).on 'click', '#t-unlock-measures-button', (ev) ->
-      target = "zip:#{$('#t-unlock-measures-zip').val()}"
-      fetch_targetable_proposals(target);
+      zip = $('#t-unlock-measures-zip').val()
+      target = "zip:#{zip}"
+      fetch_targetable_proposals(target, true);
       $.post Routes.set_tag_path(), {tags:"#{target}"}, (data, status, xhr) ->
 
     ##################

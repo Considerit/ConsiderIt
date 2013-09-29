@@ -1,25 +1,35 @@
 //////////////// shared ////////////////
 %script{ :type => "text/template", :id => "tpl_proposal_description"}
+  (( prop_type = proposal.getTagsByType('type'); ))
+  (( jurisdiction = proposal.getTagsByType('jurisdiction'); ))
+
+
+  (( console.log(prop_type); if(prop_type=='local'){ console.log( $(".m-proposal[data-id='"+proposal.id+"']") ); $(".m-proposal[data-id='"+proposal.id+"']").addClass('t-local'); } ))
+
   .l-message.m-proposal-message.m-proposal-introduction
     .l-message-speaker.left.l-message-initiator
       %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
         %img{:src => "{{ avatar }}"}
+      .t-jurisdiction
+        %span
+          {{jurisdiction}}
 
     .l-message-body.left.down.m-proposal-description
       = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
       .l-message-title
         %span.m-proposal-leading
-          {{ category }} {{designator}}: 
+          {{ category }} {{designator}} 
         %span.m-proposal-description-title
+        (( if(!show_details){ ))
+        %span.m-proposal-description-title-readmore
+          read more
+        (( } ))
 
-      (( if(!show_details){ ))
-      %span.m-proposal-description-title-readmore
-        [read more]
-      (( } else if(!published) { ))
+      (( if(show_details && !published) { ))
       .l-message-details.m-proposal-description-body
 
-      (( } else { ))
+      (( } else if (!show_details) { ))
       .l-message-details.m-proposal-description-body
 
       .m-proposal-description-details

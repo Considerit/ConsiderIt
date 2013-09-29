@@ -9,12 +9,17 @@
         ConsiderIt.vent.trigger 'proposals:fetched', data
         ConsiderIt.vent.trigger 'proposals:reset'
 
+        zip = target.split(':')[1]
+
         if initial
-          zip = target.split(':')[1]
           proposals = data.proposals
           msg = if data.proposals.length > 0 then "#{data.proposals.length} ballot measures for #{zip} are now accessible." else "Sorry, we do not have any local measures on file for #{zip}."
           toastr.success(msg) if initial
 
+        $unlocked = $('.unlocked')
+        $unlocked.find('.zipcode').text(zip)
+        $('.unlock').hide()
+        $unlocked.show()
 
     current_user = ConsiderIt.request 'user:current'
     tags = current_user.getTags()
@@ -26,7 +31,13 @@
       zip = $('#t-unlock-measures-zip').val()
       target = "zip:#{zip}"
       fetch_targetable_proposals(target, true);
-      $.post Routes.set_tag_path(), {tags:"#{target}"}, (data, status, xhr) ->
+      $.post Routes.set_tag_path(), {tags:"#{target}", overwrite_type: true}, (data, status, xhr) ->
+
+    $(document).on 'click', '.t-unlock-local .reset_zip', (ev) ->
+      $('.unlocked').hide()
+      $('.unlock').show()
+      
+
 
     ##################
 

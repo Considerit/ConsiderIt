@@ -221,11 +221,16 @@ class User < ActiveRecord::Base
     return split[0]  
   end
 
-  def addTags(tags)
+  def addTags(new_tags, overwrite_type = false)
     self.tags ||= ''
+    existing_tags = getTags()
 
-    existing_tags = self.tags.split(';')
-    self.tags = (existing_tags | tags).join(';')
+    if overwrite_type
+      types = new_tags.map{|t| t.split(':')[0]}
+      existing_tags.delete_if {|t| types.include?(t.split(':')[0])}
+    end
+
+    self.tags = (existing_tags | new_tags).join(';')
     self.save
   end
 
@@ -233,6 +238,8 @@ class User < ActiveRecord::Base
     tags = self.tags ||= ''
     tags.split(';')
   end
+
+
 
   def add_token
     self.unique_token = SecureRandom.hex(10)

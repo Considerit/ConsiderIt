@@ -136,6 +136,19 @@
     isActive : ->
       @get('active')
 
+    #TODO: refactor this out into "tagged" model
+    getTags : ->
+      if tags = @get('tags')
+        _.compact tags.split(';')
+      else
+        []
+
+    getTagsByType : (type) ->
+      tags = @getTags()
+      tags = (t.split(':')[1] for t in tags when t.split(':')[0] == type)
+      tags ||= []      
+      tags = tags[0] if tags.length == 1
+      tags
 
   class Entities.Proposals extends App.Entities.Collection
 
@@ -162,6 +175,7 @@
     purge_inaccessible : -> 
       @remove @filter (p) -> 
         p.get('publicity') < 2 || !p.get('published')
+
 
   class Entities.PaginatedProposals extends window.mixOf Entities.Proposals, App.Entities.PaginatedCollection 
     state:

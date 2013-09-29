@@ -82,11 +82,20 @@
         @my_roles = user_roles
       @my_roles
 
+    #TODO: refactor this out into "tagged" model
     getTags : ->
       if tags = @get('tags')
-        tags.split(';')
+        _.compact tags.split(';')
       else
         []
+
+    getTagsByType : (type) ->
+      tags = @getTags()
+      tags = (t.split(':')[1] for t in tags when t.split(':')[0] == type)
+      tags ||= []      
+      tags = tags[0] if tags.length == 1
+      tags
+
 
     ### Relations ###
     getProposals : ->

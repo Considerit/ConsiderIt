@@ -65,14 +65,22 @@ class HomeController < ApplicationController
 
   # right now this is only used by LVG for zip codes...
   def set_tag
-    session[:tags] ||= []
-    session[:tags] |= params[:tags].split(';')
+
+    new_tags = params[:tags].split(';')
+
     if current_user
-      current_user.addTags session[:tags]
+      current_user.addTags new_tags, params['overwrite_type']
       tags = current_user.getTags()
     else
-      tags = session[:tags]
+      tags = session.has_key?(:tags) ? session[:tags] : []
+      if params['overwrite_type']
+        types = new_tags.map{|t| t.split(':')[0]}
+        tags.delete_if {|t| types.include?(t.split(':')[0])}
+      end
+      tags |= new_tags
+      session[:tags] = tags
     end
+
     render :json => { :success => true, :user_tags => tags}
   end  
 

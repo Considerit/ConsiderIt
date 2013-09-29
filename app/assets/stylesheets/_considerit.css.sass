@@ -718,6 +718,7 @@ $tooltip_width: 225px
     @extend %bolded
     +font-size(2)
 
+
   .m-proposal-description
     +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
     //z-index: 3
@@ -727,6 +728,10 @@ $tooltip_width: 225px
       color: $initiator_text_color
     td
       padding: 0 3px
+
+    .m-proposal-description-body
+      +font-size(-1)
+      margin-top: $vertical_baseline/2
 
   .m-proposal-description-details
     +font-size(-2)
@@ -744,6 +749,7 @@ $tooltip_width: 225px
   .m-proposal-description-title-readmore
     +font-size(-3)
     white-space: nowrap
+    font-weight: normal
 
   &[data-state="0"][data-visibility="published"]
     .m-proposal-description-title

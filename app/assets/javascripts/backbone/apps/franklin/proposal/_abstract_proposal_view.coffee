@@ -12,6 +12,7 @@
     serializeData : ->
       user = @model.getUser()
       _.extend {}, @model.attributes,
+        proposal : @model
         avatar : App.request('user:avatar', user, 'large' )
         description_detail_fields : @model.description_detail_fields()
         show_details : @show_details

@@ -188,9 +188,11 @@
   border-radius: 5px
   z-index: 20
   width: 390px
+  +font-size(-2)
 
-  .subtext
-    padding-right: $grid_xs / 2
+  .unlock
+    .subtext
+      padding-right: $grid_xs / 2
 
   h3 
     color: #333
@@ -206,9 +208,7 @@
     +font-size(-3)
     a
       text-decoration: underline
-  .reset
-    display: inline-block
-    +font-size(-2)
+    
 
   a
     color: inherit
@@ -221,6 +221,43 @@
     +font-size(1)
 /////
 
+
+///proposal description
+
+
+.t-jurisdiction
+  text-align: center
+  width: 70px
+  height: 70px
+  position: absolute
+  top: 0
+
+  &:before
+    content: ''
+    display: inline-block
+    height: 100%
+    vertical-align: middle
+    margin-right: -0.25em /* Adjusts for spacing */
+
+  +font-size(-4)
+  line-height: 1em
+
+  span
+    display: inline-block
+    vertical-align: middle
+    width: 70px
+
+    background-color: rgba(#fafafa, 1)
+
+.t-local
+  .m-point-assessment-region
+    display: none
+
+.m-proposal-leading
+  font-weight: normal
+  font-variant: small-caps
+  padding-right: $grid_xs/2
+  text-transform: lowercase
 
 html body #m-dashboard
   margin-bottom: 0

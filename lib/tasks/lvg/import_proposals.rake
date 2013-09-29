@@ -13,7 +13,12 @@ namespace :lvg do
         throw 'Could not find proposal'
       end
       jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
-      next if jurisdiction == 'Statewide'
+      if jurisdiction == 'Statewide'
+        proposal.add_tag 'type:statewide'
+        proposal.add_tag "jurisdiction:State of Washington"
+        proposal.save
+        next
+      end
 
       if !(jurisdiction_to_proposals.has_key?(jurisdiction))
         jurisdiction_to_proposals[jurisdiction] = []
@@ -43,6 +48,9 @@ namespace :lvg do
       # tags = zips.map{|z|"zip:#{z}"}.join(';')
 
       proposals.each do |p|
+        p.add_tag "type:local"
+        p.add_tag "jurisdiction:#{jurisdiction}"
+
         zips.each do |zip|
           p.targettable = true
           p.add_tag "zip:#{zip}"

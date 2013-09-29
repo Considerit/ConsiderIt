@@ -4,7 +4,7 @@
   (( jurisdiction = proposal.getTagsByType('jurisdiction'); ))
 
 
-  (( console.log(prop_type); if(prop_type=='local'){ console.log( $(".m-proposal[data-id='"+proposal.id+"']") ); $(".m-proposal[data-id='"+proposal.id+"']").addClass('t-local'); } ))
+  (( if(prop_type=='local'){ $(".m-proposal[data-id='"+proposal.id+"']").addClass('t-local'); } ))
 
   .l-message.m-proposal-message.m-proposal-introduction
     .l-message-speaker.left.l-message-initiator

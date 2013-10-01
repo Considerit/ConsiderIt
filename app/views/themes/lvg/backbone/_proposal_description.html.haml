@@ -51,7 +51,7 @@
 
         (( }); ))
 
-        (( _.each([{field: url1, name: 'Full text'} ], function(url) {  ))
+        (( _.each([{field: url1, name: 'Full text'}, {field: url2, name: 'Responsible Choices Analysis'}, {field: url3, name: 'Funding Sources'} ], function(url) {  ))
         (( if( url.field && $.trim(url.field) != '' ){ ))
         .m-proposal-url-field
           %a{ :href => "{{url.field}}", :target => "_blank"}

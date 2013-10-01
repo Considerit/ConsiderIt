@@ -85,7 +85,8 @@ namespace :lvg do
         :additional_description3 => row.fetch('additional_description3', nil),
         :url1 => row.fetch('url1', nil),
         :url2 => row.fetch('url2', nil),
-        :url3 => row.fetch('url3', nil)
+        :url3 => row.fetch('url3', nil),
+        :url4 => row.fetch('url4', nil)
       }
 
       proposal = Proposal.find_by_long_id measure[:long_id]

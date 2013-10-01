@@ -1,6 +1,8 @@
 # good set of playbooks: https://github.com/francisbesset/ansible-playbooks/
 #https://www.digitalocean.com/community/articles/how-to-install-rails-and-nginx-with-passenger-on-ubuntu
 
+# In setting up daniels, I had to modify /etc/sudoers to change the secure_path because rbenv paths weren't accessible through sudo
+
 ---
 
 - hosts: all
@@ -8,6 +10,14 @@
   vars_files:
     - vars/environment.yml
   tasks:
-    - include: tasks/setup.yml
+    #- include: tasks/setup/install_deps.yml
+    #- include: tasks/setup/install_memcached.yml
+    #- include: tasks/setup/install_mysql.yml
+    #- include: tasks/setup/install_considerit.yml
+    #- include: tasks/setup/install_ruby.yml
+    #- include: tasks/setup/install_passenger.yml
+    - include: tasks/setup/install_nginx.yml
+    #- include: tasks/setup/setup_ssl.yml
+    #- include: tasks/setup/start_nginx.yml
   handlers:
     - include: handlers.yml

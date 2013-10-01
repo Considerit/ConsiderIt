@@ -1,0 +1,28 @@
+---
+
+- hosts: all
+  name: Setting up the server to respond to crawling by bots for single page apps
+  vars:
+    # for tasks/crawlable/install_crawlable
+    www_root: /home/considerit
+
+    # for tasks/crawlable/install_nodejs
+    repo_basedir: ..
+    node_version: "0.10.18"
+    node_prefix: "node-v${node_version}"
+    node_tarball: "${node_prefix}.tar.gz"
+    node_path: "/usr/local"
+    # for tasks/crawlable/install_phantomjs
+    url: http://code.google.com/p/phantomjs/downloads/list?can=1 
+    # for tasks/crawlable/setup_upstart
+    service: crawlable
+    description: Enabling crawling by bots on single page apps
+    script_path: "${www_root}/crawlable/"
+
+  #vars_files:
+  tasks:
+    #- include: tasks/crawlable/install_nodejs.yml
+    - include: tasks/crawlable/install_phantomjs.yml  
+    - include: tasks/crawlable/install_crawlable.yml  
+    - include: tasks/crawlable/setup_upstart.yml
+  #handlers:

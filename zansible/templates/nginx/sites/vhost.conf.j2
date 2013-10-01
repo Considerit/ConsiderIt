@@ -1,4 +1,3 @@
-
 {% if server.ssl %}
 server {
   listen         80;
@@ -22,6 +21,36 @@ server {
   passenger_enabled on;
   rails_spawn_method smart;
   rails_env production;
+
+  if ($args ~ _escaped_fragment_) {
+      rewrite ^ /ajaxcrawlable;
+  }
+
+  location /ajaxcrawlable {
+    # Send the original URI before any modifications.
+    # This is needed because error_page changes the URI.
+    proxy_set_header X-Request-URI   $request_uri;
+    # Set client's IP address
+    proxy_set_header X-Real-IP       $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    # Set original host name
+    proxy_set_header X-Forwarded-Host            $host;
+    proxy_set_header Host $http_host;
+
+    # Set original port
+    proxy_set_header Port            $server_port;
+    
+    # Redirect to the Node.js server(s).
+    # NOTE: This cannot end with a trailing slash.
+    {% if server.ssl %}
+      proxy_set_header X-Forwarded-Proto https; 
+    {% else %}
+      proxy_set_header X-Forwarded-Proto http; 
+    {% endif %}
+
+    proxy_pass http://nodejs;
+    proxy_redirect off;
+  }
 
   location ~ (\.php|myadmin) {
       return 403;

@@ -1,0 +1,11 @@
+- name: Make crawlable directory
+  file: path=${www_root}/crawlable owner=$user state=directory
+  sudo: False
+
+- name: Add server
+  template: src=templates/node/crawlable.js.j2 dest=${www_root}/crawlable/crawlable.js
+  sudo: False
+
+- name: Add handler
+  template: src=templates/node/crawl.js.j2 dest=${www_root}/crawlable/crawl.js
+  sudo: False

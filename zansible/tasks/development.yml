@@ -41,7 +41,7 @@
 
 # Cache avatars
 - name: Cache avatars
-  shell: $source && cd $app_home && RAILS_ENV=$environment bundle exec rake cache:avatars
+  shell: $source && cd $app_home && RAILS_ENV=$rails_environment bundle exec rake cache:avatars
   sudo: False
 
 # Import seed database

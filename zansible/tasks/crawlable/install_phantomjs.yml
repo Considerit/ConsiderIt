@@ -1,0 +1,26 @@
+#this only works back to versions: 1.7.x
+
+- name: ensure weget is installed
+  apt: pkg=wget state=latest
+- name: ensure libfontconfig is installed
+  apt: pkg=libfontconfig1 state=latest
+- name: ensure bzip2 is installed
+  apt: pkg=bzip2 state=latest
+- name: get architecture
+  shell: uname -m
+  register: arch
+- name: get latest phantomjs version
+  shell: wget --no-check-certificate -q -O-  ${url} | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' | sort -u -k 1,1n -k 2,2n -k 3,3n -t . | tail -n1
+  register: phantom_version
+- name: download phantomjs
+  get_url: url=http://phantomjs.googlecode.com/files/phantomjs-${phantom_version.stdout}-linux-${arch.stdout}.tar.bz2 dest=/tmp/pjs.tar.bz2 force=yes
+- name: bunzip2 phantomjs
+  command: bunzip2 -f /tmp/pjs.tar.bz2
+- name: untar phantomjs
+  command: tar xf /tmp/pjs.tar -C /tmp
+- name: installing phantomjs
+  command: mv -f /tmp/phantomjs-${phantom_version.stdout}-linux-${arch.stdout}/bin/phantomjs /usr/local/bin/phantomjs-${phantom_version.stdout}
+- name: symlinking phantomjs
+  file: src=/usr/local/bin/phantomjs-${phantom_version.stdout} dest=/usr/local/bin/phantomjs state=link
+- name: removing tar file
+  file: path=/tmp/pjs.tar state=absent

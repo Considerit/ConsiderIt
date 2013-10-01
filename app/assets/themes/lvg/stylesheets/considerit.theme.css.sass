@@ -224,13 +224,54 @@
 
 ///proposal description
 
+.m-proposal
+  .m-proposal-showing-details
+
+    .m-proposal-description
+      border-radius: 0px 5px 0px 0px
+
+  .m-proposal-details
+    margin-top: 0
+    .l-message-body
+      background: $base_bg_color
+      border: 1px solid darken($base_bg_color, 15%)
+      border-top: none
+      border-radius: 0px 0px 5px 5px 
+
+    // .t-jurisdiction
+    //   +font-size(-1)
+    //   color: #666
+    //   margin-bottom: $vertical_baseline /2
+
+.m-proposals-details-wrapper
+  position: relative
+  .m-proposal-links
+    background-color: darken($base_bg_color, 15%)
+    position: absolute
+    right: -$margin_width - $grid_xs
+    bottom: 0
+    padding: $vertical_baseline/2 $grid_xs/2
+    width: $margin_width
+
+
+$juri_width: $initiator_width + 20
+
+  
+
+.l-message
+  &.m-proposal-summary-view, &.m-proposal-showing-details
+    > .l-message-speaker.l-message-initiator
+      top: -14px
+
 
 .t-jurisdiction
   text-align: center
-  width: 70px
-  height: 70px
+  width: $juri_width
+  height: $juri_width
   position: absolute
   top: 0
+  left: -10px
+  top: -10px
 
   &:before
     content: ''
@@ -239,25 +280,24 @@
     vertical-align: middle
     margin-right: -0.25em /* Adjusts for spacing */
 
-  +font-size(-4)
-  line-height: 1em
+  +font-size(-3)
+  line-height: 1.2
 
   span
     display: inline-block
     vertical-align: middle
-    width: 70px
-
-    background-color: #fafafa
+    width: $juri_width
+    font-weight: bold
 
 .t-local
   .m-point-assessment-region
     display: none
 
 .m-proposal-leading
-  font-weight: normal
-  font-variant: small-caps
-  padding-right: $grid_xs/2
-  text-transform: lowercase
+  font-weight: bold
+  //font-variant: small-caps
+  //padding-right: $grid_xs/2
+  //text-transform: lowercase
 
 html body #m-dashboard
   margin-bottom: 0
@@ -373,4 +413,6 @@ html body #m-dashboard
     img
       width: 100px
 
+#m-proposals-container-completed
+  display: none
 

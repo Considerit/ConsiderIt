@@ -734,9 +734,24 @@ $tooltip_width: 225px
       margin-top: $vertical_baseline/2
 
   .m-proposal-description-details
-    +font-size(-2)
+    margin-top: $vertical_baseline / 2
+    +font-size(-1)
     .hidden, .showing
       text-decoration: underline  
+
+    .m-proposal-description-detail-field-full
+      p
+        margin-bottom: $vertical_baseline/2
+
+      h1, h3
+        margin: $vertical_baseline/4 0
+
+      h1
+        +font-size(2)
+      h3
+        +font-size(1)
+      ul
+        padding-left: $grid_xs
 
   .m-proposal-url-field
     a

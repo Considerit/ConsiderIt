@@ -77,8 +77,6 @@ do ($) ->
         $('body').animate {scrollTop: target}, distance_to_travel
       else 
         $('body').scrollTop target
-    else
-      console.log 'already in viewport'
 
 
   $.fn.moveToBottom = (offset_buffer = 50, scroll = false) ->

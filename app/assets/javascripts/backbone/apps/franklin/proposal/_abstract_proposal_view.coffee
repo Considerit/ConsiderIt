@@ -64,8 +64,12 @@
     showDetails : (ev) ->
       $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
+      $toggle = $block.find('.hidden:first')
+      
+      @desc = $toggle.data('label', $toggle.text()) if !$toggle.data('label')
+
       $block.find('.m-proposal-description-detail-field-full').slideDown();
-      $block.find('.hidden')
+      $toggle
         .text('hide')
         .toggleClass('hidden showing');
 
@@ -77,9 +81,11 @@
       if $(document).scrollTop() > $block.offset().top
         $('body').animate {scrollTop: $block.offset().top}, 1000
 
+      $toggle = $block.find('.showing')
+
       $block.find('.m-proposal-description-detail-field-full').slideUp(1000);
-      $block.find('.showing')
-        .text('show')
+      $toggle
+        .text($toggle.data('label'))
         .toggleClass('hidden showing');
 
       ev.stopPropagation()

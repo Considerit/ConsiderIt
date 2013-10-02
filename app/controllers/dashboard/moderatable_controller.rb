@@ -46,11 +46,12 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
       records = Moderation.where(:moderatable_type => mc.name)
       if objs.length > 0
         records = records.where("moderatable_id in (#{objs.join(',')})")
-      end
-      records = records.includes(:user)
+        records = records.includes(:user)
 
-      records.select([:user_id, :id, :status, :moderatable_id, :moderatable_type, :updated_since_last_evaluation, :notification_sent]).each do |mod|
-        @existing_moderations[class_name][mod.moderatable_id] = mod unless @existing_moderations[class_name].has_key?(mod.moderatable_id) && @existing_moderations[class_name][mod.moderatable_id].user_id == current_user.id
+        records.select([:user_id, :id, :status, :moderatable_id, :moderatable_type, :updated_since_last_evaluation, :notification_sent]).each do |mod|
+          @existing_moderations[class_name][mod.moderatable_id] = mod unless @existing_moderations[class_name].has_key?(mod.moderatable_id) && @existing_moderations[class_name][mod.moderatable_id].user_id == current_user.id
+        end
+        
       end
 
       @existing_moderations[class_name] = @existing_moderations[class_name].values

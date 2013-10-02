@@ -77,36 +77,49 @@ namespace :alerts do
   task :check_moderation => :environment do
     Account.where(:enable_moderation => true).each do |accnt|
 
-      ApplicationController.set_current_tenant_to(accnt)
+      #ApplicationController.set_current_tenant_to(accnt)
 
       # Find out how many objects need to be moderated
       # this section is horribly coded and inefficient ... TODO fix
       content_to_moderate = 0
+      existing_moderations = {}
+      objs_to_moderate = {}
+
       Moderation.classes_to_moderate.each do |mc|
-        existing = {}
-        objs_to_moderate = {}
+
+        next if accnt["moderate_#{mc.name.downcase}s_mode"] == 0
+
+        class_name = mc.name.split('::')[-1]
+
+        existing_moderations[class_name] = {}
+
         if mc == Comment
-          comments = []
-          mc.moderatable_objects.call.each do |comment|
-            if comment.commentable_type != 'Point' || comment.root_object.proposal.active 
-              comments.push(comment)
-            end
-          end
-          objs_to_moderate = comments.map{|x| x.id}.compact
-          records = Moderation.where(:moderatable_type => mc.name)
-          if objs_to_moderate.length > 0
-            records = records.where("moderatable_id in (#{objs_to_moderate.join(',')})")
-          end
-        else
-          objs_to_moderate = mc.moderatable_objects.call
-          records = Moderation.where(:moderatable_type => mc.name)
+          # Assumes Commentable_type is Point!!!
+          # select all comments of points of active proposals
+          qry = "SELECT c.id, c.user_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.commentable_id=pnt.id"
+        elsif mc == Proposal
+          qry = "SELECT id, user_id, name from proposals where account_id=#{accnt.id}"
+        elsif mc == Point
+          qry = "SELECT pnt.id, pnt.user_id FROM points pnt, proposals prop WHERE prop.account_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
         end
-        records.each do |mod|
-          existing[mod.moderatable_id] = mod
+        objects = ActiveRecord::Base.connection.select(qry)
+
+        objs_to_moderate[class_name] = objects
+        objs = objs_to_moderate[class_name].map{|x| x["id"]}.compact
+
+        records = Moderation.where(:moderatable_type => mc.name, :account_id => accnt.id)
+        if objs.length > 0
+          records = records.where("moderatable_id in (#{objs.join(',')})")
+          records.select([:id, :moderatable_id]).each do |mod|
+            existing_moderations[class_name][mod.moderatable_id] = mod
+          end
         end
 
-        content_to_moderate += objs_to_moderate.length - existing.length
+        existing_moderations[class_name] = existing_moderations[class_name].values
+        content_to_moderate += objs_to_moderate[class_name].length - existing_moderations[class_name].length
+
       end
+
       #######
 
       if content_to_moderate > 0

@@ -55,6 +55,7 @@
 
     handleCanceled : (ev) ->
       @trigger 'position:canceled'
+      ev.stopPropagation()
 
   class Proposal.PositionReasonsLayout extends App.Views.Layout
     template : '#tpl_position_reasons'

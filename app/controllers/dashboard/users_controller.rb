@@ -22,7 +22,7 @@ class Dashboard::UsersController < Dashboard::DashboardController
     influenced_users_by_point = {}
     accessible_points = []
 
-    user.points.published.each do |pnt|
+    user.points.published.named.each do |pnt|
       proposal = Proposal.find(pnt.proposal_id) 
       if can?(:read, proposal) && (!pnt.hide_name || (current_user && pnt.user_id == current_user.id)) 
         referenced_points[pnt.id] = pnt

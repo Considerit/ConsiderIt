@@ -22,6 +22,23 @@
     App.unregister instance, id if App.environment is "development"
   
   App.addInitializer ->
+    $.get Routes.get_avatars_path(), (data) ->
+      $('head').append data
+
+    $(document).on "click", "a[href^='/']", (event) ->
+      href = $(event.target).attr('href')
+      target = $(event.target).attr('target')
+
+      if target == '_blank' || href == '/newrelic'  || $(event.target).data('remote') # || href[1..9] == 'dashboard'
+        return true
+
+      # Allow shift+click for new tabs, etc.
+      if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
+        event.preventDefault()
+        # Instruct Backbone to trigger routing events
+        App.navigate(href, { trigger : true })
+        return false
+
     nav_app = App.module 'NavApp'
 
     header_app = App.module "HeaderApp"

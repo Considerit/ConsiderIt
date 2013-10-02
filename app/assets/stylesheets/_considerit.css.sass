@@ -1322,9 +1322,10 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
 
 $static_position_width: $body_width+$grid_major
 .m-static-position
-  text-align: left
-  margin-left: - $static_position_width / 2
   width: $static_position_width
+  .m-static-position-reasons
+    text-align: left
+
 
   .m-static-position-reasons-label
     font-weight: bold
@@ -1340,7 +1341,7 @@ $static_position_width: $body_width+$grid_major
     font-style: italic
 
   .m-static-position-reasons-none
-    font-style: italic
+    font-weight: bold
 
 
 //////////////////

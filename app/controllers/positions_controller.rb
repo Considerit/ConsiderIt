@@ -30,8 +30,15 @@ class PositionsController < ApplicationController
       update_attrs[:stance] = params[:position][:stance]
     end
 
+    #if an existing published position exists for this user, handle it
+    existing_position = proposal.positions.published.where("id != #{position.id}").find_by_user_id current_user.id
+
     update_attrs[:published] = true
     position.update_attributes update_attrs
+
+    if existing_position
+      position.subsume existing_position
+    end
 
     params[:position][:included_points] ||= []
     params[:position][:included_points].each do |pnt|
@@ -77,7 +84,8 @@ class PositionsController < ApplicationController
     results = {
       :position => position,
       :updated_points => updated_points.metrics_fields,
-      :proposal => proposal
+      :proposal => proposal,
+      :subsumed_position => existing_position
     }
         
     render :json => results

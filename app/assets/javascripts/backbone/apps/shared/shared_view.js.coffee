@@ -18,7 +18,6 @@
       'mouseenter [data-target="user_profile_page"]' : 'tooltipShow'
       'mouseleave [data-target="user_profile_page"]' : 'tooltipHide'
       'click [data-target="user_profile_page"]' : 'viewProfile'
-      "click a[href^='/']" : 'processLink'
 
 
     viewProfile : (ev) -> 
@@ -61,16 +60,3 @@
       @$el.children('.l-tooltip-user, .l-tooltip-user-title').remove()
 
 
-    processLink : (event) ->
-      href = $(event.currentTarget).attr('href')
-      target = $(event.currentTarget).attr('target')
-
-      if target == '_blank' || href == '/newrelic'  || $(event.currentTarget).data('remote') # || href[1..9] == 'dashboard'
-        return true
-
-      # Allow shift+click for new tabs, etc.
-      if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
-        event.preventDefault()
-        # Instruct Backbone to trigger routing events
-        App.navigate(href, { trigger : true })
-        return false

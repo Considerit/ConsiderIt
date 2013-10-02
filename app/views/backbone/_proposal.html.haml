@@ -236,9 +236,12 @@
             %span.m-top-point-header
               Our Top {{ pro_label }} is 
             %span.m-top-point-content
-              &ldquo;{{ top_pro.nutshell }}&rdquo; 
+              &ldquo;{{ top_pro.nutshell }}&rdquo;
+            (( if(!top_pro.hide_name){ )) 
             %span.m-top-point-user
               &ndash; {{ top_pro_user.name }}       
+            (( } ))
+
             (( } ))
 
         .m-points-list-region
@@ -251,8 +254,10 @@
               Our Top {{ con_label }} is
             %span.m-top-point-content
               &ldquo;{{ top_con.nutshell }}&rdquo;  
+            (( if(!top_con.hide_name){ )) 
             %span.m-top-point-user
-              &ndash; {{ top_con_user.name }}               
+              &ndash; {{ top_con_user.name }}       
+            (( } ))
 
             (( } ))
 

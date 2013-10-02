@@ -2,10 +2,14 @@ class HomeController < ApplicationController
   #caches_page :index
   respond_to :json, :html
 
-  def render(*args)
-    @current_page = 'homepage'
-    super
-  end
+  caches_action :avatars, :cache_path => proc {|c|
+    {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}"}
+  }
+
+  # def render(*args)
+  #   @current_page = 'homepage'
+  #   super
+  # end
 
   def index
 
@@ -39,7 +43,8 @@ class HomeController < ApplicationController
   end  
 
   def avatars
-    render :partial => 'home/avatars'
+    result = render_to_string :partial => 'home/avatars'
+    render :json => result 
   end
 
   def content_for_user

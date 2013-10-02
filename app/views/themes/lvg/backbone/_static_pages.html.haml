@@ -28,10 +28,6 @@
         Video tutorials
 
     %li
-      %a.m-sidebar_link{:href => "/home/copromoters", :'data-target' => 'copromoters'}
-        Co-promoters
-
-    %li
       %a.m-sidebar_link{:href => "/home/terms-of-use", :'data-target' => 'terms-of-use'}
         Terms of use
 
@@ -216,41 +212,6 @@
 
       %p
         The results of the fact checks will be shown to all LVG participants. When browsing the pros and cons, you can see that points marked with a checkmark contain accurate claims, points marked with an ellipsis (...) contain unverifiable claims, and points marked with a question mark contain questionable claims that appears to be inaccurate. 
-
-
-%script{ :type => "text/template", :id => "tpl_static_copromoters" }
-  - media_links = [{:anchor=>'Wenatchee World',:link=>'http://www.wenatcheeworld.com/'},{:anchor=>'Tri-City Herald',:link=>'http://www.tri-cityherald.com/'},{:anchor=>'The Daily Herald',:link=>'http://www.heraldnet.com/'},{:anchor=>'The Daily World',:link=>'http://thedailyworld.com/'},{:anchor=>'Crosscut',:link=>'http://crosscut.com/'},{:anchor=>'The Chronicle',:link=>'http://www.chronline.com/'},{:anchor=>'Centralia Battle Ground Reflector',:link=>'http://www.thereflector.com/'},{:anchor=>'Nisqually Valley News',:link=>'http://www.yelmonline.com/'}]
-
-  - copromoters = [{:anchor=>'AARP',:link=>'http://www.aarp.org/'},{:anchor=>'American Society for Public Administration - Evergreen Chapter',:link=>'http://www.evergreenaspaonline.org/'},{:anchor=>'Anacortes Public Library',:link=>'http://library.cityofanacortes.org/client/default'},{:anchor=>'Asotin County Library',:link=>'http://www.aclib.org/'},{:anchor=>'Everett Public Library',:link=>'http://www.epls.org/'},{:anchor=>'Grays Harbor County Republican Central Committee',:link=>'http://www.ghgop.net/'},{:anchor=>'King County Elections',:link=>'http://www.kingcounty.gov/elections.aspx'},{:anchor=>'Leadership Eastside',:link=>'http://www.leadershipeastside.com/'},{:anchor=>'Leadership Tomorrow',:link=>'http://www.leadershiptomorrowseattle.org/index.html'},{:anchor=>'Longview Public Library',:link=>'http://www.longviewlibrary.org/'},{:anchor=>'Municipal League Foundation',:link=>'http://www.munileague.org/'},{:anchor=>'Northwest Progressive Institute',:link=>'http://www.nwprogressive.org/'},{:anchor=>'Office of the Secretary of State',:link=>'http://www.sos.wa.gov/'},{:anchor=>'Orcas Island Library District',:link=>'http://www.orcaslibrary.org/'},{:anchor=>'Philanthropy NW',:link=>'http://www.philanthropynw.org/s_pnw/index.asp'},{:anchor=>'Pierce County Library System',:link=>'http://www.piercecountylibrary.org/'},{:anchor=>'Responsible Choices',:link=>'http://www.responsiblechoiceswa.org/'},{:anchor=>'Seattle Public Library',:link=>'http://www.spl.org/'},{:anchor=>'Seattle Works',:link=>'http://www.seattleworks.org/'},{:anchor=>'Washington News Council',:link=>'http://wanewscouncil.org/'},{:anchor=>'Win/Win Network',:link=>'http://winwinnetwork.org/'},{:anchor=>'Women\'s Funding Alliance',:link=>'http://www.wfalliance.org/'}]
-
-  #static-header
-    %h1
-      Thanks to our Living Voters Guide Co-promoters!
-
-  #static-header
-    %h2
-      Media partners
-
-  #static-main.copromoters
-    %ul
-      - media_links.each do |link|
-        %li
-          = link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:anchor], :rel => 'nofollow')
-
-
-  #static-header
-    %h2
-      Co-promoting partners
-
-  #static-main.copromoters
-
-
-    %ul
-      - copromoters.each do |link|
-        %li
-          = link_to(link[:anchor] , link[:link], :target => "_blank", :title => link[:anchor], :rel => 'nofollow')
-
-
 
 
 

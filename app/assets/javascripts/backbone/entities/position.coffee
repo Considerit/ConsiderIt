@@ -72,7 +72,7 @@
       @set 'user_id', user.id
 
     stanceLabel : ->
-      Entities.Position.stance_name_adverb @get('stance')
+      Entities.Position.stance_name_adverb @get('stance_bucket')
 
     @stance_name_for_bar : (d) ->
       switch parseInt(d)

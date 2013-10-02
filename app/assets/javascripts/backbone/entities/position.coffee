@@ -133,8 +133,14 @@
     getPositions : ->
       @all_positions
 
+    positionSubsumed : (position_data) ->
+      position = @all_positions.get position_data.id
+      @all_positions.remove position
+      position.clear()
+      position
 
-
+  App.vent.on 'position:subsumed', (position_data) ->
+    API.positionSubsumed position_data
 
   App.vent.on 'positions:fetched', (positions, position = null) ->
     API.addPositions positions, position

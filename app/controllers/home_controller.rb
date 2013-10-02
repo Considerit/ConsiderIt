@@ -51,8 +51,17 @@ class HomeController < ApplicationController
     # proposals that are written by this user; private proposals this user has access to
     proposals = Proposal.content_for_user(current_user)
 
-    top = proposals.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
-          proposals.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
+    top = []
+    top_con_qry = proposals.where 'top_con IS NOT NULL'
+    if top_con_qry.count > 0
+      top += top_con_qry.select(:top_con).map {|x| x.top_con}.compact
+    end
+
+    top_pro_qry = proposals.where 'top_pro IS NOT NULL' 
+    if top_pro_qry.count > 0
+      top += top_pro_qry.select(:top_pro).map {|x| x.top_pro}.compact
+    end
+
     top_points = {}
     Point.where('id in (?)', top).public_fields.each do |pnt|
       top_points[pnt.id] = pnt

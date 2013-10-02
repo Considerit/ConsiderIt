@@ -254,7 +254,7 @@
     width: $margin_width
 
 
-$juri_width: $initiator_width + 20
+$juri_width: $initiator_width
 
   
 
@@ -270,8 +270,11 @@ $juri_width: $initiator_width + 20
   height: $juri_width
   position: absolute
   top: 0
-  left: -10px
-  top: -10px
+  +font-size(-3)
+  line-height: 1.2
+  
+  // left: -10px
+  //top: -10px
 
   &:before
     content: ''
@@ -280,13 +283,11 @@ $juri_width: $initiator_width + 20
     vertical-align: middle
     margin-right: -0.25em /* Adjusts for spacing */
 
-  +font-size(-3)
-  line-height: 1.2
 
   span
     display: inline-block
     vertical-align: middle
-    width: $juri_width
+    //width: $juri_width
     font-weight: bold
 
 .t-local

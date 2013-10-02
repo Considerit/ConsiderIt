@@ -2,7 +2,6 @@
   class Position.PositionView extends App.Views.ItemView
     template : '#tpl_static_position'
     dialog : ->
-      console.log @model, @model.stanceLabel()
       title : "#{@model.getUser().get('name')} #{@model.stanceLabel()} this proposal"
 
     serializeData : ->

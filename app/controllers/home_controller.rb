@@ -49,18 +49,22 @@ class HomeController < ApplicationController
 
   def content_for_user
     # proposals that are written by this user; private proposals this user has access to
-    proposals = []
-    Proposal.content_for_user(current_user).each do |proposal|      
-      proposals.push ({
-        :model => proposal,
-        :top_con => proposal.top_con ? Point.where('id=(?)', proposal.top_con).public_fields.first : nil,
-        :top_pro => proposal.top_pro ? Point.where('id=(?)', proposal.top_pro).public_fields.first : nil,
-      }) 
+    proposals = Proposal.content_for_user(current_user)
+
+    top = proposals.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
+          proposals.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
+    top_points = {}
+    Point.where('id in (?)', top).public_fields.each do |pnt|
+      top_points[pnt.id] = pnt
+    end
+
+    current_user.points.published.where(:hide_name => true).public_fields.each do |pnt|
+      top_points[pnt.id] = pnt
     end
 
     render :json => {
-      :points => current_user.points.published.where(:hide_name => true).select([:id, :user_id]),
-      :proposals => proposals
+      :top_points => top_points.values,
+      :proposals => proposals.public_fields
     }
   end
 

@@ -26,6 +26,8 @@ class Position < ActiveRecord::Base
     subsumed_position.points.update_all({:user_id => user_id, :position_id => id})
     subsumed_position.inclusions.update_all({:user_id => user_id, :position_id => id})
     subsumed_position.comments.update_all({:commentable_id => id})
+    subsumed_position.published = false
+    subsumed_position.save
   end
 
   def self.get_bucket(value)

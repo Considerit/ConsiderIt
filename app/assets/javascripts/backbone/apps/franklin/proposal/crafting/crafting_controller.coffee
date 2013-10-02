@@ -70,6 +70,8 @@
               App.vent.trigger 'points:fetched', (p.point for p in data.updated_points)
               proposal.set(data.proposal) if 'proposal' of data
 
+              App.vent.trigger('position:subsumed', data.subsumed_position.position) if 'subsumed_position' of data && data.subsumed_position
+
               proposal.newPositionSaved @model
 
               #TODO: make sure points getting updated properly in all containers

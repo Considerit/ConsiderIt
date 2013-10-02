@@ -11,7 +11,6 @@
 
     serializeData : ->
       user = @model.getUser()
-      console.log @model
       _.extend {}, @model.attributes,
         proposal : @model
         avatar : App.request('user:avatar', user, 'large' )

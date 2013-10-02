@@ -2,10 +2,6 @@ class HomeController < ApplicationController
   #caches_page :index
   respond_to :json, :html
 
-  caches_action :avatars, :cache_path => proc {|c|
-    {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}"}
-  }
-
   def render(*args)
     @current_page = 'homepage'
     super

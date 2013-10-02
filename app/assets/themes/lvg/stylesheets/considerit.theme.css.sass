@@ -366,7 +366,7 @@ html body #m-dashboard
             opacity: 1
       > .line
         padding-bottom: $vertical_baseline
-      padding-bottom: 4 * $vertical_baseline
+      padding-bottom: 2 * $vertical_baseline
 
     #contact, #voter_info
       position: absolute
@@ -383,6 +383,34 @@ html body #m-dashboard
 
     #voter_info
       left: 5%
+
+  .copromoters
+    margin-top: $vertical_baseline
+    +font-size(-2)
+    color: #666
+    text-align: center
+    ul
+      display: inline-block
+    li
+      display: inline-block
+      //padding-right: $grid_xs / 2
+
+      &.strong
+        font-weight: bold
+        padding-right: $grid_xs / 2
+        &:after
+          content: none
+
+      a
+        color: #666
+
+        &:hover
+          text-decoration: underline
+
+      &:after
+        content: $hex-bullet-point
+        padding: 0 $grid_xs / 4
+
 
 #static-main-region
   .media-story

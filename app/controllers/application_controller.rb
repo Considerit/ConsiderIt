@@ -84,8 +84,18 @@ class ApplicationController < ActionController::Base
       proposals = Proposal.open_to_public.active.browsable
       proposals_active_count = proposals.count
       proposals = proposals.public_fields.order('activity DESC').limit(7)
-      top = proposals.where('top_con IS NOT NULL').select(:top_con).map {|x| x.top_con}.compact +
-            proposals.where('top_pro IS NOT NULL').select(:top_pro).map {|x| x.top_pro}.compact 
+
+
+      top = []
+      top_con_qry = proposals.where 'top_con IS NOT NULL'
+      if top_con_qry.count > 0
+        top += top_con_qry.select(:top_con).map {|x| x.top_con}.compact
+      end
+
+      top_pro_qry = proposals.where 'top_pro IS NOT NULL' 
+      if top_pro_qry.count > 0
+        top += top_pro_qry.select(:top_pro).map {|x| x.top_pro}.compact
+      end
       
       top_points = {}
       Point.where('id in (?)', top).public_fields.each do |pnt|

@@ -72,8 +72,8 @@ class ProposalsController < ApplicationController
 
     if current_tenant.assessment_enabled
       response.update({
-        :claims => proposal.claims.public_fields,
-        :assessments => proposal.assessments.public_fields,
+        :assessments => proposal.assessments.completed.public_fields,
+        :claims => proposal.assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
         :verdicts => Assessable::Verdict.all        
       })
     end

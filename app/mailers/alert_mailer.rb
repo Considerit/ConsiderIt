@@ -8,7 +8,7 @@ class AlertMailer < ActionMailer::Base
   def content_to_moderate(user, tenant)
     @user = user
     @host = tenant.host_with_port
-    @url = moderate_url(:host => @host)
+    @url = dashboard_moderate_url(:host => @host)
     @tenant = tenant
 
     email_with_name = "#{@user.username} <#{@user.email}>"

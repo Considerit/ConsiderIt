@@ -78,9 +78,7 @@
       @proposal
 
     getComments : ->
-      if !@comments
-        @comments = App.request 'comments:get:point', @id
-      @comments
+      App.request 'comments:get:point', @id
 
     getAssessment : ->
       @assessment = App.request 'assessment:get:point', @id

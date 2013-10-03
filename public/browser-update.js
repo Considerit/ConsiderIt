@@ -176,7 +176,7 @@ font-family: Arial,Helvetica,sans-serif; color:#000; font-size: 12px;}\
 .buorg div { padding:5px 36px 5px 40px; } \
 .buorg a,.buorg a:visited  {color:#E25600; text-decoration: underline;}\
 #buorgclose { position: absolute; right: .5em; top:.2em; height: 20px; width: 12px; font-weight: bold;font-size:14px; padding:0; }";
-document.body.insertBefore(div,document.body.firstChild);
+document.body.insertBefore(div,null); //TRAVIS EDIT: adding to end
 document.getElementsByTagName("head")[0].appendChild(sheet);
 try {
     sheet.innerText=style;

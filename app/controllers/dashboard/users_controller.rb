@@ -22,7 +22,8 @@ class Dashboard::UsersController < Dashboard::DashboardController
     influenced_users_by_point = {}
     accessible_points = []
 
-    user.points.published.named.each do |pnt|
+    points = user.points.published.named
+    points.each do |pnt|
       proposal = Proposal.find(pnt.proposal_id) 
       if can?(:read, proposal) && (!pnt.hide_name || (current_user && pnt.user_id == current_user.id)) 
         referenced_points[pnt.id] = pnt
@@ -62,7 +63,7 @@ class Dashboard::UsersController < Dashboard::DashboardController
       :referenced_proposals => referenced_proposals,
       :referenced_points => referenced_points,
       :positions => positions,
-      :points => user.points.published.where("id in (?)", accessible_points).public_fields,
+      :points => points.where("id in (?)", accessible_points).public_fields,
       :comments => user.comments.public_fields,
       :influenced_users => influenced_users,
       :influenced_users_by_point => influenced_users_by_point

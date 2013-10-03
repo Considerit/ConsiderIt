@@ -18,6 +18,13 @@
   right: 0;
   width: 100%;
 }
+.toast-top-middle {
+  top: 0;
+  left: 50%;
+  margin-left: -200px;
+  width: 400px;
+}
+
 .toast-bottom-full-width {
   bottom: 0;
   right: 0;

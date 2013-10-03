@@ -104,8 +104,9 @@
       @proposals
 
     getPoints : ->
-      if !@points
-        @points = App.request 'points:get:user', @id
+      @points = App.request 'points:get:user', @id
+      if App.request('user:current').id != @id
+        @points = new Entities.Points @points.where({hide_name: false})
       @points
 
     getPositions : ->
@@ -114,8 +115,7 @@
       @positions
 
     getComments : ->
-      if !@comments
-        @comments = App.request 'comments:get:user', @id
+      @comments = App.request 'comments:get:user', @id
       @comments
 
     firstName : ->

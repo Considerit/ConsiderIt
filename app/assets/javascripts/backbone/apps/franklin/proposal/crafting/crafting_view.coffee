@@ -47,8 +47,8 @@
         follows : current_user.isFollowing 'Proposal', @model.id
 
     events : 
-      'click .submit' : 'handleSubmitPosition'
-      'click .m-position-cancel' : 'handleCanceled'
+      'click [data-target="submit-position"]' : 'handleSubmitPosition'
+      'click [data-target="show-results"]' : 'handleCanceled'
 
     handleSubmitPosition : (ev) ->
       @trigger 'position:submit-requested', @$el.find('#follow_proposal').is(':checked')

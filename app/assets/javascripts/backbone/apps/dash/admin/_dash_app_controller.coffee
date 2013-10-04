@@ -7,17 +7,15 @@
     initialize : (options = {} ) ->
       if !@hasPermission()
         App.navigate Routes.root_path(), {trigger : true}
-        return
+        toastr.error 'Sorry, you need to sign in first to access that page'
+        @redirected = true
 
       if !App.request("admin_templates_loaded?")
         $('head').append ConsiderIt.admin_files.style_tag
         $('head').append ConsiderIt.admin_files.js_tag
       super options
 
-      current_user = App.request('user:current')
-
-
-    hasPermission : (user) ->
+    hasPermission : ->
       current_user = App.request 'user:current'
       current_user && current_user.permissions()[@auth]
 

@@ -73,6 +73,7 @@ class ApplicationController < ActionController::Base
 
     #TODO: now that we have a global redirect to home#index for non-ajax requests, can we move this to home controller?
     if !request.xhr?
+      @page = request.path
 
       if params.has_key? :reset_password_token
         @reset_password_token = params[:reset_password_token]

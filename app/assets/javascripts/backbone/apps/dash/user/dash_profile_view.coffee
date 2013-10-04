@@ -47,6 +47,7 @@
     userUpdated : (ev, response, options) ->
       data = $.parseJSON(response.responseText)
       @trigger 'user:update:requested', data
+      toastr.success 'Profile updated'
 
   class User.AccountSettingsView extends App.Dash.View
     dash_name : 'account_settings'

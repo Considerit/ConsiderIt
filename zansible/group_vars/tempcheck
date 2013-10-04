@@ -2,6 +2,7 @@ user: tempcheck
 ansible_ssh_user: $user
 app_name: tempcheck
 app_home: ~/tempcheck.occupy.net/web/$app_name
+allow_indexing: false
 
 
 server:

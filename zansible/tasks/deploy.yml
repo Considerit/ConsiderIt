@@ -16,6 +16,10 @@
   template: src=templates/project/production.rb.j2 dest=$app_home/config/environments/production.rb
   sudo: False
 
+- name: Initialize robots.txt
+  template: src=templates/robots.txt.j2 dest=$app_home/public/robots.txt
+  sudo: False
+
 - name: Update gems
   shell: $source && bundle install --gemfile=$app_home/Gemfile && rbenv rehash
   sudo: False

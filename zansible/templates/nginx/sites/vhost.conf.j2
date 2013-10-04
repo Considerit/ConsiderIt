@@ -4,6 +4,12 @@ server {
   server_name    {{ server.name }};
   rewrite        ^ https://$host$request_uri? permanent;
 }
+{% else %}
+server {
+  listen         443 ssl;
+  server_name    {{ server.name }};
+  rewrite        ^ http://$host$request_uri? permanent;
+}
 {% endif %}
 
 server {

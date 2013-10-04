@@ -24,6 +24,7 @@
             pnt.set 'user_id', current_user.id
 
         @listenTo ConsiderIt.vent, 'user:signout', => 
+          #TODO: clear out position data like points
           @region.reset()
           @region.show layout
 
@@ -190,7 +191,11 @@
 
       window.addCSRF params
       @model.removePoint model
-      $.post Routes.inclusions_path( {delete : true} ), params
+      $.post Routes.inclusions_path( {delete : true} ), params, (data) =>
+        if data.destroyed
+          model.trigger 'destroy', model, model.collection
+          toastr.success 'Point deleted'
+
       App.vent.trigger 'point:removal', model.id
 
 

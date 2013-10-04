@@ -17,6 +17,22 @@
 
       @layout = layout
 
+    unexpand : (go_back) ->
+      $(document).off '.m-point-details'
+      @layout.$el
+        .addClass('m-point-unexpanded')
+        .removeClass('m-point-expanded')
+
+      @stopListening @layout.expansionRegion.currentView
+      @stopListening App.vent, 'point:expanded'
+      @stopListening App.vent, 'navigated_to_base'
+
+      @layout.expansionRegion.reset() if @layout.expansionRegion
+
+      @layout.$el.ensureInView {fill_threshold: .5}
+
+      App.request 'nav:back:crumb' if go_back
+
     expand : ->
       expanded_view = @getExpandedView @options.model
 
@@ -102,21 +118,7 @@
       @listenTo comments, 'comment:created', =>
         @options.model.set 'comment_count', @options.model.getComments().length
 
-    unexpand : (go_back) ->
-      $(document).off '.m-point-details'
-      @layout.$el
-        .addClass('m-point-unexpanded')
-        .removeClass('m-point-expanded')
 
-      @stopListening @layout.expansionRegion.currentView
-      @stopListening App.vent, 'point:expanded'
-      @stopListening App.vent, 'navigated_to_base'
-
-      @layout.expansionRegion.reset() if @layout.expansionRegion
-
-      @layout.$el.ensureInView {fill_threshold: .5}
-
-      App.request 'nav:back:crumb' if go_back
       
 
     getLayout : (model) ->

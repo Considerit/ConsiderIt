@@ -65,7 +65,7 @@
 
     (( if( active ) { ))
 
-    %a.m-position-your-action-body.submit
+    %a.m-position-your-action-body.submit{:'data-target' => 'submit-position'}
       (( if(updating){ ))
       Update your position
       (( } else { ))
@@ -86,8 +86,11 @@
           %span
             Get email updates about new activity
 
-      %a.m-position-cancel
+      %a.m-position-cancel{:'data-target' => 'show-results'}
         cancel and show results
+    (( } else { ))
+    %a.m-position-your-action-body.submit{:'data-target' => 'show-results'}
+      View results 
     (( } ))
 
   .l-message-speaker

@@ -32,6 +32,7 @@
       proposal_attrs
 
     parseAssociated : (params) ->
+      @fetched = true
 
       App.vent.trigger 'points:fetched',
         (p.point for p in params.points)
@@ -50,7 +51,6 @@
         App.request 'claims:add', (c.claim for c in params.claims)
         App.request 'verdicts:add', (v.verdict for v in params.verdicts)
 
-      @fetched = true
 
 
     description_detail_fields : ->
@@ -191,7 +191,7 @@
 
 
     bootstrapProposal : (proposal_attrs) ->
-      proposal = @all_proposals.findWhere {long_id : proposal_attrs.proposal.long_id}
+      proposal = @all_proposals.findWhere {long_id : proposal_attrs.proposal.proposal.long_id}
       if proposal
         proposal.set proposal_attrs.proposal
       else

@@ -53,9 +53,7 @@ ConsiderIt::Application.configure do
   # In production, Apache or nginx will already do this
   config.serve_static_assets = false
 
-  {% if server.ssl %}
-    # config.force_ssl = true
-  {% endif %}
+  config.force_ssl = false
 
   #{% if config.aws.enabled %}
 

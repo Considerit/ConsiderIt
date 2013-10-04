@@ -50,14 +50,10 @@ class HomeController < ApplicationController
     proposals = Proposal.content_for_user(current_user)
 
     top = []
-    top_con_qry = proposals.where 'top_con IS NOT NULL'
-    if top_con_qry.count > 0
-      top += top_con_qry.select(:top_con).map {|x| x.top_con}.compact
-    end
 
-    top_pro_qry = proposals.where 'top_pro IS NOT NULL' 
-    if top_pro_qry.count > 0
-      top += top_pro_qry.select(:top_pro).map {|x| x.top_pro}.compact
+    proposals.each do |prop|
+      top.push(prop.top_con) if prop.top_con
+      top.push(prop.top_pro) if prop.top_pro
     end
 
     top_points = {}
@@ -72,8 +68,8 @@ class HomeController < ApplicationController
     respond_to do |format|
       format.json {
         render :json => {
-          :top_points => top_points.values,
-          :proposals => proposals.public_fields
+          :points => top_points.values,
+          :proposals => proposals
         }
       }
     end

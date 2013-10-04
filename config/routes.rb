@@ -46,8 +46,6 @@ ConsiderIt::Application.routes.draw do
   devise_scope :user do 
     match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
   end
-  
-
 
   match "/content_for_user" => "home#content_for_user", :as => :content_for_user
   match "/users/set_tag" => "home#set_tag", :via => :post, :as => :set_tag

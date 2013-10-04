@@ -61,6 +61,7 @@
 
 
   .m-moderatable-evaluation-option
+    padding: $vertical_baseline / 4 0
     &:hover
       background-color: rgba(yellow, .15)
     label
@@ -74,8 +75,11 @@
   .m-moderatable-field
     margin-bottom: $vertical_baseline/2
 
-  .m-moderatable-email button
-    +font-size(-3)
+  .m-moderatable-email 
+    margin-top: $vertical_baseline
+
+    button
+      +font-size(-3)
 
   .meta
     +font-size(-2)

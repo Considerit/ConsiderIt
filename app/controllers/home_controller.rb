@@ -56,19 +56,19 @@ class HomeController < ApplicationController
       top.push(prop.top_pro) if prop.top_pro
     end
 
-    top_points = {}
+    points = {}
     Point.where('id in (?)', top).public_fields.each do |pnt|
-      top_points[pnt.id] = pnt
+      points[pnt.id] = pnt
     end
 
     current_user.points.published.where(:hide_name => true).public_fields.each do |pnt|
-      top_points[pnt.id] = pnt
+      points[pnt.id] = pnt
     end
 
     respond_to do |format|
       format.json {
         render :json => {
-          :points => top_points.values,
+          :points => points.values,
           :proposals => proposals
         }
       }

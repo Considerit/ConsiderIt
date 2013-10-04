@@ -1,35 +1,32 @@
 class HomeController < ApplicationController
-  #caches_page :index
-
   caches_action :avatars, :cache_path => proc {|c|
     {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}"}
   }
 
-  # def render(*args)
-  #   @current_page = 'homepage'
-  #   super
-  # end
 
+  # this method serves pretty much all HTML requests coming through the application
   def index
 
-    # TODO: move this to config somehow
-    # if current_tenant.theme == 'lvg'
-    #   @title = "Living Voters Guide: 2013 #{current_tenant.identifier == 'cali' ? 'California' : 'Washington'} Election"
-    #   @keywords = "voters guide 2012 ballot #{current_tenant.identifier == 'cali' ? 'california san francisco los angeles san diego riverside irvine sacramento' : 'washington state wa seattle tacoma spokane yakima vancouver'} election pamphlet ballot measures propositions"
-    #   @description = "#{current_tenant.identifier == 'cali' ? 'California\'s' : 'Washington\'s'} citizen-powered voters guide. Engage with your virtual neighbors about the 2012 election. Experience a better democracy."
-    # elsif current_tenant.theme == 'directrep'
-    #   theme = Themes::ThemeDirectrep.find_by_account_id(current_tenant.id)
-    #   @title = "DirectRep #{theme.rep_name.split(' ')[-1]}"
-    #   @keywords = "Listening Dialogue Citizen Government Representative Democracy Communication Deliberation"
-    #   @description = "Representative #{theme.rep_name} wants your help thinking through the issues being considered."
-    # elsif current_tenant.theme == 'policyninja'
-    #   @title = "Educate. Deliberate. Advocate. Office of Hawaiian Affairs"
-    #   @keywords = "Educate, Deliberate, Advocate, hawaii, office of hawaiian affairs, oha"
-    #   @description = "Help us think through the issues we are considering"
-    # else
-    @title = current_tenant.app_title
-    @keywords = "#{current_tenant.app_title} deliberate decide"
-    @description = "ConsiderIt: Discuss issues at #{current_tenant.app_title}"
+    #TODO: do something special for non-root pages?
+
+    if APP_CONFIG[:meta].has_key? current_tenant.identifier.intern
+      meta = APP_CONFIG[:meta][current_tenant.identifier.intern]
+    else 
+      meta = APP_CONFIG[:meta][:default]
+    end
+
+    if current_tenant.header_text
+      description = current_tenant.header_text
+      if current_tenant.header_details_text && current_tenant.header_details_text != ''
+        description = "#{description} - #{current_tenant.header_details_text}"
+      end
+    else
+      description = meta[:description]
+    end
+
+    @title = current_tenant.app_title || meta[:title]
+    @keywords = meta[:keywords]
+    @description = description
 
     respond_to do |format|
       format.html
@@ -76,6 +73,7 @@ class HomeController < ApplicationController
   end
 
   # right now this is only used by LVG for zip codes...
+  # TODO: move this to a taggable controller, and specify the model type being tagged
   def set_tag
 
     new_tags = params[:tags].split(';')
@@ -97,26 +95,5 @@ class HomeController < ApplicationController
       format.json { render :json => { :success => true, :user_tags => tags} }
     end
   end  
-
-  # def study
-  #   category = params[:category]
-  #   sd = StudyData.create!({
-  #     :category => category.to_i,
-  #     :user_id => current_user ? current_user.id : nil,
-  #     :session_id => request.session_options[:id],
-
-  #     :position_id => params[:position_id],
-  #     :point_id => params[:point_id],
-  #     :proposal_id => params[:proposal_id],
-  #     :detail1 => params[:detail1],
-  #     :detail2 => params[:detail2],
-  #     :ival => params[:ival].to_i,
-  #     :fval => params[:fval].to_f,
-  #     :bval => params[:bval] == 'true'
-  #   })
-  #   response = {:success => "success"}
-  #   render :json => response.to_json
-
-  # end
 
 end

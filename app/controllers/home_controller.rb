@@ -1,6 +1,5 @@
 class HomeController < ApplicationController
   #caches_page :index
-  respond_to :json, :html
 
   caches_action :avatars, :cache_path => proc {|c|
     {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}"}
@@ -32,19 +31,18 @@ class HomeController < ApplicationController
     @keywords = "#{current_tenant.app_title} deliberate decide"
     @description = "ConsiderIt: Discuss issues at #{current_tenant.app_title}"
 
-  end
-
-  def show
-    if params[:page] == 'help'
-      redirect_to root_path
-    else
-      render :action => params[:page]
+    respond_to do |format|
+      format.html
     end
-  end  
+
+  end
 
   def avatars
     #result = render_to_string :partial => 'home/avatars'
-    render :partial => 'home/avatars'
+    respond_to do |format|
+      format.html { render :partial => 'home/avatars' } 
+      format.json { render :partial => 'home/avatars' }
+    end
   end
 
   def content_for_user
@@ -71,10 +69,14 @@ class HomeController < ApplicationController
       top_points[pnt.id] = pnt
     end
 
-    render :json => {
-      :top_points => top_points.values,
-      :proposals => proposals.public_fields
-    }
+    respond_to do |format|
+      format.json {
+        render :json => {
+          :top_points => top_points.values,
+          :proposals => proposals.public_fields
+        }
+      }
+    end
   end
 
   # right now this is only used by LVG for zip codes...
@@ -95,33 +97,30 @@ class HomeController < ApplicationController
       session[:tags] = tags
     end
 
-    render :json => { :success => true, :user_tags => tags}
+    respond_to do |format|
+      format.json { render :json => { :success => true, :user_tags => tags} }
+    end
   end  
 
-  def set_dev_options
-    session["user_theme"] = params[:theme]
-    redirect_to request.referrer
-  end
+  # def study
+  #   category = params[:category]
+  #   sd = StudyData.create!({
+  #     :category => category.to_i,
+  #     :user_id => current_user ? current_user.id : nil,
+  #     :session_id => request.session_options[:id],
 
-  def study
-    category = params[:category]
-    sd = StudyData.create!({
-      :category => category.to_i,
-      :user_id => current_user ? current_user.id : nil,
-      :session_id => request.session_options[:id],
+  #     :position_id => params[:position_id],
+  #     :point_id => params[:point_id],
+  #     :proposal_id => params[:proposal_id],
+  #     :detail1 => params[:detail1],
+  #     :detail2 => params[:detail2],
+  #     :ival => params[:ival].to_i,
+  #     :fval => params[:fval].to_f,
+  #     :bval => params[:bval] == 'true'
+  #   })
+  #   response = {:success => "success"}
+  #   render :json => response.to_json
 
-      :position_id => params[:position_id],
-      :point_id => params[:point_id],
-      :proposal_id => params[:proposal_id],
-      :detail1 => params[:detail1],
-      :detail2 => params[:detail2],
-      :ival => params[:ival].to_i,
-      :fval => params[:fval].to_f,
-      :bval => params[:bval] == 'true'
-    })
-    response = {:success => "success"}
-    render :json => response.to_json
-
-  end
+  # end
 
 end

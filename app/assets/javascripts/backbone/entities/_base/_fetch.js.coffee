@@ -1,5 +1,11 @@
 @ConsiderIt.module "Entities", (Entities, App, Backbone, Marionette, $, _) ->
   App.commands.setHandler "when:fetched", (entities, callback, loading = true) ->
+    already_fetched = false
+    _.each entities, (e) ->
+      already_fetched ||= e.fetched
+
+    return if already_fetched
+
     xhrs = _.chain([entities]).flatten().pluck("_fetch").value()
     App.execute "when:completed", xhrs, callback, loading
 

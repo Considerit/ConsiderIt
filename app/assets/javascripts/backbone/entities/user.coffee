@@ -369,7 +369,7 @@
 
   App.reqres.setHandler "auth:can_create_proposal", ->
     current_user = AUTH_API.get_current_user()
-    current_user && ( current_user.isManager() || App.request("tenant:get").get('enable_user_conversations') )
+    AUTH_API.current_user_logged_in() && ( current_user.isManager() || App.request("tenant:get").get('enable_user_conversations') )
 
   App.reqres.setHandler "auth:can_edit_proposal", (proposal) ->
     current_user = AUTH_API.get_current_user() 

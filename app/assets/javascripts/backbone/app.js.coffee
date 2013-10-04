@@ -55,7 +55,6 @@
 
   App.on "initialize:after", ->
     
-    #TODO: don't remove this until everything loaded
     $('#l-preloader').hide()
 
     @startHistory()

@@ -34,7 +34,13 @@ config:
     secret_access_key: 
     fog_directory: 
     cloudfront: 
-    
+
+  meta:
+    default: 
+      title: "ConsiderIt"
+      description: "Help think through these issues being considered."
+      keywords: "Discuss Decide Deliberate"
+      
   exception_notifier:
     email_recipients: tempcheck@mayfirst.org
 

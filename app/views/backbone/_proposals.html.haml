@@ -84,7 +84,7 @@
       %span.total
         {{ totalRecords }} 
       shown.
-    (( } else { ))
+    (( } else if(has_more_models) { ))
     %button.m-pointlist-pagination-showmore
       {{ prompt }} 
     (( } ))

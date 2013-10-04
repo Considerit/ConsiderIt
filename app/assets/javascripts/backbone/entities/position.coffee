@@ -136,8 +136,7 @@
     positionSubsumed : (position_data) ->
       position = @all_positions.get position_data.id
       @all_positions.remove position
-      position.clear()
-      position
+      position.trigger 'destroy', position, position.collection
 
   App.vent.on 'position:subsumed', (position_data) ->
     API.positionSubsumed position_data

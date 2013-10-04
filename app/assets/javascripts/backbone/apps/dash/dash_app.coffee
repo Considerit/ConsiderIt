@@ -76,9 +76,10 @@
       @current_controller = new Dash.Admin.AppSettingsController
         region : @_getMainRegion()  
 
-      App.vent.trigger 'route:completed', [ 
-        ['homepage', '/'], 
-        ["Application", Routes.account_path()] ]
+      if !@current_controller.redirected
+        App.vent.trigger 'route:completed', [ 
+          ['homepage', '/'], 
+          ["Application", Routes.account_path()] ]
 
 
     # manageProposals : ->
@@ -96,9 +97,10 @@
       @current_controller = new Dash.Admin.UserRolesController
         region : @_getMainRegion()  
 
-      App.vent.trigger 'route:completed', [ 
-        ['homepage', '/'], 
-        ["User roles", Routes.manage_roles_path()] ]
+      if !@current_controller.redirected
+        App.vent.trigger 'route:completed', [ 
+          ['homepage', '/'], 
+          ["User roles", Routes.manage_roles_path()] ]
 
 
     analyze : ->
@@ -108,9 +110,10 @@
       @current_controller = new Dash.Admin.AnalyticsController
         region : @_getMainRegion()  
 
-      App.vent.trigger 'route:completed', [ 
-        ['homepage', '/'], 
-        ["Analytics", Routes.analytics_path()] ]
+      if !@current_controller.redirected
+        App.vent.trigger 'route:completed', [ 
+          ['homepage', '/'], 
+          ["Analytics", Routes.analytics_path()] ]
 
     database : ->
       $(document).scrollTop(0)
@@ -119,9 +122,10 @@
       @current_controller = new Dash.Admin.DatabaseController
         region : @_getMainRegion()        
 
-      App.vent.trigger 'route:completed', [ 
-        ['homepage', '/'], 
-        ["Database", Routes.rails_admin_dashboard_path()] ]
+      if !@current_controller.redirected
+        App.vent.trigger 'route:completed', [ 
+          ['homepage', '/'], 
+          ["Database", Routes.rails_admin_dashboard_path()] ]
 
     moderate : ->
       $(document).scrollTop(0)
@@ -130,9 +134,10 @@
       @current_controller = new Dash.Admin.Moderation.ModerationController
         region : @_getMainRegion()  
 
-      App.vent.trigger 'route:completed', [ 
-        ['homepage', '/'], 
-        ["moderate", Routes.dashboard_moderate_path()] ]
+      if !@current_controller.redirected
+        App.vent.trigger 'route:completed', [ 
+          ['homepage', '/'], 
+          ["moderate", Routes.dashboard_moderate_path()] ]
 
     unauthorizedPage : ->
       @current_controller.close() if @current_controller

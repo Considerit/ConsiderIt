@@ -47,7 +47,7 @@
       @included_points.push point.id
 
     removePoint : (point) ->
-      @setIncludedPoints _.without @included_points, [point.id]
+      @setIncludedPoints _.without(@included_points, point.id)
 
     addViewedPoint : (point) ->
       @viewed_points[point.id] = 1
@@ -135,7 +135,7 @@
 
     positionSubsumed : (position_data) ->
       position = @all_positions.get position_data.id
-      @all_positions.remove position
+      #@all_positions.remove position
       position.trigger 'destroy', position, position.collection
 
   App.vent.on 'position:subsumed', (position_data) ->

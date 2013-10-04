@@ -39,12 +39,13 @@
     process_data_from_server : null
 
     initialize : (options = {}) ->
-      @on 'preload_complete', (data) => 
-        view = @setupLayout()
-        @region.show view
-        App.vent.trigger 'dashboard:region:rendered', @options.model, view.dash_name
+      if !@redirected
+        @on 'preload_complete', (data) => 
+          view = @setupLayout()
+          @region.show view
+          App.vent.trigger 'dashboard:region:rendered', @options.model, view.dash_name
 
-      @preload()
+        @preload()
 
 
     preload : ->

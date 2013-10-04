@@ -10,9 +10,6 @@ class Proposal < ActiveRecord::Base
   belongs_to :user
 
   acts_as_tenant(:account)
-  #attr_taggable :tags
-
-  #acts_as_taggable
 
   is_trackable
   is_followable
@@ -229,9 +226,5 @@ class Proposal < ActiveRecord::Base
 
     true
   end
-
-  # def has_admin_privilege(candidate_user, this_session_id, params)
-  #   (session_id && this_session_id == session_id) || (!candidate_user.nil? && (candidate_user.id == user_id || candidate_user.is_admin?)) || (params.has_key?(:admin_id) && params[:admin_id] == admin_id)
-  # end
 
 end

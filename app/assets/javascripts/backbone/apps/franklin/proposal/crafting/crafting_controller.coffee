@@ -71,8 +71,8 @@
               App.vent.trigger 'points:fetched', (p.point for p in data.updated_points)
               proposal.set(data.proposal) if 'proposal' of data
 
-              App.vent.trigger('position:subsumed', data.subsumed_position.position) if 'subsumed_position' of data && data.subsumed_position
 
+              App.vent.trigger('position:subsumed', data.subsumed_position.position) if 'subsumed_position' of data && data.subsumed_position && data.subsumed_position.id != @model.id
               proposal.newPositionSaved @model
 
               #TODO: make sure points getting updated properly in all containers
@@ -161,6 +161,7 @@
 
         @listenTo position_list, 'point:created', (point) =>
           @model.written_points.push point
+          @model.includePoint point
 
         @listenTo position_list, 'point:remove', (view) => 
           if position_list == position_pros_controller
@@ -252,7 +253,8 @@
       }
       window.addCSRF params
       $.post Routes.inclusions_path(), 
-        params, (data) ->
+        params, (data) =>
+          @model.includePoint model
 
 
     setupStanceView : (view) ->

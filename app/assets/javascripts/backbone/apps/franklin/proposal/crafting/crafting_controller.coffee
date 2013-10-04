@@ -25,6 +25,7 @@
 
         @listenTo ConsiderIt.vent, 'user:signout', => 
           #TODO: clear out position data like points
+          @model
           @region.reset()
           @region.show layout
 

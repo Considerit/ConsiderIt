@@ -3,30 +3,7 @@ class HomeController < ApplicationController
     {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}"}
   }
 
-
-  # this method serves pretty much all HTML requests coming through the application
   def index
-
-    #TODO: do something special for non-root pages?
-
-    if APP_CONFIG[:meta].has_key? current_tenant.identifier.intern
-      meta = APP_CONFIG[:meta][current_tenant.identifier.intern]
-    else 
-      meta = APP_CONFIG[:meta][:default]
-    end
-
-    if current_tenant.header_text
-      description = current_tenant.header_text
-      if current_tenant.header_details_text && current_tenant.header_details_text != ''
-        description = "#{description} - #{current_tenant.header_details_text}"
-      end
-    else
-      description = meta[:description]
-    end
-
-    @title = current_tenant.app_title || meta[:title]
-    @keywords = meta[:keywords]
-    @description = description
 
     respond_to do |format|
       format.html

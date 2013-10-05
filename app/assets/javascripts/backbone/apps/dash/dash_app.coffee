@@ -26,6 +26,7 @@
       App.vent.trigger 'route:completed', [ 
         ['homepage', '/'], 
         ["#{user.get('name')}", Routes.profile_path(user.id)] ]
+      App.request 'meta:change:default'
 
     
     editProfile : (user_id) ->
@@ -40,6 +41,7 @@
       App.vent.trigger 'route:completed', [ 
         ['homepage', '/'], 
         ["profile", Routes.edit_profile_path(current_user.id)] ]
+      App.request 'meta:change:default'
 
     accountSettings : (user_id) ->
       $(document).scrollTop(0)
@@ -53,6 +55,7 @@
       App.vent.trigger 'route:completed', [ 
         ['homepage', '/'], 
         ["account", Routes.edit_account_path(current_user.id)] ]
+      App.request 'meta:change:default'
 
 
     emailNotifications : (user_id) ->
@@ -67,6 +70,7 @@
       App.vent.trigger 'route:completed', [ 
         ['homepage', '/'], 
         ["notifications", Routes.edit_notifications_path(user.id)] ]
+      App.request 'meta:change:default'
 
 
     appSettings : ->
@@ -80,6 +84,7 @@
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
           ["Application", Routes.account_path()] ]
+        App.request 'meta:change:default'
 
 
     # manageProposals : ->
@@ -101,6 +106,7 @@
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
           ["User roles", Routes.manage_roles_path()] ]
+        App.request 'meta:change:default'
 
 
     analyze : ->
@@ -114,7 +120,8 @@
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
           ["Analytics", Routes.analytics_path()] ]
-
+        App.request 'meta:change:default'
+  
     database : ->
       $(document).scrollTop(0)
 
@@ -126,6 +133,7 @@
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
           ["Database", Routes.rails_admin_dashboard_path()] ]
+        App.request 'meta:change:default'
 
     moderate : ->
       $(document).scrollTop(0)
@@ -138,6 +146,7 @@
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
           ["moderate", Routes.dashboard_moderate_path()] ]
+        App.request 'meta:change:default'
 
     unauthorizedPage : ->
       @current_controller.close() if @current_controller

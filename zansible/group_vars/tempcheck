@@ -35,6 +35,9 @@ config:
     fog_directory: 
     cloudfront: 
 
+  indexability:
+    default: false
+
   meta:
     default: 
       title: "ConsiderIt"
@@ -44,14 +47,15 @@ config:
   exception_notifier:
     email_recipients: tempcheck@mayfirst.org
 
-  facebook:
-    consumer_key: 
-    consumer_secret: 
+  domain:
+    facebook:
+      consumer_key: 
+      consumer_secret: 
 
-  twitter:
-    consumer_key: 
-    consumer_secret: 
+    twitter:
+      consumer_key: 
+      consumer_secret: 
 
-  google:
-    consumer_key: 
-    consumer_secret: 
+    google:
+      consumer_key: 
+      consumer_secret: 

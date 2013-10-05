@@ -3,7 +3,7 @@
 
 {% for key, value in config.indexability.iteritems() %}
 {% if value and key in config.meta %}
-Sitemap: {{config.meta[key].canonical}}/sitemaps/{{ key|e }}/sitemap.xml
+Sitemap: {{config.meta[key].canonical}}/sitemaps/{{ key|e }}/sitemap.xml.gz
 {% endif %}
 {% endfor %}
 {% else %}

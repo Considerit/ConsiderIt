@@ -1,4 +1,7 @@
 var page = require('webpage').create();
+
+page.settings.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1660.0 Safari/537.36';
+
 var system = require('system');
 
 var lastReceived = new Date().getTime();

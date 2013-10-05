@@ -1,10 +1,13 @@
 SitemapGenerator::Sitemap.sitemaps_host = "http:consider.it"
 
 Account.all.each do |accnt|
-  next if !accnt.sitemap_enabled
+
+  indexability = APP_CONFIG[:indexability]
+  indexed = indexability.has_key?(accnt.identifier.intern) ? indexability[accnt.identifier.intern] : indexability[:default]  
+  next if !indexed
 
   subdomain = accnt.identifier  
-# Set the host name for URL creation
+  # Set the host name for URL creation
   SitemapGenerator::Sitemap.default_host = "https://#{accnt.host}"
 
   SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain}"

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131005011655) do
+ActiveRecord::Schema.define(:version => 20131001060421) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -57,7 +57,6 @@ ActiveRecord::Schema.define(:version => 20131005011655) do
     t.integer  "moderate_points_mode",                     :default => 0
     t.integer  "moderate_comments_mode",                   :default => 0
     t.integer  "moderate_proposals_mode",                  :default => 0
-    t.boolean  "sitemap_enabled",                          :default => false
   end
 
   add_index "accounts", ["identifier"], :name => "by_identifier", :length => {"identifier"=>10}

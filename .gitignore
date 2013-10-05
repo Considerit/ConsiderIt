@@ -14,6 +14,7 @@ public/images/old
 public/system/avatars
 public/assets/
 public/system/icons
+public/sitemaps/*
 public/system/cache/*.css
 *.bk
 config/newrelic.yml

@@ -26,7 +26,7 @@
       @active_meta
 
     changeToDefault : ->
-      @active_meta.setMeta {}, true
+      @setMeta {}, true
 
   App.reqres.setHandler 'meta:get', ->
     API.getMeta()

@@ -16,6 +16,7 @@
         page : page
 
       App.vent.trigger 'route:completed', [ ['homepage', '/'], [page, "/home/#{page}"] ]
+      App.request 'meta:change:default'
 
   
 

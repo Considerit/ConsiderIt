@@ -23,6 +23,7 @@
       region.controlled_by = @franklin_controller      
 
       App.vent.trigger 'route:completed', [ ['homepage', '/'] ]
+      App.request 'meta:change:default'
 
     Consider: (long_id) -> 
       proposal = App.request 'proposal:get', long_id, true
@@ -47,7 +48,10 @@
 
         App.vent.trigger 'route:completed', [ ['homepage', '/'], ["#{proposal.long_id}", Routes.new_position_proposal_path(proposal.long_id)] ]
         App.vent.trigger 'navigated_to_base'
-
+        App.request 'meta:set', 
+          title : "#{proposal.get('category')} #{proposal.get('designator')} #{proposal.get('name')}"
+          description : "Think through and discuss #{proposal.get('category')} #{proposal.get('designator')} - #{proposal.get('name')}."
+          keywords : "#{proposal.get('category')} #{proposal.get('designator')}"
 
     Aggregate: (long_id) -> 
       proposal = App.request 'proposal:get', long_id, true
@@ -79,6 +83,10 @@
           ["results", Routes.proposal_path(proposal.long_id)]]
 
         App.vent.trigger 'navigated_to_base'
+        App.request 'meta:set', 
+          title : "#{proposal.get('category')} #{proposal.get('designator')} #{proposal.get('name')}"
+          description : "Think through and discuss #{proposal.get('category')} #{proposal.get('designator')} - #{proposal.get('name')}."
+          keywords : "#{proposal.get('category')} #{proposal.get('designator')}"
 
 
 
@@ -110,6 +118,7 @@
           crumbs.splice crumbs.length - 1, 0, ['results', Routes.proposal_path(long_id)]
 
         App.vent.trigger 'route:completed', crumbs
+        App.request 'meta:change:default'
 
     StaticPosition: (long_id, user_id) ->
       proposal = App.request 'proposal:get', long_id, true
@@ -140,6 +149,7 @@
           crumbs.splice crumbs.length - 1, 0, ['results', Routes.proposal_path(long_id)]
 
         App.vent.trigger 'route:completed', crumbs
+        App.request 'meta:change:default'
 
     _loading : (entities, region) ->
       region ?= App.request 'default:region'

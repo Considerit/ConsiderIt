@@ -1,13 +1,14 @@
-SitemapGenerator::Sitemap.default_host = "http://consider.it"
+SitemapGenerator::Sitemap.sitemaps_host = "http:consider.it"
 
 Account.all.each do |accnt|
   next if !accnt.sitemap_enabled
 
   subdomain = accnt.identifier  
 # Set the host name for URL creation
+  SitemapGenerator::Sitemap.default_host = "https://#{accnt.host}"
+
   SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain}"
 
-  SitemapGenerator::Sitemap.sitemaps_host = "https://#{accnt.host}"
   SitemapGenerator::Sitemap.create do
     # Put links creation logic here.
     #

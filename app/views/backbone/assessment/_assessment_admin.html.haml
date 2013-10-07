@@ -245,6 +245,12 @@
 
 
 %script{ :type => "text/template", :id => "tpl_assess_edit_forms"}
+
+  .assessment_notes
+    %textarea{:id => "assessment_notes"} 
+      {{ notes }}
+    %button.assessment_save_notes
+      Update notes
   
   (( if(complete){ ))
   .assessment_published_at

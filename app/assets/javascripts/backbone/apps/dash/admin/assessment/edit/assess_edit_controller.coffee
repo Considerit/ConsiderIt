@@ -79,16 +79,22 @@
 
         @listenTo forms, "show", =>
           @listenTo forms, 'publish', =>
-            assessment.save {complete : true}
-            App.execute 'when:fetched', assessment, =>
-              toastr.success 'Assessment published.'
-              forms.render()
+            assessment.save {complete : true}, 
+              success : ->
+                toastr.success 'Assessment published.'
+                forms.render()
 
           @listenTo forms, 'request_approval', =>
-            assessment.save {reviewable : true}
-            App.execute 'when:fetched', assessment, => 
-              toastr.success 'Submitted for approval'
-              forms.render()
+            assessment.save {reviewable : true}, 
+              success : ->
+                toastr.success 'Submitted for approval'
+                forms.render()
+
+          @listenTo forms, 'save_notes', (notes) =>
+            assessment.save {notes: notes}, 
+              success : ->
+                toastr.success 'Saved'
+                forms.render()
 
           @listenTo assessment, 'change', ->
             forms.render()

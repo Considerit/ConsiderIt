@@ -43,7 +43,10 @@ class Point < ActiveRecord::Base
   # cattr_reader :per_page
   # @@per_page = 4  
 
-  scope :public_fields, select([:long_id, :appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :position_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id, :hide_name])
+  class_attribute :my_public_fields
+  self.my_public_fields = [:long_id, :appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :position_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id, :hide_name]
+
+  scope :public_fields, select(self.my_public_fields)
   scope :metrics_fields, select([:id, :appeal, :attention, :comment_count, :divisiveness, :includers, :is_pro, :num_inclusions, :persuasiveness, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :unique_listings])
 
   scope :named, where( :hide_name => false )
@@ -97,6 +100,15 @@ class Point < ActiveRecord::Base
     end 
     chain
   }
+
+  def as_json(options={})
+    options[:only] ||= Point.my_public_fields
+    super(options)
+  end
+
+  def only_public_fields
+    self.to_json :only => Point.my_public_fields
+  end  
   
   def self.included_by_stored(user, proposal, deleted_points)
     if user
@@ -118,13 +130,18 @@ class Point < ActiveRecord::Base
   end
 
   #WARNING: do not save these points after doing this
-  def self.mask_anonymous_users(points, user)
+  def self.mask_anonymous_users(points, current_user)
     points.map do |pnt|
-      if pnt.hide_name && (user.nil? || user.id != pnt.user_id)
-        pnt.user_id = -1
-      end
-      pnt
+      pnt.mask_anonymous current_user
     end
+    points
+  end
+
+  def mask_anonymous(current_user)
+    if hide_name && (current_user.nil? || current_user.id != user_id)
+      user_id = -1
+    end
+    self
   end
 
   def short_desc(max_len = 140)

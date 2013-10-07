@@ -59,32 +59,16 @@ class ProposalsController < ApplicationController
 
     ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
-    position = get_position_for_user(proposal)
 
-    response = {
-      :proposal => proposal, #TODO: filter to public fields
-      :points => Point.mask_anonymous_users(proposal.points.viewable.public_fields, current_user),
-      :included_points => Point.included_by_stored(current_user, proposal, session[proposal.id][:deleted_points].keys).select('points.id') + Point.included_by_unstored(session[proposal.id][:included_points].keys, proposal).select('points.id'),
-      :positions => proposal.positions.published.public_fields,
-      :position => position,
-      :result => 'success',
-    }
+    data = proposal.full_data current_tenant, current_user, session[proposal.id]
 
-    if current_tenant.assessment_enabled
-      response.update({
-        :assessments => proposal.assessments.completed.public_fields,
-        :claims => proposal.assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
-        :verdicts => Assessable::Verdict.all        
-      })
-    end
-
-    #@proposal = {:data => response, :long_id => @proposal.long_id}.to_json
+    position = ProposalsController.get_position_for_user(proposal, current_user, session)
+    data[:position] = position
 
     respond_to do |format|
-      format.json {render :json => response}
+      format.json {render :json => data}
       format.html {
-        #@current_proposal = {:id => proposal.id, :data => response }
-        @current_proposal = response.to_json
+        @current_proposal = data.to_json
       }
     end
 
@@ -168,7 +152,7 @@ class ProposalsController < ApplicationController
       :published => proposal.published,
       :active => proposal.active,
       :proposal => proposal,
-      :position => get_position_for_user(proposal)
+      :position => ProposalsController.get_position_for_user(proposal, current_user, session)
     }
     render :json => response.to_json
   end
@@ -180,14 +164,14 @@ class ProposalsController < ApplicationController
     render :json => {:success => true}
   end
 
-  def get_position_for_user(proposal)
+  def self.get_position_for_user(proposal, current_user, session)
     position = current_user ? current_user.positions.published.where(:proposal_id => proposal.id).last : !session["position-#{proposal.id}"].nil? ? Position.find(session["position-#{proposal.id}"]) : nil
     position ||= Position.create!( 
       :stance => 0.0, 
       :proposal_id => proposal.id, 
       :long_id => proposal.long_id,
       :user_id => current_user ? current_user.id : nil,
-      :account_id => current_tenant.id
+      :account_id => proposal.account_id
     )
 
     position

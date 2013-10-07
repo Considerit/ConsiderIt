@@ -54,7 +54,9 @@
           @unexpand go_back
           
         @listenTo App.vent, 'point:expanded', => @unexpand false
-        @listenTo App.vent, 'navigated_to_base', => @unexpand false
+        @listenTo App.vent, 'navigated_to_base', => 
+          @layout.$el.removeLightbox()
+          @unexpand false
 
         @layout.$el
           .addClass('m-point-expanded')

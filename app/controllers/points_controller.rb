@@ -1,7 +1,5 @@
 class PointsController < ApplicationController
-
   protect_from_forgery
-  respond_to :json
   
   def create
     proposal = Proposal.find_by_long_id(params[:long_id])
@@ -28,36 +26,49 @@ class PointsController < ApplicationController
     session[proposal.id][:included_points][point.id] = 1    
     session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
     
-    render :json => point
-
+    respond_to do |format|
+      format.json {render :json => point}
+    end
   end
 
   def show
 
-    if request.xhr?
-      point = Point.find params[:id]
-      authorize! :read, point
+    point = Point.find params[:id]
+    authorize! :read, point
 
-      #todo: make this more efficient and natural
-      comments = point.comments
-      thanks = point.comments.map {|x| x.thanks.public_fields.all}.compact.flatten
-      thanks.concat point.claims.map {|x| x.thanks.public_fields.all}.compact.flatten
-      
-      response = {
-        :comments => comments.public_fields,
-        :thanks => thanks
+    #todo: make this more efficient and natural
+    comments = point.comments
+    thanks = point.comments.map {|x| x.thanks.public_fields.all}.compact.flatten
+    thanks.concat point.claims.map {|x| x.thanks.public_fields.all}.compact.flatten
+    
+    response = {
+      :comments => comments.public_fields,
+      :thanks => thanks
+    }
+
+    if current_tenant.assessment_enabled
+      response.update({
+        :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
+        :verdicts => Assessable::Verdict.all,
+        :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
+        :already_requested_assessment => current_user && Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
+      })
+    end
+
+
+    respond_to do |format|
+      format.json {render :json => response}
+      format.html { 
+        proposal_data = point.proposal.full_data current_tenant, current_user, session[point.proposal_id]
+        proposal_data[:position] = ProposalsController.get_position_for_user(point.proposal, current_user, session)
+        @current_proposal = proposal_data.to_json
+        
+        point = point.mask_anonymous current_user
+        @current_point = {
+          :associated => response,
+          :point => point
+        }.to_json
       }
-
-      if current_tenant.assessment_enabled
-        response.update({
-          :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
-          :verdicts => Assessable::Verdict.all,
-          :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
-          :already_requested_assessment => current_user && Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
-        })
-      end
-
-      render :json => response
     end
   end
 
@@ -87,11 +98,14 @@ class PointsController < ApplicationController
       )
     end
 
-    render :json => point
+    respond_to do |format|
+      format.json {render :json => point}
+    end
 
   end
 
   def destroy
+    return unless request.xhr?
 
     @point = Point.find params[:id]
     
@@ -105,7 +119,12 @@ class PointsController < ApplicationController
     @point.destroy
 
     response = {:result => 'successful'}
-    render :json => response
+
+    respond_to do |format|
+      format.json {render :json => response}
+    end
+
+
   end
 
   

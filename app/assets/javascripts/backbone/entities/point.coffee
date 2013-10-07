@@ -2,6 +2,7 @@
 
   class Entities.Point extends App.Entities.Model
     name: 'point'
+    fetched: false
 
     initialize : (options = {}) ->
       super options
@@ -22,6 +23,7 @@
       if 'point' of response then response.point else {}
 
     parseAssociated : (data) ->
+      @fetched = true
       comments = (co.comment for co in data.comments)
       thanks = (t.thank for t in data.thanks)
       App.vent.trigger 'comments:fetched', comments
@@ -103,9 +105,14 @@
   API = 
     all_points : new Entities.Points
 
+    bootstrapPoint : (data) ->
+      point = new Entities.Point data.point.point
+      point.parse data.associated
+      @all_points.add point
+
     getPoint : (id, fetch = false, long_id = null) ->
       point = @all_points.get(id) || new Entities.Point({id : id, long_id : long_id})
-      if fetch
+      if fetch && !point.fetched
         point.fetch()
       point
 
@@ -129,6 +136,9 @@
       points = @getPointsBy {proposal_id : proposal_id}
       points
 
+  App.reqres.setHandler 'point:bootstrap', (data) ->
+    API.bootstrapPoint data
+
   App.reqres.setHandler 'point:get', (id, fetch = false, proposal_id = null) ->
     API.getPoint id, fetch, proposal_id
 
@@ -148,4 +158,7 @@
     API.getPointsBy filter
 
 
-
+  App.addInitializer ->
+    if ConsiderIt.current_point
+      App.request 'point:bootstrap', ConsiderIt.current_point
+      ConsiderIt.current_point = null

@@ -30,6 +30,27 @@ class Proposal < ActiveRecord::Base
   scope :published_web, where( :published => true)
   scope :browsable, where( :targettable => false)
 
+
+  def full_data(current_tenant, current_user, prop_data)
+    response = {
+      :proposal => self,
+      :points => Point.mask_anonymous_users(points.viewable.public_fields, current_user),
+      :included_points => Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).select('points.id') + Point.included_by_unstored(prop_data[:included_points].keys, self).select('points.id'),
+      :positions => positions.published.public_fields,
+      :result => 'success',
+    }
+
+    if current_tenant.assessment_enabled
+      response.update({
+        :assessments => assessments.completed.public_fields,
+        :claims => assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
+        :verdicts => Assessable::Verdict.all        
+      })
+    end
+
+    response
+  end
+
   def self.content_for_user(user)
     user.proposals.public_fields.all + Proposal.privately_shared.where("access_list like '%#{user.email}%' ").public_fields.all
   end

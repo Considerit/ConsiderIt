@@ -307,6 +307,7 @@
 
 
   App.addInitializer ->
+
     if ConsiderIt.proposals
       App.request 'proposals:bootstrap', ConsiderIt.proposals
       API.initializeTotalCounts ConsiderIt.proposals.proposals_active_count, ConsiderIt.proposals.proposals_inactive_count

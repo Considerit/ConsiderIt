@@ -176,16 +176,22 @@
 
       params 
 
+    onRender : ->
+      @$el.find('#assessment_notes').autosize()
 
     events :
       'click .publish' : 'publish'
       'click .request_approval' : 'requestApproval'
+      'click .assessment_save_notes' : 'saveNotes'
 
     publish : (ev) ->
       @trigger 'publish'
 
     requestApproval : (ev) ->
       @trigger 'request_approval'
+
+    saveNotes : (ev) ->
+      @trigger 'save_notes', @$el.find('#assessment_notes').val()
 
   class Assessment.EmailDialogView extends App.Dash.EmailDialogView
     dialog: 

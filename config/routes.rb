@@ -22,7 +22,7 @@ ConsiderIt::Application.routes.draw do
   resources :inclusions, :only => [:create] 
 
   resources :proposals, :only => [:index, :create]
-  resource :proposal, :path => '/:long_id/results', :long_id => /[a-z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
+  resource :proposal, :path => '/:long_id/results', :long_id => /[a-zA-Z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
     match '/' => "proposals#show" , :via => :get, :as => :new_position
 

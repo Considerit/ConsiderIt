@@ -150,6 +150,9 @@
       tags = tags[0] if tags.length == 1
       tags
 
+    openToPublic : ->
+      @get('publicity') > 0 && @get('published')
+
   class Entities.Proposals extends App.Entities.Collection
 
     model : Entities.Proposal

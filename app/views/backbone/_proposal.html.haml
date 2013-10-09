@@ -106,7 +106,10 @@
     
     .m-histogram-region
 
+
     .l-message.m-proposal-message.m-aggregated-results
+      .m-proposal-socialmedia-region
+
       .l-message-recipient
 
 
@@ -198,8 +201,16 @@
       (( }); ))
 
 
+%script{ :type => "text/template", :id => "tpl_proposal_social_media" }
+  .m-proposal-socialmedia-action-call
+    Excite your friends to join
 
+  %a{ :href => "https://twitter.com/share", :class => "twitter-share-button", :'data-text' => "I flexed my civic muscle @lvguide.", :'data-related' => "lvguide", :'data-count' => "none", :'data-hashtags' => "lvguide"}
+    Tweet
+  {{'<' + 'script src="//platform.twitter.com/widgets.js" type="text/javascript"' + '><' + '/script>'}}
 
+  %a.zocial.facebook{ :href => "#", :onclick => "window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href), 'facebook-share-dialog', 'width=626,height=436'); return false;"}
+    Share
 
 
 

@@ -73,6 +73,10 @@
         if @options.move_to_results
           layout.moveToResults()
 
+        if @model.openToPublic()
+          social_view = @getSocialMediaView()
+          layout.socialMediaRegion.show social_view
+
 
       @region.show layout
 
@@ -110,6 +114,10 @@
 
     getAggregateReasons : ->
       new Proposal.AggregateReasons
+        model : @model
+
+    getSocialMediaView : ->
+      new Proposal.SocialMediaView
         model : @model
 
 

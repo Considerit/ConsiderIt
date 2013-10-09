@@ -179,8 +179,10 @@
 
   class Entities.PaginatedProposals extends window.mixOf Entities.Proposals, App.Entities.PaginatedCollection 
     state:
-      pageSize: 7
       currentPage: 1
+
+    initialize : ->
+      @state.pageSize = App.request('tenant:get').get('num_proposals_per_page')
 
   API =
     all_proposals : new Entities.Proposals()

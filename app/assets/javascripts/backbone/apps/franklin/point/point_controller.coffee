@@ -52,6 +52,9 @@
         @listenTo expanded_view, 'details:close', (go_back) => 
           @layout.$el.removeLightbox()
           @unexpand go_back
+
+        @listenTo expanded_view, 'make_fields_editable', =>
+          @layout.makeEditable()
           
         @listenTo App.vent, 'point:expanded', => @unexpand false
         @listenTo App.vent, 'navigated_to_base', => 

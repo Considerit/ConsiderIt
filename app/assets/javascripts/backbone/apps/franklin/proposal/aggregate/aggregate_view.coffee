@@ -108,8 +108,9 @@
     className : 'm-histogram'
 
     serializeData : ->
-      supporter_label = _.compact([@model.get('slider_left')]) || 'Supporters'
-      opposer_label = _.compact([@model.get('slider_right')]) || 'Opposers'
+
+      supporter_label = @model.get('slider_left') || 'Supporters'
+      opposer_label = @model.get('slider_right') || 'Opposers'
 
       _.extend {}, @model.attributes,
         histogram : @options.histogram

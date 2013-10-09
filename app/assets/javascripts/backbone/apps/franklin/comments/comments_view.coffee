@@ -30,7 +30,9 @@
       for el in @$el.find('.is_counted')
         $(el).NobleCount $(el).siblings('.count'), 
           block_negative: true,
-          max_chars : parseInt $(el).siblings('.count').text()       
+          max_chars : parseInt $(el).siblings('.count').text()
+
+      @$el.find('.m-new-comment-body-field').autosize()
 
 
     createNew : (ev) ->

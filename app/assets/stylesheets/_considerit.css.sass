@@ -644,7 +644,7 @@ $tooltip_width: 225px
 
 .m-proposals-list-pagination
   margin-top: $vertical_baseline
-
+    
   .m-pointlist-pagination-showmore, .m-proposals-list-pagination-page, .m-proposals-list-pagination-jump
     +sassy-button("simple", 5px, inherit, darken($base_bg_color, 4%), darken($base_bg_color, 12%))
     color: lighten($base_text_color, 12%)
@@ -881,23 +881,32 @@ $tooltip_width: 225px
   .m-proposal-message.m-position-your_action
     .m-position-your-action-body.join
       top: -7px
+  
+.m-proposal-socialmedia-region
+  position: absolute
+  z-index: 0
+  right: 0
+  top: 4 * $vertical_baseline
+  padding-right: $grid_xs
 
+  .m-proposal-socialmedia-action-call
+    +font-size(-1)
+    font-weight: bold
+    text-decoration: underline
+    margin-bottom: $vertical_baseline / 4
 
-  // active, unexpanded proposals with no activity
-  // &[data-state="0"][data-status="proposal-active"]
-  //   .m-proposal-admin_strip
-  //     position: relative
-  //     bottom: -1.5 * $vertical_baseline
+  .facebook
+    +font-size(-3)
+    line-height: 1.6
+    top: -6px
+    position: relative
 
-  // unpublished, unexpanded proposals without any activity
-  // &[data-state="0"][data-visibility="unpublished"]
-  //   .m-proposal-admin_strip
-  //     position: static
-  //     +font-size(0)
-  //     bottom: auto
+    &:hover
+      color: white
 
-
-
+    &:before
+      line-height: 1.4
+      margin: 0
 
 
 
@@ -1179,7 +1188,7 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
   @extend %pro_con_list
 
 .m-point-list-has-pagination
-  min-height: 500px
+  min-height: 250px
 
 
 /* POSITION */  

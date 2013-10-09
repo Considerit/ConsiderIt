@@ -13,6 +13,7 @@
       proposalRegion : '.m-proposal-description-region'
       histogramRegion : '.m-histogram-region'
       reasonsRegion : '.m-reasons-region'
+      socialMediaRegion : '.m-proposal-socialmedia-region'
 
     serializeData : ->
       participants = @model.getParticipants()
@@ -230,3 +231,8 @@
         others
           .html("The most compelling considerations for us <span class='group_name'>#{group_name}</span>")
           .show()
+
+  class Proposal.SocialMediaView extends App.Views.ItemView
+    template : '#tpl_proposal_social_media'
+    className : 'm-proposal-socialmedia'
+

@@ -46,7 +46,7 @@
             model : proposal
           region.controlled_by = @franklin_controller
 
-        App.vent.trigger 'route:completed', [ ['homepage', '/'], ["#{proposal.long_id}", Routes.new_position_proposal_path(proposal.long_id)] ]
+        App.vent.trigger 'route:completed', [ ['homepage', '/'], ["#{proposal.title(40)}", Routes.new_position_proposal_path(proposal.long_id)] ]
         App.vent.trigger 'navigated_to_base'
         App.request 'meta:set', 
           title : "#{proposal.get('category')} #{proposal.get('designator')} #{proposal.get('name')}"
@@ -79,7 +79,7 @@
 
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
-          ["#{proposal.long_id}", Routes.new_position_proposal_path(proposal.long_id)] 
+          ["#{proposal.title(40)}", Routes.new_position_proposal_path(proposal.long_id)] 
           ["results", Routes.proposal_path(proposal.long_id)]]
 
         App.vent.trigger 'navigated_to_base'

@@ -51,7 +51,7 @@
     bindings : 
       '.m-proposal-description-title' : 
         observe : ['name', 'description']
-        onGet : (values) -> @model.title()
+        onGet : (values) -> @model.title(280)
       '.m-proposal-description-body' : 
         observe : 'description'
         updateMethod: 'html'

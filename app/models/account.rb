@@ -8,16 +8,15 @@ class Account < ActiveRecord::Base
   #TODO: replace with activity gem 
   has_many :activities, :class_name => 'Activity', :dependent => :destroy
 
-  #has_many :reflect_bullets, :class_name => 'Reflect::ReflectBullet'
-  #has_many :reflect_responses, :class_name => 'Reflect::ReflectResponse'
-
-  #has_one :theme#, :polymorphic => true
-
   belongs_to :managing_account, :class_name => 'User'
 
   is_followable
 
   before_create :set_default
+
+  def num_proposals_per_page 
+    10
+  end
 
   def host_without_subdomain
     host_with_port.split('.')[-2, 2].join('.')

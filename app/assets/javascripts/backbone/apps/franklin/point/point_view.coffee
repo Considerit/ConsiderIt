@@ -113,6 +113,25 @@
         @trigger 'point:clicked'
         ev.stopPropagation()
 
+    makeEditable : ->
+      @$el.find('.m-point-nutshell').editable
+        resource: 'point'
+        pk: @model.id
+        url: Routes.proposal_point_path @model.get('long_id'), @model.id
+        type: 'textarea'
+        name: 'nutshell'
+        success : (response, new_value) => @model.set('nutshell', new_value)
+
+      @$el.find('.m-point-details-description').editable
+        resource: 'point'
+        pk: @model.id
+        url: Routes.proposal_point_path @model.get('long_id'), @model.id
+        type: 'textarea'
+        name: 'text'
+        success : (response, new_value) => @model.set('text', new_value)
+
+          
+
   class Point.PeerPointView extends Point.PointView
     actions : ['include']
 
@@ -170,22 +189,10 @@
         @closeDetails() if ev.keyCode == 27 && dialog_not_open
 
       current_user = App.request 'user:current'
-      if current_user.id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
-        @$el.find('.m-point-nutshell ').editable
-          resource: 'point'
-          pk: @model.id
-          url: Routes.proposal_point_path @model.get('long_id'), @model.id
-          type: 'textarea'
-          name: 'nutshell'
-          success : (response, new_value) => @model.set('nutshell', new_value)
 
-        @$el.find('.m-point-details-description ').editable
-          resource: 'point'
-          pk: @model.id
-          url: Routes.proposal_point_path @model.get('long_id'), @model.id
-          type: 'textarea'
-          name: 'text'
-          success : (response, new_value) => @model.set('text', new_value)
+      #needs to be managed by layout
+      if current_user.id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
+        @trigger 'make_fields_editable'
 
 
     closeDetails : (go_back) ->

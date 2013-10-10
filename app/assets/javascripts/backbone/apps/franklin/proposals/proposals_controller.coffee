@@ -103,13 +103,15 @@
         @resetCollection proposals, collection, is_active
         callback(callback_params) if callback
 
-    resetCollection : (proposals, collection, is_active) ->        
-      filtered_collection = proposals.where {active : is_active}
-      collection.fullCollection.reset filtered_collection
+    resetCollection : (proposals, collection, is_active) -> 
+      if collection.fullCollection # conditional for IE 8
+        filtered_collection = proposals.where {active : is_active}
+        collection.fullCollection.reset filtered_collection
 
     sortCollection : ({collection, sort_by}) ->
-      collection.setSorting sort_by, 1
-      collection.fullCollection.sort()
+      if collection.fullCollection # conditional for IE 8    
+        collection.setSorting sort_by, 1
+        collection.fullCollection.sort()
 
     getLayout : ->
       new Proposals.ProposalsListLayout

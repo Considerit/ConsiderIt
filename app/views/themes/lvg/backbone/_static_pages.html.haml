@@ -56,7 +56,7 @@
       Throughout, we have published 
       %a{:href => "/home/publications", :'data-target' => 'publications'}
         peer-reviewed articles 
-      describing the design and evolution of the technology, while also analyzing the outcomes. For example, we have found that LVG encourages citizens to consider tradeoffs. Despite the contentious nature of many of these ballot measures, 45.0% of all pro/con lists include both pros and cons, demonstrating that it is possible to encourage citizens to consider tradeoffs and shed light on those more nuanced deliberations. In summative user studies, we've also found that citizens are surprised and encouraged when LVG shows people with whom they disagreed recognizing the importance of both pros and cons, especially when the “disagreers” included some of the same points they themselves thought important. Citizens could thus unexpectedly find common ground.
+      describing the design and evolution of the technology, while also analyzing the outcomes. For example, we have found that LVG encourages citizens to consider tradeoffs. Despite the contentious nature of many of these ballot measures, 45.0% of all pro/con lists include both pros and cons, demonstrating that it is possible to encourage citizens to consider tradeoffs and shed light on those more nuanced deliberations. In summative user studies, we've also found that citizens are surprised and encouraged when LVG shows people with whom they disagreed recognizing the importance of both pros and cons, especially when the &#8220;disagreers&#8221; included some of the same points they themselves thought important. Citizens could thus unexpectedly find common ground.
 
     %p.history
       %a.t-about-image.fl{:href => "http://www.seattlecityclub.org", :target => "_blank"}
@@ -186,7 +186,8 @@
         The Seattle Public Library is providing on-demand reference assistance for users of the Living Voters Guide.
 
       %p
-        To ask a librarian to check the facts of a claim on the Living Voters Guide, click the &#8220;Ask a Librarian&#8221; button at the bottom of each post. Librarians will respond to each request within 48 hours. We will assign each claim a status of &#8220;accurate,&#8221; &#8220;questionable,&#8221; or &#8220;unverifiable&#8221; and will post a response with further information and the sources used to evaluate the claim.
+
+        To ask a librarian to check the facts of a claim on the Living Voters Guide, click the &#8220;Request a fact check of this point&#8221; button at the bottom of each post. Librarians will respond to each request within 48 hours. We will assign each claim a status of &#8220;Consistent with sources found,&#8221; &#8220;Inconsistent with sources found,&#8221; &#8220;Inconclusive given sources found,&#8221; or &#8220;Outside the scope of the service&#8221; and will post a response with further information and the sources used to evaluate the claim.
 
       %p
         We will make every effort to find a variety of sources and to post a fair, balanced, and complete response to each request. Librarians will spend up to two hours per request; if an answer cannot be found in this timeframe, we will note this in our response. Librarians are not experts on current ballot measures; but we are experts in finding information. We will respond to all requests and present the best information we can find in an attempt to evaluate the veracity of a claim.
@@ -208,12 +209,38 @@
         How it works
 
       %p 
-        When you're browsing pro/con points, you can click on a point to expand it. If you would like a librarian to fact check it, click the button "Ask a librarian to fact check this point". You can then describe what claim you'd like them to investigate. The librarians will try to respond within 48 hours. 
+        When you're browsing pro/con points, you can click on a point to expand it. If you would like a librarian to fact check it, click the button &#8220;Ask a librarian about this point&#8221;. You can then describe what claim you'd like them to investigate. The librarians will try to respond within 48 hours.
 
       %p
-        The results of the fact checks will be shown to all LVG participants. When browsing the pros and cons, you can see that points marked with a checkmark contain accurate claims, points marked with an ellipsis (...) contain unverifiable claims, and points marked with a question mark contain questionable claims that appears to be inaccurate. 
+        The results of the fact checks will be shown to all LVG participants. When browsing the pros and cons, you can see the result of the fact check labeled with the following icons:
+        %ul
+          %li.category_explanation
+            %img{:src => "https://d2rtgkroh5y135.cloudfront.net/system/icons/3/original/fc-consistent.png"}
 
+            %strong
+              Consistent with sources found. 
+            The sources we found support or are consistent with the claim.
+          
+          %li.category_explanation
+            %img{:src => "https://d2rtgkroh5y135.cloudfront.net/system/icons/1/original/fc-inconsistent.png"}
 
+            %strong
+              Inconclusive given sources found. 
+            The information we found neither confirms nor denies the accuracy of the claim. In some cases this might be used where we found two different sources which fall on either side of the claim.  In other cases it might be used where one source can be interpreted in more than one way. 
+
+          %li.category_explanation
+            %img{:src => "https://d2rtgkroh5y135.cloudfront.net/system/icons/2/original/fc-inconclusive.png"}
+
+            %strong
+              Inconsistent with sources found. 
+            Sources we found conflict with or are inconsistent with the claim. 
+
+          %li.category_explanation
+            %img{:src => "https://d2rtgkroh5y135.cloudfront.net/system/icons/4/original/fc-outofscope.png"}
+
+            %strong
+              Outside the scope of the service. 
+            Some reasons for this might be - it would require; more in-depth analysis which would take more time than the service allows, in-depth legal or financial analysis, evaluation of the merits of value or opinion statements, evaluation of the likelihood of hypothetical statements.  In each case, we would explain why it is outside the scope.
 
 
 
@@ -501,7 +528,7 @@
       By using this site, you certify that you agree to have information about how you use this site collected.  For people who read the discussion and take positions, we are collecting session logs.  These logs are completely anonymized – we aren’t collecting any information in these logs that could identify you personally.  For people who post new content, the items on the site are all publicly visible on the internet.
 
     %p
-      For people who read information on the site and perhaps take positions, we are collecting session logs that record users’ interaction with the website, including a hash of the IP address of the machine they are coming from, the geographic region of the IP address, timestamped keystrokes, mouse clicks, and mouse position.  We are also recording a hash of the login name of any logged in user.  A “hash” of the IP address means that we will take the actual internet address and transform it into a unique code that will only correspond to that particular IP address.  However, this will be a one-way cryptographic transformation: the stored information will let us determine whether this is the same address when used again, but won’t let us (or anyone else) determine the actual IP address from the hash.  Similarly, by taking the hash of the login name, we can determine whether two sessions are from the same user without storing any personally identifying information.
+      For people who read information on the site and perhaps take positions, we are collecting session logs that record users’ interaction with the website, including a hash of the IP address of the machine they are coming from, the geographic region of the IP address, timestamped keystrokes, mouse clicks, and mouse position.  We are also recording a hash of the login name of any logged in user.  A &#8220;hash&#8221; of the IP address means that we will take the actual internet address and transform it into a unique code that will only correspond to that particular IP address.  However, this will be a one-way cryptographic transformation: the stored information will let us determine whether this is the same address when used again, but won’t let us (or anyone else) determine the actual IP address from the hash.  Similarly, by taking the hash of the login name, we can determine whether two sessions are from the same user without storing any personally identifying information.
 
     %p
       For people who are posting new content, the items on the site are all publicly visible on the internet.
@@ -525,7 +552,7 @@
       %li
         The Living Voters Guide provides a vehicle for citizens to exchange ideas and content. Living Voters Guide managers and sponsors are not responsible for the opinions, links and other content posted on this site, with the exception of information posted by the mangers of the site.
       %li
-        There is no guarantee that access to the site will be uninterrupted or error free. The site is provided on an “as available” basis without warranties of any kind, either express or implied. We are not responsible if specific content is improperly displayed, not posted or not available.
+        There is no guarantee that access to the site will be uninterrupted or error free. The site is provided on an &#8220;as available&#8221; basis without warranties of any kind, either express or implied. We are not responsible if specific content is improperly displayed, not posted or not available.
       %li
         Neither Living Voters Guide managers nor its sponsors are liable for any legal damages based on any claim of the user, or as a result of the user's employing this service.
       %li

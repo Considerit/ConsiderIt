@@ -67,6 +67,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
     else #registration via email
       user = build_resource
       user.referer = user.page_views.first.referer if user.page_views.count > 0
+
+      user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
       if user.save
         sign_in(resource_name, user)
         current_user.track!

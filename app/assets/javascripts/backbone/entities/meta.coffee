@@ -39,7 +39,7 @@
 
   API.active_meta.on 'change', ->
     meta = API.getMeta()
-    $('head title').text meta.get('title')
+    document.title = meta.get('title')
     $('head meta[name="description"]').attr('content', meta.get('description')) 
     $('head meta[name="keywords"]').attr('content', meta.get('keywords')) 
 
@@ -48,7 +48,7 @@
   App.addInitializer ->
     
     args = 
-      title : $('head title').text()
+      title : document.title
       description : $('head meta[name="description"]').attr('content')
       keywords : $('head meta[name="keywords"]').attr('content')
 

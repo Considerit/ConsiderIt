@@ -250,9 +250,13 @@
         hide_name : $form.find('.m-newpoint-anonymous').is(':checked')
         comment_count : 0
 
-      @trigger 'point:create:requested', point_attributes
-
-      @cancelPoint {currentTarget: $form.find('.m-newpoint-cancel')}
+      if point_attributes.nutshell.length < 4
+        toastr.error 'Sorry, the summary of your point must be longer'
+      else if point_attributes.nutshell.length > 140
+        toastr.error 'Sorry, the summary of your point must be less than 140 characters.'
+      else
+        @trigger 'point:create:requested', point_attributes
+        @cancelPoint {currentTarget: $form.find('.m-newpoint-cancel')}
 
   class Points.AggregatedReasonsList extends Points.PaginatedPointList
     location : 'results'

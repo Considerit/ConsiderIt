@@ -55,6 +55,7 @@ class PointsController < ApplicationController
       })
     end
 
+    ApplicationController.reset_user_activities(session, point.proposal) if !session.has_key?(point.proposal.id)
 
     respond_to do |format|
       format.json {render :json => response}

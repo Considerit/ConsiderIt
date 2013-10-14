@@ -1,0 +1,43 @@
+%script{ :type => "text/template", :id => "tpl_dashboard_analyze"}
+  .m-dashboard-heading
+    %h2
+      Analytics
+
+    .m-dashboard-subheading
+      Some ways to look at what is happening    
+
+  .m-analytics-tabs
+    %ul
+      %li.m-analytics-view{ :'data-target' => 'visitation'}
+        Visitation
+      %li.m-analytics-view{ :'data-target' => 'timeseries'}
+        Time series
+
+  .m-analytics-region
+
+%script{ :type => "text/template", :id => "tpl_dashboard_analytics_visitation"} 
+  %h2
+    On-site activities broken down by how the user first reached the site    
+
+
+%script{ :type => "text/template", :id => "tpl_dashboard_analytics_timeseries"} 
+  %h2
+    Timelines of activities, with cumulative plots on the right    
+
+
+  (( _.each(time_series_data, function(s) { ))
+
+  .placeholder{ :id => "placeholder-{{s.title}}" }
+    %h3
+      {{ s.title }}
+    .main
+      .graph
+
+      .overview
+
+    .cumulative
+      .graph
+
+      .overview
+
+  (( }); ))

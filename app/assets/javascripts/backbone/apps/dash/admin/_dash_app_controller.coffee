@@ -88,22 +88,7 @@
       new Admin.UserRolesView
         collection : @collection
 
-  class Admin.AnalyticsController extends Admin.AdminController
-    auth : 'is_analyst'
 
-    data_uri : ->
-      Routes.analytics_path()
-
-    process_data_from_server : (data) ->
-      @analytics_data = data.analytics_data
-      data
-
-    setupLayout : ->
-      @getLayout()
-
-    getLayout : ->
-      new Admin.AnalyticsView
-        analytics_data : @analytics_data
 
 
   class Admin.DatabaseController extends Admin.AdminController

@@ -113,7 +113,7 @@
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
-      @current_controller = new Dash.Admin.AnalyticsController
+      @current_controller = new Dash.Admin.Analytics.AnalyticsController
         region : @_getMainRegion()  
 
       if !@current_controller.redirected

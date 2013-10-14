@@ -355,10 +355,10 @@ end
 
 def shorten_link(link)
   shortened_link = ''
-  if link && APP_CONFIG.has_key?(:bitly)
-    bitly_client = Bitly.new(APP_CONFIG[:bitly][:user_name], APP_CONFIG[:bitly][:api_key])
-    shortened_link = bitly_client.shorten(link).short_url
-  end
+  # if link && APP_CONFIG.has_key?(:bitly)
+  #   bitly_client = Bitly.new(APP_CONFIG[:bitly][:user_name], APP_CONFIG[:bitly][:api_key])
+  #   shortened_link = bitly_client.shorten(link).short_url
+  # end
   shortened_link
 end
 

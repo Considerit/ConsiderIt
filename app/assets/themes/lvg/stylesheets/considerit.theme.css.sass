@@ -463,3 +463,15 @@ html body #m-dashboard
 #m-proposals-container-completed
   display: none
 
+.t-lvg-library-resources
+  &:after
+    content: "These resources curated for the Living Voters Guide by the Seattle Public Library"
+    font-style: italic
+
+.t-lvg-library-resource
+  padding: $vertical_baseline/2 $grid_xs
+  a
+    text-decoration: underline
+    font-weight: bold
+  p
+    +font-size(-1)

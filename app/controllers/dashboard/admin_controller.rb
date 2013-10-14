@@ -73,62 +73,75 @@ class Dashboard::AdminController < Dashboard::DashboardController
       }
     else
 
-      @series = []
-
-      has_permission = current_user && (current_user.is_admin? || current_user.has_role?(:analyst) )
-      classes = has_permission ? [Session, User, Position, Inclusion, Point, Comment] : []
-
-      classes.each_with_index do |data, idx|
-        dates = {}
-        name = data.name.split('::').last
-
-        if [Position, Point].include?(data)
-          qry = data.published
-        else
-          qry = data
-        end
-
-        if [Inclusion].include? data
-          qry = qry
-                  .joins(:position)
-                  .where('positions.published = 1')
-                  .where('inclusions.created_at is not null')
-                  .select('count(*) as cnt, inclusions.created_at')
-                  .group('YEAR(inclusions.created_at), MONTH(inclusions.created_at), DAY(inclusions.created_at)')
-        else
-          qry = qry.select('count(*) as cnt, created_at')
-                  .group('YEAR(created_at), MONTH(created_at), DAY(created_at)')
-                  .where('created_at is not null')
-        end
-
-        qry = qry.order('created_at')
-
-        time = []
-        qry.each do |obj|
-           time.push([obj.created_at.to_date.strftime('%s').to_i * 1000, obj.cnt ])
-        end
-
-        cumulative = []
-        prev = 0
-        time.each_with_index do |row, idx|
-          cumulative.push([row[0], row[1] + prev])
-          prev += row[1]
-        end
-
-        @series.push( {
-          :title => name,
-          :main => { :title => name, :data => time}, 
-          :cumulative => { :title => 'Cumulative ' + name, :data => cumulative}
-        })
-      end
+      time_series = _get_timeseries
+      visitation_data = _get_visitation
 
       result = { 
-        :analytics_data => @series,
+        :time_series_data => time_series,
+        :visitation_data => visitation_data,
         :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
     end
     render :json => result
 
   end
 
+  protected
+
+  def _get_timeseries
+    series = []
+
+    classes = [User, Position, Inclusion, Point, Comment]
+
+    classes.each_with_index do |data, idx|
+      dates = {}
+      name = data.name.split('::').last
+
+      if [Position, Point].include?(data)
+        qry = data.published
+      else
+        qry = data
+      end
+
+      if [Inclusion].include? data
+        qry = qry
+                .joins(:position)
+                .where('positions.published = 1')
+                .where('inclusions.created_at is not null')
+                .select('count(*) as cnt, inclusions.created_at')
+                .group('YEAR(inclusions.created_at), MONTH(inclusions.created_at), DAY(inclusions.created_at)')
+      else
+        qry = qry.select('count(*) as cnt, created_at')
+                .group('YEAR(created_at), MONTH(created_at), DAY(created_at)')
+                .where('created_at is not null')
+      end
+
+      qry = qry.order('created_at')
+
+      time = []
+      qry.each do |obj|
+         time.push([obj.created_at.to_date.strftime('%s').to_i * 1000, obj.cnt ])
+      end
+
+      cumulative = []
+      prev = 0
+      time.each_with_index do |row, idx|
+        cumulative.push([row[0], row[1] + prev])
+        prev += row[1]
+      end
+
+      series.push( {
+        :title => name,
+        :main => { :title => name, :data => time}, 
+        :cumulative => { :title => 'Cumulative ' + name, :data => cumulative}
+      })
+    end
+    series
+  end
+
+  def _get_visitation
+    visitation = {}
+
+    visitation
+  end
 
 end

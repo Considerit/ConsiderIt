@@ -7,7 +7,7 @@ gem 'rails', '~>3'
 gem "mysql2"
 
 gem "haml"
-gem 'sass-rails'#,   "3.2.6"
+#gem 'sass-rails'#,   "3.2.6"
 
 # https://github.com/railsware/js-routes
 gem "js-routes"
@@ -15,6 +15,9 @@ gem "js-routes"
 # https://github.com/ohler55/oj
 gem "oj"
 
+# https://github.com/nesquena/rabl
+# https://github.com/ccocchi/rabl-rails
+gem 'rabl-rails'
 
 # https://github.com/plataformatec/devise
 gem 'devise', "~> 2.2"
@@ -88,14 +91,8 @@ gem 'backup', "~>3.0.24"
 #gem 'hpricot'
 gem 'premailer-rails'
 
-# https://github.com/bradphelan/rocket_tag
-# gem 'acts-as-taggable-on'
-
-#gem "squeel", "1.0.9"
-#gem "rocket_tag", "~> 0.5.6"
-
 # https://github.com/philnash/bitly
-gem 'bitly'
+# gem 'bitly'
 
 # https://github.com/mperham/dalli/
 gem 'dalli'
@@ -113,7 +110,6 @@ gem "assessable", :path => "lib/gems/assessable"
 gem "thankable", :path => "lib/gems/thankable"
 
 gem 'sitemap_generator'
-gem 'newrelic_rpm'
 
 # https://github.com/cmer/cacheable-csrf-token-rails
 gem 'cacheable-csrf-token-rails'
@@ -127,6 +123,7 @@ group :development, :test do
   #gem "query_reviewer"
   gem 'thin'
   gem 'meta_request'
+  gem 'newrelic_rpm'
 end
 
 group :production do
@@ -137,7 +134,7 @@ end
 
 group :assets do
   gem 'aws-sdk'
-  gem 'sass-rails'#,   "3.2.6"
+  #gem 'sass-rails'#,   "3.2.6"
   gem 'coffee-rails', "~> 3.2.2"
   gem 'uglifier'
   gem "asset_sync"

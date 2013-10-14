@@ -30,7 +30,7 @@
 
 #TODO: handle AWS cloudfront at all?
 - name: Precompile assets
-  shell: $source && cd $app_home && RAILS_ENV=$rails_environment RAILS_GROUPS=assets bundle exec rake assets:precompile:primary
+  shell: $source && cd $app_home && RAILS_ENV=$rails_environment RAILS_GROUPS=assets bundle exec rake assets:precompile
   ignore_errors: yes #if we don't have AWS S3 set up, asset sync will error out unnecessarily
   sudo: False
 

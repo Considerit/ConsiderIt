@@ -277,36 +277,10 @@
 
 
 
-  %script{ :type => "text/template", :id => "tpl_dashboard_analyze"}
-    .m-dashboard-heading
-      %h2
-        Analyze trends
-
-      .m-dashboard-subheading
-        Timelines of activities, with cumulative plots on the right     
-
-    (( _.each(analytics_data, function(s) { ))
-
-    .placeholder{ :id => "placeholder-{{s.title}}" }
-      %h3
-        {{ s.title }}
-      .main
-        .graph
-
-        .overview
-
-      .cumulative
-        .graph
-
-        .overview
-
-    (( }); ))
-
-
   %script{ :type => "text/template", :id => "tpl_dashboard_database"}
     %iframe{ :src => rails_admin_path }
 
 
-
+  = render :partial => "backbone/analytics"
   = render :partial => "backbone/moderation"
   = render :partial => "backbone/assessment/assessment_admin"

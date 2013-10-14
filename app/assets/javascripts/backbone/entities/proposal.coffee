@@ -55,7 +55,8 @@
 
     description_detail_fields : ->
       [ ['additional_description1', 'Long Description', $.trim(htmlFormat(@attributes.additional_description1))], 
-        ['additional_description2', 'Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_description2))] ]
+        ['additional_description2', 'Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_description2))],
+        ['additional_description3', 'Resources curated by Seattle Public Library', $.trim(htmlFormat(@attributes.additional_description3))] ]
 
     title : (max_len = 140) ->
       if @get('name') && @get('name').length > 0
@@ -236,7 +237,7 @@
       @all_proposals.remove model
   
     proposalDescriptionFields : ->
-      ['additional_description1', 'additional_description2']     
+      ['additional_description1', 'additional_description2', 'additional_description3']     
 
     areProposalsFetched : () ->
       @proposals_fetched

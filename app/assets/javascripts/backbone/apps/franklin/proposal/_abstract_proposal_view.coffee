@@ -81,7 +81,7 @@
       if $(document).scrollTop() > $block.offset().top
         $('body').animate {scrollTop: $block.offset().top}, 1000
 
-      $toggle = $block.find('.showing')
+      $toggle = $block.find('.showing:first')
 
       $block.find('.m-proposal-description-detail-field-full').slideUp(1000);
       $toggle

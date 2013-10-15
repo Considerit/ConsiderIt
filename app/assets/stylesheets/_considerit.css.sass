@@ -785,6 +785,14 @@ $tooltip_width: 225px
   .m-proposal-description-body, .m-proposal-description-details
     display: none
 
+.m-proposal[data-state="1"]
+  .m-position-your-action-body.submit
+    @extend %supersuperbutton
+    width: 100%
+    border-radius: 0 0 5px 5px
+    +font-size(2)
+
+
 // results view of proposal
 .m-proposal[data-state="2"], .m-proposal[data-state="4"]
   margin-bottom: $vertical_baseline * 2

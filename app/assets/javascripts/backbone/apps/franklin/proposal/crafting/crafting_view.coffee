@@ -8,6 +8,7 @@
     attributes : ->
       "data-role": 'm-proposal'
       "data-id": "#{@model.id}"
+      "data-state": 1
 
     regions : 
       proposalRegion : '.m-proposal-description-region'

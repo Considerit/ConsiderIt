@@ -156,10 +156,13 @@
       @get('publicity') > 0 && @get('published')
 
     getMeta : ->
-      title : if @get('seo_title') then @get('seo_title') else "#{@get('category')} #{@get('designator')} #{@get('name')}"
-      description : if @get('seo_description') then @get('seo_title') else "Think through and discuss #{@get('category')} #{@get('designator')} - #{@get('name')}."
-      keywords : if @get('seo_keywords') then @get('seo_title') else "#{@get('category')} #{@get('designator')}"
+      meta = 
+        title : if @get('seo_title') then @get('seo_title') else "Discuss #{@get('category')} #{@get('designator')} #{@get('name')}: #{@get('name')}"
+        description : if @get('seo_description') then @get('seo_title') else "Think through and discuss #{@get('category')} #{@get('designator')} - #{@get('name')}."
+        keywords : if @get('seo_keywords') then @get('seo_keywords') else "#{@get('category')} #{@get('designator')}"
 
+      console.log meta.keywords
+      meta
 
   class Entities.Proposals extends App.Entities.Collection
 

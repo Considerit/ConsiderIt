@@ -82,11 +82,11 @@
               #   @$el.attr('data-activity', 'proposal-has-activity')
 
               current_user = App.request 'user:current'
-              toastr.success "Thanks for your contribution #{current_user.firstName()}. Now explore the results!", null,
+              toastr.success "Thanks #{current_user.firstName()}. Now explore the results!", null,
                 positionClass: "toast-top-full-width"
                 fadeIn: 100
                 fadeOut: 100
-                timeOut: 10000
+                timeOut: 7000
                 extendedTimeOut: 100
 
               App.navigate Routes.proposal_path( @model.get('long_id') ), {trigger: true}

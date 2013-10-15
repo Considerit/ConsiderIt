@@ -53,6 +53,7 @@
 
 
 
+    #TODO: make this general beyond LVG
     description_detail_fields : ->
       [ ['additional_description1', 'Long Description', $.trim(htmlFormat(@attributes.additional_description1))], 
         ['additional_description2', 'Fiscal Impact Statement', $.trim(htmlFormat(@attributes.additional_description2))],
@@ -153,6 +154,12 @@
 
     openToPublic : ->
       @get('publicity') > 0 && @get('published')
+
+    getMeta : ->
+      title : if @get('seo_title') then @get('seo_title') else "#{proposal.get('category')} #{proposal.get('designator')} #{proposal.get('name')}"
+      description : if @get('seo_description') then @get('seo_title') else "Think through and discuss #{proposal.get('category')} #{proposal.get('designator')} - #{proposal.get('name')}."
+      keywords : if @get('seo_keywords') then @get('seo_title') else "#{proposal.get('category')} #{proposal.get('designator')}"
+
 
   class Entities.Proposals extends App.Entities.Collection
 

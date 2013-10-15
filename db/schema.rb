@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131007220917) do
+ActiveRecord::Schema.define(:version => 20131015165003) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -363,6 +363,9 @@ ActiveRecord::Schema.define(:version => 20131007220917) do
     t.string   "url3"
     t.text     "additional_description3"
     t.string   "url4"
+    t.string   "seo_title"
+    t.string   "seo_description"
+    t.string   "seo_keywords"
   end
 
   add_index "proposals", ["account_id", "active"], :name => "select_proposal_by_active"

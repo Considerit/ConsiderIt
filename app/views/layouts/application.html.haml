@@ -15,8 +15,6 @@
     - cache ['main_layout', current_tenant] do 
       %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
 
-      %meta{ :name => "fragment", :content => "!"}
-
       %link{ :href => "#{current_theme_image_path 'favicon.ico'}", :rel => "icon", :type => "image/vnd.microsoft.icon" }
 
       = theme_stylesheet_link_tag 'application'

@@ -77,7 +77,10 @@
           new_point = App.request 'point:create', attrs
           App.execute 'when:fetched', new_point, =>
 
-            @options.collection.add new_point          
+            @options.collection.add new_point    
+            toastr.success "Good point! Please <strong style='text-decoration:underline'>Save Your Position</strong> below to share your point with others.", null,
+              positionClass: "toast-top-full-width"
+
             @trigger 'point:created', new_point
 
           # App.execute 'show:loading',

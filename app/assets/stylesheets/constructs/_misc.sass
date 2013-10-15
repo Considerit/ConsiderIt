@@ -40,6 +40,12 @@
   color: $callout_text_color
   &:hover
     color: lighten($callout_text_color, 20%)
+
+%supersuperbutton
+  +sassy-button("glass", 5px, inherit, darken($initiator_color, 8%), darken($initiator_color, 16%))
+  color: $callout_text_color
+  &:hover
+    color: lighten($callout_text_color, 20%)
     
 =button($bground_color: hsl(0,0,45%), $darken_amt: 10%)
   +sassy-button("glass", 5px, inherit, $bground_color, darken($bground_color, $darken_amt))

@@ -39,7 +39,22 @@ server {
   rails_spawn_method smart;
   rails_env production;
 
-  if ($args ~ _escaped_fragment_) {
+  location ~ ^/(sitemaps)/ {
+    gzip_static on;
+    add_header  Cache-Control public;
+    add_header  Last-Modified "";
+    add_header  ETag "";
+    break;
+  }  
+
+  set $redirect_as_bot 0;
+  if ($http_user_agent ~ "crawl|Googlebot|Slurp|spider|bingbot|tracker|click|parser|spider") {
+      set $redirect_as_bot 1;
+  }
+  if ($uri ~ "sitemaps"){
+      set $redirect_as_bot 0;
+  }
+  if ($redirect_as_bot = 1){
       rewrite ^ /ajaxcrawlable;
   }
 
@@ -69,8 +84,8 @@ server {
     proxy_redirect off;
   }
 
-  location ~ (\.php|myadmin) {
-      return 403;
+  location ~ \.(myadmin|aspx|php|jsp|cgi)$ {
+    return 410;
   }
 
   location ~ ^/(assets|images|javascripts|stylesheets|system)/ {

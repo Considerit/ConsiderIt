@@ -1,12 +1,8 @@
-# See http://www.robotstxt.org/wc/norobots.html for documentation on how to use the robots.txt file
 User-Agent: *
-
 {% if allow_indexing %}
-
 Disallow: /*/points/*
 Disallow: /*/points
 Disallow: /users
-
 {% for key, value in config.indexability.iteritems() %}
 {% if value and key in config.meta %}
 Sitemap: {{config.meta[key].canonical}}/sitemaps/{{ key|e }}/sitemap.xml.gz

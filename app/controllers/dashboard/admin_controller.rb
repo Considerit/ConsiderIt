@@ -193,7 +193,7 @@ class Dashboard::AdminController < Dashboard::DashboardController
 
     unique_visitors = []
     views_for_sessions.each do |session, views|
-      views.sort! { |x,y| y.created_at <=> x.created_at }
+      views.sort! { |x,y| x.created_at <=> y.created_at }
 
       referer = views[0].referer
       begin

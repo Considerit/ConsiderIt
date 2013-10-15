@@ -14,7 +14,7 @@
       @trigger 'switch_view', $target.data('target')
       @$el.find('.m-analytics-view').removeClass('active')
       $target.addClass('active')
-      
+
   class Analytics.AnalyticsView extends App.Views.ItemView
 
   class Analytics.Visitation extends Analytics.AnalyticsView
@@ -22,6 +22,12 @@
 
     initialize : (options) ->
 
+    serializeData : ->
+      params = 
+        all_data : @options.all_data
+        by_domain : @options.by_domain
+
+      params
 
   class Analytics.TimeSeries extends Analytics.AnalyticsView
     template : '#tpl_dashboard_analytics_timeseries'

@@ -17,8 +17,31 @@
 
 %script{ :type => "text/template", :id => "tpl_dashboard_analytics_visitation"} 
   %h2
-    On-site activities broken down by how the user first reached the site    
+    On-site activities broken down by how the user first reached the site
 
+  %table.m-analytics-visitation
+    %tr
+      %th
+        domain
+      %th
+        unique visitors
+      %th
+        registered users
+      %th
+        registration rate
+
+
+    (( _.each(_.sortBy(by_domain, function(d){return -d.total;}), function(domain) { ))
+    %tr.m-analytics-visitation-row
+      %td
+        {{ domain.domain }}
+      %td
+        {{ domain.total }}
+      %td
+        {{ domain.registered }}
+      %td
+        {{ (domain.registered / domain.total * 100 ).toFixed(1) }}%        
+    (( }); ))
 
 %script{ :type => "text/template", :id => "tpl_dashboard_analytics_timeseries"} 
   %h2

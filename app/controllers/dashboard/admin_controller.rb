@@ -139,9 +139,81 @@ class Dashboard::AdminController < Dashboard::DashboardController
   end
 
   def _get_visitation
+
     visitation = {}
 
-    visitation
+    visits = current_tenant.page_views
+
+    sessions_for_user = Hash.new {|h,k| h[k] = Set.new }
+    sessions_for_ip = Hash.new {|h,k| h[k] = Set.new }
+    views_for_sessions = Hash.new {|h,k| h[k] = [] }
+
+    bots_regex = Regexp.new(/\(.*https?:\/\/.*\)/)
+
+    bots = Hash.new {|h,k| h[k] = 0 }
+    not_bots = Hash.new {|h,k| h[k] = 0 }
+
+    visits.each do |pv|
+      next if bots_regex.match pv.user_agent # pass on bots
+
+      views_for_sessions[pv.session] << pv
+      
+      sessions_for_user[pv.user_id] << pv.session if pv.user_id
+      sessions_for_ip[pv.ip_address] << pv.session
+
+    end
+
+    # collapse users with multiple sessions
+    sessions_for_user.each do |user_id,sessions|
+      sessions = sessions.to_a
+      next if sessions.length < 2
+      canonical_session = sessions[0]
+      sessions[1..sessions.length].each do |session|
+        views_for_sessions[canonical_session].concat views_for_sessions.delete(session) if views_for_sessions.has_key?(session)
+      end
+      views_for_sessions[canonical_session].each do |pv|
+        pv.user_id = user_id
+      end
+    end
+
+    #collapse ips with multiple sessions
+    sessions_for_ip.each do |ip,sessions|
+      sessions = sessions.to_a
+      sessions = sessions.select {|s| views_for_sessions.has_key?(s) && views_for_sessions[s].length > 0 && views_for_sessions[s].collect{|c| c.user_id ? 1 : 0}.reduce(:+) == 0}
+      next if sessions.length < 2
+
+      canonical_session = sessions[0]
+      sessions[1..sessions.length].each do |session|
+        views_for_sessions[canonical_session].concat views_for_sessions.delete(session) if views_for_sessions.has_key?(session)
+      end
+      views_for_sessions[canonical_session].each do |pv|
+        pv.ip_address = ip
+      end
+    end
+
+    unique_visitors = []
+    views_for_sessions.each do |session, views|
+      views.sort! { |x,y| y.created_at <=> x.created_at }
+
+      referer = views[0].referer
+      begin
+        referer_domain = referer ? URI.parse( referer ).host.gsub('www.', '') : 'not set'
+      rescue
+        referer_domain = 'unknown'
+      end
+
+      visitor = {
+        :referer => referer,
+        :referer_domain => referer_domain,
+        :user => views[0].user_id,
+        :visits => views.count
+      }
+      unique_visitors.push visitor
+
+    end
+
+    #TODO: for users that created an account, measure things
+    unique_visitors
   end
 
 end

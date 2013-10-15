@@ -226,6 +226,11 @@ class Proposal < ActiveRecord::Base
     self.tags += "#{tag};" if !has_tag(tag)
   end
 
+  def add_seo_keyword(keyword)
+    self.seo_keywords ||= ""
+    self.seo_keywords += "#{keyword}," if !self.seo_keywords.index("#{keyword},")
+  end
+
   def add_long_id
     self.long_id = SecureRandom.hex(5)
     self.save

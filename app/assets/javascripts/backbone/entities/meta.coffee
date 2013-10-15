@@ -13,11 +13,11 @@
         @active_meta.set @default_meta.attributes
       else
         if 'title' of args
-          args['title'] = "#{@default_meta.get('title')}: #{args['title']}"
+          args['title'] = "#{args['title']}"
         if 'description' of args
-          args['description'] = "#{@default_meta.get('title')}: #{args['description']}"
+          args['description'] = "#{args['description']}"
         if 'keywords' of args
-          args['keywords'] = "#{@default_meta.get('keywords')} #{args['keywords']}"
+          args['keywords'] = "#{args['keywords']}"
 
         @active_meta.set _.defaults(args, @default_meta.attributes)
       @active_meta

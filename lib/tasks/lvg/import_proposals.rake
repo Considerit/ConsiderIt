@@ -16,6 +16,7 @@ namespace :lvg do
       if jurisdiction == 'Statewide'
         proposal.add_tag 'type:statewide'
         proposal.add_tag "jurisdiction:State of Washington"
+        proposal.add_seo_keyword 'Statewide'
         proposal.save
         next
       end
@@ -50,12 +51,14 @@ namespace :lvg do
       proposals.each do |p|
         p.add_tag "type:local"
         p.add_tag "jurisdiction:#{jurisdiction}"
+        p.add_seo_keyword jurisdiction
 
         zips.each do |zip|
           p.targettable = true
           p.add_tag "zip:#{zip}"
-          p.save
         end
+        p.save
+
       end
 
     end

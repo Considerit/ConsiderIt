@@ -48,10 +48,7 @@
 
         App.vent.trigger 'route:completed', [ ['homepage', '/'], ["#{proposal.title(40)}", Routes.new_position_proposal_path(proposal.long_id)] ]
         App.vent.trigger 'navigated_to_base'
-        App.request 'meta:set', 
-          title : "#{proposal.get('category')} #{proposal.get('designator')} #{proposal.get('name')}"
-          description : "Think through and discuss #{proposal.get('category')} #{proposal.get('designator')} - #{proposal.get('name')}."
-          keywords : "#{proposal.get('category')} #{proposal.get('designator')}"
+        App.request 'meta:set', proposal.getMeta() 
 
     Aggregate: (long_id) -> 
       proposal = App.request 'proposal:get', long_id, true
@@ -83,10 +80,7 @@
           ["results", Routes.proposal_path(proposal.long_id)]]
 
         App.vent.trigger 'navigated_to_base'
-        App.request 'meta:set', 
-          title : "#{proposal.get('category')} #{proposal.get('designator')} #{proposal.get('name')}"
-          description : "Think through and discuss #{proposal.get('category')} #{proposal.get('designator')} - #{proposal.get('name')}."
-          keywords : "#{proposal.get('category')} #{proposal.get('designator')}"
+        App.request 'meta:set', proposal.getMeta()
 
 
 

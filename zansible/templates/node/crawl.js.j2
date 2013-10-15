@@ -39,7 +39,17 @@ page.open(system.args[1], function (status) {
       + "\": " + page.reason
     );
   } else {
-    //console.log( "Successful page open!" );
+    page.evaluate(function(){
+      var scripts = document.getElementsByTagName("script"), item;
+      for (var i = scripts.length - 1; i > -1; i--) {
+        item = scripts[i];
+        if (item && item.id && item.id.indexOf("tpl_") == 0) {
+          item.parentNode.removeChild(item);
+        }
+      }
+      var avatar = document.getElementById('b64-avatars');
+      avatar.parentNode.removeChild(avatar);
+    });
   }
 });
 

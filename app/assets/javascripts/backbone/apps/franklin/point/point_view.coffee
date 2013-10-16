@@ -210,6 +210,11 @@
         current_user_id : current_user.id
       params
 
+    onShow : ->
+      current_user = App.request 'user:current'
+      @listenTo current_user, "follow:changed:Point#{@model.id}", ->
+        @render()
+
     events : 
       'click .m-point-follow' : 'toggleFollow'
 

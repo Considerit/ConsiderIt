@@ -126,19 +126,24 @@
     setFollows : (follows) ->
       follows = ( f.follow for f in follows )
       @follows = {}
+
       for f in follows
         @follows[f.followable_type] = {} if !(f.followable_type of @follows)
         @follows[f.followable_type][f.followable_id] = f
-      
+        @trigger "follow:changed:#{f.followable_type}#{f.followable_id}"
+
+
     isFollowing : (followable_type, followable_id) ->
-      if @isLoggedIn() && followable_type of @follows && followable_id of @follows[followable_type] && @follows[followable_type][followable_id].follow == true
-        return @follows[followable_type][followable_id] 
-      else
-        false
-        
+      return @isLoggedIn() && followable_type of @follows && followable_id of @follows[followable_type] && @follows[followable_type][followable_id].follow
+
     setFollowing : (follow) ->
-      @follows[follow.followable_type] = {} if !_.has(@follows, follow.followable_type)
+      if !_.has(@follows, follow.followable_type)
+        @follows[follow.followable_type] = {} 
+      else
+        return if !follow.explicit && follow.followable_id of @follows[follow.followable_type] && @follows[follow.followable_type][follow.followable_id].explicit
+
       @follows[follow.followable_type][follow.followable_id] = follow
+      @trigger "follow:changed:#{follow.followable_type}#{follow.followable_id}"
 
     # unfollow : (followable_type, followable_id) ->
     #   follow = @follows[followable_type][followable_id] if followable_type of @follows && if followable_id of @follows[followable_type]

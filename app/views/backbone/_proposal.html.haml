@@ -7,9 +7,8 @@
     .l-message.m-proposal-message.m-position
       .l-message-speaker
       .m-position-crafting-region.l-message-body.m-position-message-body
-      .l-message-recipient
+      
 
-    .m-position-footer-region
 
 
 %script{ :type => "text/template", :id => "tpl_position_crafting" }  
@@ -21,6 +20,9 @@
   .m-position-stance-region
 
   .m-position-explanation-region
+
+  .m-position-footer-region
+
 
 %script{ :type => "text/template", :id => "tpl_position_reasons" }  
   .m-reasons-peer-points.m-reasons-peer-points-pros.m-points-list-region
@@ -59,8 +61,7 @@
 
 
 %script{ :type => "text/template", :id => "tpl_position_footer" }  
-  .l-message-speaker
-  .l-message-body.m-position-your-action-body-wrap
+  .m-position-your-action-body-wrap
 
     (( if( active ) { ))
 
@@ -91,7 +92,7 @@
     %a.m-position-your-action-body.submit{:'data-target' => 'show-results'}
       View results 
     (( } ))
-  .l-message-recipient
+  
 
   
 
@@ -119,22 +120,13 @@
 
 
       .l-message-body.m-results-responders
-        = render :partial => "shared/bubble", :locals => {:left => false}
+        = render :partial => "shared/bubble", :locals => {:left => true}
 
         .m-reasons-region
 
-      .l-message-recipient
-
-
-    .l-message.m-position-your_action
-      .l-message-speaker
-
-      .l-message-body
-        %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
-          {{ call }}
-
-      .l-message-recipient
-
+        .m-position-your-action-body-wrap
+          %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+            {{ call }}
 
 
 %script{ :type => "text/template", :id => "tpl_aggregate_histogram"}
@@ -199,9 +191,9 @@
         (( }); ))
 
     .l-message-body.m-results-responders
-      = render :partial => "shared/bubble", :locals => {:left => false}
+      = render :partial => "shared/bubble", :locals => {:left => true}
 
-    .l-message-recipient
+    
 
 
 %script{ :type => "text/template", :id => "tpl_proposal_social_media" }
@@ -227,21 +219,21 @@
         %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
         (( }); ))
 
-      %a.m-results-summary-button{:href => "{{Routes.proposal_path( long_id )}}"}
-        View full results
 
-          
+
+
     .l-message-body.m-results-responders.summary 
-      = render :partial => "shared/bubble", :locals => {:left => false}
+      = render :partial => "shared/bubble", :locals => {:left => true}
 
 
-      %h3.m-results-pro-con-list-who
-        .m-results-pro-con-list-who-others
-        .m-results-pro-con-list-who-all    
-          The most compelling considerations we've covered so far
 
       .m-results-summary-pro-con-list
-
+        %h3.m-results-pro-con-list-header
+          (( if(active) { ))
+          The most compelling points raised thus far:
+          (( } else { ))
+          These were the most compelling points we considered:
+          (( } ))
         .m-points-list-region         
           .m-top-point.m-top-pro
             (( if(!top_pro) { ))
@@ -276,9 +268,16 @@
 
             (( } ))
 
+      (( if(active && published){ ))
 
+      .m-position-your-action-body-wrap    
+        %a.m-results-summary-button{:href => "{{Routes.proposal_path( long_id )}}"}
+          View results      
+          
 
-    .l-message-recipient
+      (( } ))
+
+    
 
 
 
@@ -290,23 +289,7 @@
   .l-content-wrap
     .m-proposal-description-region
 
-
-      .l-message-recipient
-
     .m-results-summary-region
-
-    (( if(active && published){ ))
-
-    .m-take-position-region
-      .l-message.m-proposal-message.m-position-your_action    
-        .l-message-speaker
-
-        .l-message-body
-          %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :title => "Decide on {{name}}"}
-            {{ call }}
-        .l-message-recipient
-
-    (( } ))
 
     (( if(!published){ ))
     .m-proposal-strip_publish

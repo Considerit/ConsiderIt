@@ -47,7 +47,7 @@
 
 %script{ :type => "text/template", :id => "tpl_proposal_list_pagination"}
   .m-proposals-list-pagination-wrap
-    (( if (data_loaded || has_more_models) { ))
+    (( if (data_loaded) { ))
     %span.m-proposals-list-pagination-pages
       (( if (currentPage > 1 && false) { ))
       %span.m-proposals-list-pagination-jump-left

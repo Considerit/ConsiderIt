@@ -10,12 +10,16 @@
       App.request 'auth:can_edit_proposal', @model    
 
     serializeData : ->
+      user_position = @model.getUserPosition()
+
+
       user = @model.getUser()
       _.extend {}, @model.attributes,
         proposal : @model
         avatar : App.request('user:avatar', user, 'large' )
         description_detail_fields : @model.description_detail_fields()
         show_details : @show_details
+        call : if user_position && user_position.get('published') then 'Update your position' else 'What do you think?'
 
     initialize : ->
       if @editable()

@@ -3,86 +3,89 @@
   (( prop_type = proposal.getTagsByType('type'); ))
   (( jurisdiction = proposal.getTagsByType('jurisdiction'); ))
 
-
   (( if(prop_type=='local'){ $(".m-proposal[data-id='"+proposal.id+"']").addClass('t-local'); } ))
 
   (( var prop_class = show_details ? 'm-proposal-showing-details' : 'm-proposal-summary-view'; ))
 
-  %div{:class => "l-message m-proposal-message m-proposal-introduction {{prop_class}}" }
-    .l-message-speaker.left.l-message-initiator
+  %div{:class => "{{prop_class}}" }
 
-      %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
-        %img{:src => "{{ avatar }}"}
-      .t-jurisdiction
-        %span
-          {{ category }} {{designator}}, 
-          %br
-          {{jurisdiction}}
-        %span.m-proposal-leading
-          
+    .l-message.m-proposal-introduction.m-proposal-message
 
-    .l-message-body.left.down.m-proposal-description
-      = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-      .l-message-title
-        %span.m-proposal-description-title
-        (( if(!show_details){ ))
-        %span.m-proposal-description-title-readmore
-          read more
+      .l-message-speaker.left.l-message-initiator
+
+        %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
+          %img{:src => "{{ avatar }}"}
+        .t-jurisdiction
+          %span
+            {{ category }} {{designator}}, 
+            %br
+            {{jurisdiction}}
+          %span.m-proposal-leading
+            
+
+      .l-message-body.left.down.m-proposal-description
+        = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+
+        .l-message-title
+          %span.m-proposal-description-title
+          (( if(!show_details){ ))
+          %span.m-proposal-description-title-readmore
+            read more
+          (( } ))
+
+
+      .l-message-recipient
+
+    (( if(show_details){ ))
+
+    .l-message.m-proposal-details
+      .l-message-speaker
+      .l-message-body
+
+        (( if(!published) { ))
+        .l-message-details.m-proposal-description-body
+
+        (( } else { ))
+
+
+        .l-message-details.m-proposal-description-body
+
+        .m-proposal-details-wrapper
+          .m-proposal-description-details
+
+
+            (( _.each(description_detail_fields, function(field) {  ))
+
+            (( if( $.trim(field[2]) != '') { ))
+            .m-proposal-description-detail-field
+              .m-proposal-description-detail-field-heading
+                %a.hidden
+                  Read {{ field[1] }} &raquo;
+              .m-proposal-description-detail-field-full.hide
+                %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
+                  %h1
+                    {{ field[1] }}
+                  {{ field[2] }}
+                %a.showing
+                  hide
+            (( } ))
+
+            (( }); ))
+          .m-proposal-description-details.m-proposal-links
+            %h3
+              More information
+
+            (( _.each([{field: url1, name: 'Full text'}, {field: url2, name: 'Responsible Choices Analysis'}, {field: url3, name: 'Funding Sources'} ], function(url) {  ))
+            (( if( url.field && $.trim(url.field) != '' ){ ))
+            .m-proposal-url-field
+              %a{ :href => "{{url.field}}", :target => "_blank"}
+                {{url.name}}
+            (( } ))
+            (( }); ))
+
+
+
         (( } ))
-
-
-    .l-message-recipient
-
-  (( if(show_details){ ))
-
-  .l-message.m-proposal-details
-    .l-message-speaker
-    .l-message-body
-
-      (( if(!published) { ))
-      .l-message-details.m-proposal-description-body
-
-      (( } else { ))
-
-
-      .l-message-details.m-proposal-description-body
-
-      .m-proposals-details-wrapper
-        .m-proposal-description-details
-
-
-          (( _.each(description_detail_fields, function(field) {  ))
-
-          (( if( $.trim(field[2]) != '') { ))
-          .m-proposal-description-detail-field
-            .m-proposal-description-detail-field-heading
-              %a.hidden
-                Read {{ field[1] }} &raquo;
-            .m-proposal-description-detail-field-full.hide
-              %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
-                %h1
-                  {{ field[1] }}
-                {{ field[2] }}
-              %a.showing
-                hide
-          (( } ))
-
-          (( }); ))
-        .m-proposal-description-details.m-proposal-links
-          %h3
-            More information
-
-          (( _.each([{field: url1, name: 'Full text'}, {field: url2, name: 'Responsible Choices Analysis'}, {field: url3, name: 'Funding Sources'} ], function(url) {  ))
-          (( if( url.field && $.trim(url.field) != '' ){ ))
-          .m-proposal-url-field
-            %a{ :href => "{{url.field}}", :target => "_blank"}
-              {{url.name}}
-          (( } ))
-          (( }); ))
-
-
-
-      (( } ))
-    .l-message-recipient
-  (( } ))
+      .l-message-recipient
+    (( } ))

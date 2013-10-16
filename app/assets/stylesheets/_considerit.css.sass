@@ -360,15 +360,15 @@ html
 
 .l-message
   position: relative
-  margin-top: $vertical_baseline / 4
+  margin-top: $vertical_baseline / 2
     
-  > .l-message-speaker, > .l-message-recipient, > .l-message-body
+  > .l-message-speaker, > .l-message-body
     display: inline-block
     vertical-align: top
     position: relative
 
-  > .l-message-speaker, > .l-message-recipient
-    top: 0
+  > .l-message-speaker
+    top: 3px
     z-index: 1
 
   > .l-message-speaker
@@ -377,7 +377,7 @@ html
 
     &.l-message-initiator
       width: $initiator_width
-      left: $margin_width - $initiator_width + $grid_xs
+      left: - $initiator_width - $grid_xs / 4
 
       [data-target="user_profile_page"]
         opacity: .9
@@ -393,7 +393,7 @@ html
   > .l-message-body
     width: 100%
     z-index: 2
-    margin: auto
+    //margin: auto
     display: block
     width: $body_width
     padding: $vertical_baseline / 2 $grid_xs
@@ -406,6 +406,7 @@ html
 .l-group-container
   font-size: 0
   line-height: 0
+  text-align: right
 
 .l-tooltip
   display: none
@@ -686,9 +687,17 @@ $tooltip_width: 225px
     +font-size(2)
 
 .m-proposal
-  margin: $vertical_baseline 0
+  margin: $vertical_baseline 0 $vertical_baseline * 3 0
   position: relative
   min-height: $initiator_width
+
+  .m-position-your-action-body-wrap
+    //top: -9px
+    bottom: -2*$vertical_baseline
+    //+font-size(0)
+    position: relative
+    width: $body_width
+    left: -1px
 
   .m-position-your_action
     > .l-message-body
@@ -696,7 +705,7 @@ $tooltip_width: 225px
 
   .m-aggregated-results, .m-results-summary
     > .l-message-speaker
-      right: $grid_xs
+      left: -$margin_width - $grid_xs / 4
 
   > .l-content-wrap
     padding-bottom: 0
@@ -798,23 +807,43 @@ $tooltip_width: 225px
     width: $margin_width
 
 
+%full_width_dialog_bubble_button
+  top: -$vertical_baseline
+  width: 100%
+  padding: $vertical_baseline / 2 0
+  text-align: center
+  +font-size(-2)    
 
 // unexpanded proposal
 .m-proposal[data-state="0"]
   .m-proposal-description
     cursor: pointer
-  .m-position-your-action-body.join
-    top: -9px
-    +font-size(0)
+
   .m-proposal-description-body, .m-proposal-description-details
     display: none
 
+  .m-position-your-action-body.join
+    position: absolute
+    right: -153px
+    top: 50%
+    margin-top: -16px // half the height
+    border-radius: 0
+    +font-size(-1)
+
+
+  .m-results-summary-button
+    @extend %full_width_dialog_bubble_button
+
 .m-proposal[data-state="1"]
+  .m-position-your-action-body-wrap
+    bottom: -2.5 * $vertical_baseline
+    left: -$grid_xs - 3
+
   .m-position-your-action-body.submit
     @extend %supersuperbutton
     width: 100%
-    border-radius: 0 0 5px 5px
     +font-size(2)
+    border-radius: 0 0 5px 5px
 
 
 // results view of proposal
@@ -822,7 +851,7 @@ $tooltip_width: 225px
   margin-bottom: $vertical_baseline * 2
 
   .m-position-your-action-body.join
-    top: -$vertical_baseline
+    @extend %full_width_dialog_bubble_button
 
   .l-group-container
     min-height: 85px
@@ -1003,9 +1032,21 @@ $tooltip_width: 225px
 
 
 .l-message
-  &.m-proposal-introduction, &.m-position, &.m-aggregated-results, &.m-position-your_action, &.m-results-summary
-    > .l-message-recipient
-      display: none
+  &.m-proposal-introduction, &.m-proposal-details
+    margin-left: $margin_width
+
+  &.m-position
+    > .l-message-body
+      margin: 0 auto
+  &.m-aggregated-results
+    > .l-message-body
+      margin: 0 auto
+
+  // &.m-position-your_action
+  //   margin-left: $margin_width * 2
+
+  &.m-results-summary
+    margin-left: $margin_width * 2 + $grid_xs / 2
 
   &.m-results-summary
     > .l-message-speaker .l-group-container
@@ -1023,17 +1064,9 @@ $tooltip_width: 225px
   position: relative
 
   &.join
-    
-    width: 100%
-    padding: $vertical_baseline / 2 0
-    text-align: center
+
 
   &.submit
-    +font-size(3)
-    display: block
-    border-radius: 0 0 5px 5px
-    position: relative
-    top: -$vertical_baseline / 2
 
 .m-position-submit-footer-wrap
 
@@ -1056,8 +1089,8 @@ $tooltip_width: 225px
 /* SUMMARY */
 
 .m-results-summary
-  .m-results-summary-button
-    bottom: 0px
+  // .m-results-summary-button
+  //   bottom: 0px
 
 .m-results-summary, .m-aggregated-results
   .m-results-summary-button
@@ -1070,7 +1103,7 @@ $tooltip_width: 225px
     +text-shadow(none)
     border-radius: 0 0 5px 5px
     width: $margin_width // + 16
-    position: absolute
+    //position: absolute
 
     &:hover
       color: darken($community_text_color, 5%)
@@ -1089,9 +1122,8 @@ $tooltip_width: 225px
 
   .m-results-responders
     padding: $vertical_baseline / 2 0
-
-    +bubble($community_color, $dark_community_color, right, $text_color: $community_text_color)
-    min-height: 120px  
+    +bubble($community_color, $dark_community_color, left, $text_color: $community_text_color)
+    //min-height: 120px  
 
 .m-results-summary  
   .m-results-responders
@@ -1218,6 +1250,10 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
 
 .m-results-pro-con-list, .m-results-summary-pro-con-list
   @extend %pro_con_list
+
+.m-results-summary-pro-con-list
+  .m-results-pro-con-list-header
+    margin-left: $grid_xs
 
 .m-point-list-has-pagination
   min-height: 250px

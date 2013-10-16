@@ -18,10 +18,8 @@
 
 
     serializeData : ->
-      user_position = @model.getUserPosition()
 
-      params = _.extend {}, @model.attributes, 
-        call : if user_position && user_position.get('published') then 'Update your position' else 'What do you think?'
+      params = _.extend {}, @model.attributes
       params
 
     onRender : ->
@@ -57,6 +55,7 @@
       tenant = App.request 'tenant:get'
       participants = @model.getParticipants()
       
+
       params = _.extend {}, @model.attributes, 
         top_pro : if top_pro then top_pro.attributes else null
         top_con : if top_con then top_con.attributes else null
@@ -70,8 +69,8 @@
       params
 
     getTileSize : ->
-      PARTICIPANT_WIDTH = 150
-      PARTICIPANT_HEIGHT = 110
+      PARTICIPANT_WIDTH = 120
+      PARTICIPANT_HEIGHT = 120
 
       Math.min 50, 
         window.getTileSize(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)

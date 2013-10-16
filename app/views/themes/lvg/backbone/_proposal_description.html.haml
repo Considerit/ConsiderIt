@@ -32,10 +32,14 @@
           (( if(!show_details){ ))
           %span.m-proposal-description-title-readmore
             read more
+          (( if(active) { ))
+          %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :title => "Decide on {{name}}"}
+            {{ call }}
+          (( } ))            
           (( } ))
 
 
-      .l-message-recipient
+      
 
     (( if(show_details){ ))
 
@@ -87,5 +91,5 @@
 
 
         (( } ))
-      .l-message-recipient
+      
     (( } ))

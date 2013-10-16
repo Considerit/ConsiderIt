@@ -1,51 +1,72 @@
 //////////////// shared ////////////////
 %script{ :type => "text/template", :id => "tpl_proposal_description"}
-  .l-message.m-proposal-message.m-proposal-introduction
-    .l-message-speaker.left.l-message-initiator
-      %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
-        %img{:src => "{{ avatar }}"}
 
-    .l-message-body.left.down.m-proposal-description
-      = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+  (( var prop_class = show_details ? 'm-proposal-showing-details' : 'm-proposal-summary-view'; ))
 
-      .l-message-title.m-proposal-description-title
+  %div{:class => "m-proposal-message {{prop_class}}" }
 
-      (( if(!show_details){ ))
-      %span.m-proposal-description-title-readmore
-        [read more]
-      (( } else if(!published) { ))
-      .l-message-details.m-proposal-description-body
+    .l-message.m-proposal-message.m-proposal-introduction
+      .l-message-speaker.left.l-message-initiator
+        %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
+          %img{:src => "{{ avatar }}"}
 
-      (( } else { ))
-      .l-message-details.m-proposal-description-body
+      .l-message-body.left.down.m-proposal-description
+        = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-      .m-proposal-description-details
 
-        (( _.each(description_detail_fields, function(field) {  ))
+        .l-message-title
+          %span.m-proposal-description-title
+          (( if(!show_details){ ))
+          %span.m-proposal-description-title-readmore
+            read more
+          (( } ))
 
-        (( if( $.trim(field[2]) != '') { ))
-        .m-proposal-description-detail-field
-          .m-proposal-description-detail-field-heading
-            {{ field[1] }}
-            %a.hidden
-              show
-          .m-proposal-description-detail-field-full.hide
-            %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
-              {{ field[2] }}
-            %a.hidden
-              show
+      .l-message-recipient
+
+    (( if(show_details){ ))
+
+    .l-message.m-proposal-details
+      .l-message-speaker
+
+      .l-message-body
+
+        (( if(!published) { ))
+        .l-message-details.m-proposal-description-body
+        (( } else { ))
+        .l-message-details.m-proposal-description-body
+
+        .m-proposal-details-wrapper
+          .m-proposal-description-details
+
+            (( _.each(description_detail_fields, function(field) {  ))
+
+            (( if( $.trim(field[2]) != '') { ))
+            .m-proposal-description-detail-field
+              .m-proposal-description-detail-field-heading
+                %a.hidden
+                  Read {{ field[1] }} &raquo;
+              .m-proposal-description-detail-field-full.hide
+                %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
+                  %h1
+                    {{ field[1] }}
+                  {{ field[2] }}
+                %a.showing
+                  hide
+            (( } ))
+
+            (( }); ))
+          .m-proposal-description-details.m-proposal-links
+            %h3
+              More information
+            (( _.each([{field: url1, name: 'Link'} ], function(url) {  ))
+            (( if( url.field && $.trim(url.field) != '' ){ ))
+            .m-proposal-url-field
+              %a{ :href => "{{url.field}}", :target => "_blank"}
+                {{url.name}}
+            (( } ))
+            (( }); ))
+
         (( } ))
 
-        (( }); ))
-      .m-proposal-description-details
-        (( _.each([{field: url1, name: 'Link'} ], function(url) {  ))
-        (( if( url.field && $.trim(url.field) != '' ){ ))
-        .m-proposal-url-field
-          %a{ :href => "{{url.field}}", :target => "_blank"}
-            {{url.name}}
-        (( } ))
-        (( }); ))
-
-      (( } ))
-
-    .l-message-recipient
+      .l-message-recipient
+    (( } ))

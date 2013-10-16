@@ -161,7 +161,6 @@
         description : if @get('seo_description') then @get('seo_title') else "Think through and discuss #{@get('category')} #{@get('designator')} - #{@get('name')}."
         keywords : if @get('seo_keywords') then @get('seo_keywords') else "#{@get('category')} #{@get('designator')}"
 
-      console.log meta.keywords
       meta
 
   class Entities.Proposals extends App.Entities.Collection

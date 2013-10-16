@@ -73,7 +73,8 @@
         page_set : (page for page in [@collection.state.firstPage..@collection.state.lastPage])
         data_loaded : App.request "proposals:are_fetched"
         prompt: if @options.is_active then "Show more ongoing conversations" else "Show past conversations"
-        has_more_models : @options.total_models > @collection.state.pageSize || @collection.state.totalPages > 1
+        has_more_models : (@options.total_models > @collection.state.pageSize) || @collection.state.totalPages > 1
+
       params
 
     events : 

@@ -99,6 +99,8 @@
 
     requestProposals : (collection, is_active, callback = null, callback_params = {}) ->
       proposals = App.request 'proposals:get', true
+
+      console.log proposals
       App.execute "when:fetched", proposals, =>
         @resetCollection proposals, collection, is_active
         callback(callback_params) if callback
@@ -120,6 +122,7 @@
       new Proposals.PaginationView
         collection: collection
         is_active : @is_active
+        total_models : @options.total_models
 
     getFilterView : (collection) ->
       new Proposals.FilterView

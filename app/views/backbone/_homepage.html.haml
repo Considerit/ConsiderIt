@@ -8,14 +8,14 @@
     .l-content-wrap.t-intro
               
       .l-message
-        .l-message-speaker.left.l-message-initiator
+        .l-message-speaker.l-message-initiator
           %a
             - if current_tenant.managing_account && current_tenant.managing_account.avatar_file_name
               = image_tag current_tenant.managing_account.avatar.url(:large)
             - else
               %img{ :src => '/system/default_avatar/large_default-profile-pic.png'}
 
-        .l-message-body.left.down
+        .l-message-body.down
           = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
           %span.l-message-title

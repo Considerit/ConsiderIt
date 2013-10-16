@@ -5,9 +5,9 @@
     .m-proposal-description-region
     
     .l-message.m-proposal-message.m-position
+      .l-message-speaker
+      .m-position-crafting-region.l-message-body.m-position-message-body
       .l-message-recipient
-      .m-position-crafting-region.l-message-body.right.m-position-message-body
-      .l-message-speaker.right
 
     .m-position-footer-region
 
@@ -59,8 +59,7 @@
 
 
 %script{ :type => "text/template", :id => "tpl_position_footer" }  
-  .l-message-recipient
-
+  .l-message-speaker
   .l-message-body.m-position-your-action-body-wrap
 
     (( if( active ) { ))
@@ -92,8 +91,9 @@
     %a.m-position-your-action-body.submit{:'data-target' => 'show-results'}
       View results 
     (( } ))
+  .l-message-recipient
 
-  .l-message-speaker
+  
 
 
 
@@ -110,29 +110,31 @@
     .l-message.m-proposal-message.m-aggregated-results
       .m-proposal-socialmedia-region
 
-      .l-message-recipient
-
-
-      .l-message-body.right.m-results-responders
-        = render :partial => "shared/bubble", :locals => {:left => false}
-
-        .m-reasons-region
-
-      .l-message-speaker.right
+      .l-message-speaker
 
         .l-group-container
           (( _.each(participants, function(p){ ))
           %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
           (( }); ))
 
-    .l-message.m-position-your_action
+
+      .l-message-body.m-results-responders
+        = render :partial => "shared/bubble", :locals => {:left => false}
+
+        .m-reasons-region
+
       .l-message-recipient
+
+
+    .l-message.m-position-your_action
+      .l-message-speaker
 
       .l-message-body
         %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
           {{ call }}
 
-      .l-message-speaker
+      .l-message-recipient
+
 
 
 %script{ :type => "text/template", :id => "tpl_aggregate_histogram"}
@@ -188,17 +190,18 @@
 
 %script{ :type => "text/template", :id => "tpl_results" }      
   .l-message.m-proposal-message.m-aggregated-results
-    .l-message-recipient
 
-    .l-message-body.right.m-results-responders
+    .l-message-speaker
+
+      .l-group-container
+        (( _.each( participants, function(p){ ))
+        %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+        (( }); ))
+
+    .l-message-body.m-results-responders
       = render :partial => "shared/bubble", :locals => {:left => false}
 
-  .l-message-speaker.right
-
-    .l-group-container
-      (( _.each( participants, function(p){ ))
-      %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-      (( }); ))
+    .l-message-recipient
 
 
 %script{ :type => "text/template", :id => "tpl_proposal_social_media" }
@@ -218,9 +221,17 @@
 %script{ :type => "text/template", :id => "tpl_proposal_summary_results"}
   .l-message.m-proposal-message.m-results-summary{:'data-role' => 'results-section'}
 
-    .l-message-recipient
+    .l-message-speaker
+      .l-group-container
+        (( _.each(participants, function(p){ ))
+        %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+        (( }); ))
 
-    .l-message-body.right.m-results-responders.summary 
+      %a.m-results-summary-button{:href => "{{Routes.proposal_path( long_id )}}"}
+        View full results
+
+          
+    .l-message-body.m-results-responders.summary 
       = render :partial => "shared/bubble", :locals => {:left => false}
 
 
@@ -266,14 +277,10 @@
             (( } ))
 
 
-    .l-message-speaker.right
-      .l-group-container
-        (( _.each(participants, function(p){ ))
-        %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-        (( }); ))
 
-      %a.m-results-summary-button{:href => "{{Routes.proposal_path( long_id )}}"}
-        View full results
+    .l-message-recipient
+
+
 
 
 
@@ -292,13 +299,13 @@
 
     .m-take-position-region
       .l-message.m-proposal-message.m-position-your_action    
-        .l-message-recipient
+        .l-message-speaker
 
         .l-message-body
           %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :title => "Decide on {{name}}"}
             {{ call }}
+        .l-message-recipient
 
-        .l-message-speaker
     (( } ))
 
     (( if(!published){ ))

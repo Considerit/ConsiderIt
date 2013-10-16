@@ -6,11 +6,11 @@
   %div{:class => "m-proposal-message {{prop_class}}" }
 
     .l-message.m-proposal-message.m-proposal-introduction
-      .l-message-speaker.left.l-message-initiator
+      .l-message-speaker.l-message-initiator
         %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
           %img{:src => "{{ avatar }}"}
 
-      .l-message-body.left.down.m-proposal-description
+      .l-message-body.down.m-proposal-description
         = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
 

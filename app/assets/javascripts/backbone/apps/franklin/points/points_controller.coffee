@@ -11,12 +11,7 @@
      
 
       @listenTo layout, 'show', =>
-        App.vent.on 'point:removal', (point_id) =>
-          is_paginated = @options.collection.fullCollection?
-          collection = if is_paginated then @options.collection.fullCollection else @options.collection
 
-          if collection.get point_id
-            @sortPoints layout.sort
         @listenTo layout, 'sort', (sort_by) =>
           @sortPoints sort_by
 
@@ -67,6 +62,15 @@
     initialize : (options = {}) ->
       super options
       @listenTo @layout, 'show', =>
+
+        App.vent.on 'point:removal', (point_id) =>
+          is_paginated = @options.collection.fullCollection?
+          collection = if is_paginated then @options.collection.fullCollection else @options.collection
+
+          if collection.get point_id
+            @sortPoints layout.sort
+
+
         @listenTo @layout, 'childview:point:remove', (view) => @trigger 'point:remove', view
 
         @listenTo @layout, 'point:create:requested', (attrs) =>

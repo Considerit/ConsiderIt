@@ -5,6 +5,11 @@ class Followable::Follow < ActiveRecord::Base
 
   scope :active, where( :follow => true )  
 
+  def as_json(options={})
+    options[:only] ||= [:followable_id, :followable_type, :follow, :explicit]
+    super(options)
+  end
+
   def notify?
     follow
   end

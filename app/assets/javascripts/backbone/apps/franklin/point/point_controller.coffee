@@ -89,7 +89,7 @@
           $.post path, params, (data) => 
             toastr.success 'Success'
             current_user.setFollowing data.follow.follow
-            follow_view.render()
+            
 
       follow_view
 

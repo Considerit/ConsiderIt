@@ -13,7 +13,6 @@
     regions : 
       proposalRegion : '.m-proposal-description-region'
       positionRegion : '.m-position-crafting-region'
-      footerRegion : '.m-position-footer-region'
 
   class Proposal.PositionCraftingLayout extends App.Views.Layout
     template : '#tpl_position_crafting'
@@ -23,6 +22,7 @@
       reasonsRegion : '.m-position-reasons-region'
       stanceRegion : '.m-position-stance-region'
       explanationRegion : '.m-position-explanation-region'
+      footerRegion : '.m-position-footer-region'
 
     serializeData : ->
       tenant = App.request 'tenant:get'
@@ -38,7 +38,7 @@
 
   class Proposal.PositionFooterView extends App.Views.ItemView
     template : '#tpl_position_footer'
-    className : 'm-position-footer l-message m-position-your_action'
+    className : 'm-position-footer m-position-your_action'
 
     serializeData : ->
       current_user = App.request 'user:current'

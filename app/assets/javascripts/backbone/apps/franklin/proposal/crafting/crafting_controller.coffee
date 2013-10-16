@@ -8,14 +8,11 @@
       @listenTo layout, 'show', =>
         proposal_view = @getProposalDescription @proposal
         crafting_layout = @getCraftingLayout @proposal, @model
-        footer_view = @getFooterView @model
 
         @listenTo crafting_layout, 'show', => @setupPositionLayout crafting_layout
-        @listenTo footer_view, 'show', => @setupFooterLayout footer_view
 
         layout.proposalRegion.show proposal_view
         layout.positionRegion.show crafting_layout
-        layout.footerRegion.show footer_view
 
         @listenTo App.vent, 'user:signin', =>
           current_user = App.request 'user:current'
@@ -46,6 +43,10 @@
       layout.reasonsRegion.show reasons_layout
       layout.stanceRegion.show stance_view
       # layout.explanationRegion.show explanation_view
+
+      footer_view = @getFooterView @model
+      @listenTo footer_view, 'show', => @setupFooterLayout footer_view
+      layout.footerRegion.show footer_view
       
     setupFooterLayout : (view) ->
       @listenTo view, 'position:canceled', =>

@@ -25,8 +25,8 @@
 
 
     getTileSize : ->
-      PARTICIPANT_WIDTH = 150
-      PARTICIPANT_HEIGHT = 110
+      PARTICIPANT_WIDTH = 120
+      PARTICIPANT_HEIGHT = 120
 
       Math.min 50, 
         window.getTileSize(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)

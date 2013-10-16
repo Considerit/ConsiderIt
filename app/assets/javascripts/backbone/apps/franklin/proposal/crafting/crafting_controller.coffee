@@ -194,9 +194,17 @@
       window.addCSRF params
       @model.removePoint model
       $.post Routes.inclusions_path( {delete : true} ), params, (data) =>
+        current_user = App.request 'user:current'
+        current_user.setFollowing 
+          followable_type : 'Point'
+          followable_id : model.id
+          follow : false
+          explicit: false
+
         if data.destroyed
           model.trigger 'destroy', model, model.collection
           toastr.success 'Point deleted'
+
 
       App.vent.trigger 'point:removal', model.id
 
@@ -256,6 +264,13 @@
       $.post Routes.inclusions_path(), 
         params, (data) =>
           @model.includePoint model
+
+          current_user = App.request 'user:current'
+          current_user.setFollowing 
+            followable_type : 'Point'
+            followable_id : model.id
+            follow : true
+            explicit: false
 
 
     setupStanceView : (view) ->

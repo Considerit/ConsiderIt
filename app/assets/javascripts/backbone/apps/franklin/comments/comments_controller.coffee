@@ -41,6 +41,11 @@
           @options.collection.add comment
           @layout.commentCreated()
           @trigger 'comment:created'
+          current_user.setFollowing 
+            followable_type : @options.commentable_type
+            followable_id : @options.commentable_id
+            follow : true
+            explicit: false
 
 
     getLayout : (collection) ->

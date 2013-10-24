@@ -79,12 +79,13 @@
           switch @state 
             when Proposal.ReasonsState.separated
               included_points = @model.getUserPosition().getIncludedPoints()              
-              collection.fullCollection.filter (point) -> !(point.id in included_points)
+              collection.fullCollection.remove (App.request('point:get', i) for i in included_points)
+
               collection.setPageSize 4
 
             when Proposal.ReasonsState.collapsed
               top_points = [@model.get('top_pro'), @model.get('top_con')]
-              collection.fullCollection.filter (point) -> point.id in top_points
+              collection.fullCollection.set  top_points
               collection.setPageSize 1
 
             when Proposal.ReasonsState.together
@@ -109,6 +110,15 @@
 
         @peer_pros_controller = @getPointsController layout.peerProsRegion, 'pro', aggregated_pros
         @peer_cons_controller = @getPointsController layout.peerConsRegion, 'con', aggregated_cons
+
+        _.each [@peer_pros_controller, @peer_cons_controller], (controller) =>
+          @listenTo controller, 'point:show_details', (point) =>
+            region = if point.isPro() then @layout.peerProsRegion else @layout.peerConsRegion
+            region.$el.css 'zIndex', 11
+
+            @listenToOnce controller, 'details:close', =>
+              region.$el.css 'zIndex', ''
+
 
         @setupPointsController @peer_pros_controller
         @setupPointsController @peer_cons_controller

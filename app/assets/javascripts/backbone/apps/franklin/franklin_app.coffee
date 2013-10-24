@@ -120,7 +120,7 @@
           ["#{proposal.long_id}", Routes.new_position_proposal_path(long_id)]
           ["#{ if point.isPro() then 'Pro' else 'Con'} point", Routes.proposal_point_path(long_id, point_id)] ]
 
-        if region.currentView instanceof Franklin.Proposal.AggregateLayout
+        if @franklin_controller instanceof Franklin.Proposal.ProposalController && @franklin_controller.state == Franklin.Proposal.State.expanded.results
           crumbs.splice crumbs.length - 1, 0, ['results', Routes.proposal_path(long_id)]
 
         App.vent.trigger 'route:completed', crumbs

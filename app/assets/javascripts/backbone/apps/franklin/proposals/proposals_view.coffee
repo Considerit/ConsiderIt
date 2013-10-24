@@ -78,7 +78,7 @@
       params
 
     events : 
-      'click .m-pointlist-pagination-showmore' : 'showMoreRequested'
+      'click .m-proposals-pagination-showmore' : 'showMoreRequested'
       'click [data-target="proposallist:first"]' : 'gotoFirst'
       'click [data-target="proposallist:prev"]' : 'gotoPrev'
       'click [data-target="proposallist:next"]' : 'gotoNext'
@@ -131,20 +131,20 @@
       data_loaded : App.request "proposals:are_fetched"
 
     buildItemView : (proposal) ->
-      if App.request "auth:can_edit_proposal", proposal
-        view_cls = App.Franklin.Proposal.ModifiableProposalSummaryView
-      else
-        view_cls = App.Franklin.Proposal.ProposalSummaryView
+      #TODO: handle modifiable!
+
+      view_cls = App.Franklin.Proposal.ProposalLayout      
+      # if App.request "auth:can_edit_proposal", proposal
+      #   view_cls = App.Franklin.Proposal.ModifiableProposalSummaryView
+      # else
+      #   view_cls = App.Franklin.Proposal.ProposalSummaryView
 
       view = new view_cls
         model: proposal
         class : 'm-proposal'
-        attributes : 
-          'data-id': "#{proposal.id}"
-          'data-role': 'm-proposal'
-          'data-activity': if proposal.has_participants() then 'proposal-has-activity' else 'proposal-no-activity'
-          'data-status': if proposal.get('active') then 'proposal-active' else 'proposal-inactive'
-          'data-visibility': if proposal.get('published') then 'published' else 'unpublished'
+        # attributes : 
+        #   'data-id': "#{proposal.id}"
+        #   'data-role': 'm-proposal'
 
       view
 

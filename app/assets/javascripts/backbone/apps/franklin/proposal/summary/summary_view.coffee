@@ -1,6 +1,5 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
   
-  class Proposal.UnpublishedProposalDescription extends Proposal.ProposalDescriptionView
 
   class Proposal.ProposalSummaryView extends App.Views.Layout
     template : '#tpl_proposal_summary'
@@ -27,18 +26,6 @@
       @$el.attr('data-visibility', 'unpublished') if !@model.get 'published'
 
 
-  class Proposal.SummaryProposalDescription extends Proposal.ProposalDescriptionView
-    show_details : false
-  
-    editable : => false
-
-    initialize : (options = {}) ->
-      super options
-      _.extend @events, 
-        'click .m-proposal-description' : 'toggleDescription'
-
-    toggleDescription : (ev) ->
-      @trigger 'proposal:clicked'
 
 
   class Proposal.SummaryResultsView extends App.Views.ItemView
@@ -53,7 +40,6 @@
       top_con = null if !top_con.id
 
       tenant = App.request 'tenant:get'
-      participants = @model.getParticipants()
       
 
       params = _.extend {}, @model.attributes, 
@@ -63,8 +49,6 @@
         top_con_user : if top_con then top_con.getUser().attributes else null
         pro_label : tenant.getProLabel()
         con_label : tenant.getConLabel()
-        participants : _.sortBy(participants, (user) -> !user.get('avatar_file_name')?  )
-        tile_size : @getTileSize()
 
       params
 

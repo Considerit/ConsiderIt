@@ -1,0 +1,107 @@
+[data-activity="proposal-no-activity"]
+  .m-reasons, > .l-message-speaker
+    display: none
+
+[data-activity="proposal-has-activity"]
+  .m-reasons[data-state="collapsed"]
+    .m-reasons-lists
+      min-height: 85px
+      margin-bottom: 100px // spacing for participants block
+
+.m-reasons
+
+  // REASONS
+  // this is the wrapper for the peer and position point lists
+  .m-reasons-lists
+    margin: $vertical_baseline / 2 auto 0 auto
+    position: relative
+    width: $body_width
+
+  /////////
+  // wrapper for a points column, managed by a PointsController
+  .m-points-list-region
+    position: relative
+    vertical-align: top
+
+  .m-points-list-region, .m-position-region
+    display: inline-block
+
+  .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+    +transition(width .4s ease, left .5s linear, right .5s linear)
+    position: absolute
+    top: 0
+    z-index: 10
+
+  &[data-state="together"], &[data-state="collapsed"]
+    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      width: 296px
+
+    .m-aggregated-propoints-region
+      left: 0
+
+    .m-aggregated-conpoints-region
+      right: 0
+
+  &[data-state="separated"]
+
+    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      width: $peer-point-width
+
+    .m-aggregated-propoints-region
+      left: -232px
+
+    .m-aggregated-conpoints-region
+      right: -232px
+
+  ////////
+
+  // The header of the reasons, describing whose reasons they are
+  &[data-state="separated"], &[data-state="collapsed"]
+    .m-reasons-header-region
+      display: none
+
+
+  &[data-state="together"]
+    .m-reasons-header-region
+      display: static
+      border-radius: 0  
+      padding: $vertical_baseline / 2 $grid_xs
+      //+bubble($community_color, $dark_community_color, left, $text_color: $community_text_color)
+
+      .t-bubble
+        display: none
+
+    .m-reasons-header
+      margin-bottom: $vertical_baseline/2    
+      text-align: center
+      +font-size(3)    
+      text-decoration: underline  
+  ////
+
+
+  /// The participants block
+  &[data-state="separated"]
+    > .l-message-speaker
+      display: none
+    .l-group-container
+      
+
+  // &[data-state="together"], &[data-state="collapsed"]
+
+  //   > .l-message-speaker
+  //     position: relative
+  //     width: $body_width
+  //     margin: auto
+  //     display: block
+  //     //left: -$margin_width - $grid_xs / 4
+
+
+  ///
+
+// sticky footer for results (not presented in .m-reasons el)
+.m-reasons-footer-sticky
+  text-align: center
+
+  a
+    width: 100%
+    border-radius: 0

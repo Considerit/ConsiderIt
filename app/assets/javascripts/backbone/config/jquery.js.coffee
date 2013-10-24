@@ -76,7 +76,7 @@ do ($) ->
         distance_to_travel = Math.abs( doc_top - target )
         $('body').animate {scrollTop: target}, distance_to_travel
       else 
-        $('body').scrollTop target
+        $(document).scrollTop target
 
 
   $.fn.moveToBottom = (offset_buffer = 50, scroll = false) ->
@@ -100,7 +100,7 @@ do ($) ->
       distance_to_travel = Math.abs( doc_top - target )
       $('body').animate {scrollTop: target}, distance_to_travel
     else
-      $('body').scrollTop target
+      $(document).scrollTop target
 
   $.fn.moveToTop = (offset_buffer = 50, scroll = false) ->
     $el = $(this)
@@ -113,12 +113,17 @@ do ($) ->
       distance_to_travel = Math.abs( doc_top - target )
       $('body').animate {scrollTop: target}, distance_to_travel
     else
-      $('body').scrollTop target
-
-
+      $(document).scrollTop target
 
   $.fn.putBehindLightbox = ->
     $(this).after '<div id="lightbox">'
 
   $.fn.removeLightbox = ->
     $('#lightbox').remove()
+
+  $.fn.showParentStates = ->
+    console.log 'Parent states for ', $(this), ':'
+    $this = $(this)
+    console.log '\t', $this.data('state') if $this.data('state')
+    $(this).parents('[data-state]').each ->
+      console.log '\t', $(this).data('state'), $(this)

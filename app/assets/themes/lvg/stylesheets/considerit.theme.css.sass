@@ -227,35 +227,41 @@ $juri_width: $initiator_width
 
   
 
-.l-message
-  &.m-proposal-summary-view, &.m-proposal-showing-details
-    > .l-message-speaker.l-message-initiator
-      top: -14px
+// .l-message
+//   &.m-proposal-summary-view, &.m-proposal-showing-details
+//     > .l-message-speaker.l-message-initiator
+//       top: -14px
 
 
 .t-jurisdiction
   text-align: center
-  width: $juri_width
-  height: $juri_width
+  width: $juri_width + 50
+  //height: $initiator_width
   position: absolute
   top: 0
+  left: -$initiator_width - 50
   +font-size(-3)
   line-height: 1.2
+  text-align: right
+
+  strong
+    +font-size(2)
+    font-weight: bold
   
   // left: -10px
   //top: -10px
 
-  &:before
-    content: ''
-    display: inline-block
-    height: 100%
-    vertical-align: middle
-    margin-right: -0.25em /* Adjusts for spacing */
+  // &:before
+  //   content: ''
+  //   display: inline-block
+  //   height: 100%
+  //   vertical-align: middle
+  //   margin-right: -0.25em /* Adjusts for spacing */
 
 
   span
     display: inline-block
-    vertical-align: middle
+    //vertical-align: middle
     //width: $juri_width
     font-weight: bold
 

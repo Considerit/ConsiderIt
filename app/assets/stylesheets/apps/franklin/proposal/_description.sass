@@ -1,0 +1,99 @@
+.m-proposal-description-wrap
+
+  // in title
+  .m-position-your-action-body.join
+    @extend %collapsed_action_call
+    margin-top: -16px
+
+  .m-reasons-view-results
+    //+sassy-button("glass", 5px, inherit, saturate($community_color, 8%), darken(saturate($community_color, 8%), 5%))
+    @extend %collapsed_action_call
+    +font-size(-2)
+    display: block
+    color: lighten($base_text_color, 5%)
+    font-weight: bold
+    text-align: center
+    //+text-shadow(none)
+    //border-radius: 0
+    margin-top: 3 * $vertical_baseline / 2
+
+    &:hover
+      color: darken($base_text_color, 5%)
+
+
+  .m-proposal-description
+    +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
+    p
+      margin-bottom: $vertical_baseline / 2
+    h1, h2, h3
+      color: $initiator_text_color
+    td
+      padding: 0 3px
+
+  .m-proposal-description-title-readmore
+    +font-size(-3)
+    white-space: nowrap
+    font-weight: normal
+
+
+  // in details
+
+  .m-proposal-details
+    margin-top: 0
+    margin-bottom: $vertical_baseline
+
+    .l-message-body
+      background: $base_bg_color
+      border: 1px solid darken($base_bg_color, 15%)
+      border-top: none
+      border-radius: 0px 0px 5px 5px 
+
+  .m-proposal-details-wrapper
+    position: relative
+
+  // read more fields
+  .m-proposal-description-details
+    margin-top: $vertical_baseline / 2
+    +font-size(-1)
+
+    .hidden, .showing
+      text-decoration: underline  
+
+    .m-proposal-description-detail-field-full
+      p
+        margin-bottom: $vertical_baseline/2
+
+      h1, h3
+        margin: $vertical_baseline/4 0
+
+      h1
+        +font-size(2)
+      h3
+        +font-size(1)
+      ul
+        padding-left: $grid_xs
+
+  // additional links
+  .m-proposal-links
+    background-color: darken($base_bg_color, 15%)
+    position: absolute
+    right: -$margin_width - $grid_xs
+    bottom: 0
+    padding: $vertical_baseline/2 $grid_xs/2
+    width: $margin_width
+
+  .m-proposal-url-field
+    a
+      text-decoration: underline
+
+
+  &[data-state="expanded"]
+    .m-proposal-description-title-readmore
+      display: none
+
+    .m-proposal-description
+      border-radius: 0px 5px 0px 0px
+
+  &[data-state="collapsed"]
+    .m-proposal-description
+      cursor: pointer

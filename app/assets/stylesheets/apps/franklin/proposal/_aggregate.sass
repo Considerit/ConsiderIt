@@ -1,0 +1,95 @@
+.m-results[data-state="together"]
+  .m-histogram
+    visibility: visible
+    display: block
+
+// HISTOGRAM / WHAT
+$histogram_bar_color: darken($mid_bg_color, 15%)
+.m-histogram
+  display: none
+  opacity: 0
+  visibility: hidden
+  margin: $vertical_baseline auto 0 auto
+  position: relative
+  top: 0px
+  width: $body_width
+
+  .m-histogram-bar
+    width: $histogram_bar_width
+    position: relative
+    cursor: pointer
+    border: 2px solid darken($histogram_bar_color, 10%)
+    border-bottom: none
+    background-color: $histogram_bar_color
+    +bubble(lighten($community_color,10%), $dark_community_color, up, $include_bg: false, $text_color: $community_text_color)
+    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($histogram_bar_color, 25%), $inset: true)
+
+    border-radius: 0px
+    text-align: center
+    display: inline-block
+    vertical-align: bottom
+
+
+    &.m-bar-is-selected .t-bubble
+      display: block
+
+    .t-bubble
+      display: none
+      position: absolute
+      left: 50%
+      margin-left: -15px
+      z-index: 999999
+      top: auto
+      bottom: -37px
+      width: 30px
+
+      .t-bubble-spacing
+        display: none
+
+    &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
+      background-color: lighten($histogram_bar_color, 16%)
+      border-color: darken($histogram_bar_color, 2%)
+    
+    &.m-bar-is-soft-selected
+      z-index: 5
+
+    &.m-bar-is-hard-selected
+      z-index: 10
+      
+
+.m-bar-people
+  background-color: transparent
+  font-size: 0
+  margin: auto
+  +rotate(180deg)
+  height: 100%
+  
+  .m-bar-person
+    +rotate(180deg)  
+    opacity: .15
+
+.m-bar-is-soft-selected .m-bar-people .m-bar-person
+  opacity: .75
+
+.m-bar-is-hard-selected .m-bar-people .m-bar-person
+  opacity: .9
+
+
+.m-histogram-base
+  margin-left: -$grid_xs/2
+  height: $vertical_baseline
+  width: $body_width + $grid_xs
+  border-radius: 10px
+  background-color: lighten($mid_bg_color, 10%)
+  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: lighten($mid_bg_color, 25%), $inset: true)
+
+.m-histogram-base-label
+  +font-size(-2)
+  text-transform: uppercase
+  position: absolute
+  font-weight: bold
+
+.m-histogram-base-label-support
+  left: -100px
+.m-histogram-base-label-oppose
+  right: -84px

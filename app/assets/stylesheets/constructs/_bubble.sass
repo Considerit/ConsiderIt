@@ -8,7 +8,7 @@ $bubble_shadow_color: white
 %bubble
   +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: $bubble_shadow_color, $inset: true)
   
-  > .t-bubble
+  .t-bubble
     font-size: 0
     line-height: 1
     position: absolute
@@ -19,13 +19,13 @@ $bubble_shadow_color: white
 %bubble_right
   @extend %bubble
   border-radius: 5px 0 5px 5px
-  > .t-bubble
+  .t-bubble
     right: $banchor_adjustx 
 
 %bubble_left
   @extend %bubble
   border-radius: 0 5px 5px 5px
-  > .t-bubble
+  .t-bubble
     left: $banchor_adjustx 
 
 = bubble($light, $dark, $direction, $text_color: $base_text_color, $bg_image: false, $bg-color: $base_bg_color, $bborder-width: 1px, $include_bg: true)
@@ -44,7 +44,7 @@ $bubble_shadow_color: white
   @else if $direction == right
     @extend %bubble_right
 
-  > .t-bubble
+  .t-bubble
     
     .t-bubble-inner
       fill: $light

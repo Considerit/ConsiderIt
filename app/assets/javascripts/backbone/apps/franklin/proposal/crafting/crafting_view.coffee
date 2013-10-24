@@ -1,23 +1,8 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
-  class Proposal.PositionProposalDescription extends Proposal.ProposalDescriptionView
-
-  class Proposal.PositionLayout extends App.Views.Layout
-    template : '#tpl_position_layout'
-    className : 'm-proposal'
-    attributes : ->
-      "data-role": 'm-proposal'
-      "data-id": "#{@model.id}"
-      "data-state": 1
-
-    regions : 
-      proposalRegion : '.m-proposal-description-region'
-      positionRegion : '.m-position-crafting-region'
-
-  class Proposal.PositionCraftingLayout extends App.Views.Layout
-    template : '#tpl_position_crafting'
-    className : 'm-position-crafting'
-
+  class Proposal.PositionLayout extends App.Views.StatefulLayout
+    template : '#tpl_position_crafting_layout'
+    className : 'l-message m-position'
     regions : 
       reasonsRegion : '.m-position-reasons-region'
       stanceRegion : '.m-position-stance-region'
@@ -28,6 +13,7 @@
       tenant = App.request 'tenant:get'
       _.extend {}, tenant.attributes, _.compactObject(@options.proposal.attributes)
 
+    # TODO: move this to reasons layout view
     # Hacky to put this here...need to log point views for peer points
     events : 
       'mouseenter .m-point-peer' : 'log_point_view'
@@ -38,7 +24,7 @@
 
   class Proposal.PositionFooterView extends App.Views.ItemView
     template : '#tpl_position_footer'
-    className : 'm-position-footer m-position-your_action'
+    className : 'm-position-footer'
 
     serializeData : ->
       current_user = App.request 'user:current'
@@ -60,13 +46,11 @@
 
   class Proposal.PositionReasonsLayout extends App.Views.Layout
     template : '#tpl_position_reasons'
-    className : 'm-reasons'
+    className : 'm-personal-reasons'
 
     regions : 
-      'peerProsRegion' : '.m-reasons-peer-points-pros'
-      'peerConsRegion' : '.m-reasons-peer-points-cons'
-      'positionProsRegion' : '.m-pro-con-list-propoints-region'
-      'positionConsRegion' : '.m-pro-con-list-conpoints-region'
+      positionProsRegion : '.m-position-propoints-region'
+      positionConsRegion : '.m-position-conpoints-region'
 
   class Proposal.PositionStance extends App.Views.ItemView
     template : '#tpl_position_stance'

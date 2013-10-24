@@ -1,175 +1,82 @@
+$m-point-expanded-width: $body_width + 150
 
-.m-point-include, .m-point-assessment-request-initiate, .m-point-remove, .m-point-follow
-  +sassy-button("simple", 5px, inherit, $callout_bg_color)
-  +font-size(-3)
-  padding: $vertical_baseline/4 $grid_xs / 2
-  text-align: center
-  display: inline-block
-  vertical-align: top
-  margin: 0
-  color: $callout_text_color
-  &:hover
-    color: $callout_text_color
-
-
-
-
-.m-point-results, .m-point-position, .m-point-peer
+.m-point
   position: relative
   +transition(background-color .1s ease, top .5s linear)
   @extend %nude_list
 
-
-.m-point-peer
-
-  .m-point-nutshell
-    +font-size(-3)
-
-  .m-point-operations        
-    position: absolute
-    width: 93%
-
-    a
-      +font-size(-1)
-
-  &.pro
-    .m-point-operations
-      text-align: left
-
-  &.con
-    .m-point-operations
-      text-align: right
-
-
-.m-point-results, .m-point-position  
-  .m-point-nutshell
-    +font-size(-1)
-
-
-
-.m-point-unexpanded
-  &.m-point-results, &.m-point-position  
-    .m-point-wrap
-      width: $pro-con-list-column-width - 3 * $grid_xs
   &.m-point-peer
-    .m-point-wrap
-      width: $peer-point-width 
+    &.m-point-unexpanded
+      .m-point-wrap
+        padding: $vertical_baseline / 2 $grid_xs / 2 $vertical_baseline $grid_xs / 2 
+        margin-bottom: $vertical_baseline / 2
+        //these transitions are for point inclusion effect
+        +transition(top .5s ease, left .5s ease, color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
+
+  &.m-point-position
+
+  &.m-point-unexpanded
+    cursor: pointer
+
+  &.m-point-expanded
+    position: relative
+    z-index: 999
+    width: $m-point-expanded-width  
+    padding: $vertical_baseline $grid_xs
+
+    &.con
+      &.m-point-position
+        left: $pro-con-list-column-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
+      &.m-point-peer
+        right: $m-point-expanded-width - $peer-point-width
+    &.pro
+      &.m-point-position
+        left: - ($m-point-expanded-width - $body_width) / 2
+
+.m-peer-reasons
+
+  &[data-state="points-together"]
+
+  &[data-state="points-separated"]
+
+    .m-point-peer
+      width: $peer-point-width
+      +transition(width .4s ease) 
+
+  &[data-state="points-collapsed"]
+
+    .m-point
+      z-index: 5
+      .m-point-header-region
+        display: none
+
+.m-position-points
+  &[data-state="points-hidden"]
+    display: none
+
+  &[data-state="points-position"]
 
 
+
+
+/////////////////////////
+// Point text
 
 .m-point-unexpanded
-  cursor: pointer
+  &.m-point-peer
+    .m-point-nutshell
+      +font-size(-2)
+
+  &.m-point-position  
+    .m-point-nutshell
+      +font-size(-1)
 
   .m-point-details-description 
     display: none
 
-  // supporting avatar pic in results list
-  &.m-point-results
-    .m-point-wrap
-      display: inline-block
-
-    .avatar
-      width: 25px
-      height: 25px
-      margin: 2px 8px
-
-  //////////////////
-  // bullet points
-  &.m-point-position
-    .m-point-nutshell-wrap
-      &:before
-            
-        content: $hex-bullet-point
-        position: absolute
-        top: 0px
-        +font-size(-3)
-
-    &.pro
-      padding: 0 $grid_xs 4px 2 * $grid_xs
-
-      .m-point-nutshell-wrap:before
-        left: 8px + $grid_xs
-
-    &.con
-      padding: 0 2 * $grid_xs 4px $grid_xs
-
-      .m-point-nutshell-wrap:before
-        left: 8px
-
-    /////////////
-    .m-point-author-avatar
-      display: none
-
-    .m-point-remove
-      margin-top: $grid_xs/4
-      padding: 0 $grid_xs/2
-      opacity: .7
-
-      &:hover
-        opacity: 1
-
-
-  &.m-point-results, &.m-point-position  
-
-    // operations showing up on hover
-    &:hover .m-point-operations
-      visibility: visible
-
-    .m-point-operations
-      bottom: 0
-      left: 0
-      position: relative
-      visibility: hidden
-      padding: $vertical_baseline/8 $grid_xs
-
-      .m-point-read-more
-        +font-size(-3)
-        margin: 0
-        padding: 1px 8px
-
-
-
-  &.m-point-peer
-    .m-point-wrap
-      padding: $vertical_baseline / 2 $grid_xs / 2 2 * $vertical_baseline $grid_xs / 2
-      margin-bottom: $vertical_baseline
-      //these transitions are for point inclusion effect
-      +transition(top .5s ease, left .5s ease, color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
-
-    .m-point-operations
-      bottom: $vertical_baseline / 4
-
-    .m-point-wrap:hover
-      border-color: #aaa
-      .m-point-operations a
-        color: #666
-
-
-
-
-/* EXPANDED POINT */
-$m-point-expanded-width: $body_width + 150
-.m-point-expanded
-  &.con
-    &.m-point-position, &.m-point-results
-      left: $pro-con-list-column-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
-    &.m-point-peer
-      right: $m-point-expanded-width - $peer-point-width
-  &.pro
-    &.m-point-position, &.m-point-results
-      left: - ($m-point-expanded-width - $body_width) / 2
-
-
-
 
 .m-point-expanded
-  position: relative
-  z-index: 999
-  width: $m-point-expanded-width  
-  cursor: auto
-  padding: $vertical_baseline $grid_xs
-
-  .m-point-nutshell, .m-point-details-description, .m-point-operations
+  .m-point-nutshell, .m-point-details-description
     padding-bottom: $vertical_baseline / 2
 
   .m-point-nutshell
@@ -178,19 +85,148 @@ $m-point-expanded-width: $body_width + 150
 
   .m-point-details-description 
     +font-size(0)
-    display: block
 
-  .m-point-operations
+//////
+
+
+
+//////////////////
+// bullet points
+.m-point-unexpanded.m-point-position
+  padding: 0 $grid_xs 4px $grid_xs
+
+  .m-point-nutshell-wrap
+    &:before
+      content: $hex-bullet-point
+      position: absolute
+      top: 0px
+      +font-size(-3)
+
+  &.pro .m-point-nutshell-wrap:before
+    left: 5px
+
+  &.con .m-point-nutshell-wrap:before
+    left: 8px
+
+/////////////
+
+.m-point-unexpanded.m-point-position
+  .m-point-author-avatar
     display: none
 
+.m-point-expanded 
   .m-point-follow-region
     margin-bottom: $vertical_baseline / 2
 
+
+/////////////////////////////////////////
+// point operations
+.m-point-expanded, [data-state="points-collapsed"]
+  .m-point-operations
+    display: none
+
+.m-point-unexpanded
   &.m-point-peer
+    .m-point-operations        
+      position: relative
+
+    &.pro
+      .m-point-operations
+        text-align: left
+
+    &.con
+      .m-point-operations
+        text-align: right
+
+  &.m-point-position
+    &:hover .m-point-operations
+      visibility: visible
+
+    .m-point-operations
+      visibility: hidden
+      padding: $vertical_baseline/8 $grid_xs
+
+      .m-point-read-more
+        +font-size(-3)
+        margin: 0
+        padding: 1px 8px
+
+    .m-point-remove
+      margin-top: $grid_xs/4
+      padding: 0 $grid_xs/2        
+
+  &.m-point-peer
+    &:hover
+      .m-point-operations a
+        color: #666
+
+    .m-point-operations
+      bottom: -3*$vertical_baseline/4
+
+      a
+        color: lighten($base_text_color, 15%)
+
+        &:hover
+          color: $base_text_color
+
+
+%point_operation
+  +sassy-button("simple", 5px, inherit, lighten(desaturate($callout_bg_color, 100%), 10%))
+  +font-size(-3)
+  padding: $vertical_baseline/4 $grid_xs / 2
+  text-align: center
+  display: inline-block
+  vertical-align: top
+  margin: 0
+  color: $callout_text_color
+  &:hover
+    +sassy-button("simple", 5px, inherit, lighten(desaturate($callout_bg_color, 10%), 10%))
+    +font-size(-3)
+    padding: $vertical_baseline/4 $grid_xs / 2
+    color: $callout_text_color
+
+.m-point-include, .m-point-assessment-request-initiate, .m-point-remove, .m-point-follow
+  @extend %point_operation
+
+
+///////////////////////////////////////
+
+/////////////////////////////////////////
+// point inclusion button
+.m-point-peer
+  .m-point-include-wrap
+    display: none
+
+[data-state="points-separated"] .m-point-peer
+  .m-point-include-wrap
+    display: block
+
+    .m-point-include
+      position: relative
+      z-index: 2
+      border-radius: 0
+
+  &.m-point-unexpanded
 
     .m-point-include-wrap
-      bottom: auto
-      position: relative
+      position: absolute
+      bottom: 2px
+
+    &.pro
+      .m-point-include-wrap
+        right: 0
+
+        .m-point-include
+          border-bottom-right-radius: 8px
+
+    &.con
+      .m-point-include-wrap
+        left: 0
+        
+        .m-point-include
+          border-bottom-left-radius: 8px
+
+  &.m-point-expanded
 
     &.con
       .m-point-include-wrap
@@ -198,6 +234,7 @@ $m-point-expanded-width: $body_width + 150
         left: -$grid_xs - 1
         .m-point-include
           border-bottom-left-radius: 0px
+          border-left-color: transparent    
 
     &.pro
       .m-point-include-wrap
@@ -205,23 +242,10 @@ $m-point-expanded-width: $body_width + 150
         right: -$grid_xs - 1
         .m-point-include
           border-bottom-right-radius: 0px
+          border-right-color: transparent    
 
 
-
-/* POINT_DETAILS */
-
-.m-point-discussion
-  position: relative
-
-.m-point-discussion-heading
-  +font-size(3)
-  margin: $vertical_baseline 0
-
-.m-point-comments
-  @extend %nude_list
-
-
-
+/////////////////
 
 //////////////////////
 // Thought Bubbles...
@@ -238,37 +262,11 @@ $m-point-expanded-width: $body_width + 150
     content: ''
     position: absolute
     border: 1px solid
-    border-bottom-color: transparent
+    border-top-color: transparent
     +transition(left .5s linear, right .5s linear)
 
-  &:before
-    +circle(5px)
-    top: 23px
-    z-index: -1
-    opacity: .75
-
-  &:after
-    +circle(7px)
-    top: 15px
-    opacity: .9
-
-  &.pro
-    &:before, &:after
-      border-right-color: transparent
-    &:before
-      left: -13px
-
-    &:after
-      left: -7px
-
-  &.con
-    &:before, &:after
-      border-left-color: transparent
-    &:before
-      right: -13px
-
-    &:after
-      right: -7px
+  &:before, &:after
+    +single-box-shadow($color: rgba(black, .2), $voff: 2px)
 
   .m-point-author-avatar
 
@@ -276,8 +274,8 @@ $m-point-expanded-width: $body_width + 150
     position: absolute
     border-radius: 8px
     top: 2 * $vertical_baseline
-    border: 1px solid transparent
-    +single-box-shadow    
+    //border: 1px solid transparent
+    //+single-box-shadow    
 
   .m-point-author-avatar
     width: 35px
@@ -290,21 +288,83 @@ $m-point-expanded-width: $body_width + 150
     right: -42px
 
 
+
+%m-thought-bubble-side-down
+
+  &:before
+    +circle(5px)
+
+  &:after
+    +circle(7px)
+
+
+  &:before
+    top: 23px
+
+  &:after
+    top: 15px
+
+  &.pro
+    &:after
+      left: -7px
+      border-right-color: transparent
+
+    &:before
+      left: -13px
+
+  &.con
+    &:after
+      right: -7px
+      border-left-color: transparent
+
+    &:before
+      right: -13px
+
+%m-thought-bubble-bottom-in
+
+  &:before
+    +circle(6px)
+
+  &:after
+    +circle(9px)
+
+  &:before
+    bottom: -16px
+
+  &:after
+    bottom: -8px
+    border-top-color: transparent
+
+  &.pro
+    &:after
+      left: 60%
+
+    &:before
+      left: 63%
+
+  &.con
+    &:after
+      right: 60%
+
+    &:before
+      right: 63%
+
   //////////////////////
 
 %m-white-thought-bubble
   @extend %m-thought-bubble
   border-radius: 5px
   &:before, &:after
-    border-color: #aaa
-    background-color: white
-    @extend %on_paper
+    border-color: #ccc
+    background-color: whitesmoke
+    //@extend %on_paper
 
 %m-white-thought-bubble-inner
-  +single-box-shadow($color: rgba(black, .2))
+  +single-box-shadow($color: rgba(black, .2), $voff: 2px)
   border-radius: 8px
-  border: 1px solid #ccc //$dark_community_color
-  @extend %on_paper
+  border: 1px solid //$dark_community_color
+  border-color: #f1f1f1 #ddd #bbb #ddd
+  @extend %whitesmoke
 
 .m-point-peer
   @extend %m-white-thought-bubble
@@ -317,135 +377,142 @@ $m-point-expanded-width: $body_width + 150
   @extend %m-white-thought-bubble
   @extend %m-white-thought-bubble-inner
 
+[data-state="points-collapsed"] .m-point-peer
+  @extend %m-thought-bubble-bottom-in
+
+[data-state="points-separated"], [data-state="points-together"]
+  .m-point-peer
+    @extend %m-thought-bubble-side-down
+
+
+.m-point-unexpanded.m-point-peer
+  &:hover
+    .m-point-wrap //, &:after, &:before
+      background-color: white
+    &:before, &:after
+      background-color: white
 
 
 
+///////////
+// Discussion
+.m-point-discussion
+  position: relative
 
+.m-point-discussion-heading
+  +font-size(3)
+  margin: $vertical_baseline 0
+
+.m-point-comments
+  @extend %nude_list
+////
 
 
 
 ///////////////////////////
 /// Point inclusion effect
 ///////////////////////////
-$arrow_height: 9px
+// $arrow_height: 9px
 
-=triangle($size)
-  width: 0
-  height: 0
-  border-top: $size solid transparent
-  border-bottom: $size solid transparent
+// =triangle($size)
+//   width: 0
+//   height: 0
+//   border-top: $size solid transparent
+//   border-bottom: $size solid transparent
 
-=triangle-right($size, $color: transparent)
-  +triangle($size)
-  border-left: $size solid $color
+// =triangle-right($size, $color: transparent)
+//   +triangle($size)
+//   border-left: $size solid $color
 
-=triangle-left($size, $color: transparent)
-  +triangle($size)
-  border-right: $size solid $color
+// =triangle-left($size, $color: transparent)
+//   +triangle($size)
+//   border-right: $size solid $color
 
 
-.m-point-peer
+// .m-point-peer
   // &.m-point-expanded
   //   .m-point-include-wrap
   //     top: 14px
 
-  .m-point-include-wrap
-    position: absolute
-    bottom: 0
+  // .m-point-include-wrap
+
+  //   .m-point-include
+  //   +transition(border-radius 1s ease)
+
+  //   .list_connector
+  //     +transition(left .5s ease, right .5s ease)
+  //     position: absolute      
+  //     bottom: -1px
+  //     z-index: -1
+
+  //     &:after
+  //       content: ''
+  //       position: absolute   
+  //       top: -$arrow_height 
+
+  // &.pro
+  //   .m-point-include-wrap
+  //     .m-point-include
+  //       .list_connector
+  //         +triangle-right($arrow_height + 2)
+  //         right: 0
+
+  //         &:after
+  //           right: 2px
+  //           +triangle-right($arrow_height)
+
+  //       &:hover
+  //         border-bottom-right-radius: 1px
+  //         border-right-color: transparent
+
+  //         .list_connector
+  //           right: -$arrow_height - 2
+  //           border-left-color: darken($callout_bg_color, 8%)
+
+  //           &:after
+  //             border-left-color: darken($callout_bg_color, 8%)
+
+    // &.m-point-expanded
+    //   .m-point-include-wrap .m-point-include 
+    //     .list_connector
+    //       right: -$arrow_height - 2
+    //       border-left-color: darken($callout_bg_color, 8%)
+
+    //       &:after
+    //         border-left-color: darken($callout_bg_color, 8%)
+
+  // &.con
+  //   .m-point-include-wrap      
+  //     .m-point-include
+
+  //       .list_connector 
+  //         +triangle-left($arrow_height + 2)    
+  //         left: 0
+
+  //         &:after
+  //           left: 2px
+  //           +triangle-left($arrow_height)
 
 
+  //       &:hover
+  //         border-bottom-left-radius: 1px
+  //         border-left-color: transparent 
 
-    .m-point-include
-      position: relative
-      z-index: 2
-      border-radius: 0
-      +transition(border-radius 1s ease)
+  //         .list_connector
+  //           left: -$arrow_height - 2
+  //           border-right-color: darken($callout_bg_color, 8%)
 
-    .list_connector
-      +transition(left .5s ease, right .5s ease)
-      position: absolute      
-      bottom: -1px
-      z-index: -1
+  //           &:after
+  //             border-right-color: darken($callout_bg_color, 8%)
 
-      &:after
-        content: ''
-        position: absolute   
-        top: -$arrow_height 
+  //   &.m-point-expanded
+  //     .m-point-include-wrap .m-point-include 
+  //       .list_connector
+  //         left: -$arrow_height - 2
+  //         border-right-color: darken($callout_bg_color, 8%)
 
-  &.pro
-    .m-point-include-wrap
-      right: 0
-
-      .m-point-include
-        border-bottom-right-radius: 8px
-
-        .list_connector
-          +triangle-right($arrow_height + 2)
-          right: 0
-
-          &:after
-            right: 2px
-            +triangle-right($arrow_height)
-
-        &:hover
-          border-bottom-right-radius: 1px
-          border-right-color: transparent
-
-          .list_connector
-            right: -$arrow_height - 2
-            border-left-color: darken($callout_bg_color, 8%)
-
-            &:after
-              border-left-color: darken($callout_bg_color, 8%)
-
-    &.m-point-expanded
-      .m-point-include-wrap .m-point-include 
-        border-bottom-right-radius: 1px
-        border-right-color: transparent    
-        .list_connector
-          right: -$arrow_height - 2
-          border-left-color: darken($callout_bg_color, 8%)
-
-          &:after
-            border-left-color: darken($callout_bg_color, 8%)
-
-  &.con
-    .m-point-include-wrap
-      left: 0
-      
-      .m-point-include
-        border-bottom-left-radius: 8px
-
-        .list_connector 
-          +triangle-left($arrow_height + 2)    
-          left: 0
-
-          &:after
-            left: 2px
-            +triangle-left($arrow_height)
-
-
-        &:hover
-          border-bottom-left-radius: 1px
-          border-left-color: transparent 
-
-          .list_connector
-            left: -$arrow_height - 2
-            border-right-color: darken($callout_bg_color, 8%)
-
-            &:after
-              border-right-color: darken($callout_bg_color, 8%)
-
-    &.m-point-expanded
-      .m-point-include-wrap .m-point-include 
-        border-bottom-left-radius: 1px
-        border-left-color: transparent    
-        .list_connector
-          left: -$arrow_height - 2
-          border-right-color: darken($callout_bg_color, 8%)
-
-          &:after
-            border-right-color: darken($callout_bg_color, 8%)
+  //         &:after
+  //           border-right-color: darken($callout_bg_color, 8%)
 
   ////////////////////
 

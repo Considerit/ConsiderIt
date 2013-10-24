@@ -1,0 +1,167 @@
+%full_width_dialog_bubble_button
+  top: -$vertical_baseline
+  width: 100%
+  padding: $vertical_baseline / 2 0
+  text-align: center
+  +font-size(-2)
+
+%collapsed_action_call
+  position: absolute
+  top: 50%
+  border-radius: 0
+  +font-size(-1)
+  right: -165px
+  width: 165px
+  height: 32px
+
+@import "apps/franklin/proposal/aggregate"
+@import "apps/franklin/proposal/crafting"
+@import "apps/franklin/proposal/description"
+@import "apps/franklin/proposal/reasons"
+
+.m-proposal
+  padding-top: $vertical_baseline
+  margin: $vertical_baseline 0 $vertical_baseline * 3 0
+  position: relative
+  min-height: $initiator_width
+
+  // inactive proposal
+  &[data-status="proposal-inactive"]
+    .m-position-your-action-body, .m-position-submit-footer-wrap
+      display: none
+
+  // unpublished proposal
+  &[data-visibility="unpublished"]
+
+    .m-proposal-description
+      background-color: $standout_color
+      border-color: $dark_standout_color
+      color: $standout_text_color
+      border-radius: 0 5px 0 0
+
+      .t-bubble 
+        .t-bubble-border
+          fill: $dark_standout_color
+        .t-bubble-inner
+          fill: $standout_color
+
+      .m-proposal-description-title-readmore
+        display: none
+
+
+    .m-proposal-strip_publish
+      display: none
+
+    &[data-state="0"]
+
+      .m-proposal-strip_publish
+        position: relative
+        text-align: center
+        display: block
+        .m-proposal-publish
+          width: $body_width
+          //margin-left: $margin_width + 5
+          +sassy-button("glass", 5px, inherit, desaturate($callout_bg_color, 100%), darken( desaturate($standout_color, 100%), 8%) )
+          +font-size(1)
+          color: desaturate($callout_text_color, 100%)
+          font-weight: bold
+          text-align: center
+          margin-top: -7px
+          border-radius: 0 0 5px 5px
+
+  
+.m-proposal-socialmedia-region
+  position: absolute
+  z-index: 0
+  right: 0
+  top: 7 * $vertical_baseline
+  padding-right: $grid_xs
+
+  .m-proposal-socialmedia-action-call
+    +font-size(-1)
+    font-weight: bold
+    text-decoration: underline
+    margin-bottom: $vertical_baseline / 4
+
+  .facebook
+    +font-size(-3)
+    line-height: 1.6
+    top: -6px
+    position: relative
+
+    &:hover
+      color: white
+
+    &:before
+      line-height: 1.4
+      margin: 0
+
+
+// Proposal admin strip
+.m-proposal-admin_strip
+  margin: 0 $grid_xs
+  text-align: center
+  .l-dialog-prompt, .m-proposal-admin_label, .m-delete_proposal
+    display: inline-block
+    padding: 0 $grid_xs / 2
+
+  .l-dialog-prompt-label, .m-delete_proposal, .m-proposal-admin_label
+    display: inline-block
+    padding: $vertical_baseline / 2 0
+    text-transform: uppercase
+    +font-size(-4)
+    font-weight: bold    
+
+  .l-dialog-prompt-label span, .m-delete_proposal
+    text-decoration: underline
+
+  .l-dialog-prompt-label, .m-delete_proposal
+    &:hover
+      background-color: rgba(black, .05)
+
+  .m-delete_proposal
+    padding: $vertical_baseline/2 inherit
+
+  .m-proposal-admin_label
+    opacity: .5
+
+/* YOUR_ACTION */
+
+.m-position-your-action-body
+  @extend %superbutton
+  text-align: center
+  font-weight: bold
+  border-radius: 0 0 5px 5px
+  position: relative
+
+  &.join
+
+
+  &.submit
+
+
+// participants block
+[data-state="1"]
+  .m-participants
+    visibility: hidden
+
+.m-participants
+  position: relative
+
+  .l-group-container
+    position: absolute
+    left: ($content_width - $body_width) / 2
+    width: $body_width
+    top: 100px
+
+    text-align: center
+    // position: absolute
+    // z-index: 99
+
+    .avatar // for the explode transition
+      -ms-transition: -ms-transform .75s ease
+      -moz-transition: -moz-transform .75s ease
+      -webkit-transition: -webkit-transform .75s ease
+      transition: transform .75s ease
+      opacity: .75
+

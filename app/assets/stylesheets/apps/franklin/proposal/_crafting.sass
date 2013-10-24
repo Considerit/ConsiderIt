@@ -1,0 +1,148 @@
+
+.m-position
+  +transition(margin-left .4s ease) // for point browsing
+
+  .m-position-message-body
+    +bubble($decision_board_color, darken($decision_board_color, 10%), left )
+    border-radius: 0
+    border-width: 3px
+
+  .m-position-heading-points
+    +font-size(2)
+    padding: $vertical_baseline / 2 $grid_xs
+    margin-bottom: $vertical_baseline/2
+    text-align: center
+    background-color: darken($callout_bg_color, 16%)
+    border-top: 1px solid lighten($callout_bg_color, 5%)
+    border-bottom: 1px solid darken($callout_bg_color, 24%)
+    border-left: 3px solid darken($callout_bg_color, 35%)
+    border-right: 3px solid darken($callout_bg_color, 35%)
+    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($callout_bg_color, 25%), $inset: true)
+    position: relative
+    top: -$vertical_baseline/2
+    width: $body_width
+    left: -$grid_xs - 3
+    color: $callout_text_color
+
+// pros and cons for the user
+.m-personal-reasons
+  position: relative
+  // width: 1300px
+  // left: -250px 
+  display: inline-block
+  @extend %on_chalkboard
+  min-height: 400px
+
+  .m-point-expanded
+    @extend %on_paper
+
+[data-state="separated"]
+  .m-position-propoints-region, .m-position-conpoints-region
+    width: $pro-con-list-column-width
+
+
+// footer
+.m-position-footer
+  bottom: -2*$vertical_baseline
+  position: relative
+  width: $body_width
+  bottom: -2.5 * $vertical_baseline
+  left: -$grid_xs - 3
+
+  .m-position-your-action-body.submit
+    @extend %supersuperbutton
+    width: 100%
+    +font-size(2)
+    border-radius: 0 0 5px 5px
+
+  .m-position-submit-footer-wrap
+    margin-top: $vertical_baseline/2
+    .notifications
+      display: inline-block
+      +font-size(-2)
+      label, input[type="checkbox"]
+        cursor: pointer
+
+    .m-position-cancel
+      display: inline-block
+      margin-right: $grid_xs
+      float: right
+      +font-size(-2)
+      color: lighten($base_text_color, 25%)
+      &:hover
+        color: $base_text_color
+
+
+// SLIDER
+.m-stance
+  margin: auto auto 2 * $vertical_baseline auto 
+  @extend %on_chalkboard
+
+  .m-position-heading-stance
+    text-decoration: underline
+    margin-top: $vertical_baseline
+    +font-size(2)
+    text-align: center
+
+      
+  %m-stance-label
+    vertical-align: middle
+    +font-size(0)
+    div
+      width: $slider_label_width
+
+  .m-stance-label-support
+    @extend %m-stance-label
+    text-align: right
+    padding-right: $grid_xs
+
+  .m-stance-label-oppose
+    @extend %m-stance-label
+    text-align: left
+    padding-left: $grid_xs
+
+  .m-stance-label-neutral
+    @extend %m-stance-label
+    text-align: center
+    +font-size(2)
+    +transition(opacity .5s linear)
+
+  .m-stance-slider-container
+    height: 45px 
+    padding-top: 4px
+    width: $slider_width
+
+  .noUiSlider
+    margin: 10px
+    background: none
+    background-color: $mid_bg_color
+    background-color: rgba(black, .15)
+
+    +box-shadow(none)
+    border-radius: 15px
+    width: $slider_width
+
+    border: none
+    height: 16px
+
+    div
+      height: 38px
+      width: 39px
+    
+      background: image-url("slider.png") repeat-x scroll 50% 50% transparent  
+      border: none
+      top: -.2em
+
+      +single-transition('none')
+      margin-left: -19.5px
+
+      cursor: move
+      cursor: ew-resize
+      cursor: -webkit-grab
+      cursor: -moz-grab
+
+      &:active
+        cursor: move
+        cursor: ew-resize
+        cursor: -webkit-grabbing
+        cursor: -moz-grabbing

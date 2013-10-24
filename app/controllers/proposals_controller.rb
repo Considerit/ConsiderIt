@@ -28,7 +28,7 @@ class ProposalsController < ApplicationController
 
     render :json => {
       :proposals => proposals.public_fields,
-      :top_points => top_points.values
+      :points => top_points.values
     }
 
 

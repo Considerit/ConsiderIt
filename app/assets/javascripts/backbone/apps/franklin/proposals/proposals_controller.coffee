@@ -75,10 +75,12 @@
       view
 
     handleBeforeViewAdded : (view) ->
-      new App.Franklin.Proposal.SummaryController
+      new App.Franklin.Proposal.ProposalController
         view : view
-        region : new Backbone.Marionette.Region { el : view.el }      
+        region : new Backbone.Marionette.Region { el : view.el }
+        model : view.model
         parent_controller : @
+        proposal_state : App.Franklin.Proposal.State.collapsed
 
     handleSortRequested : (collection, sort_by) ->
       @requestProposals collection, @is_active, @sortCollection, 
@@ -100,7 +102,6 @@
     requestProposals : (collection, is_active, callback = null, callback_params = {}) ->
       proposals = App.request 'proposals:get', true
 
-      console.log proposals
       App.execute "when:fetched", proposals, =>
         @resetCollection proposals, collection, is_active
         callback(callback_params) if callback

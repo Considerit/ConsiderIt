@@ -1,0 +1,102 @@
+// New Proposal
+
+.m-proposals-new
+  margin: auto
+  text-align: center
+  width: $content_width
+
+  .m-new-proposal-submit
+    @extend %superbutton
+    border-radius: 0
+    display: inline-block
+    border: 1px solid 
+    border-bottom: 1px solid 
+    border-color: rgba(white,.5) rgba(black, .1) rgba(black,.25) rgba(white, .2)
+    font-weight: bold
+    width: $body_width
+
+#m-proposals-container, #m-proposals-container-completed
+  .m-proposal-list
+    @extend %nude_list
+
+#m-proposals-container-completed
+  hr
+    margin-bottom: $vertical_baseline
+    border-top: 1px dashed $base_text_color
+    height: 1px
+
+  h2
+    text-align: center
+
+  &.is-empty
+
+    > h2, .m-proposals-filters
+      display: none
+
+.m-proposals-list-pagination-wrap
+  padding-bottom: $vertical_baseline
+
+.m-proposals-filters
+  padding-top: $vertical_baseline
+
+.m-proposals-filters, .m-proposals-list-pagination-wrap
+  @extend %on_background
+  text-align: center
+  margin: 0 auto
+  width: $content_width
+
+.m-proposals-filter-container, .m-proposals-sort-container
+  display: inline-block
+
+  .title, a
+    display: inline-block
+    padding-right: $grid_xs/2
+
+  a
+    text-transform: lowercase
+    font-variant: small-caps
+    &.selected, &.selected:hover
+      @extend %bolded
+
+.m-proposals-list-pagination
+  margin-top: $vertical_baseline
+    
+  .m-proposals-pagination-showmore, .m-proposals-list-pagination-page, .m-proposals-list-pagination-jump
+    +sassy-button("simple", 5px, inherit, darken($base_bg_color, 4%), darken($base_bg_color, 12%))
+    color: lighten($base_text_color, 12%)
+    &:hover
+      color: darken($base_text_color, 12%)
+
+  .selected
+    +sassy-button("simple", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 12%))
+    color: $callout_text_color
+
+  .m-proposals-pagination-showmore, .m-proposals-list-pagination-page, .selected, .m-proposals-list-pagination-jump
+    border-radius: 0
+    text-shadow: none
+
+  .m-proposals-list-pagination-page, .selected, .m-proposals-list-pagination-jump
+    padding: $vertical_baseline/8 $grid_xs/4
+
+.m-proposals-list-pagination-pages
+  position: relative
+  display: inline-block
+
+// .m-proposals-list-pagination-jump-left, .m-proposals-list-pagination-jump-right
+//   position: absolute
+//   top: 0
+
+// .m-proposals-list-pagination-jump-left
+//   left: -76px
+
+// .m-proposals-list-pagination-jump-right
+//   right: -73px
+
+.m-proposals-list-pagination-current
+  margin-top: $vertical_baseline/4
+  +font-size(-2)
+
+.m-proposals-container-completed-header
+  h2
+    font-weight: none
+    +font-size(2)

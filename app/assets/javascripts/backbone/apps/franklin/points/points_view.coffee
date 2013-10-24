@@ -7,9 +7,17 @@
     itemView : App.Franklin.Point.PointView
 
     initialize : (options = {}) ->
+      @state = options.state
       super options
       @sort = options.sort || @sort
 
+    onRender : ->
+      @setDataState @state
+
+    setDataState : (state) ->
+      @$el.attr 'data-state', state
+      @$el.data 'state', state
+      @state = state            
 
     onShow : ->
       if @sort
@@ -20,8 +28,6 @@
 
       # @listenTo @collection, 'add', =>
       #   @requestSort @sort
-
-    onRender : ->
 
     serializeData : -> {}
 
@@ -42,36 +48,6 @@
       @sort = sort_by
 
     events : {}
-
-  class Points.PaginatedPointList extends Points.PointList
-    template: '#tpl_points_paginated'
-
-    initialize : (options = {}) ->
-      super options
-      # @listenTo @collection.fullCollection, 'reset', =>
-      #   @render()      
-
-    serializeData : ->
-      data = super
-      _.extend data, @collection.state,
-        is_empty : @collection.length == 0
-
-    onRender : ->
-      super
-
-      if @collection.state.totalRecords > @collection.state.pageSize
-        @$el.addClass('m-point-list-has-pagination')
-
-    events : _.extend {}, Points.PointList.prototype.events, 
-      'click .m-pointlist-forward' : 'forward'
-      'click .m-pointlist-backward' : 'backward'
-
-    forward : (ev) -> 
-      @collection.getNextPage()
-
-    backward : (ev) ->
-      @collection.getPreviousPage()
-
 
   class Points.ExpandablePointList extends Points.PointList
     template: '#tpl_points_expandable'
@@ -105,7 +81,7 @@
       super
       @bindUIElements()      
       @selectSort()
-      @ui.browse_header.css('visibility', 'visible') if @browsing
+      @ui.browse_header.css('display', 'block') if @browsing
 
     selectSort : ->
       @$el.find("[data-target]").removeClass 'selected'
@@ -180,12 +156,20 @@
 
 
   class Points.PeerPointList extends Points.ExpandablePointList
-    sort : 'persuasiveness'    
+    sort : 'score'    
     location : 'peer'
-    className : => "m-reasons-peer-#{@options.valence}s"
+    className : => "m-peer-reasons m-reasons-peer-#{@options.valence}s"
     itemView : App.Franklin.Point.PeerPointView
 
     events : _.extend {}, Points.ExpandablePointList.prototype.events
+    
+    initialize : (options = {}) ->
+      super options
+
+  class Points.CollapsedPeerPointList extends Points.PointList
+    location : 'peer'
+    className : => "m-peer-reasons m-reasons-peer-#{@options.valence}s"
+    itemView : App.Franklin.Point.PeerPointView
     
     initialize : (options = {}) ->
       super options
@@ -194,7 +178,7 @@
   class Points.UserReasonsList extends Points.PointList
     template: '#tpl_points_user_reasons'
     location : 'position'
-    className : => "m-pro-con-list-#{@options.valence}points"
+    className : => "m-position-points m-position-#{@options.valence}points"
     itemView : App.Franklin.Point.PositionPointView
 
     serializeData : ->
@@ -257,20 +241,3 @@
       else
         @trigger 'point:create:requested', point_attributes
         @cancelPoint {currentTarget: $form.find('.m-newpoint-cancel')}
-
-  class Points.AggregatedReasonsList extends Points.PaginatedPointList
-    location : 'results'
-    className : => "m-pro-con-list-#{@options.valence}points"
-    sort : 'score'
-    itemView : App.Franklin.Point.AggregatePointView
-
-    events : _.extend {}, Points.PaginatedPointList.prototype.events
-
-    initialize : (options = {}) ->
-      super options
-
-      # @listenTo @collection, 'add remove', =>
-      #   console.log 'render'
-      #   @render()
-
-

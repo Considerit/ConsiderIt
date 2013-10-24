@@ -38,3 +38,13 @@
         url = "#" + url unless options.external
         
         "<a href='#{url}'>#{@escape(name)}</a>"
+
+  _.extend Marionette.Region::,
+
+    hideAllExcept: ($show) ->
+      $active = $show
+      i = 0
+      while $active[0] != @$el[0] && i < 100
+        $active.siblings().hide()
+        $active = $active.parent()
+        i += 1

@@ -1,125 +1,78 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
-  class Proposal.AggregateController extends Proposal.AbstractProposalController
-    exploded : false
+  class Proposal.AggregateController extends App.Controllers.StatefulController
+
+    state_map : ->
+      map = {}
+      map[Proposal.State.collapsed] = Proposal.ReasonsState.collapsed
+      map[Proposal.State.expanded.crafting] = Proposal.ReasonsState.separated
+      map[Proposal.State.expanded.results] = Proposal.ReasonsState.together
+      map
 
     initialize : (options = {}) ->
+      super options
+
       @model = options.model
 
-      layout = @getLayout()
+      @layout = @getLayout()
 
-      @removed_points = {}
+      @setupLayout @layout
 
+      @region.open = (view) => @transition @region, view # this will set how this region handles the transitions between views
+
+      @region.show @layout
+
+    transition : (region, view) ->
+      if @state == Proposal.ReasonsState.collapsed || @prior_state == null
+        region.$el.empty().append view.el
+      else if @state == Proposal.ReasonsState.separated
+        region.$el.empty().append view.el
+        view.$el.slideUp()
+      else        
+        region.$el.empty().append view.el
+
+
+    processStateChange : ->
+      if @prior_state != @state
+        @layout = @resetLayout @layout
+
+    setupLayout : (layout) ->
       @listenTo layout, 'show', =>
-        proposal_view = @getProposalDescription()
-        histogram_view = @getAggregateHistgram()
-        reasons_layout = @getAggregateReasons()
+        @setupHistogram layout
 
-        points = App.request 'points:get:proposal', @model.id
-        aggregated_pros = new App.Entities.PaginatedPoints points.filter((point) -> point.isPro()), {state: {pageSize:5} }
-        aggregated_cons = new App.Entities.PaginatedPoints points.filter((point) -> !point.isPro()), {state: {pageSize:5} }
+        @listenTo @options.parent_controller, 'point:mouseover', (includers) =>
+          @histogram_view.highlightUsers includers
 
-
-        @listenTo reasons_layout, 'show', => 
-          [@pros_controller, @cons_controller] = @setupReasonsLayout reasons_layout, aggregated_pros, aggregated_cons
-
-          _.each [@pros_controller, @cons_controller], (controller) =>
-            @listenTo controller, 'point:highlight_includers', (view) =>
-              if @exploded
-                # don't highlight users on point mouseover unless the histogram is fully visible
-                includers = view.model.getIncluders()
-                includers.push view.model.get('user_id')
-                histogram_view.highlightUsers includers
-
-            @listenTo controller, 'point:unhighlight_includers', (view) =>
-              includers = view.model.getIncluders()
-              includers.push view.model.get('user_id')            
-              histogram_view.highlightUsers includers, false
+        @listenTo @options.parent_controller, 'point:mouseout', (includers) =>
+          @histogram_view.highlightUsers includers, false
 
 
-        @listenTo histogram_view, 'show', => 
+    setupHistogram : (layout) ->
+      @histogram_view = @getAggregateHistogram()
+      @listenTo @histogram_view, 'show', => 
+        @listenTo @histogram_view, 'histogram:segment_results', (segment) =>
+          @trigger 'histogram:segment_results', segment
 
-          @listenTo histogram_view, 'histogram:segment_results', (segment) =>
-            fld = if segment == 'all' then 'score' else "score_stance_group_#{segment}"
-            reasons_layout.updateHeader segment            
-            _.each [aggregated_pros, aggregated_cons], (collection, idx) =>
-              if idx of @removed_points
-                collection.fullCollection.add @removed_points[idx]
+      layout.histogramRegion.show @histogram_view 
 
-              @removed_points[idx] = collection.fullCollection.filter (point) ->
-                !point.get(fld) || point.get(fld) == 0
+      # if @model.openToPublic()
+      #   social_view = @getSocialMediaView()
+      #   layout.socialMediaRegion.show social_view      
 
-
-              collection.fullCollection.remove @removed_points[idx]
-
-              collection.setSorting fld, 1
-              collection.fullCollection.sort()
-
-        layout.proposalRegion.show proposal_view
-        layout.reasonsRegion.show reasons_layout
-        layout.histogramRegion.show histogram_view #has to be shown after reasons
-
-        @options.transition ?= true
-        if @options.transition
-          _.delay =>
-            layout.explodeParticipants()
-            @exploded = true
-          , 750
-        else
-          layout.explodeParticipants false
-          @exploded = true
-
-        @options.move_to_results ?= false
-        if @options.move_to_results
-          layout.moveToResults()
-
-        if @model.openToPublic()
-          social_view = @getSocialMediaView()
-          layout.socialMediaRegion.show social_view
-
-
-      @region.show layout
-
-
-    setupReasonsLayout : (layout, aggregated_pros, aggregated_cons) ->
-      
-      pros = new App.Franklin.Points.AggregatedReasonsController
-        valence : 'pro'
-        collection : aggregated_pros
-        region : layout.prosRegion
-        parent : @
-        parent_controller : @
-
-      cons = new App.Franklin.Points.AggregatedReasonsController
-        valence : 'con'
-        collection : aggregated_cons
-        region : layout.consRegion
-        parent : @
-        parent_controller : @
-
-      [pros, cons]
 
     getLayout : ->
       new Proposal.AggregateLayout
         model : @model
+        state : @state
 
-    getProposalDescription : ->
-      new Proposal.AggregateProposalDescription
-        model : @model
-
-    getAggregateHistgram : ->
+    getAggregateHistogram : ->
       new Proposal.AggregateHistogram
         model : @model
         histogram : @_createHistogram()
 
-    getAggregateReasons : ->
-      new Proposal.AggregateReasons
-        model : @model
-
     getSocialMediaView : ->
       new Proposal.SocialMediaView
         model : @model
-
 
     _createHistogram : () ->
       BARHEIGHT = 200

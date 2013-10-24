@@ -85,6 +85,9 @@
     has_participants : -> 
       return @participants().length > 0   
 
+    num_participants : ->
+      return @participants().length
+
     getParticipants : ->
       if !@all_participants
         @all_participants = (App.request('user', u) for u in @participants())
@@ -177,8 +180,8 @@
 
     parse : (response) ->
       if !(response instanceof Array)
-        if 'top_points' of response
-          App.vent.trigger 'points:fetched', (p.point for p in response.top_points)
+        if 'points' of response
+          App.vent.trigger 'points:fetched', (p.point for p in response.points)
         proposals = response.proposals
       else
         proposals = response

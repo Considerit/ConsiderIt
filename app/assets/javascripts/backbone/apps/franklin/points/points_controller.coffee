@@ -1,25 +1,26 @@
 @ConsiderIt.module "Franklin.Points", (Points, App, Backbone, Marionette, $, _) ->
-  class Points.AbstractPointsController extends App.Controllers.Base
+  Points.States = 
+    collapsed : 'points-collapsed'
+    together : 'points-together'
+    separated : 'points-separated'
+    position : 'points-position'
+    hidden : 'points-hidden'
+
+
+  class Points.AbstractPointsController extends App.Controllers.StatefulController
+    state_map : ->
+      throw 'need to override'
+
+    point_controllers : {}
+
     initialize : (options = {}) ->
-      layout = @getLayout options.location
-      @listenTo layout, 'before:item:added', (view) => 
-        new App.Franklin.Point.PointController
-          view : view
-          model : view.model
-          region : new Backbone.Marionette.Region { el : view.el }     
-          parent_controller : @
-     
+      super options
 
-      @listenTo layout, 'show', =>
+      @layout = @getLayout options.location     
 
-        @listenTo layout, 'sort', (sort_by) =>
-          @sortPoints sort_by
+      @setupLayout @layout
 
-        @listenTo layout, 'childview:point:clicked', (view) =>
-          point = view.model
-          App.navigate Routes.proposal_point_path(point.get('long_id'), point.id), {trigger : true}
-
-      @listenTo @options.parent, 'point:show_details', (point) =>
+      @listenTo @options.parent_controller, 'point:show_details', (point) =>
         is_paginated = @options.collection.fullCollection?
 
         collection = if is_paginated then @options.collection.fullCollection else @options.collection
@@ -29,13 +30,33 @@
             page = @options.collection.pageOf point
             @options.collection.getPage page
 
-          pointview = layout.children.findByModel point
+          pointview = @layout.children.findByModel point
           pointview.trigger 'point:show_details'
 
           # @listenTo controller, 'close', =>
           #   pointview.render()
 
-      @layout = layout
+    processStateChange : ->
+      @layout = @resetLayout @layout
+
+    setupLayout : (layout) ->
+      @listenTo layout, 'show', =>
+        @listenTo layout, 'before:item:added', (view) => 
+          if _.has @point_controllers, view.model.id
+            @point_controllers[view.model.id].close()
+
+          @point_controllers[view.model.id] = new App.Franklin.Point.PointController
+            view : view
+            model : view.model
+            region : new Backbone.Marionette.Region { el : view.el }     
+            parent_controller : @
+
+        @listenTo layout, 'sort', (sort_by) =>
+          @sortPoints sort_by
+
+        @listenTo layout, 'childview:point:clicked', (view) =>
+          point = view.model
+          App.navigate Routes.proposal_point_path(point.get('long_id'), point.id), {trigger : true}
 
     sortPoints : (sort_by) ->
       if @options.collection.setSorting #if its pageable...
@@ -45,31 +66,76 @@
 
   class Points.PeerPointsController extends Points.AbstractPointsController
 
+    state_map : ->
+      map = {}
+      map[App.Franklin.Proposal.ReasonsState.together] = Points.States.together
+      map[App.Franklin.Proposal.ReasonsState.separated] = Points.States.separated
+      map[App.Franklin.Proposal.ReasonsState.collapsed] = Points.States.collapsed
+      map 
+
+
     initialize : (options = {}) ->
       super options
-      @listenTo @layout, 'show', =>
-        @listenTo @layout, 'childview:point:include', (view) => @trigger 'point:include', view
+
+      @listenTo options.parent_controller, 'point:removal', (point_id) =>
+        is_paginated = options.collection.fullCollection?
+        collection = if is_paginated then options.collection.fullCollection else options.collection
+
+        if collection.get point_id
+          @sortPoints @layout.sort
 
       @region.show @layout
 
+    processStateChange : ->
+      @layout = @resetLayout @layout
+
+    setupLayout : (layout) ->
+      super layout
+
+      @listenTo layout, 'show', =>
+        @listenTo layout, 'childview:point:include', (view) => 
+          @trigger 'point:include', view
+        @listenTo layout, 'childview:point:highlight_includers', (view) => 
+          @trigger 'point:highlight_includers', view
+        @listenTo layout, 'childview:point:unhighlight_includers', (view) => 
+          @trigger 'point:unhighlight_includers', view
+
     getLayout : ->
+      # if @options.state == 'collapsed'
+      #   new Points.CollapsedPeerPointList
+      #     collection : @options.collection
+      #     valence : @options.valence
+      #     state : @state
+      # else
       new Points.PeerPointList
         collection : @options.collection
         valence : @options.valence
+        state : @state
+
+
 
   class Points.UserReasonsController extends Points.AbstractPointsController
-  
+    state_map : ->
+      map = {}
+      map[App.Franklin.Proposal.ReasonsState.separated] = Points.States.position    
+      map[App.Franklin.Proposal.ReasonsState.together] = Points.States.hidden
+      map[App.Franklin.Proposal.ReasonsState.collapsed] = Points.States.hidden
+      map 
+
     initialize : (options = {}) ->
+
       super options
+
+      @region.show @layout
+
+    processStateChange : ->
+      #@layout = @resetLayout @layout
+
+    setupLayout : (layout) ->
+
+      super layout
+
       @listenTo @layout, 'show', =>
-
-        App.vent.on 'point:removal', (point_id) =>
-          is_paginated = @options.collection.fullCollection?
-          collection = if is_paginated then @options.collection.fullCollection else @options.collection
-
-          if collection.get point_id
-            @sortPoints layout.sort
-
 
         @listenTo @layout, 'childview:point:remove', (view) => @trigger 'point:remove', view
 
@@ -91,27 +157,8 @@
           #   loading:
           #     entities : [new_point]
 
-
-      @region.show @layout
-
     getLayout : ->
       new Points.UserReasonsList
         collection : @options.collection
         valence : @options.valence
-
-  class Points.AggregatedReasonsController extends Points.AbstractPointsController
-
-    initialize : (options = {}) ->
-      super options
-      @listenTo @layout, 'show', =>
-        @listenTo @layout, 'childview:point:highlight_includers', (view) => 
-          @trigger 'point:highlight_includers', view
-        @listenTo @layout, 'childview:point:unhighlight_includers', (view) => @trigger 'point:unhighlight_includers', view
-
-      @region.show @layout
-
-
-    getLayout : ->
-      new Points.AggregatedReasonsList
-        collection : @options.collection
-        valence : @options.valence
+        state : @state

@@ -1,10 +1,13 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
   
-  class Proposal.ProposalDescriptionView extends App.Views.ItemView
+  class Proposal.ProposalDescriptionView extends App.Views.StatefulLayout
     template : '#tpl_proposal_description'
     className : 'm-proposal-description-wrap'
 
     show_details : true
+
+    ui : 
+      details : '.m-proposal-details'
 
     editable : =>
       App.request 'auth:can_edit_proposal', @model    
@@ -12,16 +15,19 @@
     serializeData : ->
       user_position = @model.getUserPosition()
 
-
       user = @model.getUser()
-      _.extend {}, @model.attributes,
+      params = _.extend {}, @model.attributes,
         proposal : @model
         avatar : App.request('user:avatar', user, 'large' )
         description_detail_fields : @model.description_detail_fields()
         show_details : @show_details
-        call : if user_position && user_position.get('published') then 'Update your position' else 'What do you think?'
+        call : if user_position && user_position.get('published') then 'Update your position' else 'Add your thoughts'
 
-    initialize : ->
+      params
+
+    initialize : (options = {}) ->
+      super options
+
       if @editable()
         if !Proposal.ProposalDescriptionView.editable_fields
           fields = [
@@ -35,7 +41,12 @@
 
         @editable_fields = Proposal.ProposalDescriptionView.editable_fields
 
+      @events = {}
+
     onRender : ->
+      super
+
+      @bindUIElements()      
       @stickit()
       _.each @editable_fields, (field) =>
         [selector, name, type] = field 
@@ -50,7 +61,6 @@
           success : (response, new_value) => @model.set(name, new_value)
 
     onShow : ->
-
 
     bindings : 
       '.m-proposal-description-title' : 
@@ -93,3 +103,30 @@
         .toggleClass('hidden showing');
 
       ev.stopPropagation()
+
+
+  class Proposal.SummaryProposalDescription extends Proposal.ProposalDescriptionView
+    show_details : false
+  
+    editable : => false
+
+    initialize : (options = {}) ->
+      super options
+      _.extend @events, 
+        'click .m-proposal-description' : 'toggleDescription'
+        'click [data-target="show-results"]' : 'showResults'
+
+    toggleDescription : (ev) ->
+      @trigger 'proposal:clicked'
+      
+    showResults : (ev) ->
+      @trigger 'show_results'
+      ev.stopPropagation()
+
+
+
+  class Proposal.UnpublishedProposalDescription extends Proposal.ProposalDescriptionView
+  class Proposal.AggregateProposalDescription extends Proposal.ProposalDescriptionView
+  class Proposal.PositionProposalDescription extends Proposal.ProposalDescriptionView
+
+

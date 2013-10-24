@@ -1,28 +1,5 @@
 
 - cache ['templates', current_tenant] do
-      
-
-
-  / %script{ :type => "text/template", :id => "tpl_proposal_strip" }
-  /   (( if(published){ ))
-  /   .m-proposal-connect.m-proposal-strip
-
-  /     %ul
-  /       %li.m-proposal-action-label
-  /         Help spread the word
-  /       %li.m-proposal-action-link
-  /         .zocial.icon.facebook
-  /       %li.m-proposal-action-link
-  /         .zocial.icon.twitter
-  /       %li.m-proposal-action-link
-  /         .zocial.icon.permalink
-  /       %li.m-proposal-action-label
-  /         Link to this conversation
-  /   (( } ))
-
-
-
-
 
   = render :partial => 'backbone/shared'
   = render :partial => 'backbone/root'

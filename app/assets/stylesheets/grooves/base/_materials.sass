@@ -39,21 +39,37 @@
       &:focus
         +inset-border($decision_board_color)
 
-%on_paper
-  background: image-url('paper.jpg') repeat left top #fafafa
-  color: $base_text_color
+%whitesmoke
+  background: whitesmoke
+  color: darken($base_text_color, 20%)
   
   h1, h2, h3
-    color: $base_text_color
+    color: darken($base_text_color, 20%)
 
   a
-    color: $base_text_color
+    color: darken($base_text_color, 20%)
     
     &:hover
       color: darken($base_text_color, 25%)
 
   textarea, input[type="text"], input[type="email"], input[type="password"]
-    color: $base_text_color
+    color: darken($base_text_color, 20%)
+
+%on_paper
+  background: image-url('paper.jpg') repeat left top #fafafa
+  color: darken($base_text_color, 20%)
+  
+  h1, h2, h3
+    color: darken($base_text_color, 20%)
+
+  a
+    color: darken($base_text_color, 20%)
+    
+    &:hover
+      color: darken($base_text_color, 25%)
+
+  textarea, input[type="text"], input[type="email"], input[type="password"]
+    color: darken($base_text_color, 20%)
 
 // %chalkboard
 //   background: image-url("chalk/chalkboard.jpg") repeat left top #414141

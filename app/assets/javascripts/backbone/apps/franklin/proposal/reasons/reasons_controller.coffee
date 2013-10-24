@@ -50,11 +50,16 @@
       super options
 
       @model = options.model
-      @layout = @getLayout()
 
+      @listenTo @options.parent_controller, 'point:show_details', (point) =>
+        @trigger 'point:show_details', point
+
+      @layout = @getLayout()
       @setupLayout @layout
 
       @region.show @layout
+
+
 
 
     setupLayout : (layout) ->

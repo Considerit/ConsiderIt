@@ -111,7 +111,7 @@
 
     getTileSize : ->
       PARTICIPANT_WIDTH = 600
-      PARTICIPANT_HEIGHT = if @model.num_participants() > 11 then 100 else 50
+      PARTICIPANT_HEIGHT = if @model.num_participants() > 11 then 75 else 50
 
       Math.min 50, 
         window.getTileSize(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)

@@ -22,26 +22,32 @@ $m-point-expanded-width: $body_width + 150
     position: relative
     z-index: 999
     width: $m-point-expanded-width  
-    padding: $vertical_baseline $grid_xs
+    padding: $vertical_baseline $grid_xs  
 
-    &.con
-      &.m-point-position
+    &.m-point-position
+      &.con
         left: $pro-con-list-column-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
-      &.m-point-peer
-        right: $m-point-expanded-width - $peer-point-width
-    &.pro
-      &.m-point-position
+      &.pro
         left: - ($m-point-expanded-width - $body_width) / 2
 
 .m-peer-reasons
 
   &[data-state="points-together"]
+    .m-point-peer
+      &.m-point-expanded.con.m-point-peer
+        right: $m-point-expanded-width - $peer-point-results-width
 
   &[data-state="points-separated"]
 
     .m-point-peer
-      width: $peer-point-width
       +transition(width .4s ease) 
+
+      &.m-point-unexpanded
+        width: $peer-point-width
+
+      &.m-point-expanded.con.m-point-peer
+        right: $m-point-expanded-width - $peer-point-width
+
 
   &[data-state="points-collapsed"]
 

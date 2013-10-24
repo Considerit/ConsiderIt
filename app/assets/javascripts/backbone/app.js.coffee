@@ -9,6 +9,7 @@
     headerRegion: "#l-header"
     mainRegion:    "#l-content-main-wrap"
     footerRegion: "#l-footer"
+    stickyFooterRegion : '#l-sticky-footer-region'
   
   App.rootRoute = Routes.root_path()
   

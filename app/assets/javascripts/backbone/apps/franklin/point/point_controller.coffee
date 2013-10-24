@@ -3,7 +3,12 @@
   class Point.PointController extends App.Controllers.Base
     initialize : (options = {}) ->
       point = @options.model
-      layout = @getLayout point
+      @layout = @getLayout point
+
+      @setupLayout @layout
+
+    setupLayout : (layout) ->
+      point = @options.model
 
       @listenTo layout, 'render', => 
         header_view = @getHeaderView point
@@ -12,10 +17,10 @@
         body_view = @getBodyView point, layout.actions
         layout.bodyRegion.show body_view
 
-      @listenTo layout, 'point:show_details', =>
-        @expand()
+      @listenTo layout, 'show', =>
+        @listenTo layout, 'point:show_details', =>
+          @expand()
 
-      @layout = layout
 
     unexpand : (go_back) ->
       $(document).off '.m-point-details'

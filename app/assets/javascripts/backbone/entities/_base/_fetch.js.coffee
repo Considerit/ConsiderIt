@@ -4,7 +4,6 @@
 
     entities = _.flatten [entities]
     _.each entities, (e) ->
-      console.log entities
       already_fetched &&= e.fetched
 
     if already_fetched

@@ -152,7 +152,7 @@ class ApplicationController < ActionController::Base
 
       @proposals = {
         :proposals => proposals,
-        :top_points => top_points.values,
+        :points => top_points.values,
         :proposals_active_count => proposals_active_count,
         :proposals_inactive_count => proposals_inactive_count
       }

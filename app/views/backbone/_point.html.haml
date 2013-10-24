@@ -31,16 +31,21 @@
 
     (( if( _.contains(actions, 'remove') ){ ))
     %button.m-point-remove{ :'data-target' => 'point-remove', :'data-id' => "{{id}}"}
-      Remove
+      %i.icon-trash
+      remove
     (( } ))
 
 
 
   (( if( _.contains(actions, 'include') ){ ))
   .m-point-include-wrap
-    %button.m-point-include{ :'data-target' => 'point-include', :'data-id' => "{{id}}"}
-      Add to your list
-      %span.list_connector
+    %button.m-point-include{ :'data-target' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
+      %i.icon-thumbs-up.icon-large
+      //%i.icon-heart.icon-large
+      //%i.icon-star.icon-large
+      / %i.icon-plus-circle.icon-large
+      / %i.icon-hand-o-right.icon-large
+      //%span.list_connector
   (( } ))
 
 %script{ :type => "text/template", :id => "tpl_point_expanded"}

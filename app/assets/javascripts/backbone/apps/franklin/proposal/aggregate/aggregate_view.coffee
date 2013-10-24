@@ -1,107 +1,28 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
-  class Proposal.AggregateProposalDescription extends Proposal.ProposalDescriptionView
 
-  class Proposal.AggregateLayout extends App.Views.Layout
+
+  class Proposal.AggregateLayout extends App.Views.StatefulLayout
     template : '#tpl_aggregate_layout'
-    className : 'm-proposal'
-    attributes : ->
-      "data-role": 'm-proposal'
-      "data-id": "#{@model.id}"
-
-
+    className : 'm-results'
+      
     regions : 
-      proposalRegion : '.m-proposal-description-region'
       histogramRegion : '.m-histogram-region'
-      reasonsRegion : '.m-reasons-region'
-      socialMediaRegion : '.m-proposal-socialmedia-region'
+      #socialMediaRegion : '.m-proposal-socialmedia-region'
 
-    serializeData : ->
-      participants = @model.getParticipants()
-      user_position = @model.getUserPosition()
-      _.extend {}, @model.attributes,
-        tile_size : @getTileSize()
-        participants : _.sortBy(participants, (user) -> !user.get('avatar_file_name')?  )
-        call : if user_position && user_position.get('published') then 'Update your position' else 'What do you think?'
-
-
-    getTileSize : ->
-      PARTICIPANT_WIDTH = 120
-      PARTICIPANT_HEIGHT = 120
-
-      Math.min 50, 
-        window.getTileSize(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)
+    initialize : (options = {}) ->
+      super options
 
     onRender : ->
-      @$el.attr('data-state', 4)
+      @setDataState @state
 
-    moveToResults : ->
-      @histogramRegion.currentView.$el.moveToTop 100
+    setDataState : (state) ->
+      @$el.attr 'data-state', state
+      @$el.data 'state', state
+      @state = state      
 
-    implodeParticipants : ->
-      @trigger 'results:implode_participants'
-      $participants = @$el.find('.l-message-speaker .l-group-container')
-      $participants.find('.avatar').css {position: '', zIndex: '', '-ms-transform': "", '-moz-transform': "", '-webkit-transform': "", transform: ""}
+    serializeData : ->
+      _.extend {}, @model.attributes
 
-      @$el.find('.m-bar-percentage').fadeOut()
-      @$el.find('.m-histogram').fadeOut =>
-        @$el.find('.m-histogram').css('opacity', '')
-        $participants.fadeIn()
-
-    explodeParticipants : (transition = true) ->
-      @trigger 'results:explode_participants'
-
-      modern = Modernizr.csstransforms && Modernizr.csstransitions
-
-      $participants = @$el.find('.l-message-speaker .l-group-container')
-
-      $histogram = @$el.find('.m-histogram')
-
-      if !modern || !transition
-        @$el.find('.m-histogram').css 'opacity', 1
-        $participants.fadeOut()
-      else
-        speed = 750
-        from_tile_size = $participants.find('.avatar:first').width()
-        to_tile_size = $histogram.find(".avatar:first").width()
-        ratio = to_tile_size / from_tile_size
-
-        # compute all offsets first, before applying changes, for perf reasons
-        positions = {}
-        $user_els = $participants.find('.avatar')
-        for participant in $user_els
-          $from = $(participant)
-          id = $from.data('id')
-          $to = $histogram.find("#avatar-#{id}")
-
-          to_offset = $to.offset()
-          from_offset = $from.offset()
-
-          offsetX = to_offset.left - from_offset.left
-          offsetY = to_offset.top - from_offset.top
-
-          offsetX -= (from_tile_size - to_tile_size)/2
-          offsetY -= (from_tile_size - to_tile_size)/2
-
-          positions[id] = [offsetX, offsetY]
-
-        for participant in $user_els
-          $from = $(participant)
-          id = $from.data('id')
-          [offsetX, offsetY] = positions[id]
-          
-          $from.css 
-            #'-o-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
-            '-ms-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
-            '-moz-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
-            '-webkit-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
-            'transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
-
-        _.delay => 
-          $histogram.css { opacity: 1, display: '' }
-          #window.delay 25, -> 
-          $participants.fadeOut()
-          #@$el.find('.m-bar-percentage').fadeIn()
-        , speed + 150
 
 
   class Proposal.AggregateHistogram extends App.Views.ItemView
@@ -144,8 +65,6 @@
         @$el.find('.avatar').css {'display': '', 'opacity': ''} 
       @$el.css 'visibility', ''
 
-
-
     selectBar : (ev) ->
       return if $('.m-point-expanded').length > 0
       $target = $(ev.currentTarget)
@@ -181,7 +100,7 @@
 
         @$el.show()
 
-    closeBarClick : (ev) -> @deselectBar() if $(ev.target).closest('.m-results-responders').length == 0
+    closeBarClick : (ev) -> @deselectBar() if $(ev.target).closest('.m-reasons-header-region').length == 0
 
     closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('#l-dialog-detachable').children().length == 0 && $('.m-point-expanded').length == 0
     
@@ -209,30 +128,5 @@
       @$el.show()
 
 
-  class Proposal.AggregateReasons extends App.Views.Layout
-    template : '#tpl_aggregate_reasons'
-    className : 'm-aggregate-reasons'
-    regions : 
-      prosRegion : '.m-aggregated-propoints-region'
-      consRegion : '.m-aggregated-conpoints-region'
 
-    events : 
-      'click .point_filter:not(.selected)' : 'sortAll'
-
-    updateHeader : (segment) ->
-      if segment == 'all'
-        aggregate_heading = @$el.find '.m-results-pro-con-list-who-all'
-        aggregate_heading.siblings('.m-results-pro-con-list-who-others').hide()
-        aggregate_heading.show()
-      else 
-        others = @$el.find '.m-results-pro-con-list-who-others'
-        others.siblings('.m-results-pro-con-list-who-all').hide()
-        group_name = App.Entities.Position.stance_name segment
-        others
-          .html("The most compelling considerations for us <span class='group_name'>#{group_name}</span>")
-          .show()
-
-  class Proposal.SocialMediaView extends App.Views.ItemView
-    template : '#tpl_proposal_social_media'
-    className : 'm-proposal-socialmedia'
 

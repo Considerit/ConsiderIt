@@ -15,9 +15,7 @@
 
   %ul.l-navigate-breadcrumbs  
     %a{ :href => '/', :title => "Go to homepage"}
-      .css3_icon
-        .css3_icon_home
-        .css3_icon_chimney
+      %i.icon-home
 
     (( _.each(crumbs, function(crumb,idx) {  ))
     (( var name=crumb[0], loc=crumb[1]; ))

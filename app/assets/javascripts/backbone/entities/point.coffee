@@ -136,6 +136,13 @@
       points = @getPointsBy {proposal_id : proposal_id}
       points
 
+    getTopPointsByProposal : (proposal_id) ->
+      proposal = App.request 'proposal:get:id', proposal_id
+      top_pro = if proposal.get('top_pro') then @getPoint proposal.get('top_pro'), false, proposal.long_id else null
+      top_con = if proposal.get('top_con') then @getPoint proposal.get('top_con'), false, proposal.long_id else null
+
+      new Entities.Points _.compact([top_pro, top_con])
+
   App.reqres.setHandler 'point:bootstrap', (data) ->
     API.bootstrapPoint data
 
@@ -153,6 +160,9 @@
 
   App.reqres.setHandler 'points:get:proposal', (model_id) ->
     API.getPointsByProposal model_id
+
+  App.reqres.setHandler 'points:get:proposal:top', (model_id) ->
+    API.getTopPointsByProposal model_id
 
   App.reqres.setHandler 'points:get', (filter = {}) ->
     API.getPointsBy filter

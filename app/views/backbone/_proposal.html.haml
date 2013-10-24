@@ -1,42 +1,44 @@
+////////////// proposal ////////////
+%script{ :type => "text/template", :id => "tpl_proposal_layout" }  
+  .m-proposal-description-region
+
+  .m-participants
+    .l-message-speaker
+
+  .m-proposal-aggregate-region
+
+  .m-proposal-reasons-region
+
+
+
+
+
 ////////////// position ////////////
 
-%script{ :type => "text/template", :id => "tpl_position_layout" }  
-  #p-position-crafting.l-content-wrap
-    .m-proposal-description-region
-    
-    .l-message.m-proposal-message.m-position
-      .l-message-speaker
-      .m-position-crafting-region.l-message-body.m-position-message-body
-      
+%script{ :type => "text/template", :id => "tpl_position_crafting_layout" }  
 
+  .m-position-message-body.l-message-body
+    %h2.m-position-heading-points
+      {{ considerations_prompt }}
 
+    .m-position-reasons-region
 
-%script{ :type => "text/template", :id => "tpl_position_crafting" }  
-  %h2.m-position-heading.m-position-heading-points
-    {{ considerations_prompt }}
+    .m-position-stance-region
 
-  .m-position-reasons-region
+    .m-position-explanation-region
 
-  .m-position-stance-region
-
-  .m-position-explanation-region
-
-  .m-position-footer-region
-
+    .m-position-footer-region
+              
 
 %script{ :type => "text/template", :id => "tpl_position_reasons" }  
-  .m-reasons-peer-points.m-reasons-peer-points-pros.m-points-list-region
 
-  .m-reasons-pro-con-list
-    .m-pro-con-list-propoints-region.m-points-list-region
-       
-    .m-pro-con-list-conpoints-region.m-points-list-region
-
-  .m-reasons-peer-points.m-reasons-peer-points-cons.m-points-list-region
+  .m-position-propoints-region.m-points-list-region
+     
+  .m-position-conpoints-region.m-points-list-region
 
 
 %script{ :type => "text/template", :id => "tpl_position_stance" }  
-  %h2.m-position-heading.m-position-heading-stance
+  %h2.m-position-heading-stance
     {{ slider_prompt }}
   %table
     %tr
@@ -61,72 +63,78 @@
 
 
 %script{ :type => "text/template", :id => "tpl_position_footer" }  
-  .m-position-your-action-body-wrap
 
-    (( if( active ) { ))
+  (( if( active ) { ))
 
-    %a.m-position-your-action-body.submit{:'data-target' => 'submit-position'}
-      (( if(updating){ ))
-      Update your position
-      (( } else { ))
-      Save your position
-      (( } ))
-
-    .m-position-submit-footer-wrap
-      .notifications
-
-        = label_tag :follow_proposal, '', :title => 'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.' do
-          
-          (( if (follows) { )) 
-          = check_box_tag :follow_proposal, 'true', true
-          (( } else { ))
-          = check_box_tag :follow_proposal, 'true'
-          (( }))
-
-          %span
-            Get email updates about new activity
-
-      %a.m-position-cancel{:'data-target' => 'show-results'}
-        cancel and show results
+  %a.m-position-your-action-body.submit{:'data-target' => 'submit-position'}
+    (( if(updating){ ))
+    Update your position
     (( } else { ))
-    %a.m-position-your-action-body.submit{:'data-target' => 'show-results'}
-      View results 
+    Save your position
     (( } ))
-  
+
+  .m-position-submit-footer-wrap
+    .notifications
+
+      = label_tag :follow_proposal, '', :title => 'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.' do
+        
+        (( if (follows) { )) 
+        = check_box_tag :follow_proposal, 'true', true
+        (( } else { ))
+        = check_box_tag :follow_proposal, 'true'
+        (( }))
+
+        %span
+          Get email updates about new activity
+
+    %a.m-position-cancel{:'data-target' => 'show-results'}
+      cancel and show results
+  (( } else { ))
+  %a.m-position-your-action-body.submit{:'data-target' => 'show-results'}
+    View results 
+  (( } ))
+
 
   
+
+%script{ :type => "text/template", :id => "tpl_reasons_layout"}
+
+  // .m-proposal-socialmedia-region
+
+
+  .m-reasons-header-region{:'data-target' => 'show-results'}   
+
+  .m-reasons-lists
+    .m-aggregated-propoints-region.m-points-list-region
+    .m-position-region
+    .m-aggregated-conpoints-region.m-points-list-region
+
+  .m-reasons-footer-region
 
 
 
 ////////////// aggregate ////////////
 %script{ :type => "text/template", :id => "tpl_aggregate_layout" }  
-  #p-aggregate-proposal.l-content-wrap
+  
+  .m-histogram-region
 
 
-    .m-proposal-description-region
-    
-    .m-histogram-region
 
 
-    .l-message.m-proposal-message.m-aggregated-results
-      .m-proposal-socialmedia-region
+%script{ :type => "text/template", :id => "tpl_group_container"}
+  (( _.each(participants, function(p){ ))
+  %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+  (( }); ))
 
-      .l-message-speaker
+%script{ :type => "text/template", :id => "tpl_aggregate_footer_expanded"}
+  %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+    {{ call }}
 
-        .l-group-container
-          (( _.each(participants, function(p){ ))
-          %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-          (( }); ))
+%script{ :type => "text/template", :id => "tpl_aggregate_footer_collapsed"}
+  .placeholder
 
-
-      .l-message-body.m-results-responders
-        = render :partial => "shared/bubble", :locals => {:left => true}
-
-        .m-reasons-region
-
-        .m-position-your-action-body-wrap
-          %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
-            {{ call }}
+%script{ :type => "text/template", :id => "tpl_aggregate_footer_separated"}
+  .placeholder
 
 
 %script{ :type => "text/template", :id => "tpl_aggregate_histogram"}
@@ -136,7 +144,7 @@
   (( var bucket = bar.bucket; ))
   .m-histogram-bar{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}"}
 
-    = render :partial => "shared/bubble_equilateral", :locals => {:left => false}
+    -#= render :partial => "shared/bubble_equilateral", :locals => {:left => false}
 
     (( if (bar.positions.length > 0) { ))
     %ul.m-bar-people
@@ -161,37 +169,43 @@
     .m-histogram-base-label.m-histogram-base-label-oppose
       {{ opposer_label }}
 
-%script{ :type => "text/template", :id => "tpl_aggregate_reasons"}
+%script{ :type => "text/template", :id => "tpl_reasons_results_header"}
   
   %h3.m-results-pro-con-list-who
     .m-results-pro-con-list-who-others
     .m-results-pro-con-list-who-all    
-      The most compelling considerations we've covered so far
+      (( if(active) { ))
+      The most compelling Pros and Cons raised thus far
+      (( } else { ))
+      The most compelling points we considered
+      (( } ))
 
-  .m-results-pro-con-list
-    .m-pro-con-list-header
-      Pros
+%script{ :type => "text/template", :id => "tpl_reasons_results_header_collapsed"}
+  / = render :partial => "shared/bubble", :locals => {:left => true}
 
-    .m-pro-con-list-header
-      Cons
+  / %h3.m-results-pro-con-list-who
+  /   (( if(active) { ))
+  /   We've been considering the pros and cons and find these the most compelling
+  /   (( } else { ))
+  /   These are the most compelling pros and cons we considered
+  /   (( } ))
 
-    .m-aggregated-propoints-region.m-points-list-region
-    .m-aggregated-conpoints-region.m-points-list-region
 
+%script{ :type => "text/template", :id => "tpl_reasons_results_header_separated"}
+  .placeholder
 
+/ %script{ :type => "text/template", :id => "tpl_results" }      
+/   .l-message.m-aggregated-results
 
-%script{ :type => "text/template", :id => "tpl_results" }      
-  .l-message.m-proposal-message.m-aggregated-results
+/     .l-message-speaker
 
-    .l-message-speaker
+/       .l-group-container
+/         (( _.each( participants, function(p){ ))
+/         %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+/         (( }); ))
 
-      .l-group-container
-        (( _.each( participants, function(p){ ))
-        %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-        (( }); ))
-
-    .l-message-body.m-results-responders
-      = render :partial => "shared/bubble", :locals => {:left => true}
+/     .l-message-body.m-results-responders
+/       = render :partial => "shared/bubble", :locals => {:left => true}
 
     
 
@@ -210,103 +224,97 @@
 
 ///////////// summary ////////////////
 
-%script{ :type => "text/template", :id => "tpl_proposal_summary_results"}
-  .l-message.m-proposal-message.m-results-summary{:'data-role' => 'results-section'}
+/ %script{ :type => "text/template", :id => "tpl_proposal_summary_results"}
+/   .l-message.m-results-summary{:'data-role' => 'results-section'}
 
-    .l-message-speaker
-      .l-group-container
-        (( _.each(participants, function(p){ ))
-        %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-        (( }); ))
-
-
-
-
-    .l-message-body.m-results-responders.summary 
-      = render :partial => "shared/bubble", :locals => {:left => true}
+/     .l-message-speaker
+/       .l-group-container
+/         (( _.each(participants, function(p){ ))
+/         %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+/         (( }); ))
 
 
 
-      .m-results-summary-pro-con-list
-        %h3.m-results-pro-con-list-header
-          (( if(active) { ))
-          The most compelling points raised thus far:
-          (( } else { ))
-          These were the most compelling points we considered:
-          (( } ))
-        .m-points-list-region         
-          .m-top-point.m-top-pro
-            (( if(!top_pro) { ))
-            We haven't thought of any {{ pro_label }} arguments yet.
-            (( } else { ))
 
-            %span.m-top-point-header
-              Our Top {{ pro_label }} is 
-            %span.m-top-point-content
-              &ldquo;{{ top_pro.nutshell }}&rdquo;
-            (( if(!top_pro.hide_name){ )) 
-            %span.m-top-point-user
-              &ndash; {{ top_pro_user.name }}       
-            (( } ))
+/     .l-message-body.m-results-responders.summary 
+/       = render :partial => "shared/bubble", :locals => {:left => true}
 
-            (( } ))
 
-        .m-points-list-region
-          .m-top-point.m-top-con
-            (( if(!top_con) { ))
-            We haven't thought of any {{ con_label }} arguments yet.
-            (( } else { ))
 
-            %span.m-top-point-header
-              Our Top {{ con_label }} is
-            %span.m-top-point-content
-              &ldquo;{{ top_con.nutshell }}&rdquo;  
-            (( if(!top_con.hide_name){ )) 
-            %span.m-top-point-user
-              &ndash; {{ top_con_user.name }}       
-            (( } ))
+/       .m-results-summary-pro-con-list
+/         %h3.m-results-pro-con-list-header
+/           (( if(active) { ))
+/           The most compelling points raised thus far:
+/           (( } else { ))
+/           These were the most compelling points we considered:
+/           (( } ))
+/         .m-points-list-region         
+/           .m-top-point.m-top-pro
+/             (( if(!top_pro) { ))
+/             We haven't thought of any {{ pro_label }} arguments yet.
+/             (( } else { ))
 
-            (( } ))
+/             %span.m-top-point-header
+/               Our Top {{ pro_label }} is 
+/             %span.m-top-point-content
+/               &ldquo;{{ top_pro.nutshell }}&rdquo;
+/             (( if(!top_pro.hide_name){ )) 
+/             %span.m-top-point-user
+/               &ndash; {{ top_pro_user.name }}       
+/             (( } ))
 
-      (( if(active && published){ ))
+/             (( } ))
 
-      .m-position-your-action-body-wrap    
-        %a.m-results-summary-button{:href => "{{Routes.proposal_path( long_id )}}"}
-          View results      
+/         .m-points-list-region
+/           .m-top-point.m-top-con
+/             (( if(!top_con) { ))
+/             We haven't thought of any {{ con_label }} arguments yet.
+/             (( } else { ))
+
+/             %span.m-top-point-header
+/               Our Top {{ con_label }} is
+/             %span.m-top-point-content
+/               &ldquo;{{ top_con.nutshell }}&rdquo;  
+/             (( if(!top_con.hide_name){ )) 
+/             %span.m-top-point-user
+/               &ndash; {{ top_con_user.name }}       
+/             (( } ))
+
+/             (( } ))
+
+/       (( if(active && published){ ))
+
+/       .m-position-your-action-body-wrap    
+/         %a.m-reasons-view-results{:href => "{{Routes.proposal_path( long_id )}}"}
+/           View results      
           
 
-      (( } ))
+/       (( } ))
 
     
 
+/ %script{ :type => "text/template", :id => "tpl_proposal_summary"}
+/   .l-content-wrap
+/     .m-proposal-description-region
 
+/     .m-results-summary-region
 
+/     (( if(!published){ ))
+/     .m-proposal-strip_publish
+/       = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
+/         = f.hidden_field :published, :value => true
 
+/         = f.submit 'Publish this new conversation', :class => 'm-proposal-publish'
 
+/       -# = link_to "cancel", "{{Routes.proposal_path(long_id)}}", :confirm => "Canceling will permanently delete this conversation. Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
 
-
-%script{ :type => "text/template", :id => "tpl_proposal_summary"}
-  .l-content-wrap
-    .m-proposal-description-region
-
-    .m-results-summary-region
-
-    (( if(!published){ ))
-    .m-proposal-strip_publish
-      = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
-        = f.hidden_field :published, :value => true
-
-        = f.submit 'Publish this new conversation', :class => 'm-proposal-publish'
-
-      -# = link_to "cancel", "{{Routes.proposal_path(long_id)}}", :confirm => "Canceling will permanently delete this conversation. Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
-
-    (( } ))  
+/     (( } ))  
 
 
 
 
 %script{ :type => "text/template", :id => "tpl_proposal_admin_strip" }
-  .m-proposal-admin_strip.m-proposal-strip
+  .m-proposal-admin_strip
     %span.m-proposal-admin_label
       Conversation settings:
 

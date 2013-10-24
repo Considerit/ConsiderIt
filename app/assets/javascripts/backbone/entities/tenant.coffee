@@ -6,7 +6,7 @@
     defaults : 
       slider_right : 'oppose'
       slider_left : 'support'
-      considerations_prompt : 'What are the most important pros and cons to you?'
+      considerations_prompt : 'What are your most important pros and cons?'
       slider_prompt : 'What is your overall opinion given these Pros and Cons?'
       statement_prompt : 'support'
       pro_label : 'pro'

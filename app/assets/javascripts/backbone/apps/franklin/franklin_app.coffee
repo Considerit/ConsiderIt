@@ -12,6 +12,7 @@
   API =
     Root: -> 
       region = App.request "default:region"
+      App.request "sticky_footer:close"
 
       if @franklin_controller && (region.controlled_by != @franklin_controller || !(@franklin_controller instanceof Franklin.Root.RootController))
         @franklin_controller.close()
@@ -30,21 +31,36 @@
 
       # @_loading [proposal]
 
+      from_root = @franklin_controller instanceof Franklin.Root.RootController
+
+      try
+        proposal_controller = App.request "proposal_controller:#{proposal.id}"
+      catch
+
+      if from_root
+        $pel = $(proposal_controller.region.el)
+        @franklin_controller.region.hideAllExcept $pel
+
       App.execute 'when:fetched', proposal, =>
         region = App.request 'default:region'
 
-        if @franklin_controller && region.controlled_by != @franklin_controller
+        proposal_controller.upRoot() if from_root && proposal_controller 
+
+        if @franklin_controller && @franklin_controller != proposal_controller
           @franklin_controller.close()
           @franklin_controller = null
 
-        already_viewing = @franklin_controller && @franklin_controller.options.model == proposal && @franklin_controller instanceof Franklin.Proposal.PositionController
-        if !already_viewing
-          @franklin_controller.close() if @franklin_controller
-          $(document).scrollTop(0)
-          @franklin_controller = new Franklin.Proposal.PositionController
-            region : region
-            model : proposal
-          region.controlled_by = @franklin_controller
+        #$(document).scrollTop(0)
+        @franklin_controller = proposal_controller || new Franklin.Proposal.ProposalController
+          region : region
+          model : proposal
+          proposal_state : Franklin.Proposal.State.expanded.crafting
+        
+        if proposal_controller
+          proposal_controller.plant region if from_root
+          proposal_controller.changeState Franklin.Proposal.State.expanded.crafting
+
+        region.controlled_by = @franklin_controller
 
         App.vent.trigger 'route:completed', [ ['homepage', '/'], ["#{proposal.title(40)}", Routes.new_position_proposal_path(proposal.long_id)] ]
         App.vent.trigger 'navigated_to_base'
@@ -55,24 +71,39 @@
 
       # @_loading [proposal]
 
+      from_root = @franklin_controller instanceof Franklin.Root.RootController
+
+      try
+        proposal_controller = App.request "proposal_controller:#{proposal.id}"
+      catch
+
+      if from_root
+        $pel = $(proposal_controller.region.el)
+        @franklin_controller.region.hideAllExcept $pel
+
       App.execute 'when:fetched', proposal, =>
         region = App.request 'default:region'
 
-        if @franklin_controller && region.controlled_by != @franklin_controller
+        proposal_controller.upRoot() if from_root && proposal_controller
+
+        if @franklin_controller && @franklin_controller != proposal_controller
           @franklin_controller.close()
           @franklin_controller = null
 
-        already_viewing = @franklin_controller && @franklin_controller.options.model == proposal && @franklin_controller instanceof Franklin.Proposal.AggregateController
+        #$(document).scrollTop(0)
 
-        if !already_viewing    
-          $(document).scrollTop(0)
-          @franklin_controller.close() if @franklin_controller
+        @franklin_controller = proposal_controller || new Franklin.Proposal.ProposalController
+          region : App.request "default:region"
+          model : proposal
+          proposal_state : Franklin.Proposal.State.expanded.results            
+          #move_to_results : !from_root
 
-          @franklin_controller = new Franklin.Proposal.AggregateController
-            region : App.request "default:region"
-            model : proposal
-            move_to_results : true
-          region.controlled_by = @franklin_controller
+        if proposal_controller
+          proposal_controller.plant region if from_root
+          proposal_controller.changeState Franklin.Proposal.State.expanded.results
+
+        region.controlled_by = @franklin_controller
+
 
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
@@ -94,10 +125,10 @@
         if !(region.currentView instanceof Franklin.Proposal.PositionLayout || 
              region.currentView instanceof Franklin.Proposal.AggregateLayout)
           @franklin_controller.close() if @franklin_controller
-          @franklin_controller = new Franklin.Proposal.AggregateController
+          @franklin_controller = new Franklin.Proposal.ProposalController
             region : region
             model : proposal
-            transition : false
+            proposal_state : Franklin.Proposal.State.expanded.results                        
           region.controlled_by = @franklin_controller
 
 
@@ -121,10 +152,10 @@
         if !(region.currentView instanceof Franklin.Proposal.PositionLayout || 
              region.currentView instanceof Franklin.Proposal.AggregateLayout)
           @franklin_controller.close() if @franklin_controller
-          @franklin_controller = new Franklin.Proposal.AggregateController
+          @franklin_controller = new Franklin.Proposal.ProposalController
             region : region
             model : proposal
-            transition : false
+            proposal_state : Franklin.Proposal.State.expanded.results                        
           region.controlled_by = @franklin_controller
 
         user = App.request 'user', parseInt(user_id)

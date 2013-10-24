@@ -1,5 +1,117 @@
 @ConsiderIt.module "Franklin.Point", (Point, App, Backbone, Marionette, $, _) ->
   
+  class Point.PointView extends App.Views.Layout
+    actions : []
+
+    tagName : 'li'
+    template : '#tpl_point_view'
+
+    regions :
+      headerRegion : '.m-point-header-region'
+      bodyRegion : '.m-point-wrap'
+      expansionRegion : '.m-point-expansion-region'
+
+    serializeData : ->
+      params = _.extend {}, @model.attributes, 
+        actions : @actions
+
+      params
+
+    @events : 
+      'click' : 'pointClicked'
+
+    pointClicked : (ev) ->
+      pass_through = false
+      _.each App.request('shared:targets'), (target) ->
+        pass_through ||= $(ev.target).is("[data-target='#{target}']")
+
+      if !pass_through
+        @trigger 'point:clicked'
+        ev.stopPropagation()
+
+    makeEditable : ->
+      @$el.find('.m-point-nutshell').editable
+        resource: 'point'
+        pk: @model.id
+        url: Routes.proposal_point_path @model.get('long_id'), @model.id
+        type: 'textarea'
+        name: 'nutshell'
+        success : (response, new_value) => @model.set('nutshell', new_value)
+
+      @$el.find('.m-point-details-description').editable
+        resource: 'point'
+        pk: @model.id
+        url: Routes.proposal_point_path @model.get('long_id'), @model.id
+        type: 'textarea'
+        name: 'text'
+        success : (response, new_value) => @model.set('text', new_value)
+
+          
+
+  class Point.PeerPointView extends Point.PointView
+    actions : ['include']
+
+    events : _.extend @events,
+      'click [data-target="point-include"]' : 'includePoint'
+      'mouseenter' : 'highlightIncluders'
+      'mouseleave' : 'unhighlightIncluders'
+
+    includePoint : (ev) ->
+      @trigger 'point:include'
+      ev.stopPropagation()
+
+    highlightIncluders : ->
+      @trigger 'point:highlight_includers'
+
+    unhighlightIncluders : ->
+      @trigger 'point:unhighlight_includers'
+
+  class Point.PositionPointView extends Point.PointView
+    actions : ['remove']
+
+    events : _.extend @events,
+      'click [data-target="point-remove"]' : 'removePoint'
+
+    removePoint : (ev) ->
+      @trigger 'point:remove'
+      ev.stopPropagation()
+
+
+  class Point.ExpandedView extends App.Views.Layout
+    template : '#tpl_point_expanded'
+    regions :
+      followRegion : '.m-point-follow-region'
+      assessmentRegion : '.m-point-assessment-region'
+      discussionRegion : '.m-point-discussion'
+
+    onRender : ->
+      App.vent.trigger 'point:expanded'
+
+    onShow : ->
+      # when clicking outside of point, close it      
+      $(document).on 'click.m-point-details', (ev)  => 
+        is_not_clicking_this_point = ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id)
+        dialog_not_open = $('#l-dialog-detachable').length == 0
+        if is_not_clicking_this_point && $(ev.target).closest('.editable-buttons').length == 0 && dialog_not_open
+          is_click_within_a_point = $(ev.target).closest('[data-role="m-point"]').length > 0
+          is_clicking_nav = $(ev.target).closest('.l-navigate-wrap').length > 0
+          @closeDetails(  !is_click_within_a_point && !is_clicking_nav ) 
+
+      $(document).on 'keyup.m-point-details', (ev) => 
+        dialog_not_open = $('#l-dialog-detachable').length == 0
+        @closeDetails() if ev.keyCode == 27 && dialog_not_open
+
+      current_user = App.request 'user:current'
+
+      #needs to be managed by layout
+      if current_user.id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
+        @trigger 'make_fields_editable'
+
+
+    closeDetails : (go_back) ->
+      go_back ?= true
+      @trigger 'details:close', go_back
+
   class Point.PointHeaderView extends App.Views.ItemView
     template : '#tpl_point_view_header'
     tagName : 'span'
@@ -84,120 +196,7 @@
           if @model.get('comment_count') == 1 then "1 comment" else "#{@model.get('comment_count')} comments"
 
 
-  class Point.PointView extends App.Views.Layout
-    actions : []
 
-    tagName : 'li'
-    template : '#tpl_point_view'
-
-    regions :
-      headerRegion : '.m-point-header-region'
-      bodyRegion : '.m-point-wrap'
-      expansionRegion : '.m-point-expansion-region'
-
-    serializeData : ->
-      params = _.extend {}, @model.attributes, 
-        actions : @actions
-
-      params
-
-    @events : 
-      'click' : 'pointClicked'
-
-    pointClicked : (ev) ->
-      pass_through = false
-      _.each App.request('shared:targets'), (target) ->
-        pass_through ||= $(ev.target).is("[data-target='#{target}']")
-
-      if !pass_through
-        @trigger 'point:clicked'
-        ev.stopPropagation()
-
-    makeEditable : ->
-      @$el.find('.m-point-nutshell').editable
-        resource: 'point'
-        pk: @model.id
-        url: Routes.proposal_point_path @model.get('long_id'), @model.id
-        type: 'textarea'
-        name: 'nutshell'
-        success : (response, new_value) => @model.set('nutshell', new_value)
-
-      @$el.find('.m-point-details-description').editable
-        resource: 'point'
-        pk: @model.id
-        url: Routes.proposal_point_path @model.get('long_id'), @model.id
-        type: 'textarea'
-        name: 'text'
-        success : (response, new_value) => @model.set('text', new_value)
-
-          
-
-  class Point.PeerPointView extends Point.PointView
-    actions : ['include']
-
-    events : _.extend @events,
-      'click [data-target="point-include"]' : 'includePoint'
-
-    includePoint : (ev) ->
-      @trigger 'point:include'
-      ev.stopPropagation()
-
-  class Point.PositionPointView extends Point.PointView
-    actions : ['remove']
-
-    events : _.extend @events,
-      'click [data-target="point-remove"]' : 'removePoint'
-
-    removePoint : (ev) ->
-      @trigger 'point:remove'
-      ev.stopPropagation()
-
-  class Point.AggregatePointView extends Point.PointView
-
-    events : _.extend @events,
-      'mouseenter' : 'highlightIncluders'
-      'mouseleave' : 'unhighlightIncluders'
-
-    highlightIncluders : ->
-      @trigger 'point:highlight_includers'
-
-    unhighlightIncluders : ->
-      @trigger 'point:unhighlight_includers'
-
-  class Point.ExpandedView extends App.Views.Layout
-    template : '#tpl_point_expanded'
-    regions :
-      followRegion : '.m-point-follow-region'
-      assessmentRegion : '.m-point-assessment-region'
-      discussionRegion : '.m-point-discussion'
-
-    onRender : ->
-      App.vent.trigger 'point:expanded'
-
-    onShow : ->
-      # when clicking outside of point, close it      
-      $(document).on 'click.m-point-details', (ev)  => 
-        is_not_clicking_this_point = ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id)
-        dialog_not_open = $('#l-dialog-detachable').length == 0
-        if is_not_clicking_this_point && $(ev.target).closest('.editable-buttons').length == 0 && dialog_not_open
-          is_click_within_a_point = $(ev.target).closest('[data-role="m-point"]').length > 0
-          is_clicking_nav = $(ev.target).closest('.l-navigate-wrap').length > 0
-          @closeDetails(  !is_click_within_a_point && !is_clicking_nav ) 
-
-      $(document).on 'keyup.m-point-details', (ev) => 
-        dialog_not_open = $('#l-dialog-detachable').length == 0
-        @closeDetails() if ev.keyCode == 27 && dialog_not_open
-
-      current_user = App.request 'user:current'
-
-      #needs to be managed by layout
-      if current_user.id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
-        @trigger 'make_fields_editable'
-
-
-    closeDetails : (go_back) ->
-      go_back ?= true
-      @trigger 'details:close', go_back
 
 
   class Point.FollowView extends App.Views.ItemView

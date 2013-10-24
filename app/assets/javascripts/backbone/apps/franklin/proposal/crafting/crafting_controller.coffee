@@ -1,18 +1,56 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
-  class Proposal.PositionController extends Proposal.AbstractProposalController
+
+  class Proposal.CraftingController extends App.Controllers.StatefulController
+    # maps from parent state to this controller's state
+    state_map : ->
+      map = {}
+      map[Proposal.ReasonsState.collapsed] = Proposal.ReasonsState.collapsed
+      map[Proposal.ReasonsState.separated] = Proposal.ReasonsState.separated
+      map[Proposal.ReasonsState.together] = Proposal.ReasonsState.together
+      map
+
     initialize : (options = {}) ->
+      super options
+
       @proposal = options.model
       @model = @proposal.getUserPosition()
 
-      layout = @getLayout @proposal
+      @layout = @getLayout()
+
+      @setupLayout @layout
+
+      @region.open = (view) => @transition @region, view # this will set how this region handles the transitions between views
+      @region.show @layout
+
+
+    transition : (region, view) ->
+      if @state == Proposal.ReasonsState.collapsed
+        region.$el.empty().append view.el
+      else if @state == Proposal.ReasonsState.separated
+        if @prior_state == null
+          region.$el.empty().append view.el
+        else
+          _.delay =>
+            view.$el.hide()
+            region.$el.empty().append view.el
+            view.$el.fadeIn 400
+          , 400
+      else if @state == Proposal.ReasonsState.together
+        view.$el.hide()
+        region.$el.empty().append view.el
+
+
+    processStateChange : ->
+      if @prior_state != @state
+        @layout = @resetLayout @layout
+
+
+    setupLayout : (layout) ->
       @listenTo layout, 'show', =>
-        proposal_view = @getProposalDescription @proposal
-        crafting_layout = @getCraftingLayout @proposal, @model
+        # switch @state 
 
-        @listenTo crafting_layout, 'show', => @setupPositionLayout crafting_layout
-
-        layout.proposalRegion.show proposal_view
-        layout.positionRegion.show crafting_layout
+        #   when Proposal.ReasonsState.separated
+        @setupPositionLayout layout
 
         @listenTo App.vent, 'user:signin', =>
           current_user = App.request 'user:current'
@@ -22,12 +60,9 @@
 
         @listenTo ConsiderIt.vent, 'user:signout', => 
           #TODO: clear out position data like points
-          @model
           @region.reset()
           @region.show layout
 
-      @region.show layout
-      @layout = layout
 
     setupPositionLayout : (layout) ->
       @listenTo layout, 'point:viewed', (point_id) =>
@@ -37,7 +72,8 @@
       stance_view = @getPositionStance @proposal, @model
       # explanation_view = @getPositionExplanation @model
 
-      @listenTo reasons_layout, 'show', => @setupReasonsLayout reasons_layout
+      @listenTo reasons_layout, 'show', => 
+        @setupReasonsLayout reasons_layout
       @listenTo stance_view, 'show', => @setupStanceView stance_view
 
       layout.reasonsRegion.show reasons_layout
@@ -113,85 +149,48 @@
           submitPosition()
 
     setupReasonsLayout : (layout) ->
+      @position_pros_controller.close() if @position_pros_controller
+      @position_cons_controller.close() if @position_cons_controller
+
       points = App.request 'points:get:proposal', @proposal.id
       included_points = @model.getIncludedPoints()
-      #TODO: make sure included points is correct
 
-      position_pros = new App.Entities.Points points.filter (point) ->
+      position_pros = new App.Entities.Points 
+      position_cons = new App.Entities.Points
+
+      
+      @position_pros_controller = @getPointsController layout.positionProsRegion, 'pro', position_pros
+      @position_cons_controller = @getPointsController layout.positionConsRegion, 'con', position_cons
+
+      ########
+      # instead of passing these in to the constructor, going to add them after. This is so that the respective
+      # PointController instances will be spun off properly
+      position_pros.add points.filter (point) ->
         point.id in included_points && point.isPro()
 
-      position_cons = new App.Entities.Points points.filter (point) ->
+      position_cons.add points.filter (point) ->
         point.id in included_points && !point.isPro()
+      ########
 
-      peer_pros = new App.Entities.PaginatedPoints points.filter (point) ->
-        !(point.id in included_points) && point.isPro()
+      @setupPointsController @position_pros_controller
+      @setupPointsController @position_cons_controller
 
-      peer_cons = new App.Entities.PaginatedPoints points.filter (point) ->
-        !(point.id in included_points) && !point.isPro()
+    setupPointsController : (controller) ->
 
-      peer_pros_controller = new App.Franklin.Points.PeerPointsController
-        valence : 'pro'
-        collection : peer_pros
-        region : layout.peerProsRegion
-        parent : @
-        parent_controller : @
+      @listenTo controller, 'point:created', (point) =>
+        @model.written_points.push point
+        @model.includePoint point
 
-      peer_cons_controller = new App.Franklin.Points.PeerPointsController
-        valence : 'con'
-        collection : peer_cons
-        region : layout.peerConsRegion
-        parent : @
-        parent_controller : @
+      @listenTo controller, 'point:remove', (view) => 
+        @handleRemovePoint view, view.model, controller.options.collection
 
-      position_pros_controller = new App.Franklin.Points.UserReasonsController
-        valence : 'pro'
-        collection : position_pros
-        region : layout.positionProsRegion
-        proposal : @proposal
-        parent : @
-        parent_controller : @
-
-      position_cons_controller = new App.Franklin.Points.UserReasonsController
-        valence : 'con'
-        collection : position_cons
-        region : layout.positionConsRegion
-        proposal : @proposal
-        parent : @
-        parent_controller : @
-
-      _.each [position_pros_controller, position_cons_controller], (position_list) =>
-
-        @listenTo position_list, 'point:created', (point) =>
-          @model.written_points.push point
-          @model.includePoint point
-
-        @listenTo position_list, 'point:remove', (view) => 
-          if position_list == position_pros_controller
-            [source, dest] = [position_pros, peer_pros]
-          else 
-            [source, dest] = [position_cons, peer_cons]
-          @handleRemovePoint view, view.model, source, dest, layout
-
-      _.each [peer_pros_controller, peer_cons_controller], (peer_list) =>
-        @listenTo peer_list, 'point:include', (view) => 
-          if peer_list == peer_pros_controller
-            [dest, source] = [position_pros, peer_pros]
-          else 
-            [dest, source] = [position_cons, peer_cons]
-          @handleIncludePoint view, view.model, source, dest, layout
-
-    handleRemovePoint : (view, model, source, dest, layout) ->
+    handleRemovePoint : (view, model, source) ->
       # TODO: need to close point details if point is currently expanded
-      # model.trigger('point:removed') 
-
       source.remove model
-      dest.add model
-
-      params = { 
+      params =
         proposal_id : model.proposal_id,
         point_id : model.id
-      }
-
+      
       window.addCSRF params
       @model.removePoint model
       $.post Routes.inclusions_path( {delete : true} ), params, (data) =>
@@ -206,88 +205,25 @@
           model.trigger 'destroy', model, model.collection
           toastr.success 'Point deleted'
 
-
-      App.vent.trigger 'point:removal', model.id
-
-
-    handleIncludePoint : (view, model, source, dest, layout) ->
-      dest.add model
-
-      # TODO: need to close point details if point is currently expanded
-      # model.trigger('point:included') 
-
-      $item = view.$el
-      if $item.is('.m-point-unexpanded')
-        $included_point = layout.$el.find(".m-point-position[data-id='#{model.id}']")
-
-        $included_point.css 'visibility', 'hidden'
-
-        item_offset = $item.offset()
-        ip_offset = $included_point.offset()
-        [offsetX, offsetY] = [ip_offset.left - item_offset.left, ip_offset.top - item_offset.top]
-
-        styles = _.pick $included_point.getStyles(), ['color', 'width', 'paddingRight', 'paddingLeft', 'paddingTop', 'paddingBottom']
-
-        _.extend styles, 
-          background: 'none'
-          border: 'none'
-          top: offsetY 
-          left: offsetX
-          position: 'absolute'
-
-        $placeholder = $('<li class="m-point-peer">')
-        $placeholder.css {height: $item.outerHeight(), visibility: 'hidden'}
-
-        $item.find('.m-point-author-avatar, .m-point-include-wrap, .m-point-operations').fadeOut(50)
-
-        $wrap = $item.find('.m-point-wrap')
-        $wrap.css 
-          position: 'absolute'
-          width: $wrap.outerWidth()
-
-        $placeholder.insertAfter $item
-
-        $wrap.css(styles).delay(500).queue (next) =>
-          $item.fadeOut -> 
-            source.remove model
-            $placeholder.remove()
-            $included_point.css 'visibility', ''
-          next()
-      else
-        source.remove model
-
-      # persist the inclusion ... (in future, don't have to do this until posting...)
-      params = { 
-        proposal_id : model.get('proposal_id'),
-        point_id : model.id
-      }
-      window.addCSRF params
-      $.post Routes.inclusions_path(), 
-        params, (data) =>
-          @model.includePoint model
-
-          current_user = App.request 'user:current'
-          current_user.setFollowing 
-            followable_type : 'Point'
-            followable_id : model.id
-            follow : true
-            explicit: false
+      @trigger 'point:removal', model
 
 
     setupStanceView : (view) ->
 
-    getLayout : (proposal) ->
+    getPointsController : (region, valence, collection) ->
+      new App.Franklin.Points.UserReasonsController
+        valence : valence
+        collection : collection
+        region : region
+        proposal : @proposal
+        parent_controller : @
+        parent_state : @state
+
+    getLayout : ->
       new Proposal.PositionLayout
-        model : proposal
-
-    getProposalDescription : (proposal) ->
-      new Proposal.PositionProposalDescription
-        model : proposal
-
-    getCraftingLayout : (proposal, position) ->
-      new Proposal.PositionCraftingLayout
-        model : position
-        proposal : proposal
+        model : @model
+        proposal : @proposal
+        state : @state
 
     getPositionReasons : (proposal, position) ->
       new Proposal.PositionReasonsLayout

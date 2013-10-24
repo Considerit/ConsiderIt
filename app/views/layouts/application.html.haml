@@ -39,7 +39,6 @@
 
 
   %body
-    / = image_tag "ajax-loader.gif", :style => 'display: none'
 
     - cache ['main_body', current_tenant] do
 
@@ -64,6 +63,8 @@
                     #m-dashboard.l-content-wrap
 
                     = image_tag "ajax-loader.gif", :id => 'l-preloader'
+
+            #l-sticky-footer-region
 
             #l-footer
 

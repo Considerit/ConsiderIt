@@ -2,7 +2,7 @@
 
   class Dash.Layout extends App.Views.Layout
     template: "#tpl_dashboard_container"
-
+    className: 'm-dashboard-wrapper'
     regions :
       sidebarRegion : '.m-dashboard-sidebar-region'
       mainRegion : '.m-dashboard-main-region'

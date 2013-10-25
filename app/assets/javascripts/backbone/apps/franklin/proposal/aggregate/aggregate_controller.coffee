@@ -104,6 +104,7 @@
           empty_size : empty_size
           num_ghosts : if bar.positions.length % tiles_per_row != 0 then tiles_per_row - bar.positions.length % tiles_per_row else 0
           bucket : idx
+          group_name : App.Entities.Position.stance_name idx
 
         bar.positions = _.sortBy bar.positions, (pos) -> 
           !pos.getUser().get('avatar_file_name')?

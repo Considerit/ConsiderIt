@@ -33,7 +33,7 @@
     +transition(width .4s ease, left .5s linear, right .5s linear)
     position: absolute
     top: 0
-    //z-index: 10
+    z-index: 10
 
   &[data-state="together"], &[data-state="collapsed"]
     .m-aggregated-propoints-region, .m-aggregated-conpoints-region
@@ -68,17 +68,35 @@
     .m-reasons-header-region
       display: static
       border-radius: 0  
-      padding: $vertical_baseline / 2 $grid_xs
+      padding: 0 $grid_xs
       //+bubble($community_color, $dark_community_color, left, $text_color: $community_text_color)
 
       .t-bubble
         display: none
 
     .m-reasons-header
-      margin-bottom: $vertical_baseline/2    
       text-align: center
-      +font-size(3)    
-      text-decoration: underline  
+      margin-top: $vertical_baseline * 1.5
+
+      .m-results-pro-con-list-who
+        display: none
+        +font-size(0)    
+        //position: absolute
+        //left: 740px
+        //top: 15px
+
+      .m-reasons-results-header
+
+      .m-reasons-results-header-link
+        +font-size(4)    
+        display: none
+
+      .m-reasons-results-header-label
+        +font-size(8)    
+        font-weight: bold
+        display: inline-block
+        margin: 0 $peer-point-results-width / 2 - 50
+        border-bottom: 3px solid $base_text_color
   ////
 
 

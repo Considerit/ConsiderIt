@@ -120,20 +120,19 @@
     className : 'm-reasons-header'
 
     serializeData : ->
-      @model.attributes
+      # if @options.group == 'all'
+      #   #call = 'Across all participants, the most compelling' 
+      #   #call = 'for all participants'
+      #   call = ' ' 
 
-    updateHeader : (segment) ->
-      if segment == 'all'
-        aggregate_heading = @$el.find '.m-results-pro-con-list-who-all'
-        aggregate_heading.siblings('.m-results-pro-con-list-who-others').hide()
-        aggregate_heading.show()
-      else 
-        others = @$el.find '.m-results-pro-con-list-who-others'
-        others.siblings('.m-results-pro-con-list-who-all').hide()
-        group_name = App.Entities.Position.stance_name segment
-        others
-          .html("The most compelling Pros and Cons for <span class='group_name'>#{group_name}</span>")
-          .show()
+      # else 
+      #   group_name = App.Entities.Position.stance_name @options.group
+      #   #call = "For #{group_name}, the most compelling"
+      #   call = "for #{group_name}"
+
+      # _.extend {}, @model.attributes, 
+      #   call : call
+
 
   class Proposal.ResultsHeaderViewCollapsed extends App.Views.ItemView
     template: '#tpl_reasons_results_header_collapsed'

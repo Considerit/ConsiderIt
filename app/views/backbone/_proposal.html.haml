@@ -150,7 +150,10 @@
   (( var bucket = bar.bucket; ))
   .m-histogram-bar{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}"}
 
-    -#= render :partial => "shared/bubble_equilateral", :locals => {:left => false}
+    = render :partial => "shared/bubble_equilateral", :locals => {:left => false}
+    .m-bar-position
+      for {{bar.group_name}}
+
 
     (( if (bar.positions.length > 0) { ))
     %ul.m-bar-people
@@ -177,14 +180,20 @@
 
 %script{ :type => "text/template", :id => "tpl_reasons_results_header"}
   
-  %h3.m-results-pro-con-list-who
-    .m-results-pro-con-list-who-others
-    .m-results-pro-con-list-who-all    
-      (( if(active) { ))
-      The most compelling Pros and Cons raised thus far
-      (( } else { ))
-      The most compelling points we considered
-      (( } ))
+  // .m-results-pro-con-list-who
+  //   { call }
+
+  .m-reasons-results-header
+    %span.m-reasons-results-header-label
+      Pros
+
+    %span.m-reasons-results-header-link
+      and
+
+    %span.m-reasons-results-header-label
+      Cons
+
+
 
 %script{ :type => "text/template", :id => "tpl_reasons_results_header_collapsed"}
   / = render :partial => "shared/bubble", :locals => {:left => true}

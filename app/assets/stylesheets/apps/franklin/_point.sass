@@ -2,7 +2,7 @@ $m-point-expanded-width: $body_width + 150
 
 .m-point
   position: relative
-  +transition(background-color .1s ease, top .5s linear, width .4s ease)
+  +transition(background-color .1s ease, top .5s linear)
   @extend %nude_list
 
   &.m-point-peer
@@ -19,6 +19,7 @@ $m-point-expanded-width: $body_width + 150
     cursor: pointer
 
   &.m-point-expanded
+    +transition(width .4s ease)
     position: relative
     z-index: 999
     width: $m-point-expanded-width  
@@ -70,7 +71,7 @@ $m-point-expanded-width: $body_width + 150
 .m-point-unexpanded
   &.m-point-peer
     .m-point-nutshell
-      +font-size(-2)
+      +font-size(-1)
 
   &.m-point-position  
     .m-point-nutshell
@@ -130,10 +131,22 @@ $m-point-expanded-width: $body_width + 150
   .m-point-operations
     display: none
 
+[data-state="points-together"] .m-point-peer
+  .m-point-operations
+    visibility: hidden
+
+  &:hover
+    .m-point-operations
+      visibility: visible
+
 .m-point-unexpanded
   &.m-point-peer
     .m-point-operations        
       position: relative
+
+      .m-point-read-more
+        +font-size(-3)
+
 
     &.pro
       .m-point-operations
@@ -260,12 +273,9 @@ $m-point-expanded-width: $body_width + 150
     border: 1px solid
     border-top-color: transparent
     +transition(left .5s linear, right .5s linear)
-
-  &:before, &:after
     +single-box-shadow($color: rgba(black, .2), $voff: 2px)
 
   .m-point-author-avatar
-
     display: inline-block
     position: absolute
     border-radius: 8px
@@ -362,23 +372,51 @@ $m-point-expanded-width: $body_width + 150
   border-color: #f1f1f1 #ddd #bbb #ddd
   @extend %whitesmoke
 
-.m-point-peer
-  @extend %m-white-thought-bubble
-
-  &.m-point-unexpanded
-    .m-point-wrap
-      @extend %m-white-thought-bubble-inner
 
 .m-point-expanded
   @extend %m-white-thought-bubble
   @extend %m-white-thought-bubble-inner
 
+
+[data-state="points-collapsed"], [data-state="points-separated"]
+  .m-point-peer
+    @extend %m-white-thought-bubble
+
+    &.m-point-unexpanded
+      .m-point-wrap
+        @extend %m-white-thought-bubble-inner
+
 [data-state="points-collapsed"] .m-point-peer
   @extend %m-thought-bubble-bottom-in
 
-[data-state="points-separated"], [data-state="points-together"]
-  .m-point-peer
-    @extend %m-thought-bubble-side-down
+[data-state="points-separated"] .m-point-peer
+  @extend %m-thought-bubble-side-down
+
+[data-state="points-together"] .m-point-peer.m-point.m-point-unexpanded 
+
+  .m-point-wrap
+    margin-bottom: 0
+    &:hover 
+      +single-box-shadow($color: rgba(black, .2), $voff: 2px)
+
+  .m-point-author-avatar
+    display: inline-block
+    position: absolute
+    border-radius: 8px
+    top: .7 * $vertical_baseline
+    //border: 1px solid transparent
+    //+single-box-shadow    
+
+  .m-point-author-avatar
+    width: 35px
+    height: 35px
+
+  &.pro .m-point-author-avatar
+    left: -42px
+
+  &.con .m-point-author-avatar
+    right: -42px
+
 
 
 .m-point-unexpanded.m-point-peer

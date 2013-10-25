@@ -106,13 +106,17 @@
         @listenTo layout, 'childview:point:unhighlight_includers', (view) => 
           @trigger 'point:unhighlight_includers', view
 
+        @listenTo layout, 'points:browsing', =>
+          @trigger 'points:browsing', @options.valence
+          @previous_page_size = @options.collection.state.pageSize
+          @options.collection.setPageSize 1000
+
+        @listenTo layout, 'points:browsing:off', =>
+          @options.collection.setPageSize @previous_page_size
+          @options.collection.getPage 1
+          @trigger 'points:browsing:off', @options.valence
+
     getLayout : ->
-      # if @options.state == 'collapsed'
-      #   new Points.CollapsedPeerPointList
-      #     collection : @options.collection
-      #     valence : @options.valence
-      #     state : @state
-      # else
       new Points.PeerPointList
         collection : @options.collection
         valence : @options.valence

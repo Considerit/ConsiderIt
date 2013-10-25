@@ -14,7 +14,6 @@
     # transition or reset views as appropriate after state has been updated
     processStateChange : ->
       @updatePeerPoints @layout
-      @layout.sizeToFit @state != Proposal.ReasonsState.separated
 
       if !@crafting_controller && @options.model.fetched && @state != Proposal.ReasonsState.collapsed
         @crafting_controller = @getCraftingController @layout.positionRegion
@@ -38,6 +37,12 @@
         @layout.footerRegion.show footer_view
         if @prior_state != null
           App.request "sticky_footer:close"
+
+      delay = if @state == Proposal.ReasonsState.collapsed then 0 else 500
+
+      _.delay =>
+        @layout.sizeToFit @state != Proposal.ReasonsState.separated
+      , delay
 
 
     initialize : (options = {}) ->
@@ -109,6 +114,13 @@
 
             @listenToOnce controller, 'details:close', (point) =>
               @layout.pointClosed point, @state != Proposal.ReasonsState.separated
+
+          @listenTo controller, 'points:browsing', (valence) =>
+            @layout.pointsBrowsing @state != Proposal.ReasonsState.separated, valence
+
+            @listenToOnce controller, 'points:browsing:off', (valence) =>
+              @layout.pointsBrowsingOff @state != Proposal.ReasonsState.separated, valence
+
 
         @setupPointsController @peer_pros_controller
         @setupPointsController @peer_cons_controller

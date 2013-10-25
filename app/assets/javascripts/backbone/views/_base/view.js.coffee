@@ -48,3 +48,5 @@
         $active.siblings().hide()
         $active = $active.parent()
         i += 1
+
+      $(document).scrollTop(0)

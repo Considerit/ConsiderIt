@@ -34,7 +34,7 @@
           pointview.trigger 'point:show_details'
 
           @listenToOnce pointview, 'details:close', =>
-            @trigger 'details:close'
+            @trigger 'details:close', pointview.model
 
           @trigger 'point:show_details', point
 

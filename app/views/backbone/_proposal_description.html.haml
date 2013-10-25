@@ -17,10 +17,15 @@
           more info
         (( if(active && !show_details) { ))
         %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :title => "Decide on {{name}}"}
+          //fa-pencil-square-o
+          %i.icon-large 
+            &#xf044;
           {{ call }}
 
         %a.m-reasons-view-results{:'data-target' => 'show-results'}
-          &hellip; or View Results
+          %i.icon-bar-chart-o.icon-large 
+            &#xf080;
+          View Results
       
         (( } ))
 

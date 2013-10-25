@@ -14,15 +14,11 @@
     # transition or reset views as appropriate after state has been updated
     processStateChange : ->
       @updatePeerPoints @layout
-      @layout.sizeToFit()
+      @layout.sizeToFit @state != Proposal.ReasonsState.separated
 
       if !@crafting_controller && @options.model.fetched && @state != Proposal.ReasonsState.collapsed
         @crafting_controller = @getCraftingController @layout.positionRegion
         @setupCraftingController @crafting_controller 
-
-      # else if @crafting_controller && @state == Proposal.ReasonsState.collapsed
-      #   @crafting_controller.close()
-      #   @crafting_controller = null
 
       #if @state != Proposal.ReasonsState.collapsed || (@peer_pros_controller.options.collection.length + @peer_cons_controller.options.collection.length > 0)
       footer_view = @getResultsFooterView()
@@ -44,8 +40,6 @@
           App.request "sticky_footer:close"
 
 
-
-
     initialize : (options = {}) ->
       super options
 
@@ -58,8 +52,6 @@
       @setupLayout @layout
 
       @region.show @layout
-
-
 
 
     setupLayout : (layout) ->
@@ -113,12 +105,10 @@
 
         _.each [@peer_pros_controller, @peer_cons_controller], (controller) =>
           @listenTo controller, 'point:show_details', (point) =>
-            region = if point.isPro() then @layout.peerProsRegion else @layout.peerConsRegion
-            region.$el.css 'zIndex', 11
+            @layout.pointExpanded point, @state != Proposal.ReasonsState.separated
 
-            @listenToOnce controller, 'details:close', =>
-              region.$el.css 'zIndex', ''
-
+            @listenToOnce controller, 'details:close', (point) =>
+              @layout.pointClosed point, @state != Proposal.ReasonsState.separated
 
         @setupPointsController @peer_pros_controller
         @setupPointsController @peer_cons_controller

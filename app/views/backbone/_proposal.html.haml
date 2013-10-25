@@ -27,7 +27,7 @@
 
     .m-position-explanation-region
 
-    .m-position-footer-region
+  .m-position-footer-region
               
 
 %script{ :type => "text/template", :id => "tpl_position_reasons" }  
@@ -67,6 +67,9 @@
   (( if( active ) { ))
 
   %a.m-position-your-action-body.submit{:'data-target' => 'submit-position'}
+    // fa-floppy-o
+    %i.icon-large  
+      &#xf0c7;
     (( if(updating){ ))
     Update your position
     (( } else { ))
@@ -128,6 +131,9 @@
 
 %script{ :type => "text/template", :id => "tpl_aggregate_footer_expanded"}
   %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+    //fa-pencil-square-o
+    %i.icon-large 
+      &#xf044;  
     {{ call }}
 
 %script{ :type => "text/template", :id => "tpl_aggregate_footer_collapsed"}

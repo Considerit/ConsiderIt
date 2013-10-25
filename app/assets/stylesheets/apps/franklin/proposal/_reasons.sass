@@ -23,6 +23,9 @@
     position: relative
     vertical-align: top
 
+  .m-position-region
+    position: relative
+
   .m-points-list-region, .m-position-region
     display: inline-block
 
@@ -86,18 +89,6 @@
     .l-group-container
       
 
-  // &[data-state="together"], &[data-state="collapsed"]
-
-  //   > .l-message-speaker
-  //     position: relative
-  //     width: $body_width
-  //     margin: auto
-  //     display: block
-  //     //left: -$margin_width - $grid_xs / 4
-
-
-  ///
-
 // sticky footer for results (not presented in .m-reasons el)
 .m-reasons-footer-sticky
   text-align: center
@@ -105,3 +96,4 @@
   a
     width: 100%
     border-radius: 0
+    +font-size(2)

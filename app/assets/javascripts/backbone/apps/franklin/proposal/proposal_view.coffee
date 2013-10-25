@@ -38,7 +38,6 @@
 
       $participants = @$el.find('.l-message-speaker .l-group-container')
 
-      console.log $participants
       $histogram = @$el.find('.m-histogram')
 
       delay = if transition then 750 else 1

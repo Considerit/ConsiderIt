@@ -53,7 +53,7 @@
           interactive: true
           content: $tooltip
           offsetY: -5
-          delay: 400
+          delay: 700
         $target.tooltipster 'show'
 
     tooltipHide : (ev) ->

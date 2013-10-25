@@ -81,33 +81,27 @@
       super
       @bindUIElements()      
       @selectSort()
-      @ui.browse_header.css('display', 'block') if @browsing
+      @ui.browse_header.css('display', if @browsing then 'block' else 'none') 
 
     selectSort : ->
       @$el.find("[data-target]").removeClass 'selected'
       @$el.find("[data-target='#{@sort}']").addClass 'selected'
 
     toggleBrowse : (browse) ->
+      @browsing = browse
+
       if browse
         @toggleBrowseOn()
       else
         @toggleBrowseOff()
-      @browsing = browse
 
-    # TODO: THIS IS HACKY, SHOULD BE DONE IN POSITION CONTROLLER
+
     toggleBrowseOn : ->
-      parent_position = @$el.closest '.m-position'
-      @$el.addClass 'm-pointlist-browsing'
-      @previous_margin = parent_position.css 'margin-left'
-      parent_position.css
-        marginLeft: if @options.valence == 'pro' then '550px' else '-550px'
 
-      @previous_page_size = @collection.state.pageSize
-      @collection.setPageSize 1000
+      @$el.addClass 'm-pointlist-browsing'
 
       @ui.browse_footer.find('.m-pointlist-browse-toggle').text "Stop browsing"
-      @ui.browse_header.css
-        visibility: 'visible'
+      @ui.browse_header.slideDown()
 
       # when clicking outside of pointlist, close browsing
       $(document).on 'click.m-pointlist-browsing', (ev)  => 
@@ -118,26 +112,24 @@
       $(document).on 'keyup.m-pointlist-browsing', (ev) => 
         if ev.keyCode == 27 && $('.m-point-expanded, #l-dialog-detachable').length == 0
           @toggle_browse false 
+      @trigger 'points:browsing'
+
 
     toggleBrowseOff : ->
-      parent_position = @$el.closest '.m-position'
       @$el.removeClass 'm-pointlist-browsing'
-      parent_position.css
-        marginLeft : @previous_margin
-      @collection.setPageSize @previous_page_size
-      @collection.getPage 1
 
       tenant = App.request 'tenant:get'
       cnt = _.size @collection.fullCollection
       label = if @options.valence == 'pro' then tenant.getProLabel({capitalize:true, plural:true}) else tenant.getConLabel({capitalize:false, plural:true})        
 
       @ui.browse_footer.find('.m-pointlist-browse-toggle').text "View all #{cnt} #{label}"      
-      @ui.browse_header.css
-        visibility: 'hidden'
+      @ui.browse_header.slideUp()
 
       $(document).off '.m-pointlist-browsing'
       @$el.off '.m-pointlist-browsing'
       @$el.find('.m-pointlist-browse-toggle').ensureInView {fill_threshold: .5}
+
+      @trigger 'points:browsing:off'
 
     ###### end hack #####
 
@@ -162,14 +154,6 @@
     itemView : App.Franklin.Point.PeerPointView
 
     events : _.extend {}, Points.ExpandablePointList.prototype.events
-    
-    initialize : (options = {}) ->
-      super options
-
-  class Points.CollapsedPeerPointList extends Points.PointList
-    location : 'peer'
-    className : => "m-peer-reasons m-reasons-peer-#{@options.valence}s"
-    itemView : App.Franklin.Point.PeerPointView
     
     initialize : (options = {}) ->
       super options

@@ -21,9 +21,9 @@
 
       #if @state != Proposal.ReasonsState.collapsed || (@peer_pros_controller.options.collection.length + @peer_cons_controller.options.collection.length > 0)
       footer_view = @getResultsFooterView()
-      @header_view = @getHeaderView()
+      header_view = @getHeaderView()
 
-      @layout.reasonsHeaderRegion.show @header_view
+      @layout.reasonsHeaderRegion.show header_view
 
 
       if @state == Proposal.ReasonsState.together && !@options.model.getUserPosition().get('published')
@@ -127,7 +127,8 @@
 
     segmentPeerPoints : (segment) ->
       fld = if segment == 'all' then 'score' else "score_stance_group_#{segment}"
-      @header_view.updateHeader segment            
+      @layout.reasonsHeaderRegion.show @getHeaderView(segment)
+
       _.each [@peer_pros_controller.options.collection, @peer_cons_controller.options.collection], (collection, idx) =>
         if idx of @removed_points
           collection.fullCollection.add @removed_points[idx]
@@ -219,17 +220,20 @@
             model : @model
 
 
-    getHeaderView : ->
+    getHeaderView : (group = 'all') ->
       switch @state
         when Proposal.ReasonsState.together
           new Proposal.ResultsHeaderView
             model : @model
+            group : group
         when Proposal.ReasonsState.collapsed
           new Proposal.ResultsHeaderViewCollapsed
             model : @model
+            group : group
         when Proposal.ReasonsState.separated
           new Proposal.ResultsHeaderViewSeparated
             model : @model
+            group : group
 
     getLayout : ->
       new Proposal.ReasonsLayout

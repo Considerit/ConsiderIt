@@ -41,8 +41,6 @@
 
         @editable_fields = Proposal.ProposalDescriptionView.editable_fields
 
-      @events = {}
-
     onRender : ->
       super
 
@@ -76,6 +74,7 @@
       'click .showing' : 'hideDetails'      
 
     showDetails : (ev) ->
+      console.log 'showing'
       $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
       $toggle = $block.find('.hidden:first')

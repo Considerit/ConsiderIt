@@ -27,11 +27,44 @@
       region.$el.css 'zIndex', ''
       @sizeToFit inclusive
 
+    pointsBrowsing : (inclusive, valence) ->
+      # $expansion_size: 250px
+      expansion_size = 250
+      if valence == 'pro'
+        @peerConsRegion.$el.css 
+          right: parseInt(@peerConsRegion.$el.css('right')) - expansion_size
+
+        @positionRegion.$el.css 
+          left: expansion_size
+
+      else
+        @peerProsRegion.$el.css 
+          left: parseInt(@peerProsRegion.$el.css('left')) - expansion_size
+        @positionRegion.$el.css 
+          left: -expansion_size
+        @peerConsRegion.$el.css 
+          right: parseInt(@peerConsRegion.$el.css('right')) + expansion_size
+
+      _.delay =>
+        @sizeToFit inclusive
+      , 500
+
+    pointsBrowsingOff : (inclusive, valence) ->
+      @peerConsRegion.$el.css 
+        right: ''
+        @positionRegion.$el.css 
+          left: ''
+
+      if valence == 'con'
+        @peerProsRegion.$el.css 
+          left: ''
+
+      _.delay =>
+        @sizeToFit inclusive
+      , 500
+
     sizeToFit : (inclusive) ->
       @$el.css 'min-height', ''
-      console.log 'sizing', @$el.css 'min-height'
-
-      console.log @peerProsRegion.$el.height(), @peerConsRegion.$el.height()
       height = _.max [@peerProsRegion.$el.height(), @peerConsRegion.$el.height()]
       height += @$el.height() if inclusive
       @$el.css 'min-height', height

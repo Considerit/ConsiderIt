@@ -17,26 +17,48 @@
       //+font-size(-1)
 
 $expansion_size: 250px
-.m-pointlist-browsing
-  .m-point-peer
-    &.m-point-unexpanded
+.m-pointlist-browsing.m-peer-reasons
+
+  &[data-state="points-together"]
+    .m-point-peer.m-point-unexpanded
+      width: $peer-point-results-width + $expansion_size    
+      .m-point-wrap
+        width: $peer-point-results-width + $expansion_size
+
+  &[data-state="points-separated"]
+    .m-point-peer.m-point-unexpanded
       width: $peer-point-width + $expansion_size
       .m-point-wrap
         width: $peer-point-width + $expansion_size
 
-  .m-point-peer.pro
-    margin-left: -$expansion_size
+    .m-pointlist-browse-header
+      position: absolute
+      top: 0
 
-  .m-point-peer.con.m-point-expanded
-    right: 525 - $expansion_size
+  .m-point-peer
+    &.con.m-point-expanded
+      right: 525 - $expansion_size
 
 
 // header
 .m-peer-reasons[data-state="points-separated"]
-  padding-top: 70px
+  padding-top: 5.5 * $vertical_baseline
 
-.m-reasons-peer-pros .m-pointlist-browse-header
-  left: -$expansion_size
+.m-peer-reasons[data-state="points-together"] 
+  .m-pointlist-browse-header
+    position: absolute
+    width: 124px
+    top: -2em
+    .m-pointlist-browse-heading
+      display: none
+
+  &.m-reasons-peer-cons
+    .m-pointlist-browse-header
+      right: -$expansion_size - 124 - $grid_xs
+
+  &.m-reasons-peer-pros
+    .m-pointlist-browse-header
+      left: - 124 - $grid_xs
 
 .m-reasons-peer-cons .m-pointlist-browse-header
   text-align: right

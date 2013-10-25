@@ -17,10 +17,24 @@
     onRender : ->
       super
 
-    sizeToFit : ->
-      height = _.max [@peerProsRegion.$el.height(), @peerConsRegion.$el.height()]
-      @$el.css 'min-height', height
+    pointExpanded : (point, inclusive) ->
+      region = if point.isPro() then @peerProsRegion else @peerConsRegion
+      region.$el.css 'zIndex', 11
+      @sizeToFit inclusive
 
+    pointClosed : (point, inclusive) ->
+      region = if point.isPro() then @peerProsRegion else @peerConsRegion
+      region.$el.css 'zIndex', ''
+      @sizeToFit inclusive
+
+    sizeToFit : (inclusive) ->
+      @$el.css 'min-height', ''
+      console.log 'sizing', @$el.css 'min-height'
+
+      console.log @peerProsRegion.$el.height(), @peerConsRegion.$el.height()
+      height = _.max [@peerProsRegion.$el.height(), @peerConsRegion.$el.height()]
+      height += @$el.height() if inclusive
+      @$el.css 'min-height', height
 
     # ugly having this method here...
     includePoint : (model, $source, $dest, source) ->
@@ -109,7 +123,7 @@
     serializeData : ->
       user_position = @model.getUserPosition()
       _.extend {}, @model.attributes,
-        call : if user_position && user_position.get('published') then 'Update your position' else 'Add your thoughts'
+        call : if user_position && user_position.get('published') then 'Update your position' else 'What do you think? Click to contribute your own position.'
 
   class Proposal.ResultsFooterCollapsedView extends App.Views.ItemView
     template : '#tpl_aggregate_footer_collapsed'

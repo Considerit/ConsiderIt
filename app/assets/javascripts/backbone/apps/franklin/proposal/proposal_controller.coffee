@@ -15,8 +15,6 @@
     collapsed : 'collapsed'
     expanded : 'expanded'
       
-  #TODO: handle declarative Proposal states, and manage transitions
-
   class Proposal.ProposalController extends App.Controllers.Base
     exploded : false
     state : null
@@ -82,8 +80,11 @@
 
         @listenTo layout, 'explosion:complete', => @exploded = true
 
-        @showFinished()
+        if App.request "auth:can_edit_proposal", @model
+          @admin_controller = @getAdminController layout.adminRegion
+          @setupAdminController @admin_controller
 
+        @showFinished()
 
 
     setupDescriptionController : (controller) ->
@@ -91,6 +92,8 @@
     setupAggregateController : (controller) ->
 
     setupReasonsController : (controller) ->
+
+    setupAdminController : (controller) ->
 
 
     setupHistogramReasonsBridge : (reasons_controller, aggregate_controller) =>
@@ -128,6 +131,13 @@
         parent_state : @state
         parent_controller : @
 
+    getAdminController : (region) ->
+      new Proposal.AdminController
+        model : @model
+        region : region
+        parent_state : @state
+        parent_controller : @
+
     getParticipantsView : ->
       new Proposal.ParticipantsView
         model : @model
@@ -136,3 +146,5 @@
       new Proposal.ProposalLayout
         model : @model
         state : @state
+
+

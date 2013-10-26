@@ -197,7 +197,7 @@ class Dashboard::AdminController < Dashboard::DashboardController
 
       referer = views[0].referer
       begin
-        referer_domain = referer ? URI.parse( referer ).host.gsub('www.', '') : 'not set'
+        referer_domain = referer ? URI.parse( referer ).host.gsub('www.', '') : '(not set)'
       rescue
         referer_domain = 'unknown'
       end

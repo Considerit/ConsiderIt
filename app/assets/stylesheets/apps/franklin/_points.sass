@@ -57,8 +57,8 @@ $expansion_size: 250px
 
   &[data-state="points-separated"]
     .m-pointlist-header-label
-      color: lighten($base_text_color, 20%)
-      border-bottom-color: lighten($base_text_color, 20%)
+      color: darken($base_bg_color, 15%)
+      border-bottom-color: darken($base_bg_color, 15%)
       +font-size(4)    
 
   &[data-state="points-collapsed"]
@@ -74,40 +74,32 @@ $expansion_size: 250px
 
 // expandable header
 .m-peer-reasons[data-state="points-separated"]
-  padding-top: 5 * $vertical_baseline
+  padding-top: 3.5 * $vertical_baseline
 
 .m-peer-reasons[data-state="points-together"] 
   .m-pointlist-browse-header
     position: absolute
-    width: 124px
-    top: -2em
-    .m-pointlist-browse-heading
-      display: none
 
   &.m-reasons-peer-cons
     .m-pointlist-browse-header
-      right: -$expansion_size - 124 - $grid_xs
+      right: -$expansion_size - $grid_xs
 
   &.m-reasons-peer-pros
     .m-pointlist-browse-header
-      left: - 124 - $grid_xs
+      right: -240px
 
 .m-reasons-peer-cons .m-pointlist-browse-header
   text-align: right
 
 .m-pointlist-browse-header
   display: none
-  width: $peer-point-width + $expansion_size
+  width: 240px
   position: relative
   margin-bottom: $vertical_baseline
 
   .m-pointlist-browse-toggle
     +font-size(-2)
     margin-bottom: $vertical_baseline / 2
-
-.m-pointlist-browse-heading
-  +font-size(2)
-  margin-bottom: $vertical_baseline / 4
 
 .m-pointlist-browse-sort
   ul
@@ -121,10 +113,10 @@ $expansion_size: 250px
     list-style: none
 
     a
-      padding: $vertical_baseline / 2 $grid_xs / 2
+      padding: $vertical_baseline / 4 $grid_xs / 4
       text-transform: uppercase
       +font-size(-4)
-      @extend %bolded
+      //@extend %bolded
       
       &:hover
         background-color: darken($callout_bg_color, 10%)

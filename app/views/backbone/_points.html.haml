@@ -10,7 +10,7 @@
 %script{ :type => "text/template", :id => "tpl_points_expandable"}
   .m-pointlist-browse-header  
     .m-pointlist-browse-header-close
-      %a.m-pointlist-browse-toggle
+      %a.m-pointlist-browse-toggle{'data-target' => 'browse-toggle'}
         {{ pros ? '&laquo;' : '' }} stop browsing points {{ pros ? '' : '&raquo;' }}
     
     .m-pointlist-browse-sort
@@ -24,7 +24,7 @@
         (( }); ))
 
   .m-pointlist-header
-    %span.m-pointlist-header-label
+    %span.m-pointlist-header-label{'data-target' => 'browse-toggle'}
       {{ header }}
 
 
@@ -32,7 +32,7 @@
 
   (( if(has_points){ ))
   .m-pointlist-browse
-    %a.m-pointlist-browse-toggle
+    %a.m-pointlist-browse-toggle{'data-target' => 'browse-toggle'}
       (( if( browsing_all ) { ))
       Stop browsing
       (( } else { ))

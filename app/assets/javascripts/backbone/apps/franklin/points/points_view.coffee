@@ -157,7 +157,7 @@
 
     events : _.extend {}, Points.PointList.prototype.events,
       'click .m-pointlist-sort-option a' : 'sortList'
-      'click .m-pointlist-browse-toggle' : 'handleToggleBrowse'
+      'click [data-target="browse-toggle"]' : 'handleToggleBrowse'
 
     sortList : (ev) ->
       sort_by = $(ev.target).data('target')

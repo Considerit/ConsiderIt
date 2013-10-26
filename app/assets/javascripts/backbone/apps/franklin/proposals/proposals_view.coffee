@@ -131,20 +131,11 @@
       data_loaded : App.request "proposals:are_fetched"
 
     buildItemView : (proposal) ->
-      #TODO: handle modifiable!
-
-      view_cls = App.Franklin.Proposal.ProposalLayout      
-      # if App.request "auth:can_edit_proposal", proposal
-      #   view_cls = App.Franklin.Proposal.ModifiableProposalSummaryView
-      # else
-      #   view_cls = App.Franklin.Proposal.ProposalSummaryView
+      view_cls = App.Franklin.Proposal.ProposalLayout
 
       view = new view_cls
         model: proposal
         class : 'm-proposal'
-        # attributes : 
-        #   'data-id': "#{proposal.id}"
-        #   'data-role': 'm-proposal'
 
       view
 

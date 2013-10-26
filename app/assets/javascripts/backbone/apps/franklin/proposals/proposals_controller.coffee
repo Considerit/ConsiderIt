@@ -75,6 +75,7 @@
       view
 
     handleBeforeViewAdded : (view) ->
+      console.log 'before view added', view.model
       new App.Franklin.Proposal.ProposalController
         view : view
         region : new Backbone.Marionette.Region { el : view.el }
@@ -174,7 +175,8 @@
       proposal = App.request "proposal:create", attrs, 
         wait: true
         success: => 
-          @proposals_view.collection.fullCollection.add proposal
+          @proposals_view.collection.add proposal
+          App.navigate Routes.new_position_proposal_path(proposal.long_id), {trigger: true}
 
 
     getCreateView : ->

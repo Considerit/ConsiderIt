@@ -100,13 +100,16 @@
     .m-user-accounts-form
       .m-user-accounts-form-fields-wrap
 
+        
         (( if(fixed) { ))
         = f.hidden_field :email, :value => "{{email}}"
         .email_field.inlined.fixed
         (( } else { ))
         .email_field.inlined
+
           = f.label :email, 'Email'
-          = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
+
+          = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email form-control"
         (( } ))
         .password_field.inlined
           = f.label :email, 'Password'              

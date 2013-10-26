@@ -1,5 +1,8 @@
 ////////////// proposal ////////////
 %script{ :type => "text/template", :id => "tpl_proposal_layout" }  
+
+  .m-proposal-admin-region
+
   .m-proposal-description-region
 
   .m-participants
@@ -10,16 +13,13 @@
   .m-proposal-reasons-region
 
 
-
-
-
 ////////////// position ////////////
 
 %script{ :type => "text/template", :id => "tpl_position_crafting_layout" }  
 
   .m-position-message-body.l-message-body
-    %h2.m-position-heading-points
-      {{ considerations_prompt }}
+    / %h2.m-position-heading-points
+    /   {{ considerations_prompt }}
 
     .m-position-reasons-region
 
@@ -178,52 +178,6 @@
     .m-histogram-base-label.m-histogram-base-label-oppose
       {{ opposer_label }}
 
-%script{ :type => "text/template", :id => "tpl_reasons_results_header"}
-  
-  // .m-results-pro-con-list-who
-  //   { call }
-
-  .m-reasons-results-header
-    %span.m-reasons-results-header-label
-      Pros
-
-    %span.m-reasons-results-header-link
-      and
-
-    %span.m-reasons-results-header-label
-      Cons
-
-
-
-%script{ :type => "text/template", :id => "tpl_reasons_results_header_collapsed"}
-  / = render :partial => "shared/bubble", :locals => {:left => true}
-
-  / %h3.m-results-pro-con-list-who
-  /   (( if(active) { ))
-  /   We've been considering the pros and cons and find these the most compelling
-  /   (( } else { ))
-  /   These are the most compelling pros and cons we considered
-  /   (( } ))
-
-
-%script{ :type => "text/template", :id => "tpl_reasons_results_header_separated"}
-  .placeholder
-
-/ %script{ :type => "text/template", :id => "tpl_results" }      
-/   .l-message.m-aggregated-results
-
-/     .l-message-speaker
-
-/       .l-group-container
-/         (( _.each( participants, function(p){ ))
-/         %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :alt => "{{ConsiderIt.users[p].get('name')}}'s profile picture", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-/         (( }); ))
-
-/     .l-message-body.m-results-responders
-/       = render :partial => "shared/bubble", :locals => {:left => true}
-
-    
-
 
 %script{ :type => "text/template", :id => "tpl_proposal_social_media" }
   .m-proposal-socialmedia-action-call
@@ -237,74 +191,6 @@
     Share
 
 
-///////////// summary ////////////////
-
-/ %script{ :type => "text/template", :id => "tpl_proposal_summary_results"}
-/   .l-message.m-results-summary{:'data-role' => 'results-section'}
-
-/     .l-message-speaker
-/       .l-group-container
-/         (( _.each(participants, function(p){ ))
-/         %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
-/         (( }); ))
-
-
-
-
-/     .l-message-body.m-results-responders.summary 
-/       = render :partial => "shared/bubble", :locals => {:left => true}
-
-
-
-/       .m-results-summary-pro-con-list
-/         %h3.m-results-pro-con-list-header
-/           (( if(active) { ))
-/           The most compelling points raised thus far:
-/           (( } else { ))
-/           These were the most compelling points we considered:
-/           (( } ))
-/         .m-points-list-region         
-/           .m-top-point.m-top-pro
-/             (( if(!top_pro) { ))
-/             We haven't thought of any {{ pro_label }} arguments yet.
-/             (( } else { ))
-
-/             %span.m-top-point-header
-/               Our Top {{ pro_label }} is 
-/             %span.m-top-point-content
-/               &ldquo;{{ top_pro.nutshell }}&rdquo;
-/             (( if(!top_pro.hide_name){ )) 
-/             %span.m-top-point-user
-/               &ndash; {{ top_pro_user.name }}       
-/             (( } ))
-
-/             (( } ))
-
-/         .m-points-list-region
-/           .m-top-point.m-top-con
-/             (( if(!top_con) { ))
-/             We haven't thought of any {{ con_label }} arguments yet.
-/             (( } else { ))
-
-/             %span.m-top-point-header
-/               Our Top {{ con_label }} is
-/             %span.m-top-point-content
-/               &ldquo;{{ top_con.nutshell }}&rdquo;  
-/             (( if(!top_con.hide_name){ )) 
-/             %span.m-top-point-user
-/               &ndash; {{ top_con_user.name }}       
-/             (( } ))
-
-/             (( } ))
-
-/       (( if(active && published){ ))
-
-/       .m-position-your-action-body-wrap    
-/         %a.m-reasons-view-results{:href => "{{Routes.proposal_path( long_id )}}"}
-/           View results      
-          
-
-/       (( } ))
 
     
 

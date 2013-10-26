@@ -1,5 +1,9 @@
 
 %script{ :type => "text/template", :id => "tpl_points"}
+  .m-pointlist-header
+    %span.m-pointlist-header-label
+      {{ header }}
+
   %ul.m-point-list
 
 
@@ -22,6 +26,10 @@
             {{ sort.name }}
         (( }); ))
 
+  .m-pointlist-header
+    %span.m-pointlist-header-label
+      {{ header }}
+
 
   %ul.m-point-list
 
@@ -36,6 +44,10 @@
   (( } ))
 
 %script{ :type => "text/template", :id => "tpl_points_user_reasons"}
+  .m-pointlist-header
+    %span.m-pointlist-header-label
+      {{ header }}
+      
   %ul.m-point-list
 
 

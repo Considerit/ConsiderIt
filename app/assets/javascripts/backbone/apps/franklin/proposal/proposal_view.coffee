@@ -18,6 +18,7 @@
       aggregateRegion : '.m-proposal-aggregate-region'
       reasonsRegion : '.m-proposal-reasons-region'
       participantsRegion : '.l-message-speaker'
+      adminRegion : '.m-proposal-admin-region'
 
     initialize : (options = {}) ->
       super options
@@ -119,4 +120,9 @@
     template : '#tpl_proposal_social_media'
     className : 'm-proposal-socialmedia'
 
-  class Proposal
+
+
+
+
+
+

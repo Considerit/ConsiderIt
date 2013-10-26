@@ -163,6 +163,7 @@
       sort_by = $(ev.target).data('target')
       @requestSort sort_by
       @selectSort()
+      ev.stopPropagation()
 
     handleToggleBrowse : (ev) ->
       @toggleBrowse !@browsing

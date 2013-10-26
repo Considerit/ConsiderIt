@@ -1,5 +1,9 @@
 [data-activity="proposal-no-activity"]
-  .m-reasons, > .l-message-speaker
+  .m-reasons[data-state="collapsed"]
+    display: none
+
+[data-visibility="unpublished"]
+  .m-reasons
     display: none
 
 [data-activity="proposal-has-activity"]
@@ -13,7 +17,7 @@
   // REASONS
   // this is the wrapper for the peer and position point lists
   .m-reasons-lists
-    margin: $vertical_baseline / 2 auto 0 auto
+    margin: $vertical_baseline auto 0 auto
     position: relative
     width: $body_width
 
@@ -60,43 +64,32 @@
 
   // The header of the reasons, describing whose reasons they are
   &[data-state="separated"], &[data-state="collapsed"]
-    .m-reasons-header-region
-      display: none
+    // .m-reasons-header-region
+    //   display: none
 
 
   &[data-state="together"]
-    .m-reasons-header-region
-      display: static
-      border-radius: 0  
-      padding: 0 $grid_xs
-      //+bubble($community_color, $dark_community_color, left, $text_color: $community_text_color)
+    // .m-reasons-header-region
+    //   display: static
+    //   border-radius: 0  
+    //   padding: 0 $grid_xs
+    //   //+bubble($community_color, $dark_community_color, left, $text_color: $community_text_color)
 
-      .t-bubble
-        display: none
+    //   .t-bubble
+    //     display: none
 
-    .m-reasons-header
-      text-align: center
-      margin-top: $vertical_baseline * 1.5
+    // .m-reasons-header
+    //   text-align: center
+    //   margin-top: $vertical_baseline * 1.5
 
-      .m-results-pro-con-list-who
-        display: none
-        +font-size(0)    
-        //position: absolute
-        //left: 740px
-        //top: 15px
+    //   .m-results-pro-con-list-who
+    //     display: none
+    //     +font-size(0)    
+    //     //position: absolute
+    //     //left: 740px
+    //     //top: 15px
 
-      .m-reasons-results-header
 
-      .m-reasons-results-header-link
-        +font-size(4)    
-        display: none
-
-      .m-reasons-results-header-label
-        +font-size(8)    
-        font-weight: bold
-        display: inline-block
-        margin: 0 $peer-point-results-width / 2 - 50
-        border-bottom: 3px solid $base_text_color
   ////
 
 

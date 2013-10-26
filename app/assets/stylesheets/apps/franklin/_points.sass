@@ -41,8 +41,40 @@ $expansion_size: 250px
 
 
 // header
+.m-pointlist-header
+  text-align: center
+  margin-bottom: $vertical_baseline / 2
+  .m-pointlist-header-label
+    +transition(font-size .4s ease, color .4s ease) // for point browsing
+    +font-size(8)    
+    font-weight: bold
+    display: inline-block
+    border-bottom: 3px solid 
+
+.m-peer-reasons
+  .m-pointlist-header-label
+    border-bottom-color: $base_text_color
+
+  &[data-state="points-separated"]
+    .m-pointlist-header-label
+      color: lighten($base_text_color, 20%)
+      border-bottom-color: lighten($base_text_color, 20%)
+      +font-size(4)    
+
+  &[data-state="points-collapsed"]
+    .m-pointlist-header-label
+      display: none
+
+.m-position-points
+  .m-pointlist-header-label
+    border-bottom-color: $decision_board_text_color
+    margin-bottom: $vertical_baseline/2
+
+
+
+// expandable header
 .m-peer-reasons[data-state="points-separated"]
-  padding-top: 5.5 * $vertical_baseline
+  padding-top: 5 * $vertical_baseline
 
 .m-peer-reasons[data-state="points-together"] 
   .m-pointlist-browse-header

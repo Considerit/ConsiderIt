@@ -100,7 +100,7 @@
 
         @$el.show()
 
-    closeBarClick : (ev) -> @deselectBar() if $(ev.target).closest('.m-reasons-header-region').length == 0
+    closeBarClick : (ev) -> @deselectBar() 
 
     closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('#l-dialog-detachable').children().length == 0 && $('.m-point-expanded').length == 0
     

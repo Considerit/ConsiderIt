@@ -12,6 +12,9 @@
       min-height: 85px
       //margin-bottom: 100px // spacing for participants block
 
+  .m-reasons
+    &[data-state="together"], &[data-state="separated"]
+      min-height: 500px
 .m-reasons
 
   // REASONS
@@ -61,36 +64,6 @@
       right: -232px
 
   ////////
-
-  // The header of the reasons, describing whose reasons they are
-  &[data-state="separated"], &[data-state="collapsed"]
-    // .m-reasons-header-region
-    //   display: none
-
-
-  &[data-state="together"]
-    // .m-reasons-header-region
-    //   display: static
-    //   border-radius: 0  
-    //   padding: 0 $grid_xs
-    //   //+bubble($community_color, $dark_community_color, left, $text_color: $community_text_color)
-
-    //   .t-bubble
-    //     display: none
-
-    // .m-reasons-header
-    //   text-align: center
-    //   margin-top: $vertical_baseline * 1.5
-
-    //   .m-results-pro-con-list-who
-    //     display: none
-    //     +font-size(0)    
-    //     //position: absolute
-    //     //left: 740px
-    //     //top: 15px
-
-
-  ////
 
 
   /// The participants block

@@ -50,8 +50,9 @@
       view
 
     requestSort : (sort_by) ->
-      @trigger 'sort', sort_by
       @sort = sort_by
+
+      @trigger 'sort', sort_by
 
     events : {}
 
@@ -91,8 +92,17 @@
 
     getHeaderText : ->
       valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
+      modifier = switch @sort
+        when 'score'
+          'Top'
+        when 'persuasiveness'
+          'Persuasive'
+        when 'created_at'
+          'New'
 
-      "Top #{valence}"
+
+
+      "#{modifier} #{valence}"
 
 
     selectSort : ->
@@ -139,7 +149,7 @@
 
       $(document).off '.m-pointlist-browsing'
       @$el.off '.m-pointlist-browsing'
-      @$el.find('.m-pointlist-browse-toggle').ensureInView {fill_threshold: .5}
+      @$el.find('.m-pointlist-header').ensureInView {fill_threshold: .5}
 
       @trigger 'points:browsing:off'
 

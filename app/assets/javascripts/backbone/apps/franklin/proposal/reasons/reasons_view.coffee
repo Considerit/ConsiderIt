@@ -65,9 +65,11 @@
 
     sizeToFit : (inclusive) ->
       @$el.css 'min-height', ''
-      height = _.max [@peerProsRegion.$el.height(), @peerConsRegion.$el.height()]
-      height += @$el.height() if inclusive
-      @$el.css 'min-height', height
+      regions = _.compact [@peerProsRegion, @peerConsRegion]
+      if regions.length > 0
+        height = _.max (r.$el.height() for r in regions)
+        height += @$el.height() if inclusive
+        @$el.css 'min-height', height
 
     # ugly having this method here...
     includePoint : (model, $source, $dest, source) ->
@@ -112,41 +114,6 @@
       else
         source.remove model
 
-
-
-
-  class Proposal.ResultsHeaderView extends App.Views.ItemView
-    template: '#tpl_reasons_results_header'
-    className : 'm-reasons-header'
-
-    serializeData : ->
-      # if @options.group == 'all'
-      #   #call = 'Across all participants, the most compelling' 
-      #   #call = 'for all participants'
-      #   call = ' ' 
-
-      # else 
-      #   group_name = App.Entities.Position.stance_name @options.group
-      #   #call = "For #{group_name}, the most compelling"
-      #   call = "for #{group_name}"
-
-      # _.extend {}, @model.attributes, 
-      #   call : call
-
-
-  class Proposal.ResultsHeaderViewCollapsed extends App.Views.ItemView
-    template: '#tpl_reasons_results_header_collapsed'
-    className : 'm-reasons-header'
-
-    serializeData : ->
-      @model.attributes
-
-  class Proposal.ResultsHeaderViewSeparated extends App.Views.ItemView
-    template: '#tpl_reasons_results_header_separated'
-    className : 'm-reasons-header'
-
-    serializeData : ->
-      @model.attributes
 
   class Proposal.ResultsFooterView extends App.Views.ItemView
     template : '#tpl_aggregate_footer_expanded'

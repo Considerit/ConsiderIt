@@ -98,7 +98,13 @@ class ProposalsController < ApplicationController
     current_tenant.follow!(current_user, :follow => true, :explicit => false)
     proposal.follow!(current_user, :follow => true, :explicit => false)
 
-    render :json => proposal
+    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
+
+    data = proposal.full_data current_tenant, current_user, session[proposal.id]
+
+    position = ProposalsController.get_position_for_user(proposal, current_user, session)
+    data[:position] = position
+    render :json => data
     
   end
 

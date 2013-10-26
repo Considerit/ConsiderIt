@@ -28,11 +28,12 @@
 
 
     _transitionProposal: (proposal, new_state, crumbs) ->
-      from_root = @franklin_controller instanceof Franklin.Root.RootController
+      from_root = @franklin_controller instanceof Franklin.Root.RootController && proposal.get('published')
 
-      try
-        proposal_controller = App.request "proposal_controller:#{proposal.id}"
-      catch
+      if proposal.get('published')
+        try
+          proposal_controller = App.request "proposal_controller:#{proposal.id}"
+        catch
 
       if from_root
         $pel = $(proposal_controller.region.el)

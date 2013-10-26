@@ -17,7 +17,7 @@
     setDataState : (state) ->
       @$el.attr 'data-state', state
       @$el.data 'state', state
-      @state = state            
+      @state = state 
 
     onShow : ->
       if @sort
@@ -29,7 +29,13 @@
       # @listenTo @collection, 'add', =>
       #   @requestSort @sort
 
-    serializeData : -> {}
+    serializeData : ->
+      header : @getHeaderText()
+
+    getHeaderText : ->
+      valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
+      valence
+
 
     buildItemView : (point) ->
       valence = if point.attributes.is_pro then 'pro' else 'con'
@@ -82,6 +88,12 @@
       @bindUIElements()      
       @selectSort()
       @ui.browse_header.css('display', if @browsing then 'block' else 'none') 
+
+    getHeaderText : ->
+      valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
+
+      "Top #{valence}"
+
 
     selectSort : ->
       @$el.find("[data-target]").removeClass 'selected'
@@ -166,11 +178,18 @@
     itemView : App.Franklin.Point.PositionPointView
 
     serializeData : ->
+      data = super
+
       tenant = App.request 'tenant:get'
-      _.extend {}, 
-        label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true}) else tenant.getConLabel({capitalize:false})
+      _.extend data, 
+        label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true}) else tenant.getConLabel({capitalize:true})
         hide_label : "hide_name-#{@options.valence}"
         is_pro : @options.valence == 'pro'
+
+    getHeaderText : ->
+      valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
+
+      "Your #{valence}"
 
     onShow : ->  
       super   

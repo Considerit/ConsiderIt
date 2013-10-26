@@ -131,13 +131,14 @@ $m-point-expanded-width: $body_width + 150
   .m-point-operations
     display: none
 
-[data-state="points-together"] .m-point-peer
-  .m-point-operations
-    visibility: hidden
-
-  &:hover
+[data-state="points-together"], [data-state="points-separated"]
+  .m-point-peer
     .m-point-operations
-      visibility: visible
+      visibility: hidden
+
+    &:hover
+      .m-point-operations
+        visibility: visible
 
 .m-point-unexpanded
   &.m-point-peer
@@ -214,6 +215,9 @@ $m-point-expanded-width: $body_width + 150
       position: relative
       z-index: 2
       border-radius: 0
+  &.con
+    .m-point-include
+      +scaleX(-1)
 
   &.m-point-unexpanded
 
@@ -224,34 +228,46 @@ $m-point-expanded-width: $body_width + 150
     &.pro
       .m-point-include-wrap
         right: 0
-
-        .m-point-include
-          border-bottom-right-radius: 8px
-
     &.con
       .m-point-include-wrap
         left: 0
+
+    .m-point-include-wrap
+
+      .m-point-include
+        border-bottom-right-radius: 8px
+
+    // &.con
+    //   .m-point-include-wrap
+    //     left: 0
         
-        .m-point-include
-          border-bottom-left-radius: 8px
+    //     .m-point-include
+    //       border-bottom-left-radius: 8px
 
   &.m-point-expanded
 
-    &.con
-      .m-point-include-wrap
-        float: left
-        left: -$grid_xs - 1
-        .m-point-include
-          border-bottom-left-radius: 0px
-          border-left-color: transparent    
+    // &.con
+    //   .m-point-include-wrap
+    //     float: left
+    //     left: -$grid_xs - 1
+    //     .m-point-include
+    //       border-bottom-left-radius: 0px
+    //       border-left-color: transparent    
 
     &.pro
       .m-point-include-wrap
         float: right
-        right: -$grid_xs - 1
-        .m-point-include
-          border-bottom-right-radius: 0px
-          border-right-color: transparent    
+
+    &.con
+      .m-point-include-wrap
+        float: left
+
+    .m-point-include-wrap
+      float: right
+      right: -$grid_xs - 1
+      .m-point-include
+        border-bottom-right-radius: 0px
+        border-right-color: transparent    
 
 
 /////////////////

@@ -7,7 +7,7 @@
       slider_right : 'oppose'
       slider_left : 'support'
       considerations_prompt : 'Your list of the most important factors to you'
-      slider_prompt : 'What is your overall opinion given these Pros and Cons?'
+      slider_prompt : 'What is your opinion given these Pros and Cons?'
       statement_prompt : 'support'
       pro_label : 'pro'
       con_label : 'con'

@@ -6,7 +6,6 @@
 
     regions : 
       positionRegion : '.m-position-region'
-      reasonsHeaderRegion : '.m-reasons-header-region'
       footerRegion : '.m-reasons-footer-region'      
       peerProsRegion : '.m-aggregated-propoints-region'
       peerConsRegion : '.m-aggregated-conpoints-region'
@@ -64,12 +63,15 @@
       , 500
 
     sizeToFit : (inclusive) ->
-      @$el.css 'min-height', ''
+
       regions = _.compact [@peerProsRegion, @peerConsRegion]
       if regions.length > 0
         height = _.max (r.$el.height() for r in regions)
-        height += @$el.height() if inclusive
-        @$el.css 'min-height', height
+        height += @$el.children('.m-reasons-lists').height() if inclusive
+      
+      else
+        height = 0
+      @$el.css 'min-height', height
 
     # ugly having this method here...
     includePoint : (model, $source, $dest, source) ->

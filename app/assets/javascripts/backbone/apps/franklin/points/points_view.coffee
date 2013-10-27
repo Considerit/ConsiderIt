@@ -120,8 +120,6 @@
 
     toggleBrowseOn : ->
 
-      @$el.addClass 'm-pointlist-browsing'
-
       @ui.browse_footer.find('.m-pointlist-browse-toggle').text "Stop browsing"
       @ui.browse_header.slideDown()
 
@@ -138,8 +136,6 @@
 
 
     toggleBrowseOff : ->
-      @$el.removeClass 'm-pointlist-browsing'
-
       tenant = App.request 'tenant:get'
       cnt = _.size @collection.fullCollection
       label = if @options.valence == 'pro' then tenant.getProLabel({capitalize:true, plural:true}) else tenant.getConLabel({capitalize:false, plural:true})        

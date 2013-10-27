@@ -27,7 +27,7 @@
       @sizeToFit inclusive
 
     pointsBrowsing : (inclusive, valence) ->
-      # $expansion_size: 250px
+      # $expanded_points_increment: 250px
       expansion_size = 250
       if valence == 'pro'
         @peerConsRegion.$el.css 
@@ -36,13 +36,17 @@
         @positionRegion.$el.css 
           left: expansion_size
 
+        @peerProsRegion.$el.addClass 'm-pointlist-browsing'
+
       else
         @peerProsRegion.$el.css 
           left: parseInt(@peerProsRegion.$el.css('left')) - expansion_size
         @positionRegion.$el.css 
           left: -expansion_size
-        @peerConsRegion.$el.css 
-          right: parseInt(@peerConsRegion.$el.css('right')) + expansion_size
+        # @peerConsRegion.$el.css 
+        #   right: parseInt(@peerConsRegion.$el.css('right')) + expansion_size
+        @peerConsRegion.$el.addClass 'm-pointlist-browsing'
+
 
       _.delay =>
         @sizeToFit inclusive
@@ -57,6 +61,11 @@
       if valence == 'con'
         @peerProsRegion.$el.css 
           left: ''
+
+        @peerConsRegion.$el.removeClass 'm-pointlist-browsing'
+      else
+        @peerProsRegion.$el.removeClass 'm-pointlist-browsing'
+
 
       _.delay =>
         @sizeToFit inclusive

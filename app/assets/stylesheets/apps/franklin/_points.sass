@@ -16,28 +16,33 @@
     &:hover
       //+font-size(-1)
 
-$expansion_size: 250px
-.m-pointlist-browsing.m-peer-reasons
+.m-pointlist-browsing
+  .m-peer-reasons
 
-  &[data-state="points-together"]
-    .m-point-peer.m-point-unexpanded
-      width: $peer-point-results-width + $expansion_size    
-      .m-point-wrap
-        width: $peer-point-results-width + $expansion_size
+    &[data-state="points-together"]
+      .m-point-peer.m-point-unexpanded
+        width: $peer-point-results-width + $expanded_points_increment    
+        .m-point-wrap
+          width: $peer-point-results-width + $expanded_points_increment
 
-  &[data-state="points-separated"]
-    .m-point-peer.m-point-unexpanded
-      width: $peer-point-width + $expansion_size
-      .m-point-wrap
-        width: $peer-point-width + $expansion_size
+    &[data-state="points-separated"]
+      .m-point-peer.m-point-unexpanded
+        width: $peer-point-width + $expanded_points_increment
+        .m-point-wrap
+          width: $peer-point-width + $expanded_points_increment
 
-    .m-pointlist-browse-header
-      position: absolute
-      top: 0
+    // .m-pointlist-browse-header
+    //   position: absolute
+    //   top: 0
 
   .m-point-peer
-    &.con.m-point-expanded
-      right: 525 - $expansion_size
+    // &.con.m-point-expanded
+    //   right: 525 - $expanded_points_increment
+
+[data-state="points-separated"]
+  .m-pointlist-browse-header
+    position: absolute
+    top: 0
 
 
 // header
@@ -83,7 +88,7 @@ $expansion_size: 250px
 
   &.m-reasons-peer-cons
     .m-pointlist-browse-header
-      right: -$expansion_size - $grid_xs
+      right: -$expanded_points_increment - $grid_xs
 
   &.m-reasons-peer-pros
     .m-pointlist-browse-header

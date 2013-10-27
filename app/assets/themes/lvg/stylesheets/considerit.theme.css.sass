@@ -20,8 +20,11 @@
   min-height: 32px
   
 #t-bg-content
+
+#l-content-main-wrap
   +single-box-shadow
   border-radius: 2px
+  background: asset-data-url('paper.jpg') repeat white 5 * $vertical_baseline 0em
 
 #t-bg-content
   //margin-top: 2 * $vertical_baseline
@@ -235,12 +238,13 @@ $juri_width: $initiator_width
 
 .t-jurisdiction
   text-align: center
-  width: $juri_width + 50
+  //width: $juri_width + 50
   //height: $initiator_width
   position: absolute
   top: 0
-  left: -$initiator_width - 50
-  +font-size(-3)
+  //left: -$initiator_width - 50
+  right: 0
+  +font-size(-2)
   line-height: 1.2
   text-align: right
 

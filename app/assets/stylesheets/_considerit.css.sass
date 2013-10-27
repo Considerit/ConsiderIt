@@ -43,7 +43,7 @@ html, body
 
 #t-bg-content
 
-#t-bg-content-top
+#t-bg-content-top, #l-content-main-wrap
   min-height: 500px
 
 
@@ -318,6 +318,8 @@ html
 
 #l-content
   z-index: 2
+  width: $content_width + 2 * 100
+  margin: auto
 
 #l-content-main, .l-content-wrap
   position: relative  
@@ -327,7 +329,10 @@ html
   width: $content_width
 
 #l-content-main
+
+#l-content-main-wrap
   width: $content_width
+  margin: auto
 
 #l-footer
   padding: $vertical_baseline 0 2 * $vertical_baseline 0

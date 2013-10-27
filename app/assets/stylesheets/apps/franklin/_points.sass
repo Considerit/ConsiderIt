@@ -1,7 +1,5 @@
 /* POINTLISTBROWSING */
 
-
-
 // footer
 [data-state="points-collapsed"]
   .m-pointlist-browse
@@ -39,10 +37,7 @@
     // &.con.m-point-expanded
     //   right: 525 - $expanded_points_increment
 
-[data-state="points-separated"]
-  .m-pointlist-browse-header
-    position: absolute
-    top: 0
+
 
 
 // header
@@ -81,6 +76,18 @@
 // expandable header
 .m-peer-reasons[data-state="points-separated"]
   padding-top: 3.5 * $vertical_baseline
+  .m-pointlist-browse-header
+    position: absolute
+    top: 0
+
+  &.m-reasons-peer-cons
+    .m-pointlist-browse-header
+      right: 0px
+
+  &.m-reasons-peer-pros
+    .m-pointlist-browse-header
+      left: 0px
+
 
 .m-peer-reasons[data-state="points-together"] 
   .m-pointlist-browse-header
@@ -88,11 +95,11 @@
 
   &.m-reasons-peer-cons
     .m-pointlist-browse-header
-      right: -$expanded_points_increment - $grid_xs
+      right: -100px
 
   &.m-reasons-peer-pros
     .m-pointlist-browse-header
-      right: -240px
+      left: -100px
 
 .m-reasons-peer-cons .m-pointlist-browse-header
   text-align: right

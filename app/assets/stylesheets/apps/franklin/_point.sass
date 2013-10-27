@@ -392,15 +392,14 @@ $m-point-expanded-width: $body_width + 150
 .m-point-expanded
   @extend %m-white-thought-bubble
   @extend %m-white-thought-bubble-inner
-
+  @extend %m-thought-bubble-side-down
 
 [data-state="points-collapsed"], [data-state="points-separated"]
-  .m-point-peer
+  .m-point-peer.m-point-unexpanded
     @extend %m-white-thought-bubble
 
-    &.m-point-unexpanded
-      .m-point-wrap
-        @extend %m-white-thought-bubble-inner
+    .m-point-wrap
+      @extend %m-white-thought-bubble-inner
 
 [data-state="points-collapsed"] .m-point-peer
   @extend %m-thought-bubble-bottom-in

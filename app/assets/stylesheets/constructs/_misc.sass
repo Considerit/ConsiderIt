@@ -26,10 +26,8 @@
 
 // Browsers render the inset colors so differently...
 =inset-border($base_text_color)
-  border-top-color: darken($base_text_color, 10%)
-  border-left-color: darken($base_text_color, 10%)
-  border-bottom-color: lighten($base_text_color, 10%)
-  border-right-color: lighten($base_text_color, 10%)
+  border-color: darken($base_text_color, 10%) lighten($base_text_color, 5%) lighten($base_text_color, 10%) lighten($base_text_color, 5%)
+
 
 
 =outset-text($transparency:.1)

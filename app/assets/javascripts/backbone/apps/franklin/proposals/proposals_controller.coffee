@@ -170,7 +170,7 @@
     handleNewProposal : ->
       attrs = 
         name : 'Should we ... ?'
-        description : "We're thinking about ..."
+        description : "Here are some details about what we're thinking about ..."
 
       proposal = App.request "proposal:create", attrs, 
         wait: true

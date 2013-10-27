@@ -30,7 +30,9 @@
         %span.m-proposal-description-title-readmore
           more info
         (( if(active && !show_details) { ))
-        %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :title => "Decide on {{name}}"}
+        %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :title => "Decide on {{name}}"}          
+          %i.icon-large 
+            &#xf044;
           {{ call }}
 
         %a.m-reasons-view-results{:'data-target' => 'show-results'}

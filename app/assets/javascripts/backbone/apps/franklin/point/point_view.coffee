@@ -29,22 +29,6 @@
         @trigger 'point:clicked'
         ev.stopPropagation()
 
-    makeEditable : ->
-      @$el.find('.m-point-nutshell').editable
-        resource: 'point'
-        pk: @model.id
-        url: Routes.proposal_point_path @model.get('long_id'), @model.id
-        type: 'textarea'
-        name: 'nutshell'
-        success : (response, new_value) => @model.set('nutshell', new_value)
-
-      @$el.find('.m-point-details-description').editable
-        resource: 'point'
-        pk: @model.id
-        url: Routes.proposal_point_path @model.get('long_id'), @model.id
-        type: 'textarea'
-        name: 'text'
-        success : (response, new_value) => @model.set('text', new_value)
 
           
 
@@ -104,7 +88,7 @@
       current_user = App.request 'user:current'
 
       #needs to be managed by layout
-      if current_user.id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
+      if current_user.canEditPoint @model 
         @trigger 'make_fields_editable'
 
 
@@ -185,9 +169,15 @@
       
       params
 
-    onRender : ->
+    onShow : ->
       @listenTo @model, 'change', @render      
+
+    onRender : ->
       @stickit()
+
+      current_user = App.request 'user:current'
+      if @$el.parents('.m-point-expanded').length > 0 && current_user.canEditPoint @model 
+        @makeEditable()
 
     bindings : 
       '.m-point-read-more' : 
@@ -195,6 +185,38 @@
         onGet : -> 
           if @model.get('comment_count') == 1 then "1 comment" else "#{@model.get('comment_count')} comments"
 
+
+    makeEditable : ->
+      $editable = @$el.find('.m-point-nutshell')
+      $editable.editable
+        resource: 'point'
+        pk: @model.id
+        url: Routes.proposal_point_path @model.get('long_id'), @model.id
+        type: 'textarea'
+        name: 'nutshell'
+        success : (response, new_value) => @model.set('nutshell', new_value)
+
+      $editable.addClass 'icon-pencil icon-large'
+
+      $details_editable = @$el.find('.m-point-details-description')
+      $details_editable.editable
+        resource: 'point'
+        pk: @model.id
+        url: Routes.proposal_point_path @model.get('long_id'), @model.id
+        type: 'textarea'
+        name: 'text'
+        success : (response, new_value) => @model.set('text', new_value)
+
+      $details_editable.addClass 'icon-pencil icon-large'
+
+    removeEditable : ->
+      $editable = @$el.find('.m-point-nutshell')
+      $details_editable = @$el.find('.m-point-details-description')
+
+      $editable.editable('destroy')
+      $details_editable.editable('destroy')
+      $editable.removeClass 'icon-pencil icon-large'
+      $details_editable.removeClass 'icon-pencil icon-large'
 
 
 

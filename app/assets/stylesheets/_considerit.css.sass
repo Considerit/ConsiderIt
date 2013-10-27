@@ -715,65 +715,34 @@ $static_position_width: $body_width+$grid_major
 /* for jquery.editable.js
 /**/
 
+.editable-container.editable-inline
+  border-color: #ddd #ccc #bbb #ccc
+  background-color: white
 
-.editableform, .editable.editable-click:not(.editable-disabled):hover, a.editable.editable-click:not(.editable-disabled):hover,
-  &:before
-    //background-color: rgba(white, .35)
-    width: 100%
-    content: ''
-    height: 100%
-    z-index: 1
-    position: absolute
-    left: -5px
-    top: -1px
-    padding: 1px 5px
-    border: 1px solid #777
+.editable.editable-click, a.editable.editable-click, .editable-container.editable-inline
+  border: 1px solid transparent
+  padding: 4px 3px
 
-
-.editable.editable-click, a.editable.editable-click
   &:hover
     cursor: pointer
+    border-color: #ddd #ccc #bbb #ccc
+    background-color: white
 
   &:not(.editable-disabled)
-    border-bottom: none
+    width: 96%
+    display: inline-block
     position: relative
-    width: 100%
+    margin-left: 25px
+
+    &:before
+      position: absolute
+      left: -25px
+      font-size: 14px
+      opacity: .7
+
     &:hover
-      //color: black
       position: relative
-
-      &:before
-        //background-color: rgba(white, .35)
-        width: 100%
-        content: ''
-        height: 100%
-        z-index: 1
-        position: absolute
-        left: -5px
-        top: -1px
-        padding: 1px 5px
-        border: 1px solid #777
-
-      &:after
-        position: absolute
-        text-align: center
-        left: 50%
-        margin-left: -40px
-        top: -17px
-        font-size: 10px
-        line-height: 1.2
-        padding-top: 3px
-        content: 'click to edit'
-        background-color: rgba(white, .95)
-        color: #444
-        width: 80px
-        border: 1px solid #777
-        border-bottom: 0
-        font-weight: normal
-        font-style: normal
-        text-transform: none
-        height: 13px
-        border-radius: 5px 5px 0 0
+      opacity: 1
 
 .editable-container
   position: relative
@@ -783,15 +752,15 @@ $static_position_width: $body_width+$grid_major
   .control-group
     position: relative
 
+.editable-input
+  width: 100%
+  textarea
+    background-color: transparent
+    width: 100%
+    padding: 0
+
 .editable-buttons
-  position: absolute
-  right: -1px
-  bottom: -24px
-  background-color: rgba(white, .95)
-  z-index: 999
-  border: 1px solid rgba($standout_color, .7)
-  border-top: none
-    
+
   .editable-cancel
     background: none
     border: none
@@ -809,6 +778,8 @@ $static_position_width: $body_width+$grid_major
     line-height: .5
     @extend %bolded
 
+.editable-empty, .editable-empty:hover, .editable-empty:focus
+  font-style: normal
 
 //////////////////////////////////////////
 // UNINCORPORATED

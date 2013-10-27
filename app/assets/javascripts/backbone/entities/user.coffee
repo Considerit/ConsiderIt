@@ -173,6 +173,8 @@
         return auth[1] if auth[0] of attrs && attrs[auth[0]]? && attrs[auth[0]].length > 0
       return 'email'
 
+    canEditPoint : (point) ->
+      @id == point.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()      
 
   class Entities.Users extends Entities.Collection
 

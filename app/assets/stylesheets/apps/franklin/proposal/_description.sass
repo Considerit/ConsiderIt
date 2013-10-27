@@ -9,6 +9,23 @@
 
 .m-proposal-description-wrap
 
+  // editable
+  .m-proposal-description, .m-proposal-details
+    // .editable.editable-click:not(.editable-disabled)
+    //   width: 96%
+    //   display: inline-block
+    //   position: relative
+    //   margin-left: 25px
+
+    //   &:before
+    //     position: absolute
+    //     left: -25px
+
+  .m-proposal-description-body.editable
+    min-height: 80px
+  //
+
+
   // in title
   .m-position-your-action-body.join
     @extend %collapsed_action_call
@@ -43,6 +60,7 @@
     +font-size(-3)
     white-space: nowrap
     font-weight: normal
+
 
 
   // in details

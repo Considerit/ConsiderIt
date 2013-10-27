@@ -38,24 +38,19 @@
 
 
     .m-proposal-strip_publish
-      display: none
-
-    &[data-state="0"]
-
-      .m-proposal-strip_publish
-        position: relative
+      position: relative
+      text-align: center
+      display: block
+      .m-proposal-publish
+        width: $body_width
+        //margin-left: $margin_width + 5
+        +sassy-button("glass", 5px, inherit, desaturate($callout_bg_color, 100%), darken( desaturate($callout_bg_color, 100%), 8%) )
+        +font-size(0)
+        color: desaturate($callout_text_color, 100%)
+        font-weight: bold
         text-align: center
-        display: block
-        .m-proposal-publish
-          width: $body_width
-          //margin-left: $margin_width + 5
-          +sassy-button("glass", 5px, inherit, desaturate($callout_bg_color, 100%), darken( desaturate($standout_color, 100%), 8%) )
-          +font-size(1)
-          color: desaturate($callout_text_color, 100%)
-          font-weight: bold
-          text-align: center
-          margin-top: -7px
-          border-radius: 0 0 5px 5px
+        //margin-top: -7px
+
 
   
 .m-proposal-socialmedia-region

@@ -26,14 +26,16 @@
     onShow : ->
       current_user = App.request 'user:current'
       if current_user.id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
-        @$el.find('.m-comment-body').editable 
+        $editable = @$el.find('.m-comment-body')
+        $editable.editable 
           resource: 'comment'
           pk: @model.id
           url: Routes.comment_path @model.id
           type: 'textarea'
           name: 'body'
           success : (response, new_value) => @model.set('body', new_value)
-    
+        $editable.addClass 'icon-pencil icon-large'
+
 
 
   class Comments.ClaimView extends Comments.DiscussionEntry

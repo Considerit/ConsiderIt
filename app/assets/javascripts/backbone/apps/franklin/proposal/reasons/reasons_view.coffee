@@ -18,7 +18,7 @@
 
     pointExpanded : (point, inclusive) ->
       region = if point.isPro() then @peerProsRegion else @peerConsRegion
-      region.$el.css 'zIndex', 11
+      region.$el.css 'zIndex', 12
       @sizeToFit inclusive
 
     pointClosed : (point, inclusive) ->

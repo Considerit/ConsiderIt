@@ -48,15 +48,17 @@
       @stickit()
       _.each @editable_fields, (field) =>
         [selector, name, type] = field 
-
-        @$el.find(selector).editable
+        $editable = @$el.find(selector)
+        $editable.editable
           resource: 'proposal'
           pk: @long_id
-          disabled: @state == 0 && @model.get('published')
+          disabled: @state == Proposal.State.collapsed && @model.get('published')
           url: Routes.proposal_path @model.long_id
           type: type
           name: name
           success : (response, new_value) => @model.set(name, new_value)
+
+        $editable.addClass 'icon-pencil icon-large'
 
     onShow : ->
 
@@ -74,7 +76,6 @@
       'click .showing' : 'hideDetails'      
 
     showDetails : (ev) ->
-      console.log 'showing'
       $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
       $toggle = $block.find('.hidden:first')
@@ -121,11 +122,4 @@
     showResults : (ev) ->
       @trigger 'show_results'
       ev.stopPropagation()
-
-
-
-  class Proposal.UnpublishedProposalDescription extends Proposal.ProposalDescriptionView
-  class Proposal.AggregateProposalDescription extends Proposal.ProposalDescriptionView
-  class Proposal.PositionProposalDescription extends Proposal.ProposalDescriptionView
-
 

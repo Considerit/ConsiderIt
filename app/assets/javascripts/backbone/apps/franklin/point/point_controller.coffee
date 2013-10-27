@@ -14,8 +14,8 @@
         header_view = @getHeaderView point
         layout.headerRegion.show header_view
 
-        body_view = @getBodyView point, layout.actions
-        layout.bodyRegion.show body_view
+        @body_view = @getBodyView point, layout.actions
+        layout.bodyRegion.show @body_view
 
       @listenTo layout, 'show', =>
         @listenTo layout, 'point:show_details', =>
@@ -59,8 +59,11 @@
           @unexpand go_back
           @layout.trigger 'details:close'
 
+
         @listenTo expanded_view, 'make_fields_editable', =>
-          @layout.makeEditable()
+          @body_view.makeEditable()
+          @listenToOnce expanded_view, 'details:close', =>
+            @body_view.removeEditable()
           
         @listenTo App.vent, 'point:expanded', => @unexpand false
         @listenTo App.vent, 'navigated_to_base', => 

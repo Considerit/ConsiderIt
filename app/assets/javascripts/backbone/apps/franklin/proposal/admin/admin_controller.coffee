@@ -39,6 +39,10 @@
         App.request 'position:create', data.position.position
         @trigger 'proposal:published'
 
+      @listenTo layout, 'proposal:deleted', (model) =>
+        App.vent.trigger 'proposal:deleted', model
+        App.navigate Routes.root_path(), {trigger : true}
+
     getLayout : (model) ->
       new Proposal.AdminSettingsView
         model : @model

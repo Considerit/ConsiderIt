@@ -57,10 +57,17 @@
       @proposals_view = proposals_view
 
     setupProposalsView : (is_active) ->
-      view = @getProposals @is_active
+      all_proposals = App.request('proposals:get')
+
+      filtered_collection = all_proposals.where({active : is_active})
+      @collection = new App.Entities.PaginatedProposals filtered_collection,
+        fullCollection : filtered_collection
+        total_models : @options.total_models
+
+      view = @getProposals @is_active, @collection
       @sortCollection {collection: view.collection, sort_by: 'activity'}
       @listenTo view, 'before:item:added', (vw) -> @handleBeforeViewAdded vw
-      @listenTo view, 'childview:proposal:deleted', (vw) => @handleProposalDeleted view.collection, vw.model
+      @listenTo App.vent, 'proposal:deleted', (model) => @handleProposalDeleted @collection, model
       @listenTo App.vent, 'proposals:reset', => @handleReset view.collection, @is_active
       view
 
@@ -88,12 +95,12 @@
         sort_by: sort_by
 
     handleShowMore : (collection, view) ->
-      @requestProposals collection, @is_active, ->
+      @requestProposals collection, @is_active, =>
         App.vent.trigger "proposals:show_more_handled:#{@is_active}"
 
     handleProposalDeleted : (collection, model) ->
+      console.log 'proposals: proposal deleted', collection, model
       collection.fullCollection.remove model
-      App.vent.trigger 'proposal:deleted', model
 
     handleReset : (collection, is_active) ->
       proposals = App.request 'proposals:get'
@@ -130,13 +137,7 @@
         collection: collection
         is_active : @is_active
 
-    getProposals : (is_active) ->
-      all_proposals = App.request('proposals:get')
-
-      filtered_collection = all_proposals.where({active : is_active})
-      collection = new App.Entities.PaginatedProposals filtered_collection,
-        fullCollection : filtered_collection
-        total_models : @options.total_models
+    getProposals : (is_active, collection) ->
 
       if is_active
         list = new Proposals.ActiveProposalsList

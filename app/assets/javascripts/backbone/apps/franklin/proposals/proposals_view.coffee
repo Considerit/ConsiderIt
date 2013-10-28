@@ -86,8 +86,10 @@
       'click [data-target="proposallist:page"]' : 'gotoPage'
 
     proposalsLoaded : ->
-      @$el.moveToBottom()
-      
+      _.delay =>
+        @$el.moveToBottom()
+      , 300
+
     showMoreRequested : (ev) ->
       @trigger 'pagination:show_more'
 

@@ -55,7 +55,7 @@
           @franklin_controller.close()
           @franklin_controller = null
 
-        if @franklin_controller && @franklin_controller == proposal_controller || use_existing_proposal_controller
+        if @franklin_controller && (@franklin_controller == proposal_controller && region.controlled_by == @franklin_controller) || use_existing_proposal_controller
           proposal_controller.plant region if from_root
           proposal_controller.changeState new_state
         else

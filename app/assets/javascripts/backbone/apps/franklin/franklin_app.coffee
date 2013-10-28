@@ -12,6 +12,9 @@
   API =
     Root: -> 
       region = App.request "default:region"
+
+      return if @franklin_controller && @franklin_controller instanceof Franklin.Root.RootController && region.controlled_by == @franklin_controller
+
       App.request "sticky_footer:close"
 
       if @franklin_controller && (region.controlled_by != @franklin_controller || !(@franklin_controller instanceof Franklin.Root.RootController))
@@ -28,7 +31,10 @@
 
 
     _transitionProposal: (proposal, new_state, crumbs) ->
-      from_root = @franklin_controller instanceof Franklin.Root.RootController && proposal.get('published')
+
+      region = App.request 'default:region'
+
+      from_root = @franklin_controller instanceof Franklin.Root.RootController && region.controlled_by == @franklin_controller && proposal.get('published') 
 
       if proposal.get('published')
         try
@@ -42,7 +48,6 @@
         @franklin_controller.region.hideAllExcept $pel
 
       App.execute 'when:fetched', proposal, =>
-        region = App.request 'default:region'
 
         proposal_controller.upRoot() if use_existing_proposal_controller
 

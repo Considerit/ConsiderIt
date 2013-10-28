@@ -766,6 +766,8 @@ $static_position_width: $body_width+$grid_major
     border: none
     margin-left: 0
     color: #555
+    display: block
+    margin: auto
 
     &:hover
       color: black
@@ -777,6 +779,7 @@ $static_position_width: $body_width+$grid_major
     +text-shadow(none)
     line-height: .5
     @extend %bolded
+    +font-size(1)
 
 .editable-empty, .editable-empty:hover, .editable-empty:focus
   font-style: normal

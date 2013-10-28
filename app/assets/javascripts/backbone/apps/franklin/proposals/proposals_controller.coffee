@@ -75,7 +75,6 @@
       view
 
     handleBeforeViewAdded : (view) ->
-      console.log 'before view added', view.model
       new App.Franklin.Proposal.ProposalController
         view : view
         region : new Backbone.Marionette.Region { el : view.el }

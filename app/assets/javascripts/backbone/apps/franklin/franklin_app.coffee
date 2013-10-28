@@ -35,20 +35,22 @@
           proposal_controller = App.request "proposal_controller:#{proposal.id}"
         catch
 
-      if from_root
+      use_existing_proposal_controller = from_root && proposal_controller && proposal_controller.region
+
+      if use_existing_proposal_controller
         $pel = $(proposal_controller.region.el)
         @franklin_controller.region.hideAllExcept $pel
 
       App.execute 'when:fetched', proposal, =>
         region = App.request 'default:region'
 
-        proposal_controller.upRoot() if from_root && proposal_controller 
+        proposal_controller.upRoot() if use_existing_proposal_controller
 
         if @franklin_controller && @franklin_controller != proposal_controller
           @franklin_controller.close()
           @franklin_controller = null
 
-        if proposal_controller
+        if @franklin_controller == proposal_controller || use_existing_proposal_controller
           proposal_controller.plant region if from_root
           proposal_controller.changeState new_state
         else

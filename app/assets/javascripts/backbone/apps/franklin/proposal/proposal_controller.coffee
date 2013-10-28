@@ -94,7 +94,10 @@
     setupReasonsController : (controller) ->
 
     setupAdminController : (controller) ->
-
+      @listenTo controller, 'proposal:published', =>
+        @layout.$el.data 'visibility', 'published'
+        @layout.$el.attr 'data-visibility', 'published'
+        @region.show @layout
 
     setupHistogramReasonsBridge : (reasons_controller, aggregate_controller) =>
 

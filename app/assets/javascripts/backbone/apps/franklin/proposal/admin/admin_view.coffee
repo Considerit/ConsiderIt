@@ -29,11 +29,12 @@
     publishProposal : (ev, response, options) ->
       data = $.parseJSON response.responseText
       if data.success
-        toastr.success 'Published!'
+        toastr.success 'Published! Start the conversation with some pro/con points of your own if appropriate.', null,
+          positionClass: "toast-top-full-width"
       else
         toastr.error 'Failed to publish'
 
-      @trigger 'proposal:published', data.proposal.proposal, data.position.position
+      @trigger 'proposal:published', data
 
   class Proposal.ProposalStatusDialogView extends App.Views.ItemView
     template : '#tpl_proposal_admin_strip_edit_active'

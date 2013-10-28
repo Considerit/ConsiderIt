@@ -34,6 +34,10 @@
         dialog = App.request 'dialog:new', dialogview,
           class : 'm-proposal-admin-publicity'
 
+      @listenTo layout, 'proposal:published', (data) =>
+        @model.set data.proposal.proposal
+        App.request 'position:create', data.position.position
+        @trigger 'proposal:published'
 
     getLayout : (model) ->
       new Proposal.AdminSettingsView

@@ -11,7 +11,7 @@
     template: '#tpl_proposals_list_layout'
     
     regions: 
-      createRegion : '.m-proposals-create'
+      createRegion : '.m-proposals-create-region'
       proposalsRegion : '.m-proposal-list-region'
       filtersRegion : '.m-proposals-filters'
       paginationRegion : '.m-proposals-list-pagination'

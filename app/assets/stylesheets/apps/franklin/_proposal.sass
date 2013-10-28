@@ -20,6 +20,9 @@
 
   // unpublished proposal
   &[data-visibility="unpublished"]
+    &[data-state="0"]
+      .m-proposal-admin-publish
+        display: none
 
     .m-proposal-description
       background-color: $standout_color
@@ -37,10 +40,11 @@
         display: none
 
 
-    .m-proposal-strip_publish
+    .m-proposal-admin-publish
       position: relative
       text-align: center
       display: block
+
       .m-proposal-publish
         width: $body_width
         //margin-left: $margin_width + 5

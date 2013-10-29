@@ -48,6 +48,7 @@
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
         @listenTo layout, 'before:item:added', (view) => 
+          return if view instanceof Points.PeerEmptyView
           if _.has @point_controllers, view.model.id
             @point_controllers[view.model.id].close()
 

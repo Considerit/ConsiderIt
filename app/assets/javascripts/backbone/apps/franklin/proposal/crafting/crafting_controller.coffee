@@ -89,7 +89,7 @@
       
     setupFooterLayout : (view) ->
       @listenTo view, 'position:canceled', =>
-        # TODO: discard changes
+        # TODO: discard changes?
         App.navigate Routes.proposal_path(@proposal.long_id), {trigger: true}
 
       @listenTo view, 'position:submit-requested', (follow_proposal) => 
@@ -177,6 +177,15 @@
 
       @setupPointsController @position_pros_controller
       @setupPointsController @position_cons_controller
+
+      _.each [@position_pros_controller, @position_cons_controller], (controller) =>
+        @listenTo controller, 'point:showed_details', (point) =>
+          @trigger 'point:showed_details', point
+
+          @listenToOnce controller, 'details:closed', (point) =>
+            @trigger 'details:closed', point
+
+
 
     setupPointsController : (controller) ->
 

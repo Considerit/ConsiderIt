@@ -16,13 +16,11 @@
     onRender : ->
       super
 
-    pointExpanded : (point, inclusive) ->
-      region = if point.isPro() then @peerProsRegion else @peerConsRegion
+    pointExpanded : (region, inclusive) ->
       region.$el.css 'zIndex', 12
       @sizeToFit inclusive
 
-    pointClosed : (point, inclusive) ->
-      region = if point.isPro() then @peerProsRegion else @peerConsRegion
+    pointClosed : (region, inclusive) ->
       region.$el.css 'zIndex', ''
       @sizeToFit inclusive
 

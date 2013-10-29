@@ -68,8 +68,6 @@
 
 
     setupPositionLayout : (layout) ->
-      @listenTo layout, 'point:viewed', (point_id) =>
-        @model.addViewedPoint point_id
 
       reasons_layout = @getPositionReasons @proposal, @model
       stance_view = @getPositionStance @proposal, @model

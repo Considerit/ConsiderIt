@@ -8,8 +8,9 @@
       App.vent.on 'user:updated', =>
         @sidebar.render() if @sidebar
 
-      App.vent.on 'user:signin', =>
-        @layout.render()
+      App.vent.on 'user:signin', =>        
+        @layout.mainRegion.currentView.render() if @layout.mainRegion.currentView
+        @layout.sidebarRegion.currentView.render() if @layout.sidebarRegion.currentView
 
       App.vent.on 'user:signout', =>
         @layout.close()
@@ -24,7 +25,7 @@
       @sidebar.updateActiveLink dash_name
 
     getLayout : ->
-      new Dash.Layout  
+      new Dash.DashLayout  
 
     getSidebar : (model) ->
       new Dash.Sidebar

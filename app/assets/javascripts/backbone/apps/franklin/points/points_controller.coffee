@@ -101,6 +101,7 @@
 
       @listenTo layout, 'show', =>
         @listenTo layout, 'childview:point:include', (view) => 
+          App.vent.trigger 'points:unexpand'
           @trigger 'point:include', view
         @listenTo layout, 'childview:point:highlight_includers', (view) => 
           @trigger 'point:highlight_includers', view

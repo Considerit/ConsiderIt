@@ -68,7 +68,7 @@
 
         App.vent.trigger 'route:completed', crumbs
         
-        App.vent.trigger 'navigated_to_base'
+        App.vent.trigger 'points:unexpand'
         App.request 'meta:set', proposal.getMeta() 
 
 

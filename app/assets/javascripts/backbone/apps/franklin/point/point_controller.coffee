@@ -30,7 +30,7 @@
 
       @stopListening @layout.expansionRegion.currentView
       @stopListening App.vent, 'point:expanded'
-      @stopListening App.vent, 'navigated_to_base'
+      @stopListening App.vent, 'points:unexpand'
 
       @layout.expansionRegion.reset() if @layout.expansionRegion
 
@@ -59,14 +59,13 @@
           @unexpand go_back
           @layout.trigger 'details:closed'
 
-
         @listenTo expanded_view, 'make_fields_editable', =>
           @body_view.makeEditable()
           @listenToOnce expanded_view, 'details:close', =>
             @body_view.removeEditable()
           
         @listenTo App.vent, 'point:expanded', => @unexpand false
-        @listenTo App.vent, 'navigated_to_base', => 
+        @listenTo App.vent, 'points:unexpand', => 
           @layout.$el.removeLightbox()
           @unexpand false
 

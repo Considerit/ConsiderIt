@@ -83,9 +83,6 @@
     # ugly having this method here...
     includePoint : (model, $source, $dest, source) ->
 
-      # TODO: need to close point details if point is currently expanded
-      # model.trigger('point:included') 
-
       if $source.is('.m-point-unexpanded')
         $dest.css 'visibility', 'hidden'
 

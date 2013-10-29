@@ -197,7 +197,8 @@
         @handleRemovePoint view, view.model, controller.options.collection
 
     handleRemovePoint : (view, model, source) ->
-      # TODO: need to close point details if point is currently expanded
+      App.vent.trigger 'points:unexpand'
+      
       source.remove model
       params =
         proposal_id : model.proposal_id,

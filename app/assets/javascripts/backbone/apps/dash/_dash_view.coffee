@@ -1,6 +1,6 @@
 @ConsiderIt.module "Dash", (Dash, App, Backbone, Marionette, $, _) ->
 
-  class Dash.Layout extends App.Views.Layout
+  class Dash.DashLayout extends App.Views.Layout
     template: "#tpl_dashboard_container"
     className: 'm-dashboard-wrapper'
     regions :

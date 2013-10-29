@@ -6,6 +6,8 @@ class Dashboard::UsersController < Dashboard::DashboardController
     user = User.find(params[:id])
 
     referenced_proposals = {}
+    referenced_points = {}
+
     positions = []
     user.positions.published.each do |position|
       if !referenced_proposals.has_key?(position.proposal_id)
@@ -17,7 +19,6 @@ class Dashboard::UsersController < Dashboard::DashboardController
       end
     end
 
-    referenced_points = {}
     influenced_users = {}
     influenced_users_by_point = {}
     accessible_points = []
@@ -57,9 +58,30 @@ class Dashboard::UsersController < Dashboard::DashboardController
       end
     end
 
+    user_proposals = user.proposals.open_to_public
+    proposals = user_proposals.map {|p| p.id} + referenced_proposals.keys()
+
+    #make sure that top points of each proposal are included
+    top = []
+    top_con_qry = Proposal.where "top_con IS NOT NULL AND id in (#{proposals.join(',')})"
+    if top_con_qry.count > 0
+      top += top_con_qry.select(:top_con).map {|x| x.top_con}.compact
+    end
+
+    top_pro_qry = Proposal.where "top_pro IS NOT NULL AND id in (#{proposals.join(',')})"
+    if top_pro_qry.count > 0
+      top += top_pro_qry.select(:top_pro).map {|x| x.top_pro}.compact
+    end
+    
+    top_points = {}
+    Point.where('id in (?)', top).public_fields.each do |pnt|
+      referenced_points[pnt.id] = pnt
+    end
+
+
     data = {
       :user_id => user.id,
-      :proposals => user.proposals.open_to_public.public_fields,
+      :proposals => user_proposals.public_fields,
       :referenced_proposals => referenced_proposals,
       :referenced_points => referenced_points,
       :positions => positions,

@@ -112,7 +112,6 @@
               App.vent.trigger 'points:fetched', (p.point for p in data.updated_points)
               proposal.set(data.proposal) if 'proposal' of data
 
-
               App.vent.trigger('position:subsumed', data.subsumed_position.position) if 'subsumed_position' of data && data.subsumed_position && data.subsumed_position.id != @model.id
               proposal.newPositionSaved @model
 
@@ -160,14 +159,13 @@
 
       position_pros = new App.Entities.Points 
       position_cons = new App.Entities.Points
-
       
       @position_pros_controller = @getPointsController layout.positionProsRegion, 'pro', position_pros
       @position_cons_controller = @getPointsController layout.positionConsRegion, 'con', position_cons
 
       ########
       # instead of passing these in to the constructor, going to add them after. This is so that the respective
-      # PointController instances will be spun off properly
+      # PointController instances will be spun off properly by PointsController
       position_pros.add points.filter (point) ->
         point.id in included_points && point.isPro()
 
@@ -198,7 +196,7 @@
 
     handleRemovePoint : (view, model, source) ->
       App.vent.trigger 'points:unexpand'
-      
+
       source.remove model
       params =
         proposal_id : model.proposal_id,

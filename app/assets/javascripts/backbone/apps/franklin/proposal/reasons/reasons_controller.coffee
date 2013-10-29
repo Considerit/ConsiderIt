@@ -109,11 +109,11 @@
         @peer_cons_controller = @getPointsController layout.peerConsRegion, 'con', aggregated_cons
 
         _.each [@peer_pros_controller, @peer_cons_controller], (controller) =>
-          @listenTo controller, 'point:show_details', (point) =>
-            @layout.pointExpanded point, @state != Proposal.ReasonsState.separated
+          @listenTo controller, 'point:showed_details', (point) =>
+            @layout.pointExpanded controller.region, @state != Proposal.ReasonsState.separated
 
-            @listenToOnce controller, 'details:close', (point) =>
-              @layout.pointClosed point, @state != Proposal.ReasonsState.separated
+            @listenToOnce controller, 'details:closed', (point) =>
+              @layout.pointClosed controller.region, @state != Proposal.ReasonsState.separated
 
           @listenTo controller, 'points:browsing', (valence) =>
             @layout.pointsBrowsing @state != Proposal.ReasonsState.separated, valence
@@ -145,6 +145,12 @@
         controller = if model.isPro() then @peer_pros_controller else @peer_cons_controller
         controller.options.collection.add model
         @trigger 'point:removal', model.id
+
+      @listenTo controller, 'point:showed_details', (point) =>
+        @layout.pointExpanded @layout.positionRegion, true
+        @listenToOnce controller, 'details:closed', (point) => 
+          @layout.pointClosed @layout.positionRegion, true
+
 
     setupPointsController : (controller) ->
       @listenTo controller, 'point:highlight_includers', (view) =>

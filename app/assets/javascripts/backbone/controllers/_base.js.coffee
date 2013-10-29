@@ -4,6 +4,7 @@
     controllers : []
 
     constructor: (options = {}) ->
+      @options = options
       @region = options.region or App.request "default:region"
       super options
       @_instance_id = _.uniqueId("controller")

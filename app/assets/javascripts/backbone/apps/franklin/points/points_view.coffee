@@ -37,17 +37,21 @@
       valence
 
 
-    buildItemView : (point) ->
-      valence = if point.attributes.is_pro then 'pro' else 'con'
-      view = new @itemView
-        model : point
-        attributes : 
-          'data-id': "#{point.id}"
-          'data-role': 'm-point'
-          includers : "#{point.get('includers')}"
-          class : "m-point m-point-unexpanded m-point-#{@location} #{valence}"
+    buildItemView : (point, itemview, options) ->
+      if itemview == Points.PeerEmptyView
 
-      view
+        new itemview()
+      else
+        valence = if point.attributes.is_pro then 'pro' else 'con'
+        view = new @itemView
+          model : point
+          attributes : 
+            'data-id': "#{point.id}"
+            'data-role': 'm-point'
+            includers : "#{point.get('includers')}"
+            class : "m-point m-point-unexpanded m-point-#{@location} #{valence}"
+
+        view
 
     requestSort : (sort_by) ->
       @sort = sort_by
@@ -166,11 +170,16 @@
       ev.stopPropagation()
 
 
+  class Points.PeerEmptyView extends App.Views.ItemView
+    template : '#tpl_points_peer_empty'
+    className : 'points_peer_empty'
+
   class Points.PeerPointList extends Points.ExpandablePointList
     sort : 'score'    
     location : 'peer'
     className : => "m-peer-reasons m-reasons-peer-#{@options.valence}s"
     itemView : App.Franklin.Point.PeerPointView
+    emptyView : Points.PeerEmptyView
 
     events : _.extend {}, Points.ExpandablePointList.prototype.events
     

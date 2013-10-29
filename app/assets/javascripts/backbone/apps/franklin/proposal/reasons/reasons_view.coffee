@@ -120,6 +120,13 @@
       else
         source.remove model
 
+    events : 
+      'mouseenter .m-point-peer' : 'logPointView'
+
+    logPointView : (ev) ->
+      pnt = $(ev.currentTarget).data('id')
+      @trigger 'point:viewed', pnt
+
 
   class Proposal.ResultsFooterView extends App.Views.ItemView
     template : '#tpl_aggregate_footer_expanded'

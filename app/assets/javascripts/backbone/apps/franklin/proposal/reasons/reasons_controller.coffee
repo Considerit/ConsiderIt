@@ -62,6 +62,10 @@
     setupLayout : (layout) ->
 
       @listenTo layout, 'show', =>
+        @listenTo layout, 'point:viewed', (point_id) =>
+          position = @model.getUserPosition()
+          position.addViewedPoint point_id if position
+
         @processStateChange()
 
     updatePeerPoints : (layout) ->

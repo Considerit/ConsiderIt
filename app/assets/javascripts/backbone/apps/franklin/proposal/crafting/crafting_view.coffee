@@ -13,14 +13,6 @@
       tenant = App.request 'tenant:get'
       _.extend {}, tenant.attributes, _.compactObject(@options.proposal.attributes)
 
-    # TODO: move this to reasons layout view
-    # Hacky to put this here...need to log point views for peer points
-    events : 
-      'mouseenter .m-point-peer' : 'log_point_view'
-
-    logPointView : (ev) ->
-      pnt = $(ev.currentTarget).data('id')
-      @trigger 'point:viewed', pnt
 
   class Proposal.PositionFooterView extends App.Views.ItemView
     template : '#tpl_position_footer'

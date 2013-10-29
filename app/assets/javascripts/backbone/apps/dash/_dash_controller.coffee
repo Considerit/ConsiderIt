@@ -9,8 +9,8 @@
         @sidebar.render() if @sidebar
 
       App.vent.on 'user:signin', =>        
-        @layout.mainRegion.currentView.render() if @layout.mainRegion.currentView
-        @layout.sidebarRegion.currentView.render() if @layout.sidebarRegion.currentView
+        @layout.mainRegion.currentView.render() if @layout.mainRegion && @layout.mainRegion.currentView
+        @layout.sidebarRegion.currentView.render() if @layout.sidebarRegion && @layout.sidebarRegion.currentView
 
       App.vent.on 'user:signout', =>
         @layout.close()

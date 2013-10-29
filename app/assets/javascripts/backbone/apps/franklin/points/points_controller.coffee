@@ -33,10 +33,10 @@
           pointview = @layout.children.findByModel point
           pointview.trigger 'point:show_details'
 
-          @listenToOnce pointview, 'details:close', =>
-            @trigger 'details:close', pointview.model
+          @listenToOnce pointview, 'details:closed', =>
+            @trigger 'details:closed', pointview.model
 
-          @trigger 'point:show_details', point
+          @trigger 'point:showed_details', point
 
 
           # @listenTo controller, 'close', =>

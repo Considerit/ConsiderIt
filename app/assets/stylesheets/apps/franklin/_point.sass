@@ -394,43 +394,46 @@ $m-point-expanded-width: $body_width + 150
   @extend %m-white-thought-bubble-inner
   @extend %m-thought-bubble-side-down
 
-[data-state="points-collapsed"], [data-state="points-separated"]
+
+[data-state="points-separated"]
   .m-point-peer.m-point-unexpanded
     @extend %m-white-thought-bubble
 
     .m-point-wrap
       @extend %m-white-thought-bubble-inner
 
-[data-state="points-collapsed"] .m-point-peer
-  @extend %m-thought-bubble-bottom-in
+// [data-state="points-collapsed"] .m-point-peer
+//   @extend %m-thought-bubble-bottom-in
 
 [data-state="points-separated"] .m-point-peer.m-point-unexpanded
   @extend %m-thought-bubble-side-down
 
-[data-state="points-together"] .m-point-peer.m-point.m-point-unexpanded 
+[data-state="points-together"], [data-state="points-collapsed"]
 
-  .m-point-wrap
-    margin-bottom: 0
-    &:hover 
-      +single-box-shadow($color: rgba(black, .2), $voff: 2px)
+  .m-point-peer.m-point.m-point-unexpanded 
 
-  .m-point-author-avatar
-    display: inline-block
-    position: absolute
-    border-radius: 8px
-    top: .7 * $vertical_baseline
-    //border: 1px solid transparent
-    //+single-box-shadow    
+    .m-point-wrap
+      margin-bottom: 0
+      &:hover 
+        +single-box-shadow($color: rgba(black, .2), $voff: 2px)
 
-  .m-point-author-avatar
-    width: 35px
-    height: 35px
+    .m-point-author-avatar
+      display: inline-block
+      position: absolute
+      border-radius: 8px
+      top: .7 * $vertical_baseline
+      //border: 1px solid transparent
+      //+single-box-shadow    
 
-  &.pro .m-point-author-avatar
-    left: -42px
+    .m-point-author-avatar
+      width: 35px
+      height: 35px
 
-  &.con .m-point-author-avatar
-    right: -42px
+    &.pro .m-point-author-avatar
+      left: -42px
+
+    &.con .m-point-author-avatar
+      right: -42px
 
 
 

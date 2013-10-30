@@ -36,10 +36,6 @@
   .m-point-peer
     // &.con.m-point-expanded
     //   right: 525 - $expanded_points_increment
-
-
-
-
 // header
 
 [data-activity="proposal-no-activity"]
@@ -51,10 +47,9 @@
   margin-bottom: $vertical_baseline / 2
   .m-pointlist-header-label
     +transition(font-size .4s ease, color .4s ease) // for point browsing
-    +font-size(8)    
+    +font-size(3)    
     font-weight: bold
     display: inline-block
-    border-bottom: 3px solid 
 
 .m-peer-reasons
   .m-pointlist-header-label
@@ -63,18 +58,33 @@
 
   &[data-state="points-separated"]
     .m-pointlist-header-label
-      color: darken($base_bg_color, 15%)
-      border-bottom-color: darken($base_bg_color, 15%)
-      +font-size(4)    
+      color: darken($base_bg_color, 20%)
+      border-bottom-color: darken($base_bg_color, 20%)
+      +font-size(2)    
+
+  &[data-state="points-collapsed"], &[data-state="points-together"]
+    .m-pointlist-header-label
+      color: lighten($base_text_color, 20%)
+      font-weight: normal
 
   &[data-state="points-collapsed"]
+    .m-pointlist-header-label  
+      +font-size(2)    
+
+  &[data-state="points-together"]
     .m-pointlist-header-label
-      display: none
+      +font-size(4)    
+      border-bottom: 3px solid 
+
+  // &[data-state="points-collapsed"]
+  //   .m-pointlist-header-label
+  //     display: none
 
 .m-position-points
   .m-pointlist-header-label
     border-bottom-color: $decision_board_text_color
     margin-bottom: $vertical_baseline/2
+    border-bottom: 3px solid 
 
 
 
@@ -110,7 +120,7 @@
   text-align: right
 
 .m-pointlist-browse-header
-  display: none
+  //display: none
   width: 240px
   position: relative
   margin-bottom: $vertical_baseline

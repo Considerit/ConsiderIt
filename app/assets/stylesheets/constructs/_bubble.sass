@@ -1,30 +1,31 @@
 @import "compass/css3/box-shadow"
 
-$bubble_border_radius: 8px
+$bubble_border_radius: 16px
 $banchor_top: -3px
-$banchor_adjustx: -20px
+$banchor_adjustx: -24px
 $bubble_shadow_color: white
 
 %bubble
   +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: $bubble_shadow_color, $inset: true)
-  
+  border-radius: $bubble_border_radius
   .t-bubble
     font-size: 0
     line-height: 1
     position: absolute
-    top: $banchor_top
-    
+    //top: $banchor_top
+    bottom: 0
     z-index: 99
+
 
 %bubble_right
   @extend %bubble
-  border-radius: 5px 0 5px 5px
+  //border-radius: $bubble_border_radius 0 $bubble_border_radius $bubble_border_radius
   .t-bubble
     right: $banchor_adjustx 
 
 %bubble_left
   @extend %bubble
-  border-radius: 0 5px 5px 5px
+  //border-radius: 0 $bubble_border_radius $bubble_border_radius $bubble_border_radius
   .t-bubble
     left: $banchor_adjustx 
 
@@ -55,5 +56,12 @@ $bubble_shadow_color: white
 
     .t-bubble-spacing
       fill: $bg-color
+
+    .t-bubble-main
+      fill: $light
+      stroke: $dark
+
+    .t-bubble-adjust
+      fill: $light
 
 

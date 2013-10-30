@@ -129,23 +129,34 @@
 
 // participants block
 [data-state="1"]
-  .m-participants
+  .m-participants.l-message-speaker
     visibility: hidden
+[data-state="0"]
+  .m-participants.l-message-speaker
 
-.m-participants
-  position: relative
+    .l-group-container
+      +rotate(180deg)
+      
+      .avatar // for the explode transition
+        +rotate(180deg)
+
+[data-state="4"]
+  .m-participants.l-message-speaker
+    top: -3px
+
+.m-participants.l-message-speaker
   z-index: 1
+  right: 0
 
   .l-group-container
-    position: absolute
-    left: ($content_width - $body_width) / 2
-    width: $body_width
-    top: 100px
+    // width: $margin_width
+    // top: $vertical_baseline
 
     text-align: center
     // position: absolute
     // z-index: 99
-
+    height: 100%
+    
     .avatar // for the explode transition
       -ms-transition: -ms-transform .75s ease
       -moz-transition: -moz-transform .75s ease

@@ -17,7 +17,6 @@
       descriptionRegion : '.m-proposal-description-region'
       aggregateRegion : '.m-proposal-aggregate-region'
       reasonsRegion : '.m-proposal-reasons-region'
-      participantsRegion : '.l-message-speaker'
       adminRegion : '.m-proposal-admin-region'
 
     initialize : (options = {}) ->
@@ -110,8 +109,8 @@
 
 
     getTileSize : ->
-      PARTICIPANT_WIDTH = 600
-      PARTICIPANT_HEIGHT = if @model.num_participants() > 11 then 75 else 50
+      PARTICIPANT_WIDTH = 150
+      PARTICIPANT_HEIGHT = 150
 
       Math.min 50, 
         window.getTileSize(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)
@@ -119,10 +118,4 @@
   class Proposal.SocialMediaView extends App.Views.ItemView
     template : '#tpl_proposal_social_media'
     className : 'm-proposal-socialmedia'
-
-
-
-
-
-
 

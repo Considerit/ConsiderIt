@@ -359,35 +359,16 @@ html
     position: relative
 
   > .l-message-speaker
-    top: 3px
+    bottom: 0px
     z-index: 1
-
-  > .l-message-speaker
     position: absolute
     width: $margin_width
 
-    &.l-message-initiator
-      width: $initiator_width
-      left: $initiator_width - $grid_xs - 4
-      text-align: right
-
-      [data-target="user_profile_page"]
-        opacity: .9
-        display: inline-block
-
-      &:hover
-        [data-target="user_profile_page"]
-          opacity: 1
-
-      img
-        width: $initiator_width - 30
-
   > .l-message-body
-    width: 100%
     z-index: 2
     margin: auto
     display: block
-    width: $body_width
+    width: $body_width //- $dialog_stutter
     padding: $vertical_baseline / 2 $grid_xs
 
     .l-message-title

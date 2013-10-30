@@ -7,7 +7,35 @@
   width: 183px
   height: 32px
 
+.l-proposal-description-outer-wrap.l-message-body
+  padding: 0
+
+
+ 
+
 .m-proposal-description-wrap
+
+  .l-message-speaker.l-message-initiator
+    //width: $initiator_width
+    //left: $margin_width - $initiator_width
+    //text-align: right
+    //margin-left: -($margin_width - $initiator_width)/2
+
+    [data-target="user_profile_page"]
+      opacity: .9
+      display: inline-block
+
+    &:hover
+      [data-target="user_profile_page"]
+        opacity: 1
+
+    img
+      width: $initiator_width // - 30
+      vertical-align: bottom 
+
+  &[data-state="collapsed"]
+    .l-message-speaker.l-message-initiator
+      top: -3px
 
   // editable
   .m-proposal-description, .m-proposal-details
@@ -49,14 +77,22 @@
 
   .m-proposal-description
     +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
+    margin: auto
+    left: -$dialog_stutter
+
+
     p
       margin-bottom: $vertical_baseline / 2
     h1, h2, h3
       color: $initiator_text_color
     td
       padding: 0 3px
+  
+  .m-proposal-description-title
+    +font-size(2)
 
   .m-proposal-description-title-readmore
+    display: none
     +font-size(-3)
     white-space: nowrap
     font-weight: normal
@@ -66,14 +102,17 @@
   // in details
 
   .m-proposal-details
-    margin-top: 0
-    margin-bottom: $vertical_baseline
 
     .l-message-body
-      background: $base_bg_color
-      border: 1px solid darken($base_bg_color, 15%)
-      border-top: none
-      border-radius: 0px 0px 5px 5px 
+      //margin: 0 $margin_width $vertical_baseline $margin_width //- $dialog_stutter + $grid_xs  
+      +bubble(darken($base_bg_color, 3%), darken($base_bg_color, 12%), left, $text_color: $base_text_color)
+      left: -$dialog_stutter
+
+      &.m-proposal-details-body-wrap // silliness to override css from prior rule...
+        //border: 1px solid darken($base_bg_color, 15%)
+        border-top: none
+        border-radius: 0px 0px 16px 16px 
+        //width: $body-width - $grid_xs / 2
 
   .m-proposal-details-wrapper
     position: relative
@@ -119,8 +158,18 @@
       display: none
 
     .m-proposal-description
-      border-radius: 0px 5px 0px 0px
+      border-radius: 16px 16px 0px 0px
+
+      > .t-bubble
+        display: none
 
   &[data-state="collapsed"]
     .m-proposal-description
       cursor: pointer
+
+    .m-proposal-details
+      > .t-bubble
+        display: none
+
+
+

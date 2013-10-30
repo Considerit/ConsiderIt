@@ -2,37 +2,25 @@
 - left ||= false
 
 - cache ['bubble', left, down] do 
-  - size = 10
-  - border_width = 4
+  - size = 28
   - stroke_width = 1
-  - svg_size = size + border_width * 2 + 2
-  - ypos1 = stroke_width * 3
-  - ypos2 = stroke_width * 3 + size
 
-  - xpos1 = svg_size
-  - xpos2 = svg_size - size
-  - bubbleadjustx = 1
-  - spacingadjustx = -border_width * 3  
-  - borderadjustx = -stroke_width * 3
-  - spacingoffsetx = -1
+  - if down
+    - height = 2 * size
+  - else
+    - height = size
 
-  - points = "#{xpos1 + bubbleadjustx},#{ypos1} #{xpos1 + bubbleadjustx},#{ypos2} #{xpos2},#{ypos1} #{xpos1 + bubbleadjustx}, #{ypos1}"
-  - points_border = "#{xpos1}, #{ypos1 - stroke_width} #{xpos1},#{ypos2 + stroke_width * 2} #{xpos2 + borderadjustx},#{ypos1 - stroke_width} #{xpos1}, #{ypos1 - stroke_width}"
-  - points_spacing = "#{xpos1 + spacingoffsetx},#{ypos1 - stroke_width * 3 - 1} #{xpos1 + spacingoffsetx},#{ypos2 + border_width * 2} #{xpos2 + spacingadjustx},#{ypos1 - border_width} #{xpos1 + spacingoffsetx}, #{ypos1 - stroke_width * 3 - 1}"
-
-  %svg{ :xmlns => "http://www.w3.org/2000/svg", :width => svg_size, :height => svg_size, :class => "t-bubble", :version => "1.1", :baseProfile => "full" }
+  %svg{ :xmlns => "http://www.w3.org/2000/svg", :width => size, :height => height, :class => "t-bubble", :version => "1.1", :baseProfile => "full" }
 
     - if !left && !down
-      - transform = "scale(-1, 1) translate(#{-svg_size}, 0)"
+      - transform = "scale(-1, 1) translate(#{-size}, 0)"
     - elsif down
-      - transform = "translate(0, #{svg_size}) rotate(-90)"
+      - transform = "scale(2,1) translate(#{size+6}, #{8 + size}) rotate(-250)"
     - else
       - transform = ''
 
     %g{ :transform => transform }
-      %polygon{ :class => "t-bubble-spacing", :points => points_spacing }
-      %polygon{ :class => "t-bubble-border", :points => points_border }
-      %polygon{ :class => "t-bubble-inner", :points => points, :filter => "url(#bubble_gradient)" }
     
+      %path.t-bubble-main{d: "M23.0619886,5 C23.0619886,19.9963179 3,27.9943541 3,27.9943541 C3,27.9943541 21.7676667,27.994354 26.9449541,21.9958269 L23.0619886,5 Z M23.0619886,5"}
 
-
+      %path.t-bubble-adjust{d: "M27.378418,20.913672 L23.4689941,4.4 C23.4689941,4.4 23.5527547,6.32501898 23.4689941,6.81333008 C23.3504435,7.50446238 23.1328125,8.99228515 23.1328125,8.99228515 L26.3166504,21.9688468 L27.378418,20.913672 Z M27.378418,20.913672"}

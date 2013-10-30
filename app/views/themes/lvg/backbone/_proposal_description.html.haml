@@ -50,7 +50,9 @@
 
   .l-message.m-proposal-details
 
-    .l-message-body
+    .l-message-body.m-proposal-details-body-wrap
+      = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+
       .m-proposal-description-body
 
       (( if(published) { ))

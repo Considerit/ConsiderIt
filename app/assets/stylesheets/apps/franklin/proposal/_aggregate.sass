@@ -21,7 +21,7 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
     border: 2px solid darken($histogram_bar_color, 10%)
     border-bottom: none
     background-color: $histogram_bar_color
-    +bubble(lighten($base_bg_color,10%), darken($base_bg_color, 10%), up, $include_bg: false, $text_color: $community_text_color)
+    +bubble($community_color, $dark_community_color, up, $include_bg: false, $text_color: $community_text_color)
     +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($histogram_bar_color, 25%), $inset: true)
 
     border-radius: 0px
@@ -31,7 +31,7 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
 
 
     &.m-bar-is-selected 
-      .t-bubble, .m-bar-position
+      .t-bubble//, .m-bar-position
         display: block
 
     .t-bubble
@@ -47,15 +47,15 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
       .t-bubble-spacing
         display: none
 
-    .m-bar-position
-      position: absolute
-      bottom: -37px
-      width: 150px
-      margin-left: -75px
-      left: 50%
-      display: none
-      text-align: center
-      +font-size(-1)
+    // .m-bar-position
+    //   position: absolute
+    //   bottom: -37px
+    //   width: 150px
+    //   margin-left: -75px
+    //   left: 50%
+    //   display: none
+    //   text-align: center
+    //   +font-size(-1)
 
     &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
       background-color: lighten($histogram_bar_color, 16%)

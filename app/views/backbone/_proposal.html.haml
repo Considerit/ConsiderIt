@@ -5,9 +5,6 @@
 
   .m-proposal-description-region
 
-  .m-participants
-    .l-message-speaker
-
   .m-proposal-aggregate-region
 
   .m-proposal-reasons-region
@@ -104,10 +101,13 @@
 
   // .m-proposal-socialmedia-region
 
-  .m-reasons-lists
+  .m-reasons-lists.l-message-body
+    = render :partial => "shared/bubble", :locals => {:left => false, :down => false}
+
     .m-aggregated-propoints-region.m-points-list-region
     .m-position-region
     .m-aggregated-conpoints-region.m-points-list-region
+  .l-message-speaker.m-participants
 
   .m-reasons-footer-region
 
@@ -147,9 +147,9 @@
   (( var bucket = bar.bucket; ))
   .m-histogram-bar{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}"}
 
-    = render :partial => "shared/bubble_equilateral", :locals => {:left => false}
-    .m-bar-position
-      for {{bar.group_name}}
+    = render :partial => "shared/bubble", :locals => {:left => false, :down => true}
+    // .m-bar-position
+    //   for {{bar.group_name}}
 
 
     (( if (bar.positions.length > 0) { ))

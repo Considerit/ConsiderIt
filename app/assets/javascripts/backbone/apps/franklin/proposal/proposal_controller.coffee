@@ -65,8 +65,7 @@
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
 
-        participants_view = @getParticipantsView()
-        layout.participantsRegion.show participants_view
+
 
         @description_controller = @getDescriptionController layout.descriptionRegion
         @aggregate_controller = @getAggregateController layout.aggregateRegion
@@ -141,13 +140,7 @@
         parent_state : @state
         parent_controller : @
 
-    getParticipantsView : ->
-      new Proposal.ParticipantsView
-        model : @model
-
     getLayout : ->
       new Proposal.ProposalLayout
         model : @model
         state : @state
-
-

@@ -10,3 +10,6 @@ if "irb" == $0
   ActiveRecord::Base.logger = Logger.new(STDOUT)
   ActiveSupport::Cache::Store.logger = Logger.new(STDOUT)
 end
+
+code_revision = `git log --pretty=format:%h -n1`.strip
+ENV['RAILS_CACHE_ID'] = code_revision

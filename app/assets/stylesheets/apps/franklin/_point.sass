@@ -284,7 +284,7 @@ $m-point-expanded-width: $body_width + 150
 %m-thought-bubble
 
   &:before, &:after
-    content: ''
+    //content: ''
     position: absolute
     border: 1px solid
     border-top-color: transparent
@@ -295,7 +295,8 @@ $m-point-expanded-width: $body_width + 150
     display: inline-block
     position: absolute
     border-radius: 8px
-    top: 2 * $vertical_baseline
+    top: .7 * $vertical_baseline
+    //top: 2 * $vertical_baseline
     //border: 1px solid transparent
     //+single-box-shadow    
 
@@ -397,8 +398,8 @@ $m-point-expanded-width: $body_width + 150
 
 [data-state="points-separated"]
   .m-point-peer.m-point-unexpanded
-    @extend %m-white-thought-bubble
-
+    //@extend %m-white-thought-bubble
+    @extend %m-thought-bubble
     .m-point-wrap
       @extend %m-white-thought-bubble-inner
 
@@ -406,7 +407,7 @@ $m-point-expanded-width: $body_width + 150
 //   @extend %m-thought-bubble-bottom-in
 
 [data-state="points-separated"] .m-point-peer.m-point-unexpanded
-  @extend %m-thought-bubble-side-down
+  //@extend %m-thought-bubble-side-down
 
 [data-state="points-together"], [data-state="points-collapsed"]
 

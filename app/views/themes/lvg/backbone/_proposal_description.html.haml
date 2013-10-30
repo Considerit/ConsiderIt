@@ -5,93 +5,102 @@
 
   (( if(prop_type=='local'){ $(".m-proposal[data-id='"+proposal.id+"']").addClass('t-local'); } ))
 
-  .l-message.m-proposal-introduction
 
+  .l-message
 
     .l-message-speaker.l-message-initiator
-
       %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
         %img{:src => "{{ avatar }}"}
-      .t-jurisdiction
-        %span
-          %strong
-            {{ category.charAt(0) }}-{{designator}} 
-          %br
-          {{jurisdiction}}
-        %span.m-proposal-leading
-          
 
-    .l-message-body.m-proposal-description
-      = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+    .l-message-body.l-proposal-description-outer-wrap     
 
-      .l-message-title
-        %span.m-proposal-description-title
-        (( if(!show_details){ ))
-        %span.m-proposal-description-title-readmore
-          more info
-        (( if(active && !show_details) { ))
-        %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :title => "Decide on {{name}}"}          
-          %i.icon-large 
-            &#xf044;
-          {{ call }}
-
-        %a.m-reasons-view-results{:'data-target' => 'show-results'}
-          %i.icon-bar-chart-o.icon-large 
-            &#xf080;
-          View Results
-          
-        (( } ))
-        (( } ))
+      .l-message.m-proposal-introduction
 
 
-    
+        .l-message-speaker.l-message-initiator
 
-  (( if(show_details){ ))
+          %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
+            %img{:src => "{{ avatar }}"}
+          .t-jurisdiction
+            %span
+              %strong
+                {{ category.charAt(0) }}-{{designator}} 
+              %br
+              {{jurisdiction}}
+            %span.m-proposal-leading
+              
 
-  .l-message.m-proposal-details
+        .l-message-body.m-proposal-description
+          = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-    .l-message-body.m-proposal-details-body-wrap
-      = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+          .l-message-title
+            %span.m-proposal-description-title
+            (( if(!show_details){ ))
+            %span.m-proposal-description-title-readmore
+              more info
+            (( if(active && !show_details) { ))
+            %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :title => "Decide on {{name}}"}          
+              %i.icon-large 
+                &#xf044;
+              {{ call }}
 
-      .m-proposal-description-body
+            %a.m-reasons-view-results{:'data-target' => 'show-results'}
+              %i.icon-bar-chart-o.icon-large 
+                &#xf080;
+              View Results
+              
+            (( } ))
+            (( } ))
 
-      (( if(published) { ))
 
-      .m-proposal-details-wrapper
-        .m-proposal-description-details
+        
+
+      (( if(show_details){ ))
+
+      .l-message.m-proposal-details
+
+        .l-message-body.m-proposal-details-body-wrap
+          = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+
+          .m-proposal-description-body
+
+          (( if(published) { ))
+
+          .m-proposal-details-wrapper
+            .m-proposal-description-details
 
 
-          (( _.each(description_detail_fields, function(field) {  ))
+              (( _.each(description_detail_fields, function(field) {  ))
 
-          (( if( $.trim(field[2]) != '') { ))
-          .m-proposal-description-detail-field
-            .m-proposal-description-detail-field-heading
-              %a.hidden
-                Read {{ field[1] }} &raquo;
-            .m-proposal-description-detail-field-full.hide
-              %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
-                %h1
-                  {{ field[1] }}
-                {{ field[2] }}
-              %a.showing
-                hide
+              (( if( $.trim(field[2]) != '') { ))
+              .m-proposal-description-detail-field
+                .m-proposal-description-detail-field-heading
+                  %a.hidden
+                    Read {{ field[1] }} &raquo;
+                .m-proposal-description-detail-field-full.hide
+                  %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
+                    %h1
+                      {{ field[1] }}
+                    {{ field[2] }}
+                  %a.showing
+                    hide
+              (( } ))
+
+              (( }); ))
+            .m-proposal-description-details.m-proposal-links
+              %h3
+                More information
+
+              (( _.each([{field: url1, name: 'Full text'}, {field: url2, name: 'Responsible Choices Analysis'}, {field: url3, name: 'Funding Sources'} ], function(url) {  ))
+              (( if( url.field && $.trim(url.field) != '' ){ ))
+              .m-proposal-url-field
+                %a{ :href => "{{url.field}}", :target => "_blank"}
+                  {{url.name}}
+              (( } ))
+              (( }); ))
+
+
+
           (( } ))
-
-          (( }); ))
-        .m-proposal-description-details.m-proposal-links
-          %h3
-            More information
-
-          (( _.each([{field: url1, name: 'Full text'}, {field: url2, name: 'Responsible Choices Analysis'}, {field: url3, name: 'Funding Sources'} ], function(url) {  ))
-          (( if( url.field && $.trim(url.field) != '' ){ ))
-          .m-proposal-url-field
-            %a{ :href => "{{url.field}}", :target => "_blank"}
-              {{url.name}}
-          (( } ))
-          (( }); ))
-
-
-
+        
       (( } ))
-    
-  (( } ))

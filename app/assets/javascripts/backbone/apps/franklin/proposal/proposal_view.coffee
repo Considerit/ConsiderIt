@@ -36,11 +36,11 @@
     explodeParticipants : (transition = true) ->      
       modern = Modernizr.csstransforms && Modernizr.csstransitions
 
-      $participants = @$el.find('.l-message-speaker .l-group-container')
+      $participants = @$el.find('.l-message-speaker.m-participants .l-group-container')
 
       $histogram = @$el.find('.m-histogram')
 
-      delay = if transition then 750 else 1
+      delay = if transition then 1 else 1
 
       _.delay =>
 

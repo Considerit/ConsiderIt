@@ -21,6 +21,9 @@
 
 
 .m-reasons
+  &[data-state="together"]
+    .m-reasons-lists
+      width: $body_width + 2 * $grid_major
 
   // REASONS
   // this is the wrapper for the peer and position point lists
@@ -28,6 +31,18 @@
     margin: $vertical_baseline auto 0 auto
     position: relative
     width: $body_width
+
+  &[data-state="collapsed"], &[data-state="together"]
+    .m-reasons-lists
+      +bubble($community_color, $dark_community_color, left, $text_color: $community_text_color)
+      svg.t-bubble
+        left: auto
+        right: -23px
+        
+  &[data-state="separated"], &[data-state="together"]
+    .m-reasons-lists
+      > svg.t-bubble
+        display: none
 
   /////////
   // wrapper for a points column, managed by a PointsController
@@ -63,11 +78,20 @@
     .m-aggregated-propoints-region, .m-aggregated-conpoints-region
       width: $peer-point-results-width
 
+  &[data-state="collapsed"]
     .m-aggregated-propoints-region
       left: 0
 
     .m-aggregated-conpoints-region
       right: 0
+
+  &[data-state="together"]
+    .m-aggregated-propoints-region
+      left: $grid_major
+
+    .m-aggregated-conpoints-region
+      right: $grid_major
+
 
   &[data-state="separated"]
 

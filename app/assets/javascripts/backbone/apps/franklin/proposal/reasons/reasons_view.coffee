@@ -9,6 +9,7 @@
       footerRegion : '.m-reasons-footer-region'      
       peerProsRegion : '.m-aggregated-propoints-region'
       peerConsRegion : '.m-aggregated-conpoints-region'
+      participantsRegion : '.l-message-speaker'
 
     initialize : (options = {}) ->
       super options
@@ -70,15 +71,16 @@
       , 500
 
     sizeToFit : (inclusive) ->
+      $to_fit = @$el.children('.m-reasons-lists')
 
       regions = _.compact [@peerProsRegion, @peerConsRegion]
       if regions.length > 0
         height = _.max (r.$el.height() for r in regions)
-        height += @$el.children('.m-reasons-lists').height() if inclusive
+        #height += @$el.children('.m-reasons-lists').height() if inclusive
       
       else
         height = 0
-      @$el.css 'min-height', height
+      $to_fit.css 'min-height', height + 50
 
     # ugly having this method here...
     includePoint : (model, $source, $dest, source) ->

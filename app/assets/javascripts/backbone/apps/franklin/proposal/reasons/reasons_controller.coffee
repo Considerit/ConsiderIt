@@ -25,6 +25,9 @@
 
       # @layout.reasonsHeaderRegion.show header_view
 
+      participants_view = @getParticipantsView()
+      @layout.participantsRegion.show participants_view
+
 
       if @state == Proposal.ReasonsState.together && !@options.model.getUserPosition().get('published')
         _.delay =>
@@ -229,6 +232,9 @@
           new Proposal.ResultsFooterSeparatedView
             model : @model
 
+    getParticipantsView : ->
+      new Proposal.ParticipantsView
+        model : @model
 
     # getHeaderView : (group = 'all') ->
     #   switch @state

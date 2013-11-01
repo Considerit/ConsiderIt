@@ -19,37 +19,39 @@
 
     pointExpanded : (region, inclusive) ->
       region.$el.css 'zIndex', 12
-      @sizeToFit inclusive
+      #@sizeToFit inclusive
 
     pointClosed : (region, inclusive) ->
       region.$el.css 'zIndex', ''
-      @sizeToFit inclusive
+      #@sizeToFit inclusive
 
     pointsBrowsing : (inclusive, valence) ->
       # $expanded_points_increment: 250px
       expansion_size = 250
       if valence == 'pro'
-        @peerConsRegion.$el.css 
-          right: parseInt(@peerConsRegion.$el.css('right')) - expansion_size
+        # @peerConsRegion.$el.css 
+        #   right: parseInt(@peerConsRegion.$el.css('right')) - expansion_size
 
-        @positionRegion.$el.css 
-          left: expansion_size
+        # @positionRegion.$el.css 
+        #   left: expansion_size
 
         @peerProsRegion.$el.addClass 'm-pointlist-browsing'
+        @$el.addClass 'm-reasons-browsing m-reasons-browsing-pros'
 
       else
-        @peerProsRegion.$el.css 
-          left: parseInt(@peerProsRegion.$el.css('left')) - expansion_size
-        @positionRegion.$el.css 
-          left: -expansion_size
+        # @peerProsRegion.$el.css 
+        #   left: parseInt(@peerProsRegion.$el.css('left')) - expansion_size
+        # @positionRegion.$el.css 
+        #   left: -expansion_size
         # @peerConsRegion.$el.css 
         #   right: parseInt(@peerConsRegion.$el.css('right')) + expansion_size
         @peerConsRegion.$el.addClass 'm-pointlist-browsing'
+        @$el.addClass 'm-reasons-browsing m-reasons-browsing-cons'
 
 
-      _.delay =>
-        @sizeToFit inclusive
-      , 500
+      # _.delay =>
+      #   @sizeToFit inclusive
+      # , 500
 
     pointsBrowsingOff : (inclusive, valence) ->
       @peerConsRegion.$el.css 
@@ -62,13 +64,15 @@
           left: ''
 
         @peerConsRegion.$el.removeClass 'm-pointlist-browsing'
+        @$el.removeClass 'm-reasons-browsing m-reasons-browsing-cons'
+
       else
         @peerProsRegion.$el.removeClass 'm-pointlist-browsing'
+        @$el.removeClass 'm-reasons-browsing m-reasons-browsing-pros'
 
-
-      _.delay =>
-        @sizeToFit inclusive
-      , 500
+      # _.delay =>
+      #   @sizeToFit inclusive
+      # , 500
 
     sizeToFit : (inclusive) ->
       $to_fit = @$el.children('.m-reasons-lists')

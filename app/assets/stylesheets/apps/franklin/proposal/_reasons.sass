@@ -1,3 +1,121 @@
+//////////////////
+// global layout for reasons & points, in different states
+
+
+.m-reasons
+  .m-point
+    +transition(width $transition_speed $transition_function, top $transition_speed linear)
+
+    .m-point-wrap
+      +transition(all $transition_speed $transition_function)
+      //+transition(width $transition_speed $transition_function, background-color $transition_speed $transition_function, border-color $transition_speed $transition_function, top .5s ease, left .5s ease, color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
+
+  .m-points-list-region, .m-position-region
+    display: inline-block
+    //+transition(width $transition_speed $transition_function, left $transition_speed $transition_function)
+    +transition(all $transition_speed $transition_function)
+
+  .m-position-region
+    overflow: hidden
+
+  .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+    +transition(width $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function)
+
+  // this is the wrapper for the peer and position point lists
+  .m-reasons-lists
+    position: absolute
+    //+transition(width $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function, background-color $transition_speed $transition_function, border-color $transition_speed $transition_function, box-shadow $transition_speed $transition_function)
+    +transition(all $transition_speed $transition_function)
+
+  &[data-state="collapsed"]
+    .m-reasons-lists
+      width: $body_width + 1 * $grid_xs
+      left: $margin-width
+
+  &[data-state="together"]
+    .m-reasons-lists
+      left: $margin-width - $dialog_stutter
+      width: $body_width + 2 * $peer-point-avatar-area + $grid_xs / 2
+      padding-left: $peer-point-avatar-area + $grid_xs
+      padding-right: $peer-point-avatar-area + $grid_xs
+
+    .m-aggregated-propoints-region
+
+
+  $separated-points-width: $peer-point-width - 0
+  &[data-state="separated"]
+    .m-reasons-lists
+      width: $body_width + 2 * $peer-point-width + 2 * $peer-point-avatar-area + 2.5 * $grid_xs
+      left: -$peer-point-width + $margin_width - $peer-point-avatar-area - $grid_xs / 4
+      padding-left: $peer-point-avatar-area + $grid_xs
+      padding-right: $peer-point-avatar-area + $grid_xs
+
+    .m-position-region
+      width: $body_width
+      left: 0px
+
+    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      width: $separated-points-width
+
+    .m-point-peer.m-point-unexpanded
+      width: $separated-points-width
+      .m-point-wrap
+        width: $separated-points-width
+
+  $together-points-width: $peer-point-results-width - 0
+  &[data-state="together"], &[data-state="collapsed"]
+    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      width: $together-points-width
+
+    .m-position-region
+      width: 0
+      left: -$separated-points-width - $peer-point-avatar-area - 2.5 * $grid_xs
+
+    .m-point-peer.m-point-unexpanded
+      width: $together-points-width
+      .m-point-wrap
+        width: $together-points-width
+
+
+  // pointlist browsing
+  &[data-state="separated"]
+    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      &.m-pointlist-browsing
+        width: $peer-point-width + $expanded_points_increment
+
+        .m-point-peer.m-point-unexpanded
+          width: $peer-point-width + $expanded_points_increment
+          .m-point-wrap
+            width: $peer-point-width + $expanded_points_increment
+
+    &.m-reasons-browsing .m-reasons-lists
+      width: $body_width + 2 * $peer-point-width + 2 * $peer-point-avatar-area + 2.5 * $grid_xs + $expanded_points_increment
+
+    &.m-reasons-browsing-cons .m-reasons-lists
+      left: -$peer-point-width + $margin_width - $peer-point-avatar-area - $grid_xs / 4 - $expanded_points_increment 
+
+  &[data-state="together"]
+    &.m-reasons-browsing-cons .m-reasons-lists
+
+
+    &.m-reasons-browsing .m-reasons-lists
+      width: $body_width + 2 * $peer-point-avatar-area + $grid_xs / 2 + $expanded_points_increment
+
+
+    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      &.m-pointlist-browsing
+        width: $peer-point-results-width + $expanded_points_increment
+
+        .m-point-peer.m-point-unexpanded
+          width: $peer-point-results-width + $expanded_points_increment    
+          .m-point-wrap
+            width: $peer-point-results-width + $expanded_points_increment
+
+
+////////// end layout //////////
+
+
+// Activity-based styles
 [data-activity="proposal-no-activity"]
   .m-reasons[data-state="collapsed"]
     display: none
@@ -18,23 +136,19 @@
     &[data-state="together"], &[data-state="separated"]
       min-height: 500px
 
+////////////////////
+
+
 
 
 .m-reasons
-  &[data-state="together"]
-    .m-reasons-lists
-      width: $body_width + 2 * $grid_major
+  margin: $vertical_baseline 0
 
-  // REASONS
-  // this is the wrapper for the peer and position point lists
-  .m-reasons-lists
-    margin: $vertical_baseline auto 0 auto
-    position: relative
-    width: $body_width
 
-  &[data-state="collapsed"], &[data-state="together"]
+  &[data-state="collapsed"]//, &[data-state="together"] //, &[data-state="separated"]
     .m-reasons-lists
-      +bubble($community_color, $dark_community_color, left, $text_color: $community_text_color)
+      //+bubble($community_color, $dark_community_color, left, $text_color: $community_text_color)
+      +bubble(whitesmoke, darken(whitesmoke, 20%), left, $text_color: $base_text_color)
       svg.t-bubble
         left: auto
         right: -23px
@@ -53,56 +167,12 @@
   .m-position-region
     position: relative
 
-  .m-points-list-region, .m-position-region
-    display: inline-block
 
-  &[data-state="separated"]
-    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
-      &.m-pointlist-browsing
-        width: $peer-point-width + $expanded_points_increment
-
-  &[data-state="together"]
-    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
-      &.m-pointlist-browsing
-        width: $peer-point-results-width + $expanded_points_increment
 
   .m-aggregated-propoints-region, .m-aggregated-conpoints-region
-    +transition(width .4s ease, left .5s linear, right .5s linear)
-    position: absolute
+    //position: absolute
     top: 0
     z-index: 10
-
-
-
-  &[data-state="together"], &[data-state="collapsed"]
-    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
-      width: $peer-point-results-width
-
-  &[data-state="collapsed"]
-    .m-aggregated-propoints-region
-      left: 0
-
-    .m-aggregated-conpoints-region
-      right: 0
-
-  &[data-state="together"]
-    .m-aggregated-propoints-region
-      left: $grid_major
-
-    .m-aggregated-conpoints-region
-      right: $grid_major
-
-
-  &[data-state="separated"]
-
-    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
-      width: $peer-point-width
-
-    .m-aggregated-propoints-region
-      left: -232px
-
-    .m-aggregated-conpoints-region
-      right: -232px
 
   ////////
 

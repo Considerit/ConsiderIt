@@ -39,7 +39,7 @@
       'click [data-target="point-include"]' : 'includePoint'
       'mouseenter' : 'highlightIncluders'
       'mouseleave' : 'unhighlightIncluders'
-
+      
     includePoint : (ev) ->
       @trigger 'point:include'
       ev.stopPropagation()

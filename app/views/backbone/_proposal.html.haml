@@ -147,7 +147,12 @@
   (( var bucket = bar.bucket; ))
   .m-histogram-bar{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}"}
 
-    = render :partial => "shared/bubble", :locals => {:left => false, :down => true}
+    (( if(bucket < 4 ){ ))
+    = render :partial => "shared/bubble", :locals => {:left => false, :down => true }
+    (( } else { ))
+    = render :partial => "shared/bubble", :locals => {:left => false, :down => true, :flipped => true }
+    (( } ))
+
     // .m-bar-position
     //   for {{bar.group_name}}
 

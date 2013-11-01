@@ -91,13 +91,6 @@
   .m-proposal-description-title
     +font-size(2)
 
-  .m-proposal-description-title-readmore
-    display: none
-    +font-size(-3)
-    white-space: nowrap
-    font-weight: normal
-
-
 
   // in details
 
@@ -153,10 +146,8 @@
       text-decoration: underline
 
 
-  &[data-state="expanded"]
-    .m-proposal-description-title-readmore
-      display: none
-
+  &[data-state="expanded-together"], &[data-state="expanded-separated"]
+  
     .m-proposal-description
       border-radius: 16px 16px 0px 0px
 

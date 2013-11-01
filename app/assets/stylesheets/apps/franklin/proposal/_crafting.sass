@@ -1,9 +1,10 @@
 
 .m-position
-  top: -$vertical_baseline / 2
-  left: -$grid_xs
+  // top: -$vertical_baseline / 2
+  // left: -$grid_xs
+  width: $body_width
 
-  +transition(margin-left .4s ease) // for point browsing
+  +transition(margin-left .8s ease) // for point browsing
 
   .m-position-message-body
     +bubble($decision_board_color, darken($decision_board_color, 10%), left )
@@ -19,16 +20,21 @@
   // left: -250px 
   display: inline-block
   @extend %on_chalkboard
-  min-height: 450px
   margin-top: $vertical_baseline / 2
+
+  min-height: 0
+  +transition(min-height $transition_speed $transition_function)
 
   .m-point-expanded
     @extend %whitesmoke
 
-[data-state="separated"]
-  .m-position-propoints-region, .m-position-conpoints-region
-    width: $pro-con-list-column-width
 
+.m-position-propoints-region, .m-position-conpoints-region
+  width: $pro-con-list-column-width
+
+[data-state="separated"]
+  .m-personal-reasons
+    min-height: 450px
 
 // footer
 .m-position-footer

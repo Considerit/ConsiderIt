@@ -72,6 +72,7 @@
 
 
   class Points.PeerPointsController extends Points.AbstractPointsController
+    removed_points : []
 
     state_map : ->
       map = {}
@@ -94,10 +95,29 @@
       @region.show @layout
 
     processStateChange : ->
-      @layout = @resetLayout @layout
+      #@layout = @resetLayout @layout
+
+    segmentPeerPoints : (segment) ->
+      fld = if segment == 'all' then 'score' else "score_stance_group_#{segment}"
+      @layout.sort = fld
+      @layout.segment = segment
+
+
+      if @removed_points.length > 0
+        @options.collection.fullCollection.add @removed_points
+
+      @removed_points = @options.collection.fullCollection.filter (point) ->
+        !point.get(fld) || point.get(fld) == 0
+
+      @options.collection.fullCollection.remove @removed_points
+      @options.collection.setSorting fld, 1
+      @options.collection.fullCollection.sort()          
+
 
     setupLayout : (layout) ->
       super layout
+
+      $transition_speed = 1200
 
       @listenTo layout, 'show', =>
         @listenTo layout, 'childview:point:include', (view) => 
@@ -110,13 +130,18 @@
 
         @listenTo layout, 'points:browsing', =>
           @trigger 'points:browsing', @options.valence
-          @previous_page_size = @options.collection.state.pageSize
-          @options.collection.setPageSize 1000
+          _.delay =>
+            @previous_page_size = @options.collection.state.pageSize
+            @options.collection.setPageSize 1000
+          , $transition_speed
 
         @listenTo layout, 'points:browsing:off', =>
-          @options.collection.setPageSize @previous_page_size
-          @options.collection.getPage 1
           @trigger 'points:browsing:off', @options.valence
+
+          _.delay =>
+            @options.collection.setPageSize @previous_page_size
+            @options.collection.getPage 1
+          , $transition_speed
 
     getLayout : ->
       new Points.PeerPointList
@@ -130,8 +155,8 @@
     state_map : ->
       map = {}
       map[App.Franklin.Proposal.ReasonsState.separated] = Points.States.position    
-      map[App.Franklin.Proposal.ReasonsState.together] = Points.States.hidden
-      map[App.Franklin.Proposal.ReasonsState.collapsed] = Points.States.hidden
+      map[App.Franklin.Proposal.ReasonsState.together] = Points.States.position
+      map[App.Franklin.Proposal.ReasonsState.collapsed] = Points.States.position
       map 
 
     initialize : (options = {}) ->

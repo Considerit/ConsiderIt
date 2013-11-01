@@ -13,8 +13,9 @@
 
   Proposal.DescriptionState = 
     collapsed : 'collapsed'
-    expanded : 'expanded'
-      
+    expandedTogether : 'expanded-together'
+    expandedSeparated : 'expanded-separated'
+
   class Proposal.ProposalController extends App.Controllers.Base
     exploded : false
     state : null
@@ -49,24 +50,20 @@
         if @state == Proposal.State.collapsed
           @layout.$el.moveToTop 50, true
         else
-          @aggregate_controller.layout.$el.moveToTop 50, true
+          @aggregate_controller.layout.$el.ensureInView()# 50, true
 
       else
         $(document).scrollTop(0)
 
 
       if @state == Proposal.State.expanded.results
-        @layout.explodeParticipants prior_state != null
-
-      else if @exploded
+        @layout.explodeParticipants prior_state != null && prior_state != Proposal.State.expanded.crafting
+      else if @exploded #&& @state == Proposal.State.collapsed
         @layout.implodeParticipants()
         @exploded = false
 
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
-
-
-
         @description_controller = @getDescriptionController layout.descriptionRegion
         @aggregate_controller = @getAggregateController layout.aggregateRegion
         @reasons_controller = @getReasonsController layout.reasonsRegion

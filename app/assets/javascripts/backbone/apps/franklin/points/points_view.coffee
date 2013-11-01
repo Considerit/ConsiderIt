@@ -103,10 +103,13 @@
           'Persuasive'
         when 'created_at'
           'New'
+        else
+          '' 
+
+      tail = if modifier == '' then "for #{App.Entities.Position.stance_name(@segment)}" else ''
 
 
-
-      "#{modifier} #{valence}"
+      $.trim "#{modifier} #{valence} #{tail}"
 
 
     selectSort : ->

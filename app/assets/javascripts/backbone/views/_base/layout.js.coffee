@@ -13,6 +13,9 @@
       @setDataState @state
 
     setDataState : (state) ->
+      @$el.attr 'data-state-from', @state
+      @$el.data 'state-from', @state
+
       @$el.attr 'data-state', state
       @$el.data 'state', state
       @state = state      

@@ -2,11 +2,18 @@
   .m-histogram
     visibility: visible
     display: block
+    height: 215px
+
+.m-results[data-state="separated"], .m-results[data-state="collapsed"]
+  .m-histogram
+    height: 215px
+
 
 // HISTOGRAM / WHAT
 $histogram_bar_color: darken($mid_bg_color, 15%)
 .m-histogram
-  display: none
+  //display: none
+  +transition(height $transition_speed, opacity $transition_speed)
   opacity: 0
   visibility: hidden
   margin: $vertical_baseline auto 0 auto

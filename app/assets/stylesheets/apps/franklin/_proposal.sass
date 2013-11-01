@@ -128,9 +128,6 @@
 
 
 // participants block
-[data-state="1"]
-  .m-participants.l-message-speaker
-    visibility: hidden
 [data-state="0"]
   .m-participants.l-message-speaker
 
@@ -139,6 +136,10 @@
       
       .avatar // for the explode transition
         +rotate(180deg)
+
+[data-state="1"]
+  .m-participants.l-message-speaker
+    visibility: hidden
 
 [data-state="4"]
   .m-participants.l-message-speaker

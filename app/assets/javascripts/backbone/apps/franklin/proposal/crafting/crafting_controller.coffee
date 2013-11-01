@@ -33,19 +33,21 @@
         if @prior_state == null
           region.$el.empty().append view.el
         else
-          _.delay =>
-            view.$el.hide()
-            region.$el.empty().append view.el
-            view.$el.fadeIn 400
-          , 400
+          region.$el.empty().append view.el
+
+          # _.delay =>
+          #   #view.$el.hide()
+          #   region.$el.empty().append view.el
+          #   #view.$el.fadeIn 400
+          # , 400
       else if @state == Proposal.ReasonsState.together
-        view.$el.hide()
+        #view.$el.hide()
         region.$el.empty().append view.el
 
 
     processStateChange : ->
-      if @prior_state != @state
-        @layout = @resetLayout @layout
+      # if @prior_state != @state
+      #   @layout = @resetLayout @layout
 
 
     setupLayout : (layout) ->

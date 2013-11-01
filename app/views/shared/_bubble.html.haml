@@ -1,5 +1,6 @@
 - down ||= false
 - left ||= false
+- flipped ||= false
 
 - cache ['bubble', left, down] do 
   - size = 28
@@ -18,6 +19,9 @@
       - transform = "scale(2,1) translate(#{size+6}, #{8 + size}) rotate(-250)"
     - else
       - transform = ''
+
+    - if flipped
+      - transform = 'translate(28,0) scale(-1,1)' + transform
 
     %g{ :transform => transform }
     

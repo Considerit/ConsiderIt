@@ -74,6 +74,8 @@
     events : 
       'click .hidden' : 'showDetails'
       'click .showing' : 'hideDetails'      
+      'click .m-proposal-description' : 'toggleDescription'
+      'click [data-target="show-results"]' : 'showResults'
 
     showDetails : (ev) ->
       $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
@@ -104,22 +106,29 @@
 
       ev.stopPropagation()
 
-
-  class Proposal.SummaryProposalDescription extends Proposal.ProposalDescriptionView
-    show_details : false
-  
-    editable : => false
-
-    initialize : (options = {}) ->
-      super options
-      _.extend @events, 
-        'click .m-proposal-description' : 'toggleDescription'
-        'click [data-target="show-results"]' : 'showResults'
-
     toggleDescription : (ev) ->
       @trigger 'proposal:clicked'
       
     showResults : (ev) ->
       @trigger 'show_results'
       ev.stopPropagation()
+
+      
+  class Proposal.SummaryProposalDescription extends Proposal.ProposalDescriptionView
+    show_details : false
+  
+    editable : => false
+
+    # initialize : (options = {}) ->
+    #   super options
+    #   _.extend @events, 
+    #     'click .m-proposal-description' : 'toggleDescription'
+    #     'click [data-target="show-results"]' : 'showResults'
+
+    # toggleDescription : (ev) ->
+    #   @trigger 'proposal:clicked'
+      
+    # showResults : (ev) ->
+    #   @trigger 'show_results'
+    #   ev.stopPropagation()
 

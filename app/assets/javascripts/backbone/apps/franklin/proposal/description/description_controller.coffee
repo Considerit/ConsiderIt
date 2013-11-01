@@ -5,8 +5,8 @@
     state_map : ->
       map = {}
       map[Proposal.State.collapsed] = Proposal.ReasonsState.collapsed
-      map[Proposal.State.expanded.crafting] = Proposal.DescriptionState.expanded
-      map[Proposal.State.expanded.results] = Proposal.DescriptionState.expanded
+      map[Proposal.State.expanded.crafting] = Proposal.DescriptionState.expandedSeparated
+      map[Proposal.State.expanded.results] = Proposal.DescriptionState.expandedTogether
       map
 
 
@@ -26,12 +26,13 @@
         @layout = @resetLayout @layout
 
     transition : (region, view) ->
-      if @state == Proposal.DescriptionState.collapsed || @prior_state == null
+      if @state != Proposal.DescriptionState.collapsed && @prior_state == Proposal.DescriptionState.collapsed
         region.$el.empty().append view.el
-      else
         view.ui.details.hide()
         region.$el.empty().append view.el
         view.ui.details.slideDown 400
+      else# if @state == Proposal.DescriptionState.collapsed || @prior_state == null
+        region.$el.empty().append view.el
 
     setupLayout : (layout) ->
 
@@ -40,7 +41,7 @@
           App.navigate Routes.new_position_proposal_path( @model.long_id ), {trigger: true}
 
         @listenTo layout, 'show_results', =>
-          if @state == Proposal.ReasonsState.collapsed
+          if @state != Proposal.ReasonsState.together
             App.navigate Routes.proposal_path(@model.long_id), {trigger: true}
 
             if @prior_state == Proposal.ReasonsState.separated
@@ -49,13 +50,13 @@
 
     getLayout : ->
 
-      if @state == Proposal.DescriptionState.expanded
-        new Proposal.ProposalDescriptionView
+
+      if @state == Proposal.DescriptionState.collapsed
+        new Proposal.SummaryProposalDescription
           model : @model
           state : @state
-
-      else if @state == Proposal.DescriptionState.collapsed
-        new Proposal.SummaryProposalDescription
+      else
+        new Proposal.ProposalDescriptionView
           model : @model
           state : @state
 

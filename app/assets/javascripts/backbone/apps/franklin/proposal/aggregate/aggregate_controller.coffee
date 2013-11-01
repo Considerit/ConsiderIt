@@ -23,18 +23,13 @@
       @region.show @layout
 
     transition : (region, view) ->
-      if @state == Proposal.ReasonsState.collapsed || @prior_state == null
-        region.$el.empty().append view.el
-      else if @state == Proposal.ReasonsState.separated
-        region.$el.empty().append view.el
-        view.$el.slideUp()
-      else        
-        region.$el.empty().append view.el
+      region.$el.empty().append view.el
 
 
     processStateChange : ->
-      if @prior_state != @state
+      if @prior_state == Proposal.ReasonsState.collapsed
         @layout = @resetLayout @layout
+
 
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
@@ -76,7 +71,7 @@
 
     _createHistogram : () ->
       BARHEIGHT = 200
-      BARWIDTH = 78
+      BARWIDTH = 83
 
       breakdown = [{positions:[]} for i in [0..6]][0]
 

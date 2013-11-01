@@ -1,6 +1,5 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
   class Proposal.ReasonsController extends App.Controllers.StatefulController
-    removed_points : {}
 
     # maps from parent state to this controller's state
     state_map : ->
@@ -13,7 +12,7 @@
 
     # transition or reset views as appropriate after state has been updated
     processStateChange : ->
-
+      $transition_speed = 1200
 
       #if @state != Proposal.ReasonsState.collapsed || (@peer_pros_controller.options.collection.length + @peer_cons_controller.options.collection.length > 0)
       footer_view = @getResultsFooterView()
@@ -37,21 +36,23 @@
         if @prior_state != null
           App.request "sticky_footer:close"
 
-
-      delay = if @state != Proposal.ReasonsState.together || @prior_state == null then 0 else 1300
+      # do immediately if this is first time showing crafting
+      #delay = if @state == Proposal.ReasonsState.collapsed || @prior_state == null then 0 else $transition_speed
+      delay = if !@crafting_controller then 0 else $transition_speed
       _.delay => 
         @updatePeerPoints @layout
 
         if !@crafting_controller && @options.model.fetched && @state != Proposal.ReasonsState.collapsed
           @crafting_controller = @getCraftingController @layout.positionRegion
           @setupCraftingController @crafting_controller 
+
       , delay
 
-      delay = if @state == Proposal.ReasonsState.together || @prior_state == null then 0 else 500 + 1300
+      # delay = if @state == Proposal.ReasonsState.together || @prior_state == null then 0 else 500 + 1300
 
-      _.delay =>
-        @layout.sizeToFit @state != Proposal.ReasonsState.separated
-      , delay
+      # _.delay =>
+      #   @layout.sizeToFit @state != Proposal.ReasonsState.separated
+      # , delay
 
 
     initialize : (options = {}) ->
@@ -99,7 +100,7 @@
               collection.setPageSize 1
 
             when Proposal.ReasonsState.together
-              collection.setPageSize 5
+              collection.setPageSize 4
 
       else
         points = switch @state 
@@ -112,7 +113,7 @@
             page_size = 4
             new App.Entities.Points all_points.filter (point) -> !(point.id in included_points)
           else
-            page_size = 5
+            page_size = 4
             App.request 'points:get:proposal', @model.id
 
         aggregated_pros = new App.Entities.PaginatedPoints points.filter((point) -> point.isPro()), {state: {pageSize:page_size} }
@@ -139,19 +140,12 @@
         @setupPointsController @peer_cons_controller
 
     segmentPeerPoints : (segment) ->
-      fld = if segment == 'all' then 'score' else "score_stance_group_#{segment}"
       # @layout.reasonsHeaderRegion.show @getHeaderView(segment)
 
-      _.each [@peer_pros_controller.options.collection, @peer_cons_controller.options.collection], (collection, idx) =>
-        if idx of @removed_points
-          collection.fullCollection.add @removed_points[idx]
+      _.each [@peer_pros_controller, @peer_cons_controller], (controller, idx) =>
+        controller.segmentPeerPoints segment
 
-        @removed_points[idx] = collection.fullCollection.filter (point) ->
-          !point.get(fld) || point.get(fld) == 0
-
-        collection.fullCollection.remove @removed_points[idx]
-        collection.setSorting fld, 1
-        collection.fullCollection.sort()      
+  
 
     setupCraftingController : (controller) ->
       @listenTo controller, 'point:removal', (model) =>

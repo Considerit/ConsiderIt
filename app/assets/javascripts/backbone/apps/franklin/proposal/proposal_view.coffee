@@ -29,7 +29,7 @@
       $participants = @$el.find('.l-message-speaker .l-group-container')
       $participants.find('.avatar').css {position: '', zIndex: '', '-ms-transform': "", '-moz-transform': "", '-webkit-transform': "", transform: ""}
 
-      @$el.find('.m-histogram').hide()
+      #@$el.find('.m-histogram').hide()
       @$el.find('.m-histogram').css('opacity', '')
       $participants.show()
 
@@ -40,38 +40,36 @@
 
       $histogram = @$el.find('.m-histogram')
 
-      delay = if transition then 1 else 1
+      if !modern || !transition
+        @$el.find('.m-histogram').css 'opacity', 1
+        $participants.hide()
+        @trigger 'explosion:complete'
+      else
+        speed = 1200
+        from_tile_size = $participants.find('.avatar:first').width()
+        to_tile_size = $histogram.find(".avatar:first").width()
+        ratio = to_tile_size / from_tile_size
 
-      _.delay =>
+        # compute all offsets first, before applying changes, for perf reasons
+        positions = {}
+        $user_els = $participants.find('.avatar')
+        for participant in $user_els
+          $from = $(participant)
+          id = $from.data('id')
+          $to = $histogram.find("#avatar-#{id}")
 
-        if !modern || !transition
-          @$el.find('.m-histogram').css 'opacity', 1
-          $participants.fadeOut()
-          @trigger 'explosion:complete'
-        else
-          speed = 1200
-          from_tile_size = $participants.find('.avatar:first').width()
-          to_tile_size = $histogram.find(".avatar:first").width()
-          ratio = to_tile_size / from_tile_size
+          to_offset = $to.offset()
+          from_offset = $from.offset()
 
-          # compute all offsets first, before applying changes, for perf reasons
-          positions = {}
-          $user_els = $participants.find('.avatar')
-          for participant in $user_els
-            $from = $(participant)
-            id = $from.data('id')
-            $to = $histogram.find("#avatar-#{id}")
+          offsetX = to_offset.left - from_offset.left
+          offsetY = to_offset.top - from_offset.top
 
-            to_offset = $to.offset()
-            from_offset = $from.offset()
+          offsetX -= (from_tile_size - to_tile_size)/2
+          offsetY -= (from_tile_size - to_tile_size)/2
 
-            offsetX = to_offset.left - from_offset.left
-            offsetY = to_offset.top - from_offset.top
+          positions[id] = [offsetX, offsetY]
 
-            offsetX -= (from_tile_size - to_tile_size)/2
-            offsetY -= (from_tile_size - to_tile_size)/2
-
-            positions[id] = [offsetX, offsetY]
+        _.delay =>
 
           for participant in $user_els
             $from = $(participant)
@@ -79,20 +77,17 @@
             [offsetX, offsetY] = positions[id]
             
             $from.css 
-              #'-o-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
               '-ms-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
               '-moz-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
               '-webkit-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
               'transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
 
-          _.delay => 
+          _.delay =>
             $histogram.css { opacity: 1, display: '' }
             $participants.fadeOut()
             @trigger 'explosion:complete'
           , speed + 150
-
-
-      , delay 
+        , 1000 # give time for the description to slide down
 
 
 

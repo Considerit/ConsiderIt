@@ -28,8 +28,7 @@
     .m-aggregated-propoints-region, .m-aggregated-conpoints-region
       .m-peer-reasons
         border-color: transparent
-        background: $bg_declaration
-        background-color: whitesmoke
+        background: $bg_main
 
   &[data-state="together"], &[data-state="collapsed"]
 
@@ -48,6 +47,7 @@
 
   .m-position-region
     overflow: hidden
+    //visibility: hidden
 
   .m-reasons-lists
     //height: 100%
@@ -63,7 +63,7 @@
   .m-aggregated-propoints-region
 
     .m-point-header-region
-      //float: left
+      float: left
 
   .m-aggregated-conpoints-region
 
@@ -75,13 +75,16 @@
 
 
   //horizontal size and positioning
-  $full_reasons_width: $decision_board_width + 2 * $peer-point-results-width + 6 //6 is for borders //+ 2 * $grid_xs
+  $full_reasons_width: $decision_board_width + 2 * $peer-point-results-width + 7 //7 is for borders //+ 2 * $grid_xs
   $full_reasons_left: -($full_reasons_width - $content_width) / 2
   .m-reasons-lists
     padding: 0
     width: $full_reasons_width
     left: $full_reasons_left   //-$peer-point-results-width + $margin_width - 2 * $peer-point-avatar-area //- $grid_xs / 4
 
+
+  .m-point-header-region
+    width: $peer-point-avatar-area
 
   &[data-state="separated"]
 
@@ -97,10 +100,10 @@
       width: $peer-point-results-width
 
     .m-aggregated-propoints-region
-      left: $peer-point-results-width + 1
+      left: $peer-point-results-width + 1.5
 
     .m-aggregated-conpoints-region
-      left: -$peer-point-results-width - 1
+      left: -$peer-point-results-width - 1.5
 
     .m-point-peer.m-point-unexpanded .m-point-wrap
       width: $peer-point-wrap-results-width

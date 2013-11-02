@@ -30,7 +30,7 @@
         region.$el.empty().append view.el
         view.ui.details.hide()
         region.$el.empty().append view.el
-        view.ui.details.slideDown 400
+        view.ui.details.slideDown 1400
       else# if @state == Proposal.DescriptionState.collapsed || @prior_state == null
         region.$el.empty().append view.el
 

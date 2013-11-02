@@ -41,7 +41,10 @@
       $histogram = @$el.find('.m-histogram')
 
       if !modern || !transition
-        @$el.find('.m-histogram').css 'opacity', 1
+        $histogram.css 
+          opacity: 1
+          display: ''
+
         $participants.hide()
         @trigger 'explosion:complete'
       else

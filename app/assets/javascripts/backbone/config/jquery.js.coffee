@@ -41,6 +41,7 @@ do ($) ->
       offset_buffer: 50
       scroll: true
       position: 'top' 
+      speed: null
 
     $el = $(this)
 
@@ -73,7 +74,7 @@ do ($) ->
           throw 'bad position for ensureInView'
 
       if options.scroll
-        distance_to_travel = Math.abs( doc_top - target )
+        distance_to_travel = options.speed || Math.abs( doc_top - target )
         $('body').animate {scrollTop: target}, distance_to_travel
       else 
         $(document).scrollTop target

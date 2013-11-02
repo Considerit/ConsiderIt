@@ -46,11 +46,14 @@
       @showFinished prior_state
 
     showFinished : (prior_state = null) ->
+      $transition_speed = 1200
+      
       if prior_state && prior_state != Proposal.State.collapsed
         if @state == Proposal.State.collapsed
           @layout.$el.moveToTop 50, true
         else
-          @aggregate_controller.layout.$el.ensureInView()# 50, true
+          @aggregate_controller.layout.$el.ensureInView
+            speed: $transition_speed
 
       else
         $(document).scrollTop(0)

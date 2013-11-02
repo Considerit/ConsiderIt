@@ -11,23 +11,21 @@
     .l-message-speaker.l-message-initiator
       %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
         %img{:src => "{{ avatar }}"}
+      .t-jurisdiction
+        %span
+          %strong
+            {{ category.charAt(0) }}-{{designator}} 
+          %br
+          {{jurisdiction}}
+        %span.m-proposal-leading
 
     .l-message-body.l-proposal-description-outer-wrap     
 
       .l-message.m-proposal-introduction
 
 
-        .l-message-speaker.l-message-initiator
+        .l-message-speaker
 
-          %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
-            %img{:src => "{{ avatar }}"}
-          .t-jurisdiction
-            %span
-              %strong
-                {{ category.charAt(0) }}-{{designator}} 
-              %br
-              {{jurisdiction}}
-            %span.m-proposal-leading
               
 
         .l-message-body.m-proposal-description

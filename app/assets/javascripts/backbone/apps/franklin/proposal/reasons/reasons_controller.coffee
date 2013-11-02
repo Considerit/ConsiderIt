@@ -48,11 +48,11 @@
 
       , delay
 
-      # delay = if @state == Proposal.ReasonsState.together || @prior_state == null then 0 else 500 + 1300
+      delay = if @prior_state == null then 0 else $transition_speed
 
-      # _.delay =>
-      #   @layout.sizeToFit @state != Proposal.ReasonsState.separated
-      # , delay
+      _.delay =>
+        @layout.sizeToFit()
+      , delay
 
 
     initialize : (options = {}) ->

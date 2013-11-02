@@ -1,5 +1,6 @@
 
 %script{ :type => "text/template", :id => "tpl_points"}
+
   .m-pointlist-header
     %span.m-pointlist-header-label
       {{ header }}
@@ -8,6 +9,8 @@
 
 
 %script{ :type => "text/template", :id => "tpl_points_expandable"}
+  = render :partial => "shared/bubble", :locals => {:left => false, :down => false}
+
   .m-pointlist-browse-header  
     .m-pointlist-browse-header-close
       %a.m-pointlist-browse-toggle{'data-target' => 'browse-toggle'}

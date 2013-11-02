@@ -29,7 +29,7 @@
           footer_view.$el.hide()
           App.request "sticky_footer:new", footer_view
           footer_view.$el.fadeIn 300
-        , 2000
+        , $transition_speed
 
       else
         @layout.footerRegion.show footer_view
@@ -39,7 +39,7 @@
       # do immediately if this is first time showing crafting
       #delay = if @state == Proposal.ReasonsState.collapsed || @prior_state == null then 0 else $transition_speed
       delay = if !@crafting_controller then 0 else $transition_speed
-      _.delay => 
+      _.delay =>
         @updatePeerPoints @layout
 
         if !@crafting_controller && @options.model.fetched && @state != Proposal.ReasonsState.collapsed
@@ -48,11 +48,9 @@
 
       , delay
 
-      delay = if @prior_state == null then 0 else $transition_speed
+      delay = if @prior_state == null then 0 else $transition_speed + 50
 
-      _.delay =>
-        @layout.sizeToFit()
-      , delay
+      @layout.sizeToFit delay
 
 
     initialize : (options = {}) ->

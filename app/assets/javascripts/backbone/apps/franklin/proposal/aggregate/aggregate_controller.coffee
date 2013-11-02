@@ -27,7 +27,6 @@
 
 
     processStateChange : ->
-      console.log @prior_state, @state
       if @prior_state == Proposal.ReasonsState.collapsed
         @layout = @resetLayout @layout
 

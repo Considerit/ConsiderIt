@@ -5,22 +5,28 @@
   .m-pointlist-browse
     display: none  
 
+
+[data-state="points-separated"]
+  .m-pointlist-browse-toggle
+    width: $peer-point-wrap-width
+
+[data-state="points-together"]
+  .m-pointlist-browse-toggle
+    width: $peer-point-wrap-results-width
+
 .m-pointlist-browse
   .m-pointlist-browse-toggle
     @extend %desaturatedbutton
-    //+font-size(-1)
-    width: 100% //$peer-point-width
     text-align: center
-    &:hover
-      //+font-size(-1)
 
-    // .m-pointlist-browse-header
-    //   position: absolute
-    //   top: 0
+.m-reasons-peer-pros
+  .m-pointlist-browse
+    text-align: right
 
-  .m-point-peer
-    // &.con.m-point-expanded
-    //   right: 525 - $expanded_points_increment
+
+
+
+
 // header
 
 [data-activity="proposal-no-activity"]

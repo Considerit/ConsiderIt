@@ -1,13 +1,14 @@
-.m-results[data-state="together"]
-  .m-histogram
-    visibility: visible
-    display: block
-    height: 215px
+.m-results
+  &[data-state="together"], &[data-state="separated"][data-state-from="together"]
+    .m-histogram
+      visibility: visible
+      display: block
+      height: 215px
 
-.m-results[data-state="separated"], .m-results[data-state="collapsed"]
+.m-results
+  &[data-state="collapsed"], &[data-state="separated"]
   .m-histogram
-    height: 215px
-
+    height: 0
 
 // HISTOGRAM / WHAT
 $histogram_bar_color: darken($mid_bg_color, 15%)
@@ -28,7 +29,9 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
     border: 2px solid darken($histogram_bar_color, 10%)
     border-bottom: none
     background-color: $histogram_bar_color
-    +bubble($community_color, $dark_community_color, up, $include_bg: false, $text_color: $community_text_color)
+    //+bubble($community_color, $dark_community_color, up, $include_bg: false, $text_color: $community_text_color)
+    +bubble(whitesmoke, darken(whitesmoke, 20%), up, $include_bg: false, $text_color: $base_text_color)
+    
     +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($histogram_bar_color, 25%), $inset: true)
 
     border-radius: 0px

@@ -36,12 +36,20 @@
     font-weight: bold
     display: inline-block
 
+
+
 .m-peer-reasons
-  padding-top: 0
-  +transition(padding-top $transition_speed $transition_function)
+  // +transition(padding-top $transition_speed $transition_function)
   +transition(all $transition_speed $transition_function)
   +bubble(whitesmoke, darken(whitesmoke, 20%), left, $text_color: $base_text_color)
-  
+
+
+  &.m-reasons-peer-pros
+    padding: $vertical_baseline / 2 0 $vertical_baseline / 2 $peer_padding
+
+  &.m-reasons-peer-cons
+    padding: $vertical_baseline / 2 $peer_padding $vertical_baseline / 2 0
+
   .m-pointlist-header-label
     border-bottom-color: $base_text_color
     cursor: pointer

@@ -6,6 +6,7 @@ $vertical_baseline: 1em
 
 $content_width: 967px //$grid_major * 22 + $grid_xs
 $body_width: 667 - 2 * $grid_xs
+$decision_board_width: 598px
 $margin_width: 150px
 $initiator_width: 100px
 
@@ -13,9 +14,6 @@ $initiator_width: 100px
 $slider_width: 300px
 $slider_label_width: 100px
 
-$peer-point-width: 225px
-$peer-point-results-width: 296px
-$peer-point-avatar-area: 42px
 
 //$peer-point-height: 180px
 $expanded_points_increment: 250px
@@ -30,3 +28,15 @@ $dialog_stutter: 28px
 
 $transition_speed: 1.2s
 $transition_function: linear
+
+
+
+// Peer point: 
+// | padding | avatar | point-wrap | padding | 
+$peer_padding: $grid_xs
+$peer-point-avatar-area: 38px
+$peer-point-wrap-width: 225px
+$peer-point-wrap-results-width: $decision_board_width / 2 - $peer_padding - $peer-point-avatar-area
+
+$peer-point-width: $peer-point-wrap-width + $peer-point-avatar-area + $peer_padding + 2 //the two is for border
+$peer-point-results-width: $peer-point-wrap-results-width + $peer-point-avatar-area + $peer_padding + 2 //the two is for border

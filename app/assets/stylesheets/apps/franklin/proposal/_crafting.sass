@@ -2,7 +2,6 @@
 .m-position
   // top: -$vertical_baseline / 2
   // left: -$grid_xs
-  width: $body_width
 
   +transition(margin-left .8s ease) // for point browsing
 
@@ -11,6 +10,7 @@
     border-top-right-radius: 0
     border-width: 3px
     padding-bottom: $vertical_baseline * 1.5
+    width: auto
 
 
 // pros and cons for the user
@@ -39,7 +39,7 @@
 // footer
 .m-position-footer
   position: relative
-  width: $body_width
+  width: 100% //$body_width
   top: -16px
   z-index: 2
   margin-bottom: 2 * $vertical_baseline

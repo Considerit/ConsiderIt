@@ -19,11 +19,11 @@
 
     pointExpanded : (region, inclusive) ->
       region.$el.css 'zIndex', 12
-      #@sizeToFit inclusive
+      @sizeToFit inclusive
 
     pointClosed : (region, inclusive) ->
       region.$el.css 'zIndex', ''
-      #@sizeToFit inclusive
+      @sizeToFit inclusive
 
     pointsBrowsing : (inclusive, valence) ->
       # $expanded_points_increment: 250px
@@ -49,9 +49,9 @@
         @$el.addClass 'm-reasons-browsing m-reasons-browsing-cons'
 
 
-      # _.delay =>
-      #   @sizeToFit inclusive
-      # , 500
+      _.delay =>
+        @sizeToFit inclusive
+      , 500
 
     pointsBrowsingOff : (inclusive, valence) ->
       @peerConsRegion.$el.css 
@@ -70,21 +70,28 @@
         @peerProsRegion.$el.removeClass 'm-pointlist-browsing'
         @$el.removeClass 'm-reasons-browsing m-reasons-browsing-pros'
 
-      # _.delay =>
-      #   @sizeToFit inclusive
-      # , 500
+      _.delay =>
+        @sizeToFit inclusive
+      , 500
 
-    sizeToFit : (inclusive) ->
+    sizeToFit : ->
       $to_fit = @$el.children('.m-reasons-lists')
 
-      regions = _.compact [@peerProsRegion, @peerConsRegion]
-      if regions.length > 0
-        height = _.max (r.$el.height() for r in regions)
-        #height += @$el.children('.m-reasons-lists').height() if inclusive
+      $to_fit.css 'height', ''
+      $to_fit.parent().css 'min-height', ''
+
+      height = $to_fit.height()
+
+      # regions = _.compact [@peerProsRegion, @peerConsRegion]
+      # if regions.length > 0
+      #   height = _.max (r.$el.height() for r in regions)
+      #   #height += @$el.children('.m-reasons-lists').height() if inclusive
       
-      else
-        height = 0
-      $to_fit.css 'min-height', height + 50
+      # else
+      #   height = 0
+
+      #$to_fit.css 'height', height + 50
+      $to_fit.parent().css 'min-height', height #+ 50
 
     # ugly having this method here...
     includePoint : (model, $source, $dest, source) ->

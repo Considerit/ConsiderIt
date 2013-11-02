@@ -10,15 +10,7 @@
       #socialMediaRegion : '.m-proposal-socialmedia-region'
 
     initialize : (options = {}) ->
-      super options
-
-    onRender : ->
-      @setDataState @state
-
-    setDataState : (state) ->
-      @$el.attr 'data-state', state
-      @$el.data 'state', state
-      @state = state      
+      super options    
 
     serializeData : ->
       _.extend {}, @model.attributes

@@ -7,14 +7,15 @@
 
 .m-results
   &[data-state="collapsed"], &[data-state="separated"]
-  .m-histogram
-    height: 0
+    .m-histogram
+      height: 0
+      margin-top: 0
 
 // HISTOGRAM / WHAT
 $histogram_bar_color: darken($mid_bg_color, 15%)
 .m-histogram
   //display: none
-  +transition(height $transition_speed, opacity $transition_speed)
+  +transition(height $transition_speed, opacity $transition_speed, margin-top $transition_speed)
   opacity: 0
   visibility: hidden
   margin: $vertical_baseline auto 0 auto
@@ -30,7 +31,7 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
     border-bottom: none
     background-color: $histogram_bar_color
     //+bubble($community_color, $dark_community_color, up, $include_bg: false, $text_color: $community_text_color)
-    +bubble(whitesmoke, darken(whitesmoke, 20%), up, $include_bg: false, $text_color: $base_text_color)
+    +bubble(whitesmoke, darken(whitesmoke, 10%), up, $include_bg: false, $text_color: $base_text_color)
     
     +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($histogram_bar_color, 25%), $inset: true)
 

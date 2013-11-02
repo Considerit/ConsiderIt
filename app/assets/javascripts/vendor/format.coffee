@@ -23,7 +23,7 @@ simpleFormat = (str) ->
   str = str.replace carriage_rtn_regex, '\n'
   str = str.replace br_regex, '\n'
   str = str.replace redundant_break_regex, '<p/>'
-  str = str.replace newlines_regex, '<br />'
+  str = str.replace newlines_regex, '<br /><br />'
   str
 
 

@@ -156,8 +156,6 @@
 
       @trigger 'points:browsing:off'
 
-    ###### end hack #####
-
     events : _.extend {}, Points.PointList.prototype.events,
       'click .m-pointlist-sort-option a' : 'sortList'
       'click [data-target="browse-toggle"]' : 'handleToggleBrowse'
@@ -169,8 +167,9 @@
       ev.stopPropagation()
 
     handleToggleBrowse : (ev) ->
-      @toggleBrowse !@browsing
-      ev.stopPropagation()
+      if @state != Points.States.collapsed
+        @toggleBrowse !@browsing
+        ev.stopPropagation()
 
 
   class Points.PeerEmptyView extends App.Views.ItemView

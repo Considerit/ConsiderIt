@@ -99,7 +99,6 @@
         App.vent.trigger "proposals:show_more_handled:#{@is_active}"
 
     handleProposalDeleted : (collection, model) ->
-      console.log 'proposals: proposal deleted', collection, model
       collection.fullCollection.remove model
 
     handleReset : (collection, is_active) ->

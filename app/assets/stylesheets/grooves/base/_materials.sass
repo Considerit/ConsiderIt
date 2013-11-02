@@ -39,8 +39,7 @@
       &:focus
         +inset-border($decision_board_color)
 
-%whitesmoke
-  //background: whitesmoke
+%light
 
   color: darken($base_text_color, 20%)
   
@@ -61,9 +60,12 @@
     padding: 3px 
 
 
+%whitesmoke
+  @extend %light
+  background: whitesmoke
 
 %on_paper
-  @extend %whitesmoke
+  @extend %light
   background: image-url('paper.jpg') repeat left top #fafafa
 
 // %chalkboard

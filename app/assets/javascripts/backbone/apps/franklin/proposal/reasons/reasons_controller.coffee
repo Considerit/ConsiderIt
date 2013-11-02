@@ -48,7 +48,9 @@
 
       , delay
 
-      delay = if @prior_state == null then 0 else $transition_speed + 50
+      #delay = if @prior_state == null then 0 else $transition_speed + 50
+
+      @layout.sizeToFit delay / 2
 
       @layout.sizeToFit delay
 

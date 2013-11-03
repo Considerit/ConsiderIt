@@ -49,14 +49,7 @@
 
 
     getLayout : ->
-
-
-      if @state == Proposal.DescriptionState.collapsed
-        new Proposal.SummaryProposalDescription
-          model : @model
-          state : @state
-      else
-        new Proposal.ProposalDescriptionView
-          model : @model
-          state : @state
+      new Proposal.ProposalDescriptionView
+        model : @model
+        state : @state
 

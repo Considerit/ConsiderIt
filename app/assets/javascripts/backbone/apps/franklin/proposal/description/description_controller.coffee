@@ -27,7 +27,6 @@
 
     transition : (region, view) ->
       if @state != Proposal.DescriptionState.collapsed && @prior_state == Proposal.DescriptionState.collapsed
-        region.$el.empty().append view.el
         view.ui.details.hide()
         region.$el.empty().append view.el
         view.ui.details.slideDown 1400

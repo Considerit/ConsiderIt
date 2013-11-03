@@ -10,7 +10,7 @@
       details : '.m-proposal-details'
 
     editable : =>
-      App.request 'auth:can_edit_proposal', @model    
+      @state != Proposal.DescriptionState.collapsed && App.request 'auth:can_edit_proposal', @model    
 
     serializeData : ->
       user_position = @model.getUserPosition()
@@ -20,13 +20,15 @@
         proposal : @model
         avatar : App.request('user:avatar', user, 'large' )
         description_detail_fields : @model.description_detail_fields()
-        show_details : @show_details
+        show_details : @state != Proposal.DescriptionState.collapsed 
         call : if user_position && user_position.get('published') then 'Update your position' else 'Add your thoughts'
 
       params
 
     initialize : (options = {}) ->
       super options
+
+      console.log 'initializing!'
 
       if @editable()
         if !Proposal.ProposalDescriptionView.editable_fields
@@ -78,6 +80,7 @@
       'click [data-target="show-results"]' : 'showResults'
 
     showDetails : (ev) ->
+      console.log 'SHOW DETAILS'
       $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
       $toggle = $block.find('.hidden:first')
@@ -92,6 +95,8 @@
       ev.stopPropagation()
 
     hideDetails : (ev) ->
+      console.log 'hide desc!'
+
       $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
       if $(document).scrollTop() > $block.offset().top
@@ -107,28 +112,12 @@
       ev.stopPropagation()
 
     toggleDescription : (ev) ->
+      console.log 'toggle desc!'
       @trigger 'proposal:clicked'
       
     showResults : (ev) ->
+      console.log 'show results'
+
       @trigger 'show_results'
       ev.stopPropagation()
-
-      
-  class Proposal.SummaryProposalDescription extends Proposal.ProposalDescriptionView
-    show_details : false
-  
-    editable : => false
-
-    # initialize : (options = {}) ->
-    #   super options
-    #   _.extend @events, 
-    #     'click .m-proposal-description' : 'toggleDescription'
-    #     'click [data-target="show-results"]' : 'showResults'
-
-    # toggleDescription : (ev) ->
-    #   @trigger 'proposal:clicked'
-      
-    # showResults : (ev) ->
-    #   @trigger 'show_results'
-    #   ev.stopPropagation()
 

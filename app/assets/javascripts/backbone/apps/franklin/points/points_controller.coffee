@@ -11,7 +11,9 @@
     state_map : ->
       throw 'need to override'
 
-    point_controllers : {}
+    point_controllers : 
+      PeerController : {}
+      PositionController : {}
 
     initialize : (options = {}) ->
       super options
@@ -34,6 +36,7 @@
           pointview = @layout.children.findByModel point
           pointview.trigger 'point:show_details'
 
+
           @listenToOnce pointview, 'details:closed', =>
             @trigger 'details:closed', pointview.model
 
@@ -44,16 +47,16 @@
           #   pointview.render()
 
     processStateChange : ->
-      @layout = @resetLayout @layout
+      #@layout = @resetLayout @layout
 
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
         @listenTo layout, 'before:item:added', (view) => 
           return if view instanceof Points.PeerEmptyView
-          if _.has @point_controllers, view.model.id
-            @point_controllers[view.model.id].close()
+          if _.has @point_controllers[@cname], view.model.id
+            @point_controllers[@cname][view.model.id].close()
 
-          @point_controllers[view.model.id] = new App.Franklin.Point.PointController
+          @point_controllers[@cname][view.model.id] = new App.Franklin.Point.PointController
             view : view
             model : view.model
             region : new Backbone.Marionette.Region { el : view.el }     
@@ -73,6 +76,8 @@
 
 
   class Points.PeerPointsController extends Points.AbstractPointsController
+    cname: 'PeerController'
+
     removed_points : []
 
     state_map : ->
@@ -155,6 +160,8 @@
 
 
   class Points.UserReasonsController extends Points.AbstractPointsController
+    cname: 'PositionController'
+
     state_map : ->
       map = {}
       map[App.Franklin.Proposal.ReasonsState.separated] = Points.States.position    

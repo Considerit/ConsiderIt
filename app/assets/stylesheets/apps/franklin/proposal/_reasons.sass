@@ -5,17 +5,21 @@
 
   // transitions and styles
   .m-point
-    +transition(width $transition_speed $transition_function, top $transition_speed linear)
+    +transition(width $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function) //, top $transition_speed linear)
     .m-point-wrap
       +transition(all $transition_speed $transition_function)
+
       //+transition(width $transition_speed $transition_function, background-color $transition_speed $transition_function, border-color $transition_speed $transition_function, top .5s ease, left .5s ease, color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
   .m-reasons-lists
     +transition(width $transition_speed $transition_function, top $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function)
     //+transition(all $transition_speed $transition_function)
 
-  .m-points-list-region, .m-position-region
-    //+transition(width $transition_speed $transition_function, left $transition_speed $transition_function)
-    +transition(all $transition_speed $transition_function)
+  .m-points-list-region
+    +transition(width $transition_speed $transition_function, left $transition_speed $transition_function)
+    //+transition(all $transition_speed $transition_function)
+
+  .m-position-region
+    +transition(width $transition_speed $transition_function, left $transition_speed $transition_function)
 
   .m-aggregated-propoints-region, .m-aggregated-conpoints-region
     +transition(width $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function)
@@ -46,14 +50,12 @@
     display: inline-block
 
   .m-position-region
-    overflow: hidden
+    //overflow: hidden
     //visibility: hidden
 
   .m-reasons-lists
     //height: 100%
     top: 0 
-
-  .m-aggregated-propoints-region, .m-aggregated-conpoints-region, .m-position-region
 
   .m-aggregated-propoints-region, .m-aggregated-conpoints-region
     height: 100%
@@ -73,7 +75,6 @@
   .m-reasons-lists
     position: absolute  
 
-
   //horizontal size and positioning
   $full_reasons_width: $decision_board_width + 2 * $peer-point-results-width + 7 //7 is for borders //+ 2 * $grid_xs
   $full_reasons_left: -($full_reasons_width - $content_width) / 2
@@ -92,6 +93,7 @@
       width: $peer-point-width
 
     .m-point-peer.m-point-unexpanded
+      width: $peer-point-width
       .m-point-wrap
         width: $peer-point-wrap-width
 
@@ -105,8 +107,19 @@
     .m-aggregated-conpoints-region
       left: -$peer-point-results-width - 1.5
 
-    .m-point-peer.m-point-unexpanded .m-point-wrap
-      width: $peer-point-wrap-results-width
+    .m-point-peer.m-point-unexpanded 
+      width: $peer-point-results-width
+      .m-point-wrap
+        width: $peer-point-wrap-results-width
+
+  .m-position-propoints-region, .m-position-conpoints-region
+    width: $pro-con-list-column-width
+
+    .m-point-position.m-point-unexpanded 
+      width: $pro-con-list-column-width
+      .m-point-wrap
+        width: $pro-con-list-column-width - $peer-point-avatar-area
+
 
 
   // pointlist browsing
@@ -122,8 +135,10 @@
       &.m-pointlist-browsing
         width: $peer-point-width + $expanded_points_increment
 
-        .m-point-peer.m-point-unexpanded .m-point-wrap
-          width: $peer-point-wrap-width + $expanded_points_increment
+        .m-point-peer.m-point-unexpanded 
+          width: $peer-point-width + $expanded_points_increment
+          .m-point-wrap
+            width: $peer-point-wrap-width + $expanded_points_increment
 
 
   &[data-state="together"]
@@ -132,6 +147,7 @@
         width: $peer-point-results-width + $expanded_points_increment
 
         .m-point-peer.m-point-unexpanded
+          width: $peer-point-results-width + $expanded_points_increment
           .m-point-wrap
             width: $peer-point-wrap-results-width + $expanded_points_increment
 

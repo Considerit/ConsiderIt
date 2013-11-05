@@ -8,7 +8,7 @@
 
     regions :
       headerRegion : '.m-point-header-region'
-      bodyRegion : '.m-point-wrap'
+      bodyRegion : '.m-point-wrap-region'
       expansionRegion : '.m-point-expansion-region'
 
     serializeData : ->

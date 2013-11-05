@@ -24,8 +24,9 @@
         is_paginated = @options.collection.fullCollection?
 
         collection = if is_paginated then @options.collection.fullCollection else @options.collection
-        if point = collection.get point
+        if @respondToPointExpansions() && point = collection.get(point)
           # ensure that point is currently displayed
+
           if is_paginated
             page = @options.collection.pageOf point
             @options.collection.getPage page
@@ -114,6 +115,8 @@
       @options.collection.fullCollection.sort()          
 
 
+    respondToPointExpansions : -> true
+
     setupLayout : (layout) ->
       super layout
 
@@ -155,8 +158,8 @@
     state_map : ->
       map = {}
       map[App.Franklin.Proposal.ReasonsState.separated] = Points.States.position    
-      map[App.Franklin.Proposal.ReasonsState.together] = Points.States.position
-      map[App.Franklin.Proposal.ReasonsState.collapsed] = Points.States.position
+      map[App.Franklin.Proposal.ReasonsState.together] = Points.States.hidden
+      map[App.Franklin.Proposal.ReasonsState.collapsed] = Points.States.hidden
       map 
 
     initialize : (options = {}) ->
@@ -167,6 +170,9 @@
 
     processStateChange : ->
       #@layout = @resetLayout @layout
+
+    respondToPointExpansions : ->
+      @state != Points.States.hidden
 
     setupLayout : (layout) ->
 

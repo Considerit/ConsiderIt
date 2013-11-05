@@ -4,13 +4,14 @@ $m-point-expanded-width: $body_width + 150
   position: relative
   @extend %nude_list
 
-  &.m-point-peer
+  .m-point-wrap
+    position: relative
+    display: inline-block
+
+  &.m-point-peer, &.m-point-expanded
     .m-point-wrap
-      display: inline-block
-    &.m-point-unexpanded
-      .m-point-wrap
-        padding: $vertical_baseline / 2 $grid_xs / 2 $vertical_baseline $grid_xs / 2 
-        margin-bottom: $vertical_baseline / 2
+      padding: $vertical_baseline / 2 $grid_xs / 2 $vertical_baseline $grid_xs / 2 
+      margin-bottom: $vertical_baseline / 2
 
 
   &.m-point-position
@@ -21,8 +22,13 @@ $m-point-expanded-width: $body_width + 150
   &.m-point-expanded
     position: relative
     z-index: 999
-    width: $m-point-expanded-width  
-    padding: $vertical_baseline $grid_xs  
+    // padding: $vertical_baseline $grid_xs  
+    width: $m-point-expanded-width + $peer-point-avatar-area
+
+
+    .m-point-wrap
+      width: $m-point-expanded-width - 3
+
 
     &.m-point-position
       &.con
@@ -51,8 +57,6 @@ $m-point-expanded-width: $body_width + 150
 .m-position-points
   // &[data-state="points-hidden"]
   //   display: none
-
-  &[data-state="points-position"]
 
 
 
@@ -101,10 +105,10 @@ $m-point-expanded-width: $body_width + 150
       +font-size(-3)
 
   &.pro .m-point-nutshell-wrap:before
-    left: 5px
+    left: -13px
 
   &.con .m-point-nutshell-wrap:before
-    left: 8px
+    left: -10px
 
 /////////////
 
@@ -215,7 +219,7 @@ $m-point-expanded-width: $body_width + 150
 
     .m-point-include-wrap
       position: absolute
-      bottom: $vertical_baseline / 2
+      bottom: 0//$vertical_baseline / 2
 
     &.pro
       .m-point-include-wrap
@@ -273,32 +277,32 @@ $m-point-expanded-width: $body_width + 150
   width: $width
   height: $width
 
-%m-thought-bubble
+// %m-thought-bubble
 
-  &:before, &:after
-    //content: ''
-    position: absolute
-    border: 1px solid
-    border-top-color: transparent
-    +transition(left .5s linear, right .5s linear)
-    +single-box-shadow($color: rgba(black, .2), $voff: 2px)
+//   // &:before, &:after
+//   //   //content: ''
+//   //   position: absolute
+//   //   border: 1px solid
+//   //   border-top-color: transparent
+//   //   +transition(left .5s linear, right .5s linear)
+//   //   +single-box-shadow($color: rgba(black, .2), $voff: 2px)
 
-  .m-point-author-avatar
-    display: inline-block
-    border-radius: 8px
-    //top: 2 * $vertical_baseline
-    //border: 1px solid transparent
-    //+single-box-shadow    
+//   .m-point-author-avatar
+//     display: inline-block
+//     border-radius: 8px
+//     //top: 2 * $vertical_baseline
+//     //border: 1px solid transparent
+//     //+single-box-shadow    
 
-  .m-point-author-avatar
-    width: $peer-point-avatar-area - 3
-    height: $peer-point-avatar-area - 3
+//   .m-point-author-avatar
+//     width: $peer-point-avatar-area - 3
+//     height: $peer-point-avatar-area - 3
 
-  // &.pro .m-point-author-avatar
-  //   left: -42px
+//   // &.pro .m-point-author-avatar
+//   //   left: -42px
 
-  // &.con .m-point-author-avatar
-  //   right: -42px
+//   // &.con .m-point-author-avatar
+//   //   right: -42px
 
 
 
@@ -380,18 +384,17 @@ $m-point-expanded-width: $body_width + 150
   @extend %whitesmoke
 
 
-.m-point-expanded
-  @extend %m-white-thought-bubble
-  @extend %m-white-thought-bubble-inner
-  @extend %m-thought-bubble-side-down
+// .m-point-expanded
+//   @extend %m-white-thought-bubble
+//   @extend %m-white-thought-bubble-inner
+//   @extend %m-thought-bubble-side-down
 
 
-[data-state="points-separated"]
-  .m-point-peer.m-point-unexpanded
-    //@extend %m-white-thought-bubble
-    @extend %m-thought-bubble
-    .m-point-wrap
-      @extend %m-white-thought-bubble-inner
+[data-state="points-separated"] .m-point-peer.m-point-unexpanded, .m-point-expanded
+  // //@extend %m-white-thought-bubble
+  // @extend %m-thought-bubble
+  .m-point-wrap
+    @extend %m-white-thought-bubble-inner
 
 // [data-state="points-collapsed"] .m-point-peer
 //   @extend %m-thought-bubble-bottom-in
@@ -399,34 +402,38 @@ $m-point-expanded-width: $body_width + 150
 [data-state="points-separated"] .m-point-peer.m-point-unexpanded
   //@extend %m-thought-bubble-side-down
 
+.m-point-position.m-point-unexpanded .m-point-wrap
+  background-color: $decision_board_color
+
 .m-point-author-avatar
   display: inline-block
   position: relative
   border-radius: 8px
   top: .7 * $vertical_baseline
+  width: 35px
+  height: 35px  
   //border: 1px solid transparent
   //+single-box-shadow    
 
-[data-state="points-together"], [data-state="points-collapsed"]
+//[data-state="points-together"], [data-state="points-collapsed"]
 
-  .m-point-peer.m-point.m-point-unexpanded 
+.m-point-peer.m-point //.m-point-unexpanded 
 
-    .m-point-wrap
-      margin-bottom: 0
-      &:hover 
-        +single-box-shadow($color: rgba(black, .2), $voff: 2px)
+  .m-point-wrap
+    //margin-bottom: 0
+    &:hover 
+      +single-box-shadow($color: rgba(black, .2), $voff: 2px)
 
 
 
-    .m-point-author-avatar
-      width: 35px
-      height: 35px
+  // .m-point-author-avatar
 
-    // &.pro .m-point-author-avatar
-    //   left: -$peer-point-avatar-area
 
-    // &.con .m-point-author-avatar
-    //   right: -$peer-point-avatar-area
+  // &.pro .m-point-author-avatar
+  //   left: -$peer-point-avatar-area
+
+  // &.con .m-point-author-avatar
+  //   right: -$peer-point-avatar-area
 
 
 
@@ -453,111 +460,4 @@ $m-point-expanded-width: $body_width + 150
 ////
 
 
-
-///////////////////////////
-/// Point inclusion effect
-///////////////////////////
-// $arrow_height: 9px
-
-// =triangle($size)
-//   width: 0
-//   height: 0
-//   border-top: $size solid transparent
-//   border-bottom: $size solid transparent
-
-// =triangle-right($size, $color: transparent)
-//   +triangle($size)
-//   border-left: $size solid $color
-
-// =triangle-left($size, $color: transparent)
-//   +triangle($size)
-//   border-right: $size solid $color
-
-
-// .m-point-peer
-  // &.m-point-expanded
-  //   .m-point-include-wrap
-  //     top: 14px
-
-  // .m-point-include-wrap
-
-  //   .m-point-include
-  //   +transition(border-radius 1s ease)
-
-  //   .list_connector
-  //     +transition(left .5s ease, right .5s ease)
-  //     position: absolute      
-  //     bottom: -1px
-  //     z-index: -1
-
-  //     &:after
-  //       content: ''
-  //       position: absolute   
-  //       top: -$arrow_height 
-
-  // &.pro
-  //   .m-point-include-wrap
-  //     .m-point-include
-  //       .list_connector
-  //         +triangle-right($arrow_height + 2)
-  //         right: 0
-
-  //         &:after
-  //           right: 2px
-  //           +triangle-right($arrow_height)
-
-  //       &:hover
-  //         border-bottom-right-radius: 1px
-  //         border-right-color: transparent
-
-  //         .list_connector
-  //           right: -$arrow_height - 2
-  //           border-left-color: darken($callout_bg_color, 8%)
-
-  //           &:after
-  //             border-left-color: darken($callout_bg_color, 8%)
-
-    // &.m-point-expanded
-    //   .m-point-include-wrap .m-point-include 
-    //     .list_connector
-    //       right: -$arrow_height - 2
-    //       border-left-color: darken($callout_bg_color, 8%)
-
-    //       &:after
-    //         border-left-color: darken($callout_bg_color, 8%)
-
-  // &.con
-  //   .m-point-include-wrap      
-  //     .m-point-include
-
-  //       .list_connector 
-  //         +triangle-left($arrow_height + 2)    
-  //         left: 0
-
-  //         &:after
-  //           left: 2px
-  //           +triangle-left($arrow_height)
-
-
-  //       &:hover
-  //         border-bottom-left-radius: 1px
-  //         border-left-color: transparent 
-
-  //         .list_connector
-  //           left: -$arrow_height - 2
-  //           border-right-color: darken($callout_bg_color, 8%)
-
-  //           &:after
-  //             border-right-color: darken($callout_bg_color, 8%)
-
-  //   &.m-point-expanded
-  //     .m-point-include-wrap .m-point-include 
-  //       .list_connector
-  //         left: -$arrow_height - 2
-  //         border-right-color: darken($callout_bg_color, 8%)
-
-  //         &:after
-  //           border-right-color: darken($callout_bg_color, 8%)
-
-  ////////////////////
 

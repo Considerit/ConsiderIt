@@ -39,7 +39,6 @@
 
     buildItemView : (point, itemview, options) ->
       if itemview == Points.PeerEmptyView
-
         new itemview()
       else
         valence = if point.attributes.is_pro then 'pro' else 'con'

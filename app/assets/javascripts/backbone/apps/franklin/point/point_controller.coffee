@@ -42,7 +42,6 @@
       expanded_view = @getExpandedView @options.model
 
       @listenTo expanded_view, 'show', =>
-
         if App.request("user:current:logged_in?") && @options.model.get 'published'
           follow_view = @setupFollowView()
 

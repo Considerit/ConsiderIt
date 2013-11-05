@@ -28,8 +28,6 @@
     initialize : (options = {}) ->
       super options
 
-      console.log 'initializing!'
-
       if @editable()
         if !Proposal.ProposalDescriptionView.editable_fields
           fields = [
@@ -80,7 +78,6 @@
       'click [data-target="show-results"]' : 'showResults'
 
     showDetails : (ev) ->
-      console.log 'SHOW DETAILS'
       $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
       $toggle = $block.find('.hidden:first')
@@ -95,7 +92,6 @@
       ev.stopPropagation()
 
     hideDetails : (ev) ->
-      console.log 'hide desc!'
 
       $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
 
@@ -112,11 +108,9 @@
       ev.stopPropagation()
 
     toggleDescription : (ev) ->
-      console.log 'toggle desc!'
       @trigger 'proposal:clicked'
       
     showResults : (ev) ->
-      console.log 'show results'
 
       @trigger 'show_results'
       ev.stopPropagation()

@@ -17,17 +17,17 @@
     onRender : ->
       super
 
-    pointExpanded : (region, inclusive) ->
+    pointExpanded : (region) ->
       region.$el.css 'zIndex', 12
       $transition_speed = 1200
       @sizeToFit $transition_speed
 
-    pointClosed : (region, inclusive) ->
+    pointClosed : (region) ->
       region.$el.css 'zIndex', ''
       $transition_speed = 1200
       @sizeToFit $transition_speed
 
-    pointsBrowsing : (inclusive, valence) ->
+    pointsBrowsing : (valence) ->
       # $expanded_points_increment: 250px
       expansion_size = 250
       $transition_speed = 1200
@@ -43,7 +43,7 @@
 
       @sizeToFit $transition_speed * 1.5
 
-    pointsBrowsingOff : (inclusive, valence) ->
+    pointsBrowsingOff : (valence) ->
       $transition_speed = 1200
 
       @peerConsRegion.$el.css 
@@ -81,7 +81,7 @@
     # ugly having this method here...
     includePoint : (model, $source, $dest, source) ->
 
-      if $source.is('.m-point-unexpanded')
+      if false && $source.is('.m-point-unexpanded')
         $dest.css 'visibility', 'hidden'
 
         item_offset = $source.offset()

@@ -38,15 +38,21 @@
 
       # do immediately if this is first time showing crafting
       #delay = if @state == Proposal.ReasonsState.collapsed || @prior_state == null then 0 else $transition_speed
-      delay = if !@crafting_controller then 0 else $transition_speed
-      _.delay =>
+
+      setupPoints = =>
         @updatePeerPoints @layout
 
         if !@crafting_controller && @options.model.fetched && @state != Proposal.ReasonsState.collapsed
           @crafting_controller = @getCraftingController @layout.positionRegion
           @setupCraftingController @crafting_controller 
 
-      , delay
+      delay = if !@crafting_controller || @prior_state == null then 0 else $transition_speed
+      if delay
+        _.delay =>
+          setupPoints()
+        , delay
+      else
+        setupPoints()
 
       #delay = if @prior_state == null then 0 else $transition_speed + 50
 
@@ -124,16 +130,16 @@
 
         _.each [@peer_pros_controller, @peer_cons_controller], (controller) =>
           @listenTo controller, 'point:showed_details', (point) =>
-            @layout.pointExpanded controller.region, @state != Proposal.ReasonsState.separated
+            @layout.pointExpanded controller.region
 
             @listenToOnce controller, 'details:closed', (point) =>
-              @layout.pointClosed controller.region, @state != Proposal.ReasonsState.separated
+              @layout.pointClosed controller.region
 
           @listenTo controller, 'points:browsing', (valence) =>
-            @layout.pointsBrowsing @state != Proposal.ReasonsState.separated, valence
+            @layout.pointsBrowsing valence
 
             @listenToOnce controller, 'points:browsing:off', (valence) =>
-              @layout.pointsBrowsingOff @state != Proposal.ReasonsState.separated, valence
+              @layout.pointsBrowsingOff valence
 
 
         @setupPointsController @peer_pros_controller
@@ -154,9 +160,9 @@
         @trigger 'point:removal', model.id
 
       @listenTo controller, 'point:showed_details', (point) =>
-        @layout.pointExpanded @layout.positionRegion, true
+        @layout.pointExpanded @layout.positionRegion
         @listenToOnce controller, 'details:closed', (point) => 
-          @layout.pointClosed @layout.positionRegion, true
+          @layout.pointClosed @layout.positionRegion
 
 
     setupPointsController : (controller) ->

@@ -27,22 +27,24 @@
 
 
     transition : (region, view) ->
-      if @state == Proposal.ReasonsState.collapsed
-        region.$el.empty().append view.el
-      else if @state == Proposal.ReasonsState.separated
-        if @prior_state == null
-          region.$el.empty().append view.el
-        else
-          region.$el.empty().append view.el
+      region.$el.empty().append view.el
+      
+      # if @state == Proposal.ReasonsState.collapsed
+      #   region.$el.empty().append view.el
+      # else if @state == Proposal.ReasonsState.separated
+      #   if @prior_state == null
+      #     region.$el.empty().append view.el
+      #   else
+      #     region.$el.empty().append view.el
 
-          # _.delay =>
-          #   #view.$el.hide()
-          #   region.$el.empty().append view.el
-          #   #view.$el.fadeIn 400
-          # , 400
-      else if @state == Proposal.ReasonsState.together
-        #view.$el.hide()
-        region.$el.empty().append view.el
+      #     # _.delay =>
+      #     #   #view.$el.hide()
+      #     #   region.$el.empty().append view.el
+      #     #   #view.$el.fadeIn 400
+      #     # , 400
+      # else if @state == Proposal.ReasonsState.together
+      #   #view.$el.hide()
+      #   region.$el.empty().append view.el
 
 
     processStateChange : ->

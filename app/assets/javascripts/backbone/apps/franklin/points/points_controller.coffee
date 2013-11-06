@@ -125,7 +125,7 @@
     setupLayout : (layout) ->
       super layout
 
-      $transition_speed = 1200
+      $transition_speed = 600
 
       @listenTo layout, 'show', =>
         @listenTo layout, 'childview:point:include', (view) => 

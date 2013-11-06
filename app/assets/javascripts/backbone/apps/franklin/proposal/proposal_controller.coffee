@@ -46,7 +46,7 @@
       @showFinished prior_state
 
     showFinished : (prior_state = null) ->
-      $transition_speed = 1200
+      $transition_speed = 600
       
       if prior_state && prior_state != Proposal.State.collapsed
         if @state == Proposal.State.collapsed

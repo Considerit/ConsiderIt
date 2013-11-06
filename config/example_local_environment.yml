@@ -1,5 +1,6 @@
 default:
 
+  admin_email: ''
   analytics:
     google: ''
 

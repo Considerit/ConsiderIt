@@ -98,7 +98,7 @@ ConsiderIt::Application.configure do
   config.middleware.use ExceptionNotification::Rack,
     :email => {
       :email_prefix => "[ConsiderIt Error] ",
-      :sender_address => "\"Notifier\" <{{config.admin_email}}>",
+      :sender_address => "\"Notifier\" <tkriplean@gmail.com>",
       :exception_recipients => ['{{ config.exception_notifier.email_recipients }}']
     }
 

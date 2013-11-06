@@ -17,7 +17,6 @@ $m-point-expanded-width: $body_width + 150
   &.m-point-position
 
   &.m-point-unexpanded
-    cursor: pointer
 
   &.m-point-expanded
     position: relative
@@ -46,6 +45,9 @@ $m-point-expanded-width: $body_width + 150
     .m-point-expanded.con.m-point-peer
       right: $m-point-expanded-width - $peer-point-width
 
+  &[data-state="points-separated"], &[data-state="points-together"]
+    .m-point-unexpanded
+      cursor: pointer
 
   &[data-state="points-collapsed"]
 
@@ -266,141 +268,15 @@ $m-point-expanded-width: $body_width + 150
         border-right-color: transparent    
 
 
-/////////////////
-
-//////////////////////
-// Thought Bubbles...
-//////////////////////
-
-= circle($width)
-  border-radius: 50%
-  width: $width
-  height: $width
-
-// %m-thought-bubble
-
-//   // &:before, &:after
-//   //   //content: ''
-//   //   position: absolute
-//   //   border: 1px solid
-//   //   border-top-color: transparent
-//   //   +transition(left .5s linear, right .5s linear)
-//   //   +single-box-shadow($color: rgba(black, .2), $voff: 2px)
-
-//   .m-point-author-avatar
-//     display: inline-block
-//     border-radius: 8px
-//     //top: 2 * $vertical_baseline
-//     //border: 1px solid transparent
-//     //+single-box-shadow    
-
-//   .m-point-author-avatar
-//     width: $peer-point-avatar-area - 3
-//     height: $peer-point-avatar-area - 3
-
-//   // &.pro .m-point-author-avatar
-//   //   left: -42px
-
-//   // &.con .m-point-author-avatar
-//   //   right: -42px
-
-
-
-%m-thought-bubble-side-down
-
-  &:before
-    +circle(5px)
-
-  &:after
-    +circle(7px)
-
-
-  &:before
-    top: 23px
-
-  &:after
-    top: 15px
-
-  &.pro
-    &:after
-      left: -7px
-      border-right-color: transparent
-
-    &:before
-      left: -13px
-
-  &.con
-    &:after
-      right: -7px
-      border-left-color: transparent
-
-    &:before
-      right: -13px
-
-%m-thought-bubble-bottom-in
-
-  &:before
-    +circle(6px)
-
-  &:after
-    +circle(9px)
-
-  &:before
-    bottom: -16px
-
-  &:after
-    bottom: -8px
-    border-top-color: transparent
-
-  &.pro
-    &:after
-      left: 60%
-
-    &:before
-      left: 63%
-
-  &.con
-    &:after
-      right: 60%
-
-    &:before
-      right: 63%
-
-  //////////////////////
-
-%m-white-thought-bubble
-  @extend %m-thought-bubble
-  border-radius: 5px
-  &:before, &:after
-    border-color: #ccc
-    background-color: whitesmoke
-    //@extend %on_paper
-
-%m-white-thought-bubble-inner
-  +single-box-shadow($color: rgba(black, .1), $voff: 1px)
-  border-radius: 8px
-  border: 1px solid //$dark_community_color
-  border-color: #f1f1f1 #ddd #bbb #ddd
-  @extend %whitesmoke
-
-
-// .m-point-expanded
-//   @extend %m-white-thought-bubble
-//   @extend %m-white-thought-bubble-inner
-//   @extend %m-thought-bubble-side-down
-
 
 [data-state="points-separated"] .m-point-peer.m-point-unexpanded, .m-point-expanded
-  // //@extend %m-white-thought-bubble
-  // @extend %m-thought-bubble
   .m-point-wrap
-    @extend %m-white-thought-bubble-inner
+    +single-box-shadow($color: rgba(black, .1), $voff: 1px)
+    border-radius: 8px
+    border: 1px solid //$dark_community_color
+    border-color: #f1f1f1 #ddd #bbb #ddd
+    @extend %whitesmoke
 
-// [data-state="points-collapsed"] .m-point-peer
-//   @extend %m-thought-bubble-bottom-in
-
-[data-state="points-separated"] .m-point-peer.m-point-unexpanded
-  //@extend %m-thought-bubble-side-down
 
 .m-point-position.m-point-unexpanded .m-point-wrap
   background-color: $decision_board_color
@@ -412,38 +288,14 @@ $m-point-expanded-width: $body_width + 150
   top: .7 * $vertical_baseline
   width: 35px
   height: 35px  
-  //border: 1px solid transparent
-  //+single-box-shadow    
-
-//[data-state="points-together"], [data-state="points-collapsed"]
-
-.m-point-peer.m-point //.m-point-unexpanded 
-
-  .m-point-wrap
-    //margin-bottom: 0
-    &:hover 
-      +single-box-shadow($color: rgba(black, .2), $voff: 2px)
 
 
-
-  // .m-point-author-avatar
-
-
-  // &.pro .m-point-author-avatar
-  //   left: -$peer-point-avatar-area
-
-  // &.con .m-point-author-avatar
-  //   right: -$peer-point-avatar-area
-
-
-
-.m-point-unexpanded.m-point-peer
-  &:hover
-    .m-point-wrap //, &:after, &:before
-      background-color: white
-    &:before, &:after
-      background-color: white
-
+[data-state="points-separated"], [data-state="points-together"]
+  .m-point-unexpanded.m-point-peer
+    &:hover
+      .m-point-wrap //, &:after, &:before
+        background-color: white
+        +single-box-shadow($color: rgba(black, .2), $voff: 2px)
 
 
 ///////////

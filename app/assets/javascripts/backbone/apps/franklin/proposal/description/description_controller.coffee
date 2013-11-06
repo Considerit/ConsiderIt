@@ -39,13 +39,6 @@
         @listenTo layout, 'proposal:clicked', =>
           App.navigate Routes.new_position_proposal_path( @model.long_id ), {trigger: true}
 
-        @listenTo layout, 'show_results', =>
-          if @state != Proposal.ReasonsState.together
-            App.navigate Routes.proposal_path(@model.long_id), {trigger: true}
-
-            if @prior_state == Proposal.ReasonsState.separated
-              layout.moveToResults()
-
 
     getLayout : ->
       new Proposal.ProposalDescriptionView

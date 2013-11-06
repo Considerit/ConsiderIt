@@ -9,24 +9,19 @@
 
 .l-proposal-description-outer-wrap.l-message-body
   padding: 0
-
-
  
 
 .m-proposal-description-wrap
 
   .l-message-speaker.l-message-initiator
-    //width: $initiator_width
-    //left: $margin_width - $initiator_width
-    //text-align: right
-    //margin-left: -($margin_width - $initiator_width)/2
+    left: $grid_xs / 2
 
     [data-target="user_profile_page"]
       opacity: .9
       display: inline-block
+      margin-left: $grid_xs
 
-    &:hover
-      [data-target="user_profile_page"]
+      &:hover
         opacity: 1
 
     img
@@ -35,19 +30,10 @@
 
   &[data-state="collapsed"]
     .l-message-speaker.l-message-initiator
-      top: -3px
+      top: 0
 
   // editable
   .m-proposal-description, .m-proposal-details
-    // .editable.editable-click:not(.editable-disabled)
-    //   width: 96%
-    //   display: inline-block
-    //   position: relative
-    //   margin-left: 25px
-
-    //   &:before
-    //     position: absolute
-    //     left: -25px
 
   .m-proposal-description-body br
     padding-bottom: $vertical_baseline/2
@@ -61,21 +47,6 @@
   .m-position-your-action-body.join
     @extend %collapsed_action_call
     margin-top: -16px
-
-  .m-reasons-view-results
-    //+sassy-button("glass", 5px, inherit, saturate($community_color, 8%), darken(saturate($community_color, 8%), 5%))
-    @extend %collapsed_action_call
-    +font-size(-2)
-    display: block
-    color: lighten($base_text_color, 5%)
-    font-weight: bold
-    text-align: center
-    //+text-shadow(none)
-    //border-radius: 0
-    margin-top: 3 * $vertical_baseline / 2
-
-    &:hover
-      color: darken($base_text_color, 5%)
 
 
   .m-proposal-description

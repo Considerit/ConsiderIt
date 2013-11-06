@@ -17,10 +17,7 @@
         options.parent_controller.addController @
 
     close: (args...) ->
-      console.log "removing Controller:", @, @.layout.model.id if @.layout and @.layout.model
-
-      if @.layout and @.layout.model and @layout.model.id == 1390
-        window.trace()
+      #console.log "removing Controller:"
         
       while @controllers.length > 0
         c = @controllers.pop()

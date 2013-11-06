@@ -58,7 +58,10 @@
 
   .m-pointlist-header-label
     border-bottom-color: $base_text_color
-    cursor: pointer
+
+  &[data-state="points-separated"], &[data-state="points-together"]
+    .m-pointlist-header-label
+      cursor: pointer
 
   &[data-state="points-separated"]
     .m-pointlist-header-label

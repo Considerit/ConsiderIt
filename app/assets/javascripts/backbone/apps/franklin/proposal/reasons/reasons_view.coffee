@@ -117,10 +117,16 @@
 
     events : 
       'mouseenter .m-point-peer' : 'logPointView'
+      'click' : 'reasonsClicked'
 
     logPointView : (ev) ->
-      pnt = $(ev.currentTarget).data('id')
-      @trigger 'point:viewed', pnt
+      if @state != Proposal.ReasonsState.collapsed
+        pnt = $(ev.currentTarget).data('id')
+        @trigger 'point:viewed', pnt
+
+    reasonsClicked : (ev) ->
+      @trigger 'show_results'
+      ev.stopPropagation()
 
 
   class Proposal.ResultsFooterView extends App.Views.ItemView

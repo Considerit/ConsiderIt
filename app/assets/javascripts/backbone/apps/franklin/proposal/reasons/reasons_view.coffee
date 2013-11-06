@@ -19,18 +19,18 @@
 
     pointExpanded : (region) ->
       region.$el.css 'zIndex', 12
-      $transition_speed = 1200
+      $transition_speed = 600
       @sizeToFit $transition_speed
 
     pointClosed : (region) ->
       region.$el.css 'zIndex', ''
-      $transition_speed = 1200
+      $transition_speed = 600
       @sizeToFit $transition_speed
 
     pointsBrowsing : (valence) ->
       # $expanded_points_increment: 250px
       expansion_size = 250
-      $transition_speed = 1200
+      $transition_speed = 600
 
       if valence == 'pro'
         @peerProsRegion.$el.addClass 'm-pointlist-browsing'
@@ -44,7 +44,7 @@
       @sizeToFit $transition_speed * 1.5
 
     pointsBrowsingOff : (valence) ->
-      $transition_speed = 1200
+      $transition_speed = 600
 
       @peerConsRegion.$el.css 
         right: ''

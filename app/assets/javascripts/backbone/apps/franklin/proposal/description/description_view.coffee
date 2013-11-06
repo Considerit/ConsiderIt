@@ -75,7 +75,6 @@
       'click .hidden' : 'showDetails'
       'click .showing' : 'hideDetails'      
       'click .m-proposal-description' : 'toggleDescription'
-      'click [data-target="show-results"]' : 'showResults'
 
     showDetails : (ev) ->
       $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
@@ -110,8 +109,5 @@
     toggleDescription : (ev) ->
       @trigger 'proposal:clicked'
       
-    showResults : (ev) ->
 
-      @trigger 'show_results'
-      ev.stopPropagation()
 

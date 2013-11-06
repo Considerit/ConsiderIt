@@ -12,7 +12,7 @@
 
     # transition or reset views as appropriate after state has been updated
     processStateChange : ->
-      $transition_speed = 1200
+      $transition_speed = 600
 
       #if @state != Proposal.ReasonsState.collapsed || (@peer_pros_controller.options.collection.length + @peer_cons_controller.options.collection.length > 0)
       footer_view = @getResultsFooterView()

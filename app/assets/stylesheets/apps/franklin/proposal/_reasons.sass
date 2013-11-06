@@ -202,6 +202,11 @@
       > svg.t-bubble
         display: none
 
+  &[data-state="collapsed"]
+    opacity: .85
+    &:hover
+      opacity: 1
+      cursor: pointer
 
 
   /////////
@@ -213,8 +218,6 @@
   .m-position-region
     position: relative
     width: $decision_board_width
-
-
 
   .m-aggregated-propoints-region, .m-aggregated-conpoints-region
     //position: absolute
@@ -231,6 +234,27 @@
     .l-group-container
       
 
+
+  .m-reasons-footer-region
+    visibility: hidden
+
+  &[data-state="collapsed"] 
+
+    &:hover
+      .m-reasons-footer-region
+        visibility: visible
+        width: $margin_width
+        position: absolute
+        right: $grid_xs / 2
+        bottom: - 2 * $vertical_baseline
+
+        div
+          text-align: center
+        .m-reasons-view-results
+          text-align: right
+          +font-size(-1)
+
+
 // sticky footer for results (not presented in .m-reasons el)
 .m-reasons-footer-sticky
   text-align: center
@@ -239,3 +263,4 @@
     width: 100%
     border-radius: 0
     +font-size(2)
+

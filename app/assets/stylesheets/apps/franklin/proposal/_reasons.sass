@@ -14,15 +14,18 @@
     +transition(width $transition_speed $transition_function, top $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function)
     //+transition(all $transition_speed $transition_function)
 
-  .m-points-list-region
-    +transition(width $transition_speed $transition_function, left $transition_speed $transition_function)
-    //+transition(all $transition_speed $transition_function)
+  // .m-points-list-region
+  //   +transition(width $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function)
+  //   //+transition(all $transition_speed $transition_function)
 
   .m-position-region
     +transition(width $transition_speed $transition_function, left $transition_speed $transition_function)
 
+    //+transition(all $transition_speed $transition_function)
+
   .m-aggregated-propoints-region, .m-aggregated-conpoints-region
     +transition(width $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function)
+    //+transition(all $transition_speed $transition_function)
 
   &[data-state="separated"][data-state-from="together"]
     .m-reasons-lists
@@ -93,6 +96,8 @@
 
     .m-aggregated-propoints-region, .m-aggregated-conpoints-region
       width: $peer-point-width
+      left: 0
+
 
     .m-point-peer.m-point-unexpanded
       width: $peer-point-width

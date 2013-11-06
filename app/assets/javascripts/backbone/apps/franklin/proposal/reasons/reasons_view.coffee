@@ -28,8 +28,6 @@
       @sizeToFit $transition_speed
 
     pointsBrowsing : (valence) ->
-      # $expanded_points_increment: 250px
-      expansion_size = 250
       $transition_speed = 600
 
       if valence == 'pro'
@@ -39,7 +37,6 @@
       else
         @peerConsRegion.$el.addClass 'm-pointlist-browsing'
         @$el.addClass 'm-reasons-browsing m-reasons-browsing-cons'
-
 
       @sizeToFit $transition_speed * 1.5
 

@@ -66,12 +66,12 @@
 
     sizeToFit : (delay = 0) ->
       _.delay =>
-        $to_fit = @$el.children('.m-reasons-lists')
+        $to_fit = @$el.find('.m-reasons-lists')
 
         $to_fit.css 'height', ''
         $to_fit.parent().css 'min-height', ''
 
-        height = $to_fit.height()
+        height = $to_fit.outerHeight()
 
         $to_fit.css 'height', height
         $to_fit.parent().css 'min-height', height

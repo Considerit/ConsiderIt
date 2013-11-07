@@ -66,7 +66,7 @@
         @listenTo App.vent, 'point:expanded', => @unexpand false
         @listenTo App.vent, 'points:unexpand', => 
           @layout.$el.removeLightbox()
-          @unexpand false
+          @unexpand true # set to true so that when including point from expanded view, url updated appropriately on close
 
         @layout.$el
           .addClass('m-point-expanded')

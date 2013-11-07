@@ -125,8 +125,9 @@
         @trigger 'point:viewed', pnt
 
     reasonsClicked : (ev) ->
-      @trigger 'show_results'
-      ev.stopPropagation()
+      if @state == Proposal.ReasonsState.collapsed
+        @trigger 'show_results'
+        ev.stopPropagation()
 
 
   class Proposal.ResultsFooterView extends App.Views.ItemView

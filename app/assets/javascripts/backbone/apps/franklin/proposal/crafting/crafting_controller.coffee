@@ -13,10 +13,28 @@
       super options
 
       @proposal = options.model
-      @model = @proposal.getUserPosition()
 
       @listenTo @options.parent_controller, 'point:show_details', (point) =>
         @trigger 'point:show_details', point
+
+      @listenTo App.vent, 'user:signin:data_loaded', =>
+        current_user = App.request 'user:current'
+        if @model.get('user_id') != current_user.id
+          existing_position = App.request 'position:current_user:proposal', @proposal.id, false
+          if !existing_position
+            @model.setUser current_user
+          else
+            existing_position.subsume @model
+            @trigger 'signin:position_changed'
+
+        @region.reset()
+        @region.show @layout
+
+      @listenTo App.vent, 'user:signout', => 
+        @region.reset()
+        @region.show @layout
+        @trigger 'signin:position_changed'
+
 
       @layout = @getLayout()
 
@@ -28,24 +46,6 @@
 
     transition : (region, view) ->
       region.$el.empty().append view.el
-      
-      # if @state == Proposal.ReasonsState.collapsed
-      #   region.$el.empty().append view.el
-      # else if @state == Proposal.ReasonsState.separated
-      #   if @prior_state == null
-      #     region.$el.empty().append view.el
-      #   else
-      #     region.$el.empty().append view.el
-
-      #     # _.delay =>
-      #     #   #view.$el.hide()
-      #     #   region.$el.empty().append view.el
-      #     #   #view.$el.fadeIn 400
-      #     # , 400
-      # else if @state == Proposal.ReasonsState.together
-      #   #view.$el.hide()
-      #   region.$el.empty().append view.el
-
 
     processStateChange : ->
       # if @prior_state != @state
@@ -54,21 +54,9 @@
 
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
-        # switch @state 
+        @model = @proposal.getUserPosition()
 
-        #   when Proposal.ReasonsState.separated
         @setupPositionLayout layout
-
-        @listenTo App.vent, 'user:signin', =>
-          current_user = App.request 'user:current'
-
-          _.each @model.written_points, (pnt) =>
-            pnt.set 'user_id', current_user.id
-
-        @listenTo ConsiderIt.vent, 'user:signout', => 
-          #TODO: clear out position data like points
-          @region.reset()
-          @region.show layout
 
 
     setupPositionLayout : (layout) ->
@@ -95,52 +83,27 @@
         App.navigate Routes.proposal_path(@proposal.long_id), {trigger: true}
 
       @listenTo view, 'position:submit-requested', (follow_proposal) => 
+
         submitPosition = =>
-          params = _.extend @model.toJSON(),    
-            included_points : @model.getIncludedPoints()
-            viewed_points : _.keys(@model.viewed_points)
+          @listenToOnce @model, 'position:synced', =>
+            current_user = App.request 'user:current'
+            toastr.success "Thanks #{current_user.firstName()}. Now explore the results!", null,
+              positionClass: "toast-top-full-width"
+              fadeIn: 100
+              fadeOut: 100
+              timeOut: 7000
+              extendedTimeOut: 100
+
+            App.navigate Routes.proposal_path( @model.get('long_id') ), {trigger: true}
+
+          @listenToOnce @model, 'position:sync:failed', =>
+            toastr.error "We're sorry, something went wrong saving your position :-(", null,
+              positionClass: "toast-top-full-width"
+
+          params = 
             follow_proposal : follow_proposal
 
-          xhr = Backbone.sync 'update', @model,
-            data : JSON.stringify params
-            contentType : 'application/json'
-
-            success : (data) =>
-              #TODO : move this to Position.coffee
-              proposal = @model.getProposal()
-
-              @model.set data.position.position
-
-              App.vent.trigger 'points:fetched', (p.point for p in data.updated_points)
-              proposal.set(data.proposal) if 'proposal' of data
-
-              App.vent.trigger('position:subsumed', data.subsumed_position.position) if 'subsumed_position' of data && data.subsumed_position && data.subsumed_position.id != @model.id
-              proposal.newPositionSaved @model
-
-              #TODO: make sure points getting updated properly in all containers
-
-              # if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()
-              #   @$el.attr('data-activity', 'proposal-has-activity')
-
-              current_user = App.request 'user:current'
-              toastr.success "Thanks #{current_user.firstName()}. Now explore the results!", null,
-                positionClass: "toast-top-full-width"
-                fadeIn: 100
-                fadeOut: 100
-                timeOut: 7000
-                extendedTimeOut: 100
-
-              App.navigate Routes.proposal_path( @model.get('long_id') ), {trigger: true}
-
-
-            failure : (data) =>
-              toastr.error "We're sorry, something went wrong saving your position :-(", null,
-                positionClass: "toast-top-full-width"
-
-          App.execute 'show:loading',
-            loading:
-              entities : xhr
-              xhr: true
+          App.request 'position:sync', @model, params
 
         user = @model.getUser()
         if user.isNew() || user.id < 0
@@ -234,7 +197,6 @@
 
     getLayout : ->
       new Proposal.PositionLayout
-        model : @model
         proposal : @proposal
         state : @state
 

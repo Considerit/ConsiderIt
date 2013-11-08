@@ -139,6 +139,7 @@ class ApplicationController < ActionController::Base
         top_points[pnt.id] = pnt
       end
 
+      @positions = {}
       if current_user
         hidden_proposals = Proposal.content_for_user(current_user)
         hidden_proposals.each do |hidden|          
@@ -146,6 +147,7 @@ class ApplicationController < ActionController::Base
           top_points[hidden.top_con] = Point.find(hidden.top_con) if hidden.top_con
         end
         proposals += hidden_proposals
+        @positions = current_user.positions.published
       end
 
       proposals_inactive_count = Proposal.open_to_public.inactive.browsable.count
@@ -154,7 +156,7 @@ class ApplicationController < ActionController::Base
         :proposals => proposals,
         :points => top_points.values,
         :proposals_active_count => proposals_active_count,
-        :proposals_inactive_count => proposals_inactive_count
+        :proposals_inactive_count => proposals_inactive_count,
       }
 
       @public_root = Rails.application.config.action_controller.asset_host.nil? ? "" : Rails.application.config.action_controller.asset_host

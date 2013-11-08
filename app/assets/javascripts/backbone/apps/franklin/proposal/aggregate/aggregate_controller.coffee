@@ -14,6 +14,12 @@
 
       @model = options.model
 
+      @listenTo @options.parent_controller, 'point:mouseover', (includers) =>
+        @histogram_view.highlightUsers includers
+
+      @listenTo @options.parent_controller, 'point:mouseout', (includers) =>
+        @histogram_view.highlightUsers includers, false
+
       @layout = @getLayout()
 
       @setupLayout @layout
@@ -27,32 +33,24 @@
 
 
     processStateChange : ->
-      if @prior_state == Proposal.ReasonsState.collapsed
+      if @state == Proposal.ReasonsState.together 
+        #reset the layout such that updated positions are shown correctly in the histogram
         @layout = @resetLayout @layout
 
 
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
-        @setupHistogram layout
 
-        @listenTo @options.parent_controller, 'point:mouseover', (includers) =>
-          @histogram_view.highlightUsers includers
+        @histogram_view = @getAggregateHistogram()
+        @listenTo @histogram_view, 'show', => 
+          @listenTo @histogram_view, 'histogram:segment_results', (segment) =>
+            @trigger 'histogram:segment_results', segment
 
-        @listenTo @options.parent_controller, 'point:mouseout', (includers) =>
-          @histogram_view.highlightUsers includers, false
+        layout.histogramRegion.show @histogram_view 
 
-
-    setupHistogram : (layout) ->
-      @histogram_view = @getAggregateHistogram()
-      @listenTo @histogram_view, 'show', => 
-        @listenTo @histogram_view, 'histogram:segment_results', (segment) =>
-          @trigger 'histogram:segment_results', segment
-
-      layout.histogramRegion.show @histogram_view 
-
-      # if @model.openToPublic()
-      #   social_view = @getSocialMediaView()
-      #   layout.socialMediaRegion.show social_view      
+        # if @model.openToPublic()
+        #   social_view = @getSocialMediaView()
+        #   layout.socialMediaRegion.show social_view      
 
 
     getLayout : ->

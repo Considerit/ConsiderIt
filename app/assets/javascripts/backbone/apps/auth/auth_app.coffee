@@ -74,9 +74,13 @@
         #TODO: check if all the unpublished proposals of this user show up
         App.vent.trigger 'proposals:fetched', data
 
+        App.vent.trigger 'positions:fetched', data.positions
+
         #TODO: check if the appropriate points are updated in all views        
         App.vent.trigger 'points:fetched', 
           (p.point for p in data.points)
+
+        App.vent.trigger 'user:signin:data_loaded'
 
       if @redirect_after_signin
         App.navigate @redirect_after_signin, {trigger: true}

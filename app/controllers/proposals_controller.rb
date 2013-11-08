@@ -62,8 +62,8 @@ class ProposalsController < ApplicationController
 
     data = proposal.full_data current_tenant, current_user, session[proposal.id]
 
-    position = ProposalsController.get_position_for_user(proposal, current_user, session)
-    data[:position] = position
+    # position = ProposalsController.get_position_for_user(proposal, current_user, session)
+    # data[:position] = position
 
     respond_to do |format|
       format.json {render :json => data}
@@ -85,6 +85,7 @@ class ProposalsController < ApplicationController
     # TODO: explicitly grab parameters
     params[:proposal].update({
       :long_id => SecureRandom.hex(5),
+      :account_id => current_tenant.id,
       :admin_id => SecureRandom.hex(6),
       :user_id => current_user ? current_user.id : nil,
       :description => description,
@@ -102,8 +103,8 @@ class ProposalsController < ApplicationController
 
     data = proposal.full_data current_tenant, current_user, session[proposal.id]
 
-    position = ProposalsController.get_position_for_user(proposal, current_user, session)
-    data[:position] = position
+    # position = ProposalsController.get_position_for_user(proposal, current_user, session)
+    # data[:position] = position
     render :json => data
     
   end
@@ -157,8 +158,8 @@ class ProposalsController < ApplicationController
       :publicity => proposal.publicity,
       :published => proposal.published,
       :active => proposal.active,
-      :proposal => proposal,
-      :position => ProposalsController.get_position_for_user(proposal, current_user, session)
+      :proposal => proposal
+      # :position => ProposalsController.get_position_for_user(proposal, current_user, session)
     }
     render :json => response.to_json
   end

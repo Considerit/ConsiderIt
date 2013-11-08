@@ -26,7 +26,7 @@ ConsiderIt::Application.routes.draw do
   resource :proposal, :path => '/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
     match '/' => "proposals#show" , :via => :get, :as => :new_position
 
-    resources :positions, :path => '', :only => [:update], :path_names => {:new => ''} 
+    resources :positions, :path => '', :only => [:update, :create], :path_names => {:new => ''} 
 
     match '/positions/:user_id' => "positions#show", :as => :user_position
 

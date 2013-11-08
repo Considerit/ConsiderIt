@@ -168,6 +168,13 @@
         @listenToOnce controller, 'details:closed', (point) => 
           @layout.pointClosed @layout.positionRegion
 
+      # After signing in, the existing user may have a preexisting position. We need
+      # to refresh the points shown in the margins if that preexisting position had included points.
+      # Similarily after a user signs out, the points in their list should be returned to peer points.
+      @listenTo controller, 'signin:position_changed', =>
+        if @state == Proposal.ReasonsState.separated
+          @updatePeerPoints @layout
+
 
     setupPointsController : (controller) ->
       @listenTo controller, 'point:highlight_includers', (view) =>

@@ -3,11 +3,23 @@ class PositionsController < ApplicationController
   protect_from_forgery
 
   respond_to :json
+
+
+  def create
+    position = Position.create params[:position]
+    position[:user_id] = current_user ? current_user.id : nil
+    position[:account_id] = current_tenant.id
+    update_or_create position
+  end
   
   def update
-    raise 'Cannot update without a logged in user' if !current_user || !current_user.registration_complete
-
     position = Position.find params[:id]
+    update_or_create position
+  end
+
+  def update_or_create(position)
+
+    raise 'Cannot update without a logged in user' if !current_user || !current_user.registration_complete
     authorize! :update, position
 
     proposal = position.proposal

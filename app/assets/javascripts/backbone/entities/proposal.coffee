@@ -38,12 +38,12 @@
         (p.point for p in params.points)
 
       App.vent.trigger 'positions:fetched', 
-        (p.position for p in params.positions), params.position.position
+        (p.position for p in params.positions) #, params.position.position
 
-      @setUserPosition params.position.position.id
+      #@setUserPosition params.position.position.id
 
-      position = @getUserPosition()
-      position.setIncludedPoints (p.point.id for p in params.included_points)
+      # position = @getUserPosition()
+      # position.setIncludedPoints (p.point.id for p in params.included_points)
 
       current_tenant = App.request 'tenant:get'
       if current_tenant.get 'assessment_enabled'
@@ -101,10 +101,7 @@
       user
 
     getUserPosition : ->
-      if !@position
-        null
-      else
-        @position
+      App.request 'position:current_user:proposal', @id
 
     getPositions : ->
       App.request 'positions:get:proposal', @id
@@ -116,13 +113,13 @@
     #   @getUserPosition().set attrs
     #   @getUserPosition
 
-    setUserPosition : (position_id) ->
-      @position = App.request 'position:get', position_id
+    # setUserPosition : (position_id) ->
+    #   @position = App.request 'position:get', position_id
 
     # TODO: refactor this method out...handles what happens when 
     # current user saves a new position
     newPositionSaved : (position) ->
-      user_id = @position.get('user_id')
+      user_id = position.get('user_id')
       if position.get('published') 
 
         if !@user_participated(user_id)

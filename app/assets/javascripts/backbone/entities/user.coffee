@@ -122,6 +122,10 @@
       @get('name').split(' ')[0]
 
   class Entities.OperatingUser extends Entities.User
+    defaults : 
+      id : -1
+      bio : ''
+
     ##### Follows #####
     setFollows : (follows) ->
       follows = ( f.follow for f in follows )
@@ -157,14 +161,14 @@
           follow.follow = false
 
     isPersisted : ->
-      'id' of @attributes
+      @isLoggedIn()
 
     #TODO: this method is technically incorrect...having a user id does not mean
     # that the user is logged in, only in the limited auth scenario where this
     # method is being used to detect whether a user has been created or not...
     # need to update this so there is an authoritative indicator from the server
     isLoggedIn : ->
-      'id' of @attributes
+      'id' of @attributes && @get('id') > -1
 
     authMethod : ->
       attrs = @attributes

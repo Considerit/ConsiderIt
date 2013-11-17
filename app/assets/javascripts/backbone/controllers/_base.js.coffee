@@ -65,23 +65,36 @@
         @changeState state
 
     changeState : (new_parent_state) ->
-      @setState new_parent_state
-      @prepareForStateChange()
-      @layout.setDataState @state
-      @processStateChange()
+      if @transition_speed
+        @layout.enterTransition()
+        App.vent.trigger 'transition:start'
+        _.delay =>
+          @layout.exitTransition()
+          App.vent.trigger 'transition:end'
+        , @transition_speed() + 5
 
-      @trigger 'state:changed', @state
+      _.delay => # the delay is to get around a strange issue where the state was transitioning too fast
+        @setState new_parent_state
+        @prepareForStateChange()
+        @layout.setDataState @state
+
+
+        @processStateChange()
+
+        @trigger 'state:changed', @state
+      , 5
 
     setState : (new_parent_state) ->
+
       new_state = @state_map()[new_parent_state]
 
-      if @state != new_state
-        @prior_state = @state if @state != null  
-        @state = new_state
+      #if @state != new_state
+      @prior_state = @state if @state != null  
+      @state = new_state
 
     # convenience method for common action
     resetLayout : (layout) ->
-      layout.close()
+      #layout.close()
       layout = @getLayout()
       @setupLayout layout
       @region.show layout

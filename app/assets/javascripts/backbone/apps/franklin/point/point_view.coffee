@@ -35,6 +35,7 @@
   class Point.PeerPointView extends Point.PointView
     actions : ['include']
 
+
     events : _.extend @events,
       'click [data-target="point-include"]' : 'includePoint'
       'mouseenter' : 'highlightIncluders'

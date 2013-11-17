@@ -31,7 +31,7 @@ $m-point-expanded-width: $body_width + 150
 
     &.m-point-position
       &.con
-        left: $pro-con-list-column-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
+        left: $position-point-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
       &.pro
         left: - ($m-point-expanded-width - $body_width) / 2
 
@@ -269,14 +269,24 @@ $m-point-expanded-width: $body_width + 150
 
 
 
+.m-point-peer.m-point-unexpanded, .m-point-expanded
+  .m-point-wrap
+    border: 1px solid transparent
+    // background-color: whitesmoke
+
 [data-state="points-separated"] .m-point-peer.m-point-unexpanded, .m-point-expanded
   .m-point-wrap
-    +single-box-shadow($color: rgba(black, .1), $voff: 1px)
     border-radius: 8px
-    border: 1px solid //$dark_community_color
-    border-color: #f1f1f1 #ddd #bbb #ddd
-    @extend %whitesmoke
+    background-color: whitesmoke
 
+[data-state="points-separated"] .m-point-peer.m-point-unexpanded
+  .m-point-wrap
+    +single-box-shadow($color: rgba(black, .1), $voff: 1px)
+    border-color: #f1f1f1 #ddd #bbb #ddd
+
+.m-point-expanded .m-point-wrap
+  +single-box-shadow($color: rgba(black, .25), $voff: 1px)
+  border-color: #777 #666 #555 #666
 
 .m-point-position.m-point-unexpanded .m-point-wrap
   background-color: $decision_board_color
@@ -293,9 +303,9 @@ $m-point-expanded-width: $body_width + 150
 [data-state="points-separated"], [data-state="points-together"]
   .m-point-unexpanded.m-point-peer
     &:hover
-      .m-point-wrap //, &:after, &:before
+      .m-point-wrap
         background-color: white
-        +single-box-shadow($color: rgba(black, .2), $voff: 2px)
+        //+single-box-shadow($color: rgba(black, .2), $voff: 2px)
 
 
 ///////////

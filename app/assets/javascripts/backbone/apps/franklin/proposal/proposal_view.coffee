@@ -15,9 +15,9 @@
 
     regions: 
       descriptionRegion : '.m-proposal-description-region'
+      stateToggleRegion : '.m-proposal-state-toggle-region'
       aggregateRegion : '.m-proposal-aggregate-region'
       reasonsRegion : '.m-proposal-reasons-region'
-      adminRegion : '.m-proposal-admin-region'
 
     initialize : (options = {}) ->
       super options
@@ -27,10 +27,21 @@
 
     implodeParticipants : ->
       $participants = @$el.find('.l-message-speaker .l-group-container')
-      $participants.find('.avatar').css {position: '', zIndex: '', '-ms-transform': "", '-moz-transform': "", '-webkit-transform': "", transform: ""}
 
-      #@$el.find('.m-histogram').hide()
-      @$el.find('.m-histogram').css('opacity', '')
+      $participants.hide()
+      # $participants.find('.avatar').css 
+      #   position: ''
+      #   zIndex: ''
+      #   '-ms-transform': ""
+      #   '-moz-transform': ""
+      #   '-webkit-transform': ""
+      #   transform: ""
+
+      $participants.find('.avatar[style]').removeAttr('style') # much more efficient
+
+      # @$el.find('.m-histogram').css
+      #   opacity: ''
+
       $participants.show()
 
     explodeParticipants : (transition = true) ->      
@@ -48,10 +59,21 @@
         $participants.hide()
         @trigger 'explosion:complete'
       else
+        $histogram.find('.m-bar-people').css
+          visibility: 'hidden'
+
         speed = 1200
         from_tile_size = $participants.find('.avatar:first').width()
         to_tile_size = $histogram.find(".avatar:first").width()
         ratio = to_tile_size / from_tile_size
+
+        $participants_container = $participants.parent()
+        $participants_offset = $participants_container.offset()
+        $participants_container.css
+          top: $participants_offset.top - $participants_container.parent().offset().top
+          bottom: 'auto'
+
+
 
         # compute all offsets first, before applying changes, for perf reasons
         positions = {}
@@ -72,25 +94,30 @@
 
           positions[id] = [offsetX, offsetY]
 
+        #_.delay =>
+
+        for participant in $user_els
+          $from = $(participant)
+          id = $from.data('id')
+          [offsetX, offsetY] = positions[id]
+          
+          rule = "rotate(180deg) scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
+          $from.css 
+            '-ms-transform':     rule,
+            '-moz-transform':    rule,
+            '-webkit-transform': rule,
+            'transform':         rule
+
         _.delay =>
+          $histogram.css { opacity: 1, display: '' }
+          $histogram.find('.m-bar-people').css {visibility: ''}
 
-          for participant in $user_els
-            $from = $(participant)
-            id = $from.data('id')
-            [offsetX, offsetY] = positions[id]
-            
-            $from.css 
-              '-ms-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
-              '-moz-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
-              '-webkit-transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)",
-              'transform': "scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
+          $participants.fadeOut()
+          $participants_container.removeAttr 'style'
 
-          _.delay =>
-            $histogram.css { opacity: 1, display: '' }
-            $participants.fadeOut()
-            @trigger 'explosion:complete'
-          , speed + 150
-        , 1000 # give time for the description to slide down
+          @trigger 'explosion:complete'
+        , speed + 10
+        #, 1000 # give time for the description to slide down
 
 
 
@@ -112,6 +139,8 @@
 
       Math.min 50, 
         window.getTileSize(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)
+
+
 
   class Proposal.SocialMediaView extends App.Views.ItemView
     template : '#tpl_proposal_social_media'

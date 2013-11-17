@@ -1,32 +1,66 @@
 .m-results
+  height: $aggregate_area_height
   &[data-state="together"], &[data-state="separated"][data-state-from="together"]
     .m-histogram
       visibility: visible
       display: block
-      height: 215px
+      opacity: 1
 
-.m-results
-  &[data-state="collapsed"], &[data-state="separated"]
-    .m-histogram
-      height: 0
-      margin-top: 0
+  .m-histogram-base, .m-bar-people, .m-histogram-bar
+    +transition(opacity $transition_speed $transition_function)
+
+
+  &.transitioning
+
+    &[data-state="together"][data-state-from="collapsed"]
+      .m-bar-people
+        visibility: hidden
+      .m-histogram-base-label
+        visibility: hidden
+
+
+
+  &[data-state="together"][data-state-from="separated"]
+    .m-histogram-bar
+      opacity: 1
+    .m-histogram-base, .m-bar-people  
+      opacity: 1
+
+  &[data-state="separated"][data-state-from="together"]
+    .m-histogram-bar
+      opacity: .1
+    .m-histogram-base, .m-bar-people  
+      opacity: 0
+
+
+[data-state="separated"]
+  .m-histogram-bar
+    [data-target="user_profile_page"]
+      cursor: auto
+
+[data-state="together"]
+  .m-histogram-bar
+    cursor: pointer
 
 // HISTOGRAM / WHAT
-$histogram_bar_color: darken($mid_bg_color, 15%)
+$histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
+$histogram_width: $histogram_bar_width * 7 + 3 * 7
 .m-histogram
   //display: none
-  +transition(height $transition_speed, opacity $transition_speed, margin-top $transition_speed)
+
+  // +transition(height $transition_speed, opacity $transition_speed, margin-top $transition_speed)
+  +transition(opacity $transition_speed)
+
   opacity: 0
   visibility: hidden
   margin: $vertical_baseline auto 0 auto
   position: relative
   top: 0px
-  width: $body_width
+  width: $histogram_width
 
   .m-histogram-bar
     width: $histogram_bar_width
     position: relative
-    cursor: pointer
     border: 2px solid darken($histogram_bar_color, 10%)
     border-bottom: none
     background-color: $histogram_bar_color
@@ -42,7 +76,7 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
 
 
     &.m-bar-is-selected 
-      .t-bubble//, .m-bar-position
+      .t-bubble
         display: block
 
     .t-bubble
@@ -69,8 +103,8 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
     //   +font-size(-1)
 
     &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
-      background-color: lighten($histogram_bar_color, 16%)
-      border-color: darken($histogram_bar_color, 2%)
+      background-color: darken($histogram_bar_color, 8%)
+      border-color: darken($histogram_bar_color, 16%)
     
     &.m-bar-is-soft-selected
       z-index: 5
@@ -88,7 +122,7 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
   
   .m-bar-person
     +rotate(180deg)  
-    opacity: .15
+    opacity: .6
 
 .m-bar-is-soft-selected .m-bar-people .m-bar-person
   opacity: .75
@@ -100,18 +134,27 @@ $histogram_bar_color: darken($mid_bg_color, 15%)
 .m-histogram-base
   margin-left: -$grid_xs/2
   height: $vertical_baseline
-  width: $body_width + $grid_xs
+  width: $histogram_width + $grid_xs
   border-radius: 10px
-  background-color: lighten($mid_bg_color, 10%)
-  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: lighten($mid_bg_color, 25%), $inset: true)
+  background-color: mix(lighten($mid_bg_color, 30%), $accent_color, 90%)
+  //background-color: lighten($mid_bg_color, 10%)
+  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: lighten($mid_bg_color, 40%), $inset: true)
 
 .m-histogram-base-label
-  +font-size(-2)
-  text-transform: uppercase
   position: absolute
-  font-weight: bold
+  padding: 0 $grid_xs + 3
+  z-index: -1
+  // border-radius: 16px
+  // background-color: lighten($mid_bg_color, 55%)
+  height: $vertical_baseline
+  span
+    +font-size(-2)
+    text-transform: lowercase
+    line-height: 1.1
+    display: block
+    //font-weight: bold
 
 .m-histogram-base-label-support
-  left: -100px
+  left: -92px
 .m-histogram-base-label-oppose
-  right: -84px
+  right: -82px

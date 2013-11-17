@@ -1,6 +1,10 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
   class Proposal.CraftingController extends App.Controllers.StatefulController
+    transition_speed : -> 
+      $transition_speed = 1000
+      $transition_speed
+
     # maps from parent state to this controller's state
     state_map : ->
       map = {}
@@ -40,42 +44,72 @@
 
       @setupLayout @layout
 
-      @region.open = (view) => @transition @region, view # this will set how this region handles the transitions between views
+      # @region.open = (view) => @transition @region, view # this will set how this region handles the transitions between views
       @region.show @layout
 
 
-    transition : (region, view) ->
-      region.$el.empty().append view.el
+    # transition : (region, view) ->
+    #   region.$el.empty().append view.el
 
     processStateChange : ->
       # if @prior_state != @state
       #   @layout = @resetLayout @layout
 
 
-    setupLayout : (layout) ->
-      @listenTo layout, 'show', =>
-        @model = @proposal.getUserPosition()
+      if @prior_state != @state
 
-        @setupPositionLayout layout
+        if @state == Proposal.ReasonsState.separated
+
+          if @prior_state == Proposal.ReasonsState.collapsed
+            _.delay =>
+              @createFooter @layout
+              @createReasons @layout
+            , @transition_speed()
+            
+          else 
+            @createFooter @layout
+            @createReasons @layout
 
 
-    setupPositionLayout : (layout) ->
+        else if @state == Proposal.ReasonsState.collapsed
+          @createFooter @layout
+          @layout.reasonsRegion.reset()
+          @layout.stanceRegion.reset()
 
+    createReasons : (layout) ->
       reasons_layout = @getPositionReasons @proposal, @model
       stance_view = @getPositionStance @proposal, @model
       # explanation_view = @getPositionExplanation @model
 
-      @listenTo reasons_layout, 'show', => 
-        @setupReasonsLayout reasons_layout
+      @listenTo reasons_layout, 'show', => @setupReasonsLayout reasons_layout
       @listenTo stance_view, 'show', => @setupStanceView stance_view
 
       layout.reasonsRegion.show reasons_layout
       layout.stanceRegion.show stance_view
       # layout.explanationRegion.show explanation_view
 
+    createHeader : (layout) ->
+      header_view = @getReasonsHeader @model
+      layout.headerRegion.show header_view
+
+    createFooter : (layout) ->
       footer_view = @getFooterView @model
-      @listenTo footer_view, 'show', => @setupFooterLayout footer_view
-      layout.footerRegion.show footer_view
+      if footer_view
+        @listenTo footer_view, 'show', => @setupFooterLayout footer_view
+        layout.footerRegion.show footer_view
+      else
+        if layout.footerRegion.currentView
+          layout.footerRegion.currentView.$el.fadeOut ->
+            layout.footerRegion.reset()
+
+    setupLayout : (layout) ->
+      @listenTo layout, 'show', =>
+        @model = @proposal.getUserPosition()
+
+        if @state == Proposal.ReasonsState.separated
+          @createReasons layout
+        @createFooter layout
+        @createHeader layout
       
     setupFooterLayout : (view) ->
       @listenTo view, 'position:canceled', =>
@@ -215,5 +249,20 @@
         model : position
 
     getFooterView : (position) ->
-      new Proposal.PositionFooterView
-        model : position
+
+      switch @state
+        when Proposal.ReasonsState.separated
+          new Proposal.PositionFooterSeparatedView
+            model : position
+
+        when Proposal.ReasonsState.collapsed
+          null
+
+        when Proposal.ReasonsState.together
+          null
+
+    getReasonsHeader : (position) ->
+      new Proposal.ReasonsHeaderView
+        model : position      
+
+

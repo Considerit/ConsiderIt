@@ -1,14 +1,32 @@
 ////////////// proposal ////////////
 %script{ :type => "text/template", :id => "tpl_proposal_layout" }  
 
-  .m-proposal-admin-region
-
   .m-proposal-description-region
 
+  .m-proposal-state-toggle-region
+  
   .m-proposal-aggregate-region
 
   .m-proposal-reasons-region
 
+%script{ :type => "text/template", :id => "tpl_proposal_state_toggle"}
+
+  (( if(crafting && (active || updating) ) { ))
+
+  %a{ :href => "{{Routes.proposal_path( long_id )}}"}
+    %i.icon-large 
+      &#xf046;
+
+    {{ call }}
+
+  (( } else if(!crafting && (active || updating) ) { ))
+  %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+    %i.icon-large 
+      &#xf096;
+
+    {{ call }}
+
+  (( } ))
 
 ////////////// position ////////////
 
@@ -17,6 +35,8 @@
   .m-position-message-body.l-message-body
     / %h2.m-position-heading-points
     /   {{ considerations_prompt }}
+
+    .m-reasons-header-region
 
     .m-position-reasons-region
 
@@ -68,9 +88,9 @@
     %i.icon-large  
       &#xf0c7;
     (( if(updating){ ))
-    Update your position
+    Update your evaluation
     (( } else { ))
-    Save your position
+    Save your evaluation
     (( } ))
 
   .m-position-submit-footer-wrap
@@ -95,6 +115,19 @@
   (( } ))
 
 
+%script{ :type => "text/template", :id => "tpl_reasons_header" }  
+
+  (( if(active) { ))
+  %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+    //fa-pencil-square-o
+    %i.icon-large 
+      //&#xf044;
+      &#xf040;
+    {{ call }}
+  (( } ))
+
+
+
   
 
 %script{ :type => "text/template", :id => "tpl_reasons_layout"}
@@ -102,6 +135,7 @@
   // .m-proposal-socialmedia-region
 
   .m-reasons-lists.l-message-body
+
     .m-aggregated-propoints-region.m-points-list-region
     .m-position-region
     .m-aggregated-conpoints-region.m-points-list-region
@@ -125,11 +159,12 @@
   (( }); ))
 
 %script{ :type => "text/template", :id => "tpl_aggregate_footer_expanded"}
-  %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
-    //fa-pencil-square-o
-    %i.icon-large 
-      &#xf044;  
-    {{ call }}
+  .placeholder
+  // %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+  //   //fa-pencil-square-o
+  //   %i.icon-large 
+  //     &#xf044;  
+  //   {{ call }}
 
 %script{ :type => "text/template", :id => "tpl_aggregate_footer_collapsed"}
   %a.m-reasons-view-results{:'data-target' => 'show-results'}
@@ -178,9 +213,11 @@
 
   .m-histogram-base
     .m-histogram-base-label.m-histogram-base-label-support
-      {{ supporter_label }}
+      %span
+        {{ supporter_label }}
     .m-histogram-base-label.m-histogram-base-label-oppose
-      {{ opposer_label }}
+      %span
+        {{ opposer_label }}
 
 
 %script{ :type => "text/template", :id => "tpl_proposal_social_media" }
@@ -228,33 +265,34 @@
   (( } ))
 
   .m-proposal-admin_strip
-    %span.m-proposal-admin_label
-      Conversation settings:
+    %i.icon-cog
 
-    .m-proposal-admin-publicity.l-dialog-prompt
-      %a.m-proposal-admin_operations-publicity.l-dialog-prompt-label
-        //Sharing is 
-        %span
-          (( if(publicity == 2) { ))
-          publicly accessible
-          (( } else if(publicity == 1){ ))
-          accessible by link only
-          (( } else { ))
-          private
-          (( } ))
+    .m-proposal-admin-options-menu-wrap
+      %ul.m-proposal-admin-options-menu
+        %li.m-proposal-admin-publicity.l-dialog-prompt
+          %a.m-proposal-admin_operations-publicity.l-dialog-prompt-label
+            //Sharing is 
+            %span
+              (( if(publicity == 2) { ))
+              Access: public
+              (( } else if(publicity == 1){ ))
+              Access: link only
+              (( } else { ))
+              Access: by invivation
+              (( } ))
 
-    .m-proposal-admin-status.l-dialog-prompt
-      %a.m-proposal-admin_operations-status.l-dialog-prompt-label
-        //Status is 
-        %span
-          (( if(active){ ))
-          active
-          (( } else { ))
-          inactive
-          (( } ))
+        %li.m-proposal-admin-status.l-dialog-prompt
+          %a.m-proposal-admin_operations-status.l-dialog-prompt-label
+            //Status is 
+            %span
+              (( if(active){ ))
+              Status: active
+              (( } else { ))
+              Status: inactive
+              (( } ))
 
-
-    = link_to "Delete conversation", "{{Routes.proposal_path(long_id)}}", :confirm => "Are you sure you wish to permanently delete this conversation?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
+        %li
+          = link_to "Delete", "{{Routes.proposal_path(long_id)}}", :confirm => "Are you sure you wish to permanently delete this conversation?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
 
 
 

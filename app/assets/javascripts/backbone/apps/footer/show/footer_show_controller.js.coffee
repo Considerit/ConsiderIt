@@ -5,6 +5,12 @@
     initialize: ->
       showView = @getShowView()
       @show showView
+
+      @listenTo App.vent, 'transition:start', =>
+        @region.$el.hide()
+
+      @listenTo App.vent, 'transition:end', =>
+        @region.$el.fadeIn()
     
     getShowView: ->
       new Show.Footer

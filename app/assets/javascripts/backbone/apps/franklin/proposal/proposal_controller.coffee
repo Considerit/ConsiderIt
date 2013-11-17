@@ -20,6 +20,10 @@
     exploded : false
     state : null
 
+    transition_speed : -> 
+      $transition_speed = 1000
+      $transition_speed
+
     initialize : (options = {}) ->
       _.defaults options, 
         proposal_state : Proposal.State.expanded.crafting
@@ -40,27 +44,31 @@
       @layout.setDataState @state if @layout
       @trigger 'state:changed', @state
 
+    showDescription : (new_state) ->
+      @description_controller.changeState new_state
+
     changeState : (state) ->
       prior_state = @state
       @setState state
       @showFinished prior_state
 
     showFinished : (prior_state = null) ->
-      $transition_speed = 600
       
       if prior_state && prior_state != Proposal.State.collapsed
         if @state == Proposal.State.collapsed
           @layout.$el.moveToTop 50, true
         else
           @aggregate_controller.layout.$el.ensureInView
-            speed: $transition_speed
+            speed: @transition_speed()
 
       else
         $(document).scrollTop(0)
 
-
       if @state == Proposal.State.expanded.results
-        @layout.explodeParticipants prior_state != null && prior_state != Proposal.State.expanded.crafting
+        _.delay =>
+          @layout.explodeParticipants prior_state != null && prior_state != Proposal.State.expanded.crafting
+        , @transition_speed()
+
       else if @exploded #&& @state == Proposal.State.collapsed
         @layout.implodeParticipants()
         @exploded = false
@@ -70,6 +78,7 @@
         @description_controller = @getDescriptionController layout.descriptionRegion
         @aggregate_controller = @getAggregateController layout.aggregateRegion
         @reasons_controller = @getReasonsController layout.reasonsRegion
+        @toggle_controller = @getStateToggleController layout.stateToggleRegion
 
         @setupDescriptionController @description_controller
         @setupAggregateController @aggregate_controller
@@ -79,24 +88,20 @@
 
         @listenTo layout, 'explosion:complete', => @exploded = true
 
-        if App.request "auth:can_edit_proposal", @model
-          @admin_controller = @getAdminController layout.adminRegion
-          @setupAdminController @admin_controller
-
         @showFinished()
 
 
     setupDescriptionController : (controller) ->
+      @listenTo controller, 'proposal:published', =>
+        @layout.$el.data 'visibility', 'published'
+        @layout.$el.attr 'data-visibility', 'published'
+        @region.show @layout
+
 
     setupAggregateController : (controller) ->
 
     setupReasonsController : (controller) ->
 
-    setupAdminController : (controller) ->
-      @listenTo controller, 'proposal:published', =>
-        @layout.$el.data 'visibility', 'published'
-        @layout.$el.attr 'data-visibility', 'published'
-        @region.show @layout
 
     setupHistogramReasonsBridge : (reasons_controller, aggregate_controller) =>
 
@@ -133,8 +138,10 @@
         parent_state : @state
         parent_controller : @
 
-    getAdminController : (region) ->
-      new Proposal.AdminController
+
+
+    getStateToggleController : (region) ->
+      new Proposal.StateToggleController
         model : @model
         region : region
         parent_state : @state

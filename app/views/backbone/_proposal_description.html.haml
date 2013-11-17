@@ -18,13 +18,7 @@
           .l-message-title
             %span.m-proposal-description-title
 
-            (( if(active && !show_details) { ))
-            %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :title => "Decide on {{name}}"}
-              //fa-pencil-square-o
-              %i.icon-large 
-                &#xf044;
-              {{ call }}
-            (( } ))
+        .m-proposal-admin-region
 
 
 

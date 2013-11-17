@@ -27,10 +27,11 @@
       $('head').append data
 
     $(document).on "click", "a[href^='/']", (event) ->
-      href = $(event.target).attr('href')
-      target = $(event.target).attr('target')
+      console.log 'click registered'
+      href = $(event.currentTarget).attr('href')
+      target = $(event.currentTarget).attr('target')
 
-      if target == '_blank' || href == '/newrelic'  || $(event.target).data('remote') # || href[1..9] == 'dashboard'
+      if target == '_blank' || href == '/newrelic'  || $(event.currentTarget).data('remote') # || href[1..9] == 'dashboard'
         return true
 
       # Allow shift+click for new tabs, etc.

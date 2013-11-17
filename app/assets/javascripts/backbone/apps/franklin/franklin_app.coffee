@@ -17,12 +17,17 @@
 
       App.request "sticky_footer:close"
 
+      last_proposal_id = null
       if @franklin_controller && (region.controlled_by != @franklin_controller || !(@franklin_controller instanceof Franklin.Root.RootController))
+        if @franklin_controller instanceof Franklin.Proposal.ProposalController
+          last_proposal_id = @franklin_controller.model.id
+
         @franklin_controller.close()
         @franklin_controller = null
 
       @franklin_controller = new Franklin.Root.RootController
         region : region
+        last_proposal_id : last_proposal_id
 
       region.controlled_by = @franklin_controller      
 
@@ -31,6 +36,7 @@
 
 
     _transitionProposal: (proposal, new_state, crumbs) ->
+      $description_animation_time = 500
 
       region = App.request 'default:region'
 
@@ -44,33 +50,58 @@
       use_existing_proposal_controller = from_root && proposal_controller && proposal_controller.region
 
       if use_existing_proposal_controller
+        #remove surrounding elements, while suspending proposal el and moving it gracefully to top
         $pel = $(proposal_controller.region.el)
+        $pel_offset = $pel.position()
+        $pel.css
+          top : $pel_offset.top - $(document).scrollTop()
+          minHeight : 2000
+
         @franklin_controller.region.hideAllExcept $pel
+        $pel.animate
+          top : 0
+        , $description_animation_time, =>
+          _.delay ->
+            $pel.attr 'style', ''
+          , 2500
+        start = new Date().getTime()
+
+        proposal_controller.showDescription new_state
 
       App.execute 'when:fetched', proposal, =>
 
-        proposal_controller.upRoot() if use_existing_proposal_controller
+        transition = =>
+          if use_existing_proposal_controller
+            proposal_controller.upRoot() 
 
-        if @franklin_controller && @franklin_controller != proposal_controller
-          @franklin_controller.close()
-          @franklin_controller = null
+          if @franklin_controller && @franklin_controller != proposal_controller
+            @franklin_controller.close()
+            @franklin_controller = null
 
-        if @franklin_controller && (@franklin_controller == proposal_controller && region.controlled_by == @franklin_controller) || use_existing_proposal_controller
-          proposal_controller.plant region if from_root
-          proposal_controller.changeState new_state
+          if @franklin_controller && (@franklin_controller == proposal_controller && region.controlled_by == @franklin_controller) || use_existing_proposal_controller
+            proposal_controller.plant region if from_root
+            proposal_controller.changeState new_state
+          else
+            proposal_controller = new Franklin.Proposal.ProposalController
+              region : region
+              model : proposal
+              proposal_state : new_state   
+
+          @franklin_controller = region.controlled_by = proposal_controller  
+
+          App.vent.trigger 'route:completed', crumbs
+          
+          App.vent.trigger 'points:unexpand'
+          App.request 'meta:set', proposal.getMeta() 
+
+        if use_existing_proposal_controller
+          remaining = $description_animation_time - (new Date().getTime() - start)
+          if remaining > 0
+            _.delay transition, remaining
+          else
+            transition()
         else
-          proposal_controller = new Franklin.Proposal.ProposalController
-            region : region
-            model : proposal
-            proposal_state : new_state   
-
-        @franklin_controller = region.controlled_by = proposal_controller  
-
-        App.vent.trigger 'route:completed', crumbs
-        
-        App.vent.trigger 'points:unexpand'
-        App.request 'meta:set', proposal.getMeta() 
-
+          transition()
 
     Consider: (long_id) -> 
       proposal = App.request 'proposal:get', long_id, true

@@ -1,0 +1,34 @@
+.m-proposal-state-toggle
+  text-align: center
+
+  &[data-state="collapsed"]
+    display: none
+
+  // &[data-state="separated"][data-updating="false"][data-state-from="collapsed"]
+  //   visibility: hidden
+
+  // &[data-state="together"][data-updating="false"]
+  //   text-align: center
+  //   a
+  //     margin: auto
+  //     text-align: left
+  //     display: block
+  //     width: $body_width
+  //     border: 2px dashed $decision_board_border_color
+  //     border-radius: 16px
+
+  //     padding: 0 0 0 $grid_xs
+
+  //     i 
+  //       +font-size(3)
+
+  &[data-state="separated"], &[data-state="together"]
+    margin-top: $vertical_baseline
+    a
+      color: $decision_board_text_color
+      &:hover
+        color: darken($decision_board_text_color, 10%)
+      +font-size(3)
+      i
+        +font-size(4)
+        vertical-align: middle

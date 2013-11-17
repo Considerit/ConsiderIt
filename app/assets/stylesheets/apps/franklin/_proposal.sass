@@ -2,10 +2,10 @@
 @import "apps/franklin/proposal/crafting"
 @import "apps/franklin/proposal/description"
 @import "apps/franklin/proposal/reasons"
+@import "apps/franklin/proposal/toggle"
 
 .m-proposal
-  //padding: $vertical_baseline 0 
-  padding: $vertical_baseline 0
+  //padding: $vertical_baseline 0
   position: relative
   min-height: $initiator_width
 
@@ -55,8 +55,10 @@
         text-align: center
         //margin-top: -7px
 
+// .m-proposal
+//   &[data-state="1"], &[data-state="2"], &[data-state="4"]
+//     padding: $vertical_baseline 0
 
-  
 .m-proposal-socialmedia-region
   position: absolute
   z-index: 0
@@ -86,31 +88,47 @@
 
 // Proposal admin strip
 .m-proposal-admin_strip
-  margin: 0 $grid_xs
-  text-align: center
-  .l-dialog-prompt, .m-proposal-admin_label, .m-delete_proposal
-    display: inline-block
-    padding: 0 $grid_xs / 2
+  position: absolute
+  right: -$grid_xs
+  bottom: 0
+  z-index: 10
 
-  .l-dialog-prompt-label, .m-delete_proposal, .m-proposal-admin_label
-    display: inline-block
-    padding: $vertical_baseline / 2 0
-    text-transform: uppercase
-    +font-size(-4)
-    font-weight: bold    
+  i
+    color: darken($base_bg_color, 25%)
 
-  .l-dialog-prompt-label span, .m-delete_proposal
-    text-decoration: underline
+  .m-proposal-admin-options-menu
+    display: none
+
+  &:hover
+    .m-proposal-admin-options-menu-wrap
+      position: absolute
+      right: -$grid_minor
+
+    .m-proposal-admin-options-menu
+      min-width: 140px
+      @extend %nude_list
+      margin-left: 0
+      display: inline-block
+      +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
+      border-radius: 5px
+      background-color: $base_bg_color
+      padding: $vertical_baseline / 2 0
+      border: 1px solid darken($base_bg_color, 20%)
+
+      a
+        width: 100%
+        padding: 2px $grid_minor
+        display: block
+        cursor: pointer
+        +font-size(-3)
+        font-weight: bold
+        &:hover
+          color: $comp_text_color
+          background-color: $dark_comp_color
+
 
   .l-dialog-prompt-label, .m-delete_proposal
-    &:hover
-      background-color: rgba(black, .05)
-
-  .m-delete_proposal
-    padding: $vertical_baseline/2 inherit
-
-  .m-proposal-admin_label
-    opacity: .5
+    text-transform: uppercase
 
 /* YOUR_ACTION */
 
@@ -128,24 +146,25 @@
 
 
 // participants block
-[data-state="0"]
-  .m-participants.l-message-speaker
+[data-state="collapsed"]
+.m-participants.l-message-speaker
 
-    .l-group-container
+  .l-group-container
+    +rotate(180deg)
+    
+    .avatar // for the explode transition
       +rotate(180deg)
-      
-      .avatar // for the explode transition
-        +rotate(180deg)
 
-[data-state="1"]
+[data-state="together"][data-state-from="collapsed"], [data-state="collapsed"]
   .m-participants.l-message-speaker
-    visibility: hidden
+    visibility: visible
 
-[data-state="4"]
-  .m-participants.l-message-speaker
-    top: -3px
+// [data-state="together"]
+//   .m-participants.l-message-speaker
+//     top: -3px
 
 .m-participants.l-message-speaker
+  visibility: hidden
   z-index: 1
   right: $grid_xs / 2
 
@@ -158,10 +177,8 @@
     // z-index: 99
     height: 100%
     
-    .avatar // for the explode transition
-      -ms-transition: -ms-transform .75s ease
-      -moz-transition: -moz-transform .75s ease
-      -webkit-transition: -webkit-transform .75s ease
-      transition: transform .75s ease
+    // for the explode transition
+    .avatar 
+      +transition(transform .75s linear)
       opacity: .75
 

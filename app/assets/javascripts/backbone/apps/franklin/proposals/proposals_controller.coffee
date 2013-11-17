@@ -16,6 +16,13 @@
           parent_controller : @
           total_models : App.request('proposals:totals')[1]
 
+
+        if @options.last_proposal_id
+          #TODO: if not on page, go to page where proposal lives
+          $last_proposal = layout.$el.find(".m-proposal[data-id='#{@options.last_proposal_id}']")
+          if $last_proposal.length == 1
+            $last_proposal.moveToTop() # {scroll: false}
+
       @region.show layout
 
     getLayout : ->

@@ -22,4 +22,5 @@
       c = new App.Franklin.Proposals.RegionController
           region: layout.proposalsRegion
           parent_controller : @
+          last_proposal_id : @options.last_proposal_id
       c

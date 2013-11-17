@@ -131,7 +131,6 @@
       position
 
     syncPosition : (position, params = {}) -> 
-      console.log position
       params = _.extend params, 
         included_points : position.getIncludedPoints()
         viewed_points : _.keys(position.viewed_points)

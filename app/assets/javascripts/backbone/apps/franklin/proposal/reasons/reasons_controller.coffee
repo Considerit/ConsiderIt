@@ -1,5 +1,8 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
   class Proposal.ReasonsController extends App.Controllers.StatefulController
+    transition_speed : -> 
+      $transition_speed = 1000
+      $transition_speed
 
     # maps from parent state to this controller's state
     state_map : ->
@@ -8,57 +11,6 @@
       map[Proposal.State.expanded.crafting] = Proposal.ReasonsState.separated
       map[Proposal.State.expanded.results] = Proposal.ReasonsState.together
       map
-
-
-    # transition or reset views as appropriate after state has been updated
-    processStateChange : ->
-      $transition_speed = 600
-
-      #if @state != Proposal.ReasonsState.collapsed || (@peer_pros_controller.options.collection.length + @peer_cons_controller.options.collection.length > 0)
-      footer_view = @getResultsFooterView()
-      # header_view = @getHeaderView()
-
-      # @layout.reasonsHeaderRegion.show header_view
-
-      participants_view = @getParticipantsView()
-      @layout.participantsRegion.show participants_view
-
-
-      if @state == Proposal.ReasonsState.together && !@options.model.getUserPosition().get('published')
-        _.delay =>
-          footer_view.$el.hide()
-          App.request "sticky_footer:new", footer_view
-          footer_view.$el.fadeIn 300
-        , $transition_speed
-
-      else
-        @layout.footerRegion.show footer_view
-        if @prior_state != null
-          App.request "sticky_footer:close"
-
-      # do immediately if this is first time showing crafting
-      #delay = if @state == Proposal.ReasonsState.collapsed || @prior_state == null then 0 else $transition_speed
-
-      setupPoints = =>
-        @updatePeerPoints @layout
-
-        if !@crafting_controller && @options.model.fetched && @state != Proposal.ReasonsState.collapsed
-          @crafting_controller = @getCraftingController @layout.positionRegion
-          @setupCraftingController @crafting_controller 
-
-      delay = if !@crafting_controller || @prior_state == null then 0 else $transition_speed
-      if delay
-        _.delay =>
-          setupPoints()
-        , delay
-      else
-        setupPoints()
-
-      #delay = if @prior_state == null then 0 else $transition_speed + 50
-
-      @layout.sizeToFit delay / 2
-
-      @layout.sizeToFit delay
 
 
     initialize : (options = {}) ->
@@ -74,6 +26,51 @@
 
       @region.show @layout
 
+    # transition or reset views as appropriate after state has been updated
+    processStateChange : ->
+      participants_view = @getParticipantsView()
+      @layout.participantsRegion.show participants_view
+
+
+      footer_view = @getResultsFooterView()
+      # if @state == Proposal.ReasonsState.together && !@options.model.getUserPosition().get('published')
+      #   _.delay =>
+      #     footer_view.$el.hide()
+      #     App.request "sticky_footer:new", footer_view
+      #     footer_view.$el.fadeIn 300
+      #   , @transition_speed()
+
+      # else
+      @layout.footerRegion.show footer_view
+      if @prior_state != null
+        App.request "sticky_footer:close"
+
+
+      setupPoints = =>
+        @updatePeerPoints @layout
+
+        if !@crafting_controller #&& @options.model.fetched && @state != Proposal.ReasonsState.collapsed
+          @crafting_controller = @getCraftingController @layout.positionRegion
+          @setupCraftingController @crafting_controller 
+
+      if @crafting_controller && @prior_state != null
+        _.delay =>
+          setupPoints()
+        , @transition_speed()
+      else
+        setupPoints()
+
+      #delay = if @prior_state == null then 0 else $transition_speed + 50
+
+      if @layout.$el.is('.transitioning')
+        @layout.sizeToFit 10
+        # @layout.sizeToFit @transition_speed() / 2
+        # @layout.sizeToFit @transition_speed()
+        # @layout.sizeToFit @transition_speed() + 10
+        @layout.sizeToFit @transition_speed() + 100
+
+      else
+        @layout.sizeToFit()
 
     setupLayout : (layout) ->
 
@@ -89,7 +86,9 @@
         @processStateChange()
 
     updatePeerPoints : (layout) ->
+
       if @prior_state
+        #transition = =>
         all_points = App.request 'points:get:proposal', @model.id
         @peer_pros_controller.options.collection.fullCollection.add all_points.filter((point) -> point.isPro()) 
         @peer_cons_controller.options.collection.fullCollection.add all_points.filter((point) -> !point.isPro())
@@ -111,6 +110,8 @@
 
             when Proposal.ReasonsState.together
               collection.setPageSize 4
+        #delay = 0 #@transition_speed() #if @prior_state == Proposal.ReasonsState.together then @transition_speed() else 0
+        #_.delay transition, delay
 
       else
         points = switch @state 

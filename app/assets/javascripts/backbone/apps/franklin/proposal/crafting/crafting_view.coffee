@@ -4,6 +4,7 @@
     template : '#tpl_position_crafting_layout'
     className : 'l-message m-position'
     regions : 
+      headerRegion : '.m-reasons-header-region'
       reasonsRegion : '.m-position-reasons-region'
       stanceRegion : '.m-position-stance-region'
       explanationRegion : '.m-position-explanation-region'
@@ -14,7 +15,7 @@
       _.extend {}, tenant.attributes, _.compactObject(@options.proposal.attributes)
 
 
-  class Proposal.PositionFooterView extends App.Views.ItemView
+  class Proposal.PositionFooterSeparatedView extends App.Views.ItemView
     template : '#tpl_position_footer'
     className : 'm-position-footer'
 
@@ -35,6 +36,17 @@
     handleCanceled : (ev) ->
       @trigger 'position:canceled'
       ev.stopPropagation()
+
+  class Proposal.ReasonsHeaderView extends App.Views.ItemView
+    template : '#tpl_reasons_header'
+    className : 'm-reasons-header'
+
+    serializeData : ->
+      current_user = App.request 'user:current'
+      _.extend {}, @model.getProposal().attributes,
+        active : @model.getProposal().get 'active'
+        updating : @model && @model.get 'published'
+        call : if @model && @model.get('published') then 'Update your evaluation' else 'Make your evaluation'
 
   class Proposal.PositionReasonsLayout extends App.Views.Layout
     template : '#tpl_position_reasons'
@@ -82,9 +94,9 @@
       @value = @_stance_val()
 
       params = _.extend {}, @slider_ui_init, 
-          start : -@_stance_val()
-          slide : =>
-            @sliderChange @ui.slider.val()
+        start : -@_stance_val()
+        slide : =>
+          @sliderChange @ui.slider.val()
 
       @ui.slider.noUiSlider params
 
@@ -109,7 +121,6 @@
       size = @slider.max_effect / 100 * @value
       @ui.oppose_label.css('font-size', 100 + size + '%')
       @ui.support_label.css('font-size', 100 - size + '%')
-
 
 
   class Proposal.PositionExplanation extends App.Views.ItemView

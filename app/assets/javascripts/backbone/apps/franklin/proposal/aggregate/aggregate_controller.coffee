@@ -1,6 +1,9 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
   class Proposal.AggregateController extends App.Controllers.StatefulController
+    transition_speed : -> 
+      $transition_speed = 1000
+      $transition_speed
 
     state_map : ->
       map = {}
@@ -24,52 +27,47 @@
 
       @setupLayout @layout
 
-      @region.open = (view) => @transition @region, view # this will set how this region handles the transitions between views
+      # @region.open = (view) => @transition @region, view # this will set how this region handles the transitions between views
 
       @region.show @layout
 
-    transition : (region, view) ->
-      region.$el.empty().append view.el
+    # transition : (region, view) ->
+    #   region.$el.empty().append view.el
 
 
     processStateChange : ->
-      if @state == Proposal.ReasonsState.together 
+      if @state == Proposal.ReasonsState.together || (@state == Proposal.ReasonsState.separated && @prior_state != Proposal.ReasonsState.together)
         #reset the layout such that updated positions are shown correctly in the histogram
-        @layout = @resetLayout @layout
+        @createHistogram @layout
 
 
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
 
-        @histogram_view = @getAggregateHistogram()
-        @listenTo @histogram_view, 'show', => 
-          @listenTo @histogram_view, 'histogram:segment_results', (segment) =>
-            @trigger 'histogram:segment_results', segment
-
-        layout.histogramRegion.show @histogram_view 
+        if @state == Proposal.ReasonsState.together
+          @createHistogram layout
 
         # if @model.openToPublic()
         #   social_view = @getSocialMediaView()
-        #   layout.socialMediaRegion.show social_view      
+        #   layout.socialMediaRegion.show social_view  
+
+    createHistogram : (layout) ->
+      if !@histogram_view
+        @histogram_view = @getAggregateHistogram()
+        @listenTo @histogram_view, 'show', => 
+          @listenTo @histogram_view, 'histogram:segment_results', (segment, hard_select) =>
+            if @state == Proposal.ReasonsState.together
+              @trigger 'histogram:segment_results', segment
+              @histogram_view.finishSelectingBar segment, hard_select
+        layout.histogramRegion.show @histogram_view 
 
 
-    getLayout : ->
-      new Proposal.AggregateLayout
-        model : @model
-        state : @state
 
-    getAggregateHistogram : ->
-      new Proposal.AggregateHistogram
-        model : @model
-        histogram : @_createHistogram()
 
-    getSocialMediaView : ->
-      new Proposal.SocialMediaView
-        model : @model
 
     _createHistogram : () ->
-      BARHEIGHT = 200
-      BARWIDTH = 83
+      $histogram_bar_height = 145
+      $histogram_bar_width = 70
 
       breakdown = [{positions:[]} for i in [0..6]][0]
 
@@ -84,12 +82,12 @@
 
       for bar,idx in histogram.breakdown
         height = bar.positions.length / histogram.biggest_segment
-        full_size = Math.ceil(height * BARHEIGHT)
-        empty_size = BARHEIGHT * (1 - height)
+        full_size = Math.ceil(height * $histogram_bar_height)
+        empty_size = $histogram_bar_height * (1 - height)
 
-        tile_size = window.getTileSize(BARWIDTH, full_size, bar.positions.length)
+        tile_size = window.getTileSize($histogram_bar_width, full_size, bar.positions.length)
 
-        tiles_per_row = Math.floor( BARWIDTH / tile_size)
+        tiles_per_row = Math.floor( $histogram_bar_width / tile_size)
 
         _.extend bar, 
           tile_size : tile_size
@@ -103,3 +101,18 @@
           !pos.getUser().get('avatar_file_name')?
 
       histogram
+
+    getAggregateHistogram : ->
+      new Proposal.AggregateHistogram
+        model : @model
+        histogram : @_createHistogram()
+
+    getSocialMediaView : ->
+      new Proposal.SocialMediaView
+        model : @model
+
+    getLayout : ->
+      new Proposal.AggregateLayout
+        model : @model
+        state : @state
+      

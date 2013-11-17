@@ -33,7 +33,7 @@
             page = @options.collection.pageOf point
             @options.collection.getPage page
 
-          pointview = @layout.children.findByModel point
+          pointview = @list_view.children.findByModel point
           pointview.trigger 'point:show_details'
 
 
@@ -50,24 +50,26 @@
       #@layout = @resetLayout @layout
 
     setupLayout : (layout) ->
-      @listenTo layout, 'show', =>
-        @listenTo layout, 'before:item:added', (view) => 
-          return if view instanceof Points.PeerEmptyView
-          if _.has @point_controllers[@cname], view.model.id
-            @point_controllers[@cname][view.model.id].close()
 
-          @point_controllers[@cname][view.model.id] = new App.Franklin.Point.PointController
-            view : view
-            model : view.model
-            region : new Backbone.Marionette.Region { el : view.el }     
-            parent_controller : @
 
-        @listenTo layout, 'sort', (sort_by) =>
-          @sortPoints sort_by
+    setupListView : (list_view) ->
 
-        @listenTo layout, 'childview:point:clicked', (view) =>
-          point = view.model
-          App.navigate Routes.proposal_point_path(point.get('long_id'), point.id), {trigger : true}
+      @listenTo list_view, 'before:item:added', (view) => 
+        return if view instanceof Points.PeerEmptyView
+        if _.has @point_controllers[@cname], view.model.id
+          @point_controllers[@cname][view.model.id].close()
+
+        @point_controllers[@cname][view.model.id] = new App.Franklin.Point.PointController
+          view : view
+          model : view.model
+          region : new Backbone.Marionette.Region { el : view.el }     
+          parent_controller : @
+
+      @listenTo list_view, 'childview:point:clicked', (view) =>
+        point = view.model
+        App.navigate Routes.proposal_point_path(point.get('long_id'), point.id), {trigger : true}
+
+      @list_view = list_view
 
     sortPoints : (sort_by) ->
       if @options.collection.setSorting #if its pageable...
@@ -100,14 +102,14 @@
 
       @region.show @layout
 
-    processStateChange : ->
-      #@layout = @resetLayout @layout
 
     segmentPeerPoints : (segment) ->
-      fld = if segment == 'all' then 'score' else "score_stance_group_#{segment}"
-      @layout.sort = fld
-      @layout.segment = segment
 
+      fld = if segment == 'all' then 'score' else "score_stance_group_#{segment}"
+
+      @header_view.sort = fld
+      @header_view.segment = segment
+      @header_view.render()
 
       if @removed_points.length > 0
         @options.collection.fullCollection.add @removed_points
@@ -115,48 +117,101 @@
       @removed_points = @options.collection.fullCollection.filter (point) ->
         !point.get(fld) || point.get(fld) == 0
 
-      @options.collection.fullCollection.remove @removed_points
+      all_points = _.difference @options.collection.fullCollection.models, @removed_points
+
       @options.collection.setSorting fld, 1
-      @options.collection.fullCollection.sort()          
+      @options.collection.fullCollection.reset all_points
+      # @options.collection.fullCollection.remove @removed_points #causing renders
+      # @options.collection.fullCollection.sort()    #causing 2x renders    
 
 
     respondToPointExpansions : -> true
 
+
+    toggleBrowsing : (current_browse_state, header_view, footer_view) ->
+      if !current_browse_state
+        header_view.setBrowsing true
+        footer_view.setBrowsing true
+        @trigger 'points:browsing', @options.valence
+        @previous_page_size = @options.collection.state.pageSize
+        @options.collection.setPageSize 1000
+      else
+        header_view.setBrowsing false
+        footer_view.setBrowsing false
+        @trigger 'points:browsing:off', @options.valence
+        @options.collection.setPageSize @previous_page_size
+        @options.collection.getPage 1
+
     setupLayout : (layout) ->
       super layout
 
-      $transition_speed = 600
-
       @listenTo layout, 'show', =>
-        @listenTo layout, 'childview:point:include', (view) => 
-          App.vent.trigger 'points:unexpand'
-          @trigger 'point:include', view
-        @listenTo layout, 'childview:point:highlight_includers', (view) => 
-          @trigger 'point:highlight_includers', view
-        @listenTo layout, 'childview:point:unhighlight_includers', (view) => 
-          @trigger 'point:unhighlight_includers', view
+        @header_view = @getHeaderView()  
+        footer_view = @getFooterView()
 
-        @listenTo layout, 'points:browsing', =>
-          @trigger 'points:browsing', @options.valence
-          _.delay =>
-            @previous_page_size = @options.collection.state.pageSize
-            @options.collection.setPageSize 1000
-          , $transition_speed
+        @listenTo @header_view, 'sort', (sort_by) =>
+          @sortPoints sort_by
 
-        @listenTo layout, 'points:browsing:off', =>
-          @trigger 'points:browsing:off', @options.valence
+        @listenTo @header_view, 'points:browsing:toggle', (current_browse_state) =>
+          if @state != Points.States.collapsed
+            @toggleBrowsing current_browse_state, @header_view, footer_view
+          
 
-          _.delay =>
-            @options.collection.setPageSize @previous_page_size
-            @options.collection.getPage 1
-          , $transition_speed
+        @listenTo footer_view, 'points:browsing:toggle', (current_browse_state) =>
+          if @state != Points.States.collapsed
+            @toggleBrowsing current_browse_state, @header_view, footer_view
+
+        layout.headerRegion.show @header_view
+
+        layout.footerRegion.show footer_view
+
+
+        # setup listview after, so that sorting takes place without rerendering
+        list_view = @getListView()
+
+        @setupListView list_view
+
+        layout.listRegion.show list_view
+
+
+
+
+    setupListView : (list_view) ->
+      super list_view
+
+      @listenTo list_view, 'childview:point:include', (view) => 
+        App.vent.trigger 'points:unexpand'
+        @trigger 'point:include', view
+
+      @listenTo list_view, 'childview:point:highlight_includers', (view) => 
+        @trigger 'point:highlight_includers', view
+
+      @listenTo list_view, 'childview:point:unhighlight_includers', (view) => 
+        @trigger 'point:unhighlight_includers', view
+
+    getHeaderView : ->
+      new Points.ExpandablePointListHeader
+        browsing: false
+        collection : @options.collection
+        sort : 'score'
+        valence : @options.valence
+
+    getFooterView : ->
+      new Points.ExpandablePointListFooter
+        valence : @options.valence
+        collection : @options.collection
+
+    getListView : ->
+      new Points.PointList
+        itemView : App.Franklin.Point.PeerPointView
+        emptyView : Points.PeerEmptyView
+        collection : @options.collection
+        location: 'peer'
 
     getLayout : ->
       new Points.PeerPointList
-        collection : @options.collection
-        valence : @options.valence
         state : @state
-
+        valence : @options.valence
 
 
   class Points.UserReasonsController extends Points.AbstractPointsController
@@ -170,13 +225,8 @@
       map 
 
     initialize : (options = {}) ->
-
       super options
-
       @region.show @layout
-
-    processStateChange : ->
-      #@layout = @resetLayout @layout
 
     respondToPointExpansions : ->
       @state != Points.States.hidden
@@ -185,11 +235,15 @@
 
       super layout
 
-      @listenTo @layout, 'show', =>
+      @listenTo layout, 'show', =>
 
-        @listenTo @layout, 'childview:point:remove', (view) => @trigger 'point:remove', view
+        header_view = @getHeaderView()
+        footer_view = @getFooterView()
+        list_view = @getListView()
 
-        @listenTo @layout, 'point:create:requested', (attrs) =>
+        @setupListView list_view
+
+        @listenTo footer_view, 'point:create:requested', (attrs) =>
           _.extend attrs, 
             proposal_id : @options.proposal.id
             long_id : @options.proposal.long_id
@@ -207,8 +261,34 @@
           #   loading:
           #     entities : [new_point]
 
+        layout.headerRegion.show header_view
+        layout.listRegion.show list_view
+        layout.footerRegion.show footer_view
+
+    setupListView : (list_view) ->
+      super list_view
+      @listenTo list_view, 'childview:point:remove', (view) => @trigger 'point:remove', view
+
+    getHeaderView : ->
+      new Points.UserReasonsPointListHeader
+        collection : @options.collection
+        sort : null
+        valence : @options.valence
+
+    getFooterView : ->
+      new Points.UserReasonsPointListFooter
+        valence : @options.valence
+
+    getListView : ->
+      new Points.PointList
+        itemView : App.Franklin.Point.PositionPointView
+        collection : @options.collection
+        location: 'position'
+
     getLayout : ->
       new Points.UserReasonsList
-        collection : @options.collection
-        valence : @options.valence
         state : @state
+        valence : @options.valence
+
+
+

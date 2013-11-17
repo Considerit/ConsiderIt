@@ -6,6 +6,10 @@
 
     show_details : true
 
+    regions : 
+      adminRegion : '.m-proposal-admin-region'
+      
+
     ui : 
       details : '.m-proposal-details'
 
@@ -21,7 +25,6 @@
         avatar : App.request('user:avatar', user, 'large' )
         description_detail_fields : @model.description_detail_fields()
         show_details : @state != Proposal.DescriptionState.collapsed 
-        call : if user_position && user_position.get('published') then 'Update your position' else 'Add your thoughts'
 
       params
 

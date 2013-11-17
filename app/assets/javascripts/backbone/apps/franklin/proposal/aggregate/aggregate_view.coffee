@@ -44,53 +44,58 @@
       $(ev.currentTarget).parent().trigger('mouseenter')
 
     highlightUsers : (users, highlight = true) ->
+      if Modernizr.opacity
+        selector = ("#avatar-#{uid}" for uid in users).join(',')
 
-      selector = ("#avatar-#{uid}" for uid in users).join(',')
+        @$el.hide()
 
-      @$el.css 'visibility', 'hidden'
-      if highlight
-        @$el.addClass 'm-histogram-segment-selected'
-        @$el.find('.avatar').hide()        
-        @$el.find(selector).css {'display': '', 'opacity': 1}
-      else
-        @$el.removeClass 'm-histogram-segment-selected'
-        @$el.find('.avatar').css {'display': '', 'opacity': ''} 
-      @$el.css 'visibility', ''
+        if highlight
+          @$el.addClass 'm-histogram-segment-selected'
+          @$el.find(".avatar:not(#{selector})").css
+            opacity: 0
+
+        else
+          @$el.removeClass 'm-histogram-segment-selected'
+          @$el.find(".avatar:not(#{selector})").css 
+            opacity: ''
+
+        @$el.show()
+
+    finishSelectingBar : (bucket, hard_select) ->
+      $bar = @$el.find(".m-histogram-bar[bucket=#{6-bucket}]")
+
+      @$el.addClass 'm-histogram-segment-selected'
+
+      @$el.hide()
+
+      $('.m-bar-is-selected', @$el).removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
+      $bar.addClass("m-bar-is-selected #{if hard_select then 'm-bar-is-hard-selected' else 'm-bar-is-soft-selected'}")
+
+      fld = "score_stance_group_#{bucket}"
+
+      @$el.find('.l-message-speaker').css('z-index': 999)
+
+      #######
+      # when clicking outside of bar, close it
+      if hard_select
+        $(document).on 'click.histogram', (ev) => @closeBarClick(ev)
+        $(document).on 'keyup.histogram', (ev) => @closeBarKey(ev)
+        ev.stopPropagation()
+      #######
+
+      @$el.show()
 
     selectBar : (ev) ->
-      return if $('.m-point-expanded').length > 0
+      return if $('.m-point-expanded').length > 0 #|| @state != Proposal.ReasonsState.together 
       $target = $(ev.currentTarget)
       hard_select = ev.type == 'click'
 
       if ( hard_select || @$el.find('.m-bar-is-hard-selected').length == 0 )
-        @$el.addClass 'm-histogram-segment-selected'
-        #@$el.find('.m-bar-percentage').hide()
-
         $bar = $target.closest('.m-histogram-bar')
-        # bubble_offset = $bar.offset().top - @$el.closest('.l-message-body').offset().top + 20
 
-        @$el.hide()
+        bucket = 6 - $target.closest('.m-histogram-bar').attr('bucket')
 
-        bucket = 6 - $bar.attr('bucket')
-        $('.m-bar-is-selected', @$el).removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
-        $bar.addClass("m-bar-is-selected #{if hard_select then 'm-bar-is-hard-selected' else 'm-bar-is-soft-selected'}")
-
-
-        fld = "score_stance_group_#{bucket}"
-
-        @trigger 'histogram:segment_results', bucket
-
-        @$el.find('.l-message-speaker').css('z-index': 999)
-
-        #######
-        # when clicking outside of bar, close it
-        if hard_select
-          $(document).on 'click.histogram', (ev) => @closeBarClick(ev)
-          $(document).on 'keyup.histogram', (ev) => @closeBarKey(ev)
-          ev.stopPropagation()
-        #######
-
-        @$el.show()
+        @trigger 'histogram:segment_results', bucket, hard_select
 
     closeBarClick : (ev) -> @deselectBar() 
 

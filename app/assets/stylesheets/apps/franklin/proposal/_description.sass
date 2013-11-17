@@ -9,17 +9,24 @@
 
 .l-proposal-description-outer-wrap.l-message-body
   padding: 0
+  //+transition(transform 200 $transition_function)
+
+//[data-state="collapsed"]
+.l-proposal-description-outer-wrap.l-message-body
+  //+translateX(-$dialog_stutter)
+  left: -$dialog_stutter
  
 
 .m-proposal-description-wrap
 
   .l-message-speaker.l-message-initiator
-    left: $grid_xs / 2
+    //left: $grid_xs / 2
+    text-align: right
 
     [data-target="user_profile_page"]
       opacity: .9
       display: inline-block
-      margin-left: $grid_xs
+      //margin-left: $grid_xs
 
       &:hover
         opacity: 1
@@ -29,8 +36,8 @@
       vertical-align: bottom 
 
   &[data-state="collapsed"]
-    .l-message-speaker.l-message-initiator
-      top: 0
+    // .l-message-speaker.l-message-initiator
+    //   top: 0
 
   // editable
   .m-proposal-description, .m-proposal-details
@@ -52,8 +59,8 @@
   .m-proposal-description
     +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
     margin: auto
-    left: -$dialog_stutter
-
+    //left: -$dialog_stutter
+    min-height: $initiator_width
 
     p
       margin-bottom: $vertical_baseline / 2
@@ -63,7 +70,7 @@
       padding: 0 3px
   
   .m-proposal-description-title
-    +font-size(2)
+    //+font-size(3)
 
 
   // in details
@@ -73,7 +80,7 @@
     .l-message-body
       //margin: 0 $margin_width $vertical_baseline $margin_width //- $dialog_stutter + $grid_xs  
       +bubble(darken($base_bg_color, 3%), darken($base_bg_color, 12%), left, $text_color: $base_text_color)
-      left: -$dialog_stutter
+      //left: -$dialog_stutter
 
       &.m-proposal-details-body-wrap // silliness to override css from prior rule...
         //border: 1px solid darken($base_bg_color, 15%)

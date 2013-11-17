@@ -4,7 +4,7 @@
 
     state_map : ->
       map = {}
-      map[Proposal.State.collapsed] = Proposal.ReasonsState.collapsed
+      map[Proposal.State.collapsed] = Proposal.DescriptionState.collapsed
       map[Proposal.State.expanded.crafting] = Proposal.DescriptionState.expandedSeparated
       map[Proposal.State.expanded.results] = Proposal.DescriptionState.expandedTogether
       map
@@ -26,10 +26,15 @@
         @layout = @resetLayout @layout
 
     transition : (region, view) ->
-      if @state != Proposal.DescriptionState.collapsed && @prior_state == Proposal.DescriptionState.collapsed
+
+      already_showing_details = region.$el.find('.m-proposal-details').length > 0
+
+      if @state != Proposal.DescriptionState.collapsed && @prior_state == Proposal.DescriptionState.collapsed && !already_showing_details
+        
         view.ui.details.hide()
         region.$el.empty().append view.el
-        view.ui.details.slideDown 1400
+        view.ui.details.slideDown 500
+        #view.ui.details.show()
       else# if @state == Proposal.DescriptionState.collapsed || @prior_state == null
         region.$el.empty().append view.el
 
@@ -39,6 +44,20 @@
         @listenTo layout, 'proposal:clicked', =>
           App.navigate Routes.new_position_proposal_path( @model.long_id ), {trigger: true}
 
+        if App.request "auth:can_edit_proposal", @model
+          @admin_controller = @getAdminController layout.adminRegion
+          @setupAdminController @admin_controller
+
+    setupAdminController : (controller) ->
+      @listenTo controller, 'proposal:published', =>
+        @trigger 'proposal:published'
+
+    getAdminController : (region) ->
+      new Proposal.AdminController
+        model : @model
+        region : region
+        parent_state : @state
+        parent_controller : @
 
     getLayout : ->
       new Proposal.ProposalDescriptionView

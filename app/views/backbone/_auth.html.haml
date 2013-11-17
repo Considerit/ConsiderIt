@@ -70,7 +70,7 @@
 %script{ :type => "text/template", :id => "tpl_auth_options"}
   %ul.m-user-accounts-auth-options
     (( _.each(providers, function(provider) { ))
-    (( var is_email = provider.name == 'email', dataTarget = is_email ? '' : 'third_party_auth', provider_label = is_email ? 'Good ol\' fashioned email' : provider.name; ))
+    (( var is_email = provider.name == 'email', dataTarget = is_email ? '' : 'third_party_auth', provider_label = is_email ? 'Good ol\' email' : provider.name; ))
 
     %li.m-user-accounts-login-option
       %button{ :'data-target' => "{{dataTarget}}", :class => "zocial {{provider.name}}", :'data-provider' => "{{provider.provider}}" }

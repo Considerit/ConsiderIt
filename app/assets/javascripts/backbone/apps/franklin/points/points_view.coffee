@@ -1,41 +1,37 @@
 @ConsiderIt.module "Franklin.Points", (Points, App, Backbone, Marionette, $, _) ->
   
-  class Points.PointList extends App.Views.CompositeView
+  class Points.PointListLayout extends App.Views.StatefulLayout
     template: '#tpl_points'
-    itemViewContainer : 'ul.m-point-list' 
-    sort : null
-    itemView : App.Franklin.Point.PointView
+
+    regions : 
+      headerRegion : '.m-pointlist-header-region'
+      listRegion : '.m-pointlist-list-region'
+      footerRegion : '.m-pointlist-footer-region'
+
+    initialize : (options={}) ->
+      super options
+
+  class Points.ExpandablePointList extends Points.PointListLayout
+    template: '#tpl_points_expandable'
+
+  class Points.PeerPointList extends Points.ExpandablePointList
+    className : => 
+      "m-peer-reasons m-reasons-peer-#{@options.valence}s"
+
+  class Points.UserReasonsList extends Points.PointListLayout
+    className : => 
+      "m-position-points m-position-#{@options.valence}points"
+
+
+  class Points.PointList extends App.Views.CollectionView
+    tagName : 'ul'
+    className : 'm-point-list'
 
     initialize : (options = {}) ->
-      @state = options.state
+      @itemView = options.itemView
+      @emptyView = options.emptyView
+      @location = options.location
       super options
-      @sort = options.sort || @sort
-
-    onRender : ->
-      @setDataState @state
-
-    setDataState : (state) ->
-      @$el.attr 'data-state', state
-      @$el.data 'state', state
-      @state = state 
-
-    onShow : ->
-      if @sort
-        @requestSort @sort
-
-      @listenTo @collection, 'reset', =>
-        @render()
-
-      # @listenTo @collection, 'add', =>
-      #   @requestSort @sort
-
-    serializeData : ->
-      header : @getHeaderText()
-
-    getHeaderText : ->
-      valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
-      valence
-
 
     buildItemView : (point, itemview, options) ->
       if itemview == Points.PeerEmptyView
@@ -52,34 +48,79 @@
 
         view
 
+  class Points.PointListHeader extends App.Views.ItemView
+    template : '#tpl_points_header'
+    sort : null
+
+    initialize : (options = {}) ->
+      super options
+      @sort = options.sort || @sort
+
+    serializeData : ->
+      header : @getHeaderText()
+
+    getHeaderText : ->
+      valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
+      valence
+
     requestSort : (sort_by) ->
       @sort = sort_by
 
       @trigger 'sort', sort_by
 
-    events : {}
+    onShow : ->      
+      @requestSort(@sort) if @sort
+      @listenTo @collection, 'reset', =>  
+        @render()
 
-  class Points.ExpandablePointList extends Points.PointList
-    template: '#tpl_points_expandable'
+  class Points.UserReasonsPointListHeader extends Points.PointListHeader
+    getHeaderText : ->
+      valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
 
+      "Your #{valence}"
+
+
+  class Points.ExpandablePointListHeader extends Points.PointListHeader
+    template : '#tpl_points_expandable_header'
+    browsing : false
+    sort : 'score'    
+    
     ui : 
       browse_header : '.m-pointlist-browse-header'
-      browse_footer : '.m-pointlist-browse'
 
     initialize : (options = {}) ->
       super options
-      @browsing = false
+      @collection = options.collection
+      @browsing = @setBrowsing(options.browsing) if options.browsing
+      @segment = options.segment
+
+    setBrowsing : (browsing) ->
+      @browsing = browsing
+      @render()
+
+      if @browsing
+        # when clicking outside of pointlist, close browsing
+        $(document).on 'click.m-pointlist-browsing', (ev)  => 
+          if $(ev.target).closest('.m-pointlist-sort-option').length == 0 && $(ev.target).closest('.m-pointlist-browsing')[0] != @$el[0] && $('.m-point-expanded, #l-dialog-detachable').length == 0
+            @trigger 'points:browsing:toggle', true
+            ev.stopPropagation()
+
+        $(document).on 'keyup.m-pointlist-browsing', (ev) => 
+          if ev.keyCode == 27 && $('.m-point-expanded, #l-dialog-detachable').length == 0
+            @trigger 'points:browsing:toggle', true
+            ev.stopPropagation()
+      else
+        $(document).off '.m-pointlist-browsing'
+        # @$el.off '.m-pointlist-browsing'
+        @$el.ensureInView {fill_threshold: .5}
 
     serializeData : ->
       data = super
       tenant = App.request 'tenant:get'
       params = _.extend data,
         pros : @options.valence == 'pro'
-        cnt : _.size @collection.fullCollection
         sort_by : @sort
         browsing_all : @browsing
-        label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true, plural:true}) else tenant.getConLabel({capitalize:false, plural:true})        
-        has_points : @collection.length > 0
         sorts : [ 
           { name: 'Persuasiveness', title: 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', target: 'persuasiveness'}, 
           { name: 'Popularity', title: 'Considerations that have been added to the most pro/con lists are ranked higher.', target: 'score'}, 
@@ -88,7 +129,6 @@
       params
 
     onRender : ->
-      super
       @bindUIElements()      
       @selectSort()
       @ui.browse_header.css('display', if @browsing then 'block' else 'none') 
@@ -110,50 +150,9 @@
 
       $.trim "#{modifier} #{valence} #{tail}"
 
-
     selectSort : ->
       @$el.find("[data-target]").removeClass 'selected'
       @$el.find("[data-target='#{@sort}']").addClass 'selected'
-
-    toggleBrowse : (browse) ->
-      @browsing = browse
-
-      if browse
-        @toggleBrowseOn()
-      else
-        @toggleBrowseOff()
-
-
-    toggleBrowseOn : ->
-
-      @ui.browse_footer.find('.m-pointlist-browse-toggle').text "Stop browsing"
-      @ui.browse_header.slideDown()
-
-      # when clicking outside of pointlist, close browsing
-      $(document).on 'click.m-pointlist-browsing', (ev)  => 
-        if $(ev.target).closest('.m-pointlist-sort-option').length == 0 && $(ev.target).closest('.m-pointlist-browsing')[0] != @$el[0] && $('.m-point-expanded, #l-dialog-detachable').length == 0
-          @toggleBrowse false
-          ev.stopPropagation()
-
-      $(document).on 'keyup.m-pointlist-browsing', (ev) => 
-        if ev.keyCode == 27 && $('.m-point-expanded, #l-dialog-detachable').length == 0
-          @toggle_browse false 
-      @trigger 'points:browsing'
-
-
-    toggleBrowseOff : ->
-      tenant = App.request 'tenant:get'
-      cnt = _.size @collection.fullCollection
-      label = if @options.valence == 'pro' then tenant.getProLabel({capitalize:true, plural:true}) else tenant.getConLabel({capitalize:false, plural:true})        
-
-      @ui.browse_footer.find('.m-pointlist-browse-toggle').text "View all #{cnt} #{label}"      
-      @ui.browse_header.slideUp()
-
-      $(document).off '.m-pointlist-browsing'
-      @$el.off '.m-pointlist-browsing'
-      @$el.find('.m-pointlist-header').ensureInView {fill_threshold: .5}
-
-      @trigger 'points:browsing:off'
 
     events : _.extend {}, Points.PointList.prototype.events,
       'click .m-pointlist-sort-option a' : 'sortList'
@@ -166,50 +165,57 @@
       ev.stopPropagation()
 
     handleToggleBrowse : (ev) ->
-      if @state != Points.States.collapsed
-        @toggleBrowse !@browsing
-        ev.stopPropagation()
+      @trigger 'points:browsing:toggle', @browsing
+      ev.stopPropagation()
+      # if @state != Points.States.collapsed
+      #   @toggleBrowse !@browsing
+      #   ev.stopPropagation()
 
+  class Points.ExpandablePointListFooter extends App.Views.ItemView
+    template : '#tpl_points_expandable_footer'
+    browsing : false
 
-  class Points.PeerEmptyView extends App.Views.ItemView
-    template : '#tpl_points_peer_empty'
-    className : 'points_peer_empty'
-
-  class Points.PeerPointList extends Points.ExpandablePointList
-    sort : 'score'    
-    location : 'peer'
-    className : => "m-peer-reasons m-reasons-peer-#{@options.valence}s"
-    itemView : App.Franklin.Point.PeerPointView
-    emptyView : Points.PeerEmptyView
-
-    events : _.extend {}, Points.ExpandablePointList.prototype.events
-    
     initialize : (options = {}) ->
-      super options
+      @collection = options.collection
 
+    setBrowsing : (browsing) ->
+      @browsing = browsing
+      @render()
 
-  class Points.UserReasonsList extends Points.PointList
-    template: '#tpl_points_user_reasons'
-    location : 'position'
-    className : => "m-position-points m-position-#{@options.valence}points"
-    itemView : App.Franklin.Point.PositionPointView
+    onShow : ->
+      @listenTo @collection, 'reset', =>  
+        @render()
 
     serializeData : ->
       data = super
-
       tenant = App.request 'tenant:get'
-      _.extend data, 
+      params = _.extend data,
+        cnt : _.size @collection.fullCollection
+        has_points : _.size(@collection.fullCollection) > 0
+        browsing_all : @browsing
+        label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true, plural:true}) else tenant.getConLabel({capitalize:false, plural:true})        
+
+      params
+
+    events : 
+      'click [data-target="browse-toggle"]' : 'handleToggleBrowse'
+
+    handleToggleBrowse : (ev) ->
+      @trigger 'points:browsing:toggle', @browsing
+      ev.stopPropagation()
+
+  class Points.UserReasonsPointListFooter extends App.Views.ItemView
+    template : '#tpl_points_user_reasons_footer'
+
+    serializeData : ->
+      tenant = App.request 'tenant:get'
+      params =  
         label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true}) else tenant.getConLabel({capitalize:true})
         hide_label : "hide_name-#{@options.valence}"
         is_pro : @options.valence == 'pro'
-
-    getHeaderText : ->
-      valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
-
-      "Your #{valence}"
+      params
 
     onShow : ->  
-      super   
       @$el.find('.m-newpoint-nutshell').autosize()
       @$el.find('.m-newpoint-description').autosize()
       @$el.find('.m-position-statement').autosize()
@@ -220,7 +226,7 @@
           max_chars : parseInt $(el).siblings('.count').text()       
 
 
-    events : _.extend Points.PointList.prototype.events,
+    events : 
       'click .m-newpoint-new' : 'newPoint'
       'click .m-newpoint-cancel' : 'cancelPoint'
       'click .m-newpoint-create' : 'createPoint'
@@ -261,3 +267,8 @@
       else
         @trigger 'point:create:requested', point_attributes
         @cancelPoint {currentTarget: $form.find('.m-newpoint-cancel')}
+
+
+  class Points.PeerEmptyView extends App.Views.ItemView
+    template : '#tpl_points_peer_empty'
+    className : 'points_peer_empty'

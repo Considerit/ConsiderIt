@@ -37,50 +37,52 @@
   text-align: center
   margin-bottom: $vertical_baseline / 2
   .m-pointlist-header-label
-    +transition(font-size .4s ease, color .4s ease) // for point browsing
-    +font-size(3)    
-    font-weight: bold
+    //+transition(font-size .4s ease, color .4s ease) // for point browsing
+    +font-size(2)    
+    //font-weight: bold
     display: inline-block
 
 
 
 .m-peer-reasons
-  // +transition(padding-top $transition_speed $transition_function)
-  +transition(all $transition_speed $transition_function)
-  +bubble(whitesmoke, darken(whitesmoke, 10%), left, $text_color: $base_text_color)
-
+  border: 1px solid transparent
 
   &.m-reasons-peer-pros
-    padding: $vertical_baseline / 2 0 $vertical_baseline / 2 $peer_padding
+    padding: $vertical_baseline / 2 $peer_padding / 2 $vertical_baseline / 2 $peer_padding / 2
 
   &.m-reasons-peer-cons
-    padding: $vertical_baseline / 2 $peer_padding $vertical_baseline / 2 0
+    padding: $vertical_baseline / 2 $peer_padding / 2 $vertical_baseline / 2 $peer_padding / 2
 
   .m-pointlist-header-label
     border-bottom-color: $base_text_color
 
   &[data-state="points-separated"], &[data-state="points-together"]
+
     .m-pointlist-header-label
       cursor: pointer
+      +font-size(2)
+      color: lighten($base_text_color, 20%)
+      font-weight: normal
 
   &[data-state="points-separated"]
     .m-pointlist-header-label
-      color: darken($base_bg_color, 20%)
+      // color: darken($base_bg_color, 20%)
       border-bottom-color: darken($base_bg_color, 20%)
-      +font-size(2)    
+      // +font-size(2)    
 
   &[data-state="points-collapsed"], &[data-state="points-together"]
     .m-pointlist-header-label
       color: lighten($base_text_color, 20%)
-      font-weight: normal
+      // font-weight: normal
+    +bubble(whitesmoke, darken(whitesmoke, 10%), left, $text_color: $base_text_color)
 
   &[data-state="points-collapsed"]
     .m-pointlist-header-label  
-      +font-size(2)    
+      // +font-size(2)    
 
   &[data-state="points-together"]
     .m-pointlist-header-label
-      +font-size(4)    
+      // +font-size(4)    
       border-bottom: 3px solid 
 
   // &[data-state="points-collapsed"]
@@ -92,12 +94,13 @@
     border-bottom-color: $decision_board_text_color
     margin-bottom: $vertical_baseline/2
     border-bottom: 3px solid 
+    +font-size(3)
 
 
 
 // expandable header
 .m-peer-reasons[data-state="points-separated"]
-  padding-top: 3.5 * $vertical_baseline
+  //padding-top: 3.5 * $vertical_baseline
 
   .m-pointlist-browse-header
     position: absolute
@@ -166,6 +169,7 @@
 // empty list
 .points_peer_empty
   font-style: italic
+  text-align: center
 
 /* NEWPOINT */
 
@@ -192,16 +196,14 @@
   .m-newpoint-new
     +font-size(1)
     width: 95%
-    border: none
     position: relative
     @extend %bolded
     display: inline-block
-
-    border: 1px solid
-    +inset-border(#414141)
+    border: 1px dashed $decision_board_border_color
     padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_xs
     padding-left: $grid_xs
     margin-left: 3px
+    border-radius: 16px
 
     &:before
       left: 4px

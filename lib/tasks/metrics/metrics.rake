@@ -15,9 +15,9 @@ namespace :metrics do
 
   task :basic => :environment do
 
-    WASHINGTON = false
+    WASHINGTON = true
     if WASHINGTON
-      years = [2010,2011,2012]
+      years = [2010,2011,2012,2013]
       accnt_id = 1
     else
       years = [2012]
@@ -90,7 +90,7 @@ namespace :metrics do
   task :normative_inclusion_overall => :environment do
     WASHINGTON = true
     if WASHINGTON
-      years = [2010,2011,2012]
+      years = [2010,2011,2012,2013]
       accnt_id = 1
     else
       years = [2012]
@@ -108,6 +108,8 @@ namespace :metrics do
       inc_yr_side = 0
       inc_other_side = 0
 
+      inc_enemy = {}
+
       THRESH = 1
       conviction = 0
 
@@ -124,21 +126,38 @@ namespace :metrics do
           if pos.stance > 0
             inc_yr_side += inc_points.where('points.is_pro=1').count
             inc_other_side += inc_points.where('points.is_pro=0').count
+            inc_points.each do |inc|
+              otherposition = inc.point.user.positions.published.where("proposal_id=#{pos.proposal_id}").count > 0 ? inc.point.user.positions.published.find_by_proposal_id(pos.proposal_id) : nil
+              if otherposition && otherposition.stance < 0 
+                inc_enemy[pos.id] = 1
+                break
+              end
+            end
+
           elsif pos.stance < 0
             inc_yr_side += inc_points.where('points.is_pro=0').count
             inc_other_side += inc_points.where('points.is_pro=1').count
+
+            inc_points.each do |inc|
+              otherposition = inc.point.user.positions.published.where("proposal_id=#{pos.proposal_id}").count > 0 ? inc.point.user.positions.published.find_by_proposal_id(pos.proposal_id) : nil
+              if otherposition && otherposition.stance > 0 
+                inc_enemy[pos.id] = 1
+                break
+              end
+            end
+
+          else
+            neither += 1 
           end
-        else
-          neither += 1 
         end
       end
 
       printf("%i\t%.2f\t%.2f\t%i\t%i\t%.2f\n",
           year, 
           pro_and_con+not_pro_and_con > 0 ? pro_and_con.to_f / (pro_and_con+not_pro_and_con) : -1.0, #inclusions per point
-          pro_and_con+not_pro_and_con > 0 ? pro_and_con.to_f / (pro_and_con+not_pro_and_con) : -1.0, #inclusions per position
-          inc_yr_side, #inclusions per point
-          inc_other_side, #inclusions per position        
+          pro_and_con+not_pro_and_con-neither > 0 ? inc_enemy.keys().length.to_f / (pro_and_con+not_pro_and_con-neither) : -1.0, #inclusions per position
+          inc_yr_side, 
+          inc_other_side, 
           pro_and_con+not_pro_and_con > 0 ? conviction / (pro_and_con+not_pro_and_con) : -1.0
       )
     end
@@ -146,7 +165,7 @@ namespace :metrics do
   end
 
   task :normative_inclusion_by_proposal => :environment do
-    years = [2010,2011,2012]
+    years = [2010,2011,2012,2013]
     puts "Normative metrics"
     puts "Year\tProposal\tIncluded pro & con\tIncluded point by opposition\tIncluded for your side\tIncluded for other side\tConviction"
     

@@ -19,16 +19,16 @@
 
     pointExpanded : (region) ->
       region.$el.css 'zIndex', 12
-      $transition_speed = 600
+      $transition_speed = 1000
       @sizeToFit $transition_speed
 
     pointClosed : (region) ->
       region.$el.css 'zIndex', ''
-      $transition_speed = 600
+      $transition_speed = 1000
       @sizeToFit $transition_speed
 
     pointsBrowsing : (valence) ->
-      $transition_speed = 600
+      $transition_speed = 1000
 
       if valence == 'pro'
         @peerProsRegion.$el.addClass 'm-pointlist-browsing'
@@ -41,7 +41,7 @@
       @sizeToFit $transition_speed * 1.5
 
     pointsBrowsingOff : (valence) ->
-      $transition_speed = 600
+      $transition_speed = 1000
 
       @peerConsRegion.$el.css 
         right: ''
@@ -61,20 +61,26 @@
 
       @sizeToFit $transition_speed * 1.5
 
-    sizeToFit : (delay = 0) ->
-      _.delay =>
-        $to_fit = @$el.find('.m-reasons-lists')
+    _sizeToFit : (minheight) ->
+      $to_fit = @$el.find('.m-reasons-lists')
 
-        $to_fit.css 'height', ''
-        $to_fit.parent().css 'min-height', ''
+      $to_fit.css 'height', ''
+      $to_fit.parent().css 'min-height', ''
 
-        height = $to_fit.outerHeight()
+      height = Math.max $to_fit.outerHeight(), minheight
 
-        $to_fit.css 'height', height
-        $to_fit.parent().css 'min-height', height
+      $to_fit.css 'height', height
+      $to_fit.parent().css 'min-height', height
 
-      , delay
 
+    sizeToFit : (delay = 0, minheight = 0) ->
+      if delay > 0
+        _.delay =>
+          @_sizeToFit minheight
+        , delay
+      else
+        @_sizeToFit minheight
+        
     # ugly having this method here...
     includePoint : (model, $source, $dest, source) ->
 
@@ -125,7 +131,7 @@
         @trigger 'point:viewed', pnt
 
     reasonsClicked : (ev) ->
-      if @state == Proposal.ReasonsState.collapsed
+      if @state == Proposal.ReasonsState.collapsed && $(ev.target).closest('.m-reasons-header-region').length == 0
         @trigger 'show_results'
         ev.stopPropagation()
 

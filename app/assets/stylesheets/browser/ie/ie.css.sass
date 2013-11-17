@@ -1,4 +1,25 @@
-@import 'ie_common'
+//@import 'ie_common'
+@import "grooves/base/variables"
+
+
+//IE8 doesn't support transform: translate ...
+.m-reasons
+  &[data-state="separated"]
+
+    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      left: 0
+
+  &[data-state="together"], &[data-state="collapsed"]
+
+    .m-aggregated-propoints-region
+      left: $peer-point-results-width + 1.5
+
+    .m-aggregated-conpoints-region
+      left: -$peer-point-results-width - 1.5
+
+
+
+
 
 .t-bubble
   display: none

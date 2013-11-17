@@ -138,8 +138,8 @@ group :assets do
   gem 'coffee-rails', "~> 3.2.2"
   gem 'uglifier'
   gem "asset_sync"
-  gem 'compass'
-  gem 'compass-rails'  
+  gem 'compass', '>= 0.13.alpha.0'
+  gem 'compass-rails', '>= 1.0.2'
   gem 'sassy-buttons'
   #gem 'turbo-sprockets-rails3'
   #gem "themes_for_rails", :git => 'git://github.com/jasherai/themes_for_rails.git'

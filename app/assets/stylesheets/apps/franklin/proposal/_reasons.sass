@@ -1,51 +1,106 @@
 //////////////////
 // global layout for reasons & points, in different states
+@import "compass/css3/animation"
 
-.m-reasons
+$use_transitions: true
 
-  // transitions and styles
-  .m-point
-    +transition(width $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function) //, top $transition_speed linear)
-    .m-point-wrap
-      +transition(all $transition_speed $transition_function)
 
-      //+transition(width $transition_speed $transition_function, background-color $transition_speed $transition_function, border-color $transition_speed $transition_function, top .5s ease, left .5s ease, color .5s linear, font-size .5s linear, padding-right .1s linear, padding-left .1s linear, padding-top .1s linear, padding-bottom .1s linear)
-  .m-reasons-lists
-    +transition(width $transition_speed $transition_function, top $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function)
-    //+transition(all $transition_speed $transition_function)
 
-  // .m-points-list-region
-  //   +transition(width $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function)
-  //   //+transition(all $transition_speed $transition_function)
++keyframes(FromTogetherToSeparated_PeerReasons)
+  0%
+    background-color: whitesmoke
+    border-color: darken(whitesmoke, 10%)
 
-  .m-position-region
-    +transition(width $transition_speed $transition_function, left $transition_speed $transition_function)
+  70%
+    background-color: whitesmoke
+    border-color: whitesmoke
 
-    //+transition(all $transition_speed $transition_function)
+  100%
+    background-color: none
+    border-color: transparent
 
-  .m-aggregated-propoints-region, .m-aggregated-conpoints-region
-    +transition(width $transition_speed $transition_function, left $transition_speed $transition_function, right $transition_speed $transition_function)
-    //+transition(all $transition_speed $transition_function)
++keyframes(FromTogetherToSeparated_PeerPoints)
+  0%
+    background-color: whitesmoke
+    border-color: transparent
+    +single-box-shadow($color: rgba(black, 0), $voff: 1px)
 
-  &[data-state="separated"][data-state-from="together"]
-    .m-reasons-lists
-      top: -200px // put on top of histogram
+  90%
+    background-color: whitesmoke
+    border-color: transparent
+    +single-box-shadow($color: rgba(black, 0), $voff: 1px)
+
+  100%
+    +single-box-shadow($color: rgba(black, .1), $voff: 1px)
+    background-color: whitesmoke
+    border-color: #f1f1f1 #ddd #bbb #ddd
+
++keyframes(FromTogetherToSeparated_hidden)
+  0%
+    opacity: 0
+
+  50%
+    opacity: 0
+
+  100%
+    opacity: 1
+
+
+
+// transitions / animations
+.m-reasons.transitioning
+  +transition(transform $transition_speed $transition_function)
+  .m-position-region, .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+    +transition(transform $transition_speed $transition_function)
 
   &[data-state="separated"]
-    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+    &[data-state-from="together"], &[data-state-from="collapsed"]
       .m-peer-reasons
-        border-color: transparent
-        background: $bg_main
+        +animation(FromTogetherToSeparated_PeerReasons $transition_speed)
 
-  &[data-state="together"], &[data-state="collapsed"]
+      .m-point-peer.m-point-unexpanded .m-point-wrap
+        +animation(FromTogetherToSeparated_PeerPoints $transition_speed)
+        +animation-fill-mode(none)
 
-    .m-aggregated-propoints-region .m-peer-reasons
-      border-radius: 16px 0 0 16px
-      border-right-color: transparent
+      .m-point-include, .m-pointlist-browse-toggle
+        +animation(FromTogetherToSeparated_hidden $transition_speed * 2.5)
 
-    .m-aggregated-conpoints-region .m-peer-reasons
-      border-radius: 0 16px 16px 0
-      border-left-color: transparent
+
+.m-reasons  
+  &[data-state="separated"], &[data-state="collapsed"]
+    +translateY(-$aggregate_area_height)
+
+  &[data-state="separated"][data-state-from="together"]
+    +translateY(0)
+
+  &[data-state="separated"][data-state-from="together"]
+    .m-position-region
+      +translateY(- 2 * $vertical_baseline)
+
+    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      +translateY($vertical_baseline)
+
+  &[data-state="separated"][data-state-from="collapsed"], &[data-state="separated"]
+    .m-position-region
+      +translateY(3 * $vertical_baseline)
+
+    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      +translateY(6 * $vertical_baseline)
+
+
+  &[data-state="collapsed"]
+    .m-position-region
+      //bottom: 0
+      +translateY(10 * $vertical_baseline)
+      //vertical-align: bottom
+
+  .m-aggregated-propoints-region .m-peer-reasons
+    border-radius: 16px 0 0 16px
+    border-right-color: transparent
+
+  .m-aggregated-conpoints-region .m-peer-reasons
+    border-radius: 0 16px 16px 0
+    border-left-color: transparent
 
   // basic layout
 
@@ -59,6 +114,7 @@
   .m-reasons-lists
     //height: 100%
     top: 0 
+    min-height: $aggregate_area_height
 
   .m-aggregated-propoints-region, .m-aggregated-conpoints-region
     height: 100%
@@ -74,19 +130,28 @@
 
     .m-point-header-region
       float: right
+
+    .m-point-unexpanded .m-point-header-region
       right: $peer_padding
 
   .m-reasons-lists
     position: absolute  
 
+  &.transitioning .m-personal-reasons
+    //min-height: 0
+    min-height: 450px
+
+  [data-state="separated"]
+    .m-personal-reasons
+      min-height: 450px
+
+
   //horizontal size and positioning
-  $full_reasons_width: $decision_board_width + 2 * $peer-point-results-width + 11 //7 is for borders //+ 2 * $grid_xs
-  $full_reasons_left: -($full_reasons_width - $content_width) / 2
+
   .m-reasons-lists
     padding: 0
     width: $full_reasons_width
     left: $full_reasons_left   //-$peer-point-results-width + $margin_width - 2 * $peer-point-avatar-area //- $grid_xs / 4
-
 
   .m-point-header-region
     width: $peer-point-avatar-area
@@ -96,8 +161,7 @@
 
     .m-aggregated-propoints-region, .m-aggregated-conpoints-region
       width: $peer-point-width
-      left: 0
-
+      //left: 0
 
     .m-point-peer.m-point-unexpanded
       width: $peer-point-width
@@ -109,10 +173,12 @@
       width: $peer-point-results-width
 
     .m-aggregated-propoints-region
-      left: $peer-point-results-width + 1.5
+      //left: $peer-point-results-width + 1.5
+      +translateX($peer-point-results-width - ($peer-point-results-width - $decision_board_width/2) + 3.5)
 
     .m-aggregated-conpoints-region
-      left: -$peer-point-results-width - 1.5
+      //left: -$peer-point-results-width - 1.5
+      +translateX(-$peer-point-results-width + ($peer-point-results-width - $decision_board_width/2) - 3.5)
 
     .m-point-peer.m-point-unexpanded 
       width: $peer-point-results-width
@@ -120,12 +186,12 @@
         width: $peer-point-wrap-results-width
 
   .m-position-propoints-region, .m-position-conpoints-region
-    width: $pro-con-list-column-width
+    width: $position-point-width
 
     .m-point-position.m-point-unexpanded 
-      width: $pro-con-list-column-width
+      width: $position-point-width
       .m-point-wrap
-        width: $pro-con-list-column-width - $peer-point-avatar-area
+        width: $position-point-wrap-width 
 
 
 
@@ -189,7 +255,7 @@
 
 
 .m-reasons
-  margin: $vertical_baseline 0
+  margin: $vertical_baseline 0 4 * $vertical_baseline 0
 
 
   &[data-state="collapsed"] .m-aggregated-conpoints-region   
@@ -203,14 +269,12 @@
         display: none
 
   &[data-state="collapsed"]
-    opacity: .85
     &:hover
-      opacity: 1
       cursor: pointer
 
 
   /////////
-  // wrapper for a points column, managed by a PointsController
+  // warpper for a points column, managed by a PointsController
   .m-points-list-region
     position: relative
     vertical-align: top

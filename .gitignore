@@ -41,6 +41,8 @@ zansible/files/ssl/chalkboardit/chalkboardit.key
 
 *.crt
 
+*.sql
+
 zansible/group_vars/chalkboardit
 
 zansible/group_vars/development

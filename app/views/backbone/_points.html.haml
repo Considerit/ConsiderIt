@@ -53,7 +53,7 @@
   .m-newpoint
 
     %a.m-newpoint-new
-      Write a new {{ label }}
+      Add a new {{ label }}
 
     .m-newpoint-form
       = hidden_field_tag :is_pro, "{{is_pro}}", :class => 'm-newpoint-is_pro'
@@ -73,10 +73,11 @@
           Conceal your name
 
       .m-newpoint-submit
-        %input.m-newpoint-create.button{ :type => 'submit', :value => 'Done'}
-
         %a.m-newpoint-cancel
           cancel
+
+        %input.m-newpoint-create.button{ :type => 'submit', :value => 'Done'}
+
 
 %script{ :type => 'text/template', :id => "tpl_points_peer_empty"}
   No points identified

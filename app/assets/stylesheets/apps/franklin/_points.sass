@@ -183,6 +183,9 @@
 .m-newpoint
   position: relative
   margin-top: $vertical_baseline
+  border: 1px dashed $decision_board_border_color
+  border-radius: 16px
+  width: 99%
 
   .m-newpoint-new, .m-newpoint-form
 
@@ -195,39 +198,39 @@
 
   .m-newpoint-new
     +font-size(1)
-    width: 95%
     position: relative
-    @extend %bolded
-    display: inline-block
-    border: 1px dashed $decision_board_border_color
+    //@extend %bolded
+    display: block
     padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_xs
     padding-left: $grid_xs
     margin-left: 3px
-    border-radius: 16px
 
     &:before
       left: 4px
       +font-size(-4)
 
   .m-newpoint-form
+    padding-top: $vertical_baseline / 2
     position: relative
     display: none
     margin-left: $grid_xs
     input, textarea
-      +font-size(-1)
+      +font-size(0)
+      padding-top: 0
+      padding-bottom: 0
   
     &:before
-      left: -9px    
+      left: -11px    
       +font-size(-4)
 
   .m-newpoint-description
-    width: 94%
-    min-height: 40px
+    width: 96%
+    min-height: 55px
 
   .m-newpoint-nutshell-wrap
     .m-newpoint-nutshell
-      width: 94%
-      min-height: 40px
+      width: 96%
+      min-height: 55px
 
     .count
       +font-size(-3)
@@ -236,7 +239,9 @@
       right: 20px
       top: -16px
 
-  .m-newpoint-submit, .m-newpoint-anonymous-wrap
+  .m-newpoint-submit
+    text-align: right
+
     //text-align: right
     //margin-left: 10px
 

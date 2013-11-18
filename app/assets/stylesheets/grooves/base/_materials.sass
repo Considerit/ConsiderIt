@@ -20,9 +20,9 @@
   color: $decision_board_text_color
   //background-color: $decision_board_color
   a
-    color: lighten($decision_board_text_color, 10%)
+    color: darken($decision_board_text_color, 10%)
     &:hover
-      color: lighten($decision_board_text_color, 20%)
+      color: darken($decision_board_text_color, 20%)
   
   h1, h2, h3
     color: $decision_board_text_color
@@ -30,14 +30,14 @@
   textarea, input[type="text"], input[type="email"], input[type="password"]
     background-color: transparent
     border: 1px solid
-    +inset-border($decision_board_color)
+    +inset-border($decision_board_text_color)
     display: inline-block
     color: $decision_board_text_color
 
     &.error 
       border-color: #883333
       &:focus
-        +inset-border($decision_board_color)
+        +inset-border($decision_board_text_color)
 
 %light
 

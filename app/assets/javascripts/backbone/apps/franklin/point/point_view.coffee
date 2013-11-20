@@ -35,7 +35,6 @@
   class Point.PeerPointView extends Point.PointView
     actions : ['include']
 
-
     events : _.extend @events,
       'click [data-target="point-include"]' : 'includePoint'
       'mouseenter' : 'highlightIncluders'
@@ -50,6 +49,10 @@
 
     unhighlightIncluders : ->
       @trigger 'point:unhighlight_includers'
+
+    onRender : ->
+      @$el.find('.m-point-wrap').draggable
+        revert: "invalid"
 
   class Point.PositionPointView extends Point.PointView
     actions : ['remove']

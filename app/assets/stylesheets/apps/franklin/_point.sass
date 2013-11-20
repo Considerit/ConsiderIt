@@ -45,9 +45,13 @@ $m-point-expanded-width: $body_width + 150
     .m-point-expanded.con.m-point-peer
       right: $m-point-expanded-width - $peer-point-width
 
-  &[data-state="points-separated"], &[data-state="points-together"]
+  &[data-state="points-separated"], &[data-state="points-together"], &[data-state="points-position"]
     .m-point-unexpanded
       cursor: pointer
+
+  &[data-state="points-separated"]
+    .m-point-unexpanded.m-point-peer
+      +grab_cursor
 
   &[data-state="points-collapsed"]
 
@@ -170,7 +174,16 @@ $m-point-expanded-width: $body_width + 150
 
     .m-point-remove
       margin-top: $grid_xs/4
-      padding: 0 $grid_xs/2        
+      padding: 0 $grid_xs/2
+
+      // @extend %point_operation
+      background: none
+      border-color: transparent
+      color: $decision_board_text_color
+      // +single-box-shadow(none)
+      // +text-shadow(none)
+      &:hover
+        color: darken($decision_board_text_color, 15%)
 
   &.m-point-peer
     &:hover
@@ -193,7 +206,7 @@ $m-point-expanded-width: $body_width + 150
   &:hover
     +font-size(-3)
 
-.m-point-include, .m-point-assessment-request-initiate, .m-point-remove, .m-point-follow
+.m-point-include, .m-point-assessment-request-initiate, .m-point-follow
   @extend %point_operation
 
 
@@ -205,7 +218,7 @@ $m-point-expanded-width: $body_width + 150
   .m-point-include-wrap
     display: none
 
-[data-state="points-separated"] .m-point-peer
+[data-state="points-separated"] .m-point-peer.m-point-expanded
   .m-point-include-wrap
     display: block
 
@@ -213,9 +226,6 @@ $m-point-expanded-width: $body_width + 150
       position: relative
       z-index: 2
       border-radius: 0
-  &.con
-    .m-point-include
-      +scaleX(-1)
 
   &.m-point-unexpanded
 
@@ -226,47 +236,12 @@ $m-point-expanded-width: $body_width + 150
     &.pro
       .m-point-include-wrap
         right: 0
-    &.con
-      .m-point-include-wrap
-        left: 0
-
-    .m-point-include-wrap
-
-      .m-point-include
-        border-bottom-right-radius: 8px
-
-    // &.con
-    //   .m-point-include-wrap
-    //     left: 0
-        
-    //     .m-point-include
-    //       border-bottom-left-radius: 8px
-
-  &.m-point-expanded
-
-    // &.con
-    //   .m-point-include-wrap
-    //     float: left
-    //     left: -$grid_xs - 1
-    //     .m-point-include
-    //       border-bottom-left-radius: 0px
-    //       border-left-color: transparent    
-
-    &.pro
-      .m-point-include-wrap
         float: right
 
     &.con
       .m-point-include-wrap
+        left: 0
         float: left
-
-    .m-point-include-wrap
-      float: right
-      right: -$grid_xs - 1
-      .m-point-include
-        border-bottom-right-radius: 0px
-        border-right-color: transparent    
-
 
 
 .m-point-peer.m-point-unexpanded, .m-point-expanded

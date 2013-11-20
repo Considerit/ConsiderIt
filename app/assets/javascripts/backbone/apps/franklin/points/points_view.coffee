@@ -22,6 +22,8 @@
     className : => 
       "m-position-points m-position-#{@options.valence}points"
 
+    onRender : ->
+      super
 
   class Points.PointList extends App.Views.CollectionView
     tagName : 'ul'
@@ -85,9 +87,6 @@
     browsing : false
     sort : 'score'    
     
-    ui : 
-      browse_header : '.m-pointlist-browse-header'
-
     initialize : (options = {}) ->
       super options
       @collection = options.collection
@@ -129,9 +128,7 @@
       params
 
     onRender : ->
-      @bindUIElements()      
       @selectSort()
-      @ui.browse_header.css('display', if @browsing then 'block' else 'none') 
 
     getHeaderText : ->
       valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
@@ -213,6 +210,7 @@
         label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true}) else tenant.getConLabel({capitalize:true})
         hide_label : "hide_name-#{@options.valence}"
         is_pro : @options.valence == 'pro'
+        direction : if @options.valence == 'pro' then 'left' else 'right'
       params
 
     onShow : ->  

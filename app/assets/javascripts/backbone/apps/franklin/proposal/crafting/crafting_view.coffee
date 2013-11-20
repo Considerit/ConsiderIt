@@ -15,6 +15,43 @@
       _.extend {}, tenant.attributes, _.compactObject(@options.proposal.attributes)
 
 
+    onRender : ->
+      super
+
+      @processIncludedPoints()
+
+      @$el.droppable
+        accept: ".m-point-peer .m-point-wrap"
+        drop : (ev, ui) =>
+          valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
+          ui.draggable.find('[data-target="point-include"]').trigger 'click'
+          @$el.removeClass "draggable_hover_#{valence} draggable_initiated_#{valence}"
+
+        out : (ev, ui) =>
+          valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
+          @$el.removeClass "draggable_hover_#{valence}"
+
+        over : (ev, ui) =>
+          valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
+          @$el.addClass "draggable_hover_#{valence}"
+
+        activate : (ev, ui) =>
+          valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
+          @$el.addClass "draggable_initiated_#{valence}"
+
+        deactivate : (ev, ui) =>
+          valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
+          @$el.removeClass "draggable_initiated_#{valence}"
+
+    processIncludedPoints : ->
+      if @model.getIncludedPoints().length > 0 
+        @$el.removeClass 'no_included_points'
+        @$el.addClass 'has_included_points'
+      else
+        @$el.addClass 'no_included_points'
+        @$el.removeClass 'has_included_points'
+
+
   class Proposal.PositionFooterSeparatedView extends App.Views.ItemView
     template : '#tpl_position_footer'
     className : 'm-position-footer'

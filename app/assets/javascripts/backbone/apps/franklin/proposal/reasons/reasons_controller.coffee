@@ -33,41 +33,24 @@
 
 
       footer_view = @getResultsFooterView()
-      # if @state == Proposal.ReasonsState.together && !@options.model.getUserPosition().get('published')
-      #   _.delay =>
-      #     footer_view.$el.hide()
-      #     App.request "sticky_footer:new", footer_view
-      #     footer_view.$el.fadeIn 300
-      #   , @transition_speed()
-
-      # else
       @layout.footerRegion.show footer_view if footer_view
-      # if @prior_state != null
-      #   App.request "sticky_footer:close"
 
-
-      setupPoints = =>
+      wait = if @crafting_controller && @prior_state != null then @transition_speed() else 0
+      _.delayIfWait =>
         @updatePeerPoints @layout
 
         if !@crafting_controller #&& @options.model.fetched && @state != Proposal.ReasonsState.collapsed
           @crafting_controller = @getCraftingController @layout.positionRegion
           @setupCraftingController @crafting_controller 
 
-      if @crafting_controller && @prior_state != null
-        _.delay =>
-          setupPoints()
-        , @transition_speed()
-      else
-        setupPoints()
-
-      #delay = if @prior_state == null then 0 else $transition_speed + 50
+      , wait
 
       if @layout.$el.is('.transitioning')
         @layout.sizeToFit 10
         # @layout.sizeToFit @transition_speed() / 2
         # @layout.sizeToFit @transition_speed()
         # @layout.sizeToFit @transition_speed() + 10
-        @layout.sizeToFit @transition_speed() + 100
+        @layout.sizeToFit @transition_speed() + 10
 
       else
         @layout.sizeToFit()
@@ -88,7 +71,6 @@
     updatePeerPoints : (layout) ->
 
       if @prior_state
-        #transition = =>
         all_points = App.request 'points:get:proposal', @model.id
         @peer_pros_controller.options.collection.fullCollection.add all_points.filter((point) -> point.isPro()) 
         @peer_cons_controller.options.collection.fullCollection.add all_points.filter((point) -> !point.isPro())
@@ -100,18 +82,19 @@
             when Proposal.ReasonsState.separated
               included_points = @model.getUserPosition().getIncludedPoints()              
               collection.fullCollection.remove (App.request('point:get', i) for i in included_points)
-
               collection.setPageSize 4
+              controller.sortPoints 'persuasiveness'
+
 
             when Proposal.ReasonsState.collapsed
               top_points = [@model.get('top_pro'), @model.get('top_con')]
-              collection.fullCollection.set  top_points
+              collection.fullCollection.set top_points
+
               collection.setPageSize 1
 
             when Proposal.ReasonsState.together
               collection.setPageSize 4
-        #delay = 0 #@transition_speed() #if @prior_state == Proposal.ReasonsState.together then @transition_speed() else 0
-        #_.delay transition, delay
+              controller.sortPoints 'score'
 
       else
         points = switch @state 
@@ -129,6 +112,7 @@
 
         aggregated_pros = new App.Entities.PaginatedPoints points.filter((point) -> point.isPro()), {state: {pageSize:page_size} }
         aggregated_cons = new App.Entities.PaginatedPoints points.filter((point) -> !point.isPro()), {state: {pageSize:page_size} }
+
 
         @peer_pros_controller = @getPointsController layout.peerProsRegion, 'pro', aggregated_pros
         @peer_cons_controller = @getPointsController layout.peerConsRegion, 'con', aggregated_cons

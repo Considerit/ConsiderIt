@@ -16,26 +16,34 @@
       {{ header }}
 
 %script{ :type => "text/template", :id => "tpl_points_expandable_header"}
-  .m-pointlist-browse-header  
-    (( if(browsing_all) { ))
-    .m-pointlist-browse-header-close
-      %a.m-pointlist-browse-toggle{'data-target' => 'browse-toggle'}
-        {{ pros ? '&laquo;' : '' }} stop browsing points {{ pros ? '' : '&raquo;' }}
-    
-    .m-pointlist-browse-sort
-      %span.m-pointlist-browse-sort-label
-        sort by: 
-      %ul
-        (( _.each(sorts, function(sort){  ))
-        %li.m-pointlist-sort-option
-          %a{ :title => "{{ sort.title }}", :'data-target' => "{{ sort.target }}" }
-            {{ sort.name }}
-        (( }); ))
-    (( } ))
 
   .m-pointlist-header
     %span.m-pointlist-header-label{'data-target' => 'browse-toggle'}
       {{ header }}
+
+      (( if(browsing_all) { ))
+      %span.m-pointlist-browse-header-close
+        %i.icon.icon-small
+          &#xf066;      
+
+      .m-pointlist-browse-sort
+        %span.m-pointlist-browse-sort-label
+          sort 
+          %i.icon.icon-small
+            &#xf0d7;
+        %ul.m-pointlist-browse-sort-menu
+          (( _.each(sorts, function(sort){  ))
+          %li.m-pointlist-sort-option
+            %a{ :title => "{{ sort.title }}", :'data-target' => "{{ sort.target }}" }
+              {{ sort.name }}
+          (( }); ))
+
+      (( } else { ))
+      %span.m-pointlist-browse-header-open
+        %i.icon.icon-small
+          &#xf065; 
+      (( } ))
+
 
 %script{:type => "text/template", :id => "tpl_points_expandable_footer"}
   (( if(has_points){ ))
@@ -52,7 +60,7 @@
 %script{ :type => "text/template", :id => "tpl_points_user_reasons_footer"}
   .m-newpoint
 
-    %a.m-newpoint-new
+    %span.m-newpoint-new
       Add a new {{ label }}
 
     .m-newpoint-form
@@ -77,6 +85,10 @@
           cancel
 
         %input.m-newpoint-create.button{ :type => 'submit', :value => 'Done'}
+
+  .m-point-drop-target
+    %span
+      Drag and drop {{ label }}s from the {{ direction }}
 
 
 %script{ :type => 'text/template', :id => "tpl_points_peer_empty"}

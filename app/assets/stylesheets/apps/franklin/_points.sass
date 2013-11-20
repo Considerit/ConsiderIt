@@ -64,6 +64,54 @@
       color: lighten($base_text_color, 20%)
       font-weight: normal
 
+    .m-pointlist-browse-sort
+      display: inline-block
+      position: relative
+      margin-left: $grid_xs
+
+      .m-pointlist-browse-sort-label
+        +font-size(-2)
+
+      .m-pointlist-browse-sort-menu
+        display: none
+
+
+      &:hover
+
+        .m-pointlist-browse-sort-menu
+          //min-width: 140px
+          text-align: left
+          @extend %nude_list
+          margin-left: 0
+          display: inline-block
+          +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
+          border-radius: 5px
+          background-color: $base_bg_color
+          padding: $vertical_baseline / 2 0
+          border: 1px solid darken($base_bg_color, 20%)
+          position: absolute
+          right: -$grid_xs
+          z-index: 10
+
+          li
+            display: block
+
+          a
+            width: 100%
+            padding: 2px $grid_minor
+            display: block
+            cursor: pointer
+            +font-size(-3)
+            font-weight: bold
+            &:hover
+              color: $comp_text_color
+              background-color: $dark_comp_color
+            &.selected
+              background-color: darken($callout_bg_color, 8%)
+              color: $callout_text_color
+
+
+
   &[data-state="points-separated"]
     .m-pointlist-header-label
       // color: darken($base_bg_color, 20%)
@@ -76,18 +124,6 @@
       // font-weight: normal
     +bubble(whitesmoke, darken(whitesmoke, 10%), left, $text_color: $base_text_color)
 
-  &[data-state="points-collapsed"]
-    .m-pointlist-header-label  
-      // +font-size(2)    
-
-  &[data-state="points-together"]
-    .m-pointlist-header-label
-      // +font-size(4)    
-      border-bottom: 3px solid 
-
-  // &[data-state="points-collapsed"]
-  //   .m-pointlist-header-label
-  //     display: none
 
 .m-position-points
   .m-pointlist-header-label
@@ -99,71 +135,16 @@
 
 
 // expandable header
-.m-peer-reasons[data-state="points-separated"]
-  //padding-top: 3.5 * $vertical_baseline
 
-  .m-pointlist-browse-header
-    position: absolute
-    top: 0
-
-  &.m-reasons-peer-cons
-    .m-pointlist-browse-header
-      right: 0px
-
-  &.m-reasons-peer-pros
-    .m-pointlist-browse-header
-      left: 0px
-
-
-.m-peer-reasons[data-state="points-together"] 
-  .m-pointlist-browse-header
-    position: absolute
-
-  &.m-reasons-peer-cons
-    .m-pointlist-browse-header
-      right: -100px
-
-  &.m-reasons-peer-pros
-    .m-pointlist-browse-header
-      left: -100px
-
-.m-reasons-peer-cons .m-pointlist-browse-header
-  text-align: right
-
-.m-pointlist-browse-header
-  //display: none
-  width: 240px
-  position: relative
-  margin-bottom: $vertical_baseline
-
-  .m-pointlist-browse-toggle
-    +font-size(-2)
-    margin-bottom: $vertical_baseline / 2
-
-.m-pointlist-browse-sort
-  ul
-    display: inline
-
-  .m-pointlist-browse-sort-label
+.m-peer-reasons[data-state="points-together"], .m-peer-reasons[data-state="points-separated"] 
+  .m-pointlist-browse-header-open, .m-pointlist-browse-header-close
+    color: darken($base_bg_color, 15%)
     +font-size(-2)
 
-  .m-pointlist-sort-option
-    display: inline-block
-    list-style: none
-
-    a
-      padding: $vertical_baseline / 4 $grid_xs / 4
-      text-transform: uppercase
-      +font-size(-4)
-      //@extend %bolded
-      
-      &:hover
-        background-color: darken($callout_bg_color, 10%)
-        color: lighten($callout_text_color, 10%)
-
-      &.selected
-        background-color: darken($callout_bg_color, 8%)
-        color: $callout_text_color
+.m-peer-reasons[data-state="points-collapsed"] 
+  .m-pointlist-browse-header-open, .m-pointlist-browse-header-close
+    visibility: hidden
+    
 
 
 // empty list
@@ -174,18 +155,50 @@
 /* NEWPOINT */
 
 .m-position-propoints .m-newpoint
-  margin-left: -3px
+  // margin-left: -3px
 
 .m-position-conpoints .m-newpoint
   //margin-right: $grid_xs
 
 
-.m-newpoint
-  position: relative
-  margin-top: $vertical_baseline
+.has_included_points
+  .m-point-drop-target
+    opacity: .2
+
+.no_included_points
+  .m-point-drop-target
+    opacity: .75
+
+.draggable_initiated_pro .m-position-propoints, .draggable_initiated_con .m-position-conpoints
+  .m-point-drop-target
+    opacity: 1
+
+.draggable_hover_pro .m-position-propoints, .draggable_hover_con .m-position-conpoints
+  .m-point-drop-target
+    color: darken($decision_board_text_color, 25%)
+    border-color: darken($decision_board_text_color, 25%)
+
+
+.m-point-drop-target
+  padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_xs
+  +font-size(1)
+  height: 5 * $vertical_baseline
+  vertical-align: middle
+  margin-top: 2 * $vertical_baseline
+  +transition(opacity 300)
+
+.m-point-drop-target, .m-newpoint
   border: 1px dashed $decision_board_border_color
   border-radius: 16px
   width: 99%
+
+  
+
+
+
+.m-newpoint
+  position: relative
+  margin-top: $vertical_baseline
 
   .m-newpoint-new, .m-newpoint-form
 
@@ -202,8 +215,11 @@
     //@extend %bolded
     display: block
     padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_xs
-    padding-left: $grid_xs
     margin-left: 3px
+    cursor: pointer
+    opacity: .75
+    &:hover
+      opacity: 1
 
     &:before
       left: 4px

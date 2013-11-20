@@ -46,13 +46,15 @@
     color: lighten($callout_text_color, 20%)
     
 %desaturatedbutton
-  +sassy-button("simple", 5px, inherit, lighten(desaturate($callout_bg_color, 100%), 10%))
+  //+sassy-button("simple", 5px, inherit, lighten(desaturate($callout_bg_color, 100%), 10%))
+  +sassy-button("simple", 5px, inherit, desaturate($base_bg_color, 100%), darken(desaturate($base_bg_color, 100%), 5%), $base_text_color, "false")
   padding: $vertical_baseline/4 $grid_xs / 2
   text-align: center
   display: inline-block
   vertical-align: top
   margin: 0
-  color: $callout_text_color
+  //color: $callout_text_color
+  // +text-shadow(none)
   &:hover
     +sassy-button("simple", 5px, inherit, lighten(desaturate($callout_bg_color, 10%), 10%))
     padding: $vertical_baseline/4 $grid_xs / 2

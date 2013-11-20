@@ -81,3 +81,17 @@
   &.selected
     border-color: #ccc white white #ccc
     +single-box-shadow($inset: true, $blur: 4px, $color: rgba(0, 0, 0, .2))
+
+
+
+=grab_cursor
+  cursor: move
+  cursor: ew-resize
+  cursor: -webkit-grab
+  cursor: -moz-grab
+
+  &:active
+    cursor: move
+    cursor: ew-resize
+    cursor: -webkit-grabbing
+    cursor: -moz-grabbing

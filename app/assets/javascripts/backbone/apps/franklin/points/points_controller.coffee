@@ -72,7 +72,7 @@
       @list_view = list_view
 
     sortPoints : (sort_by) ->
-      if @options.collection.setSorting #if its pageable...
+      if @options.collection.setSorting && sort_by #if its pageable...
         @options.collection.setSorting sort_by, 1
         @options.collection.fullCollection.sort()
 

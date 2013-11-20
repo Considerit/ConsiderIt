@@ -193,6 +193,15 @@
       @listenTo controller, 'point:remove', (view) => 
         @handleRemovePoint view, view.model, controller.options.collection
 
+    handleIncludePoint : (model) ->
+      dest_controller  = if model.isPro() then @position_pros_controller else @position_cons_controller
+      dest = dest_controller.options.collection
+      dest.add model
+
+      @layout.processIncludedPoints()
+
+
+
     handleRemovePoint : (view, model, source) ->
       App.vent.trigger 'points:unexpand'
 
@@ -231,6 +240,7 @@
 
     getLayout : ->
       new Proposal.PositionLayout
+        model : @proposal.getUserPosition()
         proposal : @proposal
         state : @state
 

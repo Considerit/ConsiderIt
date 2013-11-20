@@ -80,7 +80,6 @@
       if hard_select
         $(document).on 'click.histogram', (ev) => @closeBarClick(ev)
         $(document).on 'keyup.histogram', (ev) => @closeBarKey(ev)
-        ev.stopPropagation()
       #######
 
       @$el.show()
@@ -96,6 +95,9 @@
         bucket = 6 - $target.closest('.m-histogram-bar').attr('bucket')
 
         @trigger 'histogram:segment_results', bucket, hard_select
+
+      if hard_select
+        ev.stopPropagation()
 
     closeBarClick : (ev) -> @deselectBar() 
 

@@ -41,9 +41,9 @@
       #   , @transition_speed()
 
       # else
-      @layout.footerRegion.show footer_view
-      if @prior_state != null
-        App.request "sticky_footer:close"
+      @layout.footerRegion.show footer_view if footer_view
+      # if @prior_state != null
+      #   App.request "sticky_footer:close"
 
 
       setupPoints = =>
@@ -192,13 +192,16 @@
           @trigger 'point:unhighlight_includers', includers 
 
       @listenTo controller, 'point:include', (view) =>
+
         model = view.model # a Point...
+
+        position = @model.getUserPosition()
+        position.includePoint model
+
         source_controller = if model.isPro() then @peer_pros_controller else @peer_cons_controller
         source = source_controller.options.collection
-        dest_controller  = if model.isPro() then @crafting_controller.position_pros_controller else @crafting_controller.position_cons_controller
-        dest = dest_controller.options.collection
-
-        dest.add model
+        
+        @crafting_controller.handleIncludePoint model
 
         $included_point = @layout.$el.find ".m-point-position[data-id='#{model.id}']"
 
@@ -211,8 +214,6 @@
         window.addCSRF params
         $.post Routes.inclusions_path(), 
           params, (data) =>
-            position = @model.getUserPosition()
-            position.includePoint model
 
             current_user = App.request 'user:current'
             current_user.setFollowing 

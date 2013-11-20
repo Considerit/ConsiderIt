@@ -27,7 +27,6 @@
       $('head').append data
 
     $(document).on "click", "a[href^='/']", (event) ->
-      console.log 'click registered'
       href = $(event.currentTarget).attr('href')
       target = $(event.currentTarget).attr('target')
 

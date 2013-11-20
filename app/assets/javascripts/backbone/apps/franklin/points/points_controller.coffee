@@ -73,6 +73,7 @@
 
     sortPoints : (sort_by) ->
       if @options.collection.setSorting && sort_by #if its pageable...
+        @header_view.sort = sort_by
         @options.collection.setSorting sort_by, 1
         @options.collection.fullCollection.sort()
 
@@ -98,7 +99,7 @@
         collection = if is_paginated then options.collection.fullCollection else options.collection
 
         if collection.get point_id
-          @sortPoints @layout.sort
+          @sortPoints @header_view.sort
 
       @region.show @layout
 
@@ -146,7 +147,9 @@
       super layout
 
       @listenTo layout, 'show', =>
-        @header_view = @getHeaderView()  
+        sort = if @state == Points.States.separated then 'persuasiveness' else 'score'
+
+        @header_view = @getHeaderView sort  
         footer_view = @getFooterView()
 
         @listenTo @header_view, 'sort', (sort_by) =>
@@ -189,11 +192,11 @@
       @listenTo list_view, 'childview:point:unhighlight_includers', (view) => 
         @trigger 'point:unhighlight_includers', view
 
-    getHeaderView : ->
+    getHeaderView : (sort) ->
       new Points.ExpandablePointListHeader
         browsing: false
         collection : @options.collection
-        sort : 'score'
+        sort : sort
         valence : @options.valence
 
     getFooterView : ->

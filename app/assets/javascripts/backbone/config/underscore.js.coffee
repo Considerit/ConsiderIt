@@ -14,3 +14,9 @@ do (_) ->
       _.each o, (v,k) ->
         n[k] = v if v
       n
+
+    delayIfWait : (func, wait) ->
+      if wait > 0
+        _.delay func, wait
+      else
+        func()

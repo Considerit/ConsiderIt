@@ -14,6 +14,15 @@
     .m-position-your-action-body, .m-position-submit-footer-wrap
       display: none
 
+    &[data-state="0"]
+      .m-position-region
+        visibility: hidden
+
+    &[data-activity="proposal-no-activity"]
+      .m-proposal-aggregate-region, .m-proposal-reasons-region
+        display: none
+
+
   &[data-activity="proposal-no-activity"]
     > .l-message-speaker
       display: none

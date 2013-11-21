@@ -123,7 +123,12 @@
 
     events : 
       'mouseenter .m-point-peer' : 'logPointView'
-      'click' : 'reasonsClicked'
+      'click .m-points-list-region' : 'reasonsClicked'
+      'click .m-participants' : 'reasonsClicked'      
+      'mouseenter .m-points-list-region' : 'showViewResults'
+      'mouseleave .m-points-list-region' : 'hideViewResults'
+      'mouseenter .m-participants' : 'showViewResults'
+      'mouseleave .m-participants' : 'hideViewResults'
 
     logPointView : (ev) ->
       if @state != Proposal.ReasonsState.collapsed
@@ -134,6 +139,16 @@
       if @state == Proposal.ReasonsState.collapsed && $(ev.target).closest('.m-reasons-header-region').length == 0
         @trigger 'show_results'
         ev.stopPropagation()
+
+    showViewResults : (ev) ->
+      return if @state != Proposal.ReasonsState.collapsed
+      @$el.find('.m-reasons-footer-region').css
+        visibility: 'visible'
+
+    hideViewResults : (ev) ->
+      return if @state != Proposal.ReasonsState.collapsed
+      @$el.find('.m-reasons-footer-region').css
+        visibility: ''
 
 
   class Proposal.ResultsFooterView extends App.Views.ItemView

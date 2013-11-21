@@ -4,9 +4,11 @@
     .m-position-message-body
       padding-bottom: $vertical_baseline / 2 $grid_xs / 2 $vertical_baseline * 1.5 $grid_xs / 2
       background: $decision_board_bg
+      border-style: solid
+
   .m-position-message-body
     +bubble($decision_board_color, darken($decision_board_color, 10%), left )
-    border: 2px dashed $decision_board_border_color
+    border: 1px dashed $decision_board_border_color
     padding: $vertical_baseline / 2 $grid_xs / 2 0 $grid_xs / 2
     width: auto
 

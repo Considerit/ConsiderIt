@@ -83,7 +83,7 @@
       _.extend {}, @model.getProposal().attributes,
         active : @model.getProposal().get 'active'
         updating : @model && @model.get 'published'
-        call : if @model && @model.get('published') then 'Update your evaluation' else 'Make your evaluation'
+        call : if @model && @model.get('published') then 'Update your opinion' else 'Add your opinion'
 
   class Proposal.PositionReasonsLayout extends App.Views.Layout
     template : '#tpl_position_reasons'

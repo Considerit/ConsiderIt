@@ -91,7 +91,7 @@ $use_transitions: true
   &[data-state="collapsed"]
     .m-position-region
       //bottom: 0
-      +translateY(10 * $vertical_baseline)
+      +translateY($aggregate_area_height + $vertical_baseline)
       //vertical-align: bottom
 
   .m-aggregated-propoints-region .m-peer-reasons
@@ -245,7 +245,7 @@ $use_transitions: true
 [data-activity="proposal-has-activity"]
   .m-reasons[data-state="collapsed"]
     .m-reasons-lists
-      min-height: 85px
+      min-height: $aggregate_area_height
       //margin-bottom: 100px // spacing for participants block
 
   .m-reasons
@@ -255,7 +255,8 @@ $use_transitions: true
 ////////////////////
 
 
-
+[data-state="0"] .m-proposal-reasons-region
+  height: 3 * $vertical_baseline
 
 .m-reasons
   margin: $vertical_baseline 0 4 * $vertical_baseline 0
@@ -272,8 +273,9 @@ $use_transitions: true
         display: none
 
   &[data-state="collapsed"]
-    &:hover
-      cursor: pointer
+    .m-points-list-region, .m-participants
+      &:hover
+        cursor: pointer
 
 
   /////////
@@ -306,20 +308,19 @@ $use_transitions: true
     visibility: hidden
 
   &[data-state="collapsed"] 
+    // shown on hover...
+    .m-reasons-footer-region
+      width: $margin_width
+      position: absolute
+      right: $grid_xs / 2
+      bottom: - 2 * $vertical_baseline
 
-    &:hover
-      .m-reasons-footer-region
-        visibility: visible
-        width: $margin_width
-        position: absolute
-        right: $grid_xs / 2
-        bottom: - 2 * $vertical_baseline
+      div
+        text-align: center
 
-        div
-          text-align: center
-        .m-reasons-view-results
-          text-align: right
-          +font-size(-1)
+      .m-reasons-view-results
+        text-align: right
+        +font-size(-1)
 
 
 // sticky footer for results (not presented in .m-reasons el)

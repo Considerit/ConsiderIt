@@ -50,7 +50,7 @@
         # @layout.sizeToFit @transition_speed() / 2
         # @layout.sizeToFit @transition_speed()
         # @layout.sizeToFit @transition_speed() + 10
-        @layout.sizeToFit @transition_speed() + 10
+        @layout.sizeToFit @transition_speed() + 100
 
       else
         @layout.sizeToFit()

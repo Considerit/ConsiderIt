@@ -1,13 +1,14 @@
 %script{ :type => "text/template", :id => "tpl_footer" }
 
   .m-footer-shortdesc
-    %span.t-logo-name
-      Consider
-    %span.t-logo-separator
-      &#9733;
-    %span.t-logo-name
-      It
-    is new technology for helping people think through issues together.
+    %a.homepage_link{ :href => "http://consider.it"}
+      %span.t-logo-name
+        Consider
+      %span.t-logo-separator
+        &#9733;
+      %span.t-logo-name
+        It
+      is new technology for helping people think through issues together.
 
   .m-footer-history
     =link_to 'We invented ConsiderIt', 'http://dub.washington.edu/djangosite/media/papers/kriplean-cscw2012.pdf', :target => '_blank' 

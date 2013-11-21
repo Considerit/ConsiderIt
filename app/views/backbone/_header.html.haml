@@ -11,20 +11,26 @@
 
 %script{  :type => "text/template", :id => "tpl_header_nav" }
   %a.l-navigate-back
-    &laquo; go back
+    %i.icon.icon-small
+      &#xf104;
+    go back
+
+  .l-navigate-separator
+    | 
 
   %ul.l-navigate-breadcrumbs  
     %a{ :href => '/', :title => "Go to homepage"}
       %i.icon-home
+      Homepage
 
-    (( _.each(crumbs, function(crumb,idx) {  ))
-    (( var name=crumb[0], loc=crumb[1]; ))
+    // (( _.each(crumbs, function(crumb,idx) {  ))
+    // (( var name=crumb[0], loc=crumb[1]; ))
 
-    %li.l-navigate-crumb
-      %a{:href => "{{loc}}"}
-        {{name}}
-      (( if( idx != crumbs.length - 1) { ))
-      \/
-      (( } ))
-    (( }); ))
+    // %li.l-navigate-crumb
+    //   %a{:href => "{{loc}}"}
+    //     {{name}}
+    //   (( if( idx != crumbs.length - 1) { ))
+    //   \/
+    //   (( } ))
+    // (( }); ))
 

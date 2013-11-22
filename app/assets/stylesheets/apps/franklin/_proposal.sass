@@ -33,20 +33,20 @@
       .m-proposal-admin-publish
         display: none
 
-    .m-proposal-description
-      background-color: $standout_color
-      border-color: $dark_standout_color
-      color: $standout_text_color
-      border-radius: 0 5px 0 0
-
-      .t-bubble 
-        .t-bubble-border
-          fill: $dark_standout_color
-        .t-bubble-inner
-          fill: $standout_color
-
-      .m-proposal-description-title-readmore
+      .m-proposal-reasons-region, .m-proposal-aggregate-region, .m-proposals-list-pagination
         display: none
+
+    .m-proposal-description
+      // background-color: $standout_color
+      // border-color: $dark_standout_color
+      // color: $standout_text_color
+      // border-radius: 0 5px 0 0
+
+      // .t-bubble 
+      //   .t-bubble-border
+      //     fill: $dark_standout_color
+      //   .t-bubble-inner
+      //     fill: $standout_color
 
 
     .m-proposal-admin-publish
@@ -111,7 +111,8 @@
   &:hover
     .m-proposal-admin-options-menu-wrap
       position: absolute
-      right: -$grid_minor
+      left: 13px
+      bottom: -1 * $vertical_baseline
 
     .m-proposal-admin-options-menu
       min-width: 140px
@@ -175,7 +176,7 @@
 .m-participants.l-message-speaker
   visibility: hidden
   z-index: 10
-  right: $grid_xs / 2
+  right: 0 //1.5 * $grid_xs
 
   .l-group-container
     // width: $margin_width

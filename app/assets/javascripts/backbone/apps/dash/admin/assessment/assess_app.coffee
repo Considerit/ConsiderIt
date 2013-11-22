@@ -7,6 +7,8 @@
   API =
 
     list : ->
+      App.vent.trigger 'route:started', null
+
       $(document).scrollTop(0)
 
       new Assessment.AssessmentsController
@@ -17,6 +19,8 @@
         ["Assess", Routes.assessment_index_path()] ]     
 
     edit : (id, model = null) ->
+      App.vent.trigger 'route:started', null
+      
       $(document).scrollTop(0)
       
       new Assessment.AssessmentEditController

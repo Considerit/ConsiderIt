@@ -4,7 +4,7 @@ $grid_xs: 18px
 
 $vertical_baseline: 1em
 
-$content_width: 967px //$grid_major * 22 + $grid_xs
+$content_width: 920px //967px //$grid_major * 22 + $grid_xs
 $margin_width: 150px
 $initiator_width: 75px
 
@@ -21,7 +21,7 @@ $histogram_bar_width: 73px //2 * $grid_major - 4
 $histogram_bar_height: 150px
 $aggregate_area_height: 10 * $vertical_baseline
 
-$dialog_stutter: 28px
+$dialog_stutter: $grid_xs
 
 
 $transition_speed: 1000ms
@@ -51,4 +51,4 @@ $decision_board_width: $position-point-width * 2 + 2 * $peer_padding //+ 10
 $body_width: $decision_board_width //667 - 2 * $grid_xs
 
 $full_reasons_width: $decision_board_width + 2 * $peer-point-results-width + 11 //7 is for borders //+ 2 * $grid_xs
-$full_reasons_left: -($full_reasons_width - $content_width) / 2
+$full_reasons_left: -($full_reasons_width - $content_width) / 2 + 2

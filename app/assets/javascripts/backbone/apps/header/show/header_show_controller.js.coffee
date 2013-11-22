@@ -8,7 +8,7 @@
 
         # setup appropriate header navigation after route has finished
         App.vent.on 'route:started', (crumbs) =>
-          if crumbs.length < 2
+          if crumbs && crumbs.length < 2
             layout.navRegion.reset()
             logo = @getLogo()
             layout.logoRegion.show logo

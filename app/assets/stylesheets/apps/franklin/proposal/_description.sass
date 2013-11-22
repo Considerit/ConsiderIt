@@ -13,9 +13,20 @@
 
 //[data-state="collapsed"]
 .l-proposal-description-outer-wrap.l-message-body
-  //+translateX(-$dialog_stutter)
-  left: -$dialog_stutter
+  //left: -$dialog_stutter
  
+[data-state="0"]
+  .m-proposal-description-region
+    +translateX(-$dialog_stutter)
+
+[data-state="0"].transitioning
+  .m-proposal-description-region
+    +translateX(0)
+
+
+$description_animation_time: 500ms
+.m-proposal-description-region
+  +transition(transform $description_animation_time)
 
 .m-proposal-description-wrap
 
@@ -35,9 +46,6 @@
       width: $initiator_width // - 30
       vertical-align: bottom 
 
-  &[data-state="collapsed"]
-    // .l-message-speaker.l-message-initiator
-    //   top: 0
 
   // editable
   .m-proposal-description, .m-proposal-details

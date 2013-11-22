@@ -5,15 +5,8 @@
   text-align: center
   width: $content_width
 
-  .m-new-proposal-submit
-    @extend %superbutton
-    border-radius: 0
-    display: inline-block
-    border: 1px solid 
-    border-bottom: 1px solid 
-    border-color: rgba(white,.5) rgba(black, .1) rgba(black,.25) rgba(white, .2)
-    font-weight: bold
-    width: $body_width
+  button
+    @extend %desaturatedbutton
 
 #m-proposals-container, #m-proposals-container-completed
   padding-top: $vertical_baseline

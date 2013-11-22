@@ -115,6 +115,7 @@ $use_transitions: true
     //height: 100%
     top: 0 
     min-height: $aggregate_area_height
+    position: absolute  
 
   .m-aggregated-propoints-region, .m-aggregated-conpoints-region
     height: 100%
@@ -133,9 +134,6 @@ $use_transitions: true
 
     .m-point-unexpanded .m-point-header-region
       right: $peer_padding
-
-  .m-reasons-lists
-    position: absolute  
 
   &.transitioning .m-personal-reasons
     //min-height: 0
@@ -236,11 +234,6 @@ $use_transitions: true
   .m-reasons[data-state="collapsed"] .m-points-list-region
     display: none
 
-  
-
-[data-visibility="unpublished"]
-  .m-reasons
-    display: none
 
 [data-activity="proposal-has-activity"]
   .m-reasons[data-state="collapsed"]

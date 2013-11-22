@@ -10,18 +10,18 @@
   .l-navigate
 
 %script{  :type => "text/template", :id => "tpl_header_nav" }
-  %a.l-navigate-back
-    %i.icon.icon-small
-      &#xf104;
-    go back
+  // %a.l-navigate-back
+  //   %i.icon.icon-small
+  //     &#xf104;
+  //   go back
 
-  .l-navigate-separator
-    | 
+  // .l-navigate-separator
+  //   | 
 
   %ul.l-navigate-breadcrumbs  
     %a{ :href => '/', :title => "Go to homepage"}
       %i.icon-home
-      Homepage
+      homepage
 
     // (( _.each(crumbs, function(crumb,idx) {  ))
     // (( var name=crumb[0], loc=crumb[1]; ))

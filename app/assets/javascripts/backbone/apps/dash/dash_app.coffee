@@ -15,6 +15,8 @@
   API =
 
     userProfile : (user_id) ->
+      App.vent.trigger 'route:started', null
+
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
@@ -30,6 +32,8 @@
 
     
     editProfile : (user_id) ->
+      App.vent.trigger 'route:started', null
+
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
@@ -44,6 +48,8 @@
       App.request 'meta:change:default'
 
     accountSettings : (user_id) ->
+      App.vent.trigger 'route:started', null
+
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
@@ -59,6 +65,8 @@
 
 
     emailNotifications : (user_id) ->
+      App.vent.trigger 'route:started', null
+
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
@@ -74,6 +82,7 @@
 
 
     appSettings : ->
+
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
@@ -81,6 +90,8 @@
         region : @_getMainRegion()  
 
       if !@current_controller.redirected
+        App.vent.trigger 'route:started', null
+
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
           ["Application", Routes.account_path()] ]
@@ -96,6 +107,7 @@
     #     ["Manage proposals", Routes.account_path()]         
 
     userRoles : ->
+
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
@@ -103,6 +115,8 @@
         region : @_getMainRegion()  
 
       if !@current_controller.redirected
+        App.vent.trigger 'route:started', null
+
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
           ["User roles", Routes.manage_roles_path()] ]
@@ -110,6 +124,7 @@
 
 
     analyze : ->
+
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
@@ -117,12 +132,15 @@
         region : @_getMainRegion()  
 
       if !@current_controller.redirected
+        App.vent.trigger 'route:started', null
+
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
           ["Analytics", Routes.analytics_path()] ]
         App.request 'meta:change:default'
   
     database : ->
+
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
@@ -130,12 +148,16 @@
         region : @_getMainRegion()        
 
       if !@current_controller.redirected
+        App.vent.trigger 'route:started', null
+
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
           ["Database", Routes.rails_admin_dashboard_path()] ]
         App.request 'meta:change:default'
 
     moderate : ->
+      App.vent.trigger 'route:started', null
+
       $(document).scrollTop(0)
       
       @current_controller.close() if @current_controller      
@@ -143,6 +165,8 @@
         region : @_getMainRegion()  
 
       if !@current_controller.redirected
+        App.vent.trigger 'route:started', null
+
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
           ["moderate", Routes.dashboard_moderate_path()] ]

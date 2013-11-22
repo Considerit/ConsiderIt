@@ -11,6 +11,10 @@
 
   API =
     Root: -> 
+      crumbs = [ ['homepage', '/'] ]
+
+      App.vent.trigger 'route:started', crumbs
+
       region = App.request "default:region"
 
       return if @franklin_controller && @franklin_controller instanceof Franklin.Root.RootController && region.controlled_by == @franklin_controller
@@ -31,12 +35,13 @@
 
       region.controlled_by = @franklin_controller      
 
-      App.vent.trigger 'route:completed', [ ['homepage', '/'] ]
+      App.vent.trigger 'route:completed', crumbs
       App.request 'meta:change:default'
 
 
     _transitionProposal: (proposal, new_state, crumbs) ->
       $description_animation_time = 500
+      App.vent.trigger 'route:started', crumbs
 
       region = App.request 'default:region'
 
@@ -58,6 +63,8 @@
           minHeight : 2000
 
         @franklin_controller.region.hideAllExcept $pel
+        $pel.addClass('transitioning')
+
         $pel.animate
           top : 0
         , $description_animation_time, =>
@@ -89,6 +96,8 @@
 
           @franklin_controller = region.controlled_by = proposal_controller  
 
+          $pel.removeClass('transitioning') if $pel
+
           App.vent.trigger 'route:completed', crumbs
           
           App.vent.trigger 'points:unexpand'
@@ -115,6 +124,7 @@
           ["results", Routes.proposal_path(proposal.long_id)]]
 
     PointDetails: (long_id, point_id) -> 
+      App.vent.trigger 'route:started', null
 
       proposal = App.request 'proposal:get', long_id, true
       point = App.request 'point:get', parseInt(point_id), true, long_id
@@ -166,6 +176,8 @@
         App.request 'meta:change:default'
 
     StaticPosition: (long_id, user_id) ->
+      App.vent.trigger 'route:started', null
+
       proposal = App.request 'proposal:get', long_id, true
       App.execute 'when:fetched', proposal, => 
         region = App.request "default:region"        

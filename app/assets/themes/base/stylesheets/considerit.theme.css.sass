@@ -28,6 +28,10 @@
 #l-header .t-logo
   margin: $vertical_baseline/2 $grid_xs/2 $vertical_baseline/2 $grid_xs + $margin_width - $initiator_width
 
-.t-intro-wrap .l-message-initiator
-  img
-    width: 100px  
+.t-intro-wrap 
+  left: -$dialog_stutter
+  position: relative
+  .l-message-initiator
+    text-align: right
+    img
+      width: 100px  

@@ -261,7 +261,7 @@
     = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
       = f.hidden_field :published, :value => true
 
-      = f.submit 'Publish this new conversation', :class => 'm-proposal-publish'
+      = f.submit 'Done! Publish it.', :class => 'm-proposal-publish'
   (( } ))
 
   .m-proposal-admin_strip
@@ -274,11 +274,14 @@
             //Sharing is 
             %span
               (( if(publicity == 2) { ))
-              Access: public
+              %i.icon.icon-globe
+              Accessible to all
               (( } else if(publicity == 1){ ))
-              Access: link only
+              %i.icon.icon-link
+              Accessible by link only
               (( } else { ))
-              Access: by invivation
+              %i.icon.icon-lock
+              Accessible by invite only
               (( } ))
 
         %li.m-proposal-admin-status.l-dialog-prompt
@@ -286,15 +289,21 @@
             //Status is 
             %span
               (( if(active){ ))
-              Status: active
+              %i.icon.icon-microphone
+              Conversation is Active
               (( } else { ))
-              Status: inactive
+              %i.icon.icon-large
+                &#xf131;
+              Conversation is Closed
               (( } ))
 
         %li
-          = link_to "Delete", "{{Routes.proposal_path(long_id)}}", :confirm => "Are you sure you wish to permanently delete this conversation?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
+          (( var call = published ? 'Delete' : 'nevermind, delete it'; ))
 
-
+          %a.m-delete_proposal{ :href => "{{Routes.proposal_path(long_id)}}", :'data-confirm' => "Are you sure you wish to permanently delete this conversation?", :'data-method' => 'delete', :'data-remote' => "true", :rel => "nofollow"}
+            %i.icon.icon-small
+              &#xf014;
+            {{call}}
 
 %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_publicity" }
 
@@ -307,9 +316,10 @@
         = f.radio_button :publicity, '2', :value => '2'
         (( } ))
 
+        %i.icon.icon-globe
         = f.label :publicity, 'Public', :value => '2'
         .sublabel
-          It will be accessible on the homepage.
+          It will be listed on the homepage for all visitors.
 
       .option
         (( if(publicity == 1) { ))
@@ -318,6 +328,7 @@
         = f.radio_button :publicity, '1', :value => '1'
         (( } ))
 
+        %i.icon.icon-link
         = f.label :publicity, 'Anyone with a link', :value => '1'
         .sublabel
           Only people that have a link to this proposal will be able to access it.
@@ -329,6 +340,7 @@
         = f.radio_button :publicity, '0', :value => '0'
         (( } ))
 
+        %i.icon.icon-lock
         = f.label :publicity, 'Private', :value => '0'
         .sublabel
           Restrict access to the following invited participants.
@@ -353,6 +365,7 @@
         (( } else { ))
         = f.radio_button :active, true, :value => true
         (( } ))
+        %i.icon.icon-microphone        
         = f.label :active, 'Active', :value => true
         .sublabel
           Contributions are open. People with access to this proposal can contribute to it.
@@ -362,7 +375,11 @@
         (( } else { ))
         = f.radio_button :active, false, :value => false, :checked => true
         (( } ))
-        = f.label :active, 'Inactive', :value => false
+
+        %i.icon.icon-large
+          &#xf131;
+
+        = f.label :active, 'Read-only', :value => false
         .sublabel
           Contributions are closed. People with access to this proposal will only be able to view it. 
 

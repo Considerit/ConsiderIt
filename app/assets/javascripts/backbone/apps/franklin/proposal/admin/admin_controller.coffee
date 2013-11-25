@@ -36,7 +36,7 @@
 
       @listenTo layout, 'proposal:published', (data) =>
         @model.set data.proposal.proposal
-        App.request 'position:create', data.position.position
+        # App.request 'position:create', data.position.position
         @trigger 'proposal:published'
 
       @listenTo layout, 'proposal:deleted', (model) =>

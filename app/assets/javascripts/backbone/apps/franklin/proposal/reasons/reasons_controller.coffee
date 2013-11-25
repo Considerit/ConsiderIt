@@ -139,6 +139,8 @@
       _.each [@peer_pros_controller, @peer_cons_controller], (controller, idx) =>
         controller.segmentPeerPoints segment
 
+      @layout.sizeToFit()
+
   
 
     setupCraftingController : (controller) ->

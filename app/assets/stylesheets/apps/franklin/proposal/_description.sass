@@ -18,6 +18,9 @@
 [data-state="0"]
   .m-proposal-description-region
     +translateX(-$dialog_stutter)
+    // the following is because translateX effectively creates a different rendering context, so need to set z-index/position so admin menu will work
+    position: relative
+    z-index: 2
 
 [data-state="0"].transitioning
   .m-proposal-description-region

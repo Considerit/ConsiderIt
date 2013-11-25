@@ -27,42 +27,13 @@
     > .l-message-speaker
       display: none
 
-  // unpublished proposal
-  &[data-visibility="unpublished"]
     &[data-state="0"]
-      .m-proposal-admin-publish
+      .m-proposal-aggregate-region
         display: none
 
-      .m-proposal-reasons-region, .m-proposal-aggregate-region, .m-proposals-list-pagination
-        display: none
-
-    .m-proposal-description
-      // background-color: $standout_color
-      // border-color: $dark_standout_color
-      // color: $standout_text_color
-      // border-radius: 0 5px 0 0
-
-      // .t-bubble 
-      //   .t-bubble-border
-      //     fill: $dark_standout_color
-      //   .t-bubble-inner
-      //     fill: $standout_color
 
 
-    .m-proposal-admin-publish
-      position: relative
-      text-align: center
-      display: block
 
-      .m-proposal-publish
-        width: $body_width
-        //margin-left: $margin_width + 5
-        +sassy-button("glass", 5px, inherit, desaturate($callout_bg_color, 100%), darken( desaturate($callout_bg_color, 100%), 8%) )
-        +font-size(0)
-        color: desaturate($callout_text_color, 100%)
-        font-weight: bold
-        text-align: center
-        //margin-top: -7px
 
 // .m-proposal
 //   &[data-state="1"], &[data-state="2"], &[data-state="4"]
@@ -96,49 +67,127 @@
 
 
 // Proposal admin strip
-.m-proposal-admin_strip
-  position: absolute
-  right: -$grid_xs
-  bottom: 0
-  z-index: 10
+[data-visibility="published"]
+  .m-proposal-admin_strip
+    position: absolute
+    right: -$grid_xs
+    bottom: 0
+    z-index: 10
 
-  i
-    color: darken($base_bg_color, 25%)
-
-  .m-proposal-admin-options-menu
-    display: none
-
-  &:hover
-    .m-proposal-admin-options-menu-wrap
-      position: absolute
-      left: 13px
-      bottom: -1 * $vertical_baseline
+    i
+      color: darken($base_bg_color, 25%)
 
     .m-proposal-admin-options-menu
-      min-width: 140px
-      @extend %nude_list
-      margin-left: 0
+      display: none
+
+    &:hover
+      .m-proposal-admin-options-menu-wrap
+        position: absolute
+        right: -$grid_minor
+        top: 20px
+
+      .m-proposal-admin-options-menu
+        min-width: 200px
+        @extend %nude_list
+        margin-left: 0
+        display: inline-block
+        +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
+        border-radius: 5px
+        background-color: $base_bg_color
+        padding: $vertical_baseline / 4 0
+        border: 1px solid darken($base_bg_color, 20%)
+
+        a
+
+          width: 100%
+          padding: $vertical_baseline / 4 $grid_xs
+          display: block
+          cursor: pointer
+          +font-size(-2)
+          span
+            display: block
+
+          &:hover
+            color: $comp_text_color
+            background-color: $dark_comp_color
+
+          i
+            padding-right: $grid_xs / 2
+            display: inline-block
+
+
+    .l-dialog-prompt-label, .m-delete_proposal
+      //text-transform: uppercase
+
+
+// unpublished proposal
+[data-visibility="unpublished"]
+  .m-proposal-admin-region
+    top: $vertical_baseline / 2 
+    height: 0
+    position: relative
+
+  .m-proposal-admin_strip
+    color: $base_text_color
+    position: relative
+
+    i.icon-cog
+      display: none
+
+    .m-proposal-admin-options-menu-wrap
       display: inline-block
-      +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
-      border-radius: 5px
-      background-color: $base_bg_color
-      padding: $vertical_baseline / 2 0
-      border: 1px solid darken($base_bg_color, 20%)
+
+    .m-proposal-admin-options-menu
+      @extend %nude_list
+      li
+        display: inline-block
 
       a
-        width: 100%
-        padding: 2px $grid_minor
-        display: block
-        cursor: pointer
-        +font-size(-3)
-        font-weight: bold
         &:hover
-          color: $comp_text_color
-          background-color: $dark_comp_color
 
 
-  .l-dialog-prompt-label, .m-delete_proposal
-    text-transform: uppercase
+    .l-dialog-prompt-label, .m-delete_proposal
+      //text-transform: uppercase
+
+    .m-proposal-admin_operations-status
+      display: none
+
+    .m-proposal-admin-publicity
+      position: absolute
+      +font-size(-1)
+      top: $vertical_baseline / 2
+      left: 15 * $grid_xs
+
+    .m-delete_proposal
+      right: 4px
+      position: absolute
+      top: 3 * $vertical_baseline
+      color: darken($base_bg_color, 25%)
+      +font-size(-2)
+      &:hover
+        color: $base_text_color
+
+
+  .m-proposal-admin-publish
+    position: absolute
+    right: 0
+    z-index: 2
+
+    .m-proposal-publish
+      @extend %desaturatedbutton
+      +font-size(0)
+      &:hover
+        +font-size(0)
+
+  .m-proposal-reasons-region, .m-proposal-aggregate-region, .m-proposal-state-toggle-region
+    display: none
+
+  &[data-state="0"]
+    .m-proposal-reasons-region, .m-proposal-aggregate-region, .m-proposals-list-pagination
+      display: none
+
+    padding-bottom: 4 * $vertical_baseline
+
 
 /* YOUR_ACTION */
 

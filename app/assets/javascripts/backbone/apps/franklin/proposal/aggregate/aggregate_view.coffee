@@ -21,6 +21,7 @@
     template : '#tpl_aggregate_histogram'
     className : 'm-histogram'
     bar_state : null
+    highlight_state : []
 
     serializeData : ->
 
@@ -45,20 +46,33 @@
       $(ev.currentTarget).parent().trigger('mouseenter')
 
     highlightUsers : (users, highlight = true) ->
+
       if Modernizr.opacity
         selector = ("#avatar-#{uid}" for uid in users).join(',')
 
         @$el.hide()
 
         if highlight
-          @$el.addClass 'm-histogram-segment-selected'
+          if @highlight_state.length > 0
+            restore_opacity = ("#avatar-#{uid}" for uid in @highlight_state).join(',')
+            @$el.find(".avatar:not(#{restore_opacity})").css 
+              opacity: ''
+            @highlight_state = []
+
           @$el.find(".avatar:not(#{selector})").css
             opacity: 0
 
         else
-          @$el.removeClass 'm-histogram-segment-selected'
-          @$el.find(".avatar:not(#{selector})").css 
-            opacity: ''
+          @highlight_state = _.union users, @highlight_state
+          # this delay is a performance enhancement for skipping unhighlight when unnecessary
+          _.delay =>
+            if @highlight_state.length > 0
+              restore_opacity = ("#avatar-#{uid}" for uid in @highlight_state).join(',')
+              @$el.find(".avatar:not(#{restore_opacity})").css 
+                opacity: ''
+
+              @highlight_state = []
+          , 10
 
         @$el.show()
 

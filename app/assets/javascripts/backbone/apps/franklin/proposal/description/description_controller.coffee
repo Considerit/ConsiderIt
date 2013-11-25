@@ -52,6 +52,9 @@
       @listenTo controller, 'proposal:published', =>
         @trigger 'proposal:published'
 
+      @listenTo controller, 'proposal:setting_changed', =>
+        @trigger 'proposal:setting_changed'
+
     getAdminController : (region) ->
       new Proposal.AdminController
         model : @model

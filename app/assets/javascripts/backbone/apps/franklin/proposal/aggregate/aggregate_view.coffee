@@ -20,6 +20,7 @@
   class Proposal.AggregateHistogram extends App.Views.ItemView
     template : '#tpl_aggregate_histogram'
     className : 'm-histogram'
+    bar_state : null
 
     serializeData : ->
 
@@ -99,6 +100,8 @@
       if hard_select
         ev.stopPropagation()
 
+      @bar_state = 'select'
+
     closeBarClick : (ev) -> @deselectBar() 
 
     closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('#l-dialog-detachable').children().length == 0 && $('.m-point-expanded').length == 0
@@ -107,24 +110,30 @@
       $selected_bar = @$el.find('.m-bar-is-selected')
       return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.m-bar-is-hard-selected')) || $('.m-point-expanded').length > 0
 
-      @$el.hide()
-
-      @$el.removeClass 'm-histogram-segment-selected'
-
-      hiding = @$el.find('.m-point-list, .m-results-pro-con-list-who')
-      hiding.css 'visibility', 'hidden'
-
-      @trigger 'histogram:segment_results', 'all'
-
-      @$el.find('.l-message-speaker').css('z-index': '')
-
-      hiding.css 'visibility', ''
-
-      $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
-
+      @bar_state = 'deselect'
       $(document).off 'click.histogram'
       $(document).off 'keyup.histogram'
-      @$el.show()
+
+      # this slight delay helps to prevent rerendering when moving mouse in between histogram bars
+      _.delay =>
+        if @bar_state == 'deselect'
+          @$el.hide()
+
+          @$el.removeClass 'm-histogram-segment-selected'
+
+          hiding = @$el.find('.m-point-list, .m-results-pro-con-list-who')
+          hiding.css 'visibility', 'hidden'
+
+          @trigger 'histogram:segment_results', 'all'
+
+          @$el.find('.l-message-speaker').css('z-index': '')
+
+          hiding.css 'visibility', ''
+
+          $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
+
+          @$el.show()
+      , 100
 
 
 

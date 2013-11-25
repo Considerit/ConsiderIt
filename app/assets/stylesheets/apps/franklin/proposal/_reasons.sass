@@ -231,8 +231,21 @@ $use_transitions: true
 
 // Activity-based styles
 [data-activity="proposal-no-activity"]
-  .m-reasons[data-state="collapsed"] .m-points-list-region
-    display: none
+  .m-reasons[data-state="collapsed"] 
+    +translateY(0)
+
+    .m-points-list-region
+      //display: none
+      height: 0
+      overflow: hidden
+
+    .m-position-region
+      +translateY(0)
+
+    .m-reasons-lists      
+      min-height: 0
+
+
 
 
 [data-activity="proposal-has-activity"]

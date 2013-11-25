@@ -51,6 +51,11 @@
         #   social_view = @getSocialMediaView()
         #   layout.socialMediaRegion.show social_view  
 
+    updateHistogram : ->
+      @histogram_view.close() if @histogram_view
+      @histogram_view = null
+      @createHistogram @layout
+
     createHistogram : (layout) ->
       if !@histogram_view
         @histogram_view = @getAggregateHistogram()

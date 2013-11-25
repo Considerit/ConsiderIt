@@ -91,21 +91,25 @@
         @showFinished()
 
 
+    _update_attributes : ->
+      @layout.$el.data @layout.attributes(false)
+      @layout.$el.attr @layout.attributes()
+      @trigger 'proposal:attributes:updated'
+      #@region.show @layout
+
+
     setupDescriptionController : (controller) ->
       @listenTo controller, 'proposal:published', =>
-        @layout.$el.data 'visibility', 'published'
-        @layout.$el.attr 'data-visibility', 'published'
-        @region.show @layout
+        @_update_attributes()
 
       @listenTo controller, 'proposal:setting_changed', =>
-        @layout.$el.data @layout.attributes()
-        @layout.$el.attr @layout.attributes()
-        @region.show @layout
-
+        @_update_attributes()
 
     setupAggregateController : (controller) ->
 
     setupReasonsController : (controller) ->
+      @listenTo @, 'proposal:attributes:updated', =>
+        controller.layout.sizeToFit()
 
 
     setupHistogramReasonsBridge : (reasons_controller, aggregate_controller) =>
@@ -121,6 +125,10 @@
       @listenTo aggregate_controller, 'histogram:segment_results', (segment) =>
         if @state == Proposal.State.expanded.results && @exploded
           reasons_controller.segmentPeerPoints segment
+
+      @listenTo reasons_controller, 'position:published', =>
+        @_update_attributes()
+        aggregate_controller.updateHistogram()
 
     getDescriptionController : (region) ->
       new Proposal.DescriptionController

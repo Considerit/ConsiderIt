@@ -16,7 +16,7 @@ class Account < ActiveRecord::Base
   before_create :set_default
 
   def num_proposals_per_page 
-    10
+    5
   end
 
   def host_without_subdomain

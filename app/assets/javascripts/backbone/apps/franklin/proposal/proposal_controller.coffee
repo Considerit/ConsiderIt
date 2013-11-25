@@ -97,6 +97,11 @@
         @layout.$el.attr 'data-visibility', 'published'
         @region.show @layout
 
+      @listenTo controller, 'proposal:setting_changed', =>
+        @layout.$el.data @layout.attributes()
+        @layout.$el.attr @layout.attributes()
+        @region.show @layout
+
 
     setupAggregateController : (controller) ->
 

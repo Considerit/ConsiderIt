@@ -67,6 +67,7 @@
       all_proposals = App.request('proposals:get')
 
       filtered_collection = all_proposals.where({active : is_active})
+
       @collection = new App.Entities.PaginatedProposals filtered_collection,
         fullCollection : filtered_collection
         total_models : @options.total_models
@@ -115,7 +116,8 @@
     requestProposals : (collection, is_active, callback = null, callback_params = {}) ->
       proposals = App.request 'proposals:get', true
 
-      App.execute "when:fetched", proposals, =>
+      @listenToOnce App.vent, 'proposals:fetched:done', =>
+        proposals = App.request 'proposals:get'
         @resetCollection proposals, collection, is_active
         callback(callback_params) if callback
 
@@ -178,9 +180,9 @@
         name : 'Should we ... ?'
         description : "Here are some details about what we're thinking about ..."
 
-      proposal = App.request "proposal:create", attrs, 
+      App.request "proposal:create", attrs, 
         wait: true
-        success: => 
+        success: (proposal) => 
           @proposals_view.collection.add proposal
           App.navigate Routes.new_position_proposal_path(proposal.long_id), {trigger: true}
 

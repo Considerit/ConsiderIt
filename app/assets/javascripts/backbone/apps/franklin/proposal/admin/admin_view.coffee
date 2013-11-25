@@ -61,6 +61,9 @@
     serializeData : ->
       _.extend {}, @model.attributes
 
+    events : 
+      'ajax:complete .m-proposal-admin_operations-settings-form' : 'changeSettings'
+
     changeSettings : (ev, response ,options) ->
       data = $.parseJSON response.responseText
       @trigger 'proposal:updated', data

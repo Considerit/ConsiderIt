@@ -3,13 +3,15 @@
   class Proposal.ProposalLayout extends App.Views.StatefulLayout
     template: '#tpl_proposal_layout'
     className : 'm-proposal'
-    attributes : ->
-      params = 
-        "data-role": 'm-proposal'
-        "data-id": "#{@model.id}"
-        'data-activity': if @model.has_participants() then 'proposal-has-activity' else 'proposal-no-activity'
-        'data-status': if @model.get('active') then 'proposal-active' else 'proposal-inactive'
-        'data-visibility': if @model.get('published') then 'published' else 'unpublished'
+    attributes : (include_data=true) ->
+      prefix = if include_data then 'data-' else ''
+
+      params = {}
+      params["#{prefix}role"] = 'm-proposal'
+      params["#{prefix}id"] = "#{@model.id}"
+      params["#{prefix}activity"] = if @model.has_participants() then 'proposal-has-activity' else 'proposal-no-activity'
+      params["#{prefix}status"] = if @model.get('active') then 'proposal-active' else 'proposal-inactive'
+      params["#{prefix}visibility"] = if @model.get('published') then 'published' else 'unpublished'
 
       params
 

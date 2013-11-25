@@ -18,25 +18,26 @@
           @model.set {access_list: data.access_list, active: data.active, publicity: data.publicity}
           layout.render()
           dialog.close()
+          @trigger 'proposal:setting_changed'
 
         dialog = App.request 'dialog:new', dialogview,
           class : 'm-proposal-admin-status'
 
-      @listenTo layout, 'publicity_dialog', (view) =>
+      @listenTo layout, 'publicity_dialog', =>
         dialogview = new Proposal.ProposalPublicityDialogView
           model : @model
 
         @listenTo dialogview, 'proposal:updated', (data) =>
           @model.set {access_list: data.access_list, active: data.active, publicity: data.publicity}
-          view.render()
+          layout.render()
           dialog.close()
+          @trigger 'proposal:setting_changed'
 
         dialog = App.request 'dialog:new', dialogview,
           class : 'm-proposal-admin-publicity'
 
       @listenTo layout, 'proposal:published', (data) =>
         @model.set data.proposal.proposal
-        # App.request 'position:create', data.position.position
         @trigger 'proposal:published'
 
       @listenTo layout, 'proposal:deleted', (model) =>

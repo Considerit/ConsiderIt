@@ -26,8 +26,10 @@
       if 'positions' of response
         @parseAssociated response
         proposal_attrs = response.proposal.proposal
-      else
+      else if 'proposal' of response
         proposal_attrs = response.proposal
+      else
+        proposal_attrs = response
 
       proposal_attrs
 
@@ -176,10 +178,13 @@
       Routes.proposals_path( )
 
     parse : (response) ->
-      if !(response instanceof Array)
+      if response instanceof Entities.Proposal
+        # happens when new proposal is created, called by backbone.set
+        proposals = [response] 
+      else if !(response instanceof Array)
         if 'points' of response
           App.vent.trigger 'points:fetched', (p.point for p in response.points)
-        proposals = response.proposals
+        proposals = ((p.proposal for p in response.proposals))
       else
         proposals = response
 
@@ -262,11 +267,11 @@
       if fetch && !@proposals_fetched
         @all_proposals.fetch
           remove: false
+          merge: true
+          success : =>
+            @proposals_fetched = true
+            App.vent.trigger 'proposals:fetched:done'
 
-        @proposals_fetched = true
-
-        App.execute "when:fetched", @all_proposals, ->
-          App.vent.trigger 'proposals:fetched:done'
 
       @all_proposals
 

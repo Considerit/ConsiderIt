@@ -51,6 +51,7 @@
     setupAdminController : (controller) ->
       @listenTo controller, 'proposal:published', =>
         @trigger 'proposal:published'
+        @region.show @layout
 
       @listenTo controller, 'proposal:setting_changed', =>
         @trigger 'proposal:setting_changed'

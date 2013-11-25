@@ -140,7 +140,7 @@
       PARTICIPANT_HEIGHT = 150
 
       Math.min 50, 
-        window.getTileSize(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.getParticipants().length)
+        window.getTileSize(PARTICIPANT_WIDTH, PARTICIPANT_HEIGHT, @model.num_participants())
 
 
 

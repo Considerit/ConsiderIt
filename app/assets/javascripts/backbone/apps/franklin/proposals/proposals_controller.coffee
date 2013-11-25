@@ -86,7 +86,8 @@
 
     setupFilterView : (collection) ->
       view = @getFilterView collection
-      @listenTo view, 'sort:requested', (sort_by) => @handleSortRequested collection, sort_by
+      @listenTo view, 'sort:requested', (sort_by) => 
+        @handleSortRequested collection, sort_by
       view
 
     handleBeforeViewAdded : (view) ->
@@ -116,7 +117,7 @@
     requestProposals : (collection, is_active, callback = null, callback_params = {}) ->
       proposals = App.request 'proposals:get', true
 
-      @listenToOnce App.vent, 'proposals:fetched:done', =>
+      App.execute 'when:fetched', proposals, =>
         proposals = App.request 'proposals:get'
         @resetCollection proposals, collection, is_active
         callback(callback_params) if callback

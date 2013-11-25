@@ -31,7 +31,6 @@
       participants_view = @getParticipantsView()
       @layout.participantsRegion.show participants_view
 
-
       footer_view = @getResultsFooterView()
       @layout.footerRegion.show footer_view if footer_view
 
@@ -160,6 +159,8 @@
         if @state == Proposal.ReasonsState.separated
           @updatePeerPoints @layout
 
+      @listenTo controller, 'position:published', =>
+        @trigger 'position:published'
 
     setupPointsController : (controller) ->
       @listenTo controller, 'point:highlight_includers', (view) =>

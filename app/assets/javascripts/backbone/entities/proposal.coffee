@@ -11,7 +11,12 @@
     initialize : (options = {}) ->
       super options
       @long_id = @get 'long_id'
-      @on 'change:long_id', (model, value) -> model.long_id = value      
+      @on 'change:long_id', (model, value) -> model.long_id = value   
+
+      if !@attributes.participants || @attributes.participants == ""
+        @participant_list = []
+      else            
+        @participant_list = $.parseJSON(@attributes.participants)
 
     urlRoot : ''
 
@@ -77,12 +82,7 @@
     user_participated : (user_id) -> 
       user_id in @participants()
 
-    participants : ->
-      if !@attributes.participants || @attributes.participants == ""
-        @participant_list = []
-      else 
-        @participant_list = $.parseJSON(@attributes.participants)
-
+    participants : -> @participant_list
 
     has_participants : -> 
       return @participants().length > 0   
@@ -91,11 +91,8 @@
       return @participants().length
 
     getParticipants : ->
-      if !@all_participants
-        @all_participants = (App.request('user', u) for u in @participants())
-
+      @all_participants = (App.request('user', u) for u in @participants())
       @all_participants
-
 
     # Relations
     getUser : ->
@@ -121,21 +118,24 @@
     # TODO: refactor this method out...handles what happens when 
     # current user saves a new position
     newPositionSaved : (position) ->
+      console.log 'NEW POS'
       user_id = position.get('user_id')
       if position.get('published') 
-
+        console.log 'PUBLISHED!'
         if !@user_participated(user_id)
           @positions = null
           @participant_list.push user_id 
+          console.log 'PUSHING!', user_id, @participant_list
+
+        console.log @getParticipants()
 
         if !@get('top_pro')
           _.each position.written_points, (pnt) =>
-            if pnt.isPro()
-              @set('top_pro', pnt.id)
+            @set('top_pro', pnt.id) if pnt.isPro()
+
         if !@get('top_con')
           _.each position.written_points, (pnt) =>
-            if !pnt.isPro()
-              @set('top_con', pnt.id)
+            @set('top_con', pnt.id) if !pnt.isPro()
 
     isActive : ->
       @get('active')

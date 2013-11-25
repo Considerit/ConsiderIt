@@ -11,7 +11,7 @@
       statement_prompt : 'support'
       pro_label : 'pro'
       con_label : 'con'
-      num_proposals_per_page : 10
+      num_proposals_per_page : 5
 
 
     url : () ->

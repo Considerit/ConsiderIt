@@ -104,8 +104,6 @@ RailsAdmin.config do |config|
   #     configure :users, :has_many_association 
   #     configure :comments, :has_many_association 
   #     configure :activities, :has_many_association 
-  #     configure :reflect_bullets, :has_many_association 
-  #     configure :reflect_responses, :has_many_association 
   #     configure :follows, :has_many_association   #   # Found columns:
   #     configure :id, :integer 
   #     configure :identifier, :string 
@@ -183,8 +181,6 @@ RailsAdmin.config do |config|
   #     configure :commentable, :polymorphic_association 
   #     configure :user, :belongs_to_association 
   #     configure :account, :belongs_to_association 
-  #     configure :reflect_bullets, :has_many_association 
-  #     configure :reflect_bullet_revisions, :has_many_association 
   #     configure :activities, :has_many_association 
   #     configure :versions, :has_many_association         # Hidden 
   #     configure :follows, :has_many_association   #   # Found columns:

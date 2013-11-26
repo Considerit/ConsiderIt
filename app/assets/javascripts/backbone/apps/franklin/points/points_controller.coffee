@@ -65,6 +65,7 @@
           region : new Backbone.Marionette.Region { el : view.el }     
           parent_controller : @
 
+
       @listenTo list_view, 'childview:point:clicked', (view) =>
         point = view.model
         App.navigate Routes.proposal_point_path(point.get('long_id'), point.id), {trigger : true}
@@ -103,6 +104,12 @@
 
       @region.show @layout
 
+    processStateChange : ->
+      super
+      if @state != Points.States.separated
+        @list_view.children.each (vw) -> vw.disableDrag()
+      else
+        @list_view.children.each (vw) -> vw.enableDrag()
 
     segmentPeerPoints : (segment) ->
 
@@ -177,8 +184,6 @@
         layout.listRegion.show list_view
 
 
-
-
     setupListView : (list_view) ->
       super list_view
 
@@ -191,6 +196,11 @@
 
       @listenTo list_view, 'childview:point:unhighlight_includers', (view) => 
         @trigger 'point:unhighlight_includers', view
+
+      @listenTo list_view, 'before:item:added', (view) => 
+        @listenTo view, 'render', =>
+          if @state == Points.States.separated
+            view.enableDrag()
 
     getHeaderView : (sort) ->
       new Points.ExpandablePointListHeader

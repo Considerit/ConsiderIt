@@ -36,6 +36,9 @@
 
       #@layout.$el.ensureInView {fill_threshold: .5}
 
+      if @layout.$el.parents('[data-state="points-separated"]').length > 0
+        @layout.enableDrag()
+
       App.request 'nav:back:crumb' if go_back
 
     expand : ->
@@ -74,6 +77,9 @@
 
         @layout.$el.ensureInView {fill_threshold: .5}
         # @layout.$el.putBehindLightbox()
+
+        if @layout.$el.parents('[data-state="points-separated"]').length > 0
+          @layout.disableDrag()
 
       @layout.expansionRegion.show expanded_view
 

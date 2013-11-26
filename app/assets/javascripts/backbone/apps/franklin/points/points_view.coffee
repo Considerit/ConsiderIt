@@ -188,7 +188,7 @@
       tenant = App.request 'tenant:get'
       params = _.extend data,
         cnt : _.size @collection.fullCollection
-        has_points : _.size(@collection.fullCollection) > 0
+        has_more_points : @collection.state.totalPages > 1
         browsing_all : @browsing
         label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true, plural:true}) else tenant.getConLabel({capitalize:false, plural:true})        
 

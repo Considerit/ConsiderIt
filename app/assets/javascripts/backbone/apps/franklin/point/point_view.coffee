@@ -50,9 +50,13 @@
     unhighlightIncluders : ->
       @trigger 'point:unhighlight_includers'
 
-    onRender : ->
+    disableDrag : ->
+      @$el.find('.m-point-wrap').draggable 'destroy'
+
+    enableDrag : ->
       @$el.find('.m-point-wrap').draggable
         revert: "invalid"
+
 
   class Point.PositionPointView extends Point.PointView
     actions : ['remove']

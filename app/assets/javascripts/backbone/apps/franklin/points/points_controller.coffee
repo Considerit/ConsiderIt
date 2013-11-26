@@ -18,6 +18,8 @@
     initialize : (options = {}) ->
       super options
 
+      @collection = options.collection
+
       @layout = @getLayout options.location     
 
       @setupLayout @layout
@@ -106,6 +108,9 @@
 
     processStateChange : ->
       super
+
+      return if @collection.size() == 0
+
       if @state != Points.States.separated
         @list_view.children.each (vw) -> vw.disableDrag()
       else
@@ -199,7 +204,7 @@
 
       @listenTo list_view, 'before:item:added', (view) => 
         @listenTo view, 'render', =>
-          if @state == Points.States.separated
+          if @state == Points.States.separated && @collection.size() > 0
             view.enableDrag()
 
     getHeaderView : (sort) ->

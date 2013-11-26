@@ -18,7 +18,6 @@ class PositionsController < ApplicationController
   end
 
   def update_or_create(position)
-
     raise 'Cannot update without a logged in user' if !current_user || !current_user.registration_complete
     authorize! :update, position
 
@@ -52,13 +51,13 @@ class PositionsController < ApplicationController
       position.subsume existing_position
     end
 
-    params[:position][:included_points] ||= []
-    params[:position][:included_points].each do |pnt|
+    params[:included_points] ||= []
+    params[:included_points].each do |pnt|
       session[position.proposal_id][:included_points][pnt] = true
     end
 
-    params[:position][:viewed_points] ||= []
-    params[:position][:viewed_points].each do |pnt|
+    params[:viewed_points] ||= []
+    params[:viewed_points].each do |pnt|
       session[position.proposal_id][:viewed_points].push([pnt,-1])
     end
 
@@ -146,7 +145,8 @@ protected
             :point_id => point_id,
             :user_id => position.user_id,
             :position_id => position.id,
-            :proposal_id => position.proposal_id
+            :proposal_id => position.proposal_id,
+            :account_id => current_tenant.id
           } )
           if !actions[:written_points].include?(point_id) 
             pnt = Point.find(point_id)
@@ -168,7 +168,6 @@ protected
       pnt.published = 1
       
       pnt.position_id = position.id
-      pp "score_stance_group_#{position.stance_bucket}"
       pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001, :score => 0.0000001})
 
       updated_points.push(pnt_id)
@@ -198,12 +197,13 @@ protected
     actions[:deleted_points] = {}
 
     point_listings = []
+    now = "#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
     actions[:viewed_points].to_set.each do |point_id, context|
-      point_listings.push("(#{position.proposal_id}, #{position.id}, #{point_id}, #{position.user_id}, #{current_tenant.id})")
+      point_listings.push("(#{position.proposal_id}, #{position.id}, #{point_id}, #{position.user_id}, #{current_tenant.id}, '#{now}', '#{now}')")
     end
     if point_listings.length > 0
       qry = "INSERT INTO point_listings 
-              (proposal_id, position_id, point_id, user_id, account_id) 
+              (proposal_id, position_id, point_id, user_id, account_id, created_at, updated_at) 
               VALUES #{point_listings.join(',')}
               ON DUPLICATE KEY UPDATE count=count+1"
 

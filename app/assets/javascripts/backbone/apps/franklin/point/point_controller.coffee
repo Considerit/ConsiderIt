@@ -57,7 +57,7 @@
         @setupCommentsView expanded_view.discussionRegion
 
         @listenTo expanded_view, 'details:close', (go_back) => 
-          # @layout.$el.removeLightbox()
+          @layout.$el.removeLightbox()
           @unexpand go_back
           @layout.trigger 'details:closed'
 
@@ -68,7 +68,7 @@
           
         @listenTo App.vent, 'point:expanded', => @unexpand false
         @listenTo App.vent, 'points:unexpand', => 
-          # @layout.$el.removeLightbox()
+          @layout.$el.removeLightbox()
           @unexpand true # set to true so that when including point from expanded view, url updated appropriately on close
 
         @layout.$el
@@ -76,7 +76,7 @@
           .removeClass('m-point-unexpanded')
 
         @layout.$el.ensureInView {fill_threshold: .5}
-        # @layout.$el.putBehindLightbox()
+        @layout.$el.putBehindLightbox()
 
         if @layout.$el.parents('[data-state="points-separated"]').length > 0
           @layout.disableDrag()

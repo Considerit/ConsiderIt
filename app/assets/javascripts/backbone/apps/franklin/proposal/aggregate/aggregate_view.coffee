@@ -72,7 +72,7 @@
                 opacity: ''
 
               @highlight_state = []
-          , 10
+          , 50
 
         @$el.show()
 

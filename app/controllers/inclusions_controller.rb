@@ -30,7 +30,8 @@ class InclusionsController < ApplicationController
     candidate_next_points = point.is_pro ? proposal.points.viewable.pros : proposal.points.viewable.cons
 
     session[proposal.id][:included_points][params[:point_id]] = 1
-    
+    session[proposal.id][:viewed_points].push([params[:point_id],-1])
+
     render :json => { :success => true }
   end
   

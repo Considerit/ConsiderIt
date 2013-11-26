@@ -80,10 +80,18 @@
 
     serializeData : ->
       current_user = App.request 'user:current'
+
+      if @model && @model.get('published') 
+        call = 'Update your opinion' 
+      else if @model.getProposal().num_participants() > 0
+        call = 'Add your opinion'
+      else
+        call = 'Be the first to add an opinion'
+
       _.extend {}, @model.getProposal().attributes,
         active : @model.getProposal().get 'active'
         updating : @model && @model.get 'published'
-        call : if @model && @model.get('published') then 'Update your opinion' else 'Add your opinion'
+        call : call
 
   class Proposal.PositionReasonsLayout extends App.Views.Layout
     template : '#tpl_position_reasons'

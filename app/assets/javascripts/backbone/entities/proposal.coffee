@@ -118,16 +118,11 @@
     # TODO: refactor this method out...handles what happens when 
     # current user saves a new position
     newPositionSaved : (position) ->
-      console.log 'NEW POS'
       user_id = position.get('user_id')
       if position.get('published') 
-        console.log 'PUBLISHED!'
         if !@user_participated(user_id)
           @positions = null
           @participant_list.push user_id 
-          console.log 'PUSHING!', user_id, @participant_list
-
-        console.log @getParticipants()
 
         if !@get('top_pro')
           _.each position.written_points, (pnt) =>
@@ -158,10 +153,15 @@
       @get('publicity') > 0 && @get('published')
 
     getMeta : ->
+      defaults = 
+        title : "#{@get('category')||''} #{@get('designator')||''} #{@get('name')}"
+        description : @get('name')
+        keywords : "#{@get('category')||''} #{@get('designator')||''}"
+
       meta = 
-        title : if @get('seo_title') then @get('seo_title') else "Discuss #{@get('category')} #{@get('designator')} #{@get('name')}: #{@get('name')}"
-        description : if @get('seo_description') then @get('seo_title') else "Think through and discuss #{@get('category')} #{@get('designator')} - #{@get('name')}."
-        keywords : if @get('seo_keywords') then @get('seo_keywords') else "#{@get('category')} #{@get('designator')}"
+        title : if @get('seo_title') then @get('seo_title') else defaults.title
+        description : if @get('seo_description') then @get('seo_title') else defaults.description
+        keywords : if @get('seo_keywords') then @get('seo_keywords') else defaults.keywords
 
       meta
 

@@ -1,4 +1,3 @@
-$m-point-expanded-width: $body_width + 150
 
 .m-point
   position: relative
@@ -10,7 +9,7 @@ $m-point-expanded-width: $body_width + 150
 
   &.m-point-peer, &.m-point-expanded
     .m-point-wrap
-      padding: $vertical_baseline / 2 $grid_xs / 2 $vertical_baseline $grid_xs / 2 
+      padding: $vertical_baseline / 2 $grid_xs / 2 
       margin-bottom: $vertical_baseline / 2
 
 
@@ -27,7 +26,7 @@ $m-point-expanded-width: $body_width + 150
 
     .m-point-wrap
       width: $m-point-expanded-width - 3
-
+      padding: $vertical_baseline 1.5 * $grid_xs
 
     &.m-point-position
       &.con
@@ -39,6 +38,7 @@ $m-point-expanded-width: $body_width + 150
   .m-point-unexpanded
     cursor: pointer
 
+
 .m-peer-reasons
 
   &[data-state="points-together"]
@@ -47,7 +47,7 @@ $m-point-expanded-width: $body_width + 150
 
   &[data-state="points-separated"]
     .m-point-expanded.con.m-point-peer
-      right: $m-point-expanded-width - $peer-point-width
+      right: $m-point-expanded-width - $peer-point-width + 56
 
 
   &[data-state="points-separated"]
@@ -125,8 +125,7 @@ $m-point-expanded-width: $body_width + 150
 
 .m-point-expanded 
   .m-point-follow-region
-    margin-bottom: $vertical_baseline / 2
-
+    //margin-bottom: $vertical_baseline / 2
 
 /////////////////////////////////////////
 // point operations
@@ -192,7 +191,7 @@ $m-point-expanded-width: $body_width + 150
         color: #666
 
     .m-point-operations
-      bottom: -3*$vertical_baseline/4
+      //bottom: -3*$vertical_baseline/4
 
       a
         color: lighten($base_text_color, 15%)
@@ -213,37 +212,20 @@ $m-point-expanded-width: $body_width + 150
 
 ///////////////////////////////////////
 
+.m-point-action
+  display: inline-block
+
+  i
+    padding-right: $grid_xs / 4
+
 /////////////////////////////////////////
 // point inclusion button
-.m-point-peer
-  .m-point-include-wrap
-    display: none
+.m-point-include-wrap
+  display: none
 
 [data-state="points-separated"] .m-point-peer.m-point-expanded
   .m-point-include-wrap
-    display: block
-
-    .m-point-include
-      position: relative
-      z-index: 2
-      border-radius: 0
-
-  &.m-point-unexpanded
-
-    .m-point-include-wrap
-      position: absolute
-      bottom: 0//$vertical_baseline / 2
-
-    &.pro
-      .m-point-include-wrap
-        right: 0
-        float: right
-
-    &.con
-      .m-point-include-wrap
-        left: 0
-        float: left
-
+    display: inline-block
 
 .m-point-peer.m-point-unexpanded, .m-point-expanded
   .m-point-wrap
@@ -261,8 +243,8 @@ $m-point-expanded-width: $body_width + 150
     border-color: #f1f1f1 #ddd #bbb #ddd
 
 .m-point-expanded .m-point-wrap
-  +single-box-shadow($color: rgba(black, .25), $voff: 1px)
-  border-color: #777 #666 #555 #666
+  //+single-box-shadow($color: rgba(black, .25), $voff: 1px)
+  //border-color: #777 #666 #555 #666
 
 .m-point-position.m-point-unexpanded .m-point-wrap
   background-color: $decision_board_color

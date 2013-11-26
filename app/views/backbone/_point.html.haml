@@ -36,27 +36,27 @@
     (( } ))
 
 
-
-  (( if( _.contains(actions, 'include') ){ ))
-  .m-point-include-wrap
-    %button.m-point-include{ :'data-target' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
-      %i.icon.icon-small
-        &#xf03a;
-      Add to your pro/con list
-
-  (( } ))
-
 %script{ :type => "text/template", :id => "tpl_point_expanded"}
   .m-point-actions
+    .m-point-include-wrap.m-point-action
+      %button.m-point-include{ :'data-target' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
+        %i.icon.icon-small
+          &#xf03a;
+        Add to your pro/con list
+
     .m-point-follow-region.m-point-action
     .m-point-assessment-region.m-point-action
+
+
   .m-point-discussion
 
 %script{ :type => "text/template", :id => "tpl_point_follow"}
   (( if(already_follows){ ))
   %button.m-point-follow
-    Unfollow this point
+    %i.icon.icon-rss
+    Unsubscribe to comments
   (( } else{ ))
   %button.m-point-follow{ :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
-    Follow this point
+    %i.icon.icon-rss
+    Subscribe to new comments
   (( } ))

@@ -29,9 +29,6 @@
         @trigger 'point:clicked'
         ev.stopPropagation()
 
-
-          
-
   class Point.PeerPointView extends Point.PointView
     actions : ['include']
 
@@ -76,6 +73,9 @@
       assessmentRegion : '.m-point-assessment-region'
       discussionRegion : '.m-point-discussion'
 
+    serializeData : ->
+      @model.attributes
+
     onRender : ->
       App.vent.trigger 'point:expanded'
 
@@ -87,7 +87,7 @@
         if is_not_clicking_this_point && $(ev.target).closest('.editable-buttons').length == 0 && dialog_not_open
           is_click_within_a_point = $(ev.target).closest('[data-role="m-point"]').length > 0
           is_clicking_nav = $(ev.target).closest('.l-navigate-wrap').length > 0
-          @closeDetails(  !is_click_within_a_point && !is_clicking_nav ) 
+          @closeDetails( !is_click_within_a_point && !is_clicking_nav ) 
 
       $(document).on 'keyup.m-point-details', (ev) => 
         dialog_not_open = $('#l-dialog-detachable').length == 0

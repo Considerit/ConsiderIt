@@ -45,29 +45,29 @@ class InclusionsController < ApplicationController
 
     destroyed = false
 
-    if session[proposal.id][:included_points].has_key?(params[:point_id])
 
-      if current_user
-        inc = current_user.inclusions.where(:point_id => point.id).first
-        if inc
-          session[proposal.id][:deleted_points][point.id] = 1
-        end
+    if current_user
+      inc = current_user.inclusions.where(:point_id => point.id).first
+      if inc
+        session[proposal.id][:deleted_points][point.id] = 1
       end
+    end
 
+    if session[proposal.id][:included_points].has_key?(params[:point_id])
       authorize! :destroy, inc || Inclusion.new
       session[proposal.id][:included_points].delete(params[:point_id])    
 
     else
       session[point.proposal_id][:written_points].delete(point.id)
       session[point.proposal_id][:included_points].delete(point.id)  
-
-      if ((!point.published && point.user_id.nil?) || (current_user.id == point.user_id)) && point.inclusions.count < 2  #can?(:destroy, point) # not using the ability otherwise whenever an admin removes a point from their list, they destroy it!
-        authorize! :destroy, point
-        point.destroy
-        destroyed = true
-      end
-
     end
+
+    if ((!point.published && point.user_id.nil?) || (current_user.id == point.user_id)) && point.inclusions.count < 2  #can?(:destroy, point) # not using the ability otherwise whenever an admin removes a point from their list, they destroy it!
+      authorize! :destroy, point
+      point.destroy
+      destroyed = true
+    end
+
 
     render :json => { :success => true, :destroyed => destroyed }
   end

@@ -61,23 +61,24 @@ class Dashboard::UsersController < Dashboard::DashboardController
     user_proposals = user.proposals.open_to_public
     proposals = user_proposals.map {|p| p.id} + referenced_proposals.keys()
 
-    #make sure that top points of each proposal are included
-    top = []
-    top_con_qry = Proposal.where "top_con IS NOT NULL AND id in (#{proposals.join(',')})"
-    if top_con_qry.count > 0
-      top += top_con_qry.select(:top_con).map {|x| x.top_con}.compact
-    end
+    if proposals.length > 0
+      #make sure that top points of each proposal are included
+      top = []
+      top_con_qry = Proposal.where "top_con IS NOT NULL AND id in (#{proposals.join(',')})"
+      if top_con_qry.count > 0
+        top += top_con_qry.select(:top_con).map {|x| x.top_con}.compact
+      end
 
-    top_pro_qry = Proposal.where "top_pro IS NOT NULL AND id in (#{proposals.join(',')})"
-    if top_pro_qry.count > 0
-      top += top_pro_qry.select(:top_pro).map {|x| x.top_pro}.compact
+      top_pro_qry = Proposal.where "top_pro IS NOT NULL AND id in (#{proposals.join(',')})"
+      if top_pro_qry.count > 0
+        top += top_pro_qry.select(:top_pro).map {|x| x.top_pro}.compact
+      end
+      
+      top_points = {}
+      Point.where('id in (?)', top).public_fields.each do |pnt|
+        referenced_points[pnt.id] = pnt
+      end
     end
-    
-    top_points = {}
-    Point.where('id in (?)', top).public_fields.each do |pnt|
-      referenced_points[pnt.id] = pnt
-    end
-
 
     data = {
       :user_id => user.id,

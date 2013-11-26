@@ -35,6 +35,10 @@ $m-point-expanded-width: $body_width + 150
       &.pro
         left: - ($m-point-expanded-width - $body_width) / 2
 
+[data-state="points-separated"], [data-state="points-together"], [data-state="points-position"]
+  .m-point-unexpanded
+    cursor: pointer
+
 .m-peer-reasons
 
   &[data-state="points-together"]
@@ -45,9 +49,6 @@ $m-point-expanded-width: $body_width + 150
     .m-point-expanded.con.m-point-peer
       right: $m-point-expanded-width - $peer-point-width
 
-  &[data-state="points-separated"], &[data-state="points-together"], &[data-state="points-position"]
-    .m-point-unexpanded
-      cursor: pointer
 
   &[data-state="points-separated"]
     .m-point-unexpanded.m-point-peer .m-point-wrap

@@ -86,6 +86,8 @@
 
     removed_points : []
 
+    current_browse_state : false
+
     state_map : ->
       map = {}
       map[App.Franklin.Proposal.ReasonsState.together] = Points.States.together
@@ -141,19 +143,24 @@
     respondToPointExpansions : -> true
 
 
-    toggleBrowsing : (current_browse_state, header_view, footer_view) ->
+    toggleBrowsing : (current_browse_state) ->
+      header_view = @header_view
+      footer_view = @footer_view
+
       if !current_browse_state
         header_view.setBrowsing true
         footer_view.setBrowsing true
         @trigger 'points:browsing', @options.valence
         @previous_page_size = @options.collection.state.pageSize
         @options.collection.setPageSize 1000
+        @current_browse_state = true
       else
         header_view.setBrowsing false
         footer_view.setBrowsing false
         @trigger 'points:browsing:off', @options.valence
         @options.collection.setPageSize @previous_page_size
         @options.collection.getPage 1
+        @current_browse_state = false
 
     setupLayout : (layout) ->
       super layout
@@ -162,23 +169,23 @@
         sort = if @state == Points.States.separated then 'persuasiveness' else 'score'
 
         @header_view = @getHeaderView sort  
-        footer_view = @getFooterView()
+        @footer_view = @getFooterView()
 
         @listenTo @header_view, 'sort', (sort_by) =>
           @sortPoints sort_by
 
         @listenTo @header_view, 'points:browsing:toggle', (current_browse_state) =>
           if @state != Points.States.collapsed
-            @toggleBrowsing current_browse_state, @header_view, footer_view
+            @toggleBrowsing current_browse_state
           
 
-        @listenTo footer_view, 'points:browsing:toggle', (current_browse_state) =>
+        @listenTo @footer_view, 'points:browsing:toggle', (current_browse_state) =>
           if @state != Points.States.collapsed
-            @toggleBrowsing current_browse_state, @header_view, footer_view
+            @toggleBrowsing current_browse_state
 
         layout.headerRegion.show @header_view
 
-        layout.footerRegion.show footer_view
+        layout.footerRegion.show @footer_view
 
 
         # setup listview after, so that sorting takes place without rerendering

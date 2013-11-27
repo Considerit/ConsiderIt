@@ -85,8 +85,11 @@
       'mouseenter .m-point-peer' : 'logPointView'
       'click .m-points-list-region' : 'reasonsClicked'
       'click .m-participants' : 'reasonsClicked'      
+      'click .m-reasons-footer-region' : 'reasonsClicked'            
       'mouseenter .m-points-list-region' : 'showViewResults'
       'mouseleave .m-points-list-region' : 'hideViewResults'
+      'mouseenter .m-reasons-footer-region' : 'showViewResults'
+      'mouseleave .m-reasons-footer-region' : 'hideViewResults'      
       'mouseenter .m-participants' : 'showViewResults'
       'mouseleave .m-participants' : 'hideViewResults'
 
@@ -102,14 +105,19 @@
 
     showViewResults : (ev) ->
       return if @state != Proposal.ReasonsState.collapsed
+
+      @hover_state = true
       @$el.find('.m-reasons-footer-region').css
         visibility: 'visible'
 
     hideViewResults : (ev) ->
-      return if @state != Proposal.ReasonsState.collapsed
-      @$el.find('.m-reasons-footer-region').css
-        visibility: ''
-
+      return if @state != Proposal.ReasonsState.collapsed || $(ev.target).closest('.m-reasons-view-results').length > 0
+      @hover_state = false
+      _.delay =>
+        if !@hover_state
+          @$el.find('.m-reasons-footer-region').css
+            visibility: ''
+      , 100
 
   class Proposal.ResultsFooterView extends App.Views.ItemView
     template : '#tpl_aggregate_footer_expanded'

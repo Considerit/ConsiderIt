@@ -4,6 +4,12 @@
 
       layout = @getLayout @options.collection
 
+      @setupLayout layout
+
+      @layout = layout
+      @region.show layout
+
+    setupLayout : (layout) ->
       @listenTo layout, 'show', =>
         @listenTo layout, 'comment:create', (attrs) => @handleCreate attrs
         @listenTo layout, 'childview:give_thanks', (view) =>
@@ -23,10 +29,12 @@
             success : (model, response) ->
               layout.render()
 
+        @listenTo App.vent, 'user:signin', =>
+          @layout.saveCommentText()
+          @region.show @layout
+          @layout.restoreCommentText()
 
 
-      @layout = layout
-      @region.show layout
 
     handleCreate : (attrs) ->
       current_user = App.request 'user:current'

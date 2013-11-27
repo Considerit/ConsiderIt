@@ -121,7 +121,6 @@ $use_transitions: true
     height: 100%
     .m-peer-reasons
       height: 100%
-      padding-bottom: 3 * $vertical_baseline
 
   .m-aggregated-propoints-region
 
@@ -141,14 +140,19 @@ $use_transitions: true
     min-height: 450px
     height: auto
 
-  [data-state="separated"]
+  &[data-state="separated"]
     .m-personal-reasons
       min-height: 450px
 
-  [data-state="together"]
+  &[data-state="together"]
     .m-personal-reasons
       height: 0
       overflow: hidden
+
+    .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      .m-peer-reasons
+        padding-bottom: 3 * $vertical_baseline
+
 
   //horizontal size and positioning
 

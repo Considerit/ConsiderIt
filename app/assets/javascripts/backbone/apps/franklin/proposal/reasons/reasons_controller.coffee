@@ -116,7 +116,8 @@
         @peer_pros_controller = @getPointsController layout.peerProsRegion, 'pro', aggregated_pros
         @peer_cons_controller = @getPointsController layout.peerConsRegion, 'con', aggregated_cons
 
-        _.each [@peer_pros_controller, @peer_cons_controller], (controller) =>
+        _.each [ [@peer_pros_controller, @peer_cons_controller], [@peer_cons_controller, @peer_pros_controller]], (item) =>
+          [controller, other_controller] = item
           @listenTo controller, 'point:showed_details', (point) =>
             @layout.pointExpanded controller.region
 
@@ -124,6 +125,10 @@
               @layout.pointClosed controller.region
 
           @listenTo controller, 'points:browsing', (valence) =>
+
+            if other_controller.current_browse_state
+              other_controller.toggleBrowsing other_controller.current_browse_state
+
             @layout.pointsBrowsing valence
 
             @listenToOnce controller, 'points:browsing:off', (valence) =>

@@ -48,8 +48,11 @@
       @trigger 'point:unhighlight_includers'
 
     disableDrag : ->
-      @$el.find('.m-point-wrap').draggable 'destroy'
-
+      try
+        @$el.find('.m-point-wrap').draggable 'destroy'
+      catch e
+        # get here when nav to results page before draggable created
+        
     enableDrag : ->
       @$el.find('.m-point-wrap').draggable
         revert: "invalid"

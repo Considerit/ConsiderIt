@@ -138,11 +138,16 @@ $use_transitions: true
   &.transitioning .m-personal-reasons
     //min-height: 0
     min-height: 450px
+    height: auto
 
   [data-state="separated"]
     .m-personal-reasons
       min-height: 450px
 
+  [data-state="together"]
+    .m-personal-reasons
+      height: 0
+      overflow: hidden
 
   //horizontal size and positioning
 

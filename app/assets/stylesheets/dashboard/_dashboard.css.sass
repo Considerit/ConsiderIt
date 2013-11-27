@@ -71,6 +71,8 @@ html body #m-dashboard
   /////////////////
 
   .m-dashboard-profile
+    .l-group-container
+      text-align: left
 
     .m-dashboard-profile-edit_profile
       +font-size(-2)
@@ -135,8 +137,8 @@ html body #m-dashboard
       font-weight: bold
 
     .m-activity-summary-label, .m-dashboard-profile-influence-label
-      +font-size(-3)
-      text-transform: uppercase
+      +font-size(-1)
+      //text-transform: uppercase
 
     .m-activity-summary-count, .m-activity-summary-label, .m-dashboard-profile-influence-count, .m-dashboard-profile-influence-label
       text-align: center
@@ -158,11 +160,11 @@ html body #m-dashboard
       .m-dashboard-profile-activity-action
         text-align: right
       .m-dashboard-profile-activity-substance
-        +font-size(1)
+        +font-size(3)
         font-weight: bold
         margin-bottom: $vertical_baseline/2
       .m-dashboard-profile-activity-substance-context
-        +font-size(-1)
+        +font-size(1)
 
       .m-dashboard-profile-activity-influence
         margin-top: $vertical_baseline/2
@@ -171,7 +173,7 @@ html body #m-dashboard
         width: 500px
     
     .m-dashboard-profile-activity-empty
-      +font-size(-2)
+      +font-size(-1)
       font-style: italic
 
 

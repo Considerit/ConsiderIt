@@ -330,9 +330,9 @@ $use_transitions: true
     .m-reasons-footer-region
       width: $margin_width
       position: absolute
-      right: 0
-      top: - $vertical_baseline / 2
-      padding: $vertical_baseline 0
+      left: 50%
+      margin-left: -$margin_width/2
+      bottom: $vertical_baseline / 4
       cursor: pointer
       z-index: 2
 
@@ -342,6 +342,12 @@ $use_transitions: true
       .m-reasons-view-results
         text-align: right
         +font-size(-1)
+        color: darken($base_bg_color, 25%)
+        i
+          padding-right: $grid_xs/4
+
+        &:hover
+          color: $base_text_color
 
 
 // sticky footer for results (not presented in .m-reasons el)

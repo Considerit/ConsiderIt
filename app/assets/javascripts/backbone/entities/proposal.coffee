@@ -72,7 +72,7 @@
       else if @get 'description'
         my_title = @get 'description'
       else
-        throw 'Name and description nil'
+        my_title = "Unnamed or private"
       
       if my_title.length > max_len
         "#{my_title[0..max_len]}..."

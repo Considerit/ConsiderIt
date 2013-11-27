@@ -164,35 +164,14 @@
       @listenTo controller, 'position:published', =>
         @trigger 'position:published'
 
-    setupPointsController : (controller) ->
-      @listenTo controller, 'point:highlight_includers', (view) =>
-        if @state == Proposal.ReasonsState.together
-          # don't highlight users on point mouseover unless the histogram is fully visible
-          includers = view.model.getIncluders() || []
-          includers.push view.model.get('user_id')
-          @trigger 'point:highlight_includers', includers 
 
-      @listenTo controller, 'point:unhighlight_includers', (view) =>
-        if @state == Proposal.ReasonsState.together
-          includers = view.model.getIncluders() || []
-          includers.push view.model.get('user_id')
-          @trigger 'point:unhighlight_includers', includers 
-
-      @listenTo controller, 'point:include', (view) =>
-
-        model = view.model # a Point...
-
+      @listenTo controller, 'point:include', (model) =>
         position = @model.getUserPosition()
         position.includePoint model
 
         source_controller = if model.isPro() then @peer_pros_controller else @peer_cons_controller
         source = source_controller.options.collection
-        
-        @crafting_controller.handleIncludePoint model
-
-        $included_point = @layout.$el.find ".m-point-position[data-id='#{model.id}']"
-
-        @layout.includePoint model, view.$el, $included_point, source
+        source.remove model
 
         params =
           proposal_id : @model.id
@@ -208,6 +187,26 @@
               followable_id : model.id
               follow : true
               explicit: false
+
+
+
+
+
+
+    setupPointsController : (controller) ->
+      @listenTo controller, 'point:highlight_includers', (view) =>
+        if @state == Proposal.ReasonsState.together
+          # don't highlight users on point mouseover unless the histogram is fully visible
+          includers = view.model.getIncluders() || []
+          includers.push view.model.get('user_id')
+          @trigger 'point:highlight_includers', includers 
+
+      @listenTo controller, 'point:unhighlight_includers', (view) =>
+        if @state == Proposal.ReasonsState.together
+          includers = view.model.getIncluders() || []
+          includers.push view.model.get('user_id')
+          @trigger 'point:unhighlight_includers', includers 
+
 
 
     getCraftingController : (region) ->

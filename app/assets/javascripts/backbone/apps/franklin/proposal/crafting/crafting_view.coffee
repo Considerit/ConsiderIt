@@ -24,7 +24,8 @@
         accept: ".m-point-peer .m-point-wrap"
         drop : (ev, ui) =>
           valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
-          ui.draggable.find('[data-target="point-include"]').trigger 'click'
+          #ui.draggable.find('[data-target="point-include"]').trigger 'click'
+          @trigger 'point:include', ui.draggable.parent().data('id')
           @$el.removeClass "draggable_hover_#{valence} draggable_initiated_#{valence}"
 
         out : (ev, ui) =>

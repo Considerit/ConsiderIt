@@ -177,6 +177,7 @@
   .m-point-drop-target
     color: darken($decision_board_text_color, 25%)
     border-color: darken($decision_board_text_color, 25%)
+    border-style: solid
 
 
 .m-point-drop-target
@@ -185,7 +186,6 @@
   height: 5 * $vertical_baseline
   vertical-align: middle
   margin-top: 2 * $vertical_baseline
-  +transition(opacity 300)
 
 .m-point-drop-target, .m-newpoint
   border: 1px dashed $decision_board_border_color
@@ -200,6 +200,9 @@
   position: relative
   margin-top: $vertical_baseline
 
+  &:hover, &.m-newpoint-adding
+    border-style: solid
+
   .m-newpoint-new, .m-newpoint-form
 
     // bullet point
@@ -208,6 +211,7 @@
       display: inline-block
       position: absolute
       top: 7px
+
 
   .m-newpoint-new
     +font-size(1)
@@ -220,6 +224,7 @@
     opacity: .75
     &:hover
       opacity: 1
+
 
     &:before
       left: 4px

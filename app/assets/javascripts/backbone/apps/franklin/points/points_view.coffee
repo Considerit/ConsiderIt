@@ -240,6 +240,8 @@
         $form.find('[placeholder]').simplePlaceholder() 
       else
         $form.find('.m-newpoint-nutshell').focus()
+
+      @$el.find('.m-newpoint').addClass 'm-newpoint-adding'
     
     cancelPoint : (ev) ->
       $form = $(ev.currentTarget).closest('.m-newpoint-form')
@@ -247,6 +249,8 @@
       $form.siblings('.m-newpoint-new').show()
       $form.find('textarea').val('').trigger('keydown')
       $form.find('label.inline').addClass('empty')
+
+      @$el.find('.m-newpoint').removeClass 'm-newpoint-adding'
 
     createPoint : (ev) ->
       $form = $(ev.currentTarget).closest('.m-newpoint-form')

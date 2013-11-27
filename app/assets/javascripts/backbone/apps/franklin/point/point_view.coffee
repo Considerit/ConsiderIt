@@ -18,6 +18,7 @@
       params
 
     @events : 
+      'click .m-point-close' : 'closePoint'
       'click' : 'pointClicked'
 
     pointClicked : (ev) ->
@@ -28,6 +29,11 @@
       if !pass_through
         @trigger 'point:clicked'
         ev.stopPropagation()
+
+    closePoint : (ev) ->
+      # only for closing expanded points
+      $('#l-wrap').trigger 'click'
+      ev.stopPropagation()
 
   class Point.PeerPointView extends Point.PointView
     actions : ['include']
@@ -52,7 +58,7 @@
         @$el.find('.m-point-wrap').draggable 'destroy'
       catch e
         # get here when nav to results page before draggable created
-        
+
     enableDrag : ->
       @$el.find('.m-point-wrap').draggable
         revert: "invalid"

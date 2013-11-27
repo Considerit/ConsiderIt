@@ -3,6 +3,9 @@
   position: relative
   @extend %nude_list
 
+  .m-point-close
+    display: none
+
   .m-point-wrap
     position: relative
     display: inline-block
@@ -23,6 +26,15 @@
     // padding: $vertical_baseline $grid_xs  
     width: $m-point-expanded-width + $peer-point-avatar-area
 
+    .m-point-close
+      display: block
+      position: absolute
+      right: -11px
+      top: -11px
+      cursor: pointer
+
+      i
+        +font-size(2)
 
     .m-point-wrap
       width: $m-point-expanded-width - 3

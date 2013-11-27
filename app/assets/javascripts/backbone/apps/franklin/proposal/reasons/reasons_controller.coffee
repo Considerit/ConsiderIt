@@ -146,7 +146,29 @@
 
       @layout.sizeToFit()
 
-  
+    includePoint : (model) ->
+      position = @model.getUserPosition()
+      position.includePoint model
+
+      source_controller = if model.isPro() then @peer_pros_controller else @peer_cons_controller
+      source = source_controller.options.collection
+      source.remove model
+
+      @crafting_controller.handleIncludePoint model
+
+      params =
+        proposal_id : @model.id
+        point_id : model.id
+      
+      window.addCSRF params
+      $.post Routes.inclusions_path(), 
+        params, (data) =>
+          current_user = App.request 'user:current'
+          current_user.setFollowing 
+            followable_type : 'Point'
+            followable_id : model.id
+            follow : true
+            explicit: false      
 
     setupCraftingController : (controller) ->
       @listenTo controller, 'point:removal', (model) =>
@@ -171,31 +193,7 @@
 
 
       @listenTo controller, 'point:include', (model) =>
-        position = @model.getUserPosition()
-        position.includePoint model
-
-        source_controller = if model.isPro() then @peer_pros_controller else @peer_cons_controller
-        source = source_controller.options.collection
-        source.remove model
-
-        params =
-          proposal_id : @model.id
-          point_id : model.id
-        
-        window.addCSRF params
-        $.post Routes.inclusions_path(), 
-          params, (data) =>
-
-            current_user = App.request 'user:current'
-            current_user.setFollowing 
-              followable_type : 'Point'
-              followable_id : model.id
-              follow : true
-              explicit: false
-
-
-
-
+        @includePoint model
 
 
     setupPointsController : (controller) ->
@@ -211,6 +209,9 @@
           includers = view.model.getIncluders() || []
           includers.push view.model.get('user_id')
           @trigger 'point:unhighlight_includers', includers 
+
+      @listenTo controller, 'point:include', (model) =>
+        @includePoint model
 
 
 

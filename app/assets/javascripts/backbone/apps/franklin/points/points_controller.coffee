@@ -201,7 +201,7 @@
 
       @listenTo list_view, 'childview:point:include', (view) => 
         App.vent.trigger 'points:unexpand'
-        @trigger 'point:include', view
+        @trigger 'point:include', view.model
 
       @listenTo list_view, 'childview:point:highlight_includers', (view) => 
         @trigger 'point:highlight_includers', view

@@ -1,10 +1,25 @@
 /* POINTLISTBROWSING */
 
 // footer
+
+.m-pointlist-footer-more
+  display: none
+
 [data-state="points-collapsed"]
+  .m-pointlist-footer-region
+    position: absolute
+    bottom: $vertical_baseline / 2
+    width: $peer-point-wrap-width
+    
   .m-pointlist-browse
     display: none  
+  .m-pointlist-footer-more
+    display: block
+    text-align: center
 
+    i
+      color: $base_text_color
+      font-weight: bold
 
 [data-state="points-separated"]
   .m-pointlist-browse-toggle

@@ -7,9 +7,11 @@
 
     loginDialogRequested : (ev) ->
       App.vent.trigger 'signin:requested'
+      ev.stopPropagation()
 
     createDialogRequested : (ev) ->
       App.vent.trigger 'registration:requested'
+      ev.stopPropagation()
 
   class Shared.ProfileView extends Backbone.View
     template : _.template $('#tpl_user_tooltip').html()

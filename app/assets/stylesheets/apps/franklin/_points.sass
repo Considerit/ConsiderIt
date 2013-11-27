@@ -5,12 +5,14 @@
 .m-pointlist-footer-more
   display: none
 
-[data-state="points-collapsed"]
+[data-state="points-collapsed"], [data-state="points-together"]
   .m-pointlist-footer-region
     position: absolute
     bottom: $vertical_baseline / 2
     width: $peer-point-wrap-width
-    
+
+[data-state="points-collapsed"]
+
   .m-pointlist-browse
     display: none  
   .m-pointlist-footer-more

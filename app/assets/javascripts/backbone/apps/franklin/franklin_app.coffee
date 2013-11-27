@@ -198,7 +198,8 @@
 
         crumbs = [ 
           ['homepage', '/'], 
-          ["#{proposal.long_id}", Routes.new_position_proposal_path(long_id)]        
+          ["#{proposal.long_id}", Routes.new_position_proposal_path(long_id)],      
+          ["results", Routes.proposal_path(long_id)],          
           ["#{user.get('name')}", Routes.proposal_position_path(long_id, position.id)] ]
 
         if region.currentView instanceof Franklin.Proposal.AggregateLayout

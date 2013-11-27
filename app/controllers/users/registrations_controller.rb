@@ -154,7 +154,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
 protected
   def dirty_avatar_cache
-    current = Rails.cache.read("avatar-digest-#{current_tenant.id}")
+    current = Rails.cache.read("avatar-digest-#{current_tenant.id}") || 0
     Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)   
   end
 end

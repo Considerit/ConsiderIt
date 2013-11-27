@@ -87,7 +87,6 @@
       @listenTo layout, 'point:include', (point_id) =>
         point = App.request 'point:get', point_id
         @trigger 'point:include', point
-        @handleIncludePoint point
 
 
       layout.reasonsRegion.show reasons_layout

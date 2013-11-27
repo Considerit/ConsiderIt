@@ -44,3 +44,9 @@
     commentCreated : ->
       @$el.find('.m-new-comment-body-field').val('')
       toastr.success 'Comment added'
+
+    restoreCommentText : ->
+      @$el.find('.m-new-comment-body-field').val @saved_comment_text
+
+    saveCommentText : ->
+      @saved_comment_text = @$el.find('.m-new-comment-body-field').val()

@@ -320,8 +320,11 @@ $use_transitions: true
     .m-reasons-footer-region
       width: $margin_width
       position: absolute
-      right: $grid_xs / 2
-      bottom: - 2 * $vertical_baseline
+      right: 0
+      top: - $vertical_baseline / 2
+      padding: $vertical_baseline 0
+      cursor: pointer
+      z-index: 2
 
       div
         text-align: center

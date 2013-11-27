@@ -28,7 +28,6 @@
       @sizeToFit $transition_speed
 
     pointsBrowsing : (valence) ->
-      $transition_speed = 1000
 
       if valence == 'pro'
         @peerProsRegion.$el.addClass 'm-pointlist-browsing'
@@ -38,11 +37,9 @@
         @peerConsRegion.$el.addClass 'm-pointlist-browsing'
         @$el.addClass 'm-reasons-browsing m-reasons-browsing-cons'
 
-      @sizeToFit $transition_speed * 1.5
+      @sizeToFit 10
 
     pointsBrowsingOff : (valence) ->
-      $transition_speed = 1000
-
       @peerConsRegion.$el.css 
         right: ''
         @positionRegion.$el.css 
@@ -59,7 +56,7 @@
         @peerProsRegion.$el.removeClass 'm-pointlist-browsing'
         @$el.removeClass 'm-reasons-browsing m-reasons-browsing-pros'
 
-      @sizeToFit $transition_speed * 1.5
+      @sizeToFit 10
 
     _sizeToFit : (minheight) ->
       $to_fit = @$el.find('.m-reasons-lists')

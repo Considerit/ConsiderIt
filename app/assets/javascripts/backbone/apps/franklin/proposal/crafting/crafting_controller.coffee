@@ -84,6 +84,12 @@
       @listenTo reasons_layout, 'show', => @setupReasonsLayout reasons_layout
       @listenTo stance_view, 'show', => @setupStanceView stance_view
 
+      @listenTo layout, 'point:include', (point_id) =>
+        point = App.request 'point:get', point_id
+        @trigger 'point:include', point
+        @handleIncludePoint point
+
+
       layout.reasonsRegion.show reasons_layout
       layout.stanceRegion.show stance_view
       # layout.explanationRegion.show explanation_view
@@ -108,6 +114,7 @@
 
         if @state == Proposal.ReasonsState.separated
           @createReasons layout
+
         @createFooter layout
         @createHeader layout
       
@@ -177,7 +184,6 @@
 
           @listenToOnce controller, 'details:closed', (point) =>
             @trigger 'details:closed', point
-
 
 
     setupPointsController : (controller) ->

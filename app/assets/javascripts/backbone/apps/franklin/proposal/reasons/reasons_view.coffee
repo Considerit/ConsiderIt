@@ -80,46 +80,6 @@
         , delay
       else
         @_sizeToFit minheight
-        
-    # ugly having this method here...
-    includePoint : (model, $source, $dest, source) ->
-
-      if false && $source.is('.m-point-unexpanded')
-        $dest.css 'visibility', 'hidden'
-
-        item_offset = $source.offset()
-        ip_offset = $dest.offset()
-        [offsetX, offsetY] = [ip_offset.left - item_offset.left, ip_offset.top - item_offset.top]
-
-        styles = _.pick $dest.getStyles(), ['color', 'width', 'paddingRight', 'paddingLeft', 'paddingTop', 'paddingBottom']
-
-        _.extend styles, 
-          background: 'none'
-          border: 'none'
-          top: offsetY 
-          left: offsetX
-          position: 'absolute'
-
-        $placeholder = $('<li class="m-point-peer">')
-        $placeholder.css {height: $source.outerHeight(), visibility: 'hidden'}
-
-        $source.find('.m-point-author-avatar, .m-point-include-wrap, .m-point-operations').fadeOut(50)
-
-        $wrap = $source.find('.m-point-wrap')
-        $wrap.css 
-          position: 'absolute'
-          width: $wrap.outerWidth()
-
-        $placeholder.insertAfter $source
-
-        $wrap.css(styles).delay(500).queue (next) =>
-          $source.fadeOut -> 
-            source.remove model
-            $placeholder.remove()
-            $dest.css 'visibility', ''
-          next()
-      else
-        source.remove model
 
     events : 
       'mouseenter .m-point-peer' : 'logPointView'

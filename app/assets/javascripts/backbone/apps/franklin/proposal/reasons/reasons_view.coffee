@@ -19,12 +19,12 @@
 
     pointExpanded : (region) ->
       region.$el.css 'zIndex', 12
-      $transition_speed = 1000
+      $transition_speed = if Modernizr.csstransitions then 1000 else 0
       @sizeToFit $transition_speed
 
     pointClosed : (region) ->
       region.$el.css 'zIndex', ''
-      $transition_speed = 1000
+      $transition_speed = if Modernizr.csstransitions then 1000 else 0
       @sizeToFit $transition_speed
 
     pointsBrowsing : (valence) ->

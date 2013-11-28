@@ -21,7 +21,7 @@
     state : null
 
     transition_speed : -> 
-      $transition_speed = 1000
+      $transition_speed = if Modernizr.csstransitions then 1000 else 0
       $transition_speed
 
     initialize : (options = {}) ->

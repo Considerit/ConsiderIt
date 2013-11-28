@@ -56,6 +56,11 @@
   class Controllers.StatefulController extends Controllers.Base
     state : null
     prior_state : null
+    transitions_enabled : false
+    
+    transition_speed : -> 
+      $transition_speed = if Modernizr.csstransitions then 1000 else 0
+      $transition_speed    
 
     initialize : (options = {}) ->
       @prior_state = options.prior_state if 'prior_state' of options
@@ -65,7 +70,7 @@
         @changeState state
 
     changeState : (new_parent_state) ->
-      if @transition_speed
+      if @transitions_enabled
         @layout.enterTransition()
         App.vent.trigger 'transition:start'
         _.delay =>

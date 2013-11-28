@@ -1,8 +1,6 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
   class Proposal.ReasonsController extends App.Controllers.StatefulController
-    transition_speed : -> 
-      $transition_speed = 1000
-      $transition_speed
+    transitions_enabled : true
 
     # maps from parent state to this controller's state
     state_map : ->

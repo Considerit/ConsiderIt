@@ -11,7 +11,7 @@
 
       #t-intro-people  
         - rows = 7
-        - users_per_row = 37
+        - users_per_row = 34
 
         - pics = current_tenant.id == 2 ? User.unscoped.where('avatar_file_name IS NOT NULL AND account_id in (1,2)') : User.where('avatar_file_name IS NOT NULL')
         - users = pics.sample( [rows * users_per_row, pics.count].min )

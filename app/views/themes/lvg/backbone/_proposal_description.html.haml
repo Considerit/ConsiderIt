@@ -11,13 +11,6 @@
     .l-message-speaker.l-message-initiator
       %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
         %img{:src => "{{ avatar }}"}
-      .t-jurisdiction
-        %span
-          %strong
-            {{ category.charAt(0) }}-{{designator}} 
-          %br
-          {{jurisdiction}}
-        %span.m-proposal-leading
 
     .l-message-body.l-proposal-description-outer-wrap     
 
@@ -32,6 +25,14 @@
           = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
           .l-message-title
+            %span.m-proposal-description-intro
+              = succeed ':' do
+                %strong
+                  {{ category.charAt(0) }}-{{designator}}
+                (( if(jurisdiction && jurisdiction.length > 0) { ))
+                , {{jurisdiction}}
+                (( } ))
+
             %span.m-proposal-description-title
 
         

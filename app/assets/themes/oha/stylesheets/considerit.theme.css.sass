@@ -12,10 +12,9 @@
 // @import "grooves/simple/fonts"
 
 $main_font-family: "Armata", "Source Sans Pro", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif
-$base-font-size: 14px
-$browser-default-font-size: $base-font-size
-
-$base-line-height: 4px
+//$base-font-size: 14px
+//$browser-default-font-size: $base-font-size
+//$base-line-height: 4px
 
 @font-face
   font-family: 'Armata'
@@ -44,8 +43,8 @@ $base-line-height: 4px
 
 
 .l-message-title
-  font-weight: bold
-  +font-size(0)
+  //font-weight: bold
+  //+font-size(0)
   margin: $vertical_baseline/2 0
 
 .t-intro-header
@@ -82,11 +81,5 @@ $base-line-height: 4px
   padding-top: .75 * $vertical_baseline
 
 
-// #l-content-main
-//   width: $content_width + 118 * 2
-
-// #l-content-main-wrap
-//   padding-left: 138px
-
-// .m-reasons[data-state="separated"] .m-aggregated-conpoints-region
-//   right: 0px
+.m-reasons[data-state="collapsed"] .m-position-region
+  +translateY(12em)  

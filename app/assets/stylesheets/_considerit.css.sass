@@ -704,9 +704,18 @@ $static_position_width: $body_width+$grid_major
 /* for jquery.editable.js
 /**/
 
+
+.editable-pencil
+  position: absolute
+  left: -15px
+  top: $vertical_baseline/2
+  font-size: 12px
+  opacity: .7
+
 .editable-container.editable-inline
   border-color: #ddd #ccc #bbb #ccc
   background-color: white
+  color: #444
 
 .editable.editable-click, a.editable.editable-click, .editable-container.editable-inline
   border: 1px solid transparent
@@ -716,18 +725,20 @@ $static_position_width: $body_width+$grid_major
     cursor: pointer
     border-color: #ddd #ccc #bbb #ccc
     background-color: white
+    color: #444
 
   &:not(.editable-disabled)
-    width: 96%
+    width: 98%
     display: inline-block
     position: relative
-    margin-left: 25px
+    //margin-left: 25px
 
-    &:before
-      position: absolute
-      left: -25px
-      font-size: 14px
-      opacity: .7
+    // &:before
+    //   position: absolute
+    //   left: -15px
+    //   top: $vertical_baseline/2
+    //   font-size: 13px
+    //   opacity: .7
 
     &:hover
       position: relative

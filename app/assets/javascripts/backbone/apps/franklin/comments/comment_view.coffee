@@ -34,7 +34,8 @@
           type: 'textarea'
           name: 'body'
           success : (response, new_value) => @model.set('body', new_value)
-        $editable.addClass 'icon-pencil icon-large'
+        #$editable.addClass 'icon-pencil icon-large'
+        $editable.prepend '<i class="editable-pencil icon-pencil icon-large">'
 
 
 

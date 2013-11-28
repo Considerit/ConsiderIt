@@ -213,7 +213,9 @@
         name: 'nutshell'
         success : (response, new_value) => @model.set('nutshell', new_value)
 
-      $editable.addClass 'icon-pencil icon-large'
+      # $editable.addClass 'icon-pencil icon-large'
+
+      $editable.prepend '<i class="editable-pencil icon-pencil icon-large">'
 
       $details_editable = @$el.find('.m-point-details-description')
       $details_editable.editable
@@ -224,7 +226,8 @@
         name: 'text'
         success : (response, new_value) => @model.set('text', new_value)
 
-      $details_editable.addClass 'icon-pencil icon-large'
+      # $details_editable.addClass 'icon-pencil icon-large'
+      $details_editable.prepend '<i class="editable-pencil icon-pencil icon-large">'
 
     removeEditable : ->
       $editable = @$el.find('.m-point-nutshell')
@@ -232,8 +235,10 @@
 
       $editable.editable('destroy')
       $details_editable.editable('destroy')
-      $editable.removeClass 'icon-pencil icon-large'
-      $details_editable.removeClass 'icon-pencil icon-large'
+      # $editable.removeClass 'icon-pencil icon-large'
+      # $details_editable.removeClass 'icon-pencil icon-large'
+
+      @$el.find('.editable-pencil').remove()
 
 
 

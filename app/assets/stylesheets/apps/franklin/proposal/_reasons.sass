@@ -90,9 +90,8 @@ $use_transitions: true
 
   &[data-state="collapsed"]
     .m-position-region
-      //bottom: 0
       +translateY($aggregate_area_height + $vertical_baseline)
-      //vertical-align: bottom
+
 
   .m-aggregated-propoints-region .m-peer-reasons
     border-radius: 16px 0 0 16px
@@ -181,11 +180,9 @@ $use_transitions: true
       width: $peer-point-results-width
 
     .m-aggregated-propoints-region
-      //left: $peer-point-results-width + 1.5
       +translateX($peer-point-results-width - ($peer-point-results-width - $decision_board_width/2) + 4)
 
     .m-aggregated-conpoints-region
-      //left: -$peer-point-results-width - 1.5
       +translateX(-$peer-point-results-width + ($peer-point-results-width - $decision_board_width/2) - 4)
 
     .m-point-peer.m-point-unexpanded 

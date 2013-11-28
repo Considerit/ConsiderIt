@@ -45,13 +45,9 @@
 
 // HISTOGRAM / WHAT
 $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
-$histogram_width: $histogram_bar_width * 7 + 3 * 7
+$histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
 .m-histogram
-  //display: none
-
-  // +transition(height $transition_speed, opacity $transition_speed, margin-top $transition_speed)
   +transition(opacity $transition_speed)
-
   opacity: 0
   visibility: hidden
   margin: $vertical_baseline auto 0 auto

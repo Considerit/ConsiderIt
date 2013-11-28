@@ -52,6 +52,7 @@
       _.each @editable_fields, (field) =>
         [selector, name, type] = field 
         $editable = @$el.find(selector)
+
         $editable.editable
           resource: 'proposal'
           pk: @long_id
@@ -61,7 +62,8 @@
           name: name
           success : (response, new_value) => @model.set(name, new_value)
 
-        $editable.addClass 'icon-pencil icon-large'
+        # $editable.addClass 'icon-pencil icon-large'
+        $editable.prepend '<i class="editable-pencil icon-pencil icon-large">'
 
     onShow : ->
 

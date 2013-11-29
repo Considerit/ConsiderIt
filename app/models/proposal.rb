@@ -31,13 +31,13 @@ class Proposal < ActiveRecord::Base
   scope :browsable, where( :targettable => false)
 
 
-  def full_data(current_tenant, current_user, prop_data)
+  def full_data(current_tenant, current_user, prop_data, show_private = false)
     response = {
       :proposal => self,
       :points => Point.mask_anonymous_users(points.viewable.public_fields, current_user),
       :included_points => Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).select('points.id') + Point.included_by_unstored(prop_data[:included_points].keys, self).select('points.id'),
       :positions => positions.published.public_fields,
-      :result => 'success',
+      :result => 'success'
     }
 
     if current_tenant.assessment_enabled
@@ -45,6 +45,12 @@ class Proposal < ActiveRecord::Base
         :assessments => assessments.completed.public_fields,
         :claims => assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
         :verdicts => Assessable::Verdict.all        
+      })
+    end
+
+    if show_private && self.publicity < 2
+      response.update({
+        :access_list => self.access_list
       })
     end
 

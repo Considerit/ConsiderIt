@@ -344,12 +344,10 @@
         %i.icon.icon-lock
         = f.label :publicity, 'Private', :value => '0'
         .sublabel
-          Restrict access to the following invited participants.
+          Restrict access to the following comma-separated list of the emails of invited participants.
 
         .access_list
-          .label
-            Comma-separated email list of invited users:
-          = f.text_area :access_list, :rows => 2
+          = f.text_area :access_list
 
     .save_block
       = f.submit 'save'

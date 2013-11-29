@@ -60,7 +60,7 @@ class PointsController < ApplicationController
     respond_to do |format|
       format.json {render :json => response}
       format.html { 
-        proposal_data = point.proposal.full_data current_tenant, current_user, session[point.proposal_id]
+        proposal_data = point.proposal.full_data current_tenant, current_user, session[point.proposal_id], can?(:manage, point.proposal)
         proposal_data[:position] = ProposalsController.get_position_for_user(point.proposal, current_user, session)
         @current_proposal = proposal_data.to_json
         

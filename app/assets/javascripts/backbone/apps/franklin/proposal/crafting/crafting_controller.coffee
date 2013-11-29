@@ -33,9 +33,10 @@
         @region.show @layout
 
       @listenTo App.vent, 'user:signout', => 
-        @region.reset()
-        @region.show @layout
-        @trigger 'signin:position_changed'
+        if @proposal.openToPublic()
+          @region.reset()
+          @region.show @layout
+          @trigger 'signin:position_changed'
 
 
       @layout = @getLayout()

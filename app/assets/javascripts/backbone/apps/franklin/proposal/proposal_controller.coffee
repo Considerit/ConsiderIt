@@ -90,6 +90,9 @@
 
         @showFinished()
 
+        if !@model.openToPublic()
+          @listenTo App.vent, 'user:signout', =>
+            App.navigate Routes.root_path(), {trigger : true}
 
     _update_attributes : ->
       @layout.$el.data @layout.attributes(false)

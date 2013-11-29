@@ -36,6 +36,9 @@
       else
         proposal_attrs = response
 
+      if 'access_list' of response
+        proposal_attrs.access_list = response.access_list
+
       proposal_attrs
 
     parseAssociated : (params) ->
@@ -57,6 +60,8 @@
         App.request 'assessments:add', (a.assessment for a in params.assessments)
         App.request 'claims:add', (c.claim for c in params.claims)
         App.request 'verdicts:add', (v.verdict for v in params.verdicts)
+
+
 
 
 
@@ -212,10 +217,16 @@
 
     bootstrapProposal : (proposal_attrs) ->
       proposal = @all_proposals.findWhere {long_id : proposal_attrs.proposal.proposal.long_id}
-      if proposal
+      if proposal        
         proposal.set proposal_attrs.proposal
       else
         proposal = API.newProposal proposal_attrs.proposal
+
+      #TODO: DRY this out because it is repeated in parse()
+      if 'access_list' of proposal_attrs
+        proposal.set 'access_list', proposal_attrs.access_list
+
+
       proposal.parseAssociated proposal_attrs
       proposal
     
@@ -238,9 +249,9 @@
         proposal.fetch()
       proposal
 
-    newProposal: (attrs = {}, add_to_all = true ) ->
+    newProposal: (attrs = {} ) ->
       proposal = new Entities.Proposal attrs
-      @all_proposals.add proposal if add_to_all
+      @all_proposals.add proposal
       proposal
 
     createProposal: (attrs, options) ->
@@ -295,8 +306,8 @@
   App.reqres.setHandler "proposal:get:id", (id, fetch = false) ->
     API.getProposalById id, fetch
 
-  App.reqres.setHandler "proposal:new", (attrs = {}, add_to_all = true)->
-    API.newProposal attrs, add_to_all
+  App.reqres.setHandler "proposal:new", (attrs = {})->
+    API.newProposal attrs
 
   App.reqres.setHandler "proposal:create", (attrs, options) ->
     API.createProposal(attrs, options)

@@ -67,3 +67,8 @@
     changeSettings : (ev, response ,options) ->
       data = $.parseJSON response.responseText
       @trigger 'proposal:updated', data
+
+    onRender : ->
+      $access_list = @$el.find('[name="proposal[access_list]"]')
+      $access_list.val @model.get('access_list')
+      $access_list.autosize()

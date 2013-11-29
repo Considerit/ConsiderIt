@@ -60,7 +60,7 @@ class ProposalsController < ApplicationController
     ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
 
-    data = proposal.full_data current_tenant, current_user, session[proposal.id]
+    data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
 
     # position = ProposalsController.get_position_for_user(proposal, current_user, session)
     # data[:position] = position

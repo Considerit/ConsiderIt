@@ -158,7 +158,7 @@
             %td.proposal
               {{ proposal.get('name') ? proposal.get('name').slice(0, 50) : 'Untitled' }}
             %td.action
-              %a{ :href => "{{ Routes.new_position_proposal_path(proposal.get('long_id')) }}", :target => '_blank' }
+              %a{ :href => "{{ Routes.new_position_proposal_path(proposal.id) }}", :target => '_blank' }
                 Edit
 
           (( }); ))
@@ -178,7 +178,7 @@
             %td.proposal
               {{ proposal.get('name') ? proposal.get('name').slice(0, 50) : 'Untitled' }}
             %td.action
-              %a{ :href => "{{ Routes.new_position_proposal_path(proposal.get('long_id')) }}", :target => '_blank' }
+              %a{ :href => "{{ Routes.new_position_proposal_path(proposal.id) }}", :target => '_blank' }
                 Edit
           (( }); ))
 

@@ -61,7 +61,7 @@
 
         @listenTo layout, 'show_results', =>
           if @state == Proposal.ReasonsState.collapsed
-            App.navigate Routes.proposal_path(@model.long_id), {trigger: true}
+            App.navigate Routes.proposal_path(@model.id), {trigger: true}
 
         @processStateChange()
 

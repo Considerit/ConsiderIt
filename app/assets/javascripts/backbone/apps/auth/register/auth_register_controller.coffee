@@ -108,13 +108,18 @@
 
     getUser : ->
       if App.request 'user:fixed:exists'
-        App.request 'user:fixed'
+        [App.request('user:fixed'), true]
       else
-        App.request 'user:current'
+        [App.request('user:current'), false]
 
     getRegisterLayout : ->
-      new Register.Layout
-        model: @getUser()
+      [user, is_fixed] = @getUser()
+      if is_fixed
+        new Register.FixedLayout
+          model: user
+      else
+        new Register.Layout
+          model: user
 
     getPaperworkLayout : (user) ->
       new Register.PaperworkLayout

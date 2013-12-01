@@ -29,9 +29,21 @@
         proposal_state : Proposal.State.expanded.crafting
 
       @model = options.model
+
+      # #TODO: the reason/access denied check is lazy and error-prone ... replace somehow
+      # if !@model.openToPublic() && @model.get('reason') == "Access denied" 
+      #   return
+
       @layout = options.view || @getLayout()
 
       @setupLayout @layout
+
+      if !@model.openToPublic()
+        @listenTo App.vent, 'user:signout', =>
+          @close()
+          App.navigate Routes.root_path(), {trigger : true}
+
+
       App.reqres.setHandler "proposal_controller:#{@model.id}", => @
 
       @setState @options.proposal_state
@@ -90,9 +102,6 @@
 
         @showFinished()
 
-        if !@model.openToPublic()
-          @listenTo App.vent, 'user:signout', =>
-            App.navigate Routes.root_path(), {trigger : true}
 
     _update_attributes : ->
       @layout.$el.data @layout.attributes(false)

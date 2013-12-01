@@ -208,7 +208,7 @@
     .assessment-header
       {{author.firstName()}} writes, regarding 
       = succeed ':' do
-        %a{ :href => "{{Routes.proposal_path(root_object.long_id)}}", :target => "_blank" }
+        %a{ :href => "{{Routes.proposal_path(root_object.id)}}", :target => "_blank" }
           {{root_object.name}}
 
     .assessment-context-content
@@ -220,7 +220,7 @@
       (( } ))    
     .assessment-footer
       .assessment-footer-link
-        = link_to 'Read point in context', "{{Routes.proposal_point_path(root_object.long_id, assessable.id)}}", :target => "_blank"
+        = link_to 'Read point in context', "{{Routes.proposal_point_path(root_object.id, assessable.id)}}", :target => "_blank"
       .assessment-footer-link
         %a.email_author
           Email the author

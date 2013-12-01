@@ -57,7 +57,7 @@
           resource: 'proposal'
           pk: @long_id
           disabled: @state == Proposal.State.collapsed && @model.get('published')
-          url: Routes.proposal_path @model.long_id
+          url: Routes.proposal_path @model.id
           type: type
           name: name
           success : (response, new_value) => @model.set(name, new_value)

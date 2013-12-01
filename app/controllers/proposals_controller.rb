@@ -110,29 +110,39 @@ class ProposalsController < ApplicationController
   end
 
   def update
-    # TODO: this edit will fail for those who do not have an account & whose session timed out, but try to edit following admin_id link
+    # ASSUMPTION: a proposal cannot become unpublished after it has been published
+
     proposal = Proposal.find_by_long_id(params[:long_id])
     authorize! :update, proposal
-    publicity_changed = params[:proposal].has_key?(:publicity) && params[:proposal][:publicity] == '0'
 
-    if publicity_changed
-      before_attributes = proposal.attributes
+
+    private_discussion = (params[:proposal].has_key?(:publicity) && params[:proposal][:publicity] == '0') || proposal.publicity == 0
+
+    published_now = params[:proposal].has_key?(:published) && params[:proposal][:published] == 'true' && !proposal.published
+
+    notify_private_accessors = private_discussion && (published_now || proposal.published)
+
+    if notify_private_accessors
+      # if this proposal has already been published, then those users already given access have already been notified, so we
+      # want to make sure not to send them another invite. If this, however, is a newly published proposal, we'll want to 
+      # notify everyone in the access list, regardless of on which update they were given access to this proposal.
+      existing_access_list = !published_now ? proposal.attributes['access_list'] : nil
     end
 
     # TODO: explicitly grab params
     proposal.update_attributes!(params[:proposal])
 
-    if publicity_changed
+    if notify_private_accessors
       users = []
       inviter = nil
 
-      if before_attributes['access_list'].nil? || before_attributes['access_list'] == '' 
+      if existing_access_list.nil? || existing_access_list == '' 
         if !current_user.nil?
           inviter = current_user
         end
         users = proposal.access_list.gsub(' ', '').split(',')
       else
-        before = before_attributes['access_list'].gsub(' ', '').split(',').to_set
+        before = existing_access_list.gsub(' ', '').split(',').to_set
         after = proposal.access_list.gsub(' ', '').split(',').to_set
         users = after - before
       end
@@ -144,7 +154,9 @@ class ProposalsController < ApplicationController
         :current_tenant => current_tenant,
         :mail_options => mail_options
       )
-    elsif proposal.published
+    end
+
+    if published_now
       ActiveSupport::Notifications.instrument("proposal:updated", 
         :model => proposal,
         :current_tenant => current_tenant,

@@ -22,14 +22,14 @@
     setupLayout : (layout) ->
       user = layout.model
 
-      if App.request 'user:fixed:exists'
-        if user.authMethod() == 'email'
-          email_view = @setupEmailView
-            model: user
-            fixed: true
-          layout.emailAuthRegion.show email_view
+      if App.request 'user:fixed:exists' && user.authMethod() == 'email'
+        email_view = @setupEmailView
+          model: user
+          fixed: true
+        layout.emailAuthRegion.show email_view
 
-        else
+      else
+        if App.request 'user:fixed:exists'
           provider = switch user.authMethod()
             when 'google'
               'google_oauth2'
@@ -40,26 +40,27 @@
             model: user
             providers: [ {name: user.authMethod(), provider: provider} ]
             fixed: true
+
           layout.authOptionsRegion.show auth_options_view
 
-      else
-        
-        auth_options_view = new Signin.AuthOptions
-          model: user
-          providers: [ {name: 'email', provider: 'email'}, {name: 'google', provider: "google_oauth2"}, {name: 'facebook', provider: 'facebook'}, {name: 'twitter', provider: 'twitter'} ]
-
-        @listenTo auth_options_view, 'email_auth_request', ->
-          email_view = @setupEmailView
+        else
+          
+          auth_options_view = new Signin.AuthOptions
             model: user
-            fixed: false
-          layout.authOptionsRegion.close()
-          layout.emailAuthRegion.show email_view
+            providers: [ {name: 'email', provider: 'email'}, {name: 'google', provider: "google_oauth2"}, {name: 'facebook', provider: 'facebook'}, {name: 'twitter', provider: 'twitter'} ]
 
-        @listenTo auth_options_view, 'switch_method_requested', ->
-          @close()
-          App.vent.trigger 'registration:requested'
+          @listenTo auth_options_view, 'email_auth_request', ->
+            email_view = @setupEmailView
+              model: user
+              fixed: false
+            layout.authOptionsRegion.close()
+            layout.emailAuthRegion.show email_view
 
-        layout.authOptionsRegion.show auth_options_view
+          @listenTo auth_options_view, 'switch_method_requested', ->
+            @close()
+            App.vent.trigger 'registration:requested'
+
+          layout.authOptionsRegion.show auth_options_view
 
         @listenTo auth_options_view, 'third_party_auth_request', @handleThirdPartyAuthRequest
 

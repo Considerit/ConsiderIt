@@ -149,7 +149,7 @@
         %input{ :id => "user_name", :name => "user[name]", :pattern => "^.{1,}", :placeholder => "Your name", :required => "required", :title => "Give yourself a name, please!", :type => "text"}
 
       (( if( fixed ) { ))
-      %input{ :id => "user_email", :name => "user[email]", :type => "hidden"}
+      %input{ :id => "user_email", :name => "user[email]", :type => "hidden", :value => "{{email}}"}
       .email_field.inlined.fixed
         {{ email }}
       (( } else { ))

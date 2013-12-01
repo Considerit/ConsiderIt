@@ -132,14 +132,14 @@
     getPointsByUser : (user_id) ->
       @getPointsBy {user_id : user_id}
 
-    getPointsByProposal : (proposal_id) ->
-      points = @getPointsBy {proposal_id : proposal_id}
+    getPointsByProposal : (long_id) ->
+      points = @getPointsBy {long_id : long_id}
       points
 
-    getTopPointsByProposal : (proposal_id) ->
-      proposal = App.request 'proposal:get:id', proposal_id
-      top_pro = if proposal.get('top_pro') then @getPoint proposal.get('top_pro'), false, proposal.long_id else null
-      top_con = if proposal.get('top_con') then @getPoint proposal.get('top_con'), false, proposal.long_id else null
+    getTopPointsByProposal : (long_id) ->
+      proposal = App.request 'proposal:get', long_id
+      top_pro = if proposal.get('top_pro') then @getPoint proposal.get('top_pro'), false, long_id else null
+      top_con = if proposal.get('top_con') then @getPoint proposal.get('top_con'), false, long_id else null
 
       new Entities.Points _.compact([top_pro, top_con])
 
@@ -158,11 +158,11 @@
   App.reqres.setHandler 'points:get:user', (model_id) ->
     API.getPointsByUser model_id
 
-  App.reqres.setHandler 'points:get:proposal', (model_id) ->
-    API.getPointsByProposal model_id
+  App.reqres.setHandler 'points:get:proposal', (long_id) ->
+    API.getPointsByProposal long_id
 
-  App.reqres.setHandler 'points:get:proposal:top', (model_id) ->
-    API.getTopPointsByProposal model_id
+  App.reqres.setHandler 'points:get:proposal:top', (long_id) ->
+    API.getTopPointsByProposal long_id
 
   App.reqres.setHandler 'points:get', (filter = {}) ->
     API.getPointsBy filter

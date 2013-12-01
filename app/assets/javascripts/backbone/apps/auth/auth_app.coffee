@@ -105,7 +105,7 @@
     API.set_redirect_path_post_signin path
 
   App.vent.on 'signin:requested', -> 
-    API.begin_signin()  
+    API.begin_signin()
 
   App.vent.on 'registration:requested', -> 
     API.begin_registration()
@@ -116,7 +116,6 @@
   App.vent.on 'csrf:new', (token_val) ->
     API.updateCSRF token_val
 
-
   Auth.on "start", ->
     API.show()
 
@@ -126,9 +125,12 @@
     if API.get_password_reset_token()
       API.begin_password_reset()
 
-
     if ConsiderIt.inaccessible_proposal
-      App.request 'user:signin:set_redirect', Routes.proposal_path(ConsiderIt.inaccessible_proposal.long_id)
-      App.vent.trigger 'signin:requested'
-      ConsiderIt.inaccessible_proposal = null
+
+      @listenToOnce App.vent, 'App:Initialization:Complete', ->
+        App.request 'user:signin:set_redirect', Routes.new_position_proposal_path(ConsiderIt.inaccessible_proposal.long_id)
+        App.navigate Routes.root_path(), {trigger : true}
+        toastr.info 'Please signin first to access this private proposal!'
+        App.vent.trigger 'signin:requested'
+        ConsiderIt.inaccessible_proposal = null
 

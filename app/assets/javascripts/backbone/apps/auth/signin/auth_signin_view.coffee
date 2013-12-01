@@ -6,15 +6,14 @@
       emailAuthRegion : '.m-user-accounts-email-auth-region'
       authOptionsRegion : '.m-user-accounts-auth-options-region'
 
-    dialog:
+    dialog : 
       title : 'Sign in'
 
   class Signin.FixedLayout extends Signin.Layout
 
     dialog: -> 
-      title : "Welcome back, #{model.get('email')}! Please sign in."
+      title : "Welcome back, #{@model.get('email')}! Please sign in."
 
-    onRender: ->
 
   class Signin.AuthOptions extends App.Views.ItemView
     template: "#tpl_auth_options"
@@ -45,7 +44,10 @@
     template: "#tpl_signin_via_email"
 
     serializeData : -> 
-      {fixed : @options.fixed}
+      params = 
+        fixed : @options.fixed
+        email : if @options.fixed then @model.get('email') else null
+      params
 
     onShow : ->
       @$el.find('input[type="file"]').customFileInput()

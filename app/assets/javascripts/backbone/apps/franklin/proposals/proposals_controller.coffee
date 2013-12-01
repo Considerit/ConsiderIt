@@ -35,17 +35,15 @@
 
       layout = @getLayout()
 
-      @listenTo layout, 'show', => @handleShow layout
-
-      @listenTo App.vent, 'user:signin user:signout', => 
-        @region.reset()
-        @region.show layout
+      @listenTo layout, 'show', => 
+        @handleShow layout
 
       @region.show layout
 
-      @listenTo App.vent, 'proposals:fetched:done proposals:added', => 
-        @region.reset()
-        @region.show layout
+      # Not sure why the following was important. It was creating problems with private discussion workflow.
+      # @listenTo App.vent, 'proposals:fetched:done proposals:added', => 
+      #   @region.reset()
+      #   @region.show layout
 
       @layout = layout
 
@@ -164,9 +162,17 @@
   class Proposals.ActiveListController extends Proposals.AbstractListController
     is_active : true
 
+    initialize : (options = {}) ->
+      super options
+
+      @listenTo App.vent, 'user:signin user:signout', => 
+        @createCreateRegion @layout
 
     handleShow : (layout) ->
       super layout
+      @createCreateRegion layout
+
+    createCreateRegion : (layout) ->      
       can_create = App.request "auth:can_create_proposal"
       if can_create
         create_view = @getCreateView()
@@ -185,7 +191,7 @@
         wait: true
         success: (proposal) => 
           @proposals_view.collection.add proposal
-          App.navigate Routes.new_position_proposal_path(proposal.long_id), {trigger: true}
+          App.navigate Routes.new_position_proposal_path(proposal.id), {trigger: true}
 
 
     getCreateView : ->

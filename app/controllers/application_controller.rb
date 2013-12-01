@@ -35,7 +35,8 @@ class ApplicationController < ActionController::Base
       # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") if user.nil?
 
 
-      permission =   (user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") == params[:t]) \
+      # is it a security problem to allow users to continue to sign in through the tokenized email after they've created an account?
+      permission =   (ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") == params[:t]) \
                   ||(!user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{user.unique_token}#{current_tenant.identifier}") == params[:t]) # this user already exists, want to have a harder auth method; still not secure if user forwards their email
 
       if permission
@@ -49,6 +50,9 @@ class ApplicationController < ActionController::Base
       @limited_user_follows = @limited_user.follows.all
       @limited_user_email = @limited_user.email
     end
+
+
+    pp @limited_user
 
     #TODO: what does this do?
     if args && args.first.respond_to?('has_key?')

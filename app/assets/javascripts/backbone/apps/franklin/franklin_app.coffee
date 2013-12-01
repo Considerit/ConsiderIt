@@ -113,17 +113,21 @@
           transition()
 
     Consider: (long_id) -> 
+      return if ConsiderIt.inaccessible_proposal != null      
       proposal = App.request 'proposal:get', long_id, true
-      @_transitionProposal proposal, Franklin.Proposal.State.expanded.crafting, [ ['homepage', '/'], ["#{proposal.title(40)}", Routes.new_position_proposal_path(proposal.long_id)] ]
+      @_transitionProposal proposal, Franklin.Proposal.State.expanded.crafting, [ ['homepage', '/'], ["#{proposal.title(40)}", Routes.new_position_proposal_path(proposal.id)] ]
 
     Aggregate: (long_id) -> 
+      return if ConsiderIt.inaccessible_proposal != null      
       proposal = App.request 'proposal:get', long_id, true
       @_transitionProposal proposal, Franklin.Proposal.State.expanded.results, [ 
           ['homepage', '/'], 
-          ["#{proposal.title(40)}", Routes.new_position_proposal_path(proposal.long_id)] 
-          ["results", Routes.proposal_path(proposal.long_id)]]
+          ["#{proposal.title(40)}", Routes.new_position_proposal_path(proposal.id)] 
+          ["results", Routes.proposal_path(proposal.id)]]
 
     PointDetails: (long_id, point_id) -> 
+      return if ConsiderIt.inaccessible_proposal != null      
+
       App.vent.trigger 'route:started', null
 
       proposal = App.request 'proposal:get', long_id, true
@@ -166,7 +170,7 @@
 
         crumbs = [ 
           ['homepage', '/'], 
-          ["#{proposal.long_id}", Routes.new_position_proposal_path(long_id)]
+          ["#{proposal.id}", Routes.new_position_proposal_path(long_id)]
           ["#{ if point.isPro() then 'Pro' else 'Con'} point", Routes.proposal_point_path(long_id, point_id)] ]
 
         if @franklin_controller instanceof Franklin.Proposal.ProposalController && @franklin_controller.state == Franklin.Proposal.State.expanded.results
@@ -176,6 +180,8 @@
         App.request 'meta:change:default'
 
     StaticPosition: (long_id, user_id) ->
+      return if ConsiderIt.inaccessible_proposal != null      
+
       App.vent.trigger 'route:started', null
 
       proposal = App.request 'proposal:get', long_id, true
@@ -198,7 +204,7 @@
 
         crumbs = [ 
           ['homepage', '/'], 
-          ["#{proposal.long_id}", Routes.new_position_proposal_path(long_id)],      
+          ["#{proposal.id}", Routes.new_position_proposal_path(long_id)],      
           ["results", Routes.proposal_path(long_id)],          
           ["#{user.get('name')}", Routes.proposal_position_path(long_id, position.id)] ]
 

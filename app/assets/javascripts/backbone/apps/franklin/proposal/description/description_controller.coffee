@@ -18,6 +18,11 @@
 
       @setupLayout @layout
 
+      @listenTo App.vent, 'user:signin user:signout', => 
+        if @region #this controller might have been closed by parent, e.g. if this is a private proposal and user just signed out         
+          @region.reset()
+          @region.show @layout
+
       @region.open = (view) => @transition @region, view # this will set how this region handles the transitions between views
       @region.show @layout
 
@@ -42,7 +47,7 @@
 
       @listenTo layout, 'show', ->
         @listenTo layout, 'proposal:clicked', =>
-          App.navigate Routes.new_position_proposal_path( @model.long_id ), {trigger: true}
+          App.navigate Routes.new_position_proposal_path( @model.id ), {trigger: true}
 
         if App.request "auth:can_edit_proposal", @model
           @admin_controller = @getAdminController layout.adminRegion

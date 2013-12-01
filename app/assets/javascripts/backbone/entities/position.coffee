@@ -175,14 +175,11 @@
       # if position
       #   @all_positions.add position, {merge: true}
 
-    getPositionForProposalForCurrentUser : (proposal_id, create_if_not_found = true) ->
+    getPositionForProposalForCurrentUser : (long_id, create_if_not_found = true) ->
       current_user = App.request 'user:current'
-      params = 
-        proposal_id: proposal_id
-        user_id: current_user.id
 
       position = @all_positions.findWhere
-        proposal_id: proposal_id
+        long_id: long_id
         user_id: current_user.id
 
       if !position && create_if_not_found
@@ -190,16 +187,16 @@
         position = new Entities.Position # todo: does this work when someone logs in after position created?
           user_id : current_user.id #todo: make sure this doesn't get shown in results
           published : false
-          proposal_id : proposal_id
-          long_id: App.request('proposal:get:id', proposal_id).get('long_id')
+          long_id: long_id 
+          proposal_id : App.request('proposal:get', long_id).get('id')
 
         @all_positions.add position
 
       position
 
 
-    getPositionsByProposal : (proposal_id) ->
-      new Entities.Positions @all_positions.where({proposal_id: proposal_id, published : true})
+    getPositionsByProposal : (long_id) ->
+      new Entities.Positions @all_positions.where({long_id: long_id, published : true})
 
     getPositionsByUser : (user_id) ->
       new Entities.Positions @all_positions.where({user_id: user_id})
@@ -230,14 +227,14 @@
   App.reqres.setHandler 'positions:get', ->
     API.getPositions()
 
-  App.reqres.setHandler 'positions:get:proposal', (model_id) ->
-    API.getPositionsByProposal model_id
+  App.reqres.setHandler 'positions:get:proposal', (long_id) ->
+    API.getPositionsByProposal long_id
 
   App.reqres.setHandler 'positions:get:user', (model_id) ->
     API.getPositionsByUser model_id
 
-  App.reqres.setHandler 'position:current_user:proposal', (proposal_id, create_if_not_found = true) ->
-    API.getPositionForProposalForCurrentUser proposal_id, create_if_not_found
+  App.reqres.setHandler 'position:current_user:proposal', (long_id, create_if_not_found = true) ->
+    API.getPositionForProposalForCurrentUser long_id, create_if_not_found
 
 
   App.addInitializer ->

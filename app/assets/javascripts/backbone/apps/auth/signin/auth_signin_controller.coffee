@@ -1,7 +1,7 @@
 @ConsiderIt.module "Auth.Signin", (Signin, App, Backbone, Marionette, $, _) ->
 
   class Signin.Controller extends App.Controllers.Base
-    initialize : ->
+    initialize : (options = {}) ->
       @layout = @getSigninLayout()
       @listenTo @layout, 'show', =>
         @setupLayout @layout
@@ -61,11 +61,12 @@
 
         layout.authOptionsRegion.show auth_options_view
 
-      @listenTo auth_options_view, 'third_party_auth_request', @handleThirdPartyAuthRequest
+        @listenTo auth_options_view, 'third_party_auth_request', @handleThirdPartyAuthRequest
 
     setupEmailView : (options) ->
+
       email_view = new Signin.ViaEmail
-        model: options.user
+        model: options.model
         fixed: options.fixed
       
       @listenTo email_view, 'passwordReminderRequested', @handlePasswordReminderRequested      
@@ -90,20 +91,25 @@
       else
         view.signinFailed data.reason
 
-
     getOverlay : (view) ->
       App.request 'dialog:new', view, 
         class: 'auth_overlay'
 
     getUser : ->
       if App.request 'user:fixed:exists'
-        App.request 'user:fixed'
+        [App.request('user:fixed'), true]
       else
-        App.request 'user:current'
+        [App.request('user:current'), false]
 
     getSigninLayout : ->
-      new Signin.Layout
-        model: @getUser()
+      [user, is_fixed] = @getUser()
+
+      if is_fixed
+        new Signin.FixedLayout
+          model: user
+      else
+        new Signin.Layout
+          model: user
 
 
   class Signin.PasswordResetController extends Signin.Controller
@@ -118,7 +124,7 @@
 
     getSigninLayout : ->
       new Signin.PasswordResetView
-        model: @getUser()
+        model: @getUser()[0]
 
 
 

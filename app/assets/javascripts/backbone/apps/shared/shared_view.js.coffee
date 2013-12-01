@@ -32,8 +32,8 @@
         user = App.request 'user', $target.data('id')
 
         if $target.closest('[data-role="m-proposal"]').length > 0
-          proposal_id = $target.closest('[data-role="m-proposal"]').data('id')
-          proposal = App.request 'proposal:get:id', proposal_id
+          long_id = $target.closest('[data-role="m-proposal"]').data('id')
+          proposal = App.request 'proposal:get', long_id
 
           proposal = null if !proposal.user_participated(user.id) 
 

@@ -58,7 +58,7 @@
           url = Routes.proposal_point_path obj.get('proposal_id'), obj.get('root_id')
           anchor = 'View this Comment'
         when 'Proposal'
-          url = Routes.proposal_path obj.get('long_id')
+          url = Routes.proposal_path obj.id
           anchor = 'View this Proposal'
 
       _.extend {}, @model.attributes,

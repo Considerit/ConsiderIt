@@ -65,4 +65,6 @@
       region: new Backbone.Marionette.Region
         el: $("#t-bg")
 
+    App.vent.trigger 'App:Initialization:Complete'
+
   App

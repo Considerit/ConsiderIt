@@ -3,6 +3,7 @@
   class Entities.Proposal extends App.Entities.Model
     name: 'proposal'
     fetched: false
+    idAttribute : 'long_id'
     defaults : 
       participants : '[]'
       active : true
@@ -10,8 +11,8 @@
 
     initialize : (options = {}) ->
       super options
-      @long_id = @get 'long_id'
-      @on 'change:long_id', (model, value) -> model.long_id = value   
+      #@long_id = @get 'long_id'
+      #@on 'change:long_id', (model, value) -> model.long_id = value   
 
       if !@attributes.participants || @attributes.participants == ""
         @participant_list = []
@@ -21,8 +22,8 @@
     urlRoot : ''
 
     url : () ->
-      if @long_id
-        Routes.proposal_path( @attributes.long_id ) 
+      if @id
+        Routes.proposal_path @id
       else
         # for create
         Routes.proposals_path()
@@ -60,9 +61,6 @@
         App.request 'assessments:add', (a.assessment for a in params.assessments)
         App.request 'claims:add', (c.claim for c in params.claims)
         App.request 'verdicts:add', (v.verdict for v in params.verdicts)
-
-
-
 
 
     #TODO: make this general beyond LVG
@@ -176,7 +174,7 @@
 
     initialize : (options = {}) ->
       super options
-      @listenTo ConsiderIt.vent, 'user:signout', => 
+      @listenTo App.vent, 'user:signout', => 
         @purge_inaccessible()      
 
     url : ->
@@ -196,8 +194,9 @@
       proposals
 
     purge_inaccessible : -> 
-      @remove @filter (p) -> 
+      to_remove = @filter (p) -> 
         p.get('publicity') < 2 || !p.get('published')
+      @remove to_remove
 
 
   class Entities.PaginatedProposals extends window.mixOf Entities.Proposals, App.Entities.PaginatedCollection 
@@ -216,7 +215,7 @@
 
 
     bootstrapProposal : (proposal_attrs) ->
-      proposal = @all_proposals.findWhere {long_id : proposal_attrs.proposal.proposal.long_id}
+      proposal = @all_proposals.get proposal_attrs.proposal.proposal.long_id
       if proposal        
         proposal.set proposal_attrs.proposal
       else
@@ -231,7 +230,7 @@
       proposal
     
     getProposal: (long_id, fetch = false) ->
-      proposal = @all_proposals.findWhere {long_id : long_id}
+      proposal = @all_proposals.get long_id
 
       if !proposal
         proposal = API.newProposal {long_id : long_id}
@@ -241,9 +240,10 @@
       proposal
 
     getProposalById: (id, fetch = false) ->
-      proposal = @all_proposals.get id
+      throw 'Cannot get proposal without id' if !id
+      proposal = @all_proposals.findWhere {id : id}
       if !proposal
-        proposal = API.newProposal {long_id : long_id}
+        proposal = API.newProposal {id : id}
         proposal.fetch()
       else if fetch
         proposal.fetch()
@@ -347,5 +347,6 @@
       App.request 'proposal:bootstrap', ConsiderIt.current_proposal
 
 
-
-
+    # @listenTo API.all_proposals, 'add', (p) ->
+    #   console.log 'Added', p
+    #   trace()

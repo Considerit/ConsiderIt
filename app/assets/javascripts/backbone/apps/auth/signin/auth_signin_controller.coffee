@@ -22,7 +22,7 @@
     setupLayout : (layout) ->
       user = layout.model
 
-      if App.request 'user:fixed:exists' && user.authMethod() == 'email'
+      if App.request('user:fixed:exists') && user.authMethod() == 'email'
         email_view = @setupEmailView
           model: user
           fixed: true

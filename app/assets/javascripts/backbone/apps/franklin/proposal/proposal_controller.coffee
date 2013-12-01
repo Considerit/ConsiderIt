@@ -30,10 +30,6 @@
 
       @model = options.model
 
-      # #TODO: the reason/access denied check is lazy and error-prone ... replace somehow
-      # if !@model.openToPublic() && @model.get('reason') == "Access denied" 
-      #   return
-
       @layout = options.view || @getLayout()
 
       @setupLayout @layout

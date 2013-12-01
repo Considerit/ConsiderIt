@@ -12,7 +12,7 @@
   class Register.FixedLayout extends Register.Layout
 
     dialog: -> 
-      title : "Welcome, #{model.get('email')}! Please create an account."
+      title : "Welcome, #{@model.get('email')}! Please create an account."
 
   class Register.AuthOptions extends App.Views.ItemView
     template: "#tpl_auth_options"

@@ -45,9 +45,9 @@
     
     // LIMITED USER
 
-    var limited_user_data = #{@limited_user_email ? {email: '#{@limited_user_email}'} : 'null'};
+    var limited_user_data = #{@limited_user_email ? "{email: '#{@limited_user_email}'}" : 'null'};
 
-    ConsiderIt.limited_user_data = #{@limited_user ? "{ id: #{@limited_user.id} , google_uid: '#{@limited_user.google_uid}', facebook_uid: '#{@limited_user.facebook_uid}', twitter_uid: '#{@limited_user.twitter_uid}'}" : 'limited_user_data'};
+    ConsiderIt.limited_user_data = #{@limited_user ? "{ id: #{@limited_user.id}, email: '#{@limited_user_email}', google_uid: '#{@limited_user.google_uid}', facebook_uid: '#{@limited_user.facebook_uid}', twitter_uid: '#{@limited_user.twitter_uid}'}" : 'limited_user_data'};
 
     ConsiderIt.limited_user_follows = #{@limited_user ? @limited_user_follows.to_json : 'null'};
 

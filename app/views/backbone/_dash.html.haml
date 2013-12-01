@@ -182,7 +182,7 @@
               .m-dashboard-profile-activity-substance
                 {{ proposal.get('name') }}
             %td.m-dashboard-profile-activity-action
-              = link_to 'View and consider', "{{Routes.proposal_path(proposal.long_id)}}"
+              = link_to 'View and consider', "{{Routes.proposal_path(proposal.id)}}"
           (( }); ))
       (( } else { ))
       .m-dashboard-profile-activity-empty
@@ -201,7 +201,7 @@
         %tbody
           (( positions.each(function(position){ ))
           (( var proposal = position.getProposal(); ))
-          (( var route = Routes.user_position_proposal_path(proposal.get('long_id'), id); ))
+          (( var route = Routes.user_position_proposal_path(proposal.id, id); ))
           %tr
             %td.m-dashboard-profile-activity-substance-wrap
               .m-dashboard-profile-activity-substance
@@ -232,7 +232,7 @@
         %tbody
           (( points.each(function(point){ ))
           (( var proposal = point.getProposal(); ))  
-          (( var route = Routes.proposal_point_path(proposal.get('long_id'), point.id); ))          
+          (( var route = Routes.proposal_point_path(proposal.id, point.id); ))          
           %tr
             %td.m-dashboard-profile-activity-substance-wrap
               .m-dashboard-profile-activity-substance
@@ -265,7 +265,7 @@
           (( comments.each(function(comment){ ))
           (( var point = comment.getRoot(); ))
           (( var proposal = point.getProposal(); ))
-          (( var route = Routes.proposal_point_path(proposal.get('long_id'), point.id); ))
+          (( var route = Routes.proposal_point_path(proposal.id, point.id); ))
           %tr
             %td.m-dashboard-profile-activity-substance-wrap
               .m-dashboard-profile-activity-substance

@@ -270,8 +270,8 @@
 
         @listenTo footer_view, 'point:create:requested', (attrs) =>
           _.extend attrs, 
-            proposal_id : @options.proposal.id
-            long_id : @options.proposal.long_id
+            proposal_id : @options.proposal.get('id')
+            long_id : @options.proposal.id
 
           new_point = App.request 'point:create', attrs
           App.execute 'when:fetched', new_point, =>

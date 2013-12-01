@@ -119,7 +119,7 @@
     setupFooterLayout : (view) ->
       @listenTo view, 'position:canceled', =>
         # TODO: discard changes?
-        App.navigate Routes.proposal_path(@proposal.long_id), {trigger: true}
+        App.navigate Routes.proposal_path(@proposal.id), {trigger: true}
 
       @listenTo view, 'position:submit-requested', (follow_proposal) => 
 

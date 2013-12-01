@@ -228,7 +228,7 @@
       url
 
     addUser : (params) ->
-      @users.add params
+      @all_users.add params
 
     handleUpdatedCurrentUser : (current_user) ->
       old_user = @all_users.remove current_user.id
@@ -277,14 +277,16 @@
     get_fixed_user : ->
       @fixed_user
 
+    _upgradeToOperatingUser : (user) ->
+      if !(user instanceof Entities.OperatingUser)
+        _.extend user, Entities.OperatingUser.prototype
+
     set_current_user : (user_id) ->
       existing_user = App.request 'user', user_id
-      if !(existing_user instanceof Entities.OperatingUser)
-        _.extend existing_user, Entities.OperatingUser.prototype
+      @_upgradeToOperatingUser existing_user
 
       # This is hacky. Updating both prior references to current user while also upgrading old. Could lead to some probs.
-      if !(@current_user instanceof Entities.OperatingUser)
-        _.extend @current_user, Entities.OperatingUser.prototype if @current_user
+      @_upgradeToOperatingUser @current_user if @current_user
       @current_user.set existing_user.attributes if @current_user
       ######
 
@@ -294,12 +296,14 @@
       @current_user
 
     set_fixed_user : (user_data) ->
-      if id of user_data.user     
+      if 'id' of user_data.user     
         @fixed_user = App.request 'user', user_data.user.id
         @fixed_user.set user_data.user
+        @_upgradeToOperatingUser @fixed_user
         @fixed_user.setFollows user_data.follows if 'follows' of user_data
       else
         @fixed_user = App.request 'users:add', {email: user_data.user.email}      
+        @_upgradeToOperatingUser @fixed_user
 
       @fixed_user
 
@@ -394,6 +398,7 @@
     else
       AUTH_API.clear_current_user()
 
+    console.log ConsiderIt.limited_user_data
     if ConsiderIt.limited_user_data
       AUTH_API.set_fixed_user { user : ConsiderIt.limited_user_data, follows : ConsiderIt.limited_user_follows }
     

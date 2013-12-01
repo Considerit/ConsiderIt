@@ -63,10 +63,14 @@
 
     events : 
       'ajax:complete .m-proposal-admin_operations-settings-form' : 'changeSettings'
+      'click [name="proposal[access_list]"]' : 'selectPrivate'
 
     changeSettings : (ev, response ,options) ->
       data = $.parseJSON response.responseText
       @trigger 'proposal:updated', data
+
+    selectPrivate : (ev) ->
+      @$el.find('#proposal_publicity_0').prop 'checked', 'checked'
 
     onRender : ->
       $access_list = @$el.find('[name="proposal[access_list]"]')

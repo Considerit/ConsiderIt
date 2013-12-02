@@ -164,9 +164,6 @@
     handleToggleBrowse : (ev) ->
       @trigger 'points:browsing:toggle', @browsing
       ev.stopPropagation()
-      # if @state != Points.States.collapsed
-      #   @toggleBrowse !@browsing
-      #   ev.stopPropagation()
 
   class Points.ExpandablePointListFooter extends App.Views.ItemView
     template : '#tpl_points_expandable_footer'

@@ -225,6 +225,7 @@
       new App.Franklin.Points.PeerPointsController
         valence : valence
         collection : collection
+        proposal : @model
         region : region
         parent_controller : @
         parent_state : @state

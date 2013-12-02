@@ -51,6 +51,11 @@
     cursor: pointer
 
 
+.m-pointlist-browsing .m-peer-reasons
+  &[data-state="points-separated"]
+    .m-point-expanded.con.m-point-peer
+      right: $m-point-expanded-width - $peer-point-width + 56 - $expanded_points_increment
+
 .m-peer-reasons
 
   &[data-state="points-together"]
@@ -101,8 +106,8 @@
     padding-bottom: $vertical_baseline / 2
 
   .m-point-nutshell
-    +font-size(3)
-    font-weight: bold
+    +font-size(4)
+    //font-weight: bold
 
   .m-point-details-description 
     +font-size(0)
@@ -284,7 +289,7 @@
   position: relative
 
 .m-point-discussion-heading
-  +font-size(3)
+  +font-size(2)
   margin: $vertical_baseline 0
 
 .m-point-comments

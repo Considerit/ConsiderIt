@@ -119,8 +119,21 @@
   class Entities.Positions extends App.Entities.Collection
     model : Entities.Position
 
+    parse : (models) ->
+      if models instanceof Entities.Position
+        # happens when new proposal is created, called by backbone.set
+        positions = [models] 
+      else if !(models instanceof Array)
+        positions = ((p.position for p in models.positions))
+      else
+        positions = ((p.position for p in models))
+
+      positions
+
+
   API = 
     all_positions : new Entities.Positions()
+
 
     getPosition : (position_id) ->
       @all_positions.get position_id
@@ -163,6 +176,7 @@
 
           position.trigger 'position:synced'
 
+
         failure : (data) => @trigger 'position:sync:failed'
 
       App.execute 'show:loading',
@@ -171,11 +185,10 @@
           xhr: true
 
 
-    addPositions : (positions) -> #, position = null) ->
+    addPositions : (positions) -> 
       positions = @all_positions.parse(positions)
-      @all_positions.add positions, {merge: true}
-      # if position
-      #   @all_positions.add position, {merge: true}
+      @all_positions.add positions,
+        merge: true
 
     getPositionForProposalForCurrentUser : (long_id, create_if_not_found = true) ->
       current_user = App.request 'user:current'
@@ -209,7 +222,7 @@
     positionSubsumed : (position_data) ->
       position = @all_positions.get position_data.id
       if position
-        #@all_positions.remove position
+        #@all_positions.remove position        
         position.trigger 'destroy', position, position.collection
 
   App.vent.on 'position:subsumed', (position_data) ->

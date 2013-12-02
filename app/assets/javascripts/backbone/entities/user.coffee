@@ -17,7 +17,7 @@
       if details
         data.proposals = data.proposals.concat(_.values(data.referenced_proposals))
         App.vent.trigger 'proposals:fetched', data.proposals
-        App.vent.trigger 'positions:fetched', (p.position for p in data.positions)
+        App.vent.trigger 'positions:fetched', data.positions
         App.vent.trigger 'points:fetched', (p.point for p in data.points.concat(_.values(data.referenced_points)))        
         App.vent.trigger 'comments:fetched', (c.comment for c in data.comments)
         @setInfluencedUsers data.influenced_users, data.influenced_users_by_point

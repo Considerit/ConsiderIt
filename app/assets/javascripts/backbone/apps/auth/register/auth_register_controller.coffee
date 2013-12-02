@@ -11,6 +11,7 @@
 
       @listenTo @dialog_overlay, 'dialog:canceled', =>
         App.request 'user:current:clear'
+        App.vent.trigger 'user:signin:canceled'
         @close()
 
       @listenTo App.vent, 'registration:complete_paperwork', =>

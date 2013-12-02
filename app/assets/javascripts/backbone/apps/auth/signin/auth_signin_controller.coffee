@@ -9,6 +9,7 @@
       @dialog_overlay = @getOverlay @layout
       @listenTo @dialog_overlay, 'dialog:canceled', =>
         App.request 'user:current:clear'
+        App.vent.trigger 'user:signin:canceled'
         @close()
 
       @listenTo App.vent, 'user:signin', =>

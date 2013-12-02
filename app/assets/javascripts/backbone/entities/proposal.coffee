@@ -49,7 +49,7 @@
         (p.point for p in params.points)
 
       App.vent.trigger 'positions:fetched', 
-        (p.position for p in params.positions) #, params.position.position
+        (p for p in params.positions) #, params.position.position
 
       #@setUserPosition params.position.position.id
 
@@ -124,7 +124,6 @@
       user_id = position.get('user_id')
       if position.get('published') 
         if !@user_participated(user_id)
-          @positions = null
           @participant_list.push user_id 
 
         if !@get('top_pro')

@@ -145,8 +145,10 @@
           App.vent.trigger 'registration:requested'
           @listenToOnce App.vent, 'user:signin', => 
             @stopListening App.vent, 'user:signin:canceled'
-            @model.setUser App.request 'user:current'
-            submitPosition()
+
+            @listenToOnce App.vent, 'user:signin:data_loaded', =>
+              # wait for content to be loaded for user, otherwise weird combinations occur
+              submitPosition()
 
           @listenToOnce App.vent, 'user:signin:canceled', =>
             # if user cancels login, then we could later submit this position unexpectedly when signing in to submit a different position!      

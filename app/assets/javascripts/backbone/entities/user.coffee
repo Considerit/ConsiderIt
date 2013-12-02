@@ -22,6 +22,7 @@
         App.vent.trigger 'comments:fetched', (c.comment for c in data.comments)
         @setInfluencedUsers data.influenced_users, data.influenced_users_by_point
         @fetched = true
+        #TODO: umm, shouldn't this return something?        
       else
         data
 
@@ -181,9 +182,6 @@
       @id == point.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()      
 
   class Entities.Users extends Entities.Collection
-
-    initialize : (options = {}) ->
-      super options
 
     model: (attrs, options) ->
       if attrs.id? && 'operating_users' of options && attrs.id in options.operating_users
@@ -398,7 +396,6 @@
     else
       AUTH_API.clear_current_user()
 
-    console.log ConsiderIt.limited_user_data
     if ConsiderIt.limited_user_data
       AUTH_API.set_fixed_user { user : ConsiderIt.limited_user_data, follows : ConsiderIt.limited_user_follows }
     

@@ -143,10 +143,14 @@
         user = @model.getUser()
         if user.isNew() || user.id < 0
           App.vent.trigger 'registration:requested'
-          # if user cancels login, then we could later submit this position unexpectedly when signing in to submit a different position!      
           @listenToOnce App.vent, 'user:signin', => 
+            @stopListening App.vent, 'user:signin:canceled'
             @model.setUser App.request 'user:current'
             submitPosition()
+
+          @listenToOnce App.vent, 'user:signin:canceled', =>
+            # if user cancels login, then we could later submit this position unexpectedly when signing in to submit a different position!      
+            @stopListening App.vent, 'user:signin'
         else
           submitPosition()
 

@@ -177,8 +177,9 @@
         @listenTo @header_view, 'points:browsing:toggle', (current_browse_state) =>
           if @state != Points.States.collapsed
             @toggleBrowsing current_browse_state
+          else
+            App.navigate Routes.proposal_path(@options.proposal.id), {trigger : true}
           
-
         @listenTo @footer_view, 'points:browsing:toggle', (current_browse_state) =>
           if @state != Points.States.collapsed
             @toggleBrowsing current_browse_state

@@ -46,7 +46,7 @@
 
 
 %script{:type => "text/template", :id => "tpl_points_expandable_footer"}
-  (( if(has_more_points){ ))
+  (( if(has_more_points || browsing_all){ ))
   .m-pointlist-browse
     %a.m-pointlist-browse-toggle{'data-target' => 'browse-toggle'}
       (( if( browsing_all ) { ))

@@ -67,7 +67,7 @@
 
     updatePeerPoints : (layout) ->
 
-      if @prior_state
+      if @peer_pros_controller && @peer_cons_controller
         all_points = App.request 'points:get:proposal', @model.id
         @peer_pros_controller.options.collection.fullCollection.add all_points.filter((point) -> point.isPro()) 
         @peer_cons_controller.options.collection.fullCollection.add all_points.filter((point) -> !point.isPro())

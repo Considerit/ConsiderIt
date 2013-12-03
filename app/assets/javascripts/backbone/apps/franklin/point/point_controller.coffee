@@ -34,8 +34,6 @@
 
       @layout.expansionRegion.reset() if @layout.expansionRegion
 
-      #@layout.$el.ensureInView {fill_threshold: .5}
-
       if @layout.$el.parents('[data-state="points-separated"]').length > 0
         @layout.enableDrag()
 

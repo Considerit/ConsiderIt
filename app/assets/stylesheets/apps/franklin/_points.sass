@@ -23,6 +23,16 @@
       color: darken($base_bg_color, 25%)
       font-weight: bold
 
+.m-pointlist-browsing
+  [data-state="points-separated"]
+    .m-pointlist-browse-toggle
+      width: $peer-point-wrap-width + $expanded_points_increment
+
+  [data-state="points-together"]
+    .m-pointlist-browse-toggle
+      width: $peer-point-wrap-results-width + $expanded_points_increment
+
+
 [data-state="points-separated"]
   .m-pointlist-browse-toggle
     width: $peer-point-wrap-width

@@ -11,7 +11,9 @@ class InclusionsController < ApplicationController
       return
     end
 
-    proposal = Proposal.find params[:proposal_id]
+    proposal = Proposal.find_by_long_id params[:proposal_id]
+
+    params[:proposal_id] = proposal.id
     point = Point.published.find params[:point_id]
 
     ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)

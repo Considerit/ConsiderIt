@@ -148,9 +148,9 @@
       footer_view = @footer_view
 
       if !current_browse_state
+        @trigger 'points:browsing', @options.valence
         header_view.setBrowsing true
         footer_view.setBrowsing true
-        @trigger 'points:browsing', @options.valence
         @previous_page_size = @options.collection.state.pageSize
         @options.collection.setPageSize 1000
         @current_browse_state = true

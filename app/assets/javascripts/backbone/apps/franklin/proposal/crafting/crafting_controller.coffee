@@ -30,8 +30,13 @@
             existing_position.subsume @model
             @trigger 'signin:position_changed', existing_position_had_included_points
 
+        
+          
+        @options.parent_controller.saveOpenPoint()
         @region.reset()
         @region.show @layout
+        @options.parent_controller.restoreOpenPoint()
+
 
       @listenTo App.vent, 'user:signout', => 
         if @proposal.openToPublic()

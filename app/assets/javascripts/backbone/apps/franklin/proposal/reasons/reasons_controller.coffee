@@ -166,7 +166,7 @@
             followable_type : 'Point'
             followable_id : model.id
             follow : true
-            explicit: false      
+            explicit: false
 
     setupCraftingController : (controller) ->
       @listenTo controller, 'point:removal', (model) =>
@@ -182,13 +182,36 @@
       # After signing in, the existing user may have a preexisting position. We need
       # to refresh the points shown in the margins if that preexisting position had included points.
       # Similarily after a user signs out, the points in their list should be returned to peer points.
-      @listenTo controller, 'signin:position_changed', =>
-        if @state == Proposal.ReasonsState.separated
+      @listenTo controller, 'signin:position_changed', (existing_position_had_included_points) =>
+        if @state == Proposal.ReasonsState.separated && existing_position_had_included_points
+
+          #### SUPER HACKY YUCK
+          # check if any points are open now, and, if so, save them such that we can reopen it after we arere done resetting peer points
+          has_open_point = @region.$el.find('.m-point-expanded').length > 0
+          if has_open_point
+            $expanded_point = @region.$el.find('.m-point-expanded')
+            point_id = $expanded_point.data('id')
+            point = App.request 'point:get', point_id
+            comment_text = $expanded_point.find('.m-new-comment-body-field').val()
+            $('body').trigger('click')
+          #####################
+          
           @updatePeerPoints @layout
+
+          #### MORE HACKY CRAP
+          if has_open_point
+            _.delay =>
+              App.navigate Routes.proposal_point_path(point.get('long_id'), point.id), {trigger : true}
+              $expanded_point = @region.$el.find('.m-point-expanded')
+              $comment_field = $expanded_point.find('.m-new-comment-body-field')
+              $comment_field.val comment_text
+              $comment_field.ensureInView {scroll: false}
+            , 10
+          ####################
+          
 
       @listenTo controller, 'position:published', =>
         @trigger 'position:published'
-
 
       @listenTo controller, 'point:include', (model) =>
         @includePoint model

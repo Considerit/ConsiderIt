@@ -130,7 +130,7 @@
       @listenToOnce App.vent, 'App:Initialization:Complete', ->
         App.request 'user:signin:set_redirect', Routes.new_position_proposal_path(ConsiderIt.inaccessible_proposal.long_id)
         App.navigate Routes.root_path(), {trigger : true}
-        toastr.info 'Please signin first to access this private proposal!'
+        toastr.info 'Please sign in first to access this private proposal!'
         App.vent.trigger 'signin:requested'
         ConsiderIt.inaccessible_proposal = null
 

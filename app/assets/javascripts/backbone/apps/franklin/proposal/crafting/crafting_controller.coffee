@@ -26,8 +26,9 @@
           if !existing_position
             @model.setUser current_user
           else
+            existing_position_had_included_points = _.size(existing_position.getIncludedPoints()) > 0
             existing_position.subsume @model
-            @trigger 'signin:position_changed'
+            @trigger 'signin:position_changed', existing_position_had_included_points
 
         @region.reset()
         @region.show @layout

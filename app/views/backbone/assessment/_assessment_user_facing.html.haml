@@ -35,12 +35,11 @@
     %input.button{ :name => "commit", :type => "submit", :value => "Submit your request"}
   (( } else { ))
   .login
-    %a{:'data-target' => 'login', :class => "m-login-signin"}
-      Sign In
-    or
-    %a.m-login-signup{:'data-target' => 'create_account'}
-      Create an Account
+    You must
 
+    = surround '' do 
+      %a{:'data-target' => 'login', :class => "m-login-signin"}
+        Sign In
     to request a fact check.
   (( } ))
 

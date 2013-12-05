@@ -23,11 +23,6 @@
   +font-size(-1)
   font-weight: bold
 
-.m-login-signin.has_register:after
-  position: relative
-  content: $hex-bullet-point
-  right: 0
-
 .m-user-options
   cursor: pointer
   position: relative
@@ -82,27 +77,26 @@
 .m-user-accounts-auth-options-region
   margin-top: $vertical_baseline
 
+  .m-user-accounts-auth-options-header
+    +font-size(-1)
+    color: #666
+    margin-bottom: $vertical_baseline/2
+
   .m-user-accounts-auth-options
     @extend %nude_list
     padding-bottom: $vertical_baseline
 
     .m-user-accounts-login-option
-      display: inline
+      margin-bottom: $vertical_baseline/4
+      //display: inline
       margin-right: $grid_xs
       position: relative
       +font-size(-1)
+      .zocial
+        width: 125px
+
       &.hide
         display: none
-
-
-  .m-user-accounts-fineprint
-    +font-size(-2)
-    display: inline-block
-    position: absolute
-    bottom: -2.5 * $vertical_baseline
-    left: 5px
-    width: 250px
-    text-align: left
 
   .m-user-accounts-switch-method-wrapper
     a span
@@ -113,13 +107,30 @@ $avatar_preview_height: 120px
 $membership_card_width: 450px
 $membership_card_height: 278px
 
-.m-user-accounts-email-auth-region, .m-user-accounts-complete-paperwork-form
+
+.m-user-accounts-email-auth-region, .m-user-accounts-auth-options-region
+  display: inline-block
+  vertical-align: top
+
+.m-user-accounts-layout-not-fixed
+
+  .m-user-accounts-email-auth-region
+    width: 66%
+    padding-right: $grid_xs
+    border-right: 1px solid #eaeaea
+
+  .m-user-accounts-auth-options-region
+    width: 31%
+    padding-left: $grid_xs
+
+
+.m-user-accounts-email-auth-region, .m-user-accounts-complete-paperwork-form, .m-user-accounts-password-reset-form
 
   .email_field input, .password_field input
     +font-size(0)
 
-  input[type="submit"]
-    margin-bottom: $vertical_baseline
+  input[type="submit"], .m-user-accounts-register-next
+    margin: $vertical_baseline 0
     @extend %superbutton
     +font-size(0)
 
@@ -131,6 +142,15 @@ $membership_card_height: 278px
       display: none  
 
 .m-user-accounts-email-auth-region
+  .m-user-account-auth-question
+    font-weight: bold
+    margin: $vertical_baseline / 2 0
+
+  .m-user-accounts-no-account, .m-user-accounts-has-account
+    margin: $vertical_baseline/2 0 $vertical_baseline $grid_minor
+
+  .m-user-account-password
+    margin: $vertical_baseline/4 0 0 $grid_xs
 
   .email_field input, .password_field input
     +font-size(1)
@@ -141,8 +161,8 @@ $membership_card_height: 278px
     margin-bottom: $vertical_baseline/2
 
     label
-      width: 70px
-      text-align: right
+      // width: 70px
+      // text-align: right
       display: inline-block
 
     input.error
@@ -156,9 +176,14 @@ $membership_card_height: 278px
       text-decoration: underline
 
 
-
-  .m-user-accounts-finish-wrap
-    margin-top: $vertical_baseline
+#l-dialog-detachable 
+  .m-user-accounts-complete-paperwork-form
+    input[type="text"], input[type="email"], input[type="password"], textarea
+      width: 100%
+      &.ui-state-valid
+        border-color: transparent
+        background-color: transparent
+        color: $initiator_text_color
 
 .m-user-accounts-complete-paperwork-form
   .m-user-accounts-form
@@ -191,12 +216,7 @@ $membership_card_height: 278px
     .email_field input, .password_field input
       +font-size(0)
 
-    input[type="text"], input[type="email"], input[type="password"], textarea
-      width: 100%
-      &.ui-state-valid
-        border-color: transparent
-        background-color: transparent
-        color: $initiator_text_color
+
 
     .name_field input
       +font-size(4)
@@ -248,6 +268,8 @@ $membership_card_height: 278px
   .m-user-accounts-complete-paperwork-footer, .m-user-accounts-complete-paperwork-pledge
     margin: $vertical_baseline auto      
 
+  .m-user-accounts-complete-paperwork-footer
+    text-align: center
 
   .m-user-accounts-complete-paperwork-pledge
     margin-bottom: $vertical_baseline

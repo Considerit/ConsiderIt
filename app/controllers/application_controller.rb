@@ -13,19 +13,6 @@ class ApplicationController < ActionController::Base
       Rails.cache.write("avatar-digest-#{current_tenant.id}", 0)
     end
     
-    #############
-    # for testing pinned users: 
-    test_fixed_user = false
-    if Rails.env == 'development' && test_fixed_user
-      if false
-        @limited_user = User.find(6)
-        @limited_user_email = @limited_user.email
-        @limited_user_follows = @limited_user.follows.all
-      else
-        @limited_user_email = 'test@testing.dev'
-      end
-    end
-    ###################
 
     if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
       user = User.find_by_lower_email(params[:u])
@@ -51,8 +38,6 @@ class ApplicationController < ActionController::Base
       @limited_user_email = @limited_user.email
     end
 
-
-    pp @limited_user
 
     #TODO: what does this do?
     if args && args.first.respond_to?('has_key?')

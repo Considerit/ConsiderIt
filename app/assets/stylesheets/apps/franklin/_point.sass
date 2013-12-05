@@ -244,10 +244,11 @@
   .m-point-include-wrap
     display: inline-block
 
-.m-point-peer.m-point-unexpanded, .m-point-expanded
+.m-point-expanded
   .m-point-wrap
-    border: 1px solid transparent
-    // background-color: whitesmoke
+    border: 1px solid
+    border-color: #eaeaea #ddd #ccc #ddd
+
 
 [data-state="points-separated"] .m-point-peer.m-point-unexpanded, .m-point-expanded
   .m-point-wrap
@@ -257,7 +258,8 @@
 [data-state="points-separated"] .m-point-peer.m-point-unexpanded
   .m-point-wrap
     +single-box-shadow($color: rgba(black, .1), $voff: 1px)
-    border-color: #f1f1f1 #ddd #bbb #ddd
+    border: 1px solid
+    border-color: #eaeaea #ddd #ccc #ddd
 
 .m-point-expanded .m-point-wrap
   //+single-box-shadow($color: rgba(black, .25), $voff: 1px)

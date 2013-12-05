@@ -31,5 +31,3 @@
       fixed = if App.request('user:fixed:exists') then App.request('user:fixed') else null      
       new Show.LoggedOut
         model: user
-        show_signin : !fixed || fixed.isPersisted()
-        show_register : !fixed || !fixed.isPersisted()

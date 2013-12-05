@@ -6,10 +6,13 @@
       
       @dialogLayout = @getDialogLayout options.config
       @listenTo @dialogLayout, "show", =>
+        @center()
         @dialogLayout.contentRegion.show @contentView
+        @region.$el.putBehindLightbox()
         @center()
 
         @listenTo @contentView, 'close', ->
+          @region.$el.removeLightbox()
           @close()  
         
         @listenTo @dialogLayout, 'closeRequested', ->
@@ -33,21 +36,22 @@
         config: config
 
     center : ->
+      window_height = $(window).height()
+      dialog_height = @region.$el.height()
+
       $overlay = @region.$el
       $overlay.offset 
-        top: $(document).scrollTop() + 50
+        top: $(document).scrollTop() + Math.max( (window_height - dialog_height) / 2, 50)
         left: $(window).innerWidth() / 2 - $overlay.outerWidth() / 2
   
     getDefaultConfig: (config = {}) ->
       _.defaults config,
         title: ''
-        close_label: 'close'
 
     close: ->
       @dialogLayout.close()
       super
       @$el.remove()
-      #$('#l-dialog-detachable').remove()
 
   App.reqres.setHandler "dialog:new", (contentView, options = {}) ->
     options.class ?= ''

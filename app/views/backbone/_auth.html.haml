@@ -1,14 +1,8 @@
 
 %script{ :type => "text/template", :id => "tpl_logged_out"}
   .m-login
-    (( if(show_signin){ ))
-    (( var also_register_class = show_register ? 'has_register' : ''; ))
-    %a{:'data-target' => 'login', :class => "m-login-signin {{also_register_class}}"}
-      Sign In
-    (( } if(show_register){ ))
-    %a.m-login-signup{:'data-target' => 'create_account'}
-      Create Account
-    (( } ))
+    %a{:'data-target' => 'login', :class => "m-login-signin"}
+      Log In / Create Account
 
 %script{ :type => "text/template", :id => "tpl_logged_in"}
 
@@ -64,67 +58,102 @@
             = link_to 'Tune', '/newrelic', :target => "_blank"
         %li
           %a.m-user-options-logout
-            Sign out
+            Log out
             
 
 %script{ :type => "text/template", :id => "tpl_auth_options"}
+  
+  .m-user-accounts-auth-options-header
+
+    (( if(fixed){ ))
+    Please log in through {{providers[0].name}}, the option you previously chose.
+    (( } else { ))
+    &hellip;or log in instantly with
+    (( } ))
+
   %ul.m-user-accounts-auth-options
     (( _.each(providers, function(provider) { ))
-    (( var is_email = provider.name == 'email', dataTarget = is_email ? '' : 'third_party_auth', provider_label = is_email ? 'Good ol\' email' : provider.name; ))
 
     %li.m-user-accounts-login-option
-      %button{ :'data-target' => "{{dataTarget}}", :class => "zocial {{provider.name}}", :'data-provider' => "{{provider.provider}}" }
-        {{provider_label}}
-      (( if(provider.fineprint) { ))
+      %button{ :'data-target' => "third_party_auth", :class => "zocial {{provider.name}}", :'data-provider' => "{{provider.provider}}" }
+        %i.icon.icon-fw
+        {{provider.name}}
+      (( if(false && provider.fineprint) { ))
       .m-user-accounts-fineprint.m-fineprint-social
         {{provider.fineprint}}
       (( } ))
 
     (( }) ))
 
-  .m-user-accounts-switch-method-wrapper
 
-    (( if(fixed){ ))
-    Please sign in through {{providers[0].name}}, the option you previously chose.
-    (( } else { ))
-    %a.m-user-accounts-switch-method
-      {{switch_label}}
-
-      %span
-        {{switch_prompt}}
-      instead.
-    (( } ))
 
 %script{ :type => "text/template", :id => "tpl_signin_via_email"}
   = form_for :user, :url => user_session_path, :remote => true do |f|
     .m-user-accounts-form
       .m-user-accounts-form-fields-wrap
-
-        
         (( if(fixed) { ))
-        = f.hidden_field :email, :value => "{{email}}"
-        .email_field.inlined.fixed
+        = f.hidden_field :email, :value => "{{email}}", :class => 'h5-email ui-state-valid'
+        // = f.label :email, 'Your email address'
+        // .email_field.inlined.fixed
         (( } else { ))
         .email_field.inlined
+          .m-user-account-auth-question
+            = f.label :password_overviews, "What is your email address?"
 
-          = f.label :email, 'Email'
-
-          = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email form-control"
+          .input-group
+            %span.input-group-addon
+              %i.icon.icon-envelope-o.icon-fw 
+                &#xf003;             
+            = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Email address", :required => true, :class =>"h5-email form-control"
         (( } ))
-        .password_field.inlined
-          = f.label :email, 'Password'              
-          = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
+
+        (( if(fixed) { ))
+        .m-user-account-password
+          .input-group
+            %span.input-group-addon     
+              %i.icon.icon-key.icon-fw 
+            = f.password_field :password, :title => 'Password is required.', :placeholder => "Your password",  :required => true, :pattern => ".{3,}", :class => "form-control"
           %a.forget_password_prompt
-            I forgot. Email me password instructions. 
-            
-      .m-user-accounts-finish-wrap
-        = f.submit "Sign in!"
+            I forgot! Email me password instructions. 
+        (( } else { ))
+        .password_field.inlined
+          .m-user-account-auth-question
+            = f.label :password_overviews, "Do you already have an account?"
+
+          .m-user-accounts-no-account
+            %input{ :id => :password_none, :name => :password_overviews, :type => 'radio', :value => 'no'}
+            %label{ :for => :password_none }
+              Nope, I'm a new user
+
+
+          .m-user-accounts-has-account
+
+            %input{ :id => :password_has, :name => :password_overviews, :type => 'radio', :value => 'yes'}
+            %label{ :for => :password_has }
+              Yep, I have a password
+
+            .m-user-account-password
+              .input-group
+                %span.input-group-addon     
+                  %i.icon.icon-key.icon-fw 
+                = f.password_field :password, :title => 'Password is required.', :placeholder => "Your password",  :required => true, :pattern => ".{3,}", :class => "form-control"
+              %a.forget_password_prompt
+                I forgot! Email me password instructions. 
+
+        .m-user-accounts-finish-wrap
+          %button.m-user-accounts-register-next{:disabled => 'disabled', :type => 'button'}
+            Create my account
+        
+        (( } ))
+        .m-user-accounts-finish-wrap
+          = f.submit "Log me in", :disabled => 'disabled', :class => 'm-user-accounts-login-submit'
+
 
 
 
 %script{ :type => "text/template", :id => "tpl_user_signin"}
-  .m-user-accounts-auth-options-region
   .m-user-accounts-email-auth-region
+  .m-user-accounts-auth-options-region
 
 %script{ :type => "text/template", :id => "tpl_new_user" }      
   .m-user-accounts-auth-options-region
@@ -156,14 +185,14 @@
       .email_field.inlined
         / = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Your email address", :required => true, :class =>"h5-email"
 
-        %input{ :id => "user_email", :name => "user[email]", :placeholder => "Your email address", :required => "required", :title => "We need an email address, thanks.", :type => "email", :class => 'h5-email'}
+        %input{ :id => "user_email", :name => "user[email]", :placeholder => "Your email address", :required => "required", :pattern => ".{3,}", :title => "We need an email address, thanks.", :type => "email", :class => 'h5-email'}
 
       (( } ))
 
       .password_field.inlined
         / = f.password_field :password, :title => 'Password is required.', :placeholder => "Password",  :required => true
 
-        %input{ :id => "user_password", :name => "user[password]", :placeholder => "Password", :required => "required", :title => "Password is required.", :type => "password"}
+        %input{ :id => "user_password", :name => "user[password]", :placeholder => "Password", :required => "required", :pattern => ".{3,}", :title => "Password is required.", :type => "password"}
 
 
       .m-user-accounts-authorized-feedback{:'data-provider' => "{{auth_method}}" }
@@ -197,10 +226,10 @@
       %label{ :for => "pledge1"}
         I will not attack or mock other participants or groups.
 
-    %li
-      %input{:id => 'pledge2', :name => "pledge2", :type => "checkbox", :value =>"2", :title => "All participants must make this pledge to join"}
-      %label{ :for => "pledge2"}
-        I will speak only on behalf of myself, not an organization.
+    // %li
+    //   %input{:id => 'pledge2', :name => "pledge2", :type => "checkbox", :value =>"2", :title => "All participants must make this pledge to join"}
+    //   %label{ :for => "pledge2"}
+    //     I will speak only on behalf of myself, not an organization.
 
     %li
       %input{:id => 'pledge3', :name => "pledge3", :type => "checkbox", :value =>"3", :title => "All participants must make this pledge to join"}
@@ -228,11 +257,11 @@
     %p
       = f.label :password, "New password"
 
-    = f.password_field :password
+    = f.password_field :password, :pattern => ".{3,}"
 
     %p
       = f.label :password_confirmation, "Confirm new password" 
-    = f.password_field :password_confirmation
+    = f.password_field :password_confirmation, :pattern => ".{3,}"
 
     .m-user-accounts-finish-wrap
-      = f.submit "Change my password and sign in", :class => 'button'
+      = f.submit "Change my password and log in", :class => 'button'

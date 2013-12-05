@@ -7,7 +7,6 @@
 
     serializeData: ->
       title : @options.config.title
-      close_label : @options.config.close_label
 
     events : 
       'click [data-target="dialog-close"]' : 'closeRequested'

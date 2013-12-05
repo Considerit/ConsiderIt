@@ -10,16 +10,12 @@
         region: region
 
     begin_signin : ->
-      if !App.request("user:fixed:exists") || App.request("user:fixed").isPersisted()
+      if App.request('user:fixed:exists') && !App.request('user:fixed').id
+        App.request 'registration:complete_paperwork'
+      else
+        selected = if !App.request("user:fixed:exists") || App.request("user:fixed").isPersisted() then 'no_pass' else 'pass'
         new Auth.Signin.Controller
-      else
-        API.begin_registration()
-
-    begin_registration : ->
-      if !App.request("user:fixed:exists") || !App.request("user:fixed").isPersisted()
-        new Auth.Register.Controller
-      else
-        API.begin_signin()
+          selected: selected      
 
     begin_password_reset : ->
       new Auth.Signin.PasswordResetController
@@ -33,16 +29,16 @@
     password_reset_handled : ->
       @password_reset_token = null
 
-    complete_paperwork : (controller = null) -> 
-      controller ?= API.begin_registration()
-      App.vent.trigger 'registration:complete_paperwork'
+    complete_paperwork : (params = {}) -> 
+      new Auth.Register.Controller
+        params : params
 
     signin : (user_data, controller = null) ->
       App.request "user:current:update", user_data
       App.vent.trigger 'csrf:new', user_data.new_csrf if user_data.new_csrf
 
       if App.request "user:paperwork_completed"
-        @_handle_signin()         
+        @_handle_signin()
       else
         API.complete_paperwork controller
 
@@ -98,8 +94,8 @@
   App.reqres.setHandler "user:signin", (user_data, controller = null) ->
     API.signin user_data, controller
 
-  App.reqres.setHandler 'registration:complete_paperwork', (controller = null) -> 
-    API.complete_paperwork controller
+  App.reqres.setHandler 'registration:complete_paperwork', (params = {}) -> 
+    API.complete_paperwork params
 
   App.reqres.setHandler 'user:signin:set_redirect', (path) ->
     API.set_redirect_path_post_signin path

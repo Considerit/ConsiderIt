@@ -16,53 +16,39 @@
         @close()
 
     close : ->
-      @dialog_overlay.close()
-      @layout.close()
+      @dialog_overlay.close() if @dialog_overlay
+      @layout.close() if @layout
       super
 
     setupLayout : (layout) ->
       user = layout.model
+      fixed = App.request('user:fixed:exists')
 
-      if App.request('user:fixed:exists') && user.authMethod() == 'email'
+      if fixed && user.authMethod() != 'email'
+        provider = switch user.authMethod()
+          when 'google'
+            'google_oauth2'
+          else
+            user.authMethod()
+        auth_options_view = new Signin.AuthOptions
+          model: user
+          providers: [ {name: user.authMethod(), provider: provider} ]
+          fixed: true
+      
+      else if (fixed && user.authMethod() != 'email') || !fixed
+        auth_options_view = new Signin.AuthOptions
+          model: user
+          providers: [ {name: 'google', provider: "google_oauth2"}, {name: 'facebook', provider: 'facebook'}, {name: 'twitter', provider: 'twitter'} ]
+
+      if (fixed && user.authMethod() == 'email') || !fixed
         email_view = @setupEmailView
           model: user
-          fixed: true
+          fixed: fixed
+          selected : @options.selected
         layout.emailAuthRegion.show email_view
 
-      else
-        if App.request 'user:fixed:exists'
-          provider = switch user.authMethod()
-            when 'google'
-              'google_oauth2'
-            else
-              user.authMethod()
-
-          auth_options_view = new Signin.AuthOptions
-            model: user
-            providers: [ {name: user.authMethod(), provider: provider} ]
-            fixed: true
-
-          layout.authOptionsRegion.show auth_options_view
-
-        else
-          
-          auth_options_view = new Signin.AuthOptions
-            model: user
-            providers: [ {name: 'email', provider: 'email'}, {name: 'google', provider: "google_oauth2"}, {name: 'facebook', provider: 'facebook'}, {name: 'twitter', provider: 'twitter'} ]
-
-          @listenTo auth_options_view, 'email_auth_request', ->
-            email_view = @setupEmailView
-              model: user
-              fixed: false
-            layout.authOptionsRegion.close()
-            layout.emailAuthRegion.show email_view
-
-          @listenTo auth_options_view, 'switch_method_requested', ->
-            @close()
-            App.vent.trigger 'registration:requested'
-
-          layout.authOptionsRegion.show auth_options_view
-
+      if auth_options_view
+        layout.authOptionsRegion.show auth_options_view        
         @listenTo auth_options_view, 'third_party_auth_request', @handleThirdPartyAuthRequest
 
     setupEmailView : (options) ->
@@ -73,6 +59,8 @@
       
       @listenTo email_view, 'passwordReminderRequested', @handlePasswordReminderRequested      
       @listenTo email_view, 'signinCompleted', (data) => @handleSigninCompleted(data, email_view)
+      @listenTo email_view, 'emailRegistrationRequested', (params) =>
+        App.request 'registration:complete_paperwork', params
 
       email_view
 
@@ -80,7 +68,7 @@
       App.request 'third_party_auth:new',
         provider : provider
         callback : (user_data) ->
-          App.request "user:signin", user_data
+          App.request "user:signin", user_data, @
 
     handlePasswordReminderRequested : (email) ->
       $.post Routes.user_password_path(), {user : {email: email}}, (data) =>
@@ -93,6 +81,7 @@
       else
         view.signinFailed data.reason
 
+
     getOverlay : (view) ->
       App.request 'dialog:new', view, 
         class: 'auth_overlay'
@@ -103,15 +92,20 @@
       else
         [App.request('user:current'), false]
 
+
     getSigninLayout : ->
       [user, is_fixed] = @getUser()
 
       if is_fixed
         new Signin.FixedLayout
           model: user
+          fixed: App.request('user:fixed:exists')
+
       else
         new Signin.Layout
           model: user
+          fixed: App.request('user:fixed:exists')
+
 
 
   class Signin.PasswordResetController extends Signin.Controller

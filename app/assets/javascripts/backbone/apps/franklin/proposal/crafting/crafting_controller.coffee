@@ -148,7 +148,7 @@
 
         user = @model.getUser()
         if user.isNew() || user.id < 0
-          App.vent.trigger 'registration:requested'
+          App.vent.trigger 'signin:requested'
           @listenToOnce App.vent, 'user:signin', => 
             @stopListening App.vent, 'user:signin:canceled'
 
@@ -211,8 +211,6 @@
       dest.add model
 
       @layout.processIncludedPoints()
-
-
 
     handleRemovePoint : (view, model, source) ->
       App.vent.trigger 'points:unexpand'

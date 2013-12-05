@@ -79,7 +79,7 @@
     getHeaderText : ->
       valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
 
-      "Your #{valence}"
+      "List Your #{valence}"
 
 
   class Points.ExpandablePointListHeader extends Points.PointListHeader

@@ -3,7 +3,9 @@
   class Register.Controller extends App.Controllers.Base
 
     initialize : (options = {}) ->
-      @layout = @getRegisterLayout()
+
+      @layout = @getLayout()
+
       @listenTo @layout, 'show', =>
         @setupLayout @layout
 
@@ -14,14 +16,8 @@
         App.vent.trigger 'user:signin:canceled'
         @close()
 
-      @listenTo App.vent, 'registration:complete_paperwork', =>
-        @completePaperwork()
-
       @listenTo App.vent, 'user:signin', =>
         @close()
-
-      if App.request 'user:fixed:exists'
-        App.request 'registration:complete_paperwork', @        
 
     close : ->
       @dialog_overlay.close()
@@ -29,56 +25,31 @@
       super
 
     setupLayout : (layout) ->
-      user = layout.model
-      
-      auth_options_view = new Register.AuthOptions
-        model: user
-        providers: [ {name: 'email', provider: 'email'}, {name: 'google', provider: "google_oauth2"}, {name: 'facebook', provider: 'facebook'}, {name: 'twitter', provider: 'twitter'} ]
+      @paperwork_view = new Register.PaperworkView
+        model : @layout.model
         fixed : App.request 'user:fixed:exists'
-
-      @listenTo auth_options_view, 'email_auth_request', ->
-        App.request 'registration:complete_paperwork', @
-
-      @listenTo auth_options_view, 'switch_method_requested', ->
-        @close()
-        App.vent.trigger 'signin:requested'
-
-      layout.authOptionsRegion.show auth_options_view
-
-      @listenTo auth_options_view, 'third_party_auth_request', @handleThirdPartyAuthRequest
+        params : @options.params
 
 
-    completePaperwork : () ->
-      @layout.authOptionsRegion.close()
-      paperwork_layout = @getPaperworkLayout @layout.model
+      @listenTo @paperwork_view, 'show', =>
+        @listenTo @paperwork_view, 'third_party_auth_request', @handleImportThirdPartyImage
 
-      @listenTo paperwork_layout, 'show', =>
+      layout.cardRegion.show @paperwork_view
 
-        @paperwork_view = new Register.PaperworkView
+      if App.request('tenant:get').get 'pledge_enabled'
+        paperwork_pledge_view = new Register.PaperworkPledgeView
           model : @layout.model
-          fixed : App.request 'user:fixed:exists'
+        layout.pledgeRegion.show paperwork_pledge_view
 
-        @listenTo @paperwork_view, 'show', =>
-          @listenTo @paperwork_view, 'third_party_auth_request', @handleImportThirdPartyImage
+      paperwork_footer_view = new Register.PaperworkFooterView
+        model : @layout.model
 
-        paperwork_layout.cardRegion.show @paperwork_view
+      @listenTo paperwork_footer_view, 'show', =>
 
-        if App.request('tenant:get').get 'pledge_enabled'
-          paperwork_pledge_view = new Register.PaperworkPledgeView
-            model : @layout.model
-          paperwork_layout.pledgeRegion.show paperwork_pledge_view
+      layout.footerRegion.show paperwork_footer_view
 
-        paperwork_footer_view = new Register.PaperworkFooterView
-          model : @layout.model
+      @listenTo layout, 'registration:returned', @handleRegistrationResponse
 
-        @listenTo paperwork_footer_view, 'show', =>
-
-        paperwork_layout.footerRegion.show paperwork_footer_view
-
-        @listenTo paperwork_layout, 'registration:returned', @handleRegistrationResponse
-
-
-      @layout.completePaperworkRegion.show paperwork_layout
 
     handleThirdPartyAuthRequest : (provider) ->
 
@@ -113,15 +84,11 @@
       else
         [App.request('user:current'), false]
 
-    getRegisterLayout : ->
+    getLayout : ->
       [user, is_fixed] = @getUser()
       if is_fixed
         new Register.FixedLayout
           model: user
       else
-        new Register.Layout
+        new Register.PaperworkLayout
           model: user
-
-    getPaperworkLayout : (user) ->
-      new Register.PaperworkLayout
-        model: user

@@ -238,7 +238,8 @@ $preloadersize_height: 10.5px
   display: none
 
 #lightbox
-  background-color: rgba(#777, .65)
+  background-color: white
+  background-color: rgba(white, .85)
   position: fixed
   top: -20000px
   left: -2000px
@@ -248,10 +249,6 @@ $preloadersize_height: 10.5px
 
 
 /* SHARED STYLES */
-
-
-
-
 
 .avatar
   vertical-align: top
@@ -856,7 +853,69 @@ $static_position_width: $body_width+$grid_major
 #expanded .verdict_summary
   display: none
 
+
+// styles pillaged from fontawesome examples
+.input-group
+  position: relative
+  display: table
+  border-collapse: separate
+  &.col
+    float: none
+    padding-left: 0
+    padding-right: 0
+
+  .form-control
+    width: 100%
+    margin-bottom: 0
+    margin-top: 0
+
+.input-group-addon, .input-group-btn, .input-group .form-control
+  display: table-cell
+.input-group-addon:not(:first-child):not(:last-child),.input-group-btn:not(:first-child):not(:last-child),.input-group .form-control:not(:first-child):not(:last-child)
+  border-radius: 0
+.input-group-addon,.input-group-btn
+  width: 1%
+  white-space: nowrap
+  vertical-align: middle
+
+.input-group-addon
+  padding: 6px 12px
+  font-size: 14px
+  font-weight: normal
+  line-height: 1
+  text-align: center
+  background-color: #eee
+  border: 1px solid #ccc
+  border-radius: 4px
+.input-group-addon input[type="radio"],.input-group-addon input[type="checkbox"]
+  margin-top: 0
+.input-group .form-control:first-child,.input-group-addon:first-child,.input-group-btn:first-child>.btn,.input-group-btn:first-child>.dropdown-toggle,.input-group-btn:last-child>.btn:not(:last-child):not(.dropdown-toggle)
+  border-bottom-right-radius: 0
+  border-top-right-radius: 0
+.input-group-addon:first-child
+  border-right: 0
+.input-group .form-control:last-child,.input-group-addon:last-child,.input-group-btn:last-child>.btn,.input-group-btn:last-child>.dropdown-toggle,.input-group-btn:first-child>.btn:not(:first-child)
+  border-bottom-left-radius: 0
+  border-top-left-radius: 0
+.input-group-addon:last-child
+  border-left: 0
+.input-group-btn
+  position: relative
+  white-space: nowrap
+.input-group-btn>.btn
+  position:relative
+.input-group-btn>.btn+.btn
+  margin-left: -4px
+.input-group-btn>.btn:hover,.input-group-btn>.btn:active
+  z-index: 2
+
+
+
 // user dashboard
 @import "dashboard/dashboard"
 @import "shared/sidebar"
 
+
+//zocial
+.zocial:before
+  width: $grid_xs

@@ -6,6 +6,8 @@
     defaults : 
       slider_right : 'oppose'
       slider_left : 'support'
+      slider_middle : 'Neutral / Undecided'
+
       considerations_prompt : 'Your list of the most important factors to you'
       slider_prompt : 'What is your opinion given these Pros and Cons?'
       statement_prompt : 'support'

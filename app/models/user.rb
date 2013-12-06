@@ -62,6 +62,7 @@ class User < ActiveRecord::Base
       },
       :processors => [:thumbnail, :paperclip_optimizer]
 
+
   def unsubscribe!
     self.follows.update_all( {:explicit => true, :follow => false} )
   end

@@ -6,7 +6,10 @@
       layout = @getLayout()
 
       @listenTo layout, 'show', =>
-        header = @getHeader()        
+        header = @getHeader()
+        @listenTo App.vent, 'user:signin user:signout', =>
+          layout.headerRegion.show header
+
         layout.headerRegion.show header
         proposals_controller = @getProposalsController layout
 
@@ -17,6 +20,7 @@
 
     getHeader : ->
       new Root.HeaderView
+        model : App.request 'tenant:get'
 
     getProposalsController : (layout) ->
       c = new App.Franklin.Proposals.RegionController

@@ -34,6 +34,12 @@
         .sublabel
           The description shown in the header of the homepage that states the purpose of the forum. 
 
+      .field
+        = f.label :project_url, 'Project URL'
+        = f.text_field :project_url, :value => "{{project_url}}"
+        .sublabel
+          If there is a different homepage for this project, set it here.
+
       // .field
       //   = f.label :contact_email, 'Contact Email'
       //   = f.text_field :contact_email, :value => "{{contact_email}}"

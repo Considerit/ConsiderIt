@@ -1,0 +1,70 @@
+//////////////////////////////////////////////////////////////
+// These must be included at the top of all theme stylesheets
+@import "grooves/base/variables"
+@import "grooves/clean/colors"
+@import "grooves/base/fonts"
+////////////////////////////
+
+////////////////////////////////////////
+// Overide any base style variables here
+
+
+// required for all themes
+@import "grooves/base/_processor"
+@import "considerit" 
+/////////
+
+@import "constructs/bubble"
+
+
+#l-content
+  // +single-box-shadow($voff: 2px, $color: rgba(black,.15))
+  // border-bottom: 1px solid darken($header_footer_bg_color, 10%)
+
+#l-header
+  height: 0
+  margin: 0
+  min-height: 0
+
+#l-content-main-wrap
+  padding-top: 3 * $vertical_baseline
+
+#t-bg-content
+  +box-shadow(0 0 3px rgba(0, 0, 0, 0.2))
+
+#l-footer
+  background-color: $header_footer_bg_color
+
+.t-intro-wrap .t-logo
+  height: 5 * $vertical_baseline
+
+.t-intro-wrap 
+  left: -$dialog_stutter
+  position: relative
+
+  .t-intro
+    min-height: 100px
+
+  .t-header-wrap
+    text-align: center
+    padding: $vertical_baseline 0
+    margin: $vertical_baseline * 2 0 $vertical_baseline 0
+    border-top: 2px solid
+    border-bottom: 1px solid
+    border-color: darken($base_bg_color, 5%)
+
+  .t-message-title, .t-message-details
+
+  .t-message-title
+    +font-size(4)
+
+  .t-message-details
+    +font-size(2)
+
+.l-homepage-pic
+  position: relative
+  top: 0 * $vertical_baseline
+  margin: auto
+  text-align: center
+.m-header-logo 
+  display: none

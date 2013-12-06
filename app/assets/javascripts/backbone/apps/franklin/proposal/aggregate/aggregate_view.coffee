@@ -27,11 +27,13 @@
 
       supporter_label = @model.get('slider_left') || 'Supporters'
       opposer_label = @model.get('slider_right') || 'Opposers'
+      neutral_label = @model.get('slider_middle') || 'Neutral / Undecided'
 
       _.extend {}, @model.attributes,
         histogram : @options.histogram
         supporter_label : supporter_label
         opposer_label : opposer_label
+        neutral_label : neutral_label
 
     events : 
       'mouseenter .m-histogram-bar:not(.m-bar-is-selected)' : 'selectBar'

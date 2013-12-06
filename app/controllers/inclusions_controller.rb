@@ -55,14 +55,10 @@ class InclusionsController < ApplicationController
       end
     end
 
-    if session[proposal.id][:included_points].has_key?(params[:point_id])
-      authorize! :destroy, inc || Inclusion.new
-      session[proposal.id][:included_points].delete(params[:point_id])    
+    authorize! :destroy, inc || Inclusion.new
+    session[proposal.id][:included_points].delete(params[:point_id])
+    session[point.proposal_id][:written_points].delete(point.id) if session[point.proposal_id][:written_points].include? point.id
 
-    else
-      session[point.proposal_id][:written_points].delete(point.id)
-      session[point.proposal_id][:included_points].delete(point.id)  
-    end
 
     if ((!point.published && point.user_id.nil?) || (current_user && current_user.id == point.user_id)) && point.inclusions.count < 2  #can?(:destroy, point) # not using the ability otherwise whenever an admin removes a point from their list, they destroy it!
       authorize! :destroy, point

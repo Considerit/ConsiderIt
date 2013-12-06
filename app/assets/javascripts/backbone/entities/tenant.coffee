@@ -65,6 +65,16 @@
 
       label
 
+    getHomepagePic : (size = 'large', fname = null) ->
+      if fname?
+        url = "#{ConsiderIt.public_root}/system/homepage_pics/#{@id}/#{size}/#{fname}"
+      else if @get 'homepage_pic_file_name'
+        url = "#{ConsiderIt.public_root}/system/homepage_pics/#{@id}/#{size}/#{@get('homepage_pic_file_name')}"
+      else
+        throw 'yuck'
+        url = "#{ConsiderIt.public_root}/system/default_avatar/#{size}_default-profile-pic.png"
+      url
+
 
 
 

@@ -1,0 +1,60 @@
+
+///////// BASE BACKGROUND ///////
+$base_text_color: #414141
+$base_hover_color: darken($base_text_color, 25%)
+// approximate color of basic background, used for default fill for bubbles
+$base_bg_color: white
+// background for header and footer
+$header_footer_bg_color: transparent
+$header_footer_text_color: $base_text_color
+
+$bg_declaration: #f8f8f8
+$bg_main: white
+
+$bg_top_declaration: none
+$bg_content_declaration: white
+$bg_content_top_declaration: none
+
+
+/////////////////// BACKGROUND COMPLEMENTS
+$comp_color:       #bde0c3  //hsl(  0, 0%, 25%)
+$comp_text_color:  $base_text_color  //hsl( 0, 0%, 92%)
+
+$mid_bg_color: #666
+
+/////////////// PROPOSAL INITIATORS
+$accent_text_color: $base_text_color
+$accent_color:    #c9cee2
+
+
+////////////// SPECIAL PROPOSALS
+$standout_text_color: $base_text_color
+$standout_color: hsl( 0, 0%, 92%)
+
+////////// CHALKBOARD SLATE
+$decision_board_color: transparent //hsl( 0, 0%, 25%)
+//$decision_board_text_color: mix($base_text_color, $accent_color, 80%)
+$decision_board_text_color: mix(darken($base_text_color, 35%), darken(saturate($accent_color, 50%), 25%), 20%)
+$decision_board_border_color: $decision_board_text_color //mix(lighten($base_text_color, 10%), $accent_color, 30%)
+$decision_board_bg: mix($base_bg_color, $accent_color, 98%)
+
+
+/////////////// PROPOSAL INITIATORS
+$initiator_text_color: $accent_text_color
+$initiator_color:    $accent_color
+
+///////////////// PROPOSAL RESPONDERS
+// $community_text_color: hsl( 49, 35%, 15%)
+// $community_color:    hsl( 49, 70%, 84%)
+
+$community_text_color: hsl( 49, 25%, 15%)
+$community_color:    hsl( 49, 25%, 95%)
+
+///////////////// ATTENTION GRABBING COLOR
+$callout_bg_color: darken($initiator_color, 25%) //#BAAC54
+$callout_text_color: #fafafa
+
+/////////////////////////
+
+// determines how much each base color is darkened for their dark counterpart
+$border_darken_amt: 10%

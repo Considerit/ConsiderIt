@@ -12,6 +12,7 @@
 
     initialize : (options = {}) ->
       super options
+      console.log 'creating new!'
 
       @model = options.model
       @layout = @getLayout()
@@ -19,8 +20,9 @@
       @setupLayout @layout
 
       @listenTo App.vent, 'user:signin user:signout', => 
+        console.log 'SIGNIN!', @region
         if @region #this controller might have been closed by parent, e.g. if this is a private proposal and user just signed out         
-          @region.reset()
+          console.log 'RELAYOUT'
           @region.show @layout
 
       @region.open = (view) => @transition @region, view # this will set how this region handles the transitions between views

@@ -13,7 +13,6 @@
 
     ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };
 
-
     //var users = { User.select("id, name, avatar_file_name").to_json };
     ConsiderIt.users = #{@users};
 
@@ -29,12 +28,15 @@
         statement_prompt : "#{current_tenant.statement_prompt}", 
         pro_label : "#{current_tenant.pro_label}",
         con_label : "#{current_tenant.con_label}",
-        pledge_enabled : #{current_tenant.requires_civility_pledge_on_registration},   
+        pledge_enabled : #{current_tenant.requires_civility_pledge_on_registration},
+        project_url : "#{current_tenant.project_url}",
         enable_moderation : #{current_tenant.enable_moderation}, 
         moderate_points_mode : #{current_tenant.moderate_points_mode}, 
         moderate_comments_mode : #{current_tenant.moderate_comments_mode}, 
         moderate_proposals_mode : #{current_tenant.moderate_proposals_mode},
-        num_proposals_per_page : #{ current_tenant.num_proposals_per_page() }
+        num_proposals_per_page : #{ current_tenant.num_proposals_per_page() },
+        homepage_pic_remote_url : "#{ current_tenant.homepage_pic_remote_url }",
+        homepage_pic_file_name : "#{ current_tenant.homepage_pic_file_name }"
     };
 
 

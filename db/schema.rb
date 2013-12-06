@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131015165003) do
+ActiveRecord::Schema.define(:version => 20131206060657) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -57,6 +57,12 @@ ActiveRecord::Schema.define(:version => 20131015165003) do
     t.integer  "moderate_points_mode",                     :default => 0
     t.integer  "moderate_comments_mode",                   :default => 0
     t.integer  "moderate_proposals_mode",                  :default => 0
+    t.string   "homepage_pic_file_name"
+    t.string   "homepage_pic_content_type"
+    t.integer  "homepage_pic_file_size"
+    t.datetime "homepage_pic_updated_at"
+    t.string   "homepage_pic_remote_url"
+    t.string   "project_url"
   end
 
   add_index "accounts", ["identifier"], :name => "by_identifier", :length => {"identifier"=>10}
@@ -129,6 +135,7 @@ ActiveRecord::Schema.define(:version => 20131015165003) do
     t.integer  "followable_last_notification_milestone", :default => 0
     t.datetime "followable_last_notification"
     t.integer  "moderation_status"
+    t.integer  "thanks_count",                           :default => 0
   end
 
   add_index "comments", ["account_id", "commentable_id", "commentable_type", "moderation_status"], :name => "select_comments"

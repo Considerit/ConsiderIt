@@ -225,6 +225,24 @@
       'click .m-newpoint-new' : 'newPoint'
       'click .m-newpoint-cancel' : 'cancelPoint'
       'click .m-newpoint-create' : 'createPoint'
+      # 'blur .m-newpoint-nutshell' : 'checkIfShouldClose'
+      'focusout .m-newpoint-form' : 'checkIfShouldClose'
+
+    checkIfShouldClose : (ev) ->
+      $form = $(ev.currentTarget).closest('.m-newpoint-form')
+
+      $nutshell = $form.find('.m-newpoint-nutshell')
+      $description = $form.find('.m-newpoint-description')
+
+      if $nutshell.val().length + $description.val().length == 0
+        click_inside = false
+        $form.one 'focusin.checkshouldclose', => 
+          click_inside = true
+
+        _.delay =>
+          $form.off '.checkshouldclose'
+          @cancelPoint(ev) if !click_inside
+        , 10
 
     newPoint : (ev) ->
       $(ev.currentTarget).hide()

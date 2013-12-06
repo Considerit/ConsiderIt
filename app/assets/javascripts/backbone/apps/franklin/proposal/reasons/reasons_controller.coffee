@@ -26,6 +26,7 @@
 
     # transition or reset views as appropriate after state has been updated
     processStateChange : ->
+      
       participants_view = @getParticipantsView()
       @layout.participantsRegion.show participants_view
 
@@ -34,6 +35,8 @@
 
       wait = if @crafting_controller && @prior_state != null then @transition_speed() else 0
       _.delayIfWait =>
+
+
         @updatePeerPoints @layout
 
         if !@crafting_controller #&& @options.model.fetched && @state != Proposal.ReasonsState.collapsed
@@ -66,7 +69,7 @@
         @processStateChange()
 
     updatePeerPoints : (layout) ->
-
+      
       if @peer_pros_controller && @peer_cons_controller
         all_points = App.request 'points:get:proposal', @model.id
         @peer_pros_controller.options.collection.fullCollection.add all_points.filter((point) -> point.isPro()) 

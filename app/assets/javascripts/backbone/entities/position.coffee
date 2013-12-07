@@ -213,8 +213,14 @@
     getPositionsByProposal : (long_id) ->
       new Entities.Positions @all_positions.where({long_id: long_id, published : true})
 
-    getPositionsByUser : (user_id) ->
-      new Entities.Positions @all_positions.where({user_id: user_id})
+    getPositionsByUser : (user_id, published = true) ->
+      params = 
+        user_id : user_id
+
+      if published
+        params.published = true
+
+      new Entities.Positions @all_positions.where params
 
     getPositions : ->
       @all_positions
@@ -246,8 +252,8 @@
   App.reqres.setHandler 'positions:get:proposal', (long_id) ->
     API.getPositionsByProposal long_id
 
-  App.reqres.setHandler 'positions:get:user', (model_id) ->
-    API.getPositionsByUser model_id
+  App.reqres.setHandler 'positions:get:user', (model_id, published = true) ->
+    API.getPositionsByUser model_id, published
 
   App.reqres.setHandler 'position:current_user:proposal', (long_id, create_if_not_found = true) ->
     API.getPositionForProposalForCurrentUser long_id, create_if_not_found

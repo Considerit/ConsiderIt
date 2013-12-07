@@ -112,7 +112,6 @@
       ev.stopPropagation()
 
     toggleDescription : (ev) ->
-      console.log 'proposal clicked!'
       @trigger 'proposal:clicked'
       
 

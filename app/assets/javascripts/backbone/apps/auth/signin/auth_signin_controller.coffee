@@ -61,7 +61,6 @@
       @listenTo email_view, 'emailRegistrationRequested', (params) =>
 
         $.get Routes.users_check_login_info_path( {email : params.email} ), {}, (data) =>
-          console.log 'RESPONSE!!!', data
           if data.valid
             App.request 'registration:complete_paperwork', params
           else

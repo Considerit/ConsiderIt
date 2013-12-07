@@ -234,6 +234,7 @@
           model.trigger 'destroy', model, model.collection
           toastr.success 'Point deleted'
 
+      @layout.processIncludedPoints()
       @trigger 'point:removal', model
 
 

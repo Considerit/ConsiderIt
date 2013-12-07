@@ -56,7 +56,8 @@ class InclusionsController < ApplicationController
     end
 
     authorize! :destroy, inc || Inclusion.new
-    session[proposal.id][:included_points].delete(params[:point_id])
+
+    session[proposal.id][:included_points].delete point.id
     session[point.proposal_id][:written_points].delete(point.id) if session[point.proposal_id][:written_points].include? point.id
 
 

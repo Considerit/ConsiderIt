@@ -1,3 +1,12 @@
+%script{ :type => "text/template", :id => "tpl_static_sidebar" }
+  %ul
+    %li.m-sidebar-image
+      = theme_image_tag 'logo_large.png'
+
+    %li
+      %a.m-sidebar_link{:href => "/home/terms-of-use", :'data-target' => 'terms-of-use'}
+        Terms of use
+
 %script{ :type => "text/template", :id => "tpl_static_terms-of-use"}
   #static-header
     %h1

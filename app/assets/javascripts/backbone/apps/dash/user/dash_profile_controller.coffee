@@ -38,7 +38,11 @@
   class User.AccountSettingsController extends User.ProfileController
 
     setupLayout : ->
-      @getLayout()
+      layout = @getLayout()
+      @listenTo layout, 'user:update:requested', (data) =>
+        App.request "user:current:update", data.user
+        layout.render()
+      layout
 
     getLayout : ->
       new User.AccountSettingsView

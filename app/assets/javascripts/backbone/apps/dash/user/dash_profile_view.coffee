@@ -55,6 +55,16 @@
     serializeData : ->
       _.extend {}, @model.attributes, 
         third_party_authenticated : @model.authMethod() != 'email'
+        auth_method : @model.authMethod()
+
+    events : 
+      'ajax:complete .m-dashboard-edit-user' : 'userUpdated'
+
+    userUpdated : (ev, response, options) ->
+      data = $.parseJSON(response.responseText)
+      @trigger 'user:update:requested', data
+      toastr.success 'Settings updated'
+
 
   class User.EmailNotificationsView extends App.Dash.View
     dash_name : 'email_notifications'

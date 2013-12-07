@@ -236,22 +236,22 @@
 
     
 
-/ %script{ :type => "text/template", :id => "tpl_proposal_summary"}
-/   .l-content-wrap
-/     .m-proposal-description-region
+// %script{ :type => "text/template", :id => "tpl_proposal_summary"}
+//   .l-content-wrap
+//     .m-proposal-description-region
 
-/     .m-results-summary-region
+//     .m-results-summary-region
 
-/     (( if(!published){ ))
-/     .m-proposal-admin-publish
-/       = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
-/         = f.hidden_field :published, :value => true
+//     (( if(!published){ ))
+//     .m-proposal-admin-publish
+//       = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
+//         = f.hidden_field :published, :value => true
 
-/         = f.submit 'Publish this new conversation', :class => 'm-proposal-publish'
+//         = f.submit 'Publish this new conversation', :class => 'm-proposal-publish'
 
-/       -# = link_to "cancel", "{{Routes.proposal_path(long_id)}}", :confirm => "Canceling will permanently delete this conversation. Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
+//       -# = link_to "cancel", "{{Routes.proposal_path(long_id)}}", :confirm => "Canceling will permanently delete this conversation. Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
 
-/     (( } ))  
+//     (( } ))  
 
 
 

@@ -332,7 +332,7 @@
 
     (( if ( third_party_authenticated ) { ))
     .field
-      Authorized via {{third_party_authenticated}}
+      Authorized via {{auth_method}}
     (( } else { ))
     .field
       = f.label :password, "New password"

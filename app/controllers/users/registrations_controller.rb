@@ -140,17 +140,21 @@ class Users::RegistrationsController < Devise::RegistrationsController
     render :json => { :result => 'successful', :new_csrf => form_authenticity_token }
   end
 
+  def check_login_info
+    email = params[:email]
 
-  # DEPRECATED
-  #def check_login_info    
-  #  email = params[:user][:email]
-  #  password = params[:user][:password]
+    user = User.find_by_lower_email(email)
+    email_in_use = !user.nil?
 
-  #  user = User.find_by_lower_email(email)
-  #  email_in_use = !user.nil?
+    if email_in_use
+      pp user.third_party_authenticated
+      method = user.third_party_authenticated || 'email'
+    else
+      method = nil
+    end
 
-  #  render :json => { :valid => !email_in_use || user.valid_password?(password) }
-  #end
+    render :json => { :valid => !email_in_use, :method => method }
+  end
 
 protected
   def dirty_avatar_cache

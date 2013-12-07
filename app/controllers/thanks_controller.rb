@@ -11,8 +11,8 @@ class ThanksController < ApplicationController
     params[:thank][:user_id] = current_user.id
     params[:thank][:account_id] = current_tenant.id
 
-    if params[:thank][:thankable_id] == 'Claim'
-      params[:thank][:thankable_id] = "Assessable::Claim"
+    if params[:thank][:thankable_type] == 'Claim'
+      params[:thank][:thankable_type] = "Assessable::Claim"
     end
     
     thank = Thank.new params[:thank]

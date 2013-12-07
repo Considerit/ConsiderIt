@@ -82,6 +82,22 @@
       'validated #user_email,#user_password' : 'checkIfSubmitEnabled'
       'click .m-user-accounts-register-next' : 'registerAccount'
 
+    setInput : (has_password) ->
+      if has_password
+        $now_checked = @$el.find('#password_has')
+        #$not_checked = @$el.find('#password_none') 
+      else
+        $now_checked = @$el.find('#password_none') 
+        #$not_checked = @$el.find('#password_has')
+
+      $now_checked.trigger 'click'
+      #$now_checked.attr 'checked', 'checked'
+      #$not_checked.removeAttr 'checked'
+
+      #@toggleInput has_password
+
+
+
     toggleInput : (has_password) ->
       $password_area = @$el.find('#password_has').siblings('.m-user-account-password')
       $submit_button_login = @$el.find('.m-user-accounts-login-submit')

@@ -44,7 +44,7 @@ ConsiderIt::Application.routes.draw do
   thankable_routes
 
   devise_scope :user do 
-    match "users/check_login_info" => "users/registrations#check_login_info", :via => :post
+    match "users/check_login_info" => "users/registrations#check_login_info"
   end
 
   match "/content_for_user" => "home#content_for_user", :as => :content_for_user

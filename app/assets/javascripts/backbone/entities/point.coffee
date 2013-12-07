@@ -129,8 +129,12 @@
       else
         @all_points
 
-    getPointsByUser : (user_id) ->
-      @getPointsBy {user_id : user_id}
+    getPointsByUser : (user_id, published = true) ->
+      params = 
+        user_id : user_id
+      if published
+        params.published = true
+      @getPointsBy params
 
     getPointsByProposal : (long_id) ->
       points = @getPointsBy {long_id : long_id}
@@ -155,8 +159,8 @@
   App.vent.on 'points:fetched', (points) ->
     API.addPoints points
 
-  App.reqres.setHandler 'points:get:user', (model_id) ->
-    API.getPointsByUser model_id
+  App.reqres.setHandler 'points:get:user', (model_id, published = true) ->
+    API.getPointsByUser model_id, published
 
   App.reqres.setHandler 'points:get:proposal', (long_id) ->
     API.getPointsByProposal long_id

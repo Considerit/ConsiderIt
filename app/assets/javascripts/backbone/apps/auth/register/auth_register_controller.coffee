@@ -51,13 +51,6 @@
       @listenTo layout, 'registration:returned', @handleRegistrationResponse
 
 
-    handleThirdPartyAuthRequest : (provider) ->
-
-      App.request 'third_party_auth:new',
-        provider : provider
-        callback : (user_data) =>
-          App.request "user:signin", user_data, @
-
     handleImportThirdPartyImage : (provider) ->
       App.request 'third_party_auth:new',
         provider : provider
@@ -66,7 +59,7 @@
           @paperwork_view.updateAvatarFile avatar
 
 
-    handleRegistrationResponse : (data) =>
+    handleRegistrationResponse : (data) ->
       if data.result == 'successful' 
         App.request 'user:signin', data.user
       else if data.result == 'rejected' && data.reason == 'user_exists'

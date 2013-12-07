@@ -52,7 +52,6 @@
         @listenTo auth_options_view, 'third_party_auth_request', @handleThirdPartyAuthRequest
 
     setupEmailView : (options) ->
-
       email_view = new Signin.ViaEmail
         model: options.model
         fixed: options.fixed
@@ -60,7 +59,19 @@
       @listenTo email_view, 'passwordReminderRequested', @handlePasswordReminderRequested      
       @listenTo email_view, 'signinCompleted', (data) => @handleSigninCompleted(data, email_view)
       @listenTo email_view, 'emailRegistrationRequested', (params) =>
-        App.request 'registration:complete_paperwork', params
+
+        $.get Routes.users_check_login_info_path( {email : params.email} ), {}, (data) =>
+          console.log 'RESPONSE!!!', data
+          if data.valid
+            App.request 'registration:complete_paperwork', params
+          else
+            msg = 'An account with that same email address already exists! Please sign in instead.'
+            if data.method != 'email'
+              msg = "#{msg} Previously you logged in with #{data.method}."
+            else
+              email_view.setInput true
+
+            toastr.error msg
 
       email_view
 
@@ -74,7 +85,7 @@
       $.post Routes.user_password_path(), {user : {email: email}}, (data) =>
         @layout.emailAuthRegion.currentView.respondToPasswordReminderRequest data.result == 'success'
 
-    handleSigninCompleted : (data, view) =>
+    handleSigninCompleted : (data, view) ->
       if data.result == 'successful'
         data.user = data.user.user
         App.request 'user:signin', data

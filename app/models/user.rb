@@ -89,12 +89,14 @@ class User < ActiveRecord::Base
   end
 
   def third_party_authenticated
-    if !self.facebook_uid.nil?
+    if !!self.facebook_uid
       'Facebook' 
-    elsif !self.google_uid.nil?
+    elsif !!self.google_uid
       'Google'
-    elsif !self.twitter_uid.nil?
+    elsif !!self.twitter_uid
       'Twitter'
+    else
+      nil
     end
   end
 

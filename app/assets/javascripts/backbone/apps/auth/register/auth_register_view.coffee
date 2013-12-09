@@ -70,7 +70,8 @@
       if auth_method == 'email'
         @$el.find('.password_field').show() 
         if Modernizr.input.placeholder
-          @$el.find('#user_name').focus() 
+          #@$el.find('#user_name').focus() 
+          null
         else
           #IE hack
           @$el.find('.name_field').prepend('<label for="user_name">Your name</label>')

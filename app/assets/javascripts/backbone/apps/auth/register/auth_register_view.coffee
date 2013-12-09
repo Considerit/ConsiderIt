@@ -38,7 +38,7 @@
 
       $submit_button_register = @$el.find('.m-user-accounts-complete-paperwork-footer input[type="submit"]')
 
-      if pledges_checked && $email_field.is('.ui-state-valid') && $password_field.is('.ui-state-valid') && $name_field.is('.ui-state-valid') 
+      if pledges_checked && $email_field.is('.ui-state-valid') && $name_field.is('.ui-state-valid') && ($password_field.is('.ui-state-valid') || @model.authMethod() != 'email')
         $submit_button_register.removeAttr('disabled')
       else 
         $submit_button_register.attr 'disabled', 'true'

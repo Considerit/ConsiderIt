@@ -15,14 +15,22 @@ class Account < ActiveRecord::Base
 
   before_create :set_default
 
-  attr_accessible :homepage_pic, :app_title, :header_text, :header_details_text, :project_url, :enable_user_conversations, :assessment_enabled, :enable_position_statement, :enable_moderation, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :pro_label, :con_label, :slider_left, :slider_right, :slider_prompt
+  attr_accessible :homepage_pic, :app_title, :header_text, :header_details_text, :project_url, :enable_user_conversations, :assessment_enabled, :enable_position_statement, :enable_moderation, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :pro_label, :con_label, :slider_left, :slider_right, :slider_prompt, :pledge_enabled
   has_attached_file :homepage_pic, 
       :styles => { 
         :large => "x100>",
       },
       :processors => [:thumbnail, :paperclip_optimizer]
 
+  class_attribute :my_public_fields
+  self.my_public_fields = [:id, :identifier, :homepage_pic_remote_url, :homepage_pic_file_name, :app_title, :header_text, :header_details_text, :project_url, :enable_user_conversations, :assessment_enabled, :enable_position_statement, :enable_moderation, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :pro_label, :con_label, :slider_left, :slider_right, :slider_prompt, :pledge_enabled]
 
+  scope :public_fields, select(self.my_public_fields)
+
+  def as_json(options={})
+    options[:only] ||= Account.my_public_fields
+    super(options)
+  end
 
   def num_proposals_per_page 
     5

@@ -135,6 +135,13 @@
             toastr.success "Thanks #{current_user.firstName()}. Now explore the results!"
 
             App.navigate Routes.proposal_path( @model.get('long_id') ), {trigger: true}
+            
+            current_user.setFollowing 
+              followable_type : 'Proposal'
+              followable_id : @model.getProposal().get('id')
+              follow : follow_proposal
+              explicit: true
+
             @trigger 'position:published'
 
           @listenToOnce @model, 'position:sync:failed', =>

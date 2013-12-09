@@ -12,7 +12,8 @@
   .t-intro-wrap
     .l-content-wrap.t-intro
 
-      = theme_image_tag 'logo_large.png', :class => 't-logo'
+      %a{ :href => 'http://kamakakoi.com' }
+        = theme_image_tag 'logo_large.png', :class => 't-logo'
               
       .l-message-title
         = simple_format current_tenant.header_text

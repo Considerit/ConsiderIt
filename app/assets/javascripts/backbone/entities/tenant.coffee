@@ -60,10 +60,10 @@
 
     _getLabel : (is_pro, capitalize, plural) ->
       label = if is_pro then @get('pro_label') else @get('con_label')
+      if plural && label == 'pro' || label == 'con' #TODO: better solution
+        label = label + 's'
       if capitalize
         label = label.charAt(0).toUpperCase() + label.slice(1)
-      if plural #TODO: better solution
-        label = label + 's'
 
       label
 

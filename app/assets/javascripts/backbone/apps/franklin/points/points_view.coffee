@@ -61,9 +61,14 @@
     serializeData : ->
       header : @getHeaderText()
 
-    getHeaderText : ->
-      valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
+    processValenceForHeader : ->
+      tenant = App.request 'tenant:get'
+      valence = if @options.valence == 'pro' then tenant.getProLabel({capitalize:true,plural:true}) else tenant.getConLabel({capitalize:true,plural:true})
       valence
+
+
+    getHeaderText : ->
+      @processValenceForHeader()
 
     requestSort : (sort_by) ->
       @sort = sort_by
@@ -77,8 +82,7 @@
 
   class Points.UserReasonsPointListHeader extends Points.PointListHeader
     getHeaderText : ->
-      valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
-
+      valence = @processValenceForHeader()
       "List Your #{valence}"
 
 
@@ -131,7 +135,7 @@
       @selectSort()
 
     getHeaderText : ->
-      valence = if @options.valence == 'pro' then 'Pros' else 'Cons'
+      valence = @processValenceForHeader()
       modifier = switch @sort
         when 'score'
           'Top'

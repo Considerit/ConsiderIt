@@ -37,7 +37,7 @@
 
       .t-header-wrap
         .t-message-title
-          = simple_format current_tenant.header_text
+          {{ tenant.get('header_text') }}
 
         .t-message-details
-          = simple_format current_tenant.header_details_text
+          {{ tenant.get('header_details_text') }}

@@ -18,9 +18,9 @@
           = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
           %span.l-message-title
-            = simple_format current_tenant.header_text
+            {{tenant.get('header_text')}}
 
           .l-message-details
-            = simple_format current_tenant.header_details_text
+            {{tenant.get('header_details_text')}}
 
 

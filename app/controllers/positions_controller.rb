@@ -80,8 +80,8 @@ class PositionsController < ApplicationController
     position.track!
 
     #proposal.follow!(current_user, :follow => params[:position][:follow_proposal] == 'true', :explicit => true)
-    position.follow!(current_user, :follow => true, :explicit => false)
-    proposal.follow!(current_user, :follow => params[:follow_proposal] == 'true', :explicit => true)
+    #position.follow!(current_user, :follow => true, :explicit => false)
+    proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
     updated_points = Point.where('id in (?)', updated_points)
     updated_points.each do |pnt|

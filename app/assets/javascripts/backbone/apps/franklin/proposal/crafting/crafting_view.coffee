@@ -58,10 +58,11 @@
 
     serializeData : ->
       current_user = App.request 'user:current'
+      proposal = @model.getProposal()
       _.extend {},
-        active : @model.getProposal().get 'active'
+        active : proposal.get 'active'
         updating : @model && @model.get 'published'
-        follows : current_user.isFollowing 'Proposal', @model.id
+        follows : current_user.isFollowing 'Proposal', proposal.get('id')
 
     events : 
       'click [data-target="submit-position"]' : 'handleSubmitPosition'

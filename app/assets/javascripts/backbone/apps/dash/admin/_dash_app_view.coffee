@@ -6,7 +6,9 @@
       ['account', 'assessment_enabled', 'account_assessment_enabled'],
       ['account', 'enable_moderation', 'account_enable_moderation'],
       ['account', 'enable_position_statement', 'account_enable_position_statement'],
-      ['account', 'enable_user_conversations', 'account_enable_user_conversations']]
+      ['account', 'enable_user_conversations', 'account_enable_user_conversations'], 
+      ['account', 'requires_civility_pledge_on_registration', 'account_requires_civility_pledge_on_registration']
+    ]
 
     radioboxes : [
       ['account', 'moderate_points_mode', 'account_moderate_points_mode'],

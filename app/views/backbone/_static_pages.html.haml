@@ -1,7 +1,16 @@
 %script{ :type => "text/template", :id => "tpl_static_sidebar" }
   %ul
     %li.m-sidebar-image
-      = theme_image_tag 'logo_large.png'
+      (( if( tenant.get('homepage_pic_file_name') ){ ))
+      %img.t-logo{ :src => "{{tenant.getHomepagePic()}}"}
+      (( } else { ))
+      - if current_tenant.managing_account && current_tenant.managing_account.avatar_file_name
+        = image_tag current_tenant.managing_account.avatar.url(:large), :class => 't-logo'
+      - else
+        = theme_image_tag 'logo_large.png'
+      (( } ))
+
+
 
     %li
       %a.m-sidebar_link{:href => "/home/terms-of-use", :'data-target' => 'terms-of-use'}

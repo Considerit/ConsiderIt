@@ -46,6 +46,13 @@
       //   .sublabel
       //     The email from which notification emails are set. 
 
+
+      .field
+        = f.check_box :requires_civility_pledge_on_registration
+        = f.label :requires_civility_pledge_on_registration, 'Enable Civility Pledge'
+        .sublabel
+          Whether you want every new user to take a pledge that they won't attack other participants and that they will only register a single account.
+          
       .field  
         = f.check_box :enable_user_conversations
         = f.label :enable_user_conversations, 'Enable User Created Conversations'

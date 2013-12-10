@@ -154,10 +154,12 @@
       return unless isFinite(new_value)
 
       if Math.abs(new_value) < 5
-        @ui.neutral_label.css('opacity', 1)
+        @ui.neutral_label.css
+          visibility: ''
         @is_neutral = true
       else if @is_neutral
-        @ui.neutral_label.css('opacity', 0)
+        @ui.neutral_label.css
+          visibility: 'hidden'
         @is_neutral = false
 
       @value = new_value

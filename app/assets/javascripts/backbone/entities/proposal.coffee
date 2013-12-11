@@ -295,6 +295,12 @@
     getTotalCounts : ->
       [@total_active, @total_inactive]
 
+    tenantUpdated : ->
+      tenant = App.request 'tenant:get'
+      if tenant.get('enable_hibernation')
+        _.each @all_proposals.where({active : true}), (proposal) ->
+          proposal.set 'active', false
+
 
   App.reqres.setHandler "proposal:bootstrap", (proposal_attrs) ->
     API.bootstrapProposal proposal_attrs
@@ -334,6 +340,9 @@
 
   App.reqres.setHandler 'proposals:totals', ->
     API.getTotalCounts()
+
+  App.vent.on "tenant:updated", ->
+    API.tenantUpdated()
 
 
   App.addInitializer ->

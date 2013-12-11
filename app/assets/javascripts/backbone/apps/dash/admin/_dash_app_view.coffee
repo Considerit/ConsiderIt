@@ -45,10 +45,8 @@
     toggleExpandable : (ev) ->
       $expandable_option = $(ev.currentTarget).closest('.l-expandable-option')
       $expandable_area = $expandable_option.siblings('.l-expandable-area')
-      console.log $expandable_area, $expandable_option, $expandable_option.is(':checked')
 
       if $expandable_option.find('input').is(':checked')
-        console.log 'CHECKED!'
         $expandable_area.slideDown()
       else
         $expandable_area.slideUp()

@@ -26,10 +26,17 @@
 %script{ :type => "text/template", :id => 'tpl_proposals_list'}
 
 
-  (( if( !is_active && data_loaded ){ ))
+  (( if( !is_active && !tenant.enable_hibernation && data_loaded ){ ))
   .m-proposals-container-completed-header
     %h2
       Past conversations
+
+  (( } else if( !is_active && tenant.enable_hibernation) { ))
+  .m-proposals-container-hibernation-message
+    %i.icon-info-circle.icon.icon-lg 
+      &#xf05a
+      
+    {{tenant.hibernation_message}}    
   (( } ))
 
   %ul.m-proposal-list

@@ -19,6 +19,10 @@ class AccountsController < Dashboard::DashboardController
 
     # TODO: explicitly grab params
     current_tenant.update_attributes(params[:account])
+
+    if current_tenant.enable_hibernation && params[:account].has_key?('enable_hibernation')
+      current_tenant.proposals.open_to_public.active.update_all(active: false)      
+    end
     render :json => current_tenant
 
   end

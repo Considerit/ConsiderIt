@@ -45,9 +45,10 @@
         if @state == Proposal.ReasonsState.together
           @createHistogram layout
 
-        # if @model.openToPublic()
-        #   social_view = @getSocialMediaView()
-        #   layout.socialMediaRegion.show social_view  
+        if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
+          social_view = @getSocialMediaView()
+          layout.socialMediaRegion.show social_view
+          console.log layout.socialMediaRegion.$el
 
     updateHistogram : ->
       @histogram_view.close() if @histogram_view

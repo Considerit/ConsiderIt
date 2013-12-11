@@ -6,15 +6,25 @@
       layout = @getLayout()
 
       @listenTo layout, 'show', =>
-        active_controller = new Proposals.ActiveListController
-          region : layout.activeRegion
-          parent_controller : @
-          total_models : App.request('proposals:totals')[0]
 
-        inactive_controller = new Proposals.InactiveListController
-          region : layout.pastRegion
-          parent_controller : @
-          total_models : App.request('proposals:totals')[1]
+        tenant = App.request('tenant:get')
+
+        if tenant.get('enable_hibernation')
+          inactive_controller = new Proposals.InactiveListController
+            region : layout.activeRegion
+            parent_controller : @
+            total_models : App.request('proposals:totals')[1]
+
+        else
+          active_controller = new Proposals.ActiveListController
+            region : layout.activeRegion
+            parent_controller : @
+            total_models : App.request('proposals:totals')[0]
+
+          inactive_controller = new Proposals.InactiveListController
+            region : layout.pastRegion
+            parent_controller : @
+            total_models : App.request('proposals:totals')[1]
 
 
         if @options.last_proposal_id

@@ -3,11 +3,14 @@
   class Admin.AppSettingsView extends App.Dash.View
     dash_name : 'app_settings'
     checkboxes : [
-      ['account', 'assessment_enabled', 'account_assessment_enabled'],
+      #['account', 'assessment_enabled', 'account_assessment_enabled'],
       ['account', 'enable_moderation', 'account_enable_moderation'],
-      ['account', 'enable_position_statement', 'account_enable_position_statement'],
+      #['account', 'enable_position_statement', 'account_enable_position_statement'],
       ['account', 'enable_user_conversations', 'account_enable_user_conversations'], 
+      ['account', 'enable_sharing', 'account_enable_sharing'],
+      ['account', 'enable_hibernation', 'account_enable_hibernation'],
       ['account', 'requires_civility_pledge_on_registration', 'account_requires_civility_pledge_on_registration']
+
     ]
 
     radioboxes : [
@@ -23,11 +26,14 @@
       super
       @$el.find('#account_header_text').autosize()
       @$el.find('#account_header_details_text').autosize()
-      @toggleModeration()
+
+      @$el.find('.l-expandable-option').each (idx, $expandable) =>
+        @toggleExpandable 
+          currentTarget : $expandable
 
     events : 
       'ajax:complete .m-dashboard-edit-account' : 'accountUpdated'
-      'click #account_enable_moderation' : 'toggleModeration'
+      'click .l-expandable-option input' : 'toggleExpandable'
 
     accountUpdated : (ev, response, options) ->
       data = $.parseJSON(response.responseText)
@@ -36,11 +42,16 @@
       toastr.success 'Account updated'
 
 
-    toggleModeration : ->
-      if @$el.find('#account_enable_moderation').is(':checked')
-        @$el.find('.m-moderation-settings').slideDown()
+    toggleExpandable : (ev) ->
+      $expandable_option = $(ev.currentTarget).closest('.l-expandable-option')
+      $expandable_area = $expandable_option.siblings('.l-expandable-area')
+      console.log $expandable_area, $expandable_option, $expandable_option.is(':checked')
+
+      if $expandable_option.find('input').is(':checked')
+        console.log 'CHECKED!'
+        $expandable_area.slideDown()
       else
-        @$el.find('.m-moderation-settings').slideUp()
+        $expandable_area.slideUp()
 
 
   # class Admin.ManageProposalsView extends App.Dash.View

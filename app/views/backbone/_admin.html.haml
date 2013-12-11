@@ -59,30 +59,54 @@
         .sublabel
           Whether you wish to allow any registered user to start new conversations on the homepage.
 
-      .field  
-        = f.check_box :assessment_enabled
-        = f.label :assessment_enabled, 'Enable Assessments'
-        .sublabel
-          Whether you wish to fact check the pros and cons users contribute. 
-
       .field
-        = f.check_box :enable_position_statement
-
-        = f.label :enable_position_statement, 'Enable Position Statement'
+        = f.check_box :enable_sharing
+        = f.label :enable_sharing, 'Enable Social Media Sharing'
         .sublabel
-          Allow users to write a summary of their position, in addition to their pro/con list and stance. 
+          Whether to include Facebook Share and Twitter Tweet buttons for active public discussions. 
+
+
+      %fieldset
+        %legend
+          Hibernation options
+        .field.l-expandable-option
+          = f.check_box :enable_hibernation
+          = f.label :enable_hibernation, 'Enter Hibernation Mode'
+          .sublabel
+            Sometimes you might not have any active discussions. Enter hibernation mode in order to (1) show a message on the homepage regarding the status of the site and (2) prevent further contributions to existing discussions.
+
+        .l-expandable-area
+          .field
+            = f.label :hibernation_message, 'Hibernation message'
+            = f.text_field :hibernation_message, :value => "{{hibernation_message}}"
+            .sublabel
+              This message will appear on the homepage as long as the site is in hibernation.
+
+
+      // .field  
+      //   = f.check_box :assessment_enabled
+      //   = f.label :assessment_enabled, 'Enable Assessments [experimental, not recommended yet]'
+      //   .sublabel
+      //     Whether you wish to fact check the pros and cons users contribute. 
+
+      // .field
+      //   = f.check_box :enable_position_statement
+
+      //   = f.label :enable_position_statement, 'Enable Position Statement [experimental, not recommended]'
+      //   .sublabel
+      //     Allow users to write a summary of their position, in addition to their pro/con list and stance. 
 
       %fieldset
         %legend 
           Content Moderation
 
-        .field  
+        .field.l-expandable-option  
           = f.check_box :enable_moderation
           = f.label :enable_moderation, 'Enable Moderation'
           .sublabel
             Whether you wish to moderate user contributed content like comments and pro and con points. 
 
-        .m-moderation-settings
+        .l-expandable-area
           - ['points', 'comments', 'proposals'].each do |model|
             %fieldset
               %legend

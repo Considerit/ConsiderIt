@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131206215949) do
+ActiveRecord::Schema.define(:version => 20131210223146) do
 
   create_table "accounts", :force => true do |t|
     t.string   "identifier"
@@ -63,6 +63,9 @@ ActiveRecord::Schema.define(:version => 20131206215949) do
     t.datetime "homepage_pic_updated_at"
     t.string   "homepage_pic_remote_url"
     t.string   "project_url"
+    t.boolean  "enable_hibernation",                       :default => false
+    t.boolean  "enable_sharing",                           :default => false
+    t.string   "hibernation_message"
   end
 
   add_index "accounts", ["identifier"], :name => "by_identifier", :length => {"identifier"=>10}

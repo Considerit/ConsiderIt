@@ -131,6 +131,7 @@
     serializeData : ->
       is_active : @is_active
       data_loaded : App.request "proposals:are_fetched"
+      tenant : App.request('tenant:get').attributes
 
     buildItemView : (proposal) ->
       view_cls = App.Franklin.Proposal.ProposalLayout

@@ -108,8 +108,15 @@ class ApplicationController < ActionController::Base
 
       num_proposals_per_page = current_tenant.num_proposals_per_page
       
-      proposals = Proposal.open_to_public.active.browsable
-      proposals_active_count = proposals.count
+      active_proposals = Proposal.open_to_public.active.browsable
+      inactive_proposals = Proposal.open_to_public.inactive.browsable
+
+      proposals_active_count = active_proposals.count
+      proposals_inactive_count = inactive_proposals.count
+
+
+      proposals = current_tenant.enable_hibernation ? inactive_proposals : active_proposals
+
       proposals = proposals.public_fields.order('activity DESC').limit(num_proposals_per_page)
 
 
@@ -140,7 +147,6 @@ class ApplicationController < ActionController::Base
         @positions = current_user.positions.published
       end
 
-      proposals_inactive_count = Proposal.open_to_public.inactive.browsable.count
 
       @proposals = {
         :proposals => proposals,

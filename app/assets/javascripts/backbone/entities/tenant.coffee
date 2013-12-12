@@ -21,14 +21,17 @@
 
     initialize : (options = {}) ->
       super options
-
-      # Overwrite null and blank values for default fields
-      _.each _.keys(@defaults), (key) =>
-        @set(key, @defaults[key]) if !!!@get(key)
+      @updateAttrs()
 
       #TODO: create HTML version of each of these fields and use those to render when appropriate
       @attributes.header_text = htmlFormat(@attributes.header_text)
       @attributes.header_details_text = htmlFormat(@attributes.header_details_text)
+
+
+    updateAttrs : ->
+      # Overwrite null and blank values for default fields
+      _.each _.keys(@defaults), (key) =>
+        @set(key, @defaults[key]) if !!!@get(key)
 
 
     classesToModerate : ->
@@ -91,6 +94,7 @@
 
     updateTenant : (attrs) ->
       @current_tenant.set attrs
+      @current_tenant.updateAttrs()
       App.vent.trigger "tenant:updated"
 
   App.reqres.setHandler "tenant:get", ->

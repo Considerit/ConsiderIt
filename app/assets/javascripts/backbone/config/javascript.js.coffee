@@ -80,15 +80,15 @@ $(document).ready () ->
 
   
   #adapted from http://www.thecssninja.com/javascript/pointer-events-60fps
-  $body = $('body')
-  timer = null
-  $(window).scroll ->
-    clearTimeout timer
-    if document.body.style.pointerEvents != 'none'
-      document.body.style.pointerEvents = 'none'
+  # $body = $('body')
+  # timer = null
+  # $(window).scroll ->
+  #   clearTimeout timer
+  #   if document.body.style.pointerEvents != 'none'
+  #     document.body.style.pointerEvents = 'none'
     
-    timer = setTimeout ->
-      document.body.style.pointerEvents = ''
-    , 200
+  #   timer = setTimeout ->
+  #     document.body.style.pointerEvents = ''
+  #   , 200
 
 

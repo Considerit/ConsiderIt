@@ -312,7 +312,47 @@
         %a.cancel{ :'data-target' => "dialog-close" }
           cancel  
 
+  %script{ :type => "text/template", :id => "tpl_dashboard_import_data"}
+    .m-dashboard-heading
+      %h2
+        Import data via CSV spreadsheet [experimental]
 
+      .m-dashboard-subheading
+        Currently only Proposals can be imported. Note that all imported proposals will be publicly accessible. You probably shouldn't do this unless you've gotten instructions from 
+        %a{ :href => "mailto:kevin@consider.it"}
+          Kevin at Consider.it
+
+
+    = form_for :account, :url => import_data_path, :remote => true, :method => :put, :html => { :class => 'm-dashboard-import-data'} do |f|
+
+      .field
+        = f.label :user_id, 'Proposing user'
+        = f.text_field :user_id, :value => "{{current_user.id}}"
+        .sublabel
+          The user id to be treated as the "Proposer" for the imported proposals. [Defaults to you.]
+
+      .field
+        = f.check_box :published, :checked => true
+        = f.label :published, 'Publish proposals immediately'
+        .sublabel
+          The user id to be treated as the "Proposer" for the imported proposals. Defaults to you. [Defaults to yes]
+
+      .field
+        = f.label :csv, 'Your CSV file'
+        = f.file_field :csv
+        .sublabel
+          A .csv file containing the proposals you wish to import. Make sure that you have a ten character "long_id" specified for each proposal.
+
+      (( if(tenant.theme=='lvg'){ ))
+      .field
+        = f.label :csv_local, 'Jurisdictions file for WA localities (optional)'
+        = f.file_field :csv_local
+        .sublabel
+          A .csv file containing jurisdiction for each zip.
+      (( } ))
+
+      .save_block
+        = f.submit 'Import proposals', :class => 'button'
 
   %script{ :type => "text/template", :id => "tpl_dashboard_database"}
     %iframe{ :src => rails_admin_path }

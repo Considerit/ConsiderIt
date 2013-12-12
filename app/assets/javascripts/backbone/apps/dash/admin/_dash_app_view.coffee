@@ -122,6 +122,38 @@
   class Admin.DatabaseView extends App.Dash.View
     dash_name : 'database'
 
+  class Admin.ImportDataView extends App.Dash.View
+    dash_name : 'import_data'
+
+    serializeData : ->
+      tenant = App.request 'tenant:get'
+      _.extend {},
+        tenant : tenant.attributes
+        current_user : App.request('user:current')
+
+    events : 
+      'ajax:complete .m-dashboard-import-data' : 'dataImported'
+
+    dataImported : (data, response, xhr) ->
+      result = $.parseJSON(response.responseText)
+      if result.created > 0
+        toastr.success "#{result.created} proposals created"
+
+      if result.updated > 0
+        toastr.success "#{result.updated} proposals updated"
+
+      if result.errors > 0
+        toastr.error "#{result.errors} proposals were not updated because of errors"
+
+      if App.request('tenant:get').get('theme') == 'lvg' && result.jurisdictions
+        toastr.success "#{result.jurisdictions}"
+        
+        if result.jurisdiction_errors > 0
+          toastr.error "Failed jurisdictions: #{result.jurisdiction_errors}"
+
+      @trigger 'data:imported', result
+
+
 
 
 

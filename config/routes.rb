@@ -66,6 +66,9 @@ ConsiderIt::Application.routes.draw do
     match '/dashboard/admin_template' => "admin#admin_template", :via => :get, :as => :admin_template
     #match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
     match '/dashboard/analytics' => "admin#analytics", :via => :get, :as => :analytics
+    match '/dashboard/import_data' => "admin#import_data", :via => :get, :as => :import_data
+    match '/dashboard/import_data' => "admin#import_data_create", :via => :put, :as => :import_data
+
     #match '/dashboard/proposals' => "admin#proposals", :via => :get, :as => :manage_proposals
     match '/dashboard/roles' => "admin#roles", :via => :get, :as => :manage_roles
     match '/dashboard/roles/users/:user_id' => "admin#update_role", :via => :post, :as => :update_role

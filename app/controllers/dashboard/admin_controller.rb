@@ -85,6 +85,35 @@ class Dashboard::AdminController < Dashboard::DashboardController
 
   end
 
+  def import_data
+    if current_user.nil? || !(current_user.is_admin? || current_user.has_role?(:analyst))
+      result = {
+        :result => 'failed',
+        :reason => current_user.nil? ? 'not logged in' : 'not authorized'
+      }
+    else
+      result = { 
+        :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
+    end
+    render :json => result
+
+  end
+
+  def import_data_create
+    result = Proposal.import_from_spreadsheet params[:account][:csv], {
+      :published => params[:account]["published"],
+      :user_id => params[:account]["user_id"],
+    }
+
+    if current_tenant.theme == 'lvg' && params[:account].has_key?(:csv_local) && params[:account][:csv_local]
+      result.update Proposal.import_jurisdictions params[:account][:csv], params[:account][:csv_local]
+    end
+
+    pp result
+    render :json => result
+
+  end
+
   protected
 
   def _get_timeseries

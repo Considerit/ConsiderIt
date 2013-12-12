@@ -89,6 +89,6 @@ $(document).ready () ->
     
     timer = setTimeout ->
       document.body.style.pointerEvents = ''
-    , 100
+    , 200
 
 

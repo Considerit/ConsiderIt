@@ -11,6 +11,7 @@
       "dashboard/analytics" : "analyze"
       "dashboard/data" : "database"
       "dashboard/moderate" : "moderate"
+      "dashboard/import_data" : "importData"
 
   API =
 
@@ -139,6 +140,23 @@
           ["Analytics", Routes.analytics_path()] ]
         App.request 'meta:change:default'
   
+
+    importData : ->
+
+      $(document).scrollTop(0)
+
+      @current_controller.close() if @current_controller      
+      @current_controller = new Dash.Admin.ImportDataController
+        region : @_getMainRegion()  
+
+      if !@current_controller.redirected
+        App.vent.trigger 'route:started', null
+
+        App.vent.trigger 'route:completed', [ 
+          ['homepage', '/'], 
+          ["Import data", Routes.import_data_path()] ]
+        App.request 'meta:change:default'
+
     database : ->
 
       $(document).scrollTop(0)

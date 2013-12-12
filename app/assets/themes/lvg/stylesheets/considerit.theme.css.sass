@@ -22,24 +22,25 @@
 #t-bg-content
 
 #l-content-main-wrap
-  +single-box-shadow
-  border-radius: 2px
-  background: asset-data-url('paper.jpg') repeat white 5 * $vertical_baseline 0em
+  // background: asset-data-url('paper.jpg') repeat white 5 * $vertical_baseline 0em
 
 #t-bg-content
+  +single-box-shadow(rgba(black, .25), 0, 1px)
+  border-radius: 15px
+
   //margin-top: 2 * $vertical_baseline
 
 #t-bg-top
   &:before
     content: ""
     height: 7 * $vertical_baseline
-    +single-box-shadow
+    +single-box-shadow(rgba(black, .25), 0, 1px)
     position: absolute
     width: 100%
     top: 13 * $vertical_baseline
     +background(linear-gradient(top, #888, #777))
     border-top: 1px solid #919191
-    border-bottom: 1px solid #555
+    border-bottom: 1px solid #666
 
 #l-header
   .t-logo
@@ -79,7 +80,9 @@
   #t-intro-people
     text-align: center
     padding-top: $vertical_baseline
-    margin-left: 25px
+    margin-left: -($full_width - $content_width)/2
+    width: $full_width
+
     .row
       font-size: 0
     .avatar

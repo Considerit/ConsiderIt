@@ -52,12 +52,14 @@
       if !Modernizr.input.placeholder
         @$el.find('[placeholder]').simplePlaceholder() 
 
+
+      selector = if @options.selected == 'has_pass' then '#password_none' else '#password_has'
+      $password_input = @$el.find selector
+      $password_input.trigger 'click'
+
       if !@options.fixed
         @$el.find('#user_email').focus() 
 
-      selector = if @options.selected == 'no_pass' then '#password_has' else '#password_none'
-      $password_input = @$el.find selector
-      $password_input.trigger 'click'
 
     respondToPasswordReminderRequest : (success) ->
       if success

@@ -57,6 +57,7 @@
 
   class Admin.UserRolesController extends Admin.AdminController
     auth : 'is_admin'
+    admin_template_needed : true
 
     #TODO: cache this data
     data_uri : -> 
@@ -89,6 +90,27 @@
         collection : @collection
 
 
+  class Admin.ImportDataController extends Admin.AdminController
+    auth : 'is_manager'
+    admin_template_needed : true
+
+    data_uri : ->
+      Routes.import_data_path()
+
+    process_data_from_server : (data) -> 
+      data
+
+    setupLayout : ->
+      layout = @getLayout()
+
+      @listenTo layout, 'data:imported', (result) =>
+        if result.proposals && result.proposals.length > 0
+          App.vent.trigger "proposals:fetched", result.proposals
+
+      layout
+
+    getLayout : ->
+      new Admin.ImportDataView
 
 
   class Admin.DatabaseController extends Admin.AdminController

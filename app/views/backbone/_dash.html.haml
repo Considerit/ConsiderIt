@@ -69,6 +69,12 @@
         Analytics
     (( } ))
 
+    (( if(  is_manager ) { ))
+    %li
+      %a.m-sidebar_link{:href => "{{Routes.import_data_path()}}", :'data-target' => 'import_data'}
+        Import data
+    (( } ))
+
     (( if(is_admin) { ))
     %li
       %a.m-sidebar_link{:href => "/dashboard/database", :target => "_blank"}

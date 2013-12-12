@@ -19,19 +19,20 @@
 
         .l-message-speaker
 
-              
-
         .l-message-body.m-proposal-description
           = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
           .l-message-title
             %span.m-proposal-description-intro
+              (( if(category){ ))
+
               = succeed ':' do
                 %strong
                   {{ category.charAt(0) }}-{{designator}}
                 (( if(jurisdiction && jurisdiction.length > 0) { ))
                 , {{jurisdiction}}
                 (( } ))
+              (( } ))
 
             %span.m-proposal-description-title
 

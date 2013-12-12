@@ -38,6 +38,12 @@
         #reset the layout such that updated positions are shown correctly in the histogram
         @createHistogram @layout
 
+      if @state == Proposal.ReasonsState.together
+        @createSharing @layout
+
+      else
+        @removeSharing @layout
+
 
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
@@ -45,10 +51,18 @@
         if @state == Proposal.ReasonsState.together
           @createHistogram layout
 
-        if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
+          @createSharing layout
+
+    removeSharing : (layout) ->
+      if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
+        layout.socialMediaRegion.reset()
+
+    createSharing : (layout) ->
+      if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
+        _.delay =>
           social_view = @getSocialMediaView()
           layout.socialMediaRegion.show social_view
-          console.log layout.socialMediaRegion.$el
+        , @transition_speed() * 3
 
     updateHistogram : ->
       @histogram_view.close() if @histogram_view

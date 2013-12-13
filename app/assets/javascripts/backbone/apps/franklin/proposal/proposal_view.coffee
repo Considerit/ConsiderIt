@@ -114,7 +114,7 @@
           $histogram.css { opacity: 1, display: '' }
           $histogram.find('.m-bar-people').css {visibility: ''}
 
-          $participants.fadeOut()
+          $participants.hide()
           $participants_container.removeAttr 'style'
 
           @trigger 'explosion:complete'

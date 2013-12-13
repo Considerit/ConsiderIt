@@ -7,7 +7,7 @@ class Comment < ActiveRecord::Base
     Comment.where('id > -1') #tacked on this where in order to enable chaining
   }
 
-  scope :public_fields, select('id, body, user_id, commentable_type, created_at, commentable_id, moderation_status')
+  scope :public_fields, -> {select('id, body, user_id, commentable_type, created_at, commentable_id, moderation_status')}
   
   has_paper_trail :only => [:title, :body, :subject, :user_id]  
   

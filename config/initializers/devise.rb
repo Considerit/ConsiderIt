@@ -15,6 +15,8 @@ Devise.setup do |config|
   # available as additional gems.
   require 'devise/orm/active_record'
 
+  config.secret_key = '5b4534b1dfa4e4f3b7aad0eb614b2753a55db508fef46a21b94b88f8449c18b3f721c2a2a307c69baeb3069cb99283f1ecc79c62d1b8770cfc0637fe78025a20'
+
   #from omniauth docs: In order to use following features, you have to require openid store in Devise initializer.
   #require 'openid/store/filesystem'
   

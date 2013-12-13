@@ -138,7 +138,7 @@ group :assets do
   gem 'coffee-rails', "~> 3.2.2"
   gem 'uglifier'
   gem "asset_sync"
-  gem 'compass', '>= 0.13.alpha.0'
+  gem 'compass', '0.13.alpha.12'
   gem 'compass-rails', '>= 1.0.2'
   gem 'sassy-buttons'
   #gem 'turbo-sprockets-rails3'

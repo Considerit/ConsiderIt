@@ -101,7 +101,7 @@ GEM
       activemodel
       fog (>= 1.8.0)
     atomic (1.1.14)
-    aws-sdk (1.29.0)
+    aws-sdk (1.30.0)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
@@ -135,8 +135,8 @@ GEM
       json
       listen (~> 1.1.0)
       sass (~> 3.3.0.rc.1)
-    compass-rails (1.0.3)
-      compass (>= 0.12.2, < 0.14)
+    compass-rails (1.1.2)
+      compass (>= 0.12.2)
     css_parser (1.3.5)
       addressable
     daemons (1.1.9)
@@ -175,7 +175,7 @@ GEM
     font-awesome-rails (3.2.1.3)
       railties (>= 3.2, < 5.0)
     formatador (0.2.4)
-    fspath (2.0.5)
+    fspath (2.0.6)
     haml (4.0.4)
       tilt
     hashie (2.0.5)
@@ -183,7 +183,7 @@ GEM
     htmlentities (4.3.1)
     http (0.5.0)
       http_parser.rb
-    http_parser.rb (0.5.3)
+    http_parser.rb (0.6.0)
     httpauth (0.2.0)
     i18n (0.6.9)
     image_optim (0.9.1)
@@ -201,7 +201,7 @@ GEM
     jquery-ui-rails (3.0.1)
       jquery-rails
       railties (>= 3.1.0)
-    js-routes (0.9.4)
+    js-routes (0.9.6)
       rails (>= 3.2)
     json (1.8.1)
     jwt (0.1.8)
@@ -234,7 +234,7 @@ GEM
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.7.0)
-    newrelic_rpm (3.6.9.171)
+    newrelic_rpm (3.7.0.177)
     nokogiri (1.6.0)
       mini_portile (~> 0.5.0)
     oauth (0.4.7)
@@ -244,7 +244,7 @@ GEM
       jwt (~> 0.1.4)
       multi_json (~> 1.0)
       rack (~> 1.2)
-    oj (2.2.3)
+    oj (2.4.1)
     omniauth (1.1.4)
       hashie (>= 1.2, < 3)
       rack
@@ -264,9 +264,9 @@ GEM
       omniauth-oauth (~> 1.0)
     open4 (1.3.0)
     orm_adapter (0.5.0)
-    paper_trail (2.7.2)
-      activerecord (~> 3.0)
-      railties (~> 3.0)
+    paper_trail (3.0.0)
+      activerecord (>= 3.0, < 5.0)
+      activesupport (>= 3.0, < 5.0)
     paperclip (3.5.2)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -355,7 +355,7 @@ GEM
     sassy-buttons (0.2.6)
       compass (>= 0.12.2)
     simple_oauth (0.2.0)
-    sitemap_generator (4.3.0)
+    sitemap_generator (4.3.1)
       builder
     sprockets (2.2.2)
       hike (~> 1.2)
@@ -376,19 +376,19 @@ GEM
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
-    twitter (5.1.1)
+    twitter (5.2.0)
       addressable (~> 2.3)
       buftok (~> 0.2.0)
       descendants_tracker (~> 0.0.1)
-      equalizer (~> 0.0.7)
+      equalizer (~> 0.0.7, != 0.0.8)
       faraday (>= 0.8, < 0.10)
       http (~> 0.5.0)
-      http_parser.rb (~> 0.5.0)
+      http_parser.rb (~> 0.6.0)
       json (~> 1.8)
       memoizable (~> 0.2.0)
       simple_oauth (~> 0.2.0)
     tzinfo (0.3.38)
-    uglifier (2.3.2)
+    uglifier (2.3.3)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
     uuidtools (2.1.4)
@@ -415,7 +415,7 @@ DEPENDENCIES
   cancan
   coffee-rails (~> 3.2.2)
   commentable!
-  compass (>= 0.13.alpha.0)
+  compass (= 0.13.alpha.12)
   compass-rails (>= 1.0.2)
   daemons
   dalli

@@ -23,12 +23,19 @@
   //       +font-size(3)
 
   &[data-state="separated"], &[data-state="together"]
-    margin-top: $vertical_baseline
-    a
+    margin-top: 2 * $vertical_baseline
+
+    .m-proposal-state-primary
+      +font-size(6)
       color: $decision_board_text_color
+      font-weight: bold
+
+    .m-proposal-state-secondary
+      color: lighten($base_text_color, 20%)
       &:hover
-        color: darken($decision_board_text_color, 10%)
-      +font-size(3)
-      i
-        +font-size(4)
-        vertical-align: middle
+        color: $base_text_color
+      +font-size(1)
+      text-decoration: underline
+      // i
+      //   +font-size(4)
+      //   vertical-align: middle

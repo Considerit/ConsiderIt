@@ -10,8 +10,11 @@ ConsiderIt::Application.configure do
   config.action_controller.perform_caching = true
 
   # Compress JavaScripts and CSS
-  config.assets.compress = true
-   
+  #config.assets.compress = true
+  config.assets.js_compressor = :uglifier
+
+  config.eager_load = true
+  
   # Choose the compressors to use
   # config.assets.js_compressor  = :uglifier
   # config.assets.css_compressor = :yui

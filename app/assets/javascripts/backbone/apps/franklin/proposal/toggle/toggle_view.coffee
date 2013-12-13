@@ -13,12 +13,17 @@
       crafting = @state == Proposal.ReasonsState.separated
       
       if !active && updating
-        call = 'View your opinion'
+        call = 'View Your Opinion'
       else
         if updating
-          call = 'Update your opinion'
+          call = 'Update Your Opinion'
         else
-          call = if crafting then 'Adding your own opinion' else 'Add your own opinion'
+          if crafting 
+            call = 'Craft Your Own Opinion' 
+          else 
+            call = 'Craft Your Own Opinion'
+          
+        results_call = 'View All Opinions'
 
       current_user = App.request 'user:current'
       _.extend {}, @model.attributes,
@@ -26,6 +31,7 @@
         updating : updating
         crafting : crafting
         call : call
+        results_call : results_call
 
     onRender : ->
       super

@@ -13,18 +13,25 @@
 
   (( if(crafting && (active || updating) ) { ))
 
-  %a{ :href => "{{Routes.proposal_path( long_id )}}"}
-    %i.icon-large 
-      &#xf046;
-
+  .m-proposal-state-primary
     {{ call }}
+
+  %a{ :href => "{{Routes.proposal_path( long_id )}}", :class => 'm-proposal-state-secondary'}
+    // %i.icon-large 
+    //   &#xf046;
+
+    {{ results_call }}
 
   (( } else if(!crafting && (active || updating) ) { ))
-  %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
-    %i.icon-large 
-      &#xf096;
+  .m-proposal-state-primary
+    {{ results_call }}
+
+  %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :class => 'm-proposal-state-secondary'}
+    // %i.icon-large 
+    //   &#xf096;
 
     {{ call }}
+
 
   (( } ))
 

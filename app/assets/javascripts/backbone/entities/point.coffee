@@ -153,11 +153,14 @@
   App.reqres.setHandler 'point:get', (id, fetch = false, proposal_id = null) ->
     API.getPoint id, fetch, proposal_id
 
-  App.reqres.setHandler 'point:create', (attrs, options = {wait: true}) ->
+  App.reqres.setHandler 'point:create', (attrs, options) ->
+    _.defaults options, 
+      wait : true
     API.createPoint attrs, options
 
   App.vent.on 'points:fetched', (points) ->
     API.addPoints points
+
 
   App.reqres.setHandler 'points:get:user', (model_id, published = true) ->
     API.getPointsByUser model_id, published

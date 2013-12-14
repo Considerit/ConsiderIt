@@ -29,6 +29,9 @@ ConsiderIt::Application.configure do
   
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
   config.action_mailer.perform_deliveries = false 
+  
+  # Automatically inject JavaScript needed for LiveReload
+  config.middleware.insert_after(ActionDispatch::Static, Rack::LiveReload)
 
   ActionMailer::Base.smtp_settings = {
     :address              => "smtp.gmail.com",
@@ -45,4 +48,5 @@ ConsiderIt::Application.configure do
   Paperclip.options[:command_path] = "/opt/local/bin/"
 
 
-end
+end  
+

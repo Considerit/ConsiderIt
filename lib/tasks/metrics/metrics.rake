@@ -291,7 +291,8 @@ namespace :metrics do
 
     proposals = points.map {|p| Point.find(p).proposal_id}.compact.uniq
 
-    if nonfactchecked=false
+    nonfactchecked=false
+    if nonfactchecked
       inclusions_all = Inclusion.where("proposal_id in (?) and point_id not in (?)", proposals, points)
 
       all_points = Point.where("proposal_id in (?)", proposals)

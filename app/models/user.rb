@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   validates :name, :presence => true
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
-  attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_positions, :metric_comments, :metric_influence, :b64_thumbnail
+  #attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_positions, :metric_comments, :metric_influence, :b64_thumbnail
 
   attr_accessor :avatar_url, :downloaded
 

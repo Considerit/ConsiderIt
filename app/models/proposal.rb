@@ -21,7 +21,7 @@ class Proposal < ActiveRecord::Base
   class_attribute :my_public_fields
   self.my_public_fields = [:id, :long_id, :activity, :additional_description2, :category, :created_at, :contested, :description, :designator, :additional_description1, :additional_description3, :name, :trending, :updated_at, :url1,:url2,:url3,:user_id, :active, :top_pro, :top_con, :participants, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description]
   
-  attr_accessible :long_id, :activity, :additional_description2, :category, :created_at, :contested, :description, :designator, :additional_description1, :additional_description3, :name, :trending, :updated_at, :url1,:url2,:url3,:user_id, :active, :top_pro, :top_con, :participants, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description
+  #attr_accessible :long_id, :activity, :additional_description2, :category, :created_at, :contested, :description, :designator, :additional_description1, :additional_description3, :name, :trending, :updated_at, :url1,:url2,:url3,:user_id, :active, :top_pro, :top_con, :participants, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description
 
   scope :active, -> {where( :active => true, :published => true )}
   scope :inactive, -> {where( :active => false, :published => true )}

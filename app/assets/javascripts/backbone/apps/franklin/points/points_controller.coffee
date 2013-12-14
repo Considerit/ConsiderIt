@@ -274,14 +274,13 @@
             proposal_id : @options.proposal.get('id')
             long_id : @options.proposal.id
 
-          new_point = App.request 'point:create', attrs
-          App.execute 'when:fetched', new_point, =>
+          new_point = App.request 'point:create', attrs, 
+            success : => 
+              @options.collection.add new_point    
+              toastr.success "Thanks for your contribution! Please <strong style='text-decoration:underline'>Save Your Position</strong> below to share your point with others.", null,
+                positionClass: "toast-top-full-width"
 
-            @options.collection.add new_point    
-            toastr.success "Thanks for your contribution! Please <strong style='text-decoration:underline'>Save Your Position</strong> below to share your point with others.", null,
-              positionClass: "toast-top-full-width"
-
-            @trigger 'point:created', new_point
+              @trigger 'point:created', new_point
 
           # App.execute 'show:loading',
           #   loading:

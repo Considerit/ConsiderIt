@@ -605,15 +605,15 @@ $static_position_width: $body_width+$grid_major
 .m-footer-contact
 
 .mc-subscribe
-  +sassy-button("simple", 5px, inherit, darken($header_footer_bg_color, 3%), darken($header_footer_bg_color, 5%))
+  +sassy-button("simple", 5px, inherit, #999, #777)
   +font-size(-3)
-  color: desaturate(invert(darken($header_footer_bg_color, 5%)), 100%)
+  color: #fafafa
   text-shadow: none
   position: relative
   top: -2px
   @extend %bolded
   &:hover
-    color: desaturate(invert(darken($header_footer_bg_color, 5%)), 100%)
+    color: white
 
 
 #mce-EMAIL

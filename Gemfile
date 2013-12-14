@@ -37,7 +37,8 @@ gem "remotipart"#, "~> 1.0.2"
 gem 'acts_as_tenant'
 
 # https://github.com/sferik/rails_admin
-gem 'rails_admin' #, "~> 0.0.5"
+#gem 'rails_admin' #, "~> 0.0.6"
+gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin' #remove git reference after next version bump
 
 #https://github.com/ryanb/cancan
 gem 'cancan'
@@ -79,7 +80,7 @@ gem 'jquery-rails'
 gem 'paper_trail'
 
 # https://github.com/lucasefe/themes_for_rails
-gem "themes_for_rails", "0.5.0.2", :git => 'git://github.com/tkriplean/themes_for_rails.git'
+gem "themes_for_rails", "0.5.0.2", :git => 'git://github.com/tkriplean/themes_for_rails.git' #, :branch => 'rails4'
 
 # https://github.com/weppos/actionmailer_with_request
 gem 'actionmailer-with-request'
@@ -120,7 +121,7 @@ gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csr
 #######
 # https://github.com/rails/protected_attributes
 # These are primarily to make smooth upgrade from Rails 3 to 4
-gem 'protected_attributes'
+#gem 'protected_attributes'
 gem 'actionpack-action_caching'
 #######
 
@@ -134,6 +135,10 @@ group :development, :test do
   gem 'thin'
   gem 'meta_request'
   gem 'newrelic_rpm'
+  gem 'guard', '>= 2.2.2',       :require => false
+  gem 'guard-livereload',        :require => false
+  gem 'rack-livereload'
+  gem 'rb-fsevent',              :require => false  
 end
 
 group :production do
@@ -143,12 +148,12 @@ end
 
 
 gem 'sprockets-rails', :require => 'sprockets/railtie'
-gem 'sprockets-helpers'
+#gem 'sprockets-helpers'
 
 gem 'aws-sdk'
 gem 'coffee-rails' #, "~> 3.2.2"
 gem 'uglifier'
 gem "asset_sync"
-gem 'compass', '0.13.alpha.12'
-gem 'compass-rails', '>= 1.0.2'
+gem 'compass' #, '0.13.alpha.12'
+gem 'compass-rails' #, '>= 1.0.2'
 gem 'sassy-buttons'

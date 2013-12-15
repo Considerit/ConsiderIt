@@ -5,15 +5,14 @@ class UserMailer < ActionMailer::Base
   layout 'email'
   include Devise::Mailers::Helpers
 
-
-
   ######### DEVISE MAILERS
-  def confirmation_instructions(user, proposal, options)
+  def confirmation_instructions(user, proposal, token, options)
     if user.nil?
       return
     end
     
-    generate_reset_password_token!(user) #if (user.reset_password_token.nil? || !user.reset_password_period_valid?)
+    @token = token 
+    #generate_reset_password_token!(user) #if (user.reset_password_token.nil? || !user.reset_password_period_valid?)
 
     @user = user
     @proposal = proposal
@@ -27,11 +26,13 @@ class UserMailer < ActionMailer::Base
 
   end
 
-  def reset_password_instructions(user, options)
-    generate_reset_password_token!(user) #if (user.reset_password_token.nil? || !user.reset_password_period_valid?)
+  def reset_password_instructions(user, token, options)
+    #generate_reset_password_token!(user) #if (user.reset_password_token.nil? || !user.reset_password_period_valid?)    
+
     @user = user
     @host = options[:host]
     @options = options
+    @token = token 
     email_with_name = "#{@user.username} <#{@user.email}>"
     subject = "password reset instructions"
     from = format_email(options[:from], options[:app_title])
@@ -74,10 +75,10 @@ class UserMailer < ActionMailer::Base
 
     end
 
-    def generate_reset_password_token!(user)
-      user.reset_password_token = User.reset_password_token
-      user.reset_password_sent_at = Time.now.utc
-      user.save
-    end
+    # def generate_reset_password_token!(user)
+    #   user.reset_password_token = User.reset_password_token
+    #   user.reset_password_sent_at = Time.now.utc
+    #   user.save
+    # end
 end
 

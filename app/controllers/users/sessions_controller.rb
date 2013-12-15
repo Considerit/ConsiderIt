@@ -2,6 +2,11 @@
 class Users::SessionsController < Devise::SessionsController
   #TODO: reevaluate whether this exception is still needed
   protect_from_forgery #:except => :create
+  before_filter :configure_permitted_parameters
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.for(:sign_in) { |u| u.permit! }
+  end
 
   def create
     user = User.find_by_lower_email(params[:user][:email])

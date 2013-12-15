@@ -5,7 +5,11 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
     user = User.find_by_lower_email(params[:user][:email])
     proposal = Proposal.find_by_id(params[:proposal_id])
 
-    UserMailer.confirmation_instructions(user, proposal, mail_options).deliver!
+    unless user.raw_confirmation_token
+      user.generate_confirmation_token!
+    end
+
+    UserMailer.confirmation_instructions(user, proposal, @raw_confirmation_token, mail_options).deliver!
     #self.resource = User.send_confirmation_instructions()
 
     # if successfully_sent?(resource)

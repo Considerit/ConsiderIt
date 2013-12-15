@@ -13,7 +13,7 @@
         current_user : current_user
 
     events:
-      'click .m-user-options-logout' : 'signoutRequested'
+      'click [data-target="logout"]' : 'signoutRequested'
       'mouseenter .m-user-options' : 'nav_entered' 
       'mouseleave .m-user-options' : 'nav_exited' 
       'click .m-user-options-dashboard_link' : 'access_dashboard'

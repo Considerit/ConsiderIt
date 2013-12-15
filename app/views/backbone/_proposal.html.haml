@@ -92,8 +92,7 @@
 
   %a.m-position-your-action-body.submit{:'data-target' => 'submit-position'}
     // fa-floppy-o
-    %i.fa-lg.fa
-      &#xf0c7;
+    %i.fa-lg.fa.fa-floppy-o
     (( if(updating){ ))
     Update your opinion
     (( } else { ))
@@ -127,9 +126,7 @@
   (( if(active) { ))
   %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
     //fa-pencil-square-o
-    %i.fa-lg.fa
-      //&#xf044;
-      &#xf040;
+    %i.fa-lg.fa.fa-pencil
     {{ call }}
   (( } ))
 
@@ -175,9 +172,8 @@
 
 %script{ :type => "text/template", :id => "tpl_aggregate_footer_collapsed"}
   %a.m-reasons-view-results{:'data-target' => 'show-results'}
-    %i.fa.fa-bar-chart-o.fa-lg 
-      //&#xf080;
-      &#xf00b;
+    //%i.fa.fa-bar-chart-o.fa-lg 
+    %i.fa.fa-th-list.fa-lg
     View Results
 
     
@@ -278,8 +274,7 @@
               %i.fa.fa-microphone
               Conversation is Active
               (( } else { ))
-              %i.fa.fa-lg
-                &#xf131;
+              %i.fa.fa-lg.fa-microphone-slash
               Conversation is Closed
               (( } ))
 
@@ -287,8 +282,7 @@
           (( var call = published ? 'Delete' : 'nevermind, delete it'; ))
 
           %a.m-delete_proposal{ :href => "{{Routes.proposal_path(long_id)}}", :'data-confirm' => "Are you sure you wish to permanently delete this conversation?", :'data-method' => 'delete', :'data-remote' => "true", :rel => "nofollow"}
-            %i.fa.fa-small
-              &#xf014;
+            %i.fa.fa-small.fa-trash-o
             {{call}}
 
 %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_publicity" }
@@ -360,8 +354,7 @@
         = f.radio_button :active, false, :value => false, :checked => true
         (( } ))
 
-        %i.fa.fa-lg
-          &#xf131;
+        %i.fa.fa-lg.fa-microphone-slash
 
         = f.label :active, 'Read-only', :value => false
         .sublabel

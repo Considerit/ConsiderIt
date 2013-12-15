@@ -7,8 +7,7 @@
 %script{ :type => "text/template", :id => "tpl_proposals_list_create"}
   .m-proposals-new
     %button.m-new-proposal-submit
-      %i.fa.fa-small
-        &#xf067;
+      %i.fa.fa-small.fa-plus
       New conversation
 
 
@@ -34,7 +33,6 @@
   (( } else if( !is_active && tenant.enable_hibernation) { ))
   .m-proposals-container-hibernation-message
     %i.fa-info-circle.fa.fa-lg 
-      &#xf05a
       
     {{tenant.hibernation_message}}    
   (( } ))

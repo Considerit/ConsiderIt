@@ -4,7 +4,14 @@ class Users::PasswordsController < Devise::PasswordsController
   def create
     user = User.find_by_lower_email(params[:user][:email]) if params[:user][:email].strip.length > 0
     if !user.nil?
-      UserMailer.reset_password_instructions(user, mail_options).deliver!
+      #from recoverable.send_reset_password_instructions
+      raw, enc = Devise.token_generator.generate(User, :reset_password_token)
+      user.reset_password_token   = enc
+      user.reset_password_sent_at = Time.now.utc
+      user.save(:validate => false)
+      ####
+
+      UserMailer.reset_password_instructions(user, raw, mail_options).deliver!
       render :json => {
         :result => 'success'
       }

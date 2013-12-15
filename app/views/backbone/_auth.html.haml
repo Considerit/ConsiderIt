@@ -54,7 +54,7 @@
           %li
             = link_to 'Tune', '/newrelic', :target => "_blank"
         %li
-          %a.m-user-options-logout
+          %a{"data-target" => "logout"}
             Log out
             
 
@@ -73,7 +73,6 @@
 
     %li.m-user-accounts-login-option
       %button{ :'data-target' => "third_party_auth", :class => "zocial {{provider.name}}", :'data-provider' => "{{provider.provider}}" }
-        %i.fa.fa-fw
         {{provider.name}}
       (( if(false && provider.fineprint) { ))
       .m-user-accounts-fineprint.m-fineprint-social
@@ -100,7 +99,6 @@
           .input-group
             %span.input-group-addon
               %i.fa.fa-envelope-o.fa-fw 
-                &#xf003;             
             = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Email address", :required => true, :class =>"h5-email form-control"
         (( } ))
 

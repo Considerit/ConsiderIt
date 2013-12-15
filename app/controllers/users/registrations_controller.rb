@@ -1,8 +1,14 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
-
   protect_from_forgery
   skip_before_filter :verify_authenticity_token, :if => :file_uploaded
+  before_filter :configure_permitted_parameters
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.for(:sign_up) { |u| u.permit! }
+    devise_parameter_sanitizer.for(:account_update) { |u| u.permit! }
+  end
+
 
   def file_uploaded
     params[:remotipart_submitted].present? && params[:remotipart_submitted] == "true"
@@ -65,10 +71,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
 
     else #registration via email
-      user = build_resource
+      pp sign_up_params
+      user = build_resource(sign_up_params)
       user.referer = user.page_views.first.referer if user.page_views.count > 0
 
       user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
+      
+      pp user
       if user.save
         sign_in(resource_name, user)
         current_user.track!

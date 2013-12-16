@@ -148,7 +148,7 @@
 
       is_neutral = Math.abs(@_stance_val()) < 5
       if !is_neutral
-        @ui.neutral_label.css('opacity', 0)
+        @ui.neutral_label.css 'visibility', 'hidden'
 
     sliderChange : (new_value) -> 
       return unless isFinite(new_value)

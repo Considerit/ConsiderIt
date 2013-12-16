@@ -61,7 +61,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     end
 
     attrs[:creator] = current_user.id
-    claim = Assessable::Claim.create!(attrs)
+    claim = Assessable::Claim.create! ActionController::Parameters.new(attrs).permit!
 
     render :json => claim
 
@@ -78,7 +78,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     params[:claim].delete :verdict_id if params[:claim].has_key?(:verdict_id) && params[:claim][:verdict_id].nil?
 
     # TODO: explicitly grab params  
-    claim.update_attributes(params[:claim])
+    claim.update_attributes params[:claim].permit!
 
     if claim.assessment.complete
       claim.assessment.update_verdict
@@ -112,7 +112,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     if assessment.complete
       assessment.update_verdict()
     end
-    assessment.update_attributes(params[:assessment])
+    assessment.update_attributes params[:assessment].permit!
     assessment.save
 
     if !complete && assessment.complete
@@ -144,7 +144,12 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     assessment = Assessable::Assessment.where(:assessable_type => assessable_type, :assessable_id => assessable_id).first
     if !assessment
-      assessment = Assessable::Assessment.create!({:account_id => current_tenant.id, :assessable_type => assessable_type, :assessable_id => assessable_id})
+      create_attrs = {
+        :account_id => current_tenant.id, 
+        :assessable_type => assessable_type, 
+        :assessable_id => assessable_id }
+        
+      assessment = Assessable::Assessment.create! ActionController::Parameters.new(create_attrs).permit!
 
       ActiveSupport::Notifications.instrument("new_assessment_request", 
         :assessment => assessment,

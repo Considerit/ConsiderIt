@@ -73,13 +73,13 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
     moderation = Moderation.where(:moderatable_type => params[:moderate][:moderatable_type], :moderatable_id => params[:moderate][:moderatable_id]).last
     
     if moderation
-      moderation.update_attributes!(
+      update_attrs = { 
         :user_id => params[:moderate][:user_id],
         :status => params[:moderate][:status],
-        :updated_since_last_evaluation => false
-      )
+        :updated_since_last_evaluation => false } 
+      moderation.update_attributes! ActionController::Parameters.new(update_attrs).permit!        
     else
-      moderation = Moderation.create!(params[:moderate])
+      moderation = Moderation.create!(params[:moderate].permit!)
     end
 
     if !moderation.notification_sent && moderation.status == 1

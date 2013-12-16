@@ -252,7 +252,7 @@ private
         :created_at => Time.current
       }  
 
-      PageView.create! params
+      PageView.create! ActionController::Parameters.new(params).permit!
     end
   end
 

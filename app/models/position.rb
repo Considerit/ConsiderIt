@@ -95,8 +95,6 @@ class Position < ActiveRecord::Base
           last = pos.order(:updated_at).last
           pos.where('id != (?)', last.id).each do |p|
             p.published = false
-            #p.inclusions.update_attributes!({:position_id => last.id})
-            pp p.user_id
             p.save
           end
         end

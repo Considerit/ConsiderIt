@@ -14,7 +14,7 @@ class PointListing < ActiveRecord::Base
 
     ActiveRecord::Base.connection.execute "DELETE FROM point_listings WHERE point_listings.point_id NOT IN (SELECT id FROM points)"
 
-    Point.to_a.each do |pnt|
+    Point.find_each do |pnt|
       users = pnt.point_listings(:select => [:user_id]).map {|x| x.user_id}.uniq.compact
 
       users.each do |u|

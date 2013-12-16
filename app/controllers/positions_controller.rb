@@ -6,7 +6,7 @@ class PositionsController < ApplicationController
 
 
   def create
-    position = Position.create params[:position]
+    position = Position.create params[:position].permit!
     position[:user_id] = current_user ? current_user.id : nil
     position[:account_id] = current_tenant.id
     update_or_create position
@@ -45,7 +45,7 @@ class PositionsController < ApplicationController
     existing_position = proposal.positions.published.where("id != #{position.id}").find_by_user_id current_user.id
 
     update_attrs[:published] = true
-    position.update_attributes update_attrs
+    position.update_attributes ActionController::Parameters.new(update_attrs).permit!
 
     if existing_position
       position.subsume existing_position
@@ -141,13 +141,15 @@ protected
     Inclusion.transaction do
       actions[:included_points].each do |point_id, value|
         if Inclusion.where( :position_id => position.id, :point_id => point_id, :user_id => position.user_id ).count == 0
-          inc = Inclusion.create!( { 
+          inc_attrs = { 
             :point_id => point_id,
             :user_id => position.user_id,
             :position_id => position.id,
             :proposal_id => position.proposal_id,
             :account_id => current_tenant.id
-          } )
+          }
+          
+          inc = Inclusion.create! ActionController::Parameters.new(inc_attrs).permit!
           if !actions[:written_points].include?(point_id) 
             pnt = Point.find(point_id)
             inc.track!
@@ -168,7 +170,8 @@ protected
       pnt.published = 1
       
       pnt.position_id = position.id
-      pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001, :score => 0.0000001})
+      update_attrs = {"score_stance_group_#{position.stance_bucket}".intern => 0.001, :score => 0.0000001}
+      pnt.update_attributes ActionController::Parameters.new(update_attrs).permit!
 
       updated_points.push(pnt_id)
 

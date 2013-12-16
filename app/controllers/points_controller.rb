@@ -49,7 +49,7 @@ class PointsController < ApplicationController
     if current_tenant.assessment_enabled
       response.update({
         :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
-        :verdicts => Assessable::Verdict.to_a,
+        :verdicts => Assessable::Verdict.all,
         :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
         :already_requested_assessment => current_user && Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
       })

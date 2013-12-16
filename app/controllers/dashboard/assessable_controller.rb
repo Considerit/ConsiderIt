@@ -19,7 +19,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     root_objects = Proposal.where("id in (?)", root_objects_ids).public_fields.to_a
 
     render :json => { 
-      :verdicts => Assessable::Verdict.to_a,
+      :verdicts => Assessable::Verdict.all,
       :assessments => assessments,
       :assessable_objects => assessable_objects,
       :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,
@@ -34,7 +34,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     root_object = assessment.proposal 
 
     render :json => {
-      :verdicts => Assessable::Verdict.to_a,
+      :verdicts => Assessable::Verdict.all,
       :assessment => assessment,
       :requests => assessment.requests,
       :claims => assessment.claims,

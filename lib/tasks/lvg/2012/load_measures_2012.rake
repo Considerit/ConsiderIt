@@ -10,7 +10,7 @@ namespace :admin do
     # CALI: "cal_prop_30"
 
 
-    Proposal.all.each do |prop|
+    Proposal.find_each do |prop|
         if prop.account_id == 1
             des = prop.designator.gsub(' ', '_')
 
@@ -54,7 +54,7 @@ namespace :admin do
 
   end
   task :tag_and_deactivate_old_measures => :environment do
-    Proposal.all.each do |prop|
+    Proposal.find_each do |prop|
         if prop.id > 323
             prop.tags = ['2012']
         else

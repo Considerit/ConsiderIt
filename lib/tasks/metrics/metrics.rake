@@ -280,7 +280,7 @@ namespace :metrics do
   task :fact_checking_rates => :environment do 
     puts "Computing average commenting rate and inclusion rate"
 
-    Assessable::Assessment.all().each do |ass|
+    Assessable::Assessment.find_each do |ass|
       #pp "Created at: #{ass.created_at}, Updated at: #{ass.updated_at}"
       #pp "requested at: #{ass.requests.first.created_at}"
     end
@@ -499,7 +499,7 @@ namespace :metrics do
 
     election_date = DateTime.new(2012,11,8)
 
-    Assessable::Assessment.all().each do |ass|
+    Assessable::Assessment.find_each do |ass|
       #pp "Created at: #{ass.created_at}, Updated at: #{ass.updated_at}"
       #pp "requested at: #{ass.requests.first.created_at}"
     end
@@ -706,8 +706,8 @@ namespace :metrics do
 
     proposals = assessed_points.map {|p| Point.find(p).proposal_id}.compact.uniq
 
-    requests = Assessable::Request.all().map {|r| r.created_at}
-    assessments = Assessable::Assessment.all().map {|a| a.updated_at}
+    requests = Assessable::Request.all.map {|r| r.created_at}
+    assessments = Assessable::Assessment.all.map {|a| a.updated_at}
     points = Point.published.where("proposal_id in (?)", proposals).map {|p| p.created_at}
 
     days = {}

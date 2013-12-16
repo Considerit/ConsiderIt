@@ -28,7 +28,7 @@ class Followable::Follow < ActiveRecord::Base
   end
 
   def self.purge
-    Followable::Follow.all.each do |u|
+    Followable::Follow.find_all do |u|
       begin
         obj = u.root_object
       rescue

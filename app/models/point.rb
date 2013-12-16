@@ -227,7 +227,7 @@ class Point < ActiveRecord::Base
       num_listings_per_point[row.pnt.to_i] = row.cnt.to_i
     end
 
-    Account.all.each do |accnt|
+    Account.find_each do |accnt|
 
       accnt.proposals.active.select(:id).each do |proposal|
 
@@ -235,8 +235,8 @@ class Point < ActiveRecord::Base
         # Point ranking across the metrics is done separately for pros and cons,
         # fixed on a particular Proposal
         point_groups = [
-          proposal.points.viewable.pros.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").all,
-          proposal.points.viewable.cons.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").all
+          proposal.points.viewable.pros.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").to_a,
+          proposal.points.viewable.cons.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").to_a
         ]
 
         point_groups.each do |group|        

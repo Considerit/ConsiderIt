@@ -16,7 +16,7 @@ class PointsController < ApplicationController
         :published => false
     }
 
-    point = Point.create!(create_params)
+    point = Point.create! ActionController::Parameters.new(create_params).permit!
     #TODO: shouldn't this happen before?
     authorize! :create, point
 
@@ -89,7 +89,7 @@ class PointsController < ApplicationController
       update_params[:hide_name] = params[:point][:hide_name]
     end
 
-    point.update_attributes! update_params
+    point.update_attributes! ActionController::Parameters.new(update_params).permit!
     
     if point.published
       ActiveSupport::Notifications.instrument("point:updated", 

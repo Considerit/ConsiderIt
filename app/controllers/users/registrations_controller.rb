@@ -120,7 +120,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     # TODO: explicitly grab params
 
-    if current_user.update_attributes(params[:user])
+    if current_user.update_attributes params[:user].permit!
 
       results = {
         :result => 'successful',

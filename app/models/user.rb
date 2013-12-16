@@ -298,7 +298,7 @@ class User < ActiveRecord::Base
         break
       end
     end
-    self.update_attributes!(attrs) if values_changed
+    self.update_attributes!(ActionController::Parameters.new(attrs).permit!) if values_changed
 
   end
 

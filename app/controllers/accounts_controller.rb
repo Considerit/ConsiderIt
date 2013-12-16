@@ -18,7 +18,7 @@ class AccountsController < Dashboard::DashboardController
     end
 
     # TODO: explicitly grab params
-    current_tenant.update_attributes(params[:account])
+    current_tenant.update_attributes(params[:account].permit!)
 
     if current_tenant.enable_hibernation && params[:account].has_key?('enable_hibernation')
       current_tenant.proposals.open_to_public.active.update_all(active: false)      

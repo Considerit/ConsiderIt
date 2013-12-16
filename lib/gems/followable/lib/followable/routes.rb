@@ -4,7 +4,7 @@ module Followable
 
     def followable_routes
       get "followable_index" => 'followable/followable#index', :as => 'followable_index'
-      get "follow" => 'followable/followable#follow'
+      match "follow" => 'followable/followable#follow', :via => :post
       #match "unfollow" => 'followable::followable#unfollow'
       match "unfollow" => 'followable/followable#unfollow', :via => :post
     end

@@ -12,6 +12,7 @@ public/images/old
 *.DS_STORE
 .sass-cache/
 public/system/avatars
+public/system/homepage_pics
 public/assets/
 public/system/icons
 public/sitemaps/*

@@ -31,7 +31,7 @@ namespace :cache do
     size = 'small'
     #TODO: do not automatically replace each file ... check hash at end for equality
     begin
-      Account.all.each do |accnt|
+      Account.find_each do |accnt|
         internal = Rails.application.config.action_controller.asset_host.nil?
         File.open("public/system/cache/#{accnt.identifier}.css", 'w') do |f|
 

@@ -28,13 +28,13 @@ class ApplicationController < ActionController::Base
 
       if permission
         session[:limited_user] = user ? user.id : nil
-        @limited_user_follows = user ? user.follows.all : []
+        @limited_user_follows = user ? user.follows.to_a : []
         @limited_user = user
         @limited_user_email = params[:u]
       end
     elsif session.has_key?(:limited_user ) && !session[:limited_user].nil?
       @limited_user = User.find(session[:limited_user])
-      @limited_user_follows = @limited_user.follows.all
+      @limited_user_follows = @limited_user.follows.to_a
       @limited_user_email = @limited_user.email
     end
 

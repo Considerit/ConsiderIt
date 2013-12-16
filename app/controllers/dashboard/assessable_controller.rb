@@ -14,12 +14,12 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     assessments = Assessable::Assessment.order(:complete)
     assessable_ids = assessments.map{ |assessment| assessment.assessable_id }.compact
-    assessable_objects = Point.where("id in (?)", assessable_ids).public_fields.all
+    assessable_objects = Point.where("id in (?)", assessable_ids).public_fields.to_a
     root_objects_ids = assessable_objects.map{ |assessed| assessed.proposal_id }.compact
-    root_objects = Proposal.where("id in (?)", root_objects_ids).public_fields.all
+    root_objects = Proposal.where("id in (?)", root_objects_ids).public_fields.to_a
 
     render :json => { 
-      :verdicts => Assessable::Verdict.all,
+      :verdicts => Assessable::Verdict.to_a,
       :assessments => assessments,
       :assessable_objects => assessable_objects,
       :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,
@@ -34,10 +34,10 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     root_object = assessment.proposal 
 
     render :json => {
-      :verdicts => Assessable::Verdict.all,
+      :verdicts => Assessable::Verdict.to_a,
       :assessment => assessment,
-      :requests => assessment.requests.all,
-      :claims => assessment.claims.all,
+      :requests => assessment.requests,
+      :claims => assessment.claims,
       :all_claims => root_object.claims,
       :assessable_obj => assessment.root_object, 
       :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,      

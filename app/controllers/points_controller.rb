@@ -38,8 +38,8 @@ class PointsController < ApplicationController
 
     #todo: make this more efficient and natural
     comments = point.comments
-    thanks = point.comments.map {|x| x.thanks.public_fields.all}.compact.flatten
-    thanks.concat point.claims.map {|x| x.thanks.public_fields.all}.compact.flatten
+    thanks = point.comments.map {|x| x.thanks.public_fields.to_a}.compact.flatten
+    thanks.concat point.claims.map {|x| x.thanks.public_fields.to_a}.compact.flatten
     
     response = {
       :comments => comments.public_fields,
@@ -49,7 +49,7 @@ class PointsController < ApplicationController
     if current_tenant.assessment_enabled
       response.update({
         :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
-        :verdicts => Assessable::Verdict.all,
+        :verdicts => Assessable::Verdict.to_a,
         :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
         :already_requested_assessment => current_user && Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
       })

@@ -87,7 +87,7 @@ class Position < ActiveRecord::Base
   end
 
   def self.purge
-    User.all.each do |u|
+    User.find_each do |u|
       proposals = u.positions.map {|p| p.proposal_id}.uniq
       proposals.each do |prop|
         pos = u.positions.where(:proposal_id => prop)

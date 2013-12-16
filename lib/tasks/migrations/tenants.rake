@@ -1,7 +1,7 @@
 namespace :tenants do
   desc "Based on tenant info from Proposals, Points, Positions, update account_id on all associated records"  
   task :update_associated => :environment do
-    Account.all.each do |accnt|
+    Account.find_each do |accnt|
       accnt.proposals.each do |prop|
         prop.inclusions.update_all(:account_id => accnt.id)
         prop.point_listings.update_all(:account_id => accnt.id)
@@ -34,7 +34,7 @@ namespace :tenants do
       'proposals', 'positions', 'points', 'inclusions', 'reflect_bullet_revisions', 'reflect_response_revisions',
       'point_listings', 'comments', 'activities']
 
-    User.all.each do |u|
+    User.find_each do |u|
       accounts = []
       tables.each do |tbl|
         result = tbl.select('DISTINCT account_id').where(:user_id => u.id)

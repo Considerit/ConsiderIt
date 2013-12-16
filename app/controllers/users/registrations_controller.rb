@@ -29,7 +29,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         :new_csrf => form_authenticity_token,
         #TODO: filter users' to_json?
         :user => current_user,
-        :follows => current_user.follows.all,         
+        :follows => current_user.follows,         
       }
 
     elsif user
@@ -58,7 +58,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
           :result => 'successful',
           #TODO: filter users' to_json?
           :user => current_user,
-          :follows => current_user.follows.all, 
+          :follows => current_user.follows, 
           :new_csrf => form_authenticity_token
         }
 
@@ -71,13 +71,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
 
     else #registration via email
-      pp sign_up_params
       user = build_resource(sign_up_params)
       user.referer = user.page_views.first.referer if user.page_views.count > 0
 
       user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
       
-      pp user
       if user.save
         sign_in(resource_name, user)
         current_user.track!
@@ -92,7 +90,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
           :result => 'successful',
           #TODO: filter users' to_json
           :user => current_user,
-          :follows => current_user.follows.all, 
+          :follows => current_user.follows, 
           :new_csrf => form_authenticity_token
         }
 

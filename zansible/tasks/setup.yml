@@ -1,3 +1,5 @@
+### This task is now deprecated and is now distributed across the playbooks in tasks/setup
+
 # good set of playbooks: https://github.com/francisbesset/ansible-playbooks/
 #https://www.digitalocean.com/community/articles/how-to-install-rails-and-nginx-with-passenger-on-ubuntu
 

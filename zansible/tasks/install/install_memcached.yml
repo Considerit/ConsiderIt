@@ -1,6 +1,5 @@
-# Install memcached
 - name: Write memcached.conf
-  action: template src=templates/memcached/memcached.cnf.j2 dest=/etc/memcached.conf mode=0644
+  action: template src=templates/memcached.cnf.j2 dest=/etc/memcached.conf mode=0644
   sudo: True
 
 - name: Restart memcached

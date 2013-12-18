@@ -1,0 +1,11 @@
+userhome: /home/$user
+#userhome: /home/members/interoccupynet/sites/tempcheck.occupy.net/users/tempcheck
+rbenv_path: ${userhome}/.rbenv #/usr/local/.rbenv
+ruby_home: ${userhome}/.rbenv/shims
+rbenv_home: ${rbenv_path}/bin
+ruby_version: 2.0.0-p247 #1.9.3-p392
+source: . ~/.profile
+port: 3000
+rails_environment: production
+passenger_root: ${rbenv_path}/versions/$ruby_version/lib/ruby/gems/2.0.0/gems/passenger-4.0.10
+path: PATH="${rbenv_path}/bin:${rbenv_path}/plugins/ruby-build/bin:$HOME/.rbenv/shims:$PATH"

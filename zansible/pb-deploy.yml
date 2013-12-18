@@ -1,10 +1,13 @@
 ---
 
 - hosts: all
-  name: Deploy ConsiderIt
+  name: Deploying Consider.it. Intended to be run whenever code needs to be pushed. 
+  vars:
   vars_files:
-    - vars/environment.yml
+    - global_vars/environment.yml
   tasks:
-    - include: tasks/deploy.yml
+    - include: tasks/deploy/install_considerit.yml
+    - include: tasks/deploy/update_app_environment.yml
+    - include: tasks/deploy/flushes_and_resets.yml
   handlers:
-    - include: handlers.yml
+    - include: tasks/handlers.yml

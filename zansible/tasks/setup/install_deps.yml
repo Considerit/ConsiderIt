@@ -1,8 +1,0 @@
-- name: Update apt
-  command: /usr/bin/apt-get update
-  sudo: True
-
-- name: Installs ruby building dependencies
-  apt: pkg=$item state=latest install_recommends=no
-  with_items: $deps
-  sudo: True

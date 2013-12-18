@@ -1,0 +1,15 @@
+- name: Install passenger
+  shell: $source && $path gem install passenger --no-rdoc --no-ri #&& rbenv rehash
+  sudo: False
+
+- name: Rbenv rehash
+  shell: $source && $path rbenv rehash
+  sudo: False
+
+- name: Install passenger nginx module
+  shell: $source && passenger-install-nginx-module --auto --auto-download --prefix=/opt/nginx --extra-configure-flags=--with-http_ssl_module creates=/opt/nginx
+  sudo: True
+
+- name: Create passenger agents
+  shell: $source && cd $passenger_root && rake nginx creates=$passenger_root/agents/PassengerWatchdog
+  sudo: False

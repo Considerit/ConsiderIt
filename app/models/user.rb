@@ -48,7 +48,6 @@ class User < ActiveRecord::Base
   end
 
 
-
   #validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
   after_create :add_token
 
@@ -57,7 +56,6 @@ class User < ActiveRecord::Base
   has_attached_file :avatar, 
       :styles => { 
         :large => "250x250#",
-        #:medium => "70x70#", 
         :small => "50x50#"
       },
       :processors => [:thumbnail, :paperclip_optimizer]

@@ -19,7 +19,6 @@ public/sitemaps/*
 public/system/cache/*.css
 *.bk
 config/newrelic.yml
-Vagrantfile
 .vagrant
 restart.txt
 

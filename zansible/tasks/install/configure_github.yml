@@ -10,6 +10,7 @@
   template: src=templates/github/ssh_config.j2 dest=~/.ssh/config
   sudo: False
 
-# - name: Add Github to known hosts
-#   copy: src=templates/github/ssh_known_hosts dest=~/.ssh/known_hosts
-#   sudo: False
+- name: Add Github to known hosts
+  shell: ssh-keyscan github.com >> ~/.ssh/known_hosts
+  #copy: src=templates/github/ssh_known_hosts dest=~/.ssh/known_hosts
+  sudo: False

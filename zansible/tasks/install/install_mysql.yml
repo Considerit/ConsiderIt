@@ -4,7 +4,7 @@
   notify:
     - Restart mysql
 
-- name: Write mysqld.conf
+- name: Write mysql client.cnf
   template: src=templates/mysql/client.cnf.j2 dest=/etc/mysql/conf.d/client.cnf
   sudo: True
   notify:

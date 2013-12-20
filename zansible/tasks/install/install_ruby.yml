@@ -37,16 +37,19 @@
   register: ruby_current_version
   sudo: False
 
+- name: Ruby Version check
+  debug: msg="current version of Ruby is {{ ruby_current_version.stdout }} while we're looking for {{ ruby_version }}"
+
 - name: Install ruby
   shell: $source && $path rbenv install $ruby_version && $path rbenv global $ruby_version
-  only_if: "'${ruby_current_version.stdout}' != '$ruby_version'"
+  when: ruby_current_version.stdout != ruby_version
   async: 600
   poll: 30
   sudo: False
 
 # - name: Set global rbenv version
 #   shell: $source && $path rbenv global $ruby_version
-#   only_if: "'${ruby_current_version.stdout}' != '$ruby_version'"
+#   when: ruby_current_version.stdout != ruby_version
 #   sudo: False
 
 - name: Install bundler

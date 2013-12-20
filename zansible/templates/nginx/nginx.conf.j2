@@ -13,7 +13,7 @@ http {
     ##
     # Basic Settings
     ##
-    passenger_root {{ passenger_root }};
+    passenger_root {{ passenger_root.stdout }};
     passenger_ruby {{ rbenv_path }}/versions/{{ ruby_version }}/bin/ruby;
 
     sendfile on;

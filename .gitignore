@@ -44,9 +44,9 @@ zansible/files/ssl/chalkboardit/chalkboardit.key
 
 *.sql
 
-zansible/group_vars/chalkboardit
-
-zansible/group_vars/development
+zansible/hosts/group_vars/chalkboardit
+zansible/hosts/group_vars/considerit
+zansible/hosts/group_vars/chlkit
 
 zansible/hosts-chalkboardit
 
@@ -54,14 +54,12 @@ zansible/files/ssl/chalkboardit/chalkboardit.key.encrypted
 
 zansible/files/ssl/chalkboardit/chalkboardit.key.nopass
 
-zansible/group_vars/chlkit
 
 zansible/hosts-chlkit
 
 
 public/system/default_avatar/avatar.sketch*
 
-zansible/group_vars/considerit
 
 zansible/hosts-considerit
 

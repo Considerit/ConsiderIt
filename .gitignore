@@ -22,45 +22,25 @@ config/newrelic.yml
 Vagrantfile
 .vagrant
 restart.txt
-zansible/files/avatars.zip
 
-zansible/files/considerit.sql.bz2
 
-zansible/files/github_consideritbsd_rsa
+zansible/templates/seeds_for_local_dev/avatars.zip
+zansible/templates/seeds_for_local_dev/considerit.sql.bz2
 
-zansible/files/github_consideritbsd_rsa.pub
-
-zansible/files/github_deploy_rsa
-
-zansible/files/github_deploy_rsa.pub
-
-zansible/files/ssl/chalkboardit/chalkboardit.crt
-
-zansible/files/ssl/chalkboardit/chalkboardit.csr
-
-zansible/files/ssl/chalkboardit/chalkboardit.key
-
-*.crt
-
-*.sql
+zansible/templates/github/github_consideritbsd_rsa
+zansible/templates/github/github_consideritbsd_rsa.pub
+zansible/templates/github/github_deploy_rsa
+zansible/templates/github/github_deploy_rsa.pub
 
 zansible/hosts/group_vars/chalkboardit
 zansible/hosts/group_vars/considerit
 zansible/hosts/group_vars/chlkit
 
-zansible/hosts-chalkboardit
+zansible/hosts/chalkboardit
+zansible/hosts/chlkit
+zansible/hosts/considerit
 
-zansible/files/ssl/chalkboardit/chalkboardit.key.encrypted
-
-zansible/files/ssl/chalkboardit/chalkboardit.key.nopass
-
-
-zansible/hosts-chlkit
-
+*.crt
+*.sql
 
 public/system/default_avatar/avatar.sketch*
-
-
-zansible/hosts-considerit
-
-considerit_pristine_transition.sql

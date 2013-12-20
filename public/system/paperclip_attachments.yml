@@ -1,5 +1,8 @@
 ---
 :User:
   :avatar:
-  - :large
+  - :golden_horizontal
+  - :golden_vertical
+  - :medium
+  - :medium_dark
   - :small

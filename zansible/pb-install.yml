@@ -15,12 +15,12 @@
     - global_vars/memcached_config_vars.yml
     - global_vars/nginx_config_vars.yml    
   tasks:
-    # - include: tasks/install/install_deps.yml
-    # - include: tasks/install/install_memcached.yml
-    # - include: tasks/install/install_mysql.yml
-    # - include: tasks/install/configure_github.yml
-    # - include: tasks/deploy/install_considerit.yml
-    # - include: tasks/install/install_ruby.yml
+    - include: tasks/install/install_deps.yml
+    - include: tasks/install/install_memcached.yml
+    - include: tasks/install/install_mysql.yml
+    - include: tasks/install/configure_github.yml
+    - include: tasks/deploy/install_considerit.yml
+    - include: tasks/install/install_ruby.yml
     - include: tasks/install/install_passenger.yml
     - include: tasks/install/install_nginx.yml
     - include: tasks/install/setup_ssl.yml

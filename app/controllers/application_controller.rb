@@ -239,7 +239,7 @@ private
   end
 
   def pageview
-    if request.method == 'GET'
+    if request.method == 'GET' && request.fullpath.index('/users/auth').nil?
       user = current_user ? current_user.id : nil
       params = {
         :account_id => current_tenant.id,

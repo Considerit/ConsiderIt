@@ -140,7 +140,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     assessable_type = params[:request][:assessable_type]
     assessable_id = params[:request][:assessable_id]
 
-    request = Assessable::Request.new(params[:request])
+    request = Assessable::Request.new params[:request].permit!
 
     assessment = Assessable::Assessment.where(:assessable_type => assessable_type, :assessable_id => assessable_id).first
     if !assessment

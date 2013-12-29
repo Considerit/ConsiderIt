@@ -42,7 +42,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     elsif by_third_party
       user_params = User.create_from_third_party_token(session[:access_token]).update params[:user]
       
-      user = User.new user_params #build_resource user_params
+      user = User.new ActionController::Parameters.new(user_params).permit! #build_resource user_params
       user.referer = user.page_views.first.referer if user.page_views.count > 0
 
       user.skip_confirmation! 

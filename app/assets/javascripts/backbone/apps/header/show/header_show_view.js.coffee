@@ -12,9 +12,9 @@
     template: '#tpl_header_nav'
     className : 'l-navigate-wrap'
 
-    serializeData : ->
-      _.extend {},
-        crumbs : @options.crumbs
+    # serializeData : ->
+    #   _.extend {},
+    #     crumbs : @options.crumbs
 
     events : 
       'click .l-navigate-back' : 'goBack'

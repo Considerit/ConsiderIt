@@ -15,7 +15,7 @@ do (_) ->
         n[k] = v if v
       n
 
-    delayIfWait : (func, wait) ->
+    delayIfWait : (wait, func) ->
       if wait > 0
         _.delay func, wait
       else

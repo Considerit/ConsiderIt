@@ -169,8 +169,8 @@
         region = App.request "default:region"        
 
         from_root = region.controlled_by instanceof Franklin.Root.RootController
-        if !(region.controlled_by instanceof Franklin.Proposal.ProposalController && region.controlled_by.model.id == proposal.id) && !from_root
-          region.controlled_by.close() if region.controlled_by
+        if !region.controlled_by #!(region.controlled_by instanceof Franklin.Proposal.ProposalController && region.controlled_by.model.id == proposal.id) && !from_root
+          #region.controlled_by.close() if region.controlled_by
           proposal_controller = new Franklin.Proposal.ProposalController
             region : region
             model : proposal

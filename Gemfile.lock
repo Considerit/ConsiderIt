@@ -32,7 +32,7 @@ GIT
 
 GIT
   remote: git://github.com/sferik/rails_admin
-  revision: 6e0c11bc32a6b306e632143a8febc403b059aad3
+  revision: 1aed17d05b6d83f238354e000e5806e2195bf3b8
   specs:
     rails_admin (0.6.0)
       builder (~> 3.1)
@@ -44,9 +44,9 @@ GIT
       kaminari (~> 0.14)
       nested_form (~> 0.3)
       rack-pjax (~> 0.7)
-      rails (~> 4.0.0)
+      rails (~> 4.0)
       remotipart (~> 1.0)
-      safe_yaml (~> 0.9)
+      safe_yaml (~> 1.0)
       sass-rails (~> 4.0)
 
 GIT
@@ -108,7 +108,7 @@ GEM
       erubis (~> 2.7.0)
       rack (~> 1.5.2)
       rack-test (~> 0.6.2)
-    actionpack-action_caching (1.1.0)
+    actionpack-action_caching (1.1.1)
       actionpack (>= 4.0.0, < 5.0)
     activemodel (4.0.2)
       activesupport (= 4.0.2)
@@ -166,7 +166,7 @@ GEM
       chunky_png (~> 1.2)
       fssm (>= 0.2.7)
       sass (~> 3.1)
-    compass-rails (1.1.2)
+    compass-rails (1.1.3)
       compass (>= 0.12.2)
     css_parser (1.3.5)
       addressable
@@ -207,10 +207,10 @@ GEM
       net-ssh (>= 2.1.3)
       nokogiri (~> 1.5)
       ruby-hmac
-    font-awesome-rails (4.0.3.0)
+    font-awesome-rails (4.0.3.1)
       railties (>= 3.2, < 5.0)
     formatador (0.2.4)
-    fspath (2.0.6)
+    fspath (2.1.0)
     fssm (0.2.10)
     guard (2.2.5)
       formatador (>= 0.2.4)
@@ -232,9 +232,9 @@ GEM
     http_parser.rb (0.6.0)
     httpauth (0.2.0)
     i18n (0.6.9)
-    image_optim (0.9.1)
+    image_optim (0.10.0)
       exifr (~> 1.1.3)
-      fspath (~> 2.0.5)
+      fspath (~> 2.1.0)
       image_size (~> 1.1.2)
       in_threads (~> 1.2.0)
       progress (~> 3.0.0)
@@ -262,7 +262,7 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    memoizable (0.3.1)
+    memoizable (0.4.0)
       thread_safe (~> 0.1.3)
     meta_request (0.2.8)
       callsite
@@ -279,7 +279,7 @@ GEM
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.7.0)
-    newrelic_rpm (3.7.1.180)
+    newrelic_rpm (3.7.1.182)
     nokogiri (1.6.1)
       mini_portile (~> 0.5.0)
     oauth (0.4.7)
@@ -289,13 +289,13 @@ GEM
       jwt (~> 0.1.4)
       multi_json (~> 1.0)
       rack (~> 1.2)
-    oj (2.5.1)
+    oj (2.5.3)
     omniauth (1.1.4)
       hashie (>= 1.2, < 3)
       rack
     omniauth-facebook (1.5.1)
       omniauth-oauth2 (~> 1.1.0)
-    omniauth-google-oauth2 (0.2.1)
+    omniauth-google-oauth2 (0.2.2)
       omniauth (~> 1.0)
       omniauth-oauth2
     omniauth-oauth (1.0.1)
@@ -357,7 +357,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.1.1)
-    rb-fsevent (0.9.3)
+    rb-fsevent (0.9.4)
     rb-inotify (0.9.3)
       ffi (>= 0.5.0)
     ref (1.0.5)
@@ -366,7 +366,7 @@ GEM
     rinku (1.7.3)
     role_model (0.8.1)
     ruby-hmac (0.4.0)
-    safe_yaml (0.9.7)
+    safe_yaml (1.0.0)
     sanitize (2.0.6)
       nokogiri (>= 1.4.4)
     sass (3.2.13)
@@ -404,16 +404,16 @@ GEM
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
-    twitter (5.3.0)
+    twitter (5.4.1)
       addressable (~> 2.3)
       buftok (~> 0.2.0)
-      descendants_tracker (~> 0.0.1)
-      equalizer (~> 0.0.7, != 0.0.8)
+      descendants_tracker (~> 0.0.3)
+      equalizer (~> 0.0.9)
       faraday (>= 0.8, < 0.10)
       http (~> 0.5.0)
       http_parser.rb (~> 0.6.0)
       json (~> 1.8)
-      memoizable (~> 0.3.1)
+      memoizable (~> 0.4.0)
       simple_oauth (~> 0.2.0)
     tzinfo (0.3.38)
     uglifier (2.4.0)
@@ -425,7 +425,7 @@ GEM
     whenever (0.9.0)
       activesupport (>= 2.3.4)
       chronic (>= 0.6.3)
-    xml-simple (1.1.2)
+    xml-simple (1.1.3)
     yamler (0.1.0)
 
 PLATFORMS

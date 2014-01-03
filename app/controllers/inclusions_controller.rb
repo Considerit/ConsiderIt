@@ -48,6 +48,7 @@ class InclusionsController < ApplicationController
     destroyed = false
 
 
+
     if current_user
       inc = current_user.inclusions.where(:point_id => point.id).first
       if inc
@@ -63,7 +64,16 @@ class InclusionsController < ApplicationController
 
     if ((!point.published && point.user_id.nil?) || (current_user && current_user.id == point.user_id)) && point.inclusions.count < 2  #can?(:destroy, point) # not using the ability otherwise whenever an admin removes a point from their list, they destroy it!
       authorize! :destroy, point
+
+      # if this point is a top pro or con, need to trigger proposal update
+      update_proposal_metrics = proposal.top_pro == point.id || proposal.top_con == point.id      
+      update_position = current_user && position = current_user.positions.find_by_proposal_id(point.proposal_id)
+
       point.destroy
+
+      position.update_inclusions if update_position
+      proposal.update_metrics if update_proposal_metrics
+
       destroyed = true
     end
 

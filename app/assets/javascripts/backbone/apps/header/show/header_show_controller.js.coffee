@@ -7,7 +7,7 @@
       @listenTo layout, 'show', =>
 
         # setup appropriate header navigation after route has finished
-        Backbone.history.on 'route', (route, name, args) => 
+        @listenTo Backbone.history, 'route', (route, name, args) => 
           if name == 'Root'
             layout.navRegion.reset()
             logo = @getLogo()

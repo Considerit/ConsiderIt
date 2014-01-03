@@ -30,6 +30,13 @@ class Position < ActiveRecord::Base
     subsumed_position.save
   end
 
+  def update_inclusions
+    inclusions = Inclusion.where(:user_id => self.user_id, :proposal_id => self.proposal_id).select(:point_id)
+
+    self.point_inclusions = inclusions.map {|x| x.point_id }.compact.to_s
+    self.save
+  end
+
   def self.get_bucket(value)
     if value == -1
       return 0

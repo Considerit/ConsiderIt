@@ -11,7 +11,13 @@
       @dialog_overlay = @getOverlay view
 
       @listenTo @dialog_overlay, 'close', ->
-        App.request 'nav:back:crumb'
+        App.request 'nav:back:history' if !@closing_via_history
+        @close()
+
+      @listenTo Backbone.history, 'route', (route, name, args) => 
+        @closing_via_history = true
+        @dialog_overlay.close()
+        @close()
 
     setupView : (view) ->
 

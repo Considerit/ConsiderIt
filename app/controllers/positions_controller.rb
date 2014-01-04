@@ -137,7 +137,7 @@ protected
 
     Inclusion.transaction do
       actions[:included_points].each do |point_id, value|
-        if Inclusion.where( :position_id => position.id, :point_id => point_id, :user_id => position.user_id ).count == 0
+        if Inclusion.where( :point_id => point_id, :user_id => position.user_id ).count == 0
           inc_attrs = { 
             :point_id => point_id,
             :user_id => position.user_id,

@@ -122,7 +122,6 @@ gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csr
 #######
 # https://github.com/rails/protected_attributes
 # These are primarily to make smooth upgrade from Rails 3 to 4
-#gem 'protected_attributes'
 gem 'actionpack-action_caching'
 #######
 

@@ -152,7 +152,7 @@ class Point < ActiveRecord::Base
       self.unique_listings = self.point_listings.count
     end
 
-    self.includers = self.inclusions(:select => [:user_id]).map {|x| x.user_id}.compact.to_s
+    self.includers = self.inclusions(:select => [:user_id]).map {|x| x.user_id}.compact.uniq.to_s
 
     define_appeal
     define_attention

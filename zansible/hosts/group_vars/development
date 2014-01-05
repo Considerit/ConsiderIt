@@ -22,6 +22,7 @@ database:
 
 config:
   admin_email: tkriplean@gmail.com
+  secret_token: 'a5c5cda0c748947d6202d69c0b4a75c139c9ee52af1e5487889d50c92e2cbcdda7e174b98a9b34c26dab881a3a02d5976bd81a5f814f036b04ea54509ea3bb7f'
 
   google_analytics: UA-31400941-1
   bitly:

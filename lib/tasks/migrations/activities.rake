@@ -4,10 +4,7 @@ namespace :activities do
   task :initialize_from_data => :environment do
     Activity.delete_all
 
-    Reflect::ReflectBulletRevision.all.each do |brev|
-      action = Activity.build_from!(brev)
-    end    
-    Proposal.all.each do |proposal|
+    Proposal.find_each do |proposal|
       action = Activity.build_from!(proposal)
     end
     Position.where(:published=>1).each do |pos|
@@ -16,13 +13,13 @@ namespace :activities do
     Point.where(:published=>1).each do |point|
       action = Activity.build_from!(point)
     end
-    Comment.all.each do |comment|
+    Comment.find_each do |comment|
       action = Activity.build_from!(comment)
     end
-    User.all.each do |user|
+    User.find_each do |user|
       action = Activity.build_from!(user)
     end    
-    Inclusion.all.each do |inc|
+    Inclusion.find_each do |inc|
       action = Activity.build_from!(inc)
     end        
   end

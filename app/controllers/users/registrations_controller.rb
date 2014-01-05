@@ -1,8 +1,14 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
-
   protect_from_forgery
   skip_before_filter :verify_authenticity_token, :if => :file_uploaded
+  before_filter :configure_permitted_parameters
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.for(:sign_up) { |u| u.permit! }
+    devise_parameter_sanitizer.for(:account_update) { |u| u.permit! }
+  end
+
 
   def file_uploaded
     params[:remotipart_submitted].present? && params[:remotipart_submitted] == "true"
@@ -23,7 +29,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         :new_csrf => form_authenticity_token,
         #TODO: filter users' to_json?
         :user => current_user,
-        :follows => current_user.follows.all,         
+        :follows => current_user.follows,         
       }
 
     elsif user
@@ -36,7 +42,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     elsif by_third_party
       user_params = User.create_from_third_party_token(session[:access_token]).update params[:user]
       
-      user = User.new user_params #build_resource user_params
+      user = User.new ActionController::Parameters.new(user_params).permit! #build_resource user_params
       user.referer = user.page_views.first.referer if user.page_views.count > 0
 
       user.skip_confirmation! 
@@ -52,7 +58,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
           :result => 'successful',
           #TODO: filter users' to_json?
           :user => current_user,
-          :follows => current_user.follows.all, 
+          :follows => current_user.follows, 
           :new_csrf => form_authenticity_token
         }
 
@@ -65,10 +71,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
 
     else #registration via email
-      user = build_resource
+      user = build_resource(sign_up_params)
       user.referer = user.page_views.first.referer if user.page_views.count > 0
 
       user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
+      
       if user.save
         sign_in(resource_name, user)
         current_user.track!
@@ -83,7 +90,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
           :result => 'successful',
           #TODO: filter users' to_json
           :user => current_user,
-          :follows => current_user.follows.all, 
+          :follows => current_user.follows, 
           :new_csrf => form_authenticity_token
         }
 
@@ -111,7 +118,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     # TODO: explicitly grab params
 
-    if current_user.update_attributes(params[:user])
+    if current_user.update_attributes params[:user].permit!
 
       results = {
         :result => 'successful',

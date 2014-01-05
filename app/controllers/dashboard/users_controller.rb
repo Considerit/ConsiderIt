@@ -30,11 +30,11 @@ class Dashboard::UsersController < Dashboard::DashboardController
         referenced_points[pnt.id] = pnt
         accessible_points.push pnt.id
 
-        influenced_users_by_point[pnt.id] = []
+        influenced_users_by_point[pnt.id] = Set.new
         pnt.inclusions.where("user_id != #{user.id}").each do |inc|
           influenced_users[inc.user_id] = 0 if ! influenced_users.has_key?(inc.user_id)
           influenced_users[inc.user_id] +=1
-          influenced_users_by_point[pnt.id].push inc.user_id
+          influenced_users_by_point[pnt.id].add inc.user_id
         end
 
         if !referenced_proposals.has_key?(pnt.proposal_id)

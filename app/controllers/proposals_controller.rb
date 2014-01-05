@@ -91,7 +91,7 @@ class ProposalsController < ApplicationController
       :description => description,
     })
 
-    proposal = Proposal.create(params[:proposal])
+    proposal = Proposal.create params[:proposal].permit!
     authorize! :create, proposal
     proposal.save
     proposal.track!
@@ -130,7 +130,7 @@ class ProposalsController < ApplicationController
     end
 
     # TODO: explicitly grab params
-    proposal.update_attributes!(params[:proposal])
+    proposal.update_attributes! params[:proposal].permit!
 
     if notify_private_accessors
       users = []
@@ -185,13 +185,13 @@ class ProposalsController < ApplicationController
 
   def self.get_position_for_user(proposal, current_user, session)
     position = current_user ? current_user.positions.published.where(:proposal_id => proposal.id).last : !session["position-#{proposal.id}"].nil? ? Position.find(session["position-#{proposal.id}"]) : nil
-    position ||= Position.create!( 
+    position ||= Position.create!(ActionController::Parameters.new({ 
       :stance => 0.0, 
       :proposal_id => proposal.id, 
       :long_id => proposal.long_id,
       :user_id => current_user ? current_user.id : nil,
       :account_id => proposal.account_id
-    )
+    }).permit!)
 
     position
 

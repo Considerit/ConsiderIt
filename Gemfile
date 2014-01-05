@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
 gem "therubyracer", :require => 'v8'
-gem 'rails', '~>3'
+gem 'rails', '~>4'
 #gem 'turbolinks'
 
 gem "mysql2"
@@ -17,10 +17,10 @@ gem "oj"
 
 # https://github.com/nesquena/rabl
 # https://github.com/ccocchi/rabl-rails
-gem 'rabl-rails'
+#gem 'rabl-rails'
 
 # https://github.com/plataformatec/devise
-gem 'devise', "~> 2.2"
+gem 'devise' #, "~> 2.2"
 
 gem "omniauth"
 gem 'omniauth-oauth2'
@@ -37,7 +37,8 @@ gem "remotipart"#, "~> 1.0.2"
 gem 'acts_as_tenant'
 
 # https://github.com/sferik/rails_admin
-gem 'rails_admin'#, "~> 0.0.5"
+#gem 'rails_admin' #, "~> 0.0.6"
+gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin' #remove git reference after next version bump
 
 #https://github.com/ryanb/cancan
 gem 'cancan'
@@ -61,7 +62,8 @@ gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delaye
 gem "daemons"
 
 # https://github.com/cerebris/mailhopper
-gem 'mailhopper'
+#gem 'mailhopper'
+gem 'mailhopper', :git => 'git://github.com/youdonz/mailhopper', :branch => 'rails4'
 
 # https://github.com/cerebris/delayed_mailhopper
 gem 'delayed_mailhopper'
@@ -78,8 +80,8 @@ gem 'jquery-rails'
 gem 'paper_trail'
 
 # https://github.com/lucasefe/themes_for_rails
-gem "themes_for_rails", :git => 'git://github.com/tkriplean/themes_for_rails3.git'
-#gem "themes_for_rails"
+gem "themes_for_rails", :git => 'git://github.com/tkriplean/themes_for_rails.git' #, :branch => 'rails4'
+#gem "themes_for_rails", :git => "git://github.com/digitalmoksha/themes_for_rails"
 
 # https://github.com/weppos/actionmailer_with_request
 gem 'actionmailer-with-request'
@@ -100,6 +102,8 @@ gem 'dalli'
 # https://github.com/vmg/rinku
 gem 'rinku'
 
+#gem 'font-awesome-rails'
+
 #custom gems
 #gem "reflect", :path => "lib/gems/reflect"
 gem "followable", :path => "lib/gems/followable"
@@ -112,7 +116,14 @@ gem "thankable", :path => "lib/gems/thankable"
 gem 'sitemap_generator'
 
 # https://github.com/cmer/cacheable-csrf-token-rails
-gem 'cacheable-csrf-token-rails'
+#gem 'cacheable-csrf-token-rails'
+gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csrf-token-rails'
+
+#######
+# https://github.com/rails/protected_attributes
+# These are primarily to make smooth upgrade from Rails 3 to 4
+gem 'actionpack-action_caching'
+#######
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
@@ -124,6 +135,10 @@ group :development, :test do
   gem 'thin'
   gem 'meta_request'
   gem 'newrelic_rpm'
+  gem 'guard', '>= 2.2.2',       :require => false
+  gem 'guard-livereload',        :require => false
+  gem 'rack-livereload'
+  gem 'rb-fsevent',              :require => false  
 end
 
 group :production do
@@ -132,15 +147,13 @@ group :production do
 end
 
 
-group :assets do
-  gem 'aws-sdk'
-  #gem 'sass-rails'#,   "3.2.6"
-  gem 'coffee-rails', "~> 3.2.2"
-  gem 'uglifier'
-  gem "asset_sync"
-  gem 'compass', '0.13.alpha.12'
-  gem 'compass-rails', '>= 1.0.2'
-  gem 'sassy-buttons'
-  #gem 'turbo-sprockets-rails3'
-  #gem "themes_for_rails", :git => 'git://github.com/jasherai/themes_for_rails.git'
-end
+gem 'sprockets-rails', :require => 'sprockets/railtie'
+#gem 'sprockets-helpers'
+
+gem 'aws-sdk'
+gem 'coffee-rails' #, "~> 3.2.2"
+gem 'uglifier'
+gem "asset_sync"
+gem 'compass' #, '0.13.alpha.12'
+gem 'compass-rails' #, '>= 1.0.2'
+gem 'sassy-buttons'

@@ -12,11 +12,11 @@ class Assessable::Assessment < ActiveRecord::Base
   has_many :requests, :class_name => 'Assessable::Request'
   belongs_to :verdict, :class_name => 'Assessable::Verdict'
   
-  scope :completed, where( :complete => true )
+  scope :completed, -> {where( :complete => true )}
 
   acts_as_tenant :account
 
-  scope :public_fields, select('assessments.id, assessments.verdict_id, assessments.created_at, assessments.updated_at, assessments.published_at, assessments.assessable_id, assessments.assessable_type, assessments.complete, assessments.notes')
+  scope :public_fields, -> {select('assessments.id, assessments.verdict_id, assessments.created_at, assessments.updated_at, assessments.published_at, assessments.assessable_id, assessments.assessable_type, assessments.complete, assessments.notes')}
 
   #TODO: sanitize before_validation
   #self.text = Sanitize.clean(self.text, Sanitize::Config::RELAXED)

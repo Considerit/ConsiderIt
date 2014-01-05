@@ -34,7 +34,7 @@
       @layout.footerRegion.show footer_view if footer_view
 
       wait = if @crafting_controller && @prior_state != null then @transition_speed() else 0
-      _.delayIfWait =>
+      _.delayIfWait wait, =>
 
 
         @updatePeerPoints @layout
@@ -43,7 +43,6 @@
           @crafting_controller = @getCraftingController @layout.positionRegion
           @setupCraftingController @crafting_controller 
 
-      , wait
 
       if @layout.$el.is('.transitioning')
         @layout.sizeToFit 10

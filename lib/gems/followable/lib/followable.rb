@@ -49,7 +49,7 @@ module Followable
             :explicit => explicit
           }
           params[:account_id] = account_id if self.respond_to? :account        
-          Follow.create!(params)
+          Follow.create! ActionController::Parameters.new(params).permit!
           return Follow.last
         end
       end

@@ -13,8 +13,8 @@ class Position < ActiveRecord::Base
 
   acts_as_tenant(:account)
 
-  scope :published, where( :published => true )
-  scope :public_fields, select( [:long_id, :created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_bucket, :user_id, :explanation, :published])
+  scope :published, -> {where( :published => true )}
+  scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_bucket, :user_id, :explanation, :published])}
 
   before_save do 
     self.explanation = Sanitize.clean(self.explanation, Sanitize::Config::RELAXED)
@@ -28,6 +28,13 @@ class Position < ActiveRecord::Base
     subsumed_position.comments.update_all({:commentable_id => id})
     subsumed_position.published = false
     subsumed_position.save
+  end
+
+  def update_inclusions
+    inclusions = Inclusion.where(:user_id => self.user_id, :proposal_id => self.proposal_id).select(:point_id)
+
+    self.point_inclusions = inclusions.map {|x| x.point_id }.compact.to_s
+    self.save
   end
 
   def self.get_bucket(value)
@@ -87,7 +94,7 @@ class Position < ActiveRecord::Base
   end
 
   def self.purge
-    User.all.each do |u|
+    User.find_each do |u|
       proposals = u.positions.map {|p| p.proposal_id}.uniq
       proposals.each do |prop|
         pos = u.positions.where(:proposal_id => prop)
@@ -95,8 +102,6 @@ class Position < ActiveRecord::Base
           last = pos.order(:updated_at).last
           pos.where('id != (?)', last.id).each do |p|
             p.published = false
-            #p.inclusions.update_attributes!({:position_id => last.id})
-            pp p.user_id
             p.save
           end
         end

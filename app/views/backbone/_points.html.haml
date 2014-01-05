@@ -23,14 +23,12 @@
 
       (( if(browsing_all) { ))
       %span.m-pointlist-browse-header-close
-        %i.icon.icon-small
-          &#xf066;      
+        %i.fa.fa-small.fa-compress  
 
       .m-pointlist-browse-sort
         %span.m-pointlist-browse-sort-label
           sort 
-          %i.icon.icon-small
-            &#xf0d7;
+          %i.fa.fa-small.fa-caret-down
         %ul.m-pointlist-browse-sort-menu
           (( _.each(sorts, function(sort){  ))
           %li.m-pointlist-sort-option
@@ -40,8 +38,7 @@
 
       (( } else { ))
       %span.m-pointlist-browse-header-open
-        %i.icon.icon-small
-          &#xf065; 
+        %i.fa.fa-small.fa-expand
       (( } ))
 
 

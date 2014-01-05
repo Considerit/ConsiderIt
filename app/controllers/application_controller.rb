@@ -28,13 +28,13 @@ class ApplicationController < ActionController::Base
 
       if permission
         session[:limited_user] = user ? user.id : nil
-        @limited_user_follows = user ? user.follows.all : []
+        @limited_user_follows = user ? user.follows.to_a : []
         @limited_user = user
         @limited_user_email = params[:u]
       end
     elsif session.has_key?(:limited_user ) && !session[:limited_user].nil?
       @limited_user = User.find(session[:limited_user])
-      @limited_user_follows = @limited_user.follows.all
+      @limited_user_follows = @limited_user.follows.to_a
       @limited_user_email = @limited_user.email
     end
 
@@ -239,19 +239,21 @@ private
   end
 
   def pageview
-    user = current_user ? current_user.id : nil
-    params = {
-      :account_id => current_tenant.id,
-      :user_id => user,
-      :referer => request.referrer,
-      :session => request.session_options[:id],
-      :url => request.fullpath,
-      :ip_address => request.remote_ip,
-      :user_agent => request.env["HTTP_USER_AGENT"],
-      :created_at => Time.current
-    }  
+    if request.method == 'GET' && request.fullpath.index('/users/auth').nil?
+      user = current_user ? current_user.id : nil
+      params = {
+        :account_id => current_tenant.id,
+        :user_id => user,
+        :referer => request.referrer,
+        :session => request.session_options[:id],
+        :url => request.fullpath,
+        :ip_address => request.remote_ip,
+        :user_agent => request.env["HTTP_USER_AGENT"],
+        :created_at => Time.current
+      }  
 
-    PageView.create! params
+      PageView.create! ActionController::Parameters.new(params).permit!
+    end
   end
 
 

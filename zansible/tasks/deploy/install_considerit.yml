@@ -1,0 +1,11 @@
+- name: Installs ConsiderIt
+  git: repo=${code.repo} dest=$app_home version=${code.branch}
+  sudo: False
+
+- name: Create database.yml
+  template: src=templates/considerit_config/database.yml.j2 dest=$app_home/config/database.yml mode=400
+  sudo: False
+
+- name: Create local_environment.yml
+  template: src=templates/considerit_config/local_environment.yml.j2 dest=$app_home/config/local_environment.yml mode=400
+  sudo: False

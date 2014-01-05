@@ -14,9 +14,9 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     assessments = Assessable::Assessment.order(:complete)
     assessable_ids = assessments.map{ |assessment| assessment.assessable_id }.compact
-    assessable_objects = Point.where("id in (?)", assessable_ids).public_fields.all
+    assessable_objects = Point.where("id in (?)", assessable_ids).public_fields.to_a
     root_objects_ids = assessable_objects.map{ |assessed| assessed.proposal_id }.compact
-    root_objects = Proposal.where("id in (?)", root_objects_ids).public_fields.all
+    root_objects = Proposal.where("id in (?)", root_objects_ids).public_fields.to_a
 
     render :json => { 
       :verdicts => Assessable::Verdict.all,
@@ -36,8 +36,8 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     render :json => {
       :verdicts => Assessable::Verdict.all,
       :assessment => assessment,
-      :requests => assessment.requests.all,
-      :claims => assessment.claims.all,
+      :requests => assessment.requests,
+      :claims => assessment.claims,
       :all_claims => root_object.claims,
       :assessable_obj => assessment.root_object, 
       :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,      
@@ -61,7 +61,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     end
 
     attrs[:creator] = current_user.id
-    claim = Assessable::Claim.create!(attrs)
+    claim = Assessable::Claim.create! ActionController::Parameters.new(attrs).permit!
 
     render :json => claim
 
@@ -78,7 +78,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     params[:claim].delete :verdict_id if params[:claim].has_key?(:verdict_id) && params[:claim][:verdict_id].nil?
 
     # TODO: explicitly grab params  
-    claim.update_attributes(params[:claim])
+    claim.update_attributes params[:claim].permit!
 
     if claim.assessment.complete
       claim.assessment.update_verdict
@@ -112,7 +112,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     if assessment.complete
       assessment.update_verdict()
     end
-    assessment.update_attributes(params[:assessment])
+    assessment.update_attributes params[:assessment].permit!
     assessment.save
 
     if !complete && assessment.complete
@@ -140,11 +140,16 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     assessable_type = params[:request][:assessable_type]
     assessable_id = params[:request][:assessable_id]
 
-    request = Assessable::Request.new(params[:request])
+    request = Assessable::Request.new params[:request].permit!
 
     assessment = Assessable::Assessment.where(:assessable_type => assessable_type, :assessable_id => assessable_id).first
     if !assessment
-      assessment = Assessable::Assessment.create!({:account_id => current_tenant.id, :assessable_type => assessable_type, :assessable_id => assessable_id})
+      create_attrs = {
+        :account_id => current_tenant.id, 
+        :assessable_type => assessable_type, 
+        :assessable_id => assessable_id }
+        
+      assessment = Assessable::Assessment.create! ActionController::Parameters.new(create_attrs).permit!
 
       ActiveSupport::Notifications.instrument("new_assessment_request", 
         :assessment => assessment,

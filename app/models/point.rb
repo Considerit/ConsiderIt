@@ -46,41 +46,25 @@ class Point < ActiveRecord::Base
   class_attribute :my_public_fields
   self.my_public_fields = [:long_id, :appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :position_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id, :hide_name]
 
-  scope :public_fields, select(self.my_public_fields)
-  scope :metrics_fields, select([:id, :appeal, :attention, :comment_count, :divisiveness, :includers, :is_pro, :num_inclusions, :persuasiveness, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :unique_listings])
+  scope :public_fields, -> {select(self.my_public_fields)}
+  scope :metrics_fields, -> {select([:id, :appeal, :attention, :comment_count, :divisiveness, :includers, :is_pro, :num_inclusions, :persuasiveness, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :unique_listings])}
 
-  scope :named, where( :hide_name => false )
-  scope :published, where( :published => true )
-  scope :viewable, where( 'published=1 AND (moderation_status IS NULL OR moderation_status=1)')
+  scope :named, -> {where( :hide_name => false )}
+  scope :published, -> {where( :published => true )}
+  scope :viewable, -> {where( 'published=1 AND (moderation_status IS NULL OR moderation_status=1)')}
   #default_scope where( :published => true )  
   
-  scope :pros, where( :is_pro => true )
-  scope :cons, where( :is_pro => false )
-  scope :ranked_overall, 
-    # where( "points.score > 0" ).
-    published.
-    order( "points.score DESC" )
+  scope :pros, -> {where( :is_pro => true )}
+  scope :cons, -> {where( :is_pro => false )}
+  scope :ranked_overall, -> { published.order( "points.score DESC" ) }
 
-  scope :ranked_popularity, 
-    # where( "points.score > 0" ).
-    published.
-    order( "points.attention DESC" )
+  scope :ranked_popularity, -> { published.order( "points.attention DESC" ) }
 
-  scope :ranked_unify, 
-    # where( "points.score > 0" ).
-    published.
-    order( "points.appeal DESC" )
+  scope :ranked_unify, -> { published.order( "points.appeal DESC" ) } 
 
-  scope :ranked_divisive, 
-    # where( "points.score > 0" ).
-    published.
-    order( "points.divisiveness DESC" )
-
+  scope :ranked_divisive, -> { published.order( "points.divisiveness DESC" ) } 
   
-  scope :ranked_persuasiveness, 
-    # where( "points.persuasiveness > 0").
-    published. 
-    order( "points.persuasiveness DESC" )
+  scope :ranked_persuasiveness, -> { published.order( "points.persuasiveness DESC" ) }
     
   scope :ranked_for_stance_segment, proc {|stance_bucket|
       published.
@@ -168,7 +152,7 @@ class Point < ActiveRecord::Base
       self.unique_listings = self.point_listings.count
     end
 
-    self.includers = self.inclusions(:select => [:user_id]).map {|x| x.user_id}.compact.to_s
+    self.includers = self.inclusions(:select => [:user_id]).map {|x| x.user_id}.compact.uniq.to_s
 
     define_appeal
     define_attention
@@ -243,7 +227,7 @@ class Point < ActiveRecord::Base
       num_listings_per_point[row.pnt.to_i] = row.cnt.to_i
     end
 
-    Account.all.each do |accnt|
+    Account.find_each do |accnt|
 
       accnt.proposals.active.select(:id).each do |proposal|
 
@@ -251,8 +235,8 @@ class Point < ActiveRecord::Base
         # Point ranking across the metrics is done separately for pros and cons,
         # fixed on a particular Proposal
         point_groups = [
-          proposal.points.viewable.pros.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").all,
-          proposal.points.viewable.cons.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").all
+          proposal.points.viewable.pros.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").to_a,
+          proposal.points.viewable.cons.select("id, appeal, attention, persuasiveness, score, num_inclusions, unique_listings").to_a
         ]
 
         point_groups.each do |group|        

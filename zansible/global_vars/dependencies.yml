@@ -1,0 +1,34 @@
+deps: 
+  - advancecomp
+  - autoconf 
+  - automake 
+  - bison 
+  - build-essential 
+  - curl 
+  - exuberant-ctags 
+  - gifsicle
+  - git-core
+  - imagemagick
+  - jpegoptim
+  - libcurl4-openssl-dev #nginx/passenger requirement
+  - libjpeg-progs
+  - libmagickcore-dev
+  - libmagickwand-dev
+  - libmysqlclient-dev
+  - libreadline6 
+  - libreadline6-dev 
+  - libreadline-dev
+  - libssl-dev 
+  - libncurses5-dev
+  - libtool
+  - libxml2-dev 
+  - libxslt1-dev 
+  - memcached
+  - mysql-server
+  - openssl 
+  - optipng
+  - pngcrush
+  - python-mysqldb # for Ansible mysql module
+  - unzip
+  - zlib1g 
+  - zlib1g-dev

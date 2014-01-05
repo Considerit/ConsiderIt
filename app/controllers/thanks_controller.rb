@@ -15,7 +15,7 @@ class ThanksController < ApplicationController
       params[:thank][:thankable_type] = "Assessable::Claim"
     end
     
-    thank = Thank.new params[:thank]
+    thank = Thank.new params[:thank].permit!
     authorize! :create, thank
 
     thank.save

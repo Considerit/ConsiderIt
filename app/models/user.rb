@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   validates :name, :presence => true
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
-  attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_positions, :metric_comments, :metric_influence, :b64_thumbnail
+  #attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_positions, :metric_comments, :metric_influence, :b64_thumbnail
 
   attr_accessor :avatar_url, :downloaded
 
@@ -48,7 +48,6 @@ class User < ActiveRecord::Base
   end
 
 
-
   #validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
   after_create :add_token
 
@@ -57,7 +56,6 @@ class User < ActiveRecord::Base
   has_attached_file :avatar, 
       :styles => { 
         :large => "250x250#",
-        #:medium => "70x70#", 
         :small => "50x50#"
       },
       :processors => [:thumbnail, :paperclip_optimizer]
@@ -298,12 +296,12 @@ class User < ActiveRecord::Base
         break
       end
     end
-    self.update_attributes!(attrs) if values_changed
+    self.update_attributes!(ActionController::Parameters.new(attrs).permit!) if values_changed
 
   end
 
   def self.update_user_metrics
-    Account.all.each do |accnt|
+    Account.load.each do |accnt|
 
       accnt.users.each do |user|
         user.update_metrics()
@@ -312,7 +310,7 @@ class User < ActiveRecord::Base
   end
 
   def self.purge
-    users = User.all.map {|u| u.id}
+    users = User.load.map {|u| u.id}
     missing_users = []
     classes = [Position, Point, PointListing, Inclusion]
     classes.each do |cls|

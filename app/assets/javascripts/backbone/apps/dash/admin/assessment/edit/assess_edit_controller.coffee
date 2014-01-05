@@ -11,7 +11,7 @@
       App.vent.trigger 'points:fetched', [data.assessable_obj.point]
       App.vent.trigger 'proposals:fetched', [data.root_object.proposal]
       App.request 'claims:add', (c.claim for c in data.claims)
-      App.request 'claims:add', (c.claim for c in data.all_claims), data.root_object.proposal.id
+      App.request 'claims:add', (c.claim for c in data.all_claims), data.root_object.proposal.long_id
       App.request 'assessment:requests:add', (r.request for r in data.requests)
 
     setupLayout : ->

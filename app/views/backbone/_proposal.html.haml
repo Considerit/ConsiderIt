@@ -17,7 +17,7 @@
     {{ call }}
 
   %a{ :href => "{{Routes.proposal_path( long_id )}}", :class => 'm-proposal-state-secondary'}
-    // %i.icon-large 
+    // %i.fa-lg.fa
     //   &#xf046;
 
     {{ results_call }}
@@ -27,7 +27,7 @@
     {{ results_call }}
 
   %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :class => 'm-proposal-state-secondary'}
-    // %i.icon-large 
+    // %i.fa-lg.fa
     //   &#xf096;
 
     {{ call }}
@@ -92,8 +92,7 @@
 
   %a.m-position-your-action-body.submit{:'data-target' => 'submit-position'}
     // fa-floppy-o
-    %i.icon-large  
-      &#xf0c7;
+    %i.fa-lg.fa.fa-floppy-o
     (( if(updating){ ))
     Update your opinion
     (( } else { ))
@@ -127,9 +126,7 @@
   (( if(active) { ))
   %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
     //fa-pencil-square-o
-    %i.icon-large 
-      //&#xf044;
-      &#xf040;
+    %i.fa.fa-pencil
     {{ call }}
   (( } ))
 
@@ -169,15 +166,14 @@
   .placeholder
   // %a.m-position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
   //   //fa-pencil-square-o
-  //   %i.icon-large 
+  //   %i.fa-lg.fa 
   //     &#xf044;  
   //   {{ call }}
 
 %script{ :type => "text/template", :id => "tpl_aggregate_footer_collapsed"}
   %a.m-reasons-view-results{:'data-target' => 'show-results'}
-    %i.icon-bar-chart-o.icon-large 
-      //&#xf080;
-      &#xf00b;
+    //%i.fa.fa-bar-chart-o.fa-lg 
+    %i.fa.fa-th-list.fa-lg
     View Results
 
     
@@ -241,28 +237,6 @@
 
 
 
-    
-
-// %script{ :type => "text/template", :id => "tpl_proposal_summary"}
-//   .l-content-wrap
-//     .m-proposal-description-region
-
-//     .m-results-summary-region
-
-//     (( if(!published){ ))
-//     .m-proposal-admin-publish
-//       = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'm-proposal-publish-form'} do |f|
-//         = f.hidden_field :published, :value => true
-
-//         = f.submit 'Publish this new conversation', :class => 'm-proposal-publish'
-
-//       -# = link_to "cancel", "{{Routes.proposal_path(long_id)}}", :confirm => "Canceling will permanently delete this conversation. Are you sure?", :method => :delete, :remote => true, :class => 'm-delete_proposal'
-
-//     (( } ))  
-
-
-
-
 %script{ :type => "text/template", :id => "tpl_proposal_admin_strip" }
   (( if(!published){ ))
   .m-proposal-admin-publish
@@ -273,7 +247,7 @@
   (( } ))
 
   .m-proposal-admin_strip
-    %i.icon-cog
+    %i.fa-cog.fa
 
     .m-proposal-admin-options-menu-wrap
       %ul.m-proposal-admin-options-menu
@@ -282,13 +256,13 @@
             //Sharing is 
             %span
               (( if(publicity == 2) { ))
-              %i.icon.icon-globe
+              %i.fa.fa-globe
               Accessible to all
               (( } else if(publicity == 1){ ))
-              %i.icon.icon-link
+              %i.fa.fa-link
               Accessible by link only
               (( } else { ))
-              %i.icon.icon-lock
+              %i.fa.fa-lock
               Accessible by invite only
               (( } ))
 
@@ -297,11 +271,10 @@
             //Status is 
             %span
               (( if(active){ ))
-              %i.icon.icon-microphone
+              %i.fa.fa-microphone
               Conversation is Active
               (( } else { ))
-              %i.icon.icon-large
-                &#xf131;
+              %i.fa.fa-lg.fa-microphone-slash
               Conversation is Closed
               (( } ))
 
@@ -309,8 +282,7 @@
           (( var call = published ? 'Delete' : 'nevermind, delete it'; ))
 
           %a.m-delete_proposal{ :href => "{{Routes.proposal_path(long_id)}}", :'data-confirm' => "Are you sure you wish to permanently delete this conversation?", :'data-method' => 'delete', :'data-remote' => "true", :rel => "nofollow"}
-            %i.icon.icon-small
-              &#xf014;
+            %i.fa.fa-small.fa-trash-o
             {{call}}
 
 %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_publicity" }
@@ -324,7 +296,7 @@
         = f.radio_button :publicity, '2', :value => '2'
         (( } ))
 
-        %i.icon.icon-globe
+        %i.fa.fa-globe
         = f.label :publicity, 'Public', :value => '2'
         .sublabel
           It will be listed on the homepage for all visitors.
@@ -336,7 +308,7 @@
         = f.radio_button :publicity, '1', :value => '1'
         (( } ))
 
-        %i.icon.icon-link
+        %i.fa.fa-link
         = f.label :publicity, 'Anyone with a link', :value => '1'
         .sublabel
           Only people that have a link to this proposal will be able to access it.
@@ -348,7 +320,7 @@
         = f.radio_button :publicity, '0', :value => '0'
         (( } ))
 
-        %i.icon.icon-lock
+        %i.fa.fa-lock
         = f.label :publicity, 'Private', :value => '0'
         .sublabel
           Restrict access to the following comma-separated list of the emails of invited participants.
@@ -371,7 +343,7 @@
         (( } else { ))
         = f.radio_button :active, true, :value => true
         (( } ))
-        %i.icon.icon-microphone        
+        %i.fa.fa-microphone        
         = f.label :active, 'Active', :value => true
         .sublabel
           Contributions are open. People with access to this proposal can contribute to it.
@@ -382,8 +354,7 @@
         = f.radio_button :active, false, :value => false, :checked => true
         (( } ))
 
-        %i.icon.icon-large
-          &#xf131;
+        %i.fa.fa-lg.fa-microphone-slash
 
         = f.label :active, 'Read-only', :value => false
         .sublabel

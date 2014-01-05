@@ -15,4 +15,6 @@ ThemesForRails.config do |config|
   # for example, to get application.css for the default theme, 
   # your URL route should be : /assets/default/stylesheets/application.css
   config.themes_routes_dir = "assets"
+
+  #config.asset_digests_enabled = true
 end

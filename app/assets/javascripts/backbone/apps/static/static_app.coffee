@@ -5,9 +5,7 @@
 
 
   API =    
-    show: (page) ->
-      App.vent.trigger 'route:started', null
-      
+    show: (page) ->      
       $(document).scrollTop(0)
       region = App.request 'default:region'
       

@@ -16,7 +16,7 @@ class PointsController < ApplicationController
         :published => false
     }
 
-    point = Point.create!(create_params)
+    point = Point.create! ActionController::Parameters.new(create_params).permit!
     #TODO: shouldn't this happen before?
     authorize! :create, point
 
@@ -38,8 +38,8 @@ class PointsController < ApplicationController
 
     #todo: make this more efficient and natural
     comments = point.comments
-    thanks = point.comments.map {|x| x.thanks.public_fields.all}.compact.flatten
-    thanks.concat point.claims.map {|x| x.thanks.public_fields.all}.compact.flatten
+    thanks = point.comments.map {|x| x.thanks.public_fields.to_a}.compact.flatten
+    thanks.concat point.claims.map {|x| x.thanks.public_fields.to_a}.compact.flatten
     
     response = {
       :comments => comments.public_fields,
@@ -89,7 +89,7 @@ class PointsController < ApplicationController
       update_params[:hide_name] = params[:point][:hide_name]
     end
 
-    point.update_attributes! update_params
+    point.update_attributes! ActionController::Parameters.new(update_params).permit!
     
     if point.published
       ActiveSupport::Notifications.instrument("point:updated", 
@@ -117,7 +117,15 @@ class PointsController < ApplicationController
     session[@point.proposal_id][:written_points].delete(@point.id)
     session[@point.proposal_id][:included_points].delete(@point.id)  
 
+    # if this point is a top pro or con, need to trigger proposal update
+    proposal = @point.proposal
+    update_proposal_metrics = proposal.top_pro == @point.id || proposal.top_con == @point.id      
+    update_position = current_user && position = current_user.positions.find_by_proposal_id(point.proposal_id)
+
     @point.destroy
+
+    position.update_inclusions if update_position
+    proposal.update_metrics if update_proposal_metrics
 
     response = {:result => 'successful'}
 

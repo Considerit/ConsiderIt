@@ -6,7 +6,7 @@ class PositionsController < ApplicationController
 
 
   def create
-    position = Position.create params[:position]
+    position = Position.create params[:position].permit!
     position[:user_id] = current_user ? current_user.id : nil
     position[:account_id] = current_tenant.id
     update_or_create position
@@ -45,7 +45,7 @@ class PositionsController < ApplicationController
     existing_position = proposal.positions.published.where("id != #{position.id}").find_by_user_id current_user.id
 
     update_attrs[:published] = true
-    position.update_attributes update_attrs
+    position.update_attributes ActionController::Parameters.new(update_attrs).permit!
 
     if existing_position
       position.subsume existing_position
@@ -62,31 +62,28 @@ class PositionsController < ApplicationController
     end
 
     updated_points = save_actions(position)
+
     inclusions = Inclusion.where(:user_id => position.user_id, :proposal_id => position.proposal_id).select(:point_id)
     
-    incs = []
     inclusions.each do |inc|
       if stance_changed && !updated_points.include?(inc)
         inc.point.update_absolute_score
         updated_points.push inc.point_id
       end
-      incs.push inc.point_id
     end
-
-    position.point_inclusions = incs.compact.to_s
-    #position.point_inclusions = position.inclusions(:select => [:point_id]).map {|x| x.point_id}.compact.to_s       
-    position.save
-    
-    position.track!
-
-    #proposal.follow!(current_user, :follow => params[:position][:follow_proposal] == 'true', :explicit => true)
-    #position.follow!(current_user, :follow => true, :explicit => false)
-    proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
     updated_points = Point.where('id in (?)', updated_points)
     updated_points.each do |pnt|
       pnt.update_absolute_score
     end
+
+    position.update_inclusions
+
+    position.track!
+
+    #proposal.follow!(current_user, :follow => params[:position][:follow_proposal] == 'true', :explicit => true)
+    #position.follow!(current_user, :follow => true, :explicit => false)
+    proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
     proposal.update_metrics()
 
@@ -140,14 +137,16 @@ protected
 
     Inclusion.transaction do
       actions[:included_points].each do |point_id, value|
-        if Inclusion.where( :position_id => position.id, :point_id => point_id, :user_id => position.user_id ).count == 0
-          inc = Inclusion.create!( { 
+        if Inclusion.where( :point_id => point_id, :user_id => position.user_id ).count == 0
+          inc_attrs = { 
             :point_id => point_id,
             :user_id => position.user_id,
             :position_id => position.id,
             :proposal_id => position.proposal_id,
             :account_id => current_tenant.id
-          } )
+          }
+          
+          inc = Inclusion.create! ActionController::Parameters.new(inc_attrs).permit!
           if !actions[:written_points].include?(point_id) 
             pnt = Point.find(point_id)
             inc.track!
@@ -168,7 +167,8 @@ protected
       pnt.published = 1
       
       pnt.position_id = position.id
-      pnt.update_attributes({"score_stance_group_#{position.stance_bucket}".intern => 0.001, :score => 0.0000001})
+      update_attrs = {"score_stance_group_#{position.stance_bucket}".intern => 0.001, :score => 0.0000001}
+      pnt.update_attributes ActionController::Parameters.new(update_attrs).permit!
 
       updated_points.push(pnt_id)
 

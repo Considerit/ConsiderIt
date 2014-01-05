@@ -24,17 +24,17 @@ ConsiderIt::Application.routes.draw do
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-zA-Z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
-    match '/' => "proposals#show" , :via => :get, :as => :new_position
+    get '/' => "proposals#show" , :as => :new_position
 
     resources :positions, :path => '', :only => [:update, :create], :path_names => {:new => ''} 
 
-    match '/positions/:user_id' => "positions#show", :as => :user_position
+    get '/positions/:user_id' => "positions#show", :as => :user_position
 
     resources :points, :only => [:create, :update, :destroy, :show]
   end
   
   # route all non-ajax requests to home controller, with a few exceptions
-  match '(*url)' => 'home#index', :constraints => XHRConstraint.new
+  get '(*url)' => 'home#index', :constraints => XHRConstraint.new
 
   themes_for_rails 
   followable_routes
@@ -44,18 +44,18 @@ ConsiderIt::Application.routes.draw do
   thankable_routes
 
   devise_scope :user do 
-    match "users/check_login_info" => "users/registrations#check_login_info"
+    get "users/check_login_info" => "users/registrations#check_login_info"
   end
 
-  match "/content_for_user" => "home#content_for_user", :as => :content_for_user
+  get "/content_for_user" => "home#content_for_user", :as => :content_for_user
   match "/users/set_tag" => "home#set_tag", :via => :post, :as => :set_tag
 
   resource :account, :only => [:show, :update]
   
-  match "/feed" => "activities#feed"
+  get "/feed" => "activities#feed"
 
   #match "/theme" => "theme#set", :via => :post
-  match '/home/avatars' => "home#avatars", :via => :get, :as => :get_avatars
+  get '/home/avatars' => "home#avatars", :as => :get_avatars
   match "/home/domain" => "home#set_domain", :via => :post
   match "/home/theme" => "home#set_dev_options", :via => :post, :as => :set_dev_options
 
@@ -63,23 +63,23 @@ ConsiderIt::Application.routes.draw do
 
   #match '/home/study/:category' => "home#study", :via => :post  
   scope :module => "dashboard" do
-    match '/dashboard/admin_template' => "admin#admin_template", :via => :get, :as => :admin_template
+    get '/dashboard/admin_template' => "admin#admin_template", :as => :admin_template
     #match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
-    match '/dashboard/analytics' => "admin#analytics", :via => :get, :as => :analytics
-    match '/dashboard/import_data' => "admin#import_data", :via => :get, :as => :import_data
-    match '/dashboard/import_data' => "admin#import_data_create", :via => :put, :as => :import_data
+    get '/dashboard/analytics' => "admin#analytics", :as => :analytics
+    get '/dashboard/import_data' => "admin#import_data", :as => :import_data
+    match '/dashboard/import_data' => "admin#import_data_create", :via => :put, :as => :import_data_create
 
     #match '/dashboard/proposals' => "admin#proposals", :via => :get, :as => :manage_proposals
-    match '/dashboard/roles' => "admin#roles", :via => :get, :as => :manage_roles
+    get '/dashboard/roles' => "admin#roles", :as => :manage_roles
     match '/dashboard/roles/users/:user_id' => "admin#update_role", :via => :post, :as => :update_role
-    match '/dashboard/users/:id/profile' => "users#show", :as => :profile
-    match '/dashboard/users/:id/profile/edit' => "users#edit", :as => :edit_profile
-    match '/dashboard/users/:id/profile/edit/account' => "users#edit_account", :as => :edit_account
-    match '/dashboard/users/:id/profile/edit/notifications' => "users#edit_notifications", :as => :edit_notifications
+    get '/dashboard/users/:id/profile' => "users#show", :as => :profile
+    get '/dashboard/users/:id/profile/edit' => "users#edit", :as => :edit_profile
+    get '/dashboard/users/:id/profile/edit/account' => "users#edit_account", :as => :edit_account
+    get '/dashboard/users/:id/profile/edit/notifications' => "users#edit_notifications", :as => :edit_notifications
 
   end
 
-  match '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
+  #get '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
 
 
 end

@@ -11,7 +11,7 @@ namespace :data do
 
     # extract users
     u2011 = {}
-    User.all.each do |u|
+    User.find_each do |u|
       u2011[u.email] = u
     end
 

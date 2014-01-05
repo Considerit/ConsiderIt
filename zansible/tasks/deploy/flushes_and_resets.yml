@@ -1,0 +1,15 @@
+- name: Flush memcache
+  shell: echo "flush_all" | nc localhost 11211
+  ignore_errors: yes
+  async: 10
+  poll: 2
+  sudo: False
+
+- name: Restart cron and delayed_job
+  shell: $source && cd $app_home && RAILS_ENV=$rails_environment bundle exec whenever -w && RAILS_ENV=$rails_environment script/delayed_job restart
+  sudo: False
+
+# TODO: need to Ensure Passenger is running
+- name: Notify Passenger to reset server
+  shell: touch $app_home/tmp/restart.txt
+  sudo: False

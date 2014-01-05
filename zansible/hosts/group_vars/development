@@ -1,0 +1,74 @@
+user: vagrant
+ansible_ssh_user: $user
+app_name: ConsiderIt
+app_home: /home/$user/$app_name
+allow_indexing: false
+
+
+server:
+  name: 127.0.0.1
+  ssl: false
+
+code:
+  repo: git@github.com:tkriplean/ConsiderIt.git
+  branch: master
+
+deploy_key: github_deploy
+
+database:
+  name: considerit
+  user: root
+  password: root
+
+config:
+  admin_email: tkriplean@gmail.com
+  secret_token: 'a5c5cda0c748947d6202d69c0b4a75c139c9ee52af1e5487889d50c92e2cbcdda7e174b98a9b34c26dab881a3a02d5976bd81a5f814f036b04ea54509ea3bb7f'
+
+  google_analytics: UA-31400941-1
+  bitly:
+    user_name: o_4k0pfph950
+    api_key: R_c4ecd2e60147cb135da812d44a22a355
+  new_relic: 578589adb6303e0190d1df8a343577521a70a562
+  aws:
+    enabled: true
+    access_key_id: AKIAIN4RE4I6AT422EYQ
+    secret_access_key: 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
+    fog_directory: chalkboard-it
+    cloudfront: d27cw8yowf77j7
+  exception_notifier:
+    email_recipients: admin@consider.it
+
+  indexability:
+    default: false
+
+  meta:
+    default: 
+      title: "ConsiderIt"
+      description: "Help think through these issues being considered."
+      keywords: "Discuss Decide Deliberate"
+      
+  domain: 
+    localhost:
+      facebook:
+        consumer_key: '154394447927854'
+        consumer_secret: 'c1e6437b4bd76b2fb0bf8adc08665b88'
+
+      twitter:
+        consumer_key: 'X6LCs8gXhfLU7f5ZlKg'
+        consumer_secret: 'UmMdf7pHS01pAvX891AGDN0Hm1fmBgZ37fEuoNnjzI'
+
+      google:
+        consumer_key: '92551314397.apps.googleusercontent.com'
+        consumer_secret: 'Esu1z4DxqYzAnSF2KyYiiTx6'
+    0.1:
+      facebook:
+        consumer_key: '154394447927854'
+        consumer_secret: 'c1e6437b4bd76b2fb0bf8adc08665b88'
+
+      twitter:
+        consumer_key: 'X6LCs8gXhfLU7f5ZlKg'
+        consumer_secret: 'UmMdf7pHS01pAvX891AGDN0Hm1fmBgZ37fEuoNnjzI'
+
+      google:
+        consumer_key: '92551314397.apps.googleusercontent.com'
+        consumer_secret: 'Esu1z4DxqYzAnSF2KyYiiTx6'

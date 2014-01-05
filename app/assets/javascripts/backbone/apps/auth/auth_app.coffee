@@ -43,11 +43,13 @@
         API.complete_paperwork controller
 
     signout : ->
-      $.get Routes.destroy_user_session_path(), (data) =>
-        App.vent.trigger 'csrf:new', data.new_csrf
-        App.request "user:current:clear"
-        API.show()
-        App.vent.trigger 'user:signout'
+      $.ajax Routes.destroy_user_session_path(),
+        type : 'delete'
+        success : (data) =>
+          App.vent.trigger 'csrf:new', data.new_csrf
+          App.request "user:current:clear"
+          API.show()
+          App.vent.trigger 'user:signout'
 
     set_redirect_path_post_signin : (path) ->
       @redirect_after_signin = path

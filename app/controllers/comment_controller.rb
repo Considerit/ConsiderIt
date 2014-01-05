@@ -53,7 +53,7 @@ class CommentController < ApplicationController
       :body => params[:comment][:body]
     }
 
-    comment.update_attributes!(update_attributes)
+    comment.update_attributes! update_attributes.permit(:body)
 
     commentable = comment.root_object
 

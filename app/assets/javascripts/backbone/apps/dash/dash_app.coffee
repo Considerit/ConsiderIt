@@ -16,8 +16,6 @@
   API =
 
     userProfile : (user_id) ->
-      App.vent.trigger 'route:started', null
-
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
@@ -33,7 +31,6 @@
 
     
     editProfile : (user_id) ->
-      App.vent.trigger 'route:started', null
 
       $(document).scrollTop(0)
 
@@ -49,7 +46,6 @@
       App.request 'meta:change:default'
 
     accountSettings : (user_id) ->
-      App.vent.trigger 'route:started', null
 
       $(document).scrollTop(0)
 
@@ -66,7 +62,6 @@
 
 
     emailNotifications : (user_id) ->
-      App.vent.trigger 'route:started', null
 
       $(document).scrollTop(0)
 
@@ -91,7 +86,6 @@
         region : @_getMainRegion()  
 
       if !@current_controller.redirected
-        App.vent.trigger 'route:started', null
 
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
@@ -116,7 +110,6 @@
         region : @_getMainRegion()  
 
       if !@current_controller.redirected
-        App.vent.trigger 'route:started', null
 
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
@@ -133,7 +126,6 @@
         region : @_getMainRegion()  
 
       if !@current_controller.redirected
-        App.vent.trigger 'route:started', null
 
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
@@ -150,7 +142,6 @@
         region : @_getMainRegion()  
 
       if !@current_controller.redirected
-        App.vent.trigger 'route:started', null
 
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
@@ -166,7 +157,6 @@
         region : @_getMainRegion()        
 
       if !@current_controller.redirected
-        App.vent.trigger 'route:started', null
 
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 
@@ -174,7 +164,6 @@
         App.request 'meta:change:default'
 
     moderate : ->
-      App.vent.trigger 'route:started', null
 
       $(document).scrollTop(0)
       
@@ -183,7 +172,6 @@
         region : @_getMainRegion()  
 
       if !@current_controller.redirected
-        App.vent.trigger 'route:started', null
 
         App.vent.trigger 'route:completed', [ 
           ['homepage', '/'], 

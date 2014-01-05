@@ -1,41 +1,126 @@
 //////////////////
 // global layout for reasons & points, in different states
-@import "compass/css3/animation"
 
 $use_transitions: true
 
 
+//@import "compass/css3/animation"
 
-+keyframes(FromTogetherToSeparated_PeerReasons)
-  0%
+//temp while waiting for compass to come out of beta
+@-moz-keyframes FromTogetherToSeparated_PeerReasons 
+  0% 
     background-color: whitesmoke
-    border-color: darken(whitesmoke, 10%)
+    border-color: gainsboro
+  
 
-  70%
+  70% 
     background-color: whitesmoke
     border-color: whitesmoke
+  
 
-  100%
+  100% 
     background-color: none
     border-color: transparent
+  
 
-+keyframes(FromTogetherToSeparated_PeerPoints)
+@-webkit-keyframes FromTogetherToSeparated_PeerReasons
+  0% 
+    background-color: whitesmoke
+    border-color: gainsboro
+  
+
+  70% 
+    background-color: whitesmoke
+    border-color: whitesmoke
+  
+
+  100% 
+    background-color: none
+    border-color: transparent
+  
+
+@keyframes FromTogetherToSeparated_PeerReasons
+  0% 
+    background-color: whitesmoke
+    border-color: gainsboro
+  
+
+  70% 
+    background-color: whitesmoke
+    border-color: whitesmoke
+  
+
+  100% 
+    background-color: none
+    border-color: transparent
+  
+
+@-moz-keyframes FromTogetherToSeparated_PeerPoints
+  0% 
+    background-color: whitesmoke
+    border-color: transparent
+    -moz-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
+  
+
+  90% 
+    background-color: whitesmoke
+    border-color: transparent
+    -moz-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
+  
+
+  100%
+    -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    background-color: whitesmoke
+    border-color: #f1f1f1 #dddddd #bbbbbb #dddddd
+  
+
+@-webkit-keyframes FromTogetherToSeparated_PeerPoints
   0%
     background-color: whitesmoke
     border-color: transparent
-    +single-box-shadow($color: rgba(black, 0), $voff: 1px)
+    -webkit-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
 
   90%
     background-color: whitesmoke
     border-color: transparent
-    +single-box-shadow($color: rgba(black, 0), $voff: 1px)
+    -webkit-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
+
+  100% 
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    background-color: whitesmoke
+    border-color: #f1f1f1 #dddddd #bbbbbb #dddddd
+  
+
+@keyframes FromTogetherToSeparated_PeerPoints 
+  0% 
+    background-color: whitesmoke
+    border-color: transparent
+    -moz-box-shadow: 0px 1px 2px transparent
+    -webkit-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
+  
+
+  90% 
+    background-color: whitesmoke
+    border-color: transparent
+    -moz-box-shadow: 0px 1px 2px transparent
+    -webkit-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
 
   100%
-    +single-box-shadow($color: rgba(black, .1), $voff: 1px)
+    -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
     background-color: whitesmoke
-    border-color: #f1f1f1 #ddd #bbb #ddd
+    border-color: #f1f1f1 #dddddd #bbbbbb #dddddd
 
-+keyframes(FromTogetherToSeparated_hidden)
+@-moz-keyframes FromTogetherToSeparated_hidden
   0%
     opacity: 0
 
@@ -44,6 +129,64 @@ $use_transitions: true
 
   100%
     opacity: 1
+
+@-webkit-keyframes FromTogetherToSeparated_hidden 
+  0% 
+    opacity: 0
+
+  50% 
+    opacity: 0
+  100%
+    opacity: 1
+
+@keyframes FromTogetherToSeparated_hidden
+  0%
+    opacity: 0
+  50%
+    opacity: 0
+  100%
+    opacity: 1
+
+
+
+// +keyframes(FromTogetherToSeparated_PeerReasons)
+//   0%
+//     background-color: whitesmoke
+//     border-color: darken(whitesmoke, 10%)
+
+//   70%
+//     background-color: whitesmoke
+//     border-color: whitesmoke
+
+//   100%
+//     background-color: none
+//     border-color: transparent
+
+// +keyframes(FromTogetherToSeparated_PeerPoints)
+//   0%
+//     background-color: whitesmoke
+//     border-color: transparent
+//     +single-box-shadow($color: rgba(black, 0), $voff: 1px)
+
+//   90%
+//     background-color: whitesmoke
+//     border-color: transparent
+//     +single-box-shadow($color: rgba(black, 0), $voff: 1px)
+
+//   100%
+//     +single-box-shadow($color: rgba(black, .1), $voff: 1px)
+//     background-color: whitesmoke
+//     border-color: #f1f1f1 #ddd #bbb #ddd
+
+// +keyframes(FromTogetherToSeparated_hidden)
+//   0%
+//     opacity: 0
+
+//   50%
+//     opacity: 0
+
+//   100%
+//     opacity: 1
 
 
 
@@ -56,15 +199,26 @@ $use_transitions: true
   &[data-state="separated"]
     &[data-state-from="together"], &[data-state-from="collapsed"]
       .m-peer-reasons
-        +animation(FromTogetherToSeparated_PeerReasons $transition_speed)
+        // +animation(FromTogetherToSeparated_PeerReasons $transition_speed)
+        -moz-animation: FromTogetherToSeparated_PeerReasons $transition_speed
+        -webkit-animation: FromTogetherToSeparated_PeerReasons $transition_speed
+        animation: FromTogetherToSeparated_PeerReasons $transition_speed
+
 
       .m-point-peer.m-point-unexpanded .m-point-wrap
-        +animation(FromTogetherToSeparated_PeerPoints $transition_speed)
-        +animation-fill-mode(none)
+        // +animation(FromTogetherToSeparated_PeerPoints $transition_speed)        
+        // +animation-fill-mode(none)
+
+        -moz-animation: FromTogetherToSeparated_PeerPoints $transition_speed
+        -webkit-animation: FromTogetherToSeparated_PeerPoints $transition_speed
+        animation: FromTogetherToSeparated_PeerPoints $transition_speed
 
       .m-point-include, .m-pointlist-browse-toggle
-        +animation(FromTogetherToSeparated_hidden $transition_speed * 2.5)
+        //+animation(FromTogetherToSeparated_hidden $transition_speed * 2.5)
 
+        -moz-animation: FromTogetherToSeparated_hidden $transition_speed
+        -webkit-animation: FromTogetherToSeparated_hidden $transition_speed
+        animation: FromTogetherToSeparated_hidden $transition_speed
 
 .m-reasons  
   &[data-state="separated"], &[data-state="collapsed"]
@@ -343,8 +497,8 @@ $use_transitions: true
         i
           padding-right: $grid_xs/4
 
-        &:hover
-          color: $base_text_color
+        // &:hover
+        //   color: $base_text_color
 
 
 // sticky footer for results (not presented in .m-reasons el)

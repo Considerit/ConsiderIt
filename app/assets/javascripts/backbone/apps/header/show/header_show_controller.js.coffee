@@ -7,14 +7,14 @@
       @listenTo layout, 'show', =>
 
         # setup appropriate header navigation after route has finished
-        App.vent.on 'route:started', (crumbs) =>
-          if crumbs && crumbs.length < 2
+        @listenTo Backbone.history, 'route', (route, name, args) => 
+          if name == 'Root'
             layout.navRegion.reset()
             logo = @getLogo()
             layout.logoRegion.show logo
 
           else
-            nav = @getNav crumbs
+            nav = @getNav() #crumbs
             @listenTo nav, 'show', => @setupNav()
             layout.navRegion.show nav
             layout.logoRegion.reset()
@@ -24,9 +24,9 @@
 
     setupNav : ->
 
-    getNav : (crumbs) ->
+    getNav : ->
       new Show.NavView
-        crumbs : crumbs
+        #crumbs : crumbs
 
     getLogo : ->
       new Show.LogoView

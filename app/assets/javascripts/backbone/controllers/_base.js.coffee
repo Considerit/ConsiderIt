@@ -49,9 +49,11 @@
       @detached_el = $(@region.el).detach()
 
     plant : (region, new_parent = null) ->
+      throw 'Has no detached element to plant!!' if !@detached_el
       new_parent.addController @ if new_parent
       @region = region
       @detached_el.appendTo region.$el
+      @detached_el = null
 
   class Controllers.StatefulController extends Controllers.Base
     state : null

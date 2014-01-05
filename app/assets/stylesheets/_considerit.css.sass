@@ -13,6 +13,9 @@
 
 
 
+div
+  padding: 1px
+
 /* FONTS */
 %main_font-family
   font-family: $main_font-family
@@ -180,7 +183,7 @@ a
     border: none  
 
 input, button
-  +transition(opacity .5s linear, color .5s linear, background-color .5s linear)
+  //+transition(opacity .15s linear, color .15s linear, background-color .15s linear)
 
 
 table
@@ -273,11 +276,6 @@ $preloadersize_height: 10.5px
 
 .button
   +button($bground_color: hsl(0,0,35%))
-
-// unused and interferes with zocial class
-// .icon:before 
-//   content: attr(data-icon)
-//   font-family: modern_pictograms_proregular
 
 
 //////////////////////////////////////////
@@ -602,15 +600,15 @@ $static_position_width: $body_width+$grid_major
 .m-footer-contact
 
 .mc-subscribe
-  +sassy-button("simple", 5px, inherit, darken($header_footer_bg_color, 3%), darken($header_footer_bg_color, 5%))
+  +sassy-button("simple", 5px, inherit, #999, #777)
   +font-size(-3)
-  color: desaturate(invert(darken($header_footer_bg_color, 5%)), 100%)
+  color: #fafafa
   text-shadow: none
   position: relative
   top: -2px
   @extend %bolded
   &:hover
-    color: desaturate(invert(darken($header_footer_bg_color, 5%)), 100%)
+    color: white
 
 
 #mce-EMAIL

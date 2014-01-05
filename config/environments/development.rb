@@ -6,13 +6,7 @@ ConsiderIt::Application.configure do
   # since you don't have to restart the webserver when you make code changes.
   config.cache_classes = false
 
-  # Log error messages when you accidentally call methods on nil.
-  config.whiny_nils = true
-
-  # Do not compress assets
-  config.assets.compress = false
-
-  config.assets.compile = true
+  config.eager_load = false
 
   # Expands the lines which load the assets
   config.assets.debug = true
@@ -35,6 +29,9 @@ ConsiderIt::Application.configure do
   
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
   config.action_mailer.perform_deliveries = false 
+  
+  # Automatically inject JavaScript needed for LiveReload
+  config.middleware.insert_after(ActionDispatch::Static, Rack::LiveReload)
 
   ActionMailer::Base.smtp_settings = {
     :address              => "smtp.gmail.com",
@@ -51,4 +48,5 @@ ConsiderIt::Application.configure do
   Paperclip.options[:command_path] = "/opt/local/bin/"
 
 
-end
+end  
+

@@ -4,15 +4,12 @@ require 'rails/all'
 require 'pp'
 require 'rails_rinku'
 require './config/local_environment'
+require "actionpack/action_caching"
 
 if defined?(Bundler)
-  # If you precompile assets before deploying to production, use this line
-  #Bundler.require *Rails.groups(:assets => %w(development test))
-  
-  Bundler.require(:default, :assets, Rails.env) if defined?(Bundler)
-
-  # If you want your assets lazily compiled in production, use this line
-  # Bundler.require(:default, :assets, Rails.env)
+  # Require the gems listed in Gemfile, including any gems
+  # you've limited to :test, :development, or :production.
+  Bundler.require(:default, Rails.env)
 end
 
 module ConsiderIt
@@ -50,7 +47,7 @@ module ConsiderIt
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
 
-    config.action_controller.page_cache_directory = Rails.public_path + "/cache"
+    #config.action_controller.page_cache_directory = Rails.public_path + "/cache"
 
     config.assets.enabled = true
 

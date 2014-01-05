@@ -14,10 +14,7 @@
         {{ name }} 
 
       %span.m-user-options-triangle
-        //fa-caret-down
-        %i.icon-large
-          &#xf0d7;
-        //&#x25BE;
+        %i.fa.fa-caret-down
 
     .m-user-options-menu-wrap
 
@@ -57,7 +54,7 @@
           %li
             = link_to 'Tune', '/newrelic', :target => "_blank"
         %li
-          %a.m-user-options-logout
+          %a{"data-target" => "logout"}
             Log out
             
 
@@ -76,7 +73,6 @@
 
     %li.m-user-accounts-login-option
       %button{ :'data-target' => "third_party_auth", :class => "zocial {{provider.name}}", :'data-provider' => "{{provider.provider}}" }
-        %i.icon.icon-fw
         {{provider.name}}
       (( if(false && provider.fineprint) { ))
       .m-user-accounts-fineprint.m-fineprint-social
@@ -102,8 +98,7 @@
 
           .input-group
             %span.input-group-addon
-              %i.icon.icon-envelope-o.icon-fw 
-                &#xf003;             
+              %i.fa.fa-envelope-o.fa-fw 
             = f.email_field :email, :title => 'We need an email address, thanks.', :placeholder => "Email address", :required => true, :class =>"h5-email form-control"
         (( } ))
 
@@ -111,7 +106,7 @@
         .m-user-account-password
           .input-group
             %span.input-group-addon     
-              %i.icon.icon-key.icon-fw 
+              %i.fa.fa-key.fa-fw 
             = f.password_field :password, :title => 'Password is required.', :placeholder => "Your password",  :required => true, :pattern => ".{3,}", :class => "form-control"
           %a.forget_password_prompt
             I forgot! Email me password instructions. 
@@ -135,7 +130,7 @@
             .m-user-account-password
               .input-group
                 %span.input-group-addon     
-                  %i.icon.icon-key.icon-fw 
+                  %i.fa.fa-key.fa-fw 
                 = f.password_field :password, :title => 'Password is required.', :placeholder => "Your password",  :required => true, :pattern => ".{3,}", :class => "form-control"
               %a.forget_password_prompt
                 I forgot! Email me password instructions. 

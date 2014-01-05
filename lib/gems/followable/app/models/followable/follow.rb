@@ -3,7 +3,7 @@ class Followable::Follow < ActiveRecord::Base
   belongs_to :followable, :polymorphic=>true
   belongs_to :user
 
-  scope :active, where( :follow => true )  
+  scope :active, -> { where( :follow => true )  }
 
   def as_json(options={})
     options[:only] ||= [:followable_id, :followable_type, :follow, :explicit]
@@ -28,7 +28,7 @@ class Followable::Follow < ActiveRecord::Base
   end
 
   def self.purge
-    Followable::Follow.all.each do |u|
+    Followable::Follow.find_all do |u|
       begin
         obj = u.root_object
       rescue

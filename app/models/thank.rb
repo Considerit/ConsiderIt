@@ -5,7 +5,7 @@ class Thank < ActiveRecord::Base
 
   validates_uniqueness_of :user_id, :scope => [:account_id, :thankable_type, :thankable_id]
 
-  scope :public_fields, select([:created_at, :id, :user_id, :thankable_id, :thankable_type])
+  scope :public_fields, -> {select([:created_at, :id, :user_id, :thankable_id, :thankable_type])}
 
 
   def self.build_from(obj, user_id, status)

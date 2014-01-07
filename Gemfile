@@ -68,6 +68,10 @@ gem 'mailhopper', :git => 'git://github.com/youdonz/mailhopper', :branch => 'rai
 # https://github.com/cerebris/delayed_mailhopper
 gem 'delayed_mailhopper'
 
+# https://github.com/fphilipe/premailer-rails
+#gem 'hpricot'
+gem 'premailer-rails'
+
 # https://github.com/markbates/yamler
 gem 'yamler'
 
@@ -87,11 +91,7 @@ gem "themes_for_rails", :git => 'git://github.com/tkriplean/themes_for_rails.git
 gem 'actionmailer-with-request'
 
 #https://github.com/meskyanichi/backup
-gem 'backup', "~>3.0.24"
-
-# https://github.com/fphilipe/premailer-rails3
-#gem 'hpricot'
-gem 'premailer-rails'
+gem 'backup' #, "~>3.0.24"
 
 # https://github.com/philnash/bitly
 # gem 'bitly'
@@ -100,7 +100,7 @@ gem 'premailer-rails'
 gem 'dalli'
 
 # https://github.com/vmg/rinku
-gem 'rinku'
+gem 'rinku' # needed anymore?
 
 #gem 'font-awesome-rails'
 

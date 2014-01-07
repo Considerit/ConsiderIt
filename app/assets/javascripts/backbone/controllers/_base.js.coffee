@@ -43,11 +43,13 @@
     removeFromParent : ->
       @options.parent_controller.removeController @
 
-
+    # extracts this controller (and its attached DOM) from its parent
     upRoot : ->
       @removeFromParent @
       @detached_el = $(@region.el).detach()
 
+    # re-attaches this controller's DOM to a new region.
+    # upRoot must have been called before plant
     plant : (region, new_parent = null) ->
       throw 'Has no detached element to plant!!' if !@detached_el
       new_parent.addController @ if new_parent

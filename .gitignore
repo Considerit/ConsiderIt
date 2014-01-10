@@ -43,3 +43,4 @@ zansible/hosts/considerit
 *.sql
 
 public/system/default_avatar/avatar.sketch*
+spec/data/considerit.sql.bz2

@@ -8,7 +8,7 @@ casper.test.begin 'Homepage can be mucked around', 2, (test) ->
 
       for [width, height] in [ [600, 500], [1024, 768], [1200, 900]]
         @viewport width, height
-        @captureSelector "screen-#{width}x#{height}.png", 'body' 
+        @captureSelector "#{casper.cli.options.htmlout}/screen_captures/screen-#{width}x#{height}.png", 'body' 
 
     # this.fill('form[action="/search"]', {
     #   q: "casperjs"

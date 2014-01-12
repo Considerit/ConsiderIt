@@ -17,6 +17,7 @@ public/assets/
 public/system/icons
 public/sitemaps/*
 public/system/cache/*.css
+public/test/results/*
 *.bk
 config/newrelic.yml
 .vagrant

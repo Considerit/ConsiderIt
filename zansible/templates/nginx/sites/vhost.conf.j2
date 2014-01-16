@@ -1,25 +1,14 @@
 {% if server.ssl %}
 server {
   listen         80;
-  server_name    {{ server.name }} www.{{ server.name }};
+  server_name    *.{{ server.name }}
   rewrite        ^ https://$host$request_uri? permanent;
 }
-server {
-  listen         443 ssl;
-  server_name    www.{{ server.name }};
-  rewrite        ^ https://{{ server.name }}$request_uri? permanent;
-}
-
 {% else %}
 server {
   listen         443 ssl;
-  server_name    {{ server.name }}  www.{{ server.name }};
+  server_name    *.{{ server.name }}
   rewrite        ^ http://$host$request_uri? permanent;
-}
-server {
-  listen         80;
-  server_name    www.{{ server.name }};
-  rewrite        ^ https://{{ server.name }}$request_uri? permanent;
 }
 {% endif %}
 
@@ -33,7 +22,7 @@ server {
     listen 80;
   {% endif %}
 
-  server_name {{ server.name }};
+  server_name *.{{ server.name }};
   root {{ app_home }}/public;
   passenger_enabled on;
   rails_spawn_method smart;

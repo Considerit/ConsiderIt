@@ -55,8 +55,7 @@ RailsAdmin.config do |config|
   # end
   #
 
-  #classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Comment', 'Moderation', 'Reflect::ReflectBullet', 'Reflect::ReflectBulletRevision', 'Reflect::ReflectHighlight', 'Reflect::ReflectResponse', 'Reflect::ReflectResponseRevision', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment']
-  classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Comment', 'Moderation', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment', 'Assessable::Verdict']
+  classes = ['Activity', 'Inclusion', 'Point', 'PointListing', 'Position', 'Proposal', 'User', 'Comment', 'Thank', 'Moderation', 'Assessable::Claim', 'Assessable::Request', 'Assessable::Assessment', 'Assessable::Verdict']
   
   classes.each do |cls|
     config.model cls do
@@ -64,6 +63,12 @@ RailsAdmin.config do |config|
         #pp cls
         exclude_fields :account_id, :account
       end
+    end
+  end
+
+  config.model 'Proposal' do
+    edit do
+      exclude_fields :claims, :account_id, :account
     end
   end
 

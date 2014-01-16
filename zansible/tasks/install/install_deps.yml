@@ -1,5 +1,9 @@
-- name: Update apt
+- name: Update system
   command: /usr/bin/apt-get update
+  sudo: True
+
+- name: Upgrade system
+  command: /usr/bin/apt-get upgrade
   sudo: True
 
 - name: Installs ruby building dependencies

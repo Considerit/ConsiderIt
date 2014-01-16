@@ -5,3 +5,13 @@
 - name: Install Unattended-upgrades config 2
   copy: src=templates/unattended-updates/50unattended-upgrades dest=/etc/apt/apt.conf.d/50unattended-upgrades mode=700
   sudo: True
+
+- name: Make home directory
+  file: path=/home/${user} owner=$user state=directory
+  sudo: False
+
+- name: Proper ownership of home files
+  shell: chown ${user}:${user} /home/${user} -R
+
+- name: Configure sudoers
+  lineinfile: dest=/etc/sudoers backup=yes state=present regexp='^%{{user}}' insertafter="^# %wheel" line='%{{user}} ALL=(ALL) ALL'

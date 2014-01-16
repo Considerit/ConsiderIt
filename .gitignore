@@ -25,7 +25,7 @@ restart.txt
 
 zansible/templates/seeds_for_local_dev/avatars.zip
 zansible/templates/seeds_for_local_dev/considerit.sql.bz2
-
+zansible/templates/ssl/*
 zansible/templates/ssh/github
 
 zansible/hosts/group_vars/chalkboardit
@@ -40,3 +40,6 @@ zansible/hosts/considerit
 *.sql
 
 public/system/default_avatar/avatar.sketch*
+zansible/hosts/iweb
+
+zansible/hosts/group_vars/iweb

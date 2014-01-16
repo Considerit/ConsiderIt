@@ -89,7 +89,7 @@ namespace :import do
         :fks => [
           ['activities', ['action_id', "action_type='Comment'"]],
           ['follows', ['followable_id', "followable_type='Comment'"]],
-          ['moderations', ['moderatable_id', "moderatable_type='Comment'"]]
+          ['moderations', ['moderatable_id', "moderatable_type='Comment'"]],
           ['thanks', ['thankable_id', "thankable_type='Comment'"]]
         ]
       }],

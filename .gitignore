@@ -26,10 +26,7 @@ restart.txt
 zansible/templates/seeds_for_local_dev/avatars.zip
 zansible/templates/seeds_for_local_dev/considerit.sql.bz2
 
-zansible/templates/github/github_consideritbsd_rsa
-zansible/templates/github/github_consideritbsd_rsa.pub
-zansible/templates/github/github_deploy_rsa
-zansible/templates/github/github_deploy_rsa.pub
+zansible/templates/ssh/github
 
 zansible/hosts/group_vars/chalkboardit
 zansible/hosts/group_vars/considerit

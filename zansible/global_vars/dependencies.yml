@@ -29,6 +29,7 @@ deps:
   - optipng
   - pngcrush
   - python-mysqldb # for Ansible mysql module
+  - unattended-upgrades
   - unzip
   - zlib1g 
   - zlib1g-dev

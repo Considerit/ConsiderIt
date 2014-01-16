@@ -14,4 +14,4 @@
   shell: chown ${user}:${user} /home/${user} -R
 
 - name: Configure sudoers
-  lineinfile: dest=/etc/sudoers backup=yes state=present regexp='^%{{user}}' insertafter="^# %wheel" line='%{{user}} ALL=(ALL) ALL'
+  lineinfile: dest=/etc/sudoers backup=yes state=present regexp='^%{{user}}' insertafter=EOF line='%{{user}} ALL=(ALL) ALL'

@@ -5,7 +5,7 @@ deps:
   - bison 
   - build-essential 
   - curl 
-  - emacs21-nox
+  - emacs23-nox
   - exuberant-ctags 
   - gifsicle
   - git-core

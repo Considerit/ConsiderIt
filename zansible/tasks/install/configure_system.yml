@@ -1,0 +1,7 @@
+- name: Install Unattended-upgrades config 1
+  copy: src=templates/unattended-updates/10periodic dest=/etc/apt/apt.conf.d/10periodic mode=700
+  sudo: True
+
+- name: Install Unattended-upgrades config 2
+  copy: src=templates/unattended-updates/50unattended-upgrades dest=/etc/apt/apt.conf.d/50unattended-upgrades mode=700
+  sudo: True

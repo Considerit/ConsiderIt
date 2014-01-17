@@ -14,11 +14,11 @@
   when: server.ssl
 
 - name: Copy SSL certificate private key
-  copy: src=files/ssl/$app_name/$app_name.key dest=/etc/ssl/private/$app_name.key mode=600
+  copy: src=templates/ssl/$app_name.key dest=/etc/ssl/private/$app_name.key mode=600
   sudo: True
   when: server.ssl
 
 - name: Copy SSL certificate
-  copy: src=files/ssl/$app_name/$app_name.crt dest=/etc/ssl/certs/$app_name.crt mode=600
+  copy: src=templates/ssl/$app_name.crt dest=/etc/ssl/certs/$app_name.crt mode=600
   sudo: True
   when: server.ssl

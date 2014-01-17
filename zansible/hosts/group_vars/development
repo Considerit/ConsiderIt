@@ -4,6 +4,8 @@ app_name: ConsiderIt
 app_home: /home/$user/$app_name
 allow_indexing: false
 
+ssh: 
+  pubkeys:
 
 server:
   name: 127.0.0.1

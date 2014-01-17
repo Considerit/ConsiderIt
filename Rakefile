@@ -59,11 +59,7 @@ task :run_acceptance_tests do
     begin
       Rake::Task["start_test_server"].invoke
 
-      spec_path = Rails.root.join("spec/acceptance/")
-      log_path  = Rails.root.join("log")
-
-      time = Time.now.strftime("%Y-%m-%d-%H-%M-%S")
-      results_directory = Rails.root.join "public", "test", "results", time
+      results_directory = Rails.root.join "public", "test", "results", Time.now.strftime("%Y-%m-%d-%H-%M-%S")
 
       Dir.mkdir results_directory.to_s
       Dir.mkdir results_directory.join("screen_captures").to_s
@@ -76,13 +72,14 @@ task :run_acceptance_tests do
         f.puts File.read Rails.root.join("public","test", "files", "header.html")
       end
 
-
+      spec_path = Rails.root.join("spec/acceptance/")
       for test in Dir["#{spec_path}/**/*.coffee"]
 
         system "bundle exec rake load_test_data"
 
         system("casperjs test \
                 --testhost=http://localhost:#{app_port} \
+                --includes=spec/lib/casperjs.coffee \
                 --htmlout=#{results_directory} \
                 #{File.join(test)} >> #{html_out}")
       end
@@ -90,7 +87,6 @@ task :run_acceptance_tests do
       File.open(html_out,'a') do |f|
         f.puts File.read Rails.root.join("public","test", "files", "footer.html")
       end
-
 
     ensure
       Rake::Task["stop_test_server"].invoke

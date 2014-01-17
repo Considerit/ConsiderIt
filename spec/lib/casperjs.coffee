@@ -38,11 +38,22 @@ casper.HTMLCapture = (selector = 'body', options = {}) ->
     wrap += "<a href='screen_captures/#{fname}'><img src='screen_captures/#{fname}'></a>"
   
   if options.caption?
-    wrap += "<span class='capture_caption'>Caption: #{options.caption}</span>"      
+    wrap += "<div class='capture_caption'>#{options.caption}</div>"      
   
   wrap += "</div>"
 
   casper.writeHTML wrap
+
+
+casper.test._begin = casper.test.begin
+casper.test.begin = (args...) ->
+  casper.writeHTML "<div class='test_suite'>\n<div class='test_suite_name'>#{args[0]}</div>"
+
+  casper.test._begin.apply casper.test, args
+
+  casper.writeHTML '</div>'
+
+
 
 casper.writeHTML = (html) ->
   f = casper.getHTMLOutput()
@@ -51,4 +62,5 @@ casper.writeHTML = (html) ->
 
 casper.getHTMLOutput = ->
   fs.open "#{casper.cli.options.htmlout}/index.html", 'a+'
+
 

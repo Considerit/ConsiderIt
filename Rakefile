@@ -59,7 +59,11 @@ task :run_acceptance_tests do
     begin
       Rake::Task["start_test_server"].invoke
 
-      results_directory = Rails.root.join "public", "test", "results", Time.now.strftime("%Y-%m-%d-%H-%M-%S")
+      results_path = Rails.root.join("public", "test", "results")
+
+      Dir.mkdir(results_path) unless File.exists?(results_path.to_s)
+
+      results_directory = results_path.join Time.now.strftime("%Y-%m-%d-%H-%M-%S")
 
       Dir.mkdir results_directory.to_s
       Dir.mkdir results_directory.join("screen_captures").to_s
@@ -81,7 +85,7 @@ task :run_acceptance_tests do
                 --testhost=http://localhost:#{app_port} \
                 --includes=spec/lib/casperjs.coffee \
                 --htmlout=#{results_directory} \
-                #{File.join(test)} >> #{html_out}")
+                #{File.join(test)}")
       end
 
       File.open(html_out,'a') do |f|

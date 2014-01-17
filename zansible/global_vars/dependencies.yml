@@ -5,6 +5,7 @@ deps:
   - bison 
   - build-essential 
   - curl 
+  - emacs23-nox
   - exuberant-ctags 
   - gifsicle
   - git-core
@@ -29,6 +30,7 @@ deps:
   - optipng
   - pngcrush
   - python-mysqldb # for Ansible mysql module
+  - unattended-upgrades
   - unzip
   - zlib1g 
   - zlib1g-dev

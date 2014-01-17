@@ -394,6 +394,7 @@
       %table.table.table-condensed.table-striped
         %tbody
           (( var is_following = false; ))
+          (( if(follows[followable_type.model]) { ))
           (( _.each( _.values(follows[followable_type.model]), function(obj){ ))
 
           (( if( obj.follow ){ ))
@@ -417,6 +418,7 @@
           (( }); ))
           (( if( !is_following ){ ))
           Not following any {{followable_type.label}}
+          (( } ))
           (( } ))
   (( }); ))
 

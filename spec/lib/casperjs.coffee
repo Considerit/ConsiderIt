@@ -1,6 +1,11 @@
 fs = require('fs')
 
 
+casper.on "page.error", (msg, trace) -> 
+  casper.writeHTML "<div class='javascript_error'>#{msg}</div>"
+
+casper.on "resource.error", (er) ->
+  casper.writeHTML "<div class='resource_error'>Failed to load #{er.url}: #{er.errorCode} - #{er.errorString}</div>"
 
 ## Overrides the standard assertion processor in order to insert HTML output. 
 ## Don't worry, the standard processor is invoked as well. 
@@ -19,7 +24,7 @@ casper.test.processAssertionResult = (result) ->
     status = "FAILED!"
   
   wrap = "<div class='result_wrap #{result_class}'>\n"
-  wrap += "<span class='result'>#{status}</span> <span class='message'>#{result.standard} => #{result.message}</span>\n"
+  wrap += "<span class='result'>#{status}</span> <span class='message'>#{result.message}  (#{result.standard}) </span>\n"
   wrap += "</div>\n"
 
   casper.writeHTML wrap

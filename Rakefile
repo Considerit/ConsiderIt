@@ -83,6 +83,7 @@ task :run_acceptance_tests do
 
         system "bundle exec rake load_test_data"
 
+
         system("casperjs test \
                 --testhost=http://localhost:#{app_port} \
                 --includes=spec/lib/casperjs.coffee \
@@ -129,7 +130,7 @@ end
 
 
 desc "remove all past tests"
-task :clean_out_test_data do 
+task :clean_out_test_results do 
 
   if Rails.env.test?
     begin

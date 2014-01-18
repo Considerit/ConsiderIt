@@ -63,7 +63,8 @@ task :run_acceptance_tests do
 
       Dir.mkdir(results_path) unless File.exists?(results_path.to_s)
 
-      results_directory = results_path.join Time.now.strftime("%Y-%m-%d-%H-%M-%S")
+      date = Time.now.strftime("%Y-%m-%d-%H-%M-%S")
+      results_directory = results_path.join date
 
       Dir.mkdir results_directory.to_s
       Dir.mkdir results_directory.join("screen_captures").to_s
@@ -73,7 +74,10 @@ task :run_acceptance_tests do
       html_out = results_directory.join("index.html").to_s
 
       File.open(html_out,'w+') do |f|
-        f.puts File.read Rails.root.join("public","test", "files", "header.html")
+        html = File.read(Rails.root.join("public","test", "files", "header.html"))
+        html = html.gsub('{{date}}', date)
+        pp html
+        f.puts html  
       end
 
       spec_path = Rails.root.join("spec/acceptance/")
@@ -104,7 +108,7 @@ desc "load test data into database"
 task :load_test_data do 
 
   if Rails.env.test?
-    filename = "spec/data/considerit.sql"
+    filename = "spec/data/test.sql"
     t = Time.now
 
     Rake::Task["db:drop"].invoke  
@@ -117,6 +121,18 @@ task :load_test_data do
     system "bundle exec rake db:migrate > /dev/null 2>&1"
     #puts "...Test data loaded in #{Time.now - t} seconds"
 
+  end
+end
+
+
+desc "remove all past tests"
+task :clean_out_test_data do 
+
+  if Rails.env.test?
+    begin
+      results_path = Rails.root.join("public", "test", "results")
+      FileUtils.rm_rf results_path
+    end
   end
 end
 

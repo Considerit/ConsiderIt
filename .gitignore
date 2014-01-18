@@ -23,10 +23,10 @@ config/newrelic.yml
 .vagrant
 restart.txt
 
-spec/data/considerit.sql.bz2
+spec/data/test.sql.bz2
 
-zansible/templates/seeds_for_local_dev/avatars.zip
-zansible/templates/seeds_for_local_dev/considerit.sql.bz2
+zansible/templates/seed_data/avatars.zip
+zansible/templates/seed_data/considerit.sql.bz2
 zansible/templates/ssl/*
 zansible/templates/ssh/github
 
@@ -46,3 +46,5 @@ zansible/hosts/iweb
 
 public/system/default_avatar/avatar.sketch*
 
+
+zansible/templates/seed_data/test.sql.bz2

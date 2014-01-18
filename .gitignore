@@ -17,29 +17,34 @@ public/assets/
 public/system/icons
 public/sitemaps/*
 public/system/cache/*.css
+public/test/results/*
 *.bk
 config/newrelic.yml
 .vagrant
 restart.txt
 
+spec/data/test.sql.bz2
 
-zansible/templates/seeds_for_local_dev/avatars.zip
-zansible/templates/seeds_for_local_dev/considerit.sql.bz2
+zansible/templates/seed_data/avatars.zip
+zansible/templates/seed_data/considerit.sql.bz2
 zansible/templates/ssl/*
 zansible/templates/ssh/github
 
 zansible/hosts/group_vars/chalkboardit
 zansible/hosts/group_vars/considerit
 zansible/hosts/group_vars/chlkit
+zansible/hosts/group_vars/iweb
 
 zansible/hosts/chalkboardit
 zansible/hosts/chlkit
 zansible/hosts/considerit
+zansible/hosts/iweb
+
 
 *.crt
 *.sql
 
 public/system/default_avatar/avatar.sketch*
-zansible/hosts/iweb
 
-zansible/hosts/group_vars/iweb
+
+zansible/templates/seed_data/test.sql.bz2

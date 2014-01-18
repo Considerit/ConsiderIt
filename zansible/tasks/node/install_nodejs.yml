@@ -10,12 +10,12 @@
     msg="current version of Node is {{ node_current_version.stdout }} while were looking for {{ node_version }}"
 
 - name: Node.js | Fetching node.js source
-  get_url: url=http://nodejs.org/dist/${node_version}/${node_prefix}.tar.gz dest=/tmp/
+  get_url: url=http://nodejs.org/dist/${node_version}/node-${node_version}.tar.gz dest=/tmp/
   when: node_current_version.stdout != node_version
   sudo: True
 
 - name: Node.js | Unpack node.js tarball
-  command: tar zxf ${node_prefix}.tar.gz chdir=/tmp
+  command: tar zxf node-${node_version}.tar.gz chdir=/tmp
   when: node_current_version.stdout != node_version
   sudo: True
 

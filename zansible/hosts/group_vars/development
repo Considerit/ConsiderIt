@@ -14,7 +14,8 @@ server:
 code:
   repo: git@github.com:tkriplean/ConsiderIt.git
   branch: master
-
+  run_tests_on_deploy: false
+  
 deploy_key: github_deploy
 
 database:

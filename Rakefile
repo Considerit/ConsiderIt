@@ -76,7 +76,6 @@ task :run_acceptance_tests do
       File.open(html_out,'w+') do |f|
         html = File.read(Rails.root.join("public","test", "files", "header.html"))
         html = html.gsub('{{date}}', date)
-        pp html
         f.puts html  
       end
 

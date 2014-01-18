@@ -10,5 +10,6 @@
     - include: tasks/deploy/update_app_environment.yml
     - include: tasks/deploy/migrate_database.yml    
     - include: tasks/deploy/flushes_and_resets.yml
+    - include: tasks/deploy/run_tests.yml
   handlers:
     - include: tasks/handlers.yml

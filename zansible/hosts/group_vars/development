@@ -14,7 +14,8 @@ server:
 code:
   repo: git@github.com:tkriplean/ConsiderIt.git
   branch: master
-
+  run_tests_on_deploy: false
+  
 deploy_key: github_deploy
 
 database:
@@ -25,6 +26,7 @@ database:
 config:
   admin_email: tkriplean@gmail.com
   secret_token: 'a5c5cda0c748947d6202d69c0b4a75c139c9ee52af1e5487889d50c92e2cbcdda7e174b98a9b34c26dab881a3a02d5976bd81a5f814f036b04ea54509ea3bb7f'
+  secret_key_base: '2951b055ced80eb9fc4f4c6aeab29c8f5ecd265928785b0233440e74af2b321bc0960022059be0d77e87498e3a85e09867b151bfac81d3b38eed88ed05171a34'
 
   google_analytics: UA-31400941-1
   bitly:

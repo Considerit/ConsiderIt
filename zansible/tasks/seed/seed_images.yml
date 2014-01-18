@@ -1,9 +1,9 @@
 - name: Compress avatars
-  local_action: shell zip -r templates/seeds_for_local_dev/avatars.zip ../public/system/avatars
+  local_action: shell zip -r templates/seed_data/avatars.zip ../public/system/avatars
   sudo: False
 
 - name: Copy sample avatars
-  copy: src=templates/seeds_for_local_dev/avatars.zip dest=$app_home
+  copy: src=templates/seed_data/avatars.zip dest=$app_home
   sudo: False
 
 - name: Uncompress avatars directory

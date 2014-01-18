@@ -1,5 +1,6 @@
 default:
-  secret_token: 'd563ad61367340a25b44c11bac8a692d4de498ef37ed6b2760ba254a382e4ee925eb79f671f5e051396c62042e4ec3dde4f28938aca606c9c88f9f99c5f3f48e'
+  secret_token: ''
+  secret_key_base: ''
   admin_email: ''
   analytics:
     google: ''

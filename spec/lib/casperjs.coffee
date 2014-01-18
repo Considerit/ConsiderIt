@@ -6,8 +6,6 @@ fs = require('fs')
 ## Don't worry, the standard processor is invoked as well. 
 casper.test._processAssertionResult = casper.test.processAssertionResult
 casper.test.processAssertionResult = (result) -> 
-  casper.echo 'PROCESSING ASSERTION RESULT'
-
   casper.test._processAssertionResult result
   
   if result.success

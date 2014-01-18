@@ -3,5 +3,5 @@
   sudo: False
 
 - name: Make bin of casperjs
-  shell: ln -sf $app_home/casperjs/bin/casperjs /usr/local/bin/casperjs
+  shell: ln -sf $userhome/casperjs/bin/casperjs /usr/local/bin/casperjs
   sudo: True

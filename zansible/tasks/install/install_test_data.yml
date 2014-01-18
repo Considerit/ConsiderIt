@@ -1,0 +1,11 @@
+- name: Ensure test data directory
+  file: path=$app_home/spec/data state=directory
+  sudo: False
+
+- name: Copy test data to remote server
+  copy: src=templates/seed_data/test.sql.bz2 dest=$app_home/spec/data/test.sql.bz2
+  sudo: True
+
+- name: Uncompress database dump
+  command: /bin/bunzip2 $app_home/spec/data/test.sql.bz2 creates=$app_home/spec/data/test.sql
+  sudo: True

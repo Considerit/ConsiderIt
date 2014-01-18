@@ -1,0 +1,7 @@
+- name: Installs Casperjs
+  git: repo=git://github.com/n1k0/casperjs.git dest=$userhome/casperjs
+  sudo: False
+
+- name: Make bin of casperjs
+  shell: ln -sf $userhome/casperjs/bin/casperjs /usr/local/bin/casperjs
+  sudo: True

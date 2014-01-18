@@ -38,12 +38,13 @@
   sudo: False
 
 - name: Ruby Version check
-  debug: msg="current version of Ruby is {{ ruby_current_version.stdout }} while were looking for {{ ruby_version }}"
+  debug: >
+    msg="current version of Ruby is {{ ruby_current_version.stdout }} while were looking for {{ ruby_version }}"
 
 - name: Install ruby
   shell: $source && $path rbenv install $ruby_version && $path rbenv global $ruby_version
   when: ruby_current_version.stdout != ruby_version
-  async: 600
+  async: 1000
   poll: 30
   sudo: False
 

@@ -96,7 +96,7 @@ task :run_acceptance_tests do
       end
 
       latest_path = Rails.root.join('public', 'test', 'results', 'latest')
-      FileUtils.rm latest_path.to_s
+      FileUtils.rm(latest_path.to_s) if File.exists?(latest_path.to_s)
       FileUtils.ln_s results_directory.to_s, latest_path.to_s
 
 

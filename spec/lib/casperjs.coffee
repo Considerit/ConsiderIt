@@ -6,6 +6,8 @@ fs = require('fs')
 ## Don't worry, the standard processor is invoked as well. 
 casper.test._processAssertionResult = casper.test.processAssertionResult
 casper.test.processAssertionResult = (result) -> 
+  casper.echo 'PROCESSING ASSERTION RESULT'
+
   casper.test._processAssertionResult result
   
   if result.success
@@ -28,7 +30,7 @@ casper.test.processAssertionResult = (result) ->
 
 ## Takes a screenshot of the given selector and outputs results to HTML
 casper.HTMLCapture = (selector = 'body', options = {}) ->
-  options.sizes ?= [ [1200, 900], [600, 500], [1024, 768] ]
+  options.sizes ?= [ [1200, 900] ]
 
   wrap = "<div class='screenshots'>"
   for [width, height] in options.sizes
@@ -47,11 +49,8 @@ casper.HTMLCapture = (selector = 'body', options = {}) ->
 
 casper.test._begin = casper.test.begin
 casper.test.begin = (args...) ->
-  casper.writeHTML "<div class='test_suite'>\n<div class='test_suite_name'>#{args[0]}</div>"
-
+  casper.writeHTML "<div class='test_suite_name'>#{args[0]}</div>"
   casper.test._begin.apply casper.test, args
-
-  casper.writeHTML '</div>'
 
 
 

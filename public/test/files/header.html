@@ -4,22 +4,26 @@
 <title>Acceptance test results</title>
 
 
-<script type="text/javascript">
-  
-
-</script>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 
 <style>
 html { color: #eee; background-color: black; }
 
-.test_suite_name { padding: 5px 3px; width: 100%; background-color: #03a; color: white; font-size: 1.2em; }
+.test_suite { cursor: pointer; margin-bottom: 2em; }
+.test_suite.is_closed .result_wrap, .test_suite.is_closed .screenshots { display: none; }
+
+.test_suite.has_failure .test_suite_name { background-color: #c00; }
+
+.test_suite_name { padding: 5px 3px; width: 100%; background-color: #0c3; color: white; font-size: 1.2em; }
+
+.test_suite_name .suite_summary { padding-left: 15px; font-size: .8em; }
 
 .result_wrap { padding-top: 1em; }
 
 .result_wrap.success .result { color: #0f0; }
 .result_wrap.skip .result { color: #00f; }
 .result_wrap.failure .result { color: #f00; }
-  
+
 .result { text-transform: uppercase; font-weight: bold; }
 .screenshots { margin-left: 25px; margin-top: .5em; }
 .screenshots a { margin-right: 18px; display: inline-block; }
@@ -27,5 +31,44 @@ html { color: #eee; background-color: black; }
 .screenshots .capture_caption { font-size: .9em; color: #ccc; }
 </style>
 
+<script type="text/javascript">
+  window.onload = function() { 
+    
+  $('.test_suite_name').each(function() {
+    $(this).nextUntil('.test_suite_name').andSelf().wrapAll('<div class="test_suite"></div>');
+  });
+
+  $('.test_suite').each( function(idx, ts){
+    $ts = $(ts);
+    failures = $ts.find('.result_wrap.failure').length;
+    successes = $ts.find('.result_wrap.success').length;
+    skipped = $ts.find('.result_wrap.skip').length;
+
+    if( failures > 0) {
+      $ts.addClass('has_failure');
+    }
+
+    result_summary = $("<span class='suite_summary'>" + successes + " successful, " + failures + " failed, " + skipped + " skipped</span>");
+
+    result_summary.appendTo($ts.find('.test_suite_name'));
+
+
+  });
+
+  $('.test_suite:not(.has_failure)').addClass('is_closed');
+
+  $('.test_suite_name').on('click', function() { 
+
+    $(this).parent().toggleClass('is_closed');
+  });
+  
+  } 
+
+</script>
+
 </head>
 <body>
+
+<div class="header">
+<h1>Acceptance Test Results, {{date}}</h1>
+</div>

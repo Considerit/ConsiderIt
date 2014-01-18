@@ -69,7 +69,6 @@ task :run_acceptance_tests do
       Dir.mkdir results_directory.to_s
       Dir.mkdir results_directory.join("screen_captures").to_s
 
-      FileUtils.ln_s(results_directory.to_s, Rails.root.join('public', 'test', 'results', 'latest').to_s)
 
       html_out = results_directory.join("index.html").to_s
 
@@ -94,6 +93,11 @@ task :run_acceptance_tests do
       File.open(html_out,'a') do |f|
         f.puts File.read Rails.root.join("public","test", "files", "footer.html")
       end
+
+      latest_path = Rails.root.join('public', 'test', 'results', 'latest')
+      FileUtils.rm latest_path.to_s
+      FileUtils.ln_s results_directory.to_s, latest_path.to_s
+
 
     ensure
       Rake::Task["stop_test_server"].invoke

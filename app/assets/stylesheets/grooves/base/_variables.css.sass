@@ -15,6 +15,8 @@ $slider_label_width: 100px
 
 
 //$peer-point-height: 180px
+
+// this is the horizontal amount that a point grows by when you click to browse the pros or cons
 $expanded_points_increment: 125px
 
 
@@ -27,7 +29,6 @@ $dialog_stutter: $grid_xs
 
 $transition_speed: 1000ms
 $transition_function: ease-out
-
 
 
 // Peer point: 
@@ -49,9 +50,11 @@ $peer-point-results-width: $peer-point-width //$peer-point-wrap-results-width + 
 //$position-point-wrap-width: 237px //$body_width / 2 //250px
 $position-point-width: $position-point-wrap-width + $peer-point-avatar-area 
 
+// decision board width is the size of the pro/con list in the middle
 $decision_board_width: $position-point-width * 2 + 2 * $peer_padding //+ 10
 $body_width: $decision_board_width //667 - 2 * $grid_xs
 
+// full reasons width is the width of the pro/con list in the middle and the peer pro/con points in the margins
 $full_reasons_width: $decision_board_width + 2 * $peer-point-results-width + 11 //7 is for borders //+ 2 * $grid_xs
 $full_reasons_left: -($full_reasons_width - $content_width) / 2 + 2
 

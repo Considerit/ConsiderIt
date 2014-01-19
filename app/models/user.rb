@@ -301,7 +301,7 @@ class User < ActiveRecord::Base
   end
 
   def self.update_user_metrics
-    Account.load.each do |accnt|
+    Account.all.each do |accnt|
 
       accnt.users.each do |user|
         user.update_metrics()
@@ -310,7 +310,7 @@ class User < ActiveRecord::Base
   end
 
   def self.purge
-    users = User.load.map {|u| u.id}
+    users = User.all.map {|u| u.id}
     missing_users = []
     classes = [Position, Point, PointListing, Inclusion]
     classes.each do |cls|

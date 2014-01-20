@@ -31,6 +31,7 @@
     - include: tasks/node/install_nodejs.yml
     - include: tasks/node/install_phantomjs.yml
     - include: tasks/node/install_casperjs.yml
+    - include: tasks/install/configure_backup.yml
 
   handlers:
     - include: tasks/handlers.yml

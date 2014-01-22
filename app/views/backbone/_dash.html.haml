@@ -81,6 +81,14 @@
         Database
     (( } ))
 
+    (( if(is_developer) { ))
+    %hr
+
+    %li
+      %a.m-sidebar_link{:href => "{{Routes.client_error_path()}}", :'data-target' => "client_errors"}
+        Client errors
+    (( } ))
+
     - if Rails.env.development?
       %li
         = link_to 'Tune', '/newrelic', :target => "_blank", :class => 'm-sidebar_link'

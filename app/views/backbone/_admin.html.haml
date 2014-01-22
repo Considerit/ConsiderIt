@@ -357,6 +357,40 @@
   %script{ :type => "text/template", :id => "tpl_dashboard_database"}
     %iframe{ :src => rails_admin_path }
 
+  %script{ :type => "text/template", :id => "tpl_dashboard_client_errors"}
+    .m-dashboard-heading
+      %h2
+        Javascript and Ajax errors
+
+      .m-dashboard-subheading
+        Client-side errors captured and reported here. Hover for stack trace.  
+
+    %table.table.table-condensed.table-striped
+      %tbody
+        (( errors.each( function(err){ )) 
+        (( var js = err.get('error_type') == 'js'; )) 
+        %tr.client_error{ :title => "{{ err.escape('trace') }}" }
+          %td.ce_error_type
+            {{ err.get('error_type') }}
+
+          %td.ce_message
+            {{ err.get('message') }}
+          %td.ce_location
+            (( if(!js){ ))
+            {{ err.get('line') }}: 
+            (( } ))
+            {{ err.get('location') }}
+          %td.ce_browser
+            {{ err.get('browser') }}, {{ err.get('version') }}, {{ err.get('platform') }}
+          %td.ce_created_at
+            {{ new Date(err.get('created_at')).toDateString() }}
+          %td.ce_user
+            {{ err.get('user_id') }}
+          %td.ce_session
+            {{ err.get('session_id') }}
+        (( }); ))
+
+
 
   = render :partial => "backbone/analytics"
   = render :partial => "backbone/moderation"

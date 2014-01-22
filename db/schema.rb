@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131210223146) do
+ActiveRecord::Schema.define(version: 20140121232042) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -70,21 +70,6 @@ ActiveRecord::Schema.define(version: 20131210223146) do
 
   add_index "accounts", ["identifier"], name: "by_identifier", length: {"identifier"=>10}, using: :btree
 
-  create_table "active_admin_comments", force: true do |t|
-    t.string   "resource_id",   null: false
-    t.string   "resource_type", null: false
-    t.integer  "author_id"
-    t.string   "author_type"
-    t.text     "body"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
-    t.string   "namespace"
-  end
-
-  add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
-  add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
-  add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_admin_notes_on_resource_type_and_resource_id", using: :btree
-
   create_table "activities", force: true do |t|
     t.string   "action_type"
     t.integer  "action_id",   null: false
@@ -123,6 +108,23 @@ ActiveRecord::Schema.define(version: 20131210223146) do
     t.text     "notes"
     t.integer  "creator"
     t.integer  "approver"
+  end
+
+  create_table "client_errors", force: true do |t|
+    t.text     "trace"
+    t.string   "type"
+    t.string   "line"
+    t.string   "message"
+    t.integer  "user_id"
+    t.string   "session_id"
+    t.string   "user_agent"
+    t.string   "browser"
+    t.string   "version"
+    t.string   "platform"
+    t.string   "location"
+    t.string   "ip"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "comments", force: true do |t|

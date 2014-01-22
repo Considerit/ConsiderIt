@@ -6,7 +6,9 @@ class Dashboard::ClientErrorsController < Dashboard::DashboardController
 
     rendered_admin_template = params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil
 
-    render :json => {:account => current_tenant, :admin_template => rendered_admin_template}
+    errors = ClientError.all.limit(500)
+
+    render :json => {:account => current_tenant, :admin_template => rendered_admin_template, :errors => errors}
   end
 
   def create
@@ -27,10 +29,8 @@ class Dashboard::ClientErrorsController < Dashboard::DashboardController
 
     error_params.update more_params
 
-    pp error_params
-    error = ClientError.create! error_params.permit :type, :trace, :line, :message, :user_id, :session_id, :user_agent, :location, :ip, :browser, :version, :platform
+    error = ClientError.create! error_params.permit(:error_type, :trace, :line, :message, :user_id, :session_id, :user_agent, :location, :ip, :browser, :version, :platform)
     
-    throw 'dsf'
     respond_to do |format|
       format.json {render :json => error}
     end

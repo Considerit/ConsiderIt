@@ -154,6 +154,12 @@
       @trigger 'data:imported', result
 
 
+  class Admin.ClientErrorsView extends App.Dash.View
+    dash_name : 'client_errors'
+
+    serializeData : ->
+      _.extend {}, 
+        errors : App.request 'javascript:errors:get'
 
 
 

@@ -29,7 +29,7 @@
 
     attrs = ['javascript', msg, url, line].join()
     if window.xx_last_js_error != attrs
-      App.vent.trigger 'javascript:error', 'javascript', trace, msg, url, line
+      App.vent.trigger 'javascript:error', 'js', trace, msg, window.location.pathname, line
       window.xx_last_js_error = attrs
 
     suppress_errors = true
@@ -39,6 +39,7 @@
   $( document ).ajaxError (event, jqxhr, settings, exception) ->
     attrs = ['ajax', exception, settings.url, settings.type].join()
 
+    console.log exception
     if window.xx_last_ajax_error != attrs
       App.vent.trigger 'javascript:error', 'ajax', settings.data, exception, settings.url, settings.type
       window.xx_last_ajax_error = attrs
@@ -88,5 +89,6 @@
         el: $("#t-bg")
 
     App.vent.trigger 'App:Initialization:Complete'
+
 
   App

@@ -112,7 +112,7 @@ ActiveRecord::Schema.define(version: 20140121232042) do
 
   create_table "client_errors", force: true do |t|
     t.text     "trace"
-    t.string   "type"
+    t.string   "error_type"
     t.string   "line"
     t.string   "message"
     t.integer  "user_id"

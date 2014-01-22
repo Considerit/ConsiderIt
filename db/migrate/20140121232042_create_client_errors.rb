@@ -2,7 +2,7 @@ class CreateClientErrors < ActiveRecord::Migration
   def change
     create_table :client_errors do |t|
       t.text :trace
-      t.string :type
+      t.string :error_type
       t.string :line
       t.string :message
       t.integer :user_id, :default => nil

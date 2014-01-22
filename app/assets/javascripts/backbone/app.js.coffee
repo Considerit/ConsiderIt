@@ -21,6 +21,28 @@
   
   App.commands.setHandler "unregister:instance", (instance, id) ->
     App.unregister instance, id if App.environment is "development"
+
+  window.onerror = (msg, url, line, column, error_obj) ->
+
+
+    trace = if error_obj? then error_obj.stack else null # works in chrome for now
+
+    attrs = ['javascript', msg, url, line].join()
+    if window.xx_last_js_error != attrs
+      App.vent.trigger 'javascript:error', 'javascript', trace, msg, url, line
+      window.xx_last_js_error = attrs
+
+    suppress_errors = true
+    # If you return true, then error alerts (like in older versions of Internet Explorer) will be suppressed.
+    return suppress_errors
+
+  $( document ).ajaxError (event, jqxhr, settings, exception) ->
+    attrs = ['ajax', exception, settings.url, settings.type].join()
+
+    if window.xx_last_ajax_error != attrs
+      App.vent.trigger 'javascript:error', 'ajax', settings.data, exception, settings.url, settings.type
+      window.xx_last_ajax_error = attrs
+
   
   App.addInitializer ->
     $.get Routes.get_avatars_path(), (data) ->

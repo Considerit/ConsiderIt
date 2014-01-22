@@ -57,6 +57,7 @@
     isAnalyst : -> @isAdmin() || @hasRole('analyst')
     isEvaluator : -> @isAdmin() || @hasRole('evaluator')
     isManager : -> @isAdmin() || @hasRole('manager')
+    isDeveloper : -> @hasRole('superadmin') || @hasRole('developer')
 
     permissions : ->
       is_admin: @isAdmin()
@@ -64,6 +65,7 @@
       is_evaluator: @isEvaluator()
       is_manager: @isManager()
       is_moderator: @isModerator()
+      is_developer : @isDeveloper()
 
     roleList: -> @roles().join(', ')
 

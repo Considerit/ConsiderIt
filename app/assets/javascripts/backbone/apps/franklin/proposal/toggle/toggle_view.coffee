@@ -23,7 +23,7 @@
           else 
             call = 'Craft Your Own Opinion'
           
-        results_call = 'View All Opinions'
+      results_call = 'View All Opinions'
 
       current_user = App.request 'user:current'
       _.extend {}, @model.attributes,

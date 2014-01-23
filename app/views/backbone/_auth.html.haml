@@ -136,12 +136,12 @@
                 I forgot! Email me password instructions. 
 
         .m-user-accounts-finish-wrap
-          %button.m-user-accounts-register-next{:disabled => 'disabled', :type => 'button'}
+          %button.m-user-accounts-register-next{:disabled => 'disabled', :type => 'button', :'data-target' => "create-account"}
             Create my account
         
         (( } ))
         .m-user-accounts-finish-wrap
-          = f.submit "Log me in", :disabled => 'disabled', :class => 'm-user-accounts-login-submit'
+          = f.submit "Log me in", :disabled => 'disabled', :class => 'm-user-accounts-login-submit', :'data-target' => "login-submit"
 
 
 
@@ -218,7 +218,7 @@
 
 %script{ :type => "text/template", :id => "tpl_user_paperwork_footer" }     
 
-  %input{ :name => "commit", :type => "submit", :value => "Create my account!", :class => "ui-state-valid" }
+  %input{ :name => "commit", :type => "submit", :value => "Create my account!", :class => "ui-state-valid", :'data-target' => "paperwork_complete" }
 
   .m-user-accounts-tos
     %span

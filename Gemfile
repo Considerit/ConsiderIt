@@ -119,6 +119,9 @@ gem 'sitemap_generator'
 #gem 'cacheable-csrf-token-rails'
 gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csrf-token-rails'
 
+# https://github.com/josh/useragent
+gem 'useragent'
+
 #######
 # https://github.com/rails/protected_attributes
 # These are primarily to make smooth upgrade from Rails 3 to 4

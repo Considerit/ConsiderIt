@@ -12,6 +12,7 @@
       "dashboard/data" : "database"
       "dashboard/moderate" : "moderate"
       "dashboard/import_data" : "importData"
+      "dashboard/client_errors" : "clientErrors"
 
   API =
 
@@ -177,6 +178,21 @@
           ['homepage', '/'], 
           ["moderate", Routes.dashboard_moderate_path()] ]
         App.request 'meta:change:default'
+
+    clientErrors : ->
+      $(document).scrollTop(0)
+      
+      @current_controller.close() if @current_controller      
+      @current_controller = new Dash.Admin.ClientErrorsController
+        region : @_getMainRegion()  
+
+      if !@current_controller.redirected
+
+        App.vent.trigger 'route:completed', [ 
+          ['homepage', '/'], 
+          ["client_errors", Routes.client_error_path()] ]
+        App.request 'meta:change:default'
+
 
     unauthorizedPage : ->
       @current_controller.close() if @current_controller

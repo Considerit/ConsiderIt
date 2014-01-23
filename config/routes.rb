@@ -32,7 +32,8 @@ ConsiderIt::Application.routes.draw do
 
     resources :points, :only => [:create, :update, :destroy, :show]
   end
-  
+
+
   # route all non-ajax requests to home controller, with a few exceptions
   get '(*url)' => 'home#index', :constraints => XHRConstraint.new
 
@@ -63,6 +64,9 @@ ConsiderIt::Application.routes.draw do
 
   #match '/home/study/:category' => "home#study", :via => :post  
   scope :module => "dashboard" do
+    match "/report_client_error" => "client_errors#create", :via => :post, :as => :report_client_error
+    get "/dashboard/client_errors" => "client_errors#index", :as => :client_error
+
     get '/dashboard/admin_template' => "admin#admin_template", :as => :admin_template
     #match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
     get '/dashboard/analytics' => "admin#analytics", :as => :analytics

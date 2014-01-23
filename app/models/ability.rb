@@ -48,6 +48,10 @@ class Ability
       can [:index, :create, :update], Assessable::Request      
     end
 
+    if user.has_role? :developer
+      can [:index, :create, :update, :show], ClientError
+    end
+
     if !user.id.nil?
       can :create, Assessable::Request do |req|
         assessment = req.assessment
@@ -126,6 +130,7 @@ class Ability
         end
       end
 
+      can :create, ClientError
       
     end
   end

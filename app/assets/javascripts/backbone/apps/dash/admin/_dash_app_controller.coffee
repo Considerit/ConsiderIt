@@ -121,3 +121,23 @@
     
     getLayout : ->
       new Admin.DatabaseView
+
+  class Admin.ClientErrorsController extends Admin.AdminController
+    auth : 'is_developer'
+    admin_template_needed : true
+
+    data_uri : -> 
+      Routes.client_error_path()
+
+    process_data_from_server : (data) ->
+      App.vent.trigger 'javascript:errors:fetched', data.errors
+      data
+
+    setupLayout : ->
+      layout = @getLayout()
+
+
+      layout
+
+    getLayout : ->
+      new Admin.ClientErrorsView

@@ -2,7 +2,7 @@
 
   class Root.Layout extends App.Views.Layout
     template: "#tpl_homepage_layout"
-
+    className : 'homepage-region'
     regions :
       headerRegion : '#m-homepage-header'
       proposalsRegion : '#m-homepage-proposals'

@@ -137,6 +137,7 @@
               proposal_controller.upRoot() #preserve proposal's dom
 
             region.controlled_by.close()
+            region.$el.find('.homepage-region').remove()
 
             if animate_proposal_expansion_from_homepage
               proposal_controller.plant region #re-place proposal's dom

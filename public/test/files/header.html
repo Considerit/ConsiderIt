@@ -36,13 +36,22 @@ html { color: #eee; background-color: black; }
 </style>
 
 <script type="text/javascript">
-  window.onload = function() { 
-    
+  var load = function() { 
+ 
+  // remove mistaken test suite name entries caused with multiple test suites in a single file
+
+  $('.test_suite_name').each(function() {
+      while($(this).next().hasClass('test_suite_name')) {
+        $(this).next().remove();
+      }
+  });
+
   $('.test_suite_name').each(function() {
     $(this).nextUntil('.test_suite_name').andSelf().wrapAll('<div class="test_suite"></div>');
   });
 
-  var to_remove = [];
+  
+
   $('.test_suite').each( function(idx, ts){
     $ts = $(ts);
     failures = $ts.find('.result_wrap.failure').length;
@@ -57,15 +66,9 @@ html { color: #eee; background-color: black; }
 
     result_summary.appendTo($ts.find('.test_suite_name'));
 
-    if(failures + successes + skipped == 0){
-      to_remove.push(this);
-    }
 
   });
 
-  for( var i = 0; i < to_remove.length; i+=1){
-    $(to_remove[i]).remove();
-  }
   $('.test_suite:not(.has_failure)').addClass('is_closed');
 
   $('.test_suite_name').on('click', function() { 
@@ -73,7 +76,14 @@ html { color: #eee; background-color: black; }
     $(this).parent().toggleClass('is_closed');
   });
   
-  } 
+  }
+
+  if($) { 
+    $(document).ready(load); 
+  } else { 
+    window.onload = load;
+  }
+
 
 </script>
 

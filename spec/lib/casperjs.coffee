@@ -2,10 +2,10 @@ fs = require('fs')
 
 
 casper.on "page.error", (msg, trace) -> 
-  casper.writeHTML "<div class='javascript_error'>#{msg}</div>"
+  casper.writeHTML "<div class='javascript_error entry'>#{msg}</div>"
 
 casper.on "resource.error", (er) ->
-  casper.writeHTML "<div class='resource_error'>Failed to load #{er.url}: #{er.errorCode} - #{er.errorString}</div>"
+  casper.writeHTML "<div class='resource_error entry'>Failed to load #{er.url}: #{er.errorCode} - #{er.errorString}</div>"
 
 ## Overrides the standard assertion processor in order to insert HTML output. 
 ## Don't worry, the standard processor is invoked as well. 
@@ -23,7 +23,7 @@ casper.test.processAssertionResult = (result) ->
     result_class = 'failure'
     status = "FAILED!"
   
-  wrap = "<div class='result_wrap #{result_class}'>\n"
+  wrap = "<div class='result_wrap #{result_class} entry'>\n"
   wrap += "<span class='result'>#{status}</span> <span class='message'>#{result.message}  (#{result.standard}) </span>\n"
   wrap += "</div>\n"
 
@@ -35,7 +35,7 @@ casper.test.processAssertionResult = (result) ->
 casper.HTMLCapture = (selector = 'body', options = {}) ->
   options.sizes ?= [ [1200, 900] ]
 
-  wrap = "<div class='screenshots'>"
+  wrap = "<div class='screenshots entry'>"
   for [width, height] in options.sizes
     @viewport width, height
     fname = "#{Date.now()}-#{width}x#{height}.png"
@@ -50,7 +50,7 @@ casper.HTMLCapture = (selector = 'body', options = {}) ->
   casper.writeHTML wrap
 
 casper.HTMLStep = (message) -> 
-  casper.writeHTML "<div class='step'>&#10095; #{message}</div>"
+  casper.writeHTML "<div class='step entry'>&#10095; #{message}</div>"
   casper.echo message, 'COMMENT'
 
 

@@ -32,7 +32,7 @@ GIT
 
 GIT
   remote: git://github.com/sferik/rails_admin
-  revision: 9bb02d0039ad7b8fb0aef7ba5d5d96e9db2f3cba
+  revision: 2010c962a577b52e0f32386e04f267cf39c0162a
   specs:
     rails_admin (0.6.0)
       builder (~> 3.1)
@@ -125,7 +125,7 @@ GEM
       multi_json (~> 1.3)
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
-    acts_as_tenant (0.3.3)
+    acts_as_tenant (0.3.4)
       rails (>= 3.1)
       request_store (>= 1.0.5)
     addressable (2.3.5)
@@ -231,7 +231,7 @@ GEM
       http_parser.rb
     http_parser.rb (0.6.0)
     i18n (0.6.9)
-    image_optim (0.10.0)
+    image_optim (0.10.2)
       exifr (~> 1.1.3)
       fspath (~> 2.1.0)
       image_size (~> 1.1.2)
@@ -274,12 +274,12 @@ GEM
     multi_json (1.8.4)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
-    mysql2 (0.3.14)
+    mysql2 (0.3.15)
     nested_form (0.3.2)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.7.0)
-    newrelic_rpm (3.7.1.182)
+    newrelic_rpm (3.7.1.188)
     nokogiri (1.6.1)
       mini_portile (~> 0.5.0)
     oauth (0.4.7)
@@ -314,14 +314,13 @@ GEM
     paper_trail (3.0.0)
       activerecord (>= 3.0, < 5.0)
       activesupport (>= 3.0, < 5.0)
-    paperclip (3.5.2)
+    paperclip (3.5.3)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
       cocaine (~> 0.5.3)
       mime-types
-    paperclip-optimizer (1.0.0)
+    paperclip-optimizer (1.0.1)
       image_optim (~> 0.9)
-      paperclip
       paperclip (~> 3.5.2)
     polyglot (0.3.3)
     premailer (1.8.0)
@@ -371,7 +370,7 @@ GEM
     safe_yaml (1.0.1)
     sanitize (2.1.0)
       nokogiri (>= 1.4.4)
-    sass (3.2.13)
+    sass (3.2.14)
     sass-rails (4.0.1)
       railties (>= 4.0.0, < 5.0)
       sass (>= 3.1.10)

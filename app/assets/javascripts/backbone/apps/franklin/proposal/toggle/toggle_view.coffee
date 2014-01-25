@@ -26,8 +26,7 @@
       results_call = 'View All Opinions'
 
       current_user = App.request 'user:current'
-      console.log results_call
-      
+    
       _.extend {}, @model.attributes,
         results_call : results_call
         active : active

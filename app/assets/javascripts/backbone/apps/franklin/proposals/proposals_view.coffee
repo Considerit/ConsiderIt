@@ -78,7 +78,7 @@
       params
 
     events : 
-      'click .m-proposals-pagination-showmore' : 'showMoreRequested'
+      'click [data-target="load-proposals"]' : 'showMoreRequested'
       'click [data-target="proposallist:first"]' : 'gotoFirst'
       'click [data-target="proposallist:prev"]' : 'gotoPrev'
       'click [data-target="proposallist:next"]' : 'gotoNext'

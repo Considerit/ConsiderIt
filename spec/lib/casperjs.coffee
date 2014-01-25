@@ -49,6 +49,10 @@ casper.HTMLCapture = (selector = 'body', options = {}) ->
 
   casper.writeHTML wrap
 
+casper.HTMLStep = (message) -> 
+  casper.writeHTML "<div class='step'>&#10095; #{message}</div>"
+  casper.echo message, 'COMMENT'
+
 
 casper.test._begin = casper.test.begin
 casper.test.begin = (args...) ->

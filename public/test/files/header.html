@@ -39,19 +39,19 @@ html { color: #eee; background-color: black; }
   var load = function() { 
  
   // remove mistaken test suite name entries caused with multiple test suites in a single file
-
   $('.test_suite_name').each(function() {
       while($(this).next().hasClass('test_suite_name')) {
         $(this).next().remove();
       }
   });
 
+  // wrap up test suites in a div
   $('.test_suite_name').each(function() {
     $(this).nextUntil('.test_suite_name').andSelf().wrapAll('<div class="test_suite"></div>');
   });
 
   
-
+  // add information about test results to each test suite wrap
   $('.test_suite').each( function(idx, ts){
     $ts = $(ts);
     failures = $ts.find('.result_wrap.failure').length;
@@ -69,15 +69,17 @@ html { color: #eee; background-color: black; }
 
   });
 
+  // close all test suites that successfully completed
   $('.test_suite:not(.has_failure)').addClass('is_closed');
 
+  // allow test suites to be toggled open and closed
   $('.test_suite_name').on('click', function() { 
-
     $(this).parent().toggleClass('is_closed');
   });
   
   }
 
+  // do this stuff onload
   if($) { 
     $(document).ready(load); 
   } else { 

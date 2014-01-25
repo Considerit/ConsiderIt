@@ -77,7 +77,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
 
           @mouse.click '[data-target="logout"]'
 
-          casper.wait 500, ->
+          casper.wait 1000, ->
             test.assertExists '[data-target="login"]', 'User has successfully logged out'
             @HTMLCapture '#m-user-nav', 
               caption: 'logged out'

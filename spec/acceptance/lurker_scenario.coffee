@@ -20,7 +20,7 @@ casper.test.begin 'Lurker can poke around homepage', 7, (test) ->
   casper.start "http://localhost:8787/", ->
 
     casper.then ->
-      casper.wait 500, ->
+      casper.wait 1000, ->
         @HTMLStep "Homepage can be mucked about"
 
         @HTMLCapture 'body', 
@@ -138,7 +138,7 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
     casper.then ->
       @HTMLStep 'open a point'
       @mouse.click '[data-role="m-point"]'
-      @wait 500, ->
+      @wait 1000, ->
         test.assertVisible '.m-point-details-description', 'Point details are visible'
         test.assertVisible '.m-point-discussion', 'Discussion section exists'
 

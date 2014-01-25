@@ -22,16 +22,18 @@
             call = 'Craft Your Own Opinion' 
           else 
             call = 'Craft Your Own Opinion'
-          
+      
       results_call = 'View All Opinions'
 
       current_user = App.request 'user:current'
+      console.log results_call
+      
       _.extend {}, @model.attributes,
+        results_call : results_call
         active : active
         updating : updating
         crafting : crafting
         call : call
-        results_call : results_call
 
     onRender : ->
       super

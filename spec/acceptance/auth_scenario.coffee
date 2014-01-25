@@ -11,7 +11,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
 
   casper.start "http://localhost:8787/", ->
 
-    casper.wait 500, ->
+    casper.wait 1000, ->
       
       casper.then ->
         test.assertExists '[data-target="login"]', "there is an option for logging in"
@@ -57,7 +57,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
 
       casper.then ->
         # verify logged in
-        casper.wait 500, ->
+        casper.wait 1000, ->
           test.assertExists '.m-user-options-display', 'User is logged in'
 
           @HTMLCapture '#m-user-nav', 
@@ -98,7 +98,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
 
         @mouse.click '[data-target="login-submit"]'
 
-        casper.wait 500, ->
+        casper.wait 1000, ->
           test.assertExists '.m-user-options-display', 'User is logged in'
 
 

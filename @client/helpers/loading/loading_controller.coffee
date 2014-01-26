@@ -1,6 +1,6 @@
 # from http://www.backbonerails.com/screencasts/loading-views
 
-@ConsiderIt.module "Components.Loading", (Loading, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Helpers.Loading", (Loading, App, Backbone, Marionette, $, _) ->
   
   class Loading.LoadingController extends App.Controllers.Base
     

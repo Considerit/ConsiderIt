@@ -1,4 +1,4 @@
-@ConsiderIt.module "Components.Dialog", (Dialog, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Helpers.Dialog", (Dialog, App, Backbone, Marionette, $, _) ->
   class Dialog.DialogWrapper extends App.Views.Layout
     template: '#tpl_dialog_detachable'
     regions:

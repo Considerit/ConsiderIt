@@ -1,4 +1,4 @@
-@ConsiderIt.module "Components.Sticky", (Sticky, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Helpers.Sticky", (Sticky, App, Backbone, Marionette, $, _) ->
   class Sticky.StickyController extends App.Controllers.Base
 
     initialize : (options={}) ->

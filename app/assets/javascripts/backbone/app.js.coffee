@@ -39,7 +39,6 @@
   $( document ).ajaxError (event, jqxhr, settings, exception) ->
     attrs = ['ajax', exception, settings.url, settings.type].join()
 
-    console.log exception
     if window.xx_last_ajax_error != attrs
       App.vent.trigger 'javascript:error', 'ajax', settings.data, exception, settings.url, settings.type
       window.xx_last_ajax_error = attrs

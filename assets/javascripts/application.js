@@ -11,10 +11,8 @@
 
 //= require_tree ./vendor
 
-
-
 //= require_tree ../../@client/config
-//= require app_entry
+//= require client
 //= require_tree ../../@client/entities
 //= require_tree ../../@client/controllers
 //= require_tree ../../@client/views

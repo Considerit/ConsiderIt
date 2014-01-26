@@ -1,4 +1,4 @@
-@ConsiderIt.module "Components.Dialog", (Dialog, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Helpers.Dialog", (Dialog, App, Backbone, Marionette, $, _) ->
   class Dialog.Controller extends App.Controllers.Base
     
     initialize: (options = {}) ->

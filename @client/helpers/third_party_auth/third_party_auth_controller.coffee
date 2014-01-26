@@ -1,4 +1,4 @@
-@ConsiderIt.module "Components.ThirdPartyAuth", (ThirdPartyAuth, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Helpers.ThirdPartyAuth", (ThirdPartyAuth, App, Backbone, Marionette, $, _) ->
   class ThirdPartyAuth.Controller extends App.Controllers.Base
     
     initialize : (options = {}) ->

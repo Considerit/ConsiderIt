@@ -65,6 +65,8 @@ module ConsiderIt
     config.paths["app/controllers"] << "@server/controllers"
     config.paths["app/models"] << "@server/models"
     config.paths["app/views"] << "@server/views"
+    config.paths["app/views"] << "@client/templates"
+
     config.paths["app/mailers"] << "@server/mailers"
     config.paths["app/helpers"] << "@server/helpers"
 
@@ -74,7 +76,6 @@ module ConsiderIt
     config.assets.paths << Rails.root.join("@client")
     config.assets.paths << Rails.root.join("assets")
 
-    pp Rails.application.config.assets.paths
     ########################################
 
 

@@ -59,6 +59,25 @@ module ConsiderIt
 
     config.force_ssl = false
     
+    ##################
+    # for our custom rails directory structure
+    config.paths['app'] << "@server"
+    config.paths["app/controllers"] << "@server/controllers"
+    config.paths["app/models"] << "@server/models"
+    config.paths["app/views"] << "@server/views"
+    config.paths["app/mailers"] << "@server/mailers"
+    config.paths["app/helpers"] << "@server/helpers"
+
+    config.paths["app/assets"] << "@client"
+    config.paths["app/assets"] << "assets"
+
+    config.assets.paths << Rails.root.join("@client")
+    config.assets.paths << Rails.root.join("assets")
+
+    pp Rails.application.config.assets.paths
+    ########################################
+
+
 
     # Enable FS storage for Paperclip
     Paperclip::Attachment.default_options.merge!({

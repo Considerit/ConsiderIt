@@ -22,6 +22,36 @@
   App.commands.setHandler "unregister:instance", (instance, id) ->
     App.unregister instance, id if App.environment is "development"
 
+
+  # Facilitates fetching data backing a model and then taking an action afterwards. 
+  # If data is already fetched, doesn't go to server.
+  App.commands.setHandler "when:fetched", (entities, callback, loading = true) ->
+    already_fetched = true
+
+    entities = _.flatten [entities]
+    _.each entities, (e) ->
+      already_fetched &&= e.fetched
+
+    if already_fetched
+      callback()
+      return
+
+    xhrs = _.chain(entities).pluck("_fetch").value()
+    App.execute "when:completed", xhrs, callback, loading
+
+  
+  # Facilitates taking action after an ajax request completes. 
+  App.commands.setHandler "when:completed", (xhrs, callback, loading = true) ->
+    xhrs = _.flatten [xhrs]
+    $.when(xhrs...).done ->
+      callback()
+
+    if loading
+      App.execute 'show:loading',
+        loading:
+          entities : xhrs
+          xhr: true
+
   window.onerror = (msg, url, line, column, error_obj) ->
 
 

@@ -78,7 +78,7 @@ task :run_acceptance_tests do
         f.puts html  
       end
 
-      spec_path = Rails.root.join("spec/acceptance/")
+      spec_path = Rails.root.join("spec/tests/")
       for test in Dir["#{spec_path}/**/*.coffee"]
 
         system "bundle exec rake load_test_data"
@@ -86,7 +86,7 @@ task :run_acceptance_tests do
 
         system("casperjs test \
                 --testhost=http://localhost:#{app_port} \
-                --includes=spec/lib/casperjs.coffee \
+                --includes=spec/extensions/casperjs.coffee \
                 --htmlout=#{results_directory} \
                 #{File.join(test)}")
       end

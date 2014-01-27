@@ -1,18 +1,35 @@
 //////////////////////////////////////////////////////////////
 // These must be included at the top of all theme stylesheets
-@import "grooves/base/variables"
-@import "grooves/base/colors"
-@import "grooves/base/fonts"
+@import "variables"
+@import "skin"
 ////////////////////////////
 
 ////////////////////////////////////////
-// Overide any base style variables here
-@import "variables"
-@import "colors"
-@import "fonts"
+// Overide any skin style variables here
+$base_bg_color: #fafafa
+$header_footer_bg_color: hsl( 0, 100%, 27%)
+$header_footer_text_color: hsl( 0, 0%, 80%)
+$bg_declaration: asset-data-url('wall_texture.png') repeat #777
+$bg_top_declaration: asset-data-url('lvg/images/spots-red.png') repeat-x 
+$bg_content_declaration: whitesmoke //asset-data-url('paper.jpg') //repeat white 5 * $vertical_baseline 0em
+$bg_content_top_declaration: none
+$bg_main: $base_bg_color
+$comp_color: $decision_board_text_color
+$standout_text_color: $base_text_color
+$standout_color: hsl( 0, 0%, 98%)
+$initiator_text_color: #fafafa
+$initiator_color:    hsl( 0, 100%, 32%)
+$community_text_color: hsl( 0, 30%, 15%)
+$community_color:    hsl( 0, 0%, 87%)
+$callout_bg_color: hsl( 0, 5%, 50%)
+
+$dark_initiator_color: darken($initiator_color, $border_darken_amt)
+$dark_community_color: darken($community_color, $border_darken_amt)
+$dark_comp_color: darken($comp_color, $border_darken_amt)
+$dark_standout_color: darken($standout_color, $border_darken_amt)
+
 
 // required for all themes
-@import "grooves/base/processor"
 @import "considerit" 
 /////////
 

@@ -3,7 +3,20 @@
 //////////////////////////////////////////
 
 
-@import "grooves/base/compass_defaults"
+// compass defaults
+$default-transition-property : all
+$default-transition-duration : .4s
+$default-transition-function : false
+$default-transition-delay    : false
+
+$default-box-shadow-color    : rgba(black, .4)
+$default-box-shadow-h-offset : 0px
+$default-box-shadow-v-offset : 1px
+$default-box-shadow-blur     : 2px
+$default-box-shadow-spread   : false
+$default-box-shadow-inset    : false
+
+
 @import "compass/css3/box-shadow"
 @import "compass/css3/box-sizing"
 @import "compass/css3/transform"
@@ -14,7 +27,6 @@
 @import "core"
 
 // libraries of mixins
-@import "grooves/base/materials"
 @import "constructs/misc"
 @import "constructs/bubble"
 
@@ -51,6 +63,18 @@ body
 #t-bg-content-top, #l-content-main-wrap
   min-height: 500px
 
+#t-bg
+  background: $bg_declaration
+
+#t-bg-top
+  background: $bg_top_declaration
+
+#t-bg-content
+  background: $bg_content_declaration
+
+#t-bg-content-top
+  background: $bg_content_top_declaration
+  
 
 $hex-bullet-point: '\2022'
 

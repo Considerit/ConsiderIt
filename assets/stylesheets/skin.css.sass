@@ -1,30 +1,41 @@
 
+///////// FONT ////////////
+$main_font-family: "Source Sans Pro", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif
+$base-font-size: 16px
+$browser-default-font-size: $base-font-size
+$base-line-height: 6px
+$base_unit: 1.3
+
+
+//////// COLORS ////////////////
+
+
 ///////// BASE BACKGROUND ///////
 $base_text_color: #414141
 $base_hover_color: darken($base_text_color, 25%)
 // approximate color of basic background, used for default fill for bubbles
-$base_bg_color: white
+$base_bg_color: #fafafa
 // background for header and footer
-$header_footer_bg_color: transparent
-$header_footer_text_color: $base_text_color
+$header_footer_bg_color: hsl( 0, 0%, 92%)
+$header_footer_text_color: hsl( 0, 0%, 20%)
 
-$bg_declaration: #f8f8f8
-$bg_main: white
+$bg_declaration: asset-data-url('base/images/brillant.png') repeat
+$bg_main: asset-data-url('base/images/brillant.png') repeat $base_bg_color
 
 $bg_top_declaration: none
-$bg_content_declaration: white
+$bg_content_declaration: none
 $bg_content_top_declaration: none
 
 
 /////////////////// BACKGROUND COMPLEMENTS
-$comp_color:       #4aaa42  //hsl(  0, 0%, 25%)
-$comp_text_color:  white  //hsl( 0, 0%, 92%)
+$comp_color:       invert($base_bg_color)  //hsl(  0, 0%, 25%)
+$comp_text_color:  #fafafa  //hsl( 0, 0%, 92%)
 
 $mid_bg_color: #666
 
 /////////////// PROPOSAL INITIATORS
-$accent_text_color: $base_text_color
-$accent_color:    #c9cee2
+$accent_text_color: hsl( 210, 35%, 25%)
+$accent_color:    hsl( 210, 70%, 84%)
 
 
 ////////////// SPECIAL PROPOSALS
@@ -58,3 +69,11 @@ $callout_text_color: #fafafa
 
 // determines how much each base color is darkened for their dark counterpart
 $border_darken_amt: 10%
+
+$dark_initiator_color: darken($initiator_color, $border_darken_amt)
+$dark_community_color: darken($community_color, $border_darken_amt)
+$dark_comp_color: darken($comp_color, $border_darken_amt)
+$dark_standout_color: darken($standout_color, $border_darken_amt)
+
+
+

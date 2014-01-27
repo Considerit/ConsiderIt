@@ -3,9 +3,9 @@
 //= require jquery_ujs
 //= require jquery.remotipart
 
-//= require lib/underscore
-//= require lib/backbone
-//= require lib/marionette
+//= require vendor/underscore
+//= require vendor/backbone
+//= require vendor/marionette
 
 //= require js-routes
 

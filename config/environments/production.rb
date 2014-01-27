@@ -30,7 +30,7 @@ ConsiderIt::Application.configure do
    
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   
-  config.assets.precompile += %w( browser/ie/ie.css browser/ie/ie9.css email.css admin.js admin.css jquery.XDomainRequest.js .svg .eot .woff .ttf )
+  config.assets.precompile += %w( browser/ie/ie.css browser/ie/ie9.css email.css admin.js admin.css .svg .eot .woff .ttf )
 
   config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
 

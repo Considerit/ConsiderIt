@@ -5,6 +5,6 @@ class Dashboard::DashboardController < ApplicationController
   end
 
   def process_admin_template
-    render_to_string :partial => 'backbone/admin'
+    render_to_string :partial => './admin'
   end
 end

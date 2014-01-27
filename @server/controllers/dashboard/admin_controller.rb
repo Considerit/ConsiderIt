@@ -6,7 +6,6 @@ class Dashboard::AdminController < Dashboard::DashboardController
   def admin_template
     render :json => { 
       :admin_template => self.process_admin_template() }
-
   end
 
   def proposals

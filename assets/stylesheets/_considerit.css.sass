@@ -11,30 +11,32 @@
 @import "compass/typography/vertical_rhythm"
 @import "sassy-buttons"
 
+@import "core"
+
+// libraries of mixins
+@import "grooves/base/materials"
+@import "constructs/misc"
+@import "constructs/bubble"
 
 
-div
-  padding: 1px
 
-/* FONTS */
+// has to go after variable def; can go in library
 %main_font-family
   font-family: $main_font-family
 
-%bolded
-  font-weight: bold
-  //font-family: $main_font-family
 
-%italicized
-  font-style: italic
-  //font-family: $main_font-family
 
+
+
+// compass vertical rhythm stuff...has to go after $base-font-size declared
 +establish-baseline
- 
 html
   +adjust-leading-to(3)
 
-html, body
+
+body
   min-height: 100%
+
 
 #l-wrap
   font-size: $base-font-size
@@ -48,16 +50,6 @@ html, body
 
 #t-bg-content-top, #l-content-main-wrap
   min-height: 500px
-
-
-@import "core"
-
-@import "grooves/base/materials"
-
-@import "constructs/misc"
-@import "constructs/bubble"
-
-@import "shared/dialog" 
 
 
 $hex-bullet-point: '\2022'
@@ -156,11 +148,11 @@ html
     @extend %main_font-family
 
   h1, h2, h3, h4, h5, h6, strong
-    @extend %bolded
+    font-weight: bold
 
 
   em, i 
-    @extend %italicized
+    font-style: italic
 
 
 /* ELEMENT DEFAULTS */
@@ -203,10 +195,10 @@ blockquote
   quotes: "\201C" "\201D"
   &:before
     content: open-quote
-    @extend %bolded
+    font-weight: bold
   &:after
     content: close-quote
-    @extend %bolded
+    font-weight: bold
 
 
 $preloadersize_width: 32px
@@ -276,6 +268,9 @@ $preloadersize_height: 10.5px
 
 .button
   +button($bground_color: hsl(0,0,35%))
+
+
+@import "modules/dialog" 
 
 
 //////////////////////////////////////////
@@ -406,7 +401,7 @@ html
 
     // left: 106px
     +font-size(-1)
-    @extend %bolded
+    font-weight: bold
     @extend %on_header_footer
     opacity: .8
     z-index: 10
@@ -606,7 +601,7 @@ $static_position_width: $body_width+$grid_major
   text-shadow: none
   position: relative
   top: -2px
-  @extend %bolded
+  font-weight: bold
   &:hover
     color: white
 
@@ -773,7 +768,7 @@ $static_position_width: $body_width+$grid_major
     font-size: 18px
     +text-shadow(none)
     line-height: .5
-    @extend %bolded
+    font-weight: bold
 
 .editable-empty, .editable-empty:hover, .editable-empty:focus
   font-style: normal
@@ -824,10 +819,10 @@ $static_position_width: $body_width+$grid_major
 
           .summary
             .claim_desc
-              @extend %italicized
+              font-style: italic
 
             .claim_verdict
-              @extend %bolded
+              font-weight: bold
               font-variant: small-caps
               text-transform: lowercase
 
@@ -910,8 +905,7 @@ $static_position_width: $body_width+$grid_major
 
 
 // user dashboard
-@import "dashboard/dashboard"
-@import "shared/sidebar"
+@import "modules/dash/dashboard"
 
 
 //zocial

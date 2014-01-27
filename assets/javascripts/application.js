@@ -9,7 +9,7 @@
 
 //= require js-routes
 
-//= require_tree ./vendor
+//= require_tree ./vendor/main
 
 //= require client
 //= require_tree ../../@client/extensions

@@ -70,12 +70,11 @@ module ConsiderIt
     config.paths["app/mailers"] << "@server/mailers"
     config.paths["app/helpers"] << "@server/helpers"
 
-    config.paths["app/assets"] << "@client"
-    config.paths["app/assets"] << "assets"
-
-    config.assets.paths << Rails.root.join("@client")
-    config.assets.paths << Rails.root.join("assets")
-
+    asset_paths = ["@client", "assets", "assets/stylesheets/vendor/admin/rails_admin"]
+    for asset_path in asset_paths
+        config.paths["app/assets"] << asset_path
+        config.assets.paths << Rails.root.join(asset_path)
+    end
     ########################################
 
 

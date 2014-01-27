@@ -1,4 +1,2 @@
 // ...
-// require jquery.fixedheadertable.min
-//= require jquery.flot
-//= require jquery.flot.selection
+//= require_tree ./vendor/admin

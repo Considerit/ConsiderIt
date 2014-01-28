@@ -1,3 +1,5 @@
+@import "variables"
+
 .m-proposal-state-toggle
   text-align: center
 
@@ -27,13 +29,9 @@
 
     .m-proposal-state-primary
       +font-size(6)
-      color: $decision_board_text_color
       font-weight: bold
 
     .m-proposal-state-secondary
-      color: lighten($base_text_color, 20%)
-      &:hover
-        color: $base_text_color
       +font-size(1)
       text-decoration: underline
       // i

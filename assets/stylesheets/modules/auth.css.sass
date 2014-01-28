@@ -1,7 +1,10 @@
+@import "variables"
+@import "compass/css3/box-shadow"
+@import "constructs/misc"
+
 //////////////////////////////////////////
 // USER MODULES
 //////////////////////////////////////////
-
 
 // user nav
 
@@ -15,9 +18,6 @@
 
 .m-login, .m-user-options
   display: inline-block
-
-.m-login, .m-user-options-display
-  @extend %on_header_footer
 
 .m-login a, .m-user-options-display a
   +font-size(-1)
@@ -51,9 +51,7 @@
     display: inline-block
     +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
     border-radius: 5px
-    background-color: $base_bg_color
     padding: $vertical_baseline / 4 0
-    border: 1px solid darken($base_bg_color, 20%)
 
     a
       width: 100%
@@ -62,10 +60,6 @@
       cursor: pointer
       +font-size(-3)
       font-weight: bold
-      &:hover
-        color: $comp_text_color
-        background-color: $dark_comp_color
-
 
 
 // signin / registration overlay
@@ -131,7 +125,6 @@ $membership_card_height: 278px
 
   input[type="submit"], .m-user-accounts-register-next
     margin: $vertical_baseline 0
-    @extend %superbutton
     +font-size(0)
 
   .email_field.fixed
@@ -183,7 +176,6 @@ $membership_card_height: 278px
       &.ui-state-valid
         border-color: transparent
         background-color: transparent
-        color: $initiator_text_color
 
 .m-user-accounts-complete-paperwork-form
   .m-user-accounts-form
@@ -193,16 +185,10 @@ $membership_card_height: 278px
     width: $membership_card_width
     
     box-shadow: 0 1px 2px rgba(black, .35), inset 0 0 8px 2px rgba(white, .5)
-    background-color: $initiator_color
 
     border-radius: 5px
-    border: 1px solid $dark_initiator_color
-    border-top-color: lighten($dark_initiator_color, 15%)
-    border-bottom-color: darken($dark_initiator_color, 15%)
     padding: $vertical_baseline $grid_xs
     margin: $vertical_baseline auto 0 auto
-
-    color: $initiator_text_color
 
     .m-user-accounts-form-fields-text
       width: $membership_card_width - $avatar_preview_height - $grid_xs * 3

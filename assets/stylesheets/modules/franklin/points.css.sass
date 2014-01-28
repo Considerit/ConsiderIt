@@ -1,3 +1,7 @@
+@import "variables"
+@import "compass/css3/box-shadow"
+@import "constructs/misc"
+
 /* POINTLISTBROWSING */
 
 // footer
@@ -20,7 +24,6 @@
     text-align: center
 
     i
-      color: darken($base_bg_color, 25%)
       font-weight: bold
 
 .m-pointlist-browsing
@@ -47,15 +50,11 @@
 
 .m-pointlist-browse
   .m-pointlist-browse-toggle
-    @extend %desaturatedbutton
     text-align: center
 
 .m-reasons-peer-pros
   .m-pointlist-browse
     text-align: right
-
-
-
 
 
 // header
@@ -84,15 +83,11 @@
   &.m-reasons-peer-cons
     padding: $vertical_baseline / 2 $peer_padding / 2 $vertical_baseline / 2 $peer_padding / 2
 
-  .m-pointlist-header-label
-    border-bottom-color: $base_text_color
-
   &[data-state="points-separated"], &[data-state="points-together"]
 
     .m-pointlist-header-label
       cursor: pointer
       +font-size(2)
-      color: lighten($base_text_color, 20%)
       font-weight: normal
 
     .m-pointlist-browse-sort
@@ -117,9 +112,7 @@
           display: inline-block
           +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
           border-radius: 5px
-          background-color: $base_bg_color
           padding: $vertical_baseline / 2 0
-          border: 1px solid darken($base_bg_color, 20%)
           position: absolute
           right: -$grid_xs
           z-index: 10
@@ -134,31 +127,10 @@
             cursor: pointer
             +font-size(-3)
             font-weight: bold
-            &:hover
-              color: $comp_text_color
-              background-color: $dark_comp_color
-            &.selected
-              background-color: darken($callout_bg_color, 8%)
-              color: $callout_text_color
-
-
-
-  &[data-state="points-separated"]
-    .m-pointlist-header-label
-      // color: darken($base_bg_color, 20%)
-      border-bottom-color: darken($base_bg_color, 20%)
-      // +font-size(2)    
-
-  &[data-state="points-collapsed"], &[data-state="points-together"]
-    .m-pointlist-header-label
-      color: lighten($base_text_color, 20%)
-      // font-weight: normal
-    +bubble(whitesmoke, darken(whitesmoke, 10%), left, $text_color: $base_text_color)
 
 
 .m-position-points
   .m-pointlist-header-label
-    border-bottom-color: $decision_board_text_color
     margin-bottom: $vertical_baseline/2
     border-bottom: 2px solid 
     +font-size(4)
@@ -169,14 +141,11 @@
 
 .m-peer-reasons[data-state="points-together"], .m-peer-reasons[data-state="points-separated"] 
   .m-pointlist-browse-header-open, .m-pointlist-browse-header-close
-    color: darken($base_bg_color, 15%)
     +font-size(-2)
 
 .m-peer-reasons[data-state="points-collapsed"] 
   .m-pointlist-browse-header-open, .m-pointlist-browse-header-close
     visibility: hidden
-    
-
 
 // empty list
 .points_peer_empty
@@ -206,8 +175,6 @@
 
 .draggable_hover_pro .m-position-propoints, .draggable_hover_con .m-position-conpoints
   .m-point-drop-target
-    color: darken($decision_board_text_color, 25%)
-    border-color: darken($decision_board_text_color, 25%)
     border-style: solid
 
 
@@ -219,13 +186,8 @@
   margin-top: 2 * $vertical_baseline
 
 .m-point-drop-target, .m-newpoint
-  border: 1px dashed $decision_board_border_color
   border-radius: 16px
   width: 99%
-
-  
-
-
 
 .m-newpoint
   position: relative
@@ -238,7 +200,7 @@
 
     // bullet point
     &:before
-      content: $hex-bullet-point
+      content: '\2022'
       display: inline-block
       position: absolute
       top: 7px

@@ -1,13 +1,14 @@
+@import "variables"
+@import "constructs/misc"
+@import "compass/css3/transition"
+
 .m-position
   &[data-state="separated"], &[data-state="together"]
     .m-position-message-body
       padding-bottom: $vertical_baseline / 2 $grid_xs / 2 $vertical_baseline * 1.5 $grid_xs / 2
-      background: $decision_board_bg
       border-style: solid
 
-  .m-position-message-body
-    //+bubble($decision_board_color, darken($decision_board_color, 10%), left )
-    border: 1px dashed $decision_board_border_color
+  .m-position-message-body.l-message-body
     padding: $vertical_baseline / 2 $grid_xs / 2 0 $grid_xs / 2
     width: auto
     border-radius: 15px
@@ -17,7 +18,6 @@
 .m-personal-reasons
   position: relative
   display: inline-block
-  @extend %on_chalkboard
   margin-top: $vertical_baseline / 2
 
 
@@ -34,7 +34,6 @@
   margin: $vertical_baseline 0 2 * $vertical_baseline 0
 
   .m-position-your-action-body.submit
-    @extend %supersuperbutton
     width: 100%
     +font-size(2)
     border-radius: 16px
@@ -52,10 +51,6 @@
       margin-right: $grid_xs
       float: right
       +font-size(-2)
-      color: lighten($base_text_color, 25%)
-      &:hover
-        color: $base_text_color
-
 
 .m-reasons-header-region, [data-state="separated"][data-state-from="collapsed"].transitioning .m-reasons-header-region
   width: $decision_board_width
@@ -79,15 +74,11 @@
     +font-size(2)
     width: 100% 
     display: inline-block
-    color: $decision_board_text_color
-    &:hover
-      color: darken($decision_board_text_color, 10%)
 
 
 // SLIDER
 .m-stance
   margin: auto auto 2 * $vertical_baseline auto 
-  @extend %on_chalkboard
 
   .m-position-heading-stance
     text-decoration: underline
@@ -126,7 +117,6 @@
     .noUiSlider
       margin: 10px
       background: none
-      background-color: lighten(mix($mid_bg_color, $accent_color), 20%)
       border-radius: 15px
       width: $slider_width
 

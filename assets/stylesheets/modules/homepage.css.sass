@@ -1,0 +1,49 @@
+@import "variables"
+
+.t-intro-wrap
+
+.t-intro
+  margin: 0 auto
+  min-height: $initiator_width
+
+
+  .l-message-body
+    .l-message-title
+      +font-size(2)
+    .l-message-details
+      //+font-size(-1)
+
+
+//homepage admin file upload
+.t-intro-wrap
+  .l-homepage-pic
+    
+    max-width: $body_width
+    width: auto
+    .customfile
+      background: transparent
+      max-width: $body_width
+      width: auto
+      border: none
+
+    .customfile-preview-wrap
+      max-width: $body_width
+      width: auto
+      max-height: 5 * $vertical_baseline
+      height: auto
+      overflow: hidden
+      img.customfile-preview
+        max-height: 5 * $vertical_baseline
+
+    .customfile-button
+      float: none
+      +font-size(-2)
+      text-decoration: underline
+      opacity: .5
+
+
+    .customfile-feedback
+      display: none
+
+    .customfile-input
+

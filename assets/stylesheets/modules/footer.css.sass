@@ -1,0 +1,38 @@
+@import "variables"
+@import "sassy-buttons"
+
+.m-footer-shortdesc, .m-footer-history, .m-footer-contact
+  margin-bottom: $vertical_baseline/2
+  +font-size(-1)
+
+  a
+    text-decoration: underline
+
+.m-footer-shortdesc
+  font-weight: bold
+
+  .homepage_link
+    text-decoration: none
+
+.m-footer-shortdesc-logo
+  text-transform: uppercase
+
+.m-footer-history
+
+.m-footer-contact
+
+.mc-subscribe
+  +sassy-button("simple", 5px, inherit, #999, #777)
+  +font-size(-3)
+  color: #fafafa
+  text-shadow: none
+  position: relative
+  top: -2px
+  font-weight: bold
+  &:hover
+    color: white
+
+
+#mce-EMAIL
+  +font-size(0)
+  width: 350px

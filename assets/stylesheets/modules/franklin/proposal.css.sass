@@ -1,8 +1,8 @@
-@import "modules/franklin/proposal/aggregate"
-@import "modules/franklin/proposal/crafting"
-@import "modules/franklin/proposal/description"
-@import "modules/franklin/proposal/reasons"
-@import "modules/franklin/proposal/toggle"
+@import "variables"
+@import "compass/css3/box-shadow"
+@import "compass/css3/transform"
+@import "compass/css3/transition"
+@import "constructs/misc"
 
 .m-proposal
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
@@ -84,8 +84,6 @@
     z-index: 10
 
     i
-      color: darken($base_bg_color, 25%)
-
     .m-proposal-admin-options-menu
       display: none
 
@@ -102,9 +100,7 @@
         display: inline-block
         +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
         border-radius: 5px
-        background-color: $base_bg_color
         padding: $vertical_baseline / 4 0
-        border: 1px solid darken($base_bg_color, 20%)
 
         a
 
@@ -115,10 +111,6 @@
           +font-size(-2)
           span
             display: block
-
-          &:hover
-            color: $comp_text_color
-            background-color: $dark_comp_color
 
           i
             padding-right: $grid_xs / 2
@@ -137,7 +129,6 @@
     position: relative
 
   .m-proposal-admin_strip
-    color: $base_text_color
     position: relative
 
     i.fa-cog
@@ -171,11 +162,7 @@
       right: 4px
       position: absolute
       top: 3 * $vertical_baseline
-      color: darken($base_bg_color, 25%)
       +font-size(-2)
-      &:hover
-        color: $base_text_color
-
 
   .m-proposal-admin-publish
     position: absolute
@@ -183,7 +170,6 @@
     z-index: 2
 
     .m-proposal-publish
-      @extend %desaturatedbutton
       +font-size(0)
       &:hover
         +font-size(0)
@@ -211,7 +197,6 @@
 /* YOUR_ACTION */
 
 .m-position-your-action-body
-  @extend %superbutton
   text-align: center
   font-weight: bold
   border-radius: 0 0 5px 5px

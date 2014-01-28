@@ -1,3 +1,7 @@
+@import "variables"
+@import "compass/css3/transform"
+@import "compass/css3/transition"
+
 %collapsed_action_call
   position: absolute
   top: 50%
@@ -13,7 +17,7 @@
 
 //[data-state="collapsed"]
 .l-proposal-description-outer-wrap.l-message-body
-  //left: -$dialog_stutter
+  left: -$dialog_stutter
  
 [data-state="0"]
   .m-proposal-description-region
@@ -68,15 +72,12 @@ $description_animation_time: 500ms
 
 
   .m-proposal-description
-    +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
     margin: auto
     //left: -$dialog_stutter
     min-height: $initiator_width
 
     p
       margin-bottom: $vertical_baseline / 2
-    h1, h2, h3
-      color: $initiator_text_color
     td
       padding: 0 3px
   
@@ -90,7 +91,6 @@ $description_animation_time: 500ms
 
     .l-message-body
       //margin: 0 $margin_width $vertical_baseline $margin_width //- $dialog_stutter + $grid_xs  
-      +bubble($base_bg_color, darken($base_bg_color, 12%), left, $text_color: $base_text_color)
       //left: -$dialog_stutter
 
       &.m-proposal-details-body-wrap // silliness to override css from prior rule...
@@ -126,7 +126,6 @@ $description_animation_time: 500ms
 
   // additional links
   .m-proposal-links
-    background-color: darken($base_bg_color, 15%)
     position: absolute
     right: -$margin_width - $grid_xs
     bottom: 0

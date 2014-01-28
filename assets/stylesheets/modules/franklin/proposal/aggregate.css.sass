@@ -1,3 +1,8 @@
+@import "variables"
+@import "compass/css3/box-shadow"
+@import "compass/css3/transition"
+@import "compass/css3/transform"
+
 .m-results
   height: $aggregate_area_height
   position: relative
@@ -46,7 +51,6 @@
     cursor: pointer
 
 // HISTOGRAM / WHAT
-$histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
 $histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
 .m-histogram
   +transition(opacity $transition_speed)
@@ -60,13 +64,7 @@ $histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
   .m-histogram-bar
     width: $histogram_bar_width
     position: relative
-    border: 2px solid darken($histogram_bar_color, 10%)
     border-bottom: none
-    background-color: $histogram_bar_color
-    //+bubble($community_color, $dark_community_color, up, $include_bg: false, $text_color: $community_text_color)
-    +bubble(whitesmoke, darken(whitesmoke, 10%), up, $include_bg: false, $text_color: $base_text_color)
-    
-    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($histogram_bar_color, 25%), $inset: true)
 
     border-radius: 0px
     text-align: center
@@ -100,10 +98,6 @@ $histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
     //   display: none
     //   text-align: center
     //   +font-size(-1)
-
-    &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
-      background-color: darken($histogram_bar_color, 8%)
-      border-color: darken($histogram_bar_color, 16%)
     
     &.m-bar-is-soft-selected
       z-index: 5
@@ -135,9 +129,7 @@ $histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
   height: $vertical_baseline
   width: $histogram_width + $grid_xs
   border-radius: 10px
-  background-color: mix(lighten($mid_bg_color, 30%), $accent_color, 90%)
   //background-color: lighten($mid_bg_color, 10%)
-  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: lighten($mid_bg_color, 40%), $inset: true)
 
 .m-histogram-base-label
   position: absolute

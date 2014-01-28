@@ -1,3 +1,8 @@
+@import "variables"
+@import "compass/css3/box-shadow"
+@import "compass/css3/transition"
+@import "compass/css3/transform"
+
 //////////////////
 // global layout for reasons & points, in different states
 
@@ -309,7 +314,7 @@ $use_transitions: true
 
   //horizontal size and positioning
 
-  .m-reasons-lists
+  .m-reasons-lists.l-message-body
     padding: 0
     width: $full_reasons_width
     left: $full_reasons_left   //-$peer-point-results-width + $margin_width - 2 * $peer-point-avatar-area //- $grid_xs / 4
@@ -493,7 +498,6 @@ $use_transitions: true
       .m-reasons-view-results
         text-align: right
         +font-size(-1)
-        color: darken($base_bg_color, 25%)
         i
           padding-right: $grid_xs/4
 

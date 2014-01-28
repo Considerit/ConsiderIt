@@ -1,3 +1,5 @@
+@import "variables"
+
 // TODO: refactor!
 $dashboard_sidebar_width: $grid_major * 2 + $grid_minor * 2 + $grid_xs
 $dashboard_content_width: $content_width - $dashboard_sidebar_width - 2 * $grid_xs - 5
@@ -125,16 +127,13 @@ html body #m-dashboard
       width: 120px
 
     .m-dashboard-profile-activity-summary
-      background-color: $comp_color
       &:hover, &.selected
         cursor: pointer
         color: white
 
-      &:hover
-        background-color: darken($comp_color, 10%)
-
       &.selected, &.selected:hover
         background-color: #313131
+
       
 
     .m-activity-summary-count, .m-dashboard-profile-influence-count
@@ -265,15 +264,7 @@ html body #m-dashboard
 
     &.current
       font-weight: bold
-      background-color: $comp_color
       color: white
-      //position: relative
-      //left: 1px
-      //&:hover
-      //  background: none
-      //  background-color: white
 
     &:hover
-      //+background-image(linear-gradient(#fff, #ddd))
-      background-color: $comp_color
       color: white

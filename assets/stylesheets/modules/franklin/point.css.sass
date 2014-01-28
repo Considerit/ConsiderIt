@@ -1,7 +1,10 @@
+@import "variables"
+@import "constructs/misc"
+@import "compass/css3/box-shadow"
 
 .m-point
   position: relative
-  @extend %nude_list
+  //@extend %nude_list
 
   .m-point-close
     display: none
@@ -123,7 +126,7 @@
 
   .m-point-nutshell-wrap
     &:before
-      content: $hex-bullet-point
+      content: '\2022'
       position: absolute
       top: 0px
       +font-size(-3)
@@ -193,38 +196,18 @@
       margin-top: $grid_xs/4
       padding: 0 $grid_xs/2
 
-      // @extend %point_operation
       background: none
       border-color: transparent
-      color: $decision_board_text_color
-      // +single-box-shadow(none)
-      // +text-shadow(none)
-      &:hover
-        color: darken($decision_board_text_color, 15%)
 
   &.m-point-peer
     &:hover
       .m-point-operations a
         color: #666
 
-    .m-point-operations
-      //bottom: -3*$vertical_baseline/4
-
-      a
-        color: lighten($base_text_color, 15%)
-
-        &:hover
-          color: $base_text_color
-
-
-%point_operation
-  @extend %desaturatedbutton
+.m-point-include, .m-point-assessment-request-initiate, .m-point-follow
   +font-size(-3)
   &:hover
     +font-size(-3)
-
-.m-point-include, .m-point-assessment-request-initiate, .m-point-follow
-  @extend %point_operation
 
 
 ///////////////////////////////////////
@@ -265,8 +248,6 @@
   //+single-box-shadow($color: rgba(black, .25), $voff: 1px)
   //border-color: #777 #666 #555 #666
 
-.m-point-position.m-point-unexpanded .m-point-wrap
-  background-color: $decision_board_color
 
 [data-state="points-collapsed"] .m-point-author-avatar
   //visibility: hidden

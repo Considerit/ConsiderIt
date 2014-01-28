@@ -1,12 +1,12 @@
+@import "variables"
+@import "constructs/misc"
+
 // New Proposal
 
 .m-proposals-new
   margin: auto
   text-align: center
   width: $content_width
-
-  button
-    @extend %desaturatedbutton
 
 #m-proposals-container, #m-proposals-container-completed
   padding-top: $vertical_baseline
@@ -16,7 +16,6 @@
 #m-proposals-container-completed
   hr
     margin-bottom: $vertical_baseline
-    border-top: 1px dashed $base_text_color
     height: 1px
 
   h2
@@ -34,7 +33,6 @@
   padding-top: $vertical_baseline
 
 .m-proposals-filters, .m-proposals-list-pagination-wrap
-  @extend %on_background
   text-align: center
   margin: 0 auto
   width: $content_width
@@ -55,16 +53,6 @@
 .m-proposals-list-pagination
   margin-top: $vertical_baseline
     
-  .m-proposals-pagination-showmore, .m-proposals-list-pagination-page, .m-proposals-list-pagination-jump
-    +sassy-button("simple", 5px, inherit, darken($base_bg_color, 4%), darken($base_bg_color, 12%))
-    color: lighten($base_text_color, 12%)
-    &:hover
-      color: darken($base_text_color, 12%)
-
-  .selected
-    +sassy-button("simple", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 12%))
-    color: $callout_text_color
-
   .m-proposals-pagination-showmore, .m-proposals-list-pagination-page, .selected, .m-proposals-list-pagination-jump
     border-radius: 0
     text-shadow: none
@@ -93,8 +81,6 @@
 .m-proposals-container-hibernation-message
   padding: $vertical_baseline / 2 $grid_xs 
   +font-size(2)
-  background-color: $comp_color
-  color: $comp_text_color
   text-align: center
   margin: $vertical_baseline auto
   width: $body_width

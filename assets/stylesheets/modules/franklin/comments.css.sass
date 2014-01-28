@@ -1,3 +1,5 @@
+@import "variables"
+@import "sassy-buttons"
 /* COMMENTS */
 .m-comment
   margin: 8px 0 25px 0
@@ -40,7 +42,6 @@
   .thank
     +sassy-button("glass", 5px, inherit, #eee, #ccc)  
     padding: $vertical_baseline/4 $grid_xs/2
-    color: $base_text_color
     text-shadow: none
 
 .m-thank-given
@@ -84,7 +85,6 @@
     padding-right: $grid_xs
 
   .m-login
-    color: $base_text_color
 
     a
       font-weight: normal

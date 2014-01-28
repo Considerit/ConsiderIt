@@ -1,3 +1,5 @@
+@import "variables"
+@import "constructs/misc"
 @import "compass/css3/box-shadow"
 
 $dialog_width: $grid_major * 6 + $grid_minor * 6
@@ -76,7 +78,6 @@ $dialog_width: $grid_major * 6 + $grid_minor * 6
 
     .sublabel
       +font-size(-1)
-      color: lighten($base_text_color, 15%)
 
       .suboption
         padding: $vertical_baseline/2 0

@@ -2,7 +2,6 @@
 // BASE
 //////////////////////////////////////////
 
-
 // compass defaults
 $default-transition-property : all
 $default-transition-duration : .4s
@@ -24,12 +23,14 @@ $default-box-shadow-inset    : false
 @import "compass/typography/vertical_rhythm"
 @import "sassy-buttons"
 
-@import "core"
-
 // libraries of mixins
 @import "constructs/misc"
 @import "constructs/bubble"
+@import "constructs/themable_helpers"
 
+
+@import "reset"
+@import "vendor/overrides"
 
 
 // has to go after variable def; can go in library
@@ -37,31 +38,13 @@ $default-box-shadow-inset    : false
   font-family: $main_font-family
 
 
-
-
-
 // compass vertical rhythm stuff...has to go after $base-font-size declared
 +establish-baseline
 html
   +adjust-leading-to(3)
 
-
-body
-  min-height: 100%
-
-
 #l-wrap
   font-size: $base-font-size
-
-#t-bg
-  min-height: 100%
-
-#t-bg-top
-
-#t-bg-content
-
-#t-bg-content-top, #l-content-main-wrap
-  min-height: 500px
 
 #t-bg
   background: $bg_declaration
@@ -75,9 +58,6 @@ body
 #t-bg-content-top
   background: $bg_content_top_declaration
   
-
-$hex-bullet-point: '\2022'
-
 //+font-face("ModernPictogramsNormal", font-files("modernpics-webfont.woff", "modernpics-webfont.eot",  "modernpics-webfont.ttf", "modernpics-webfont.svg#ModernPictogramsNormal"), $eot: "modernpics-webfont.eot")
 
 //+font-face("FontAwesome", font-files("fontawesome-webfont.woff", "fontawesome-webfont.eot",  "fontawesome-webfont.ttf"), $eot: "fontawesome-webfont.eot")
@@ -87,83 +67,8 @@ $hex-bullet-point: '\2022'
 //   $file: "optima-#{$style}-webfont"
 //   +font-face("Optima-web-#{$style}", font-files("#{$file}.woff", "#{$file}.eot",  "#{$file}.ttf", "#{$file}.svg"), $eot: "#{$file}.eot")
 
-@font-face
-  font-family: 'zocial'
-  src: font-url('zocialregular.eot')
-  src: font-url('zocialregular.eot?#iefix') format('eot')
-  font-weight: normal
-  font-style: normal
-
-
-@font-face
-  font-family: 'zocial'
-  src: asset-data-url('zocialregular.woff') format('woff'), font-url('zocialregular.ttf') format('truetype'), font-url('zocialregular.svg#zocialregular') format('svg')
-  font-weight: normal
-  font-style: normal
-
-
-/* RESET
- * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
- * http://cssreset.com
- */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video
-  margin: 0
-  padding: 0
-  border: 0
-  font-size: 100%
-  font: inherit
-  vertical-align: baseline
-
-hr
-  display: block
-  height: 1px
-  border: 0
-  border-top: 1px solid #ccc
-  margin: 0
-  padding: 0
-
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section
-  display: block
-
-body 
-  line-height: 1.3
-
-ol, ul 
-  list-style: none
-  list-style-position: inside
-
-blockquote, q
-  quotes: none
-
-blockquote:before, blockquote:after,
-q:before, q:after
-  content: ''
-  content: none
-
-table
-  border-collapse: collapse
-  border-spacing: 0
-
-
-
 body, h1, h2, h3, h4, h5, h6, a, input, button
   color: $base_text_color
-
-
 
 
 // do we need to put input and button here...?
@@ -171,704 +76,354 @@ html
   body, input, button, textarea
     @extend %main_font-family
 
-  h1, h2, h3, h4, h5, h6, strong
-    font-weight: bold
+a:hover
+  color: $base_hover_color
 
-
-  em, i 
-    font-style: italic
-
-
-/* ELEMENT DEFAULTS */
-
-//http://paulirish.com/2012/box-sizing-border-box-ftw/
-*
-  +box_sizing(border-box)
-
-
-a
-  &:hover
-    color: $base_hover_color
-
-a
-  color: inherit
-  outline: none
-  cursor: pointer  
-  text-decoration: none
-  img
-    border: none  
-
-input, button
-  //+transition(opacity .15s linear, color .15s linear, background-color .15s linear)
-
-
-table
-  border-collapse: separate  
-
-p
-
-ul
-  margin: 0
-  list-style-type: disc
-
-ol
-  margin: 0
-  list-style-type: decimal
-
-blockquote
-  quotes: "\201C" "\201D"
-  &:before
-    content: open-quote
-    font-weight: bold
-  &:after
-    content: close-quote
-    font-weight: bold
-
-
-$preloadersize_width: 32px
-$preloadersize_height: 10.5px
-#l-preloader
-  width: $preloadersize_width
-  height: $preloadersize_height
-  left: 50%
-  margin-left: -$preloadersize_width/2
-  top: 50%
-  margin-top: -$preloadersize_height/2
-  position: absolute
-
-.loading-container
-  position: fixed
-  top: 50%
-  left: 50%
-  margin-left: -15px
-  z-index: 9999
-/* HELPERS */
-
-.clear
-  clear: both
-
-.fl
-  float: left
-
-.fr
-  float: right
-  
-.hide
-  display: none
-
-#lightbox
-  background-color: white
-  background-color: rgba(white, .85)
-  position: fixed
-  top: -20000px
-  left: -2000px
-  width: 4000px
-  height: 40000px
-  z-index: 100
-
-
-/* SHARED STYLES */
-
-.avatar
-  vertical-align: top
-  background-color: transparent
-  border: none
-  display: inline-block
-  margin: 0
-  padding: 0
-  +background-size(cover)
-  background-image: url('/system/default_avatar/small_default-profile-pic.png')
-
-  &.m-avatar-anonymous
-    cursor: default
-
+  /* SHARED STYLES */
 [data-target="user_profile_page"]
   cursor: pointer
 
-.button, button, input[type="submit"]
-  outline: none
-  cursor: pointer
-  text-align: center
 
 .button
   +button($bground_color: hsl(0,0,35%))
 
+// @import "modules/dialog" 
+// @import "modules/header"
+// @import "modules/auth"
+// @import "modules/static"
+// @import "modules/helpers"
+// @import "modules/franklin/points"
+// @import "modules/franklin/point"
+// @import "modules/franklin/proposals"
+// @import "modules/franklin/proposal"
+// @import "modules/franklin/comments"
+// @import "modules/franklin/assessment"
+// @import "modules/footer"
+// @import "modules/homepage"
+// @import "modules/position"
+// @import "modules/dash/dashboard"
 
-@import "modules/dialog" 
-
-
-//////////////////////////////////////////
-// LAYOUT
-//////////////////////////////////////////
-
-
-/* CONTAINERS */
-
-html  
-
-#l-wrap
-  position: relative
-
-#l-header, #l-content, #l-footer
-  position: relative
-
-.l-heading-wrap, .l-content-wrap, .l-footer-wrap
-  position: relative
-
-#l-header
-  margin: 0 auto $vertical_baseline auto
-  min-height: 32px
-
-  //border-bottom: 1px solid white
-
-.l-heading-wrap
-  width: $content_width
-  left: 50%
-  margin-left: -$content_width/2
-  position: relative
-  padding: 0
-  height: 2 * $vertical_baseline
-
-#l-content
-  z-index: 2
-  width: $full_width
-  margin: auto
-
-#l-content-main, .l-content-wrap
-  position: relative  
-  margin: 0 auto
-
-.l-content-wrap
-  width: $content_width
-
-#l-content-main
-
-#l-content-main-wrap
-  width: $content_width
-  margin: auto
-
-#l-footer
-  padding: $vertical_baseline 0 2 * $vertical_baseline 0
-
-#l-sticky-footer-region
-  position: fixed
-  bottom: 0
-  width: 100%
-  z-index: 999
-
-.l-footer-wrap
-  width: $body_width
-  position: relative
-  margin: 0 auto
+////////////////////////////////////////
+///////// Themable Colors
+////////////////////////////////////////
 
 
-.l-message
-  position: relative
-  //margin-top: $vertical_baseline / 2
-    
-  > .l-message-speaker, > .l-message-body
-    display: inline-block
-    vertical-align: top
-    position: relative
+// franklin/proposals
+.m-proposals-new
+  button
+    @extend %desaturatedbutton
 
-  > .l-message-speaker
-    bottom: 0px
-    z-index: 1
-    position: absolute
-    width: $margin_width
+#m-proposals-container-completed
+  hr
+    border-top: 1px dashed $base_text_color
 
-  > .l-message-body
-    z-index: 2
-    margin: auto
-    display: block
-    width: $body_width //- $dialog_stutter
-    padding: $vertical_baseline / 2 $grid_xs
+.m-proposals-filters, .m-proposals-list-pagination-wrap
+  @extend %on_background
 
-    .l-message-title
-      +font-size(3)
-      //font-weight: bold
+.m-proposals-list-pagination    
+  .m-proposals-pagination-showmore, .m-proposals-list-pagination-page, .m-proposals-list-pagination-jump
+    +sassy-button("simple", 5px, inherit, darken($base_bg_color, 4%), darken($base_bg_color, 12%))
+    color: lighten($base_text_color, 12%)
+    &:hover
+      color: darken($base_text_color, 12%)
+
+  .selected
+    +sassy-button("simple", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 12%))
+    color: $callout_text_color
+
+.m-proposals-container-hibernation-message
+  background-color: $comp_color
+  color: $comp_text_color
+
+// franklin/proposal
+
+[data-visibility="published"]
+  .m-proposal-admin_strip
+    i
+      color: darken($base_bg_color, 25%)
+
+    &:hover
+      .m-proposal-admin-options-menu
+        background-color: $base_bg_color
+        border: 1px solid darken($base_bg_color, 20%)
+
+        a
+          &:hover
+            color: $comp_text_color
+            background-color: $dark_comp_color
+
+[data-visibility="unpublished"]
+  .m-proposal-admin_strip
+    color: $base_text_color
+
+    .m-delete_proposal
+      color: darken($base_bg_color, 25%)
+      &:hover
+        color: $base_text_color
+
+  .m-proposal-admin-publish
+    .m-proposal-publish
+      @extend %desaturatedbutton
+
+.m-position-your-action-body
+  @extend %superbutton
+
+// franklin/proposal/aggregate
+$histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
+.m-histogram
+  .m-histogram-bar
+    border: 2px solid darken($histogram_bar_color, 10%)
+    background-color: $histogram_bar_color
+    +bubble(whitesmoke, darken(whitesmoke, 10%), up, $include_bg: false, $text_color: $base_text_color)    
+    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($histogram_bar_color, 25%), $inset: true)
+    &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
+      background-color: darken($histogram_bar_color, 8%)
+      border-color: darken($histogram_bar_color, 16%)
+
+.m-histogram-base
+  background-color: mix(lighten($mid_bg_color, 30%), $accent_color, 90%)
+  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: lighten($mid_bg_color, 40%), $inset: true)
+
+// franklin/proposal/crafting
+.m-position
+  &[data-state="separated"], &[data-state="together"]
+    .m-position-message-body
+      background: $decision_board_bg
+
+  .m-position-message-body
+    border: 1px dashed $decision_board_border_color
+
+.m-personal-reasons
+  @extend %on_chalkboard
+
+.m-position-footer
+  .m-position-your-action-body.submit
+    @extend %supersuperbutton
+
+  .m-position-submit-footer-wrap
+    .m-position-cancel
+      color: lighten($base_text_color, 25%)
+      &:hover
+        color: $base_text_color
+
+.m-reasons-header
+  a
+    color: $decision_board_text_color
+    &:hover
+      color: darken($decision_board_text_color, 10%)
+
+.m-stance
+  @extend %on_chalkboard
+  .m-stance-slider-container
+    .noUiSlider
+      background-color: lighten(mix($mid_bg_color, $accent_color), 20%)
+
+// franklin/proposal/reasons
+  &[data-state="collapsed"] 
+    .m-reasons-footer-region
+      .m-reasons-view-results
+        color: darken($base_bg_color, 25%)
+
+// franklin/proposal/description
+.m-proposal-description-wrap
+
+  .m-proposal-description
+    +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
+
+    h1, h2, h3
+      color: $initiator_text_color
+  
+  .m-proposal-details
+    .l-message-body
+      +bubble($base_bg_color, darken($base_bg_color, 12%), left, $text_color: $base_text_color)
+
+  .m-proposal-links
+    background-color: darken($base_bg_color, 15%)
+
+// franklin/proposal/toggle
+.m-proposal-state-toggle
+  &[data-state="separated"], &[data-state="together"]
+
+    .m-proposal-state-primary
+      color: $decision_board_text_color
+
+    .m-proposal-state-secondary
+      color: lighten($base_text_color, 20%)
+      &:hover
+        color: $base_text_color
 
 
-.l-group-container
-  font-size: 0
-  line-height: 0
-  text-align: right
+// franklin/assessment
+.assessment-request-form-dialog
 
-.l-tooltip
-  display: none
+  .login
+    color: $base_text_color
 
-.tooltipster-content .l-tooltip
-  display: block
+// franklin/comments
+.m-thank .thank, .m-new-comment .m-login
+  color: $base_text_color
 
-.l-tooltip-title
-  padding: $vertical_baseline/4 $grid_xs/2
+// franklin/point
+.m-point-unexpanded
+  &.m-point-position
+    .m-point-remove
+      color: $decision_board_text_color
+      &:hover
+        color: darken($decision_board_text_color, 15%)
 
+  &.m-point-peer
+    .m-point-operations
+      a
+        color: lighten($base_text_color, 15%)
 
-//////////////////////////////////////////
-// HEADING 
-//////////////////////////////////////////
+        &:hover
+          color: $base_text_color
 
-.t-logo-name, .t-logo-separator
-  display: inline-block
-.t-logo-name
-  text-transform: uppercase
-.t-logo-separator
+.m-point-position.m-point-unexpanded .m-point-wrap
+  background-color: $decision_board_color
 
+.m-point-include, .m-point-assessment-request-initiate, .m-point-follow
+  @extend %desaturatedbutton
 
-#l-header
+// franklin/points
+[data-state="points-collapsed"]
+  .m-pointlist-footer-more
+    i
+      color: darken($base_bg_color, 25%)
 
-  .t-logo
-    position: relative
-    margin: $vertical_baseline/2 $grid_xs/2
-    float: left
-    vertical-align: baseline
+.m-pointlist-browse
+  .m-pointlist-browse-toggle
+    @extend %desaturatedbutton
 
-    // left: 106px
-    +font-size(-1)
-    font-weight: bold
-    @extend %on_header_footer
-    opacity: .8
-    z-index: 10
+.m-peer-reasons
 
-  .t-logo-tagline
-    display: inline-block
-    margin-left: $grid_xs/2
+  .m-pointlist-header-label
+    border-bottom-color: $base_text_color
 
+  &[data-state="points-separated"], &[data-state="points-together"]
 
-  .l-navigate
-    margin: auto
-    position: absolute
-    top: 7px
-    z-index: 50
-    width: 100%
-    @extend %on_header_footer
+    .m-pointlist-header-label
+      color: lighten($base_text_color, 20%)
 
-    .l-navigate-wrap
-      width: $content_width
-      margin-left: -$content_width/2
-      left: 50%
-      position: relative
-      padding-left: 176px
-    .l-navigate-back, .l-navigate-crumb
-      +font-size(0)
-      text-transform: lowercase
-    .l-navigate-breadcrumbs
-      display: inline
+    .m-pointlist-browse-sort
 
-      //margin-left: 50px
-    .l-navigate-crumb
-      display: inline
-      list-style: none
-    .l-navigate-separator
-      margin: 0 $grid_xs / 2
-      display: inline-block
-      opacity: .4
+      &:hover
+        .m-pointlist-browse-sort-menu
+          background-color: $base_bg_color
+          border: 1px solid darken($base_bg_color, 20%)
 
+          a
+            &:hover
+              color: $comp_text_color
+              background-color: $dark_comp_color
+            &.selected
+              background-color: darken($callout_bg_color, 8%)
+              color: $callout_text_color
 
-@import "modules/auth"
+  &[data-state="points-separated"]
+    .m-pointlist-header-label
+      border-bottom-color: darken($base_bg_color, 20%)
 
-@import "modules/static"
+  &[data-state="points-collapsed"], &[data-state="points-together"]
+    .m-pointlist-header-label
+      color: lighten($base_text_color, 20%)
+    +bubble(whitesmoke, darken(whitesmoke, 10%), left, $text_color: $base_text_color)
 
+.m-position-points
+  .m-pointlist-header-label
+    border-bottom-color: $decision_board_text_color
 
-.m-point-assessment-verdict-tooltip
-  width: 280px
-  padding: $vertical_baseline/2 $grid_xs/2
+.m-peer-reasons[data-state="points-together"], .m-peer-reasons[data-state="points-separated"] 
+  .m-pointlist-browse-header-open, .m-pointlist-browse-header-close
+    color: darken($base_bg_color, 15%)
 
-  .m-verdict-tooltip-title
-    +font-size(-2)
-    font-weight: bold
-  .m-verdict-tooltip-content
-    +font-size(-3)
-  .m-verdict-tooltip-readmore
-    +font-size(-4)
+.draggable_hover_pro .m-position-propoints, .draggable_hover_con .m-position-conpoints
+  .m-point-drop-target
+    color: darken($decision_board_text_color, 25%)
+    border-color: darken($decision_board_text_color, 25%)
 
-$tooltip_width: 225px
-.l-tooltip-user-title
+.m-point-drop-target, .m-newpoint
+  border: 1px dashed $decision_board_border_color
 
-  .l-tooltip-user-name
-    font-weight: bold
-    line-height: .7
-
-.l-tooltip-user-joined
-  +font-size(-4)
+// helpers
 
 .l-tooltip-user
-  min-width: 200px
-
-  .l-tooltip-user-block, .l-tooltip-user-metrics
-
-  .l-tooltip-user-block
-    vertical-align: baseline
-
-  .l-tooltip-user-metrics
-
-  .l-tooltip-user-metric
-    list-style: none
-    margin: 0 0 $vertical_baseline/8 $grid_xs/8
-    +font-size(-3)
-    line-height: 1
-    display: inline-block
-
-  .l-tooltip-user-metric-major    
-    color: white
-    //background-color: rgba(darken($callout_bg_color, 8%), .5)
-    padding: 0 $grid_xs/4
-    margin-left: $grid_xs/4
-
-  .l-tooltip-user-metric-minor
-
-
-  .l-tooltip-user-metric-number, .l-tooltip-user-metric-desc
-    text-transform: lowercase
-    font-variant: small-caps
-
-  .l-tooltip-user-actions
-    clear: both
-
   .l-tooltip-user-action
     +sassy-button("glass", 5px, inherit, lighten($callout_bg_color, 8%), darken($callout_bg_color, 8%) )
-    +font-size(-2)
-    color: white
-    text-align: center
-    width: 100%
-    min-width: $tooltip_width
-    display: inline-block
-    border-radius: 0
-    border-bottom: 0
 
-    &:hover
-      //+sassy-button("glass", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 20%) )
-      //+font-size(-2)
-      border-radius: 0
-
-  // .l-tooltip-user-profile
-
-//////////////////////////////////////////
-// CONSIDERIT MODULES
-//////////////////////////////////////////
-
-@import "modules/franklin/points"
-@import "modules/franklin/point"
-
-@import "modules/franklin/proposals"
-@import "modules/franklin/proposal"
-
-@import "modules/franklin/comments"
-@import "modules/franklin/assessment"
-
-
-
-// .m-top-point
-//   +font-size(-2)
-//   &.m-top-pro
-//     padding: 0 $grid_xs / 2 0 $grid_xs
-//   &.m-top-con
-//     padding: 0 $grid_xs 0 $grid_xs / 2
-//   .m-top-point-user
-//     white-space: nowrap
-
-// Static Position
-
-$static_position_width: $body_width+$grid_major
-.m-static-position
-  width: $static_position_width
-  .m-static-position-reasons
-    text-align: left
-
-
-  .m-static-position-reasons-label
-    font-weight: bold
-
-  .m-static-position-reasons-list
-    padding: $vertical_baseline / 2 $grid_xs 0 $grid_xs
-
-  .m-static-position-point
-    +font-size(-2)
-    margin-bottom: $vertical_baseline/2
-
-  .m-username
-    font-style: italic
-
-  .m-static-position-reasons-none
-    font-weight: bold
-
-.m-username
-  white-space: nowrap
-  display: inline-block
-
-//////////////////
-/// Footer ///////
-.m-footer-shortdesc, .m-footer-history, .m-footer-contact
-  margin-bottom: $vertical_baseline/2
-  +font-size(-1)
-
-  a
-    text-decoration: underline
-
-.m-footer-shortdesc
-  font-weight: bold
-
-  .homepage_link
-    text-decoration: none
-
-.m-footer-shortdesc-logo
-  text-transform: uppercase
-
-.m-footer-history
-
-.m-footer-contact
-
-.mc-subscribe
-  +sassy-button("simple", 5px, inherit, #999, #777)
-  +font-size(-3)
-  color: #fafafa
-  text-shadow: none
-  position: relative
-  top: -2px
-  font-weight: bold
-  &:hover
-    color: white
-
-
-#mce-EMAIL
-  +font-size(0)
-  width: 350px
-
-
-
-//////////////////
-//// Header //////
-
-.t-intro-wrap
+// homepage
 
 .t-intro
-  margin: 0 auto
-  min-height: $initiator_width
-
-
   .l-message-body
     +bubble($standout_color, $dark_standout_color, left, $text_color: $standout_text_color)
-    .l-message-title
-      +font-size(2)
-    .l-message-details
-      //+font-size(-1)
+
+// auth
+.m-user-options
+  .m-user-options-menu
+    background-color: $base_bg_color
+    border: 1px solid darken($base_bg_color, 20%)
+
+    a:hover
+      color: $comp_text_color
+      background-color: $dark_comp_color
+
+#l-dialog-detachable 
+  .m-user-accounts-complete-paperwork-form
+    input[type="text"], input[type="email"], input[type="password"], textarea
+      &.ui-state-valid
+        color: $initiator_text_color
+
+.m-user-accounts-complete-paperwork-form
+  .m-user-accounts-form-fields-wrap
+    background-color: $initiator_color
+    border: 1px solid $dark_initiator_color
+    border-top-color: lighten($dark_initiator_color, 15%)
+    border-bottom-color: darken($dark_initiator_color, 15%)
+    color: $initiator_text_color
+
+.m-login, .m-user-options-display
+  @extend %on_header_footer
+
+.m-user-accounts-email-auth-region, .m-user-accounts-complete-paperwork-form, .m-user-accounts-password-reset-form
+  input[type="submit"], .m-user-accounts-register-next
+    @extend %superbutton
+
+// dashboard
+html body #m-dashboard
+  .m-dashboard-profile
+    .m-dashboard-profile-activity-summary
+      background-color: $comp_color
+      &:hover
+        background-color: darken($comp_color, 10%)
+
+.m-sidebar
+  .m-sidebar_link
+    &.current
+      background-color: $comp_color
+    &:hover
+      background-color: $comp_color
 
 
+//////// These should be moved out to admin...
 
-//////////////////////////////////////////
-// VENDOR
-//////////////////////////////////////////
+// analytics
 
-/**
-/* for jquery.inline_labels.js
-/**
 
-// .inlined
-//   position: relative
-
-// label.inline
-//   color: inherit
-//   &.focus
-//     color: #777
-
-//   text-align: left
-//   position: absolute !important
-//   cursor: text !important
-//   visibility: hidden !important
-//   overflow: hidden !important
-//   padding: 0 !important
-//   margin: 0 !important
-//   border: 0 !important
-
-//   &.empty
-//     visibility: visible !important
-
-/**
-/* for tooltipster
-/**/
-
-.tooltipster-default 
+// assessable
+.assessment_published_at
   background-color: $callout_bg_color
-  border: 2px solid darken($callout_bg_color, 15%)
+  color: $callout_text_color
 
-  .tooltipster-content
-    +font-size(0)
-    font-size: 16px
-    padding: 0
+// dialog
+#l-dialog-detachable
+  .option
+    .sublabel
+      color: lighten($base_text_color, 15%)
 
-
-/**
-/* for jquery.toastr.js
-/**/
-
-#toast-container.toast-top-full-width 
-  left: 50%
-  width: $content_width
-  margin-left: -$content_width / 2
-
-  > div
-    text-align: center
-    opacity: 1
-
-/**
-/* for jquery.fileinput.js
-/**
-
-/**
-/* for jquery.editable.js
-/**/
-
-
-.editable-pencil
-  position: absolute
-  left: -15px
-  top: $vertical_baseline/2
-  font-size: 12px
-  opacity: .7
-
-.editable-container.editable-inline
-  border-color: #ddd #ccc #bbb #ccc
-  background-color: white
-  color: #444
-
-.editable.editable-click, a.editable.editable-click, .editable-container.editable-inline
-  border: 1px solid transparent
-  padding: 4px 3px
-
-  &:hover
-    cursor: pointer
-    border-color: #ddd #ccc #bbb #ccc
-    background-color: white
-    color: #444
-
-  &:not(.editable-disabled)
-    width: 98%
-    display: inline-block
-    position: relative
-    //margin-left: 25px
-
-    // &:before
-    //   position: absolute
-    //   left: -15px
-    //   top: $vertical_baseline/2
-    //   font-size: 13px
-    //   opacity: .7
-
-    &:hover
-      position: relative
-      opacity: 1
-
-.editable-container
-  position: relative
-
-.editableform 
-  //border: 1px solid rgba($standout_color, .7)
-  .control-group
-    position: relative
-
-.editable-input
-  width: 100%
-  textarea
-    background-color: transparent
-    width: 100%
-    padding: 0
-
-.editable-buttons
-
-  .editable-cancel
-    background: none
-    border: none
-    margin-left: 0
-    color: #555
-    display: block
-    margin: auto
-
-    &:hover
-      color: black
-
-  .editable-submit
-    +sassy-button("glass", 5px, inherit, darken($standout_color, 8%), darken($standout_color, 16%))
-    color: invert(darken($standout_color, 8%))
-    font-size: 18px
-    +text-shadow(none)
-    line-height: .5
-    font-weight: bold
-
-.editable-empty, .editable-empty:hover, .editable-empty:focus
-  font-style: normal
 
 //////////////////////////////////////////
 // UNINCORPORATED
 //////////////////////////////////////////
-
-
-
-// verdict on point in margin
-
-
-.m-point-peer, .m-point-position:hover
-  
-
-  &.m-point-peer
-    .verdict_summary .assessment
-      color: #CBBE31
-      right: 10px
-      bottom: 20px
-
-  &.m-point-position
-    .verdict_summary .assessment
-      right: 0px
-      bottom: 0px
-
-
-  .verdict_summary 
-    display: block
-    .assessment
-      text-align: right
-      position: absolute
-      z-index: 10
-
-      .assessment_details
-        position: absolute
-        +font-size(-3)
-        width: 200px
-        padding: $vertical_baseline/2 $grid_xs
-        text-align: left
-
-        .claim
-          padding-bottom: $vertical_baseline
-
-          .verdict
-            padding-right: $grid_xs
-
-          .summary
-            .claim_desc
-              font-style: italic
-
-            .claim_verdict
-              font-weight: bold
-              font-variant: small-caps
-              text-transform: lowercase
-
-      .wrap
-        padding: 2px 10px
-
-      &:hover
-        cursor: pointer
-        color: black
-
-
-
-        .assessment_details
-          display: inline-block
-          right: -30px
-
-          strong
-            display: block
-            padding-top: $vertical_baseline
-
-#expanded .verdict_summary
-  display: none
 
 
 // styles pillaged from fontawesome examples
@@ -928,45 +483,8 @@ $static_position_width: $body_width+$grid_major
 
 
 
-// user dashboard
-@import "modules/dash/dashboard"
 
 
-//zocial
-.zocial:before
-  width: $grid_xs
 
 
-//homepage admin file upload
-.t-intro-wrap
-  .l-homepage-pic
-    
-    max-width: $body_width
-    width: auto
-    .customfile
-      background: transparent
-      max-width: $body_width
-      width: auto
-      border: none
-
-    .customfile-preview-wrap
-      max-width: $body_width
-      width: auto
-      max-height: 5 * $vertical_baseline
-      height: auto
-      overflow: hidden
-      img.customfile-preview
-        max-height: 5 * $vertical_baseline
-
-    .customfile-button
-      float: none
-      +font-size(-2)
-      text-decoration: underline
-      opacity: .5
-
-
-    .customfile-feedback
-      display: none
-
-    .customfile-input
 

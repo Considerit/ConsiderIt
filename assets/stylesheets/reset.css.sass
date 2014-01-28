@@ -1,0 +1,317 @@
+@import "variables"
+
+
+
+//////////////////////////////////////////
+// LAYOUT
+//////////////////////////////////////////
+body
+  min-height: 100%
+
+#t-bg
+  min-height: 100%
+
+#t-bg-content-top, #l-content-main-wrap
+  min-height: 500px
+
+
+/* CONTAINERS */
+
+#l-wrap
+  position: relative
+
+#l-header, #l-content, #l-footer
+  position: relative
+
+.l-heading-wrap, .l-content-wrap, .l-footer-wrap
+  position: relative
+
+#l-header
+  margin: 0 auto $vertical_baseline auto
+  min-height: 32px
+
+  //border-bottom: 1px solid white
+
+.l-heading-wrap
+  width: $content_width
+  left: 50%
+  margin-left: -$content_width/2
+  position: relative
+  padding: 0
+  height: 2 * $vertical_baseline
+
+#l-content
+  z-index: 2
+  width: $full_width
+  margin: auto
+
+#l-content-main, .l-content-wrap
+  position: relative  
+  margin: 0 auto
+
+.l-content-wrap
+  width: $content_width
+
+#l-content-main
+
+#l-content-main-wrap
+  width: $content_width
+  margin: auto
+
+#l-footer
+  padding: $vertical_baseline 0 2 * $vertical_baseline 0
+
+
+
+#l-sticky-footer-region
+  position: fixed
+  bottom: 0
+  width: 100%
+  z-index: 999
+
+.l-footer-wrap
+  width: $body_width
+  position: relative
+  margin: 0 auto
+
+
+.l-message
+  position: relative
+  //margin-top: $vertical_baseline / 2
+    
+  > .l-message-speaker, > .l-message-body
+    display: inline-block
+    vertical-align: top
+    position: relative
+
+  > .l-message-speaker
+    bottom: 0px
+    z-index: 1
+    position: absolute
+    width: $margin_width
+
+  > .l-message-body
+    z-index: 2
+    margin: auto
+    display: block
+    width: $body_width //- $dialog_stutter
+    padding: $vertical_baseline / 2 $grid_xs
+
+    .l-message-title
+      +font-size(3)
+      //font-weight: bold
+
+
+.l-group-container
+  font-size: 0
+  line-height: 0
+  text-align: right
+
+.l-tooltip
+  display: none
+
+.tooltipster-content .l-tooltip
+  display: block
+
+.l-tooltip-title
+  padding: $vertical_baseline/4 $grid_xs/2
+
+
+
+
+
+
+
+
+
+
+
+
+@font-face
+  font-family: 'zocial'
+  src: font-url('zocialregular.eot')
+  src: font-url('zocialregular.eot?#iefix') format('eot')
+  font-weight: normal
+  font-style: normal
+
+
+@font-face
+  font-family: 'zocial'
+  src: asset-data-url('zocialregular.woff') format('woff'), font-url('zocialregular.ttf') format('truetype'), font-url('zocialregular.svg#zocialregular') format('svg')
+  font-weight: normal
+  font-style: normal
+
+
+
+/* RESET
+ * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
+ * http://cssreset.com
+ */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video
+  margin: 0
+  padding: 0
+  border: 0
+  font-size: 100%
+  font: inherit
+  vertical-align: baseline
+
+hr
+  display: block
+  height: 1px
+  border: 0
+  border-top: 1px solid #ccc
+  margin: 0
+  padding: 0
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section
+  display: block
+
+body 
+  line-height: 1.3
+
+ol, ul 
+  list-style: none
+  list-style-position: inside
+
+blockquote, q
+  quotes: none
+
+blockquote:before, blockquote:after,
+q:before, q:after
+  content: ''
+  content: none
+
+table
+  border-collapse: collapse
+  border-spacing: 0
+
+// do we need to put input and button here...?
+html
+
+  h1, h2, h3, h4, h5, h6, strong
+    font-weight: bold
+
+
+  em, i 
+    font-style: italic
+
+
+
+
+
+/* ELEMENT DEFAULTS */
+
+//http://paulirish.com/2012/box-sizing-border-box-ftw/
+*
+  +box_sizing(border-box)
+
+a
+  color: inherit
+  outline: none
+  cursor: pointer  
+  text-decoration: none
+  img
+    border: none  
+
+input, button
+  //+transition(opacity .15s linear, color .15s linear, background-color .15s linear)
+
+
+table
+  border-collapse: separate  
+
+p
+
+ul
+  margin: 0
+  list-style-type: disc
+
+ol
+  margin: 0
+  list-style-type: decimal
+
+blockquote
+  quotes: "\201C" "\201D"
+  &:before
+    content: open-quote
+    font-weight: bold
+  &:after
+    content: close-quote
+    font-weight: bold
+
+/* HELPERS */
+
+.clear
+  clear: both
+
+.fl
+  float: left
+
+.fr
+  float: right
+  
+.hide
+  display: none
+
+#lightbox
+  background-color: white
+  background-color: rgba(white, .85)
+  position: fixed
+  top: -20000px
+  left: -2000px
+  width: 4000px
+  height: 40000px
+  z-index: 100
+
+.button, button, input[type="submit"]
+  outline: none
+  cursor: pointer
+  text-align: center
+
+
+.avatar
+  vertical-align: top
+  background-color: transparent
+  border: none
+  display: inline-block
+  margin: 0
+  padding: 0
+  +background-size(cover)
+  background-image: url('/system/default_avatar/small_default-profile-pic.png')
+
+  &.m-avatar-anonymous
+    cursor: default
+
+
+$preloadersize_width: 32px
+$preloadersize_height: 10.5px
+#l-preloader
+  width: $preloadersize_width
+  height: $preloadersize_height
+  left: 50%
+  margin-left: -$preloadersize_width/2
+  top: 50%
+  margin-top: -$preloadersize_height/2
+  position: absolute
+
+.loading-container
+  position: fixed
+  top: 50%
+  left: 50%
+  margin-left: -15px
+  z-index: 9999
+

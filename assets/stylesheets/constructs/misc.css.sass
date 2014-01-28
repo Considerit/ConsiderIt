@@ -31,32 +31,7 @@
 =outset-text($transparency:.1)
   +single-text-shadow($hoff: 1px, $voff: 1px, $color: rgba(black, $transparency), $blur: 0)
 
-%superbutton
-  +sassy-button("simple", 5px, inherit, darken($callout_bg_color, 8%), darken($callout_bg_color, 16%))
-  color: $callout_text_color
-  &:hover
-    color: lighten($callout_text_color, 20%)
 
-%supersuperbutton
-  +sassy-button("glass", 5px, inherit, darken($callout_bg_color, 16%), darken($callout_bg_color, 24%))
-  color: $callout_text_color
-  &:hover
-    color: lighten($callout_text_color, 20%)
-    
-%desaturatedbutton
-  //+sassy-button("simple", 5px, inherit, lighten(desaturate($callout_bg_color, 100%), 10%))
-  +sassy-button("simple", 5px, inherit, darken(desaturate($base_bg_color, 100%), 5%), darken(desaturate($base_bg_color, 100%), 10%), $base_text_color, "false")
-  padding: $vertical_baseline/4 $grid_xs / 2
-  text-align: center
-  display: inline-block
-  vertical-align: top
-  margin: 0
-  color: lighten($base_text_color, 15%)
-  // +text-shadow(none)
-  &:hover
-    +sassy-button("simple", 5px, inherit, lighten(desaturate($callout_bg_color, 10%), 10%))
-    padding: $vertical_baseline/4 $grid_xs / 2
-    color: $callout_text_color
 
 
 =button($bground_color: hsl(0,0,45%), $darken_amt: 10%)
@@ -96,79 +71,4 @@
     cursor: -webkit-grabbing
     cursor: -moz-grabbing
 
-
-%on_header_footer
-  color: $header_footer_text_color
-  //background-color: $header_footer_bg_color
-  a
-    color: darken($header_footer_text_color, 10%)
-    &:hover
-      color: darken($header_footer_text_color, 25%)
-
-%on_background
-  color: $base_text_color
-  a
-    color: darken($base_text_color, 10%)
-    &:hover
-      color: darken($base_text_color, 25%)
-
-
-%on_chalkboard
-  color: $decision_board_text_color
-  //background-color: $decision_board_color
-  a
-    color: darken($decision_board_text_color, 10%)
-    &:hover
-      color: darken($decision_board_text_color, 20%)
-  
-  h1, h2, h3
-    color: $decision_board_text_color
-
-  textarea, input[type="text"], input[type="email"], input[type="password"]
-    background-color: transparent
-    border: 1px solid
-    +inset-border($decision_board_text_color)
-    display: inline-block
-    color: $decision_board_text_color
-
-    &.error 
-      border-color: #883333
-      &:focus
-        +inset-border($decision_board_text_color)
-
-%light
-
-  color: darken($base_text_color, 20%)
-  
-  h1, h2, h3
-    color: darken($base_text_color, 20%)
-
-  a
-    color: darken($base_text_color, 20%)
-    
-    &:hover
-      color: darken($base_text_color, 25%)
-
-  textarea, input[type="text"], input[type="email"], input[type="password"]
-    color: #2a2a2a
-    background-color: white
-    //border-width: 1px
-    //+inset-border(#bbb)
-    border: 1px solid #ccc
-    padding: 6px 12px
-
-
-%whitesmoke
-  @extend %light
-  background: whitesmoke
-
-%on_paper
-  @extend %light
-  background: image-url('paper.jpg') repeat left top #fafafa
-
-// %chalkboard
-//   background: image-url("chalk/chalkboard.jpg") repeat left top #414141
-
-// =wall($bground_color:#ccc)
-//   background: image-url('wall_texture.png') repeat scroll 0 0 $bground_color
 

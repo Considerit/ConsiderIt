@@ -1,21 +1,8 @@
-//////////////////////////////////////////
-// BASE
-//////////////////////////////////////////
-
-// compass defaults
-$default-transition-property : all
-$default-transition-duration : .4s
-$default-transition-function : false
-$default-transition-delay    : false
-
-$default-box-shadow-color    : rgba(black, .4)
-$default-box-shadow-h-offset : 0px
-$default-box-shadow-v-offset : 1px
-$default-box-shadow-blur     : 2px
-$default-box-shadow-spread   : false
-$default-box-shadow-inset    : false
-
-
+////////////////////////////////////////////////////////
+// THEME: Processes all styles requiring theme variables.
+//        Also imports some base themes
+////////////////////////////////////////////////////////
+@import "variables"
 @import "compass/css3/box-shadow"
 @import "compass/css3/box-sizing"
 @import "compass/css3/transform"
@@ -24,10 +11,9 @@ $default-box-shadow-inset    : false
 @import "sassy-buttons"
 
 // libraries of mixins
-@import "constructs/misc"
-@import "constructs/bubble"
-@import "constructs/themable_helpers"
-
+@import "library/library"
+@import "library/library_themed"
+@import "skins/ui_snippets/bubble"
 
 @import "reset"
 @import "vendor/overrides"
@@ -87,21 +73,7 @@ a:hover
 .button
   +button($bground_color: hsl(0,0,35%))
 
-// @import "modules/dialog" 
-// @import "modules/header"
-// @import "modules/auth"
-// @import "modules/static"
-// @import "modules/helpers"
-// @import "modules/franklin/points"
-// @import "modules/franklin/point"
-// @import "modules/franklin/proposals"
-// @import "modules/franklin/proposal"
-// @import "modules/franklin/comments"
-// @import "modules/franklin/assessment"
-// @import "modules/footer"
-// @import "modules/homepage"
-// @import "modules/position"
-// @import "modules/dash/dashboard"
+
 
 ////////////////////////////////////////
 ///////// Themable Colors
@@ -120,7 +92,7 @@ a:hover
 .m-proposals-filters, .m-proposals-list-pagination-wrap
   @extend %on_background
 
-.m-proposals-list-pagination    
+.m-proposals-list-pagination 
   .m-proposals-pagination-showmore, .m-proposals-list-pagination-page, .m-proposals-list-pagination-jump
     +sassy-button("simple", 5px, inherit, darken($base_bg_color, 4%), darken($base_bg_color, 12%))
     color: lighten($base_text_color, 12%)
@@ -373,6 +345,10 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
       &.ui-state-valid
         color: $initiator_text_color
 
+  .l-dialog-body
+    @extend %whitesmoke
+
+
 .m-user-accounts-complete-paperwork-form
   .m-user-accounts-form-fields-wrap
     background-color: $initiator_color
@@ -426,7 +402,7 @@ html body #m-dashboard
 //////////////////////////////////////////
 
 
-// styles pillaged from fontawesome examples
+// styles pillaged from fontawesome examples; these should be boiled down and refactored
 .input-group
   position: relative
   display: table

@@ -117,7 +117,7 @@ namespace :import do
         :fks => []
       }],
       ['follows', {
-        :max_id => Followable::Follow.last.id + 1000,
+        :max_id => Follow.last.id + 1000,
         :fks => []
       }],      
       ['inclusions', {

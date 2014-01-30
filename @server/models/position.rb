@@ -7,9 +7,8 @@ class Position < ActiveRecord::Base
   has_many :comments, :as => :commentable, :dependent => :destroy
   
   has_paper_trail
-  is_commentable
-  is_trackable
-  is_followable
+
+  include Trackable, Followable, Commentable
 
   acts_as_tenant(:account)
 

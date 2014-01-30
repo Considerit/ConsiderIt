@@ -1,4 +1,4 @@
-class XHRConstraint
+  class XHRConstraint
   def matches?(request)
     request.format == 'text/html' && !(request.xhr? || request.url =~ /\/users\/auth/)
   end
@@ -38,11 +38,44 @@ ConsiderIt::Application.routes.draw do
   get '(*url)' => 'home#index', :constraints => XHRConstraint.new
 
   themes_for_rails 
-  followable_routes
-  commentable_routes
-  moderatable_routes
-  assessable_routes
-  thankable_routes
+
+
+  ######
+  ## concerns routes
+  concern :moderatable do 
+    match "/dashboard/moderate/create" => 'dashboard/moderatable#create', :via => :post
+    get "/dashboard/moderate" => 'dashboard/moderatable#index'
+  end
+
+  concern :assessable do 
+    resources :assessment, :path => "dashboard/assessment", :controller => "dashboard/assessable", :only => [:index, :create, :edit, :update] do 
+      match "claims" => 'dashboard/assessable#create_claim', :via => :post, :as => 'create_claim'
+      match "claim/:id" => 'dashboard/assessable#update_claim', :via => :put, :as => 'update_claim'
+      match "claim/:id" => 'dashboard/assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
+    end
+  end
+
+  concern :commentable do 
+    resources :comment, :only => [:create, :update]
+  end
+
+  concern :followable do 
+    get "followable_index" => 'followable#index', :as => 'followable_index'
+    match "follow" => 'followable#follow', :via => :post
+    #match "unfollow" => 'followable#unfollow'
+    match "unfollow" => 'followable#unfollow', :via => :post
+  end
+
+  concern :thankable do 
+    resources :thanks, :only => [:create, :destroy]
+  end
+
+  concerns :moderatable
+  concerns :assessable
+  concerns :commentable
+  concerns :followable
+  concerns :thankable
+  #################
 
   devise_scope :user do 
     get "users/check_login_info" => "users/registrations#check_login_info"

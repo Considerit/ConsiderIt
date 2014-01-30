@@ -1,15 +1,6 @@
 class Point < ActiveRecord::Base
   
-  is_commentable
-  is_trackable
-  is_followable
-  is_moderatable :text_fields => [:nutshell, :text], :moderatable_objects => lambda {
-    Point.joins(:proposal).published.where(:proposals => {:active => true})
-  }
-
-  is_assessable :text_fields => [:nutshell, :text], :assessable_objects => lambda {
-    Point.joins(:proposal).published.where(:proposals => {:active => true})
-  }
+  include Trackable, Followable, Commentable, Moderatable, Assessable
   
   has_paper_trail :only => [:hide_name, :published, :is_pro, :text, :nutshell, :user_id]  
   
@@ -42,6 +33,16 @@ class Point < ActiveRecord::Base
 
   # cattr_reader :per_page
   # @@per_page = 4  
+
+  self.moderatable_fields = [:nutshell, :text]
+  self.moderatable_objects = lambda {
+    Point.joins(:proposal).published.where(:proposals => {:active => true})
+  }
+
+  self.assessable_fields = [:nutshell, :text]
+  self.assessable_objects = lambda {
+    Point.joins(:proposal).published.where(:proposals => {:active => true})
+  }
 
   class_attribute :my_public_fields
   self.my_public_fields = [:long_id, :appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :position_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id, :hide_name]

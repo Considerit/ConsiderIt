@@ -104,15 +104,6 @@ gem 'rinku' # needed anymore?
 
 #gem 'font-awesome-rails'
 
-#custom gems
-#gem "reflect", :path => "lib/gems/reflect"
-gem "followable", :path => "lib/gems/followable"
-gem "trackable", :path => "lib/gems/trackable"
-gem "commentable", :path => "lib/gems/commentable"
-gem "moderatable", :path => "lib/gems/moderatable"
-gem "assessable", :path => "lib/gems/assessable"
-gem "thankable", :path => "lib/gems/thankable"
-
 gem 'sitemap_generator'
 
 # https://github.com/cmer/cacheable-csrf-token-rails

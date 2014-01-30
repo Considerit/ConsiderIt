@@ -1,11 +1,10 @@
+########
+# Email notification hooks
+########
 
 
 ##################################################
 ############ Notifications for moderatable models
-
-########
-# Notification methods
-########
 
 notify_proposal = Proc.new do |data|
   #params : proposal, current_tenant, mail_options

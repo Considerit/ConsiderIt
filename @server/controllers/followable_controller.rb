@@ -1,4 +1,4 @@
-class Followable::FollowableController < ApplicationController
+class FollowableController < ApplicationController
   def index
     user_id = params[:user_id]
     followable_objects = {}

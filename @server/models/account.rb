@@ -11,7 +11,7 @@ class Account < ActiveRecord::Base
 
   belongs_to :managing_account, :class_name => 'User'
 
-  is_followable
+  include Followable
 
   before_create :set_default
 

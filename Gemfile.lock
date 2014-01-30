@@ -64,36 +64,6 @@ GIT
     mailhopper (0.2.0)
       rails (>= 4.0.0)
 
-PATH
-  remote: lib/gems/assessable
-  specs:
-    assessable (0.0.1)
-
-PATH
-  remote: lib/gems/commentable
-  specs:
-    commentable (0.0.1)
-
-PATH
-  remote: lib/gems/followable
-  specs:
-    followable (0.0.1)
-
-PATH
-  remote: lib/gems/moderatable
-  specs:
-    moderatable (0.0.1)
-
-PATH
-  remote: lib/gems/thankable
-  specs:
-    thankable (0.0.1)
-
-PATH
-  remote: lib/gems/trackable
-  specs:
-    trackable (0.0.1)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -437,7 +407,6 @@ DEPENDENCIES
   actionmailer-with-request
   actionpack-action_caching
   acts_as_tenant
-  assessable!
   asset_sync
   aws-sdk
   aws-ses (~> 0.5.0)!
@@ -445,7 +414,6 @@ DEPENDENCIES
   cacheable-csrf-token-rails!
   cancan
   coffee-rails
-  commentable!
   compass
   compass-rails
   daemons
@@ -455,7 +423,6 @@ DEPENDENCIES
   delayed_mailhopper
   devise
   exception_notification
-  followable!
   guard (>= 2.2.2)
   guard-livereload
   haml
@@ -464,7 +431,6 @@ DEPENDENCIES
   kaminari
   mailhopper!
   meta_request
-  moderatable!
   mysql2
   newrelic_rpm
   oj
@@ -488,11 +454,9 @@ DEPENDENCIES
   sassy-buttons
   sitemap_generator
   sprockets-rails
-  thankable!
   themes_for_rails!
   therubyracer
   thin
-  trackable!
   twitter
   uglifier
   useragent

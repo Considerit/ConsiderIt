@@ -11,10 +11,10 @@ class Proposal < ActiveRecord::Base
 
   acts_as_tenant(:account)
 
-  is_trackable
-  is_followable
+  include Trackable, Followable, Moderatable
   
-  is_moderatable :text_fields => [:name, :description, :long_description], :moderatable_objects => lambda { Proposal.published_web }
+  self.moderatable_fields = [:name, :description, :long_description]
+  self.moderatable_objects = lambda { Proposal.published_web }
 
   #before_save :extract_tags
 

@@ -25,7 +25,7 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
     @classes_to_moderate.each do |mc|
       class_name = mc.name.split('::')[-1]
 
-      moderatable_classes.push({ :name => class_name, :text_fields => mc.text_fields })
+      moderatable_classes.push({ :name => class_name, :text_fields => mc.moderatable_fields })
 
       @existing_moderations[class_name] = {}
 

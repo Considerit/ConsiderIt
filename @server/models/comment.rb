@@ -1,11 +1,6 @@
 class Comment < ActiveRecord::Base
   #is_reflectable
-  is_trackable
-  is_followable
-  is_thankable
-  is_moderatable :text_fields => [:body], :moderatable_objects => lambda {
-    Comment.where('id > -1') #tacked on this where in order to enable chaining
-  }
+  include Trackable, Thankable, Followable, Moderatable
 
   scope :public_fields, -> {select('id, body, user_id, commentable_type, created_at, commentable_id, moderation_status')}
   
@@ -23,6 +18,11 @@ class Comment < ActiveRecord::Base
   before_save do 
     self.body = Sanitize.clean(self.body, Sanitize::Config::RELAXED)
   end
+
+  self.moderatable_fields = [:body]
+  self.moderatable_objects = lambda {
+    Comment.where('id > -1') #tacked on this where in order to enable chaining
+  }
 
   # Helper class method that allows you to build a comment
   # by passing a commentable object, a user_id, and comment text

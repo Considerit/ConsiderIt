@@ -78,7 +78,7 @@ task :run_acceptance_tests do
         f.puts html  
       end
 
-      spec_path = Rails.root.join("spec/tests/")
+      spec_path = Rails.root.join("test/tests/")
       for test in Dir["#{spec_path}/**/*.coffee"]
 
         system "bundle exec rake load_test_data"
@@ -86,7 +86,7 @@ task :run_acceptance_tests do
 
         system("casperjs test \
                 --testhost=http://localhost:#{app_port} \
-                --includes=spec/extensions/casperjs.coffee \
+                --includes=test/extensions/casperjs.coffee \
                 --htmlout=#{results_directory} \
                 #{File.join(test)}")
       end
@@ -112,7 +112,7 @@ desc "load test data into database"
 task :load_test_data do 
 
   if Rails.env.test?
-    filename = "spec/data/test.sql"
+    filename = "test/data/test.sql"
     t = Time.now
 
     Rake::Task["db:drop"].invoke  

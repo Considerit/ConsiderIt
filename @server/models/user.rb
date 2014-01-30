@@ -2,7 +2,7 @@ require 'open-uri'
 require 'role_model'
 
 class User < ActiveRecord::Base
-  include RoleModel
+  include RoleModel, Trackable
 
   has_many :points, :dependent => :destroy
   has_many :positions, :dependent => :destroy
@@ -10,11 +10,10 @@ class User < ActiveRecord::Base
   has_many :point_listings, :dependent => :destroy
   has_many :comments, :dependent => :destroy
   has_many :proposals
-  has_many :follows, :dependent => :destroy, :class_name => 'Followable::Follow'
+  has_many :follows, :dependent => :destroy, :class_name => 'Follow'
   has_many :page_views, :dependent => :destroy
 
   acts_as_tenant(:account)
-  is_trackable
 
   #devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
   # Include default devise modules. Others available are:

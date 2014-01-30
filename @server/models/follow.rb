@@ -1,4 +1,4 @@
-class Followable::Follow < ActiveRecord::Base
+class Follow < ActiveRecord::Base
 
   belongs_to :followable, :polymorphic=>true
   belongs_to :user
@@ -28,7 +28,7 @@ class Followable::Follow < ActiveRecord::Base
   end
 
   def self.purge
-    Followable::Follow.find_all do |u|
+    Follow.find_all do |u|
       begin
         obj = u.root_object
       rescue

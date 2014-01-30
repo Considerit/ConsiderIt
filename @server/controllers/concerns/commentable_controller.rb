@@ -1,5 +1,5 @@
 
-class CommentController < ApplicationController
+class CommentableController < ApplicationController
   protect_from_forgery
 
   respond_to :json
@@ -53,7 +53,7 @@ class CommentController < ApplicationController
       :body => params[:comment][:body]
     }
 
-    comment.update_attributes! update_attributes.permit(:body)
+    comment.update_attributes! ActionController::Parameters.new(update_attributes).permit(:body)
 
     commentable = comment.root_object
 

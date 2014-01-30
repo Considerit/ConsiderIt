@@ -13,9 +13,9 @@
 
     url : () ->
       if @id
-        Routes.comment_path(@id)
+        Routes.commentable_path(@id)
       else
-        Routes.comment_index_path( )
+        Routes.commentable_index_path( )
 
     # relations
     getRoot : ->

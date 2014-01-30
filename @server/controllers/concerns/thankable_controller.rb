@@ -1,4 +1,4 @@
-class ThanksController < ApplicationController
+class ThankableController < ApplicationController
   protect_from_forgery
   respond_to :json
 

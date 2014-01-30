@@ -5,9 +5,9 @@
 
     url : ->
       if @id
-        Routes.thank_path @id
+        Routes.thankable_path @id
       else
-        Routes.thanks_path()
+        Routes.thankable_index_path()
 
     parse : (attrs) ->
       attrs.thank

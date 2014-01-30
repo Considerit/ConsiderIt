@@ -56,7 +56,7 @@ ConsiderIt::Application.routes.draw do
   end
 
   concern :commentable do 
-    resources :comment, :only => [:create, :update]
+    resources :commentable, :only => [:create, :update]
   end
 
   concern :followable do 
@@ -67,7 +67,7 @@ ConsiderIt::Application.routes.draw do
   end
 
   concern :thankable do 
-    resources :thanks, :only => [:create, :destroy]
+    resources :thankable, :only => [:create, :destroy]
   end
 
   concerns :moderatable
@@ -86,7 +86,7 @@ ConsiderIt::Application.routes.draw do
 
   resource :account, :only => [:show, :update]
   
-  get "/feed" => "activities#feed"
+  get "/feed" => "trackable#feed"
 
   #match "/theme" => "theme#set", :via => :post
   get '/home/avatars' => "home#avatars", :as => :get_avatars

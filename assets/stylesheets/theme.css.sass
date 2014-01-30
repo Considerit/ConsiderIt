@@ -256,6 +256,9 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
 
 .m-point-include, .m-point-assessment-request-initiate, .m-point-follow
   @extend %desaturatedbutton
+  +font-size(-3)
+  &:hover
+    +font-size(-3)
 
 // franklin/points
 [data-state="points-collapsed"]

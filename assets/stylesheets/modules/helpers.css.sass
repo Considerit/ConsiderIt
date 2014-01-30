@@ -49,21 +49,19 @@ $tooltip_width: 225px
   .l-tooltip-user-actions
     clear: both
 
-  .l-tooltip-user-action
-    +font-size(-2)
-    color: white
-    text-align: center
-    width: 100%
-    min-width: $tooltip_width
-    display: inline-block
-    border-radius: 0
-    border-bottom: 0
-
-    &:hover
-      //+sassy-button("glass", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 20%) )
-      //+font-size(-2)
+    .l-tooltip-user-action
+      +font-size(-2)
+      color: white
+      text-align: center
+      width: 100%
+      min-width: $tooltip_width
+      display: inline-block
       border-radius: 0
+      border-bottom: 0
 
-  // .l-tooltip-user-profile
+      &:hover
+        //+sassy-button("glass", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 20%) )
+        //+font-size(-2)
+        border-radius: 0
 
 

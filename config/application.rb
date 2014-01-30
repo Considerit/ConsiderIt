@@ -70,6 +70,9 @@ module ConsiderIt
     config.paths["app/mailers"] << "@server/mailers"
     config.paths["app/helpers"] << "@server/helpers"
 
+    config.paths["app/controllers/concerns"] << "@server/controllers/concerns"
+    config.paths["app/models/concerns"] << "@server/models/concerns"
+
     asset_paths = ["@client", "assets", "assets/stylesheets/vendor/admin/rails_admin"]
     for asset_path in asset_paths
         config.paths["app/assets"] << asset_path

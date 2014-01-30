@@ -24,7 +24,7 @@ Vagrant::Config.run do |config|
     # point Vagrant at the location of your playbook you want to run
 
     #setup core
-    ansible.playbook = "zansible/pb-setup-local-dev.yml"
+    ansible.playbook = "zansible/install-for-local-dev.yml"
 
     ansible.inventory_path = "zansible/hosts/development"
 

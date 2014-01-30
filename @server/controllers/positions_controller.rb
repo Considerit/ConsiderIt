@@ -124,6 +124,8 @@ class PositionsController < ApplicationController
           :stance => position.stance_bucket
         }
       end
+    else
+      render :nothing => true, :layout => true
     end
 
   end

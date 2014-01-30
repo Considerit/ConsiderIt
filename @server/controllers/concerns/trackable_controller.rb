@@ -1,4 +1,4 @@
-class ActivitiesController < ApplicationController
+class TrackableController < ApplicationController
   def feed
     @actions = Activity.order('created_at DESC').limit(300)
 

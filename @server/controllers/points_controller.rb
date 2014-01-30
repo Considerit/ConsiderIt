@@ -69,6 +69,8 @@ class PointsController < ApplicationController
           :associated => response,
           :point => point
         }.to_json
+
+        render :nothing => true, :layout => true
       }
     end
   end

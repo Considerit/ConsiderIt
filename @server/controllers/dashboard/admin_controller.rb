@@ -108,7 +108,6 @@ class Dashboard::AdminController < Dashboard::DashboardController
       result.update Proposal.import_jurisdictions params[:account][:csv], params[:account][:csv_local]
     end
 
-    pp result
     render :json => result
 
   end

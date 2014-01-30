@@ -5,18 +5,14 @@ class HomeController < ApplicationController
   }
 
   def index
-
-    respond_to do |format|
-      format.html
-    end
-
+    render :nothing => true, :layout => true
   end
 
   def avatars
-    #result = render_to_string :partial => 'home/avatars'
+    #result = render_to_string :partial => './avatars'
     respond_to do |format|
-      format.html { render :partial => 'home/avatars' } 
-      format.json { render :partial => 'home/avatars' }
+      format.html { render :partial => './avatars' } 
+      format.json { render :partial => './avatars' }
     end
   end
 

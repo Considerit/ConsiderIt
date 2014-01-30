@@ -69,6 +69,7 @@ class ProposalsController < ApplicationController
       format.json {render :json => data}
       format.html {
         @current_proposal = data.to_json
+        render :nothing => true, :layout => true
       }
     end
 

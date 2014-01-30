@@ -23,7 +23,7 @@ config/newrelic.yml
 .vagrant
 restart.txt
 
-spec/data/test.sql.bz2
+test/data/test.sql.bz2
 
 zansible/templates/seed_data/avatars.zip
 zansible/templates/seed_data/considerit.sql.bz2

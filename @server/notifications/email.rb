@@ -1,5 +1,6 @@
 ########
 # Email notification hooks
+# http://api.rubyonrails.org/classes/ActiveSupport/Notifications.html
 ########
 
 

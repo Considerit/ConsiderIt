@@ -1,4 +1,4 @@
-  class XHRConstraint
+class XHRConstraint
   def matches?(request)
     request.format == 'text/html' && !(request.xhr? || request.url =~ /\/users\/auth/)
   end

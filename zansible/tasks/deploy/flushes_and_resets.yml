@@ -6,7 +6,7 @@
   sudo: False
 
 - name: Restart cron and delayed_job
-  shell: $source && cd $app_home && RAILS_ENV=$rails_environment bundle exec whenever -w && RAILS_ENV=$rails_environment script/delayed_job restart
+  shell: $source && cd $app_home && RAILS_ENV=$rails_environment bundle exec whenever -w && RAILS_ENV=$rails_environment bin/delayed_job restart
   sudo: False
 
 # TODO: need to Ensure Passenger is running

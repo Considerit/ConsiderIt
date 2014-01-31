@@ -6,7 +6,7 @@
   ignore_errors: yes
 
 - name: Copy existing database to remote server
-  copy: src=templates/seed_data/test.sql.bz2 dest=/tmp/${database.name}.sql.bz2
+  copy: src=templates/seed_data/${database.name}.sql.bz2 dest=/tmp/${database.name}.sql.bz2
   sudo: True
 
 - name: Uncompress database dump

@@ -74,7 +74,7 @@ module ConsiderIt
     config.paths["app/models/concerns"] << "@server/models/concerns"
 
     config.paths["config/initializers"] << "@server/notifications"
-    asset_paths = ["@client", "assets", "assets/stylesheets/vendor/admin/rails_admin"]
+    asset_paths = ["@client", "assets", "assets/stylesheets/vendor/admin/rails_admin", "assets/fonts"]
     for asset_path in asset_paths
         config.paths["app/assets"] << asset_path
         config.assets.paths << Rails.root.join(asset_path)

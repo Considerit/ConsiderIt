@@ -47,7 +47,7 @@ gem 'cancan'
 gem 'role_model'
 
 # https://github.com/thoughtbot/paperclip
-gem 'paperclip'
+gem 'paperclip', "3.5.2"
 gem 'paperclip-optimizer'
 
 # https://github.com/amatsuda/kaminari

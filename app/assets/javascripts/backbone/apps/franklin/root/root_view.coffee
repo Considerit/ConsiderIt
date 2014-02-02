@@ -20,7 +20,7 @@
         observe : 'homepage_pic_file_name'
         onGet : (values) ->
           return if !values? || $.trim(values)==''
-          @$el.find('.l-homepage-pic img.customfile-preview').attr('src', App.request("tenant:get").getHomepagePic('large', values))
+          @$el.find('.l-homepage-pic img.customfile-preview').attr('src', App.request("tenant:get").getHomepagePic('original', values))
 
     events : 
       'change input[type="file"]' : 'fileChanged'

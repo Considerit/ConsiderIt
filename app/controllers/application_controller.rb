@@ -82,7 +82,7 @@ class ApplicationController < ActionController::Base
         if current_tenant.header_text
           description = sanitize(current_tenant.header_text, :tags=>[])  
           if current_tenant.header_details_text && current_tenant.header_details_text != ''
-            description = "#{description} - #{sanitize(current_tenant.header_details_text, :tags=>)}"
+            description = "#{description} - #{sanitize(current_tenant.header_details_text, :tags=>[])}"
           end
         else
           description = meta[:description]

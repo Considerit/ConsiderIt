@@ -80,9 +80,9 @@ class ApplicationController < ActionController::Base
       if using_default_meta
         @title = current_tenant.app_title || meta[:title]
         if current_tenant.header_text
-          description = current_tenant.header_text
+          description = ActionView::Base.full_sanitizer.sanitize(current_tenant.header_text, :tags=>[])  
           if current_tenant.header_details_text && current_tenant.header_details_text != ''
-            description = "#{description} - #{current_tenant.header_details_text}"
+            description = "#{description} - #{ActionView::Base.full_sanitizer.sanitize(current_tenant.header_details_text, :tags=>[])}"
           end
         else
           description = meta[:description]

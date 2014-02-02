@@ -66,10 +66,13 @@ class ProposalsController < ApplicationController
     # data[:position] = position
 
     respond_to do |format|
-      format.json {render :json => data}
       format.html {
         @current_proposal = data.to_json
         render :nothing => true, :layout => true
+      }
+
+      format.json {
+        render :json => data
       }
     end
 

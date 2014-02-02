@@ -74,6 +74,10 @@ class ProposalsController < ApplicationController
       format.json {
         render :json => data
       }
+
+      format.json {
+        render :json => data
+      }
     end
 
   end

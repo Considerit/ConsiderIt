@@ -70,7 +70,7 @@
 
       label
 
-    getHomepagePic : (size = 'large', fname = null) ->
+    getHomepagePic : (size = 'original', fname = null) ->
       if fname?
         url = "#{ConsiderIt.public_root}/system/homepage_pics/#{@id}/#{size}/#{fname}"
       else if @get 'homepage_pic_file_name'

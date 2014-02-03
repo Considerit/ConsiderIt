@@ -16,7 +16,7 @@
   .proposal-state-primary
     {{ call }}
 
-  %a{ :href => "{{Routes.proposal_path( long_id )}}", :class => 'proposal-state-secondary'}
+  %a{ :href => "{{Routes.proposal_path( long_id )}}", :class => 'proposal-state-secondary', :'data-target' => 'view-results'}
     // %i.fa-lg.fa
     //   &#xf046;
 
@@ -26,7 +26,7 @@
   .proposal-state-primary
     {{ results_call }}
 
-  %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :class => 'proposal-state-secondary'}
+  %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :class => 'proposal-state-secondary', :'data-target' => 'craft-position'}
     // %i.fa-lg.fa
     //   &#xf096;
 
@@ -124,7 +124,7 @@
 %script{ :type => "text/template", :id => "tpl_reasons_header" }  
 
   (( if(active) { ))
-  %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+  %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :'data-target' => 'craft-position'}
     //fa-pencil-square-o
     %i.fa.fa-pencil
     {{ call }}

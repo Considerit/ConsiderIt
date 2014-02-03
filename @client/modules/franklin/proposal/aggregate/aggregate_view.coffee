@@ -3,11 +3,11 @@
 
   class Proposal.AggregateLayout extends App.Views.StatefulLayout
     template : '#tpl_aggregate_layout'
-    className : 'm-results'
+    className : 'results'
       
     regions : 
-      histogramRegion : '.m-histogram-region'
-      socialMediaRegion : '.m-proposal-socialmedia-region'
+      histogramRegion : '.histogram-region'
+      socialMediaRegion : '.proposal-socialmedia-region'
 
     initialize : (options = {}) ->
       super options    
@@ -19,7 +19,7 @@
 
   class Proposal.AggregateHistogram extends App.Views.ItemView
     template : '#tpl_aggregate_histogram'
-    className : 'm-histogram'
+    className : 'histogram'
     bar_state : null
     highlight_state : []
 
@@ -36,12 +36,12 @@
         neutral_label : neutral_label
 
     events : 
-      'mouseenter .m-histogram-bar:not(.m-bar-is-selected)' : 'selectBar'
-      'click .m-histogram-bar:not(.m-bar-is-hard-selected)' : 'selectBar'
-      'click .m-bar-is-hard-selected' : 'deselectBar'
-      'mouseleave .m-histogram-bar' : 'deselectBar'
+      'mouseenter .histogram-bar:not(.bar-is-selected)' : 'selectBar'
+      'click .histogram-bar:not(.bar-is-hard-selected)' : 'selectBar'
+      'click .bar-is-hard-selected' : 'deselectBar'
+      'mouseleave .histogram-bar' : 'deselectBar'
       'keypress' : 'deselectBar'
-      'mouseenter .m-histogram-bar:not(.m-bar-is-hard-selected) [data-target="user_profile_page"]' : 'preventProfile'
+      'mouseenter .histogram-bar:not(.bar-is-hard-selected) [data-target="user_profile_page"]' : 'preventProfile'
 
     preventProfile : (ev) ->
       ev.stopPropagation()
@@ -79,14 +79,14 @@
         @$el.show()
 
     finishSelectingBar : (bucket, hard_select) ->
-      $bar = @$el.find(".m-histogram-bar[bucket=#{6-bucket}]")
+      $bar = @$el.find(".histogram-bar[bucket=#{6-bucket}]")
 
-      @$el.addClass 'm-histogram-segment-selected'
+      @$el.addClass 'histogram-segment-selected'
 
       @$el.hide()
 
-      $('.m-bar-is-selected', @$el).removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
-      $bar.addClass("m-bar-is-selected #{if hard_select then 'm-bar-is-hard-selected' else 'm-bar-is-soft-selected'}")
+      $('.bar-is-selected', @$el).removeClass('bar-is-selected bar-is-hard-selected bar-is-soft-selected')
+      $bar.addClass("bar-is-selected #{if hard_select then 'bar-is-hard-selected' else 'bar-is-soft-selected'}")
 
       fld = "score_stance_group_#{bucket}"
 
@@ -102,14 +102,14 @@
       @$el.show()
 
     selectBar : (ev) ->
-      return if $('.m-point-expanded').length > 0 #|| @state != Proposal.ReasonsState.together 
+      return if $('.point-expanded').length > 0 #|| @state != Proposal.ReasonsState.together 
       $target = $(ev.currentTarget)
       hard_select = ev.type == 'click'
 
-      if ( hard_select || @$el.find('.m-bar-is-hard-selected').length == 0 )
-        $bar = $target.closest('.m-histogram-bar')
+      if ( hard_select || @$el.find('.bar-is-hard-selected').length == 0 )
+        $bar = $target.closest('.histogram-bar')
 
-        bucket = 6 - $target.closest('.m-histogram-bar').attr('bucket')
+        bucket = 6 - $target.closest('.histogram-bar').attr('bucket')
 
         @trigger 'histogram:segment_results', bucket, hard_select
 
@@ -120,11 +120,11 @@
 
     closeBarClick : (ev) -> @deselectBar() 
 
-    closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('#l-dialog-detachable').children().length == 0 && $('.m-point-expanded').length == 0
+    closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('#l-dialog-detachable').children().length == 0 && $('.point-expanded').length == 0
     
     deselectBar : (ev) ->
-      $selected_bar = @$el.find('.m-bar-is-selected')
-      return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.m-bar-is-hard-selected')) || $('.m-point-expanded').length > 0
+      $selected_bar = @$el.find('.bar-is-selected')
+      return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.bar-is-hard-selected')) || $('.point-expanded').length > 0
 
       @bar_state = 'deselect'
       $(document).off 'click.histogram'
@@ -135,9 +135,9 @@
         if @bar_state == 'deselect'
           @$el.hide()
 
-          @$el.removeClass 'm-histogram-segment-selected'
+          @$el.removeClass 'histogram-segment-selected'
 
-          hiding = @$el.find('.m-point-list, .m-results-pro-con-list-who')
+          hiding = @$el.find('.point-list, .results-pro-con-list-who')
           hiding.css 'visibility', 'hidden'
 
           @trigger 'histogram:segment_results', 'all'
@@ -146,7 +146,7 @@
 
           hiding.css 'visibility', ''
 
-          $selected_bar.removeClass('m-bar-is-selected m-bar-is-hard-selected m-bar-is-soft-selected')
+          $selected_bar.removeClass('bar-is-selected bar-is-hard-selected bar-is-soft-selected')
 
           @$el.show()
       , 100

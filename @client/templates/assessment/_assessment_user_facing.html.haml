@@ -1,31 +1,31 @@
 %script{ :type => "text/template", :id => "tpl_verdict_tooltip"}
-  .m-point-assessment-verdict-tooltip
-    .m-verdict-tooltip-title
+  .point-assessment-verdict-tooltip
+    .verdict-tooltip-title
       This point has been fact-checked
-    .m-verdict-tooltip-content
+    .verdict-tooltip-content
       {{ content }}
-    .m-verdict-tooltip-readmore
+    .verdict-tooltip-readmore
       Click to read more.
 
 %script{ :type => "text/template", :id => "tpl_assessment_layout"}
-  .m-point-assessment-request
-  .m-point-assessment
+  .point-assessment-request
+  .point-assessment
 
 
 %script{ :type => "text/template", :id => "tpl_assessment_request"}
   (( if( !already_requested_assessment ) { ))
-  %button.m-point-assessment-request-initiate
+  %button.point-assessment-request-initiate
     %i.fa.fa-info
     Ask a librarian about this point
   (( } else { ))
-  .m-point-assessment-requested-feedback
+  .point-assessment-requested-feedback
     Your fact check request has been registered.
   (( } ))
 
 
 %script{ :type => "text/template", :id => "tpl_assessment_request_form"}
 
-  .m-assessment-request-prompt
+  .assessment-request-prompt
     Which claims do you wish to have researched and evaluated by a librarian?
 
   %textarea#request_suggestion{ :name => "request[suggestion]"}
@@ -38,7 +38,7 @@
     You must
 
     = surround '' do 
-      %a{:'data-target' => 'login', :class => "m-login-signin"}
+      %a{:'data-target' => 'login', :class => "login-signin"}
         Sign In
     to request a fact check.
   (( } ))
@@ -49,33 +49,33 @@
 
 %script{ :type => "text/template", :id => "tpl_assessment_header"}
   (( claims.each(function(claim){ ))
-  .m-claim-summary
+  .claim-summary
 
-    .m-claim-summary-restatement
+    .claim-summary-restatement
       Fact-check: {{ claim.get('claim_restatement') }}
-    .m-claim-summary-evaluation
+    .claim-summary-evaluation
       Rated: {{ claim.getVerdict().get('name') }}.
-    .m-claim-summary-link
+    .claim-summary-link
       = link_to 'Read the full report', "#claim-comment-{{claim.id}}"
   (( }) ))
 
 %script{ :type => "text/template", :id => "tpl_claim_comment_view"}
-  %img.m-comment-avatar.m-claim-evaluation{:src => "{{verdict.getIcon()}}", :title => "{{verdict.get('desc')}}"}
+  %img.comment-avatar.claim-evaluation{:src => "{{verdict.getIcon()}}", :title => "{{verdict.get('desc')}}"}
 
-  .m-comment-body-wrap
-    .m-comment-claim-restatement
+  .comment-body-wrap
+    .comment-claim-restatement
       Fact-check: {{ claim.get('claim_restatement') }}
-    .m-comment-claim-evaluation
+    .comment-claim-evaluation
       Rated: {{ verdict.get('name') }}
-    .m-comment-claim-report
+    .comment-claim-report
       {{ claim.get('result') }}
 
-    .m-comment-footer
-      %span.m-comment-author
+    .comment-footer
+      %span.comment-author
         &ndash; 
         = link_to 'Seattle Public Library', 'http://spl.org', :target => '_blank'
 
-      .m-thank
+      .thank
 
         (( if(can_thank && !user_thanked){ ))
         %button.thank
@@ -88,7 +88,7 @@
         (( } )) 
 
       (( if(thanks.length > 0 ) { ))
-      .m-thank-given      
+      .thank-given      
 
         %ul
           (( thanks.each( function(thank){ ))
@@ -99,6 +99,6 @@
           {{ thanks.length }} {{ thanks.length == 1 ? 'person says' : 'people say' }} thanks
       (( } ))
 
-      .m-comment-claim-process       
+      .comment-claim-process       
         = link_to 'Read about the fact-checking process', '/home/fact_check', :target => '_blank' 
 

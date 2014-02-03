@@ -1,7 +1,7 @@
 @import "variables"
 @import "variables_skin"
 
-.m-dashboard-moderate
+.dashboard-moderate
 
   #tabs
     margin-left: 15px
@@ -31,19 +31,19 @@
         font-weight: bold
 
 
-  .m-moderate-content
+  .moderate-content
     //border-radius: 8px
 
   &.hide_moderated .moderated
     display: none
 
-  .m-moderate-filters
+  .moderate-filters
     padding-top: $vertical_baseline
     padding-left: $grid_xs
     color: rgba($base_text_color, .5)
     border-top: 1px solid $comp_color
 
-  .m-moderate-filter
+  .moderate-filter
     color: rgba($base_text_color, .7)
 
     &.selected
@@ -54,12 +54,12 @@
     &:hover
       color: $base_text_color
 
-  .m-moderate-row
+  .moderate-row
     padding: $vertical_baseline $grid_xs
     border-bottom: 1px solid #aaa
 
 
-  .m-moderatable-evaluation-option
+  .moderatable-evaluation-option
     padding: $vertical_baseline / 4 0
     &:hover
       background-color: rgba(yellow, .15)
@@ -71,10 +71,10 @@
       cursor: pointer
 
 
-  .m-moderatable-field
+  .moderatable-field
     margin-bottom: $vertical_baseline/2
 
-  .m-moderatable-email 
+  .moderatable-email 
     margin-top: $vertical_baseline
 
     button
@@ -84,11 +84,11 @@
     +font-size(-2)
     margin-bottom: $vertical_baseline / 2
 
-    .m-moderate-context_link
+    .moderate-context_link
       text-decoration: underline
     .by
 
-  .m-moderate-updated
+  .moderate-updated
     +font-size(-1)
-    .m-moderate-updated-fineprint
+    .moderate-updated-fineprint
       +font-size(-4u)

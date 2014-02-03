@@ -3,7 +3,7 @@
 
   class Proposal.StateToggleView extends App.Views.StatefulLayout
     template : '#tpl_proposal_state_toggle'
-    className : 'm-proposal-state-toggle'
+    className : 'proposal-state-toggle'
 
 
     serializeData : ->

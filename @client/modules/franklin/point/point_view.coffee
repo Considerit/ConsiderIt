@@ -7,9 +7,9 @@
     template : '#tpl_point_view'
 
     regions :
-      headerRegion : '.m-point-header-region'
-      bodyRegion : '.m-point-wrap-region'
-      expansionRegion : '.m-point-expansion-region'
+      headerRegion : '.point-header-region'
+      bodyRegion : '.point-wrap-region'
+      expansionRegion : '.point-expansion-region'
 
     serializeData : ->
       params = _.extend {}, @model.attributes, 
@@ -18,7 +18,7 @@
       params
 
     @events : 
-      'click .m-point-close' : 'closePoint'
+      'click .point-close' : 'closePoint'
       'click' : 'pointClicked'
 
     pointClicked : (ev) ->
@@ -55,12 +55,12 @@
 
     disableDrag : ->
       try
-        @$el.find('.m-point-wrap').draggable 'destroy'
+        @$el.find('.point-wrap').draggable 'destroy'
       catch e
         # get here when nav to results page before draggable created
 
     enableDrag : ->
-      @$el.find('.m-point-wrap').draggable
+      @$el.find('.point-wrap').draggable
         revert: "invalid"
 
 
@@ -78,9 +78,9 @@
   class Point.ExpandedView extends App.Views.Layout
     template : '#tpl_point_expanded'
     regions :
-      followRegion : '.m-point-follow-region'
-      assessmentRegion : '.m-point-assessment-region'
-      discussionRegion : '.m-point-discussion'
+      followRegion : '.point-follow-region'
+      assessmentRegion : '.point-assessment-region'
+      discussionRegion : '.point-discussion'
 
     serializeData : ->
       @model.attributes
@@ -90,15 +90,15 @@
 
     onShow : ->
       # when clicking outside of point, close it      
-      $(document).on 'click.m-point-details', (ev)  => 
-        is_not_clicking_this_point = ($(ev.target).closest('.m-point-expanded').length == 0 || $(ev.target).closest('.m-point-expanded').data('id') != @model.id)
+      $(document).on 'click.point-details', (ev)  => 
+        is_not_clicking_this_point = ($(ev.target).closest('.point-expanded').length == 0 || $(ev.target).closest('.point-expanded').data('id') != @model.id)
         dialog_not_open = $('#l-dialog-detachable').length == 0
         if is_not_clicking_this_point && $(ev.target).closest('.editable-buttons').length == 0 && dialog_not_open
-          is_click_within_a_point = $(ev.target).closest('[data-role="m-point"]').length > 0
+          is_click_within_a_point = $(ev.target).closest('[data-role="point"]').length > 0
           is_clicking_nav = $(ev.target).closest('.l-navigate-wrap').length > 0
           @closeDetails( !is_click_within_a_point && !is_clicking_nav ) 
 
-      $(document).on 'keyup.m-point-details', (ev) => 
+      $(document).on 'keyup.point-details', (ev) => 
         dialog_not_open = $('#l-dialog-detachable').length == 0
         @closeDetails() if ev.keyCode == 27 && dialog_not_open
 
@@ -139,7 +139,7 @@
       @listenTo @model, 'change', @render
 
     events : 
-      'mouseover .m-point-assessment-indicator-region' : 'showVerdictTooltip'
+      'mouseover .point-assessment-indicator-region' : 'showVerdictTooltip'
 
     showVerdictTooltip : (ev) ->
 
@@ -193,18 +193,18 @@
       @stickit()
 
       current_user = App.request 'user:current'
-      if @$el.parents('.m-point-expanded').length > 0 && current_user.canEditPoint @model 
+      if @$el.parents('.point-expanded').length > 0 && current_user.canEditPoint @model 
         @makeEditable()
 
     bindings : 
-      '.m-point-read-more' : 
+      '.point-read-more' : 
         observe : 'comment_count'
         onGet : -> 
           if @model.get('comment_count') == 1 then "1 comment" else "#{@model.get('comment_count')} comments"
 
 
     makeEditable : ->
-      $editable = @$el.find('.m-point-nutshell')
+      $editable = @$el.find('.point-nutshell')
       $editable.editable
         resource: 'point'
         pk: @model.id
@@ -217,7 +217,7 @@
 
       $editable.prepend '<i class="editable-pencil icon-pencil icon-large">'
 
-      $details_editable = @$el.find('.m-point-details-description')
+      $details_editable = @$el.find('.point-details-description')
       $details_editable.editable
         resource: 'point'
         pk: @model.id
@@ -230,8 +230,8 @@
       $details_editable.prepend '<i class="editable-pencil icon-pencil icon-large">'
 
     removeEditable : ->
-      $editable = @$el.find('.m-point-nutshell')
-      $details_editable = @$el.find('.m-point-details-description')
+      $editable = @$el.find('.point-nutshell')
+      $details_editable = @$el.find('.point-details-description')
 
       $editable.editable('destroy')
       $details_editable.editable('destroy')
@@ -259,7 +259,7 @@
         @render()
 
     events : 
-      'click .m-point-follow' : 'toggleFollow'
+      'click .point-follow' : 'toggleFollow'
 
     toggleFollow : (ev) ->
       @trigger 'point:follow'

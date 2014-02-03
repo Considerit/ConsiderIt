@@ -4,8 +4,8 @@
     template : '#tpl_assessment_layout'
 
     regions : 
-      assessmentRequestRegion : '.m-point-assessment-request'
-      assessmentRegion : '.m-point-assessment'
+      assessmentRequestRegion : '.point-assessment-request'
+      assessmentRegion : '.point-assessment'
 
 
   class Assessment.AssessmentRequestView extends App.Views.ItemView
@@ -17,7 +17,7 @@
         already_requested_assessment : App.request 'assessment:request:by_user', @options.assessable.id, current_user.id 
 
     events : 
-      'click .m-point-assessment-request-initiate' : 'showRequestForm'
+      'click .point-assessment-request-initiate' : 'showRequestForm'
 
     showRequestForm : (ev) ->
       @trigger 'assessment:request'

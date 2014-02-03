@@ -174,20 +174,20 @@
     # Extremely ugly two methods
     saveOpenPoint : ->
       # check if any points are open now, and, if so, save them such that we can reopen it after we arere done resetting peer points
-      @has_open_point = @region.$el.find('.m-point-expanded').length > 0
+      @has_open_point = @region.$el.find('.point-expanded').length > 0
       if @has_open_point
-        $expanded_point = @region.$el.find('.m-point-expanded')
+        $expanded_point = @region.$el.find('.point-expanded')
         point_id = $expanded_point.data('id')
         @saved_point = App.request 'point:get', point_id
-        @comment_text = $expanded_point.find('.m-new-comment-body-field').val()
+        @comment_text = $expanded_point.find('.new-comment-body-field').val()
         $('body').trigger('click')
 
     restoreOpenPoint : ->
       if @has_open_point
         _.delay =>
           App.navigate Routes.proposal_point_path(@saved_point.get('long_id'), @saved_point.id), {trigger : true}
-          $expanded_point = @region.$el.find('.m-point-expanded')
-          $comment_field = $expanded_point.find('.m-new-comment-body-field')
+          $expanded_point = @region.$el.find('.point-expanded')
+          $comment_field = $expanded_point.find('.new-comment-body-field')
           $comment_field.val @comment_text
           $comment_field.ensureInView {scroll: false}
         , 10

@@ -2,16 +2,16 @@
   
   class Proposal.ProposalDescriptionView extends App.Views.StatefulLayout
     template : '#tpl_proposal_description'
-    className : 'm-proposal-description-wrap'
+    className : 'proposal-description-wrap'
 
     show_details : true
 
     regions : 
-      adminRegion : '.m-proposal-admin-region'
+      adminRegion : '.proposal-admin-region'
       
 
     ui : 
-      details : '.m-proposal-details'
+      details : '.proposal-details'
 
     editable : =>
       @state != Proposal.DescriptionState.collapsed && App.request 'auth:can_edit_proposal', @model    
@@ -34,11 +34,11 @@
       if @editable()
         if !Proposal.ProposalDescriptionView.editable_fields
           fields = [
-            ['.m-proposal-description-title', 'name', 'textarea'], 
-            ['.m-proposal-description-body', 'description', 'textarea'] ]
+            ['.proposal-description-title', 'name', 'textarea'], 
+            ['.proposal-description-body', 'description', 'textarea'] ]
 
           editable_fields = _.union fields,
-            ([".m-proposal-description-detail-field-#{f}", f, 'textarea'] for f in App.request('proposal:description_fields'))          
+            ([".proposal-description-detail-field-#{f}", f, 'textarea'] for f in App.request('proposal:description_fields'))          
 
           Proposal.ProposalDescriptionView.editable_fields = editable_fields
 
@@ -68,10 +68,10 @@
     onShow : ->
 
     bindings : 
-      '.m-proposal-description-title' : 
+      '.proposal-description-title' : 
         observe : ['name', 'description']
         onGet : (values) -> @model.title(280)
-      '.m-proposal-description-body' : 
+      '.proposal-description-body' : 
         observe : 'description'
         updateMethod: 'html'
         onGet : (value) => htmlFormat(value)
@@ -79,16 +79,16 @@
     events : 
       'click .hidden' : 'showDetails'
       'click .showing' : 'hideDetails'      
-      'click .m-proposal-description' : 'toggleDescription'
+      'click .proposal-description' : 'toggleDescription'
 
     showDetails : (ev) ->
-      $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
+      $block = $(ev.currentTarget).closest('.proposal-description-detail-field')
 
       $toggle = $block.find('.hidden:first')
       
       @desc = $toggle.data('label', $toggle.text()) if !$toggle.data('label')
 
-      $block.find('.m-proposal-description-detail-field-full').slideDown();
+      $block.find('.proposal-description-detail-field-full').slideDown();
       $toggle
         .text('hide')
         .toggleClass('hidden showing');
@@ -97,14 +97,14 @@
 
     hideDetails : (ev) ->
 
-      $block = $(ev.currentTarget).closest('.m-proposal-description-detail-field')
+      $block = $(ev.currentTarget).closest('.proposal-description-detail-field')
 
       if $(document).scrollTop() > $block.offset().top
         $('body').animate {scrollTop: $block.offset().top}, 1000
 
       $toggle = $block.find('.showing:first')
 
-      $block.find('.m-proposal-description-detail-field-full').slideUp(1000);
+      $block.find('.proposal-description-detail-field-full').slideUp(1000);
       $toggle
         .text($toggle.data('label'))
         .toggleClass('hidden showing');

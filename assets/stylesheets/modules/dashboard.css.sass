@@ -4,33 +4,33 @@
 $dashboard_sidebar_width: $grid_major * 2 + $grid_minor * 2 + $grid_xs
 $dashboard_content_width: $content_width - $dashboard_sidebar_width - 2 * $grid_xs - 5
 
-html body #m-dashboard
+html body #dashboard
   margin-bottom: $vertical_baseline
   padding: 3 * $vertical_baseline $grid_xs
 
-  .m-dashboard-close
+  .dashboard-close
     position: absolute
     top: 5px
     right: 5px
 
-  .m-dashboard-sidebar-region
+  .dashboard-sidebar-region
     float: left
     z-index: 10
     width: $dashboard_sidebar_width
 
-  .m-dashboard-main-region
+  .dashboard-main-region
     padding-left: $grid_minor
     float: left
     width: $dashboard_content_width
     height: 100%
 
-  .m-dashboard-heading
+  .dashboard-heading
     margin-bottom: 20px
 
     h2
       +font-size(5)
 
-    .m-dashboard-subheading
+    .dashboard-subheading
       color: #888
 
 
@@ -77,42 +77,42 @@ html body #m-dashboard
   // PAGE SPECIFIC 
   /////////////////
 
-  .m-dashboard-profile
+  .dashboard-profile
     .l-group-container
       text-align: left
 
-    .m-dashboard-profile-edit_profile
+    .dashboard-profile-edit_profile
       +font-size(-2)
       text-decoration: underline
       position: relative
       //top: -$vertical_baseline
 
-    .m-dashboard-profile-influence
+    .dashboard-profile-influence
       display: inline-block
-      &:hover .m-dashboard-profile-influence-details
+      &:hover .dashboard-profile-influence-details
         display: inline-block
 
-    .m-dashboard-profile-influence-details
+    .dashboard-profile-influence-details
       width: 470px
       display: none
       vertical-align: top
 
-    .m-dashboard-profile-influence-summary
+    .dashboard-profile-influence-summary
       display: inline-block
       vertical-align: text-bottom
       background-color: #444
       padding: $vertical_baseline / 2
       cursor: pointer
 
-    .m-dashboard-profile-influence-description
+    .dashboard-profile-influence-description
       color: #aaa
       +font-size(-1)
 
-    .m-dashboard-profile-influenced .avatar
+    .dashboard-profile-influenced .avatar
       opacity: .80
     
 
-    .m-dashboard-profile-activity-summaries
+    .dashboard-profile-activity-summaries
       margin-top: $vertical_baseline
       list-style: none
       li
@@ -120,13 +120,13 @@ html body #m-dashboard
         margin-right: $grid_xs / 2
 
 
-    .m-dashboard-profile-activity-summary, .m-dashboard-profile-influence-summary
+    .dashboard-profile-activity-summary, .dashboard-profile-influence-summary
       display: inline-block
       padding: $vertical_baseline / 2 0
       color: white
       width: 120px
 
-    .m-dashboard-profile-activity-summary
+    .dashboard-profile-activity-summary
       &:hover, &.selected
         cursor: pointer
         color: white
@@ -136,67 +136,67 @@ html body #m-dashboard
 
       
 
-    .m-activity-summary-count, .m-dashboard-profile-influence-count
+    .activity-summary-count, .dashboard-profile-influence-count
       +font-size(2)
       font-weight: bold
 
-    .m-activity-summary-label, .m-dashboard-profile-influence-label
+    .activity-summary-label, .dashboard-profile-influence-label
       +font-size(-1)
       //text-transform: uppercase
 
-    .m-activity-summary-count, .m-activity-summary-label, .m-dashboard-profile-influence-count, .m-dashboard-profile-influence-label
+    .activity-summary-count, .activity-summary-label, .dashboard-profile-influence-count, .dashboard-profile-influence-label
       text-align: center
       display: inline-block
       width: 100%
 
 
 
-    .m-dashboard-profile-bio
+    .dashboard-profile-bio
       font-style: italic
 
-    .m-dashboard-profile-activity-block
+    .dashboard-profile-activity-block
       margin-top: $vertical_baseline
       display: none
       h3
         margin-bottom: $vertical_baseline/2
       table
         width: 100%
-      .m-dashboard-profile-activity-action
+      .dashboard-profile-activity-action
         text-align: right
-      .m-dashboard-profile-activity-substance
+      .dashboard-profile-activity-substance
         +font-size(3)
         font-weight: bold
         margin-bottom: $vertical_baseline/2
-      .m-dashboard-profile-activity-substance-context
+      .dashboard-profile-activity-substance-context
         +font-size(1)
 
-      .m-dashboard-profile-activity-influence
+      .dashboard-profile-activity-influence
         margin-top: $vertical_baseline/2
 
-      .m-dashboard-profile-activity-substance-wrap
+      .dashboard-profile-activity-substance-wrap
         width: 500px
     
-    .m-dashboard-profile-activity-empty
+    .dashboard-profile-activity-empty
       +font-size(-1)
       font-style: italic
 
 
-  .m-user_roles-edit_form
+  .user_roles-edit_form
     //display: none
 
-  .m-dashboard-database
+  .dashboard-database
     height: 100%
     iframe
       width: 100%
       height: 100%
 
-  .m-dashboard-notifications-followable_group
+  .dashboard-notifications-followable_group
     margin-bottom: 2 * $vertical_baseline
 
 
 
 
-html body #m-dashboard
+html body #dashboard
 
   .table, .fht-table
     font-size: 75%
@@ -240,7 +240,7 @@ html body #m-dashboard
 
 
 
-.m-sidebar
+.sidebar
   hr
     border-top: 1px solid #aaa
     margin: $vertical_baseline/2 0
@@ -248,11 +248,11 @@ html body #m-dashboard
   li
     list-style-type: none
 
-  .m-sidebar-image img
+  .sidebar-image img
     display: inline-block
     width: 100%
 
-  .m-sidebar_link
+  .sidebar_link
     //+background-image(linear-gradient(#eee, #ccc))
     +font-size(-1)
     color: #555

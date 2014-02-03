@@ -20,22 +20,22 @@
   left: -$dialog_stutter
  
 [data-state="0"]
-  .m-proposal-description-region
+  .proposal-description-region
     +translateX(-$dialog_stutter)
     // the following is because translateX effectively creates a different rendering context, so need to set z-index/position so admin menu will work
     position: relative
     z-index: 2
 
 [data-state="0"].transitioning
-  .m-proposal-description-region
+  .proposal-description-region
     +translateX(0)
 
 
 $description_animation_time: 500ms
-.m-proposal-description-region
+.proposal-description-region
   +transition(transform $description_animation_time)
 
-.m-proposal-description-wrap
+.proposal-description-wrap
 
   .l-message-speaker.l-message-initiator
     //left: $grid_xs / 2
@@ -55,23 +55,23 @@ $description_animation_time: 500ms
 
 
   // editable
-  .m-proposal-description, .m-proposal-details
+  .proposal-description, .proposal-details
 
-  .m-proposal-description-body br
+  .proposal-description-body br
     padding-bottom: $vertical_baseline/2
 
-  .m-proposal-description-body.editable
+  .proposal-description-body.editable
     min-height: 80px
   //
 
 
   // in title
-  .m-position-your-action-body.join
+  .position-your-action-body.join
     @extend %collapsed_action_call
     margin-top: -16px
 
 
-  .m-proposal-description
+  .proposal-description
     margin: auto
     //left: -$dialog_stutter
     min-height: $initiator_width
@@ -81,36 +81,36 @@ $description_animation_time: 500ms
     td
       padding: 0 3px
   
-  .m-proposal-description-title
+  .proposal-description-title
     //+font-size(3)
 
 
   // in details
 
-  .m-proposal-details
+  .proposal-details
 
     .l-message-body
       //margin: 0 $margin_width $vertical_baseline $margin_width //- $dialog_stutter + $grid_xs  
       //left: -$dialog_stutter
 
-      &.m-proposal-details-body-wrap // silliness to override css from prior rule...
+      &.proposal-details-body-wrap // silliness to override css from prior rule...
         //border: 1px solid darken($base_bg_color, 15%)
         border-top: none
         border-radius: 0px 0px 16px 16px 
         //width: $body-width - $grid_xs / 2
 
-  .m-proposal-details-wrapper
+  .proposal-details-wrapper
     position: relative
 
   // read more fields
-  .m-proposal-description-details
+  .proposal-description-details
     margin-top: $vertical_baseline / 2
     //+font-size(-1)
 
     .hidden, .showing
       text-decoration: underline  
 
-    .m-proposal-description-detail-field-full
+    .proposal-description-detail-field-full
       p
         margin-bottom: $vertical_baseline/2
 
@@ -125,31 +125,31 @@ $description_animation_time: 500ms
         padding-left: $grid_xs
 
   // additional links
-  .m-proposal-links
+  .proposal-links
     position: absolute
     right: -$margin_width - $grid_xs
     bottom: 0
     padding: $vertical_baseline/2 $grid_xs/2
     width: $margin_width
 
-  .m-proposal-url-field
+  .proposal-url-field
     a
       text-decoration: underline
 
 
   &[data-state="expanded-together"], &[data-state="expanded-separated"]
   
-    .m-proposal-description
+    .proposal-description
       border-radius: 16px 16px 0px 0px
 
       > .t-bubble
         display: none
 
   &[data-state="collapsed"]
-    .m-proposal-description
+    .proposal-description
       cursor: pointer
 
-    .m-proposal-details
+    .proposal-details
       > .t-bubble
         display: none
 

@@ -2,7 +2,7 @@
   class Comments.CommentsView extends App.Views.CompositeView
     template: '#tpl_comments_view'
     itemView : Comments.CommentView
-    itemViewContainer : 'ul.m-point-comments'
+    itemViewContainer : 'ul.point-comments'
 
     buildItemView : (item) ->
       if item instanceof App.Entities.Comment 
@@ -17,7 +17,7 @@
       view
 
     events : 
-      'click .m-new-comment-submit' : 'createNew'
+      'click .new-comment-submit' : 'createNew'
 
     serializeData : ->
       current_user = App.request 'user:current'
@@ -32,21 +32,21 @@
           block_negative: true,
           max_chars : parseInt $(el).siblings('.count').text()
 
-      @$el.find('.m-new-comment-body-field').autosize()
+      @$el.find('.new-comment-body-field').autosize()
 
 
     createNew : (ev) ->
       attrs = {
-        body : @$el.find('.m-new-comment-body-field').val()
+        body : @$el.find('.new-comment-body-field').val()
       }
       @trigger 'comment:create', attrs
 
     commentCreated : ->
-      @$el.find('.m-new-comment-body-field').val('')
+      @$el.find('.new-comment-body-field').val('')
       toastr.success 'Comment added'
 
     restoreCommentText : ->
-      @$el.find('.m-new-comment-body-field').val @saved_comment_text
+      @$el.find('.new-comment-body-field').val @saved_comment_text
 
     saveCommentText : ->
-      @saved_comment_text = @$el.find('.m-new-comment-body-field').val()
+      @saved_comment_text = @$el.find('.new-comment-body-field').val()

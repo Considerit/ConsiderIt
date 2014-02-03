@@ -4,23 +4,23 @@
     template: '#tpl_proposals_region_layout'
 
     regions: 
-      activeRegion : '#m-proposals-container'
-      pastRegion : '#m-proposals-container-completed'
+      activeRegion : '#proposals-container'
+      pastRegion : '#proposals-container-completed'
 
   class Proposals.ProposalsListLayout extends App.Views.Layout
     template: '#tpl_proposals_list_layout'
     
     regions: 
-      createRegion : '.m-proposals-create-region'
-      proposalsRegion : '.m-proposal-list-region'
-      filtersRegion : '.m-proposals-filters'
-      paginationRegion : '.m-proposals-list-pagination'
+      createRegion : '.proposals-create-region'
+      proposalsRegion : '.proposal-list-region'
+      filtersRegion : '.proposals-filters'
+      paginationRegion : '.proposals-list-pagination'
 
   class Proposals.CreateProposalView extends App.Views.ItemView
     template: '#tpl_proposals_list_create'
 
     events :
-      'click .m-new-proposal-submit' : 'createNewProposal'
+      'click .new-proposal-submit' : 'createNewProposal'
 
     createNewProposal : (ev) ->
       @trigger 'proposal:new:requested'
@@ -45,14 +45,14 @@
       data_loaded : App.request "proposals:are_fetched"
 
     updateSelectedFilter : ->
-      @$el.find(".m-proposallist-sort.selected").removeClass 'selected'    
+      @$el.find(".proposallist-sort.selected").removeClass 'selected'    
       @$el.find("[data-target='#{@sort_by}']").addClass 'selected'
 
     onShow : ->
       @updateSelectedFilter()      
 
     events :
-      'click .m-proposallist-sort' : 'sortProposalsTo'
+      'click .proposallist-sort' : 'sortProposalsTo'
 
     sortProposalsTo : (ev) ->  
       @sort_by = $(ev.target).data('target')
@@ -123,7 +123,7 @@
 
   class Proposals.ProposalsListView extends App.Views.CompositeView
     template: '#tpl_proposals_list'
-    itemViewContainer : 'ul.m-proposal-list' 
+    itemViewContainer : 'ul.proposal-list' 
 
     initialize : (options = {}) ->
       super options
@@ -138,7 +138,7 @@
 
       view = new view_cls
         model: proposal
-        class : 'm-proposal'
+        class : 'proposal'
 
       view
 

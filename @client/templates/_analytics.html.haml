@@ -1,25 +1,25 @@
 %script{ :type => "text/template", :id => "tpl_dashboard_analyze"}
-  .m-dashboard-heading
+  .dashboard-heading
     %h2
       Analytics [experimental]
 
-    .m-dashboard-subheading
+    .dashboard-subheading
       Data about what users are doing
 
-  .m-analytics-tabs
+  .analytics-tabs
     %ul
-      %li.m-analytics-view{ :'data-target' => 'visitation'}
+      %li.analytics-view{ :'data-target' => 'visitation'}
         Visitation
-      %li.m-analytics-view{ :'data-target' => 'timeseries'}
+      %li.analytics-view{ :'data-target' => 'timeseries'}
         Time series
 
-  .m-analytics-region
+  .analytics-region
 
 %script{ :type => "text/template", :id => "tpl_dashboard_analytics_visitation"} 
   %h2
     On-site activities broken down by how the user first reached the site
 
-  %table.m-analytics-visitation
+  %table.analytics-visitation
     %tr
       %th
         domain
@@ -32,7 +32,7 @@
 
 
     (( _.each(_.sortBy(by_domain, function(d){return -d.total;}), function(domain) { ))
-    %tr.m-analytics-visitation-row
+    %tr.analytics-visitation-row
       %td
         {{ domain.domain }}
       %td

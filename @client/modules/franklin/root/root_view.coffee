@@ -4,8 +4,8 @@
     template: "#tpl_homepage_layout"
     className : 'homepage-region'
     regions :
-      headerRegion : '#m-homepage-header'
-      proposalsRegion : '#m-homepage-proposals'
+      headerRegion : '#homepage-header'
+      proposalsRegion : '#homepage-proposals'
 
 
   class Root.HeaderView extends App.Views.ItemView

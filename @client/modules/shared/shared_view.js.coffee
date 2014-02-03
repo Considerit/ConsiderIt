@@ -31,8 +31,8 @@
       if !$target.closest('.l-tooltip-user').length > 0
         user = App.request 'user', $target.data('id')
 
-        if $target.closest('[data-role="m-proposal"]').length > 0
-          long_id = $target.closest('[data-role="m-proposal"]').data('id')
+        if $target.closest('[data-role="proposal"]').length > 0
+          long_id = $target.closest('[data-role="proposal"]').data('id')
           proposal = App.request 'proposal:get', long_id
 
           proposal = null if !proposal.user_participated(user.id) 

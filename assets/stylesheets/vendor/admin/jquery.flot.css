@@ -1,8 +1,8 @@
 
-.m-dashboard-analyze .placeholder{
+.dashboard-analyze .placeholder{
   margin-top: 1em;
 }
-  .m-dashboard-analyze .placeholder h3 {font-size: 125%;padding-bottom: 1em;}
-  .m-dashboard-analyze .placeholder .main, .m-dashboard-analyze .placeholder .cumulative{display: inline-block;}
+  .dashboard-analyze .placeholder h3 {font-size: 125%;padding-bottom: 1em;}
+  .dashboard-analyze .placeholder .main, .dashboard-analyze .placeholder .cumulative{display: inline-block;}
     .main{margin-right: 2em;}
     .overview{margin-left: 12px;}

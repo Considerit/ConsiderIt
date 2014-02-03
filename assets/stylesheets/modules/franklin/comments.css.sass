@@ -1,15 +1,15 @@
 @import "variables"
 @import "sassy-buttons"
 /* COMMENTS */
-.m-comment
+.comment
   margin: 8px 0 25px 0
 
-  .m-comment-avatar
+  .comment-avatar
     width: 50px
     height: 50px
     vertical-align: top
     
-  .m-comment-body-wrap
+  .comment-body-wrap
     +font-size(-2)    
     display: inline-block
     width: 80%
@@ -17,7 +17,7 @@
     p, br
       margin-bottom: 6px
 
-  .m-comment-author
+  .comment-author
     font-style: italic
     white-space: nowrap
     display: inline-block
@@ -26,20 +26,20 @@
       text-decoration: underline
 
 
-  .m-comment-edit
+  .comment-edit
     +font-size(-2)
 
-  .m-comment-edit-form
+  .comment-edit-form
     .save_block
       top: auto
       left: 50px
       bottom: -30px
 
-.m-thank
+.thank
   display: inline-block
   margin-left: $grid_xs / 2 
 
-.m-thank-given
+.thank-given
   margin-top: $vertical_baseline / 2
   ul
     display: inline
@@ -52,34 +52,34 @@
 
 /* NEWCOMMENT */
 
-.m-new-comment
+.new-comment
   margin: 8px 0 25px 0
 
-  .m-new-comment-avatar
+  .new-comment-avatar
     width: 50px
     height: 50px
 
-  .m-new-comment-body
+  .new-comment-body
     //+font-size(-1)    
     display: inline-block
     width: 80%
     margin-left: $grid_xs    
 
-  .m-new-comment-body-field
+  .new-comment-body-field
     height: 60px
     width: 90%
     +font-size(2)
 
-  .m-new-comment-submit-wrap
+  .new-comment-submit-wrap
     text-align: right
     width: 90%
 
-  .m-new-comment-civility-reminder
+  .new-comment-civility-reminder
     +font-size(-2)
     width: 150px
     padding-right: $grid_xs
 
-  .m-login
+  .login
 
     a
       font-weight: normal

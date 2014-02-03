@@ -14,9 +14,9 @@
 
     events:
       'click [data-target="logout"]' : 'signoutRequested'
-      'mouseenter .m-user-options' : 'nav_entered' 
-      'mouseleave .m-user-options' : 'nav_exited' 
-      'click .m-user-options-dashboard_link' : 'access_dashboard'
+      'mouseenter .user-options' : 'nav_entered' 
+      'mouseleave .user-options' : 'nav_exited' 
+      'click .user-options-dashboard_link' : 'access_dashboard'
 
     signoutRequested : (ev) ->
       @trigger 'signout:requested'
@@ -27,13 +27,13 @@
         .delay 100, => @nav_exited()
 
     nav_entered : (ev) -> 
-      @$el.find('.m-user-options-menu-wrap')
+      @$el.find('.user-options-menu-wrap')
         .stop(true,false)
         .css('height', '')
         .slideDown();
 
     nav_exited : () ->
-      @$el.find('.m-user-options-menu-wrap')
+      @$el.find('.user-options-menu-wrap')
         .stop(true,false)
         .slideUp()
 

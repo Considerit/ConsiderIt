@@ -27,20 +27,20 @@
   %td
     {{ status }}
   %td
-    %a.m-assessment-edit{ :'data-id' => "{{ id }}", :href => "{{ Routes.edit_assessment_path(id) }}"}
+    %a.assessment-edit{ :'data-id' => "{{ id }}", :href => "{{ Routes.edit_assessment_path(id) }}"}
       Edit
 
 %script{ :type => "text/template", :id => "tpl_assess_list"}
 
 
-  .m-dashboard-heading
+  .dashboard-heading
     %h2
       Fact Checking Interface
 
-    .m-dashboard-subheading
+    .dashboard-subheading
       Accept responsibility for an assessment, determine which claims can be checked, and complete the check. 
 
-  .m-dashboard-assess-hide_completed
+  .dashboard-assess-hide_completed
     = check_box_tag 'hide_completed', :checked => false
     = label_tag 'hide_completed', 'hide completed'
 
@@ -68,11 +68,11 @@
 
   #edit_assessment
 
-    .m-dashboard-heading
+    .dashboard-heading
       %h2
         Assess claims
 
-      .m-dashboard-subheading
+      .dashboard-subheading
         Check the claims made in this point
 
     #main

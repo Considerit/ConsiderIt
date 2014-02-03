@@ -71,7 +71,6 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
 
     casper.then -> 
       @wait 1000, ->
-
         @HTMLStep 'browse to a proposal results page'
         test.assertExists '[data-role="proposal"] .peer-reasons[data-state="points-collapsed"]', 'Peer reasons exists in collapsed form'
         @click '[data-role="proposal"]:first-of-type .peer-reasons[data-state="points-collapsed"]:first-of-type'
@@ -79,15 +78,7 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
           @HTMLCapture 'body', 
             caption : 'The results page'
 
-          test.assertExists '[data-role="proposal"][data-state="4"]', 'Proposal is in results state'
-          test.assertElementCount '[data-role="proposal"]', 1, "there is only one proposal on the page"
-          test.assertVisible '.proposal-details', 'Proposal details are visible'
-          test.assertElementCount '.histogram-bar', 7, 'There are seven histogram bars visible'
-          test.assertExists '.peer-reasons[data-state="points-together"]', 'Pros and cons in together state'
-
-          test.assertSelectorHasText '.pointlist-header-label', 'Pros', 'Pros present in pros header'
-          test.assertSelectorDoesntHaveText '.pointlist-header-label', 'upport', 'Supporter is not present in pros header'
-
+          assert_in_results_state test
 
 
     execute_histogram_tests = (state) =>
@@ -136,59 +127,55 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
 
 
     casper.then ->
-      @HTMLStep 'open a point'
-      @mouse.click '[data-role="point"]'
-      @wait 1000, ->
-        test.assertVisible '.point-details-description', 'Point details are visible'
-        test.assertVisible '.point-discussion', 'Discussion section exists'
-
-        #TODO: if logged in, can thank and comment; if not, cannot thank or comment
-        @HTMLCapture '.point-expanded', 
-          caption : "Expanded point"
-
-        @mouse.click '.point-close'
-        test.assertDoesntExist '.point-expanded', 'point closes'
+      test_open_point test
 
     casper.then ->
-      @HTMLStep 'browse points'
-      @click '[data-target="browse-toggle"]'
-
-      test.assertExists '.pointlist-browsing', 'entered browsing mode'
-      @HTMLCapture '.reasons', 
-        caption : "Browsing points"
-
-      test.assertVisible '.pointlist-browse-sort', 'user can see the sort option'
-      @mouse.move '.pointlist-browse-sort-label'
-
-      test.assertVisible '.pointlist-browse-sort-menu', 'user can see the sort menu on hover'
-
-      @HTMLCapture '.pointlist-browsing', 
-        caption : "Hovering over sort"
-
-      @click '.pointlist-browse-sort .pointlist-sort-option [data-target="persuasiveness"]'
-      @HTMLCapture '.pointlist-browsing', 
-        caption : "after clicking persuasiveness sort"
-
-      @click '[data-target="browse-toggle"]'
-      test.assertDoesntExist '.pointlist-browsing', 'exited browsing mode'
-      @HTMLCapture '.reasons', 
-        caption : "after unexpanding"
+      test_browsing_points test
 
   casper.run ->
     test.done() 
 
 
-# casper.test.begin 'Lurker can poke around the proposal crafting page', 2, (test) ->
+casper.test.begin 'Lurker can poke around the proposal crafting page', 33, (test) ->
+  example_proposal = "wash_i_522"
 
-#     # casper.then -> 
-#     #   # browse to a proposal crafting page
+  casper.start "http://localhost:8787", ->
+    @wait(1000).then ->
+      @HTMLStep "Crafting page can be navigated to from homepage"
+      test.assertExists '[data-role="proposal"] [data-target="craft-position"]', 'Opportunity to add one\'s position'
+      @click '[data-role="proposal"]:first-of-type [data-target="craft-position"]:first-of-type'
+      @wait 5000, ->
+        assert_in_crafting_state test
 
-#     #   # open a point
+    casper.open("http://localhost:8787/#{example_proposal}/results")
+    @wait 5000, ->
+      casper.then -> 
+        @HTMLStep "Crafting page can be accessed from results page"
 
-#     #   # browse points
+        test.assertExists '[data-role="proposal"] [data-target="craft-position"]', 'Opportunity to add one\'s position'
+        @click '[data-role="proposal"] [data-target="craft-position"]:first-of-type'
+        @wait 5000, ->
+          assert_in_crafting_state test
 
-#   casper.run ->
-#     test.done() 
+    casper.open("http://localhost:8787/#{example_proposal}")
+    @wait 5000, ->
+      casper.then -> 
+        @HTMLStep "Crafting page can be directly opened"
+
+        @HTMLCapture 'body', 
+          caption: 'Full crafting page, different sizes'
+          sizes: [ [1200, 900], [600, 500], [1024, 768] ]
+
+        assert_in_crafting_state test
+
+      casper.then ->
+        test_open_point test
+
+      casper.then ->
+        test_browsing_points test
+
+  casper.run ->
+    test.done() 
 
 # casper.test.begin 'Lurker can poke around a user profile', 2, (test) ->
 
@@ -197,4 +184,62 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
 
 #   casper.run ->
 #     test.done() 
+
+assert_in_results_state = (test) ->
+  test.assertExists '[data-role="proposal"][data-state="4"]', 'Proposal is in results state'
+  test.assertElementCount '[data-role="proposal"]', 1, "there is only one proposal on the page"
+  test.assertVisible '.proposal-details', 'Proposal details are visible'
+  test.assertElementCount '.histogram-bar', 7, 'There are seven histogram bars visible'
+  test.assertExists '.peer-reasons[data-state="points-together"]', 'Pros and cons in together state'
+  test.assertSelectorHasText '.pointlist-header-label', 'Pros', 'Pros present in pros header'
+  test.assertSelectorDoesntHaveText '.pointlist-header-label', 'upport', 'Supporter is not present in pros header'
+
+assert_in_crafting_state = (test) ->
+  test.assertExists '[data-role="proposal"][data-state="1"]', 'Proposal is in crafting state'
+  test.assertElementCount '[data-role="proposal"]', 1, "there is only one proposal on the page"
+  test.assertVisible '.proposal-details', 'Proposal details are visible'
+  test.assertExists '.position[data-state="separated"]', 'Decision slate is visible'
+  test.assertExists '.peer-reasons[data-state="points-separated"]', 'Pros and cons on margins'
+  test.assertExists '.stance-slider-container', 'Slider present'
+  test.assertElementCount '.point-drop-target', 2, 'Drop targets present'
+  test.assertElementCount '.newpoint', 2, 'Add points present'
+
+test_open_point = (test) ->
+  casper.HTMLStep 'open a point'
+  casper.mouse.click '[data-role="point"]'
+  casper.wait 1000, ->
+    test.assertVisible '.point-details-description', 'Point details are visible'
+    test.assertVisible '.point-discussion', 'Discussion section exists'
+
+    #TODO: if logged in, can thank and comment; if not, cannot thank or comment
+    casper.HTMLCapture '.point-expanded', 
+      caption : "Expanded point"
+
+    casper.mouse.click '.point-close'
+    test.assertDoesntExist '.point-expanded', 'point closes'
+
+test_browsing_points = (test) ->
+  casper.HTMLStep 'browse points'
+  casper.click '[data-target="browse-toggle"]'
+
+  test.assertExists '.pointlist-browsing', 'entered browsing mode'
+  casper.HTMLCapture '.reasons', 
+    caption : "Browsing points"
+
+  test.assertVisible '.pointlist-browse-sort', 'user can see the sort option'
+  casper.mouse.move '.pointlist-browse-sort-label'
+
+  test.assertVisible '.pointlist-browse-sort-menu', 'user can see the sort menu on hover'
+
+  casper.HTMLCapture '.pointlist-browsing', 
+    caption : "Hovering over sort"
+
+  casper.click '.pointlist-browse-sort .pointlist-sort-option [data-target="persuasiveness"]'
+  casper.HTMLCapture '.pointlist-browsing', 
+    caption : "after clicking persuasiveness sort"
+
+  casper.click '[data-target="browse-toggle"]'
+  test.assertDoesntExist '.pointlist-browsing', 'exited browsing mode'
+  casper.HTMLCapture '.reasons', 
+    caption : "after unexpanding"
 

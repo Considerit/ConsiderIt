@@ -18,185 +18,185 @@ Not yet tested here:
 # used in these tests when a specific proposal is needed to be referenced
 example_proposal = "wash_i_522"
 
-# casper.test.begin 'Lurker can poke around homepage', 13, (test) ->
+casper.test.begin 'Lurker can poke around homepage', 13, (test) ->
 
-#   #TODO: loop here, once with logged in user, once without
-#   casper.start "http://localhost:8787/", ->
+  #TODO: loop here, once with logged in user, once without
+  casper.start "http://localhost:8787/", ->
 
-#     casper.then ->
-#       casper.wait 1000, ->
-#         @HTMLStep "Homepage can be mucked about"
+    casper.then ->
+      casper.wait 1000, ->
+        @HTMLStep "Homepage can be mucked about"
 
-#         @HTMLCapture 'body', 
-#           caption: 'Full homepage, different sizes'
-#           sizes: [ [1200, 900], [600, 500], [1024, 768] ]
+        @HTMLCapture 'body', 
+          caption: 'Full homepage, different sizes'
+          sizes: [ [1200, 900], [600, 500], [1024, 768] ]
 
-#         @HTMLCapture '[data-role="proposal"]', 
-#           caption: 'One of the proposals'
+        @HTMLCapture '[data-role="proposal"]', 
+          caption: 'One of the proposals'
 
-#         @HTMLCapture '#proposals-container', 
-#           caption: 'Active proposals'
+        @HTMLCapture '#proposals-container', 
+          caption: 'Active proposals'
 
-#         assert_homepage_loaded test
+        assert_homepage_loaded test
 
-#     casper.then ->
-#       @HTMLStep "load some more proposals"
+    casper.then ->
+      @HTMLStep "load some more proposals"
 
-#       @click '#proposals-container [data-target="load-proposals"]'
-#       @wait 10000, ->
-#         @HTMLCapture '#proposals-container', 
-#           caption: 'Active proposals'
+      @click '#proposals-container [data-target="load-proposals"]'
+      @wait 10000, ->
+        @HTMLCapture '#proposals-container', 
+          caption: 'Active proposals'
 
-#         test.assertExists '[data-target="proposallist:page"]', 'pagination is shown after loading proposals'
-#         @HTMLCapture '.proposals-operations',
-#           caption: 'Proposals pagination after loading more'
+        test.assertExists '[data-target="proposallist:page"]', 'pagination is shown after loading proposals'
+        @HTMLCapture '.proposals-operations',
+          caption: 'Proposals pagination after loading more'
 
-#         @click '#proposals-container-completed [data-target="load-proposals"]'
-#         @wait 10000, ->
-#           test.assertExists '#proposals-container-completed [data-target="proposallist:page"]', 'pagination for inactive proposals is shown after loading inactive proposals'
+        @click '#proposals-container-completed [data-target="load-proposals"]'
+        @wait 10000, ->
+          test.assertExists '#proposals-container-completed [data-target="proposallist:page"]', 'pagination for inactive proposals is shown after loading inactive proposals'
 
-#     casper.then ->
-#       casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
-#         @HTMLStep "Homepage can be accessed from different page"
-#         test.assertExists '[data-target="go-home"]', 'Opportunity to navigate to homepage'
-#         @click '[data-target="go-home"]'
-#         @wait 1000, ->
-#           assert_homepage_loaded test
-
-
-#   casper.run ->
-#     test.done() 
+    casper.then ->
+      casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
+        @HTMLStep "Homepage can be accessed from different page"
+        test.assertExists '[data-target="go-home"]', 'Opportunity to navigate to homepage'
+        @click '[data-target="go-home"]'
+        @wait 1000, ->
+          assert_homepage_loaded test
 
 
-
-# casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) ->
-
-#   #TODO: loop here, once with logged in user, once without
-#   casper.start "http://localhost:8787/", ->
-
-#     #TODO: loop, once going to active proposal, next to an inactive proposal
-#     #TODO: loop, proposal with activity and without activity
-
-#     casper.then -> 
-#       @wait 1000, ->
-#         @HTMLStep 'Results page can be accessed from homepage'
-#         test.assertExists '[data-role="proposal"] .peer-reasons[data-state="points-collapsed"]', 'Peer reasons exists in collapsed form'
-#         @click '[data-role="proposal"]:first-of-type .peer-reasons[data-state="points-collapsed"]:first-of-type'
-#         @wait 5000, ->
-#           @HTMLCapture 'body', 
-#             caption : 'The results page'
-
-#           assert_in_results_state test
-
-#     casper.then ->
-
-#       casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
-#         @HTMLStep "Results page can be accessed from crafting page"
-#         test.assertExists '[data-target="view-results"]', 'Opportunity to navigate to results page'
-#         @click '[data-target="view-results"]'
-#         @wait 1000, ->
-#           assert_in_results_state test
-
-#     casper.then ->
-#       casper.open("http://localhost:8787/#{example_proposal}/results").wait 5000, ->
-#         @HTMLStep "Results page can be directly opened"
-#         assert_in_results_state test
+  casper.run ->
+    test.done() 
 
 
-#     execute_histogram_tests = (state) =>
-#       @HTMLStep "#{state} histogram"
 
-#       if state == 'hover'
-#         casper.mouse.move '.histogram-bar:first-of-type .bar-people'     
-#       else
-#         @mouse.click '.histogram-bar:first-of-type .bar-people'  
-#         @mouse.move 'body'
+casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) ->
 
-#       @wait 250, ->
-#         test.assertSelectorHasText '.pointlist-header-label', 'Pros', "Pros present in pros header when #{state}"
-#         test.assertSelectorHasText '.pointlist-header-label', 'upport', "Supporter is present in pros header when #{state}"
+  #TODO: loop here, once with logged in user, once without
+  casper.start "http://localhost:8787/", ->
 
-#         @HTMLCapture '[data-role="proposal"]', 
-#           caption : "#{state} histogram bar"
+    #TODO: loop, once going to active proposal, next to an inactive proposal
+    #TODO: loop, proposal with activity and without activity
 
-#     # hover over histogram; then click
-#     casper.then ->
-#       execute_histogram_tests 'hover'
+    casper.then -> 
+      @wait 1000, ->
+        @HTMLStep 'Results page can be accessed from homepage'
+        test.assertExists '[data-role="proposal"] .peer-reasons[data-state="points-collapsed"]', 'Peer reasons exists in collapsed form'
+        @click '[data-role="proposal"]:first-of-type .peer-reasons[data-state="points-collapsed"]:first-of-type'
+        @wait 5000, ->
+          @HTMLCapture 'body', 
+            caption : 'The results page'
 
-#     casper.then ->
-#       execute_histogram_tests 'click'
+          assert_in_results_state test
 
+    casper.then ->
 
-#     casper.then ->
-#       @HTMLStep 'hover over a point'
+      casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
+        @HTMLStep "Results page can be accessed from crafting page"
+        test.assertExists '[data-target="view-results"]', 'Opportunity to navigate to results page'
+        @click '[data-target="view-results"]'
+        @wait 1000, ->
+          assert_in_results_state test
 
-#       @mouse.move 'body'
-#       point_includers = @evaluate ->
-#         return _.uniq($('[data-role="point"]:first').attr("includers").split(',')).length
-
-#       total_avatars = @evaluate -> return $(".histogram .avatar:visible").length
-
-#       @mouse.move '[data-role="point"]'
-#       @wait 200, ->
-#         @HTMLCapture '[data-role="proposal"]', 
-#           caption : "Hovering over a point"
-
-#         includers_hidden = @evaluate -> 
-#           hidden = -> $(this).css('opacity') == '0' || $(this).css('visibility') == 'hidden'
-#           return $(".histogram .avatar:visible").filter(hidden).length
-
-#         test.assertEqual total_avatars - includers_hidden, point_includers, 'Only includers shown on point hover'
+    casper.then ->
+      casper.open("http://localhost:8787/#{example_proposal}/results").wait 5000, ->
+        @HTMLStep "Results page can be directly opened"
+        assert_in_results_state test
 
 
-#     casper.then ->
-#       test_open_point test
+    execute_histogram_tests = (state) =>
+      @HTMLStep "#{state} histogram"
 
-#     casper.then ->
-#       test_browsing_points test
+      if state == 'hover'
+        casper.mouse.move '.histogram-bar:first-of-type .bar-people'     
+      else
+        @mouse.click '.histogram-bar:first-of-type .bar-people'  
+        @mouse.move 'body'
 
-#   casper.run ->
-#     test.done() 
+      @wait 250, ->
+        test.assertSelectorHasText '.pointlist-header-label', 'Pros', "Pros present in pros header when #{state}"
+        test.assertSelectorHasText '.pointlist-header-label', 'upport', "Supporter is present in pros header when #{state}"
+
+        @HTMLCapture '[data-role="proposal"]', 
+          caption : "#{state} histogram bar"
+
+    # hover over histogram; then click
+    casper.then ->
+      execute_histogram_tests 'hover'
+
+    casper.then ->
+      execute_histogram_tests 'click'
 
 
-# casper.test.begin 'Lurker can poke around the proposal crafting page', 33, (test) ->
+    casper.then ->
+      @HTMLStep 'hover over a point'
 
-#   #TODO: loop here, once with logged in user, once without
+      @mouse.move 'body'
+      point_includers = @evaluate ->
+        return _.uniq($('[data-role="point"]:first').attr("includers").split(',')).length
 
-#   casper.start "http://localhost:8787", ->
-#     @wait(1000).then ->
-#       @HTMLStep "Crafting page can be navigated to from homepage"
-#       test.assertExists '[data-role="proposal"] [data-target="craft-position"]', 'Opportunity to add one\'s position'
-#       @click '[data-role="proposal"]:first-of-type [data-target="craft-position"]:first-of-type'
-#       @wait 5000, ->
-#         assert_in_crafting_state test
+      total_avatars = @evaluate -> return $(".histogram .avatar:visible").length
 
-#     casper.then ->
-#       casper.open("http://localhost:8787/#{example_proposal}/results").wait 5000, ->
-#         @HTMLStep "Crafting page can be accessed from results page"
+      @mouse.move '[data-role="point"]'
+      @wait 200, ->
+        @HTMLCapture '[data-role="proposal"]', 
+          caption : "Hovering over a point"
 
-#         test.assertExists '[data-role="proposal"] [data-target="craft-position"]', 'Opportunity to add one\'s position'
-#         @click '[data-role="proposal"] [data-target="craft-position"]:first-of-type'
-#         @wait 5000, ->
-#           assert_in_crafting_state test
+        includers_hidden = @evaluate -> 
+          hidden = -> $(this).css('opacity') == '0' || $(this).css('visibility') == 'hidden'
+          return $(".histogram .avatar:visible").filter(hidden).length
 
-#     casper.then ->
-#       casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
-#         @HTMLStep "Crafting page can be directly opened"
+        test.assertEqual total_avatars - includers_hidden, point_includers, 'Only includers shown on point hover'
 
-#         @HTMLCapture 'body', 
-#           caption: 'Full crafting page, different sizes'
-#           sizes: [ [1200, 900], [600, 500], [1024, 768] ]
 
-#         assert_in_crafting_state test
+    casper.then ->
+      test_open_point test
 
-#     casper.then ->
-#       test_open_point test
+    casper.then ->
+      test_browsing_points test
 
-#     casper.then ->
-#       test_browsing_points test
+  casper.run ->
+    test.done() 
 
-#   casper.run ->
-#     test.done() 
+
+casper.test.begin 'Lurker can poke around the proposal crafting page', 33, (test) ->
+
+  #TODO: loop here, once with logged in user, once without
+
+  casper.start "http://localhost:8787", ->
+    @wait(1000).then ->
+      @HTMLStep "Crafting page can be navigated to from homepage"
+      test.assertExists '[data-role="proposal"] [data-target="craft-position"]', 'Opportunity to add one\'s position'
+      @click '[data-role="proposal"]:first-of-type [data-target="craft-position"]:first-of-type'
+      @wait 5000, ->
+        assert_in_crafting_state test
+
+    casper.then ->
+      casper.open("http://localhost:8787/#{example_proposal}/results").wait 5000, ->
+        @HTMLStep "Crafting page can be accessed from results page"
+
+        test.assertExists '[data-role="proposal"] [data-target="craft-position"]', 'Opportunity to add one\'s position'
+        @click '[data-role="proposal"] [data-target="craft-position"]:first-of-type'
+        @wait 5000, ->
+          assert_in_crafting_state test
+
+    casper.then ->
+      casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
+        @HTMLStep "Crafting page can be directly opened"
+
+        @HTMLCapture 'body', 
+          caption: 'Full crafting page, different sizes'
+          sizes: [ [1200, 900], [600, 500], [1024, 768] ]
+
+        assert_in_crafting_state test
+
+    casper.then ->
+      test_open_point test
+
+    casper.then ->
+      test_browsing_points test
+
+  casper.run ->
+    test.done() 
 
 example_user = 262
 example_user_with_proposal = 1

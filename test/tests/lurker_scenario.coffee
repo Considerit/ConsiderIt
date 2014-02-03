@@ -14,7 +14,10 @@ Not yet tested here:
 ###
 
 
-casper.test.begin 'Lurker can poke around homepage', 7, (test) ->
+# used in these tests when a specific proposal is needed to be referenced
+example_proposal = "wash_i_522"
+
+casper.test.begin 'Lurker can poke around homepage', 13, (test) ->
 
   #TODO: loop here, once with logged in user, once without
   casper.start "http://localhost:8787/", ->
@@ -26,19 +29,14 @@ casper.test.begin 'Lurker can poke around homepage', 7, (test) ->
         @HTMLCapture 'body', 
           caption: 'Full homepage, different sizes'
           sizes: [ [1200, 900], [600, 500], [1024, 768] ]
-        
-        test.assertExists '[data-role="proposal"][data-state="0"]', "there is at least one proposal, and it is collapsed"
+
         @HTMLCapture '[data-role="proposal"]', 
           caption: 'One of the proposals'
 
-        test.assertElementCount '#proposals-container [data-role="proposal"]', 5, "there are 5 active proposals"
         @HTMLCapture '#proposals-container', 
           caption: 'Active proposals'
 
-        test.assertElementCount '#proposals-container-completed [data-role="proposal"]', 0, "there are no inactive proposals"
-
-        test.assertExists '#proposals-container [data-target="load-proposals"]', 'ability to load more active proposals'
-        test.assertExists '#proposals-container-completed [data-target="load-proposals"]', 'ability to load more inactive proposals'
+        assert_homepage_loaded test
 
     casper.then ->
       @HTMLStep "load some more proposals"
@@ -56,12 +54,21 @@ casper.test.begin 'Lurker can poke around homepage', 7, (test) ->
         @wait 10000, ->
           test.assertExists '#proposals-container-completed [data-target="proposallist:page"]', 'pagination for inactive proposals is shown after loading inactive proposals'
 
+    casper.then ->
+      casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
+        @HTMLStep "Homepage can be accessed from different page"
+        test.assertExists '[data-target="go-home"]', 'Opportunity to navigate to homepage'
+        @click '[data-target="go-home"]'
+        @wait 1000, ->
+          assert_homepage_loaded test
+
+
   casper.run ->
     test.done() 
 
 
 
-casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) ->
+casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) ->
 
   #TODO: loop here, once with logged in user, once without
   casper.start "http://localhost:8787/", ->
@@ -71,7 +78,7 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
 
     casper.then -> 
       @wait 1000, ->
-        @HTMLStep 'browse to a proposal results page'
+        @HTMLStep 'Results page can be accessed from homepage'
         test.assertExists '[data-role="proposal"] .peer-reasons[data-state="points-collapsed"]', 'Peer reasons exists in collapsed form'
         @click '[data-role="proposal"]:first-of-type .peer-reasons[data-state="points-collapsed"]:first-of-type'
         @wait 5000, ->
@@ -79,6 +86,20 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
             caption : 'The results page'
 
           assert_in_results_state test
+
+    casper.then ->
+
+      casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
+        @HTMLStep "Results page can be accessed from crafting page"
+        test.assertExists '[data-target="view-results"]', 'Opportunity to navigate to results page'
+        @click '[data-target="view-results"]'
+        @wait 1000, ->
+          assert_in_results_state test
+
+    casper.then ->
+      casper.open("http://localhost:8787/#{example_proposal}/results").wait 5000, ->
+        @HTMLStep "Results page can be directly opened"
+        assert_in_results_state test
 
 
     execute_histogram_tests = (state) =>
@@ -137,7 +158,8 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
 
 
 casper.test.begin 'Lurker can poke around the proposal crafting page', 33, (test) ->
-  example_proposal = "wash_i_522"
+
+  #TODO: loop here, once with logged in user, once without
 
   casper.start "http://localhost:8787", ->
     @wait(1000).then ->
@@ -147,8 +169,7 @@ casper.test.begin 'Lurker can poke around the proposal crafting page', 33, (test
       @wait 5000, ->
         assert_in_crafting_state test
 
-    casper.open("http://localhost:8787/#{example_proposal}/results")
-    @wait 5000, ->
+    casper.open("http://localhost:8787/#{example_proposal}/results").wait 5000, ->
       casper.then -> 
         @HTMLStep "Crafting page can be accessed from results page"
 
@@ -184,6 +205,13 @@ casper.test.begin 'Lurker can poke around the proposal crafting page', 33, (test
 
 #   casper.run ->
 #     test.done() 
+
+assert_homepage_loaded = (test) ->
+  test.assertExists '[data-role="proposal"][data-state="0"]', "there is at least one proposal, and it is collapsed"
+  test.assertElementCount '#proposals-container [data-role="proposal"]', 5, "there are 5 active proposals"
+  test.assertElementCount '#proposals-container-completed [data-role="proposal"]', 0, "there are no inactive proposals"
+  test.assertExists '#proposals-container [data-target="load-proposals"]', 'ability to load more active proposals'
+  test.assertExists '#proposals-container-completed [data-target="load-proposals"]', 'ability to load more inactive proposals'
 
 assert_in_results_state = (test) ->
   test.assertExists '[data-role="proposal"][data-state="4"]', 'Proposal is in results state'

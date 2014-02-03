@@ -196,16 +196,15 @@
               .dashboard-profile-activity-substance
                 {{ proposal.get('name') }}
             %td.dashboard-profile-activity-action
-              = link_to 'View and consider', "{{Routes.proposal_path(proposal.id)}}"
+              %a{ :href => "{{ Routes.proposal_path(proposal.id) }}", :'data-id' => "{{ proposal.id }}" }
+                View and consider
           (( }); ))
       (( } else { ))
       .dashboard-profile-activity-empty
         {{name}} has not put forward any proposals.
       (( } ))
 
-
     .dashboard-profile-activity-block{ :'data-target' => 'positions-details'}
-
 
       %h3
         Positions taken
@@ -230,7 +229,8 @@
                 Re: {{ proposal.get('name') }}
 
             %td.dashboard-profile-activity-action
-              = link_to 'See why', "{{ route }}"
+              %a{ :href => "{{ route }}", :'data-id' => "{{ position.id }}" }
+                See why
           (( }); ))
       (( } else { ))
       .dashboard-profile-activity-empty
@@ -262,7 +262,8 @@
                 (( }); ))   
 
             %td.dashboard-profile-activity-action
-              = link_to 'Read and discuss', "{{ route }}"
+              %a{ :href => "{{ route }}", :'data-id' => "{{ point.id }}" }
+                Read and discuss
           (( }); ))
       (( } else { ))
       .dashboard-profile-activity-empty
@@ -289,7 +290,8 @@
               .dashboard-profile-activity-substance-context
                 Re: {{ proposal.get('name') }}
             %td.dashboard-profile-activity-action
-              = link_to 'Join in', "{{ route }}", :anchor => "comment-{{comment.id}}"
+              %a{ :href => "{{ route }}#comment-{{comment.id}}", :'data-id' => "{{ comment.id }}" }
+                Join in
           (( }); ))
       (( } else { ))
       .dashboard-profile-activity-empty

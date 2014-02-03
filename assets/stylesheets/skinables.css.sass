@@ -81,9 +81,8 @@ a:hover
 
 
 // franklin/proposals
-.m-proposals-new
-  button
-    @extend %desaturatedbutton
+.m-proposals-new button
+  @extend %desaturatedbutton
 
 #m-proposals-container-completed
   hr
@@ -94,14 +93,11 @@ a:hover
 
 .m-proposals-list-pagination 
   .m-proposals-pagination-showmore, .m-proposals-list-pagination-page, .m-proposals-list-pagination-jump
-    +sassy-button("simple", 5px, inherit, darken($base_bg_color, 4%), darken($base_bg_color, 12%))
-    color: lighten($base_text_color, 12%)
-    &:hover
-      color: darken($base_text_color, 12%)
+    @extend %desaturatedbutton
 
   .selected
-    +sassy-button("simple", 5px, inherit, darken($callout_bg_color, 4%), darken($callout_bg_color, 12%))
-    color: $callout_text_color
+    @extend %superbutton
+    padding: $vertical_baseline / 4 $grid_xs/2
 
 .m-proposals-container-hibernation-message
   background-color: $comp_color
@@ -320,11 +316,15 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
 .m-point-drop-target, .m-newpoint
   border: 1px dashed $decision_board_border_color
 
+// franklin/point
+.m-thank .thank
+  @extend %desaturatedbutton
+
 // helpers
 
 .l-tooltip-user
   .l-tooltip-user-action
-    +sassy-button("glass", 5px, inherit, lighten($callout_bg_color, 8%), darken($callout_bg_color, 8%) )
+    @extend %superbutton
 
 // homepage
 

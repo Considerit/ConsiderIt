@@ -21,10 +21,10 @@
       params
 
     onShow : ->
-      @$el.find('.m-moderation-tab:first').trigger('click')
+      @$el.find('.moderation-tab:first').trigger('click')
 
     events : 
-      'click .m-moderation-tab.inactive' : 'tabChanged'
+      'click .moderation-tab.inactive' : 'tabChanged'
 
     tabChanged : (ev) ->
       $target = $(ev.currentTarget)
@@ -38,7 +38,7 @@
   class Moderation.ModerationItemView extends App.Views.ItemView
     template : '#tpl_moderate_item_view'
     tagName : 'div'
-    className : 'm-moderate-row'
+    className : 'moderate-row'
 
     radioboxes : [
       ['account', 'moderate_points_mode', 'account_moderate_points_mode']
@@ -84,9 +84,9 @@
         @$el.addClass 'not_moderated'
 
     events : 
-      'click .m-moderatable-evaluation-option input' : 'moderation'
+      'click .moderatable-evaluation-option input' : 'moderation'
       'ajax:complete form' : 'moderationSubmitted'
-      'click .m-moderatable-email button' : 'emailRequest'
+      'click .moderatable-email button' : 'emailRequest'
 
     moderation : (ev) ->
       @$el.find('input[type="submit"]').trigger('click')
@@ -108,16 +108,16 @@
   class Moderation.ModerationListView extends App.Views.CompositeView
     template : '#tpl_moderate_list_view'
     itemView : Moderation.ModerationItemView
-    itemViewContainer : '.m-moderate-content'
+    itemViewContainer : '.moderate-content'
 
     setFilter : (filter) ->
-      @$el.find('.m-moderate-filter').removeClass('selected')
-      @$el.find(".m-moderate-filter[data-target='#{filter}']").addClass('selected')
+      @$el.find('.moderate-filter').removeClass('selected')
+      @$el.find(".moderate-filter[data-target='#{filter}']").addClass('selected')
       @current_filter = filter
       @trigger 'filter:changed', filter
 
     events : 
-      'click .m-moderate-filter' : 'toggleFilter'
+      'click .moderate-filter' : 'toggleFilter'
 
     toggleFilter : (ev) ->
       $target = $(ev.currentTarget)

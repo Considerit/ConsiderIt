@@ -21,12 +21,12 @@
       params
 
     events : 
-      'click .m-dashboard-profile-activity-summary' : 'activityToggled'
+      'click .dashboard-profile-activity-summary' : 'activityToggled'
 
     activityToggled : (ev) ->
       already_selected = $(ev.currentTarget).is('.selected')
-      @$el.find('.m-dashboard-profile-activity-block').hide()
-      @$el.find('.m-dashboard-profile-activity-summary').removeClass('selected')
+      @$el.find('.dashboard-profile-activity-block').hide()
+      @$el.find('.dashboard-profile-activity-summary').removeClass('selected')
 
       if !already_selected
         target = $(ev.currentTarget).data('target')    
@@ -42,7 +42,7 @@
         avatar : App.request('user:avatar', @model, 'original')
 
     events : 
-      'ajax:complete .m-dashboard-edit-user' : 'userUpdated'
+      'ajax:complete .dashboard-edit-user' : 'userUpdated'
 
     userUpdated : (ev, response, options) ->
       data = $.parseJSON(response.responseText)
@@ -58,7 +58,7 @@
         auth_method : @model.authMethod()
 
     events : 
-      'ajax:complete .m-dashboard-edit-user' : 'userUpdated'
+      'ajax:complete .dashboard-edit-user' : 'userUpdated'
 
     userUpdated : (ev, response, options) ->
       data = $.parseJSON(response.responseText)
@@ -86,8 +86,8 @@
         tenant_id : tenant.id
         
     events : 
-      'ajax:complete .m-dashboard-notifications-unfollow_all' : 'unfollowed_all'
-      'ajax:complete .m-dashboard-notifications-unfollow' : 'unfollow'
+      'ajax:complete .dashboard-notifications-unfollow_all' : 'unfollowed_all'
+      'ajax:complete .dashboard-notifications-unfollow' : 'unfollow'
 
     unfollowed_all : (ev, response, status) ->
       @trigger 'unfollow:all'

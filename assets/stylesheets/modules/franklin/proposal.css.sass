@@ -4,22 +4,22 @@
 @import "compass/css3/transition"
 @import "library/library"
 
-.m-proposal
+.proposal
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
   position: relative
   min-height: $initiator_width
 
   // inactive proposal
   &[data-status="proposal-inactive"]
-    .m-position-your-action-body, .m-position-submit-footer-wrap
+    .position-your-action-body, .position-submit-footer-wrap
       display: none
 
     &[data-state="0"]
-      .m-position-region
+      .position-region
         visibility: hidden
 
     &[data-activity="proposal-no-activity"]
-      .m-proposal-aggregate-region, .m-proposal-reasons-region
+      .proposal-aggregate-region, .proposal-reasons-region
         display: none
 
 
@@ -28,32 +28,32 @@
       display: none
 
     &[data-state="0"]
-      .m-proposal-aggregate-region
+      .proposal-aggregate-region
         display: none
 
     &[data-state="1"]
 
-      .m-proposal-state-toggle
+      .proposal-state-toggle
         display: none
 
-      .m-position-cancel
+      .position-cancel
         display: none
 
-      .points_peer_empty, .m-point-drop-target
+      .points_peer_empty, .point-drop-target
         display: none
 
 
 
-// .m-proposal
+// .proposal
 //   &[data-state="1"], &[data-state="2"], &[data-state="4"]
 //     padding: $vertical_baseline 0
 
-[data-state="together"] .m-proposal-socialmedia-region
+[data-state="together"] .proposal-socialmedia-region
   visibility: visible
 
-[data-state="together"].transitioning .m-proposal-socialmedia-region
+[data-state="together"].transitioning .proposal-socialmedia-region
 
-.m-proposal-socialmedia-region
+.proposal-socialmedia-region
   position: absolute
   visibility: hidden
   z-index: 999
@@ -61,7 +61,7 @@
   bottom: -9 * $vertical_baseline
   padding-right: $grid_xs / 2
 
-  .m-proposal-socialmedia-action-call
+  .proposal-socialmedia-action-call
     +font-size(-1)
     font-weight: bold
     text-decoration: underline
@@ -83,23 +83,23 @@
 
 // Proposal admin strip
 [data-visibility="published"]
-  .m-proposal-admin_strip
+  .proposal-admin_strip
     position: absolute
     right: -$grid_xs * 2
     bottom: $vertical_baseline / 4
     z-index: 10
 
     i
-    .m-proposal-admin-options-menu
+    .proposal-admin-options-menu
       display: none
 
     &:hover
-      .m-proposal-admin-options-menu-wrap
+      .proposal-admin-options-menu-wrap
         position: absolute
         right: -$grid_minor
         top: 20px
 
-      .m-proposal-admin-options-menu
+      .proposal-admin-options-menu
         min-width: 200px
         @extend %nude_list
         margin-left: 0
@@ -123,27 +123,27 @@
             display: inline-block
 
 
-    .l-dialog-prompt-label, .m-delete_proposal
+    .l-dialog-prompt-label, .delete_proposal
       //text-transform: uppercase
 
 
 // unpublished proposal
 [data-visibility="unpublished"]
-  .m-proposal-admin-region
+  .proposal-admin-region
     top: $vertical_baseline / 2 
     height: 0
     position: relative
 
-  .m-proposal-admin_strip
+  .proposal-admin_strip
     position: relative
 
     i.fa-cog
       display: none
 
-    .m-proposal-admin-options-menu-wrap
+    .proposal-admin-options-menu-wrap
       display: inline-block
 
-    .m-proposal-admin-options-menu
+    .proposal-admin-options-menu
       @extend %nude_list
       li
         display: inline-block
@@ -152,46 +152,46 @@
         &:hover
 
 
-    .l-dialog-prompt-label, .m-delete_proposal
+    .l-dialog-prompt-label, .delete_proposal
       //text-transform: uppercase
 
-    .m-proposal-admin_operations-status
+    .proposal-admin_operations-status
       display: none
 
-    .m-proposal-admin-publicity
+    .proposal-admin-publicity
       position: absolute
       +font-size(-1)
       top: $vertical_baseline / 2
       left: 15 * $grid_xs
 
-    .m-delete_proposal
+    .delete_proposal
       right: 4px
       position: absolute
       top: 3 * $vertical_baseline
       +font-size(-2)
 
-  .m-proposal-admin-publish
+  .proposal-admin-publish
     position: absolute
     right: 0
     z-index: 2
 
-    .m-proposal-publish
+    .proposal-publish
       +font-size(0)
       &:hover
         +font-size(0)
 
-  .m-proposal-reasons-region, .m-proposal-aggregate-region, .m-proposal-state-toggle-region
+  .proposal-reasons-region, .proposal-aggregate-region, .proposal-state-toggle-region
     display: none
 
   &[data-state="0"]
-    .m-proposal-reasons-region, .m-proposal-aggregate-region, .m-proposals-list-pagination
+    .proposal-reasons-region, .proposal-aggregate-region, .proposals-list-pagination
       display: none
 
     padding-bottom: 4 * $vertical_baseline
 
 
 // admin form
-.m-proposal-admin_operations-settings-form
+.proposal-admin_operations-settings-form
   .access_list
     textarea
       width: 100%
@@ -202,7 +202,7 @@
 
 /* YOUR_ACTION */
 
-.m-position-your-action-body
+.position-your-action-body
   text-align: center
   font-weight: bold
   border-radius: 0 0 5px 5px
@@ -211,7 +211,7 @@
 
 // participants block
 [data-state="collapsed"]
-.m-participants.l-message-speaker
+.participants.l-message-speaker
 
   .l-group-container
     +rotate(180deg)
@@ -220,14 +220,14 @@
       +rotate(180deg)
 
 [data-state="together"][data-state-from="collapsed"], [data-state="collapsed"]
-  .m-participants.l-message-speaker
+  .participants.l-message-speaker
     visibility: visible
 
 // [data-state="together"]
-//   .m-participants.l-message-speaker
+//   .participants.l-message-speaker
 //     top: -3px
 
-.m-participants.l-message-speaker
+.participants.l-message-speaker
   visibility: hidden
   z-index: 10
   right: 0 //1.5 * $grid_xs

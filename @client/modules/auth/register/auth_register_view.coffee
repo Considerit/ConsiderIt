@@ -4,12 +4,12 @@
     dialog:
       title : 'Please finish your registration'
 
-    className : 'm-user-accounts-complete-paperwork-form'
+    className : 'user-accounts-complete-paperwork-form'
     template: "#tpl_user_complete_paperwork"
     regions:
-      cardRegion : '.m-user-accounts-complete-paperwork-card'
-      pledgeRegion : '.m-user-accounts-complete-paperwork-pledge'
-      footerRegion : '.m-user-accounts-complete-paperwork-footer'
+      cardRegion : '.user-accounts-complete-paperwork-card'
+      pledgeRegion : '.user-accounts-complete-paperwork-pledge'
+      footerRegion : '.user-accounts-complete-paperwork-footer'
 
     events:
       'ajax:complete form' : 'registrationReturned'
@@ -36,7 +36,7 @@
 
       pledges_checked = @$el.find('input[type="checkbox"]').length == @$el.find('input[type="checkbox"]:checked').length
 
-      $submit_button_register = @$el.find('.m-user-accounts-complete-paperwork-footer input[type="submit"]')
+      $submit_button_register = @$el.find('.user-accounts-complete-paperwork-footer input[type="submit"]')
 
       if pledges_checked && $email_field.is('.ui-state-valid') && $name_field.is('.ui-state-valid') && ($password_field.is('.ui-state-valid') || @model.authMethod() != 'email')
         $submit_button_register.removeAttr('disabled')
@@ -118,9 +118,9 @@
 
     pledge_clicked : ->
       if @$el.find('input[type="checkbox"]').length == @$el.find('input[type="checkbox"]:checked').length
-        $('.m-user-accounts-pledge-taken').fadeIn()
+        $('.user-accounts-pledge-taken').fadeIn()
       else
-        $('.m-user-accounts-pledge-taken').fadeOut()
+        $('.user-accounts-pledge-taken').fadeOut()
 
 
   class Register.PaperworkFooterView extends App.Views.ItemView

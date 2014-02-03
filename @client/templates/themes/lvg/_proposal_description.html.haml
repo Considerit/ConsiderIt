@@ -3,7 +3,7 @@
   (( prop_type = proposal.getTagsByType('type'); ))
   (( jurisdiction = proposal.getTagsByType('jurisdiction'); ))
 
-  (( if(prop_type=='local'){ $(".m-proposal[data-id='"+proposal.id+"']").addClass('t-local'); } ))
+  (( if(prop_type=='local'){ $(".proposal[data-id='"+proposal.id+"']").addClass('t-local'); } ))
 
 
   .l-message
@@ -14,16 +14,16 @@
 
     .l-message-body.l-proposal-description-outer-wrap     
 
-      .l-message.m-proposal-introduction
+      .l-message.proposal-introduction
 
 
         .l-message-speaker
 
-        .l-message-body.m-proposal-description
+        .l-message-body.proposal-description
           = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
           .l-message-title
-            %span.m-proposal-description-intro
+            %span.proposal-description-intro
               (( if(category){ ))
 
               = succeed ':' do
@@ -34,34 +34,34 @@
                 (( } ))
               (( } ))
 
-            %span.m-proposal-description-title
+            %span.proposal-description-title
 
         
 
       (( if(show_details){ ))
 
-      .l-message.m-proposal-details
+      .l-message.proposal-details
 
-        .l-message-body.m-proposal-details-body-wrap
+        .l-message-body.proposal-details-body-wrap
           = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-          .m-proposal-description-body
+          .proposal-description-body
 
           (( if(published) { ))
 
-          .m-proposal-details-wrapper
-            .m-proposal-description-details
+          .proposal-details-wrapper
+            .proposal-description-details
 
 
               (( _.each(description_detail_fields, function(field) {  ))
 
               (( if( $.trim(field[2]) != '') { ))
-              .m-proposal-description-detail-field
-                .m-proposal-description-detail-field-heading
+              .proposal-description-detail-field
+                .proposal-description-detail-field-heading
                   %a.hidden
                     Read {{ field[1] }} &raquo;
-                .m-proposal-description-detail-field-full.hide
-                  %div{ :class => "m-proposal-description-detail-field-{{field[0]}}" }
+                .proposal-description-detail-field-full.hide
+                  %div{ :class => "proposal-description-detail-field-{{field[0]}}" }
                     %h1
                       {{ field[1] }}
                     {{ field[2] }}
@@ -70,13 +70,13 @@
               (( } ))
 
               (( }); ))
-            .m-proposal-description-details.m-proposal-links
+            .proposal-description-details.proposal-links
               %h3
                 More information
 
               (( _.each([{field: url1, name: 'Full text'}, {field: url2, name: 'Responsible Choices Analysis'}, {field: url3, name: 'Funding Sources'} ], function(url) {  ))
               (( if( url.field && $.trim(url.field) != '' ){ ))
-              .m-proposal-url-field
+              .proposal-url-field
                 %a{ :href => "{{url.field}}", :target => "_blank"}
                   {{url.name}}
               (( } ))
@@ -87,4 +87,4 @@
           (( } ))
         
       (( } ))
-      .m-proposal-admin-region
+      .proposal-admin-region

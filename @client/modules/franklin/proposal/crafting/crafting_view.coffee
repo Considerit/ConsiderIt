@@ -2,13 +2,13 @@
 
   class Proposal.PositionLayout extends App.Views.StatefulLayout
     template : '#tpl_position_crafting_layout'
-    className : 'l-message m-position'
+    className : 'l-message position'
     regions : 
-      headerRegion : '.m-reasons-header-region'
-      reasonsRegion : '.m-position-reasons-region'
-      stanceRegion : '.m-position-stance-region'
-      explanationRegion : '.m-position-explanation-region'
-      footerRegion : '.m-position-footer-region'
+      headerRegion : '.reasons-header-region'
+      reasonsRegion : '.position-reasons-region'
+      stanceRegion : '.position-stance-region'
+      explanationRegion : '.position-explanation-region'
+      footerRegion : '.position-footer-region'
 
     serializeData : ->
       tenant = App.request 'tenant:get'
@@ -21,7 +21,7 @@
       @processIncludedPoints()
 
       @$el.droppable
-        accept: ".m-point-peer .m-point-wrap"
+        accept: ".point-peer .point-wrap"
         drop : (ev, ui) =>
           valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
           @trigger 'point:include', ui.draggable.parent().data('id')
@@ -54,7 +54,7 @@
 
   class Proposal.PositionFooterSeparatedView extends App.Views.ItemView
     template : '#tpl_position_footer'
-    className : 'm-position-footer'
+    className : 'position-footer'
 
     serializeData : ->
       current_user = App.request 'user:current'
@@ -77,7 +77,7 @@
 
   class Proposal.ReasonsHeaderView extends App.Views.ItemView
     template : '#tpl_reasons_header'
-    className : 'm-reasons-header'
+    className : 'reasons-header'
 
     serializeData : ->
       current_user = App.request 'user:current'
@@ -96,15 +96,15 @@
 
   class Proposal.PositionReasonsLayout extends App.Views.Layout
     template : '#tpl_position_reasons'
-    className : 'm-personal-reasons'
+    className : 'personal-reasons'
 
     regions : 
-      positionProsRegion : '.m-position-propoints-region'
-      positionConsRegion : '.m-position-conpoints-region'
+      positionProsRegion : '.position-propoints-region'
+      positionConsRegion : '.position-conpoints-region'
 
   class Proposal.PositionStance extends App.Views.ItemView
     template : '#tpl_position_stance'
-    className : 'm-stance'
+    className : 'stance'
 
     serializeData : ->
       tenant = App.request 'tenant:get'
@@ -122,9 +122,9 @@
 
     ui : 
       slider : '.noUiSlider'
-      neutral_label : '.m-stance-label-neutral'
-      support_label : '.m-stance-label-support'
-      oppose_label : '.m-stance-label-oppose'
+      neutral_label : '.stance-label-neutral'
+      support_label : '.stance-label-support'
+      oppose_label : '.stance-label-oppose'
 
     _stance_val : ->
       @model.get('stance') * 100

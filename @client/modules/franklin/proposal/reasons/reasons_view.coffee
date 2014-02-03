@@ -2,13 +2,13 @@
 
   class Proposal.ReasonsLayout extends App.Views.StatefulLayout
     template: '#tpl_reasons_layout'
-    className: 'l-message m-reasons'
+    className: 'l-message reasons'
 
     regions : 
-      positionRegion : '.m-position-region'
-      footerRegion : '.m-reasons-footer-region'      
-      peerProsRegion : '.m-aggregated-propoints-region'
-      peerConsRegion : '.m-aggregated-conpoints-region'
+      positionRegion : '.position-region'
+      footerRegion : '.reasons-footer-region'      
+      peerProsRegion : '.aggregated-propoints-region'
+      peerConsRegion : '.aggregated-conpoints-region'
       participantsRegion : '.l-message-speaker'
 
     initialize : (options = {}) ->
@@ -30,12 +30,12 @@
     pointsBrowsing : (valence) ->
 
       if valence == 'pro'
-        @peerProsRegion.$el.addClass 'm-pointlist-browsing'
-        @$el.addClass 'm-reasons-browsing m-reasons-browsing-pros'
+        @peerProsRegion.$el.addClass 'pointlist-browsing'
+        @$el.addClass 'reasons-browsing reasons-browsing-pros'
 
       else
-        @peerConsRegion.$el.addClass 'm-pointlist-browsing'
-        @$el.addClass 'm-reasons-browsing m-reasons-browsing-cons'
+        @peerConsRegion.$el.addClass 'pointlist-browsing'
+        @$el.addClass 'reasons-browsing reasons-browsing-cons'
 
       @sizeToFit 10
 
@@ -49,17 +49,17 @@
         @peerProsRegion.$el.css 
           left: ''
 
-        @peerConsRegion.$el.removeClass 'm-pointlist-browsing'
-        @$el.removeClass 'm-reasons-browsing m-reasons-browsing-cons'
+        @peerConsRegion.$el.removeClass 'pointlist-browsing'
+        @$el.removeClass 'reasons-browsing reasons-browsing-cons'
 
       else
-        @peerProsRegion.$el.removeClass 'm-pointlist-browsing'
-        @$el.removeClass 'm-reasons-browsing m-reasons-browsing-pros'
+        @peerProsRegion.$el.removeClass 'pointlist-browsing'
+        @$el.removeClass 'reasons-browsing reasons-browsing-pros'
 
       @sizeToFit 10
 
     _sizeToFit : (minheight) ->
-      $to_fit = @$el.find('.m-reasons-lists')
+      $to_fit = @$el.find('.reasons-lists')
 
       $to_fit.css 'height', ''
       $to_fit.parent().css 'min-height', ''
@@ -79,16 +79,16 @@
         @_sizeToFit minheight
 
     events : 
-      'mouseenter .m-point-peer' : 'logPointView'
-      'click .m-points-list-region' : 'reasonsClicked'
-      'click .m-participants' : 'reasonsClicked'      
-      'click .m-reasons-footer-region' : 'reasonsClicked'            
-      'mouseenter .m-points-list-region' : 'showViewResults'
-      'mouseleave .m-points-list-region' : 'hideViewResults'
-      'mouseenter .m-reasons-footer-region' : 'showViewResults'
-      'mouseleave .m-reasons-footer-region' : 'hideViewResults'      
-      'mouseenter .m-participants' : 'showViewResults'
-      'mouseleave .m-participants' : 'hideViewResults'
+      'mouseenter .point-peer' : 'logPointView'
+      'click .points-list-region' : 'reasonsClicked'
+      'click .participants' : 'reasonsClicked'      
+      'click .reasons-footer-region' : 'reasonsClicked'            
+      'mouseenter .points-list-region' : 'showViewResults'
+      'mouseleave .points-list-region' : 'hideViewResults'
+      'mouseenter .reasons-footer-region' : 'showViewResults'
+      'mouseleave .reasons-footer-region' : 'hideViewResults'      
+      'mouseenter .participants' : 'showViewResults'
+      'mouseleave .participants' : 'hideViewResults'
 
     logPointView : (ev) ->
       if @state != Proposal.ReasonsState.collapsed
@@ -96,7 +96,7 @@
         @trigger 'point:viewed', pnt
 
     reasonsClicked : (ev) ->
-      if @state == Proposal.ReasonsState.collapsed && $(ev.target).closest('.m-reasons-header-region').length == 0
+      if @state == Proposal.ReasonsState.collapsed && $(ev.target).closest('.reasons-header-region').length == 0
         @trigger 'show_results'
         ev.stopPropagation()
 
@@ -104,21 +104,21 @@
       return if @state != Proposal.ReasonsState.collapsed
 
       @hover_state = true
-      @$el.find('.m-reasons-footer-region').css
+      @$el.find('.reasons-footer-region').css
         visibility: 'visible'
 
     hideViewResults : (ev) ->
-      return if @state != Proposal.ReasonsState.collapsed || $(ev.target).closest('.m-reasons-view-results').length > 0
+      return if @state != Proposal.ReasonsState.collapsed || $(ev.target).closest('.reasons-view-results').length > 0
       @hover_state = false
       _.delay =>
         if !@hover_state
-          @$el.find('.m-reasons-footer-region').css
+          @$el.find('.reasons-footer-region').css
             visibility: ''
       , 100
 
   class Proposal.ResultsFooterView extends App.Views.ItemView
     template : '#tpl_aggregate_footer_expanded'
-    className : 'm-reasons-footer-sticky'
+    className : 'reasons-footer-sticky'
 
     serializeData : ->
       user_position = @model.getUserPosition()

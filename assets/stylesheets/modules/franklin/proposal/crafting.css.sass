@@ -2,20 +2,20 @@
 @import "library/library"
 @import "compass/css3/transition"
 
-.m-position
+.position
   &[data-state="separated"], &[data-state="together"]
-    .m-position-message-body
+    .position-message-body
       padding-bottom: $vertical_baseline / 2 $grid_xs / 2 $vertical_baseline * 1.5 $grid_xs / 2
       border-style: solid
 
-  .m-position-message-body.l-message-body
+  .position-message-body.l-message-body
     padding: $vertical_baseline / 2 $grid_xs / 2 0 $grid_xs / 2
     width: auto
     border-radius: 15px
 
 
 // pros and cons for the user
-.m-personal-reasons
+.personal-reasons
   position: relative
   display: inline-block
   margin-top: $vertical_baseline / 2
@@ -23,22 +23,22 @@
 
 //separated footer
 [data-state="together"]
-  .m-position-footer
+  .position-footer
     visibility: hidden
 
-.m-position-footer
+.position-footer
   position: relative
   width: 100% //$body_width
   //top: -16px
   z-index: 2
   margin: $vertical_baseline 0 2 * $vertical_baseline 0
 
-  .m-position-your-action-body.submit
+  .position-your-action-body.submit
     width: 100%
     +font-size(2)
     border-radius: 16px
 
-  .m-position-submit-footer-wrap
+  .position-submit-footer-wrap
     margin-top: $vertical_baseline/2
     .notifications
       display: inline-block
@@ -46,13 +46,13 @@
       label, input[type="checkbox"]
         cursor: pointer
 
-    .m-position-cancel
+    .position-cancel
       display: inline-block
       margin-right: $grid_xs
       float: right
       +font-size(-2)
 
-.m-reasons-header-region, [data-state="separated"][data-state-from="collapsed"].transitioning .m-reasons-header-region
+.reasons-header-region, [data-state="separated"][data-state-from="collapsed"].transitioning .reasons-header-region
   width: $decision_board_width
   position: relative
   margin-left: -$grid_xs / 2 - 2
@@ -61,12 +61,12 @@
   display: block
 
 [data-state="separated"], [data-state="together"]
-  .m-reasons-header-region
+  .reasons-header-region
     // border-radius: 16px 16px 0 0
     // border: 2px solid
     display: none
 
-.m-reasons-header
+.reasons-header
   a
     //border: 2px dashed $decision_board_border_color
     //border-radius: 16px
@@ -77,39 +77,39 @@
 
 
 // SLIDER
-.m-stance
+.stance
   margin: auto auto 2 * $vertical_baseline auto 
 
-  .m-position-heading-stance
+  .position-heading-stance
     text-decoration: underline
     margin-top: $vertical_baseline
     +font-size(2)
     text-align: center
 
       
-  %m-stance-label
+  %stance-label
     vertical-align: middle
     +font-size(0)
     div
       width: $slider_label_width
 
-  .m-stance-label-support
-    @extend %m-stance-label
+  .stance-label-support
+    @extend %stance-label
     text-align: right
     padding-right: $grid_xs
 
-  .m-stance-label-oppose
-    @extend %m-stance-label
+  .stance-label-oppose
+    @extend %stance-label
     text-align: left
     padding-left: $grid_xs
 
-  .m-stance-label-neutral
-    @extend %m-stance-label
+  .stance-label-neutral
+    @extend %stance-label
     text-align: center
     +font-size(2)
     +transition(opacity .5s linear)
 
-  .m-stance-slider-container
+  .stance-slider-container
     height: 45px 
     padding-top: 4px
     width: $slider_width

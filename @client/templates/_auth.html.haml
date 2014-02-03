@@ -1,52 +1,52 @@
 
 %script{ :type => "text/template", :id => "tpl_logged_out"}
-  .m-login
-    %a{:'data-target' => 'login', :class => "m-login-signin"}
+  .login
+    %a{:'data-target' => 'login', :class => "login-signin"}
       Log In / Create Account
 
 %script{ :type => "text/template", :id => "tpl_logged_in"}
 
-  .m-user-options
-    .m-user-options-display
+  .user-options
+    .user-options-display
       %img{ :src => "{{ avatar }}", :alt => "your profile picture"}
 
       %a
         {{ name }} 
 
-      %span.m-user-options-triangle
+      %span.user-options-triangle
         %i.fa.fa-caret-down
 
-    .m-user-options-menu-wrap
+    .user-options-menu-wrap
 
-      %ul.m-user-options-menu
+      %ul.user-options-menu
         %li
-          %a.m-user-options-dashboard_link{:href => "{{Routes.profile_path(current_user.id)}}"}
+          %a.user-options-dashboard_link{:href => "{{Routes.profile_path(current_user.id)}}"}
             Profile
         %li
-          %a.m-user-options-dashboard_link{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
+          %a.user-options-dashboard_link{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
             Edit Profile
 
         (( if(is_admin) { ))
         %li
-          %a.m-user-options-dashboard_link.application{:href => "/dashboard/application", :'data-target' => 'app_settings'}
+          %a.user-options-dashboard_link.application{:href => "/dashboard/application", :'data-target' => 'app_settings'}
             App settings
         (( } ))
 
         (( if( can_moderate ) { ))
         %li
-          %a.m-user-options-dashboard_link.moderate{:href => "{{Routes.dashboard_moderate_path()}}", :'data-target' => 'moderate'}
+          %a.user-options-dashboard_link.moderate{:href => "{{Routes.dashboard_moderate_path()}}", :'data-target' => 'moderate'}
             Moderate
         (( } ))
 
         (( if( can_assess ) { ))
         %li
-          %a.m-user-options-dashboard_link.assess{:href => "{{Routes.assessment_index_path()}}", :'data-target' => 'assess'}
+          %a.user-options-dashboard_link.assess{:href => "{{Routes.assessment_index_path()}}", :'data-target' => 'assess'}
             Assess
         (( } ))
 
         / (( if( is_analyst ) { ))
         / %li
-        /   %a.m-user-options-dashboard_link.analyze{:href => "{{Routes.analytics_path()}}", :'data-target' => 'analyze'}
+        /   %a.user-options-dashboard_link.analyze{:href => "{{Routes.analytics_path()}}", :'data-target' => 'analyze'}
         /     Analyze
         / (( } ))
 
@@ -60,7 +60,7 @@
 
 %script{ :type => "text/template", :id => "tpl_auth_options"}
   
-  .m-user-accounts-auth-options-header
+  .user-accounts-auth-options-header
 
     (( if(fixed){ ))
     Please log in through {{providers[0].name}}, the option you previously chose.
@@ -68,14 +68,14 @@
     &hellip;or log in instantly with
     (( } ))
 
-  %ul.m-user-accounts-auth-options
+  %ul.user-accounts-auth-options
     (( _.each(providers, function(provider) { ))
 
-    %li.m-user-accounts-login-option
+    %li.user-accounts-login-option
       %button{ :'data-target' => "third_party_auth", :class => "zocial {{provider.name}}", :'data-provider' => "{{provider.provider}}" }
         {{provider.name}}
       (( if(false && provider.fineprint) { ))
-      .m-user-accounts-fineprint.m-fineprint-social
+      .user-accounts-fineprint.fineprint-social
         {{provider.fineprint}}
       (( } ))
 
@@ -85,15 +85,15 @@
 
 %script{ :type => "text/template", :id => "tpl_signin_via_email"}
   = form_for :user, :url => user_session_path, :remote => true do |f|
-    .m-user-accounts-form
-      .m-user-accounts-form-fields-wrap
+    .user-accounts-form
+      .user-accounts-form-fields-wrap
         (( if(fixed) { ))
         = f.hidden_field :email, :value => "{{email}}", :class => 'h5-email ui-state-valid'
         // = f.label :email, 'Your email address'
         // .email_field.inlined.fixed
         (( } else { ))
         .email_field.inlined
-          .m-user-account-auth-question
+          .user-account-auth-question
             = f.label :password_overviews, "What is your email address?"
 
           .input-group
@@ -103,7 +103,7 @@
         (( } ))
 
         (( if(fixed) { ))
-        .m-user-account-password
+        .user-account-password
           .input-group
             %span.input-group-addon     
               %i.fa.fa-key.fa-fw 
@@ -112,22 +112,22 @@
             I forgot! Email me password instructions. 
         (( } else { ))
         .password_field.inlined
-          .m-user-account-auth-question
+          .user-account-auth-question
             = f.label :password_overviews, "Do you already have an account?"
 
-          .m-user-accounts-no-account
+          .user-accounts-no-account
             %input{ :id => :password_none, :name => :password_overviews, :type => 'radio', :value => 'no'}
             %label{ :for => :password_none }
               Nope, I'm a new user
 
 
-          .m-user-accounts-has-account
+          .user-accounts-has-account
 
             %input{ :id => :password_has, :name => :password_overviews, :type => 'radio', :value => 'yes'}
             %label{ :for => :password_has }
               Yep, I have a password
 
-            .m-user-account-password
+            .user-account-password
               .input-group
                 %span.input-group-addon     
                   %i.fa.fa-key.fa-fw 
@@ -135,24 +135,24 @@
               %a.forget_password_prompt
                 I forgot! Email me password instructions. 
 
-        .m-user-accounts-finish-wrap
-          %button.m-user-accounts-register-next{:disabled => 'disabled', :type => 'button', :'data-target' => "create-account"}
+        .user-accounts-finish-wrap
+          %button.user-accounts-register-next{:disabled => 'disabled', :type => 'button', :'data-target' => "create-account"}
             Create my account
         
         (( } ))
-        .m-user-accounts-finish-wrap
-          = f.submit "Log me in", :disabled => 'disabled', :class => 'm-user-accounts-login-submit', :'data-target' => "login-submit"
+        .user-accounts-finish-wrap
+          = f.submit "Log me in", :disabled => 'disabled', :class => 'user-accounts-login-submit', :'data-target' => "login-submit"
 
 
 
 
 %script{ :type => "text/template", :id => "tpl_user_signin"}
-  .m-user-accounts-email-auth-region
-  .m-user-accounts-auth-options-region
+  .user-accounts-email-auth-region
+  .user-accounts-auth-options-region
 
 %script{ :type => "text/template", :id => "tpl_new_user" }      
-  .m-user-accounts-auth-options-region
-  .m-user-accounts-complete-paperwork-form
+  .user-accounts-auth-options-region
+  .user-accounts-complete-paperwork-form
 
 %script{ :type => "text/template", :id => "tpl_user_complete_paperwork" }      
   = form_for :user, :url => user_registration_path, :remote => true, :multipart => true do |f|
@@ -160,14 +160,14 @@
     %input{ :type => "hidden", :name => "{{ csrfparam }}", :value => "{{ csrftoken }}" }
     = f.hidden_field :registration_complete, :value => true
 
-    .m-user-accounts-complete-paperwork-card
-    .m-user-accounts-complete-paperwork-pledge
-    .m-user-accounts-complete-paperwork-footer
+    .user-accounts-complete-paperwork-card
+    .user-accounts-complete-paperwork-pledge
+    .user-accounts-complete-paperwork-footer
 
 %script{ :type => "text/template", :id => "tpl_user_paperwork_card" }      
 
-  .m-user-accounts-form-fields-wrap
-    .m-user-accounts-form-fields-text
+  .user-accounts-form-fields-wrap
+    .user-accounts-form-fields-text
 
       .name_field.inlined
         %input{ :id => "user_name", :name => "user[name]", :pattern => "^.{1,}", :placeholder => "Your name", :required => "required", :title => "Give yourself a name, please!", :type => "text"}
@@ -190,11 +190,11 @@
         %input{ :id => "user_password", :name => "user[password]", :placeholder => "Password", :required => "required", :pattern => ".{3,}", :title => "Password is required.", :type => "password"}
 
 
-      .m-user-accounts-authorized-feedback{:'data-provider' => "{{auth_method}}" }
+      .user-accounts-authorized-feedback{:'data-provider' => "{{auth_method}}" }
         %button{ :class => "zocial {{auth_method}} icon" }
         Registering via {{auth_method}}
 
-      .m-user-accounts-pledge-taken
+      .user-accounts-pledge-taken
         &#10004; Civility pledge taken
 
     .avatar_field
@@ -220,10 +220,10 @@
 
   %input{ :name => "commit", :type => "submit", :value => "Create my account!", :class => "ui-state-valid", :'data-target' => "paperwork_complete" }
 
-  .m-user-accounts-tos
+  .user-accounts-tos
     %span
       Signing up acknowledges that you agree to the 
-    %a.m-user-terms-show{:href => "/home/terms-of-use", :target => "_blank"}
+    %a.user-terms-show{:href => "/home/terms-of-use", :target => "_blank"}
       Terms of Use
 
 
@@ -242,5 +242,5 @@
       = f.label :password_confirmation, "Confirm new password" 
     = f.password_field :password_confirmation, :pattern => ".{3,}"
 
-    .m-user-accounts-finish-wrap
+    .user-accounts-finish-wrap
       = f.submit "Change my password and log in", :class => 'button'

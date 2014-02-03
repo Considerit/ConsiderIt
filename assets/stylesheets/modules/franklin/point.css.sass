@@ -2,34 +2,34 @@
 @import "library/library"
 @import "compass/css3/box-shadow"
 
-.m-point
+.point
   position: relative
   @extend %nude_list
 
-  .m-point-close
+  .point-close
     display: none
 
-  .m-point-wrap
+  .point-wrap
     position: relative
     display: inline-block
 
-  &.m-point-peer, &.m-point-expanded
-    .m-point-wrap
+  &.point-peer, &.point-expanded
+    .point-wrap
       padding: $vertical_baseline / 2 $grid_xs / 2 
       margin-bottom: $vertical_baseline / 2
 
 
-  &.m-point-position
+  &.point-position
 
-  &.m-point-unexpanded
+  &.point-unexpanded
 
-  &.m-point-expanded
+  &.point-expanded
     position: relative
     z-index: 999
     // padding: $vertical_baseline $grid_xs  
-    width: $m-point-expanded-width + $peer-point-avatar-area
+    width: $point-expanded-width + $peer-point-avatar-area
 
-    .m-point-close
+    .point-close
       display: block
       position: absolute
       right: -11px
@@ -39,49 +39,49 @@
       i
         +font-size(2)
 
-    .m-point-wrap
-      width: $m-point-expanded-width - 3
+    .point-wrap
+      width: $point-expanded-width - 3
       padding: $vertical_baseline 1.5 * $grid_xs
 
-    &.m-point-position
+    &.point-position
       &.con
-        left: $position-point-width - $m-point-expanded-width + ($m-point-expanded-width - $body_width) / 2
+        left: $position-point-width - $point-expanded-width + ($point-expanded-width - $body_width) / 2
       &.pro
-        left: - ($m-point-expanded-width - $body_width) / 2
+        left: - ($point-expanded-width - $body_width) / 2
 
 [data-state="points-separated"], [data-state="points-together"], [data-state="points-position"]
-  .m-point-unexpanded
+  .point-unexpanded
     cursor: pointer
 
 
-.m-pointlist-browsing .m-peer-reasons
+.pointlist-browsing .peer-reasons
   &[data-state="points-separated"]
-    .m-point-expanded.con.m-point-peer
-      right: $m-point-expanded-width - $peer-point-width + 56 - $expanded_points_increment
+    .point-expanded.con.point-peer
+      right: $point-expanded-width - $peer-point-width + 56 - $expanded_points_increment
 
-.m-peer-reasons
+.peer-reasons
 
   &[data-state="points-together"]
-    .m-point-expanded.con.m-point-peer
-      right: $m-point-expanded-width - $peer-point-results-width
+    .point-expanded.con.point-peer
+      right: $point-expanded-width - $peer-point-results-width
 
   &[data-state="points-separated"]
-    .m-point-expanded.con.m-point-peer
-      right: $m-point-expanded-width - $peer-point-width + 56
+    .point-expanded.con.point-peer
+      right: $point-expanded-width - $peer-point-width + 56
 
 
   &[data-state="points-separated"]
-    .m-point-unexpanded.m-point-peer .m-point-wrap
+    .point-unexpanded.point-peer .point-wrap
       +grab_cursor
 
   &[data-state="points-collapsed"]
 
-    .m-point
+    .point
       z-index: 5
-      // .m-point-header-region
+      // .point-header-region
       //   display: none
 
-.m-position-points
+.position-points
   // &[data-state="points-hidden"]
   //   display: none
 
@@ -91,28 +91,28 @@
 /////////////////////////
 // Point text
 
-.m-point-unexpanded
-  &.m-point-peer
-    .m-point-nutshell
+.point-unexpanded
+  &.point-peer
+    .point-nutshell
       +font-size(-1)
 
-  &.m-point-position  
-    .m-point-nutshell
+  &.point-position  
+    .point-nutshell
       +font-size(-1)
 
-  .m-point-details-description 
+  .point-details-description 
     display: none
 
 
-.m-point-expanded
-  .m-point-nutshell, .m-point-details-description
+.point-expanded
+  .point-nutshell, .point-details-description
     padding-bottom: $vertical_baseline / 2
 
-  .m-point-nutshell
+  .point-nutshell
     +font-size(4)
     //font-weight: bold
 
-  .m-point-details-description 
+  .point-details-description 
     +font-size(0)
 
 //////
@@ -121,92 +121,92 @@
 
 //////////////////
 // bullet points
-.m-point-unexpanded.m-point-position
+.point-unexpanded.point-position
   padding: 0 $grid_xs 4px $grid_xs
 
-  .m-point-nutshell-wrap
+  .point-nutshell-wrap
     &:before
       content: '\2022'
       position: absolute
       top: 0px
       +font-size(-3)
 
-  &.pro .m-point-nutshell-wrap:before
+  &.pro .point-nutshell-wrap:before
     left: -13px
 
-  &.con .m-point-nutshell-wrap:before
+  &.con .point-nutshell-wrap:before
     left: -10px
 
 /////////////
 
-.m-point-unexpanded.m-point-position
-  .m-point-author-avatar
+.point-unexpanded.point-position
+  .point-author-avatar
     display: none
 
-.m-point-expanded 
-  .m-point-follow-region
+.point-expanded 
+  .point-follow-region
     //margin-bottom: $vertical_baseline / 2
 
 /////////////////////////////////////////
 // point operations
-.m-point-expanded, [data-state="points-collapsed"]
-  .m-point-operations
+.point-expanded, [data-state="points-collapsed"]
+  .point-operations
     display: none
 
 [data-state="points-together"], [data-state="points-separated"]
-  .m-point-peer
-    .m-point-operations
+  .point-peer
+    .point-operations
       visibility: hidden
 
     &:hover
-      .m-point-operations
+      .point-operations
         visibility: visible
 
-.m-point-unexpanded
-  &.m-point-peer
-    .m-point-operations        
+.point-unexpanded
+  &.point-peer
+    .point-operations        
       position: relative
 
-      .m-point-read-more
+      .point-read-more
         +font-size(-3)
 
 
     &.pro
-      .m-point-operations
+      .point-operations
         text-align: left
 
     &.con
-      .m-point-operations
+      .point-operations
         text-align: right
 
-  &.m-point-position
-    &:hover .m-point-operations
+  &.point-position
+    &:hover .point-operations
       visibility: visible
 
-    .m-point-operations
+    .point-operations
       visibility: hidden
       padding: $vertical_baseline/8 $grid_xs
 
-      .m-point-read-more
+      .point-read-more
         +font-size(-3)
         margin: 0
         padding: 1px 8px
 
-    .m-point-remove
+    .point-remove
       margin-top: $grid_xs/4
       padding: 0 $grid_xs/2
 
       background: none
       border-color: transparent
 
-  &.m-point-peer
+  &.point-peer
     &:hover
-      .m-point-operations a
+      .point-operations a
         color: #666
 
 ///////////////////////////////////////
 
-.m-point-action
+.point-action
   display: inline-block
 
   i
@@ -214,39 +214,39 @@
 
 /////////////////////////////////////////
 // point inclusion button
-.m-point-include-wrap
+.point-include-wrap
   display: none
 
-[data-state="points-separated"] .m-point-peer.m-point-expanded
-  .m-point-include-wrap
+[data-state="points-separated"] .point-peer.point-expanded
+  .point-include-wrap
     display: inline-block
 
-.m-point-expanded
-  .m-point-wrap
+.point-expanded
+  .point-wrap
     border: 1px solid
     border-color: #eaeaea #ddd #ccc #ddd
 
 
-[data-state="points-separated"] .m-point-peer.m-point-unexpanded, .m-point-expanded
-  .m-point-wrap
+[data-state="points-separated"] .point-peer.point-unexpanded, .point-expanded
+  .point-wrap
     border-radius: 8px
     background-color: whitesmoke
 
-[data-state="points-separated"] .m-point-peer.m-point-unexpanded
-  .m-point-wrap
+[data-state="points-separated"] .point-peer.point-unexpanded
+  .point-wrap
     +single-box-shadow($color: rgba(black, .1), $voff: 1px)
     border: 1px solid
     border-color: #eaeaea #ddd #ccc #ddd
 
-.m-point-expanded .m-point-wrap
+.point-expanded .point-wrap
   //+single-box-shadow($color: rgba(black, .25), $voff: 1px)
   //border-color: #777 #666 #555 #666
 
 
-[data-state="points-collapsed"] .m-point-author-avatar
+[data-state="points-collapsed"] .point-author-avatar
   //visibility: hidden
 
-.m-point-author-avatar
+.point-author-avatar
   display: inline-block
   position: relative
   border-radius: 8px
@@ -256,23 +256,23 @@
 
 
 [data-state="points-separated"], [data-state="points-together"]
-  .m-point-unexpanded.m-point-peer
+  .point-unexpanded.point-peer
     &:hover
-      .m-point-wrap
+      .point-wrap
         background-color: white
         //+single-box-shadow($color: rgba(black, .2), $voff: 2px)
 
 
 ///////////
 // Discussion
-.m-point-discussion
+.point-discussion
   position: relative
 
-.m-point-discussion-heading
+.point-discussion-heading
   +font-size(2)
   margin: $vertical_baseline 0
 
-.m-point-comments
+.point-comments
   @extend %nude_list
 ////
 

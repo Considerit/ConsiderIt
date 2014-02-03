@@ -1,32 +1,19 @@
 // These mixins and extenders can only be used in places where theme variables are instantiated
 
 %superbutton
-  +sassy-button("simple", 5px, inherit, darken($callout_bg_color, 8%), darken($callout_bg_color, 16%))
+  +sassy-button("glass", 5px, inherit, darken($callout_bg_color, 16%), darken($callout_bg_color, 24%))
   color: $callout_text_color
+  padding: $vertical_baseline/2 $grid_xs
   &:hover
     color: lighten($callout_text_color, 20%)
 
-%supersuperbutton
-  +sassy-button("glass", 5px, inherit, darken($callout_bg_color, 16%), darken($callout_bg_color, 24%))
-  color: $callout_text_color
-  &:hover
-    color: lighten($callout_text_color, 20%)
-    
 %desaturatedbutton
   //+sassy-button("simple", 5px, inherit, lighten(desaturate($callout_bg_color, 100%), 10%))
   +sassy-button("simple", 5px, inherit, darken(desaturate($base_bg_color, 100%), 5%), darken(desaturate($base_bg_color, 100%), 10%), $base_text_color, "false")
-  padding: $vertical_baseline/4 $grid_xs / 2
-  text-align: center
-  display: inline-block
-  vertical-align: top
-  margin: 0
   color: lighten($base_text_color, 15%)
-  // +text-shadow(none)
   &:hover
     +sassy-button("simple", 5px, inherit, lighten(desaturate($callout_bg_color, 10%), 10%))
-    padding: $vertical_baseline/4 $grid_xs / 2
     color: $callout_text_color
-
 
 %on_header_footer
   color: $header_footer_text_color

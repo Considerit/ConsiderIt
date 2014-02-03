@@ -32,6 +32,7 @@ $dark_standout_color: darken($standout_color, $border_darken_amt)
 
 // required for all themes
 @import "skinables" 
+@import "sassy-buttons"
 /////////
 
 #l-header
@@ -185,7 +186,6 @@ $dark_standout_color: darken($standout_color, $border_darken_amt)
   +sassy-button("glass", 5px, inherit, #eee, #ccc)
   padding: $vertical_baseline/4 $grid_xs/2
   color: $base_text_color
-  text-shadow: none  
 
 #t-unlock-measures-zip, #t-unlock-measures-button
   +font-size(1)

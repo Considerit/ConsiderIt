@@ -8,6 +8,9 @@
       if item instanceof App.Entities.Comment 
         view = new Comments.CommentView
           model : item
+          attributes : 
+            id : "comment-#{item.id}"
+
       else if item instanceof App.Entities.Claim
         view = new Comments.ClaimView
           model : item

@@ -48,8 +48,14 @@
 //   &[data-state="1"], &[data-state="2"], &[data-state="4"]
 //     padding: $vertical_baseline 0
 
+[data-state="together"] .m-proposal-socialmedia-region
+  visibility: visible
+
+[data-state="together"].transitioning .m-proposal-socialmedia-region
+
 .m-proposal-socialmedia-region
   position: absolute
+  visibility: hidden
   z-index: 999
   right: 0
   bottom: -9 * $vertical_baseline

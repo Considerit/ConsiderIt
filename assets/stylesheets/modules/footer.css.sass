@@ -1,5 +1,5 @@
 @import "variables"
-@import "sassy-buttons"
+@import "library/library"
 
 .m-footer-shortdesc, .m-footer-history, .m-footer-contact
   margin-bottom: $vertical_baseline/2
@@ -22,15 +22,10 @@
 .m-footer-contact
 
 .mc-subscribe.button
-  +sassy-button("simple", 5px, inherit, #999, #777)
-  +font-size(-3)
-  color: #fafafa
-  text-shadow: none
+  +button
+  +font-size(-2)
   position: relative
   top: -2px
-  &:hover
-    color: white
-
 
 #mce-EMAIL
   +font-size(0)

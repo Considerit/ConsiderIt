@@ -30,7 +30,7 @@
 /* for tooltipster
 /**/
 
-@import "sassy-buttons"
+@import "library/library"
 
 .tooltipster-default 
   background-color: $callout_bg_color
@@ -132,12 +132,8 @@
       color: black
 
   .editable-submit
-    +sassy-button("glass", 5px, inherit, darken($standout_color, 8%), darken($standout_color, 16%))
-    color: invert(darken($standout_color, 8%))
-    font-size: 18px
-    +text-shadow(none)
-    line-height: .5
-    font-weight: bold
+    +button
+    +font-size(3)
 
 .editable-empty, .editable-empty:hover, .editable-empty:focus
   font-style: normal

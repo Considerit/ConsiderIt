@@ -32,7 +32,7 @@
           currentTarget : $expandable
 
     events : 
-      'ajax:complete .m-dashboard-edit-account' : 'accountUpdated'
+      'ajax:complete .dashboard-edit-account' : 'accountUpdated'
       'click .l-expandable-option input' : 'toggleExpandable'
 
     accountUpdated : (ev, response, options) ->
@@ -73,7 +73,7 @@
       @$el.find('#account_header_details_text').autosize()
 
     events : 
-      'click .m-user_roles-invoke_role_change' : 'editRole'
+      'click .user_roles-invoke_role_change' : 'editRole'
 
     editRole : (ev) ->
 
@@ -107,12 +107,12 @@
       @checkBox @model, null, 'user_role_user', @model.roles_mask == 0
 
     events : 
-      'click .m-user_roles-edit_form input[type="checkbox"]' : 'roleEdited'
-      'ajax:complete .m-user_roles-edit_form' : 'roleChanged'
+      'click .user_roles-edit_form input[type="checkbox"]' : 'roleEdited'
+      'ajax:complete .user_roles-edit_form' : 'roleChanged'
 
 
     roleEdited : (ev) ->
-      $(ev.currentTarget).closest('.m-user_roles-edit_form').find('.option.specific input[type="radio"]').trigger('click')
+      $(ev.currentTarget).closest('.user_roles-edit_form').find('.option.specific input[type="radio"]').trigger('click')
 
     roleChanged : (data, response, xhr) ->
       result = $.parseJSON(response.responseText)
@@ -132,7 +132,7 @@
         current_user : App.request('user:current')
 
     events : 
-      'ajax:complete .m-dashboard-import-data' : 'dataImported'
+      'ajax:complete .dashboard-import-data' : 'dataImported'
 
     dataImported : (data, response, xhr) ->
       result = $.parseJSON(response.responseText)

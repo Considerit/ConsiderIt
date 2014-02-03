@@ -81,7 +81,7 @@
           layout.render()
 
         dialog = App.request 'dialog:new', view,
-          class : 'm-user_roles-edit_form'
+          class : 'user_roles-edit_form'
 
       layout
 

@@ -21,7 +21,7 @@
           @trigger 'proposal:setting_changed'
 
         dialog = App.request 'dialog:new', dialogview,
-          class : 'm-proposal-admin-status'
+          class : 'proposal-admin-status'
 
       @listenTo layout, 'publicity_dialog', =>
         dialogview = new Proposal.ProposalPublicityDialogView
@@ -34,7 +34,7 @@
           @trigger 'proposal:setting_changed'
 
         dialog = App.request 'dialog:new', dialogview,
-          class : 'm-proposal-admin-publicity'
+          class : 'proposal-admin-publicity'
 
       @listenTo layout, 'proposal:published', (data) =>
         @model.set data.proposal.proposal

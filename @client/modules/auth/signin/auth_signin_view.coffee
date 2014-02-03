@@ -3,14 +3,14 @@
   class Signin.Layout extends App.Views.Layout
     template: "#tpl_user_signin"
     regions:
-      emailAuthRegion : '.m-user-accounts-email-auth-region'
-      authOptionsRegion : '.m-user-accounts-auth-options-region'
+      emailAuthRegion : '.user-accounts-email-auth-region'
+      authOptionsRegion : '.user-accounts-auth-options-region'
 
     dialog : 
       title : 'Hi! Please log in'
 
     attributes : -> 
-      class : if @options.fixed then 'm-user-accounts-layout-fixed' else 'm-user-accounts-layout-not-fixed'
+      class : if @options.fixed then 'user-accounts-layout-fixed' else 'user-accounts-layout-not-fixed'
 
   class Signin.FixedLayout extends Signin.Layout
 
@@ -101,7 +101,7 @@
 
 
     toggleInput : (has_password) ->
-      $password_area = @$el.find('#password_has').siblings('.m-user-account-password')
+      $password_area = @$el.find('#password_has').siblings('.user-account-password')
       $submit_button_login = @$el.find('[data-target="login-submit"]')
       $submit_button_register = @$el.find('[data-target="create-account"]')
       if !has_password
@@ -163,7 +163,7 @@
 
   class Signin.PasswordResetView extends App.Views.ItemView
     template: "#tpl_user_reset_password"
-    className: 'm-user-accounts-password-reset-form'
+    className: 'user-accounts-password-reset-form'
     dialog:
       title : 'Change your password'
 

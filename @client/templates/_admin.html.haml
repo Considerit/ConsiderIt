@@ -6,14 +6,14 @@
 
   %script{ :type => "text/template", :id => "tpl_dashboard_app_settings"}
 
-    .m-dashboard-heading
+    .dashboard-heading
       %h2
         Application Settings
 
-      .m-dashboard-subheading
+      .dashboard-subheading
         System-wide configuration changes
 
-    = form_for :account, :url => account_path, :remote => true, :method => :put, :html => { :class => 'm-dashboard-edit-account'} do |f|
+    = form_for :account, :url => account_path, :remote => true, :method => :put, :html => { :class => 'dashboard-edit-account'} do |f|
 
 
       .field
@@ -176,11 +176,11 @@
 
   %script{ :type => "text/template", :id => "tpl_dashboard_manage_proposals"}
     
-    .m-dashboard-heading
+    .dashboard-heading
       %h2
         Manage proposals
 
-      .m-dashboard-subheading
+      .dashboard-subheading
         Access and edit all proposals, active and inactive  
 
     .active
@@ -227,11 +227,11 @@
 
 
   %script{ :type => "text/template", :id => "tpl_dashboard_user_roles"}
-    .m-dashboard-heading
+    .dashboard-heading
       %h2
         Manage user roles
 
-      .m-dashboard-subheading
+      .dashboard-subheading
         Change the system privileges for any user
 
     %table.table.table-condensed.table-striped
@@ -248,17 +248,17 @@
 
           %td.action
             .role_settings.l-dialog-prompt
-              %a.m-user_roles-invoke_role_change{ :'data-id' => "{{ user.id }}"}
+              %a.user_roles-invoke_role_change{ :'data-id' => "{{ user.id }}"}
                 Roles:
-                %span.m-user-roles-list
+                %span.user-roles-list
                   {{ user.roleList() }}
-                %span.m-user_roles-roles_triangle
+                %span.user_roles-roles_triangle
                   &#x25BE;
 
         (( }) ))  
 
   %script{ :type => "text/template", :id => "tpl_dashboard_user_roles_edit"}
-    = form_for :user, :url => "{{Routes.update_role_path(id)}}", :remote => true, :method => :post, :html => { :class => 'm-user_roles-edit_form l-dialog-detachable' } do |f|
+    = form_for :user, :url => "{{Routes.update_role_path(id)}}", :remote => true, :method => :post, :html => { :class => 'user_roles-edit_form l-dialog-detachable' } do |f|
 
       .radio_block
         .option
@@ -313,17 +313,17 @@
           cancel  
 
   %script{ :type => "text/template", :id => "tpl_dashboard_import_data"}
-    .m-dashboard-heading
+    .dashboard-heading
       %h2
         Import data via CSV spreadsheet [experimental]
 
-      .m-dashboard-subheading
+      .dashboard-subheading
         Currently only Proposals can be imported. Note that all imported proposals will be publicly accessible. You probably shouldn't do this unless you've gotten instructions from 
         %a{ :href => "mailto:kevin@consider.it"}
           Kevin at Consider.it
 
 
-    = form_for :account, :url => import_data_create_path, :remote => true, :method => :put, :html => { :class => 'm-dashboard-import-data'} do |f|
+    = form_for :account, :url => import_data_create_path, :remote => true, :method => :put, :html => { :class => 'dashboard-import-data'} do |f|
 
       .field
         = f.label :user_id, 'Proposing user'
@@ -358,11 +358,11 @@
     %iframe{ :src => rails_admin_path }
 
   %script{ :type => "text/template", :id => "tpl_dashboard_client_errors"}
-    .m-dashboard-heading
+    .dashboard-heading
       %h2
         Javascript and Ajax errors
 
-      .m-dashboard-subheading
+      .dashboard-subheading
         Client-side errors captured and reported here. Hover for stack trace.  
 
     %table.table.table-condensed.table-striped

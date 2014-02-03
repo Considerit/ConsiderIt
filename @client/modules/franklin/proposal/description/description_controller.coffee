@@ -31,7 +31,7 @@
 
     transition : (region, view) ->
 
-      already_showing_details = region.$el.find('.m-proposal-details').length > 0
+      already_showing_details = region.$el.find('.proposal-details').length > 0
 
       if @state != Proposal.DescriptionState.collapsed && @prior_state == Proposal.DescriptionState.collapsed && !already_showing_details
         

@@ -4,23 +4,23 @@
 
 //IE8 doesn't support transform: translate ...
 .no-csstransforms
-  .m-reasons
+  .reasons
     &[data-state="separated"]
 
-      .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      .aggregated-propoints-region, .aggregated-conpoints-region
         left: 0
 
     &[data-state="together"], &[data-state="collapsed"]
 
-      .m-aggregated-propoints-region
+      .aggregated-propoints-region
         left: $peer-point-results-width - ($peer-point-results-width - $decision_board_width/2) + 4
 
-      .m-aggregated-conpoints-region
+      .aggregated-conpoints-region
         left: -$peer-point-results-width + ($peer-point-results-width - $decision_board_width/2) - 4
 
 
 
-  .m-reasons  
+  .reasons  
     &[data-state="separated"], &[data-state="collapsed"]
       top: -$aggregate_area_height
 
@@ -28,38 +28,38 @@
       top: 0
 
     &[data-state="separated"][data-state-from="together"]
-      .m-position-region
+      .position-region
         top: - 2 * $vertical_baseline
 
-      .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      .aggregated-propoints-region, .aggregated-conpoints-region
         top: $vertical_baseline
 
     &[data-state="separated"][data-state-from="collapsed"], &[data-state="separated"]
-      .m-position-region
+      .position-region
         top: 3 * $vertical_baseline
 
-      .m-aggregated-propoints-region, .m-aggregated-conpoints-region
+      .aggregated-propoints-region, .aggregated-conpoints-region
         top: 6 * $vertical_baseline
 
 
     &[data-state="collapsed"]
-      .m-position-region
+      .position-region
         top: $aggregate_area_height + $vertical_baseline
 
 
   [data-activity="proposal-no-activity"]
-    .m-reasons[data-state="collapsed"] 
+    .reasons[data-state="collapsed"] 
       top: 0
 
-      .m-position-region
+      .position-region
         top: 0
 
   [data-state="0"]
-    .m-proposal-description-region
+    .proposal-description-region
       left: -$dialog_stutter
 
   [data-state="0"].transitioning
-    .m-proposal-description-region
+    .proposal-description-region
       left: 0
 
 
@@ -68,8 +68,8 @@
 
 
 
-.m-results[data-state="separated"][data-state-from="together"] 
-  .m-histogram-bar, .m-histogram, .m-histogram-base
+.results[data-state="separated"][data-state-from="together"] 
+  .histogram-bar, .histogram, .histogram-base
     visibility: hidden
 
 
@@ -84,7 +84,7 @@
 // .avatar
 //   -ms-behavior: url(polyfills/backgroundsize.min.htc)
 
-input[type="password"], .m-user-accounts-form-fields-text .email_field input
+input[type="password"], .user-accounts-form-fields-text .email_field input
   font-family: arial
 
 // for LVG...

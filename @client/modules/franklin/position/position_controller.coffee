@@ -28,4 +28,4 @@
 
     getOverlay : (view) ->
       App.request 'dialog:new', view, 
-        class: 'm-static-position'
+        class: 'static-position'

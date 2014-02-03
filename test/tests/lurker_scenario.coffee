@@ -27,34 +27,34 @@ casper.test.begin 'Lurker can poke around homepage', 7, (test) ->
           caption: 'Full homepage, different sizes'
           sizes: [ [1200, 900], [600, 500], [1024, 768] ]
         
-        test.assertExists '[data-role="m-proposal"][data-state="0"]', "there is at least one proposal, and it is collapsed"
-        @HTMLCapture '[data-role="m-proposal"]', 
+        test.assertExists '[data-role="proposal"][data-state="0"]', "there is at least one proposal, and it is collapsed"
+        @HTMLCapture '[data-role="proposal"]', 
           caption: 'One of the proposals'
 
-        test.assertElementCount '#m-proposals-container [data-role="m-proposal"]', 5, "there are 5 active proposals"
-        @HTMLCapture '#m-proposals-container', 
+        test.assertElementCount '#proposals-container [data-role="proposal"]', 5, "there are 5 active proposals"
+        @HTMLCapture '#proposals-container', 
           caption: 'Active proposals'
 
-        test.assertElementCount '#m-proposals-container-completed [data-role="m-proposal"]', 0, "there are no inactive proposals"
+        test.assertElementCount '#proposals-container-completed [data-role="proposal"]', 0, "there are no inactive proposals"
 
-        test.assertExists '#m-proposals-container [data-target="load-proposals"]', 'ability to load more active proposals'
-        test.assertExists '#m-proposals-container-completed [data-target="load-proposals"]', 'ability to load more inactive proposals'
+        test.assertExists '#proposals-container [data-target="load-proposals"]', 'ability to load more active proposals'
+        test.assertExists '#proposals-container-completed [data-target="load-proposals"]', 'ability to load more inactive proposals'
 
     casper.then ->
       @HTMLStep "load some more proposals"
 
-      @click '#m-proposals-container [data-target="load-proposals"]'
+      @click '#proposals-container [data-target="load-proposals"]'
       @wait 10000, ->
-        @HTMLCapture '#m-proposals-container', 
+        @HTMLCapture '#proposals-container', 
           caption: 'Active proposals'
 
         test.assertExists '[data-target="proposallist:page"]', 'pagination is shown after loading proposals'
-        @HTMLCapture '.m-proposals-operations',
+        @HTMLCapture '.proposals-operations',
           caption: 'Proposals pagination after loading more'
 
-        @click '#m-proposals-container-completed [data-target="load-proposals"]'
+        @click '#proposals-container-completed [data-target="load-proposals"]'
         @wait 10000, ->
-          test.assertExists '#m-proposals-container-completed [data-target="proposallist:page"]', 'pagination for inactive proposals is shown after loading inactive proposals'
+          test.assertExists '#proposals-container-completed [data-target="proposallist:page"]', 'pagination for inactive proposals is shown after loading inactive proposals'
 
   casper.run ->
     test.done() 
@@ -73,20 +73,20 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
       @wait 1000, ->
 
         @HTMLStep 'browse to a proposal results page'
-        test.assertExists '[data-role="m-proposal"] .m-peer-reasons[data-state="points-collapsed"]', 'Peer reasons exists in collapsed form'
-        @click '[data-role="m-proposal"]:first-of-type .m-peer-reasons[data-state="points-collapsed"]:first-of-type'
+        test.assertExists '[data-role="proposal"] .peer-reasons[data-state="points-collapsed"]', 'Peer reasons exists in collapsed form'
+        @click '[data-role="proposal"]:first-of-type .peer-reasons[data-state="points-collapsed"]:first-of-type'
         @wait 5000, ->
           @HTMLCapture 'body', 
             caption : 'The results page'
 
-          test.assertExists '[data-role="m-proposal"][data-state="4"]', 'Proposal is in results state'
-          test.assertElementCount '[data-role="m-proposal"]', 1, "there is only one proposal on the page"
-          test.assertVisible '.m-proposal-details', 'Proposal details are visible'
-          test.assertElementCount '.m-histogram-bar', 7, 'There are seven histogram bars visible'
-          test.assertExists '.m-peer-reasons[data-state="points-together"]', 'Pros and cons in together state'
+          test.assertExists '[data-role="proposal"][data-state="4"]', 'Proposal is in results state'
+          test.assertElementCount '[data-role="proposal"]', 1, "there is only one proposal on the page"
+          test.assertVisible '.proposal-details', 'Proposal details are visible'
+          test.assertElementCount '.histogram-bar', 7, 'There are seven histogram bars visible'
+          test.assertExists '.peer-reasons[data-state="points-together"]', 'Pros and cons in together state'
 
-          test.assertSelectorHasText '.m-pointlist-header-label', 'Pros', 'Pros present in pros header'
-          test.assertSelectorDoesntHaveText '.m-pointlist-header-label', 'upport', 'Supporter is not present in pros header'
+          test.assertSelectorHasText '.pointlist-header-label', 'Pros', 'Pros present in pros header'
+          test.assertSelectorDoesntHaveText '.pointlist-header-label', 'upport', 'Supporter is not present in pros header'
 
 
 
@@ -94,16 +94,16 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
       @HTMLStep "#{state} histogram"
 
       if state == 'hover'
-        casper.mouse.move '.m-histogram-bar:first-of-type .m-bar-people'     
+        casper.mouse.move '.histogram-bar:first-of-type .bar-people'     
       else
-        @mouse.click '.m-histogram-bar:first-of-type .m-bar-people'  
+        @mouse.click '.histogram-bar:first-of-type .bar-people'  
         @mouse.move 'body'
 
       @wait 250, ->
-        test.assertSelectorHasText '.m-pointlist-header-label', 'Pros', "Pros present in pros header when #{state}"
-        test.assertSelectorHasText '.m-pointlist-header-label', 'upport', "Supporter is present in pros header when #{state}"
+        test.assertSelectorHasText '.pointlist-header-label', 'Pros', "Pros present in pros header when #{state}"
+        test.assertSelectorHasText '.pointlist-header-label', 'upport', "Supporter is present in pros header when #{state}"
 
-        @HTMLCapture '[data-role="m-proposal"]', 
+        @HTMLCapture '[data-role="proposal"]', 
           caption : "#{state} histogram bar"
 
     # hover over histogram; then click
@@ -119,59 +119,59 @@ casper.test.begin 'Lurker can poke around a proposal results page', 20, (test) -
 
       @mouse.move 'body'
       point_includers = @evaluate ->
-        return _.uniq($('[data-role="m-point"]:first').attr("includers").split(',')).length
+        return _.uniq($('[data-role="point"]:first').attr("includers").split(',')).length
 
-      total_avatars = @evaluate -> return $(".m-histogram .avatar:visible").length
+      total_avatars = @evaluate -> return $(".histogram .avatar:visible").length
 
-      @mouse.move '[data-role="m-point"]'
+      @mouse.move '[data-role="point"]'
       @wait 200, ->
-        @HTMLCapture '[data-role="m-proposal"]', 
+        @HTMLCapture '[data-role="proposal"]', 
           caption : "Hovering over a point"
 
         includers_hidden = @evaluate -> 
           hidden = -> $(this).css('opacity') == '0' || $(this).css('visibility') == 'hidden'
-          return $(".m-histogram .avatar:visible").filter(hidden).length
+          return $(".histogram .avatar:visible").filter(hidden).length
 
         test.assertEqual total_avatars - includers_hidden, point_includers, 'Only includers shown on point hover'
 
 
     casper.then ->
       @HTMLStep 'open a point'
-      @mouse.click '[data-role="m-point"]'
+      @mouse.click '[data-role="point"]'
       @wait 1000, ->
-        test.assertVisible '.m-point-details-description', 'Point details are visible'
-        test.assertVisible '.m-point-discussion', 'Discussion section exists'
+        test.assertVisible '.point-details-description', 'Point details are visible'
+        test.assertVisible '.point-discussion', 'Discussion section exists'
 
         #TODO: if logged in, can thank and comment; if not, cannot thank or comment
-        @HTMLCapture '.m-point-expanded', 
+        @HTMLCapture '.point-expanded', 
           caption : "Expanded point"
 
-        @mouse.click '.m-point-close'
-        test.assertDoesntExist '.m-point-expanded', 'point closes'
+        @mouse.click '.point-close'
+        test.assertDoesntExist '.point-expanded', 'point closes'
 
     casper.then ->
       @HTMLStep 'browse points'
       @click '[data-target="browse-toggle"]'
 
-      test.assertExists '.m-pointlist-browsing', 'entered browsing mode'
-      @HTMLCapture '.m-reasons', 
+      test.assertExists '.pointlist-browsing', 'entered browsing mode'
+      @HTMLCapture '.reasons', 
         caption : "Browsing points"
 
-      test.assertVisible '.m-pointlist-browse-sort', 'user can see the sort option'
-      @mouse.move '.m-pointlist-browse-sort-label'
+      test.assertVisible '.pointlist-browse-sort', 'user can see the sort option'
+      @mouse.move '.pointlist-browse-sort-label'
 
-      test.assertVisible '.m-pointlist-browse-sort-menu', 'user can see the sort menu on hover'
+      test.assertVisible '.pointlist-browse-sort-menu', 'user can see the sort menu on hover'
 
-      @HTMLCapture '.m-pointlist-browsing', 
+      @HTMLCapture '.pointlist-browsing', 
         caption : "Hovering over sort"
 
-      @click '.m-pointlist-browse-sort .m-pointlist-sort-option [data-target="persuasiveness"]'
-      @HTMLCapture '.m-pointlist-browsing', 
+      @click '.pointlist-browse-sort .pointlist-sort-option [data-target="persuasiveness"]'
+      @HTMLCapture '.pointlist-browsing', 
         caption : "after clicking persuasiveness sort"
 
       @click '[data-target="browse-toggle"]'
-      test.assertDoesntExist '.m-pointlist-browsing', 'exited browsing mode'
-      @HTMLCapture '.m-reasons', 
+      test.assertDoesntExist '.pointlist-browsing', 'exited browsing mode'
+      @HTMLCapture '.reasons', 
         caption : "after unexpanding"
 
   casper.run ->

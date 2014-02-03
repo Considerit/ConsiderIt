@@ -2,14 +2,14 @@
 
   class Dash.DashLayout extends App.Views.Layout
     template: "#tpl_dashboard_container"
-    className: 'm-dashboard-wrapper'
+    className: 'dashboard-wrapper'
     regions :
-      sidebarRegion : '.m-dashboard-sidebar-region'
-      mainRegion : '.m-dashboard-main-region'
+      sidebarRegion : '.dashboard-sidebar-region'
+      mainRegion : '.dashboard-main-region'
 
   class Dash.Sidebar extends App.Views.ItemView
     template: '#tpl_dashboard_sidebar'
-    className : 'm-sidebar'
+    className : 'sidebar'
 
     serializeData : ->
       current_user = App.request 'user:current' 
@@ -21,7 +21,7 @@
       params
 
     updateActiveLink : (dash_name) ->
-      @$el.find('.m-sidebar_link').removeClass('current').filter("[data-target='#{dash_name}']").addClass('current')
+      @$el.find('.sidebar_link').removeClass('current').filter("[data-target='#{dash_name}']").addClass('current')
 
 
   # Abstract view to be extended by main region specific views
@@ -49,7 +49,7 @@
 
 
     onShow : ->
-      @$el.addClass("m-dashboard-#{@dash_name}")
+      @$el.addClass("dashboard-#{@dash_name}")
       
       _.each @checkboxes, (checkbox) =>
         @checkBox(checkbox...)

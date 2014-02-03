@@ -23,10 +23,10 @@
 
 
     unexpand : (go_back) ->
-      $(document).off '.m-point-details'
+      $(document).off '.point-details'
       @layout.$el
-        .addClass('m-point-unexpanded')
-        .removeClass('m-point-expanded')
+        .addClass('point-unexpanded')
+        .removeClass('point-expanded')
 
       @stopListening @layout.expansionRegion.currentView
       @stopListening App.vent, 'point:expanded'
@@ -70,8 +70,8 @@
           @unexpand true # set to true so that when including point from expanded view, url updated appropriately on close
 
         @layout.$el
-          .addClass('m-point-expanded')
-          .removeClass('m-point-unexpanded')
+          .addClass('point-expanded')
+          .removeClass('point-unexpanded')
 
         @layout.$el.ensureInView {fill_threshold: .5}
         @layout.$el.putBehindLightbox()

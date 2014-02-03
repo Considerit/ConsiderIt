@@ -3,17 +3,17 @@
 
 // New Proposal
 
-.m-proposals-new
+.proposals-new
   margin: auto
   text-align: center
   width: $content_width
 
-#m-proposals-container, #m-proposals-container-completed
+#proposals-container, #proposals-container-completed
   padding-top: $vertical_baseline
-  .m-proposal-list
+  .proposal-list
     @extend %nude_list
 
-#m-proposals-container-completed
+#proposals-container-completed
   hr
     margin-bottom: $vertical_baseline
     height: 1px
@@ -23,21 +23,21 @@
 
   &.is-empty
 
-    > h2, .m-proposals-filters
+    > h2, .proposals-filters
       display: none
 
-.m-proposals-list-pagination-wrap
+.proposals-list-pagination-wrap
   padding-bottom: $vertical_baseline
 
-.m-proposals-filters
+.proposals-filters
   padding-top: $vertical_baseline
 
-.m-proposals-filters, .m-proposals-list-pagination-wrap
+.proposals-filters, .proposals-list-pagination-wrap
   text-align: center
   margin: 0 auto
   width: $content_width
 
-.m-proposals-filter-container, .m-proposals-sort-container
+.proposals-filter-container, .proposals-sort-container
   display: inline-block
 
   .title, a
@@ -50,42 +50,42 @@
     &.selected, &.selected:hover
       font-weight: bold
 
-.m-proposals-list-pagination
+.proposals-list-pagination
   margin-top: $vertical_baseline
     
-  .m-proposals-pagination-showmore, .m-proposals-list-pagination-page, .selected, .m-proposals-list-pagination-jump
+  .proposals-pagination-showmore, .proposals-list-pagination-page, .selected, .proposals-list-pagination-jump
     border-radius: 0
     text-shadow: none
 
-  .m-proposals-list-pagination-page, .selected, .m-proposals-list-pagination-jump
+  .proposals-list-pagination-page, .selected, .proposals-list-pagination-jump
     padding: $vertical_baseline/8 $grid_xs/4
 
-.m-proposals-list-pagination-pages
+.proposals-list-pagination-pages
   position: relative
   display: inline-block
 
-// .m-proposals-list-pagination-jump-left, .m-proposals-list-pagination-jump-right
+// .proposals-list-pagination-jump-left, .proposals-list-pagination-jump-right
 //   position: absolute
 //   top: 0
 
-// .m-proposals-list-pagination-jump-left
+// .proposals-list-pagination-jump-left
 //   left: -76px
 
-// .m-proposals-list-pagination-jump-right
+// .proposals-list-pagination-jump-right
 //   right: -73px
 
-.m-proposals-list-pagination-current
+.proposals-list-pagination-current
   margin-top: $vertical_baseline/4
   +font-size(-2)
 
-.m-proposals-container-hibernation-message
+.proposals-container-hibernation-message
   padding: $vertical_baseline / 2 $grid_xs 
   +font-size(2)
   text-align: center
   margin: $vertical_baseline auto
   width: $body_width
 
-.m-proposals-container-completed-header
+.proposals-container-completed-header
   h2
     font-weight: none
     +font-size(2)

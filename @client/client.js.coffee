@@ -62,7 +62,7 @@
       App.vent.trigger 'javascript:error', 'js', trace, msg, window.location.pathname, line
       window.xx_last_js_error = attrs
 
-    suppress_errors = true
+    suppress_errors = false
     # If you return true, then error alerts (like in older versions of Internet Explorer) will be suppressed.
     return suppress_errors
 

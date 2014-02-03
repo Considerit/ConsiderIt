@@ -4,15 +4,15 @@
     dash_name : 'analyze'
 
     regions: 
-      analyticsRegion : '.m-analytics-region'
+      analyticsRegion : '.analytics-region'
 
     events : 
-      'click .m-analytics-view:not(.active)' : 'changeView'
+      'click .analytics-view:not(.active)' : 'changeView'
 
     changeView : (ev) ->
       $target = $(ev.currentTarget)
       @trigger 'switch_view', $target.data('target')
-      @$el.find('.m-analytics-view').removeClass('active')
+      @$el.find('.analytics-view').removeClass('active')
       $target.addClass('active')
 
   class Analytics.AnalyticsView extends App.Views.ItemView

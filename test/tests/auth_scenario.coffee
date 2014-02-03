@@ -67,7 +67,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
 
       casper.then -> 
         # complete paperwork for new user
-        test.assertExists '.m-user-accounts-complete-paperwork-form', 'Finish paperwork screen appears'
+        test.assertExists '.user-accounts-complete-paperwork-form', 'Finish paperwork screen appears'
 
         @sendKeys 'input#user_name', 'Testiffer McMuffin'
 
@@ -85,16 +85,16 @@ casper.test.begin 'Authentication tests', 8, (test) ->
       casper.then ->
         # verify logged in
         casper.wait 1000, ->
-          test.assertExists '.m-user-options-display', 'User is logged in'
+          test.assertExists '.user-options-display', 'User is logged in'
 
-          @HTMLCapture '#m-user-nav', 
+          @HTMLCapture '#user-nav', 
             caption: 'Nav after login'
 
 
       casper.then ->
         # logout
 
-        @mouse.move '.m-user-options'
+        @mouse.move '.user-options'
 
         casper.wait 500, ->
           @HTMLCapture 'body', 
@@ -106,7 +106,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
 
           casper.wait 1000, ->
             test.assertExists '[data-target="login"]', 'User has successfully logged out'
-            @HTMLCapture '#m-user-nav', 
+            @HTMLCapture '#user-nav', 
               caption: 'logged out'
 
       casper.then ->
@@ -126,7 +126,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
         @mouse.click '[data-target="login-submit"]'
 
         casper.wait 1000, ->
-          test.assertExists '.m-user-options-display', 'User is logged in'
+          test.assertExists '.user-options-display', 'User is logged in'
 
 
 

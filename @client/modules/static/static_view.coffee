@@ -13,7 +13,7 @@
 
 
   class Static.StaticSidebar extends App.Views.ItemView
-    className : 'm-sidebar'
+    className : 'sidebar'
     template : '#tpl_static_sidebar'
 
     serializeData : ->

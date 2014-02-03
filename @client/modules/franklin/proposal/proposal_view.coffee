@@ -2,12 +2,12 @@
   
   class Proposal.ProposalLayout extends App.Views.StatefulLayout
     template: '#tpl_proposal_layout'
-    className : 'm-proposal'
+    className : 'proposal'
     attributes : (include_data=true) ->
       prefix = if include_data then 'data-' else ''
 
       params = {}
-      params["#{prefix}role"] = 'm-proposal'
+      params["#{prefix}role"] = 'proposal'
       params["#{prefix}id"] = "#{@model.id}"
       params["#{prefix}activity"] = if @model.has_participants() then 'proposal-has-activity' else 'proposal-no-activity'
       params["#{prefix}status"] = if @model.get('active') then 'proposal-active' else 'proposal-inactive'
@@ -16,10 +16,10 @@
       params
 
     regions: 
-      descriptionRegion : '.m-proposal-description-region'
-      stateToggleRegion : '.m-proposal-state-toggle-region'
-      aggregateRegion : '.m-proposal-aggregate-region'
-      reasonsRegion : '.m-proposal-reasons-region'
+      descriptionRegion : '.proposal-description-region'
+      stateToggleRegion : '.proposal-state-toggle-region'
+      aggregateRegion : '.proposal-aggregate-region'
+      reasonsRegion : '.proposal-reasons-region'
 
     initialize : (options = {}) ->
       super options
@@ -41,7 +41,7 @@
 
       $participants.find('.avatar[style]').removeAttr('style') # much more efficient
 
-      # @$el.find('.m-histogram').css
+      # @$el.find('.histogram').css
       #   opacity: ''
 
       $participants.show()
@@ -49,9 +49,9 @@
     explodeParticipants : (transition = true) ->      
       modern = Modernizr.csstransforms && Modernizr.csstransitions
 
-      $participants = @$el.find('.l-message-speaker.m-participants .l-group-container')
+      $participants = @$el.find('.l-message-speaker.participants .l-group-container')
 
-      $histogram = @$el.find('.m-histogram')
+      $histogram = @$el.find('.histogram')
 
       if !modern || !transition
         $histogram.css 
@@ -61,7 +61,7 @@
         $participants.hide()
         @trigger 'explosion:complete'
       else
-        $histogram.find('.m-bar-people').css
+        $histogram.find('.bar-people').css
           visibility: 'hidden'
 
         speed = 1200
@@ -112,7 +112,7 @@
 
         _.delay =>
           $histogram.css { opacity: 1, display: '' }
-          $histogram.find('.m-bar-people').css {visibility: ''}
+          $histogram.find('.bar-people').css {visibility: ''}
 
           $participants.hide()
           $participants_container.removeAttr 'style'
@@ -146,5 +146,5 @@
 
   class Proposal.SocialMediaView extends App.Views.ItemView
     template : '#tpl_proposal_social_media'
-    className : 'm-proposal-socialmedia'
+    className : 'proposal-socialmedia'
 

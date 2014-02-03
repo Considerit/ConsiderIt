@@ -81,37 +81,37 @@ a:hover
 
 
 // franklin/proposals
-.m-proposals-new button
+.proposals-new button
   @extend %desaturatedbutton
 
-#m-proposals-container-completed
+#proposals-container-completed
   hr
     border-top: 1px dashed $base_text_color
 
-.m-proposals-filters, .m-proposals-list-pagination-wrap
+.proposals-filters, .proposals-list-pagination-wrap
   @extend %on_background
 
-.m-proposals-list-pagination 
-  .m-proposals-pagination-showmore, .m-proposals-list-pagination-page, .m-proposals-list-pagination-jump
+.proposals-list-pagination 
+  .proposals-pagination-showmore, .proposals-list-pagination-page, .proposals-list-pagination-jump
     @extend %desaturatedbutton
 
   .selected
     @extend %superbutton
     padding: $vertical_baseline / 4 $grid_xs/2
 
-.m-proposals-container-hibernation-message
+.proposals-container-hibernation-message
   background-color: $comp_color
   color: $comp_text_color
 
 // franklin/proposal
 
 [data-visibility="published"]
-  .m-proposal-admin_strip
+  .proposal-admin_strip
     i
       color: darken($base_bg_color, 25%)
 
     &:hover
-      .m-proposal-admin-options-menu
+      .proposal-admin-options-menu
         background-color: $base_bg_color
         border: 1px solid darken($base_bg_color, 20%)
 
@@ -121,101 +121,101 @@ a:hover
             background-color: $dark_comp_color
 
 [data-visibility="unpublished"]
-  .m-proposal-admin_strip
+  .proposal-admin_strip
     color: $base_text_color
 
-    .m-delete_proposal
+    .delete_proposal
       color: darken($base_bg_color, 25%)
       &:hover
         color: $base_text_color
 
-  .m-proposal-admin-publish
-    .m-proposal-publish
+  .proposal-admin-publish
+    .proposal-publish
       @extend %desaturatedbutton
 
-.m-position-your-action-body
+.position-your-action-body
   @extend %superbutton
 
 // franklin/proposal/aggregate
 $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
-.m-histogram
-  .m-histogram-bar
+.histogram
+  .histogram-bar
     border: 2px solid darken($histogram_bar_color, 10%)
     background-color: $histogram_bar_color
     +bubble(whitesmoke, darken(whitesmoke, 10%), up, $include_bg: false, $text_color: $base_text_color)    
     +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($histogram_bar_color, 25%), $inset: true)
-    &.m-bar-is-soft-selected, &.m-bar-is-hard-selected
+    &.bar-is-soft-selected, &.bar-is-hard-selected
       background-color: darken($histogram_bar_color, 8%)
       border-color: darken($histogram_bar_color, 16%)
 
-.m-histogram-base
+.histogram-base
   background-color: mix(lighten($mid_bg_color, 30%), $accent_color, 90%)
   +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: lighten($mid_bg_color, 40%), $inset: true)
 
 // franklin/proposal/crafting
-.m-position
+.position
   &[data-state="separated"], &[data-state="together"]
-    .m-position-message-body
+    .position-message-body
       background: $decision_board_bg
 
-  .m-position-message-body
+  .position-message-body
     border: 1px dashed $decision_board_border_color
 
-.m-personal-reasons
+.personal-reasons
   @extend %on_chalkboard
 
-.m-position-footer
-  .m-position-your-action-body.submit
+.position-footer
+  .position-your-action-body.submit
     @extend %superbutton
 
-  .m-position-submit-footer-wrap
-    .m-position-cancel
+  .position-submit-footer-wrap
+    .position-cancel
       color: lighten($base_text_color, 25%)
       &:hover
         color: $base_text_color
 
-.m-reasons-header
+.reasons-header
   a
     color: $decision_board_text_color
     &:hover
       color: darken($decision_board_text_color, 10%)
 
-.m-stance
+.stance
   @extend %on_chalkboard
-  .m-stance-slider-container
+  .stance-slider-container
     .noUiSlider
       background-color: lighten(mix($mid_bg_color, $accent_color), 20%)
 
 // franklin/proposal/reasons
   &[data-state="collapsed"] 
-    .m-reasons-footer-region
-      .m-reasons-view-results
+    .reasons-footer-region
+      .reasons-view-results
         color: darken($base_bg_color, 25%)
 
 // franklin/proposal/description
-.m-proposal-description-wrap
+.proposal-description-wrap
 
-  .m-proposal-description
+  .proposal-description
     +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
 
     h1, h2, h3
       color: $initiator_text_color
   
-  .m-proposal-details
+  .proposal-details
     .l-message-body
       +bubble($base_bg_color, darken($base_bg_color, 12%), left, $text_color: $base_text_color)
 
-  .m-proposal-links
+  .proposal-links
     background-color: darken($base_bg_color, 15%)
 
 // franklin/proposal/toggle
-.m-proposal-state-toggle
+.proposal-state-toggle
   &[data-state="separated"], &[data-state="together"]
 
-    .m-proposal-state-primary
+    .proposal-state-primary
       color: $decision_board_text_color
 
-    .m-proposal-state-secondary
+    .proposal-state-secondary
       color: lighten($base_text_color, 20%)
       &:hover
         color: $base_text_color
@@ -228,29 +228,29 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
     color: $base_text_color
 
 // franklin/comments
-.m-thank .thank, .m-new-comment .m-login
+.thank .thank, .new-comment .login
   color: $base_text_color
 
 // franklin/point
-.m-point-unexpanded
-  &.m-point-position
-    .m-point-remove
+.point-unexpanded
+  &.point-position
+    .point-remove
       color: $decision_board_text_color
       &:hover
         color: darken($decision_board_text_color, 15%)
 
-  &.m-point-peer
-    .m-point-operations
+  &.point-peer
+    .point-operations
       a
         color: lighten($base_text_color, 15%)
 
         &:hover
           color: $base_text_color
 
-.m-point-position.m-point-unexpanded .m-point-wrap
+.point-position.point-unexpanded .point-wrap
   background-color: $decision_board_color
 
-.m-point-include, .m-point-assessment-request-initiate, .m-point-follow
+.point-include, .point-assessment-request-initiate, .point-follow
   @extend %desaturatedbutton
   +font-size(-3)
   &:hover
@@ -258,28 +258,28 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
 
 // franklin/points
 [data-state="points-collapsed"]
-  .m-pointlist-footer-more
+  .pointlist-footer-more
     i
       color: darken($base_bg_color, 25%)
 
-.m-pointlist-browse
-  .m-pointlist-browse-toggle
+.pointlist-browse
+  .pointlist-browse-toggle
     @extend %desaturatedbutton
 
-.m-peer-reasons
+.peer-reasons
 
-  .m-pointlist-header-label
+  .pointlist-header-label
     border-bottom-color: $base_text_color
 
   &[data-state="points-separated"], &[data-state="points-together"]
 
-    .m-pointlist-header-label
+    .pointlist-header-label
       color: lighten($base_text_color, 20%)
 
-    .m-pointlist-browse-sort
+    .pointlist-browse-sort
 
       &:hover
-        .m-pointlist-browse-sort-menu
+        .pointlist-browse-sort-menu
           background-color: $base_bg_color
           border: 1px solid darken($base_bg_color, 20%)
 
@@ -292,32 +292,32 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
               color: $callout_text_color
 
   &[data-state="points-separated"]
-    .m-pointlist-header-label
+    .pointlist-header-label
       border-bottom-color: darken($base_bg_color, 20%)
 
   &[data-state="points-collapsed"], &[data-state="points-together"]
-    .m-pointlist-header-label
+    .pointlist-header-label
       color: lighten($base_text_color, 20%)
     +bubble(whitesmoke, darken(whitesmoke, 10%), left, $text_color: $base_text_color)
 
-.m-position-points
-  .m-pointlist-header-label
+.position-points
+  .pointlist-header-label
     border-bottom-color: $decision_board_text_color
 
-.m-peer-reasons[data-state="points-together"], .m-peer-reasons[data-state="points-separated"] 
-  .m-pointlist-browse-header-open, .m-pointlist-browse-header-close
+.peer-reasons[data-state="points-together"], .peer-reasons[data-state="points-separated"] 
+  .pointlist-browse-header-open, .pointlist-browse-header-close
     color: darken($base_bg_color, 15%)
 
-.draggable_hover_pro .m-position-propoints, .draggable_hover_con .m-position-conpoints
-  .m-point-drop-target
+.draggable_hover_pro .position-propoints, .draggable_hover_con .position-conpoints
+  .point-drop-target
     color: darken($decision_board_text_color, 25%)
     border-color: darken($decision_board_text_color, 25%)
 
-.m-point-drop-target, .m-newpoint
+.point-drop-target, .newpoint
   border: 1px dashed $decision_board_border_color
 
 // franklin/point
-.m-thank .thank
+.thank .thank
   @extend %desaturatedbutton
 
 // helpers
@@ -333,8 +333,8 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
     +bubble($standout_color, $dark_standout_color, left, $text_color: $standout_text_color)
 
 // auth
-.m-user-options
-  .m-user-options-menu
+.user-options
+  .user-options-menu
     background-color: $base_bg_color
     border: 1px solid darken($base_bg_color, 20%)
 
@@ -343,7 +343,7 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
       background-color: $dark_comp_color
 
 #l-dialog-detachable 
-  .m-user-accounts-complete-paperwork-form
+  .user-accounts-complete-paperwork-form
     input[type="text"], input[type="email"], input[type="password"], textarea
       &.ui-state-valid
         color: $initiator_text_color
@@ -352,31 +352,31 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
     @extend %whitesmoke
 
 
-.m-user-accounts-complete-paperwork-form
-  .m-user-accounts-form-fields-wrap
+.user-accounts-complete-paperwork-form
+  .user-accounts-form-fields-wrap
     background-color: $initiator_color
     border: 1px solid $dark_initiator_color
     border-top-color: lighten($dark_initiator_color, 15%)
     border-bottom-color: darken($dark_initiator_color, 15%)
     color: $initiator_text_color
 
-.m-login, .m-user-options-display, #l-header .t-logo, #l-header .l-navigate
+.login, .user-options-display, #l-header .t-logo, #l-header .l-navigate
   @extend %on_header_footer
 
-.m-user-accounts-email-auth-region, .m-user-accounts-complete-paperwork-form, .m-user-accounts-password-reset-form
-  input[type="submit"], .m-user-accounts-register-next
+.user-accounts-email-auth-region, .user-accounts-complete-paperwork-form, .user-accounts-password-reset-form
+  input[type="submit"], .user-accounts-register-next
     @extend %superbutton
 
 // dashboard
-html body #m-dashboard
-  .m-dashboard-profile
-    .m-dashboard-profile-activity-summary
+html body #dashboard
+  .dashboard-profile
+    .dashboard-profile-activity-summary
       background-color: $comp_color
       &:hover
         background-color: darken($comp_color, 10%)
 
-.m-sidebar
-  .m-sidebar_link
+.sidebar
+  .sidebar_link
     &.current
       background-color: $comp_color
     &:hover

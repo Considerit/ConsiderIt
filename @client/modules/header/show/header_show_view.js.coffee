@@ -4,9 +4,9 @@
     template: "#tpl_header"
 
     regions:
-      userNavRegion: "#m-user-nav"
+      userNavRegion: "#user-nav"
       navRegion : '.l-navigate'
-      logoRegion : '#m-header-logo-region'
+      logoRegion : '#header-logo-region'
 
   class Show.NavView extends App.Views.ItemView
     template: '#tpl_header_nav'
@@ -25,4 +25,4 @@
 
   class Show.LogoView extends App.Views.ItemView
     template: '#tpl_header_logo'
-    className : 'm-header-logo'
+    className : 'header-logo'

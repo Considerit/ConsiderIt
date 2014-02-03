@@ -4,9 +4,9 @@
     template: '#tpl_points'
 
     regions : 
-      headerRegion : '.m-pointlist-header-region'
-      listRegion : '.m-pointlist-list-region'
-      footerRegion : '.m-pointlist-footer-region'
+      headerRegion : '.pointlist-header-region'
+      listRegion : '.pointlist-list-region'
+      footerRegion : '.pointlist-footer-region'
 
     initialize : (options={}) ->
       super options
@@ -16,18 +16,18 @@
 
   class Points.PeerPointList extends Points.ExpandablePointList
     className : => 
-      "m-peer-reasons m-reasons-peer-#{@options.valence}s"
+      "peer-reasons reasons-peer-#{@options.valence}s"
 
   class Points.UserReasonsList extends Points.PointListLayout
     className : => 
-      "m-position-points m-position-#{@options.valence}points"
+      "position-points position-#{@options.valence}points"
 
     onRender : ->
       super
 
   class Points.PointList extends App.Views.CollectionView
     tagName : 'ul'
-    className : 'm-point-list'
+    className : 'point-list'
 
     initialize : (options = {}) ->
       @itemView = options.itemView
@@ -44,9 +44,9 @@
           model : point
           attributes : 
             'data-id': "#{point.id}"
-            'data-role': 'm-point'
+            'data-role': 'point'
             includers : "#{point.get('includers')}"
-            class : "m-point m-point-unexpanded m-point-#{@location} #{valence}"
+            class : "point point-unexpanded point-#{@location} #{valence}"
 
         view
 
@@ -103,18 +103,18 @@
 
       if @browsing
         # when clicking outside of pointlist, close browsing
-        $(document).on 'click.m-pointlist-browsing', (ev)  => 
-          if $(ev.target).closest('.m-pointlist-sort-option').length == 0 && $(ev.target).closest('.m-pointlist-browsing')[0] != @$el[0] && $('.m-point-expanded, #l-dialog-detachable').length == 0
+        $(document).on 'click.pointlist-browsing', (ev)  => 
+          if $(ev.target).closest('.pointlist-sort-option').length == 0 && $(ev.target).closest('.pointlist-browsing')[0] != @$el[0] && $('.point-expanded, #l-dialog-detachable').length == 0
             @trigger 'points:browsing:toggle', true
             ev.stopPropagation()
 
-        $(document).on 'keyup.m-pointlist-browsing', (ev) => 
-          if ev.keyCode == 27 && $('.m-point-expanded, #l-dialog-detachable').length == 0
+        $(document).on 'keyup.pointlist-browsing', (ev) => 
+          if ev.keyCode == 27 && $('.point-expanded, #l-dialog-detachable').length == 0
             @trigger 'points:browsing:toggle', true
             ev.stopPropagation()
       else
-        $(document).off '.m-pointlist-browsing'
-        # @$el.off '.m-pointlist-browsing'
+        $(document).off '.pointlist-browsing'
+        # @$el.off '.pointlist-browsing'
         @$el.ensureInView {fill_threshold: .5}
 
     serializeData : ->
@@ -156,7 +156,7 @@
       @$el.find("[data-target='#{@sort}']").addClass 'selected'
 
     events : _.extend {}, Points.PointList.prototype.events,
-      'click .m-pointlist-sort-option a' : 'sortList'
+      'click .pointlist-sort-option a' : 'sortList'
       'click [data-target="browse-toggle"]' : 'handleToggleBrowse'
 
     sortList : (ev) ->
@@ -215,28 +215,28 @@
       params
 
     onShow : ->  
-      @$el.find('.m-newpoint-nutshell').autosize()
-      @$el.find('.m-newpoint-description').autosize()
-      @$el.find('.m-position-statement').autosize()
+      @$el.find('.newpoint-nutshell').autosize()
+      @$el.find('.newpoint-description').autosize()
+      @$el.find('.position-statement').autosize()
 
-      for el in @$el.find('.m-newpoint-form .is_counted')
+      for el in @$el.find('.newpoint-form .is_counted')
         $(el).NobleCount $(el).siblings('.count'), 
           block_negative: true,
           max_chars : parseInt $(el).siblings('.count').text()       
 
 
     events : 
-      'click .m-newpoint-new' : 'newPoint'
-      'click .m-newpoint-cancel' : 'cancelPoint'
-      'click .m-newpoint-create' : 'createPoint'
-      # 'blur .m-newpoint-nutshell' : 'checkIfShouldClose'
-      'focusout .m-newpoint-form' : 'checkIfShouldClose'
+      'click .newpoint-new' : 'newPoint'
+      'click .newpoint-cancel' : 'cancelPoint'
+      'click .newpoint-create' : 'createPoint'
+      # 'blur .newpoint-nutshell' : 'checkIfShouldClose'
+      'focusout .newpoint-form' : 'checkIfShouldClose'
 
     checkIfShouldClose : (ev) ->
-      $form = $(ev.currentTarget).closest('.m-newpoint-form')
+      $form = $(ev.currentTarget).closest('.newpoint-form')
 
-      $nutshell = $form.find('.m-newpoint-nutshell')
-      $description = $form.find('.m-newpoint-description')
+      $nutshell = $form.find('.newpoint-nutshell')
+      $description = $form.find('.newpoint-description')
 
       if $nutshell.val().length + $description.val().length == 0
         click_inside = false
@@ -250,35 +250,35 @@
 
     newPoint : (ev) ->
       $(ev.currentTarget).hide()
-      $form = $(ev.currentTarget).siblings('.m-newpoint-form')
+      $form = $(ev.currentTarget).siblings('.newpoint-form')
 
-      $form.find('.m-newpoint-nutshell, .m-newpoint-description').trigger('keyup')
+      $form.find('.newpoint-nutshell, .newpoint-description').trigger('keyup')
       $form.show()
 
       if !Modernizr.input.placeholder
         $form.find('[placeholder]').simplePlaceholder() 
       else
-        $form.find('.m-newpoint-nutshell').focus()
+        $form.find('.newpoint-nutshell').focus()
 
-      @$el.find('.m-newpoint').addClass 'm-newpoint-adding'
+      @$el.find('.newpoint').addClass 'newpoint-adding'
     
     cancelPoint : (ev) ->
-      $form = $(ev.currentTarget).closest('.m-newpoint-form')
+      $form = $(ev.currentTarget).closest('.newpoint-form')
       $form.hide()
-      $form.siblings('.m-newpoint-new').show()
+      $form.siblings('.newpoint-new').show()
       $form.find('textarea').val('').trigger('keydown')
       $form.find('label.inline').addClass('empty')
 
-      @$el.find('.m-newpoint').removeClass 'm-newpoint-adding'
+      @$el.find('.newpoint').removeClass 'newpoint-adding'
 
     createPoint : (ev) ->
-      $form = $(ev.currentTarget).closest('.m-newpoint-form')
+      $form = $(ev.currentTarget).closest('.newpoint-form')
 
       point_attributes =
-        nutshell : $form.find('.m-newpoint-nutshell').val()
-        text : $form.find('.m-newpoint-description').val()
-        is_pro : $form.find('.m-newpoint-is_pro').val() == 'true'
-        hide_name : $form.find('.m-newpoint-anonymous').is(':checked')
+        nutshell : $form.find('.newpoint-nutshell').val()
+        text : $form.find('.newpoint-description').val()
+        is_pro : $form.find('.newpoint-is_pro').val() == 'true'
+        hide_name : $form.find('.newpoint-anonymous').is(':checked')
         comment_count : 0
 
       if point_attributes.nutshell.length < 4
@@ -287,7 +287,7 @@
         toastr.error 'Sorry, the summary of your point must be less than 140 characters.'
       else
         @trigger 'point:create:requested', point_attributes
-        @cancelPoint {currentTarget: $form.find('.m-newpoint-cancel')}
+        @cancelPoint {currentTarget: $form.find('.newpoint-cancel')}
 
 
   class Points.PeerEmptyView extends App.Views.ItemView

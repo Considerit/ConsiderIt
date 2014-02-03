@@ -252,7 +252,7 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
           @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
           casper.wait 5000, ->
             @HTMLCapture 'body', 
-              caption: 'User profile page, different sizes'
+              caption: 'Position page, accessed from profile'
 
             assert_position_open test
 

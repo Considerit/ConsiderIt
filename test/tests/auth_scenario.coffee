@@ -7,6 +7,33 @@ Not tested here:
   - proper disabling of buttons in various states
 ###
 
+
+###
+In future, make sure to test:
+
+registration
+- register via email
+- register via third party
+- user cancels registration after first phase
+  = when already exists
+  = when new
+- register via third party when user already exists
+
+sign in
+- sign in via email
+- sign in via third party
+- sign in via third party when user doesn't yet exist
+- forgot password
+  = when user doesn't exist
+  = when user exists
+- when user opens a proposal (but doesn't change their stance), then logs in (with an existing position), the position should be updated to reflect the user's position
+- user browses results, not logged in. They even start editing some positions. Then, on one, they click save, are prompted to login, and do so. Lo & behold, they already have published positions for this & other proposal they've been actively engaging with.
+  + the position being edited should be changed to the old, but with the new data subsumed
+  + points and other created items this session should have their position references updated.
+- on signout, clear written points, positions, reset views
+
+###
+
 casper.test.begin 'Authentication tests', 8, (test) ->
 
   casper.start "http://localhost:8787/", ->

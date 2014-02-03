@@ -12,16 +12,10 @@
       active = @model.get 'active'
       crafting = @state == Proposal.ReasonsState.separated
       
-      if !active && updating
-        call = 'View Your Opinion'
+      if active 
+        call = if updating then 'Update Your Opinion' else 'Craft Your Own Opinion'
       else
-        if updating
-          call = 'Update Your Opinion'
-        else
-          if crafting 
-            call = 'Craft Your Own Opinion' 
-          else 
-            call = 'Craft Your Own Opinion'
+        call = if updating then 'View Your Opinion' else 'Craft your Own Opinion'
       
       results_call = 'View All Opinions'
 

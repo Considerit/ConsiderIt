@@ -11,7 +11,7 @@
 
 %script{ :type => "text/template", :id => "tpl_proposal_state_toggle"}
 
-  (( if(crafting && (active || updating) ) { ))
+  (( if(crafting) { ))
 
   .proposal-state-primary
     {{ call }}
@@ -22,7 +22,7 @@
 
     {{ results_call }}
 
-  (( } else if(!crafting && (active || updating) ) { ))
+  (( } else { ))
   .proposal-state-primary
     {{ results_call }}
 

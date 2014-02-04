@@ -60,8 +60,9 @@
     createSharing : (layout) ->
       if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
         _.delay =>
-          social_view = @getSocialMediaView()
-          layout.socialMediaRegion.show social_view
+          if layout.SocialMediaRegion
+            social_view = @getSocialMediaView()
+            layout.socialMediaRegion.show social_view
         , @transition_speed() * 3
 
     updateHistogram : ->

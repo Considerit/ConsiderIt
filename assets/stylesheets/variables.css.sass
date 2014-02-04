@@ -29,13 +29,13 @@ $vertical_baseline: 1em
 
 // $page_width encompasses the entirety of all content shown. If a viewport is larger 
 // than $page_width, background is shown in the additional space on either side.
-$page_width: 24 * $grid_major //$content_width + 2 * $content_gutter
+$page_width: 24 * $grid_major 
 
 // $content_width encompasses the area of the page that is rendered into. Only occasionally is content 
 // rendered in the $body_gutter on either side of the content area (e.g. points by others shown in the 
 // margins in crafting mode)
 $content_gutter: 2 * $grid_major
-$content_width: $page_width - 2 * $content_gutter //920px //967px //$grid_major * 22 + $grid_gutter
+$content_width: $page_width - 2 * $content_gutter 
 
 // $body_width encompasses the core active area. Content rendered in the $body_gutter
 // tends to be things like individual or groups of user avatars
@@ -55,9 +55,9 @@ $decision_board_width: $body_width + 4 // the four is for the border
 // |                             point-width                                |
 // | grid_gutter/2 | point-avatar-width | point-content-width | grid_gutter/2 | 
 
-$point-width: $body_width / 2 // $point-content-width + $point-avatar-width + $grid-gutter + 2 //the two is for border
+$point-width: $body_width / 2 
 $point-avatar-width: 2 * $grid_gutter
-$point-content-width: $point_width - $point-avatar-width - $grid-gutter //225px
+$point-content-width: $point_width - $point-avatar-width - $grid-gutter 
 
 $point-expanded-width: $body_width + 3 * $grid_major
 
@@ -111,7 +111,6 @@ $font-size-scale: $base-font-size - 5 * $base_unit $base-font-size - 4 * $base_u
 @import "compass/typography/vertical_rhythm"
 
 =font-size($size:0)
-  //font-size: 12px
   +adjust-font-size-to(nth($font-size-scale, $size + 5))
 
 

@@ -24,8 +24,6 @@
 
 
   &[data-activity="proposal-no-activity"]
-    > .l-message-speaker
-      display: none
 
     &[data-state="0"]
       .proposal-aggregate-region
@@ -213,14 +211,10 @@
 // participants block
 
 [data-state="together"][data-state-from="collapsed"], [data-state="collapsed"]
-  .participants.l-message-speaker
+  .participants
     visibility: visible
 
-// [data-state="together"]
-//   .participants.l-message-speaker
-//     top: -3px
-
-.participants.l-message-speaker
+.participants
   visibility: hidden
   z-index: 10
   right: 0 //1.5 * $grid_gutter

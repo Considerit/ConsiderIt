@@ -135,8 +135,6 @@
     border-bottom: 2px solid 
     +font-size(4)
 
-
-
 // expandable header
 
 .peer-reasons[data-state="points-together"], .peer-reasons[data-state="points-separated"] 
@@ -153,13 +151,6 @@
   text-align: center
 
 /* NEWPOINT */
-
-.position-propoints .newpoint
-  // margin-left: -3px
-
-.position-conpoints .newpoint
-  //margin-right: $grid_gutter
-
 
 .has_included_points
   .point-drop-target
@@ -188,10 +179,11 @@
 .point-drop-target, .newpoint
   border-radius: 16px
   width: $point_width - $grid_gutter
+  margin-left: $grid_gutter / 2
 
-.position-propoints 
-  .point-drop-target, .newpoint
-    margin-left: $grid_gutter / 2
+// .position-propoints 
+//   .point-drop-target, .newpoint
+//     margin-left: $grid_gutter / 2
 
 .newpoint
   position: relative

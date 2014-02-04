@@ -38,19 +38,19 @@ $description_animation_time: 500ms
 .proposal-description-wrap
 
   .l-message-speaker.l-message-initiator
-    //left: $grid_xs / 2
+    //left: $grid_gutter / 2
     text-align: right
 
     [data-target="user_profile_page"]
       opacity: .9
       display: inline-block
-      //margin-left: $grid_xs
+      margin-right: 2 * $grid_gutter
 
       &:hover
         opacity: 1
 
     img
-      width: $initiator_width // - 30
+      width: $proposer_img_size // - 30
       vertical-align: bottom 
 
 
@@ -74,7 +74,7 @@ $description_animation_time: 500ms
   .proposal-description
     margin: auto
     //left: -$dialog_stutter
-    min-height: $initiator_width
+    min-height: $proposer_img_size
 
     p
       margin-bottom: $vertical_baseline / 2
@@ -90,14 +90,10 @@ $description_animation_time: 500ms
   .proposal-details
 
     .l-message-body
-      //margin: 0 $margin_width $vertical_baseline $margin_width //- $dialog_stutter + $grid_xs  
-      //left: -$dialog_stutter
 
       &.proposal-details-body-wrap // silliness to override css from prior rule...
-        //border: 1px solid darken($base_bg_color, 15%)
         border-top: none
         border-radius: 0px 0px 16px 16px 
-        //width: $body-width - $grid_xs / 2
 
   .proposal-details-wrapper
     position: relative
@@ -122,15 +118,15 @@ $description_animation_time: 500ms
       h3
         +font-size(1)
       ul
-        padding-left: $grid_xs
+        padding-left: $grid_gutter
 
   // additional links
   .proposal-links
     position: absolute
-    right: -$margin_width - $grid_xs
+    right: -$body_gutter - $grid_gutter
     bottom: 0
-    padding: $vertical_baseline/2 $grid_xs/2
-    width: $margin_width
+    padding: $vertical_baseline/2 $grid_gutter/2
+    width: $body_gutter
 
   .proposal-url-field
     a

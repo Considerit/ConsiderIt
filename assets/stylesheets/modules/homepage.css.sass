@@ -5,19 +5,30 @@
 .t-intro
   margin: 0 auto
   min-height: $proposer_img_size
+  position: relative  
+  width: $content_width
 
+  .account_holder
+    width: $body_gutter
+    bottom: 0px
+    position: absolute
 
-  .l-message-body
-    .l-message-title
+  .account_message
+    position: relative
+    padding: $vertical_baseline / 2 $grid_gutter
+    margin: auto
+    width: $body_width
+
+    .account_message_heading
       +font-size(2)
-    .l-message-details
+    .account_message_details
       //+font-size(-1)
 
 
 //homepage admin file upload
 .t-intro-wrap
   .l-homepage-pic
-    
+    margin-right: $grid_gutter * 2
     //max-width: $body_width
     width: auto
     .customfile

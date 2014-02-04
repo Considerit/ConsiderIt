@@ -275,6 +275,8 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     top: 0 
     min-height: $aggregate_area_height
     position: absolute  
+    margin: auto
+    width: $body_width
 
   .aggregated-propoints-region, .aggregated-conpoints-region
     height: 100%
@@ -308,10 +310,9 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
         padding-bottom: 3 * $vertical_baseline
 
   //horizontal size and positioning
-  .reasons-lists.l-message-body
-    padding: 0
+  .reasons-lists
     width: $full_reasons_width
-    left: $full_reasons_left   //-$point-width + $body_gutter - 2 * $point-avatar-width //- $grid_gutter / 4
+    left: $full_reasons_left
 
   .point-header-region
     width: $point-avatar-width
@@ -399,6 +400,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
 .reasons
   margin: $vertical_baseline 0 4 * $vertical_baseline 0
+  position: relative
 
 
   &[data-state="collapsed"] .aggregated-conpoints-region   
@@ -416,6 +418,12 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
       &:hover
         cursor: pointer
 
+
+  .participants
+    bottom: 0px
+    position: absolute
+    // width: $body_gutter
+    // right: 0
 
   /////////
   // warpper for a points column, managed by a PointsController
@@ -437,11 +445,8 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
   /// The participants block
   &[data-state="separated"]
-    > .l-message-speaker
-      display: none
-    .l-group-container
-      
-
+    > .participants
+      display: none      
 
   .reasons-footer-region
     visibility: hidden
@@ -465,9 +470,6 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
         +font-size(-1)
         i
           padding-right: $grid_gutter/4
-
-        // &:hover
-        //   color: $base_text_color
 
 
 // sticky footer for results (not presented in .reasons el)

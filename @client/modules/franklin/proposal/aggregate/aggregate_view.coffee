@@ -90,8 +90,6 @@
 
       fld = "score_stance_group_#{bucket}"
 
-      @$el.find('.l-message-speaker').css('z-index': 999)
-
       #######
       # when clicking outside of bar, close it
       if hard_select
@@ -141,8 +139,6 @@
           hiding.css 'visibility', 'hidden'
 
           @trigger 'histogram:segment_results', 'all'
-
-          @$el.find('.l-message-speaker').css('z-index': '')
 
           hiding.css 'visibility', ''
 

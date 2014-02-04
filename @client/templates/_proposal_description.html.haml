@@ -1,71 +1,66 @@
 //////////////// shared ////////////////
 %script{ :type => "text/template", :id => "tpl_proposal_description"}
+  .proposer
+    %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
+      %img{:src => "{{ avatar }}"}
 
-  .l-message
+  .l-proposal-description-outer-wrap     
+    .proposal-introduction
 
-    .l-message-speaker.l-message-initiator
-      %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
-        %img{:src => "{{ avatar }}"}
+      .proposal-description
+        = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-    .l-message-body.l-proposal-description-outer-wrap     
-      .l-message.proposal-introduction
-
-        .l-message-speaker
-
-        .l-message-body.proposal-description
-          = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
-
-          .l-message-title
-            %span.proposal-description-title
+        .proposal_heading
+          %span.proposal-description-title
 
 
 
 
-      (( if(show_details){ ))
+    (( if(show_details){ ))
 
-      .l-message.proposal-details
+    .proposal-details
 
-        .l-message-body.proposal-details-body-wrap
-          = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+      .proposal-details-body-wrap
+        = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-          .proposal-description-body
+        .proposal-description-body
 
-          (( if(published) { ))
-          .proposal-details-wrapper
-            .proposal-description-details
+        (( if(published) { ))
+        .proposal-details-wrapper
+          .proposal-description-details
 
-              (( _.each(description_detail_fields, function(field) {  ))
+            (( _.each(description_detail_fields, function(field) {  ))
 
-              (( if( $.trim(field[2]) != '') { ))
-              .proposal-description-detail-field
-                .proposal-description-detail-field-heading
-                  %a.hidden
-                    Read {{ field[1] }} &raquo;
-                .proposal-description-detail-field-full.hide
-                  %div{ :class => "proposal-description-detail-field-{{field[0]}}" }
-                    %h1
-                      {{ field[1] }}
-                    {{ field[2] }}
-                  %a.showing
-                    hide
-              (( } ))
-
-              (( }); ))
-
-            (( if(url1 && $.trim(url1) != '') { ))
-            .proposal-description-details.proposal-links
-              %h3
-                More information
-              (( _.each([{field: url1, name: 'Link'} ], function(url) {  ))
-              (( if( url.field && $.trim(url.field) != '' ){ ))
-              .proposal-url-field
-                %a{ :href => "{{url.field}}", :target => "_blank"}
-                  {{url.name}}
-              (( } ))
-              (( }); ))
+            (( if( $.trim(field[2]) != '') { ))
+            .proposal-description-detail-field
+              .proposal-description-detail-field-heading
+                %a.hidden
+                  Read {{ field[1] }} &raquo;
+              .proposal-description-detail-field-full.hide
+                %div{ :class => "proposal-description-detail-field-{{field[0]}}" }
+                  %h1
+                    {{ field[1] }}
+                  {{ field[2] }}
+                %a.showing
+                  hide
             (( } ))
 
+            (( }); ))
+
+          (( if(url1 && $.trim(url1) != '') { ))
+          .proposal-description-details.proposal-links
+            %h3
+              More information
+            (( _.each([{field: url1, name: 'Link'} ], function(url) {  ))
+            (( if( url.field && $.trim(url.field) != '' ){ ))
+            .proposal-url-field
+              %a{ :href => "{{url.field}}", :target => "_blank"}
+                {{url.name}}
+            (( } ))
+            (( }); ))
           (( } ))
-        
-      (( } ))
-      .proposal-admin-region
+
+        (( } ))
+      
+    (( } ))
+    .proposal-admin-region

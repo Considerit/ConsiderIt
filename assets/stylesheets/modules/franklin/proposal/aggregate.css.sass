@@ -7,9 +7,14 @@ $histogram_bar_width: 73px //2 * $grid_major - 4
 $histogram_bar_height: 150px
 $histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
 
+.proposal-aggregate-region
+  position: relative
+
+[data-state="together"] .proposal-aggregate-region
+  z-index: 20 // allows for bubble to go over the reasons on mousing over histogram bar; but can't do on the homepage
+
 .results
   height: $aggregate_area_height
-  position: relative
   
   &[data-state="together"], &[data-state="separated"][data-state-from="together"]
     .histogram

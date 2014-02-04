@@ -28,7 +28,7 @@
       super
 
     implodeParticipants : ->
-      $participants = @$el.find('.l-message-speaker .l-group-container')
+      $participants = @$el.find('.participants .l-group-container')
 
       $participants.hide()
       # $participants.find('.avatar').css 
@@ -49,7 +49,7 @@
     explodeParticipants : (transition = true) ->      
       modern = Modernizr.csstransforms && Modernizr.csstransitions
 
-      $participants = @$el.find('.l-message-speaker.participants .l-group-container')
+      $participants = @$el.find('.participants .l-group-container')
 
       $histogram = @$el.find('.histogram')
 

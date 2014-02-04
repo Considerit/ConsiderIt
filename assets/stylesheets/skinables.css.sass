@@ -193,9 +193,8 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
     h1, h2, h3
       color: $initiator_text_color
   
-  .proposal-details
-    .l-message-body
-      +bubble($base_bg_color, darken($base_bg_color, 12%), left, $text_color: $base_text_color)
+  .proposal-details-body-wrap
+    +bubble($base_bg_color, darken($base_bg_color, 12%), left, $text_color: $base_text_color)
 
   .proposal-links
     background-color: darken($base_bg_color, 15%)
@@ -321,7 +320,7 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
 // homepage
 
 .t-intro
-  .l-message-body
+  .account_message
     +bubble($standout_color, $dark_standout_color, left, $text_color: $standout_text_color)
 
 // auth

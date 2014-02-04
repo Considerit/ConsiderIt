@@ -11,24 +11,22 @@
   width: 183px
   height: 32px
 
-.l-proposal-description-outer-wrap.l-message-body
-  padding: 0
-  //+transition(transform 200 $transition_function)
-
-//[data-state="collapsed"]
-.l-proposal-description-outer-wrap.l-message-body
+.l-proposal-description-outer-wrap
   left: -$dialog_stutter
- 
+  position: relative
+  margin: auto
+  width: $body_width
+
 [data-state="0"]
   .proposal-description-region
-    +translateX(-$dialog_stutter)
+    //+translateX(-$dialog_stutter)
     // the following is because translateX effectively creates a different rendering context, so need to set z-index/position so admin menu will work
     position: relative
     z-index: 2
 
 [data-state="0"].transitioning
   .proposal-description-region
-    +translateX(0)
+    //+translateX(0)
 
 
 $description_animation_time: 500ms
@@ -36,15 +34,18 @@ $description_animation_time: 500ms
   +transition(transform $description_animation_time)
 
 .proposal-description-wrap
+  position: relative
 
-  .l-message-speaker.l-message-initiator
-    //left: $grid_gutter / 2
+  .proposer
     text-align: right
+    width: $body_gutter
+    bottom: 0px
+    position: absolute
 
     [data-target="user_profile_page"]
       opacity: .9
       display: inline-block
-      margin-right: 2 * $grid_gutter
+      margin-right: 3 * $grid_gutter
 
       &:hover
         opacity: 1
@@ -73,6 +74,8 @@ $description_animation_time: 500ms
 
   .proposal-description
     margin: auto
+    position: relative
+    padding: $vertical_baseline / 2 $grid_gutter
     //left: -$dialog_stutter
     min-height: $proposer_img_size
 
@@ -80,6 +83,9 @@ $description_animation_time: 500ms
       margin-bottom: $vertical_baseline / 2
     td
       padding: 0 3px
+
+    .proposal_heading
+      +font-size(3)
   
   .proposal-description-title
     //+font-size(3)
@@ -89,11 +95,11 @@ $description_animation_time: 500ms
 
   .proposal-details
 
-    .l-message-body
-
-      &.proposal-details-body-wrap // silliness to override css from prior rule...
-        border-top: none
-        border-radius: 0px 0px 16px 16px 
+    .proposal-details-body-wrap // silliness to override css from prior rule...
+      border-top: none
+      border-radius: 0px 0px 16px 16px 
+      position: relative
+      padding: $vertical_baseline / 2 $grid_gutter
 
   .proposal-details-wrapper
     position: relative

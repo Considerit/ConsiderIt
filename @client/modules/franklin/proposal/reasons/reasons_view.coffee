@@ -2,14 +2,14 @@
 
   class Proposal.ReasonsLayout extends App.Views.StatefulLayout
     template: '#tpl_reasons_layout'
-    className: 'l-message reasons'
+    className: 'reasons'
 
     regions : 
       positionRegion : '.position-region'
       footerRegion : '.reasons-footer-region'      
       peerProsRegion : '.aggregated-propoints-region'
       peerConsRegion : '.aggregated-conpoints-region'
-      participantsRegion : '.l-message-speaker'
+      participantsRegion : '.participants'
 
     initialize : (options = {}) ->
       super options

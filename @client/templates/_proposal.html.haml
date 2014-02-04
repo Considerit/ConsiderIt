@@ -39,7 +39,7 @@
 
 %script{ :type => "text/template", :id => "tpl_position_crafting_layout" }  
 
-  .position-message-body.l-message-body
+  .position-message-body 
     / %h2.position-heading-points
     /   {{ considerations_prompt }}
 
@@ -136,12 +136,11 @@
 %script{ :type => "text/template", :id => "tpl_reasons_layout"}
 
 
-  .reasons-lists.l-message-body
-
+  .reasons-lists
     .aggregated-propoints-region.points-list-region>
     .position-region>
     .aggregated-conpoints-region.points-list-region>
-  .l-message-speaker.participants
+  .participants
 
   .reasons-footer-region
 

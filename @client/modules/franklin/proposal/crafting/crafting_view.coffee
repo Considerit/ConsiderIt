@@ -2,7 +2,7 @@
 
   class Proposal.PositionLayout extends App.Views.StatefulLayout
     template : '#tpl_position_crafting_layout'
-    className : 'l-message position'
+    className : 'position' 
     regions : 
       headerRegion : '.reasons-header-region'
       reasonsRegion : '.position-reasons-region'

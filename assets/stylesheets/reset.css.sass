@@ -19,7 +19,7 @@
 #l-header, #l-content, #l-footer
   position: relative
 
-.l-heading-wrap, .l-content-wrap, .l-footer-wrap
+.l-heading-wrap, .l-footer-wrap
   position: relative
 
 #l-header
@@ -41,14 +41,9 @@
   width: $page_width
   margin: auto
 
-#l-content-main, .l-content-wrap
+#l-content-main
   position: relative  
   margin: 0 auto
-
-.l-content-wrap
-  width: $content_width
-
-#l-content-main
 
 #l-content-main-wrap
   width: $content_width
@@ -69,33 +64,6 @@
   width: $body_width
   position: relative
   margin: 0 auto
-
-
-.l-message
-  position: relative
-  //margin-top: $vertical_baseline / 2
-    
-  > .l-message-speaker, > .l-message-body
-    display: inline-block
-    vertical-align: top
-    position: relative
-
-  > .l-message-speaker
-    bottom: 0px
-    z-index: 1
-    position: absolute
-    width: $body_gutter
-
-  > .l-message-body
-    z-index: 2
-    margin: auto
-    display: block
-    width: $body_width
-    padding: $vertical_baseline / 2 $grid_gutter
-
-    .l-message-title
-      +font-size(3)
-      //font-weight: bold
 
 
 .l-group-container

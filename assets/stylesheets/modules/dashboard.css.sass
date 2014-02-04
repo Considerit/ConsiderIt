@@ -1,12 +1,12 @@
 @import "variables"
 
 // TODO: refactor!
-$dashboard_sidebar_width: $grid_major * 2 + $grid_minor * 2 + $grid_xs
-$dashboard_content_width: $content_width - $dashboard_sidebar_width - 2 * $grid_xs - 5
+$dashboard_sidebar_width: $grid_major * 2 + $grid_minor * 2 + $grid_gutter
+$dashboard_content_width: $content_width - $dashboard_sidebar_width - 2 * $grid_gutter - 5
 
 html body #dashboard
   margin-bottom: $vertical_baseline
-  padding: 3 * $vertical_baseline $grid_xs
+  padding: 3 * $vertical_baseline $grid_gutter
 
   .dashboard-close
     position: absolute
@@ -117,7 +117,7 @@ html body #dashboard
       list-style: none
       li
         display: inline-block
-        margin-right: $grid_xs / 2
+        margin-right: $grid_gutter / 2
 
 
     .dashboard-profile-activity-summary, .dashboard-profile-influence-summary
@@ -257,8 +257,8 @@ html body #dashboard
     +font-size(-1)
     color: #555
     width: 100%      
-    //width: $dashboard_sidebar_width - 2 * $grid_xs
-    padding: 5px $grid_xs
+    //width: $dashboard_sidebar_width - 2 * $grid_gutter
+    padding: 5px $grid_gutter
     display: inline-block
     text-align: right
 

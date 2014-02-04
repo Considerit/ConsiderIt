@@ -3,6 +3,10 @@
 @import "compass/css3/transition"
 @import "compass/css3/transform"
 
+$histogram_bar_width: 73px //2 * $grid_major - 4
+$histogram_bar_height: 150px
+$histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
+
 .results
   height: $aggregate_area_height
   position: relative
@@ -51,7 +55,6 @@
     cursor: pointer
 
 // HISTOGRAM / WHAT
-$histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
 .histogram
   +transition(opacity $transition_speed)
   opacity: 0
@@ -125,15 +128,15 @@ $histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
 
 
 .histogram-base
-  margin-left: -$grid_xs/2
+  margin-left: -$grid_gutter/2
   height: $vertical_baseline
-  width: $histogram_width + $grid_xs
+  width: $histogram_width + $grid_gutter
   border-radius: 10px
   //background-color: lighten($mid_bg_color, 10%)
 
 .histogram-base-label
   position: absolute
-  padding: 0 $grid_xs + 3
+  padding: 0 $grid_gutter + 3
   z-index: 1
   // border-radius: 16px
   // background-color: lighten($mid_bg_color, 55%)

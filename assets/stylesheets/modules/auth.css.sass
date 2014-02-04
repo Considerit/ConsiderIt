@@ -12,7 +12,7 @@
   position: relative
   text-align: right
   z-index: 999
-  padding: $vertical_baseline/4 $grid_xs/2
+  padding: $vertical_baseline/4 $grid_gutter/2
   right: 0
   float: right
 
@@ -83,7 +83,7 @@
     .user-accounts-login-option
       margin-bottom: $vertical_baseline/4
       //display: inline
-      margin-right: $grid_xs
+      margin-right: $grid_gutter
       position: relative
       +font-size(-1)
       .zocial
@@ -110,12 +110,12 @@ $membership_card_height: 278px
 
   .user-accounts-email-auth-region
     width: 66%
-    padding-right: $grid_xs
+    padding-right: $grid_gutter
     border-right: 1px solid #eaeaea
 
   .user-accounts-auth-options-region
     width: 31%
-    padding-left: $grid_xs
+    padding-left: $grid_gutter
 
 
 .user-accounts-email-auth-region, .user-accounts-complete-paperwork-form, .user-accounts-password-reset-form
@@ -143,7 +143,7 @@ $membership_card_height: 278px
     margin: $vertical_baseline/2 0 $vertical_baseline $grid_minor
 
   .user-account-password
-    margin: $vertical_baseline/4 0 0 $grid_xs
+    margin: $vertical_baseline/4 0 0 $grid_gutter
 
   .email_field input, .password_field input
     +font-size(1)
@@ -187,11 +187,11 @@ $membership_card_height: 278px
     box-shadow: 0 1px 2px rgba(black, .35), inset 0 0 8px 2px rgba(white, .5)
 
     border-radius: 5px
-    padding: $vertical_baseline $grid_xs
+    padding: $vertical_baseline $grid_gutter
     margin: $vertical_baseline auto 0 auto
 
     .user-accounts-form-fields-text
-      width: $membership_card_width - $avatar_preview_height - $grid_xs * 3
+      width: $membership_card_width - $avatar_preview_height - $grid_gutter * 3
       float: right
       min-height: 200px
 
@@ -268,7 +268,7 @@ $membership_card_height: 278px
       list-style: none
 
       li
-        padding: 0 $grid_xs
+        padding: 0 $grid_gutter
 
         &:hover
           background-color: rgba(white, .25)

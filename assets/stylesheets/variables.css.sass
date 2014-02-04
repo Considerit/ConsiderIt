@@ -1,4 +1,89 @@
-// compass defaults
+////////////////////////////////////////////////////////////////////
+// GRID VARIABLES, horizontal and vertical. Sets out the atomic 
+// units for spacing.
+////////////////////////////////////////////////////////////////////
+
+// Pictoral summary of grid variables:
+// 
+//    |          $grid_major                 |   
+//    | $grid_gutter |      $grid_minor      |
+
+// Horizontal spacing units in Golden Ratio and $grid_major = $grid_minor + $grid_gutter
+$grid_major: 48px
+$grid_minor: 30px
+$grid_gutter: 18px
+
+// The height of each vertical grid unit (rhythm)
+$vertical_baseline: 1em
+
+
+////////////////////////////////////////////////////////////////////
+// LAYOUT VARIABLES. Defines the high-level content dimensions.
+////////////////////////////////////////////////////////////////////
+
+// Pictoral summary of layout variables:
+// 
+//    |                                        $page_width                                           |   
+//    | $content_gutter |                    $content_width                       |  $content_gutter |
+//                      |  $body_gutter |      $body_width        | $body_gutter  |             
+
+// $page_width encompasses the entirety of all content shown. If a viewport is larger 
+// than $page_width, background is shown in the additional space on either side.
+$page_width: 24 * $grid_major //$content_width + 2 * $content_gutter
+
+// $content_width encompasses the area of the page that is rendered into. Only occasionally is content 
+// rendered in the $body_gutter on either side of the content area (e.g. points by others shown in the 
+// margins in crafting mode)
+$content_gutter: 2 * $grid_major
+$content_width: $page_width - 2 * $content_gutter //920px //967px //$grid_major * 22 + $grid_gutter
+
+// $body_width encompasses the core active area. Content rendered in the $body_gutter
+// tends to be things like individual or groups of user avatars
+$body_gutter: 4 * $grid_major
+$body_width: $content_width - 2 * $body_gutter
+
+
+////////////////////////////////////////////////////////////////////
+// UI WIDGET SIZES
+////////////////////////////////////////////////////////////////////
+
+// decision board width is the size of the pro/con list in the middle
+$decision_board_width: $body_width + 4 // the four is for the border 
+
+// POINTS
+// Pictoral summary of point:
+// |                             point-width                                |
+// | grid_gutter/2 | point-avatar-width | point-content-width | grid_gutter/2 | 
+
+$point-width: $body_width / 2 // $point-content-width + $point-avatar-width + $grid-gutter + 2 //the two is for border
+$point-avatar-width: 2 * $grid_gutter
+$point-content-width: $point_width - $point-avatar-width - $grid-gutter //225px
+
+$point-expanded-width: $body_width + 3 * $grid_major
+
+// $proposer_img_size is the size of the proposer avatar shown to the right of a proposer
+$proposer_img_size: 75px
+
+// the horizontal amount that a point grows by when you click to browse the pros or cons
+$expanded_points_increment: 3 * $grid_major
+
+// The height of the histogram
+$aggregate_area_height: 10 * $vertical_baseline
+
+// The slight offset that the proposal description gets to make it look like a back and forth dialogue
+$dialog_stutter: $grid_gutter
+
+
+////////////////////////////////////////////////////////////////////
+// STATE TRANSITION VARIABLES
+////////////////////////////////////////////////////////////////////
+
+$transition_speed: 1000ms
+$transition_function: ease-out
+
+////////////////////////////////////////////////////////////////////
+// COMPASS DEFAULTS
+////////////////////////////////////////////////////////////////////
 $default-transition-property : all
 $default-transition-duration : .4s
 $default-transition-function : false
@@ -11,86 +96,22 @@ $default-box-shadow-blur     : 2px
 $default-box-shadow-spread   : false
 $default-box-shadow-inset    : false
 
-@import "compass/typography/vertical_rhythm"
 
+////////////////////////////////////////////////////////////////////
+// FONTS. Respects a vertical rhythm
+////////////////////////////////////////////////////////////////////
 
-$grid_major: 48px
-$grid_minor: 30px
-$grid_xs: 18px
-
-$vertical_baseline: 1em
-
-$content_width: 920px //967px //$grid_major * 22 + $grid_xs
-$full_width: $content_width + 2 * 100
-
-$slider_width: 283px
-$slider_label_width: 100px
-
-
-/////
-$margin_width: 150px
-$initiator_width: 75px
-/////
-
-
-
-//$peer-point-height: 180px
-
-// this is the horizontal amount that a point grows by when you click to browse the pros or cons
-$expanded_points_increment: 125px
-
-
-$histogram_bar_width: 73px //2 * $grid_major - 4
-$histogram_bar_height: 150px
-$aggregate_area_height: 10 * $vertical_baseline
-
-$dialog_stutter: $grid_xs
-
-
-$transition_speed: 1000ms
-$transition_function: ease-out
-
-
-// Peer point: 
-// | padding | avatar | point-wrap | padding | 
-$peer_padding: $grid_xs
-$peer-point-avatar-area: 38px
-$peer-point-wrap-width: 225px
-$peer-point-wrap-results-width: $peer-point-wrap-width
-$position-point-wrap-width: $peer-point-wrap-width
-
-
-//$peer-point-wrap-results-width:  243px // $decision_board_width / 2 - $peer_padding - $peer-point-avatar-area
-
-$peer-point-width: $peer-point-wrap-width + $peer-point-avatar-area + $peer_padding + 2 //the two is for border
-
-$peer-point-results-width: $peer-point-width //$peer-point-wrap-results-width + $peer-point-avatar-area + $peer_padding + 2 //the two is for border
-
-
-//$position-point-wrap-width: 237px //$body_width / 2 //250px
-$position-point-width: $position-point-wrap-width + $peer-point-avatar-area 
-
-// decision board width is the size of the pro/con list in the middle
-$decision_board_width: $position-point-width * 2 + 2 * $peer_padding //+ 10
-$body_width: $decision_board_width //667 - 2 * $grid_xs
-
-// full reasons width is the width of the pro/con list in the middle and the peer pro/con points in the margins
-$full_reasons_width: $decision_board_width + 2 * $peer-point-results-width + 11 //7 is for borders //+ 2 * $grid_xs
-$full_reasons_left: -($full_reasons_width - $content_width) / 2 + 2
-
-$point-expanded-width: $body_width + 150
-
-
-
-// FONT
 $base-font-size: 16px
 $browser-default-font-size: $base-font-size
 $base-line-height: 6px
 $base_unit: 1.3
 
 $font-size-scale: $base-font-size - 5 * $base_unit $base-font-size - 4 * $base_unit $base-font-size - 3 * $base_unit $base-font-size - 2 * $base_unit $base-font-size - 1 * $base_unit $base-font-size $base-font-size + 2 * $base_unit $base-font-size + 4 * $base_unit $base-font-size + 6 * $base_unit $base-font-size + 8 * $base_unit $base-font-size + 10 * $base_unit $base-font-size + 12 * $base_unit $base-font-size + 14 * $base_unit $base-font-size + 16 * $base_unit $base-font-size + 20 * $base_unit $base-font-size + 25 * $base_unit $base-font-size + 30 * $base_unit $base-font-size + 35 * $base_unit
+
+@import "compass/typography/vertical_rhythm"
+
 =font-size($size:0)
-  //$base_unit defined in grooves/base/fonts
+  //font-size: 12px
   +adjust-font-size-to(nth($font-size-scale, $size + 5))
 
 

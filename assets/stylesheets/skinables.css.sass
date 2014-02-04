@@ -89,7 +89,7 @@ a:hover
 
   .selected
     @extend %superbutton
-    padding: $vertical_baseline / 4 $grid_xs/2
+    padding: $vertical_baseline / 4 $grid_gutter/2
 
 .proposals-container-hibernation-message
   background-color: $comp_color
@@ -369,9 +369,7 @@ html body #dashboard
 
 .sidebar
   .sidebar_link
-    &.current
-      background-color: $comp_color
-    &:hover
+    &.current, &:hover
       background-color: $comp_color
 
 

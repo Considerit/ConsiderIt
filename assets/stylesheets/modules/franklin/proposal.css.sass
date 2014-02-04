@@ -7,7 +7,7 @@
 .proposal
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
   position: relative
-  min-height: $initiator_width
+  min-height: $proposer_img_size
 
   // inactive proposal
   &[data-status="proposal-inactive"]
@@ -60,7 +60,7 @@
   z-index: 999
   right: 0
   bottom: -9 * $vertical_baseline
-  padding-right: $grid_xs / 2
+  padding-right: $grid_gutter / 2
 
   .proposal-socialmedia-action-call
     +font-size(-1)
@@ -86,7 +86,7 @@
 [data-visibility="published"]
   .proposal-admin_strip
     position: absolute
-    right: -$grid_xs * 2
+    right: -$grid_gutter * 2
     bottom: $vertical_baseline / 4
     z-index: 10
 
@@ -112,7 +112,7 @@
         a
 
           width: 100%
-          padding: $vertical_baseline / 4 $grid_xs
+          padding: $vertical_baseline / 4 $grid_gutter
           display: block
           cursor: pointer
           +font-size(-2)
@@ -120,7 +120,7 @@
             display: block
 
           i
-            padding-right: $grid_xs / 2
+            padding-right: $grid_gutter / 2
             display: inline-block
 
 
@@ -163,7 +163,7 @@
       position: absolute
       +font-size(-1)
       top: $vertical_baseline / 2
-      left: 15 * $grid_xs
+      left: 15 * $grid_gutter
 
     .delete_proposal
       right: 4px
@@ -198,7 +198,7 @@
       width: 100%
       min-height: 3 * $vertical_baseline
       +font-size(1)
-      padding: $vertical_baseline/4 $grid_xs/4
+      padding: $vertical_baseline/4 $grid_gutter/4
 
 
 /* YOUR_ACTION */
@@ -211,14 +211,6 @@
 
 
 // participants block
-[data-state="collapsed"]
-.participants.l-message-speaker
-
-  .l-group-container
-    +rotate(180deg)
-    
-    .avatar // for the explode transition
-      +rotate(180deg)
 
 [data-state="together"][data-state-from="collapsed"], [data-state="collapsed"]
   .participants.l-message-speaker
@@ -231,19 +223,18 @@
 .participants.l-message-speaker
   visibility: hidden
   z-index: 10
-  right: 0 //1.5 * $grid_xs
+  right: 0 //1.5 * $grid_gutter
 
   .l-group-container
-    // width: $margin_width
-    // top: $vertical_baseline
-
     text-align: center
-    // position: absolute
-    // z-index: 99
     height: 100%
+    +rotate(180deg)
+    margin-left: 2 * $grid_gutter
+    width: $body_gutter - $grid_gutter * 2  
     
     // for the explode transition
     .avatar 
       +transition(transform .75s linear)
       opacity: .75
+      +rotate(180deg)
 

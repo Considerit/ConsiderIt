@@ -157,7 +157,7 @@
 
 %script{ :type => "text/template", :id => "tpl_group_container"}
   (( _.each(participants, function(p){ ))
-  %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+  %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}>
   (( }); ))
 
 %script{ :type => "text/template", :id => "tpl_aggregate_footer_expanded"}

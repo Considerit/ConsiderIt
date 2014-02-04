@@ -38,7 +38,7 @@
 
 #l-content
   z-index: 2
-  width: $full_width
+  width: $page_width
   margin: auto
 
 #l-content-main, .l-content-wrap
@@ -84,14 +84,14 @@
     bottom: 0px
     z-index: 1
     position: absolute
-    width: $margin_width
+    width: $body_gutter
 
   > .l-message-body
     z-index: 2
     margin: auto
     display: block
-    width: $body_width //- $dialog_stutter
-    padding: $vertical_baseline / 2 $grid_xs
+    width: $body_width
+    padding: $vertical_baseline / 2 $grid_gutter
 
     .l-message-title
       +font-size(3)
@@ -110,7 +110,7 @@
   display: block
 
 .l-tooltip-title
-  padding: $vertical_baseline/4 $grid_xs/2
+  padding: $vertical_baseline/4 $grid_gutter/2
 
 
 @font-face

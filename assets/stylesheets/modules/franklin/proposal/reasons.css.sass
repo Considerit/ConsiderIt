@@ -225,6 +225,11 @@ $use_transitions: true
         -webkit-animation: FromTogetherToSeparated_hidden $transition_speed
         animation: FromTogetherToSeparated_hidden $transition_speed
 
+
+// full reasons width is the width of the pro/con list in the middle and the peer pro/con points in the margins
+$full_reasons_width: 2 * $decision_board_width + 2
+$full_reasons_left: -($full_reasons_width - $content_width) / 2
+
 .reasons  
   &[data-state="separated"], &[data-state="collapsed"]
     +translateY(-$aggregate_area_height)
@@ -253,21 +258,17 @@ $use_transitions: true
 
 
   .aggregated-propoints-region .peer-reasons
-    border-radius: 16px 0 0 16px
+    border-radius: 12px 0 0 12px
     border-right-color: transparent
 
   .aggregated-conpoints-region .peer-reasons
-    border-radius: 0 16px 16px 0
+    border-radius: 0 12px 12px 0
     border-left-color: transparent
 
   // basic layout
 
   .points-list-region, .position-region
     display: inline-block
-
-  .position-region
-    //overflow: hidden
-    //visibility: hidden
 
   .reasons-lists
     //height: 100%
@@ -277,21 +278,16 @@ $use_transitions: true
 
   .aggregated-propoints-region, .aggregated-conpoints-region
     height: 100%
+
     .peer-reasons
       height: 100%
+      padding: $vertical_baseline $grid_gutter/2
 
-  .aggregated-propoints-region
+  .aggregated-propoints-region .point-header-region
+    float: left
 
-    .point-header-region
-      float: left
-
-  .aggregated-conpoints-region
-
-    .point-header-region
-      float: right
-
-    .point-unexpanded .point-header-region
-      right: $peer_padding
+  .aggregated-conpoints-region .point-header-region
+    float: right
 
   &.transitioning .personal-reasons
     //min-height: 0
@@ -311,52 +307,33 @@ $use_transitions: true
       .peer-reasons
         padding-bottom: 3 * $vertical_baseline
 
-
   //horizontal size and positioning
-
   .reasons-lists.l-message-body
     padding: 0
     width: $full_reasons_width
-    left: $full_reasons_left   //-$peer-point-results-width + $margin_width - 2 * $peer-point-avatar-area //- $grid_xs / 4
+    left: $full_reasons_left   //-$point-width + $body_gutter - 2 * $point-avatar-width //- $grid_gutter / 4
 
   .point-header-region
-    width: $peer-point-avatar-area
+    width: $point-avatar-width
     position: relative
 
-  &[data-state="separated"]
-
-    .aggregated-propoints-region, .aggregated-conpoints-region
-      width: $peer-point-width
-      //left: 0
-
-    .point-peer.point-unexpanded
-      width: $peer-point-width
-      .point-wrap
-        width: $peer-point-wrap-width
+  .point-unexpanded
+    .point-wrap
+      width: $point-content-width
 
   &[data-state="together"], &[data-state="collapsed"]
-    .aggregated-propoints-region, .aggregated-conpoints-region
-      width: $peer-point-results-width
 
     .aggregated-propoints-region
-      +translateX($peer-point-results-width - ($peer-point-results-width - $decision_board_width/2) + 4)
+      +translateX($decision_board_width/2)
 
     .aggregated-conpoints-region
-      +translateX(-$peer-point-results-width + ($peer-point-results-width - $decision_board_width/2) - 4)
+      +translateX(-$decision_board_width/2)
 
-    .point-peer.point-unexpanded 
-      width: $peer-point-results-width
-      .point-wrap
-        width: $peer-point-wrap-results-width
+  .aggregated-propoints-region, .aggregated-conpoints-region
+    width: $decision_board_width/2 //$point-width
 
   .position-propoints-region, .position-conpoints-region
-    width: $position-point-width
-
-    .point-position.point-unexpanded 
-      width: $position-point-width
-      .point-wrap
-        width: $position-point-wrap-width 
-
+    width: $point-width
 
 
   // pointlist browsing
@@ -370,27 +347,15 @@ $use_transitions: true
     left: $full_reasons_left - $expanded_points_increment 
 
 
-  &[data-state="separated"]
+  &[data-state="separated"], &[data-state="together"]
     .aggregated-propoints-region, .aggregated-conpoints-region
       &.pointlist-browsing
-        width: $peer-point-width + $expanded_points_increment
+        width: $decision_board_width/2 + $expanded_points_increment
 
         .point-peer.point-unexpanded 
-          width: $peer-point-width + $expanded_points_increment
+          //width: $decision_board_width/2 + $expanded_points_increment
           .point-wrap
-            width: $peer-point-wrap-width + $expanded_points_increment
-
-
-  &[data-state="together"]
-    .aggregated-propoints-region, .aggregated-conpoints-region
-      &.pointlist-browsing
-        width: $peer-point-results-width + $expanded_points_increment
-
-        .point-peer.point-unexpanded
-          width: $peer-point-results-width + $expanded_points_increment
-          .point-wrap
-            width: $peer-point-wrap-results-width + $expanded_points_increment
-
+            width: $point-content-width + $expanded_points_increment
 
 ////////// end layout //////////
 
@@ -484,10 +449,10 @@ $use_transitions: true
   &[data-state="collapsed"] 
     // shown on hover...
     .reasons-footer-region
-      width: $margin_width
+      width: $body_gutter
       position: absolute
       left: 50%
-      margin-left: -$margin_width/2
+      margin-left: -$body_gutter/2
       bottom: $vertical_baseline / 4
       cursor: pointer
       z-index: 2
@@ -499,7 +464,7 @@ $use_transitions: true
         text-align: right
         +font-size(-1)
         i
-          padding-right: $grid_xs/4
+          padding-right: $grid_gutter/4
 
         // &:hover
         //   color: $base_text_color

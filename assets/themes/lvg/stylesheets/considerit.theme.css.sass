@@ -100,8 +100,8 @@ $dark_standout_color: darken($standout_color, $border_darken_amt)
   #t-intro-people
     text-align: center
     padding-top: $vertical_baseline
-    margin-left: -($full_width - $content_width)/2
-    width: $full_width
+    margin-left: -($page_width - $content_width)/2
+    width: $page_width
 
     .row
       font-size: 0
@@ -177,7 +177,7 @@ $dark_standout_color: darken($standout_color, $border_darken_amt)
 
 #follow
   position: absolute
-  right: $grid_xs
+  right: $grid_gutter
   top: 113px
   //background-color: rgba(white, .6)
   z-index: 3
@@ -190,7 +190,7 @@ $dark_standout_color: darken($standout_color, $border_darken_amt)
   +font-size(1)
 
 #t-unlock-measures-zip
-  padding: $vertical_baseline/4 $grid_xs/4
+  padding: $vertical_baseline/4 $grid_gutter/4
   width: 110px
 
 .t-intro-learn-more
@@ -204,7 +204,7 @@ $dark_standout_color: darken($standout_color, $border_darken_amt)
 
 .t-unlock-local
   color: #777
-  padding: $vertical_baseline/4 $grid_xs/2
+  padding: $vertical_baseline/4 $grid_gutter/2
   margin: $vertical_baseline/2 auto 0 auto
   text-align: center
   background-color: #eee
@@ -215,7 +215,7 @@ $dark_standout_color: darken($standout_color, $border_darken_amt)
 
   .unlock
     .subtext
-      padding-right: $grid_xs / 2
+      padding-right: $grid_gutter / 2
 
   h3 
     color: #333
@@ -246,7 +246,7 @@ $dark_standout_color: darken($standout_color, $border_darken_amt)
 
 
 
-$juri_width: $initiator_width
+$juri_width: $proposer_img_size
 
   
 
@@ -265,7 +265,7 @@ $juri_width: $initiator_width
 .proposal-leading
   font-weight: bold
   //font-variant: small-caps
-  //padding-right: $grid_xs/2
+  //padding-right: $grid_gutter/2
   //text-transform: lowercase
 
 html body #dashboard
@@ -361,11 +361,11 @@ html body #dashboard
       display: inline-block
     li
       display: inline-block
-      //padding-right: $grid_xs / 2
+      //padding-right: $grid_gutter / 2
 
       &.strong
         font-weight: bold
-        padding-right: $grid_xs / 2
+        padding-right: $grid_gutter / 2
         &:after
           content: none
 
@@ -377,7 +377,7 @@ html body #dashboard
 
       &:after
         content: '\2022'
-        padding: 0 $grid_xs / 4
+        padding: 0 $grid_gutter / 4
 
 
 #static-main-region
@@ -394,7 +394,7 @@ html body #dashboard
   .t-about-image
     //float: right
     display: inline-block
-    margin: 0 $grid_xs/4 $vertical_baseline/2 $grid_xs/4
+    margin: 0 $grid_gutter/4 $vertical_baseline/2 $grid_gutter/4
 
   .history
     a
@@ -410,7 +410,7 @@ html body #dashboard
     img
       width: 100px
   ul
-    padding-left: $grid_xs
+    padding-left: $grid_gutter
     margin-bottom: $vertical_baseline
     li.category_explanation
       list-style: none
@@ -437,7 +437,7 @@ html body #dashboard
     font-style: italic
 
 .t-lvg-library-resource
-  padding: $vertical_baseline/2 $grid_xs
+  padding: $vertical_baseline/2 $grid_gutter
   a
     text-decoration: underline
     font-weight: bold

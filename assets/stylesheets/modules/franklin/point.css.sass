@@ -15,19 +15,20 @@
 
   &.point-peer, &.point-expanded
     .point-wrap
-      padding: $vertical_baseline / 2 $grid_xs / 2 
+      padding: $vertical_baseline / 2 $grid_gutter / 2 
       margin-bottom: $vertical_baseline / 2
 
 
-  &.point-position
+  &.point-position.pro
+    margin-left: $grid_gutter / 2
 
   &.point-unexpanded
 
   &.point-expanded
     position: relative
     z-index: 999
-    // padding: $vertical_baseline $grid_xs  
-    width: $point-expanded-width + $peer-point-avatar-area
+    // padding: $vertical_baseline $grid_gutter  
+    width: $point-expanded-width + $point-avatar-width
 
     .point-close
       display: block
@@ -41,11 +42,11 @@
 
     .point-wrap
       width: $point-expanded-width - 3
-      padding: $vertical_baseline 1.5 * $grid_xs
+      padding: $vertical_baseline 1.5 * $grid_gutter
 
     &.point-position
       &.con
-        left: $position-point-width - $point-expanded-width + ($point-expanded-width - $body_width) / 2
+        left: $point-width - $point-expanded-width + ($point-expanded-width - $body_width) / 2
       &.pro
         left: - ($point-expanded-width - $body_width) / 2
 
@@ -57,17 +58,17 @@
 .pointlist-browsing .peer-reasons
   &[data-state="points-separated"]
     .point-expanded.con.point-peer
-      right: $point-expanded-width - $peer-point-width + 56 - $expanded_points_increment
+      right: $point-expanded-width - $point-width + 56 - $expanded_points_increment
 
 .peer-reasons
 
   &[data-state="points-together"]
     .point-expanded.con.point-peer
-      right: $point-expanded-width - $peer-point-results-width
+      right: $point-expanded-width - $point-width
 
   &[data-state="points-separated"]
     .point-expanded.con.point-peer
-      right: $point-expanded-width - $peer-point-width + 56
+      right: $point-expanded-width - $point-width + 56
 
 
   &[data-state="points-separated"]
@@ -122,7 +123,7 @@
 //////////////////
 // bullet points
 .point-unexpanded.point-position
-  padding: 0 $grid_xs 4px $grid_xs
+  padding: 0 $grid_gutter 4px $grid_gutter
 
   .point-nutshell-wrap
     &:before
@@ -185,7 +186,7 @@
 
     .point-operations
       visibility: hidden
-      padding: $vertical_baseline/8 $grid_xs
+      padding: $vertical_baseline/8 $grid_gutter
 
       .point-read-more
         +font-size(-3)
@@ -193,8 +194,8 @@
         padding: 1px 8px
 
     .point-remove
-      margin-top: $grid_xs/4
-      padding: 0 $grid_xs/2
+      margin-top: $grid_gutter/4
+      padding: 0 $grid_gutter/2
 
       background: none
       border-color: transparent
@@ -210,7 +211,7 @@
   display: inline-block
 
   i
-    padding-right: $grid_xs / 4
+    padding-right: $grid_gutter / 4
 
 /////////////////////////////////////////
 // point inclusion button
@@ -251,8 +252,11 @@
   position: relative
   border-radius: 8px
   top: .7 * $vertical_baseline
-  width: 35px
-  height: 35px  
+  width: $point-avatar-width - 2
+  height: $point-avatar-width - 2
+
+.con .point-author-avatar
+  float: right
 
 
 [data-state="points-separated"], [data-state="points-together"]

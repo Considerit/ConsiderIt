@@ -12,21 +12,21 @@
   height: 32px
 
 .l-proposal-description-outer-wrap
-  left: -$dialog_stutter
+  //left: -$dialog_stutter
   position: relative
   margin: auto
   width: $body_width
 
 [data-state="0"]
   .proposal-description-region
-    //+translateX(-$dialog_stutter)
+    +translateX(-$dialog_stutter)
     // the following is because translateX effectively creates a different rendering context, so need to set z-index/position so admin menu will work
     position: relative
     z-index: 2
 
 [data-state="0"].transitioning
   .proposal-description-region
-    //+translateX(0)
+    +translateX(0)
 
 
 $description_animation_time: 500ms

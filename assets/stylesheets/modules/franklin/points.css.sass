@@ -1,6 +1,6 @@
 @import "variables"
 @import "compass/css3/box-shadow"
-@import "library/library"
+@import "library"
 
 /* POINTLISTBROWSING */
 
@@ -107,7 +107,7 @@
         .pointlist-browse-sort-menu
           //min-width: 140px
           text-align: left
-          @extend %nude_list
+          list-style: none outside none
           margin-left: 0
           display: inline-block
           +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
@@ -140,6 +140,7 @@
 .peer-reasons[data-state="points-together"], .peer-reasons[data-state="points-separated"] 
   .pointlist-browse-header-open, .pointlist-browse-header-close
     +font-size(-2)
+    margin-left: $grid_gutter / 2
 
 .peer-reasons[data-state="points-collapsed"] 
   .pointlist-browse-header-open, .pointlist-browse-header-close

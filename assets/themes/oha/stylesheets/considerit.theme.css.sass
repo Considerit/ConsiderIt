@@ -1,12 +1,14 @@
-//////////////////////////////////////////////////////////////
-// These must be included at the top of all theme stylesheets
+////////////////////////////////////////
+// Define/overide any skin style variables here
+@import "skins/oha"
+
+// These must be included in all theme files in this order
 @import "variables"
 @import "variables_skin"
-////////////////////////////
+@import "skinables" 
+/////////
 
-////////////////////////////////////////
-// Overide any skin style variables here
-@import "skins/oha"
+
 
 $main_font-family: "Armata", "Source Sans Pro", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif
 
@@ -19,10 +21,11 @@ $main_font-family: "Armata", "Source Sans Pro", "Lucida Grande", "Lucida Sans Un
 
 // required for all themes
 @import "skinables" 
+@import "compass/css3/transform"
 /////////
 
 
-#l-header
+.l-header
   position: absolute
   margin-left: -$content_width/2
   left: 50%

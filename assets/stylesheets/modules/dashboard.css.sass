@@ -30,9 +30,6 @@ html body #dashboard
     h2
       +font-size(5)
 
-    .dashboard-subheading
-      color: #888
-
 
 
   .field
@@ -51,7 +48,6 @@ html body #dashboard
     .sublabel
       margin-top: 2px      
       +font-size(-1)
-      color: #777
   
   fieldset
     table
@@ -123,18 +119,11 @@ html body #dashboard
     .dashboard-profile-activity-summary, .dashboard-profile-influence-summary
       display: inline-block
       padding: $vertical_baseline / 2 0
-      color: white
       width: 120px
 
     .dashboard-profile-activity-summary
       &:hover, &.selected
         cursor: pointer
-        color: white
-
-      &.selected, &.selected:hover
-        background-color: #313131
-
-      
 
     .activity-summary-count, .dashboard-profile-influence-count
       +font-size(2)
@@ -211,7 +200,6 @@ html body #dashboard
     td
       //max-width: 200px
       overflow: hidden
-      border-top: 1px solid #ddd
       line-height: 20px
       padding: 8px
       text-align: left
@@ -224,15 +212,10 @@ html body #dashboard
       font-size: 125%
       font-weight: bold
       padding: 8px 8px 1px 8px
-      border-bottom: 1px solid #ddd
 
   .table-condensed 
     td
       padding: $vertical_baseline / 2 5px
-
-  .table-striped tbody tr:nth-child(2n+1) 
-    td
-      background-color: #f9f9f9
 
 
   .fht-table-wrapper .fht-fixed-body .fht-tbody, .fht-table-wrapper .fht-tbody
@@ -242,7 +225,6 @@ html body #dashboard
 
 .sidebar
   hr
-    border-top: 1px solid #aaa
     margin: $vertical_baseline/2 0
 
   li
@@ -255,7 +237,7 @@ html body #dashboard
   .sidebar_link
     //+background-image(linear-gradient(#eee, #ccc))
     +font-size(-1)
-    color: #555
+    // color: #555
     width: 100%      
     //width: $dashboard_sidebar_width - 2 * $grid_gutter
     padding: 5px $grid_gutter
@@ -264,7 +246,3 @@ html body #dashboard
 
     &.current
       font-weight: bold
-      color: white
-
-    &:hover
-      color: white

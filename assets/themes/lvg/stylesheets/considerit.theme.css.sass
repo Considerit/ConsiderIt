@@ -1,42 +1,35 @@
-//////////////////////////////////////////////////////////////
-// These must be included at the top of all theme stylesheets
-@import "variables"
-@import "variables_skin"
-@import "compass/css3/box-shadow"
-////////////////////////////
-
 ////////////////////////////////////////
-// Overide any skin style variables here
-$base_bg_color: #fafafa
-$header_footer_bg_color: hsl( 0, 100%, 27%)
-$header_footer_text_color: hsl( 0, 0%, 80%)
-$bg_declaration: asset-data-url('wall_texture.png') repeat #777
+// Define/overide any skin style variables here
+$plain_background_color: #fafafa
+
+$base_background_declaration: asset-data-url('wall_texture.png') repeat #777
 $bg_top_declaration: asset-data-url('lvg/images/spots-red.png') repeat-x 
 $bg_content_declaration: whitesmoke //asset-data-url('paper.jpg') //repeat white 5 * $vertical_baseline 0em
 $bg_content_top_declaration: none
-$bg_main: $base_bg_color
-$comp_color: $decision_board_text_color
-$standout_text_color: $base_text_color
-$standout_color: hsl( 0, 0%, 98%)
-$initiator_text_color: #fafafa
-$initiator_color:    hsl( 0, 100%, 32%)
-$community_text_color: hsl( 0, 30%, 15%)
-$community_color:    hsl( 0, 0%, 87%)
-$callout_bg_color: hsl( 0, 5%, 50%)
 
-$dark_initiator_color: darken($initiator_color, $border_darken_amt)
-$dark_community_color: darken($community_color, $border_darken_amt)
-$dark_comp_color: darken($comp_color, $border_darken_amt)
-$dark_standout_color: darken($standout_color, $border_darken_amt)
+$header_background_declaration: none
+$header_text_color: hsl( 0, 0%, 80%)
 
+$footer_background_declaration: none
+$footer_text_color: hsl( 0, 0%, 20%)
 
-// required for all themes
+$primary_accent_background_color: hsl( 0, 100%, 32%)
+$primary_accent_text_color: #fafafa
+
+$complementary_background_color: #666
+$complementary_text_color: white
+
+// These must be included in all theme files in this order
+@import "variables"
+@import "variables_skin"
 @import "skinables" 
-@import "sassy-buttons"
-@import "library/library_skinned"
 /////////
 
-#l-header
+
+@import "compass/css3/box-shadow"
+@import "sassy-buttons"
+
+.l-header
   min-height: 32px
   
 #t-bg-content
@@ -62,39 +55,13 @@ $dark_standout_color: darken($standout_color, $border_darken_amt)
     border-top: 1px solid #919191
     border-bottom: 1px solid #666
 
-#l-header
+.l-header
   .t-logo
     display: inline-block
     position: absolute
     top: 183px
     left: 88px
     z-index: 20
-
-    .t-logo-name
-      text-transform: none
-
-    .t-logo-tagline  
-      display: none
-      //margin-left: 220px
-      //margin-top: 20px
-      font-weight: bold
-      margin-left: 0
-      +font-size(-1)
-      color: #888
-
-      &:hover
-        color: #444
-
-    .t-logo-name
-      +font-size(-1)
-      font-style: italic
-
-    .t-logo-read-more
-      +font-size(-2)
-      font-style: normal
-
-// #l-header .t-logo
-//   float: none
 
 .t-intro-wrap
   #t-intro-people
@@ -188,9 +155,6 @@ $dark_standout_color: darken($standout_color, $border_darken_amt)
   z-index: 3
 
 /// local...
-#t-unlock-measures-button
-  @extend %desaturated_button
-
 #t-unlock-measures-zip, #t-unlock-measures-button
   +font-size(1)
 
@@ -268,7 +232,7 @@ html body #dashboard
   margin-bottom: 0
 
 /// footer
-#l-footer
+.l-footer
   padding: 0 0 2 * $vertical_baseline 0
 
 .l-footer-wrap
@@ -277,7 +241,7 @@ html body #dashboard
   width: $content_width
   +font-size(2)
 
-  #l-footer_segments
+  .l-footer_segments
     color: #555
 
     a

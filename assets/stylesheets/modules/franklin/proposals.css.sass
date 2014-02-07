@@ -1,5 +1,5 @@
 @import "variables"
-@import "library/library"
+@import "library"
 
 // New Proposal
 
@@ -11,7 +11,7 @@
 #proposals-container, #proposals-container-completed
   padding-top: $vertical_baseline
   .proposal-list
-    @extend %nude_list
+    list-style: none outside none
 
 #proposals-container-completed
   hr

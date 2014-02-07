@@ -1,13 +1,13 @@
 // These mixins and extenders can be used across all the sass files
 
 @import "sassy-buttons"
-@import "compass/css3/background-size"
-@import "compass/css3/images"
 @import "compass/css3/box-shadow"
 
-=stripe($stripe-color, $height)
-  +background-image(linear-gradient(transparent 50%, $stripe-color 50%))
-  +background-size($height $height)
+// @import "compass/css3/background-size"
+// @import "compass/css3/images"
+// =stripe($stripe-color, $height)
+//   +background-image(linear-gradient(transparent 50%, $stripe-color 50%))
+//   +background-size($height $height)
 
 =grayscale
   //filter: url('/filters.svg#grayscale')  //FF 3.5+
@@ -23,8 +23,21 @@
   &:hover
     +grayscale_off
 
-%nude_list
-  list-style: none outside none
+=link_style($base_color, $amount: 25%, $method: -1)
+
+  // by default, determine whether the hover should darken or lighten the color
+  @if $method == -1
+    @if lightness($base_color) < 50%
+      $method: darken
+    @else
+      $method: lighten
+
+  color: $base_color
+  &:hover
+    @if $method == darken
+      color: darken($base_color, $amount)
+    @else
+      color: lighten($base_color, $amount)
 
 // Browsers render the inset colors so differently...
 =inset-border($base_text_color)
@@ -33,8 +46,6 @@
 =outset-text($transparency:.1)
   +single-text-shadow($hoff: 1px, $voff: 1px, $color: rgba(black, $transparency), $blur: 0)
 
-=button($bground_color: hsl(0,0,45%), $darken_amt: 10%)
-  +sassy-button("glass", 5px, inherit, $bground_color, darken($bground_color, $darken_amt))
 
 =pressable_button
   margin: 2px 5px
@@ -50,8 +61,6 @@
   &.selected
     border-color: #ccc white white #ccc
     +single-box-shadow($inset: true, $blur: 4px, $color: rgba(0, 0, 0, .2))
-
-
 
 =grab_cursor
   cursor: move

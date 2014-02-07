@@ -18,14 +18,14 @@
       
 
       &.active
-        border: 1px solid $comp_color
-        background-color: $comp_color
+        border: 1px solid $complementary_background_color
+        background-color: $complementary_background_color
         color: white
       &.inactive
         color: #666
         background-color: #f1f1f1
         border: 1px solid #ddd
-        border-bottom-color: $comp_color
+        border-bottom-color: $complementary_background_color
 
       .name
         font-weight: bold
@@ -41,7 +41,7 @@
     padding-top: $vertical_baseline
     padding-left: $grid_gutter
     color: rgba($base_text_color, .5)
-    border-top: 1px solid $comp_color
+    border-top: 1px solid $complementary_background_color
 
   .moderate-filter
     color: rgba($base_text_color, .7)
@@ -91,4 +91,4 @@
   .moderate-updated
     +font-size(-1)
     .moderate-updated-fineprint
-      +font-size(-4u)
+      +font-size(-4)

@@ -6,9 +6,9 @@
     App.environment = options.environment
   
   App.addRegions
-    headerRegion: "#l-header"
+    headerRegion: ".l-header"
     mainRegion:    "#l-content-main-wrap"
-    footerRegion: "#l-footer"
+    footerRegion: ".l-footer"
     stickyFooterRegion : '#l-sticky-footer-region'
   
   App.rootRoute = Routes.root_path()

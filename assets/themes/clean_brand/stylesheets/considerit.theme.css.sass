@@ -1,18 +1,14 @@
-//////////////////////////////////////////////////////////////
-// These must be included at the top of all theme stylesheets
-@import "variables"
-@import "variables_skin"
-////////////////////////////
-
 ////////////////////////////////////////
-// Overide any skin style variables here
+// Define/overide any skin style variables here
 @import "skins/clean"
 
-// required for all themes
+// These must be included in all theme files in this order
+@import "variables"
+@import "variables_skin"
 @import "skinables" 
 /////////
 
-#l-header
+.l-header
   height: 0
   margin: 0
   min-height: 0
@@ -22,9 +18,6 @@
 
 #t-bg-content
   +box-shadow(0 0 3px rgba(0, 0, 0, 0.2))
-
-#l-footer
-  background-color: $header_footer_bg_color
 
 // .t-intro-wrap .t-logo
 //   height: 5 * $vertical_baseline
@@ -42,7 +35,7 @@
     margin: $vertical_baseline * 2 0 $vertical_baseline 0
     border-top: 2px solid
     border-bottom: 1px solid
-    border-color: darken($base_bg_color, 5%)
+    border-color: darken($base_background_color, 5%)
 
   .t-message-title, .t-message-details
 

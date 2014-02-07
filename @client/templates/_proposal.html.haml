@@ -89,7 +89,7 @@
 
   (( if( active ) { ))
 
-  %a.position-your-action-body.submit{:'data-target' => 'submit-position'}
+  %a.position-your-action-body.submit.superbutton{:'data-target' => 'submit-position'}
     // fa-floppy-o
     %i.fa-lg.fa.fa-floppy-o
     (( if(updating){ ))
@@ -115,7 +115,7 @@
     %a.position-cancel{:'data-target' => 'show-results'}
       cancel and show results
   (( } else { ))
-  %a.position-your-action-body.submit{:'data-target' => 'show-results'}
+  %a.position-your-action-body.submit.superbutton{:'data-target' => 'show-results'}
     View results 
   (( } ))
 
@@ -162,7 +162,7 @@
 
 %script{ :type => "text/template", :id => "tpl_aggregate_footer_expanded"}
   .placeholder
-  // %a.position-your-action-body.join{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
+  // %a.position-your-action-body.join.superbutton{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
   //   //fa-pencil-square-o
   //   %i.fa-lg.fa 
   //     &#xf044;  
@@ -241,7 +241,7 @@
     = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'proposal-publish-form'} do |f|
       = f.hidden_field :published, :value => true
 
-      = f.submit 'Done! Publish it.', :class => 'proposal-publish'
+      = f.submit 'Done! Publish it.', :class => 'proposal-publish button'
   (( } ))
 
   .proposal-admin_strip
@@ -327,7 +327,7 @@
           = f.text_area :access_list
 
     .save_block
-      = f.submit 'save'
+      = f.submit 'save', :class => 'button'
       %a.cancel{:'data-target' => "dialog-close"}
         cancel
 
@@ -359,6 +359,6 @@
           Contributions are closed. People with access to this proposal will only be able to view it. 
 
     .save_block
-      = f.submit 'save'
+      = f.submit 'save', :class => 'button'
       %a.cancel{:'data-target' => "dialog-close"}
         cancel

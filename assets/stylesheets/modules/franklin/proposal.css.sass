@@ -2,7 +2,7 @@
 @import "compass/css3/box-shadow"
 @import "compass/css3/transform"
 @import "compass/css3/transition"
-@import "library/library"
+@import "library"
 
 .proposal
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
@@ -56,8 +56,8 @@
   position: absolute
   visibility: hidden
   z-index: 999
-  right: 0
-  bottom: -9 * $vertical_baseline
+  right: $grid_gutter
+  top: -4 * $vertical_baseline
   padding-right: $grid_gutter / 2
 
   .proposal-socialmedia-action-call
@@ -100,7 +100,7 @@
 
       .proposal-admin-options-menu
         min-width: 200px
-        @extend %nude_list
+        list-style: none outside none
         margin-left: 0
         display: inline-block
         +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
@@ -143,7 +143,7 @@
       display: inline-block
 
     .proposal-admin-options-menu
-      @extend %nude_list
+      list-style: none outside none
       li
         display: inline-block
 

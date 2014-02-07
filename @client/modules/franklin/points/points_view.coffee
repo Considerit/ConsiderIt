@@ -104,12 +104,12 @@
       if @browsing
         # when clicking outside of pointlist, close browsing
         $(document).on 'click.pointlist-browsing', (ev)  => 
-          if $(ev.target).closest('.pointlist-sort-option').length == 0 && $(ev.target).closest('.pointlist-browsing')[0] != @$el[0] && $('.point-expanded, #l-dialog-detachable').length == 0
+          if $(ev.target).closest('.pointlist-sort-option').length == 0 && $(ev.target).closest('.pointlist-browsing')[0] != @$el[0] && $('.point-expanded, .l-dialog-detachable').length == 0
             @trigger 'points:browsing:toggle', true
             ev.stopPropagation()
 
         $(document).on 'keyup.pointlist-browsing', (ev) => 
-          if ev.keyCode == 27 && $('.point-expanded, #l-dialog-detachable').length == 0
+          if ev.keyCode == 27 && $('.point-expanded, .l-dialog-detachable').length == 0
             @trigger 'points:browsing:toggle', true
             ev.stopPropagation()
       else

@@ -1,6 +1,5 @@
 ////////////////////////////////////////////////////////
-// THEME: Processes all styles requiring theme variables.
-//        Also imports some base themes
+// THEME: Processes all styles requiring skin variables.
 ////////////////////////////////////////////////////////
 @import "variables"
 @import "compass/css3/box-shadow"
@@ -8,26 +7,158 @@
 @import "sassy-buttons"
 
 // libraries of mixins
-@import "library/library"
-@import "library/library_skinned"
+@import "library"
 @import "skins/css_snippets/bubble"
 
-@import "reset"
-@import "vendor/overrides"
+
+// Sassy button defaults
+// TODO: use skin variables as part of default
+$sb-base-color:      #0bc265      // Base color of your button
+$sb-second-color:    false        // Optional second color of button gradient
+$sb-border-radius:   10px         // Button border radius
+$sb-border-width:    1px          // Button border width
+$sb-padding:         $vertical_baseline/2 $grid_gutter  // Button padding
+$sb-font-size:       20px         // Button font-size
+$sb-line-height:     1.2em        // Button line-height
+$sb-text-color:      white        // Button text color
+$sb-text-style:      "none"      // Button text shadow style
+$sb-gradient-style:  "matte"      // Button gradient style
+$sb-auto-states:     true         // Automatically create pseudo styles 
+
+
+/////////////////////////////////////////////////////////////////////////////
+/// Skins library: Reusable extends and mixins sensitive to skin variables
+/////////////////////////////////////////////////////////////////////////////
+
+
+%superbutton
+  +sassy-button("glass", 5px, inherit, darken($complementary_background_color, 16%), darken($complementary_background_color, 24%))
+  //padding: $vertical_baseline/2 $grid_gutter
+
+  +link_style($complementary_text_color)
+
+%button
+  +sassy-button("simple", 5px, inherit, darken(desaturate($base_background_color, 100%), 5%), darken(desaturate($base_background_color, 100%), 10%), $base_text_color, "false")
+  
+  color: lighten($base_text_color, 5%)
+  &:hover
+    +sassy-button("simple", 5px, inherit, lighten(desaturate($complementary_background_color, 10%), 10%))
+    color: $complementary_text_color
+
+
+////////////////// COLOR GROUPS //////////////////////////
+// A color group defines a text color and background styles. 
+// Color groups are applied to root HTML elements that start
+// a new background. For example, the pro/con decision board 
+// has a new background regime imposed on it and its children.
+///////////////////////////////////////////////////////////
+
+%on_background
+  color: $base_text_color
+  background: $base_background_declaration
+  a
+    +link_style(darken($base_text_color, 10%))
+
+%on_header
+  color: $header_text_color
+  background: $header_background_declaration
+  a
+    +link_style(darken($header_text_color, 10%))
+
+%on_footer
+  color: $footer_text_color
+  background: $footer_background_declaration
+  a
+    +link_style(darken($footer_text_color, 10%))
+
+
+%on_callout_color
+  color: $complementary_text_color
+  background-color: $complementary_background_color
+  a
+    +link_style(darken($complementary_text_color, 10%))
+
+
+%on_chalkboard
+  color: $decision_board_text_color
+  background: $decision_board_background_declaration
+
+  a
+    +link_style( darken($decision_board_text_color, 10%))
+  
+  h1, h2, h3
+    color: $decision_board_text_color
+
+  textarea, input[type="text"], input[type="email"], input[type="password"]
+    background-color: transparent
+    border: 1px solid
+    +inset-border($decision_board_text_color)
+    display: inline-block
+    color: $decision_board_text_color
+
+    &.error 
+      border-color: #883333
+      &:focus
+        +inset-border($decision_board_text_color)
+
+
+=on_menu($include_background: true)
+  @if $include_background
+    background-color: $menu_background_color
+  color: $menu_text_color
+  a
+    color: $menu_text_color
+    &:hover
+      color: $complementary_text_color
+      background-color: darken($complementary_background_color, 10%)
+
+    &.selected
+      color: $complementary_text_color
+      background-color: $complementary_background_color
+
+
+%on_dialog
+  background-color: $dialog_background_color
+  color: $dialog_text_color
+
+  textarea, input[type="text"], input[type="email"], input[type="password"]
+    color: darken($dialog_text_color, 15%)
+    background-color: lighten($dialog_background_color, 20%)
+    border: 1px solid darken($dialog_background_color, 20%)
+    padding: 6px 12px
+
+%on_proposal_title
+  background-color: $proposal_title_background_color
+  color: $proposal_title_text_color
+  h1, h2, h3
+    color: darken($proposal_title_text_color, 10%)
+  a
+    +link_style($proposal_title_text_color, 20%)
+
+
+%on_proposal_details
+  background-color: $proposal_detail_background_color
+  color: $proposal_detail_text_color
+  h1, h2, h3
+    color: darken($proposal_detail_text_color, 10%)
+  a
+    +link_style($proposal_detail_text_color, 20%)
+
+%on_peer_area  
+  background-color: $peer_background_color
+  color: $peer_text_color
+
+
 
 
 // has to go after variable def; can go in library
 %main_font-family
   font-family: $main_font-family
 
-
 // compass vertical rhythm stuff...has to go after $base-font-size declared
 +establish-baseline
 html
   +adjust-leading-to(3)
-
-#t-bg
-  background: $bg_declaration
 
 #t-bg-top
   background: $bg_top_declaration
@@ -38,27 +169,32 @@ html
 #t-bg-content-top
   background: $bg_content_top_declaration
 
+.content_style
+  @extend %on_background
 
-body, h1, h2, h3, h4, h5, h6, a, input, button
+
+body, h1, h2, h3, h4, h5, h6 //, input, button
   color: $base_text_color
 
 
 // do we need to put input and button here...?
-html
-  body, input, button, textarea
-    @extend %main_font-family
+body, input, button, textarea
+  @extend %main_font-family
 
-a:hover
-  color: $base_hover_color
+a  
+  +link_style($base_text_color)
 
   /* SHARED STYLES */
 [data-target="user_profile_page"]
   cursor: pointer
 
 
-.button
-  +button($bground_color: hsl(0,0,35%))
+.content_style
+  .button, a.button, input.button, button.button
+    @extend %button
 
+  .superbutton, a.superbutton, input.superbutton, button.superbutton
+    @extend %superbutton
 
 
 ////////////////////////////////////////
@@ -67,131 +203,94 @@ a:hover
 
 
 // franklin/proposals
-.proposals-new button
-  @extend %desaturatedbutton
 
-#proposals-container-completed
-  hr
-    border-top: 1px dashed $base_text_color
 
-.proposals-filters, .proposals-list-pagination-wrap
-  @extend %on_background
+#proposals-container-completed hr
+  border-top: 1px dashed $base_text_color
 
-.proposals-list-pagination 
-  .proposals-pagination-showmore, .proposals-list-pagination-page, .proposals-list-pagination-jump
-    @extend %desaturatedbutton
+// .proposals-filters, .proposals-list-pagination-wrap
+//   @extend %on_background
 
-  .selected
-    @extend %superbutton
-    padding: $vertical_baseline / 4 $grid_gutter/2
+.proposals-list-pagination .selected
+  padding: $vertical_baseline / 4 $grid_gutter/2 //override for superbutton dec
 
 .proposals-container-hibernation-message
-  background-color: $comp_color
-  color: $comp_text_color
+  background-color: $complementary_background_color
+  color: $complementary_text_color
 
 // franklin/proposal
 
 [data-visibility="published"]
-  .proposal-admin_strip
-    i
-      color: darken($base_bg_color, 25%)
+  .proposal-admin_strip > i
+    color: lighten($base_text_color, 15%)
 
-    &:hover
-      .proposal-admin-options-menu
-        background-color: $base_bg_color
-        border: 1px solid darken($base_bg_color, 20%)
+  .proposal-admin_strip:hover .proposal-admin-options-menu
+    +on_menu
+    border: 1px solid darken($base_background_color, 20%)
 
-        a
-          &:hover
-            color: $comp_text_color
-            background-color: $dark_comp_color
 
 [data-visibility="unpublished"]
   .proposal-admin_strip
     color: $base_text_color
 
     .delete_proposal
-      color: darken($base_bg_color, 25%)
-      &:hover
-        color: $base_text_color
-
-  .proposal-admin-publish
-    .proposal-publish
-      @extend %desaturatedbutton
-
-.position-your-action-body
-  @extend %superbutton
+      +link_style(darken($base_background_color, 25%))
 
 // franklin/proposal/aggregate
-$histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
-.histogram
-  .histogram-bar
-    border: 2px solid darken($histogram_bar_color, 10%)
-    background-color: $histogram_bar_color
-    +bubble(whitesmoke, darken(whitesmoke, 10%), up, $include_bg: false, $text_color: $base_text_color)    
-    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($histogram_bar_color, 25%), $inset: true)
-    &.bar-is-soft-selected, &.bar-is-hard-selected
-      background-color: darken($histogram_bar_color, 8%)
-      border-color: darken($histogram_bar_color, 16%)
+.histogram .histogram-bar
+  border: 2px solid darken($histogram_bar_color, 10%)
+  background-color: $histogram_bar_color
+  +bubble($peer_background_color, darken($peer_background_color, 10%), up, $include_bg: false, $text_color: $peer_text_color)    
+  
+  +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: lighten($histogram_bar_color, 25%), $inset: true)
+  &.bar-is-soft-selected, &.bar-is-hard-selected
+    background-color: darken($histogram_bar_color, 8%)
+    border-color: darken($histogram_bar_color, 16%)
 
 .histogram-base
-  background-color: mix(lighten($mid_bg_color, 30%), $accent_color, 90%)
-  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: lighten($mid_bg_color, 40%), $inset: true)
+  background-color: $histogram_base_color
+  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: darken($histogram_base_color, 10%), $inset: true)
 
 // franklin/proposal/crafting
 .position
   &[data-state="separated"], &[data-state="together"]
     .position-message-body
-      background: $decision_board_bg
+      @extend %on_chalkboard
 
   .position-message-body
     border: 1px dashed $decision_board_border_color
-
-.personal-reasons
-  @extend %on_chalkboard
+  
 
 .position-footer
-  .position-your-action-body.submit
-    @extend %superbutton
 
-  .position-submit-footer-wrap
-    .position-cancel
-      color: lighten($base_text_color, 25%)
-      &:hover
-        color: $base_text_color
-
-.reasons-header
-  a
-    color: $decision_board_text_color
-    &:hover
-      color: darken($decision_board_text_color, 10%)
-
-.stance
-  @extend %on_chalkboard
-  .stance-slider-container
-    .noUiSlider
-      background-color: lighten(mix($mid_bg_color, $accent_color), 20%)
+  .position-submit-footer-wrap .position-cancel
+    +link_style(lighten($base_text_color, 20%))
 
 // franklin/proposal/reasons
-  &[data-state="collapsed"] 
-    .reasons-footer-region
-      .reasons-view-results
-        color: darken($base_bg_color, 25%)
+
+.reasons-header a
+  +link_style($decision_board_text_color, 10%)
+
+.stance
+  .stance-slider-container .noUiSlider
+    background-color: $slider_background_color 
+
+[data-state="collapsed"] .reasons-footer-region
+  @extend %on_peer_area
 
 // franklin/proposal/description
 .proposal-description-wrap
 
   .proposal-description
-    +bubble($initiator_color, $dark_initiator_color, left, $text_color: $initiator_text_color)
-
-    h1, h2, h3
-      color: $initiator_text_color
+    +bubble($proposal_title_background_color, darken($proposal_title_background_color, 12%), left, $text_color: $proposal_title_text_color)
+    @extend %on_proposal_title
   
   .proposal-details-body-wrap
-    +bubble($base_bg_color, darken($base_bg_color, 12%), left, $text_color: $base_text_color)
+    +bubble($proposal_detail_background_color, darken($proposal_detail_background_color, 12%), left, $text_color: $proposal_detail_text_color)
+    @extend %on_proposal_details
 
   .proposal-links
-    background-color: darken($base_bg_color, 15%)
+    background-color: darken($proposal_detail_background_color, 15%)
 
 // franklin/proposal/toggle
 .proposal-state-toggle
@@ -201,97 +300,56 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
       color: $decision_board_text_color
 
     .proposal-state-secondary
-      color: lighten($base_text_color, 20%)
-      &:hover
-        color: $base_text_color
-
+      +link_style(lighten($base_text_color, 20%))
 
 // franklin/assessment
-.assessment-request-form-dialog
-
-  .login
-    color: $base_text_color
+.assessment-request-form-dialog .login
+  color: $base_text_color
 
 // franklin/comments
-.thank .thank, .new-comment .login
+.new-comment .login
   color: $base_text_color
 
 // franklin/point
 .point-unexpanded
-  &.point-position
-    .point-remove
-      color: $decision_board_text_color
-      &:hover
-        color: darken($decision_board_text_color, 15%)
+  &.point-position .point-remove
+    +link_style($decision_board_text_color)
 
-  &.point-peer
-    .point-operations
-      a
-        color: lighten($base_text_color, 15%)
+  &.point-peer .point-operations a
+    +link_style(lighten($base_text_color, 15%))
 
-        &:hover
-          color: $base_text_color
-
-.point-position.point-unexpanded .point-wrap
-  background-color: $decision_board_color
-
-.point-include, .point-assessment-request-initiate, .point-follow
-  @extend %desaturatedbutton
-  +font-size(-3)
-  &:hover
+.point.point-expanded
+  .point-include, .point-assessment-request-initiate, .point-follow
     +font-size(-3)
+    &:hover
+      +font-size(-3)
+
+[data-state="points-separated"] .point-peer.point-unexpanded, .point.point-expanded
+  .point-wrap
+    @extend %on_peer_area
 
 // franklin/points
-[data-state="points-collapsed"]
-  .pointlist-footer-more
-    i
-      color: darken($base_bg_color, 25%)
-
-.pointlist-browse
-  .pointlist-browse-toggle
-    @extend %desaturatedbutton
+[data-state="points-collapsed"] .pointlist-footer-more i
+  color: darken($base_background_color, 25%)
 
 .peer-reasons
 
-  .pointlist-header-label
-    border-bottom-color: $base_text_color
+  &[data-state="points-separated"] .pointlist-header-label
+    color: lighten($base_text_color, 20%)
 
   &[data-state="points-separated"], &[data-state="points-together"]
-
-    .pointlist-header-label
-      color: lighten($base_text_color, 20%)
-
-    .pointlist-browse-sort
-
-      &:hover
-        .pointlist-browse-sort-menu
-          background-color: $base_bg_color
-          border: 1px solid darken($base_bg_color, 20%)
-
-          a
-            &:hover
-              color: $comp_text_color
-              background-color: $dark_comp_color
-            &.selected
-              background-color: darken($callout_bg_color, 8%)
-              color: $callout_text_color
-
-  &[data-state="points-separated"]
-    .pointlist-header-label
-      border-bottom-color: darken($base_bg_color, 20%)
+    .pointlist-browse-sort:hover .pointlist-browse-sort-menu
+      +on_menu
 
   &[data-state="points-collapsed"], &[data-state="points-together"]
-    .pointlist-header-label
-      color: lighten($base_text_color, 20%)
-    +bubble(whitesmoke, darken(whitesmoke, 10%), left, $text_color: $base_text_color)
+    +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
 
-.position-points
-  .pointlist-header-label
-    border-bottom-color: $decision_board_text_color
+.position-points .pointlist-header-label
+  border-bottom-color: $decision_board_text_color
 
 .peer-reasons[data-state="points-together"], .peer-reasons[data-state="points-separated"] 
   .pointlist-browse-header-open, .pointlist-browse-header-close
-    color: darken($base_bg_color, 15%)
+    color: lighten($base_text_color, 50%)
 
 .draggable_hover_pro .position-propoints, .draggable_hover_con .position-conpoints
   .point-drop-target
@@ -302,86 +360,118 @@ $histogram_bar_color: mix(darken($mid_bg_color, 12%), $accent_color, 75%)
   border: 1px dashed $decision_board_border_color
 
 // franklin/point
-.thank .thank
-  @extend %desaturatedbutton
+
 
 // helpers
 
-.l-tooltip-user
-  .l-tooltip-user-action
-    @extend %superbutton
+.l-tooltip-user .l-tooltip-user-action
+  @extend %button
 
-// homepage
-
-.t-intro
-  .account_message
-    +bubble($standout_color, $dark_standout_color, left, $text_color: $standout_text_color)
 
 // auth
-.user-options
-  .user-options-menu
-    background-color: $base_bg_color
-    border: 1px solid darken($base_bg_color, 20%)
-
-    a:hover
-      color: $comp_text_color
-      background-color: $dark_comp_color
-
-#l-dialog-detachable 
-  .user-accounts-complete-paperwork-form
-    input[type="text"], input[type="email"], input[type="password"], textarea
-      &.ui-state-valid
-        color: $initiator_text_color
-
-  .l-dialog-body
-    @extend %whitesmoke
+.user-options .user-options-menu
+  +on_menu
+  border: 1px solid darken($base_background_color, 20%)
 
 
-.user-accounts-complete-paperwork-form
+.user-accounts-complete-paperwork-form 
+  input[type="text"], input[type="email"], input[type="password"], textarea
+    &.ui-state-valid
+      color: $primary_accent_text_color
+
   .user-accounts-form-fields-wrap
-    background-color: $initiator_color
-    border: 1px solid $dark_initiator_color
-    border-top-color: lighten($dark_initiator_color, 15%)
-    border-bottom-color: darken($dark_initiator_color, 15%)
-    color: $initiator_text_color
+    background-color: $primary_accent_background_color
+    border: 1px solid darken($primary_accent_background_color, 5%)
+    border-top-color: lighten($primary_accent_background_color, 10%)
+    border-bottom-color: darken($primary_accent_background_color, 10%)
+    color: $primary_accent_text_color
 
-.login, .user-options-display, #l-header .t-logo, #l-header .l-navigate
-  @extend %on_header_footer
+.l-header
+  @extend %on_header
 
-.user-accounts-email-auth-region, .user-accounts-complete-paperwork-form, .user-accounts-password-reset-form
-  input[type="submit"], .user-accounts-register-next
-    @extend %superbutton
+.l-footer
+  @extend %on_footer
 
 // dashboard
-html body #dashboard
-  .dashboard-profile
-    .dashboard-profile-activity-summary
-      background-color: $comp_color
-      &:hover
-        background-color: darken($comp_color, 10%)
+#dashboard .dashboard-profile-activity-summary
+  background-color: $complementary_background_color
+  color: $complementary_text_color
 
-.sidebar
-  .sidebar_link
-    &.current, &:hover
-      background-color: $comp_color
+  &:hover, &.selected
+    color: $complementary_text_color
+    background-color: darken($complementary_background_color, 10%)
 
+
+.table-striped tbody tr:nth-child(2n+1) td
+  background-color: darken($base_background_color, 5%)
+
+.sidebar 
+  +on_menu(false)
+
+  hr
+    border-top: 1px solid #aaa
+
+#dashboard
+  .table, .fht-table
+    td
+      border-top: 1px solid darken($base_background_color, 5%)
+      
+    th
+      border-bottom: 1px solid darken($base_background_color, 5%)
+
+  .field .sublabel
+    color: $base_text_color
+
+  .dashboard-subheading
+    color: lighten($base_text_color, 5%)
 
 //////// These should be moved out to admin...
 
-// analytics
-
-
 // assessable
 .assessment_published_at
-  background-color: $callout_bg_color
-  color: $callout_text_color
+  background-color: $complementary_background_color
+  color: $complementary_text_color
+
+#assess
+
+  .assessment_block
+    border: 1px solid darken($base_background_color, 5%)
+
+    .assessment_row
+
+      &.reviewable
+        background-color: #efe
+        td
+          background-color: #efe
+
+
+      &.incomplete
+        background-color: mix(#ff1, $base_background_color)
+        background-color: rgba(mix(#ff1, $base_background_color), .7)
+        td
+          background-color: mix(#ff1, $base_background_color)
+          background-color: rgba(mix(#ff1, $base_background_color), .7)
+
 
 // dialog
-#l-dialog-detachable
-  .option
-    .sublabel
-      color: lighten($base_text_color, 15%)
+.l-dialog-detachable
+  border: 1px solid darken($complementary_background_color, 10%)
 
+  .option .sublabel
+    color: lighten($base_text_color, 15%)
+
+  .l-dialog-title 
+    @extend %on_callout_color
+
+    a.l-dialog-close
+      +link_style(darken($complementary_background_color, 20%))
+
+  .l-dialog-body
+    @extend %on_dialog
+
+
+
+@import "vendor/overrides"
 
 //////////////////////////////////////////
 // UNINCORPORATED
@@ -442,11 +532,3 @@ html body #dashboard
   margin-left: -4px
 .input-group-btn>.btn:hover,.input-group-btn>.btn:active
   z-index: 2
-
-
-
-
-
-
-
-

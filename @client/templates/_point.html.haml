@@ -41,7 +41,7 @@
 %script{ :type => "text/template", :id => "tpl_point_expanded"}
   .point-actions
     .point-include-wrap.point-action
-      %button.point-include{ :'data-target' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
+      %button.point-include.button{ :'data-target' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
         %i.fa.fa-small.fa-list
         Add to your pro/con list
 
@@ -53,11 +53,11 @@
 
 %script{ :type => "text/template", :id => "tpl_point_follow"}
   (( if(already_follows){ ))
-  %button.point-follow
+  %button.point-follow.button
     %i.fa.fa-rss
     Unsubscribe to comments
   (( } else{ ))
-  %button.point-follow{ :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
+  %button.point-follow.button{ :title => 'Get notifications when the point is updated or someone comments on it. You can easily unsubscribe later.'}
     %i.fa.fa-rss
     Subscribe to new comments
   (( } ))

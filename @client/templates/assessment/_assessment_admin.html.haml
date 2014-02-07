@@ -14,13 +14,13 @@
 
     (( if( claimed ) { ))
     (( if( claimed_by_logged_in_user ) { ))
-    %button.unclaim.take_responsibility
+    %button.unclaim.take_responsibility.button
       Unclaim it
     (( } else { ))                                 
     {{ claimed_by }}
     (( } ))
     (( } else { ))
-    %button.claim.take_responsibility
+    %button.claim.take_responsibility.button
       I'll do it
     (( } ))
 

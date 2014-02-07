@@ -1,10 +1,10 @@
 @import "variables"
-@import "library/library"
+@import "library"
 @import "compass/css3/box-shadow"
 
 .point
   position: relative
-  @extend %nude_list
+  list-style: none outside none
 
   .point-close
     display: none
@@ -231,7 +231,6 @@
 [data-state="points-separated"] .point-peer.point-unexpanded, .point-expanded
   .point-wrap
     border-radius: 8px
-    background-color: whitesmoke
 
 [data-state="points-separated"] .point-peer.point-unexpanded
   .point-wrap
@@ -277,7 +276,7 @@
   margin: $vertical_baseline 0
 
 .point-comments
-  @extend %nude_list
+  list-style: none outside none
 ////
 
 

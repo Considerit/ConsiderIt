@@ -1,6 +1,6 @@
 @ConsiderIt.module "Auth.Signin", (Signin, App, Backbone, Marionette, $, _) ->
 
-  class Signin.Controller extends App.Controllers.Base
+  class Signin.SigninController extends App.Controllers.Base
     initialize : (options = {}) ->
       @layout = @getSigninLayout()
       @listenTo @layout, 'show', =>
@@ -62,6 +62,7 @@
 
         $.get Routes.users_check_login_info_path( {email : params.email} ), {}, (data) =>
           if data.valid
+            @close()
             App.request 'registration:complete_paperwork', params
           else
             msg = 'An account with that same email address already exists! Please sign in instead.'
@@ -118,7 +119,7 @@
 
 
 
-  class Signin.PasswordResetController extends Signin.Controller
+  class Signin.PasswordResetController extends Signin.SigninController
     initialize : ->
       super
 

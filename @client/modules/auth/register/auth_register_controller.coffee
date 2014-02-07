@@ -1,6 +1,6 @@
 @ConsiderIt.module "Auth.Register", (Register, App, Backbone, Marionette, $, _) ->
 
-  class Register.Controller extends App.Controllers.Base
+  class Register.RegisterController extends App.Controllers.Base
 
     initialize : (options = {}) ->
 

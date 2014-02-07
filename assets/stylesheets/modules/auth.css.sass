@@ -1,6 +1,6 @@
 @import "variables"
 @import "compass/css3/box-shadow"
-@import "library/library"
+@import "library"
 
 //////////////////////////////////////////
 // USER MODULES
@@ -46,7 +46,7 @@
 
   .user-options-menu
     min-width: 140px
-    @extend %nude_list
+    list-style: none outside none
     margin-left: 0
     display: inline-block
     +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
@@ -77,7 +77,7 @@
     margin-bottom: $vertical_baseline/2
 
   .user-accounts-auth-options
-    @extend %nude_list
+    list-style: none outside none
     padding-bottom: $vertical_baseline
 
     .user-accounts-login-option
@@ -169,7 +169,7 @@ $membership_card_height: 278px
       text-decoration: underline
 
 
-#l-dialog-detachable 
+.l-dialog-detachable 
   .user-accounts-complete-paperwork-form
     input[type="text"], input[type="email"], input[type="password"], textarea
       width: 100%

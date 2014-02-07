@@ -118,7 +118,7 @@
 
     closeBarClick : (ev) -> @deselectBar() 
 
-    closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('#l-dialog-detachable').children().length == 0 && $('.point-expanded').length == 0
+    closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('.l-dialog-detachable').children().length == 0 && $('.point-expanded').length == 0
     
     deselectBar : (ev) ->
       $selected_bar = @$el.find('.bar-is-selected')

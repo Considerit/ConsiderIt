@@ -14,7 +14,7 @@
         App.request 'registration:complete_paperwork'
       else
         selected = if !App.request("user:fixed:exists") || App.request("user:fixed").isPersisted() then 'no_pass' else 'pass'
-        new Auth.Signin.Controller
+        new Auth.Signin.SigninController
           selected: selected      
 
     begin_password_reset : ->
@@ -30,7 +30,7 @@
       @password_reset_token = null
 
     complete_paperwork : (params = {}) -> 
-      new Auth.Register.Controller
+      new Auth.Register.RegisterController
         params : params
 
     signin : (user_data, controller = null) ->

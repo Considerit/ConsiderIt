@@ -2,6 +2,9 @@
 // VENDOR
 //////////////////////////////////////////
 
+@import "library"
+
+
 /**
 /* for jquery.inline_labels.js
 /**
@@ -30,11 +33,10 @@
 /* for tooltipster
 /**/
 
-@import "library/library"
 
 .tooltipster-default 
-  background-color: $callout_bg_color
-  border: 2px solid darken($callout_bg_color, 15%)
+  @extend %on_background
+  border: 2px solid darken($base_background_color, 10%)
 
   .tooltipster-content
     +font-size(0)
@@ -107,7 +109,6 @@
   position: relative
 
 .editableform 
-  //border: 1px solid rgba($standout_color, .7)
   .control-group
     position: relative
 
@@ -132,7 +133,7 @@
       color: black
 
   .editable-submit
-    +button
+    @extend %button
     +font-size(3)
 
 .editable-empty, .editable-empty:hover, .editable-empty:focus

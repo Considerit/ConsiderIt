@@ -1,5 +1,5 @@
 @ConsiderIt.module "Helpers.Dialog", (Dialog, App, Backbone, Marionette, $, _) ->
-  class Dialog.Controller extends App.Controllers.Base
+  class Dialog.DialogController extends App.Controllers.Base
     
     initialize: (options = {}) ->
       @contentView = options.view
@@ -56,14 +56,16 @@
   App.reqres.setHandler "dialog:new", (contentView, options = {}) ->
     options.class ?= ''
 
-    $overlay = $("<div id='l-dialog-detachable' class='#{options.class}'>")
+    $existing = $('.l-dialog-detachable')
+
+    $overlay = $("<div class='l-dialog-detachable #{options.class}'>")
     $('#l-wrap').prepend($overlay)
 
-    @dialogController = new Dialog.Controller
+    @dialogController = new Dialog.DialogController
       view: contentView
       config: options
       region: new Backbone.Marionette.Region
-        el: "#l-dialog-detachable"
+        el: ".l-dialog-detachable"
 
     @dialogController.show @dialogController.dialogLayout
     @dialogController.dialogLayout

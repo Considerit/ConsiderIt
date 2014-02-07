@@ -33,8 +33,6 @@ $tooltip_width: 225px
     display: inline-block
 
   .l-tooltip-user-metric-major    
-    color: white
-    //background-color: rgba(darken($callout_bg_color, 8%), .5)
     padding: 0 $grid_gutter/4
     margin-left: $grid_gutter/4
 
@@ -48,17 +46,12 @@ $tooltip_width: 225px
   .l-tooltip-user-actions
     clear: both
 
-    .l-tooltip-user-action
+    .l-tooltip-user-action, .l-tooltip-user-action:hover
       +font-size(-2)
-      color: white
       text-align: center
       width: 100%
       min-width: $tooltip_width
       display: inline-block
       border-radius: 0
       border-bottom: 0
-
-      &:hover
-        border-radius: 0
-
 

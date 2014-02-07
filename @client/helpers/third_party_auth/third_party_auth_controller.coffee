@@ -1,5 +1,5 @@
 @ConsiderIt.module "Helpers.ThirdPartyAuth", (ThirdPartyAuth, App, Backbone, Marionette, $, _) ->
-  class ThirdPartyAuth.Controller extends App.Controllers.Base
+  class ThirdPartyAuth.ThirdPartyAuthController extends App.Controllers.Base
     
     initialize : (options = {}) ->
       provider = options.provider
@@ -55,6 +55,6 @@
 
   App.reqres.setHandler "third_party_auth:new", (options = {}) ->
 
-    @controller = new ThirdPartyAuth.Controller options
+    @controller = new ThirdPartyAuth.ThirdPartyAuthController options
 
     @controller

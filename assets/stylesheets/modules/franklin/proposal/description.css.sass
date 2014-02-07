@@ -45,7 +45,7 @@ $description_animation_time: 500ms
     [data-target="user_profile_page"]
       opacity: .9
       display: inline-block
-      margin-right: 3 * $grid_gutter
+      margin-right: 2 * $grid_gutter
 
       &:hover
         opacity: 1
@@ -129,8 +129,8 @@ $description_animation_time: 500ms
   // additional links
   .proposal-links
     position: absolute
-    right: -$body_gutter - $grid_gutter
-    bottom: 0
+    right: -$body_gutter - $grid_gutter - 1
+    bottom: $vertical_baseline / 2
     padding: $vertical_baseline/2 $grid_gutter/2
     width: $body_gutter
 

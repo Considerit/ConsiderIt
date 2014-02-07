@@ -136,12 +136,12 @@
                 I forgot! Email me password instructions. 
 
         .user-accounts-finish-wrap
-          %button.user-accounts-register-next{:disabled => 'disabled', :type => 'button', :'data-target' => "create-account"}
+          %button.user-accounts-register-next.superbutton{:disabled => 'disabled', :type => 'button', :'data-target' => "create-account"}
             Create my account
         
         (( } ))
         .user-accounts-finish-wrap
-          = f.submit "Log me in", :disabled => 'disabled', :class => 'user-accounts-login-submit', :'data-target' => "login-submit"
+          = f.submit "Log me in", :disabled => 'disabled', :class => 'user-accounts-login-submit superbutton', :'data-target' => "login-submit"
 
 
 
@@ -218,7 +218,7 @@
 
 %script{ :type => "text/template", :id => "tpl_user_paperwork_footer" }     
 
-  %input{ :name => "commit", :type => "submit", :value => "Create my account!", :class => "ui-state-valid", :'data-target' => "paperwork_complete" }
+  %input{ :name => "commit", :type => "submit", :value => "Create my account!", :class => "ui-state-valid superbutton", :'data-target' => "paperwork_complete" }
 
   .user-accounts-tos
     %span
@@ -243,4 +243,4 @@
     = f.password_field :password_confirmation, :pattern => ".{3,}"
 
     .user-accounts-finish-wrap
-      = f.submit "Change my password and log in", :class => 'button'
+      = f.submit "Change my password and log in", :class => 'superbutton'

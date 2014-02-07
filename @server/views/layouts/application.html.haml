@@ -42,7 +42,7 @@
 
     - cache ['main_body', current_tenant] do
 
-      #t-bg
+      #t-bg.content_style
         #t-bg-top
           %svg{ :xmlns => "http://www.w3.org/2000/svg", :height => 0, :style => "position: absolute", :version => "1.1", :baseProfile => "full" }
             %defs
@@ -53,7 +53,7 @@
 
           #l-wrap
             #l-loading-indicator
-            #l-header
+            .l-header
             #l-content
 
               #l-content-main
@@ -65,7 +65,7 @@
 
             #l-sticky-footer-region
 
-            #l-footer
+            .l-footer
 
             - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
               :javascript

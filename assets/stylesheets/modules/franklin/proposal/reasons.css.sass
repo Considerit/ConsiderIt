@@ -218,7 +218,7 @@ $use_transitions: true
         -webkit-animation: FromTogetherToSeparated_PeerPoints $transition_speed
         animation: FromTogetherToSeparated_PeerPoints $transition_speed
 
-      .point-include, .pointlist-browse-toggle
+      .point-include, .pointlist-expand-toggle
         //+animation(FromTogetherToSeparated_hidden $transition_speed * 2.5)
 
         -moz-animation: FromTogetherToSeparated_hidden $transition_speed
@@ -337,20 +337,20 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     width: $point-width
 
 
-  // pointlist browsing
-  &.reasons-browsing .reasons-lists
+  // expanded points
+  &.some_points_are_expanded .reasons-lists
     width: $full_reasons_width + $expanded_points_increment
 
     .position-region, .position, .position-message-body
       height: 100%
 
-  &.reasons-browsing-cons .reasons-lists
+  &.con_points_are_expanded .reasons-lists
     left: $full_reasons_left - $expanded_points_increment 
 
 
   &[state="crafting"], &[state="results"]
     .aggregated-propoints-region, .aggregated-conpoints-region
-      &.pointlist-browsing
+      &.points_are_expanded
         width: $decision_board_width/2 + $expanded_points_increment
 
         .point-peer.point-unexpanded 

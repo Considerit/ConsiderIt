@@ -27,19 +27,19 @@
       $transition_speed = if Modernizr.csstransitions then 1000 else 0
       @sizeToFit $transition_speed
 
-    pointsBrowsing : (valence) ->
+    pointsWereExpanded : (valence) ->
 
       if valence == 'pro'
-        @peerProsRegion.$el.addClass 'pointlist-browsing'
-        @$el.addClass 'reasons-browsing reasons-browsing-pros'
+        @peerProsRegion.$el.addClass 'points_are_expanded'
+        @$el.addClass 'some_points_are_expanded pro_points_are_expanded'
 
       else
-        @peerConsRegion.$el.addClass 'pointlist-browsing'
-        @$el.addClass 'reasons-browsing reasons-browsing-cons'
+        @peerConsRegion.$el.addClass 'points_are_expanded'
+        @$el.addClass 'some_points_are_expanded con_points_are_expanded'
 
       @sizeToFit 10
 
-    pointsBrowsingOff : (valence) ->
+    pointsWereUnexpanded : (valence) ->
       @peerConsRegion.$el.css 
         right: ''
         @positionRegion.$el.css 
@@ -49,12 +49,12 @@
         @peerProsRegion.$el.css 
           left: ''
 
-        @peerConsRegion.$el.removeClass 'pointlist-browsing'
-        @$el.removeClass 'reasons-browsing reasons-browsing-cons'
+        @peerConsRegion.$el.removeClass 'points_are_expanded'
+        @$el.removeClass 'some_points_are_expanded con_points_are_expanded'
 
       else
-        @peerProsRegion.$el.removeClass 'pointlist-browsing'
-        @$el.removeClass 'reasons-browsing reasons-browsing-pros'
+        @peerProsRegion.$el.removeClass 'points_are_expanded'
+        @$el.removeClass 'some_points_are_expanded pro_points_are_expanded'
 
       @sizeToFit 10
 

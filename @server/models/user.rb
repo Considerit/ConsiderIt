@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
   include RoleModel, Trackable
 
   has_many :points, :dependent => :destroy
-  has_many :positions, :dependent => :destroy
+  has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
   has_many :comments, :dependent => :destroy
@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
   validates :name, :presence => true
   validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
-  #attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_positions, :metric_comments, :metric_influence, :b64_thumbnail
+  #attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_opinions, :metric_comments, :metric_influence, :b64_thumbnail
 
   attr_accessor :avatar_url, :downloaded
 
@@ -65,7 +65,7 @@ class User < ActiveRecord::Base
   end
 
   def send_on_create_confirmation_instructions
-    #don't deliver confirmation instructions. We will wait for them to submit a position. 
+    #don't deliver confirmation instructions. We will wait for them to submit an opinion. 
     #self.devise_mailer.confirmation_instructions(self).deliver
   end
 
@@ -254,14 +254,14 @@ class User < ActiveRecord::Base
 
   def update_metrics
     referenced_proposals = {}
-    positions = 0
+    opinions = 0
 
-    self.positions.published.each do |position|
-      if !referenced_proposals.has_key?(position.proposal_id)
-        proposal = Proposal.find(position.proposal_id) 
+    self.opinions.published.each do |opinion|
+      if !referenced_proposals.has_key?(opinion.proposal_id)
+        proposal = Proposal.find(opinion.proposal_id) 
         #if can?(:read, proposal)  
-        referenced_proposals[position.proposal_id] = proposal
-        positions += 1          
+        referenced_proposals[opinion.proposal_id] = proposal
+        opinions += 1          
       end
     end
 
@@ -279,7 +279,7 @@ class User < ActiveRecord::Base
 
     attrs = {
       :metric_points => my_points.count,
-      :metric_positions => positions,
+      :metric_opinions => opinions,
       :metric_comments => self.comments.count,
       :metric_influence => influenced_users.keys().count, 
       :metric_conversations => self.proposals.open_to_public.count }
@@ -311,7 +311,7 @@ class User < ActiveRecord::Base
   def self.purge
     users = User.all.map {|u| u.id}
     missing_users = []
-    classes = [Position, Point, PointListing, Inclusion]
+    classes = [Opinion, Point, PointListing, Inclusion]
     classes.each do |cls|
       cls.where("user_id IS NOT NULL AND user_id NOT IN (?)", users ).each do |r|
         missing_users.push r.user_id

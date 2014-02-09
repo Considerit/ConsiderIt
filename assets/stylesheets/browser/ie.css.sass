@@ -7,15 +7,15 @@
   .reasons
     &[state="crafting"]
 
-      .aggregated-propoints-region, .aggregated-conpoints-region
+      .community-pros-region, .community-cons-region
         left: 0
 
     &[state="results"], &[state="summary"]
 
-      .aggregated-propoints-region
+      .community-pros-region
         left: $point-width - ($point-width - $decision_board_width/2) + 4
 
-      .aggregated-conpoints-region
+      .community-cons-region
         left: -$point-width + ($point-width - $decision_board_width/2) - 4
 
 
@@ -28,22 +28,22 @@
       top: 0
 
     &[state="crafting"][coming-from-state="results"]
-      .position-region
+      .opinion-region
         top: - 2 * $vertical_baseline
 
-      .aggregated-propoints-region, .aggregated-conpoints-region
+      .community-pros-region, .community-cons-region
         top: $vertical_baseline
 
     &[state="crafting"][coming-from-state="summary"], &[state="crafting"]
-      .position-region
+      .opinion-region
         top: 3 * $vertical_baseline
 
-      .aggregated-propoints-region, .aggregated-conpoints-region
+      .community-pros-region, .community-cons-region
         top: 6 * $vertical_baseline
 
 
     &[state="summary"]
-      .position-region
+      .opinion-region
         top: $aggregate_area_height + $vertical_baseline
 
 
@@ -51,7 +51,7 @@
     .reasons[state="summary"] 
       top: 0
 
-      .position-region
+      .opinion-region
         top: 0
 
   [state="summary"]

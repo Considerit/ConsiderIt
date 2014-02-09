@@ -27,7 +27,7 @@ class Ability
 
     user ||= User.new # guest user (not logged in)
 
-    user_facing_models = [User, Point, Position, Inclusion, Proposal, Thank]
+    user_facing_models = [User, Point, Opinion, Inclusion, Proposal, Thank]
         
 
     if user.has_role? :superadmin
@@ -81,11 +81,11 @@ class Ability
 
       can [:destroy], Proposal do |prop|
         ((!user.id.nil? && user.id == prop.user_id) || (session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)) && \
-          (prop.positions.published.count == 0 || (prop.positions.published.count == 1 && prop.positions.published.first.user_id == user.id))
+          (prop.opinions.published.count == 0 || (prop.opinions.published.count == 1 && prop.opinions.published.first.user_id == user.id))
       end
 
-      #Position
-      can [:create, :update, :destroy, :read], Position do |pos|
+      #Opinion
+      can [:create, :update, :destroy, :read], Opinion do |pos|
         prop = pos.proposal
         prop.publicity != 0 || (!user.id.nil? && prop.access_list.gsub(' ', '').split(',').include?(user.email) )
         #TODO: get this to work!
@@ -109,7 +109,7 @@ class Ability
       #Inclusion
       can :create, Inclusion
       can :destroy, Inclusion do |inc|
-        inc.nil? || inc.position.nil? || !inc.position.published || inc.position.user_id == inc.user_id
+        inc.nil? || inc.opinion.nil? || !inc.opinion.published || inc.opinion.user_id == inc.user_id
       end
 
       #Comment

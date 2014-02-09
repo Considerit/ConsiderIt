@@ -1,12 +1,12 @@
 class PointListing < ActiveRecord::Base
   belongs_to :proposal
-  belongs_to :position
+  belongs_to :opinion
   belongs_to :point
   belongs_to :user
 
   acts_as_tenant(:account)
   
-  #scope :by_user_with_stance, proc {|stance_bucket| joins(:position).where("positions.stance_bucket=" + stance_bucket.to_s ) }
+  #scope :by_user_with_stance, proc {|stance_bucket| joins(:opinion).where("opinions.stance_bucket=" + stance_bucket.to_s ) }
 
   # Collapses PointListings 
   def self.warehouse

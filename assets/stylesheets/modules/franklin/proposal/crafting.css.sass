@@ -2,19 +2,19 @@
 @import "library"
 @import "compass/css3/transition"
 
-.position
+.decision_board
   &[state="crafting"], &[state="results"]
-    .position-message-body
+    .decision_board_body
       border-style: solid
 
-  .position-message-body
+  .decision_board_body
     width: auto
     border-radius: 15px
     padding: $vertical_baseline / 4 0
 
 
 // pros and cons for the user
-.personal-reasons
+.opinion_points
   position: relative
   display: inline-block
   margin-top: $vertical_baseline / 2
@@ -22,35 +22,35 @@
 
 //separated footer
 [state="results"]
-  .position-footer
+  .decision-board-footer
     visibility: hidden
 
-.position-footer
+.decision-board-footer
   position: relative
   width: 100%
   z-index: 2
   margin: $vertical_baseline 0 2 * $vertical_baseline 0
 
-  .position-your-action-body.submit
+  .submit_opinion_button
     width: 100%
     +font-size(2)
     //border-radius: 16px
 
-  .position-submit-footer-wrap
+  .submit_opinion_footer
     margin-top: $vertical_baseline/2
-    .notifications
+    .subscribe_to_proposal_notifications
       display: inline-block
       +font-size(-2)
       label, input[type="checkbox"]
         cursor: pointer
 
-    .position-cancel
+    .cancel_submitting_an_opinion
       display: inline-block
       margin-right: $grid_gutter
       float: right
       +font-size(-2)
 
-.reasons-header-region, [state="crafting"][coming-from-state="summary"].transitioning .reasons-header-region
+.decision-board-heading-region, [state="crafting"][coming-from-state="summary"].transitioning .decision-board-heading-region
   width: $decision_board_width
   position: relative
   margin-left: -$grid_gutter / 2 - 2
@@ -59,12 +59,12 @@
   display: block
 
 [state="crafting"], [state="results"]
-  .reasons-header-region
+  .decision-board-heading-region
     // border-radius: 16px 16px 0 0
     // border: 2px solid
     display: none
 
-.reasons-header
+.decision_board_heading
   a
     //border: 2px dashed $decision_board_border_color
     //border-radius: 16px
@@ -79,7 +79,7 @@ $slider_width: 283px
 .stance
   margin: auto auto 2 * $vertical_baseline auto 
 
-  .position-heading-stance
+  .slider_heading
     text-decoration: underline
     margin-top: $vertical_baseline
     +font-size(2)
@@ -92,23 +92,23 @@ $slider_width: 283px
     div
       width: 100px
 
-  .stance-label-support
+  .supporting_slider_label
     @extend %stance-label
     text-align: right
     padding-right: $grid_gutter
 
-  .stance-label-oppose
+  .opposing_slider_label
     @extend %stance-label
     text-align: left
     padding-left: $grid_gutter
 
-  .stance-label-neutral
+  .neutral_slider_label
     @extend %stance-label
     text-align: center
     +font-size(2)
     +transition(opacity .5s linear)
 
-  .stance-slider-container
+  .slider_container
     height: 45px 
     padding-top: 4px
     width: $slider_width

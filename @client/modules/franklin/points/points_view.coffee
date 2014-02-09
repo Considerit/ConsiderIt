@@ -11,19 +11,14 @@
     initialize : (options={}) ->
       super options
 
-  class Points.ExpandablePointList extends Points.PointListLayout
-    template: '#tpl_points_expandable'
+  class Points.CommunityPointsColumn extends Points.PointListLayout
+    template: '#tpl_community_points'
+    className : => "points_by_community #{@options.valence}s_by_community"
 
-  class Points.PeerPointList extends Points.ExpandablePointList
-    className : => 
-      "peer-reasons reasons-peer-#{@options.valence}s"
 
-  class Points.UserReasonsList extends Points.PointListLayout
-    className : => 
-      "position-points position-#{@options.valence}points"
+  class Points.DecisionBoardColumn extends Points.PointListLayout
+    className : => "points_on_decision_board #{@options.valence}s_on_decision_board"
 
-    onRender : ->
-      super
 
   class Points.PointList extends App.Views.CollectionView
     tagName : 'ul'
@@ -36,7 +31,7 @@
       super options
 
     buildItemView : (point, itemview, options) ->
-      if itemview == Points.PeerEmptyView
+      if itemview == Points.NoCommunityPointsView
         new itemview()
       else
         valence = if point.attributes.is_pro then 'pro' else 'con'
@@ -46,7 +41,7 @@
             'data-id': "#{point.id}"
             'data-role': 'point'
             includers : "#{point.get('includers')}"
-            class : "point closed_point point-#{@location} #{valence}"
+            class : "point closed_point #{@location}_point #{valence}"
 
         view
 
@@ -80,14 +75,14 @@
       @listenTo @collection, 'reset', =>  
         @render()
 
-  class Points.UserReasonsPointListHeader extends Points.PointListHeader
+  class Points.DecisionBoardColumnHeader extends Points.PointListHeader
     getHeaderText : ->
       valence = @processValenceForHeader()
       "List Your #{valence}"
 
 
-  class Points.ExpandablePointListHeader extends Points.PointListHeader
-    template : '#tpl_points_expandable_header'
+  class Points.CommunityPointsHeader extends Points.PointListHeader
+    template : '#tpl_community_points_header'
     is_expanded : false
     sort : 'score'    
     
@@ -146,7 +141,7 @@
         else
           '' 
 
-      tail = if modifier == '' then "for #{App.Entities.Position.stance_name(@segment)}" else ''
+      tail = if modifier == '' then "for #{App.Entities.Opinion.stance_name(@segment)}" else ''
 
 
       $.trim "#{modifier} #{valence} #{tail}"
@@ -169,8 +164,8 @@
       @trigger 'points:toggle_expanded', @is_expanded
       ev.stopPropagation()
 
-  class Points.ExpandablePointListFooter extends App.Views.ItemView
-    template : '#tpl_points_expandable_footer'
+  class Points.CommunityPointsFooter extends App.Views.ItemView
+    template : '#tpl_community_points_footer'
     is_expanded : false
 
     initialize : (options = {}) ->
@@ -202,7 +197,7 @@
       @trigger 'points:toggle_expanded', @is_expanded
       ev.stopPropagation()
 
-  class Points.UserReasonsPointListFooter extends App.Views.ItemView
+  class Points.DecisionBoardColumnFooter extends App.Views.ItemView
     template : '#tpl_points_user_reasons_footer'
 
     serializeData : ->
@@ -217,7 +212,7 @@
     onShow : ->  
       @$el.find('.newpoint-nutshell').autosize()
       @$el.find('.newpoint-description').autosize()
-      @$el.find('.position-statement').autosize()
+      # @$el.find('.position-statement').autosize()
 
       for el in @$el.find('.newpoint-form .is_counted')
         $(el).NobleCount $(el).siblings('.count'), 
@@ -290,6 +285,6 @@
         @cancelPoint {currentTarget: $form.find('.newpoint-cancel')}
 
 
-  class Points.PeerEmptyView extends App.Views.ItemView
-    template : '#tpl_points_peer_empty'
-    className : 'points_peer_empty'
+  class Points.NoCommunityPointsView extends App.Views.ItemView
+    template : '#tpl_no_community_points'
+    className : 'no_community_points'

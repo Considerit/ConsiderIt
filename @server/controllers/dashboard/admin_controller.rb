@@ -117,13 +117,13 @@ class Dashboard::AdminController < Dashboard::DashboardController
   def _get_timeseries
     series = []
 
-    classes = [User, Position, Inclusion, Point, Comment]
+    classes = [User, Opinion, Inclusion, Point, Comment]
 
     classes.each_with_index do |data, idx|
       dates = {}
       name = data.name.split('::').last
 
-      if [Position, Point].include?(data)
+      if [Opinion, Point].include?(data)
         qry = data.published
       else
         qry = data
@@ -131,8 +131,8 @@ class Dashboard::AdminController < Dashboard::DashboardController
 
       if [Inclusion].include? data
         qry = qry
-                .joins(:position)
-                .where('positions.published = 1')
+                .joins(:opinion)
+                .where('opinions.published = 1')
                 .where('inclusions.created_at is not null')
                 .select('count(*) as cnt, inclusions.created_at')
                 .group('YEAR(inclusions.created_at), MONTH(inclusions.created_at), DAY(inclusions.created_at)')

@@ -67,11 +67,11 @@ class InclusionsController < ApplicationController
 
       # if this point is a top pro or con, need to trigger proposal update
       update_proposal_metrics = proposal.top_pro == point.id || proposal.top_con == point.id      
-      update_position = current_user && position = current_user.positions.find_by_proposal_id(point.proposal_id)
+      update_opinion = current_user && opinion = current_user.opinions.find_by_proposal_id(point.proposal_id)
 
       point.destroy
 
-      position.update_inclusions if update_position
+      opinion.update_inclusions if update_opinion
       proposal.update_metrics if update_proposal_metrics
 
       destroyed = true

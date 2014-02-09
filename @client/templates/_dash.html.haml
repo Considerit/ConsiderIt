@@ -164,11 +164,11 @@
             Conversations
 
       %li
-        %a.dashboard-profile-activity-summary{ :'data-target' => 'positions'}
+        %a.dashboard-profile-activity-summary{ :'data-target' => 'opinions'}
           %span.activity-summary-count
-            {{ positions.length }}
+            {{ opinions.length }}
           %span.activity-summary-label
-            Votes
+            Opinions
 
       %li
         %a.dashboard-profile-activity-summary{ :'data-target' => 'points'}
@@ -204,23 +204,23 @@
         {{name}} has not put forward any proposals.
       (( } ))
 
-    .dashboard-profile-activity-block{ :'data-target' => 'positions-details'}
+    .dashboard-profile-activity-block{ :'data-target' => 'opinions-details'}
 
       %h3
-        Positions taken
+        Opinions crafted
 
-      (( if(positions.length > 0){ ))
+      (( if(opinions.length > 0){ ))
       %table.table.table-condensed.table-striped
         %tbody
-          (( positions.each(function(position){ ))
-          (( var proposal = position.getProposal(); ))
-          (( var route = Routes.user_position_proposal_path(proposal.id, id); ))
+          (( opinions.each(function(opinion){ ))
+          (( var proposal = opinion.getProposal(); ))
+          (( var route = Routes.user_opinion_proposal_path(proposal.id, id); ))
           %tr
             %td.dashboard-profile-activity-substance-wrap
               .dashboard-profile-activity-substance
-                (( if( position.get('stance') < -.05 ) { ))
+                (( if( opinion.get('stance') < -.05 ) { ))
                 Opposed
-                (( } else if( position.get('stance') > .05 ) { ))
+                (( } else if( opinion.get('stance') > .05 ) { ))
                 Supported
                 ((} else{ ))
                 Neutral / undecided
@@ -229,12 +229,12 @@
                 Re: {{ proposal.get('name') }}
 
             %td.dashboard-profile-activity-action
-              %a{ :href => "{{ route }}", :'data-id' => "{{ position.id }}" }
+              %a{ :href => "{{ route }}", :'data-id' => "{{ opinion.id }}" }
                 See why
           (( }); ))
       (( } else { ))
       .dashboard-profile-activity-empty
-        {{name}} has not taken any positions.
+        {{name}} has not taken any opinions.
       (( } ))
 
     .dashboard-profile-activity-block{ :'data-target' => 'points-details'}

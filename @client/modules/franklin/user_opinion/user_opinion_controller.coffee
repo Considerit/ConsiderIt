@@ -1,6 +1,6 @@
-@ConsiderIt.module "Franklin.Position", (Position, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Franklin.UserOpinion", (UserOpinion, App, Backbone, Marionette, $, _) ->
 
-  class Position.PositionController extends App.Controllers.Base
+  class UserOpinion.UserOpinionController extends App.Controllers.Base
 
     initialize : (options = {}) ->
       view = @getView()
@@ -15,7 +15,7 @@
         @close()
 
       @listenTo Backbone.history, 'route', (route, name, args) => 
-        if !(name == 'StaticPosition' && parseInt(args[1]) == options.model.get('user_id'))
+        if !(name == 'UserOpinion' && parseInt(args[1]) == options.model.get('user_id'))
           @closing_via_history = true
           @dialog_overlay.close()
           @close()
@@ -23,9 +23,9 @@
     setupView : (view) ->
 
     getView : ->
-      new Position.PositionView
+      new UserOpinion.UserOpinionView
         model : @options.model
 
     getOverlay : (view) ->
       App.request 'dialog:new', view, 
-        class: 'static-position'
+        class: 'user_opinion'

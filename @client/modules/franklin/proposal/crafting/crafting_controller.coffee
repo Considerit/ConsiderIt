@@ -15,13 +15,13 @@
       @listenTo App.vent, 'user:signin:data_loaded', =>
         current_user = App.request 'user:current'
         if @model.get('user_id') != current_user.id
-          existing_position = App.request 'position:current_user:proposal', @proposal.id, false
-          if !existing_position
+          existing_opinion = App.request 'opinion:current_user:proposal', @proposal.id, false
+          if !existing_opinion
             @model.setUser current_user
           else
-            existing_position_had_included_points = _.size(existing_position.getIncludedPoints()) > 0
-            existing_position.subsume @model
-            @trigger 'signin:position_changed', existing_position_had_included_points
+            existing_opinion_had_included_points = _.size(existing_opinion.getIncludedPoints()) > 0
+            existing_opinion.subsume @model
+            @trigger 'signin:opinion_changed', existing_opinion_had_included_points
 
         
           
@@ -35,7 +35,7 @@
         if @proposal.openToPublic()
           @region.reset()
           @region.show @layout
-          @trigger 'signin:position_changed'
+          @trigger 'signin:opinion_changed'
 
 
       @layout = @getLayout()
@@ -61,12 +61,12 @@
           if @prior_state == Proposal.State.Summary
             _.delay =>
               @createFooter @layout
-              @createReasons @layout
+              @createPointsLayout @layout
             , @transition_speed()
             
           else 
             @createFooter @layout
-            @createReasons @layout
+            @createPointsLayout @layout
 
 
         else if @state == Proposal.State.Summary
@@ -74,25 +74,25 @@
           @layout.reasonsRegion.reset()
           @layout.stanceRegion.reset()
 
-    createReasons : (layout) ->
-      reasons_layout = @getPositionReasons @proposal, @model
-      stance_view = @getPositionStance @proposal, @model
-      # explanation_view = @getPositionExplanation @model
+    createPointsLayout : (layout) ->
+      points_layout = @getPointsLayout @proposal, @model
+      stance_view = @getSliderView @proposal, @model
+      # explanation_view = @getOpinionExplanation @model
 
-      @listenTo reasons_layout, 'show', => @setupReasonsLayout reasons_layout
-      @listenTo stance_view, 'show', => @setupStanceView stance_view
+      @listenTo points_layout, 'show', => @setupPointsLayout points_layout
+      @listenTo stance_view, 'show', => @setupSliderView stance_view
 
       @listenTo layout, 'point:include', (point_id) =>
         point = App.request 'point:get', point_id
         @trigger 'point:include', point
 
 
-      layout.reasonsRegion.show reasons_layout
+      layout.reasonsRegion.show points_layout
       layout.stanceRegion.show stance_view
       # layout.explanationRegion.show explanation_view
 
     createHeader : (layout) ->
-      header_view = @getReasonsHeader @model
+      header_view = @getDecisionBoardHeading @model
       layout.headerRegion.show header_view
 
     createFooter : (layout) ->
@@ -107,23 +107,23 @@
 
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
-        @model = @proposal.getUserPosition()
+        @model = @proposal.getUserOpinion()
 
         if @state == Proposal.State.Crafting
-          @createReasons layout
+          @createPointsLayout layout
 
         @createFooter layout
         @createHeader layout
       
     setupFooterLayout : (view) ->
-      @listenTo view, 'position:canceled', =>
+      @listenTo view, 'opinion:canceled', =>
         # TODO: discard changes?
         App.navigate Routes.proposal_path(@proposal.id), {trigger: true}
 
-      @listenTo view, 'position:submit-requested', (follow_proposal) => 
+      @listenTo view, 'opinion:submit_requested', (follow_proposal) => 
 
-        submitPosition = =>
-          @listenToOnce @model, 'position:synced', =>
+        submitOpinion = =>
+          @listenToOnce @model, 'opinion:synced', =>
             current_user = App.request 'user:current'
             toastr.success "Thanks #{current_user.firstName()}. Now explore the results!"
 
@@ -135,16 +135,16 @@
               follow : follow_proposal
               explicit: true
 
-            @trigger 'position:published'
+            @trigger 'opinion:published'
 
-          @listenToOnce @model, 'position:sync:failed', =>
-            toastr.error "We're sorry, something went wrong saving your position :-(", null,
+          @listenToOnce @model, 'opinion:sync:failed', =>
+            toastr.error "We're sorry, something went wrong saving your opinion :-(", null,
               positionClass: "toast-top-full-width"
 
           params = 
             follow_proposal : follow_proposal
 
-          App.request 'position:sync', @model, params
+          App.request 'opinion:sync', @model, params
 
         user = @model.getUser()
         if user.isNew() || user.id < 0
@@ -154,41 +154,41 @@
 
             @listenToOnce App.vent, 'user:signin:data_loaded', =>
               # wait for content to be loaded for user, otherwise weird combinations occur
-              submitPosition()
+              submitOpinion()
 
           @listenToOnce App.vent, 'user:signin:canceled', =>
-            # if user cancels login, then we could later submit this position unexpectedly when signing in to submit a different position!      
+            # if user cancels login, then we could later submit this opinion unexpectedly when signing in to submit a different opinion!      
             @stopListening App.vent, 'user:signin'
         else
-          submitPosition()
+          submitOpinion()
 
-    setupReasonsLayout : (layout) ->
-      @position_pros_controller.close() if @position_pros_controller
-      @position_cons_controller.close() if @position_cons_controller
+    setupPointsLayout : (layout) ->
+      @decision_board_pros_controller.close() if @decision_board_pros_controller
+      @decision_board_cons_controller.close() if @decision_board_cons_controller
 
-      points = App.request 'points:get:proposal', @proposal.id
+      points = App.request 'points:get_by_proposal', @proposal.id
       included_points = @model.getIncludedPoints()
 
-      position_pros = new App.Entities.Points 
-      position_cons = new App.Entities.Points
+      decision_board_pros = new App.Entities.Points 
+      decision_board_cons = new App.Entities.Points
       
-      @position_pros_controller = @getPointsController layout.positionProsRegion, 'pro', position_pros
-      @position_cons_controller = @getPointsController layout.positionConsRegion, 'con', position_cons
+      @decision_board_pros_controller = @getPointsController layout.decisionBoardProsRegion, 'pro', decision_board_pros
+      @decision_board_cons_controller = @getPointsController layout.decisionBoardConsRegion, 'con', decision_board_cons
 
       ########
       # instead of passing these in to the constructor, going to add them after. This is so that the respective
       # PointController instances will be spun off properly by PointsController
-      position_pros.add points.filter (point) ->
+      decision_board_pros.add points.filter (point) ->
         point.id in included_points && point.isPro()
 
-      position_cons.add points.filter (point) ->
+      decision_board_cons.add points.filter (point) ->
         point.id in included_points && !point.isPro()
       ########
 
-      @setupPointsController @position_pros_controller
-      @setupPointsController @position_cons_controller
+      @setupPointsColumnController @decision_board_pros_controller
+      @setupPointsColumnController @decision_board_cons_controller
 
-      _.each [@position_pros_controller, @position_cons_controller], (controller) =>
+      _.each [@decision_board_pros_controller, @decision_board_cons_controller], (controller) =>
         @listenTo controller, 'point:opened', (point) =>
           @trigger 'point:opened', point
 
@@ -196,7 +196,7 @@
             @trigger 'point:closed', point
 
 
-    setupPointsController : (controller) ->
+    setupPointsColumnController : (controller) ->
 
       @listenTo controller, 'point:created', (point) =>
         @model.written_points.push point
@@ -206,7 +206,7 @@
         @handleRemovePoint view, view.model, controller.options.collection
 
     handleIncludePoint : (model) ->
-      dest_controller  = if model.isPro() then @position_pros_controller else @position_cons_controller
+      dest_controller  = if model.isPro() then @decision_board_pros_controller else @decision_board_cons_controller
       dest = dest_controller.options.collection
       dest.add model
 
@@ -238,10 +238,10 @@
       @trigger 'point:removal', model
 
 
-    setupStanceView : (view) ->
+    setupSliderView : (view) ->
 
     getPointsController : (region, valence, collection) ->
-      new App.Franklin.Points.UserReasonsController
+      new App.Franklin.Points.DecisionBoardColumnController
         valence : valence
         collection : collection
         region : region
@@ -250,31 +250,31 @@
         parent_state : @state
 
     getLayout : ->
-      new Proposal.PositionLayout
-        model : @proposal.getUserPosition()
+      new Proposal.DecisionBoardLayout
+        model : @proposal.getUserOpinion()
         proposal : @proposal
         state : @state
 
-    getPositionReasons : (proposal, position) ->
-      new Proposal.PositionReasonsLayout
-        model : position
+    getPointsLayout : (proposal, opinion) ->
+      new Proposal.DecisionBoardPointsLayout
+        model : opinion
         proposal : proposal
 
-    getPositionStance : (proposal, position) ->
-      new Proposal.PositionStance
-        model : position
+    getSliderView : (proposal, opinion) ->
+      new Proposal.DecisionBoardSlider
+        model : opinion
         proposal : proposal
 
-    getPositionExplanation : (position) ->
-      new Proposal.PositionExplanation
-        model : position
+    getOpinionExplanation : (opinion) ->
+      new Proposal.SummativeExplanation
+        model : opinion
 
-    getFooterView : (position) ->
+    getFooterView : (opinion) ->
 
       switch @state
         when Proposal.State.Crafting
-          new Proposal.PositionFooterSeparatedView
-            model : position
+          new Proposal.DecisionBoardFooterView
+            model : opinion
 
         when Proposal.State.Summary
           null
@@ -282,8 +282,8 @@
         when Proposal.State.Results
           null
 
-    getReasonsHeader : (position) ->
-      new Proposal.ReasonsHeaderView
-        model : position      
+    getDecisionBoardHeading : (opinion) ->
+      new Proposal.DecisionBoardHeading
+        model : opinion      
 
 

@@ -17,14 +17,14 @@
   margin: auto
   width: $body_width
 
-[data-state="0"]
+[state="summary"]
   .proposal-description-region
     +translateX(-$dialog_stutter)
     // the following is because translateX effectively creates a different rendering context, so need to set z-index/position so admin menu will work
     position: relative
     z-index: 2
 
-[data-state="0"].transitioning
+[state="summary"].transitioning
   .proposal-description-region
     +translateX(0)
 
@@ -139,7 +139,7 @@ $description_animation_time: 500ms
       text-decoration: underline
 
 
-  &[data-state="expanded-together"], &[data-state="expanded-separated"]
+  &[state="results"], &[state="crafting"]
   
     .proposal-description
       border-radius: 16px 16px 0px 0px
@@ -147,7 +147,7 @@ $description_animation_time: 500ms
       > .t-bubble
         display: none
 
-  &[data-state="collapsed"]
+  &[state="summary"]
     .proposal-description
       cursor: pointer
 

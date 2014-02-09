@@ -9,13 +9,13 @@
 .pointlist-footer-more
   display: none
 
-[data-state="points-collapsed"], [data-state="points-together"]
+.peer-reasons[state="summary"], .peer-reasons[state="results"]
   .pointlist-footer-region
     position: absolute
     bottom: $vertical_baseline / 2
     width: $point-content-width
 
-[data-state="points-collapsed"]
+.peer-reasons[state="summary"]
 
   .pointlist-browse
     display: none  
@@ -27,20 +27,19 @@
       font-weight: bold
 
 .pointlist-browsing
-  [data-state="points-separated"]
+  .peer-reasons[state="crafting"]
     .pointlist-browse-toggle
       width: $point-content-width + $expanded_points_increment
 
-  [data-state="points-together"]
+  .peer-reasons[state="results"]
     .pointlist-browse-toggle
       width: $point-content-width + $expanded_points_increment
 
 
-[data-state="points-separated"]
-  .pointlist-browse-toggle
-    width: $point-content-width
+.peer-reasons[state="crafting"] .pointlist-browse-toggle
+  width: $point-content-width
 
-[data-state="points-together"]
+.peer-reasons[state="results"]
   &.reasons-peer-pros
     .pointlist-footer-region
       margin-left: $point-avatar-width
@@ -83,7 +82,7 @@
   // &.reasons-peer-cons
   //   padding: $vertical_baseline / 2 $grid-gutter / 2 $vertical_baseline / 2 $grid-gutter / 2
 
-  &[data-state="points-separated"], &[data-state="points-together"]
+  &[state="crafting"], &[state="results"]
 
     .pointlist-header-label
       cursor: pointer
@@ -137,12 +136,12 @@
 
 // expandable header
 
-.peer-reasons[data-state="points-together"], .peer-reasons[data-state="points-separated"] 
+.peer-reasons[state="results"], .peer-reasons[state="crafting"] 
   .pointlist-browse-header-open, .pointlist-browse-header-close
     +font-size(-2)
     margin-left: $grid_gutter / 2
 
-.peer-reasons[data-state="points-collapsed"] 
+.peer-reasons[state="summary"] 
   .pointlist-browse-header-open, .pointlist-browse-header-close
     visibility: hidden
 

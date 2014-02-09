@@ -14,7 +14,7 @@
     .position-your-action-body, .position-submit-footer-wrap
       display: none
 
-    &[data-state="0"]
+    &[state="summary"]
       .position-region
         visibility: hidden
 
@@ -25,11 +25,11 @@
 
   &[data-activity="proposal-no-activity"]
 
-    &[data-state="0"]
+    &[state="summary"]
       .proposal-aggregate-region
         display: none
 
-    &[data-state="1"]
+    &[state="crafting"]
 
       .proposal-state-toggle
         display: none
@@ -41,12 +41,7 @@
         display: none
 
 
-
-// .proposal
-//   &[data-state="1"], &[data-state="2"], &[data-state="4"]
-//     padding: $vertical_baseline 0
-
-[data-state="together"] .proposal-socialmedia-region
+[state="results"] .proposal-socialmedia-region
   visibility: visible
 
 .transitioning .proposal-socialmedia-region
@@ -182,7 +177,7 @@
   .proposal-reasons-region, .proposal-aggregate-region, .proposal-state-toggle-region
     display: none
 
-  &[data-state="0"]
+  &[state="summary"]
     .proposal-reasons-region, .proposal-aggregate-region, .proposals-list-pagination
       display: none
 
@@ -210,7 +205,7 @@
 
 // participants block
 
-[data-state="together"][data-state-from="collapsed"], [data-state="collapsed"]
+[state="results"][coming-from-state="summary"], [state="summary"]
   .participants
     visibility: visible
 

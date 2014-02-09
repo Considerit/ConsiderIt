@@ -44,7 +44,7 @@
       ]
 
       @_transitionProposal proposal, history, 
-        new_state : Franklin.Proposal.State.expanded.crafting
+        new_state : Franklin.Proposal.State.Crafting
         callback : =>
           App.request 'meta:set', proposal.getMeta() 
 
@@ -59,7 +59,7 @@
       ]
 
       @_transitionProposal proposal, history, 
-        new_state : Franklin.Proposal.State.expanded.results
+        new_state : Franklin.Proposal.State.Results
         callback : =>
           App.request 'meta:set', proposal.getMeta() 
 
@@ -76,7 +76,7 @@
 
       region = App.request 'default:region'
 
-      if region.controlled_by instanceof Franklin.Proposal.ProposalController && region.controlled_by.state == Franklin.Proposal.State.expanded.results
+      if region.controlled_by instanceof Franklin.Proposal.ProposalController && region.controlled_by.state == Franklin.Proposal.State.Results
         history.splice history.length - 1, 0, ['results', Routes.proposal_path(long_id)]
 
       @_transitionProposal proposal, history, 
@@ -150,7 +150,7 @@
             proposal_controller = new Franklin.Proposal.ProposalController
               region : region
               model : proposal
-              proposal_state : options.new_state || Franklin.Proposal.State.expanded.results
+              proposal_state : options.new_state || Franklin.Proposal.State.Results
 
           region.controlled_by = proposal_controller  
 
@@ -175,7 +175,7 @@
           proposal_controller = new Franklin.Proposal.ProposalController
             region : region
             model : proposal
-            proposal_state : Franklin.Proposal.State.expanded.results                        
+            proposal_state : Franklin.Proposal.State.Results                        
           region.controlled_by = proposal_controller
 
         user = App.request 'user', parseInt(user_id)

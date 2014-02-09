@@ -3,8 +3,8 @@
   .point-wrap>
     .point-close
       %i.fa.fa-times-circle
-    .point-wrap-region{ :'data-target' => "point-details", :'data-id' => "{{id}}" }
-    .point-expansion-region
+    .point-wrap-region{ :'data-target' => "open-point", :'data-id' => "{{id}}" }
+    .open-point-region
 
 %script{ :type => "text/template", :id => "tpl_point_view_header"}
   (( if (hide_name || user.name == 'Anonymous' ) { ))
@@ -24,7 +24,7 @@
     .point-nutshell
       {{ adjusted_nutshell }}
 
-  .point-details-description 
+  .point_description 
     {{ text }}
 
   .point-operations
@@ -38,7 +38,7 @@
     (( } ))
 
 
-%script{ :type => "text/template", :id => "tpl_point_expanded"}
+%script{ :type => "text/template", :id => "tpl_open_point"}
   .point-actions
     .point-include-wrap.point-action
       %button.point-include.button{ :'data-target' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}

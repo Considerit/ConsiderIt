@@ -19,7 +19,7 @@
 
       @setupLayout @layout
 
-      @listenTo @options.parent_controller, 'point:show_details', (point) =>
+      @listenTo @options.parent_controller, 'point:open', (point) =>
         is_paginated = @options.collection.fullCollection?
 
         collection = if is_paginated then @options.collection.fullCollection else @options.collection
@@ -31,13 +31,13 @@
             @options.collection.getPage page
 
           pointview = @list_view.children.findByModel point
-          pointview.trigger 'point:show_details'
+          pointview.trigger 'point:open'
 
 
-          @listenToOnce pointview, 'details:closed', =>
-            @trigger 'details:closed', pointview.model
+          @listenToOnce pointview, 'point:closed', =>
+            @trigger 'point:closed', pointview.model
 
-          @trigger 'point:showed_details', point
+          @trigger 'point:opened', point
 
 
           # @listenTo controller, 'close', =>

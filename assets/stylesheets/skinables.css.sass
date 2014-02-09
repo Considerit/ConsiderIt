@@ -306,7 +306,7 @@ a
   color: $base_text_color
 
 // franklin/point
-.point-unexpanded
+.closed_point
   &.point-position .point-remove
     +link_style($decision_board_text_color, $decision_board_background_color, 25%)
 
@@ -317,25 +317,25 @@ a
     &:hover .point-operations a
       color: deemphasize($base_text_color, 15%, $reference: $base_background_color)   
 
-.point.point-expanded
+.point.open_point
   .point-include, .point-assessment-request-initiate, .point-follow
     +font-size(-3)
     &:hover
       +font-size(-3)
 
-.peer-reasons[state="crafting"] .point-peer.point-unexpanded, .point.point-expanded
+.peer-reasons[state="crafting"] .point-peer.closed_point, .point.open_point
   .point-wrap
     @extend %on_peer_area
 
 .peer-reasons[state="crafting"], .peer-reasons[state="results"]
-  .point-unexpanded.point-peer:hover .point-wrap
+  .closed_point.point-peer:hover .point-wrap
     background-color: deemphasize($peer_background_color, 15%)
 
-.peer-reasons[state="crafting"] .point-peer.point-unexpanded
+.peer-reasons[state="crafting"] .point-peer.closed_point
   .point-wrap
     +single-box-shadow($color: rgba(black, .1), $voff: 1px)
 
-.point-expanded, .peer-reasons[state="crafting"] .point-peer.point-unexpanded
+.open_point, .peer-reasons[state="crafting"] .point-peer.closed_point
   .point-wrap
     border: 1px solid
     border-color: emphasize($peer_background_color, 5%) emphasize($peer_background_color, 10%) emphasize($peer_background_color, 5%) emphasize($peer_background_color, 15%)

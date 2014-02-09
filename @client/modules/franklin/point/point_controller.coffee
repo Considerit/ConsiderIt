@@ -18,60 +18,60 @@
         layout.bodyRegion.show @body_view
 
       @listenTo layout, 'show', =>
-        @listenTo layout, 'point:show_details', =>
-          @expand()
+        @listenTo layout, 'point:open', =>
+          @openPoint()
 
 
-    unexpand : (go_back) ->
-      $(document).off '.point-details'
+    closePoint : (go_back) ->
+      $(document).off '.close_point_event'
       @layout.$el
-        .addClass('point-unexpanded')
-        .removeClass('point-expanded')
+        .addClass('closed_point')
+        .removeClass('open_point')
 
-      @stopListening @layout.expansionRegion.currentView
-      @stopListening App.vent, 'point:expanded'
+      @stopListening @layout.openPointRegion.currentView
+      @stopListening App.vent, 'point:opened'
       @stopListening App.vent, 'points:unexpand'
 
-      @layout.expansionRegion.reset() if @layout.expansionRegion
+      @layout.openPointRegion.reset() if @layout.openPointRegion
 
       if @layout.$el.parents('.peer-reasons[state="crafting"]').length > 0
         @layout.enableDrag()
 
       App.request 'nav:back:crumb' if go_back
 
-    expand : ->
-      expanded_view = @getExpandedView @options.model
+    openPoint : ->
+      open_point_view = @getOpenPointView @options.model
 
-      @listenTo expanded_view, 'show', =>
+      @listenTo open_point_view, 'show', =>
         if App.request("user:current:logged_in?") && @options.model.get 'published'
           follow_view = @setupFollowView()
 
-          expanded_view.followRegion.show follow_view
+          open_point_view.followRegion.show follow_view
 
         current_tenant = App.request 'tenant:get'
         if current_tenant.get 'assessment_enabled'
-          @setupAssessmentView expanded_view.assessmentRegion
+          @setupAssessmentView open_point_view.assessmentRegion
 
-        @setupCommentsView expanded_view.discussionRegion
+        @setupCommentsView open_point_view.discussionRegion
 
-        @listenTo expanded_view, 'details:close', (go_back) => 
+        @listenTo open_point_view, 'point:close', (go_back) => 
           @layout.$el.removeLightbox()
-          @unexpand go_back
-          @layout.trigger 'details:closed'
+          @closePoint go_back
+          @layout.trigger 'point:closed'
 
-        @listenTo expanded_view, 'make_fields_editable', =>
+        @listenTo open_point_view, 'make_fields_editable', =>
           @body_view.makeEditable()
-          @listenToOnce expanded_view, 'details:close', =>
+          @listenToOnce open_point_view, 'point:close', =>
             @body_view.removeEditable()
           
-        @listenTo App.vent, 'point:expanded', => @unexpand false
+        @listenTo App.vent, 'point:opened', => @closePoint false
         @listenTo App.vent, 'points:unexpand', => 
           @layout.$el.removeLightbox()
-          @unexpand true # set to true so that when including point from expanded view, url updated appropriately on close
+          @closePoint true # set to true so that when including open point, the url is updated appropriately on close
 
         @layout.$el
-          .addClass('point-expanded')
-          .removeClass('point-unexpanded')
+          .addClass('open_point')
+          .removeClass('closed_point')
 
         @layout.$el.ensureInView {fill_threshold: .5}
         @layout.$el.putBehindLightbox()
@@ -79,7 +79,7 @@
         if @layout.$el.parents('.peer-reasons[state="crafting"]').length > 0
           @layout.disableDrag()
 
-      @layout.expansionRegion.show expanded_view
+      @layout.openPointRegion.show open_point_view
 
     setupFollowView : ->
       follow_view = @getFollowView @options.model
@@ -135,8 +135,6 @@
         @options.model.set 'comment_count', @options.model.getComments().length
 
 
-      
-
     getLayout : (model) ->
       @options.view
 
@@ -149,10 +147,10 @@
         model : model
         actions : actions
 
-    getExpandedView : (model) ->
-      new Point.ExpandedView
+    getOpenPointView : (model) ->
+      new Point.OpenPointView
         model : model
 
     getFollowView : (model) ->
-      new Point.FollowView
+      new Point.FollowPointView
         model : model

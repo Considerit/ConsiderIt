@@ -46,7 +46,7 @@
             'data-id': "#{point.id}"
             'data-role': 'point'
             includers : "#{point.get('includers')}"
-            class : "point point-unexpanded point-#{@location} #{valence}"
+            class : "point closed_point point-#{@location} #{valence}"
 
         view
 
@@ -104,12 +104,12 @@
       if @is_expanded
         # unexpand when clicking outside of pointlist
         $(document).on 'click.unexpand_points', (ev)  => 
-          if $(ev.target).closest('.pointlist-sort-option').length == 0 && $(ev.target).closest('.unexpand_points')[0] != @$el[0] && $('.point-expanded, .l-dialog-detachable').length == 0
+          if $(ev.target).closest('.pointlist-sort-option').length == 0 && $(ev.target).closest('.unexpand_points')[0] != @$el[0] && $('.open_point, .l-dialog-detachable').length == 0
             @trigger 'points:toggle_expanded', true
             ev.stopPropagation()
 
         $(document).on 'keyup.unexpand_points', (ev) => 
-          if ev.keyCode == 27 && $('.point-expanded, .l-dialog-detachable').length == 0
+          if ev.keyCode == 27 && $('.open_point, .l-dialog-detachable').length == 0
             @trigger 'points:toggle_expanded', true
             ev.stopPropagation()
       else

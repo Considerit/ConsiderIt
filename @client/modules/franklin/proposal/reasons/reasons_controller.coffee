@@ -8,8 +8,8 @@
 
       @model = options.model
 
-      @listenTo @options.parent_controller, 'point:show_details', (point) =>
-        @trigger 'point:show_details', point
+      @listenTo @options.parent_controller, 'point:open', (point) =>
+        @trigger 'point:open', point
 
       @layout = @getLayout()
       @setupLayout @layout
@@ -109,11 +109,11 @@
 
         _.each [ [@peer_pros_controller, @peer_cons_controller], [@peer_cons_controller, @peer_pros_controller]], (item) =>
           [controller, other_controller] = item
-          @listenTo controller, 'point:showed_details', (point) =>
-            @layout.pointExpanded controller.region
+          @listenTo controller, 'point:opened', (point) =>
+            @layout.pointWasOpened controller.region
 
-            @listenToOnce controller, 'details:closed', (point) =>
-              @layout.pointClosed controller.region
+            @listenToOnce controller, 'point:closed', (point) =>
+              @layout.pointWasClosed controller.region
 
           @listenTo controller, 'points:expand', (valence) =>
 
@@ -165,20 +165,20 @@
     # Extremely ugly two methods
     saveOpenPoint : ->
       # check if any points are open now, and, if so, save them such that we can reopen it after we arere done resetting peer points
-      @has_open_point = @region.$el.find('.point-expanded').length > 0
+      @has_open_point = @region.$el.find('.open_point').length > 0
       if @has_open_point
-        $expanded_point = @region.$el.find('.point-expanded')
-        point_id = $expanded_point.data('id')
+        $open_point = @region.$el.find('.open_point')
+        point_id = $open_point.data('id')
         @saved_point = App.request 'point:get', point_id
-        @comment_text = $expanded_point.find('.new-comment-body-field').val()
+        @comment_text = $open_point.find('.new-comment-body-field').val()
         $('body').trigger('click')
 
     restoreOpenPoint : ->
       if @has_open_point
         _.delay =>
           App.navigate Routes.proposal_point_path(@saved_point.get('long_id'), @saved_point.id), {trigger : true}
-          $expanded_point = @region.$el.find('.point-expanded')
-          $comment_field = $expanded_point.find('.new-comment-body-field')
+          $open_point = @region.$el.find('.open_point')
+          $comment_field = $open_point.find('.new-comment-body-field')
           $comment_field.val @comment_text
           $comment_field.ensureInView {scroll: false}
         , 10
@@ -191,11 +191,11 @@
         points_controller.options.collection.add model
         @trigger 'point:removal', model.id
 
-      @listenTo controller, 'point:showed_details', (point) =>
-        @layout.pointExpanded @layout.positionRegion
+      @listenTo controller, 'point:opened', (point) =>
+        @layout.pointWasOpened @layout.positionRegion
 
-        @listenTo controller, 'details:closed', (point) => 
-          @layout.pointClosed @layout.positionRegion
+        @listenTo controller, 'point:closed', (point) => 
+          @layout.pointWasClosed @layout.positionRegion
 
       # After signing in, the existing user may have a preexisting position. We need
       # to refresh the points shown in the margins if that preexisting position had included points.

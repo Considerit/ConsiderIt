@@ -17,7 +17,7 @@
 
 .peer-reasons[state="summary"]
 
-  .pointlist-browse
+  .expanded_points
     display: none  
   .pointlist-footer-more
     display: block
@@ -26,17 +26,17 @@
     i
       font-weight: bold
 
-.pointlist-browsing
+.points_are_expanded
   .peer-reasons[state="crafting"]
-    .pointlist-browse-toggle
+    .pointlist-expand-toggle
       width: $point-content-width + $expanded_points_increment
 
   .peer-reasons[state="results"]
-    .pointlist-browse-toggle
+    .pointlist-expand-toggle
       width: $point-content-width + $expanded_points_increment
 
 
-.peer-reasons[state="crafting"] .pointlist-browse-toggle
+.peer-reasons[state="crafting"] .pointlist-expand-toggle
   width: $point-content-width
 
 .peer-reasons[state="results"]
@@ -44,15 +44,15 @@
     .pointlist-footer-region
       margin-left: $point-avatar-width
 
-  .pointlist-browse-toggle
+  .pointlist-expand-toggle
     width: $point-content-width
 
-.pointlist-browse
-  .pointlist-browse-toggle
+.expanded_points
+  .pointlist-expand-toggle
     text-align: center
 
 .reasons-peer-pros
-  .pointlist-browse
+  .expanded_points
     text-align: right
 
 
@@ -66,9 +66,7 @@
   text-align: center
   margin-bottom: $vertical_baseline / 2
   .pointlist-header-label
-    //+transition(font-size .4s ease, color .4s ease) // for point browsing
     +font-size(2)    
-    //font-weight: bold
     display: inline-block
 
 
@@ -89,21 +87,21 @@
       +font-size(2)
       font-weight: normal
 
-    .pointlist-browse-sort
+    .expanded_points-sort
       display: inline-block
       position: relative
       margin-left: $grid_gutter
 
-      .pointlist-browse-sort-label
+      .expanded_points-sort-label
         +font-size(-2)
 
-      .pointlist-browse-sort-menu
+      .expanded_points-sort-menu
         display: none
 
 
       &:hover
 
-        .pointlist-browse-sort-menu
+        .expanded_points-sort-menu
           //min-width: 140px
           text-align: left
           list-style: none outside none
@@ -137,12 +135,12 @@
 // expandable header
 
 .peer-reasons[state="results"], .peer-reasons[state="crafting"] 
-  .pointlist-browse-header-open, .pointlist-browse-header-close
+  .expanded_points-header-open, .expanded_points-header-close
     +font-size(-2)
     margin-left: $grid_gutter / 2
 
 .peer-reasons[state="summary"] 
-  .pointlist-browse-header-open, .pointlist-browse-header-close
+  .expanded_points-header-open, .expanded_points-header-close
     visibility: hidden
 
 // empty list

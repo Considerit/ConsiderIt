@@ -50,41 +50,32 @@
       &.pro
         left: - ($point-expanded-width - $body_width) / 2
 
-[data-state="points-separated"], [data-state="points-together"], [data-state="points-position"]
+.peer-reasons[state="crafting"], .peer-reasons[state="results"], .position-points
   .point-unexpanded
     cursor: pointer
 
 
 .pointlist-browsing .peer-reasons
-  &[data-state="points-separated"]
+  &[state="crafting"]
     .point-expanded.con.point-peer
       right: $point-expanded-width - $point-width + 56 - $expanded_points_increment
 
 .peer-reasons
 
-  &[data-state="points-together"]
+  &[state="results"]
     .point-expanded.con.point-peer
       right: $point-expanded-width - $point-width
 
-  &[data-state="points-separated"]
+  &[state="crafting"]
     .point-expanded.con.point-peer
       right: $point-expanded-width - $point-width + 56
 
-
-  &[data-state="points-separated"]
     .point-unexpanded.point-peer .point-wrap
       +grab_cursor
 
-  &[data-state="points-collapsed"]
-
+  &[state="summary"]
     .point
       z-index: 5
-      // .point-header-region
-      //   display: none
-
-.position-points
-  // &[data-state="points-hidden"]
-  //   display: none
 
 
 
@@ -150,11 +141,11 @@
 
 /////////////////////////////////////////
 // point operations
-.point-expanded, [data-state="points-collapsed"]
+.point-expanded, .peer-reasons[state="summary"]
   .point-operations
     display: none
 
-[data-state="points-together"], [data-state="points-separated"]
+.peer-reasons[state="results"], .peer-reasons[state="crafting"]
   .point-peer
     .point-operations
       visibility: hidden
@@ -213,16 +204,16 @@
 .point-include-wrap
   display: none
 
-[data-state="points-separated"] .point-peer.point-expanded
-  .point-include-wrap
-    display: inline-block
+.peer-reasons[state="crafting"] 
+  .point-peer.point-expanded
+    .point-include-wrap
+      display: inline-block
 
+  .point-peer.point-unexpanded, .point-expanded
+    .point-wrap
+      border-radius: 8px
 
-[data-state="points-separated"] .point-peer.point-unexpanded, .point-expanded
-  .point-wrap
-    border-radius: 8px
-
-[data-state="points-collapsed"] .point-author-avatar
+.peer-reasons[state="summary"] .point-author-avatar
   //visibility: hidden
 
 .point-author-avatar

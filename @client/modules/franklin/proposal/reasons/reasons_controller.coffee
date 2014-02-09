@@ -2,14 +2,6 @@
   class Proposal.ReasonsController extends App.Controllers.StatefulController
     transitions_enabled : true
 
-    # maps from parent state to this controller's state
-    state_map : ->
-      map = {}
-      map[Proposal.State.collapsed] = Proposal.ReasonsState.collapsed
-      map[Proposal.State.expanded.crafting] = Proposal.ReasonsState.separated
-      map[Proposal.State.expanded.results] = Proposal.ReasonsState.together
-      map
-
 
     initialize : (options = {}) ->
       super options
@@ -39,7 +31,7 @@
 
         @updatePeerPoints @layout
 
-        if !@crafting_controller #&& @options.model.fetched && @state != Proposal.ReasonsState.collapsed
+        if !@crafting_controller #&& @options.model.fetched && @state != Proposal.State.Summary
           @crafting_controller = @getCraftingController @layout.positionRegion
           @setupCraftingController @crafting_controller 
 
@@ -62,7 +54,7 @@
           position.addViewedPoint point_id if position
 
         @listenTo layout, 'show_results', =>
-          if @state == Proposal.ReasonsState.collapsed
+          if @state == Proposal.State.Summary
             App.navigate Routes.proposal_path(@model.id), {trigger: true}
 
         @processStateChange()
@@ -78,29 +70,29 @@
         _.each [@peer_pros_controller, @peer_cons_controller], (controller) =>
           collection = controller.options.collection
           switch @state 
-            when Proposal.ReasonsState.separated
+            when Proposal.State.Crafting
               included_points = @model.getUserPosition().getIncludedPoints()              
               collection.fullCollection.remove (App.request('point:get', i) for i in included_points)
               collection.setPageSize 4
               controller.sortPoints 'persuasiveness'
 
 
-            when Proposal.ReasonsState.collapsed
+            when Proposal.State.Summary
               top_points = [@model.get('top_pro'), @model.get('top_con')]
               collection.fullCollection.set top_points
 
               collection.setPageSize 1
 
-            when Proposal.ReasonsState.together
+            when Proposal.State.Results
               collection.setPageSize 4
               controller.sortPoints 'score'
 
       else
         points = switch @state 
-          when Proposal.ReasonsState.collapsed
+          when Proposal.State.Summary
             page_size = 1
             App.request 'points:get:proposal:top', @model.id
-          when Proposal.ReasonsState.separated
+          when Proposal.State.Crafting
             included_points = @model.getUserPosition().getIncludedPoints()
             all_points = App.request 'points:get:proposal', @model.id
             page_size = 4
@@ -210,7 +202,7 @@
       # to refresh the points shown in the margins if that preexisting position had included points.
       # Similarily after a user signs out, the points in their list should be returned to peer points.
       @listenTo controller, 'signin:position_changed', (existing_position_had_included_points) =>
-        if @state == Proposal.ReasonsState.separated && existing_position_had_included_points
+        if @state == Proposal.State.Crafting && existing_position_had_included_points
           @saveOpenPoint()          
           @updatePeerPoints @layout
           @restoreOpenPoint()
@@ -227,14 +219,14 @@
 
     setupPointsController : (controller) ->
       @listenTo controller, 'point:highlight_includers', (view) =>
-        if @state == Proposal.ReasonsState.together
+        if @state == Proposal.State.Results
           # don't highlight users on point mouseover unless the histogram is fully visible
           includers = view.model.getIncluders() || []
           includers.push view.model.get('user_id')
           @trigger 'point:highlight_includers', includers 
 
       @listenTo controller, 'point:unhighlight_includers', (view) =>
-        if @state == Proposal.ReasonsState.together
+        if @state == Proposal.State.Results
           includers = view.model.getIncluders() || []
           includers.push view.model.get('user_id')
           @trigger 'point:unhighlight_includers', includers 
@@ -263,13 +255,13 @@
 
     getResultsFooterView : ->
       switch @state
-        when Proposal.ReasonsState.together
+        when Proposal.State.Results
           new Proposal.ResultsFooterView
             model : @model
-        when Proposal.ReasonsState.collapsed
+        when Proposal.State.Summary
           new Proposal.ResultsFooterCollapsedView
             model : @model
-        when Proposal.ReasonsState.separated
+        when Proposal.State.Crafting
           new Proposal.ResultsFooterSeparatedView
             model : @model
 
@@ -279,15 +271,15 @@
 
     # getHeaderView : (group = 'all') ->
     #   switch @state
-    #     when Proposal.ReasonsState.together
+    #     when Proposal.State.Results
     #       new Proposal.ResultsHeaderView
     #         model : @model
     #         group : group
-    #     when Proposal.ReasonsState.collapsed
+    #     when Proposal.State.Summary
     #       new Proposal.ResultsHeaderViewCollapsed
     #         model : @model
     #         group : group
-    #     when Proposal.ReasonsState.separated
+    #     when Proposal.State.Crafting
     #       new Proposal.ResultsHeaderViewSeparated
     #         model : @model
     #         group : group

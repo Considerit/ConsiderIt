@@ -3,12 +3,6 @@
   class Proposal.AggregateController extends App.Controllers.StatefulController
     transitions_enabled : true
 
-    state_map : ->
-      map = {}
-      map[Proposal.State.collapsed] = Proposal.ReasonsState.collapsed
-      map[Proposal.State.expanded.crafting] = Proposal.ReasonsState.separated
-      map[Proposal.State.expanded.results] = Proposal.ReasonsState.together
-      map
 
     initialize : (options = {}) ->
       super options
@@ -34,11 +28,11 @@
 
 
     processStateChange : ->
-      if @state == Proposal.ReasonsState.together || (@state == Proposal.ReasonsState.separated && @prior_state != Proposal.ReasonsState.together)
+      if @state == Proposal.State.Results || (@state == Proposal.State.Crafting && @prior_state != Proposal.State.Results)
         #reset the layout such that updated positions are shown correctly in the histogram
         @createHistogram @layout
 
-      if @state == Proposal.ReasonsState.together
+      if @state == Proposal.State.Results
         @createSharing @layout
 
       else
@@ -48,7 +42,7 @@
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
 
-        if @state == Proposal.ReasonsState.together
+        if @state == Proposal.State.Results
           @createHistogram layout
 
           @createSharing layout
@@ -75,7 +69,7 @@
         @histogram_view = @getAggregateHistogram()
         @listenTo @histogram_view, 'show', => 
           @listenTo @histogram_view, 'histogram:segment_results', (segment, hard_select) =>
-            if @state == Proposal.ReasonsState.together
+            if @state == Proposal.State.Results
               @trigger 'histogram:segment_results', segment
               @histogram_view.finishSelectingBar segment, hard_select
         layout.histogramRegion.show @histogram_view 

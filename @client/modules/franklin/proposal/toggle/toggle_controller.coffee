@@ -3,13 +3,6 @@
   class Proposal.StateToggleController extends App.Controllers.StatefulController
     transitions_enabled : true
 
-    state_map : ->
-      map = {}
-      map[Proposal.State.collapsed] = Proposal.ReasonsState.collapsed
-      map[Proposal.State.expanded.crafting] = Proposal.ReasonsState.separated
-      map[Proposal.State.expanded.results] = Proposal.ReasonsState.together
-      map
-
     initialize : (options = {}) ->
       super options
 

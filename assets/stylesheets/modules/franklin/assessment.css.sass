@@ -63,23 +63,12 @@
   .point-assessment-indicator-region
     display: none
 
-
-
-.point-peer
-  // &.pro
-  //   .point-assessment-indicator-region
-  //     left: 100px
-
-  // &.con
-  //   .point-assessment-indicator-region
-  //     right: 100px
-
 // indicator of fact-check result while browsing points
-.point-assessment-indicator-region, [data-state="collapsed"] .point-unexpanded .point-assessment-indicator-region
+.point-assessment-indicator-region, .peer-reasons[state="summary"] .point-unexpanded .point-assessment-indicator-region
   display: none
 
 
-[data-state="points-position"]
+.position-points
   .point-unexpanded
     .point-assessment-indicator-region
       top: auto

@@ -5,7 +5,7 @@
 //////////////////////////
 
 
-$tooltip_width: 225px
+$tooltip_width: 250px
 .l-tooltip-user-title
 
   .l-tooltip-user-name
@@ -16,28 +16,23 @@ $tooltip_width: 225px
   +font-size(-4)
 
 .l-tooltip-user
-  min-width: 200px
-
-  .l-tooltip-user-block, .l-tooltip-user-metrics
+  min-width: $tooltip_width
+  padding: $vertical_baseline / 2 $grid_gutter / 2 
 
   .l-tooltip-user-block
     vertical-align: baseline
 
-  .l-tooltip-user-metrics
-
   .l-tooltip-user-metric
     list-style: none
-    margin: 0 0 $vertical_baseline/8 $grid_gutter/8
+    margin-right: $grid_gutter/2
     +font-size(-3)
     line-height: 1
     display: inline-block
+    &:last-child
+      margin-right: 0
 
   .l-tooltip-user-metric-major    
     padding: 0 $grid_gutter/4
-    margin-left: $grid_gutter/4
-
-  .l-tooltip-user-metric-minor
-
 
   .l-tooltip-user-metric-number, .l-tooltip-user-metric-desc
     text-transform: lowercase

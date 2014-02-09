@@ -1,44 +1,38 @@
 @import "compass/css3/box-shadow"
+@import "library"
 
 $bubble_border_radius: 16px
 $banchor_top: -3px
 $banchor_adjustx: -24px
-$bubble_shadow_color: white
 
 %bubble
-  +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: $bubble_shadow_color, $inset: true)
   border-radius: $bubble_border_radius
   .t-bubble
     font-size: 0
     line-height: 1
     position: absolute
-    //top: $banchor_top
     bottom: 0
     z-index: 99
 
 
 %bubble_right
   @extend %bubble
-  //border-radius: $bubble_border_radius 0 $bubble_border_radius $bubble_border_radius
   .t-bubble
     right: $banchor_adjustx 
 
 %bubble_left
   @extend %bubble
-  //border-radius: 0 $bubble_border_radius $bubble_border_radius $bubble_border_radius
   .t-bubble
     left: $banchor_adjustx 
 
-= bubble($light, $dark, $direction, $text_color: $base_text_color, $bg_image: false, $bg-color: $base_background_color, $bborder-width: 1px, $include_bg: true)
-
-  @if $include_bg
-    @if $bg_image
-      background-image: asset-data-url($bg_image)
-    @else
-      background-color: $light
-    border: $bborder-width solid $dark
-
+= bubble($light, $dark, $direction, $text_color: $base_text_color, $bg-color: $base_background_color, $include_bg: true)
+  $border_color: $dark //mix($dark, $light, 75%)
   color: $text_color
+  @if $include_bg
+    background-color: $light
+    border: 1px solid $border_color
+    +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: desaturate(lighten($light, 25%), 35%), $inset: true)
+
   @if $direction == left
     @extend %bubble_left
 
@@ -49,10 +43,9 @@ $bubble_shadow_color: white
     
     .t-bubble-inner
       fill: $light
-      //fill: black
       
     .t-bubble-border
-      fill: $dark
+      fill: $border_color
 
     .t-bubble-spacing
       fill: $bg-color

@@ -1,4 +1,5 @@
 @import "variables"
+@import "library"
 @import "compass/css3/box-sizing"
 
 //////////////////////////////////////////
@@ -191,8 +192,6 @@ input, button
 table
   border-collapse: separate  
 
-p
-
 ul
   margin: 0
   list-style-type: disc
@@ -225,14 +224,18 @@ blockquote
   display: none
 
 #lightbox
-  background-color: white
-  background-color: rgba(white, .85)
   position: fixed
   top: -20000px
   left: -2000px
   width: 4000px
   height: 40000px
   z-index: 100
+
+.button
+  +font-size(1)
+
+.superbutton
+  +font-size(2)
 
 .button, button, input[type="submit"]
   outline: none

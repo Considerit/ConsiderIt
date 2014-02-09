@@ -1,3 +1,5 @@
+@import "library"
+
 //////////////////////////////////////////////////////////////////
 // SKIN VARIABLES
 //
@@ -31,15 +33,15 @@ $plain_background_color: whitesmoke !default
 $plain_text_color: #414141 !default
 
 // some colors to spice up key elements
-$primary_accent_background_color: hsl( 210, 70%, 84%) !default
-$primary_accent_text_color: hsl( 210, 35%, 25%) !default
+$primary_accent_background_color: hsl( 210, 0%, 84%) !default
+$primary_accent_text_color: hsl( 210, 0%, 25%) !default
 
 $secondary_accent_background_color: #414141 !default
 $secondary_accent_text_color: #fafafa !default
 
 // complementary color should have strong contrast with background color
-$complementary_background_color: darken($primary_accent_background_color, 25%) !default
-$complementary_text_color: lighten($primary_accent_text_color, 100%) !default
+$complementary_background_color: emphasize($primary_accent_background_color, 25%) !default
+$complementary_text_color: white !default
 
 //////////////////////////////////////////////////////////
 ////////////////// COLOR GROUPS //////////////////////////
@@ -68,7 +70,7 @@ $complementary_text_color: lighten($primary_accent_text_color, 100%) !default
 // Applied to the highest level content area
 $base_text_color: $plain_text_color !default
 $base_background_color: #fafafa !default
-$base_background_declaration: asset-data-url('base/images/brillant.png') repeat $base_background_color !default
+$base_background_declaration: $base_background_color !default
 
 // $base_text_color: #dedede 
 // $base_background_color: #777
@@ -76,14 +78,14 @@ $base_background_declaration: asset-data-url('base/images/brillant.png') repeat 
 
 // HEADER LAYOUT GROUP
 // Applied to page header
-$header_background_color: transparent !default
-$header_background_declaration: $header_background_color !default
+$header_background_color: $base_background_color !default
+$header_background_declaration: transparent !default
 $header_text_color: $base_text_color !default
 
 // FOOTER LAYOUT GROUP
 // Applied to page footer
-$footer_background_color: darken($base_background_color, 10%) !default
-$footer_background_declaration: $footer_background_color !default
+$footer_background_color: $base_background_color !default
+$footer_background_declaration: transparent !default
 $footer_text_color: $base_text_color !default
 
 // MENU LAYOUT GROUP
@@ -98,14 +100,15 @@ $dialog_text_color: $plain_text_color !default
 
 // PRO/CON DECISION BOARD ELEMENT GROUP
 // Applied to everything on the pro/con decision board for individual opinion crafting
-$decision_board_text_color: mix(darken($base_text_color, 35%), darken(saturate($primary_accent_background_color, 50%), 25%), 20%) !default
+$decision_board_text_color: mix(emphasize($base_text_color, 35%, $reference: $base_background_color), emphasize($primary_accent_background_color, 25%), 80%) !default
 $decision_board_border_color: $decision_board_text_color !default
-$decision_board_background_declaration: rgba(mix($base_background_color, $primary_accent_background_color, 95%), .3) !default
+$decision_board_background_color: rgba(mix($base_background_color, $primary_accent_background_color, 95%), .3)
+$decision_board_background_declaration: $decision_board_background_color !default
 
 // HISTOGRAM ELEMENT GROUP
 // Applied to each histogram bar on the results page
-$histogram_bar_color: darken($base_background_color, 60%) !default
-$histogram_base_color: lighten($histogram_bar_color, 25%) !default
+$histogram_bar_color: emphasize($base_background_color, 45%) !default
+$histogram_base_color: emphasize($histogram_bar_color, 5%) !default
 
 // SLIDER ELEMENT
 // Background color of the slider on the crafting page

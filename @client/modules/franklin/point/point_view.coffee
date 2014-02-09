@@ -22,7 +22,7 @@
       'click' : 'pointClicked'
 
     pointClicked : (ev) ->
-      pass_through = @$el.parents('.peer-reasons[state="summary"]').length > 0
+      pass_through = @$el.parents('.points_by_community[state="summary"]').length > 0
       _.each App.request('shared:targets'), (target) ->
         pass_through ||= $(ev.target).is("[data-target='#{target}']")
 
@@ -64,7 +64,7 @@
         revert: "invalid"
 
 
-  class Point.PositionPointView extends Point.PointView
+  class Point.DecisionBoardPointView extends Point.PointView
     actions : ['remove']
 
     events : _.extend @events,

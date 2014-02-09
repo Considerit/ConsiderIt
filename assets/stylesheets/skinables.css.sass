@@ -247,27 +247,27 @@ a
   +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: emphasize($histogram_base_color, 10%), $inset: true)
 
 // franklin/proposal/crafting
-.position
+.decision_board
   &[state="crafting"], &[state="results"]
-    .position-message-body
+    .decision_board_body
       @extend %on_decision_board
 
-  .position-message-body
+  .decision_board_body
     border: 1px dashed $decision_board_border_color
   
 
-.position-footer
+.decision-board-footer
 
-  .position-submit-footer-wrap .position-cancel
+  .submit_opinion_footer .cancel_submitting_an_opinion
     +link_style(deemphasize($base_text_color, 20%, $reference: $base_background_color), $base_background_color, 25%)
 
 // franklin/proposal/reasons
 
-.reasons-header a
+.decision_board_heading a
   +link_style($decision_board_text_color, $decision_board_background_color, 10%)
 
 .stance
-  .stance-slider-container .noUiSlider
+  .slider_container .noUiSlider
     background-color: $slider_background_color 
 
 [state="summary"] .reasons-footer-region
@@ -307,10 +307,10 @@ a
 
 // franklin/point
 .closed_point
-  &.point-position .point-remove
+  &.decision_board_point .point-remove
     +link_style($decision_board_text_color, $decision_board_background_color, 25%)
 
-  &.point-peer 
+  &.community_point 
     .point-operations a
       +link_style(deemphasize($base_text_color, 15%, $reference: $base_background_color), $base_background_color, 25%)
 
@@ -323,19 +323,19 @@ a
     &:hover
       +font-size(-3)
 
-.peer-reasons[state="crafting"] .point-peer.closed_point, .point.open_point
+.points_by_community[state="crafting"] .community_point.closed_point, .point.open_point
   .point-wrap
     @extend %on_peer_area
 
-.peer-reasons[state="crafting"], .peer-reasons[state="results"]
-  .closed_point.point-peer:hover .point-wrap
+.points_by_community[state="crafting"], .points_by_community[state="results"]
+  .closed_point.community_point:hover .point-wrap
     background-color: deemphasize($peer_background_color, 15%)
 
-.peer-reasons[state="crafting"] .point-peer.closed_point
+.points_by_community[state="crafting"] .community_point.closed_point
   .point-wrap
     +single-box-shadow($color: rgba(black, .1), $voff: 1px)
 
-.open_point, .peer-reasons[state="crafting"] .point-peer.closed_point
+.open_point, .points_by_community[state="crafting"] .community_point.closed_point
   .point-wrap
     border: 1px solid
     border-color: emphasize($peer_background_color, 5%) emphasize($peer_background_color, 10%) emphasize($peer_background_color, 5%) emphasize($peer_background_color, 15%)
@@ -343,10 +343,10 @@ a
 
 
 // franklin/points
-.peer-reasons[state="summary"] .pointlist-footer-more i
+.points_by_community[state="summary"] .pointlist-footer-more i
   color: emphasize($base_background_color, 25%)
 
-.peer-reasons
+.points_by_community
 
   &[state="crafting"] .pointlist-header-label
     color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
@@ -358,14 +358,14 @@ a
   &[state="summary"], &[state="results"]
     +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
 
-.position-points .pointlist-header-label
+.points_on_decision_board .pointlist-header-label
   border-bottom-color: $decision_board_text_color
 
-.peer-reasons[state="results"], .peer-reasons[state="crafting"] 
+.points_by_community[state="results"], .points_by_community[state="crafting"] 
   .expanded_points-header-open, .expanded_points-header-close
     color: deemphasize($base_text_color, 50%, $reference: $base_background_color)
 
-.draggable_hover_pro .position-propoints, .draggable_hover_con .position-conpoints
+.draggable_hover_pro .pros_on_decision_board, .draggable_hover_con .cons_on_decision_board
   .point-drop-target
     color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
     border-color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)

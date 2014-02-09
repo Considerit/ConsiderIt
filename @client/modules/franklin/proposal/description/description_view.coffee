@@ -17,7 +17,7 @@
       @state != Proposal.State.Summary && App.request 'auth:can_edit_proposal', @model    
 
     serializeData : ->
-      user_position = @model.getUserPosition()
+      user_opinion = @model.getUserOpinion()
 
       user = @model.getUser()
       params = _.extend {}, @model.attributes,

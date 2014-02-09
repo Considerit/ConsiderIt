@@ -80,8 +80,8 @@ casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) -
     casper.then -> 
       @wait 1000, ->
         @HTMLStep 'Results page can be accessed from homepage'
-        test.assertExists '[data-role="proposal"] .peer-reasons[state="summary"]', 'Peer reasons exists in collapsed form'
-        @click '[data-role="proposal"]:first-of-type .peer-reasons[state="summary"]:first-of-type'
+        test.assertExists '[data-role="proposal"] .points_by_community[state="summary"]', 'Peer reasons exists in collapsed form'
+        @click '[data-role="proposal"]:first-of-type .points_by_community[state="summary"]:first-of-type'
         @wait 5000, ->
           @HTMLCapture 'body', 
             caption : 'The results page'
@@ -165,8 +165,8 @@ casper.test.begin 'Lurker can poke around the proposal crafting page', 33, (test
   casper.start "http://localhost:8787", ->
     @wait(1000).then ->
       @HTMLStep "Crafting page can be navigated to from homepage"
-      test.assertExists '[data-role="proposal"] [data-target="craft-position"]', 'Opportunity to add one\'s position'
-      @click '[data-role="proposal"]:first-of-type [data-target="craft-position"]:first-of-type'
+      test.assertExists '[data-role="proposal"] [data-target="craft-opinion"]', 'Opportunity to add one\'s opinion'
+      @click '[data-role="proposal"]:first-of-type [data-target="craft-opinion"]:first-of-type'
       @wait 5000, ->
         assert_in_crafting_state test
 
@@ -174,8 +174,8 @@ casper.test.begin 'Lurker can poke around the proposal crafting page', 33, (test
       casper.open("http://localhost:8787/#{example_proposal}/results").wait 5000, ->
         @HTMLStep "Crafting page can be accessed from results page"
 
-        test.assertExists '[data-role="proposal"] [data-target="craft-position"]', 'Opportunity to add one\'s position'
-        @click '[data-role="proposal"] [data-target="craft-position"]:first-of-type'
+        test.assertExists '[data-role="proposal"] [data-target="craft-opinion"]', 'Opportunity to add one\'s opinion'
+        @click '[data-role="proposal"] [data-target="craft-opinion"]:first-of-type'
         @wait 5000, ->
           assert_in_crafting_state test
 
@@ -241,8 +241,8 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
 
     casper.then ->
       casper.open("http://localhost:8787/dashboard/users/#{example_user}/profile").wait 5000, ->
-        @HTMLStep "Access positions from profile"
-        @click('[data-target="positions"]')
+        @HTMLStep "Access opinions from profile"
+        @click('[data-target="opinions"]')
         casper.wait 200, ->
           test.assertVisible '.dashboard-profile-activity-substance-wrap', 'Has some votes listed'
           test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a vote"
@@ -252,9 +252,9 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
           @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
           casper.wait 5000, ->
             @HTMLCapture 'body', 
-              caption: 'Position page, accessed from profile'
+              caption: 'opinion page, accessed from profile'
 
-            assert_position_open test
+            assert_opinion_open test
 
             casper.back().wait 200, ->
               assert_user_profile_loaded test
@@ -312,7 +312,7 @@ assert_in_results_state = (test) ->
   test.assertElementCount '[data-role="proposal"]', 1, "there is only one proposal on the page"
   test.assertVisible '.proposal-details', 'Proposal details are visible'
   test.assertElementCount '.histogram-bar', 7, 'There are seven histogram bars visible'
-  test.assertExists '.peer-reasons[state="results"]', 'Pros and cons in together state'
+  test.assertExists '.points_by_community[state="results"]', 'Pros and cons in together state'
   test.assertSelectorHasText '.pointlist-header-label', 'Pros', 'Pros present in pros header'
   test.assertSelectorDoesntHaveText '.pointlist-header-label', 'upport', 'Supporter is not present in pros header'
 
@@ -320,9 +320,9 @@ assert_in_crafting_state = (test) ->
   test.assertExists '[data-role="proposal"][state="crafting"]', 'Proposal is in crafting state'
   test.assertElementCount '[data-role="proposal"]', 1, "there is only one proposal on the page"
   test.assertVisible '.proposal-details', 'Proposal details are visible'
-  test.assertExists '.position[state="crafting"]', 'Decision slate is visible'
-  test.assertExists '.peer-reasons[state="crafting"]', 'Pros and cons on margins'
-  test.assertExists '.stance-slider-container', 'Slider present'
+  test.assertExists '.decision_board[state="crafting"]', 'Decision slate is visible'
+  test.assertExists '.points_by_community[state="crafting"]', 'Pros and cons on margins'
+  test.assertExists '.slider_container', 'Slider present'
   test.assertElementCount '.point-drop-target', 2, 'Drop targets present'
   test.assertElementCount '.newpoint', 2, 'Add points present'
 
@@ -338,8 +338,8 @@ assert_comment_open = (test, comment_id) ->
   assert_point_open test
   test.assertVisible "#comment-#{comment_id}", 'Comment is visible'
 
-assert_position_open = (test) ->
-  test.assertVisible '.static-position-reasons', 'Viewing other user position works'
+assert_opinion_open = (test) ->
+  test.assertVisible '.user_opinion-reasons', 'Viewing other user opinion works'
 
 test_open_point = (test) ->
   casper.HTMLStep 'open a point'

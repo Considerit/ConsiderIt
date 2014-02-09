@@ -6,7 +6,7 @@ class Point < ActiveRecord::Base
   
   belongs_to :user
   belongs_to :proposal
-  belongs_to :position
+  belongs_to :opinion
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
   
@@ -45,7 +45,7 @@ class Point < ActiveRecord::Base
   }
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:long_id, :appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :position_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id, :hide_name]
+  self.my_public_fields = [:long_id, :appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :opinion_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id, :hide_name]
 
   scope :public_fields, -> {select(self.my_public_fields)}
   scope :metrics_fields, -> {select([:id, :appeal, :attention, :comment_count, :divisiveness, :includers, :is_pro, :num_inclusions, :persuasiveness, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :unique_listings])}
@@ -169,12 +169,12 @@ class Point < ActiveRecord::Base
     metrics_per_segment = {}
     (0..6).each {|stance_bucket| metrics_per_segment[stance_bucket] = [0,0]}
 
-    inclusions_by_segment = inclusions.joins(:position).select('COUNT(*) AS cnt, positions.stance_bucket AS stance_bucket').group("positions.stance_bucket").order("positions.stance_bucket")
+    inclusions_by_segment = inclusions.joins(:opinion).select('COUNT(*) AS cnt, opinions.stance_bucket AS stance_bucket').group("opinions.stance_bucket").order("opinions.stance_bucket")
     inclusions_by_segment.each do |row|
       metrics_per_segment[row.stance_bucket.to_i][0] = row.cnt.to_i
     end
 
-    listings_by_segment = point_listings.joins(:position).select('COUNT(*) AS cnt, positions.stance_bucket AS stance_bucket').group("positions.stance_bucket").order("positions.stance_bucket")        
+    listings_by_segment = point_listings.joins(:opinion).select('COUNT(*) AS cnt, opinions.stance_bucket AS stance_bucket').group("opinions.stance_bucket").order("opinions.stance_bucket")        
     listings_by_segment.each do |row|
       metrics_per_segment[row.stance_bucket.to_i][1] = row.cnt.to_i
     end
@@ -287,10 +287,10 @@ protected
     
     distribution = Array.new(5, 0.0001)
 
-    qry = inclusions.joins(:position)   \
-                    .where("positions.published=1" )                                      \
-                    .group('positions.stance_bucket')                                            \
-                    .select("COUNT(*) AS cnt, positions.stance_bucket")
+    qry = inclusions.joins(:opinion)   \
+                    .where("opinions.published=1" )                                      \
+                    .group('opinions.stance_bucket')                                            \
+                    .select("COUNT(*) AS cnt, opinions.stance_bucket")
                         
     # get the number of inclusions per stance group
     qry.each do |row|
@@ -312,10 +312,10 @@ protected
     # scale the number of inclusions per stance group by the number of people who saw this 
     # point in the stance group
     scaling_distribution = Array.new(5, 0)
-    qry = point_listings.joins(:position)   \
-                        .where("positions.published=1" )                                      \
-                        .group('positions.stance_bucket')                                            \
-                        .select("COUNT(distinct point_listings.user_id) AS cnt, positions.stance_bucket")
+    qry = point_listings.joins(:opinion)   \
+                        .where("opinions.published=1" )                                      \
+                        .group('opinions.stance_bucket')                                            \
+                        .select("COUNT(distinct point_listings.user_id) AS cnt, opinions.stance_bucket")
                  
     qry.each do |row|
       # collapse strong and moderate support/oppose to make more fair distribution

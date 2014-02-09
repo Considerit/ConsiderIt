@@ -6,7 +6,7 @@
       ":proposal": "CraftOpinion"
       ":proposal/results": "Results"
       ":proposal/points/:point" : "OpenPoint"
-      ":proposal/positions/:user_id" : "UserPosition"
+      ":proposal/opinions/:user_id" : "UserOpinion"
 
 
   API =
@@ -40,7 +40,7 @@
       proposal = App.request 'proposal:get', long_id, true
       history = [ 
         ['homepage', '/'], 
-        ["#{proposal.title(40)}", Routes.new_position_proposal_path(proposal.id)]
+        ["#{proposal.title(40)}", Routes.new_opinion_proposal_path(proposal.id)]
       ]
 
       @_transitionProposal proposal, history, 
@@ -54,7 +54,7 @@
       proposal = App.request 'proposal:get', long_id, true
       history = [ 
         ['homepage', '/'], 
-        ["#{proposal.title(40)}", Routes.new_position_proposal_path(proposal.id)] 
+        ["#{proposal.title(40)}", Routes.new_opinion_proposal_path(proposal.id)] 
         ["results", Routes.proposal_path(proposal.id)]
       ]
 
@@ -71,7 +71,7 @@
 
       history = [ 
         ['homepage', '/'], 
-        ["#{proposal.id}", Routes.new_position_proposal_path(long_id)]
+        ["#{proposal.id}", Routes.new_opinion_proposal_path(long_id)]
         ["#{ if point.isPro() then 'Pro' else 'Con'} point", Routes.proposal_point_path(long_id, point_id)] ]
 
       region = App.request 'default:region'
@@ -162,7 +162,7 @@
           if options.callback
             options.callback()
 
-    UserPosition: (long_id, user_id) ->
+    UserOpinion: (long_id, user_id) ->
       return if ConsiderIt.inaccessible_proposal != null      
 
       proposal = App.request 'proposal:get', long_id, true
@@ -179,22 +179,22 @@
           region.controlled_by = proposal_controller
 
         user = App.request 'user', parseInt(user_id)
-        position = App.request('positions:get').findWhere {long_id : long_id, user_id : user.id }
-        new Franklin.Position.PositionController
-          model : position
+        opinion = App.request('opinions:get').findWhere {long_id : long_id, user_id : user.id }
+        new Franklin.Opinion.OpinionController
+          model : opinion
           region: new Backbone.Marionette.Region
             el: $("body")
 
         if from_root
           history = [ 
             ['homepage', '/'], 
-            ["#{user.get('name')}", Routes.proposal_position_path(long_id, position.id)] ]
+            ["#{user.get('name')}", Routes.proposal_opinion_path(long_id, opinion.id)] ]
         else
           history = [ 
             ['homepage', '/'], 
-            ["#{proposal.id}", Routes.new_position_proposal_path(long_id)],      
+            ["#{proposal.id}", Routes.new_opinion_proposal_path(long_id)],      
             ["results", Routes.proposal_path(long_id)],          
-            ["#{user.get('name')}", Routes.proposal_position_path(long_id, position.id)] ]
+            ["#{user.get('name')}", Routes.proposal_opinion_path(long_id, opinion.id)] ]
 
         if region.currentView instanceof Franklin.Proposal.AggregateLayout
           history.splice history.length - 1, 0, ['results', Routes.proposal_path(long_id)]

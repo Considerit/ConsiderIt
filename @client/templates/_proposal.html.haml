@@ -26,7 +26,7 @@
   .proposal-state-primary
     {{ results_call }}
 
-  %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :class => 'proposal-state-secondary', :'data-target' => 'craft-position'}
+  %a{ :href => "{{Routes.new_opinion_proposal_path( long_id )}}", :class => 'proposal-state-secondary', :'data-target' => 'craft-opinion'}
     // %i.fa-lg.fa
     //   &#xf096;
 
@@ -35,48 +35,46 @@
 
   (( } ))
 
-////////////// position ////////////
+////////////// opinion ////////////
 
-%script{ :type => "text/template", :id => "tpl_position_crafting_layout" }  
+%script{ :type => "text/template", :id => "tpl_decision_board_layout" }  
 
-  .position-message-body 
-    / %h2.position-heading-points
-    /   {{ considerations_prompt }}
+  .decision_board_body 
 
-    .reasons-header-region
+    .decision-board-heading-region
 
-    .position-reasons-region
+    .decision-board-points-region
 
-    .position-stance-region
+    .slider-region
 
     .position-explanation-region
 
-  .position-footer-region
+  .decision-board-footer-region
               
 
-%script{ :type => "text/template", :id => "tpl_position_reasons" }  
+%script{ :type => "text/template", :id => "tpl_opinion_points" }  
 
-  .position-propoints-region.points-list-region>     
-  .position-conpoints-region.points-list-region>
+  .pros_on_decision_board-region.points-list-region>     
+  .cons_on_decision_board-region.points-list-region>
 
 
-%script{ :type => "text/template", :id => "tpl_position_stance" }  
-  .position-heading-stance
+%script{ :type => "text/template", :id => "tpl_slider" }  
+  .slider_heading
     {{ slider_prompt }}
   %table
     %tr
-      %td.stance-label-support
+      %td.supporting_slider_label
         %div
           {{ slider_left }}
 
-      %td.stance-slider-container
+      %td.slider_container
         .noUiSlider
 
-      %td.stance-label-oppose
+      %td.opposing_slider_label
         %div
           {{ slider_right }}
     %tr
-      %td.stance-label-neutral{ :colspan => 3 }
+      %td.neutral_slider_label{ :colspan => 3 }
         {{ slider_middle }}
 
 %script{ :type => "text/template", :id => "tpl_position_explanation" }  
@@ -85,11 +83,11 @@
   %textarea.position-statement{ :name => :explanation}
 
 
-%script{ :type => "text/template", :id => "tpl_position_footer" }  
+%script{ :type => "text/template", :id => "tpl_decision_board_footer" }  
 
   (( if( active ) { ))
 
-  %a.position-your-action-body.submit.superbutton{:'data-target' => 'submit-position'}
+  %a.submit_opinion_button.superbutton{:'data-target' => 'submit-opinion'}
     // fa-floppy-o
     %i.fa-lg.fa.fa-floppy-o
     (( if(updating){ ))
@@ -98,8 +96,8 @@
     Save your opinion
     (( } ))
 
-  .position-submit-footer-wrap
-    .notifications
+  .submit_opinion_footer
+    .subscribe_to_proposal_notifications
 
       = label_tag :follow_proposal, '', :title => 'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.' do
         
@@ -112,18 +110,18 @@
         %span
           Get email updates about new activity
 
-    %a.position-cancel{:'data-target' => 'show-results'}
+    %a.cancel_submitting_an_opinion{:'data-target' => 'show-results'}
       cancel and show results
   (( } else { ))
-  %a.position-your-action-body.submit.superbutton{:'data-target' => 'show-results'}
+  %a.submit_opinion_button.superbutton{:'data-target' => 'show-results'}
     View results 
   (( } ))
 
 
-%script{ :type => "text/template", :id => "tpl_reasons_header" }  
+%script{ :type => "text/template", :id => "tpl_decision_board_heading" }  
 
   (( if(active) { ))
-  %a{ :href => "{{Routes.new_position_proposal_path( long_id )}}", :'data-target' => 'craft-position'}
+  %a{ :href => "{{Routes.new_opinion_proposal_path( long_id )}}", :'data-target' => 'craft-opinion'}
     //fa-pencil-square-o
     %i.fa.fa-pencil
     {{ call }}
@@ -136,10 +134,10 @@
 %script{ :type => "text/template", :id => "tpl_reasons_layout"}
 
 
-  .reasons-lists
-    .aggregated-propoints-region.points-list-region>
-    .position-region>
-    .aggregated-conpoints-region.points-list-region>
+  .four_columns_of_points
+    .community-pros-region.points-list-region>
+    .opinion-region>
+    .community-cons-region.points-list-region>
   .participants
 
   .reasons-footer-region
@@ -162,14 +160,9 @@
 
 %script{ :type => "text/template", :id => "tpl_aggregate_footer_expanded"}
   .placeholder
-  // %a.position-your-action-body.join.superbutton{ :href => "{{Routes.new_position_proposal_path( long_id )}}"}
-  //   //fa-pencil-square-o
-  //   %i.fa-lg.fa 
-  //     &#xf044;  
-  //   {{ call }}
 
 %script{ :type => "text/template", :id => "tpl_aggregate_footer_collapsed"}
-  %a.reasons-view-results{:'data-target' => 'show-results'}
+  %a.view_results_prompt_from_summary{:'data-target' => 'show-results'}
     //%i.fa.fa-bar-chart-o.fa-lg 
     %i.fa.fa-th-list.fa-lg
     View Results
@@ -187,12 +180,12 @@
     (( } else { ))
     = render :partial => "shared/bubble", :locals => {:left => false, :down => true, :flipped => true }
     (( } ))
-    (( if (bar.positions.length > 0) { ))
+    (( if (bar.opinions.length > 0) { ))
     %ul.bar-people>
-      (( _.each(bar.positions, function(position) { ))
-      (( var user = position.getUser(); ))
+      (( _.each(bar.opinions, function(opinion) { ))
+      (( var user = opinion.getUser(); ))
       (( if (user){ ))
-      (( var has_explanation = position.get('explanation') && position.get('explanation').length > 0, expl_clss = has_explanation ? 'person-has-explanation' : 'person-has-no-explanation'; ))
+      (( var has_explanation = opinion.get('explanation') && opinion.get('explanation').length > 0, expl_clss = has_explanation ? 'person-has-explanation' : 'person-has-no-explanation'; ))
       %li.bar-person.avatar{:class=>"bucket-{{bar.bucket}} {{expl_clss}}", :'data-target' => "user_profile_page", :'data-id' => "{{user.id}}", :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}>
       (( } ))
       (( }); ))

@@ -62,8 +62,8 @@ class ProposalsController < ApplicationController
 
     data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
 
-    # position = ProposalsController.get_position_for_user(proposal, current_user, session)
-    # data[:position] = position
+    # opinion = ProposalsController.get_opinion_for_user(proposal, current_user, session)
+    # data[:opinion] = opinion
 
     respond_to do |format|
       format.html {
@@ -111,8 +111,8 @@ class ProposalsController < ApplicationController
 
     data = proposal.full_data current_tenant, current_user, session[proposal.id]
 
-    # position = ProposalsController.get_position_for_user(proposal, current_user, session)
-    # data[:position] = position
+    # opinion = ProposalsController.get_opinion_for_user(proposal, current_user, session)
+    # data[:opinion] = opinion
     render :json => data
     
   end
@@ -179,7 +179,7 @@ class ProposalsController < ApplicationController
       :published => proposal.published,
       :active => proposal.active,
       :proposal => proposal
-      # :position => ProposalsController.get_position_for_user(proposal, current_user, session)
+      # :opinion => ProposalsController.get_opinion_for_user(proposal, current_user, session)
     }
     render :json => response.to_json
   end
@@ -191,9 +191,9 @@ class ProposalsController < ApplicationController
     render :json => {:success => true}
   end
 
-  def self.get_position_for_user(proposal, current_user, session)
-    position = current_user ? current_user.positions.published.where(:proposal_id => proposal.id).last : !session["position-#{proposal.id}"].nil? ? Position.find(session["position-#{proposal.id}"]) : nil
-    position ||= Position.create!(ActionController::Parameters.new({ 
+  def self.get_opinion_for_user(proposal, current_user, session)
+    opinion = current_user ? current_user.opinions.published.where(:proposal_id => proposal.id).last : !session["opinion-#{proposal.id}"].nil? ? Opinion.find(session["opinion-#{proposal.id}"]) : nil
+    opinion ||= Opinion.create!(ActionController::Parameters.new({ 
       :stance => 0.0, 
       :proposal_id => proposal.id, 
       :long_id => proposal.long_id,
@@ -201,7 +201,7 @@ class ProposalsController < ApplicationController
       :account_id => proposal.account_id
     }).permit!)
 
-    position
+    opinion
 
 
   end

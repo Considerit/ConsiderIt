@@ -46,7 +46,7 @@ class Activity < ActiveRecord::Base
       end
     when 'Point'
       "#{user ? user.username : 'Anonymous'} wrote a new point for \"#{this_obj.proposal.title}\""
-    when 'Position'
+    when 'Opinion'
       "#{user ? user.username : 'Anonymous'} #{this_obj.stance_name_singular} \"#{this_obj.proposal.title}\""
     when 'Inclusion'
       "#{user ? user.username : 'Anonymous'} included a point by #{this_obj.point.hide_name || !this_obj.point.user ? '[hidden]' : this_obj.point.user.username} for \"#{this_obj.proposal.title}\""
@@ -72,7 +72,7 @@ class Activity < ActiveRecord::Base
       "\"#{this_obj.title}\"."
     when 'Point'
       "\"#{this_obj.nutshell}\"."
-    when 'Position'
+    when 'Opinion'
       ""
     when 'Inclusion'
       "The point states \"#{this_obj.point.nutshell}\". #{this_obj.point.inclusions.count - 1} others have included this point."
@@ -97,7 +97,7 @@ class Activity < ActiveRecord::Base
       helper.proposal_url(obj.long_id, :host => host)
     when 'Point'
       helper.proposal_point_url(obj.long_id, obj.id, :host => host)
-    when 'Position'
+    when 'Opinion'
       ""
     when 'Inclusion'
       helper.proposal_point_url(obj.long_id, obj.point_id, :host => host)

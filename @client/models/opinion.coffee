@@ -1,7 +1,7 @@
 @ConsiderIt.module "Entities", (Entities, App, Backbone, Marionette, $, _) ->
 
-  class Entities.Position extends App.Entities.Model
-    name : 'position'
+  class Entities.Opinion extends App.Entities.Model
+    name : 'opinion'
     defaults : 
       stance : 0
       user_id : -1
@@ -14,9 +14,9 @@
       if @attributes.proposal_id #avoid url if this is a new proposal
 
         if @id
-          Routes.proposal_position_path @get('long_id'), @id
+          Routes.proposal_opinion_path @get('long_id'), @id
         else
-          Routes.proposal_positions_path @get('long_id')
+          Routes.proposal_opinions_path @get('long_id')
 
     initialize : (options) ->
       super
@@ -84,7 +84,7 @@
           pnt.set 'user_id', user.id      
 
     stanceLabel : ->
-      Entities.Position.stance_name_adverb @get('stance_bucket')
+      Entities.Opinion.stance_name_adverb @get('stance_bucket')
 
     @stance_name_for_bar : (d) ->
       switch parseInt(d)
@@ -116,57 +116,57 @@
         when 5 then "supporters"
         when 6 then "strong supporters"
 
-  class Entities.Positions extends App.Entities.Collection
-    model : Entities.Position
+  class Entities.Opinions extends App.Entities.Collection
+    model : Entities.Opinion
 
     parse : (models) ->
-      if models instanceof Entities.Position
+      if models instanceof Entities.Opinion
         # happens when new proposal is created, called by backbone.set
-        positions = [models] 
+        opinions = [models] 
       else if !(models instanceof Array)
-        positions = ((p.position for p in models.positions))
+        opinions = ((o.opinion for o in models.opinions))
       else
-        positions = ((p.position for p in models))
+        opinions = ((o.opinion for o in models))
 
-      positions
+      opinions
 
 
   API = 
-    all_positions : new Entities.Positions()
+    all_opinions : new Entities.Opinions()
 
 
-    getPosition : (position_id) ->
-      @all_positions.get position_id
+    getOpinion : (opinion_id) ->
+      @all_opinions.get opinion_id
 
-    createPosition : (position_attrs = {}) ->
-      position = new Entities.Position position_attrs
-      @all_positions.add position
-      position
+    createOpinion : (opinion_attrs = {}) ->
+      opinion = new Entities.Opinion opinion_attrs
+      @all_opinions.add opinion
+      opinion
 
-    syncPosition : (position, params = {}) -> 
+    syncOpinion : (opinion, params = {}) -> 
       params = _.extend params, 
-        included_points : position.getIncludedPoints()
-        viewed_points : _.keys(position.viewed_points)
-        position : 
-          position.attributes
+        included_points : opinion.getIncludedPoints()
+        viewed_points : _.keys(opinion.viewed_points)
+        opinion : 
+          opinion.attributes
 
-      method = if position.id then 'update' else 'create'
+      method = if opinion.id then 'update' else 'create'
 
-      xhr = Backbone.sync method, position,
+      xhr = Backbone.sync method, opinion,
         data : JSON.stringify params
         contentType : 'application/json'
 
         success : (data) =>
-          proposal = position.getProposal()
-          position.set data.position.position
+          proposal = opinion.getProposal()
+          opinion.set data.opinion.opinion
 
           App.vent.trigger 'points:fetched', (p.point for p in data.updated_points)
           proposal.set(data.proposal) if 'proposal' of data
 
-          if 'subsumed_position' of data && data.subsumed_position && data.subsumed_position.id != position.id
-            App.vent.trigger 'position:subsumed', data.subsumed_position.position
+          if 'subsumed_opinion' of data && data.subsumed_opinion && data.subsumed_opinion.id != opinion.id
+            App.vent.trigger 'opinion:subsumed', data.subsumed_opinion.opinion
 
-          proposal.newPositionSaved position
+          proposal.newOpinionSaved opinion
 
           #TODO: make sure points getting updated properly in all containers
 
@@ -174,10 +174,10 @@
           # if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()
           #   @$el.attr('data-activity', 'proposal-has-activity')
 
-          position.trigger 'position:synced'
+          opinion.trigger 'opinion:synced'
 
 
-        failure : (data) => @trigger 'position:sync:failed'
+        failure : (data) => @trigger 'opinion:sync:failed'
 
       App.execute 'show:loading',
         loading:
@@ -185,84 +185,84 @@
           xhr: true
 
 
-    addPositions : (positions) -> 
-      positions = @all_positions.parse(positions)
-      @all_positions.add positions,
+    addOpinions : (opinions) -> 
+      opinions = @all_opinions.parse(opinions)
+      @all_opinions.add opinions,
         merge: true
 
-    getPositionForProposalForCurrentUser : (long_id, create_if_not_found = true) ->
+    getOpinionForProposalForCurrentUser : (long_id, create_if_not_found = true) ->
       current_user = App.request 'user:current'
 
-      position = @all_positions.findWhere
+      opinion = @all_opinions.findWhere
         long_id: long_id
         user_id: current_user.id
 
-      if !position && create_if_not_found
+      if !opinion && create_if_not_found
 
-        position = new Entities.Position # todo: does this work when someone logs in after position created?
+        opinion = new Entities.Opinion # todo: does this work when someone logs in after opinion created?
           user_id : current_user.id #todo: make sure this doesn't get shown in results
           published : false
           long_id: long_id 
           proposal_id : App.request('proposal:get', long_id).get('id')
 
-        @all_positions.add position
+        @all_opinions.add opinion
 
-      position
+      opinion
 
 
-    getPositionsByProposal : (long_id) ->
-      new Entities.Positions @all_positions.where({long_id: long_id, published : true})
+    getOpinionsByProposal : (long_id) ->
+      new Entities.Opinions @all_opinions.where({long_id: long_id, published : true})
 
-    getPositionsByUser : (user_id, published = true) ->
+    getOpinionsByUser : (user_id, published = true) ->
       params = 
         user_id : user_id
 
       if published
         params.published = true
 
-      new Entities.Positions @all_positions.where params
+      new Entities.Opinions @all_opinions.where params
 
-    getPositions : ->
-      @all_positions
+    getOpinions : ->
+      @all_opinions
 
-    positionSubsumed : (position_data) ->
-      position = @all_positions.get position_data.id
-      if position
-        #@all_positions.remove position        
-        position.trigger 'destroy', position, position.collection
+    opinionSubsumed : (opinion_data) ->
+      opinion = @all_opinions.get opinion_data.id
+      if opinion
+        #@all_opinions.remove opinion        
+        opinion.trigger 'destroy', opinion, opinion.collection
 
-  App.vent.on 'position:subsumed', (position_data) ->
-    API.positionSubsumed position_data
+  App.vent.on 'opinion:subsumed', (opinion_data) ->
+    API.opinionSubsumed opinion_data
 
-  App.vent.on 'positions:fetched', (positions) -> #, position = null) ->
-    API.addPositions positions #, position
+  App.vent.on 'opinions:fetched', (opinions) -> #, opinion = null) ->
+    API.addOpinions opinions #, opinion
 
-  App.reqres.setHandler 'position:get', (position_id) ->
-    API.getPosition position_id
+  App.reqres.setHandler 'opinion:get', (opinion_id) ->
+    API.getOpinion opinion_id
 
-  App.reqres.setHandler 'position:create', (attrs = {}) ->
-    API.createPosition attrs
+  App.reqres.setHandler 'opinion:create', (attrs = {}) ->
+    API.createOpinion attrs
 
-  App.reqres.setHandler 'position:sync', (position, params) ->
-    API.syncPosition position, params
+  App.reqres.setHandler 'opinion:sync', (opinion, params) ->
+    API.syncOpinion opinion, params
 
-  App.reqres.setHandler 'positions:get', ->
-    API.getPositions()
+  App.reqres.setHandler 'opinions:get', ->
+    API.getOpinions()
 
-  App.reqres.setHandler 'positions:get:proposal', (long_id) ->
-    API.getPositionsByProposal long_id
+  App.reqres.setHandler 'opinions:get:proposal', (long_id) ->
+    API.getOpinionsByProposal long_id
 
-  App.reqres.setHandler 'positions:get:user', (model_id, published = true) ->
-    API.getPositionsByUser model_id, published
+  App.reqres.setHandler 'opinions:get:user', (model_id, published = true) ->
+    API.getOpinionsByUser model_id, published
 
-  App.reqres.setHandler 'position:current_user:proposal', (long_id, create_if_not_found = true) ->
-    API.getPositionForProposalForCurrentUser long_id, create_if_not_found
+  App.reqres.setHandler 'opinion:current_user:proposal', (long_id, create_if_not_found = true) ->
+    API.getOpinionForProposalForCurrentUser long_id, create_if_not_found
 
 
   App.addInitializer ->
 
-    if ConsiderIt.positions && _.size(ConsiderIt.positions) > 0
-      App.vent.trigger 'positions:fetched', ConsiderIt.positions
-      ConsiderIt.positions = null
+    if ConsiderIt.opinions && _.size(ConsiderIt.opinions) > 0
+      App.vent.trigger 'opinions:fetched', ConsiderIt.opinions
+      ConsiderIt.opinions = null
 
 

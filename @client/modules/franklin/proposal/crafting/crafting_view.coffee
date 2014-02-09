@@ -1,14 +1,14 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
-  class Proposal.PositionLayout extends App.Views.StatefulLayout
-    template : '#tpl_position_crafting_layout'
-    className : 'position' 
+  class Proposal.DecisionBoardLayout extends App.Views.StatefulLayout
+    template : '#tpl_decision_board_layout'
+    className : 'decision_board' 
     regions : 
-      headerRegion : '.reasons-header-region'
-      reasonsRegion : '.position-reasons-region'
-      stanceRegion : '.position-stance-region'
-      explanationRegion : '.position-explanation-region'
-      footerRegion : '.position-footer-region'
+      headerRegion : '.decision-board-heading-region'
+      reasonsRegion : '.decision-board-points-region'
+      stanceRegion : '.slider-region'
+      # explanationRegion : '.position-explanation-region'
+      footerRegion : '.decision-board-footer-region'
 
     serializeData : ->
       tenant = App.request 'tenant:get'
@@ -21,7 +21,7 @@
       @processIncludedPoints()
 
       @$el.droppable
-        accept: ".point-peer .point-wrap"
+        accept: ".community_point .point-wrap"
         drop : (ev, ui) =>
           valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
           @trigger 'point:include', ui.draggable.parent().data('id')
@@ -52,9 +52,9 @@
         @$el.removeClass 'has_included_points'
 
 
-  class Proposal.PositionFooterSeparatedView extends App.Views.ItemView
-    template : '#tpl_position_footer'
-    className : 'position-footer'
+  class Proposal.DecisionBoardFooterView extends App.Views.ItemView
+    template : '#tpl_decision_board_footer'
+    className : 'decision-board-footer'
 
     serializeData : ->
       current_user = App.request 'user:current'
@@ -65,19 +65,19 @@
         follows : current_user.isFollowing 'Proposal', proposal.get('id')
 
     events : 
-      'click [data-target="submit-position"]' : 'handleSubmitPosition'
+      'click [data-target="submit-opinion"]' : 'handleSubmitOpinion'
       'click [data-target="show-results"]' : 'handleCanceled'
 
-    handleSubmitPosition : (ev) ->
-      @trigger 'position:submit-requested', @$el.find('#follow_proposal').is(':checked')
+    handleSubmitOpinion : (ev) ->
+      @trigger 'opinion:submit_requested', @$el.find('#follow_proposal').is(':checked')
 
     handleCanceled : (ev) ->
-      @trigger 'position:canceled'
+      @trigger 'opinion:canceled'
       ev.stopPropagation()
 
-  class Proposal.ReasonsHeaderView extends App.Views.ItemView
-    template : '#tpl_reasons_header'
-    className : 'reasons-header'
+  class Proposal.DecisionBoardHeading extends App.Views.ItemView
+    template : '#tpl_decision_board_heading'
+    className : 'decision_board_heading'
 
     serializeData : ->
       current_user = App.request 'user:current'
@@ -94,16 +94,16 @@
         updating : @model && @model.get 'published'
         call : call
 
-  class Proposal.PositionReasonsLayout extends App.Views.Layout
-    template : '#tpl_position_reasons'
-    className : 'personal-reasons'
+  class Proposal.DecisionBoardPointsLayout extends App.Views.Layout
+    template : '#tpl_opinion_points'
+    className : 'opinion_points'
 
     regions : 
-      positionProsRegion : '.position-propoints-region'
-      positionConsRegion : '.position-conpoints-region'
+      decisionBoardProsRegion : '.pros_on_decision_board-region'
+      decisionBoardConsRegion : '.cons_on_decision_board-region'
 
-  class Proposal.PositionStance extends App.Views.ItemView
-    template : '#tpl_position_stance'
+  class Proposal.DecisionBoardSlider extends App.Views.ItemView
+    template : '#tpl_slider'
     className : 'stance'
 
     serializeData : ->
@@ -122,9 +122,9 @@
 
     ui : 
       slider : '.noUiSlider'
-      neutral_label : '.stance-label-neutral'
-      support_label : '.stance-label-support'
-      oppose_label : '.stance-label-oppose'
+      neutral_label : '.neutral_slider_label'
+      support_label : '.supporting_slider_label'
+      oppose_label : '.opposing_slider_label'
 
     _stance_val : ->
       @model.get('stance') * 100
@@ -171,12 +171,12 @@
       @ui.support_label.css('font-size', 100 - size + '%')
 
 
-  class Proposal.PositionExplanation extends App.Views.ItemView
-    template : '#tpl_position_explanation'
-    className : 'position_statement'
+  # class Proposal.SummativeExplanation extends App.Views.ItemView
+  #   template : '#tpl_position_explanation'
+  #   className : 'position_statement'
 
-    onRender : ->
-      @stickit()
+  #   onRender : ->
+  #     @stickit()
 
-    bindings : 
-      'textarea[name="explanation"]' : 'explanation'
+  #   bindings : 
+  #     'textarea[name="explanation"]' : 'explanation'

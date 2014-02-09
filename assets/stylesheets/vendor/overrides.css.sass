@@ -36,7 +36,8 @@
 
 .tooltipster-default 
   @extend %on_background
-  border: 2px solid darken($base_background_color, 10%)
+  background: emphasize($base_background_color, 5%)
+  border: 1px solid emphasize($base_background_color, 25%)
 
   .tooltipster-content
     +font-size(0)
@@ -74,9 +75,9 @@
   opacity: .7
 
 .editable-container.editable-inline
-  border-color: #ddd #ccc #bbb #ccc
-  background-color: white
-  color: #444
+  border-color: emphasize($base_background_color, 5%) emphasize($base_background_color, 10%) emphasize($base_background_color, 5%) emphasize($base_background_color, 15%)
+  background-color: deemphasize($base_background_color, 100%)
+  color: $base_text_color
 
 .editable.editable-click, a.editable.editable-click, .editable-container.editable-inline
   border: 1px solid transparent
@@ -84,9 +85,9 @@
 
   &:hover
     cursor: pointer
-    border-color: #ddd #ccc #bbb #ccc
-    background-color: white
-    color: #444
+    border-color: emphasize($base_background_color, 5%) emphasize($base_background_color, 10%) emphasize($base_background_color, 5%) emphasize($base_background_color, 15%)
+    background-color: deemphasize($base_background_color, 100%)
+    color: $base_text_color
 
   &:not(.editable-disabled)
     width: 98%

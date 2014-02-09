@@ -3,9 +3,9 @@
 @import "compass/css3/transition"
 @import "compass/css3/transform"
 
-$histogram_bar_width: 73px //2 * $grid_major - 4
+$histogram_width: $body_width - $grid_major + 1
+$histogram_bar_width: $histogram_width / 7
 $histogram_bar_height: 150px
-$histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
 
 .proposal-aggregate-region
   position: relative
@@ -72,13 +72,10 @@ $histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
   .histogram-bar
     width: $histogram_bar_width
     position: relative
-    border-bottom: none
-
     border-radius: 0px
     text-align: center
     display: inline-block
     vertical-align: bottom
-
 
     &.bar-is-selected 
       .t-bubble
@@ -91,7 +88,7 @@ $histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
       margin-left: -15px
       z-index: 999999
       top: auto
-      bottom: -36px
+      bottom: -39px
       width: 30px
 
       .t-bubble-spacing
@@ -107,11 +104,11 @@ $histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
     //   text-align: center
     //   +font-size(-1)
     
-    &.bar-is-soft-selected
-      z-index: 5
+    // &.bar-is-soft-selected
+    //   z-index: 5
 
-    &.bar-is-hard-selected
-      z-index: 10
+    // &.bar-is-hard-selected
+    //   z-index: 10
       
 
 .bar-people
@@ -140,7 +137,7 @@ $histogram_width: $histogram_bar_width * 7 + 3 * 7 + 3
 
 .histogram-base-label
   position: absolute
-  padding: 0 $grid_gutter + 3
+  //padding: 0 $grid_gutter + 3
   z-index: 1
   // border-radius: 16px
   height: $vertical_baseline

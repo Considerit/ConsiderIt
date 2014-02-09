@@ -11,11 +11,11 @@
 
   // inactive proposal
   &[data-status="proposal-inactive"]
-    .position-your-action-body, .position-submit-footer-wrap
+    .submit_opinion_button, .submit_opinion_footer
       display: none
 
     &[state="summary"]
-      .position-region
+      .opinion-region
         visibility: hidden
 
     &[data-activity="proposal-no-activity"]
@@ -34,10 +34,10 @@
       .proposal-state-toggle
         display: none
 
-      .position-cancel
+      .cancel_submitting_an_opinion
         display: none
 
-      .points_peer_empty, .point-drop-target
+      .no_community_points, .point-drop-target
         display: none
 
 
@@ -196,7 +196,7 @@
 
 /* YOUR_ACTION */
 
-.position-your-action-body
+.submit_opinion_button
   text-align: center
   font-weight: bold
   border-radius: 0 0 5px 5px

@@ -29,7 +29,7 @@
         Routes.proposals_path()
 
     parse : (response) ->
-      if 'positions' of response
+      if 'opinions' of response
         @parseAssociated response
         proposal_attrs = response.proposal.proposal
       else if 'proposal' of response
@@ -48,13 +48,13 @@
       App.vent.trigger 'points:fetched',
         (p.point for p in params.points)
 
-      App.vent.trigger 'positions:fetched', 
-        (p for p in params.positions) #, params.position.position
+      App.vent.trigger 'opinions:fetched', 
+        (p for p in params.opinions) #, params.opinion.opinion
 
-      #@setUserPosition params.position.position.id
+      #@setUserOpinion params.opinion.opinion.id
 
-      # position = @getUserPosition()
-      # position.setIncludedPoints (p.point.id for p in params.included_points)
+      # opinion = @getUserOpinion()
+      # opinion.setIncludedPoints (p.point.id for p in params.included_points)
 
       current_tenant = App.request 'tenant:get'
       if current_tenant.get 'assessment_enabled'
@@ -102,36 +102,36 @@
       user = App.request 'user', @get('user_id')
       user
 
-    getUserPosition : ->
-      App.request 'position:current_user:proposal', @id
+    getUserOpinion : ->
+      App.request 'opinion:current_user:proposal', @id
 
-    getPositions : ->
-      App.request 'positions:get:proposal', @id
+    getOpinions : ->
+      App.request 'opinions:get:proposal', @id
 
     getPoints : ->
-      App.request 'points:get:proposal', @id
+      App.request 'points:get_by_proposal', @id
       
-    # updatePosition : (attrs) ->
-    #   @getUserPosition().set attrs
-    #   @getUserPosition
+    # updateOpinion : (attrs) ->
+    #   @getUserOpinion().set attrs
+    #   @getUserOpinion
 
-    # setUserPosition : (position_id) ->
-    #   @position = App.request 'position:get', position_id
+    # setUserOpinion : (opinion_id) ->
+    #   @opinion = App.request 'opinion:get', opinion_id
 
     # TODO: refactor this method out...handles what happens when 
-    # current user saves a new position
-    newPositionSaved : (position) ->
-      user_id = position.get('user_id')
-      if position.get('published') 
+    # current user saves a new opinion
+    newOpinionSaved : (opinion) ->
+      user_id = opinion.get('user_id')
+      if opinion.get('published') 
         if !@user_participated(user_id)
           @participant_list.push user_id 
 
         if !@get('top_pro')
-          _.each position.written_points, (pnt) =>
+          _.each opinion.written_points, (pnt) =>
             @set('top_pro', pnt.id) if pnt.isPro()
 
         if !@get('top_con')
-          _.each position.written_points, (pnt) =>
+          _.each opinion.written_points, (pnt) =>
             @set('top_con', pnt.id) if !pnt.isPro()
 
     isActive : ->
@@ -234,7 +234,7 @@
       if !proposal
         proposal = API.newProposal {long_id : long_id}
         proposal.fetch()
-      else if fetch && !proposal.fetched #don't double fetch, else end up with multiple user positions
+      else if fetch && !proposal.fetched #don't double fetch, else end up with multiple user opinions
         proposal.fetch()
       proposal
 

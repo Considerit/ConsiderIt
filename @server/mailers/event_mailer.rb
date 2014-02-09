@@ -27,7 +27,7 @@ class EventMailer < ActionMailer::Base
     @proposal = proposal
     @host = options[:host]
     @options = options
-    @url = new_position_proposal_url(@proposal.long_id, :host => @host)
+    @url = new_opinion_proposal_url(@proposal.long_id, :host => @host)
 
     email_with_name = "#{@user.username} <#{@user.email}>"
 
@@ -119,7 +119,7 @@ class EventMailer < ActionMailer::Base
     mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
-  #### POSITION LEVEL ####
+  #### OPINION LEVEL ####
 
   private
     def current_tenant

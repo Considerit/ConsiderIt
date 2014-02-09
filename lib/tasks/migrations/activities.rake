@@ -7,7 +7,7 @@ namespace :activities do
     Proposal.find_each do |proposal|
       action = Activity.build_from!(proposal)
     end
-    Position.where(:published=>1).each do |pos|
+    Opinion.where(:published=>1).each do |pos|
       action = Activity.build_from!(pos)
     end
     Point.where(:published=>1).each do |point|

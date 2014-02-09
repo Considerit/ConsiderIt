@@ -72,7 +72,7 @@
         #TODO: check if all the unpublished proposals of this user show up
         App.vent.trigger 'proposals:fetched', data
 
-        App.vent.trigger 'positions:fetched', data.positions
+        App.vent.trigger 'opinions:fetched', data.opinions
 
         #TODO: check if the appropriate points are updated in all views        
         App.vent.trigger 'points:fetched', 
@@ -126,7 +126,7 @@
     if ConsiderIt.inaccessible_proposal
 
       @listenToOnce App.vent, 'App:Initialization:Complete', ->
-        App.request 'user:signin:set_redirect', Routes.new_position_proposal_path(ConsiderIt.inaccessible_proposal.long_id)
+        App.request 'user:signin:set_redirect', Routes.new_opinion_proposal_path(ConsiderIt.inaccessible_proposal.long_id)
         App.navigate Routes.root_path(), {trigger : true}
         toastr.info 'Please sign in first to access this private proposal!'
         App.vent.trigger 'signin:requested'

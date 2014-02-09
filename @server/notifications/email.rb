@@ -43,7 +43,7 @@ notify_point = Proc.new do |data|
   current_tenant = data[:current_tenant]
   mail_options = data[:mail_options]
 
-  voters = proposal.positions.published.select(:user_id).uniq.map {|x| x.user_id }
+  voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
 
   proposal.follows.where(:follow => true).each do |follow|
 
@@ -59,9 +59,9 @@ notify_point = Proc.new do |data|
     elsif follow.user_id == proposal.user_id
       notification_type = 'your proposal' 
     
-    # if follower has submitted a position on this proposal
+    # if follower has submitted a opinion on this proposal
     elsif voters.include? follow.user_id
-      notification_type = 'position submitter'
+      notification_type = 'opinion submitter'
 
     # lurker 
     else
@@ -183,7 +183,7 @@ end
 
 
 def new_published_proposal_tweet(proposal)
-  proposal_link = Rails.application.routes.url_helpers.new_position_proposal_url(proposal.long_id, :host => proposal.account.host_with_port)
+  proposal_link = Rails.application.routes.url_helpers.new_opinion_proposal_url(proposal.long_id, :host => proposal.account.host_with_port)
   proposal_link = shorten_link(proposal_link)
 
   space_for_body = 140 - proposal_link.length - 23
@@ -216,7 +216,7 @@ end
 
 
 
-ActiveSupport::Notifications.subscribe("published_new_position") do |*args|
+ActiveSupport::Notifications.subscribe("published_new_opinion") do |*args|
   def fib(n)
     curr = 0; succ = 1
     n.times do |i|
@@ -235,11 +235,11 @@ ActiveSupport::Notifications.subscribe("published_new_position") do |*args|
   end
 
   data = args.last
-  position = data[:position]
+  opinion = data[:opinion]
 
   current_tenant = data[:current_tenant]
   mail_options = data[:mail_options]  
-  proposal = position.proposal
+  proposal = opinion.proposal
 
   # do not send summary mail if one was already sent today
   if proposal.followable_last_notification === DateTime.now
@@ -248,17 +248,17 @@ ActiveSupport::Notifications.subscribe("published_new_position") do |*args|
 
   proposal.followable_last_notification_milestone ||= 0 
   threshhold_for_next_notification = fib(proposal.followable_last_notification_milestone + 1)
-  positions = proposal.positions.published
+  opinions = proposal.opinions.published
   if proposal.user_id
-    positions = positions.where("user_id != #{proposal.user_id}")
+    opinions = opinions.where("user_id != #{proposal.user_id}")
   end
 
-  if positions.count >= threshhold_for_next_notification 
-    next_milestone = milestone_greater_than(positions.count)
+  if opinions.count >= threshhold_for_next_notification 
+    next_milestone = milestone_greater_than(opinions.count)
 
-    pp "Notification for Proposal '#{proposal.title}', because #{positions.count} >= #{threshhold_for_next_notification}. Setting next milestone for #{next_milestone} (#{fib(next_milestone)})}"
+    pp "Notification for Proposal '#{proposal.title}', because #{opinions.count} >= #{threshhold_for_next_notification}. Setting next milestone for #{next_milestone} (#{fib(next_milestone)})}"
 
-    proposal.follows.where(:follow => true).where("user_id != #{position.user_id}").each do |follow|
+    proposal.follows.where(:follow => true).where("user_id != #{opinion.user_id}").each do |follow|
       pp "\t Notifying #{follow.user.username}"
       EventMailer.proposal_milestone_reached(follow.user, proposal, fib(next_milestone), mail_options).deliver!
     end
@@ -266,7 +266,7 @@ ActiveSupport::Notifications.subscribe("published_new_position") do |*args|
     proposal.followable_last_notification = DateTime.now
     proposal.save
 
-    if current_tenant.tweet_notifications && positions.count > 10 #only send tweets for milestones past 10 positions
+    if current_tenant.tweet_notifications && opinions.count > 10 #only send tweets for milestones past 10 opinions
       msg = new_proposal_milestone_tweet(proposal)
       post_to_twitter_client(current_tenant, msg) 
     end
@@ -278,7 +278,7 @@ def new_proposal_milestone_tweet(proposal)
   proposal_link = Rails.application.routes.url_helpers.proposal_url(proposal.long_id, :host => proposal.account.host_with_port)
   proposal_link = shorten_link(proposal_link)
 
-  lead = "Milestone: #{proposal.positions.count} positions for "
+  lead = "Milestone: #{proposal.opinions.count} opinions for "
   space_for_body = 140 - proposal_link.length - lead.length - 9
   "#{lead}\"#{proposal.title_with_hashtags(space_for_body)} ...\" #{proposal_link}"
 end
@@ -290,7 +290,7 @@ end
 #########################
 
 
-ActiveSupport::Notifications.subscribe("comment:position:created") do |*args|
+ActiveSupport::Notifications.subscribe("comment:opinion:created") do |*args|
   data = args.last
   commentable = data[:commentable]
   comment = data[:comment]
@@ -312,11 +312,11 @@ ActiveSupport::Notifications.subscribe("comment:position:created") do |*args|
 
     # if follower is author of commentable
     elsif follow.user_id == commentable.user_id
-      #EventMailer.someone_discussed_your_position(follow.user, commentable, comment, mail_options).deliver!
+      #EventMailer.someone_discussed_your_opinion(follow.user, commentable, comment, mail_options).deliver!
 
     # else if follower is a participant in the discussion
     elsif commenters.include? follow.user_id
-      #TODO: make sure this message is relevant for position
+      #TODO: make sure this message is relevant for opinion
       #EventMailer.someone_commented_on_thread(follow.user, commentable, comment, mail_options).deliver!
 
     # TODO
@@ -335,7 +335,7 @@ end
 ####################
 
 
-ActiveSupport::Notifications.subscribe("first_position_by_new_user") do |*args|
+ActiveSupport::Notifications.subscribe("first_opinion_by_new_user") do |*args|
   data = args.last
   user = data[:user]
   proposal = data[:proposal]

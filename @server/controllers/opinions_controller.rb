@@ -1,4 +1,4 @@
-class PositionsController < ApplicationController
+class OpinionsController < ApplicationController
 
   protect_from_forgery
 
@@ -6,27 +6,27 @@ class PositionsController < ApplicationController
 
 
   def create
-    position = Position.create params[:position].permit!
-    position[:user_id] = current_user ? current_user.id : nil
-    position[:account_id] = current_tenant.id
-    update_or_create position
+    opinion = Opinion.create params[:opinion].permit!
+    opinion[:user_id] = current_user ? current_user.id : nil
+    opinion[:account_id] = current_tenant.id
+    update_or_create opinion
   end
   
   def update
-    position = Position.find params[:id]
-    update_or_create position
+    opinion = Opinion.find params[:id]
+    update_or_create opinion
   end
 
-  def update_or_create(position)
+  def update_or_create(opinion)
     raise 'Cannot update without a logged in user' if !current_user || !current_user.registration_complete
-    authorize! :update, position
+    authorize! :update, opinion
 
-    proposal = position.proposal
+    proposal = opinion.proposal
     ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
-    already_published = position.published
+    already_published = opinion.published
 
-    stance_changed = already_published && params[:position].has_key?(:stance) && position.stance != params[:position][:stance] 
+    stance_changed = already_published && params[:opinion].has_key?(:stance) && opinion.stance != params[:opinion][:stance] 
 
     update_attrs = {
       :user_id => current_user.id,
@@ -34,36 +34,36 @@ class PositionsController < ApplicationController
       :long_id => proposal.long_id
     }
 
-    if params[:position].has_key? :explanation
-      update_attrs[:explanation] = params[:position][:explanation]
+    if params[:opinion].has_key? :explanation
+      update_attrs[:explanation] = params[:opinion][:explanation]
     end
-    if params[:position].has_key? :stance
-      update_attrs[:stance] = params[:position][:stance]
+    if params[:opinion].has_key? :stance
+      update_attrs[:stance] = params[:opinion][:stance]
     end
 
-    #if an existing published position exists for this user, handle it
-    existing_position = proposal.positions.published.where("id != #{position.id}").find_by_user_id current_user.id
+    #if an existing published opinion exists for this user, handle it
+    existing_opinion = proposal.opinions.published.where("id != #{opinion.id}").find_by_user_id current_user.id
 
     update_attrs[:published] = true
-    position.update_attributes ActionController::Parameters.new(update_attrs).permit!
+    opinion.update_attributes ActionController::Parameters.new(update_attrs).permit!
 
-    if existing_position
-      position.subsume existing_position
+    if existing_opinion
+      opinion.subsume existing_opinion
     end
 
     params[:included_points] ||= []
     params[:included_points].each do |pnt|
-      session[position.proposal_id][:included_points][pnt] = true
+      session[opinion.proposal_id][:included_points][pnt] = true
     end
 
     params[:viewed_points] ||= []
     params[:viewed_points].each do |pnt|
-      session[position.proposal_id][:viewed_points].push([pnt,-1])
+      session[opinion.proposal_id][:viewed_points].push([pnt,-1])
     end
 
-    updated_points = save_actions(position)
+    updated_points = save_actions(opinion)
 
-    inclusions = Inclusion.where(:user_id => position.user_id, :proposal_id => position.proposal_id).select(:point_id)
+    inclusions = Inclusion.where(:user_id => opinion.user_id, :proposal_id => opinion.proposal_id).select(:point_id)
     
     inclusions.each do |inc|
       if stance_changed && !updated_points.include?(inc)
@@ -77,23 +77,23 @@ class PositionsController < ApplicationController
       pnt.update_absolute_score
     end
 
-    position.update_inclusions
+    opinion.update_inclusions
 
-    position.track!
+    opinion.track!
 
-    #proposal.follow!(current_user, :follow => params[:position][:follow_proposal] == 'true', :explicit => true)
-    #position.follow!(current_user, :follow => true, :explicit => false)
+    #proposal.follow!(current_user, :follow => params[:opinion][:follow_proposal] == 'true', :explicit => true)
+    #opinion.follow!(current_user, :follow => true, :explicit => false)
     proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
     proposal.update_metrics()
 
-    alert_new_published_position(proposal, position) unless already_published
+    alert_new_published_opinion(proposal, opinion) unless already_published
 
     results = {
-      :position => position,
+      :opinion => opinion,
       :updated_points => updated_points.metrics_fields,
       :proposal => proposal,
-      :subsumed_position => existing_position
+      :subsumed_opinion => existing_opinion
     }
         
     render :json => results
@@ -103,25 +103,25 @@ class PositionsController < ApplicationController
   def show
     if request.xhr?
       proposal = Proposal.find_by_long_id(params[:long_id])
-      position = proposal.positions.published.where(:user_id => params[:user_id]).first
-      user = position.user
+      opinion = proposal.opinions.published.where(:user_id => params[:user_id]).first
+      user = opinion.user
 
-      if position.nil?
+      if opinion.nil?
         render :json => {
           :result => 'failed', 
-          :reason => 'That position does not exist.'
+          :reason => 'That opinion does not exist.'
         }
-      elsif cannot?(:read, position)
+      elsif cannot?(:read, opinion)
         render :json => {
           :result => 'failed', 
-          :reason => 'You do not have permission to view that position.'
+          :reason => 'You do not have permission to view that opinion.'
         }
       else    
         render :json => {
           :result => 'successful',
           :included_pros => Point.included_by_stored(user, proposal, nil).where(:is_pro => true).map {|pnt| pnt.id},
           :included_cons => Point.included_by_stored(user, proposal, nil).where(:is_pro => false).map {|pnt| pnt.id},
-          :stance => position.stance_bucket
+          :stance => opinion.stance_bucket
         }
       end
     else
@@ -133,18 +133,18 @@ class PositionsController < ApplicationController
 
 protected
 
-  def save_actions ( position )
-    actions = session[position.proposal_id]
+  def save_actions ( opinion )
+    actions = session[opinion.proposal_id]
     updated_points = []
 
     Inclusion.transaction do
       actions[:included_points].each do |point_id, value|
-        if Inclusion.where( :point_id => point_id, :user_id => position.user_id ).count == 0
+        if Inclusion.where( :point_id => point_id, :user_id => opinion.user_id ).count == 0
           inc_attrs = { 
             :point_id => point_id,
-            :user_id => position.user_id,
-            :position_id => position.id,
-            :proposal_id => position.proposal_id,
+            :user_id => opinion.user_id,
+            :opinion_id => opinion.id,
+            :proposal_id => opinion.proposal_id,
             :account_id => current_tenant.id
           }
           
@@ -165,11 +165,11 @@ protected
     actions[:written_points].each do |pnt_id|
       pnt = Point.find( pnt_id )
 
-      pnt.user_id = position.user_id
+      pnt.user_id = opinion.user_id
       pnt.published = 1
       
-      pnt.position_id = position.id
-      update_attrs = {"score_stance_group_#{position.stance_bucket}".intern => 0.001, :score => 0.0000001}
+      pnt.opinion_id = opinion.id
+      update_attrs = {"score_stance_group_#{opinion.stance_bucket}".intern => 0.001, :score => 0.0000001}
       pnt.update_attributes ActionController::Parameters.new(update_attrs).permit!
 
       updated_points.push(pnt_id)
@@ -201,11 +201,11 @@ protected
     point_listings = []
     now = "#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
     actions[:viewed_points].to_set.each do |point_id, context|
-      point_listings.push("(#{position.proposal_id}, #{position.id}, #{point_id}, #{position.user_id}, #{current_tenant.id}, '#{now}', '#{now}')")
+      point_listings.push("(#{opinion.proposal_id}, #{opinion.id}, #{point_id}, #{opinion.user_id}, #{current_tenant.id}, '#{now}', '#{now}')")
     end
     if point_listings.length > 0
       qry = "INSERT INTO point_listings 
-              (proposal_id, position_id, point_id, user_id, account_id, created_at, updated_at) 
+              (proposal_id, opinion_id, point_id, user_id, account_id, created_at, updated_at) 
               VALUES #{point_listings.join(',')}
               ON DUPLICATE KEY UPDATE count=count+1"
 
@@ -218,15 +218,15 @@ protected
     return updated_points
   end
 
-  def alert_new_published_position ( proposal, position )
-    ActiveSupport::Notifications.instrument("published_new_position", 
-      :position => position,
+  def alert_new_published_opinion ( proposal, opinion )
+    ActiveSupport::Notifications.instrument("published_new_opinion", 
+      :opinion => opinion,
       :current_tenant => current_tenant,
       :mail_options => mail_options
     )
 
-    # send out notification of a new proposal only after first position is made on it
-    if proposal.positions.published.count == 1
+    # send out notification of a new proposal only after first opinion is made on it
+    if proposal.opinions.published.count == 1
       ActiveSupport::Notifications.instrument("proposal:created", 
         :proposal => proposal,
         :current_tenant => current_tenant,
@@ -235,8 +235,8 @@ protected
     end
 
     # send out confirmation email if user is not yet confirmed
-    if !current_user.confirmed? && current_user.positions.published.count == 1
-      ActiveSupport::Notifications.instrument("first_position_by_new_user", 
+    if !current_user.confirmed? && current_user.opinions.published.count == 1
+      ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
         :user => current_user,
         :proposal => proposal,
         :current_tenant => current_tenant,

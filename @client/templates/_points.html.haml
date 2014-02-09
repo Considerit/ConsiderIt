@@ -3,7 +3,7 @@
   .pointlist-list-region
   .pointlist-footer-region
 
-%script{ :type => "text/template", :id => "tpl_points_expandable"}
+%script{ :type => "text/template", :id => "tpl_community_points"}
   = render :partial => "shared/bubble", :locals => {:left => false, :down => false}
   
   .pointlist-header-region
@@ -15,7 +15,7 @@
     %span.pointlist-header-label
       {{ header }}
 
-%script{ :type => "text/template", :id => "tpl_points_expandable_header"}
+%script{ :type => "text/template", :id => "tpl_community_points_header"}
 
   .pointlist-header
     %span.pointlist-header-label{'data-target' => 'expand-toggle'}
@@ -42,7 +42,7 @@
       (( } ))
 
 
-%script{:type => "text/template", :id => "tpl_points_expandable_footer"}
+%script{:type => "text/template", :id => "tpl_community_points_footer"}
   (( if(has_more_points || is_expanded){ ))
   .expanded_points
     %a.pointlist-expand-toggle.button{'data-target' => 'expand-toggle'}
@@ -91,5 +91,5 @@
       Drag and drop {{ label.toLowerCase() }}s from the {{ direction }}
 
 
-%script{ :type => 'text/template', :id => "tpl_points_peer_empty"}
+%script{ :type => 'text/template', :id => "tpl_no_community_points"}
   No points identified

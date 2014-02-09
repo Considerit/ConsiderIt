@@ -24,11 +24,11 @@ ConsiderIt::Application.routes.draw do
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-zA-Z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
-    get '/' => "proposals#show" , :as => :new_position
+    get '/' => "proposals#show" , :as => :new_opinion
 
-    resources :positions, :path => '', :only => [:update, :create], :path_names => {:new => ''} 
+    resources :opinions, :path => '', :only => [:update, :create], :path_names => {:new => ''} 
 
-    get '/positions/:user_id' => "positions#show", :as => :user_position
+    get '/opinions/:user_id' => "opinions#show", :as => :user_opinion
 
     resources :points, :only => [:create, :update, :destroy, :show]
   end

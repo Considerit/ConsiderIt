@@ -102,7 +102,7 @@ class ApplicationController < ActionController::Base
         @reset_password_token = params[:reset_password_token]
       end
 
-      @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_positions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
+      @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_opinions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
       @proposals = []
 
 
@@ -136,7 +136,7 @@ class ApplicationController < ActionController::Base
         top_points[pnt.id] = pnt
       end
 
-      @positions = {}
+      @opinions = {}
       if current_user
         hidden_proposals = Proposal.content_for_user(current_user)
         hidden_proposals.each do |hidden|          
@@ -144,7 +144,7 @@ class ApplicationController < ActionController::Base
           top_points[hidden.top_con] = Point.find(hidden.top_con) if hidden.top_con
         end
         proposals += hidden_proposals
-        @positions = current_user.positions.published
+        @opinions = current_user.opinions.published
       end
 
 

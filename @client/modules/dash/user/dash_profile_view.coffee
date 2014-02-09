@@ -12,7 +12,7 @@
         influenced_users : influenced_users
         influenced_users_by_point : influenced_users_by_point
         comments : @model.getComments()
-        positions : @model.getPositions()
+        opinions : @model.getOpinions()
         proposals : @model.getProposals()
         points : @model.getPoints() 
         is_self : @model.id == current_user.id

@@ -1,26 +1,26 @@
 @ConsiderIt.module "Franklin.Points", (Points, App, Backbone, Marionette, $, _) ->
   
-  class Points.PointListLayout extends App.Views.StatefulLayout
+  class Points.PointsLayout extends App.Views.StatefulLayout
     template: '#tpl_points'
 
     regions : 
-      headerRegion : '.pointlist-header-region'
-      listRegion : '.pointlist-list-region'
-      footerRegion : '.pointlist-footer-region'
+      headerRegion : '.points-heading-region'
+      listRegion : '.points-list-region'
+      footerRegion : '.points-footer-region'
 
     initialize : (options={}) ->
       super options
 
-  class Points.CommunityPointsColumn extends Points.PointListLayout
+  class Points.CommunityPointsColumn extends Points.PointsLayout
     template: '#tpl_community_points'
     className : => "points_by_community #{@options.valence}s_by_community"
 
 
-  class Points.DecisionBoardColumn extends Points.PointListLayout
+  class Points.DecisionBoardColumn extends Points.PointsLayout
     className : => "points_on_decision_board #{@options.valence}s_on_decision_board"
 
 
-  class Points.PointList extends App.Views.CollectionView
+  class Points.PointsList extends App.Views.CollectionView
     tagName : 'ul'
     className : 'point-list'
 
@@ -45,7 +45,7 @@
 
         view
 
-  class Points.PointListHeader extends App.Views.ItemView
+  class Points.PointsHeader extends App.Views.ItemView
     template : '#tpl_points_header'
     sort : null
 
@@ -75,13 +75,13 @@
       @listenTo @collection, 'reset', =>  
         @render()
 
-  class Points.DecisionBoardColumnHeader extends Points.PointListHeader
+  class Points.DecisionBoardColumnHeader extends Points.PointsHeader
     getHeaderText : ->
       valence = @processValenceForHeader()
       "List Your #{valence}"
 
 
-  class Points.CommunityPointsHeader extends Points.PointListHeader
+  class Points.CommunityPointsHeader extends Points.PointsHeader
     template : '#tpl_community_points_header'
     is_expanded : false
     sort : 'score'    
@@ -97,9 +97,9 @@
       @render()
 
       if @is_expanded
-        # unexpand when clicking outside of pointlist
+        # unexpand when clicking outside of points
         $(document).on 'click.unexpand_points', (ev)  => 
-          if $(ev.target).closest('.pointlist-sort-option').length == 0 && $(ev.target).closest('.unexpand_points')[0] != @$el[0] && $('.open_point, .l-dialog-detachable').length == 0
+          if $(ev.target).closest('.points-sort-option').length == 0 && $(ev.target).closest('.unexpand_points')[0] != @$el[0] && $('.open_point, .l-dialog-detachable').length == 0
             @trigger 'points:toggle_expanded', true
             ev.stopPropagation()
 
@@ -150,8 +150,8 @@
       @$el.find("[data-target]").removeClass 'selected'
       @$el.find("[data-target='#{@sort}']").addClass 'selected'
 
-    events : _.extend {}, Points.PointList.prototype.events,
-      'click .pointlist-sort-option a' : 'sortList'
+    events : _.extend {}, Points.PointsList.prototype.events,
+      'click .points-sort-option a' : 'sortList'
       'click [data-target="expand-toggle"]' : 'handleExpandToggle'
 
     sortList : (ev) ->

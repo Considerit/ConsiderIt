@@ -180,7 +180,7 @@
 
         user = App.request 'user', parseInt(user_id)
         opinion = App.request('opinions:get').findWhere {long_id : long_id, user_id : user.id }
-        new Franklin.Opinion.OpinionController
+        new Franklin.UserOpinion.UserOpinionController
           model : opinion
           region: new Backbone.Marionette.Region
             el: $("body")

@@ -10,7 +10,7 @@
       position = @model.getUserPosition()
       updating = position && position.get 'published'
       active = @model.get 'active'
-      crafting = @state == Proposal.ReasonsState.separated
+      crafting = @state == Proposal.State.Crafting
       
       if active 
         call = if updating then 'Update Your Opinion' else 'Craft Your Own Opinion'

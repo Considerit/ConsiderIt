@@ -22,7 +22,7 @@
       'click' : 'pointClicked'
 
     pointClicked : (ev) ->
-      pass_through = @$el.parents('[data-state="points-collapsed"]').length > 0
+      pass_through = @$el.parents('.peer-reasons[state="summary"]').length > 0
       _.each App.request('shared:targets'), (target) ->
         pass_through ||= $(ev.target).is("[data-target='#{target}']")
 

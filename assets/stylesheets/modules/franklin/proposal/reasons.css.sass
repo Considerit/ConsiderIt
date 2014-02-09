@@ -201,8 +201,8 @@ $use_transitions: true
   .position-region, .aggregated-propoints-region, .aggregated-conpoints-region
     +transition(transform $transition_speed $transition_function)
 
-  &[data-state="separated"]
-    &[data-state-from="together"], &[data-state-from="collapsed"]
+  &[state="crafting"]
+    &[coming-from-state="results"], &[coming-from-state="summary"]
       .peer-reasons
         // +animation(FromTogetherToSeparated_PeerReasons $transition_speed)
         -moz-animation: FromTogetherToSeparated_PeerReasons $transition_speed
@@ -231,20 +231,20 @@ $full_reasons_width: 2 * $decision_board_width + 2
 $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
 .reasons  
-  &[data-state="separated"], &[data-state="collapsed"]
+  &[state="crafting"], &[state="summary"]
     +translateY(-$aggregate_area_height)
 
-  &[data-state="separated"][data-state-from="together"]
+  &[state="crafting"][coming-from-state="results"]
     +translateY(0)
 
-  &[data-state="separated"][data-state-from="together"]
+  &[state="crafting"][coming-from-state="results"]
     .position-region
       +translateY(- 2 * $vertical_baseline)
 
     .aggregated-propoints-region, .aggregated-conpoints-region
       +translateY($vertical_baseline)
 
-  &[data-state="separated"][data-state-from="collapsed"], &[data-state="separated"]
+  &[state="crafting"][coming-from-state="summary"], &[state="crafting"]
     .position-region
       +translateY(3 * $vertical_baseline)
 
@@ -252,7 +252,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
       +translateY(6 * $vertical_baseline)
 
 
-  &[data-state="collapsed"]
+  &[state="summary"]
     .position-region
       +translateY($aggregate_area_height + $vertical_baseline)
 
@@ -296,11 +296,11 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     min-height: 450px
     height: auto
 
-  &[data-state="separated"]
+  &[state="crafting"]
     .personal-reasons
       min-height: 450px
 
-  &[data-state="together"]
+  &[state="results"]
     .personal-reasons
       height: 0
       overflow: hidden
@@ -322,7 +322,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     .point-wrap
       width: $point-content-width
 
-  &[data-state="together"], &[data-state="collapsed"]
+  &[state="results"], &[state="summary"]
 
     .aggregated-propoints-region
       +translateX($decision_board_width/2)
@@ -348,7 +348,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     left: $full_reasons_left - $expanded_points_increment 
 
 
-  &[data-state="separated"], &[data-state="together"]
+  &[state="crafting"], &[state="results"]
     .aggregated-propoints-region, .aggregated-conpoints-region
       &.pointlist-browsing
         width: $decision_board_width/2 + $expanded_points_increment
@@ -363,7 +363,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
 // Activity-based styles
 [data-activity="proposal-no-activity"]
-  .reasons[data-state="collapsed"] 
+  .reasons[state="summary"] 
     +translateY(0)
 
     .points-list-region
@@ -377,25 +377,25 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     .reasons-lists      
       min-height: 0
 
-  .reasons[data-state="separated"] 
+  .reasons[state="crafting"] 
     .personal-reasons
       min-height: 200px
 
 
 [data-activity="proposal-has-activity"]
-  .reasons[data-state="collapsed"]
+  .reasons[state="summary"]
     .reasons-lists
       min-height: $aggregate_area_height
       //margin-bottom: 100px // spacing for participants block
 
   .reasons
-    &[data-state="together"], &[data-state="separated"]
+    &[state="results"], &[state="crafting"]
       min-height: 500px
 
 ////////////////////
 
 
-[data-state="0"] .proposal-reasons-region
+[state="summary"] .proposal-reasons-region
   height: 3 * $vertical_baseline
 
 .reasons
@@ -403,17 +403,17 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
   position: relative
 
 
-  &[data-state="collapsed"] .aggregated-conpoints-region   
+  &[state="summary"] .aggregated-conpoints-region   
     svg.t-bubble
       left: auto
       right: -23px
       
-  &[data-state="separated"], &[data-state="together"], &[data-state="collapsed"] .aggregated-propoints-region
+  &[state="crafting"], &[state="results"], &[state="summary"] .aggregated-propoints-region
     .peer-reasons
       > svg.t-bubble
         display: none
 
-  &[data-state="collapsed"]
+  &[state="summary"]
     .points-list-region, .participants
       &:hover
         cursor: pointer
@@ -444,14 +444,14 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
 
   /// The participants block
-  &[data-state="separated"]
+  &[state="crafting"]
     > .participants
       display: none      
 
   .reasons-footer-region
     visibility: hidden
 
-  &[data-state="collapsed"] 
+  &[state="summary"] 
     // shown on hover...
     .reasons-footer-region
       width: $body_gutter

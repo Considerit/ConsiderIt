@@ -1,20 +1,9 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
   
   Proposal.State =
-    collapsed : 0
-    expanded : 
-      crafting : 1
-      results : 4
-
-  Proposal.ReasonsState =
-    collapsed : 'collapsed'
-    separated : 'separated'
-    together : 'together'
-
-  Proposal.DescriptionState = 
-    collapsed : 'collapsed'
-    expandedTogether : 'expanded-together'
-    expandedSeparated : 'expanded-separated'
+    Summary : 'summary'
+    Crafting : 'crafting'
+    Results : 'results'
 
   class Proposal.ProposalController extends App.Controllers.Base
     exploded : false
@@ -26,7 +15,7 @@
 
     initialize : (options = {}) ->
       _.defaults options, 
-        proposal_state : Proposal.State.expanded.crafting
+        proposal_state : Proposal.State.Crafting
 
       @model = options.model
 
@@ -62,8 +51,8 @@
 
     showFinished : (prior_state = null) ->
       
-      if prior_state && prior_state != Proposal.State.collapsed
-        if @state == Proposal.State.collapsed
+      if prior_state && prior_state != Proposal.State.Summary
+        if @state == Proposal.State.Summary
           @layout.$el.moveToTop 50, true
         else
           @aggregate_controller.layout.$el.ensureInView
@@ -72,12 +61,12 @@
       else
         $(document).scrollTop(0)
 
-      if @state == Proposal.State.expanded.results
+      if @state == Proposal.State.Results
         _.delay =>
-          @layout.explodeParticipants prior_state != null && prior_state != Proposal.State.expanded.crafting
+          @layout.explodeParticipants prior_state != null && prior_state != Proposal.State.Crafting
         , @transition_speed()
 
-      else if @exploded #&& @state == Proposal.State.collapsed
+      else if @exploded #&& @state == Proposal.State.Summary
         @layout.implodeParticipants()
         @exploded = false
 
@@ -123,15 +112,15 @@
     setupHistogramReasonsBridge : (reasons_controller, aggregate_controller) =>
 
       @listenTo reasons_controller, 'point:highlight_includers', (includers) =>
-        if @state == Proposal.State.expanded.results && @exploded
+        if @state == Proposal.State.Results && @exploded
           @trigger 'point:mouseover', includers
 
       @listenTo reasons_controller, 'point:unhighlight_includers', (includers) =>
-        if @state == Proposal.State.expanded.results && @exploded
+        if @state == Proposal.State.Results && @exploded
           @trigger 'point:mouseout', includers
 
       @listenTo aggregate_controller, 'histogram:segment_results', (segment) =>
-        if @state == Proposal.State.expanded.results && @exploded
+        if @state == Proposal.State.Results && @exploded
           reasons_controller.segmentPeerPoints segment
 
       @listenTo reasons_controller, 'position:published', =>

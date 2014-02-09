@@ -3,13 +3,6 @@
   class Proposal.CraftingController extends App.Controllers.StatefulController
     transitions_enabled : true
 
-    # maps from parent state to this controller's state
-    state_map : ->
-      map = {}
-      map[Proposal.ReasonsState.collapsed] = Proposal.ReasonsState.collapsed
-      map[Proposal.ReasonsState.separated] = Proposal.ReasonsState.separated
-      map[Proposal.ReasonsState.together] = Proposal.ReasonsState.together
-      map
 
     initialize : (options = {}) ->
       super options
@@ -63,9 +56,9 @@
 
       if @prior_state != @state
 
-        if @state == Proposal.ReasonsState.separated
+        if @state == Proposal.State.Crafting
 
-          if @prior_state == Proposal.ReasonsState.collapsed
+          if @prior_state == Proposal.State.Summary
             _.delay =>
               @createFooter @layout
               @createReasons @layout
@@ -76,7 +69,7 @@
             @createReasons @layout
 
 
-        else if @state == Proposal.ReasonsState.collapsed
+        else if @state == Proposal.State.Summary
           @createFooter @layout
           @layout.reasonsRegion.reset()
           @layout.stanceRegion.reset()
@@ -116,7 +109,7 @@
       @listenTo layout, 'show', =>
         @model = @proposal.getUserPosition()
 
-        if @state == Proposal.ReasonsState.separated
+        if @state == Proposal.State.Crafting
           @createReasons layout
 
         @createFooter layout
@@ -279,14 +272,14 @@
     getFooterView : (position) ->
 
       switch @state
-        when Proposal.ReasonsState.separated
+        when Proposal.State.Crafting
           new Proposal.PositionFooterSeparatedView
             model : position
 
-        when Proposal.ReasonsState.collapsed
+        when Proposal.State.Summary
           null
 
-        when Proposal.ReasonsState.together
+        when Proposal.State.Results
           null
 
     getReasonsHeader : (position) ->

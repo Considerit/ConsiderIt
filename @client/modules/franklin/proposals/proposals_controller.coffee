@@ -99,12 +99,15 @@
       view
 
     handleBeforeViewAdded : (view) ->
-      new App.Franklin.Proposal.ProposalController
+      ctrl = new App.Franklin.Proposal.ProposalController
         view : view
         region : new Backbone.Marionette.Region { el : view.el }
         model : view.model
         parent_controller : @
-        proposal_state : App.Franklin.Proposal.State.collapsed
+        proposal_state : App.Franklin.Proposal.State.Summary
+
+      console.log ctrl
+      ctrl
 
     handleSortRequested : (collection, sort_by) ->
       @requestProposals collection, @is_active, @sortCollection, 

@@ -34,7 +34,7 @@
 
       @layout.expansionRegion.reset() if @layout.expansionRegion
 
-      if @layout.$el.parents('[data-state="points-separated"]').length > 0
+      if @layout.$el.parents('.peer-reasons[state="crafting"]').length > 0
         @layout.enableDrag()
 
       App.request 'nav:back:crumb' if go_back
@@ -76,7 +76,7 @@
         @layout.$el.ensureInView {fill_threshold: .5}
         @layout.$el.putBehindLightbox()
 
-        if @layout.$el.parents('[data-state="points-separated"]').length > 0
+        if @layout.$el.parents('.peer-reasons[state="crafting"]').length > 0
           @layout.disableDrag()
 
       @layout.expansionRegion.show expanded_view

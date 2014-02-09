@@ -1,15 +1,10 @@
 @ConsiderIt.module "Franklin.Points", (Points, App, Backbone, Marionette, $, _) ->
-  Points.States = 
-    collapsed : 'points-collapsed'
-    together : 'points-together'
-    separated : 'points-separated'
-    position : 'points-position'
-    hidden : 'points-hidden'
-
+  Points.State = 
+    Summary : 'summary'
+    Crafting : 'crafting'
+    Results : 'results'
 
   class Points.AbstractPointsController extends App.Controllers.StatefulController
-    state_map : ->
-      throw 'need to override'
 
     point_controllers : 
       PeerController : {}
@@ -88,12 +83,6 @@
 
     current_browse_state : false
 
-    state_map : ->
-      map = {}
-      map[App.Franklin.Proposal.ReasonsState.together] = Points.States.together
-      map[App.Franklin.Proposal.ReasonsState.separated] = Points.States.separated
-      map[App.Franklin.Proposal.ReasonsState.collapsed] = Points.States.collapsed
-      map 
 
 
     initialize : (options = {}) ->
@@ -113,7 +102,7 @@
 
       return if @collection.size() == 0
 
-      if @state != Points.States.separated
+      if @state != Points.State.Crafting
         @list_view.children.each (vw) -> vw.disableDrag()
       else
         @list_view.children.each (vw) -> vw.enableDrag()
@@ -166,7 +155,7 @@
       super layout
 
       @listenTo layout, 'show', =>
-        sort = if @state == Points.States.separated then 'persuasiveness' else 'score'
+        sort = if @state == Points.State.Crafting then 'persuasiveness' else 'score'
 
         @header_view = @getHeaderView sort  
         @footer_view = @getFooterView()
@@ -175,13 +164,13 @@
           @sortPoints sort_by
 
         @listenTo @header_view, 'points:browsing:toggle', (current_browse_state) =>
-          if @state != Points.States.collapsed
+          if @state != Points.State.Summary
             @toggleBrowsing current_browse_state
           else
             App.navigate Routes.proposal_path(@options.proposal.id), {trigger : true}
           
         @listenTo @footer_view, 'points:browsing:toggle', (current_browse_state) =>
-          if @state != Points.States.collapsed
+          if @state != Points.State.Summary
             @toggleBrowsing current_browse_state
 
         layout.headerRegion.show @header_view
@@ -212,7 +201,7 @@
 
       @listenTo list_view, 'before:item:added', (view) => 
         @listenTo view, 'render', =>
-          if @state == Points.States.separated && @collection.size() > 0
+          if @state == Points.State.Crafting && @collection.size() > 0
             view.enableDrag()
 
     getHeaderView : (sort) ->
@@ -243,19 +232,14 @@
   class Points.UserReasonsController extends Points.AbstractPointsController
     cname: 'PositionController'
 
-    state_map : ->
-      map = {}
-      map[App.Franklin.Proposal.ReasonsState.separated] = Points.States.position    
-      map[App.Franklin.Proposal.ReasonsState.together] = Points.States.hidden
-      map[App.Franklin.Proposal.ReasonsState.collapsed] = Points.States.hidden
-      map 
+
 
     initialize : (options = {}) ->
       super options
       @region.show @layout
 
     respondToPointExpansions : ->
-      @state != Points.States.hidden
+      @state != Points.State.Results && @state != Points.State.Summary
 
     setupLayout : (layout) ->
 

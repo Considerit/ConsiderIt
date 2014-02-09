@@ -200,11 +200,6 @@
       background: none
       border-color: transparent
 
-  &.point-peer
-    &:hover
-      .point-operations a
-        color: #666
-
 ///////////////////////////////////////
 
 .point-action
@@ -222,26 +217,10 @@
   .point-include-wrap
     display: inline-block
 
-.point-expanded
-  .point-wrap
-    border: 1px solid
-    border-color: #eaeaea #ddd #ccc #ddd
-
 
 [data-state="points-separated"] .point-peer.point-unexpanded, .point-expanded
   .point-wrap
     border-radius: 8px
-
-[data-state="points-separated"] .point-peer.point-unexpanded
-  .point-wrap
-    +single-box-shadow($color: rgba(black, .1), $voff: 1px)
-    border: 1px solid
-    border-color: #eaeaea #ddd #ccc #ddd
-
-.point-expanded .point-wrap
-  //+single-box-shadow($color: rgba(black, .25), $voff: 1px)
-  //border-color: #777 #666 #555 #666
-
 
 [data-state="points-collapsed"] .point-author-avatar
   //visibility: hidden
@@ -258,12 +237,6 @@
   float: right
 
 
-[data-state="points-separated"], [data-state="points-together"]
-  .point-unexpanded.point-peer
-    &:hover
-      .point-wrap
-        background-color: white
-        //+single-box-shadow($color: rgba(black, .2), $voff: 2px)
 
 
 ///////////

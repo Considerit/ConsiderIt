@@ -8,7 +8,7 @@
 
     point_controllers : 
       PeerController : {}
-      PositionController : {}
+      OpinionController : {}
 
     initialize : (options = {}) ->
       super options
@@ -52,7 +52,7 @@
     setupListView : (list_view) ->
 
       @listenTo list_view, 'before:item:added', (view) => 
-        return if view instanceof Points.PeerEmptyView
+        return if view instanceof Points.NoCommunityPointsView
         if _.has @point_controllers[@cls_name], view.model.id
           @point_controllers[@cls_name][view.model.id].close()
 
@@ -76,7 +76,7 @@
         @options.collection.fullCollection.sort()
 
 
-  class Points.PeerPointsController extends Points.AbstractPointsController
+  class Points.CommunityPointsController extends Points.AbstractPointsController
     cls_name: 'PeerController'
     removed_points : []
     is_expanded : false
@@ -201,32 +201,32 @@
             view.enableDrag()
 
     getHeaderView : (sort) ->
-      new Points.ExpandablePointListHeader
+      new Points.CommunityPointsHeader
         expanded: false
         collection : @options.collection
         sort : sort
         valence : @options.valence
 
     getFooterView : ->
-      new Points.ExpandablePointListFooter
+      new Points.CommunityPointsFooter
         valence : @options.valence
         collection : @options.collection
 
     getListView : ->
       new Points.PointList
         itemView : App.Franklin.Point.PeerPointView
-        emptyView : Points.PeerEmptyView
+        emptyView : Points.NoCommunityPointsView
         collection : @options.collection
-        location: 'peer'
+        location: 'community'
 
     getLayout : ->
-      new Points.PeerPointList
+      new Points.CommunityPointsColumn
         state : @state
         valence : @options.valence
 
 
-  class Points.UserReasonsController extends Points.AbstractPointsController
-    cls_name: 'PositionController'
+  class Points.DecisionBoardColumnController extends Points.AbstractPointsController
+    cls_name: 'OpinionController'
 
     initialize : (options = {}) ->
       super options
@@ -255,7 +255,7 @@
           new_point = App.request 'point:create', attrs, 
             success : => 
               @options.collection.add new_point    
-              toastr.success "Thanks for your contribution! Please <strong style='text-decoration:underline'>Save Your Position</strong> below to share your point with others.", null,
+              toastr.success "Thanks for your contribution! Please <strong style='text-decoration:underline'>Save Your Opinion</strong> below to share your point with others.", null,
                 positionClass: "toast-top-full-width"
 
               @trigger 'point:created', new_point
@@ -273,23 +273,23 @@
       @listenTo list_view, 'childview:point:remove', (view) => @trigger 'point:remove', view
 
     getHeaderView : ->
-      new Points.UserReasonsPointListHeader
+      new Points.DecisionBoardColumnHeader
         collection : @options.collection
         sort : null
         valence : @options.valence
 
     getFooterView : ->
-      new Points.UserReasonsPointListFooter
+      new Points.DecisionBoardColumnFooter
         valence : @options.valence
 
     getListView : ->
       new Points.PointList
-        itemView : App.Franklin.Point.PositionPointView
+        itemView : App.Franklin.Point.DecisionBoardPointView
         collection : @options.collection
-        location: 'position'
+        location: 'decision_board'
 
     getLayout : ->
-      new Points.UserReasonsList
+      new Points.DecisionBoardColumn
         state : @state
         valence : @options.valence
 

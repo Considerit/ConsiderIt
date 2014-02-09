@@ -7,13 +7,13 @@
 .pointlist-footer-more
   display: none
 
-.peer-reasons[state="summary"], .peer-reasons[state="results"]
+.points_by_community[state="summary"], .points_by_community[state="results"]
   .pointlist-footer-region
     position: absolute
     bottom: $vertical_baseline / 2
     width: $point-content-width
 
-.peer-reasons[state="summary"]
+.points_by_community[state="summary"]
 
   .expanded_points
     display: none  
@@ -25,20 +25,20 @@
       font-weight: bold
 
 .points_are_expanded
-  .peer-reasons[state="crafting"]
+  .points_by_community[state="crafting"]
     .pointlist-expand-toggle
       width: $point-content-width + $expanded_points_increment
 
-  .peer-reasons[state="results"]
+  .points_by_community[state="results"]
     .pointlist-expand-toggle
       width: $point-content-width + $expanded_points_increment
 
 
-.peer-reasons[state="crafting"] .pointlist-expand-toggle
+.points_by_community[state="crafting"] .pointlist-expand-toggle
   width: $point-content-width
 
-.peer-reasons[state="results"]
-  &.reasons-peer-pros
+.points_by_community[state="results"]
+  &.pros_by_community
     .pointlist-footer-region
       margin-left: $point-avatar-width
 
@@ -49,7 +49,7 @@
   .pointlist-expand-toggle
     text-align: center
 
-.reasons-peer-pros
+.pros_by_community
   .expanded_points
     text-align: right
 
@@ -57,7 +57,7 @@
 // header
 
 [data-activity="proposal-no-activity"]
-  .peer-reasons .pointlist-header
+  .points_by_community .pointlist-header
     visibility: hidden
 
 .pointlist-header
@@ -69,13 +69,13 @@
 
 
 
-.peer-reasons
+.points_by_community
   border: 1px solid transparent
 
-  // &.reasons-peer-pros
+  // &.pros_by_community
   //   padding: $vertical_baseline / 2 $grid-gutter / 2 $vertical_baseline / 2 $grid-gutter / 2
 
-  // &.reasons-peer-cons
+  // &.cons_by_community
   //   padding: $vertical_baseline / 2 $grid-gutter / 2 $vertical_baseline / 2 $grid-gutter / 2
 
   &[state="crafting"], &[state="results"]
@@ -124,7 +124,7 @@
             font-weight: bold
 
 
-.position-points
+.points_on_decision_board
   .pointlist-header-label
     margin-bottom: $vertical_baseline/2
     border-bottom: 2px solid 
@@ -132,17 +132,17 @@
 
 // expandable header
 
-.peer-reasons[state="results"], .peer-reasons[state="crafting"] 
+.points_by_community[state="results"], .points_by_community[state="crafting"] 
   .expanded_points-header-open, .expanded_points-header-close
     +font-size(-2)
     margin-left: $grid_gutter / 2
 
-.peer-reasons[state="summary"] 
+.points_by_community[state="summary"] 
   .expanded_points-header-open, .expanded_points-header-close
     visibility: hidden
 
 // empty list
-.points_peer_empty
+.no_community_points
   font-style: italic
   text-align: center
 
@@ -156,11 +156,11 @@
   .point-drop-target
     opacity: .75
 
-.draggable_initiated_pro .position-propoints, .draggable_initiated_con .position-conpoints
+.draggable_initiated_pro .pros_on_decision_board, .draggable_initiated_con .cons_on_decision_board
   .point-drop-target
     opacity: 1
 
-.draggable_hover_pro .position-propoints, .draggable_hover_con .position-conpoints
+.draggable_hover_pro .pros_on_decision_board, .draggable_hover_con .cons_on_decision_board
   .point-drop-target
     border-style: solid
 
@@ -177,7 +177,7 @@
   width: $point_width - $grid_gutter
   margin-left: $grid_gutter / 2
 
-// .position-propoints 
+// .pros_on_decision_board 
 //   .point-drop-target, .newpoint
 //     margin-left: $grid_gutter / 2
 

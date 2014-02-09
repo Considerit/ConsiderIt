@@ -13,13 +13,13 @@
     position: relative
     display: inline-block
 
-  &.point-peer, &.open_point
+  &.community_point, &.open_point
     .point-wrap
       padding: $vertical_baseline / 2 $grid_gutter / 2 
       margin-bottom: $vertical_baseline / 2
 
 
-  &.point-position
+  &.decision_board_point
     margin-left: $grid_gutter / 2
 
   &.closed_point
@@ -44,33 +44,33 @@
       width: $open_point-width - 3
       padding: $vertical_baseline 1.5 * $grid_gutter
 
-    &.point-position
+    &.decision_board_point
       &.con
         left: $point-width - $open_point-width + ($open_point-width - $body_width) / 2
       &.pro
         left: - ($open_point-width - $body_width) / 2
 
-.peer-reasons[state="crafting"], .peer-reasons[state="results"], .position-points
+.points_by_community[state="crafting"], .points_by_community[state="results"], .points_on_decision_board
   .closed_point
     cursor: pointer
 
 
-.points_are_expanded .peer-reasons
+.points_are_expanded .points_by_community
   &[state="crafting"]
-    .open_point.con.point-peer
+    .open_point.con.community_point
       right: $open_point-width - $point-width + 56 - $expanded_points_increment
 
-.peer-reasons
+.points_by_community
 
   &[state="results"]
-    .open_point.con.point-peer
+    .open_point.con.community_point
       right: $open_point-width - $point-width
 
   &[state="crafting"]
-    .open_point.con.point-peer
+    .open_point.con.community_point
       right: $open_point-width - $point-width + 56
 
-    .closed_point.point-peer .point-wrap
+    .closed_point.community_point .point-wrap
       +grab_cursor
 
   &[state="summary"]
@@ -84,11 +84,11 @@
 // Point text
 
 .closed_point
-  &.point-peer
+  &.community_point
     .point-nutshell
       +font-size(-1)
 
-  &.point-position  
+  &.decision_board_point  
     .point-nutshell
       +font-size(-1)
 
@@ -113,7 +113,7 @@
 
 //////////////////
 // bullet points
-.closed_point.point-position
+.closed_point.decision_board_point
   padding: 0 $grid_gutter 4px $grid_gutter
 
   .point-nutshell-wrap
@@ -131,7 +131,7 @@
 
 /////////////
 
-.closed_point.point-position
+.closed_point.decision_board_point
   .point-author-avatar
     display: none
 
@@ -141,12 +141,12 @@
 
 /////////////////////////////////////////
 // point operations
-.open_point, .peer-reasons[state="summary"]
+.open_point, .points_by_community[state="summary"]
   .point-operations
     display: none
 
-.peer-reasons[state="results"], .peer-reasons[state="crafting"]
-  .point-peer
+.points_by_community[state="results"], .points_by_community[state="crafting"]
+  .community_point
     .point-operations
       visibility: hidden
 
@@ -155,7 +155,7 @@
         visibility: visible
 
 .closed_point
-  &.point-peer
+  &.community_point
     .point-operations        
       position: relative
 
@@ -171,7 +171,7 @@
       .point-operations
         text-align: right
 
-  &.point-position
+  &.decision_board_point
     &:hover .point-operations
       visibility: visible
 
@@ -204,16 +204,16 @@
 .point-include-wrap
   display: none
 
-.peer-reasons[state="crafting"] 
-  .point-peer.open_point
+.points_by_community[state="crafting"] 
+  .community_point.open_point
     .point-include-wrap
       display: inline-block
 
-  .point-peer.closed_point, .open_point
+  .community_point.closed_point, .open_point
     .point-wrap
       border-radius: 8px
 
-.peer-reasons[state="summary"] .point-author-avatar
+.points_by_community[state="summary"] .point-author-avatar
   //visibility: hidden
 
 .point-author-avatar

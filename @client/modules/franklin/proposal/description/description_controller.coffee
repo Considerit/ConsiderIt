@@ -39,7 +39,7 @@
 
       @listenTo layout, 'show', ->
         @listenTo layout, 'proposal:clicked', =>
-          App.navigate Routes.new_position_proposal_path( @model.id ), {trigger: true}
+          App.navigate Routes.new_opinion_proposal_path( @model.id ), {trigger: true}
 
         if App.request "auth:can_edit_proposal", @model
           @admin_controller = @getAdminController layout.adminRegion

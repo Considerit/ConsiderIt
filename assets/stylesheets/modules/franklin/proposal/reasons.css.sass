@@ -198,19 +198,19 @@ $use_transitions: true
 // transitions / animations
 .reasons.transitioning
   +transition(transform $transition_speed $transition_function)
-  .position-region, .aggregated-propoints-region, .aggregated-conpoints-region
+  .opinion-region, .community-pros-region, .community-cons-region
     +transition(transform $transition_speed $transition_function)
 
   &[state="crafting"]
     &[coming-from-state="results"], &[coming-from-state="summary"]
-      .peer-reasons
+      .points_by_community
         // +animation(FromTogetherToSeparated_PeerReasons $transition_speed)
         -moz-animation: FromTogetherToSeparated_PeerReasons $transition_speed
         -webkit-animation: FromTogetherToSeparated_PeerReasons $transition_speed
         animation: FromTogetherToSeparated_PeerReasons $transition_speed
 
 
-      .point-peer.closed_point .point-wrap
+      .community_point.closed_point .point-wrap
         // +animation(FromTogetherToSeparated_PeerPoints $transition_speed)        
         // +animation-fill-mode(none)
 
@@ -238,39 +238,39 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     +translateY(0)
 
   &[state="crafting"][coming-from-state="results"]
-    .position-region
+    .opinion-region
       +translateY(- 2 * $vertical_baseline)
 
-    .aggregated-propoints-region, .aggregated-conpoints-region
+    .community-pros-region, .community-cons-region
       +translateY($vertical_baseline)
 
   &[state="crafting"][coming-from-state="summary"], &[state="crafting"]
-    .position-region
+    .opinion-region
       +translateY(3 * $vertical_baseline)
 
-    .aggregated-propoints-region, .aggregated-conpoints-region
+    .community-pros-region, .community-cons-region
       +translateY(6 * $vertical_baseline)
 
 
   &[state="summary"]
-    .position-region
+    .opinion-region
       +translateY($aggregate_area_height + $vertical_baseline)
 
 
-  .aggregated-propoints-region .peer-reasons
+  .community-pros-region .points_by_community
     border-radius: 12px 0 0 12px
     border-right-color: transparent
 
-  .aggregated-conpoints-region .peer-reasons
+  .community-cons-region .points_by_community
     border-radius: 0 12px 12px 0
     border-left-color: transparent
 
   // basic layout
 
-  .points-list-region, .position-region
+  .points-list-region, .opinion-region
     display: inline-block
 
-  .reasons-lists
+  .four_columns_of_points
     //height: 100%
     top: 0 
     min-height: $aggregate_area_height
@@ -278,39 +278,39 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     margin: auto
     width: $body_width
 
-  .aggregated-propoints-region, .aggregated-conpoints-region
+  .community-pros-region, .community-cons-region
     height: 100%
 
-    .peer-reasons
+    .points_by_community
       height: 100%
       padding: $vertical_baseline $grid_gutter/2
 
-  .aggregated-propoints-region .point-header-region
+  .community-pros-region .point-header-region
     float: left
 
-  .aggregated-conpoints-region .point-header-region
+  .community-cons-region .point-header-region
     float: right
 
-  &.transitioning .personal-reasons
+  &.transitioning .opinion_points
     //min-height: 0
     min-height: 450px
     height: auto
 
   &[state="crafting"]
-    .personal-reasons
+    .opinion_points
       min-height: 450px
 
   &[state="results"]
-    .personal-reasons
+    .opinion_points
       height: 0
       overflow: hidden
 
-    .aggregated-propoints-region, .aggregated-conpoints-region
-      .peer-reasons
+    .community-pros-region, .community-cons-region
+      .points_by_community
         padding-bottom: 3 * $vertical_baseline
 
   //horizontal size and positioning
-  .reasons-lists
+  .four_columns_of_points
     width: $full_reasons_width
     left: $full_reasons_left
 
@@ -324,36 +324,36 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
   &[state="results"], &[state="summary"]
 
-    .aggregated-propoints-region
+    .community-pros-region
       +translateX($decision_board_width/2)
 
-    .aggregated-conpoints-region
+    .community-cons-region
       +translateX(-$decision_board_width/2)
 
-  .aggregated-propoints-region, .aggregated-conpoints-region
+  .community-pros-region, .community-cons-region
     width: $decision_board_width/2 //$point-width
 
-  .position-propoints-region, .position-conpoints-region
+  .pros_on_decision_board-region, .cons_on_decision_board-region
     width: $point-width
 
 
   // expanded points
-  &.some_points_are_expanded .reasons-lists
+  &.some_points_are_expanded .four_columns_of_points
     width: $full_reasons_width + $expanded_points_increment
 
-    .position-region, .position, .position-message-body
+    .opinion-region, .decision_board, .decision_board_body
       height: 100%
 
-  &.con_points_are_expanded .reasons-lists
+  &.con_points_are_expanded .four_columns_of_points
     left: $full_reasons_left - $expanded_points_increment 
 
 
   &[state="crafting"], &[state="results"]
-    .aggregated-propoints-region, .aggregated-conpoints-region
+    .community-pros-region, .community-cons-region
       &.points_are_expanded
         width: $decision_board_width/2 + $expanded_points_increment
 
-        .point-peer.closed_point 
+        .community_point.closed_point 
           //width: $decision_board_width/2 + $expanded_points_increment
           .point-wrap
             width: $point-content-width + $expanded_points_increment
@@ -371,20 +371,20 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
       height: 0
       overflow: hidden
 
-    .position-region
+    .opinion-region
       +translateY(0)
 
-    .reasons-lists      
+    .four_columns_of_points      
       min-height: 0
 
   .reasons[state="crafting"] 
-    .personal-reasons
+    .opinion_points
       min-height: 200px
 
 
 [data-activity="proposal-has-activity"]
   .reasons[state="summary"]
-    .reasons-lists
+    .four_columns_of_points
       min-height: $aggregate_area_height
       //margin-bottom: 100px // spacing for participants block
 
@@ -403,13 +403,13 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
   position: relative
 
 
-  &[state="summary"] .aggregated-conpoints-region   
+  &[state="summary"] .community-cons-region   
     svg.t-bubble
       left: auto
       right: -23px
       
-  &[state="crafting"], &[state="results"], &[state="summary"] .aggregated-propoints-region
-    .peer-reasons
+  &[state="crafting"], &[state="results"], &[state="summary"] .community-pros-region
+    .points_by_community
       > svg.t-bubble
         display: none
 
@@ -431,11 +431,11 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     position: relative
     vertical-align: top
 
-  .position-region
+  .opinion-region
     position: relative
     width: $decision_board_width
 
-  .aggregated-propoints-region, .aggregated-conpoints-region
+  .community-pros-region, .community-cons-region
     //position: absolute
     top: 0
     z-index: 10
@@ -465,7 +465,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
       div
         text-align: center
 
-      .reasons-view-results
+      .view_results_prompt_from_summary
         text-align: right
         +font-size(-1)
         i

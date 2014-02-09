@@ -26,11 +26,11 @@ sign in
 - forgot password
   = when user doesn't exist
   = when user exists
-- when user opens a proposal (but doesn't change their stance), then logs in (with an existing position), the position should be updated to reflect the user's position
-- user browses results, not logged in. They even start editing some positions. Then, on one, they click save, are prompted to login, and do so. Lo & behold, they already have published positions for this & other proposal they've been actively engaging with.
-  + the position being edited should be changed to the old, but with the new data subsumed
-  + points and other created items this session should have their position references updated.
-- on signout, clear written points, positions, reset views
+- when user opens a proposal (but doesn't change their stance), then logs in (with an existing opinion), the opinion should be updated to reflect the user's opinion
+- user browses results, not logged in. They even start editing some opinions. Then, on one, they click save, are prompted to login, and do so. Lo & behold, they already have published opinions for this & other proposal they've been actively engaging with.
+  + the opinion being edited should be changed to the old, but with the new data subsumed
+  + points and other created items this session should have their opinion references updated.
+- on signout, clear written points, opinions, reset views
 
 ###
 

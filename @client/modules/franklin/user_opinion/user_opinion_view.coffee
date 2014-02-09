@@ -1,6 +1,6 @@
-@ConsiderIt.module "Franklin.Position", (Position, App, Backbone, Marionette, $, _) ->
-  class Position.PositionView extends App.Views.ItemView
-    template : '#tpl_static_position'
+@ConsiderIt.module "Franklin.UserOpinion", (UserOpinion, App, Backbone, Marionette, $, _) ->
+  class UserOpinion.UserOpinionView extends App.Views.ItemView
+    template : '#tpl_user_opinion'
     dialog : ->
       title : "#{@model.getUser().get('name')} #{@model.stanceLabel()} this proposal"
 

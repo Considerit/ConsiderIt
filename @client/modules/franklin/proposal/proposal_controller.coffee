@@ -123,7 +123,7 @@
         if @state == Proposal.State.Results && @exploded
           reasons_controller.segmentPeerPoints segment
 
-      @listenTo reasons_controller, 'position:published', =>
+      @listenTo reasons_controller, 'opinion_published', =>
         @_update_attributes()
         aggregate_controller.updateHistogram()
 

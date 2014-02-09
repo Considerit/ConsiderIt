@@ -16,14 +16,11 @@
 
       %ul
         (( _.each(metrics, function(metric) { ))
-        (( var label = metric[0], attr = metric[1], style = metric[2]; ))
-
-        %li.l-tooltip-user-metric{ :class => "l-tooltip-user-metric-{{style}}" }
-          %span.l-tooltip-user-metric-number
-            {{ user[attr] }}
-          %span.l-tooltip-user-metric-desc
-            {{ label }}
-
+        %li.l-tooltip-user-metric{ :class => "l-tooltip-user-metric-{{metric[2]}}" }>
+          %span.l-tooltip-user-metric-number>
+            {{ user[metric[1]] }}
+          %span.l-tooltip-user-metric-desc>
+            {{ metric[0] }}
         (( }) ))
 
     .l-tooltip-user-actions

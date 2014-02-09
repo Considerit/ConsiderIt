@@ -180,37 +180,23 @@
 
 
 %script{ :type => "text/template", :id => "tpl_aggregate_histogram"}
-
   (( _.each(histogram.breakdown, function(bar){ ))
-
-  (( var bucket = bar.bucket; ))
-  .histogram-bar{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bucket}}", :id => "bucket-{{bucket}}"}
-
-    (( if(bucket < 4 ){ ))
+  .histogram-bar{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bar.bucket}}", :id => "bucket-{{bar.bucket}}"}>
+    (( if(bar.bucket < 4 ){ ))
     = render :partial => "shared/bubble", :locals => {:left => false, :down => true }
     (( } else { ))
     = render :partial => "shared/bubble", :locals => {:left => false, :down => true, :flipped => true }
     (( } ))
-
-    // .bar-position
-    //   for {{bar.group_name}}
-
-
     (( if (bar.positions.length > 0) { ))
-    %ul.bar-people
-
+    %ul.bar-people>
       (( _.each(bar.positions, function(position) { ))
       (( var user = position.getUser(); ))
       (( if (user){ ))
-
       (( var has_explanation = position.get('explanation') && position.get('explanation').length > 0, expl_clss = has_explanation ? 'person-has-explanation' : 'person-has-no-explanation'; ))
-
-      %li.bar-person.avatar{:class=>"bucket-{{bucket}} {{expl_clss}}", :'data-target' => "user_profile_page", :'data-id' => "{{user.id}}", :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}
-
+      %li.bar-person.avatar{:class=>"bucket-{{bar.bucket}} {{expl_clss}}", :'data-target' => "user_profile_page", :'data-id' => "{{user.id}}", :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}>
       (( } ))
       (( }); ))
     (( } ))
-
   (( }); ))
 
   .histogram-base

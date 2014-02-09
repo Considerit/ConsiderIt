@@ -343,12 +343,12 @@ a
 
 
 // franklin/points
-.points_by_community[state="summary"] .pointlist-footer-more i
+.points_by_community[state="summary"] .points-footer-more i
   color: emphasize($base_background_color, 25%)
 
 .points_by_community
 
-  &[state="crafting"] .pointlist-header-label
+  &[state="crafting"] .points-heading-label
     color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
   &[state="crafting"], &[state="results"]
@@ -358,11 +358,11 @@ a
   &[state="summary"], &[state="results"]
     +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
 
-.points_on_decision_board .pointlist-header-label
+.points_on_decision_board .points-heading-label
   border-bottom-color: $decision_board_text_color
 
 .points_by_community[state="results"], .points_by_community[state="crafting"] 
-  .expanded_points-header-open, .expanded_points-header-close
+  .expanded_points-heading-open, .expanded_points-heading-close
     color: deemphasize($base_text_color, 50%, $reference: $base_background_color)
 
 .draggable_hover_pro .pros_on_decision_board, .draggable_hover_con .cons_on_decision_board

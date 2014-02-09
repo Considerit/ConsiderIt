@@ -210,7 +210,7 @@ $use_transitions: true
         animation: FromTogetherToSeparated_PeerReasons $transition_speed
 
 
-      .point-peer.point-unexpanded .point-wrap
+      .point-peer.closed_point .point-wrap
         // +animation(FromTogetherToSeparated_PeerPoints $transition_speed)        
         // +animation-fill-mode(none)
 
@@ -318,7 +318,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     width: $point-avatar-width
     position: relative
 
-  .point-unexpanded
+  .closed_point
     .point-wrap
       width: $point-content-width
 
@@ -353,7 +353,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
       &.points_are_expanded
         width: $decision_board_width/2 + $expanded_points_increment
 
-        .point-peer.point-unexpanded 
+        .point-peer.closed_point 
           //width: $decision_board_width/2 + $expanded_points_increment
           .point-wrap
             width: $point-content-width + $expanded_points_increment

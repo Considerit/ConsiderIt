@@ -8,7 +8,7 @@ Not yet tested here:
   - proper sort order of the proposals given different sorts
   - whether clicking to load the same proposal tries to load data again from the server
   - differences between active and inactive proposals
-  - whether you can browse points, sorted accurated, while having a histogram bar selected
+  - whether you can expand points, sorted accurated, while having a histogram bar selected
   - whether thanking and commenting is enabled based on whether or not logged in
   - sorting expanded points
   - when navigating back to the user profile page from e.g. a user's point, does not check nav behavior of closing the point
@@ -152,7 +152,7 @@ casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) -
       test_open_point test
 
     casper.then ->
-      test_browsing_points test
+      test_expanding_points test
 
   casper.run ->
     test.done() 
@@ -193,7 +193,7 @@ casper.test.begin 'Lurker can poke around the proposal crafting page', 33, (test
       test_open_point test
 
     casper.then ->
-      test_browsing_points test
+      test_expanding_points test
 
   casper.run ->
     test.done() 
@@ -331,7 +331,7 @@ assert_user_profile_loaded = (test) ->
   test.assertExists '.dashboard-profile-influence-summary', 'There is an influence tracker'
 
 assert_point_open = (test) ->
-  test.assertVisible '.point-details-description', 'Point details are visible'
+  test.assertVisible '.point_description', 'Point details are visible'
   test.assertVisible '.point-discussion', 'Discussion section exists'
 
 assert_comment_open = (test, comment_id) ->
@@ -347,19 +347,19 @@ test_open_point = (test) ->
   casper.wait 1000, ->
     assert_point_open test
     #TODO: if logged in, can thank and comment; if not, cannot thank or comment
-    casper.HTMLCapture '.point-expanded', 
-      caption : "Expanded point"
+    casper.HTMLCapture '.open_point', 
+      caption : "Opened point"
 
     casper.mouse.click '.point-close'
-    test.assertDoesntExist '.point-expanded', 'point closes'
+    test.assertDoesntExist '.open_point', 'point closes'
 
-test_browsing_points = (test) ->
-  casper.HTMLStep 'browse points'
+test_expanding_points = (test) ->
+  casper.HTMLStep 'expand points'
   casper.click '[data-target="expand-toggle"]'
 
-  test.assertExists '.points_are_expanded', 'entered browsing mode'
+  test.assertExists '.points_are_expanded', 'points are expanded'
   casper.HTMLCapture '.reasons', 
-    caption : "Browsing points"
+    caption : "Expanded points"
 
   test.assertVisible '.expanded_points-sort', 'user can see the sort option'
   casper.mouse.move '.expanded_points-sort-label'
@@ -374,7 +374,7 @@ test_browsing_points = (test) ->
     caption : "after clicking persuasiveness sort"
 
   casper.click '[data-target="expand-toggle"]'
-  test.assertDoesntExist '.points_are_expanded', 'exited browsing mode'
+  test.assertDoesntExist '.points_are_expanded', 'points are unexpanded'
   casper.HTMLCapture '.reasons', 
     caption : "after unexpanding"
 

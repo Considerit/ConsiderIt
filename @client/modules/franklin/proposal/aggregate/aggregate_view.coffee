@@ -100,7 +100,7 @@
       @$el.show()
 
     selectBar : (ev) ->
-      return if $('.point-expanded').length > 0 #|| @state != Proposal.State.Results 
+      return if $('.open_point').length > 0 #|| @state != Proposal.State.Results 
       $target = $(ev.currentTarget)
       hard_select = ev.type == 'click'
 
@@ -118,11 +118,11 @@
 
     closeBarClick : (ev) -> @deselectBar() 
 
-    closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('.l-dialog-detachable').children().length == 0 && $('.point-expanded').length == 0
+    closeBarKey : (ev) -> @deselectBar() if ev.keyCode == 27 && $('.l-dialog-detachable').children().length == 0 && $('.open_point').length == 0
     
     deselectBar : (ev) ->
       $selected_bar = @$el.find('.bar-is-selected')
-      return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.bar-is-hard-selected')) || $('.point-expanded').length > 0
+      return if $selected_bar.length == 0 || (ev && ev.type == 'mouseleave' && $selected_bar.is('.bar-is-hard-selected')) || $('.open_point').length > 0
 
       @bar_state = 'deselect'
       $(document).off 'click.histogram'

@@ -56,25 +56,25 @@
       text-decoration: underline 
 
 
-.point-position.point-unexpanded
+.point-position.closed_point
   &:hover .point-assessment-indicator-region
     display: block
 
   .point-assessment-indicator-region
     display: none
 
-.point-assessment-indicator-region, .peer-reasons[state="summary"] .point-unexpanded .point-assessment-indicator-region
+.point-assessment-indicator-region, .peer-reasons[state="summary"] .closed_point .point-assessment-indicator-region
   display: none
 
 
 .position-points
-  .point-unexpanded
+  .closed_point
     .point-assessment-indicator-region
       top: auto
       opacity: 1
       left: -$grid_gutter - 4
       
-.point-unexpanded
+.closed_point
   .point-assessment-indicator-region
     display: block
     position: absolute

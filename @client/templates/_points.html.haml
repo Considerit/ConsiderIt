@@ -1,28 +1,28 @@
 %script{ :type => "text/template", :id => "tpl_points"}
-  .pointlist-header-region
-  .pointlist-list-region
-  .pointlist-footer-region
+  .points-heading-region
+  .points-list-region
+  .points-footer-region
 
 %script{ :type => "text/template", :id => "tpl_community_points"}
   = render :partial => "shared/bubble", :locals => {:left => false, :down => false}
   
-  .pointlist-header-region
-  .pointlist-list-region
-  .pointlist-footer-region
+  .points-heading-region
+  .points-list-region
+  .points-footer-region
 
 %script{ :type => "text/template", :id => "tpl_points_header"}
-  .pointlist-header
-    %span.pointlist-header-label
+  .points-heading
+    %span.points-heading-label
       {{ header }}
 
 %script{ :type => "text/template", :id => "tpl_community_points_header"}
 
-  .pointlist-header
-    %span.pointlist-header-label{'data-target' => 'expand-toggle'}
+  .points-heading
+    %span.points-heading-label{'data-target' => 'expand-toggle'}
       {{ header }}
 
       (( if(is_expanded) { ))
-      %span.expanded_points-header-close
+      %span.expanded_points-heading-close
         %i.fa.fa-small.fa-compress  
 
       .expanded_points-sort
@@ -31,13 +31,13 @@
           %i.fa.fa-small.fa-caret-down
         %ul.expanded_points-sort-menu
           (( _.each(sorts, function(sort){  ))
-          %li.pointlist-sort-option
+          %li.points-sort-option
             %a{ :title => "{{ sort.title }}", :'data-target' => "{{ sort.target }}" }
               {{ sort.name }}
           (( }); ))
 
       (( } else { ))
-      %span.expanded_points-header-open
+      %span.expanded_points-heading-open
         %i.fa.fa-small.fa-expand
       (( } ))
 
@@ -45,7 +45,7 @@
 %script{:type => "text/template", :id => "tpl_community_points_footer"}
   (( if(has_more_points || is_expanded){ ))
   .expanded_points
-    %a.pointlist-expand-toggle.button{'data-target' => 'expand-toggle'}
+    %a.points-expand-toggle.button{'data-target' => 'expand-toggle'}
       (( if( is_expanded ) { ))
       Unexpand these {{ label }}
       (( } else { ))
@@ -53,7 +53,7 @@
       (( } ))
   (( } ))
 
-  .pointlist-footer-more
+  .points-footer-more
     %i
       &hellip;
 

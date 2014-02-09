@@ -4,11 +4,11 @@
 
 // footer
 
-.pointlist-footer-more
+.points-footer-more
   display: none
 
 .points_by_community[state="summary"], .points_by_community[state="results"]
-  .pointlist-footer-region
+  .points-footer-region
     position: absolute
     bottom: $vertical_baseline / 2
     width: $point-content-width
@@ -17,7 +17,7 @@
 
   .expanded_points
     display: none  
-  .pointlist-footer-more
+  .points-footer-more
     display: block
     text-align: center
 
@@ -26,27 +26,27 @@
 
 .points_are_expanded
   .points_by_community[state="crafting"]
-    .pointlist-expand-toggle
+    .points-expand-toggle
       width: $point-content-width + $expanded_points_increment
 
   .points_by_community[state="results"]
-    .pointlist-expand-toggle
+    .points-expand-toggle
       width: $point-content-width + $expanded_points_increment
 
 
-.points_by_community[state="crafting"] .pointlist-expand-toggle
+.points_by_community[state="crafting"] .points-expand-toggle
   width: $point-content-width
 
 .points_by_community[state="results"]
   &.pros_by_community
-    .pointlist-footer-region
+    .points-footer-region
       margin-left: $point-avatar-width
 
-  .pointlist-expand-toggle
+  .points-expand-toggle
     width: $point-content-width
 
 .expanded_points
-  .pointlist-expand-toggle
+  .points-expand-toggle
     text-align: center
 
 .pros_by_community
@@ -57,13 +57,13 @@
 // header
 
 [data-activity="proposal-no-activity"]
-  .points_by_community .pointlist-header
+  .points_by_community .points-heading
     visibility: hidden
 
-.pointlist-header
+.points-heading
   text-align: center
   margin-bottom: $vertical_baseline / 2
-  .pointlist-header-label
+  .points-heading-label
     +font-size(2)    
     display: inline-block
 
@@ -80,7 +80,7 @@
 
   &[state="crafting"], &[state="results"]
 
-    .pointlist-header-label
+    .points-heading-label
       cursor: pointer
       +font-size(2)
       font-weight: normal
@@ -125,7 +125,7 @@
 
 
 .points_on_decision_board
-  .pointlist-header-label
+  .points-heading-label
     margin-bottom: $vertical_baseline/2
     border-bottom: 2px solid 
     +font-size(4)
@@ -133,12 +133,12 @@
 // expandable header
 
 .points_by_community[state="results"], .points_by_community[state="crafting"] 
-  .expanded_points-header-open, .expanded_points-header-close
+  .expanded_points-heading-open, .expanded_points-heading-close
     +font-size(-2)
     margin-left: $grid_gutter / 2
 
 .points_by_community[state="summary"] 
-  .expanded_points-header-open, .expanded_points-header-close
+  .expanded_points-heading-open, .expanded_points-heading-close
     visibility: hidden
 
 // empty list

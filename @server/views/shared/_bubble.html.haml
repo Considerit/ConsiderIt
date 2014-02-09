@@ -16,9 +16,9 @@
     - if !left && !down
       - transform = "scale(-1, 1) translate(#{-size}, 0)"
     - elsif down
-      - transform = "scale(2,1) translate(#{size+6}, #{8 + size}) rotate(-250)"
+      - transform = "scale(2,1) translate(#{size+6}, #{8 + size}) rotate(-245)"
     - else
-      - transform = ''
+      - transform = 'translate(.75 -1) rotate(3)'
 
     - if flipped
       - transform = 'translate(28,0) scale(-1,1)' + transform

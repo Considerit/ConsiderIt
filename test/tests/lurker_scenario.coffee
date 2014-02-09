@@ -10,7 +10,7 @@ Not yet tested here:
   - differences between active and inactive proposals
   - whether you can browse points, sorted accurated, while having a histogram bar selected
   - whether thanking and commenting is enabled based on whether or not logged in
-  - sorting points when browsing points
+  - sorting expanded points
   - when navigating back to the user profile page from e.g. a user's point, does not check nav behavior of closing the point
 ###
 
@@ -355,26 +355,26 @@ test_open_point = (test) ->
 
 test_browsing_points = (test) ->
   casper.HTMLStep 'browse points'
-  casper.click '[data-target="browse-toggle"]'
+  casper.click '[data-target="expand-toggle"]'
 
-  test.assertExists '.pointlist-browsing', 'entered browsing mode'
+  test.assertExists '.points_are_expanded', 'entered browsing mode'
   casper.HTMLCapture '.reasons', 
     caption : "Browsing points"
 
-  test.assertVisible '.pointlist-browse-sort', 'user can see the sort option'
-  casper.mouse.move '.pointlist-browse-sort-label'
+  test.assertVisible '.expanded_points-sort', 'user can see the sort option'
+  casper.mouse.move '.expanded_points-sort-label'
 
-  test.assertVisible '.pointlist-browse-sort-menu', 'user can see the sort menu on hover'
+  test.assertVisible '.expanded_points-sort-menu', 'user can see the sort menu on hover'
 
-  casper.HTMLCapture '.pointlist-browsing', 
+  casper.HTMLCapture '.points_are_expanded', 
     caption : "Hovering over sort"
 
-  casper.click '.pointlist-browse-sort .pointlist-sort-option [data-target="persuasiveness"]'
-  casper.HTMLCapture '.pointlist-browsing', 
+  casper.click '.expanded_points-sort .pointlist-sort-option [data-target="persuasiveness"]'
+  casper.HTMLCapture '.points_are_expanded', 
     caption : "after clicking persuasiveness sort"
 
-  casper.click '[data-target="browse-toggle"]'
-  test.assertDoesntExist '.pointlist-browsing', 'exited browsing mode'
+  casper.click '[data-target="expand-toggle"]'
+  test.assertDoesntExist '.points_are_expanded', 'exited browsing mode'
   casper.HTMLCapture '.reasons', 
     caption : "after unexpanding"
 

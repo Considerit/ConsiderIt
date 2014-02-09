@@ -18,18 +18,18 @@
 %script{ :type => "text/template", :id => "tpl_points_expandable_header"}
 
   .pointlist-header
-    %span.pointlist-header-label{'data-target' => 'browse-toggle'}
+    %span.pointlist-header-label{'data-target' => 'expand-toggle'}
       {{ header }}
 
-      (( if(browsing_all) { ))
-      %span.pointlist-browse-header-close
+      (( if(is_expanded) { ))
+      %span.expanded_points-header-close
         %i.fa.fa-small.fa-compress  
 
-      .pointlist-browse-sort
-        %span.pointlist-browse-sort-label
+      .expanded_points-sort
+        %span.expanded_points-sort-label
           sort 
           %i.fa.fa-small.fa-caret-down
-        %ul.pointlist-browse-sort-menu
+        %ul.expanded_points-sort-menu
           (( _.each(sorts, function(sort){  ))
           %li.pointlist-sort-option
             %a{ :title => "{{ sort.title }}", :'data-target' => "{{ sort.target }}" }
@@ -37,16 +37,16 @@
           (( }); ))
 
       (( } else { ))
-      %span.pointlist-browse-header-open
+      %span.expanded_points-header-open
         %i.fa.fa-small.fa-expand
       (( } ))
 
 
 %script{:type => "text/template", :id => "tpl_points_expandable_footer"}
-  (( if(has_more_points || browsing_all){ ))
-  .pointlist-browse
-    %a.pointlist-browse-toggle.button{'data-target' => 'browse-toggle'}
-      (( if( browsing_all ) { ))
+  (( if(has_more_points || is_expanded){ ))
+  .expanded_points
+    %a.pointlist-expand-toggle.button{'data-target' => 'expand-toggle'}
+      (( if( is_expanded ) { ))
       Unexpand these {{ label }}
       (( } else { ))
       View all {{ cnt }} {{ label }}

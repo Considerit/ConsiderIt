@@ -23,7 +23,7 @@
         is_paginated = @options.collection.fullCollection?
 
         collection = if is_paginated then @options.collection.fullCollection else @options.collection
-        if @respondToPointExpansions() && point = collection.get(point)
+        if @canExpand() && point = collection.get(point)
           # ensure that point is currently displayed
 
           if is_paginated
@@ -53,10 +53,10 @@
 
       @listenTo list_view, 'before:item:added', (view) => 
         return if view instanceof Points.PeerEmptyView
-        if _.has @point_controllers[@cname], view.model.id
-          @point_controllers[@cname][view.model.id].close()
+        if _.has @point_controllers[@cls_name], view.model.id
+          @point_controllers[@cls_name][view.model.id].close()
 
-        @point_controllers[@cname][view.model.id] = new App.Franklin.Point.PointController
+        @point_controllers[@cls_name][view.model.id] = new App.Franklin.Point.PointController
           view : view
           model : view.model
           region : new Backbone.Marionette.Region { el : view.el }     
@@ -77,13 +77,9 @@
 
 
   class Points.PeerPointsController extends Points.AbstractPointsController
-    cname: 'PeerController'
-
+    cls_name: 'PeerController'
     removed_points : []
-
-    current_browse_state : false
-
-
+    is_expanded : false
 
     initialize : (options = {}) ->
       super options
@@ -129,27 +125,27 @@
       # @options.collection.fullCollection.sort()    #causing 2x renders    
 
 
-    respondToPointExpansions : -> true
+    canExpand : -> true
 
 
-    toggleBrowsing : (current_browse_state) ->
+    toggleExpanded : (is_expanded) ->
       header_view = @header_view
       footer_view = @footer_view
 
-      if !current_browse_state
-        @trigger 'points:browsing', @options.valence
-        header_view.setBrowsing true
-        footer_view.setBrowsing true
+      if !is_expanded
+        @trigger 'points:expand', @options.valence
+        header_view.setExpanded true
+        footer_view.setExpanded true
         @previous_page_size = @options.collection.state.pageSize
         @options.collection.setPageSize 1000
-        @current_browse_state = true
+        @is_expanded = true
       else
-        header_view.setBrowsing false
-        footer_view.setBrowsing false
-        @trigger 'points:browsing:off', @options.valence
+        header_view.setExpanded false
+        footer_view.setExpanded false
+        @trigger 'points:unexpand', @options.valence
         @options.collection.setPageSize @previous_page_size
         @options.collection.getPage 1
-        @current_browse_state = false
+        @is_expanded = false
 
     setupLayout : (layout) ->
       super layout
@@ -163,15 +159,15 @@
         @listenTo @header_view, 'sort', (sort_by) =>
           @sortPoints sort_by
 
-        @listenTo @header_view, 'points:browsing:toggle', (current_browse_state) =>
+        @listenTo @header_view, 'points:toggle_expanded', (is_expanded) =>
           if @state != Points.State.Summary
-            @toggleBrowsing current_browse_state
+            @toggleExpanded is_expanded
           else
             App.navigate Routes.proposal_path(@options.proposal.id), {trigger : true}
           
-        @listenTo @footer_view, 'points:browsing:toggle', (current_browse_state) =>
+        @listenTo @footer_view, 'points:toggle_expanded', (is_expanded) =>
           if @state != Points.State.Summary
-            @toggleBrowsing current_browse_state
+            @toggleExpanded is_expanded
 
         layout.headerRegion.show @header_view
 
@@ -206,7 +202,7 @@
 
     getHeaderView : (sort) ->
       new Points.ExpandablePointListHeader
-        browsing: false
+        expanded: false
         collection : @options.collection
         sort : sort
         valence : @options.valence
@@ -230,15 +226,13 @@
 
 
   class Points.UserReasonsController extends Points.AbstractPointsController
-    cname: 'PositionController'
-
-
+    cls_name: 'PositionController'
 
     initialize : (options = {}) ->
       super options
       @region.show @layout
 
-    respondToPointExpansions : ->
+    canExpand : ->
       @state != Points.State.Results && @state != Points.State.Summary
 
     setupLayout : (layout) ->

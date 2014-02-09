@@ -76,7 +76,6 @@
               collection.setPageSize 4
               controller.sortPoints 'persuasiveness'
 
-
             when Proposal.State.Summary
               top_points = [@model.get('top_pro'), @model.get('top_con')]
               collection.fullCollection.set top_points
@@ -116,15 +115,15 @@
             @listenToOnce controller, 'details:closed', (point) =>
               @layout.pointClosed controller.region
 
-          @listenTo controller, 'points:browsing', (valence) =>
+          @listenTo controller, 'points:expand', (valence) =>
 
-            if other_controller.current_browse_state
-              other_controller.toggleBrowsing other_controller.current_browse_state
+            if other_controller.is_expanded
+              other_controller.toggleExpanded other_controller.is_expanded
 
-            @layout.pointsBrowsing valence
+            @layout.pointsWereExpanded valence
 
-            @listenToOnce controller, 'points:browsing:off', (valence) =>
-              @layout.pointsBrowsingOff valence
+            @listenToOnce controller, 'points:unexpand', (valence) =>
+              @layout.pointsWereUnexpanded valence
 
 
         @setupPointsController @peer_pros_controller

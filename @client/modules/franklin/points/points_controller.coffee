@@ -213,7 +213,7 @@
         collection : @options.collection
 
     getListView : ->
-      new Points.PointList
+      new Points.PointsList
         itemView : App.Franklin.Point.PeerPointView
         emptyView : Points.NoCommunityPointsView
         collection : @options.collection
@@ -283,7 +283,7 @@
         valence : @options.valence
 
     getListView : ->
-      new Points.PointList
+      new Points.PointsList
         itemView : App.Franklin.Point.DecisionBoardPointView
         collection : @options.collection
         location: 'decision_board'

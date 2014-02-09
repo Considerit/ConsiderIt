@@ -9,8 +9,8 @@
 
       @proposal = options.model
 
-      @listenTo @options.parent_controller, 'point:show_details', (point) =>
-        @trigger 'point:show_details', point
+      @listenTo @options.parent_controller, 'point:open', (point) =>
+        @trigger 'point:open', point
 
       @listenTo App.vent, 'user:signin:data_loaded', =>
         current_user = App.request 'user:current'
@@ -189,11 +189,11 @@
       @setupPointsController @position_cons_controller
 
       _.each [@position_pros_controller, @position_cons_controller], (controller) =>
-        @listenTo controller, 'point:showed_details', (point) =>
-          @trigger 'point:showed_details', point
+        @listenTo controller, 'point:opened', (point) =>
+          @trigger 'point:opened', point
 
-          @listenToOnce controller, 'details:closed', (point) =>
-            @trigger 'details:closed', point
+          @listenToOnce controller, 'point:closed', (point) =>
+            @trigger 'point:closed', point
 
 
     setupPointsController : (controller) ->

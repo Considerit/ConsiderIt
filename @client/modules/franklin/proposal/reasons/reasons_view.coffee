@@ -17,12 +17,12 @@
     onRender : ->
       super
 
-    pointExpanded : (region) ->
+    pointWasOpened : (region) ->
       region.$el.css 'zIndex', 12
       $transition_speed = if Modernizr.csstransitions then 1000 else 0
       @sizeToFit $transition_speed
 
-    pointClosed : (region) ->
+    pointWasClosed : (region) ->
       region.$el.css 'zIndex', ''
       $transition_speed = if Modernizr.csstransitions then 1000 else 0
       @sizeToFit $transition_speed

@@ -88,33 +88,33 @@
 
   class Points.ExpandablePointListHeader extends Points.PointListHeader
     template : '#tpl_points_expandable_header'
-    browsing : false
+    is_expanded : false
     sort : 'score'    
     
     initialize : (options = {}) ->
       super options
       @collection = options.collection
-      @browsing = @setBrowsing(options.browsing) if options.browsing
+      @is_expanded = @setExpanded(options.expanded) if options.expanded
       @segment = options.segment
 
-    setBrowsing : (browsing) ->
-      @browsing = browsing
+    setExpanded : (expand) ->
+      @is_expanded = expand
       @render()
 
-      if @browsing
-        # when clicking outside of pointlist, close browsing
-        $(document).on 'click.pointlist-browsing', (ev)  => 
-          if $(ev.target).closest('.pointlist-sort-option').length == 0 && $(ev.target).closest('.pointlist-browsing')[0] != @$el[0] && $('.point-expanded, .l-dialog-detachable').length == 0
-            @trigger 'points:browsing:toggle', true
+      if @is_expanded
+        # unexpand when clicking outside of pointlist
+        $(document).on 'click.unexpand_points', (ev)  => 
+          if $(ev.target).closest('.pointlist-sort-option').length == 0 && $(ev.target).closest('.unexpand_points')[0] != @$el[0] && $('.point-expanded, .l-dialog-detachable').length == 0
+            @trigger 'points:toggle_expanded', true
             ev.stopPropagation()
 
-        $(document).on 'keyup.pointlist-browsing', (ev) => 
+        $(document).on 'keyup.unexpand_points', (ev) => 
           if ev.keyCode == 27 && $('.point-expanded, .l-dialog-detachable').length == 0
-            @trigger 'points:browsing:toggle', true
+            @trigger 'points:toggle_expanded', true
             ev.stopPropagation()
       else
-        $(document).off '.pointlist-browsing'
-        # @$el.off '.pointlist-browsing'
+        $(document).off '.unexpand_points'
+        # @$el.off '.unexpand_points'
         @$el.ensureInView {fill_threshold: .5}
 
     serializeData : ->
@@ -123,7 +123,7 @@
       params = _.extend data,
         pros : @options.valence == 'pro'
         sort_by : @sort
-        browsing_all : @browsing
+        is_expanded : @is_expanded
         sorts : [ 
           { name: 'Persuasiveness', title: 'Considerations that are proportionately better at convincing other people to add them to their pro/con list are rated higher. Newer considerations that have been seen by fewer people may be ranked higher than the most popular considerations.', target: 'persuasiveness'}, 
           { name: 'Popularity', title: 'Considerations that have been added to the most pro/con lists are ranked higher.', target: 'score'}, 
@@ -157,7 +157,7 @@
 
     events : _.extend {}, Points.PointList.prototype.events,
       'click .pointlist-sort-option a' : 'sortList'
-      'click [data-target="browse-toggle"]' : 'handleToggleBrowse'
+      'click [data-target="expand-toggle"]' : 'handleExpandToggle'
 
     sortList : (ev) ->
       sort_by = $(ev.target).data('target')
@@ -165,19 +165,19 @@
       @selectSort()
       ev.stopPropagation()
 
-    handleToggleBrowse : (ev) ->
-      @trigger 'points:browsing:toggle', @browsing
+    handleExpandToggle : (ev) ->
+      @trigger 'points:toggle_expanded', @is_expanded
       ev.stopPropagation()
 
   class Points.ExpandablePointListFooter extends App.Views.ItemView
     template : '#tpl_points_expandable_footer'
-    browsing : false
+    is_expanded : false
 
     initialize : (options = {}) ->
       @collection = options.collection
 
-    setBrowsing : (browsing) ->
-      @browsing = browsing
+    setExpanded : (expanded) ->
+      @is_expanded = expanded
       @render()
 
     onShow : ->
@@ -190,16 +190,16 @@
       params = _.extend data,
         cnt : _.size @collection.fullCollection
         has_more_points : @collection.state.totalPages > 1
-        browsing_all : @browsing
+        is_expanded : @is_expanded
         label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true, plural:true}) else tenant.getConLabel({capitalize:false, plural:true})        
 
       params
 
     events : 
-      'click [data-target="browse-toggle"]' : 'handleToggleBrowse'
+      'click [data-target="expand-toggle"]' : 'handleExpandToggle'
 
-    handleToggleBrowse : (ev) ->
-      @trigger 'points:browsing:toggle', @browsing
+    handleExpandToggle : (ev) ->
+      @trigger 'points:toggle_expanded', @is_expanded
       ev.stopPropagation()
 
   class Points.UserReasonsPointListFooter extends App.Views.ItemView

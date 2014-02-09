@@ -5,12 +5,12 @@
 //IE8 doesn't support transform: translate ...
 .no-csstransforms
   .reasons
-    &[data-state="separated"]
+    &[state="crafting"]
 
       .aggregated-propoints-region, .aggregated-conpoints-region
         left: 0
 
-    &[data-state="together"], &[data-state="collapsed"]
+    &[state="results"], &[state="summary"]
 
       .aggregated-propoints-region
         left: $point-width - ($point-width - $decision_board_width/2) + 4
@@ -21,20 +21,20 @@
 
 
   .reasons  
-    &[data-state="separated"], &[data-state="collapsed"]
+    &[state="crafting"], &[state="summary"]
       top: -$aggregate_area_height
 
-    &[data-state="separated"][data-state-from="together"]
+    &[state="crafting"][coming-from-state="results"]
       top: 0
 
-    &[data-state="separated"][data-state-from="together"]
+    &[state="crafting"][coming-from-state="results"]
       .position-region
         top: - 2 * $vertical_baseline
 
       .aggregated-propoints-region, .aggregated-conpoints-region
         top: $vertical_baseline
 
-    &[data-state="separated"][data-state-from="collapsed"], &[data-state="separated"]
+    &[state="crafting"][coming-from-state="summary"], &[state="crafting"]
       .position-region
         top: 3 * $vertical_baseline
 
@@ -42,33 +42,33 @@
         top: 6 * $vertical_baseline
 
 
-    &[data-state="collapsed"]
+    &[state="summary"]
       .position-region
         top: $aggregate_area_height + $vertical_baseline
 
 
   [data-activity="proposal-no-activity"]
-    .reasons[data-state="collapsed"] 
+    .reasons[state="summary"] 
       top: 0
 
       .position-region
         top: 0
 
-  [data-state="0"]
+  [state="summary"]
     .proposal-description-region
       left: -$dialog_stutter
 
-  [data-state="0"].transitioning
+  [state="summary"].transitioning
     .proposal-description-region
       left: 0
 
 
-  [data-state="1"]
+  [state="crafting"]
     margin-bottom: 4 * $vertical_baseline
 
 
 
-.results[data-state="separated"][data-state-from="together"] 
+.results[state="crafting"][coming-from-state="results"] 
   .histogram-bar, .histogram, .histogram-base
     visibility: hidden
 

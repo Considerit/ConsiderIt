@@ -2,13 +2,6 @@
   
   class Proposal.DescriptionController extends App.Controllers.StatefulController
 
-    state_map : ->
-      map = {}
-      map[Proposal.State.collapsed] = Proposal.DescriptionState.collapsed
-      map[Proposal.State.expanded.crafting] = Proposal.DescriptionState.expandedSeparated
-      map[Proposal.State.expanded.results] = Proposal.DescriptionState.expandedTogether
-      map
-
 
     initialize : (options = {}) ->
       super options
@@ -33,13 +26,13 @@
 
       already_showing_details = region.$el.find('.proposal-details').length > 0
 
-      if @state != Proposal.DescriptionState.collapsed && @prior_state == Proposal.DescriptionState.collapsed && !already_showing_details
+      if @state != Proposal.State.Summary && @prior_state == Proposal.State.Summary && !already_showing_details
         
         view.ui.details.hide()
         region.$el.empty().append view.el
         view.ui.details.slideDown 500
         #view.ui.details.show()
-      else# if @state == Proposal.DescriptionState.collapsed || @prior_state == null
+      else# if @state == Proposal.State.Summary || @prior_state == null
         region.$el.empty().append view.el
 
     setupLayout : (layout) ->

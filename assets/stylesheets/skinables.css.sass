@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////
+Z////////////////////////////////////////////////////////
 // THEME: Processes all styles requiring skin variables.
 ////////////////////////////////////////////////////////
 @import "variables"
@@ -248,7 +248,7 @@ a
 
 // franklin/proposal/crafting
 .position
-  &[data-state="separated"], &[data-state="together"]
+  &[state="crafting"], &[state="results"]
     .position-message-body
       @extend %on_decision_board
 
@@ -270,7 +270,7 @@ a
   .stance-slider-container .noUiSlider
     background-color: $slider_background_color 
 
-[data-state="collapsed"] .reasons-footer-region
+[state="summary"] .reasons-footer-region
   @extend %on_peer_area
 
 // franklin/proposal/description
@@ -289,7 +289,7 @@ a
 
 // franklin/proposal/toggle
 .proposal-state-toggle
-  &[data-state="separated"], &[data-state="together"]
+  &[state="crafting"], &[state="results"]
 
     .proposal-state-primary
       color: $decision_board_text_color
@@ -323,19 +323,19 @@ a
     &:hover
       +font-size(-3)
 
-[data-state="points-separated"] .point-peer.point-unexpanded, .point.point-expanded
+.peer-reasons[state="crafting"] .point-peer.point-unexpanded, .point.point-expanded
   .point-wrap
     @extend %on_peer_area
 
-[data-state="points-separated"], [data-state="points-together"]
+.peer-reasons[state="crafting"], .peer-reasons[state="results"]
   .point-unexpanded.point-peer:hover .point-wrap
     background-color: deemphasize($peer_background_color, 15%)
 
-[data-state="points-separated"] .point-peer.point-unexpanded
+.peer-reasons[state="crafting"] .point-peer.point-unexpanded
   .point-wrap
     +single-box-shadow($color: rgba(black, .1), $voff: 1px)
 
-.point-expanded, [data-state="points-separated"] .point-peer.point-unexpanded
+.point-expanded, .peer-reasons[state="crafting"] .point-peer.point-unexpanded
   .point-wrap
     border: 1px solid
     border-color: emphasize($peer_background_color, 5%) emphasize($peer_background_color, 10%) emphasize($peer_background_color, 5%) emphasize($peer_background_color, 15%)
@@ -343,25 +343,25 @@ a
 
 
 // franklin/points
-[data-state="points-collapsed"] .pointlist-footer-more i
+.peer-reasons[state="summary"] .pointlist-footer-more i
   color: emphasize($base_background_color, 25%)
 
 .peer-reasons
 
-  &[data-state="points-separated"] .pointlist-header-label
+  &[state="crafting"] .pointlist-header-label
     color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
-  &[data-state="points-separated"], &[data-state="points-together"]
+  &[state="crafting"], &[state="results"]
     .pointlist-browse-sort:hover .pointlist-browse-sort-menu
       +on_menu
 
-  &[data-state="points-collapsed"], &[data-state="points-together"]
+  &[state="summary"], &[state="results"]
     +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
 
 .position-points .pointlist-header-label
   border-bottom-color: $decision_board_text_color
 
-.peer-reasons[data-state="points-together"], .peer-reasons[data-state="points-separated"] 
+.peer-reasons[state="results"], .peer-reasons[state="crafting"] 
   .pointlist-browse-header-open, .pointlist-browse-header-close
     color: deemphasize($base_text_color, 50%, $reference: $base_background_color)
 

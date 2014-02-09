@@ -100,7 +100,7 @@
       @$el.show()
 
     selectBar : (ev) ->
-      return if $('.point-expanded').length > 0 #|| @state != Proposal.ReasonsState.together 
+      return if $('.point-expanded').length > 0 #|| @state != Proposal.State.Results 
       $target = $(ev.currentTarget)
       hard_select = ev.type == 'click'
 

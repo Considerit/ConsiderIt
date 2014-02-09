@@ -3,7 +3,7 @@
 @import "compass/css3/transition"
 
 .position
-  &[data-state="separated"], &[data-state="together"]
+  &[state="crafting"], &[state="results"]
     .position-message-body
       border-style: solid
 
@@ -21,7 +21,7 @@
 
 
 //separated footer
-[data-state="together"]
+[state="results"]
   .position-footer
     visibility: hidden
 
@@ -50,7 +50,7 @@
       float: right
       +font-size(-2)
 
-.reasons-header-region, [data-state="separated"][data-state-from="collapsed"].transitioning .reasons-header-region
+.reasons-header-region, [state="crafting"][coming-from-state="summary"].transitioning .reasons-header-region
   width: $decision_board_width
   position: relative
   margin-left: -$grid_gutter / 2 - 2
@@ -58,7 +58,7 @@
   border: 2px transparent
   display: block
 
-[data-state="separated"], [data-state="together"]
+[state="crafting"], [state="results"]
   .reasons-header-region
     // border-radius: 16px 16px 0 0
     // border: 2px solid

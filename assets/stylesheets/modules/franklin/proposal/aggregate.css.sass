@@ -10,13 +10,13 @@ $histogram_bar_height: 150px
 .proposal-aggregate-region
   position: relative
 
-[data-state="together"] .proposal-aggregate-region
+[state="results"] .proposal-aggregate-region
   z-index: 20 // allows for bubble to go over the reasons on mousing over histogram bar; but can't do on the homepage
 
 .results
   height: $aggregate_area_height
   
-  &[data-state="together"], &[data-state="separated"][data-state-from="together"]
+  &[state="results"], &[state="crafting"][coming-from-state="results"]
     .histogram
       visibility: visible
       display: block
@@ -29,7 +29,7 @@ $histogram_bar_height: 150px
 
   &.transitioning
 
-    &[data-state="together"][data-state-from="collapsed"]
+    &[state="results"][coming-from-state="summary"]
       .bar-people
         visibility: hidden
       .histogram-base-label
@@ -37,25 +37,25 @@ $histogram_bar_height: 150px
 
 
 
-  &[data-state="together"][data-state-from="separated"]
+  &[state="results"][coming-from-state="crafting"]
     .histogram-bar
       opacity: 1
     .histogram-base, .bar-people  
       opacity: 1
 
-  &[data-state="separated"][data-state-from="together"]
+  &[state="crafting"][coming-from-state="results"]
     .histogram-bar
       opacity: .1
     .histogram-base, .bar-people  
       opacity: 0
 
 
-[data-state="separated"]
+[state="crafting"]
   .histogram-bar
     [data-target="user_profile_page"]
       cursor: auto
 
-[data-state="together"]
+[state="results"]
   .histogram-bar
     cursor: pointer
 

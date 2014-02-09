@@ -3,10 +3,10 @@
   class Franklin.Router extends Marionette.AppRouter
     appRoutes : 
       "" : "Root"      
-      ":proposal": "Consider"
-      ":proposal/results": "Aggregate"
-      ":proposal/points/:point" : "PointDetails"
-      ":proposal/positions/:user_id" : "StaticPosition"
+      ":proposal": "CraftOpinion"
+      ":proposal/results": "Results"
+      ":proposal/points/:point" : "OpenPoint"
+      ":proposal/positions/:user_id" : "UserPosition"
 
 
   API =
@@ -35,7 +35,7 @@
       App.request 'meta:change:default'
 
 
-    Consider: (long_id) -> 
+    CraftOpinion: (long_id) -> 
       return if ConsiderIt.inaccessible_proposal != null      
       proposal = App.request 'proposal:get', long_id, true
       history = [ 
@@ -49,7 +49,7 @@
           App.request 'meta:set', proposal.getMeta() 
 
 
-    Aggregate: (long_id) -> 
+    Results: (long_id) -> 
       return if ConsiderIt.inaccessible_proposal != null      
       proposal = App.request 'proposal:get', long_id, true
       history = [ 
@@ -64,7 +64,7 @@
           App.request 'meta:set', proposal.getMeta() 
 
 
-    PointDetails: (long_id, point_id) -> 
+    OpenPoint: (long_id, point_id) -> 
       return if ConsiderIt.inaccessible_proposal != null      
       proposal = App.request 'proposal:get', long_id, true
       point = App.request 'point:get', parseInt(point_id), true, long_id
@@ -82,7 +82,7 @@
       @_transitionProposal proposal, history, 
         point : point
         callback : =>
-          region.controlled_by.trigger 'point:show_details', point
+          region.controlled_by.trigger 'point:open', point
           App.request 'meta:change:default'
 
 
@@ -162,7 +162,7 @@
           if options.callback
             options.callback()
 
-    StaticPosition: (long_id, user_id) ->
+    UserPosition: (long_id, user_id) ->
       return if ConsiderIt.inaccessible_proposal != null      
 
       proposal = App.request 'proposal:get', long_id, true

@@ -29,10 +29,10 @@
       _.delayIfWait wait, =>
 
 
-        @updatePeerPoints @layout
+        @updateCommunityPoints @layout
 
         if !@crafting_controller #&& @options.model.fetched && @state != Proposal.State.Summary
-          @crafting_controller = @getCraftingController @layout.positionRegion
+          @crafting_controller = @getCraftingController @layout.opinionRegion
           @setupCraftingController @crafting_controller 
 
 
@@ -50,8 +50,8 @@
 
       @listenTo layout, 'show', =>
         @listenTo layout, 'point:viewed', (point_id) =>
-          position = @model.getUserPosition()
-          position.addViewedPoint point_id if position
+          opinion = @model.getUserOpinion()
+          opinion.addViewedPoint point_id if opinion
 
         @listenTo layout, 'show_results', =>
           if @state == Proposal.State.Summary
@@ -59,19 +59,19 @@
 
         @processStateChange()
 
-    updatePeerPoints : (layout) ->
+    updateCommunityPoints : (layout) ->
       
-      if @peer_pros_controller && @peer_cons_controller
-        all_points = App.request 'points:get:proposal', @model.id
-        @peer_pros_controller.options.collection.fullCollection.add all_points.filter((point) -> point.isPro()) 
-        @peer_cons_controller.options.collection.fullCollection.add all_points.filter((point) -> !point.isPro())
+      if @community_pros_controller && @community_cons_controller
+        all_points = App.request 'points:get_by_proposal', @model.id
+        @community_pros_controller.options.collection.fullCollection.add all_points.filter((point) -> point.isPro()) 
+        @community_cons_controller.options.collection.fullCollection.add all_points.filter((point) -> !point.isPro())
 
 
-        _.each [@peer_pros_controller, @peer_cons_controller], (controller) =>
+        _.each [@community_pros_controller, @community_cons_controller], (controller) =>
           collection = controller.options.collection
           switch @state 
             when Proposal.State.Crafting
-              included_points = @model.getUserPosition().getIncludedPoints()              
+              included_points = @model.getUserOpinion().getIncludedPoints()              
               collection.fullCollection.remove (App.request('point:get', i) for i in included_points)
               collection.setPageSize 4
               controller.sortPoints 'persuasiveness'
@@ -90,24 +90,24 @@
         points = switch @state 
           when Proposal.State.Summary
             page_size = 1
-            App.request 'points:get:proposal:top', @model.id
+            App.request 'points:get_top_points_for_proposal', @model.id
           when Proposal.State.Crafting
-            included_points = @model.getUserPosition().getIncludedPoints()
-            all_points = App.request 'points:get:proposal', @model.id
+            included_points = @model.getUserOpinion().getIncludedPoints()
+            all_points = App.request 'points:get_by_proposal', @model.id
             page_size = 4
             new App.Entities.Points all_points.filter (point) -> !(point.id in included_points)
           else
             page_size = 4
-            App.request 'points:get:proposal', @model.id
+            App.request 'points:get_by_proposal', @model.id
 
-        aggregated_pros = new App.Entities.PaginatedPoints points.filter((point) -> point.isPro()), {state: {pageSize:page_size} }
-        aggregated_cons = new App.Entities.PaginatedPoints points.filter((point) -> !point.isPro()), {state: {pageSize:page_size} }
+        community_pros = new App.Entities.PaginatedPoints points.filter((point) -> point.isPro()), {state: {pageSize:page_size} }
+        community_cons = new App.Entities.PaginatedPoints points.filter((point) -> !point.isPro()), {state: {pageSize:page_size} }
 
 
-        @peer_pros_controller = @getPointsController layout.peerProsRegion, 'pro', aggregated_pros
-        @peer_cons_controller = @getPointsController layout.peerConsRegion, 'con', aggregated_cons
+        @community_pros_controller = @getPointsController layout.communityProsRegion, 'pro', community_pros
+        @community_cons_controller = @getPointsController layout.communityConsRegion, 'con', community_cons
 
-        _.each [ [@peer_pros_controller, @peer_cons_controller], [@peer_cons_controller, @peer_pros_controller]], (item) =>
+        _.each [ [@community_pros_controller, @community_cons_controller], [@community_cons_controller, @community_pros_controller]], (item) =>
           [controller, other_controller] = item
           @listenTo controller, 'point:opened', (point) =>
             @layout.pointWasOpened controller.region
@@ -126,22 +126,22 @@
               @layout.pointsWereUnexpanded valence
 
 
-        @setupPointsController @peer_pros_controller
-        @setupPointsController @peer_cons_controller
+        @setupPointsColumnController @community_pros_controller
+        @setupPointsColumnController @community_cons_controller
 
     segmentPeerPoints : (segment) ->
       # @layout.reasonsHeaderRegion.show @getHeaderView(segment)
 
-      _.each [@peer_pros_controller, @peer_cons_controller], (controller, idx) =>
+      _.each [@community_pros_controller, @community_cons_controller], (controller, idx) =>
         controller.segmentPeerPoints segment
 
       @layout.sizeToFit()
 
     includePoint : (model) ->
-      position = @model.getUserPosition()
-      position.includePoint model
+      opinion = @model.getUserOpinion()
+      opinion.includePoint model
 
-      source_controller = if model.isPro() then @peer_pros_controller else @peer_cons_controller
+      source_controller = if model.isPro() then @community_pros_controller else @community_cons_controller
       source = source_controller.options.collection
       source.remove model
 
@@ -187,36 +187,31 @@
 
     setupCraftingController : (controller) ->
       @listenTo controller, 'point:removal', (model) =>
-        points_controller = if model.isPro() then @peer_pros_controller else @peer_cons_controller
+        points_controller = if model.isPro() then @community_pros_controller else @community_cons_controller
         points_controller.options.collection.add model
         @trigger 'point:removal', model.id
 
       @listenTo controller, 'point:opened', (point) =>
-        @layout.pointWasOpened @layout.positionRegion
+        @layout.pointWasOpened @layout.opinionRegion
 
         @listenTo controller, 'point:closed', (point) => 
-          @layout.pointWasClosed @layout.positionRegion
+          @layout.pointWasClosed @layout.opinionRegion
 
-      # After signing in, the existing user may have a preexisting position. We need
-      # to refresh the points shown in the margins if that preexisting position had included points.
+      # After signing in, the existing user may have a preexisting opinion. We need
+      # to refresh the points shown in the margins if that preexisting opinion had included points.
       # Similarily after a user signs out, the points in their list should be returned to peer points.
-      @listenTo controller, 'signin:position_changed', (existing_position_had_included_points) =>
-        if @state == Proposal.State.Crafting && existing_position_had_included_points
+      @listenTo controller, 'signin:opinion_changed', (existing_opinion_had_included_points) =>
+        if @state == Proposal.State.Crafting && existing_opinion_had_included_points
           @saveOpenPoint()          
-          @updatePeerPoints @layout
+          @updateCommunityPoints @layout
           @restoreOpenPoint()
-          
 
-      @listenTo controller, 'position:published', =>
-        @trigger 'position:published'
+      @listenTo controller, 'opinion_published', => @trigger 'opinion_published'
 
-      @listenTo controller, 'point:include', (model) =>
-        @includePoint model
+      @listenTo controller, 'point:include', (model) => @includePoint model
 
 
-
-
-    setupPointsController : (controller) ->
+    setupPointsColumnController : (controller) ->
       @listenTo controller, 'point:highlight_includers', (view) =>
         if @state == Proposal.State.Results
           # don't highlight users on point mouseover unless the histogram is fully visible
@@ -244,7 +239,7 @@
         prior_state : @prior_state
 
     getPointsController : (region, valence, collection) ->
-      new App.Franklin.Points.PeerPointsController
+      new App.Franklin.Points.CommunityPointsController
         valence : valence
         collection : collection
         proposal : @model

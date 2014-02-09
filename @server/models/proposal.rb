@@ -1,6 +1,6 @@
 class Proposal < ActiveRecord::Base
   has_many :points, :dependent => :destroy
-  has_many :positions, :dependent => :destroy
+  has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
 
@@ -38,7 +38,7 @@ class Proposal < ActiveRecord::Base
       :proposal => self,
       :points => Point.mask_anonymous_users(points.viewable.public_fields, current_user),
       :included_points => Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).select('points.id') + Point.included_by_unstored(prop_data[:included_points].keys, self).select('points.id'),
-      :positions => positions.published.public_fields,
+      :opinions => opinions.published.public_fields,
       :result => 'success'
     }
 
@@ -165,7 +165,7 @@ class Proposal < ActiveRecord::Base
 
   def stance_fractions
     distribution = Array.new(7,0)
-    positions.published.select('COUNT(*) AS cnt, stance_bucket').group(:stance_bucket).each do |row|
+    opinions.published.select('COUNT(*) AS cnt, stance_bucket').group(:stance_bucket).each do |row|
       distribution[row.stance_bucket.to_i] = row.cnt.to_i
     end      
     total = distribution.inject(:+).to_f
@@ -185,16 +185,16 @@ class Proposal < ActiveRecord::Base
       self.num_comments += pnt.comments.count
       self.num_inclusions += pnt.inclusions.count
     end
-    self.num_perspectives = positions.published.count
-    self.num_unpublished_positions = positions.where(:published => false).count
-    self.num_supporters = positions.published.where("stance_bucket > ?", 3).count
-    self.num_opposers = positions.published.where("stance_bucket < ?", 3).count
+    self.num_perspectives = opinions.published.count
+    self.num_unpublished_opinions = opinions.where(:published => false).count
+    self.num_supporters = opinions.published.where("stance_bucket > ?", 3).count
+    self.num_opposers = opinions.published.where("stance_bucket < ?", 3).count
 
-    provocative = num_perspectives == 0 ? 0 : num_perspectives.to_f / (num_perspectives + num_unpublished_positions)
+    provocative = num_perspectives == 0 ? 0 : num_perspectives.to_f / (num_perspectives + num_unpublished_opinions)
 
-    latest_positions = positions.published.where(:created_at => 1.week.ago.beginning_of_week.advance(:days => -1)..1.week.ago.end_of_week).order('created_at DESC')    
-    late_perspectives = latest_positions.count
-    late_supporters = latest_positions.where("stance_bucket > ?", 3).count
+    latest_opinions = opinions.published.where(:created_at => 1.week.ago.beginning_of_week.advance(:days => -1)..1.week.ago.end_of_week).order('created_at DESC')    
+    late_perspectives = latest_opinions.count
+    late_supporters = latest_opinions.where("stance_bucket > ?", 3).count
     self.trending = late_perspectives == 0 ? 0 : Math.log2(late_supporters + 1) * late_supporters.to_f / late_perspectives
 
     # combining provocative and trending for now...
@@ -206,7 +206,7 @@ class Proposal < ActiveRecord::Base
     self.contested = -4 * polarization ** 2 + 1
 
 
-    self.participants = positions(:select => [:user_id]).published.map {|x| x.user_id}.uniq.compact.to_s
+    self.participants = opinions(:select => [:user_id]).published.map {|x| x.user_id}.uniq.compact.to_s
     tc = points(:select => [:id]).cons.published.order('score DESC').limit(1)[0]
     tp = points(:select => [:id]).pros.published.order('score DESC').limit(1)[0]
     self.top_con = !tc.nil? ? tc.id : nil

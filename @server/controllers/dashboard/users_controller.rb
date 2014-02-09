@@ -8,13 +8,13 @@ class Dashboard::UsersController < Dashboard::DashboardController
     referenced_proposals = {}
     referenced_points = {}
 
-    positions = []
-    user.positions.published.each do |position|
-      if !referenced_proposals.has_key?(position.proposal_id)
-        proposal = Proposal.find(position.proposal_id) 
+    opinions = []
+    user.opinions.published.each do |opinion|
+      if !referenced_proposals.has_key?(opinion.proposal_id)
+        proposal = Proposal.find(opinion.proposal_id) 
         if can?(:read, proposal)  
-          referenced_proposals[position.proposal_id] = proposal
-          positions.push user.positions.where(:proposal_id => position.proposal_id).published.public_fields.last
+          referenced_proposals[opinion.proposal_id] = proposal
+          opinions.push user.opinions.where(:proposal_id => opinion.proposal_id).published.public_fields.last
         end
       end
     end
@@ -85,7 +85,7 @@ class Dashboard::UsersController < Dashboard::DashboardController
       :proposals => user_proposals.public_fields,
       :referenced_proposals => referenced_proposals,
       :referenced_points => referenced_points,
-      :positions => positions,
+      :opinions => opinions,
       :points => points.where("id in (?)", accessible_points).public_fields,
       :comments => user.comments.public_fields,
       :influenced_users => influenced_users,

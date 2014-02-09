@@ -1,6 +1,6 @@
 
 
-- num_positions = @proposal.positions.published.count
+- num_opinions = @proposal.opinions.published.count
 - stance_breakdown = @proposal.stance_fractions
 - barheight = 100
 - support_pole = @proposal.slider_left && @proposal.slider_left.length > 0 ? @proposal.slider_left : 'Supporters'
@@ -9,7 +9,7 @@
 %p.intro
   %strong
     = succeed ' ' do
-      #{num_positions} 
+      #{num_opinions} 
   people have now weighed in on 
   - if @proposal.user_id
     = surround ' ', '\'s proposal '  do 
@@ -18,9 +18,9 @@
     "#{link_to @proposal.title, proposal_url(@proposal.long_id, :host => @host)}"
 
 - height_scaler = stance_breakdown.max
-- user_position = @user.positions.published.where(:proposal_id => @proposal.id).first
+- user_opinion = @user.opinions.published.where(:proposal_id => @proposal.id).first
 
-- if num_positions < 10
+- if num_opinions < 10
   
   .text_supporters
 
@@ -29,34 +29,34 @@
         %th
           Support
         %td
-          - users = @proposal.positions.published.where(:stance_bucket => 6).map {|x| x.user.short_name}.compact
-          - users += @proposal.positions.published.where(:stance_bucket => 5).map {|x| x.user.short_name}.compact
+          - users = @proposal.opinions.published.where(:stance_bucket => 6).map {|x| x.user.short_name}.compact
+          - users += @proposal.opinions.published.where(:stance_bucket => 5).map {|x| x.user.short_name}.compact
           = users.join(', ')
       %tr
         %th
           Lean support
         %td
-          - users = @proposal.positions.published.where(:stance_bucket => 4).map {|x| x.user.short_name}.compact
+          - users = @proposal.opinions.published.where(:stance_bucket => 4).map {|x| x.user.short_name}.compact
           = users.join(', ')
 
       %tr
         %th
           Neutral
         %td
-          - users = @proposal.positions.published.where(:stance_bucket => 3).map {|x| x.user.short_name}.compact
+          - users = @proposal.opinions.published.where(:stance_bucket => 3).map {|x| x.user.short_name}.compact
           = users.join(', ')
       %tr
         %th
           Lean oppose
         %td
-          - users = @proposal.positions.published.where(:stance_bucket => 2).map {|x| x.user.short_name}.compact
+          - users = @proposal.opinions.published.where(:stance_bucket => 2).map {|x| x.user.short_name}.compact
           = users.join(', ')
       %tr
         %th
           Oppose
         %td
-          - users = @proposal.positions.published.where(:stance_bucket => 1).map {|x| x.user.short_name}.compact
-          - users += @proposal.positions.published.where(:stance_bucket => 0).map {|x| x.user.short_name}.compact
+          - users = @proposal.opinions.published.where(:stance_bucket => 1).map {|x| x.user.short_name}.compact
+          - users += @proposal.opinions.published.where(:stance_bucket => 0).map {|x| x.user.short_name}.compact
           = users.join(', ')
 
 - else
@@ -80,9 +80,9 @@
 
         - stance_breakdown.reverse.each_with_index do |bucket_percentile, index| 
           %td.spanner
-            - if user_position && user_position.stance_bucket == 6 - index
-              .personal_position.update
-                #{link_to 'You', new_position_proposal_url(@proposal.long_id)} &#8593;
+            - if user_opinion && user_opinion.stance_bucket == 6 - index
+              .personal_opinion.update
+                #{link_to 'You', new_opinion_proposal_url(@proposal.long_id)} &#8593;
                   
         %td.oppose
           = oppose_pole

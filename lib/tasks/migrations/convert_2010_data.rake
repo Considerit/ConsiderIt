@@ -130,7 +130,7 @@ namespace :data do
         })
         
         if save && users[row['user_id']].positions.where(:proposal_id => proposals[row['initiative_id']].id).count > 0
-          point.position_id = users[row['user_id']].positions.where(:proposal_id => proposals[row['initiative_id']].id).published.first.id if save
+          point.opinion_id = users[row['user_id']].positions.where(:proposal_id => proposals[row['initiative_id']].id).published.first.id if save
         end
         points[row['id']] = point
 
@@ -154,7 +154,7 @@ namespace :data do
             :account_id => 1
           })
 
-          inclusion.position_id = users[row['user_id']].positions.where(:proposal_id => proposals[row['initiative_id']].id).published.first.id if save
+          inclusion.opinion_id = users[row['user_id']].positions.where(:proposal_id => proposals[row['initiative_id']].id).published.first.id if save
 
           inclusions[row['id']] = inclusion
 
@@ -181,7 +181,7 @@ namespace :data do
             :account_id => 1
           })
 
-          listing.position_id = users[row['user_id']].positions.where(:proposal_id => proposals[row['initiative_id']].id).published.first.id if save
+          listing.opinion_id = users[row['user_id']].positions.where(:proposal_id => proposals[row['initiative_id']].id).published.first.id if save
 
           listings[row['id']] = listing
 

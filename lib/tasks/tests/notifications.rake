@@ -18,7 +18,7 @@ namespace :test do
     mail_options = {:host => host, :from => from, :app_title => app_title, :current_tenant => account}
 
     ###### Discussion level ######
-    proposal = get_proposal_with_no_positions(account)
+    proposal = get_proposal_with_no_opinions(account)
     pp "****************"
     pp "discussion_new_proposal"
     pp "Proposal: #{proposal.id}"
@@ -27,7 +27,7 @@ namespace :test do
     end
 
     ###### Proposal level ######
-    proposal = get_proposal_with_positions(account)
+    proposal = get_proposal_with_opinions(account)
     pp "****************"
     pp "proposal_milestone_reached"
     pp "Proposal: #{proposal.id}"
@@ -35,7 +35,7 @@ namespace :test do
       email = EventMailer.proposal_milestone_reached(user, proposal, 100, mail_options).deliver!
     end
 
-    notification_types = ['your proposal', 'position submitter', 'lurker']
+    notification_types = ['your proposal', 'opinion submitter', 'lurker']
     notification_types.each do |nt|
       proposal = get_proposal_with_points(account)
       next if proposal.nil?
@@ -114,18 +114,18 @@ namespace :test do
     account.points.published.sample.proposal
   end
 
-  def get_proposal_with_no_positions(account)
+  def get_proposal_with_no_opinions(account)
     proposal = nil
     i = 0
-    until proposal && (proposal.positions.count == 0 || i > 50)
+    until proposal && (proposal.opinions.count == 0 || i > 50)
       proposal = account.proposals.sample
       i += 1
     end
     proposal
   end
 
-  def get_proposal_with_positions(account)
-    account.positions.published.sample.proposal
+  def get_proposal_with_opinions(account)
+    account.opinions.published.sample.proposal
   end
 
 end

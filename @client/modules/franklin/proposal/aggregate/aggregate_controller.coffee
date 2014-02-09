@@ -29,7 +29,7 @@
 
     processStateChange : ->
       if @state == Proposal.State.Results || (@state == Proposal.State.Crafting && @prior_state != Proposal.State.Results)
-        #reset the layout such that updated positions are shown correctly in the histogram
+        #reset the layout such that updated opinions are shown correctly in the histogram
         @createHistogram @layout
 
       if @state == Proposal.State.Results
@@ -74,31 +74,27 @@
               @histogram_view.finishSelectingBar segment, hard_select
         layout.histogramRegion.show @histogram_view 
 
-
-
-
-
     _createHistogram : () ->
       $histogram_bar_height = 145
       $histogram_bar_width = 70
 
-      breakdown = [{positions:[]} for i in [0..6]][0]
+      breakdown = [{opinions:[]} for i in [0..6]][0]
 
-      positions = @model.getPositions()
-      positions.each (pos) ->
-        breakdown[6-pos.get('stance_bucket')].positions.push(pos) if pos.get('user_id') > -1
+      opinions = @model.getOpinions()
+      opinions.each (pos) ->
+        breakdown[6-pos.get('stance_bucket')].opinions.push(pos) if pos.get('user_id') > -1
 
       histogram =
         breakdown : _.values breakdown
-        biggest_segment : Math.max.apply(null, _.map(breakdown, (bar) -> bar.positions.length))
-        num_positions : positions.length
+        biggest_segment : Math.max.apply(null, _.map(breakdown, (bar) -> bar.opinions.length))
+        num_opinions : opinions.length
 
       for bar,idx in histogram.breakdown
-        height = bar.positions.length / histogram.biggest_segment
+        height = bar.opinions.length / histogram.biggest_segment
         full_size = Math.ceil(height * $histogram_bar_height)
         empty_size = $histogram_bar_height * (1 - height)
 
-        tile_size = window.getTileSize($histogram_bar_width, full_size, bar.positions.length)
+        tile_size = window.getTileSize($histogram_bar_width, full_size, bar.opinions.length)
 
         tiles_per_row = Math.floor( $histogram_bar_width / tile_size)
 
@@ -106,11 +102,11 @@
           tile_size : tile_size
           full_size : full_size
           empty_size : empty_size
-          num_ghosts : if bar.positions.length % tiles_per_row != 0 then tiles_per_row - bar.positions.length % tiles_per_row else 0
+          num_ghosts : if bar.opinions.length % tiles_per_row != 0 then tiles_per_row - bar.opinions.length % tiles_per_row else 0
           bucket : idx
-          group_name : App.Entities.Position.stance_name 6 - idx
+          group_name : App.Entities.Opinion.stance_name 6 - idx
 
-        bar.positions = _.sortBy bar.positions, (pos) -> 
+        bar.opinions = _.sortBy bar.opinions, (pos) -> 
           !pos.getUser().get('avatar_file_name')?
 
       histogram

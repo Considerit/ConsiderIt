@@ -5,10 +5,10 @@
     className: 'reasons'
 
     regions : 
-      positionRegion : '.position-region'
+      opinionRegion : '.opinion-region'
       footerRegion : '.reasons-footer-region'      
-      peerProsRegion : '.aggregated-propoints-region'
-      peerConsRegion : '.aggregated-conpoints-region'
+      communityProsRegion : '.community-pros-region'
+      communityConsRegion : '.community-cons-region'
       participantsRegion : '.participants'
 
     initialize : (options = {}) ->
@@ -30,36 +30,36 @@
     pointsWereExpanded : (valence) ->
 
       if valence == 'pro'
-        @peerProsRegion.$el.addClass 'points_are_expanded'
+        @communityProsRegion.$el.addClass 'points_are_expanded'
         @$el.addClass 'some_points_are_expanded pro_points_are_expanded'
 
       else
-        @peerConsRegion.$el.addClass 'points_are_expanded'
+        @communityConsRegion.$el.addClass 'points_are_expanded'
         @$el.addClass 'some_points_are_expanded con_points_are_expanded'
 
       @sizeToFit 10
 
     pointsWereUnexpanded : (valence) ->
-      @peerConsRegion.$el.css 
+      @communityConsRegion.$el.css 
         right: ''
-        @positionRegion.$el.css 
+        @opinionRegion.$el.css 
           left: ''
 
       if valence == 'con'
-        @peerProsRegion.$el.css 
+        @communityProsRegion.$el.css 
           left: ''
 
-        @peerConsRegion.$el.removeClass 'points_are_expanded'
+        @communityConsRegion.$el.removeClass 'points_are_expanded'
         @$el.removeClass 'some_points_are_expanded con_points_are_expanded'
 
       else
-        @peerProsRegion.$el.removeClass 'points_are_expanded'
+        @communityProsRegion.$el.removeClass 'points_are_expanded'
         @$el.removeClass 'some_points_are_expanded pro_points_are_expanded'
 
       @sizeToFit 10
 
     _sizeToFit : (minheight) ->
-      $to_fit = @$el.find('.reasons-lists')
+      $to_fit = @$el.find('.four_columns_of_points')
 
       $to_fit.css 'height', ''
       $to_fit.parent().css 'min-height', ''
@@ -79,7 +79,7 @@
         @_sizeToFit minheight
 
     events : 
-      'mouseenter .point-peer' : 'logPointView'
+      'mouseenter .community_point' : 'logPointView'
       'click .points-list-region' : 'reasonsClicked'
       'click .participants' : 'reasonsClicked'      
       'click .reasons-footer-region' : 'reasonsClicked'            
@@ -96,7 +96,7 @@
         @trigger 'point:viewed', pnt
 
     reasonsClicked : (ev) ->
-      if @state == Proposal.State.Summary && $(ev.target).closest('.reasons-header-region').length == 0
+      if @state == Proposal.State.Summary && $(ev.target).closest('.decision-board-heading-region').length == 0
         @trigger 'show_results'
         ev.stopPropagation()
 
@@ -108,7 +108,7 @@
         visibility: 'visible'
 
     hideViewResults : (ev) ->
-      return if @state != Proposal.State.Summary || $(ev.target).closest('.reasons-view-results').length > 0
+      return if @state != Proposal.State.Summary || $(ev.target).closest('.view_results_prompt_from_summary').length > 0
       @hover_state = false
       _.delay =>
         if !@hover_state
@@ -121,9 +121,9 @@
     className : 'reasons-footer-sticky'
 
     serializeData : ->
-      user_position = @model.getUserPosition()
+      user_opinion = @model.getUserOpinion()
       _.extend {}, @model.attributes,
-        call : if user_position && user_position.get('published') then 'Update your position' else 'What do you think? Click to contribute your own position.'
+        call : if user_opinion && user_opinion.get('published') then 'Update your opinion' else 'What do you think? Click to contribute your own opinion.'
 
   class Proposal.ResultsFooterCollapsedView extends App.Views.ItemView
     template : '#tpl_aggregate_footer_collapsed'

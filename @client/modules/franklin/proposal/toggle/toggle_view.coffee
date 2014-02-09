@@ -7,8 +7,8 @@
 
 
     serializeData : ->
-      position = @model.getUserPosition()
-      updating = position && position.get 'published'
+      opinion = @model.getUserOpinion()
+      updating = opinion && opinion.get 'published'
       active = @model.get 'active'
       crafting = @state == Proposal.State.Crafting
       
@@ -30,5 +30,5 @@
 
     onRender : ->
       super
-      position = @model.getUserPosition()
-      @$el.attr 'data-updating', position && position.get 'published'
+      opinion = @model.getUserOpinion()
+      @$el.attr 'data-updating', opinion && opinion.get 'published'

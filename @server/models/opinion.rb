@@ -1,4 +1,4 @@
-class Position < ActiveRecord::Base
+class Opinion < ActiveRecord::Base
   belongs_to :user
   belongs_to :proposal, :touch => true 
   has_many :inclusions
@@ -17,16 +17,16 @@ class Position < ActiveRecord::Base
 
   before_save do 
     self.explanation = Sanitize.clean(self.explanation, Sanitize::Config::RELAXED)
-    self.stance_bucket = Position.get_bucket(self.stance)
+    self.stance_bucket = Opinion.get_bucket(self.stance)
   end 
 
-  def subsume( subsumed_position )
-    subsumed_position.point_listings.update_all({:user_id => user_id, :position_id => id})
-    subsumed_position.points.update_all({:user_id => user_id, :position_id => id})
-    subsumed_position.inclusions.update_all({:user_id => user_id, :position_id => id})
-    subsumed_position.comments.update_all({:commentable_id => id})
-    subsumed_position.published = false
-    subsumed_position.save
+  def subsume( subsumed_opinion )
+    subsumed_opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
+    subsumed_opinion.points.update_all({:user_id => user_id, :opinion_id => id})
+    subsumed_opinion.inclusions.update_all({:user_id => user_id, :opinion_id => id})
+    subsumed_opinion.comments.update_all({:commentable_id => id})
+    subsumed_opinion.published = false
+    subsumed_opinion.save
   end
 
   def update_inclusions
@@ -94,9 +94,9 @@ class Position < ActiveRecord::Base
 
   def self.purge
     User.find_each do |u|
-      proposals = u.positions.map {|p| p.proposal_id}.uniq
+      proposals = u.opinions.map {|p| p.proposal_id}.uniq
       proposals.each do |prop|
-        pos = u.positions.where(:proposal_id => prop)
+        pos = u.opinions.where(:proposal_id => prop)
         if pos.where(:published => true).count > 1
           last = pos.order(:updated_at).last
           pos.where('id != (?)', last.id).each do |p|

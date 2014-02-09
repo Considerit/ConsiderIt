@@ -204,7 +204,7 @@
         wait: true
         success: (proposal) => 
           @proposals_view.collection.add proposal
-          App.navigate Routes.new_position_proposal_path(proposal.id), {trigger: true}
+          App.navigate Routes.new_opinion_proposal_path(proposal.id), {trigger: true}
 
 
     getCreateView : ->

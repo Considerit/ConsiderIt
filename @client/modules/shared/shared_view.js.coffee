@@ -44,7 +44,7 @@
           metrics : [ 
             ['influence', 'metric_influence', 'major'], 
             ['points', 'metric_points', 'minor'], 
-            ['votes', 'metric_positions', 'minor'], 
+            ['votes', 'metric_opinions', 'minor'], 
             ['comments', 'metric_comments', 'minor']  ]
 
 

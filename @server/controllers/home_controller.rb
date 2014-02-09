@@ -41,7 +41,7 @@ class HomeController < ApplicationController
         render :json => {
           :points => points.values,
           :proposals => proposals,
-          :positions => current_user.positions.published
+          :opinions => current_user.opinions.published
         }
       }
     end

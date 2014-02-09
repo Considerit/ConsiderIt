@@ -127,5 +127,5 @@ do ($) ->
     console.log 'Parent states for ', $(this), ':'
     $this = $(this)
     console.log '\t', $this.data('state') if $this.data('state')
-    $(this).parents('[data-state]').each ->
+    $(this).parents('[state]').each ->
       console.log '\t', $(this).data('state'), $(this)

@@ -80,8 +80,8 @@ casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) -
     casper.then -> 
       @wait 1000, ->
         @HTMLStep 'Results page can be accessed from homepage'
-        test.assertExists '[data-role="proposal"] .peer-reasons[data-state="points-collapsed"]', 'Peer reasons exists in collapsed form'
-        @click '[data-role="proposal"]:first-of-type .peer-reasons[data-state="points-collapsed"]:first-of-type'
+        test.assertExists '[data-role="proposal"] .peer-reasons[state="summary"]', 'Peer reasons exists in collapsed form'
+        @click '[data-role="proposal"]:first-of-type .peer-reasons[state="summary"]:first-of-type'
         @wait 5000, ->
           @HTMLCapture 'body', 
             caption : 'The results page'
@@ -301,27 +301,27 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
     test.done() 
 
 assert_homepage_loaded = (test) ->
-  test.assertExists '[data-role="proposal"][data-state="0"]', "there is at least one proposal, and it is collapsed"
+  test.assertExists '[data-role="proposal"][state="summary"]', "there is at least one proposal, and it is collapsed"
   test.assertElementCount '#proposals-container [data-role="proposal"]', 5, "there are 5 active proposals"
   test.assertElementCount '#proposals-container-completed [data-role="proposal"]', 0, "there are no inactive proposals"
   test.assertExists '#proposals-container [data-target="load-proposals"]', 'ability to load more active proposals'
   test.assertExists '#proposals-container-completed [data-target="load-proposals"]', 'ability to load more inactive proposals'
 
 assert_in_results_state = (test) ->
-  test.assertExists '[data-role="proposal"][data-state="4"]', 'Proposal is in results state'
+  test.assertExists '[data-role="proposal"][state="results"]', 'Proposal is in results state'
   test.assertElementCount '[data-role="proposal"]', 1, "there is only one proposal on the page"
   test.assertVisible '.proposal-details', 'Proposal details are visible'
   test.assertElementCount '.histogram-bar', 7, 'There are seven histogram bars visible'
-  test.assertExists '.peer-reasons[data-state="points-together"]', 'Pros and cons in together state'
+  test.assertExists '.peer-reasons[state="results"]', 'Pros and cons in together state'
   test.assertSelectorHasText '.pointlist-header-label', 'Pros', 'Pros present in pros header'
   test.assertSelectorDoesntHaveText '.pointlist-header-label', 'upport', 'Supporter is not present in pros header'
 
 assert_in_crafting_state = (test) ->
-  test.assertExists '[data-role="proposal"][data-state="1"]', 'Proposal is in crafting state'
+  test.assertExists '[data-role="proposal"][state="crafting"]', 'Proposal is in crafting state'
   test.assertElementCount '[data-role="proposal"]', 1, "there is only one proposal on the page"
   test.assertVisible '.proposal-details', 'Proposal details are visible'
-  test.assertExists '.position[data-state="separated"]', 'Decision slate is visible'
-  test.assertExists '.peer-reasons[data-state="points-separated"]', 'Pros and cons on margins'
+  test.assertExists '.position[state="crafting"]', 'Decision slate is visible'
+  test.assertExists '.peer-reasons[state="crafting"]', 'Pros and cons on margins'
   test.assertExists '.stance-slider-container', 'Slider present'
   test.assertElementCount '.point-drop-target', 2, 'Drop targets present'
   test.assertElementCount '.newpoint', 2, 'Add points present'

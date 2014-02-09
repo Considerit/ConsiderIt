@@ -91,24 +91,24 @@
       'mouseleave .participants' : 'hideViewResults'
 
     logPointView : (ev) ->
-      if @state != Proposal.ReasonsState.collapsed
+      if @state != Proposal.State.Summary
         pnt = $(ev.currentTarget).data('id')
         @trigger 'point:viewed', pnt
 
     reasonsClicked : (ev) ->
-      if @state == Proposal.ReasonsState.collapsed && $(ev.target).closest('.reasons-header-region').length == 0
+      if @state == Proposal.State.Summary && $(ev.target).closest('.reasons-header-region').length == 0
         @trigger 'show_results'
         ev.stopPropagation()
 
     showViewResults : (ev) ->
-      return if @state != Proposal.ReasonsState.collapsed
+      return if @state != Proposal.State.Summary
 
       @hover_state = true
       @$el.find('.reasons-footer-region').css
         visibility: 'visible'
 
     hideViewResults : (ev) ->
-      return if @state != Proposal.ReasonsState.collapsed || $(ev.target).closest('.reasons-view-results').length > 0
+      return if @state != Proposal.State.Summary || $(ev.target).closest('.reasons-view-results').length > 0
       @hover_state = false
       _.delay =>
         if !@hover_state

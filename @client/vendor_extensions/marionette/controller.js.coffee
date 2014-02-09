@@ -95,7 +95,7 @@
 
     setState : (new_parent_state) ->
 
-      new_state = @state_map()[new_parent_state]
+      new_state = new_parent_state
 
       #if @state != new_state
       @prior_state = @state if @state != null  

@@ -14,7 +14,7 @@
       details : '.proposal-details'
 
     editable : =>
-      @state != Proposal.DescriptionState.collapsed && App.request 'auth:can_edit_proposal', @model    
+      @state != Proposal.State.Summary && App.request 'auth:can_edit_proposal', @model    
 
     serializeData : ->
       user_position = @model.getUserPosition()
@@ -24,7 +24,7 @@
         proposal : @model
         avatar : App.request('user:avatar', user, 'large' )
         description_detail_fields : @model.description_detail_fields()
-        show_details : @state != Proposal.DescriptionState.collapsed 
+        show_details : @state != Proposal.State.Summary 
 
       params
 
@@ -56,7 +56,7 @@
         $editable.editable
           resource: 'proposal'
           pk: @long_id
-          disabled: @state == Proposal.State.collapsed && @model.get('published')
+          disabled: @state == Proposal.State.Summary && @model.get('published')
           url: Routes.proposal_path @model.id
           type: type
           name: name

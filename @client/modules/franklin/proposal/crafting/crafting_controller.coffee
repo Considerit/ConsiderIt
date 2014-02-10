@@ -49,7 +49,7 @@
     # transition : (region, view) ->
     #   region.$el.empty().append view.el
 
-    processStateChange : ->
+    stateWasChanged : ->
       # if @prior_state != @state
       #   @layout = @resetLayout @layout
 

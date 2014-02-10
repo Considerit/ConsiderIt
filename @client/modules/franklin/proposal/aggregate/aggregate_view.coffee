@@ -7,7 +7,6 @@
       
     regions : 
       histogramRegion : '.histogram-region'
-      socialMediaRegion : '.proposal-socialmedia-region'
 
     initialize : (options = {}) ->
       super options    

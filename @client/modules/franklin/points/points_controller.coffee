@@ -43,7 +43,7 @@
           # @listenTo controller, 'close', =>
           #   pointview.render()
 
-    processStateChange : ->
+    stateWasChanged : ->
       #@layout = @resetLayout @layout
 
     setupLayout : (layout) ->
@@ -93,7 +93,7 @@
 
       @region.show @layout
 
-    processStateChange : ->
+    stateWasChanged : ->
       super
 
       return if @collection.size() == 0

@@ -14,7 +14,7 @@
 
       @region.show @layout
 
-    processStateChange : ->
+    stateWasChanged : ->
       #_.delay =>
       @layout.render()
       #, @transition_speed() + 10

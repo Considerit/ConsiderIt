@@ -1,14 +1,14 @@
 @ConsiderIt.module "Franklin.Point", (Point, App, Backbone, Marionette, $, _) ->
   
   class Point.PointView extends App.Views.Layout
-    actions : []
+    actions : [] # the point actions available for this class of Point
 
     tagName : 'li'
-    template : '#tpl_point_view'
+    template : '#tpl_point_layout'
 
     regions :
-      headerRegion : '.point-header-region'
-      bodyRegion : '.point-wrap-region'
+      headerRegion : '.point-avatar-region'
+      bodyRegion : '.point-summary-region'
       openPointRegion : '.open-point-region'
 
     serializeData : ->
@@ -18,7 +18,7 @@
       params
 
     @events : 
-      'click .point-close' : 'closePoint'
+      'click .close_open_point' : 'closePoint'
       'click' : 'pointClicked'
 
     pointClicked : (ev) ->
@@ -35,7 +35,7 @@
       $('#l-wrap').trigger 'click'
       ev.stopPropagation()
 
-  class Point.PeerPointView extends Point.PointView
+  class Point.CommunityPointView extends Point.PointView
     actions : ['include']
 
     events : _.extend @events,
@@ -55,12 +55,12 @@
 
     disableDrag : ->
       try
-        @$el.find('.point-wrap').draggable 'destroy'
+        @$el.find('.point_content').draggable 'destroy'
       catch e
         # get here when nav to results page before draggable created
 
     enableDrag : ->
-      @$el.find('.point-wrap').draggable
+      @$el.find('.point_content').draggable
         revert: "invalid"
 
 
@@ -113,9 +113,9 @@
       go_back ?= true
       @trigger 'point:close', go_back
 
-  class Point.PointHeaderView extends App.Views.ItemView
-    template : '#tpl_point_view_header'
-    tagName : 'span'
+  class Point.PointAvatarArea extends App.Views.ItemView
+    template : '#tpl_point_avatar_area'
+    className : 'point_avatar_area'
 
     serializeData : ->
       assessment = @model.getAssessment()
@@ -174,8 +174,8 @@
         $target.tooltipster 'show'
 
 
-  class Point.PointBodyView extends App.Views.ItemView
-    template : '#tpl_point_view_body'
+  class Point.PointSummaryView extends App.Views.ItemView
+    template : '#tpl_point_summary'
 
     serializeData : ->
       params = _.extend {}, @model.attributes, 
@@ -197,7 +197,7 @@
         @makeEditable()
 
     bindings : 
-      '.point-read-more' : 
+      '.open_point_link' : 
         observe : 'comment_count'
         onGet : -> 
           if @model.get('comment_count') == 1 then "1 comment" else "#{@model.get('comment_count')} comments"
@@ -244,7 +244,7 @@
 
 
   class Point.FollowPointView extends App.Views.ItemView
-    template : '#tpl_point_follow'
+    template : '#tpl_follow_point'
 
     serializeData : ->
       current_user = App.request 'user:current'

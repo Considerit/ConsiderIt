@@ -1,12 +1,12 @@
-%script{ :type => "text/template", :id => "tpl_point_view"}
-  %span.point-header-region>
-  .point-wrap>
-    .point-close
+%script{ :type => "text/template", :id => "tpl_point_layout"}
+  .point-avatar-region>
+  .point_content>
+    .close_open_point
       %i.fa.fa-times-circle
-    .point-wrap-region{ :'data-target' => "open-point", :'data-id' => "{{id}}" }
+    .point-summary-region{ :'data-target' => "open-point", :'data-id' => "{{id}}" }
     .open-point-region
 
-%script{ :type => "text/template", :id => "tpl_point_view_header"}
+%script{ :type => "text/template", :id => "tpl_point_avatar_area"}
   (( if (hide_name || user.name == 'Anonymous' ) { ))
   %span.avatar.point-author-avatar.avatar-anonymous{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)", :title => "This user has requested to remain anonymous"}
   (( } else if (user) { ))
@@ -19,17 +19,16 @@
     %img{:src => "{{verdict.getIcon()}}"}
   (( } ))
 
-%script{ :type => "text/template", :id => "tpl_point_view_body"}
-  .point-nutshell-wrap
-    .point-nutshell
-      {{ adjusted_nutshell }}
+%script{ :type => "text/template", :id => "tpl_point_summary"}
+  .point-nutshell
+    {{ adjusted_nutshell }}
 
   .point_description 
     {{ text }}
 
   .point-operations
 
-    %a.point-read-more
+    %a.open_point_link
 
     (( if( _.contains(actions, 'remove') ){ ))
     %button.point-remove{ :'data-target' => 'point-remove', :'data-id' => "{{id}}"}
@@ -40,8 +39,8 @@
 
 %script{ :type => "text/template", :id => "tpl_open_point"}
   .point-actions
-    .point-include-wrap.point-action
-      %button.point-include.button{ :'data-target' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
+    .point-include.point-action
+      %button.button{ :'data-target' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
         %i.fa.fa-small.fa-list
         Add to your pro/con list
 
@@ -51,7 +50,7 @@
 
   .point-discussion
 
-%script{ :type => "text/template", :id => "tpl_point_follow"}
+%script{ :type => "text/template", :id => "tpl_follow_point"}
   (( if(already_follows){ ))
   %button.point-follow.button
     %i.fa.fa-rss

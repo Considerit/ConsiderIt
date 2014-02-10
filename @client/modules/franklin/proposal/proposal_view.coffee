@@ -144,7 +144,3 @@
 
 
 
-  class Proposal.SocialMediaView extends App.Views.ItemView
-    template : '#tpl_proposal_social_media'
-    className : 'proposal-socialmedia'
-

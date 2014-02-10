@@ -2,7 +2,7 @@
   
   # Defines the high-level point list layout
   class Points.PointsLayout extends App.Views.StatefulLayout
-    template: '#tpl_points'
+    template: '#tpl_points_layout'
 
     regions : 
       headerRegion : '.points-heading-region'
@@ -14,11 +14,11 @@
 
   class Points.CommunityPointsColumn extends Points.PointsLayout
     template: '#tpl_community_points'
-    className : => "points_by_community #{@options.valence}s_by_community"
+    className : => "points_by_community #{@options.valence}s_by_community points_layout"
 
 
   class Points.DecisionBoardColumn extends Points.PointsLayout
-    className : => "points_on_decision_board #{@options.valence}s_on_decision_board"
+    className : => "points_on_decision_board #{@options.valence}s_on_decision_board points_layout"
 
   #############
 
@@ -26,7 +26,7 @@
   # Manages the actual list of points
   class Points.PointsList extends App.Views.CollectionView
     tagName : 'ul'
-    className : 'point-list'
+    className : 'point_list_collectionview'
 
     initialize : (options = {}) ->
       @itemView = options.itemView
@@ -54,7 +54,7 @@
   # at the top of the point list 
   class Points.PointsHeading extends App.Views.ItemView
     template : '#tpl_points_heading'
-    className: 'points-heading'
+    className: 'points_heading_view'
     sort : null
 
     initialize : (options = {}) ->
@@ -176,7 +176,7 @@
   class Points.CommunityPointsFooter extends App.Views.ItemView
     template : '#tpl_community_points_footer'
     is_expanded : false
-    className : 'community_points_footer'
+    className : 'community_points_footer_view'
 
     initialize : (options = {}) ->
       @collection = options.collection
@@ -211,6 +211,7 @@
   # The footer of Decision Board point list manages adding a new point, both authoring and including
   class Points.DecisionBoardColumnFooter extends App.Views.ItemView
     template : '#tpl_decision_board_points_footer'
+    className : 'decision_board_points_footer_view'
 
     serializeData : ->
       tenant = App.request 'tenant'
@@ -300,4 +301,4 @@
   # Displayed if there are no Community points in this list
   class Points.NoCommunityPointsView extends App.Views.ItemView
     template : '#tpl_no_community_points'
-    className : 'no_community_points'
+    className : 'no_community_points_view'

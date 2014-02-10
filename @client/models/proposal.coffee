@@ -56,7 +56,7 @@
       # opinion = @getUserOpinion()
       # opinion.setIncludedPoints (p.point.id for p in params.included_points)
 
-      current_tenant = App.request 'tenant:get'
+      current_tenant = App.request 'tenant'
       if current_tenant.get 'assessment_enabled'
         App.request 'assessments:add', (a.assessment for a in params.assessments)
         App.request 'claims:add', (c.claim for c in params.claims)
@@ -203,7 +203,7 @@
       currentPage: 1
 
     initialize : ->
-      @state.pageSize = App.request('tenant:get').get('num_proposals_per_page')
+      @state.pageSize = App.request('tenant').get('num_proposals_per_page')
 
   API =
     all_proposals : new Entities.Proposals()
@@ -280,7 +280,7 @@
           merge: true
           success : =>
             @proposals_fetched = true
-            App.vent.trigger 'proposals:fetched:done'
+            App.vent.trigger 'proposals:just_fetched_from_server'
 
 
       @all_proposals
@@ -296,7 +296,7 @@
       [@total_active, @total_inactive]
 
     tenantUpdated : ->
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       if tenant.get('enable_hibernation')
         _.each @all_proposals.where({active : true}), (proposal) ->
           proposal.set 'active', false
@@ -335,7 +335,7 @@
   App.reqres.setHandler "proposals:get:user", (model_id) ->
     API.getProposalsByUser model_id
     
-  App.reqres.setHandler "proposals:are_fetched", ->
+  App.reqres.setHandler "proposals:fetched_from_server?", ->
     API.areProposalsFetched()
 
   App.reqres.setHandler 'proposals:totals', ->

@@ -20,10 +20,10 @@
 
     getHeader : ->
       new Root.HeaderView
-        model : App.request 'tenant:get'
+        model : App.request 'tenant'
 
     getProposalsController : (layout) ->
-      c = new App.Franklin.Proposals.RegionController
+      c = new App.Franklin.Proposals.ProposalsRegionController
           region: layout.proposalsRegion
           parent_controller : @
           last_proposal_id : @options.last_proposal_id

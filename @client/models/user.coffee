@@ -376,15 +376,15 @@
 
   App.reqres.setHandler "auth:can_moderate", ->
     current_user = AUTH_API.get_current_user()
-    current_user && current_user.isModerator() && App.request("tenant:get").get('enable_moderation')
+    current_user && current_user.isModerator() && App.request("tenant").get('enable_moderation')
 
   App.reqres.setHandler "auth:can_assess", ->
     current_user = AUTH_API.get_current_user()
-    current_user && current_user.isEvaluator() && App.request("tenant:get").get('assessment_enabled')
+    current_user && current_user.isEvaluator() && App.request("tenant").get('assessment_enabled')
 
   App.reqres.setHandler "auth:can_create_proposal", ->
     current_user = AUTH_API.get_current_user()
-    AUTH_API.current_user_logged_in() && ( current_user.isManager() || App.request("tenant:get").get('enable_user_conversations') )
+    AUTH_API.current_user_logged_in() && ( current_user.isManager() || App.request("tenant").get('enable_user_conversations') )
 
   App.reqres.setHandler "auth:can_edit_proposal", (proposal) ->
     current_user = AUTH_API.get_current_user() 

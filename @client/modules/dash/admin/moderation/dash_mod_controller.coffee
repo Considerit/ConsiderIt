@@ -4,7 +4,7 @@
 
     initialize : (options = {} ) ->
       super options
-      @classes_to_moderate = App.request("tenant:get").classesToModerate()
+      @classes_to_moderate = App.request("tenant").classesToModerate()
 
     data_uri : ->
       Routes.dashboard_moderate_path()
@@ -44,7 +44,7 @@
       data
 
     setupLayout : ->
-      @classes_to_moderate = App.request("tenant:get").classesToModerate()
+      @classes_to_moderate = App.request("tenant").classesToModerate()
 
       layout = @getLayout()
       @listenTo layout, 'show', ->

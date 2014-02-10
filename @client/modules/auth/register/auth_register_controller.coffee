@@ -36,7 +36,7 @@
 
       layout.cardRegion.show @paperwork_view
 
-      if App.request('tenant:get').get 'requires_civility_pledge_on_registration'
+      if App.request('tenant').get 'requires_civility_pledge_on_registration'
         paperwork_pledge_view = new Register.PaperworkPledgeView
           model : @layout.model
         layout.pledgeRegion.show paperwork_pledge_view

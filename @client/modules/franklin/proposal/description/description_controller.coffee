@@ -15,14 +15,21 @@
         if @region #this controller might have been closed by parent, e.g. if this is a private proposal and user just signed out         
           @region.show @layout
 
-      @region.open = (view) => @transition @region, view # this will set how this region handles the transitions between views
+      @region.open = (view) => @stateIsChanging @region, view # this will set how this region handles the transitions between views
       @region.show @layout
 
-    processStateChange : ->
+    stateWasChanged : ->
+      console.log 'CHANGING STATE'
       if @prior_state != @state
         @layout = @resetLayout @layout
 
-    transition : (region, view) ->
+      if @state == Proposal.State.Results
+        @createSharing @layout
+      else
+        @removeSharing @layout
+
+
+    stateIsChanging : (region, view) ->
 
       already_showing_details = region.$el.find('.proposal-details').length > 0
 
@@ -35,15 +42,30 @@
       else# if @state == Proposal.State.Summary || @prior_state == null
         region.$el.empty().append view.el
 
+    removeSharing : (layout) ->
+      if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
+        layout.socialMediaRegion.reset()
+
+    createSharing : (layout) ->
+      if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
+        social_view = @getSocialMediaView()
+        layout.socialMediaRegion.show social_view
+        console.log layout.$el
+
     setupLayout : (layout) ->
 
       @listenTo layout, 'show', ->
+        console.log 'showing'
         @listenTo layout, 'proposal:clicked', =>
           App.navigate Routes.new_opinion_proposal_path( @model.id ), {trigger: true}
 
         if App.request "auth:can_edit_proposal", @model
           @admin_controller = @getAdminController layout.adminRegion
           @setupAdminController @admin_controller
+
+        if @state == Proposal.State.Results
+          @createSharing layout
+
 
     setupAdminController : (controller) ->
       @listenTo controller, 'proposal:published', =>
@@ -64,4 +86,8 @@
       new Proposal.ProposalDescriptionView
         model : @model
         state : @state
+
+    getSocialMediaView : ->
+      new Proposal.SocialMediaView
+        model : @model
 

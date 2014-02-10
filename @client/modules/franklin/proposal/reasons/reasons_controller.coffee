@@ -17,7 +17,7 @@
       @region.show @layout
 
     # transition or reset views as appropriate after state has been updated
-    processStateChange : ->
+    stateWasChanged : ->
       
       participants_view = @getParticipantsView()
       @layout.participantsRegion.show participants_view
@@ -57,7 +57,7 @@
           if @state == Proposal.State.Summary
             App.navigate Routes.proposal_path(@model.id), {trigger: true}
 
-        @processStateChange()
+        @stateWasChanged()
 
     updateCommunityPoints : (layout) ->
       

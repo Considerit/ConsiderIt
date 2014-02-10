@@ -232,7 +232,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
 .reasons  
   &[state="crafting"], &[state="summary"]
-    +translateY(-$aggregate_area_height)
+    +translateY(-$histogram_height)
 
   &[state="crafting"][coming-from-state="results"]
     +translateY(0)
@@ -254,7 +254,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
   &[state="summary"]
     .opinion-region
-      +translateY($aggregate_area_height + $vertical_baseline)
+      +translateY($histogram_height + $vertical_baseline)
 
 
   .community-pros-region .points_by_community
@@ -273,7 +273,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
   .four_columns_of_points
     //height: 100%
     top: 0 
-    min-height: $aggregate_area_height
+    min-height: $histogram_height
     position: absolute  
     margin: auto
     width: $body_width
@@ -385,7 +385,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 [data-activity="proposal-has-activity"]
   .reasons[state="summary"]
     .four_columns_of_points
-      min-height: $aggregate_area_height
+      min-height: $histogram_height
       //margin-bottom: 100px // spacing for participants block
 
   .reasons

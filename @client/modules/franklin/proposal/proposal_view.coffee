@@ -18,7 +18,7 @@
     regions: 
       descriptionRegion : '.proposal-description-region'
       stateToggleRegion : '.proposal-state-toggle-region'
-      aggregateRegion : '.proposal-aggregate-region'
+      histogramRegion : '.histogram-region'
       reasonsRegion : '.proposal-reasons-region'
 
     initialize : (options = {}) ->

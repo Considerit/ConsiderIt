@@ -347,7 +347,7 @@ a
 
 .points_by_community
 
-  &[state="crafting"] .points_heading_label
+  &[state="crafting"] .points_heading_view
     color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
   &[state="crafting"], &[state="results"]
@@ -357,7 +357,7 @@ a
   &[state="summary"], &[state="results"]
     +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
 
-.points_on_decision_board .points_heading_label
+.points_on_decision_board .points_heading_view
   border-bottom-color: $decision_board_text_color
 
 .points_by_community[state="results"], .points_by_community[state="crafting"] 

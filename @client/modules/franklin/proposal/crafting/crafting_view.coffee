@@ -25,23 +25,23 @@
         drop : (ev, ui) =>
           valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
           @trigger 'point:include', ui.draggable.parent().data('id')
-          @$el.removeClass "draggable_hover_#{valence} draggable_initiated_#{valence}"
+          @$el.removeClass "user_is_hovering_on_a_drop_target_#{valence} user_is_dragging_a_#{valence}"
 
         out : (ev, ui) =>
           valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
-          @$el.removeClass "draggable_hover_#{valence}"
+          @$el.removeClass "user_is_hovering_on_a_drop_target_#{valence}"
 
         over : (ev, ui) =>
           valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
-          @$el.addClass "draggable_hover_#{valence}"
+          @$el.addClass "user_is_hovering_on_a_drop_target_#{valence}"
 
         activate : (ev, ui) =>
           valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
-          @$el.addClass "draggable_initiated_#{valence}"
+          @$el.addClass "user_is_dragging_a_#{valence}"
 
         deactivate : (ev, ui) =>
           valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
-          @$el.removeClass "draggable_initiated_#{valence}"
+          @$el.removeClass "user_is_dragging_a_#{valence}"
 
     processIncludedPoints : ->
       if @model.getIncludedPoints().length > 0 

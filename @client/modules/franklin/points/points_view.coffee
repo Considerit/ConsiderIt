@@ -1,5 +1,6 @@
 @ConsiderIt.module "Franklin.Points", (Points, App, Backbone, Marionette, $, _) ->
   
+  # Defines the high-level point list layout
   class Points.PointsLayout extends App.Views.StatefulLayout
     template: '#tpl_points'
 
@@ -19,7 +20,10 @@
   class Points.DecisionBoardColumn extends Points.PointsLayout
     className : => "points_on_decision_board #{@options.valence}s_on_decision_board"
 
+  #############
 
+
+  # Manages the actual list of points
   class Points.PointsList extends App.Views.CollectionView
     tagName : 'ul'
     className : 'point-list'
@@ -45,8 +49,12 @@
 
         view
 
-  class Points.PointsHeader extends App.Views.ItemView
-    template : '#tpl_points_header'
+
+  # PointsHeading and its two subclasses handles the content displayed
+  # at the top of the point list 
+  class Points.PointsHeading extends App.Views.ItemView
+    template : '#tpl_points_heading'
+    className: 'points-heading'
     sort : null
 
     initialize : (options = {}) ->
@@ -61,9 +69,7 @@
       valence = if @options.valence == 'pro' then tenant.getProLabel({capitalize:true,plural:true}) else tenant.getConLabel({capitalize:true,plural:true})
       valence
 
-
-    getHeaderText : ->
-      @processValenceForHeader()
+    getHeaderText : -> @processValenceForHeader()
 
     requestSort : (sort_by) ->
       @sort = sort_by
@@ -75,31 +81,30 @@
       @listenTo @collection, 'reset', =>  
         @render()
 
-  class Points.DecisionBoardColumnHeader extends Points.PointsHeader
+  class Points.DecisionBoardColumnHeader extends Points.PointsHeading
     getHeaderText : ->
       valence = @processValenceForHeader()
       "List Your #{valence}"
 
-
-  class Points.CommunityPointsHeader extends Points.PointsHeader
-    template : '#tpl_community_points_header'
+  class Points.CommunityPointsHeader extends Points.PointsHeading
+    template : '#tpl_community_points_heading'
     is_expanded : false
     sort : 'score'    
     
     initialize : (options = {}) ->
       super options
       @collection = options.collection
-      @is_expanded = @setExpanded(options.expanded) if options.expanded
+      @is_expanded = @setExpandPoints(options.expanded) if options.expanded
       @segment = options.segment
 
-    setExpanded : (expand) ->
+    setExpandPoints : (expand) ->
       @is_expanded = expand
       @render()
 
       if @is_expanded
         # unexpand when clicking outside of points
         $(document).on 'click.unexpand_points', (ev)  => 
-          if $(ev.target).closest('.points-sort-option').length == 0 && $(ev.target).closest('.unexpand_points')[0] != @$el[0] && $('.open_point, .l-dialog-detachable').length == 0
+          if $(ev.target).closest('.sort_points_menu_option').length == 0 && $(ev.target).closest('.unexpand_points')[0] != @$el[0] && $('.open_point, .l-dialog-detachable').length == 0
             @trigger 'points:toggle_expanded', true
             ev.stopPropagation()
 
@@ -151,7 +156,7 @@
       @$el.find("[data-target='#{@sort}']").addClass 'selected'
 
     events : _.extend {}, Points.PointsList.prototype.events,
-      'click .points-sort-option a' : 'sortList'
+      'click .sort_points_menu_option a' : 'sortList'
       'click [data-target="expand-toggle"]' : 'handleExpandToggle'
 
     sortList : (ev) ->
@@ -164,14 +169,19 @@
       @trigger 'points:toggle_expanded', @is_expanded
       ev.stopPropagation()
 
+  ######
+
+
+  # The footer of Community point list just allows for the points to be un/expanded
   class Points.CommunityPointsFooter extends App.Views.ItemView
     template : '#tpl_community_points_footer'
     is_expanded : false
+    className : 'community_points_footer'
 
     initialize : (options = {}) ->
       @collection = options.collection
 
-    setExpanded : (expanded) ->
+    setExpandPoints : (expanded) ->
       @is_expanded = expanded
       @render()
 
@@ -197,8 +207,10 @@
       @trigger 'points:toggle_expanded', @is_expanded
       ev.stopPropagation()
 
+
+  # The footer of Decision Board point list manages adding a new point, both authoring and including
   class Points.DecisionBoardColumnFooter extends App.Views.ItemView
-    template : '#tpl_points_user_reasons_footer'
+    template : '#tpl_decision_board_points_footer'
 
     serializeData : ->
       tenant = App.request 'tenant:get'
@@ -221,9 +233,9 @@
 
 
     events : 
-      'click .newpoint-new' : 'newPoint'
+      'click [data-target="write-point"]' : 'newPoint'
       'click .newpoint-cancel' : 'cancelPoint'
-      'click .newpoint-create' : 'createPoint'
+      'click [data-target="submit-point"]' : 'createPoint'
       # 'blur .newpoint-nutshell' : 'checkIfShouldClose'
       'focusout .newpoint-form' : 'checkIfShouldClose'
 
@@ -255,16 +267,16 @@
       else
         $form.find('.newpoint-nutshell').focus()
 
-      @$el.find('.newpoint').addClass 'newpoint-adding'
+      @$el.find('.newpoint').addClass 'is_adding_newpoint'
     
     cancelPoint : (ev) ->
       $form = $(ev.currentTarget).closest('.newpoint-form')
       $form.hide()
-      $form.siblings('.newpoint-new').show()
+      $form.siblings('.newpoint_prompt').show()
       $form.find('textarea').val('').trigger('keydown')
       $form.find('label.inline').addClass('empty')
 
-      @$el.find('.newpoint').removeClass 'newpoint-adding'
+      @$el.find('.newpoint').removeClass 'is_adding_newpoint'
 
     createPoint : (ev) ->
       $form = $(ev.currentTarget).closest('.newpoint-form')
@@ -285,6 +297,7 @@
         @cancelPoint {currentTarget: $form.find('.newpoint-cancel')}
 
 
+  # Displayed if there are no Community points in this list
   class Points.NoCommunityPointsView extends App.Views.ItemView
     template : '#tpl_no_community_points'
     className : 'no_community_points'

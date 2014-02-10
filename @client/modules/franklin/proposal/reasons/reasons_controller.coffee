@@ -131,11 +131,11 @@
         @setupPointsColumnController @community_pros_controller
         @setupPointsColumnController @community_cons_controller
 
-    segmentPeerPoints : (segment) ->
+    segmentCommunityPoints : (segment) ->
       # @layout.reasonsHeaderRegion.show @getHeaderView(segment)
 
       _.each [@community_pros_controller, @community_cons_controller], (controller, idx) =>
-        controller.segmentPeerPoints segment
+        controller.segmentCommunityPoints segment
 
       @layout.sizeToFit()
 

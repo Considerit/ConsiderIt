@@ -88,7 +88,7 @@
         @layout.setDataState @state
 
 
-        @processStateChange()
+        @stateWasChanged()
 
         @trigger 'state:changed', @state
       , 5
@@ -111,4 +111,4 @@
 
     prepareForStateChange : ->
 
-    processStateChange : ->
+    stateWasChanged : ->

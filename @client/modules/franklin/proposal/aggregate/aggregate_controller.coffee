@@ -27,16 +27,10 @@
     #   region.$el.empty().append view.el
 
 
-    processStateChange : ->
+    stateWasChanged : ->
       if @state == Proposal.State.Results || (@state == Proposal.State.Crafting && @prior_state != Proposal.State.Results)
         #reset the layout such that updated opinions are shown correctly in the histogram
         @createHistogram @layout
-
-      if @state == Proposal.State.Results
-        @createSharing @layout
-
-      else
-        @removeSharing @layout
 
 
     setupLayout : (layout) ->
@@ -44,20 +38,6 @@
 
         if @state == Proposal.State.Results
           @createHistogram layout
-
-          @createSharing layout
-
-    removeSharing : (layout) ->
-      if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
-        layout.socialMediaRegion.reset()
-
-    createSharing : (layout) ->
-      if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
-        _.delay =>
-          if layout.SocialMediaRegion
-            social_view = @getSocialMediaView()
-            layout.socialMediaRegion.show social_view
-        , @transition_speed() * 3
 
     updateHistogram : ->
       @histogram_view.close() if @histogram_view
@@ -116,9 +96,6 @@
         model : @model
         histogram : @_createHistogram()
 
-    getSocialMediaView : ->
-      new Proposal.SocialMediaView
-        model : @model
 
     getLayout : ->
       new Proposal.AggregateLayout

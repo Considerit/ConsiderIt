@@ -214,7 +214,7 @@
 
     getListView : ->
       new Points.PointsList
-        itemView : App.Franklin.Point.PeerPointView
+        itemView : App.Franklin.Point.CommunityPointView
         emptyView : Points.NoCommunityPointsView
         collection : @options.collection
         location: 'community'

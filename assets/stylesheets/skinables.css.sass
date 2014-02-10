@@ -342,34 +342,34 @@ a
 
 
 // franklin/points
-.points_by_community[state="summary"] .points-footer-more i
+.points_by_community[state="summary"] .imply_more_points i
   color: emphasize($base_background_color, 25%)
 
 .points_by_community
 
-  &[state="crafting"] .points-heading-label
+  &[state="crafting"] .points_heading_label
     color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
   &[state="crafting"], &[state="results"]
-    .expanded_points-sort:hover .expanded_points-sort-menu
+    .sort_points:hover .sort_points_menu
       +on_menu
 
   &[state="summary"], &[state="results"]
     +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
 
-.points_on_decision_board .points-heading-label
+.points_on_decision_board .points_heading_label
   border-bottom-color: $decision_board_text_color
 
 .points_by_community[state="results"], .points_by_community[state="crafting"] 
-  .expanded_points-heading-open, .expanded_points-heading-close
+  .unexpand_points_icon, .expand_points_icon
     color: deemphasize($base_text_color, 50%, $reference: $base_background_color)
 
-.draggable_hover_pro .pros_on_decision_board, .draggable_hover_con .cons_on_decision_board
-  .point-drop-target
+.user_is_hovering_on_a_drop_target_pro .pros_on_decision_board, .user_is_hovering_on_a_drop_target_con .cons_on_decision_board
+  .add_point_drop_target
     color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
     border-color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
 
-.point-drop-target, .newpoint
+.add_point_drop_target, .newpoint
   border: 1px dashed $decision_board_border_color
 
 

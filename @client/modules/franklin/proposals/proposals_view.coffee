@@ -15,8 +15,8 @@
     regions: 
       createRegion : '.proposals-create-region'
       proposalsRegion : '.proposals-list-region'
-      filtersRegion : '.proposals-filters'
-      paginationRegion : '.proposals-list-pagination'
+      sortRegion : '.sort-proposals-region'
+      paginationRegion : '.proposals-pagination-region'
 
   class Proposals.CreateNewProposalView extends App.Views.ItemView
     template: '#tpl_create_new_proposal'

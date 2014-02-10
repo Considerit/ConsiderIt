@@ -121,7 +121,7 @@
 
       @listenTo histogram_controller, 'histogram:segment_results', (segment) =>
         if @state == Proposal.State.Results && @exploded
-          reasons_controller.segmentPeerPoints segment
+          reasons_controller.segmentCommunityPoints segment
 
       @listenTo reasons_controller, 'opinion_published', =>
         @_update_attributes()

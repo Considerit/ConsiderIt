@@ -113,8 +113,8 @@ casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) -
         @mouse.move 'body'
 
       @wait 250, ->
-        test.assertSelectorHasText '.pointlist-header-label', 'Pros', "Pros present in pros header when #{state}"
-        test.assertSelectorHasText '.pointlist-header-label', 'upport', "Supporter is present in pros header when #{state}"
+        test.assertSelectorHasText '.points-heading-label', 'Pros', "Pros present in pros header when #{state}"
+        test.assertSelectorHasText '.points-heading-label', 'upport', "Supporter is present in pros header when #{state}"
 
         @HTMLCapture '[data-role="proposal"]', 
           caption : "#{state} histogram bar"
@@ -313,8 +313,8 @@ assert_in_results_state = (test) ->
   test.assertVisible '.proposal-details', 'Proposal details are visible'
   test.assertElementCount '.histogram-bar', 7, 'There are seven histogram bars visible'
   test.assertExists '.points_by_community[state="results"]', 'Pros and cons in together state'
-  test.assertSelectorHasText '.pointlist-header-label', 'Pros', 'Pros present in pros header'
-  test.assertSelectorDoesntHaveText '.pointlist-header-label', 'upport', 'Supporter is not present in pros header'
+  test.assertSelectorHasText '.points-heading-label', 'Pros', 'Pros present in pros header'
+  test.assertSelectorDoesntHaveText '.points-heading-label', 'upport', 'Supporter is not present in pros header'
 
 assert_in_crafting_state = (test) ->
   test.assertExists '[data-role="proposal"][state="crafting"]', 'Proposal is in crafting state'
@@ -369,7 +369,7 @@ test_expanding_points = (test) ->
   casper.HTMLCapture '.points_are_expanded', 
     caption : "Hovering over sort"
 
-  casper.click '.expanded_points-sort .pointlist-sort-option [data-target="persuasiveness"]'
+  casper.click '.expanded_points-sort .points-sort-option [data-target="persuasiveness"]'
   casper.HTMLCapture '.points_are_expanded', 
     caption : "after clicking persuasiveness sort"
 

@@ -10,6 +10,9 @@
 .past_proposals_heading
   text-align: center
 
+  h2
+    font-weight: none
+    +font-size(2)
 
 // New Proposal
 .new_proposal_view
@@ -17,23 +20,30 @@
   text-align: center
   width: $content_width
 
+// Sort and paginating proposals
 
-
-// Proposal filters
-// For the ability to 
-
-.proposals_pagination_view
-  padding-bottom: $vertical_baseline
-
-.proposals-filters
-  padding-top: $vertical_baseline
-
-.proposals-filters, .proposals_pagination_view
+.proposals_sort_view, .proposals_pagination_view
   text-align: center
   margin: 0 auto
   width: $content_width
 
-.proposals-filter-container, .proposals_sort_view
+.proposals_pagination_view
+  padding-bottom: $vertical_baseline
+  margin-top: $vertical_baseline
+
+  .proposals-pagination-showmore, .proposals-list-pagination-page, .selected, .proposals-list-pagination-jump
+    border-radius: 0
+    text-shadow: none
+
+  .proposals-list-pagination-page, .selected, .proposals-list-pagination-jump
+    padding: $vertical_baseline/8 $grid_gutter/4
+
+  .proposals-list-pagination-pages
+    position: relative
+    display: inline-block
+
+.proposals_sort_view
+  padding-top: $vertical_baseline
   display: inline-block
 
   .title, a
@@ -44,31 +54,7 @@
     text-transform: lowercase
     font-variant: small-caps
     &.selected, &.selected:hover
-      font-weight: bold
-
-.proposals-list-pagination
-  margin-top: $vertical_baseline
-    
-  .proposals-pagination-showmore, .proposals-list-pagination-page, .selected, .proposals-list-pagination-jump
-    border-radius: 0
-    text-shadow: none
-
-  .proposals-list-pagination-page, .selected, .proposals-list-pagination-jump
-    padding: $vertical_baseline/8 $grid_gutter/4
-
-.proposals-list-pagination-pages
-  position: relative
-  display: inline-block
-
-// .proposals-list-pagination-jump-left, .proposals-list-pagination-jump-right
-//   position: absolute
-//   top: 0
-
-// .proposals-list-pagination-jump-left
-//   left: -76px
-
-// .proposals-list-pagination-jump-right
-//   right: -73px
+      font-weight: bold    
 
 .proposals-list-pagination-current
   margin-top: $vertical_baseline/4
@@ -81,7 +67,3 @@
   margin: $vertical_baseline auto
   width: $body_width
 
-.past_proposals_heading
-  h2
-    font-weight: none
-    +font-size(2)

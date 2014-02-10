@@ -71,7 +71,7 @@
 
 
     serializeData : ->
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       follows = @model.follows
       account_follower = _.has(follows, 'Account') && _.has(follows['Account'], tenant.id ) && follows['Account'][tenant.id].follow
 

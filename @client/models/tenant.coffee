@@ -97,7 +97,7 @@
       @current_tenant.updateAttrs()
       App.vent.trigger "tenant:updated"
 
-  App.reqres.setHandler "tenant:get", ->
+  App.reqres.setHandler "tenant", ->
     API.getTenant()
 
   App.reqres.setHandler "tenant:update", (data) ->

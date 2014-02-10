@@ -13,14 +13,14 @@
 
     serializeData : ->
       is_manager : App.request('user:current').isManager()
-      tenant : App.request('tenant:get')
+      tenant : App.request('tenant')
 
     bindings : 
       '.l-homepage-pic .hide' : 
         observe : 'homepage_pic_file_name'
         onGet : (values) ->
           return if !values? || $.trim(values)==''
-          @$el.find('.l-homepage-pic img.customfile-preview').attr('src', App.request("tenant:get").getHomepagePic('original', values))
+          @$el.find('.l-homepage-pic img.customfile-preview').attr('src', App.request("tenant").getHomepagePic('original', values))
 
     events : 
       'change input[type="file"]' : 'fileChanged'

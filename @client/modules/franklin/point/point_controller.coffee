@@ -48,7 +48,7 @@
 
           open_point_view.followRegion.show follow_view
 
-        current_tenant = App.request 'tenant:get'
+        current_tenant = App.request 'tenant'
         if current_tenant.get 'assessment_enabled'
           @setupAssessmentView open_point_view.assessmentRegion
 
@@ -117,7 +117,7 @@
       collection = @options.model.getComments()
 
       # collection will be polymorphic with fact-checks mixed in      
-      current_tenant = App.request 'tenant:get'
+      current_tenant = App.request 'tenant'
       if current_tenant.get 'assessment_enabled'
         assessment = @options.model.getAssessment()
         if assessment

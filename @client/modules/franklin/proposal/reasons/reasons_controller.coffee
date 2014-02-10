@@ -22,8 +22,10 @@
       participants_view = @getParticipantsView()
       @layout.participantsRegion.show participants_view
 
-      footer_view = @getResultsFooterView()
-      @layout.footerRegion.show footer_view if footer_view
+      if @state == Proposal.State.Summary
+        @layout.footerRegion.show @getViewResultsView()
+      else
+        @layout.footerRegion.reset()
 
       wait = if @crafting_controller && @prior_state != null then @transition_speed() else 0
       _.delayIfWait wait, =>
@@ -247,17 +249,9 @@
         parent_controller : @
         parent_state : @state
 
-    getResultsFooterView : ->
-      switch @state
-        when Proposal.State.Results
-          new Proposal.ResultsFooterView
-            model : @model
-        when Proposal.State.Summary
-          new Proposal.ResultsFooterCollapsedView
-            model : @model
-        when Proposal.State.Crafting
-          new Proposal.ResultsFooterSeparatedView
-            model : @model
+    getViewResultsView : ->
+      new Proposal.ViewResultsView
+        model : @model
 
     getParticipantsView : ->
       new Proposal.ParticipantsView

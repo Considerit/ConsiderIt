@@ -116,23 +116,8 @@
             visibility: ''
       , 100
 
-  class Proposal.ResultsFooterView extends App.Views.ItemView
-    template : '#tpl_aggregate_footer_expanded'
-    className : 'reasons-footer-sticky'
-
-    serializeData : ->
-      user_opinion = @model.getUserOpinion()
-      _.extend {}, @model.attributes,
-        call : if user_opinion && user_opinion.get('published') then 'Update your opinion' else 'What do you think? Click to contribute your own opinion.'
-
-  class Proposal.ResultsFooterCollapsedView extends App.Views.ItemView
-    template : '#tpl_aggregate_footer_collapsed'
-
-    serializeData : ->
-      _.extend {}, @model.attributes
-
-  class Proposal.ResultsFooterSeparatedView extends App.Views.ItemView
-    template : '#tpl_aggregate_footer_separated'
+  class Proposal.ViewResultsView extends App.Views.ItemView
+    template : '#tpl_view_results'
 
     serializeData : ->
       _.extend {}, @model.attributes

@@ -5,23 +5,28 @@
 
 $histogram_width: $body_width - $grid_major + 1
 $histogram_bar_width: $histogram_width / 7
-$histogram_bar_height: 150px
 
-.proposal-aggregate-region
+.histogram-region
   position: relative
 
-[state="results"] .proposal-aggregate-region
+[state="results"] .histogram-region
   z-index: 20 // allows for bubble to go over the reasons on mousing over histogram bar; but can't do on the homepage
 
-.results
-  height: $aggregate_area_height
-  
+.histogram
+  height: $histogram_height
+  +transition(opacity $transition_speed)
+  opacity: 0
+  visibility: hidden
+  margin: $vertical_baseline auto 0 auto
+  position: relative
+  top: 0px
+  width: $histogram_width
+
   &[state="results"], &[state="crafting"][coming-from-state="results"]
-    .histogram
-      visibility: visible
-      display: block
-      opacity: 1
-      min-height: $histogram_bar_height
+    visibility: visible
+    display: block
+    opacity: 1
+    min-height: $histogram_height
 
   .histogram-base, .bar-people, .histogram-bar
     +transition(opacity $transition_speed $transition_function)
@@ -49,25 +54,16 @@ $histogram_bar_height: 150px
     .histogram-base, .bar-people  
       opacity: 0
 
+  &[state="crafting"]
+    .histogram-bar
+      [data-target="user_profile_page"]
+        cursor: auto
 
-[state="crafting"]
-  .histogram-bar
-    [data-target="user_profile_page"]
-      cursor: auto
+  &[state="results"]
+    .histogram-bar
+      cursor: pointer
 
-[state="results"]
-  .histogram-bar
-    cursor: pointer
-
-// HISTOGRAM / WHAT
-.histogram
-  +transition(opacity $transition_speed)
-  opacity: 0
-  visibility: hidden
-  margin: $vertical_baseline auto 0 auto
-  position: relative
-  top: 0px
-  width: $histogram_width
+  // HISTOGRAM / WHAT
 
   .histogram-bar
     width: $histogram_bar_width

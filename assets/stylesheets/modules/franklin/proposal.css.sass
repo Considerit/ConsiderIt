@@ -19,14 +19,14 @@
         visibility: hidden
 
     &[data-activity="proposal-no-activity"]
-      .proposal-aggregate-region, .proposal-reasons-region
+      .histogram-region, .proposal-reasons-region
         display: none
 
 
   &[data-activity="proposal-no-activity"]
 
     &[state="summary"]
-      .proposal-aggregate-region
+      .histogram-region
         display: none
 
     &[state="crafting"]
@@ -174,11 +174,11 @@
       &:hover
         +font-size(0)
 
-  .proposal-reasons-region, .proposal-aggregate-region, .proposal-state-toggle-region
+  .proposal-reasons-region, .histogram-region, .proposal-state-toggle-region
     display: none
 
   &[state="summary"]
-    .proposal-reasons-region, .proposal-aggregate-region, .proposals-list-pagination
+    .proposal-reasons-region, .histogram-region, .proposals-list-pagination
       display: none
 
     padding-bottom: 4 * $vertical_baseline

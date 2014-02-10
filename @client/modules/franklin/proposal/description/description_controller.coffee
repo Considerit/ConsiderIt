@@ -19,7 +19,6 @@
       @region.show @layout
 
     stateWasChanged : ->
-      console.log 'CHANGING STATE'
       if @prior_state != @state
         @layout = @resetLayout @layout
 
@@ -50,12 +49,10 @@
       if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
         social_view = @getSocialMediaView()
         layout.socialMediaRegion.show social_view
-        console.log layout.$el
 
     setupLayout : (layout) ->
 
       @listenTo layout, 'show', ->
-        console.log 'showing'
         @listenTo layout, 'proposal:clicked', =>
           App.navigate Routes.new_opinion_proposal_path( @model.id ), {trigger: true}
 

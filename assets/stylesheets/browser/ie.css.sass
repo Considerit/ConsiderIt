@@ -22,7 +22,7 @@
 
   .reasons  
     &[state="crafting"], &[state="summary"]
-      top: -$aggregate_area_height
+      top: -$histogram_height
 
     &[state="crafting"][coming-from-state="results"]
       top: 0
@@ -44,7 +44,7 @@
 
     &[state="summary"]
       .opinion-region
-        top: $aggregate_area_height + $vertical_baseline
+        top: $histogram_height + $vertical_baseline
 
 
   [data-activity="proposal-no-activity"]
@@ -68,8 +68,9 @@
 
 
 
-.results[state="crafting"][coming-from-state="results"] 
-  .histogram-bar, .histogram, .histogram-base
+.histogram[state="crafting"][coming-from-state="results"] 
+  visibility: hidden
+  .histogram-bar, .histogram-base
     visibility: hidden
 
 

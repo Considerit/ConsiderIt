@@ -106,7 +106,6 @@
         parent_controller : @
         proposal_state : App.Franklin.Proposal.State.Summary
 
-      console.log ctrl
       ctrl
 
     handleSortRequested : (collection, sort_by) ->

@@ -1,4 +1,4 @@
-Z////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
 // THEME: Processes all styles requiring skin variables.
 ////////////////////////////////////////////////////////
 @import "variables"
@@ -317,26 +317,25 @@ a
     &:hover .point-operations a
       color: deemphasize($base_text_color, 15%, $reference: $base_background_color)   
 
-.point.open_point
-  .point-include, .point-assessment-request-initiate, .point-follow
+.point.open_point .point-action button 
+  +font-size(-3)
+  &:hover
     +font-size(-3)
-    &:hover
-      +font-size(-3)
 
 .points_by_community[state="crafting"] .community_point.closed_point, .point.open_point
-  .point-wrap
+  .point_content
     @extend %on_peer_area
 
 .points_by_community[state="crafting"], .points_by_community[state="results"]
-  .closed_point.community_point:hover .point-wrap
+  .closed_point.community_point:hover .point_content
     background-color: deemphasize($peer_background_color, 15%)
 
 .points_by_community[state="crafting"] .community_point.closed_point
-  .point-wrap
+  .point_content
     +single-box-shadow($color: rgba(black, .1), $voff: 1px)
 
 .open_point, .points_by_community[state="crafting"] .community_point.closed_point
-  .point-wrap
+  .point_content
     border: 1px solid
     border-color: emphasize($peer_background_color, 5%) emphasize($peer_background_color, 10%) emphasize($peer_background_color, 5%) emphasize($peer_background_color, 15%)
 

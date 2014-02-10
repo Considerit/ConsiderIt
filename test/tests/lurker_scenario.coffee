@@ -350,7 +350,7 @@ test_open_point = (test) ->
     casper.HTMLCapture '.open_point', 
       caption : "Opened point"
 
-    casper.mouse.click '.point-close'
+    casper.mouse.click '.close_open_point'
     test.assertDoesntExist '.open_point', 'point closes'
 
 test_expanding_points = (test) ->

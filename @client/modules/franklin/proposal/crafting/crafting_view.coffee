@@ -11,7 +11,7 @@
       footerRegion : '.decision-board-footer-region'
 
     serializeData : ->
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       _.extend {}, tenant.attributes, _.compactObject(@options.proposal.attributes)
 
 
@@ -107,7 +107,7 @@
     className : 'stance'
 
     serializeData : ->
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       params = _.extend {}, tenant.attributes, _.compactObject(@options.proposal.attributes)
       params
 

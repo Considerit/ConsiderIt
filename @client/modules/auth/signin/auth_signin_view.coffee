@@ -40,7 +40,7 @@
       params = 
         fixed : @options.fixed
         email : if @options.fixed then @model.get('email') else null
-        app_title : App.request('tenant:get').get('app_title')
+        app_title : App.request('tenant').get('app_title')
       params
 
     onShow : ->

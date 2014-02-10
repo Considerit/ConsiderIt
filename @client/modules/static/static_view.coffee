@@ -17,7 +17,7 @@
     template : '#tpl_static_sidebar'
 
     serializeData : ->
-      tenant : App.request('tenant:get')
+      tenant : App.request('tenant')
 
     onShow : ->
       @$el.find("[data-target='#{@options.page}']").addClass('current')

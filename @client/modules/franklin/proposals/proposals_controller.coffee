@@ -1,30 +1,30 @@
 @ConsiderIt.module "Franklin.Proposals", (Proposals, App, Backbone, Marionette, $, _) ->
 
-  class Proposals.RegionController extends App.Controllers.Base
+  class Proposals.ProposalsRegionController extends App.Controllers.Base
 
     initialize : (options = {}) ->
       layout = @getLayout()
 
       @listenTo layout, 'show', =>
 
-        tenant = App.request('tenant:get')
+        tenant = App.request('tenant')
 
         if tenant.get('enable_hibernation')
-          inactive_controller = new Proposals.InactiveListController
+          inactive_controller = new Proposals.InactiveProposalsController
             region : layout.activeRegion
             parent_controller : @
-            total_models : App.request('proposals:totals')[1]
+            num_proposals : App.request('proposals:totals')[1]
 
         else
-          active_controller = new Proposals.ActiveListController
+          active_controller = new Proposals.ActiveProposalsController
             region : layout.activeRegion
             parent_controller : @
-            total_models : App.request('proposals:totals')[0]
+            num_proposals : App.request('proposals:totals')[0]
 
-          inactive_controller = new Proposals.InactiveListController
+          inactive_controller = new Proposals.InactiveProposalsController
             region : layout.pastRegion
             parent_controller : @
-            total_models : App.request('proposals:totals')[1]
+            num_proposals : App.request('proposals:totals')[1]
 
 
         if @options.last_proposal_id
@@ -51,7 +51,7 @@
       @region.show layout
 
       # Not sure why the following was important. It was creating problems with private discussion workflow.
-      # @listenTo App.vent, 'proposals:fetched:done proposals:added', => 
+      # @listenTo App.vent, 'proposals:just_fetched_from_server proposals:added', => 
       #   @region.reset()
       #   @region.show layout
 
@@ -62,8 +62,8 @@
       filter_view = @setupFilterView proposals_view.collection
       pagination_view = @setupPaginationView proposals_view.collection
 
-      @listenTo App.vent, "proposals:show_more_handled:#{@is_active}", ->
-        pagination_view.proposalsLoaded()
+      @listenTo App.vent, "proposals:#{@is_active}_proposals_were_loaded", ->
+        pagination_view.proposalsWereLoaded()
 
       layout.proposalsRegion.show proposals_view
       layout.filtersRegion.show filter_view
@@ -74,31 +74,31 @@
     setupProposalsView : (is_active) ->
       all_proposals = App.request('proposals:get')
 
-      filtered_collection = all_proposals.where({active : is_active})
+      filtered_proposals = all_proposals.where({active : is_active})
 
-      @collection = new App.Entities.PaginatedProposals filtered_collection,
-        fullCollection : filtered_collection
-        total_models : @options.total_models
+      @collection = new App.Entities.PaginatedProposals filtered_proposals,
+        fullCollection : filtered_proposals
+        num_proposals : @options.num_proposals
 
       view = @getProposals @is_active, @collection
       @sortCollection {collection: view.collection, sort_by: 'activity'}
-      @listenTo view, 'before:item:added', (vw) -> @handleBeforeViewAdded vw
-      @listenTo App.vent, 'proposal:deleted', (model) => @handleProposalDeleted @collection, model
-      @listenTo App.vent, 'proposals:reset', => @handleReset view.collection, @is_active
+      @listenTo view, 'before:item:added', (vw) -> @initializeControllerForProposalView vw
+      @listenTo App.vent, 'proposal:deleted', (model) => @proposalWasDeleted @collection, model
+      @listenTo App.vent, 'proposals:reset', => @proposalsWereReset view.collection, @is_active
       view
 
     setupPaginationView : (collection) ->
-      view = @getPaginationView collection
-      @listenTo view, 'pagination:show_more', => @handleShowMore collection, view
-      view
+      pagination_view = @getPaginationView collection
+      @listenTo pagination_view, 'proposals:please_fetch_proposals_from_server', => @fetchProposals collection, pagination_view
+      pagination_view
 
     setupFilterView : (collection) ->
-      view = @getFilterView collection
-      @listenTo view, 'sort:requested', (sort_by) => 
-        @handleSortRequested collection, sort_by
-      view
+      filter_view = @getFilterView collection
+      @listenTo filter_view, 'proposals:please_sort', (sort_by) => 
+        @sortProposals collection, sort_by
+      filter_view
 
-    handleBeforeViewAdded : (view) ->
+    initializeControllerForProposalView : (view) ->
       ctrl = new App.Franklin.Proposal.ProposalController
         view : view
         region : new Backbone.Marionette.Region { el : view.el }
@@ -108,19 +108,19 @@
 
       ctrl
 
-    handleSortRequested : (collection, sort_by) ->
+    sortProposals : (collection, sort_by) ->
       @requestProposals collection, @is_active, @sortCollection, 
         collection: collection
         sort_by: sort_by
 
-    handleShowMore : (collection, view) ->
+    fetchProposals : (collection, view) ->
       @requestProposals collection, @is_active, =>
-        App.vent.trigger "proposals:show_more_handled:#{@is_active}"
+        App.vent.trigger "proposals:#{@is_active}_proposals_were_loaded"
 
-    handleProposalDeleted : (collection, model) ->
+    proposalWasDeleted : (collection, model) ->
       collection.fullCollection.remove model
 
-    handleReset : (collection, is_active) ->
+    proposalsWereReset : (collection, is_active) ->
       proposals = App.request 'proposals:get'
       @resetCollection proposals, collection, is_active
 
@@ -134,8 +134,8 @@
 
     resetCollection : (proposals, collection, is_active) -> 
       if collection.fullCollection # conditional for IE 8
-        filtered_collection = proposals.where {active : is_active}
-        collection.fullCollection.reset filtered_collection
+        filtered_proposals = proposals.where {active : is_active}
+        collection.fullCollection.reset filtered_proposals
 
     sortCollection : ({collection, sort_by}) ->
       if collection.fullCollection # conditional for IE 8    
@@ -143,16 +143,16 @@
         collection.fullCollection.sort()
 
     getLayout : ->
-      new Proposals.ProposalsListLayout
+      new Proposals.ProposalsLayout
 
     getPaginationView : (collection) ->
       new Proposals.PaginationView
         collection: collection
         is_active : @is_active
-        total_models : @options.total_models
+        num_proposals : @options.num_proposals
 
     getFilterView : (collection) ->
-      new Proposals.FilterView
+      new Proposals.SortProposalsView
         collection: collection
         is_active : @is_active
 
@@ -167,11 +167,11 @@
 
       list
 
-  class Proposals.InactiveListController extends Proposals.AbstractListController
+  class Proposals.InactiveProposalsController extends Proposals.AbstractListController
     is_active : false
 
 
-  class Proposals.ActiveListController extends Proposals.AbstractListController
+  class Proposals.ActiveProposalsController extends Proposals.AbstractListController
     is_active : true
 
     initialize : (options = {}) ->
@@ -188,13 +188,13 @@
       can_create = App.request "auth:can_create_proposal"
       if can_create
         create_view = @getCreateView()
-        @listenTo create_view, 'proposal:new:requested', => @handleNewProposal()
+        @listenTo create_view, 'proposals:please_create_new', => @createNewProposal()
         layout.createRegion.show create_view
       else
         layout.createRegion.reset()
 
 
-    handleNewProposal : ->
+    createNewProposal : ->
       attrs = 
         name : 'Should we ... ?'
         description : "Here are some details about what we're thinking about ..."
@@ -207,7 +207,7 @@
 
 
     getCreateView : ->
-      new Proposals.CreateProposalView
+      new Proposals.CreateNewProposalView
 
 
 

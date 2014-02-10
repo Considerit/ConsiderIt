@@ -15,7 +15,7 @@
       current_user = App.request 'user:current' 
       params = _.extend {}, @model.attributes, @model.permissions(),
         avatar : App.request('user:avatar', @model, 'original')
-        tenant : App.request("tenant:get")
+        tenant : App.request("tenant")
         is_self : @model.id == current_user.id
 
       params
@@ -34,7 +34,7 @@
       if model == 'user'
         model = @model
       else if model == 'account'
-        model = App.request("tenant:get")
+        model = App.request("tenant")
 
       if condition || (!condition? && model.get(attribute))
         input = document.getElementById(selector).checked = true
@@ -43,7 +43,7 @@
       if model == 'user'
         model = @model
       else if model == 'account'
-        model = App.request("tenant:get")
+        model = App.request("tenant")
 
       input = document.getElementById("#{selector}_#{model.get(attribute)}").checked = true
 

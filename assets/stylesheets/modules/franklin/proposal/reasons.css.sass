@@ -12,7 +12,7 @@ $use_transitions: true
 //@import "compass/css3/animation"
 
 //temp while waiting for compass to come out of beta
-@-moz-keyframes FromTogetherToSeparated_PeerReasons 
+@-moz-keyframes FromResultsToCrafting_CommunityPoints 
   0% 
     background-color: whitesmoke
     border-color: gainsboro
@@ -28,7 +28,7 @@ $use_transitions: true
     border-color: transparent
   
 
-@-webkit-keyframes FromTogetherToSeparated_PeerReasons
+@-webkit-keyframes FromResultsToCrafting_CommunityPoints
   0% 
     background-color: whitesmoke
     border-color: gainsboro
@@ -44,7 +44,7 @@ $use_transitions: true
     border-color: transparent
   
 
-@keyframes FromTogetherToSeparated_PeerReasons
+@keyframes FromResultsToCrafting_CommunityPoints
   0% 
     background-color: whitesmoke
     border-color: gainsboro
@@ -60,7 +60,7 @@ $use_transitions: true
     border-color: transparent
   
 
-@-moz-keyframes FromTogetherToSeparated_PeerPoints
+@-moz-keyframes FromCraftingToResults_CommunityPoints
   0% 
     background-color: whitesmoke
     border-color: transparent
@@ -82,7 +82,7 @@ $use_transitions: true
     border-color: #f1f1f1 #dddddd #bbbbbb #dddddd
   
 
-@-webkit-keyframes FromTogetherToSeparated_PeerPoints
+@-webkit-keyframes FromCraftingToResults_CommunityPoints
   0%
     background-color: whitesmoke
     border-color: transparent
@@ -102,7 +102,7 @@ $use_transitions: true
     border-color: #f1f1f1 #dddddd #bbbbbb #dddddd
   
 
-@keyframes FromTogetherToSeparated_PeerPoints 
+@keyframes FromCraftingToResults_CommunityPoints 
   0% 
     background-color: whitesmoke
     border-color: transparent
@@ -125,36 +125,8 @@ $use_transitions: true
     background-color: whitesmoke
     border-color: #f1f1f1 #dddddd #bbbbbb #dddddd
 
-@-moz-keyframes FromTogetherToSeparated_hidden
-  0%
-    opacity: 0
 
-  50%
-    opacity: 0
-
-  100%
-    opacity: 1
-
-@-webkit-keyframes FromTogetherToSeparated_hidden 
-  0% 
-    opacity: 0
-
-  50% 
-    opacity: 0
-  100%
-    opacity: 1
-
-@keyframes FromTogetherToSeparated_hidden
-  0%
-    opacity: 0
-  50%
-    opacity: 0
-  100%
-    opacity: 1
-
-
-
-// +keyframes(FromTogetherToSeparated_PeerReasons)
+// +keyframes(FromResultsToCrafting_CommunityPoints)
 //   0%
 //     background-color: whitesmoke
 //     border-color: darken(whitesmoke, 10%)
@@ -167,7 +139,7 @@ $use_transitions: true
 //     background-color: none
 //     border-color: transparent
 
-// +keyframes(FromTogetherToSeparated_PeerPoints)
+// +keyframes(FromCraftingToResults_CommunityPoints)
 //   0%
 //     background-color: whitesmoke
 //     border-color: transparent
@@ -183,16 +155,6 @@ $use_transitions: true
 //     background-color: whitesmoke
 //     border-color: #f1f1f1 #ddd #bbb #ddd
 
-// +keyframes(FromTogetherToSeparated_hidden)
-//   0%
-//     opacity: 0
-
-//   50%
-//     opacity: 0
-
-//   100%
-//     opacity: 1
-
 
 
 // transitions / animations
@@ -204,26 +166,26 @@ $use_transitions: true
   &[state="crafting"]
     &[coming-from-state="results"], &[coming-from-state="summary"]
       .points_by_community
-        // +animation(FromTogetherToSeparated_PeerReasons $transition_speed)
-        -moz-animation: FromTogetherToSeparated_PeerReasons $transition_speed
-        -webkit-animation: FromTogetherToSeparated_PeerReasons $transition_speed
-        animation: FromTogetherToSeparated_PeerReasons $transition_speed
+        // +animation(FromResultsToCrafting_CommunityPoints $transition_speed)
+        -moz-animation: FromResultsToCrafting_CommunityPoints $transition_speed
+        -webkit-animation: FromResultsToCrafting_CommunityPoints $transition_speed
+        animation: FromResultsToCrafting_CommunityPoints $transition_speed
 
 
-      .community_point.closed_point .point-wrap
-        // +animation(FromTogetherToSeparated_PeerPoints $transition_speed)        
+      .community_point.closed_point .point_content
+        // +animation(FromCraftingToResults_CommunityPoints $transition_speed)        
         // +animation-fill-mode(none)
 
-        -moz-animation: FromTogetherToSeparated_PeerPoints $transition_speed
-        -webkit-animation: FromTogetherToSeparated_PeerPoints $transition_speed
-        animation: FromTogetherToSeparated_PeerPoints $transition_speed
+        -moz-animation: FromCraftingToResults_CommunityPoints $transition_speed
+        -webkit-animation: FromCraftingToResults_CommunityPoints $transition_speed
+        animation: FromCraftingToResults_CommunityPoints $transition_speed
 
-      .point-include, .points-expand-toggle
-        //+animation(FromTogetherToSeparated_hidden $transition_speed * 2.5)
+      // .point-include, .points-expand-toggle
+      //   //+animation(FromTogetherToSeparated_hidden $transition_speed * 2.5)
 
-        -moz-animation: FromTogetherToSeparated_hidden $transition_speed
-        -webkit-animation: FromTogetherToSeparated_hidden $transition_speed
-        animation: FromTogetherToSeparated_hidden $transition_speed
+      //   -moz-animation: FromTogetherToSeparated_hidden $transition_speed
+      //   -webkit-animation: FromTogetherToSeparated_hidden $transition_speed
+      //   animation: FromTogetherToSeparated_hidden $transition_speed
 
 
 // full reasons width is the width of the pro/con list in the middle and the peer pro/con points in the margins
@@ -285,10 +247,10 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
       height: 100%
       padding: $vertical_baseline $grid_gutter/2
 
-  .community-pros-region .point-header-region
+  .community-pros-region .point-avatar-region
     float: left
 
-  .community-cons-region .point-header-region
+  .community-cons-region .point-avatar-region
     float: right
 
   &.transitioning .opinion_points
@@ -314,12 +276,16 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     width: $full_reasons_width
     left: $full_reasons_left
 
-  .point-header-region
+  .point-avatar-region
     width: $point-avatar-width
     position: relative
 
+  .point-avatar-region, .point_content
+    display: inline-block
+    vertical-align: top
+
   .closed_point
-    .point-wrap
+    .point_content
       width: $point-content-width
 
   &[state="results"], &[state="summary"]
@@ -355,7 +321,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
         .community_point.closed_point 
           //width: $decision_board_width/2 + $expanded_points_increment
-          .point-wrap
+          .point_content
             width: $point-content-width + $expanded_points_increment
 
 ////////// end layout //////////

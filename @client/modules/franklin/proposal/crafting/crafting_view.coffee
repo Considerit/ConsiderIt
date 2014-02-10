@@ -21,7 +21,7 @@
       @processIncludedPoints()
 
       @$el.droppable
-        accept: ".community_point .point-wrap"
+        accept: ".community_point .point_content"
         drop : (ev, ui) =>
           valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
           @trigger 'point:include', ui.draggable.parent().data('id')

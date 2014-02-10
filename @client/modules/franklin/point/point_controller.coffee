@@ -139,11 +139,11 @@
       @options.view
 
     getHeaderView : (model) ->
-      new Point.PointHeaderView
+      new Point.PointAvatarArea
         model : model
 
     getBodyView : (model, actions) ->
-      new Point.PointBodyView
+      new Point.PointSummaryView
         model : model
         actions : actions
 

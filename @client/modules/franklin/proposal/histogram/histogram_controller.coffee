@@ -1,8 +1,8 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
-  class Proposal.AggregateController extends App.Controllers.StatefulController
+  class Proposal.HistogramController extends App.Controllers.StatefulController
     transitions_enabled : true
-
+    histogram_initialized : false
 
     initialize : (options = {}) ->
       super options
@@ -10,10 +10,10 @@
       @model = options.model
 
       @listenTo @options.parent_controller, 'point:mouseover', (includers) =>
-        @histogram_view.highlightUsers includers
+        @layout.highlightUsers includers
 
       @listenTo @options.parent_controller, 'point:mouseout', (includers) =>
-        @histogram_view.highlightUsers includers, false
+        @layout.highlightUsers includers, false
 
       @layout = @getLayout()
 
@@ -30,31 +30,29 @@
     stateWasChanged : ->
       if @state == Proposal.State.Results || (@state == Proposal.State.Crafting && @prior_state != Proposal.State.Results)
         #reset the layout such that updated opinions are shown correctly in the histogram
-        @createHistogram @layout
+        @createHistogram()
 
 
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
 
-        if @state == Proposal.State.Results
-          @createHistogram layout
 
-    updateHistogram : ->
-      @histogram_view.close() if @histogram_view
-      @histogram_view = null
-      @createHistogram @layout
+        @listenTo layout, 'histogram:segment_results', (segment, hard_select) =>
+          if @state == Proposal.State.Results
+            @trigger 'histogram:segment_results', segment
+            layout.finishSelectingBar segment, hard_select
 
-    createHistogram : (layout) ->
-      if !@histogram_view
-        @histogram_view = @getAggregateHistogram()
-        @listenTo @histogram_view, 'show', => 
-          @listenTo @histogram_view, 'histogram:segment_results', (segment, hard_select) =>
-            if @state == Proposal.State.Results
-              @trigger 'histogram:segment_results', segment
-              @histogram_view.finishSelectingBar segment, hard_select
-        layout.histogramRegion.show @histogram_view 
+        if @state == Proposal.State.Results && !@histogram_initialized
+          @createHistogram()
 
-    _createHistogram : () ->
+    # createHistogram : (layout) ->
+
+    #   if !@histogram_view
+    #     @histogram_view = @getAggregateHistogram()
+    #     @listenTo @histogram_view, 'show', => 
+    #     layout.histogramRegion.show @histogram_view 
+
+    createHistogram : () ->
       $histogram_bar_height = 145
       $histogram_bar_width = 70
 
@@ -89,16 +87,11 @@
         bar.opinions = _.sortBy bar.opinions, (pos) -> 
           !pos.getUser().get('avatar_file_name')?
 
-      histogram
-
-    getAggregateHistogram : ->
-      new Proposal.AggregateHistogram
-        model : @model
-        histogram : @_createHistogram()
-
+      @layout.setHistogram histogram
+      @histogram_initialized = true
 
     getLayout : ->
-      new Proposal.AggregateLayout
+      new Proposal.HistogramView
         model : @model
         state : @state
       

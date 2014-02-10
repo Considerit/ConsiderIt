@@ -1,43 +1,39 @@
 @import "variables"
 @import "library"
 
-// New Proposal
+// High-level layout styles
+#active-proposals-region, #past-proposals-region
+  padding-top: $vertical_baseline
+  .proposals-list
+    list-style: none outside none
 
-.proposals-new
+.past_proposals_heading
+  text-align: center
+
+
+// New Proposal
+.new_proposal_view
   margin: auto
   text-align: center
   width: $content_width
 
-#proposals-container, #proposals-container-completed
-  padding-top: $vertical_baseline
-  .proposal-list
-    list-style: none outside none
 
-#proposals-container-completed
-  hr
-    margin-bottom: $vertical_baseline
-    height: 1px
 
-  h2
-    text-align: center
+// Proposal filters
+// For the ability to 
 
-  &.is-empty
-
-    > h2, .proposals-filters
-      display: none
-
-.proposals-list-pagination-wrap
+.proposals_pagination_view
   padding-bottom: $vertical_baseline
 
 .proposals-filters
   padding-top: $vertical_baseline
 
-.proposals-filters, .proposals-list-pagination-wrap
+.proposals-filters, .proposals_pagination_view
   text-align: center
   margin: 0 auto
   width: $content_width
 
-.proposals-filter-container, .proposals-sort-container
+.proposals-filter-container, .proposals_sort_view
   display: inline-block
 
   .title, a
@@ -78,14 +74,14 @@
   margin-top: $vertical_baseline/4
   +font-size(-2)
 
-.proposals-container-hibernation-message
+.active_proposals_hibernation_message
   padding: $vertical_baseline / 2 $grid_gutter 
   +font-size(2)
   text-align: center
   margin: $vertical_baseline auto
   width: $body_width
 
-.proposals-container-completed-header
+.past_proposals_heading
   h2
     font-weight: none
     +font-size(2)

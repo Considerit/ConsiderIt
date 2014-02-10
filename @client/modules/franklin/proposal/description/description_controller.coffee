@@ -42,11 +42,11 @@
         region.$el.empty().append view.el
 
     removeSharing : (layout) ->
-      if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
+      if @model.openToPublic() && App.request('tenant').get('enable_sharing')
         layout.socialMediaRegion.reset()
 
     createSharing : (layout) ->
-      if @model.openToPublic() && App.request('tenant:get').get('enable_sharing')
+      if @model.openToPublic() && App.request('tenant').get('enable_sharing')
         social_view = @getSocialMediaView()
         layout.socialMediaRegion.show social_view
 

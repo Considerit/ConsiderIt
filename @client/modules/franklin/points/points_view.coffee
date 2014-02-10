@@ -65,7 +65,7 @@
       header : @getHeaderText()
 
     processValenceForHeader : ->
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       valence = if @options.valence == 'pro' then tenant.getProLabel({capitalize:true,plural:true}) else tenant.getConLabel({capitalize:true,plural:true})
       valence
 
@@ -119,7 +119,7 @@
 
     serializeData : ->
       data = super
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       params = _.extend data,
         pros : @options.valence == 'pro'
         sort_by : @sort
@@ -191,7 +191,7 @@
 
     serializeData : ->
       data = super
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       params = _.extend data,
         cnt : _.size @collection.fullCollection
         has_more_points : @collection.state.totalPages > 1
@@ -213,7 +213,7 @@
     template : '#tpl_decision_board_points_footer'
 
     serializeData : ->
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       params =  
         label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true}) else tenant.getConLabel({capitalize:true})
         hide_label : "hide_name-#{@options.valence}"

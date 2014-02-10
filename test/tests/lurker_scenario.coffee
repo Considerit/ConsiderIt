@@ -34,7 +34,7 @@ casper.test.begin 'Lurker can poke around homepage', 13, (test) ->
         @HTMLCapture '[data-role="proposal"]', 
           caption: 'One of the proposals'
 
-        @HTMLCapture '#proposals-container', 
+        @HTMLCapture '#active-proposals-region', 
           caption: 'Active proposals'
 
         assert_homepage_loaded test
@@ -42,18 +42,18 @@ casper.test.begin 'Lurker can poke around homepage', 13, (test) ->
     casper.then ->
       @HTMLStep "load some more proposals"
 
-      @click '#proposals-container [data-target="load-proposals"]'
+      @click '#active-proposals-region [data-target="load-proposals"]'
       @wait 10000, ->
-        @HTMLCapture '#proposals-container', 
+        @HTMLCapture '#active-proposals-region', 
           caption: 'Active proposals'
 
-        test.assertExists '[data-target="proposallist:page"]', 'pagination is shown after loading proposals'
+        test.assertExists '[data-target="proposals:goto_page"]', 'pagination is shown after loading proposals'
         @HTMLCapture '.proposals-operations',
           caption: 'Proposals pagination after loading more'
 
-        @click '#proposals-container-completed [data-target="load-proposals"]'
+        @click '#past-proposals-region [data-target="load-proposals"]'
         @wait 10000, ->
-          test.assertExists '#proposals-container-completed [data-target="proposallist:page"]', 'pagination for inactive proposals is shown after loading inactive proposals'
+          test.assertExists '#past-proposals-region [data-target="proposals:goto_page"]', 'pagination for inactive proposals is shown after loading inactive proposals'
 
     casper.then ->
       casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
@@ -302,10 +302,10 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
 
 assert_homepage_loaded = (test) ->
   test.assertExists '[data-role="proposal"][state="summary"]', "there is at least one proposal, and it is collapsed"
-  test.assertElementCount '#proposals-container [data-role="proposal"]', 5, "there are 5 active proposals"
-  test.assertElementCount '#proposals-container-completed [data-role="proposal"]', 0, "there are no inactive proposals"
-  test.assertExists '#proposals-container [data-target="load-proposals"]', 'ability to load more active proposals'
-  test.assertExists '#proposals-container-completed [data-target="load-proposals"]', 'ability to load more inactive proposals'
+  test.assertElementCount '#active-proposals-region [data-role="proposal"]', 5, "there are 5 active proposals"
+  test.assertElementCount '#past-proposals-region [data-role="proposal"]', 0, "there are no inactive proposals"
+  test.assertExists '#active-proposals-region [data-target="load-proposals"]', 'ability to load more active proposals'
+  test.assertExists '#past-proposals-region [data-target="load-proposals"]', 'ability to load more inactive proposals'
 
 assert_in_results_state = (test) ->
   test.assertExists '[data-role="proposal"][state="results"]', 'Proposal is in results state'

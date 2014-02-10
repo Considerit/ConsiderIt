@@ -66,7 +66,7 @@
         pagination_view.proposalsWereLoaded()
 
       layout.proposalsRegion.show proposals_view
-      layout.filtersRegion.show filter_view
+      layout.sortRegion.show filter_view
       layout.paginationRegion.show pagination_view
 
       @proposals_view = proposals_view

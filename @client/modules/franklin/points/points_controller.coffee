@@ -7,8 +7,8 @@
   class Points.AbstractPointsController extends App.Controllers.StatefulController
 
     point_controllers : 
-      PeerController : {}
-      OpinionController : {}
+      CommunityPointsController : {}
+      DecisionBoardPointsController : {}
 
     initialize : (options = {}) ->
       super options
@@ -77,7 +77,7 @@
 
 
   class Points.CommunityPointsController extends Points.AbstractPointsController
-    cls_name: 'PeerController'
+    cls_name: 'CommunityPointsController'
     removed_points : []
     is_expanded : false
 
@@ -103,7 +103,7 @@
       else
         @list_view.children.each (vw) -> vw.enableDrag()
 
-    segmentPeerPoints : (segment) ->
+    segmentCommunityPoints : (segment) ->
 
       fld = if segment == 'all' then 'score' else "score_stance_group_#{segment}"
 
@@ -132,16 +132,16 @@
       header_view = @header_view
       footer_view = @footer_view
 
-      if !is_expanded
+      if !is_expanded        
         @trigger 'points:expand', @options.valence
-        header_view.setExpanded true
-        footer_view.setExpanded true
+        header_view.setExpandPoints true
+        footer_view.setExpandPoints true
         @previous_page_size = @options.collection.state.pageSize
         @options.collection.setPageSize 1000
         @is_expanded = true
       else
-        header_view.setExpanded false
-        footer_view.setExpanded false
+        header_view.setExpandPoints false
+        footer_view.setExpandPoints false
         @trigger 'points:unexpand', @options.valence
         @options.collection.setPageSize @previous_page_size
         @options.collection.getPage 1
@@ -226,7 +226,7 @@
 
 
   class Points.DecisionBoardColumnController extends Points.AbstractPointsController
-    cls_name: 'OpinionController'
+    cls_name: 'DecisionBoardPointsController'
 
     initialize : (options = {}) ->
       super options

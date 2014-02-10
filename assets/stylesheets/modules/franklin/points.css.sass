@@ -2,9 +2,93 @@
 @import "compass/css3/box-shadow"
 @import "library"
 
-// footer
+////
+// High-level points list styles
+.points_by_community
+  border: 1px solid transparent
 
-.points-footer-more
+// empty list
+.no_community_points
+  font-style: italic
+  text-align: center
+
+
+// HEADER
+// The header of a points list, such as "Pros" or "Cons"
+// Also includes the point sorting menu
+[data-activity="proposal-no-activity"]
+  .points_by_community .points-heading
+    visibility: hidden
+
+.points-heading
+  text-align: center
+  margin-bottom: $vertical_baseline / 2
+  .points_heading_label
+    +font-size(2)    
+    display: inline-block
+
+.points_on_decision_board .points_heading_label
+  margin-bottom: $vertical_baseline/2
+  border-bottom: 2px solid 
+  +font-size(4)
+
+.points_by_community[state="crafting"], .points_by_community[state="results"]
+  .points_heading_label
+    cursor: pointer
+    +font-size(2)
+    font-weight: normal
+
+  .unexpand_points_icon, .expand_points_icon
+    +font-size(-2)
+    margin-left: $grid_gutter / 2
+
+  .sort_points
+    display: inline-block
+    position: relative
+    margin-left: $grid_gutter
+
+    .sort_points_label
+      +font-size(-2)
+
+    .sort_points_menu
+      display: none
+
+    &:hover
+
+      .sort_points_menu
+        //min-width: 140px
+        text-align: left
+        list-style: none outside none
+        margin-left: 0
+        display: inline-block
+        +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
+        border-radius: 5px
+        padding: $vertical_baseline / 2 0
+        position: absolute
+        right: -$grid_gutter
+        z-index: 10
+
+        li
+          display: block
+
+        a
+          width: 100%
+          padding: 2px $grid_minor
+          display: block
+          cursor: pointer
+          +font-size(-3)
+          font-weight: bold
+
+.points_by_community[state="summary"] 
+  .unexpand_points_icon, .expand_points_icon
+    visibility: hidden
+
+
+
+// FOOTER
+// The community points list footer that either allows you to expand the list (on results or crafting)
+// or displays an indicator that there is more there in summary
+.imply_more_points
   display: none
 
 .points_by_community[state="summary"], .points_by_community[state="results"]
@@ -13,192 +97,88 @@
     bottom: $vertical_baseline / 2
     width: $point-content-width
 
+.toggle_expand_points
+  text-align: center
+
+.pros_by_community .community_points_footer
+  text-align: right
+
+.points_by_community[state="results"]
+  .toggle_expand_points
+    width: $point-content-width
+
+  &.pros_by_community .community_points_footer
+    margin-left: $point-avatar-width
+
 .points_by_community[state="summary"]
 
-  .expanded_points
+  .toggle_expand_points
     display: none  
-  .points-footer-more
+  .imply_more_points
     display: block
     text-align: center
 
     i
       font-weight: bold
 
-.points_are_expanded
-  .points_by_community[state="crafting"]
-    .points-expand-toggle
-      width: $point-content-width + $expanded_points_increment
-
-  .points_by_community[state="results"]
-    .points-expand-toggle
-      width: $point-content-width + $expanded_points_increment
-
-
-.points_by_community[state="crafting"] .points-expand-toggle
+.points_by_community[state="crafting"] .toggle_expand_points
   width: $point-content-width
 
-.points_by_community[state="results"]
-  &.pros_by_community
-    .points-footer-region
-      margin-left: $point-avatar-width
+.points_are_expanded
+  .points_by_community[state="crafting"] .toggle_expand_points
+    width: $point-content-width + $expanded_points_increment
 
-  .points-expand-toggle
-    width: $point-content-width
+  .points_by_community[state="results"] .toggle_expand_points
+    width: $point-content-width + $expanded_points_increment
 
-.expanded_points
-  .points-expand-toggle
-    text-align: center
-
-.pros_by_community
-  .expanded_points
-    text-align: right
-
-
-// header
-
-[data-activity="proposal-no-activity"]
-  .points_by_community .points-heading
-    visibility: hidden
-
-.points-heading
-  text-align: center
-  margin-bottom: $vertical_baseline / 2
-  .points-heading-label
-    +font-size(2)    
-    display: inline-block
-
-
-
-.points_by_community
-  border: 1px solid transparent
-
-  // &.pros_by_community
-  //   padding: $vertical_baseline / 2 $grid-gutter / 2 $vertical_baseline / 2 $grid-gutter / 2
-
-  // &.cons_by_community
-  //   padding: $vertical_baseline / 2 $grid-gutter / 2 $vertical_baseline / 2 $grid-gutter / 2
-
-  &[state="crafting"], &[state="results"]
-
-    .points-heading-label
-      cursor: pointer
-      +font-size(2)
-      font-weight: normal
-
-    .expanded_points-sort
-      display: inline-block
-      position: relative
-      margin-left: $grid_gutter
-
-      .expanded_points-sort-label
-        +font-size(-2)
-
-      .expanded_points-sort-menu
-        display: none
-
-
-      &:hover
-
-        .expanded_points-sort-menu
-          //min-width: 140px
-          text-align: left
-          list-style: none outside none
-          margin-left: 0
-          display: inline-block
-          +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
-          border-radius: 5px
-          padding: $vertical_baseline / 2 0
-          position: absolute
-          right: -$grid_gutter
-          z-index: 10
-
-          li
-            display: block
-
-          a
-            width: 100%
-            padding: 2px $grid_minor
-            display: block
-            cursor: pointer
-            +font-size(-3)
-            font-weight: bold
-
-
-.points_on_decision_board
-  .points-heading-label
-    margin-bottom: $vertical_baseline/2
-    border-bottom: 2px solid 
-    +font-size(4)
-
-// expandable header
-
-.points_by_community[state="results"], .points_by_community[state="crafting"] 
-  .expanded_points-heading-open, .expanded_points-heading-close
-    +font-size(-2)
-    margin-left: $grid_gutter / 2
-
-.points_by_community[state="summary"] 
-  .expanded_points-heading-open, .expanded_points-heading-close
-    visibility: hidden
-
-// empty list
-.no_community_points
-  font-style: italic
-  text-align: center
-
-/* NEWPOINT */
+// NEW POINTS & INCLUDING POINTS
+// Point lists on the decision board allow users to add points
 
 .has_included_points
-  .point-drop-target
+  .add_point_drop_target
     opacity: .2
 
 .no_included_points
-  .point-drop-target
+  .add_point_drop_target
     opacity: .75
 
-.draggable_initiated_pro .pros_on_decision_board, .draggable_initiated_con .cons_on_decision_board
-  .point-drop-target
+.user_is_dragging_a_pro .pros_on_decision_board, .user_is_dragging_a_con .cons_on_decision_board
+  .add_point_drop_target
     opacity: 1
 
-.draggable_hover_pro .pros_on_decision_board, .draggable_hover_con .cons_on_decision_board
-  .point-drop-target
+.user_is_hovering_on_a_drop_target_pro .pros_on_decision_board, .user_is_hovering_on_a_drop_target_con .cons_on_decision_board
+  .add_point_drop_target
     border-style: solid
 
-
-.point-drop-target
+.add_point_drop_target
   padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_gutter
   +font-size(1)
   height: 5 * $vertical_baseline
   vertical-align: middle
   margin-top: 2 * $vertical_baseline
 
-.point-drop-target, .newpoint
+.add_point_drop_target, .newpoint
   border-radius: 16px
   width: $point_width - $grid_gutter
   margin-left: $grid_gutter / 2
 
-// .pros_on_decision_board 
-//   .point-drop-target, .newpoint
-//     margin-left: $grid_gutter / 2
 
 .newpoint
   position: relative
   margin-top: $vertical_baseline
 
-  &:hover, &.newpoint-adding
+  &:hover, &.is_adding_newpoint
     border-style: solid
 
-  .newpoint-new, .newpoint-form
-
-    // bullet point
-    &:before
-      content: '\2022'
-      display: inline-block
-      position: absolute
-      top: 7px
+  // bullet point
+  .newpoint_prompt:before, .newpoint-form:before
+    content: '\2022'
+    display: inline-block
+    position: absolute
+    top: 7px
 
 
-  .newpoint-new
+  .newpoint_prompt
     +font-size(1)
     position: relative
     //font-weight: bold
@@ -209,7 +189,6 @@
     opacity: .75
     &:hover
       opacity: 1
-
 
     &:before
       left: 4px
@@ -247,13 +226,8 @@
 
   .newpoint-submit
     text-align: right
+    margin-top: 3px
 
-    //text-align: right
-    //margin-left: 10px
-
-  .newpoint-anonymous-wrap
+  .newpoint_hide_name
     label, input
       +font-size(-1)
-
-  .newpoint-submit
-    margin-top: 3px

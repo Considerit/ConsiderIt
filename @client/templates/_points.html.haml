@@ -10,61 +10,56 @@
   .points-list-region
   .points-footer-region
 
-%script{ :type => "text/template", :id => "tpl_points_header"}
-  .points-heading
-    %span.points-heading-label
-      {{ header }}
+%script{ :type => "text/template", :id => "tpl_points_heading"}
+  %span.points_heading_label
+    {{ header }}
 
-%script{ :type => "text/template", :id => "tpl_community_points_header"}
+%script{ :type => "text/template", :id => "tpl_community_points_heading"}
 
-  .points-heading
-    %span.points-heading-label{'data-target' => 'expand-toggle'}
-      {{ header }}
+  %span.points_heading_label{'data-target' => 'expand-toggle'}
+    {{ header }}
 
-      (( if(is_expanded) { ))
-      %span.expanded_points-heading-close
-        %i.fa.fa-small.fa-compress  
+    (( if(is_expanded) { ))
+    %i.unexpand_points_icon.fa.fa-small.fa-compress  
 
-      .expanded_points-sort
-        %span.expanded_points-sort-label
-          sort 
-          %i.fa.fa-small.fa-caret-down
-        %ul.expanded_points-sort-menu
-          (( _.each(sorts, function(sort){  ))
-          %li.points-sort-option
-            %a{ :title => "{{ sort.title }}", :'data-target' => "{{ sort.target }}" }
-              {{ sort.name }}
-          (( }); ))
+    .sort_points
+      %span.sort_points_label
+        sort 
+        %i.fa.fa-small.fa-caret-down
+      %ul.sort_points_menu
+        (( _.each(sorts, function(sort){  ))
+        %li.sort_points_menu_option
+          %a{ :title => "{{ sort.title }}", :'data-target' => "{{ sort.target }}" }
+            {{ sort.name }}
+        (( }); ))
 
-      (( } else { ))
-      %span.expanded_points-heading-open
-        %i.fa.fa-small.fa-expand
-      (( } ))
+    (( } else { ))
+    %i.expand_points_icon.fa.fa-small.fa-expand
+    (( } ))
 
 
 %script{:type => "text/template", :id => "tpl_community_points_footer"}
   (( if(has_more_points || is_expanded){ ))
-  .expanded_points
-    %a.points-expand-toggle.button{'data-target' => 'expand-toggle'}
-      (( if( is_expanded ) { ))
-      Unexpand these {{ label }}
-      (( } else { ))
-      View all {{ cnt }} {{ label }}
-      (( } ))
+  %a.toggle_expand_points.button{'data-target' => 'expand-toggle'}
+    (( if( is_expanded ) { ))
+    Unexpand these {{ label }}
+    (( } else { ))
+    View all {{ cnt }} {{ label }}
+    (( } ))
   (( } ))
 
-  .points-footer-more
+  .imply_more_points
     %i
       &hellip;
 
-%script{ :type => "text/template", :id => "tpl_points_user_reasons_footer"}
+%script{ :type => "text/template", :id => "tpl_decision_board_points_footer"}
   .newpoint
 
-    %span.newpoint-new
+    %span.newpoint_prompt{ :'data-target' => 'write-point'}
       Add a new {{ label }}
 
     .newpoint-form
-      = hidden_field_tag :is_pro, "{{is_pro}}", :class => 'newpoint-is_pro'
+      = hidden_field_tag :is_pro, "{{is_pro}}"
 
       .newpoint-nutshell-wrap
         = text_area_tag :nutshell, nil, :placeholder => 'Summarize your point (required)', :cols => 28, :class => "newpoint-nutshell is_counted", :required=>true, :maxlength => 140, :pattern => "^.{3,}"
@@ -74,7 +69,7 @@
       .newpoint-description-wrap
         = text_area_tag :text, nil, :placeholder => "Write a longer description (optional)", :title => "Write a longer description (optional)", :cols => 28, :class => "newpoint-description"
 
-      .newpoint-anonymous-wrap
+      .newpoint_hide_name
         %input.newpoint-anonymous{ :id => "{{hide_label}}", :name => "{{hide_label}}", :type => "checkbox"}
 
         %label{ :for => "{{hide_label}}", :title => 'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.'}
@@ -84,11 +79,10 @@
         %a.newpoint-cancel
           cancel
 
-        %input.newpoint-create.button{ :type => 'submit', :value => 'Done'}
+        %input.button{ :type => 'submit', :value => 'Done', :'data-target' => "submit-point"}
 
-  .point-drop-target
-    %span
-      Drag and drop {{ label.toLowerCase() }}s from the {{ direction }}
+  .add_point_drop_target
+    Drag and drop {{ label.toLowerCase() }}s from the {{ direction }}
 
 
 %script{ :type => 'text/template', :id => "tpl_no_community_points"}

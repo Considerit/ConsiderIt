@@ -55,7 +55,7 @@
         if @state == Proposal.State.Summary
           @layout.$el.moveToTop 50, true
         else
-          @aggregate_controller.layout.$el.ensureInView
+          @histogram_controller.layout.$el.ensureInView
             speed: @transition_speed()
 
       else
@@ -73,15 +73,15 @@
     setupLayout : (layout) ->
       @listenTo layout, 'show', =>
         @description_controller = @getDescriptionController layout.descriptionRegion
-        @aggregate_controller = @getAggregateController layout.aggregateRegion
+        @histogram_controller = @getHistogramController layout.histogramRegion
         @reasons_controller = @getReasonsController layout.reasonsRegion
         @toggle_controller = @getStateToggleController layout.stateToggleRegion
 
         @setupDescriptionController @description_controller
-        @setupAggregateController @aggregate_controller
+        @setupAggregateController @histogram_controller
         @setupReasonsController @reasons_controller
 
-        @setupHistogramReasonsBridge @reasons_controller, @aggregate_controller
+        @setupHistogramReasonsBridge @reasons_controller, @histogram_controller
 
         @listenTo layout, 'explosion:complete', => @exploded = true
 
@@ -109,7 +109,7 @@
         controller.layout.sizeToFit()
 
 
-    setupHistogramReasonsBridge : (reasons_controller, aggregate_controller) =>
+    setupHistogramReasonsBridge : (reasons_controller, histogram_controller) =>
 
       @listenTo reasons_controller, 'point:highlight_includers', (includers) =>
         if @state == Proposal.State.Results && @exploded
@@ -119,13 +119,13 @@
         if @state == Proposal.State.Results && @exploded
           @trigger 'point:mouseout', includers
 
-      @listenTo aggregate_controller, 'histogram:segment_results', (segment) =>
+      @listenTo histogram_controller, 'histogram:segment_results', (segment) =>
         if @state == Proposal.State.Results && @exploded
           reasons_controller.segmentPeerPoints segment
 
       @listenTo reasons_controller, 'opinion_published', =>
         @_update_attributes()
-        aggregate_controller.updateHistogram()
+        histogram_controller.createHistogram()
 
     getDescriptionController : (region) ->
       new Proposal.DescriptionController
@@ -134,8 +134,8 @@
         parent_state : @state
         parent_controller : @
 
-    getAggregateController : (region) ->
-      new Proposal.AggregateController
+    getHistogramController : (region) ->
+      new Proposal.HistogramController
         model : @model
         region : region
         parent_state : @state

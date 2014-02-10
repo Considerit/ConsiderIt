@@ -123,7 +123,7 @@
 
           @$el.removeClass 'histogram-segment-selected'
 
-          hiding = @$el.find('.point-list, .results-pro-con-list-who')
+          hiding = @$el.find('.point_list_collectionview, .results-pro-con-list-who')
           hiding.css 'visibility', 'hidden'
 
           @trigger 'histogram:segment_results', 'all'

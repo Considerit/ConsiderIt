@@ -84,7 +84,7 @@
     dash_name : 'user_roles_edit'
 
     serializeData : ->
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       _.extend {}, @model.attributes,
         enable_moderation : tenant.get 'enable_moderation'
         enable_assessment : tenant.get 'assessment_enabled'
@@ -126,7 +126,7 @@
     dash_name : 'import_data'
 
     serializeData : ->
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       _.extend {},
         tenant : tenant.attributes
         current_user : App.request('user:current')
@@ -145,7 +145,7 @@
       if result.errors > 0
         toastr.error "#{result.errors} proposals were not updated because of errors"
 
-      if App.request('tenant:get').get('theme') == 'lvg' && result.jurisdictions
+      if App.request('tenant').get('theme') == 'lvg' && result.jurisdictions
         toastr.success "#{result.jurisdictions}"
         
         if result.jurisdiction_errors > 0

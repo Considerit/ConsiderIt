@@ -119,7 +119,7 @@
 
     serializeData : ->
       assessment = @model.getAssessment()
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       has_assessment = tenant.get('assessment_enabled') && assessment && assessment.get('complete')
 
       params = _.extend {}, 

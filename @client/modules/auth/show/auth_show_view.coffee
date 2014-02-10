@@ -4,7 +4,7 @@
     template: "#tpl_logged_in"
 
     serializeData : ->
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
       current_user = App.request 'user:current'
       _.extend {}, @model.attributes, @model.permissions(),
         avatar : App.request('user:current:avatar')

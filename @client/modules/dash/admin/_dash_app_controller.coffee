@@ -24,13 +24,13 @@
     auth : 'is_admin'
 
     data_uri : -> 
-      if App.request("tenant:get").fully_loaded
+      if App.request("tenant").fully_loaded
         null
       else 
         Routes.account_path()
 
     process_data_from_server : (data) ->
-      App.request("tenant:get").add_full_data(data.account.account)
+      App.request("tenant").add_full_data(data.account.account)
       data
 
     setupLayout : ->
@@ -42,7 +42,7 @@
 
     getLayout : ->
       new Admin.AppSettingsView
-        model: App.request("tenant:get")
+        model: App.request("tenant")
 
   # class Admin.ManageProposalsController extends Dash.AdminController
   #   setupLayout : ->

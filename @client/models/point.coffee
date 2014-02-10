@@ -29,7 +29,7 @@
       App.vent.trigger 'comments:fetched', comments
       App.vent.trigger 'comments:thanks:fetched', thanks
  
-      tenant = App.request 'tenant:get'
+      tenant = App.request 'tenant'
 
       if tenant.get 'assessment_enabled'
         current_user = App.request 'user:current'

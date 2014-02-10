@@ -1,26 +1,15 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
-
-  class Proposal.AggregateLayout extends App.Views.StatefulLayout
-    template : '#tpl_aggregate_layout'
-    className : 'results'
-      
-    regions : 
-      histogramRegion : '.histogram-region'
-
-    initialize : (options = {}) ->
-      super options    
-
-    serializeData : ->
-      _.extend {}, @model.attributes
-
-
-
-  class Proposal.AggregateHistogram extends App.Views.ItemView
-    template : '#tpl_aggregate_histogram'
+  class Proposal.HistogramView extends App.Views.StatefulLayout
+    template : '#tpl_histogram'
     className : 'histogram'
     bar_state : null
     highlight_state : []
+    histogram: null
+
+    setHistogram : (histogram) ->
+      @histogram = histogram
+      @render()
 
     serializeData : ->
 
@@ -29,7 +18,7 @@
       neutral_label = @model.get('slider_middle') || 'Neutral / Undecided'
 
       _.extend {}, @model.attributes,
-        histogram : @options.histogram
+        histogram : @histogram
         supporter_label : supporter_label
         opposer_label : opposer_label
         neutral_label : neutral_label

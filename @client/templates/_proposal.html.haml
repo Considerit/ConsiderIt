@@ -5,7 +5,7 @@
 
   .proposal-state-toggle-region
   
-  .proposal-aggregate-region
+  .histogram-region
 
   .proposal-reasons-region
 
@@ -144,34 +144,30 @@
 
 
 
-////////////// aggregate ////////////
-%script{ :type => "text/template", :id => "tpl_aggregate_layout" }  
-  
-  .histogram-region
-
-
-
+////////////// histogram ////////////
 
 %script{ :type => "text/template", :id => "tpl_group_container"}
   (( _.each(participants, function(p){ ))
   %span.avatar{ :'data-target' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}>
   (( }); ))
 
-%script{ :type => "text/template", :id => "tpl_aggregate_footer_expanded"}
+%script{ :type => "text/template", :id => "tpl_results_footer_expanded"}
   .placeholder
 
-%script{ :type => "text/template", :id => "tpl_aggregate_footer_collapsed"}
+
+%script{ :type => "text/template", :id => "tpl_view_results"}
   %a.view_results_prompt_from_summary{:'data-target' => 'show-results'}
     //%i.fa.fa-bar-chart-o.fa-lg 
     %i.fa.fa-th-list.fa-lg
     View Results
 
     
-%script{ :type => "text/template", :id => "tpl_aggregate_footer_separated"}
+%script{ :type => "text/template", :id => "tpl_results_footer_separated"}
   .placeholder
 
 
-%script{ :type => "text/template", :id => "tpl_aggregate_histogram"}
+%script{ :type => "text/template", :id => "tpl_histogram"}
+  (( if (histogram) { ))
   (( _.each(histogram.breakdown, function(bar){ ))
   .histogram-bar{ :style => "height: {{bar.full_size}}px;", :bucket => "{{bar.bucket}}", :id => "bucket-{{bar.bucket}}"}>
     (( if(bar.bucket < 4 ){ ))
@@ -198,6 +194,7 @@
     .histogram-base-label.histogram-base-label-oppose
       %span
         {{ opposer_label }}
+  (( } ))
 
 
 %script{ :type => "text/template", :id => "tpl_proposal_social_media" }

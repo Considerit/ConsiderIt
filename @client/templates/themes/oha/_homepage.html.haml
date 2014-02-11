@@ -3,17 +3,16 @@
   - if false && Rails.env.development?
     = render :partial => "shared/dev_tools"      
 
-  .t-intro-header
+  .oha_homepage_header
     %a{ :href => 'http://kamakakoi.com' }
       = theme_image_tag 'oha-logo-small.png'
       %span
         Kamakakoi : The Cutting Edge
 
-  .t-intro-wrap
-    .t-intro
+  .homepage_main
 
-      %a{ :href => 'http://kamakakoi.com' }
-        = theme_image_tag 'logo_large.png', :class => 't-logo'
-              
-      .account_message
-        = simple_format current_tenant.header_text
+    %a{ :href => 'http://kamakakoi.com' }
+      = theme_image_tag 'logo_large.png', :class => 't-logo'
+            
+    .homepage_account_message
+      = simple_format current_tenant.header_text

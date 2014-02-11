@@ -1,6 +1,6 @@
-@ConsiderIt.module "Franklin.Root", (Root, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Franklin.Homepage", (Homepage, App, Backbone, Marionette, $, _) ->
 
-  class Root.RootController extends App.Controllers.Base
+  class Homepage.HomepageController extends App.Controllers.Base
 
     initialize : (options = {}) ->
       layout = @getLayout()
@@ -16,10 +16,10 @@
       @region.show layout
 
     getLayout : ->
-      new Root.Layout
+      new Homepage.HomepageLayout
 
     getHeader : ->
-      new Root.HeaderView
+      new Homepage.HomepageHeadingView
         model : App.request 'tenant'
 
     getProposalsController : (layout) ->

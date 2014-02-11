@@ -1,9 +1,9 @@
 
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
-  class Proposal.StateToggleView extends App.Views.StatefulLayout
-    template : '#tpl_proposal_state_toggle'
-    className : 'proposal-state-toggle'
+  class Proposal.ToggleProposalStateView extends App.Views.StatefulLayout
+    template : '#tpl_toggle_proposal_state'
+    className : 'toggle_proposal_state_view'
 
 
     serializeData : ->

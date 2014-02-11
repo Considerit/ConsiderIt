@@ -78,7 +78,6 @@
 
 
   # View that manages the content shown when a point is opened.
-  # Confusingly, point details are not managed here. 
   class Point.OpenPointView extends App.Views.Layout
     template : '#tpl_open_point'
     className : 'open_point_layout'
@@ -112,6 +111,21 @@
       #needs to be managed by layout
       if current_user.canEditPoint @model 
         @trigger 'make_fields_editable'
+        @makeEditable()
+
+    makeEditable : ->
+      $details_editable = @$el.find('.point_description')
+      $details_editable.editable
+        resource: 'point'
+        pk: @model.id
+        url: Routes.proposal_point_path @model.get('long_id'), @model.id
+        type: 'textarea'
+        name: 'text'
+        success : (response, new_value) => @model.set('text', new_value)
+
+      # $details_editable.addClass 'icon-pencil icon-large'
+      $details_editable.prepend '<i class="editable-pencil icon-pencil icon-large">'
+
 
 
     closePoint : (go_back) ->
@@ -223,17 +237,6 @@
 
       $editable.prepend '<i class="editable-pencil icon-pencil icon-large">'
 
-      $details_editable = @$el.find('.point_description')
-      $details_editable.editable
-        resource: 'point'
-        pk: @model.id
-        url: Routes.proposal_point_path @model.get('long_id'), @model.id
-        type: 'textarea'
-        name: 'text'
-        success : (response, new_value) => @model.set('text', new_value)
-
-      # $details_editable.addClass 'icon-pencil icon-large'
-      $details_editable.prepend '<i class="editable-pencil icon-pencil icon-large">'
 
     removeEditable : ->
       $editable = @$el.find('.point-nutshell')

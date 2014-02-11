@@ -4,48 +4,47 @@
   - if false && Rails.env.development?
     = render :partial => "shared/dev_tools"      
 
-  .t-intro-wrap
-    .t-intro
-              
-      .account_holder
-        (( if(is_manager) { ))
-        = form_for :account, :url => account_path, :remote => true, :multipart => true, :method => :put, :html => { :class => 'l-homepage-pic-form'} do |f|
+  .homepage_main
+            
+    .account_holder
+      (( if(is_manager) { ))
+      = form_for :account, :url => account_path, :remote => true, :multipart => true, :method => :put, :html => { :class => 'homepage_account_image-form'} do |f|
 
-          (( var csrfparam = $('meta[name="csrf-param"]').attr('content'), csrftoken = $('meta[name="csrf-token"]').attr('content'); ))
+        (( var csrfparam = $('meta[name="csrf-param"]').attr('content'), csrftoken = $('meta[name="csrf-token"]').attr('content'); ))
 
-          %input{ :type => "hidden", :name => "{{ csrfparam }}", :value => "{{ csrftoken }}" }
+        %input{ :type => "hidden", :name => "{{ csrfparam }}", :value => "{{ csrftoken }}" }
 
-          .l-homepage-pic
+        .homepage_account_image
 
-            %input{:id => "account_homepage_pic", :name => "account[homepage_pic]", :title => "Upload a profile picture (optional)", :type => "file", :class => "customfile-input ui-state-valid"}
+          %input{:id => "account_homepage_pic", :name => "account[homepage_pic]", :title => "Upload a profile picture (optional)", :type => "file", :class => "customfile-input ui-state-valid"}
 
-            .selected.hide
+          .selected.hide
 
-            %button.hide
-              Save image
+          %button.hide
+            Save image
 
-        (( } else { ))
-        .l-homepage-pic
-          (( var project_url = tenant.get('project_url') || '#'; target = project_url == '#' ? '' : '_blank'; ))
-          %a{:href => "{{project_url}}", :target => "{{target}}"}
-            (( if( tenant.get('homepage_pic_file_name') ){ ))
-            %img.t-logo{ :src => "{{tenant.getHomepagePic()}}"}
-            (( } else { ))
-            - if current_tenant.managing_account && current_tenant.managing_account.avatar_file_name
-              = image_tag current_tenant.managing_account.avatar.url(:large), :class => 't-logo'
-            - else
-              %img{ :src => '/system/default_avatar/large_default-profile-pic.png'}                
-            (( } ))
+      (( } else { ))
+      .homepage_account_image
+        (( var project_url = tenant.get('project_url') || '#'; target = project_url == '#' ? '' : '_blank'; ))
+        %a{:href => "{{project_url}}", :target => "{{target}}"}
+          (( if( tenant.get('homepage_pic_file_name') ){ ))
+          %img.t-logo{ :src => "{{tenant.getHomepagePic()}}"}
+          (( } else { ))
+          - if current_tenant.managing_account && current_tenant.managing_account.avatar_file_name
+            = image_tag current_tenant.managing_account.avatar.url(:large), :class => 't-logo'
+          - else
+            %img{ :src => '/system/default_avatar/large_default-profile-pic.png'}                
+          (( } ))
 
-        (( } ))
+      (( } ))
 
-      .account_message
-        = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+    .homepage_account_message
+      = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-        %span.account_message_heading
-          {{tenant.get('header_text')}}
+      %span.homepage_account_message_heading
+        {{tenant.get('header_text')}}
 
-        .account_message_details
-          {{tenant.get('header_details_text')}}
+      .homepage_account_message_details
+        {{tenant.get('header_details_text')}}
 
 

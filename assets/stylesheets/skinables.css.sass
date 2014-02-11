@@ -274,18 +274,19 @@ a
   @extend %on_peer_area
 
 // franklin/proposal/description
-.proposal-description-wrap
 
-  .proposal-description
-    +bubble($proposal_title_background_color, darken($proposal_title_background_color, 12%), left, $text_color: $proposal_title_text_color)
-    @extend %on_proposal_title
-  
-  .proposal-details-body-wrap
-    +bubble($proposal_detail_background_color, darken($proposal_detail_background_color, 12%), left, $text_color: $proposal_detail_text_color)
-    @extend %on_proposal_details
+.proposal_heading
+  +bubble($proposal_title_background_color, darken($proposal_title_background_color, 12%), left, $text_color: $proposal_title_text_color)
+  @extend %on_proposal_title
 
-  .proposal-links
-    background-color: emphasize($proposal_detail_background_color, 15%)
+.proposal-details
+  +bubble($proposal_detail_background_color, darken($proposal_detail_background_color, 12%), left, $text_color: $proposal_detail_text_color)
+  @extend %on_proposal_details
+  border-top: none
+  border-radius: 0px 0px 16px 16px 
+
+.proposal-links
+  background-color: emphasize($proposal_detail_background_color, 15%)
 
 // franklin/proposal/toggle
 .toggle_proposal_state_view

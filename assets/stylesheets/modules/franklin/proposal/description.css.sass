@@ -2,20 +2,11 @@
 @import "compass/css3/transform"
 @import "compass/css3/transition"
 
-%collapsed_action_call
-  position: absolute
-  top: 50%
-  border-radius: 0
-  +font-size(-1)
-  right: -183px
-  width: 183px
-  height: 32px
-
-.l-proposal-description-outer-wrap
-  //left: -$dialog_stutter
-  position: relative
-  margin: auto
-  width: $body_width
+// PROPOSAL DESCRIPTION
+// High level styling for the description of a proposal
+$description_animation_time: 500ms
+.proposal-description-region
+  +transition(transform $description_animation_time)
 
 [state="summary"]
   .proposal-description-region
@@ -24,89 +15,87 @@
     position: relative
     z-index: 2
 
-[state="summary"].transitioning
-  .proposal-description-region
-    +translateX(0)
+  &.transitioning
+    .proposal-description-region
+      +translateX(0)
 
-
-$description_animation_time: 500ms
-.proposal-description-region
-  +transition(transform $description_animation_time)
-
-.proposal-description-wrap
+.proposal_description_view
   position: relative
 
-  .proposer
-    text-align: right
-    width: $body_gutter
-    bottom: 0px
-    position: absolute
-
-    [data-target="user_profile_page"]
-      opacity: .9
-      display: inline-block
-      margin-right: 2 * $grid_gutter
-
-      &:hover
-        opacity: 1
-
-    img
-      width: $proposer_img_size // - 30
-      vertical-align: bottom 
 
 
-  // editable
-  .proposal-description, .proposal-details
+// Proposal proposer is the avatar of the user who submitted the proposal
+.proposal_proposer
+  text-align: right
+  width: $body_gutter
+  bottom: 0px
+  position: absolute
 
-  .proposal-description-body br
+  [data-target="user_profile_page"]
+    opacity: .9
+    display: inline-block
+    margin-right: 2 * $grid_gutter
+
+    &:hover
+      opacity: 1
+
+  img
+    width: $proposer_img_size // - 30
+    vertical-align: bottom 
+
+
+// Where all the description content goes
+.proposal_description_main
+  //left: -$dialog_stutter
+  position: relative
+  margin: auto
+  width: $body_width
+
+// The summary heading that is shown on the homepage
+.proposal_heading
+  margin: auto
+  position: relative
+  padding: $vertical_baseline / 2 $grid_gutter
+  //left: -$dialog_stutter
+  min-height: $proposer_img_size
+  +font-size(3)
+
+  p
+    margin-bottom: $vertical_baseline / 2
+  td
+    padding: 0 3px
+
+[state="results"], [state="crafting"]
+  
+  .proposal_heading
+    border-radius: 16px 16px 0px 0px
+
+    > .t-bubble
+      display: none
+
+[state="summary"]
+  .proposal_heading
+    cursor: pointer
+
+
+// The proposal details revealed 
+.proposal-details
+  position: relative
+  padding: $vertical_baseline / 2 $grid_gutter
+
+  .proposal_description_body br
     padding-bottom: $vertical_baseline/2
 
-  .proposal-description-body.editable
+  .proposal_description_body.editable
     min-height: 80px
-  //
 
-
-  .proposal-description
-    margin: auto
-    position: relative
-    padding: $vertical_baseline / 2 $grid_gutter
-    //left: -$dialog_stutter
-    min-height: $proposer_img_size
-
-    p
-      margin-bottom: $vertical_baseline / 2
-    td
-      padding: 0 3px
-
-    .proposal_heading
-      +font-size(3)
-  
-  .proposal-description-title
-    //+font-size(3)
-
-
-  // in details
-
-  .proposal-details
-
-    .proposal-details-body-wrap // silliness to override css from prior rule...
-      border-top: none
-      border-radius: 0px 0px 16px 16px 
-      position: relative
-      padding: $vertical_baseline / 2 $grid_gutter
-
-  .proposal-details-wrapper
-    position: relative
-
-  // read more fields
-  .proposal-description-details
+  .proposal_additional_details
     margin-top: $vertical_baseline / 2
-    //+font-size(-1)
 
     .hidden, .showing
-      text-decoration: underline  
+      text-decoration: underline
 
-    .proposal-description-detail-field-full
+    .proposal_detail_field_body
       p
         margin-bottom: $vertical_baseline/2
 
@@ -123,7 +112,7 @@ $description_animation_time: 500ms
   // additional links
   .proposal-links
     position: absolute
-    right: -$body_gutter - $grid_gutter - 1
+    right: -$body_gutter //- $grid_gutter - 1
     bottom: $vertical_baseline / 2
     padding: $vertical_baseline/2 $grid_gutter/2
     width: $body_gutter
@@ -133,21 +122,10 @@ $description_animation_time: 500ms
       text-decoration: underline
 
 
-  &[state="results"], &[state="crafting"]
-  
-    .proposal-description
-      border-radius: 16px 16px 0px 0px
-
-      > .t-bubble
-        display: none
-
-  &[state="summary"]
-    .proposal-description
-      cursor: pointer
-
-    .proposal-details
-      > .t-bubble
-        display: none
+[state="summary"]
+  .proposal-details
+    > .t-bubble
+      display: none
 
 
 

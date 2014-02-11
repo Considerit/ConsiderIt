@@ -2,13 +2,13 @@
   
   class Proposal.ProposalDescriptionView extends App.Views.StatefulLayout
     template : '#tpl_proposal_description'
-    className : 'proposal-description-wrap'
+    className : 'proposal_description_view'
 
     show_details : true
 
     regions : 
-      adminRegion : '.proposal-admin-region'
-      socialMediaRegion : '.proposal-socialmedia-region'
+      adminRegion : '.proposal-admin-region' 
+      socialMediaRegion : '.proposal-social_media-region'
       
 
     ui : 
@@ -35,11 +35,11 @@
       if @editable()
         if !Proposal.ProposalDescriptionView.editable_fields
           fields = [
-            ['.proposal-description-title', 'name', 'textarea'], 
-            ['.proposal-description-body', 'description', 'textarea'] ]
+            ['.proposal_description_summary', 'name', 'textarea'], 
+            ['.proposal_description_body', 'description', 'textarea'] ]
 
           editable_fields = _.union fields,
-            ([".proposal-description-detail-field-#{f}", f, 'textarea'] for f in App.request('proposal:description_fields'))          
+            ([".proposal_detail_field-#{f}", f, 'textarea'] for f in App.request('proposal:description_fields'))          
 
           Proposal.ProposalDescriptionView.editable_fields = editable_fields
 
@@ -69,10 +69,10 @@
     onShow : ->
 
     bindings : 
-      '.proposal-description-title' : 
+      '.proposal_description_summary' : 
         observe : ['name', 'description']
         onGet : (values) -> @model.title(280)
-      '.proposal-description-body' : 
+      '.proposal_description_body' : 
         observe : 'description'
         updateMethod: 'html'
         onGet : (value) => htmlFormat(value)
@@ -80,16 +80,16 @@
     events : 
       'click .hidden' : 'showDetails'
       'click .showing' : 'hideDetails'      
-      'click .proposal-description' : 'toggleDescription'
+      'click .proposal_heading' : 'toggleDescription'
 
     showDetails : (ev) ->
-      $block = $(ev.currentTarget).closest('.proposal-description-detail-field')
+      $block = $(ev.currentTarget).closest('.proposal_detail_field')
 
       $toggle = $block.find('.hidden:first')
       
       @desc = $toggle.data('label', $toggle.text()) if !$toggle.data('label')
 
-      $block.find('.proposal-description-detail-field-full').slideDown();
+      $block.find('.proposal_detail_field_body').slideDown();
       $toggle
         .text('hide')
         .toggleClass('hidden showing');
@@ -98,14 +98,14 @@
 
     hideDetails : (ev) ->
 
-      $block = $(ev.currentTarget).closest('.proposal-description-detail-field')
+      $block = $(ev.currentTarget).closest('.proposal_detail_field')
 
       if $(document).scrollTop() > $block.offset().top
         $('body').animate {scrollTop: $block.offset().top}, 1000
 
       $toggle = $block.find('.showing:first')
 
-      $block.find('.proposal-description-detail-field-full').slideUp(1000);
+      $block.find('.proposal_detail_field_body').slideUp(1000);
       $toggle
         .text($toggle.data('label'))
         .toggleClass('hidden showing');
@@ -118,6 +118,6 @@
 
   class Proposal.SocialMediaView extends App.Views.ItemView
     template : '#tpl_proposal_social_media'
-    className : 'proposal-socialmedia'
+    className : 'proposal_social_media_view'
 
 

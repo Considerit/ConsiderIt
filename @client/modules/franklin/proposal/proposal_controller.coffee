@@ -151,7 +151,7 @@
 
 
     getStateToggleController : (region) ->
-      new Proposal.StateToggleController
+      new Proposal.ToggleProposalStateController
         model : @model
         region : region
         parent_state : @state

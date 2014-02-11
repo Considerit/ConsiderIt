@@ -1,6 +1,6 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
-  class Proposal.StateToggleController extends App.Controllers.StatefulController
+  class Proposal.ToggleProposalStateController extends App.Controllers.StatefulController
     transitions_enabled : true
 
     initialize : (options = {}) ->
@@ -25,7 +25,7 @@
         null
 
     getLayout : ->
-      new Proposal.StateToggleView
+      new Proposal.ToggleProposalStateView
         model : @model
         state : @state
 

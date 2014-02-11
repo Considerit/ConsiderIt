@@ -17,7 +17,7 @@
 
     regions: 
       descriptionRegion : '.proposal-description-region'
-      stateToggleRegion : '.proposal-state-toggle-region'
+      stateToggleRegion : '.toggle-proposal-state-region'
       histogramRegion : '.histogram-region'
       reasonsRegion : '.proposal-reasons-region'
 

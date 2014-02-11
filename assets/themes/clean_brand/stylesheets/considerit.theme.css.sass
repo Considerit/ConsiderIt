@@ -19,17 +19,17 @@
 #t-bg-content
   +box-shadow(0 0 3px rgba(0, 0, 0, 0.2))
 
-// .t-intro-wrap .t-logo
+// .homepage_heading_view .t-logo
 //   height: 5 * $vertical_baseline
 
-.t-intro-wrap 
+.homepage_heading_view 
   left: -$dialog_stutter
   position: relative
 
-  .t-intro
+  .homepage_main
     min-height: 100px
 
-  .t-header-wrap
+  .homepage_account_message
     text-align: center
     padding: $vertical_baseline 0
     margin: $vertical_baseline * 2 0 $vertical_baseline 0
@@ -37,15 +37,15 @@
     border-bottom: 1px solid
     border-color: darken($base_background_color, 5%)
 
-  .t-message-title, .t-message-details
+  .homepage_account_message_heading, .homepage_account_message_details
 
-  .t-message-title
+  .homepage_account_message_heading
     +font-size(4)
 
-  .t-message-details
+  .homepage_account_message_details
     +font-size(2)
 
-.l-homepage-pic
+.homepage_account_image
   position: relative
   top: 0 * $vertical_baseline
   margin: auto

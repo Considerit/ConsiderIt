@@ -332,7 +332,7 @@ assert_user_profile_loaded = (test) ->
 
 assert_point_open = (test) ->
   test.assertVisible '.point_description', 'Point details are visible'
-  test.assertVisible '.point-discussion', 'Discussion section exists'
+  test.assertVisible '.point-discussion-region', 'Discussion section exists'
 
 assert_comment_open = (test, comment_id) ->
   assert_point_open test

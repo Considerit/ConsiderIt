@@ -41,7 +41,7 @@
 
     ##################
 
-    $(document).on 'mouseenter mouseleave', '#t-intro-people .avatar', (e) ->
+    $(document).on 'mouseenter mouseleave', '#homepage-people .avatar', (e) ->
       if e.type == 'mouseenter'
         to_hover = []
         idx = $(this).index()
@@ -50,7 +50,7 @@
         row = parseInt $(this).parent().attr('row')
 
         first = Math.max(row-area,0) 
-        rows = $('#t-intro-people').children()
+        rows = $('#homepage-people').children()
 
         for i in [0..rows.length-1]
           first = Math.max(idx-area,0)

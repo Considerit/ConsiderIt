@@ -13,7 +13,7 @@
     Root: -> 
 
       region = App.request "default:region"
-      return if region.controlled_by instanceof Franklin.Root.RootController
+      return if region.controlled_by instanceof Franklin.Homepage.HomepageController
 
       history = [ ['homepage', '/'] ]
 
@@ -25,7 +25,7 @@
       if region.controlled_by
         region.controlled_by.close() 
 
-      root_controller = new Franklin.Root.RootController
+      root_controller = new Franklin.Homepage.HomepageController
         region : region
         last_proposal_id : last_proposal_id
 
@@ -101,7 +101,7 @@
           null
 
       # preserve the existing proposal controller if it exists and we're transitioning 
-      animate_proposal_expansion_from_homepage = region.controlled_by instanceof Franklin.Root.RootController && proposal_controller && proposal_controller.region && proposal.get('published') 
+      animate_proposal_expansion_from_homepage = region.controlled_by instanceof Franklin.Homepage.HomepageController && proposal_controller && proposal_controller.region && proposal.get('published') 
 
       if animate_proposal_expansion_from_homepage
         #remove surrounding elements, while suspending proposal el and moving it gracefully to top
@@ -137,7 +137,7 @@
               proposal_controller.upRoot() #preserve proposal's dom
 
             region.controlled_by.close()
-            region.$el.find('.homepage-region').remove()
+            region.$el.find('.homepage_layout').remove()
 
             if animate_proposal_expansion_from_homepage
               proposal_controller.plant region #re-place proposal's dom
@@ -169,7 +169,7 @@
       App.execute 'when:fetched', proposal, => 
         region = App.request "default:region"        
 
-        from_root = region.controlled_by instanceof Franklin.Root.RootController
+        from_root = region.controlled_by instanceof Franklin.Homepage.HomepageController
         if !region.controlled_by #!(region.controlled_by instanceof Franklin.Proposal.ProposalController && region.controlled_by.model.id == proposal.id) && !from_root
           #region.controlled_by.close() if region.controlled_by
           proposal_controller = new Franklin.Proposal.ProposalController

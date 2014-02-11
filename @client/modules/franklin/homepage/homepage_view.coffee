@@ -1,26 +1,27 @@
-@ConsiderIt.module "Franklin.Root", (Root, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Franklin.Homepage", (Homepage, App, Backbone, Marionette, $, _) ->
 
-  class Root.Layout extends App.Views.Layout
+  class Homepage.HomepageLayout extends App.Views.Layout
     template: "#tpl_homepage_layout"
-    className : 'homepage-region'
+    className : 'homepage_layout'
     regions :
-      headerRegion : '#homepage-header'
-      proposalsRegion : '#homepage-proposals'
+      headerRegion : '#homepage-header-region'
+      proposalsRegion : '#homepage-proposals-region'
 
 
-  class Root.HeaderView extends App.Views.ItemView
+  class Homepage.HomepageHeadingView extends App.Views.ItemView
     template: '#tpl_homepage_heading'
+    className: 'homepage_heading_view'
 
     serializeData : ->
       is_manager : App.request('user:current').isManager()
       tenant : App.request('tenant')
 
     bindings : 
-      '.l-homepage-pic .hide' : 
+      '.homepage_account_image .hide' : 
         observe : 'homepage_pic_file_name'
         onGet : (values) ->
           return if !values? || $.trim(values)==''
-          @$el.find('.l-homepage-pic img.customfile-preview').attr('src', App.request("tenant").getHomepagePic('original', values))
+          @$el.find('.homepage_account_image img.customfile-preview').attr('src', App.request("tenant").getHomepagePic('original', values))
 
     events : 
       'change input[type="file"]' : 'fileChanged'
@@ -28,12 +29,12 @@
 
     fileChanged : (ev) ->
       if @submit
-        $save_button = @$el.find(".l-homepage-pic-form button")
+        $save_button = @$el.find(".homepage_account_image-form button")
         $save_button.text 'Save image'
         $save_button.show() if @submit
 
     fileUpdated : (ev) ->
-      $save_button = @$el.find(".l-homepage-pic-form button")
+      $save_button = @$el.find(".homepage_account_image-form button")
       $save_button.hide()
 
     onShow : ->

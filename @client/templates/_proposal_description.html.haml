@@ -1,67 +1,59 @@
 //////////////// shared ////////////////
 %script{ :type => "text/template", :id => "tpl_proposal_description"}
-  .proposer
+  .proposal_proposer
     %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
       %img{:src => "{{ avatar }}"}
 
-  .l-proposal-description-outer-wrap     
-    .proposal-introduction
+  .proposal_description_main     
+    .proposal_heading
+      = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-      .proposal-description
-        = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
-
-        .proposal_heading
-          %span.proposal-description-title
-
-
-
+      %span.proposal_description_summary
 
     (( if(show_details){ ))
 
     .proposal-details
 
-      .proposal-details-body-wrap
-        = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+      = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-        .proposal-description-body
+      .proposal_description_body
 
-        (( if(published) { ))
-        .proposal-details-wrapper
-          .proposal-description-details
+      (( if(published) { ))
+      .proposal_additional_details
 
-            (( _.each(description_detail_fields, function(field) {  ))
+        (( _.each(description_detail_fields, function(field) {  ))
 
-            (( if( $.trim(field[2]) != '') { ))
-            .proposal-description-detail-field
-              .proposal-description-detail-field-heading
-                %a.hidden
-                  Read {{ field[1] }} &raquo;
-              .proposal-description-detail-field-full.hide
-                %div{ :class => "proposal-description-detail-field-{{field[0]}}" }
-                  %h1
-                    {{ field[1] }}
-                  {{ field[2] }}
-                %a.showing
-                  hide
-            (( } ))
-
-            (( }); ))
-
-          (( if(url1 && $.trim(url1) != '') { ))
-          .proposal-description-details.proposal-links
-            %h3
-              More information
-            (( _.each([{field: url1, name: 'Link'} ], function(url) {  ))
-            (( if( url.field && $.trim(url.field) != '' ){ ))
-            .proposal-url-field
-              %a{ :href => "{{url.field}}", :target => "_blank"}
-                {{url.name}}
-            (( } ))
-            (( }); ))
-          (( } ))
-
+        (( if( $.trim(field[2]) != '') { ))
+        .proposal_detail_field
+          .proposal_detail_field_prompt
+            %a.hidden
+              Read {{ field[1] }} &raquo;
+          .proposal_detail_field_body.hide
+            %div{ :class => "proposal_detail_field-{{field[0]}}" }
+              %h1
+                {{ field[1] }}
+              {{ field[2] }}
+            %a.showing
+              hide
         (( } ))
+
+        (( }); ))
+
+      (( if(url1 && $.trim(url1) != '') { ))
+      .proposal-links
+        %h3
+          More information
+        (( _.each([{field: url1, name: 'Link'} ], function(url) {  ))
+        (( if( url.field && $.trim(url.field) != '' ){ ))
+        .proposal-url-field
+          %a{ :href => "{{url.field}}", :target => "_blank"}
+            {{url.name}}
+        (( } ))
+        (( }); ))
+      (( } ))
+
+      (( } ))
       
     (( } ))
     .proposal-admin-region
-    .proposal-socialmedia-region
+    .proposal-social_media-region

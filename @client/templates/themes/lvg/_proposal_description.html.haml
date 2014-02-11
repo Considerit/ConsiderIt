@@ -5,30 +5,27 @@
 
   (( if(prop_type=='local'){ $(".proposal[data-id='"+proposal.id+"']").addClass('t-local'); } ))
 
-  .proposer
+  .proposal_proposer
     %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }
       %img{:src => "{{ avatar }}"}
 
-  .l-proposal-description-outer-wrap     
+  .proposal_description_main     
 
-    .proposal-introduction
+    .proposal_heading
+      = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-      .proposal-description
-        = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+      %span.lvg_proposal_category
+        (( if(category){ ))
 
-        .proposal_heading
-          %span.proposal-description-intro
-            (( if(category){ ))
+        = succeed ':' do
+          %strong
+            {{ category.charAt(0) }}-{{designator}}
+          (( if(jurisdiction && jurisdiction.length > 0) { ))
+          , {{jurisdiction}}
+          (( } ))
+        (( } ))
 
-            = succeed ':' do
-              %strong
-                {{ category.charAt(0) }}-{{designator}}
-              (( if(jurisdiction && jurisdiction.length > 0) { ))
-              , {{jurisdiction}}
-              (( } ))
-            (( } ))
-
-          %span.proposal-description-title
+      %span.proposal_description_summary
 
       
 
@@ -36,51 +33,49 @@
 
     .proposal-details
 
-      .proposal-details-body-wrap
-        = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
+      = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
-        .proposal-description-body
+      .proposal_description_body
 
-        (( if(published) { ))
+      (( if(published) { ))
 
-        .proposal-details-wrapper
-          .proposal-description-details
+      .proposal_additional_details
 
 
-            (( _.each(description_detail_fields, function(field) {  ))
+        (( _.each(description_detail_fields, function(field) {  ))
 
-            (( if( $.trim(field[2]) != '') { ))
-            .proposal-description-detail-field
-              .proposal-description-detail-field-heading
-                %a.hidden
-                  Read {{ field[1] }} &raquo;
-              .proposal-description-detail-field-full.hide
-                %div{ :class => "proposal-description-detail-field-{{field[0]}}" }
-                  %h1
-                    {{ field[1] }}
-                  {{ field[2] }}
-                %a.showing
-                  hide
-            (( } ))
-
-            (( }); ))
-          .proposal-description-details.proposal-links
-            %h3
-              More information
-
-            (( _.each([{field: url1, name: 'Full text'}, {field: url2, name: 'Responsible Choices Analysis'}, {field: url3, name: 'Funding Sources'} ], function(url) {  ))
-            (( if( url.field && $.trim(url.field) != '' ){ ))
-            .proposal-url-field
-              %a{ :href => "{{url.field}}", :target => "_blank"}
-                {{url.name}}
-            (( } ))
-            (( }); ))
-
-
-
+        (( if( $.trim(field[2]) != '') { ))
+        .proposal_detail_field
+          .proposal_detail_field_prompt
+            %a.hidden
+              Read {{ field[1] }} &raquo;
+          .proposal_detail_field_body.hide
+            %div{ :class => "proposal_detail_field-{{field[0]}}" }
+              %h1
+                {{ field[1] }}
+              {{ field[2] }}
+            %a.showing
+              hide
         (( } ))
+
+        (( }); ))
+      .proposal-links
+        %h3
+          More information
+
+        (( _.each([{field: url1, name: 'Full text'}, {field: url2, name: 'Responsible Choices Analysis'}, {field: url3, name: 'Funding Sources'} ], function(url) {  ))
+        (( if( url.field && $.trim(url.field) != '' ){ ))
+        .proposal-url-field
+          %a{ :href => "{{url.field}}", :target => "_blank"}
+            {{url.name}}
+        (( } ))
+        (( }); ))
+
+
+
+      (( } ))
       
     (( } ))
     .proposal-admin-region
-    .proposal-socialmedia-region
+    .proposal-social_media-region
 

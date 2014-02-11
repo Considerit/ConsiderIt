@@ -23,9 +23,6 @@
   .point-nutshell
     {{ adjusted_nutshell }}
 
-  .point_description 
-    {{ text }}
-
   .point-operations
 
     %a.open_point_link
@@ -38,6 +35,9 @@
 
 
 %script{ :type => "text/template", :id => "tpl_open_point"}
+  .point_description 
+    {{ text }}
+
   .point-actions
     .point-include.point-action
       %button.button{ :'data-target' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
@@ -48,7 +48,7 @@
     .point-assessment-region.point-action
 
 
-  .point-discussion
+  .point-discussion-region
 
 %script{ :type => "text/template", :id => "tpl_follow_point"}
   (( if(already_follows){ ))

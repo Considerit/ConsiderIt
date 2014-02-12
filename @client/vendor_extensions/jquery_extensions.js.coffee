@@ -126,6 +126,6 @@ do ($) ->
   $.fn.showParentStates = ->
     console.log 'Parent states for ', $(this), ':'
     $this = $(this)
-    console.log '\t', $this.data('state') if $this.data('state')
+    console.log '\t', $this.attr('state') if $this.attr('state')
     $(this).parents('[state]').each ->
-      console.log '\t', $(this).data('state'), $(this)
+      console.log '\t', $(this).attr('state'), $(this)

@@ -107,9 +107,9 @@ casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) -
       @HTMLStep "#{state} histogram"
 
       if state == 'hover'
-        casper.mouse.move '.histogram-bar:first-of-type .bar-people'     
+        casper.mouse.move '.histogram-bar:first-of-type .histogram_bar_users'     
       else
-        @mouse.click '.histogram-bar:first-of-type .bar-people'  
+        @mouse.click '.histogram-bar:first-of-type .histogram_bar_users'  
         @mouse.move 'body'
 
       @wait 250, ->
@@ -134,7 +134,7 @@ casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) -
       point_includers = @evaluate ->
         return _.uniq($('[role="point"]:first').attr("includers").split(',')).length
 
-      total_avatars = @evaluate -> return $(".histogram .avatar:visible").length
+      total_avatars = @evaluate -> return $(".histogram_layout .avatar:visible").length
 
       @mouse.move '[role="point"]'
       @wait 200, ->
@@ -143,7 +143,7 @@ casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) -
 
         includers_hidden = @evaluate -> 
           hidden = -> $(this).css('opacity') == '0' || $(this).css('visibility') == 'hidden'
-          return $(".histogram .avatar:visible").filter(hidden).length
+          return $(".histogram_layout .avatar:visible").filter(hidden).length
 
         test.assertEqual total_avatars - includers_hidden, point_includers, 'Only includers shown on point hover'
 
@@ -228,9 +228,9 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
         test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a point"
 
         entity_id = @evaluate ->             
-          return $(".dashboard-profile-activity-action:visible a:first").attr('id')
+          return $(".dashboard-profile-activity-action:visible a:first").attr('data-id')
 
-        @click(".dashboard-profile-activity-action a[id='#{entity_id}']")
+        @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
 
         casper.wait 5000, ->
 
@@ -247,9 +247,9 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
           test.assertVisible '.dashboard-profile-activity-substance-wrap', 'Has some votes listed'
           test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a vote"
           entity_id = @evaluate ->             
-            return $(".dashboard-profile-activity-action:visible a:first").attr('id')
+            return $(".dashboard-profile-activity-action:visible a:first").attr('data-id')
 
-          @click(".dashboard-profile-activity-action a[id='#{entity_id}']")
+          @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
           casper.wait 5000, ->
             @HTMLCapture 'body', 
               caption: 'opinion page, accessed from profile'
@@ -268,9 +268,9 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
           test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a proposal"
 
           entity_id = @evaluate ->             
-            return $(".dashboard-profile-activity-action:visible a:first").attr('id')
+            return $(".dashboard-profile-activity-action:visible a:first").attr('data-id')
 
-          @click(".dashboard-profile-activity-action a[id='#{entity_id}']")
+          @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
 
           casper.wait 5000, ->
             assert_in_results_state test
@@ -287,9 +287,9 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
           test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a comment"
 
           entity_id = @evaluate ->             
-            return $(".dashboard-profile-activity-action:visible a:first").attr('id')
+            return $(".dashboard-profile-activity-action:visible a:first").attr('data-id')
 
-          @click(".dashboard-profile-activity-action a[id='#{entity_id}']")
+          @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
           casper.wait 5000, ->
             assert_comment_open test, entity_id
 

@@ -42,7 +42,7 @@
         view = new @itemView
           model : point
           attributes : 
-            'id': "#{point.id}"
+            'data-id': "#{point.id}"
             'role': 'point'
             includers : "#{point.get('includers')}"
             class : "point closed_point #{@location}_point #{valence}"
@@ -160,7 +160,7 @@
       'click [action="expand-toggle"]' : 'handleExpandToggle'
 
     sortList : (ev) ->
-      sort_by = $(ev.target).data('target')
+      sort_by = $(ev.target).attr('target')
       @requestSort sort_by
       @selectSort()
       ev.stopPropagation()

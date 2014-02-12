@@ -67,10 +67,10 @@ class Point < ActiveRecord::Base
   
   scope :ranked_persuasiveness, -> { published.order( "points.persuasiveness DESC" ) }
     
-  scope :ranked_for_stance_segment, proc {|stance_bucket|
+  scope :ranked_for_stance_segment, proc {|stance_segment|
       published.
-      where("points.score_stance_group_#{stance_bucket} > 0").
-      order("points.score_stance_group_#{stance_bucket} DESC")
+      where("points.score_stance_group_#{stance_segment} > 0").
+      order("points.score_stance_group_#{stance_segment} DESC")
   }
   
   scope :not_included_by, proc {|user, included_points, deleted_points| 
@@ -167,25 +167,25 @@ class Point < ActiveRecord::Base
   def define_segment_scores
     
     metrics_per_segment = {}
-    (0..6).each {|stance_bucket| metrics_per_segment[stance_bucket] = [0,0]}
+    (0..6).each {|stance_segment| metrics_per_segment[stance_segment] = [0,0]}
 
-    inclusions_by_segment = inclusions.joins(:opinion).select('COUNT(*) AS cnt, opinions.stance_bucket AS stance_bucket').group("opinions.stance_bucket").order("opinions.stance_bucket")
+    inclusions_by_segment = inclusions.joins(:opinion).select('COUNT(*) AS cnt, opinions.stance_segment AS stance_segment').group("opinions.stance_segment").order("opinions.stance_segment")
     inclusions_by_segment.each do |row|
-      metrics_per_segment[row.stance_bucket.to_i][0] = row.cnt.to_i
+      metrics_per_segment[row.stance_segment.to_i][0] = row.cnt.to_i
     end
 
-    listings_by_segment = point_listings.joins(:opinion).select('COUNT(*) AS cnt, opinions.stance_bucket AS stance_bucket').group("opinions.stance_bucket").order("opinions.stance_bucket")        
+    listings_by_segment = point_listings.joins(:opinion).select('COUNT(*) AS cnt, opinions.stance_segment AS stance_segment').group("opinions.stance_segment").order("opinions.stance_segment")        
     listings_by_segment.each do |row|
-      metrics_per_segment[row.stance_bucket.to_i][1] = row.cnt.to_i
+      metrics_per_segment[row.stance_segment.to_i][1] = row.cnt.to_i
     end
     
-    (0..6).each do |stance_bucket|
-      bucket_score = "score_stance_group_#{stance_bucket}".intern
+    (0..6).each do |stance_segment|
+      segment_score = "score_stance_group_#{stance_segment}".intern
             
-      if metrics_per_segment[stance_bucket][1] == 0
-        self[bucket_score] = 0.0
+      if metrics_per_segment[stance_segment][1] == 0
+        self[segment_score] = 0.0
       else
-        self[bucket_score] = metrics_per_segment[stance_bucket][0]**2 / metrics_per_segment[stance_bucket][1].to_f        
+        self[segment_score] = metrics_per_segment[stance_segment][0]**2 / metrics_per_segment[stance_segment][1].to_f        
       end
     end
   end
@@ -289,19 +289,19 @@ protected
 
     qry = inclusions.joins(:opinion)   \
                     .where("opinions.published=1" )                                      \
-                    .group('opinions.stance_bucket')                                            \
-                    .select("COUNT(*) AS cnt, opinions.stance_bucket")
+                    .group('opinions.stance_segment')                                            \
+                    .select("COUNT(*) AS cnt, opinions.stance_segment")
                         
     # get the number of inclusions per stance group
     qry.each do |row|
       # collapse strong and moderate support/oppose to make more fair distribution
-      if row.stance_bucket == '0'
-        row.stance_bucket = '1'
-      elsif row.stance_bucket == '6'
-        row.stance_bucket = '5'
+      if row.stance_segment == '0'
+        row.stance_segment = '1'
+      elsif row.stance_segment == '6'
+        row.stance_segment = '5'
       end
       begin
-        distribution[row.stance_bucket.to_i - 1] += row.cnt.to_i    
+        distribution[row.stance_segment.to_i - 1] += row.cnt.to_i    
       rescue
         'error'
       end
@@ -314,18 +314,18 @@ protected
     scaling_distribution = Array.new(5, 0)
     qry = point_listings.joins(:opinion)   \
                         .where("opinions.published=1" )                                      \
-                        .group('opinions.stance_bucket')                                            \
-                        .select("COUNT(distinct point_listings.user_id) AS cnt, opinions.stance_bucket")
+                        .group('opinions.stance_segment')                                            \
+                        .select("COUNT(distinct point_listings.user_id) AS cnt, opinions.stance_segment")
                  
     qry.each do |row|
       # collapse strong and moderate support/oppose to make more fair distribution
-      if row.stance_bucket == '0'
-        row.stance_bucket = '1'
-      elsif row.stance_bucket == '6'
-        row.stance_bucket = '5'
+      if row.stance_segment == '0'
+        row.stance_segment = '1'
+      elsif row.stance_segment == '6'
+        row.stance_segment = '5'
       end
       begin
-        scaling_distribution[row.stance_bucket.to_i - 1] += row.cnt.to_i     
+        scaling_distribution[row.stance_segment.to_i - 1] += row.cnt.to_i     
       rescue
       end
     end

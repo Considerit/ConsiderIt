@@ -59,7 +59,7 @@
       'click .sort_proposals_by' : 'sortProposalsTo'
 
     sortProposalsTo : (ev) ->  
-      @sort_by = $(ev.target).data('target')
+      @sort_by = $(ev.target).attr('target')
       @trigger 'proposals:please_sort', @sort_by
       @$el.moveToBottom()
 

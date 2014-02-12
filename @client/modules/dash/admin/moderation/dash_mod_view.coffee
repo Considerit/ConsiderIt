@@ -122,13 +122,13 @@
     toggleFilter : (ev) ->
       $target = $(ev.currentTarget)
 
-      if $target.data('target') == 'all' && $target.is('.selected')
+      if $target.attr('target') == 'all' && $target.is('.selected')
         return
 
       if $target.is('.selected')
         filter = 'all'
       else
-        filter = $target.data('target')
+        filter = $target.attr('target')
 
       @setFilter filter
 

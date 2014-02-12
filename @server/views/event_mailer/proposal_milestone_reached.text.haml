@@ -18,34 +18,34 @@ Summary:
 
 - if num_opinions < 10
 
-  - users = @proposal.opinions.published.where(:stance_bucket => 6).map {|x| x.user.short_name}.compact
-  - users += @proposal.opinions.published.where(:stance_bucket => 5).map {|x| x.user.short_name}.compact
+  - users = @proposal.opinions.published.where(:stance_segment => 6).map {|x| x.user.short_name}.compact
+  - users += @proposal.opinions.published.where(:stance_segment => 5).map {|x| x.user.short_name}.compact
   
 
   Support: #{users.join(', ')}
 
-  - users = @proposal.opinions.published.where(:stance_bucket => 4).map {|x| x.user.short_name}.compact
+  - users = @proposal.opinions.published.where(:stance_segment => 4).map {|x| x.user.short_name}.compact
 
   Lean support: #{users.join(', ')}
   
-  - users = @proposal.opinions.published.where(:stance_bucket => 3).map {|x| x.user.short_name}.compact
+  - users = @proposal.opinions.published.where(:stance_segment => 3).map {|x| x.user.short_name}.compact
   Neutral: #{users.join(', ')}
 
-  - users = @proposal.opinions.published.where(:stance_bucket => 2).map {|x| x.user.short_name}.compact
+  - users = @proposal.opinions.published.where(:stance_segment => 2).map {|x| x.user.short_name}.compact
   Lean oppose: #{users.join(', ')}
 
-  - users = @proposal.opinions.published.where(:stance_bucket => 1).map {|x| x.user.short_name}.compact
-  - users += @proposal.opinions.published.where(:stance_bucket => 0).map {|x| x.user.short_name}.compact
+  - users = @proposal.opinions.published.where(:stance_segment => 1).map {|x| x.user.short_name}.compact
+  - users += @proposal.opinions.published.where(:stance_segment => 0).map {|x| x.user.short_name}.compact
   Oppose: #{users.join(', ')}
 
 
 - else
   
-  Support: #{@proposal.opinions.published.where('stance_bucket >= 5').count}
-  Lean support: #{@proposal.opinions.published.where(:stance_bucket => 4).count}
-  Neutral: #{@proposal.opinions.published.where(:stance_bucket => 3).count}
-  Lean oppose: #{@proposal.opinions.published.where(:stance_bucket => 2).count}
-  Oppose: #{@proposal.opinions.published.where('stance_bucket <=1').count}
+  Support: #{@proposal.opinions.published.where('stance_segment >= 5').count}
+  Lean support: #{@proposal.opinions.published.where(:stance_segment => 4).count}
+  Neutral: #{@proposal.opinions.published.where(:stance_segment => 3).count}
+  Lean oppose: #{@proposal.opinions.published.where(:stance_segment => 2).count}
+  Oppose: #{@proposal.opinions.published.where('stance_segment <=1').count}
 
 - notable_points = @proposal.notable_points
 - if notable_points

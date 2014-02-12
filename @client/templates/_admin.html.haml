@@ -248,7 +248,7 @@
 
           %td.action
             .role_settings.l-dialog-prompt
-              %a.user_roles-invoke_role_change{ :'id' => "{{ user.id }}"}
+              %a.user_roles-invoke_role_change{ :'data-id' => "{{ user.id }}"}
                 Roles:
                 %span.user-roles-list
                   {{ user.roleList() }}

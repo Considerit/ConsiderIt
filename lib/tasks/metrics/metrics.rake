@@ -262,9 +262,9 @@ namespace :metrics do
 
       if !pos
         stance = 'unknown'
-      elsif pos.stance_bucket > 3
+      elsif pos.stance_segment > 3
         stance = 'supporter'
-      elsif pos.stance_bucket == 3
+      elsif pos.stance_segment == 3
         stance = 'neutral'
       else
         stance = 'opposer'

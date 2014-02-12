@@ -247,7 +247,7 @@ a
   +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: emphasize($histogram_base_color, 10%), $inset: true)
 
 // franklin/proposal/crafting
-.decision_board
+.decision_board_layout
   &[state="crafting"], &[state="results"]
     .decision_board_body
       @extend %on_decision_board
@@ -256,17 +256,17 @@ a
     border: 1px dashed $decision_board_border_color
   
 
-.decision-board-footer
+.decision_board_footer_view
 
   .submit_opinion_footer .cancel_submitting_an_opinion
     +link_style(deemphasize($base_text_color, 20%, $reference: $base_background_color), $base_background_color, 25%)
 
 // franklin/proposal/reasons
 
-.decision_board_heading a
+.decision_board_heading_view a
   +link_style($decision_board_text_color, $decision_board_background_color, 10%)
 
-.stance
+.decision_board_slider
   .slider_container .noUiSlider
     background-color: $slider_background_color 
 

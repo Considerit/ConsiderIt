@@ -37,7 +37,7 @@ $histogram_bar_width: $histogram_width / 7
     &[state="results"][coming-from-state="summary"]
       .histogram_bar_users
         visibility: hidden
-      .histogram-base-label
+      .histogram-label
         visibility: hidden
 
 
@@ -131,7 +131,7 @@ $histogram_bar_width: $histogram_width / 7
   width: $histogram_width + $grid_gutter
   border-radius: 10px
 
-.histogram-base-label
+.histogram-label
   position: absolute
   //padding: 0 $grid_gutter + 3
   z-index: 1
@@ -144,7 +144,7 @@ $histogram_bar_width: $histogram_width / 7
     display: block
     //font-weight: bold
 
-.histogram-base-label-support
+.histogram-label-support
   left: -92px
-.histogram-base-label-oppose
+.histogram-label-oppose
   right: -82px

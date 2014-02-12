@@ -320,7 +320,7 @@ assert_in_crafting_state = (test) ->
   test.assertExists '[role="proposal"][state="crafting"]', 'Proposal is in crafting state'
   test.assertElementCount '[role="proposal"]', 1, "there is only one proposal on the page"
   test.assertVisible '.proposal-details', 'Proposal details are visible'
-  test.assertExists '.decision_board[state="crafting"]', 'Decision slate is visible'
+  test.assertExists '.decision_board_layout[state="crafting"]', 'Decision slate is visible'
   test.assertExists '.points_by_community[state="crafting"]', 'Pros and cons on margins'
   test.assertExists '.slider_container', 'Slider present'
   test.assertElementCount '.add_point_drop_target', 2, 'Drop targets present'

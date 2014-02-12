@@ -3,7 +3,7 @@
   (( prop_type = proposal.getTagsByType('type'); ))
   (( jurisdiction = proposal.getTagsByType('jurisdiction'); ))
 
-  (( if(prop_type=='local'){ $(".proposal[data-id='"+proposal.id+"']").addClass('t-local'); } ))
+  (( if(prop_type=='local'){ $("[data-role='proposal'][data-id='"+proposal.id+"']").addClass('t-local'); } ))
 
   .proposal_proposer
     %a{ :'data-id' => "{{ user_id }}", :'data-target' => "user_profile_page" }

@@ -29,7 +29,7 @@
 
         if @options.last_proposal_id
           #TODO: if not on page, go to page where proposal lives
-          $last_proposal = layout.$el.find("[data-role='proposal'][data-id='#{@options.last_proposal_id}']")
+          $last_proposal = layout.$el.find("[role='proposal'][id='#{@options.last_proposal_id}']")
           if $last_proposal.length == 1
             $last_proposal.moveToTop() # {scroll: false}
 

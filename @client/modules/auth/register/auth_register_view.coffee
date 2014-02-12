@@ -99,7 +99,7 @@
           @$el.find('.avatar_field img.customfile-preview').attr('src', App.request("user:current:avatar", 'original', values))
 
     events : 
-      'click [data-target="third_party_auth"]' : 'thirdPartyAuthRequest'
+      'click [action="third_party_auth"]' : 'thirdPartyAuthRequest'
 
 
     thirdPartyAuthRequest : (ev) ->

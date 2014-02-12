@@ -20,7 +20,7 @@
       tenant : App.request('tenant')
 
     onShow : ->
-      @$el.find("[data-target='#{@options.page}']").addClass('current')
+      @$el.find("[action='#{@options.page}']").addClass('current')
 
 
   class Static.StaticView extends App.Views.ItemView

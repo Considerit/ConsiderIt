@@ -65,8 +65,8 @@
         follows : current_user.isFollowing 'Proposal', proposal.get('id')
 
     events : 
-      'click [data-target="submit-opinion"]' : 'handleSubmitOpinion'
-      'click [data-target="show-results"]' : 'handleCanceled'
+      'click [action="submit-opinion"]' : 'handleSubmitOpinion'
+      'click [action="show-results"]' : 'handleCanceled'
 
     handleSubmitOpinion : (ev) ->
       @trigger 'opinion:submit_requested', @$el.find('#follow_proposal').is(':checked')

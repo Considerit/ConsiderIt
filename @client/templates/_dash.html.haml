@@ -11,18 +11,18 @@
 
     (( if( is_self ) { ))
     %li
-      %a.sidebar_link{:href => "{{Routes.profile_path(id)}}", :'data-target' => 'profile'}
+      %a.sidebar_link{:href => "{{Routes.profile_path(id)}}", :'action' => 'profile'}
         Profile
     
     %li
-      %a.sidebar_link{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
+      %a.sidebar_link{:href => "{{Routes.edit_profile_path(id)}}", :'action' => 'edit_profile'}
         Edit profile
 
     %li
-      %a.sidebar_link{:href => "{{Routes.edit_account_path(id)}}", :'data-target' => 'account_settings'}
+      %a.sidebar_link{:href => "{{Routes.edit_account_path(id)}}", :'action' => 'account_settings'}
         Account settings
     %li
-      %a.sidebar_link{:href => "{{Routes.edit_notifications_path(id)}}", :'data-target' => 'email_notifications'}        
+      %a.sidebar_link{:href => "{{Routes.edit_notifications_path(id)}}", :'action' => 'email_notifications'}        
         Email notifications        
 
     (( } ))
@@ -33,11 +33,11 @@
   %ul
     (( if(is_admin) { ))
     %li
-      %a.sidebar_link{:href => "/dashboard/application", :'data-target' => 'app_settings'}
+      %a.sidebar_link{:href => "/dashboard/application", :'action' => 'app_settings'}
         App settings
 
     %li
-      %a.sidebar_link{:href => "{{Routes.manage_roles_path()}}", :'data-target' => 'user_roles'}
+      %a.sidebar_link{:href => "{{Routes.manage_roles_path()}}", :'action' => 'user_roles'}
         User roles
 
     (( } ))
@@ -46,32 +46,32 @@
     (( if( false && is_manager ) { ))
 
     %li
-      %a.sidebar_link{:href => "/dashboard/proposals", :'data-target' => 'manage_proposals'}
+      %a.sidebar_link{:href => "/dashboard/proposals", :'action' => 'manage_proposals'}
         Manage proposals
 
     (( } ))
 
     (( if( (is_moderator ) && tenant.get('enable_moderation') ) { ))
     %li
-      %a.sidebar_link{:href => "{{Routes.dashboard_moderate_path()}}", :'data-target' => 'moderate'}
+      %a.sidebar_link{:href => "{{Routes.dashboard_moderate_path()}}", :'action' => 'moderate'}
         Moderate content
     (( } ))
 
     (( if( (is_evaluator ) && tenant.get('assessment_enabled') ) { ))
     %li
-      %a.sidebar_link{:href => "{{Routes.assessment_index_path()}}", :'data-target' => 'assess'}
+      %a.sidebar_link{:href => "{{Routes.assessment_index_path()}}", :'action' => 'assess'}
         Assess claims
     (( } ))
 
     (( if(  is_analyst ) { ))
     %li
-      %a.sidebar_link{:href => "{{Routes.analytics_path()}}", :'data-target' => 'analyze'}
+      %a.sidebar_link{:href => "{{Routes.analytics_path()}}", :'action' => 'analyze'}
         Analytics
     (( } ))
 
     (( if(  is_manager ) { ))
     %li
-      %a.sidebar_link{:href => "{{Routes.import_data_path()}}", :'data-target' => 'import_data'}
+      %a.sidebar_link{:href => "{{Routes.import_data_path()}}", :'action' => 'import_data'}
         Import data
     (( } ))
 
@@ -85,7 +85,7 @@
     %hr
 
     %li
-      %a.sidebar_link{:href => "{{Routes.client_error_path()}}", :'data-target' => "client_errors"}
+      %a.sidebar_link{:href => "{{Routes.client_error_path()}}", :'action' => "client_errors"}
         Client errors
     (( } ))
 
@@ -129,7 +129,7 @@
 
       (( if ( is_self ) { ))
       = surround '(', ')' do
-        %a.dashboard-profile-edit_profile{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
+        %a.dashboard-profile-edit_profile{:href => "{{Routes.edit_profile_path(id)}}", :'action' => 'edit_profile'}
           edit
       (( } ))
 
@@ -149,7 +149,7 @@
 
       .dashboard-profile-influenced.l-group-container
         (( _.each(influenced_users, function(p){ ))
-        %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}>
+        %span.avatar{ :'action' => "user_profile_page", :'id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}>
         (( }); ))        
   (( } ))
 
@@ -157,34 +157,34 @@
 
     %ul.dashboard-profile-activity-summaries
       %li
-        %a.dashboard-profile-activity-summary{ :'data-target' => 'proposals'}
+        %a.dashboard-profile-activity-summary{ :'action' => 'proposals'}
           %span.activity-summary-count
             {{ proposals.length }}
           %span.activity-summary-label
             Conversations
 
       %li
-        %a.dashboard-profile-activity-summary{ :'data-target' => 'opinions'}
+        %a.dashboard-profile-activity-summary{ :'action' => 'opinions'}
           %span.activity-summary-count
             {{ opinions.length }}
           %span.activity-summary-label
             Opinions
 
       %li
-        %a.dashboard-profile-activity-summary{ :'data-target' => 'points'}
+        %a.dashboard-profile-activity-summary{ :'action' => 'points'}
           %span.activity-summary-count
             {{ points.length }}
           %span.activity-summary-label
             Pros & cons
 
       %li
-        %a.dashboard-profile-activity-summary{ :'data-target' => 'comments'}
+        %a.dashboard-profile-activity-summary{ :'action' => 'comments'}
           %span.activity-summary-count
             {{ comments.length }}
           %span.activity-summary-label
             Comments
 
-    .dashboard-profile-activity-block{ :'data-target' => 'proposals-details'}
+    .dashboard-profile-activity-block{ :'action' => 'proposals-details'}
       %h3
         Conversations started
       (( if(proposals.length > 0) { ))
@@ -196,7 +196,7 @@
               .dashboard-profile-activity-substance
                 {{ proposal.get('name') }}
             %td.dashboard-profile-activity-action
-              %a{ :href => "{{ Routes.proposal_path(proposal.id) }}", :'data-id' => "{{ proposal.id }}" }
+              %a{ :href => "{{ Routes.proposal_path(proposal.id) }}", :'id' => "{{ proposal.id }}" }
                 View and consider
           (( }); ))
       (( } else { ))
@@ -204,7 +204,7 @@
         {{name}} has not put forward any proposals.
       (( } ))
 
-    .dashboard-profile-activity-block{ :'data-target' => 'opinions-details'}
+    .dashboard-profile-activity-block{ :'action' => 'opinions-details'}
 
       %h3
         Opinions crafted
@@ -229,7 +229,7 @@
                 Re: {{ proposal.get('name') }}
 
             %td.dashboard-profile-activity-action
-              %a{ :href => "{{ route }}", :'data-id' => "{{ opinion.id }}" }
+              %a{ :href => "{{ route }}", :'id' => "{{ opinion.id }}" }
                 See why
           (( }); ))
       (( } else { ))
@@ -237,7 +237,7 @@
         {{name}} has not taken any opinions.
       (( } ))
 
-    .dashboard-profile-activity-block{ :'data-target' => 'points-details'}
+    .dashboard-profile-activity-block{ :'action' => 'points-details'}
       %h3
         Pro/con points written
 
@@ -258,11 +258,11 @@
                 This point has influenced {{influenced_users_by_point[point.id].length}} people
               .l-group-container
                 (( _.each(influenced_users_by_point[point.id], function(p){ ))
-                %span.avatar{ :'data-target' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+                %span.avatar{ :'action' => "user_profile_page", :'id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
                 (( }); ))   
 
             %td.dashboard-profile-activity-action
-              %a{ :href => "{{ route }}", :'data-id' => "{{ point.id }}" }
+              %a{ :href => "{{ route }}", :'id' => "{{ point.id }}" }
                 Read and discuss
           (( }); ))
       (( } else { ))
@@ -270,7 +270,7 @@
         {{ name }} has not contributed any points.
       (( } ))
 
-    .dashboard-profile-activity-block{ :'data-target' => 'comments-details'}
+    .dashboard-profile-activity-block{ :'action' => 'comments-details'}
       %h3
         Comments
 
@@ -290,7 +290,7 @@
               .dashboard-profile-activity-substance-context
                 Re: {{ proposal.get('name') }}
             %td.dashboard-profile-activity-action
-              %a{ :href => "{{ route }}#comment-{{comment.id}}", :'data-id' => "{{ comment.id }}" }
+              %a{ :href => "{{ route }}#comment-{{comment.id}}", :'id' => "{{ comment.id }}" }
                 Join in
           (( }); ))
       (( } else { ))

@@ -4,14 +4,12 @@
     template: '#tpl_proposal_layout'
     className : 'proposal_layout'
     attributes : (include_data=true) ->
-      prefix = if include_data then 'data-' else ''
-
       params = {}
-      params["#{prefix}role"] = 'proposal'
-      params["#{prefix}id"] = "#{@model.id}"
-      params["#{prefix}activity"] = if @model.has_participants() then 'proposal-has-activity' else 'proposal-no-activity'
-      params["#{prefix}status"] = if @model.get('active') then 'proposal-active' else 'proposal-inactive'
-      params["#{prefix}visibility"] = if @model.get('published') then 'published' else 'unpublished'
+      params["role"] = 'proposal'
+      params["id"] = "#{@model.id}"
+      params["activity"] = if @model.has_participants() then 'proposal-has-activity' else 'proposal-no-activity'
+      params["status"] = if @model.get('active') then 'proposal-active' else 'proposal-inactive'
+      params["visibility"] = if @model.get('published') then 'published' else 'unpublished'
 
       params
 

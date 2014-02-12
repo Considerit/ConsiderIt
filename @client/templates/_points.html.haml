@@ -16,7 +16,7 @@
 
 %script{ :type => "text/template", :id => "tpl_community_points_heading"}
 
-  %span.points_heading_label{'data-target' => 'expand-toggle'}
+  %span.points_heading_label{'action' => 'expand-toggle'}
     {{ header }}
 
     (( if(is_expanded) { ))
@@ -29,7 +29,7 @@
       %ul.sort_points_menu
         (( _.each(sorts, function(sort){  ))
         %li.sort_points_menu_option
-          %a{ :title => "{{ sort.title }}", :'data-target' => "{{ sort.target }}" }
+          %a{ :title => "{{ sort.title }}", :'action' => "{{ sort.target }}" }
             {{ sort.name }}
         (( }); ))
 
@@ -40,7 +40,7 @@
 
 %script{:type => "text/template", :id => "tpl_community_points_footer"}
   (( if(has_more_points || is_expanded){ ))
-  %a.toggle_expand_points.button{'data-target' => 'expand-toggle'}
+  %a.toggle_expand_points.button{'action' => 'expand-toggle'}
     (( if( is_expanded ) { ))
     Unexpand these {{ label }}
     (( } else { ))
@@ -55,7 +55,7 @@
 %script{ :type => "text/template", :id => "tpl_decision_board_points_footer"}
   .newpoint
 
-    %span.newpoint_prompt{ :'data-target' => 'write-point'}
+    %span.newpoint_prompt{ :'action' => 'write-point'}
       Add a new {{ label }}
 
     .newpoint-form
@@ -79,7 +79,7 @@
         %a.newpoint-cancel
           cancel
 
-        %input.button{ :type => 'submit', :value => 'Done', :'data-target' => "submit-point"}
+        %input.button{ :type => 'submit', :value => 'Done', :'action' => "submit-point"}
 
   .add_point_drop_target
     Drag and drop {{ label.toLowerCase() }}s from the {{ direction }}

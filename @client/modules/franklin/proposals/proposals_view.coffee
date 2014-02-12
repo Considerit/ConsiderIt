@@ -50,7 +50,7 @@
 
     applySortOrder : ->
       @$el.find(".sort_proposals_by.selected").removeClass 'selected'    
-      @$el.find("[data-target='#{@sort_by}']").addClass 'selected'
+      @$el.find("[action='#{@sort_by}']").addClass 'selected'
 
     onShow : ->
       @applySortOrder()      
@@ -82,12 +82,12 @@
       params
 
     events : 
-      'click [data-target="load-proposals"]' : 'bubbleLoadProposalsRequest'
-      'click [data-target="proposals:first_page"]' : 'gotoFirst'
-      'click [data-target="proposals:previous_page"]' : 'gotoPrev'
-      'click [data-target="proposals:next_page"]' : 'gotoNext'
-      'click [data-target="proposals:last_page"]' : 'gotoLast'
-      'click [data-target="proposals:goto_page"]' : 'gotoPage'
+      'click [action="load-proposals"]' : 'bubbleLoadProposalsRequest'
+      'click [action="proposals:first_page"]' : 'gotoFirst'
+      'click [action="proposals:previous_page"]' : 'gotoPrev'
+      'click [action="proposals:next_page"]' : 'gotoNext'
+      'click [action="proposals:last_page"]' : 'gotoLast'
+      'click [action="proposals:goto_page"]' : 'gotoPage'
 
     proposalsWereLoaded : ->
       _.delay =>

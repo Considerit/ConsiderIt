@@ -1,7 +1,7 @@
 
 %script{ :type => "text/template", :id => "tpl_logged_out"}
   .login
-    %a{:'data-target' => 'login', :class => "login-signin"}
+    %a{:'action' => 'login', :class => "login-signin"}
       Log In / Create Account
 
 %script{ :type => "text/template", :id => "tpl_logged_in"}
@@ -23,30 +23,30 @@
           %a.user-options-dashboard_link{:href => "{{Routes.profile_path(current_user.id)}}"}
             Profile
         %li
-          %a.user-options-dashboard_link{:href => "{{Routes.edit_profile_path(id)}}", :'data-target' => 'edit_profile'}
+          %a.user-options-dashboard_link{:href => "{{Routes.edit_profile_path(id)}}", :'action' => 'edit_profile'}
             Edit Profile
 
         (( if(is_admin) { ))
         %li
-          %a.user-options-dashboard_link.application{:href => "/dashboard/application", :'data-target' => 'app_settings'}
+          %a.user-options-dashboard_link.application{:href => "/dashboard/application", :'action' => 'app_settings'}
             App settings
         (( } ))
 
         (( if( can_moderate ) { ))
         %li
-          %a.user-options-dashboard_link.moderate{:href => "{{Routes.dashboard_moderate_path()}}", :'data-target' => 'moderate'}
+          %a.user-options-dashboard_link.moderate{:href => "{{Routes.dashboard_moderate_path()}}", :'action' => 'moderate'}
             Moderate
         (( } ))
 
         (( if( can_assess ) { ))
         %li
-          %a.user-options-dashboard_link.assess{:href => "{{Routes.assessment_index_path()}}", :'data-target' => 'assess'}
+          %a.user-options-dashboard_link.assess{:href => "{{Routes.assessment_index_path()}}", :'action' => 'assess'}
             Assess
         (( } ))
 
         / (( if( is_analyst ) { ))
         / %li
-        /   %a.user-options-dashboard_link.analyze{:href => "{{Routes.analytics_path()}}", :'data-target' => 'analyze'}
+        /   %a.user-options-dashboard_link.analyze{:href => "{{Routes.analytics_path()}}", :'action' => 'analyze'}
         /     Analyze
         / (( } ))
 
@@ -54,7 +54,7 @@
           %li
             = link_to 'Tune', '/newrelic', :target => "_blank"
         %li
-          %a{"data-target" => "logout"}
+          %a{"action" => "logout"}
             Log out
             
 
@@ -72,7 +72,7 @@
     (( _.each(providers, function(provider) { ))
 
     %li.user-accounts-login-option
-      %button{ :'data-target' => "third_party_auth", :class => "zocial {{provider.name}}", :'data-provider' => "{{provider.provider}}" }
+      %button{ :'action' => "third_party_auth", :class => "zocial {{provider.name}}", :'data-provider' => "{{provider.provider}}" }
         {{provider.name}}
       (( if(false && provider.fineprint) { ))
       .user-accounts-fineprint.fineprint-social
@@ -136,12 +136,12 @@
                 I forgot! Email me password instructions. 
 
         .user-accounts-finish-wrap
-          %button.user-accounts-register-next.superbutton{:disabled => 'disabled', :type => 'button', :'data-target' => "create-account"}
+          %button.user-accounts-register-next.superbutton{:disabled => 'disabled', :type => 'button', :'action' => "create-account"}
             Create my account
         
         (( } ))
         .user-accounts-finish-wrap
-          = f.submit "Log me in", :disabled => 'disabled', :class => 'user-accounts-login-submit superbutton', :'data-target' => "login-submit"
+          = f.submit "Log me in", :disabled => 'disabled', :class => 'user-accounts-login-submit superbutton', :'action' => "login-submit"
 
 
 
@@ -208,7 +208,7 @@
 
         .import_from_third_parties
           - ['facebook', 'twitter'].each do |provider|
-            %button{ :'data-target' => 'third_party_auth', :class => "zocial #{provider} icon import_from_third_party", :'data-provider' => "#{provider}" }
+            %button{ :'action' => 'third_party_auth', :class => "zocial #{provider} icon import_from_third_party", :'data-provider' => "#{provider}" }
 
         %input{ :class => "avatar_url", :id => "user_avatar_url", :name => "user[avatar_url]", :type => "hidden", :value => "" }
 
@@ -218,7 +218,7 @@
 
 %script{ :type => "text/template", :id => "tpl_user_paperwork_footer" }     
 
-  %input{ :name => "commit", :type => "submit", :value => "Create my account!", :class => "ui-state-valid superbutton", :'data-target' => "paperwork_complete" }
+  %input{ :name => "commit", :type => "submit", :value => "Create my account!", :class => "ui-state-valid superbutton", :'action' => "paperwork_complete" }
 
   .user-accounts-tos
     %span

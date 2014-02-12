@@ -248,7 +248,7 @@
 
           %td.action
             .role_settings.l-dialog-prompt
-              %a.user_roles-invoke_role_change{ :'data-id' => "{{ user.id }}"}
+              %a.user_roles-invoke_role_change{ :'id' => "{{ user.id }}"}
                 Roles:
                 %span.user-roles-list
                   {{ user.roleList() }}
@@ -309,7 +309,7 @@
 
       .save_block
         = f.submit 'Save', :class => 'button'
-        %a.cancel{ :'data-target' => "dialog-close" }
+        %a.cancel{ :'action' => "dialog-close" }
           cancel  
 
   %script{ :type => "text/template", :id => "tpl_dashboard_import_data"}

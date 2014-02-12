@@ -10,7 +10,7 @@
   min-height: $proposer_img_size
 
   // inactive proposal
-  &[data-status="proposal-inactive"]
+  &[status="proposal-inactive"]
     .submit_opinion_button, .submit_opinion_footer
       display: none
 
@@ -18,12 +18,12 @@
       .opinion-region
         visibility: hidden
 
-    &[data-activity="proposal-no-activity"]
+    &[activity="proposal-no-activity"]
       .histogram-region, .proposal-reasons-region
         display: none
 
 
-  &[data-activity="proposal-no-activity"]
+  &[activity="proposal-no-activity"]
 
     &[state="summary"]
       .histogram-region
@@ -76,7 +76,7 @@
 
 
 // Proposal admin strip
-[data-visibility="published"]
+[visibility="published"]
   .proposal-admin_strip
     position: absolute
     right: -$grid_gutter
@@ -122,7 +122,7 @@
 
 
 // unpublished proposal
-[data-visibility="unpublished"]
+[visibility="unpublished"]
   .proposal-admin-region
     top: $vertical_baseline / 2 
     height: 0

@@ -4,31 +4,31 @@
       = theme_image_tag 'logo_large.png'
 
     %li
-      %a.sidebar_link{:href => "/home/about", :'data-target' => 'about'}
+      %a.sidebar_link{:href => "/home/about", :'action' => 'about'}
         About LVG
 
     %li
-      %a.sidebar_link{:href => "/home/fact_check", :'data-target' => 'fact_check'}
+      %a.sidebar_link{:href => "/home/fact_check", :'action' => 'fact_check'}
         Fact-checking by SPL
 
     %li
-      %a.sidebar_link{:href => "/home/media", :'data-target' => 'media'}
+      %a.sidebar_link{:href => "/home/media", :'action' => 'media'}
         News stories about LVG
 
     %li
-      %a.sidebar_link{:href => "/home/awards", :'data-target' => 'awards'}
+      %a.sidebar_link{:href => "/home/awards", :'action' => 'awards'}
         Awards
 
     %li
-      %a.sidebar_link{:href => "/home/publications", :'data-target' => 'publications'}
+      %a.sidebar_link{:href => "/home/publications", :'action' => 'publications'}
         Academic Publications
 
     %li
-      %a.sidebar_link{:href => "/home/videos", :'data-target' => 'videos'}
+      %a.sidebar_link{:href => "/home/videos", :'action' => 'videos'}
         Video tutorials
 
     %li
-      %a.sidebar_link{:href => "/home/terms-of-use", :'data-target' => 'terms-of-use'}
+      %a.sidebar_link{:href => "/home/terms-of-use", :'action' => 'terms-of-use'}
         Terms of use
 
 %script{ :type => "text/template", :id => "tpl_static_about"}
@@ -42,7 +42,7 @@
       %a{:href => "http://seattlecityclub.org", :target => "_blank"}
         Seattle CityClub 
       and a team of Computer Science and Political Science researchers at the University of Washington, funded by a National Science Foundation grant. Three elections later, the LVG is an 
-      %a{:href => "/home/awards", :'data-target' => 'awards'}
+      %a{:href => "/home/awards", :'action' => 'awards'}
         award-winning 
       civic platform for facilitating community deliberation about ballot measures, drawing participation from over 30,000 Washingtonians. 
 
@@ -54,7 +54,7 @@
 
     %p.history
       Throughout, we have published 
-      %a{:href => "/home/publications", :'data-target' => 'publications'}
+      %a{:href => "/home/publications", :'action' => 'publications'}
         peer-reviewed articles 
       describing the design and evolution of the technology, while also analyzing the outcomes. For example, we have found that LVG encourages citizens to consider tradeoffs. Despite the contentious nature of many of these ballot measures, 45.0% of all pro/con lists include both pros and cons, demonstrating that it is possible to encourage citizens to consider tradeoffs and shed light on those more nuanced deliberations. In summative user studies, we've also found that citizens are surprised and encouraged when LVG shows people with whom they disagreed recognizing the importance of both pros and cons, especially when the &#8220;disagreers&#8221; included some of the same points they themselves thought important. Citizens could thus unexpectedly find common ground.
 
@@ -87,7 +87,7 @@
       %a{:href => "http://spl.org", :target => "_blank"}
         Seattle Public Library 
       joined the partnership in 2012 to offer a popular
-      %a{:href => "/home/fact_check", :'data-target' => 'fact_check'}
+      %a{:href => "/home/fact_check", :'action' => 'fact_check'}
         on-demand fact-checking service 
       to help citizens understand which statements are trustworthy. Any registered LVG participant can ask a librarian to do further research on claims made on any pro or con point contributed by other citizens. 
 

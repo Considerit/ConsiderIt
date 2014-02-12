@@ -165,8 +165,8 @@ class Proposal < ActiveRecord::Base
 
   def stance_fractions
     distribution = Array.new(7,0)
-    opinions.published.select('COUNT(*) AS cnt, stance_bucket').group(:stance_bucket).each do |row|
-      distribution[row.stance_bucket.to_i] = row.cnt.to_i
+    opinions.published.select('COUNT(*) AS cnt, stance_segment').group(:stance_segment).each do |row|
+      distribution[row.stance_segment.to_i] = row.cnt.to_i
     end      
     total = distribution.inject(:+).to_f
     if total > 0     
@@ -187,14 +187,14 @@ class Proposal < ActiveRecord::Base
     end
     self.num_perspectives = opinions.published.count
     self.num_unpublished_opinions = opinions.where(:published => false).count
-    self.num_supporters = opinions.published.where("stance_bucket > ?", 3).count
-    self.num_opposers = opinions.published.where("stance_bucket < ?", 3).count
+    self.num_supporters = opinions.published.where("stance_segment > ?", 3).count
+    self.num_opposers = opinions.published.where("stance_segment < ?", 3).count
 
     provocative = num_perspectives == 0 ? 0 : num_perspectives.to_f / (num_perspectives + num_unpublished_opinions)
 
     latest_opinions = opinions.published.where(:created_at => 1.week.ago.beginning_of_week.advance(:days => -1)..1.week.ago.end_of_week).order('created_at DESC')    
     late_perspectives = latest_opinions.count
-    late_supporters = latest_opinions.where("stance_bucket > ?", 3).count
+    late_supporters = latest_opinions.where("stance_segment > ?", 3).count
     self.trending = late_perspectives == 0 ? 0 : Math.log2(late_supporters + 1) * late_supporters.to_f / late_perspectives
 
     # combining provocative and trending for now...

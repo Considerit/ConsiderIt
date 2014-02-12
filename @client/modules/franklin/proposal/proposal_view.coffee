@@ -6,7 +6,7 @@
     attributes : (include_data=true) ->
       params = {}
       params["role"] = 'proposal'
-      params["id"] = "#{@model.id}"
+      params["#{if include_data then 'data-' else ''}id"] = "#{@model.id}"
       params["activity"] = if @model.has_participants() then 'proposal-has-activity' else 'proposal-no-activity'
       params["status"] = if @model.get('active') then 'proposal-active' else 'proposal-inactive'
       params["visibility"] = if @model.get('published') then 'published' else 'unpublished'
@@ -35,7 +35,7 @@
 
       $participants = @$el.find('.participating_users_view')
 
-      $histogram = @$el.find('.histogram')
+      $histogram = @$el.find('.histogram_layout')
 
       if !modern || !transition
         $histogram.css 
@@ -45,7 +45,7 @@
         $participants.hide()
         @trigger 'explosion:complete'
       else
-        $histogram.find('.bar-people').css
+        $histogram.find('.histogram_bar_users').css
           visibility: 'hidden'
 
         speed = 1200
@@ -94,7 +94,7 @@
 
         _.delay =>
           $histogram.css { opacity: 1, display: '' }
-          $histogram.find('.bar-people').css {visibility: ''}
+          $histogram.find('.histogram_bar_users').css {visibility: ''}
 
           $participants.hide()
           $participants_container.removeAttr 'style'

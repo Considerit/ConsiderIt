@@ -29,34 +29,34 @@
         %th
           Support
         %td
-          - users = @proposal.opinions.published.where(:stance_bucket => 6).map {|x| x.user.short_name}.compact
-          - users += @proposal.opinions.published.where(:stance_bucket => 5).map {|x| x.user.short_name}.compact
+          - users = @proposal.opinions.published.where(:stance_segment => 6).map {|x| x.user.short_name}.compact
+          - users += @proposal.opinions.published.where(:stance_segment => 5).map {|x| x.user.short_name}.compact
           = users.join(', ')
       %tr
         %th
           Lean support
         %td
-          - users = @proposal.opinions.published.where(:stance_bucket => 4).map {|x| x.user.short_name}.compact
+          - users = @proposal.opinions.published.where(:stance_segment => 4).map {|x| x.user.short_name}.compact
           = users.join(', ')
 
       %tr
         %th
           Neutral
         %td
-          - users = @proposal.opinions.published.where(:stance_bucket => 3).map {|x| x.user.short_name}.compact
+          - users = @proposal.opinions.published.where(:stance_segment => 3).map {|x| x.user.short_name}.compact
           = users.join(', ')
       %tr
         %th
           Lean oppose
         %td
-          - users = @proposal.opinions.published.where(:stance_bucket => 2).map {|x| x.user.short_name}.compact
+          - users = @proposal.opinions.published.where(:stance_segment => 2).map {|x| x.user.short_name}.compact
           = users.join(', ')
       %tr
         %th
           Oppose
         %td
-          - users = @proposal.opinions.published.where(:stance_bucket => 1).map {|x| x.user.short_name}.compact
-          - users += @proposal.opinions.published.where(:stance_bucket => 0).map {|x| x.user.short_name}.compact
+          - users = @proposal.opinions.published.where(:stance_segment => 1).map {|x| x.user.short_name}.compact
+          - users += @proposal.opinions.published.where(:stance_segment => 0).map {|x| x.user.short_name}.compact
           = users.join(', ')
 
 - else
@@ -65,8 +65,8 @@
       %tr
         %td
 
-        - stance_breakdown.reverse.each_with_index do |bucket_percentile, index| 
-          - height = bucket_percentile/height_scaler
+        - stance_breakdown.reverse.each_with_index do |segment_percentile, index| 
+          - height = segment_percentile/height_scaler
 
           %td.bar_cell
             .bar.empty{ :style => "height: #{barheight - height * barheight}px;"}
@@ -78,9 +78,9 @@
         %td.support
           = support_pole
 
-        - stance_breakdown.reverse.each_with_index do |bucket_percentile, index| 
+        - stance_breakdown.reverse.each_with_index do |segment_percentile, index| 
           %td.spanner
-            - if user_opinion && user_opinion.stance_bucket == 6 - index
+            - if user_opinion && user_opinion.stance_segment == 6 - index
               .personal_opinion.update
                 #{link_to 'You', new_opinion_proposal_url(@proposal.long_id)} &#8593;
                   

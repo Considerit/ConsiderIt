@@ -93,7 +93,7 @@
         %ul
           (( thanks.each( function(thank){ ))
           %li.l-thanks-item
-            %span.avatar{ :'action' => "user_profile_page", :'id' => "{{thank.get('user_id')}}", :id => "avatar-{{thank.get('user_id')}}", :class => "participant"}
+            %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{thank.get('user_id')}}", :id => "avatar-{{thank.get('user_id')}}", :class => "participant"}
           (( }); ))
         %span.given_thanks
           {{ thanks.length }} {{ thanks.length == 1 ? 'person says' : 'people say' }} thanks

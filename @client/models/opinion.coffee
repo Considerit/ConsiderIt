@@ -29,7 +29,7 @@
     subsume : (other_pos) ->
       params = 
         stance : if other_pos.get('stance') != 0 then other_pos.get('stance') else @get('stance')
-        stance_bucket : if other_pos.get('stance') != 0 then other_pos.get('stance_bucket') else @get('stance_bucket')
+        stance_segment : if other_pos.get('stance') != 0 then other_pos.get('stance_segment') else @get('stance_segment')
 
       explanation = other_pos.get('explanation')
       params.explanation = explanation if explanation? and explanation.length > 0
@@ -84,7 +84,7 @@
           pnt.set 'user_id', user.id      
 
     stanceLabel : ->
-      Entities.Opinion.stance_name_adverb @get('stance_bucket')
+      Entities.Opinion.stance_name_adverb @get('stance_segment')
 
     @stance_name_for_bar : (d) ->
       switch parseInt(d)
@@ -171,7 +171,7 @@
           #TODO: make sure points getting updated properly in all containers
 
           #TODO: check to make sure this case of newfound activity is handled
-          # if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()
+          # if @$el.attr('activity') == 'proposal-no-activity' && @model.has_participants()
           #   @$el.attr('activity', 'proposal-has-activity')
 
           opinion.trigger 'opinion:synced'

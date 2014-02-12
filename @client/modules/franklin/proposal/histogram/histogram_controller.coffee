@@ -60,7 +60,7 @@
 
       opinions = @model.getOpinions()
       opinions.each (pos) ->
-        breakdown[6-pos.get('stance_bucket')].opinions.push(pos) if pos.get('user_id') > -1
+        breakdown[6-pos.get('stance_segment')].opinions.push(pos) if pos.get('user_id') > -1
 
       histogram =
         breakdown : _.values breakdown
@@ -81,7 +81,7 @@
           full_size : full_size
           empty_size : empty_size
           num_ghosts : if bar.opinions.length % tiles_per_row != 0 then tiles_per_row - bar.opinions.length % tiles_per_row else 0
-          bucket : idx
+          segment : idx
           group_name : App.Entities.Opinion.stance_name 6 - idx
 
         bar.opinions = _.sortBy bar.opinions, (pos) -> 
@@ -91,7 +91,7 @@
       @histogram_initialized = true
 
     getLayout : ->
-      new Proposal.HistogramView
+      new Proposal.HistogramLayout
         model : @model
         state : @state
       

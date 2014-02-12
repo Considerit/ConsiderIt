@@ -26,7 +26,7 @@
       fixed : @options.fixed
       
     events:
-      'click [data-target="third_party_auth"]' : 'thirdPartyAuthRequest'
+      'click [action="third_party_auth"]' : 'thirdPartyAuthRequest'
 
     thirdPartyAuthRequest : (ev) ->
       provider = $(ev.target).data('provider')
@@ -82,7 +82,7 @@
       'change #password_has' : 'passwordHasChanged'
       'change #password_none' : 'passwordNoneChanged'
       'validated #user_email,#user_password' : 'checkIfSubmitEnabled'
-      'click [data-target="create-account"]' : 'registerAccount'
+      'click [action="create-account"]' : 'registerAccount'
 
     setInput : (has_password) ->
       if has_password
@@ -102,8 +102,8 @@
 
     toggleInput : (has_password) ->
       $password_area = @$el.find('#password_has').siblings('.user-account-password')
-      $submit_button_login = @$el.find('[data-target="login-submit"]')
-      $submit_button_register = @$el.find('[data-target="create-account"]')
+      $submit_button_login = @$el.find('[action="login-submit"]')
+      $submit_button_register = @$el.find('[action="create-account"]')
       if !has_password
         $password_area.css
           opacity : '.5'
@@ -131,8 +131,8 @@
     checkIfSubmitEnabled : ->
       $email_field = @$el.find('#user_email')
       $password_field = @$el.find('#user_password')
-      $submit_button_login = @$el.find('[data-target="login-submit"]')
-      $submit_button_register = @$el.find('[data-target="create-account"]')
+      $submit_button_login = @$el.find('[action="login-submit"]')
+      $submit_button_register = @$el.find('[action="create-account"]')
       is_new_user = @$el.find('#password_none:checked').length > 0 && !@options.fixed
 
       if is_new_user

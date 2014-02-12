@@ -29,7 +29,7 @@
       'click .bar-is-hard-selected' : 'deselectBar'
       'mouseleave .histogram-bar' : 'deselectBar'
       'keypress' : 'deselectBar'
-      'mouseenter .histogram-bar:not(.bar-is-hard-selected) [data-target="user_profile_page"]' : 'preventProfile'
+      'mouseenter .histogram-bar:not(.bar-is-hard-selected) [action="user_profile_page"]' : 'preventProfile'
 
     preventProfile : (ev) ->
       ev.stopPropagation()

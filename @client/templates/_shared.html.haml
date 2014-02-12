@@ -25,10 +25,10 @@
 
     .l-tooltip-user-actions
       (( if(proposal) { ))
-      %a.l-tooltip-user-action.superbutton{ :href => "{{Routes.user_opinion_proposal_path(proposal.id, user.id)}}", :'data-target' => 'user_opinion_page', :'data-proposal-id' => "{{proposal.id}}", :'data-user-id' => "{{user.id}}" }
+      %a.l-tooltip-user-action.superbutton{ :href => "{{Routes.user_opinion_proposal_path(proposal.id, user.id)}}", :'action' => 'user_opinion_page', :'data-proposal-id' => "{{proposal.id}}", :'data-user-id' => "{{user.id}}" }
         Read their thoughts on this issue
       (( } ))
-      / %a.l-tooltip-user-action.l-tooltip-user-profile{ :'data-target' => 'user_profile_page', :'data-id' => "{{user.id}}" }
+      / %a.l-tooltip-user-action.l-tooltip-user-profile{ :'action' => 'user_profile_page', :'id' => "{{user.id}}" }
       /   View their profile
 
 
@@ -36,7 +36,7 @@
   .l-dialog-title
     {{ title }} 
     
-    %a.l-dialog-close.cancel{ :'data-target' => 'dialog-close'}
+    %a.l-dialog-close.cancel{ :'action' => 'dialog-close'}
       %i.fa.fa-times-circle
 
   .l-dialog-body

@@ -30,7 +30,7 @@
 
       if !already_selected
         target = $(ev.currentTarget).data('target')    
-        @$el.find("[data-target='#{target}-details']").slideDown()
+        @$el.find("[action='#{target}-details']").slideDown()
         $(ev.currentTarget).addClass('selected')
 
 

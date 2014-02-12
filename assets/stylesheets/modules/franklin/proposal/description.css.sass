@@ -22,8 +22,6 @@ $description_animation_time: 500ms
 .proposal_description_view
   position: relative
 
-
-
 // Proposal proposer is the avatar of the user who submitted the proposal
 .proposal_proposer
   text-align: right
@@ -42,7 +40,6 @@ $description_animation_time: 500ms
   img
     width: $proposer_img_size // - 30
     vertical-align: bottom 
-
 
 // Where all the description content goes
 .proposal_description_main
@@ -128,4 +125,148 @@ $description_animation_time: 500ms
       display: none
 
 
+
+// social media area
+[state="results"] .proposal-social_media-region
+  visibility: visible
+
+.transitioning .proposal-social_media-region
+  visibility: hidden
+
+.proposal-social_media-region
+  position: absolute
+  visibility: hidden
+  right: -160px
+  bottom: -5 * $vertical_baseline
+  padding-right: $grid_gutter / 2
+
+  .social_media_prompt
+    +font-size(-1)
+    font-weight: bold
+    text-decoration: underline
+    margin-bottom: $vertical_baseline / 4
+
+  .facebook
+    +font-size(-3)
+    line-height: 1.6
+    top: -6px
+    position: relative
+    color: #e1e1e1
+
+    &:hover
+      color: white
+
+    &:before
+      line-height: 1.4
+      margin: 0
+
+
+// Proposal admin strip
+[visibility="published"]
+  .proposal-admin_strip
+    position: absolute
+    right: -$grid_gutter
+    bottom: $vertical_baseline / 4
+    z-index: 10
+
+    i
+    .proposal-admin-options-menu
+      display: none
+
+    &:hover
+      .proposal-admin-options-menu-wrap
+        position: absolute
+        right: -$grid_minor
+        top: 20px
+
+      .proposal-admin-options-menu
+        min-width: 200px
+        list-style: none outside none
+        margin-left: 0
+        display: inline-block
+        +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
+        border-radius: 5px
+        padding: $vertical_baseline / 4 0
+
+        a
+
+          width: 100%
+          padding: $vertical_baseline / 4 $grid_gutter
+          display: block
+          cursor: pointer
+          +font-size(-2)
+          span
+            display: block
+
+          i
+            padding-right: $grid_gutter / 2
+            display: inline-block
+
+
+// unpublished proposal
+[visibility="unpublished"]
+  .proposal-admin-region
+    top: $vertical_baseline / 2 
+    height: 0
+    position: relative
+
+  .proposal-admin_strip
+    position: relative
+
+    i.fa-cog
+      display: none
+
+    .proposal-admin-options-menu-wrap
+      display: inline-block
+
+    .proposal-admin-options-menu
+      list-style: none outside none
+      li
+        display: inline-block
+
+      a
+        &:hover
+
+
+    .proposal-admin_operations-status
+      display: none
+
+    .proposal-admin-publicity
+      position: absolute
+      +font-size(-1)
+      top: $vertical_baseline / 2
+      left: 15 * $grid_gutter
+
+    .delete_proposal
+      right: 4px
+      position: absolute
+      top: 3 * $vertical_baseline
+      +font-size(-2)
+
+  .proposal-admin-publish
+    position: absolute
+    right: 0
+    z-index: 2
+
+    .proposal-publish
+      +font-size(0)
+      &:hover
+        +font-size(0)
+
+  .proposal-reasons-region, .proposal_histogram_region, .toggle-proposal-state-region
+    display: none
+
+  &[state="summary"]
+    .proposal-reasons-region, .proposal_histogram_region, .proposals-pagination-region
+      display: none
+
+    padding-bottom: 4 * $vertical_baseline
+
+
+// admin form
+.proposal-admin_operations-settings-form .access_list textarea
+  width: 100%
+  min-height: 3 * $vertical_baseline
+  +font-size(1)
+  padding: $vertical_baseline/4 $grid_gutter/4
 

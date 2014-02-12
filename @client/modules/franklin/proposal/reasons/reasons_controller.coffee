@@ -254,7 +254,7 @@
         model : @model
 
     getParticipantsView : ->
-      new Proposal.ParticipantsView
+      new Proposal.ParticipatingUsersView
         model : @model
 
     # getHeaderView : (group = 'all') ->

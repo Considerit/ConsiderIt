@@ -380,12 +380,12 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
         display: none
 
   &[state="summary"]
-    .points-list-region, .participants
+    .points-list-region, .participating-users-region
       &:hover
         cursor: pointer
 
 
-  .participants
+  .participating-users-region
     bottom: 0px
     position: absolute
     // width: $body_gutter
@@ -411,7 +411,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
   /// The participants block
   &[state="crafting"]
-    > .participants
+    > .participating-users-region
       display: none      
 
   .reasons-footer-region

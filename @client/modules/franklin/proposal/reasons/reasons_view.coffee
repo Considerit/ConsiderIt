@@ -9,7 +9,7 @@
       footerRegion : '.reasons-footer-region'      
       communityProsRegion : '.community-pros-region'
       communityConsRegion : '.community-cons-region'
-      participantsRegion : '.participants'
+      participantsRegion : '.participating-users-region'
 
     initialize : (options = {}) ->
       super options
@@ -81,14 +81,14 @@
     events : 
       'mouseenter .community_point' : 'logPointView'
       'click .points-list-region' : 'reasonsClicked'
-      'click .participants' : 'reasonsClicked'      
+      'click .participating-users-region' : 'reasonsClicked'      
       'click .reasons-footer-region' : 'reasonsClicked'            
       'mouseenter .points-list-region' : 'showViewResults'
       'mouseleave .points-list-region' : 'hideViewResults'
       'mouseenter .reasons-footer-region' : 'showViewResults'
       'mouseleave .reasons-footer-region' : 'hideViewResults'      
-      'mouseenter .participants' : 'showViewResults'
-      'mouseleave .participants' : 'hideViewResults'
+      'mouseenter .participating-users-region' : 'showViewResults'
+      'mouseleave .participating-users-region' : 'hideViewResults'
 
     logPointView : (ev) ->
       if @state != Proposal.State.Summary

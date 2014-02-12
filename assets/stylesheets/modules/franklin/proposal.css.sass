@@ -19,15 +19,15 @@
         visibility: hidden
 
     &[activity="proposal-no-activity"]
-      .histogram-region, .proposal-reasons-region
+      .proposal_histogram_region, .proposal-reasons-region
         display: none
 
 
   &[activity="proposal-no-activity"]
 
     &[state="summary"]
-      .histogram-region
-        display: none
+      .proposal_histogram_region
+        display: none 
 
     &[state="crafting"]
 
@@ -40,181 +40,32 @@
       .no_community_points_view, .add_point_drop_target
         display: none
 
-
-[state="results"] .proposal-social_media-region
-  visibility: visible
-
-.transitioning .proposal-social_media-region
-  visibility: hidden
-
-.proposal-social_media-region
-  position: absolute
-  visibility: hidden
-  right: -160px
-  bottom: -5 * $vertical_baseline
-  padding-right: $grid_gutter / 2
-
-  .proposal_social_media-action-call
-    +font-size(-1)
-    font-weight: bold
-    text-decoration: underline
-    margin-bottom: $vertical_baseline / 4
-
-  .facebook
-    +font-size(-3)
-    line-height: 1.6
-    top: -6px
-    position: relative
-    color: #e1e1e1
-
-    &:hover
-      color: white
-
-    &:before
-      line-height: 1.4
-      margin: 0
-
-
-// Proposal admin strip
-[visibility="published"]
-  .proposal-admin_strip
-    position: absolute
-    right: -$grid_gutter
-    bottom: $vertical_baseline / 4
-    z-index: 10
-
-    i
-    .proposal-admin-options-menu
-      display: none
-
-    &:hover
-      .proposal-admin-options-menu-wrap
-        position: absolute
-        right: -$grid_minor
-        top: 20px
-
-      .proposal-admin-options-menu
-        min-width: 200px
-        list-style: none outside none
-        margin-left: 0
-        display: inline-block
-        +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
-        border-radius: 5px
-        padding: $vertical_baseline / 4 0
-
-        a
-
-          width: 100%
-          padding: $vertical_baseline / 4 $grid_gutter
-          display: block
-          cursor: pointer
-          +font-size(-2)
-          span
-            display: block
-
-          i
-            padding-right: $grid_gutter / 2
-            display: inline-block
-
-
-    .l-dialog-prompt-label, .delete_proposal
-      //text-transform: uppercase
-
-
 // unpublished proposal
 [visibility="unpublished"]
-  .proposal-admin-region
-    top: $vertical_baseline / 2 
-    height: 0
-    position: relative
-
-  .proposal-admin_strip
-    position: relative
-
-    i.fa-cog
-      display: none
-
-    .proposal-admin-options-menu-wrap
-      display: inline-block
-
-    .proposal-admin-options-menu
-      list-style: none outside none
-      li
-        display: inline-block
-
-      a
-        &:hover
-
-
-    .l-dialog-prompt-label, .delete_proposal
-      //text-transform: uppercase
-
-    .proposal-admin_operations-status
-      display: none
-
-    .proposal-admin-publicity
-      position: absolute
-      +font-size(-1)
-      top: $vertical_baseline / 2
-      left: 15 * $grid_gutter
-
-    .delete_proposal
-      right: 4px
-      position: absolute
-      top: 3 * $vertical_baseline
-      +font-size(-2)
-
-  .proposal-admin-publish
-    position: absolute
-    right: 0
-    z-index: 2
-
-    .proposal-publish
-      +font-size(0)
-      &:hover
-        +font-size(0)
-
-  .proposal-reasons-region, .histogram-region, .toggle-proposal-state-region
+  .proposal-reasons-region, .proposal_histogram_region, .toggle-proposal-state-region
     display: none
 
   &[state="summary"]
-    .proposal-reasons-region, .histogram-region, .proposals-pagination-region
-      display: none
-
     padding-bottom: 4 * $vertical_baseline
 
-
-// admin form
-.proposal-admin_operations-settings-form
-  .access_list
-    textarea
-      width: 100%
-      min-height: 3 * $vertical_baseline
-      +font-size(1)
-      padding: $vertical_baseline/4 $grid_gutter/4
-
-
-/* YOUR_ACTION */
-
-.submit_opinion_button
-  text-align: center
-  font-weight: bold
-  border-radius: 0 0 5px 5px
-  position: relative
+    .proposal-reasons-region, .proposal_histogram_region, .proposals-pagination-region
+      display: none
 
 
 // participants block
 
 [state="results"][coming-from-state="summary"], [state="summary"]
-  .participants
+  .participating-users-region
     visibility: visible
 
-.participants
+.participating-users-region
   visibility: hidden
   z-index: 10
   right: 0 //1.5 * $grid_gutter
 
-  .l-group-container
+  .participating_users_view
+    line-height: 0
+    font-size: 0  
     text-align: center
     height: 100%
     +rotate(180deg)
@@ -226,4 +77,7 @@
       +transition(transform .75s linear)
       opacity: .75
       +rotate(180deg)
+
+
+
 

@@ -16,7 +16,7 @@
     regions: 
       descriptionRegion : '.proposal-description-region'
       stateToggleRegion : '.toggle-proposal-state-region'
-      histogramRegion : '.histogram-region'
+      histogramRegion : '.proposal_histogram_region'
       reasonsRegion : '.proposal-reasons-region'
 
     initialize : (options = {}) -> super options
@@ -24,7 +24,7 @@
     onRender : -> super
 
     implodeParticipants : ->
-      $participants = @$el.find('.participants .l-group-container')
+      $participants = @$el.find('.participating_users_view')
 
       $participants.hide()
       $participants.find('.avatar[style]').removeAttr('style') # much more efficient
@@ -33,7 +33,7 @@
     explodeParticipants : (transition = true) ->      
       modern = Modernizr.csstransforms && Modernizr.csstransitions
 
-      $participants = @$el.find('.participants .l-group-container')
+      $participants = @$el.find('.participating_users_view')
 
       $histogram = @$el.find('.histogram')
 
@@ -105,9 +105,9 @@
 
 
 
-  class Proposal.ParticipantsView extends App.Views.ItemView
-    template: '#tpl_group_container'
-    className : 'l-group-container'
+  class Proposal.ParticipatingUsersView extends App.Views.ItemView
+    template: '#tpl_participating_users'
+    className : 'participating_users_view'
 
     serializeData : ->
       participants = @model.getParticipants()

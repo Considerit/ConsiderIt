@@ -5,7 +5,7 @@
 
   .toggle-proposal-state-region
   
-  .histogram-region
+  .proposal_histogram_region
 
   .proposal-reasons-region
 
@@ -133,13 +133,13 @@
     .community-pros-region.points-list-region>
     .opinion-region>
     .community-cons-region.points-list-region>
-  .participants
+  .participating-users-region
 
   .reasons-footer-region
 
 ////////////// histogram ////////////
 
-%script{ :type => "text/template", :id => "tpl_group_container"}
+%script{ :type => "text/template", :id => "tpl_participating_users"}
   (( _.each(participants, function(p){ ))
   %span.avatar{ :'action' => "user_profile_page",  :'id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}>
   (( }); ))
@@ -191,7 +191,7 @@
 
 
 %script{ :type => "text/template", :id => "tpl_proposal_social_media" }
-  .proposal_social_media-action-call
+  .social_media_prompt
     Invite your friends to join
 
   %a{ :href => "https://twitter.com/share", :class => "twitter-share-button", :'data-count' => "none"}

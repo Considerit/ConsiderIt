@@ -1,7 +1,7 @@
 //////////////// shared ////////////////
 %script{ :type => "text/template", :id => "tpl_proposal_description"}
   .proposal_proposer
-    %a{ :'id' => "{{ user_id }}", :'action' => "user_profile_page" }
+    %a{ :'data-id' => "{{ user_id }}", :'action' => "user_profile_page" }
       %img{:src => "{{ avatar }}"}
 
   .proposal_description_main     

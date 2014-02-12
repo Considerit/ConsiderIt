@@ -12,7 +12,7 @@ $histogram_bar_width: $histogram_width / 7
 [state="results"] .proposal_histogram_region
   z-index: 20 // allows for bubble to go over the reasons on mousing over histogram bar; but can't do on the homepage
 
-.histogram
+.histogram_layout
   height: $histogram_height
   +transition(opacity $transition_speed)
   opacity: 0
@@ -28,14 +28,14 @@ $histogram_bar_width: $histogram_width / 7
     opacity: 1
     min-height: $histogram_height
 
-  .histogram-base, .bar-people, .histogram-bar
+  .histogram-base, .histogram_bar_users, .histogram-bar
     +transition(opacity $transition_speed $transition_function)
     +backface-visibility(hidden)
 
   &.transitioning
 
     &[state="results"][coming-from-state="summary"]
-      .bar-people
+      .histogram_bar_users
         visibility: hidden
       .histogram-base-label
         visibility: hidden
@@ -45,13 +45,13 @@ $histogram_bar_width: $histogram_width / 7
   &[state="results"][coming-from-state="crafting"]
     .histogram-bar
       opacity: 1
-    .histogram-base, .bar-people  
+    .histogram-base, .histogram_bar_users  
       opacity: 1
 
   &[state="crafting"][coming-from-state="results"]
     .histogram-bar
       opacity: .1
-    .histogram-base, .bar-people  
+    .histogram-base, .histogram_bar_users  
       opacity: 0
 
   &[state="crafting"]
@@ -107,21 +107,21 @@ $histogram_bar_width: $histogram_width / 7
     //   z-index: 10
       
 
-.bar-people
+.histogram_bar_users
   background-color: transparent
   font-size: 0
   margin: auto
   +rotate(180deg)
   height: 100%
   
-  .bar-person
+  .avatar
     +rotate(180deg)  
     opacity: .6
 
-.bar-is-soft-selected .bar-people .bar-person
+.bar-is-soft-selected .histogram_bar_users .avatar
   opacity: .75
 
-.bar-is-hard-selected .bar-people .bar-person
+.bar-is-hard-selected .histogram_bar_users .avatar
   opacity: .9
 
 

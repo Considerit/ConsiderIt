@@ -1,8 +1,8 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
-  class Proposal.HistogramView extends App.Views.StatefulLayout
-    template : '#tpl_histogram'
-    className : 'histogram'
+  class Proposal.HistogramLayout extends App.Views.StatefulLayout
+    template : '#tpl_histogram_layout'
+    className : 'histogram_layout'
     bar_state : null
     highlight_state : []
     histogram: null
@@ -66,8 +66,8 @@
 
         @$el.show()
 
-    finishSelectingBar : (bucket, hard_select) ->
-      $bar = @$el.find(".histogram-bar[bucket=#{6-bucket}]")
+    finishSelectingBar : (segment, hard_select) ->
+      $bar = @$el.find(".histogram-bar[segment=#{6-segment}]")
 
       @$el.addClass 'histogram-segment-selected'
 
@@ -76,7 +76,7 @@
       $('.bar-is-selected', @$el).removeClass('bar-is-selected bar-is-hard-selected bar-is-soft-selected')
       $bar.addClass("bar-is-selected #{if hard_select then 'bar-is-hard-selected' else 'bar-is-soft-selected'}")
 
-      fld = "score_stance_group_#{bucket}"
+      fld = "score_stance_group_#{segment}"
 
       #######
       # when clicking outside of bar, close it
@@ -95,9 +95,9 @@
       if ( hard_select || @$el.find('.bar-is-hard-selected').length == 0 )
         $bar = $target.closest('.histogram-bar')
 
-        bucket = 6 - $target.closest('.histogram-bar').attr('bucket')
+        segment = 6 - $target.closest('.histogram-bar').attr('segment')
 
-        @trigger 'histogram:segment_results', bucket, hard_select
+        @trigger 'histogram:segment_results', segment, hard_select
 
       if hard_select
         ev.stopPropagation()

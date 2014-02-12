@@ -6,7 +6,7 @@
 
     serializeData : ->
       included_points = @model.getInclusions()
-      support_is_pros = @model.get('stance_bucket') >= 3
+      support_is_pros = @model.get('stance_segment') >= 3
 
       _.extend {}, @model.attributes, 
         supporting_points : included_points.where {is_pro : support_is_pros}

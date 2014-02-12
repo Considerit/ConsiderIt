@@ -13,11 +13,11 @@ class Opinion < ActiveRecord::Base
   acts_as_tenant(:account)
 
   scope :published, -> {where( :published => true )}
-  scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_bucket, :user_id, :explanation, :published])}
+  scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_segment, :user_id, :explanation, :published])}
 
   before_save do 
     self.explanation = Sanitize.clean(self.explanation, Sanitize::Config::RELAXED)
-    self.stance_bucket = Opinion.get_bucket(self.stance)
+    self.stance_segment = Opinion.get_segment(self.stance)
   end 
 
   def subsume( subsumed_opinion )
@@ -36,7 +36,7 @@ class Opinion < ActiveRecord::Base
     self.save
   end
 
-  def self.get_bucket(value)
+  def self.get_segment(value)
     if value == -1
       return 0
     elsif value == 1
@@ -55,7 +55,7 @@ class Opinion < ActiveRecord::Base
   end
 
   def stance_name
-    case stance_bucket
+    case stance_segment
       when 0
         return "strong oppose"
       when 1
@@ -74,7 +74,7 @@ class Opinion < ActiveRecord::Base
   end
 
   def stance_name_singular
-    case stance_bucket
+    case stance_segment
       when 0
         return "strongly opposes"
       when 1

@@ -121,7 +121,7 @@ class OpinionsController < ApplicationController
           :result => 'successful',
           :included_pros => Point.included_by_stored(user, proposal, nil).where(:is_pro => true).map {|pnt| pnt.id},
           :included_cons => Point.included_by_stored(user, proposal, nil).where(:is_pro => false).map {|pnt| pnt.id},
-          :stance => opinion.stance_bucket
+          :stance => opinion.stance_segment
         }
       end
     else
@@ -169,7 +169,7 @@ protected
       pnt.published = 1
       
       pnt.opinion_id = opinion.id
-      update_attrs = {"score_stance_group_#{opinion.stance_bucket}".intern => 0.001, :score => 0.0000001}
+      update_attrs = {"score_stance_group_#{opinion.stance_segment}".intern => 0.001, :score => 0.0000001}
       pnt.update_attributes ActionController::Parameters.new(update_attrs).permit!
 
       updated_points.push(pnt_id)

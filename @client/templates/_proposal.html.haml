@@ -37,95 +37,7 @@
 
 ////////////// opinion ////////////
 
-%script{ :type => "text/template", :id => "tpl_decision_board_layout" }  
 
-  .decision_board_body 
-
-    .decision-board-heading-region
-
-    .decision-board-points-region
-
-    .slider-region
-
-    .position-explanation-region
-
-  .decision-board-footer-region
-              
-
-%script{ :type => "text/template", :id => "tpl_opinion_points" }  
-
-  .pros_on_decision_board-region.points-list-region>     
-  .cons_on_decision_board-region.points-list-region>
-
-
-%script{ :type => "text/template", :id => "tpl_slider" }  
-  .slider_heading
-    {{ slider_prompt }}
-  %table
-    %tr
-      %td.supporting_slider_label
-        %div
-          {{ slider_left }}
-
-      %td.slider_container
-        .noUiSlider
-
-      %td.opposing_slider_label
-        %div
-          {{ slider_right }}
-    %tr
-      %td.neutral_slider_label{ :colspan => 3 }
-        {{ slider_middle }}
-
-%script{ :type => "text/template", :id => "tpl_position_explanation" }  
-  %label{ :name => :explanation }
-    Optional statement that summarizes your thoughts
-  %textarea.position-statement{ :name => :explanation}
-
-
-%script{ :type => "text/template", :id => "tpl_decision_board_footer" }  
-
-  (( if( active ) { ))
-
-  %a.submit_opinion_button.superbutton{:'action' => 'submit-opinion'}
-    // fa-floppy-o
-    %i.fa-lg.fa.fa-floppy-o
-    (( if(updating){ ))
-    Update your opinion
-    (( } else { ))
-    Save your opinion
-    (( } ))
-
-  .submit_opinion_footer
-    .subscribe_to_proposal_notifications
-
-      = label_tag :follow_proposal, '', :title => 'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.' do
-        
-        (( if (follows) { )) 
-        = check_box_tag :follow_proposal, 'true', true
-        (( } else { ))
-        = check_box_tag :follow_proposal, 'true'
-        (( }))
-
-        %span
-          Get email updates about new activity
-
-    %a.cancel_submitting_an_opinion{:'action' => 'show-results'}
-      cancel and show results
-  (( } else { ))
-  %a.submit_opinion_button.superbutton{:'action' => 'show-results'}
-    View results 
-  (( } ))
-
-
-%script{ :type => "text/template", :id => "tpl_decision_board_heading" }  
-
-  (( if(active) { ))
-  %a{ :href => "{{Routes.new_opinion_proposal_path( long_id )}}", :'action' => 'craft-opinion'}
-    //fa-pencil-square-o
-    %i.fa.fa-pencil
-    {{ call }}
-  (( } ))
 
 
 %script{ :type => "text/template", :id => "tpl_reasons_layout"}
@@ -150,39 +62,8 @@
     %i.fa.fa-th-list.fa-lg
     View Results
 
-    
-////////////// histogram ////////////
 
 
-%script{ :type => "text/template", :id => "tpl_histogram_layout"}
-  (( if (histogram) { ))
-  (( _.each(histogram.breakdown, function(bar){ ))
-  .histogram-bar{ :style => "height: {{bar.full_size}}px;", :segment => "{{bar.segment}}", :id => "segment-{{bar.segment}}"}>
-    (( if(bar.segment < 4 ){ ))
-    = render :partial => "shared/bubble", :locals => {:left => false, :down => true }
-    (( } else { ))
-    = render :partial => "shared/bubble", :locals => {:left => false, :down => true, :flipped => true }
-    (( } ))
-    (( if (bar.opinions.length > 0) { ))
-    %ul.histogram_bar_users>
-      (( _.each(bar.opinions, function(opinion) { ))
-      (( var user = opinion.getUser(); ))
-      (( if (user){ ))
-      (( var has_explanation = opinion.get('explanation') && opinion.get('explanation').length > 0, expl_clss = has_explanation ? 'person-has-explanation' : 'person-has-no-explanation'; ))
-      %li.avatar{:class=>"segment-{{bar.segment}} {{expl_clss}}", :'action' => "user_profile_page", :'data-id' => "{{user.id}}", :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}>
-      (( } ))
-      (( }); ))
-    (( } ))
-  (( }); ))
-
-  .histogram-base
-    .histogram-base-label.histogram-base-label-support
-      %span
-        {{ supporter_label }}
-    .histogram-base-label.histogram-base-label-oppose
-      %span
-        {{ opposer_label }}
-  (( } ))
 
 
 %script{ :type => "text/template", :id => "tpl_proposal_social_media" }

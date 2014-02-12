@@ -42,8 +42,8 @@
         view = new @itemView
           model : point
           attributes : 
-            'data-id': "#{point.id}"
-            'data-role': 'point'
+            'id': "#{point.id}"
+            'role': 'point'
             includers : "#{point.get('includers')}"
             class : "point closed_point #{@location}_point #{valence}"
 
@@ -152,12 +152,12 @@
       $.trim "#{modifier} #{valence} #{tail}"
 
     selectSort : ->
-      @$el.find("[data-target]").removeClass 'selected'
-      @$el.find("[data-target='#{@sort}']").addClass 'selected'
+      @$el.find("[action]").removeClass 'selected'
+      @$el.find("[action='#{@sort}']").addClass 'selected'
 
     events : _.extend {}, Points.PointsList.prototype.events,
       'click .sort_points_menu_option a' : 'sortList'
-      'click [data-target="expand-toggle"]' : 'handleExpandToggle'
+      'click [action="expand-toggle"]' : 'handleExpandToggle'
 
     sortList : (ev) ->
       sort_by = $(ev.target).data('target')
@@ -201,7 +201,7 @@
       params
 
     events : 
-      'click [data-target="expand-toggle"]' : 'handleExpandToggle'
+      'click [action="expand-toggle"]' : 'handleExpandToggle'
 
     handleExpandToggle : (ev) ->
       @trigger 'points:toggle_expanded', @is_expanded
@@ -234,9 +234,9 @@
 
 
     events : 
-      'click [data-target="write-point"]' : 'newPoint'
+      'click [action="write-point"]' : 'newPoint'
       'click .newpoint-cancel' : 'cancelPoint'
-      'click [data-target="submit-point"]' : 'createPoint'
+      'click [action="submit-point"]' : 'createPoint'
       # 'blur .newpoint-nutshell' : 'checkIfShouldClose'
       'focusout .newpoint-form' : 'checkIfShouldClose'
 

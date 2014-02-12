@@ -21,7 +21,7 @@
       params
 
     updateActiveLink : (dash_name) ->
-      @$el.find('.sidebar_link').removeClass('selected').filter("[data-target='#{dash_name}']").addClass('selected')
+      @$el.find('.sidebar_link').removeClass('selected').filter("[action='#{dash_name}']").addClass('selected')
 
 
   # Abstract view to be extended by main region specific views

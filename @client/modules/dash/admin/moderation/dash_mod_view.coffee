@@ -112,7 +112,7 @@
 
     setFilter : (filter) ->
       @$el.find('.moderate-filter').removeClass('selected')
-      @$el.find(".moderate-filter[data-target='#{filter}']").addClass('selected')
+      @$el.find(".moderate-filter[action='#{filter}']").addClass('selected')
       @current_filter = filter
       @trigger 'filter:changed', filter
 

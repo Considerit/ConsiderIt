@@ -41,14 +41,14 @@ casper.test.begin 'Authentication tests', 8, (test) ->
     casper.wait 1000, ->
       
       casper.then ->
-        test.assertExists '[data-target="login"]', "there is an option for logging in"
-        casper.HTMLCapture '[data-target="login"]', 
+        test.assertExists '[action="login"]', "there is an option for logging in"
+        casper.HTMLCapture '[action="login"]', 
           caption: 'Login opportunity'
 
 
       casper.then ->
         # start to create a new account
-        @mouse.click '[data-target="login"]'
+        @mouse.click '[action="login"]'
         test.assertExists '.auth_overlay', "Create account screen appears"
         @HTMLCapture '.auth_overlay',
           caption: 'login screen'
@@ -63,7 +63,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
         @HTMLCapture '.auth_overlay',
           caption: 'login screen after input'
 
-        @mouse.click '[data-target="create-account"]'
+        @mouse.click '[action="create-account"]'
 
       casper.then -> 
         # complete paperwork for new user
@@ -80,7 +80,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
         @HTMLCapture '.auth_overlay', 
           caption : 'Account paperwork screen'
 
-        @mouse.click '[data-target="paperwork_complete"]'
+        @mouse.click '[action="paperwork_complete"]'
 
       casper.then ->
         # verify logged in
@@ -100,18 +100,18 @@ casper.test.begin 'Authentication tests', 8, (test) ->
           @HTMLCapture 'body', 
             caption: 'user dropdown options'
 
-          test.assertVisible '[data-target="logout"]', 'logout is visible'
+          test.assertVisible '[action="logout"]', 'logout is visible'
 
-          @mouse.click '[data-target="logout"]'
+          @mouse.click '[action="logout"]'
 
           casper.wait 1000, ->
-            test.assertExists '[data-target="login"]', 'User has successfully logged out'
+            test.assertExists '[action="login"]', 'User has successfully logged out'
             @HTMLCapture '#user-nav', 
               caption: 'logged out'
 
       casper.then ->
         # now login with that new user
-        @mouse.click '[data-target="login"]'
+        @mouse.click '[action="login"]'
         test.assertExists '.auth_overlay', "Login screen appears"
 
         @mouse.click 'input#user_email'
@@ -123,7 +123,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
         @HTMLCapture '.auth_overlay',
           caption: 'login screen after input'
 
-        @mouse.click '[data-target="login-submit"]'
+        @mouse.click '[action="login-submit"]'
 
         casper.wait 1000, ->
           test.assertExists '.user-options-display', 'User is logged in'

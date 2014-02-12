@@ -172,7 +172,7 @@
 
           #TODO: check to make sure this case of newfound activity is handled
           # if @$el.data('activity') == 'proposal-no-activity' && @model.has_participants()
-          #   @$el.attr('data-activity', 'proposal-has-activity')
+          #   @$el.attr('activity', 'proposal-has-activity')
 
           opinion.trigger 'opinion:synced'
 

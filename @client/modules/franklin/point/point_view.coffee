@@ -25,7 +25,7 @@
     pointClicked : (ev) ->
       pass_through = @$el.parents('.points_by_community[state="summary"]').length > 0
       _.each App.request('shared:targets'), (target) ->
-        pass_through ||= $(ev.target).is("[data-target='#{target}']")
+        pass_through ||= $(ev.target).is("[action='#{target}']")
 
       if !pass_through
         @trigger 'point:clicked'
@@ -40,7 +40,7 @@
     actions : ['include']
 
     events : _.extend @events,
-      'click [data-target="point-include"]' : 'includePoint'
+      'click [action="point-include"]' : 'includePoint'
       'mouseenter' : 'highlightIncluders'
       'mouseleave' : 'unhighlightIncluders'
       
@@ -69,7 +69,7 @@
     actions : ['remove']
 
     events : _.extend @events,
-      'click [data-target="point-remove"]' : 'removePoint'
+      'click [action="point-remove"]' : 'removePoint'
 
     removePoint : (ev) ->
       @trigger 'point:remove'
@@ -98,7 +98,7 @@
         is_not_clicking_this_point = ($(ev.target).closest('.open_point').length == 0 || $(ev.target).closest('.open_point').data('id') != @model.id)
         dialog_not_open = $('.l-dialog-detachable').length == 0
         if is_not_clicking_this_point && $(ev.target).closest('.editable-buttons').length == 0 && dialog_not_open
-          is_click_within_a_point = $(ev.target).closest('[data-role="point"]').length > 0
+          is_click_within_a_point = $(ev.target).closest('[role="point"]').length > 0
           is_clicking_nav = $(ev.target).closest('.l-navigate-wrap').length > 0
           @closePoint( !is_click_within_a_point && !is_clicking_nav ) 
 

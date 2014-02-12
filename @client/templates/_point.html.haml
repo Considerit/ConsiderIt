@@ -3,7 +3,7 @@
   .point_content>
     .close_open_point
       %i.fa.fa-times-circle
-    .point-summary-region{ :'data-target' => "open-point", :'data-id' => "{{id}}" }
+    .point-summary-region{ :'action' => "open-point", :'id' => "{{id}}" }
     .open-point-region
 
 %script{ :type => "text/template", :id => "tpl_point_avatar_area"}
@@ -11,7 +11,7 @@
   %span.avatar.point-author-avatar.avatar-anonymous{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)", :title => "This user has requested to remain anonymous"}
   (( } else if (user) { ))
 
-  %a.avatar.point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'data-target' => "user_profile_page" }
+  %a.avatar.point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile", :'id' => "{{user.id}}", :'action' => "user_profile_page" }
   (( } ))
 
   (( if(has_assessment){ ))
@@ -28,7 +28,7 @@
     %a.open_point_link
 
     (( if( _.contains(actions, 'remove') ){ ))
-    %button.point-remove{ :'data-target' => 'point-remove', :'data-id' => "{{id}}"}
+    %button.point-remove{ :'action' => 'point-remove', :'id' => "{{id}}"}
       %i.fa-trash
       remove
     (( } ))
@@ -40,7 +40,7 @@
 
   .point-actions
     .point-include.point-action
-      %button.button{ :'data-target' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
+      %button.button{ :'action' => 'point-include', :'id' => "{{id}}", :title => "Add this point to your list"}
         %i.fa.fa-small.fa-list
         Add to your pro/con list
 

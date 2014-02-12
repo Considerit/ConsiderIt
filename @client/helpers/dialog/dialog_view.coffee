@@ -9,7 +9,7 @@
       title : @options.config.title
 
     events : 
-      'click [data-target="dialog-close"]' : 'closeRequested'
+      'click [action="dialog-close"]' : 'closeRequested'
 
     closeRequested : (ev) => 
       @trigger 'closeRequested'      

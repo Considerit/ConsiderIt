@@ -2,8 +2,8 @@
   class Shared.AuthView extends Backbone.View
 
     events : 
-      'click [data-target="login"]' : 'loginDialogRequested'
-      'click [data-target="create_account"]' : 'createDialogRequested'
+      'click [action="login"]' : 'loginDialogRequested'
+      'click [action="create_account"]' : 'createDialogRequested'
 
     loginDialogRequested : (ev) ->
       App.vent.trigger 'signin:requested'
@@ -17,9 +17,9 @@
     template : _.template $('#tpl_user_tooltip').html()
 
     events : 
-      'mouseenter [data-target="user_profile_page"]' : 'tooltipShow'
-      'mouseleave [data-target="user_profile_page"]' : 'tooltipHide'
-      'click [data-target="user_profile_page"]' : 'viewProfile'
+      'mouseenter [action="user_profile_page"]' : 'tooltipShow'
+      'mouseleave [action="user_profile_page"]' : 'tooltipHide'
+      'click [action="user_profile_page"]' : 'viewProfile'
 
 
     viewProfile : (ev) -> 
@@ -31,8 +31,8 @@
       if !$target.closest('.l-tooltip-user').length > 0
         user = App.request 'user', $target.data('id')
 
-        if $target.closest('[data-role="proposal"]').length > 0
-          long_id = $target.closest('[data-role="proposal"]').data('id')
+        if $target.closest('[role="proposal"]').length > 0
+          long_id = $target.closest('[role="proposal"]').data('id')
           proposal = App.request 'proposal:get', long_id
 
           proposal = null if !proposal.user_participated(user.id) 

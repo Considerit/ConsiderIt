@@ -2,7 +2,7 @@
   
   class Proposal.ProposalLayout extends App.Views.StatefulLayout
     template: '#tpl_proposal_layout'
-    className : 'proposal'
+    className : 'proposal_layout'
     attributes : (include_data=true) ->
       prefix = if include_data then 'data-' else ''
 
@@ -21,29 +21,15 @@
       histogramRegion : '.histogram-region'
       reasonsRegion : '.proposal-reasons-region'
 
-    initialize : (options = {}) ->
-      super options
+    initialize : (options = {}) -> super options
 
-    onRender : ->
-      super
+    onRender : -> super
 
     implodeParticipants : ->
       $participants = @$el.find('.participants .l-group-container')
 
       $participants.hide()
-      # $participants.find('.avatar').css 
-      #   position: ''
-      #   zIndex: ''
-      #   '-ms-transform': ""
-      #   '-moz-transform': ""
-      #   '-webkit-transform': ""
-      #   transform: ""
-
       $participants.find('.avatar[style]').removeAttr('style') # much more efficient
-
-      # @$el.find('.histogram').css
-      #   opacity: ''
-
       $participants.show()
 
     explodeParticipants : (transition = true) ->      
@@ -74,8 +60,6 @@
         $participants_container.css
           top: $participants_offset.top - $participants_container.parent().offset().top
           bottom: 'auto'
-
-
 
         # compute all offsets first, before applying changes, for perf reasons
         positions = {}

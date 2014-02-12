@@ -253,17 +253,17 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
   .community-cons-region .point-avatar-region
     float: right
 
-  &.transitioning .opinion_points
+  &.transitioning .decision_board_points_layout
     //min-height: 0
     min-height: 450px
     height: auto
 
   &[state="crafting"]
-    .opinion_points
+    .decision_board_points_layout
       min-height: 450px
 
   &[state="results"]
-    .opinion_points
+    .decision_board_points_layout
       height: 0
       overflow: hidden
 
@@ -307,7 +307,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
   &.some_points_are_expanded .four_columns_of_points
     width: $full_reasons_width + $expanded_points_increment
 
-    .opinion-region, .decision_board, .decision_board_body
+    .opinion-region, .decision_board_layout, .decision_board_body
       height: 100%
 
   &.con_points_are_expanded .four_columns_of_points
@@ -344,7 +344,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
       min-height: 0
 
   .reasons[state="crafting"] 
-    .opinion_points
+    .decision_board_points_layout
       min-height: 200px
 
 

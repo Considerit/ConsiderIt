@@ -1,0 +1,29 @@
+%script{ :type => "text/template", :id => "tpl_histogram_layout"}
+  (( if (histogram) { ))
+  (( _.each(histogram.breakdown, function(bar){ ))
+  .histogram-bar{ :style => "height: {{bar.full_size}}px;", :segment => "{{bar.segment}}", :id => "segment-{{bar.segment}}"}>
+    (( if(bar.segment < 4 ){ ))
+    = render :partial => "shared/bubble", :locals => {:left => false, :down => true }
+    (( } else { ))
+    = render :partial => "shared/bubble", :locals => {:left => false, :down => true, :flipped => true }
+    (( } ))
+    (( if (bar.opinions.length > 0) { ))
+    %ul.histogram_bar_users>
+      (( _.each(bar.opinions, function(opinion) { ))
+      (( var user = opinion.getUser(); ))
+      (( if (user){ ))
+      (( var has_explanation = opinion.get('explanation') && opinion.get('explanation').length > 0, expl_clss = has_explanation ? 'person-has-explanation' : 'person-has-no-explanation'; ))
+      %li.avatar{:class=>"segment-{{bar.segment}} {{expl_clss}}", :'action' => "user_profile_page", :'data-id' => "{{user.id}}", :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture", :style => "height:{{bar.tile_size}}px; width:{{bar.tile_size}}px;"}>
+      (( } ))
+      (( }); ))
+    (( } ))
+  (( }); ))
+
+  .histogram-base
+    .histogram-label.histogram-label-support
+      %span
+        {{ supporter_label }}
+    .histogram-label.histogram-label-oppose
+      %span
+        {{ opposer_label }}
+  (( } ))

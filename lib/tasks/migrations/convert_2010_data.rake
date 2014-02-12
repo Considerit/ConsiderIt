@@ -100,7 +100,7 @@ namespace :data do
           :proposal_id => proposals[row['initiative_id']].id,
           :user_id => users[row['user_id']].id,
           :stance => row['position'].to_f,
-          :stance_bucket => Position.get_bucket(row['position'].to_f),
+          :stance_segment => Position.get_segment(row['position'].to_f),
           :account_id => 1,
           :published => row['active'].to_i
         })

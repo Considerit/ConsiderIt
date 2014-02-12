@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140209211934) do
+ActiveRecord::Schema.define(version: 20140212194651) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -223,7 +223,7 @@ ActiveRecord::Schema.define(version: 20140209211934) do
     t.integer  "session_id"
     t.text     "explanation"
     t.float    "stance"
-    t.integer  "stance_bucket"
+    t.integer  "stance_segment"
     t.boolean  "published",                              default: false
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -238,7 +238,7 @@ ActiveRecord::Schema.define(version: 20140209211934) do
   add_index "opinions", ["account_id"], name: "index_opinions_on_account_id", using: :btree
   add_index "opinions", ["proposal_id"], name: "index_positions_on_option_id", using: :btree
   add_index "opinions", ["published"], name: "index_opinions_on_published", using: :btree
-  add_index "opinions", ["stance_bucket"], name: "index_opinions_on_stance_bucket", using: :btree
+  add_index "opinions", ["stance_segment"], name: "index_opinions_on_stance_segment", using: :btree
   add_index "opinions", ["user_id"], name: "index_opinions_on_user_id", using: :btree
 
   create_table "page_views", force: true do |t|

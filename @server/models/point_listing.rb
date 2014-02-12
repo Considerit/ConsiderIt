@@ -6,7 +6,7 @@ class PointListing < ActiveRecord::Base
 
   acts_as_tenant(:account)
   
-  #scope :by_user_with_stance, proc {|stance_bucket| joins(:opinion).where("opinions.stance_bucket=" + stance_bucket.to_s ) }
+  #scope :by_user_with_stance, proc {|stance_segment| joins(:opinion).where("opinions.stance_segment=" + stance_segment.to_s ) }
 
   # Collapses PointListings 
   def self.warehouse

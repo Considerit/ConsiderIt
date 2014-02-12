@@ -11,7 +11,7 @@
 
     changeView : (ev) ->
       $target = $(ev.currentTarget)
-      @trigger 'switch_view', $target.data('target')
+      @trigger 'switch_view', $target.attr('target')
       @$el.find('.analytics-view').removeClass('active')
       $target.addClass('active')
 

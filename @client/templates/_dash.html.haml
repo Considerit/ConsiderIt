@@ -149,7 +149,7 @@
 
       .dashboard-profile-influenced.l-group-container
         (( _.each(influenced_users, function(p){ ))
-        %span.avatar{ :'action' => "user_profile_page", :'id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}>
+        %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}>
         (( }); ))        
   (( } ))
 
@@ -196,7 +196,7 @@
               .dashboard-profile-activity-substance
                 {{ proposal.get('name') }}
             %td.dashboard-profile-activity-action
-              %a{ :href => "{{ Routes.proposal_path(proposal.id) }}", :'id' => "{{ proposal.id }}" }
+              %a{ :href => "{{ Routes.proposal_path(proposal.id) }}", :'data-id' => "{{ proposal.id }}" }
                 View and consider
           (( }); ))
       (( } else { ))
@@ -229,7 +229,7 @@
                 Re: {{ proposal.get('name') }}
 
             %td.dashboard-profile-activity-action
-              %a{ :href => "{{ route }}", :'id' => "{{ opinion.id }}" }
+              %a{ :href => "{{ route }}", :'data-id' => "{{ opinion.id }}" }
                 See why
           (( }); ))
       (( } else { ))
@@ -258,11 +258,11 @@
                 This point has influenced {{influenced_users_by_point[point.id].length}} people
               .l-group-container
                 (( _.each(influenced_users_by_point[point.id], function(p){ ))
-                %span.avatar{ :'action' => "user_profile_page", :'id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+                %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
                 (( }); ))   
 
             %td.dashboard-profile-activity-action
-              %a{ :href => "{{ route }}", :'id' => "{{ point.id }}" }
+              %a{ :href => "{{ route }}", :'data-id' => "{{ point.id }}" }
                 Read and discuss
           (( }); ))
       (( } else { ))
@@ -290,7 +290,7 @@
               .dashboard-profile-activity-substance-context
                 Re: {{ proposal.get('name') }}
             %td.dashboard-profile-activity-action
-              %a{ :href => "{{ route }}#comment-{{comment.id}}", :'id' => "{{ comment.id }}" }
+              %a{ :href => "{{ route }}#comment-{{comment.id}}", :'data-id' => "{{ comment.id }}" }
                 Join in
           (( }); ))
       (( } else { ))

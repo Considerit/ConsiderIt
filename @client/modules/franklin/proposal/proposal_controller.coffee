@@ -6,8 +6,8 @@
     Results : 'results'
 
   class Proposal.ProposalController extends App.Controllers.Base
-    exploded : false
-    state : null
+    exploded : false # has the participants group yet been exploded into the histogram
+    state : null #TODO: extend StatefulController to accommodate role of ProposalController
 
     transition_speed : -> 
       $transition_speed = if Modernizr.csstransitions then 1000 else 0
@@ -47,9 +47,9 @@
     changeState : (state) ->
       prior_state = @state
       @setState state
-      @showFinished prior_state
+      @processStateChange prior_state
 
-    showFinished : (prior_state = null) ->
+    processStateChange : (prior_state = null) ->
       
       if prior_state && prior_state != Proposal.State.Summary
         if @state == Proposal.State.Summary
@@ -85,7 +85,7 @@
 
         @listenTo layout, 'explosion:complete', => @exploded = true
 
-        @showFinished()
+        @processStateChange()
 
 
     _update_attributes : ->

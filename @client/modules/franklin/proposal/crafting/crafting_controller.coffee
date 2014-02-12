@@ -210,7 +210,7 @@
       dest = dest_controller.options.collection
       dest.add model
 
-      @layout.processIncludedPoints()
+      @layout.processWhetherPointsHaveBeenIncluded()
 
     handleRemovePoint : (view, model, source) ->
       App.vent.trigger 'points:unexpand'
@@ -234,7 +234,7 @@
           model.trigger 'destroy', model, model.collection
           toastr.success 'Point deleted'
 
-      @layout.processIncludedPoints()
+      @layout.processWhetherPointsHaveBeenIncluded()
       @trigger 'point:removal', model
 
 

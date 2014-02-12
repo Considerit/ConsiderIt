@@ -2,7 +2,7 @@
 
   class Proposal.DecisionBoardLayout extends App.Views.StatefulLayout
     template : '#tpl_decision_board_layout'
-    className : 'decision_board' 
+    className : 'decision_board_layout' 
     regions : 
       headerRegion : '.decision-board-heading-region'
       reasonsRegion : '.decision-board-points-region'
@@ -18,7 +18,7 @@
     onRender : ->
       super
 
-      @processIncludedPoints()
+      @processWhetherPointsHaveBeenIncluded()
 
       @$el.droppable
         accept: ".community_point .point_content"
@@ -43,7 +43,7 @@
           valence = if ui.draggable.parent().is('.pro') then 'pro' else 'con'
           @$el.removeClass "user_is_dragging_a_#{valence}"
 
-    processIncludedPoints : ->
+    processWhetherPointsHaveBeenIncluded : ->
       if @model.getIncludedPoints().length > 0 
         @$el.removeClass 'no_included_points'
         @$el.addClass 'has_included_points'
@@ -54,7 +54,7 @@
 
   class Proposal.DecisionBoardFooterView extends App.Views.ItemView
     template : '#tpl_decision_board_footer'
-    className : 'decision-board-footer'
+    className : 'decision_board_footer_view'
 
     serializeData : ->
       current_user = App.request 'user:current'
@@ -76,8 +76,8 @@
       ev.stopPropagation()
 
   class Proposal.DecisionBoardHeading extends App.Views.ItemView
-    template : '#tpl_decision_board_heading'
-    className : 'decision_board_heading'
+    template : '#tpl_decision_board_heading_view'
+    className : 'decision_board_heading_view'
 
     serializeData : ->
       current_user = App.request 'user:current'
@@ -95,16 +95,16 @@
         call : call
 
   class Proposal.DecisionBoardPointsLayout extends App.Views.Layout
-    template : '#tpl_opinion_points'
-    className : 'opinion_points'
+    template : '#tpl_decision_board_points_area'
+    className : 'decision_board_points_layout'
 
     regions : 
       decisionBoardProsRegion : '.pros_on_decision_board-region'
       decisionBoardConsRegion : '.cons_on_decision_board-region'
 
   class Proposal.DecisionBoardSlider extends App.Views.ItemView
-    template : '#tpl_slider'
-    className : 'stance'
+    template : '#tpl_decision_board_slider'
+    className : 'decision_board_slider'
 
     serializeData : ->
       tenant = App.request 'tenant'
@@ -142,7 +142,7 @@
       params = _.extend {}, @slider_ui_init, 
         start : -@_stance_val()
         slide : =>
-          @sliderChange @ui.slider.val()
+          @onSliderChange @ui.slider.val()
 
       @ui.slider.noUiSlider params
 
@@ -150,7 +150,7 @@
       if !is_neutral
         @ui.neutral_label.css 'visibility', 'hidden'
 
-    sliderChange : (new_value) -> 
+    onSliderChange : (new_value) -> 
       return unless isFinite(new_value)
 
       if Math.abs(new_value) < 5

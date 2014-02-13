@@ -4,7 +4,7 @@
 
 //IE8 doesn't support transform: translate ...
 .no-csstransforms
-  .reasons
+  .reasons_layout
     &[state="crafting"]
 
       .community-pros-region, .community-cons-region
@@ -20,7 +20,7 @@
 
 
 
-  .reasons  
+  .reasons_layout  
     &[state="crafting"], &[state="summary"]
       top: -$histogram_height
 
@@ -48,7 +48,7 @@
 
 
   [activity="proposal-no-activity"]
-    .reasons[state="summary"] 
+    .reasons_layout[state="summary"] 
       top: 0
 
       .opinion-region

@@ -67,7 +67,7 @@
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
-      user = if ConsiderIt.request("user:current:logged_in?") then ConsiderIt.request('user:current') else ConsiderIt.request("user:fixed")
+      user = if ConsiderIt.request("user:is_client_logged_in?") then ConsiderIt.request('user:current') else ConsiderIt.request("user:fixed")
       @current_controller = new Dash.User.EmailNotificationsController
         region : @_getMainRegion()  
         model : user

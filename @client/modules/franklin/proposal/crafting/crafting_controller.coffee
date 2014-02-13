@@ -15,7 +15,7 @@
       @listenTo App.vent, 'user:signin:data_loaded', =>
         current_user = App.request 'user:current'
         if @model.get('user_id') != current_user.id
-          existing_opinion = App.request 'opinion:current_user:proposal', @proposal.id, false
+          existing_opinion = App.request 'opinion:get_by_current_user_and_proposal', @proposal.id, false
           if !existing_opinion
             @model.setUser current_user
           else

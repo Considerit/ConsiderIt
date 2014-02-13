@@ -147,6 +147,7 @@
 
       new Entities.Points _.compact([top_pro, top_con])
 
+  # provides this API
   App.reqres.setHandler 'point:bootstrap', (data) ->
     API.bootstrapPoint data
 
@@ -158,11 +159,10 @@
       wait : true
     API.createPoint attrs, options
 
-  App.vent.on 'points:fetched', (points) ->
-    API.addPoints points
+  App.reqres.setHandler 'points:get', (filter = {}) ->
+    API.getPointsBy filter
 
-
-  App.reqres.setHandler 'points:get:user', (model_id, published = true) ->
+  App.reqres.setHandler 'points:get_by_user', (model_id, published = true) ->
     API.getPointsByUser model_id, published
 
   App.reqres.setHandler 'points:get_by_proposal', (long_id) ->
@@ -171,8 +171,9 @@
   App.reqres.setHandler 'points:get_top_points_for_proposal', (long_id) ->
     API.getTopPointsByProposal long_id
 
-  App.reqres.setHandler 'points:get', (filter = {}) ->
-    API.getPointsBy filter
+  # subscribes to these events
+  App.vent.on 'points:fetched', (points) ->
+    API.addPoints points
 
 
   App.addInitializer ->

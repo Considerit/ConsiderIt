@@ -103,18 +103,18 @@
     ### Relations ###
     getProposals : ->
       if !@proposals 
-        @proposals = App.request 'proposals:get:user', @id
+        @proposals = App.request 'proposals:get_by_user', @id
       @proposals
 
     getPoints : ->
-      @points = App.request 'points:get:user', @id
+      @points = App.request 'points:get_by_user', @id
       if App.request('user:current').id != @id
         @points = new Entities.Points @points.where({hide_name: false})
       @points
 
     getOpinions : ->
       if !@opinions
-        @opinions = App.request 'opinions:get:user', @id
+        @opinions = App.request 'opinions:get_by_user', @id
       @opinions
 
     getComments : ->
@@ -342,24 +342,17 @@
       current_user = App.request 'user:current'
       current_user.get 'registration_complete'
 
-
-
-
-
-    
+  # provides this API
   App.reqres.setHandler 'user:current', ->
     AUTH_API.get_current_user()
-
-  # App.reqres.setHandler "user:current:set", (user) ->
-  #   AUTH_API.set_current_user user
 
   App.reqres.setHandler "user:current:clear", ->
     AUTH_API.clear_current_user()
 
-  App.reqres.setHandler "user:current:update", (user_data) ->
+  App.reqres.setHandler "user:update_current_user", (user_data) ->
     AUTH_API.update_current_user user_data
 
-  App.reqres.setHandler "user:current:logged_in?", ->
+  App.reqres.setHandler "user:is_client_logged_in?", ->
     AUTH_API.current_user_logged_in()
 
   App.reqres.setHandler "user:fixed", ->
@@ -371,7 +364,7 @@
   App.reqres.setHandler "user:fixed:clear", ->
     AUTH_API.clear_fixed_user()
 
-  App.reqres.setHandler "user:paperwork_completed", ->
+  App.reqres.setHandler "user:is_registration_completed?", ->
     AUTH_API.paperworkCompleted()
 
   App.reqres.setHandler "auth:can_moderate", ->
@@ -389,6 +382,9 @@
   App.reqres.setHandler "auth:can_edit_proposal", (proposal) ->
     current_user = AUTH_API.get_current_user() 
     current_user && ( current_user.id == proposal.get('user_id') || current_user.isManager() )   
+
+  # subscribes to these events
+
 
   App.on 'initialize:before', ->
 

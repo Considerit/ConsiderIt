@@ -26,7 +26,7 @@
     setupLayout : ->
       layout = @getLayout()
       @listenTo layout, 'user:update:requested', (data) =>
-        App.request "user:current:update", data.user
+        App.request "user:update_current_user", data.user
         layout.render()
       layout
 
@@ -40,7 +40,7 @@
     setupLayout : ->
       layout = @getLayout()
       @listenTo layout, 'user:update:requested', (data) =>
-        App.request "user:current:update", data.user
+        App.request "user:update_current_user", data.user
         layout.render()
       layout
 

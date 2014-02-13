@@ -1,5 +1,5 @@
 %script{ :type => "text/template", :id => "tpl_point_layout"}
-  .point-avatar-region>
+  .point_avatar_region>
   .point_content>
     .close_open_point
       %i.fa.fa-times-circle
@@ -8,27 +8,27 @@
 
 %script{ :type => "text/template", :id => "tpl_point_avatar_area"}
   (( if (hide_name || user.name == 'Anonymous' ) { ))
-  %span.avatar.point-author-avatar.avatar-anonymous{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)", :title => "This user has requested to remain anonymous"}
+  %span.avatar.point_author_avatar.avatar_anonymous{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)", :title => "This user has requested to remain anonymous"}
   (( } else if (user) { ))
 
-  %a.avatar.point-author-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'action' => "user_profile_page" }
+  %a.avatar.point_author_avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'action' => "user_profile_page" }
   (( } ))
 
   (( if(has_assessment){ ))
-  .point-assessment-indicator-region
+  .point_assessment_indicator_region
     %img{:src => "{{verdict.getIcon()}}"}
   (( } ))
 
 %script{ :type => "text/template", :id => "tpl_point_summary"}
-  .point-nutshell
+  .point_nutshell
     {{ adjusted_nutshell }}
 
-  .point-operations
+  .point_operations
 
     %a.open_point_link
 
     (( if( _.contains(actions, 'remove') ){ ))
-    %button.point-remove{ :'action' => 'point-remove', :'data-id' => "{{id}}"}
+    %button.point_remove{ :'action' => 'point_remove', :'data-id' => "{{id}}"}
       %i.fa-trash
       remove
     (( } ))
@@ -38,17 +38,17 @@
   .point_description 
     {{ text }}
 
-  .point-actions
-    .point-include.point-action
+  .point_actions
+    .point-include.point_action
       %button.button{ :'action' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
         %i.fa.fa-small.fa-list
         Add to your pro/con list
 
-    .point-follow-region.point-action
-    .point-assessment-region.point-action
+    .point-follow-region.point_action
+    .point-assessment-region.point_action
 
 
-  .point-discussion-region
+  .point_discussion_region
 
 %script{ :type => "text/template", :id => "tpl_follow_point"}
   (( if(already_follows){ ))

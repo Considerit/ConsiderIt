@@ -6,8 +6,8 @@
 
     regions : 
       headerRegion : '.points-heading-region'
-      listRegion : '.points-list-region'
-      footerRegion : '.points-footer-region'
+      listRegion : '.points_list_region'
+      footerRegion : '.points_footer_region'
 
     initialize : (options={}) ->
       super options
@@ -223,11 +223,11 @@
       params
 
     onShow : ->  
-      @$el.find('.newpoint-nutshell').autosize()
-      @$el.find('.newpoint-description').autosize()
+      @$el.find('.newpoint_nutshell').autosize()
+      @$el.find('.newpoint_description').autosize()
       # @$el.find('.position-statement').autosize()
 
-      for el in @$el.find('.newpoint-form .is_counted')
+      for el in @$el.find('.newpoint_form .is_counted')
         $(el).NobleCount $(el).siblings('.count'), 
           block_negative: true,
           max_chars : parseInt $(el).siblings('.count').text()       
@@ -237,14 +237,14 @@
       'click [action="write-point"]' : 'newPoint'
       'click .newpoint-cancel' : 'cancelPoint'
       'click [action="submit-point"]' : 'createPoint'
-      # 'blur .newpoint-nutshell' : 'checkIfShouldClose'
-      'focusout .newpoint-form' : 'checkIfShouldClose'
+      # 'blur .newpoint_nutshell' : 'checkIfShouldClose'
+      'focusout .newpoint_form' : 'checkIfShouldClose'
 
     checkIfShouldClose : (ev) ->
-      $form = $(ev.currentTarget).closest('.newpoint-form')
+      $form = $(ev.currentTarget).closest('.newpoint_form')
 
-      $nutshell = $form.find('.newpoint-nutshell')
-      $description = $form.find('.newpoint-description')
+      $nutshell = $form.find('.newpoint_nutshell')
+      $description = $form.find('.newpoint_description')
 
       if $nutshell.val().length + $description.val().length == 0
         click_inside = false
@@ -258,20 +258,20 @@
 
     newPoint : (ev) ->
       $(ev.currentTarget).hide()
-      $form = $(ev.currentTarget).siblings('.newpoint-form')
+      $form = $(ev.currentTarget).siblings('.newpoint_form')
 
-      $form.find('.newpoint-nutshell, .newpoint-description').trigger('keyup')
+      $form.find('.newpoint_nutshell, .newpoint_description').trigger('keyup')
       $form.show()
 
       if !Modernizr.input.placeholder
         $form.find('[placeholder]').simplePlaceholder() 
       else
-        $form.find('.newpoint-nutshell').focus()
+        $form.find('.newpoint_nutshell').focus()
 
       @$el.find('.newpoint').addClass 'is_adding_newpoint'
     
     cancelPoint : (ev) ->
-      $form = $(ev.currentTarget).closest('.newpoint-form')
+      $form = $(ev.currentTarget).closest('.newpoint_form')
       $form.hide()
       $form.siblings('.newpoint_prompt').show()
       $form.find('textarea').val('').trigger('keydown')
@@ -280,11 +280,11 @@
       @$el.find('.newpoint').removeClass 'is_adding_newpoint'
 
     createPoint : (ev) ->
-      $form = $(ev.currentTarget).closest('.newpoint-form')
+      $form = $(ev.currentTarget).closest('.newpoint_form')
 
       point_attributes =
-        nutshell : $form.find('.newpoint-nutshell').val()
-        text : $form.find('.newpoint-description').val()
+        nutshell : $form.find('.newpoint_nutshell').val()
+        text : $form.find('.newpoint_description').val()
         is_pro : $form.find('.newpoint-is_pro').val() == 'true'
         hide_name : $form.find('.newpoint-anonymous').is(':checked')
         comment_count : 0

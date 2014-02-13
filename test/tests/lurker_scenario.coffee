@@ -34,7 +34,7 @@ casper.test.begin 'Lurker can poke around homepage', 13, (test) ->
         @HTMLCapture '[role="proposal"]', 
           caption: 'One of the proposals'
 
-        @HTMLCapture '#active-proposals-region', 
+        @HTMLCapture '#active_proposals_region', 
           caption: 'Active proposals'
 
         assert_homepage_loaded test
@@ -42,18 +42,18 @@ casper.test.begin 'Lurker can poke around homepage', 13, (test) ->
     casper.then ->
       @HTMLStep "load some more proposals"
 
-      @click '#active-proposals-region [action="load-proposals"]'
+      @click '#active_proposals_region [action="load-proposals"]'
       @wait 10000, ->
-        @HTMLCapture '#active-proposals-region', 
+        @HTMLCapture '#active_proposals_region', 
           caption: 'Active proposals'
 
         test.assertExists '[action="proposals:goto_page"]', 'pagination is shown after loading proposals'
         @HTMLCapture '.proposals-operations',
           caption: 'Proposals pagination after loading more'
 
-        @click '#past-proposals-region [action="load-proposals"]'
+        @click '#past_proposals_region [action="load-proposals"]'
         @wait 10000, ->
-          test.assertExists '#past-proposals-region [action="proposals:goto_page"]', 'pagination for inactive proposals is shown after loading inactive proposals'
+          test.assertExists '#past_proposals_region [action="proposals:goto_page"]', 'pagination for inactive proposals is shown after loading inactive proposals'
 
     casper.then ->
       casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
@@ -107,9 +107,9 @@ casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) -
       @HTMLStep "#{state} histogram"
 
       if state == 'hover'
-        casper.mouse.move '.histogram-bar:first-of-type .histogram_bar_users'     
+        casper.mouse.move '.histogram_bar:first-of-type .histogram_bar_users'     
       else
-        @mouse.click '.histogram-bar:first-of-type .histogram_bar_users'  
+        @mouse.click '.histogram_bar:first-of-type .histogram_bar_users'  
         @mouse.move 'body'
 
       @wait 250, ->
@@ -302,16 +302,16 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
 
 assert_homepage_loaded = (test) ->
   test.assertExists '[role="proposal"][state="summary"]', "there is at least one proposal, and it is collapsed"
-  test.assertElementCount '#active-proposals-region [role="proposal"]', 5, "there are 5 active proposals"
-  test.assertElementCount '#past-proposals-region [role="proposal"]', 0, "there are no inactive proposals"
-  test.assertExists '#active-proposals-region [action="load-proposals"]', 'ability to load more active proposals'
-  test.assertExists '#past-proposals-region [action="load-proposals"]', 'ability to load more inactive proposals'
+  test.assertElementCount '#active_proposals_region [role="proposal"]', 5, "there are 5 active proposals"
+  test.assertElementCount '#past_proposals_region [role="proposal"]', 0, "there are no inactive proposals"
+  test.assertExists '#active_proposals_region [action="load-proposals"]', 'ability to load more active proposals'
+  test.assertExists '#past_proposals_region [action="load-proposals"]', 'ability to load more inactive proposals'
 
 assert_in_results_state = (test) ->
   test.assertExists '[role="proposal"][state="results"]', 'Proposal is in results state'
   test.assertElementCount '[role="proposal"]', 1, "there is only one proposal on the page"
-  test.assertVisible '.proposal-details', 'Proposal details are visible'
-  test.assertElementCount '.histogram-bar', 7, 'There are seven histogram bars visible'
+  test.assertVisible '.proposal_details', 'Proposal details are visible'
+  test.assertElementCount '.histogram_bar', 7, 'There are seven histogram bars visible'
   test.assertExists '.points_by_community[state="results"]', 'Pros and cons in together state'
   test.assertSelectorHasText '.points_heading_view', 'Pros', 'Pros present in pros header'
   test.assertSelectorDoesntHaveText '.points_heading_view', 'upport', 'Supporter is not present in pros header'
@@ -319,7 +319,7 @@ assert_in_results_state = (test) ->
 assert_in_crafting_state = (test) ->
   test.assertExists '[role="proposal"][state="crafting"]', 'Proposal is in crafting state'
   test.assertElementCount '[role="proposal"]', 1, "there is only one proposal on the page"
-  test.assertVisible '.proposal-details', 'Proposal details are visible'
+  test.assertVisible '.proposal_details', 'Proposal details are visible'
   test.assertExists '.decision_board_layout[state="crafting"]', 'Decision slate is visible'
   test.assertExists '.points_by_community[state="crafting"]', 'Pros and cons on margins'
   test.assertExists '.slider_container', 'Slider present'
@@ -332,11 +332,11 @@ assert_user_profile_loaded = (test) ->
 
 assert_point_open = (test) ->
   test.assertVisible '.point_description', 'Point details are visible'
-  test.assertVisible '.point-discussion-region', 'Discussion section exists'
+  test.assertVisible '.point_discussion_region', 'Discussion section exists'
 
 assert_comment_open = (test, comment_id) ->
   assert_point_open test
-  test.assertVisible "#comment-#{comment_id}", 'Comment is visible'
+  test.assertVisible "#comment_#{comment_id}", 'Comment is visible'
 
 assert_opinion_open = (test) ->
   test.assertVisible '.user_opinion-reasons', 'Viewing other user opinion works'

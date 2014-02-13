@@ -5,8 +5,8 @@
     className: 'proposals_region_layout'
 
     regions: 
-      activeRegion : '#active-proposals-region'
-      pastRegion : '#past-proposals-region'
+      activeRegion : '#active_proposals_region'
+      pastRegion : '#past_proposals_region'
 
   class Proposals.ProposalsLayout extends App.Views.Layout
     template: '#tpl_proposals_layout'
@@ -14,9 +14,9 @@
 
     regions: 
       createRegion : '.proposals-create-region'
-      proposalsRegion : '.proposals-list-region'
+      proposalsRegion : '.proposals_list-region'
       sortRegion : '.sort-proposals-region'
-      paginationRegion : '.proposals-pagination-region'
+      paginationRegion : '.proposals_pagination_region'
 
   class Proposals.CreateNewProposalView extends App.Views.ItemView
     template: '#tpl_create_new_proposal'
@@ -128,7 +128,7 @@
   class Proposals.ProposalsListView extends App.Views.CompositeView
     template: '#tpl_proposals_list'
     className: 'proposals_list_view'
-    itemViewContainer : 'ul.proposals-list' 
+    itemViewContainer : 'ul.proposals_list' 
 
     initialize : (options = {}) ->
       super options

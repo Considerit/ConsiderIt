@@ -59,7 +59,7 @@
     $existing = $('.l-dialog-detachable')
 
     $overlay = $("<div class='l-dialog-detachable #{options.class}'>")
-    $('#l-wrap').prepend($overlay)
+    $('#l_wrap').prepend($overlay)
 
     @dialogController = new Dialog.DialogController
       view: contentView

@@ -28,7 +28,7 @@ $histogram_bar_width: $histogram_width / 7
     opacity: 1
     min-height: $histogram_height
 
-  .histogram-base, .histogram_bar_users, .histogram-bar
+  .histogram_base, .histogram_bar_users, .histogram_bar
     +transition(opacity $transition_speed $transition_function)
     +backface-visibility(hidden)
 
@@ -37,35 +37,35 @@ $histogram_bar_width: $histogram_width / 7
     &[state="results"][coming-from-state="summary"]
       .histogram_bar_users
         visibility: hidden
-      .histogram-label
+      .histogram_label
         visibility: hidden
 
 
 
   &[state="results"][coming-from-state="crafting"]
-    .histogram-bar
+    .histogram_bar
       opacity: 1
-    .histogram-base, .histogram_bar_users  
+    .histogram_base, .histogram_bar_users  
       opacity: 1
 
   &[state="crafting"][coming-from-state="results"]
-    .histogram-bar
+    .histogram_bar
       opacity: .1
-    .histogram-base, .histogram_bar_users  
+    .histogram_base, .histogram_bar_users  
       opacity: 0
 
   &[state="crafting"]
-    .histogram-bar
+    .histogram_bar
       [action="user_profile_page"]
         cursor: auto
 
   &[state="results"]
-    .histogram-bar
+    .histogram_bar
       cursor: pointer
 
   // HISTOGRAM / WHAT
 
-  .histogram-bar
+  .histogram_bar
     width: $histogram_bar_width
     position: relative
     border-radius: 0px
@@ -73,11 +73,11 @@ $histogram_bar_width: $histogram_width / 7
     display: inline-block
     vertical-align: bottom
 
-    &.bar-is-selected 
-      .t-bubble
+    &.bar_is_selected 
+      .mouth_bubble
         display: block
 
-    .t-bubble
+    .mouth_bubble
       display: none
       position: absolute
       left: 50%
@@ -87,7 +87,7 @@ $histogram_bar_width: $histogram_width / 7
       bottom: -39px
       width: 30px
 
-      .t-bubble-spacing
+      .mouth_bubble_spacing
         display: none
 
     // .bar-position
@@ -100,10 +100,10 @@ $histogram_bar_width: $histogram_width / 7
     //   text-align: center
     //   +font-size(-1)
     
-    // &.bar-is-soft-selected
+    // &.bar_is_soft_selected
     //   z-index: 5
 
-    // &.bar-is-hard-selected
+    // &.bar_is_hard_selected
     //   z-index: 10
       
 
@@ -118,20 +118,20 @@ $histogram_bar_width: $histogram_width / 7
     +rotate(180deg)  
     opacity: .6
 
-.bar-is-soft-selected .histogram_bar_users .avatar
+.bar_is_soft_selected .histogram_bar_users .avatar
   opacity: .75
 
-.bar-is-hard-selected .histogram_bar_users .avatar
+.bar_is_hard_selected .histogram_bar_users .avatar
   opacity: .9
 
 
-.histogram-base
+.histogram_base
   margin-left: -$grid_gutter/2
   height: $vertical_baseline
   width: $histogram_width + $grid_gutter
   border-radius: 10px
 
-.histogram-label
+.histogram_label
   position: absolute
   //padding: 0 $grid_gutter + 3
   z-index: 1
@@ -144,7 +144,7 @@ $histogram_bar_width: $histogram_width / 7
     display: block
     //font-weight: bold
 
-.histogram-label-support
+.histogram_label_support
   left: -92px
-.histogram-label-oppose
+.histogram_label_oppose
   right: -82px

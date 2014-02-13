@@ -296,7 +296,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         
               // build the base of our tooltip
               var tooltipster = $('<div class="tooltipster-base '+ themeClass +' '+ animation +'" style="'+ fixedWidth +' '+ maxWidth +' '+ pointerEvents +' '+ animationSpeed +'"></div>');
-              var tooltipsterHTML = $('<div class="tooltipster-content"></div>');
+              var tooltipsterHTML = $('<div class="tooltipster_content"></div>');
               tooltipsterHTML.html(content);
               tooltipster.append(tooltipsterHTML);
               
@@ -337,7 +337,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                   currentTooltipContent = newTooltipContent;
                   
                   // set the new content in the tooltip
-                  tooltipster.find('.tooltipster-content').html(newTooltipContent);
+                  tooltipster.find('.tooltipster_content').html(newTooltipContent);
                   
                   // if we want to play a little animation showing the content changed
                   if (object.options.updateAnimation == true) {
@@ -349,11 +349,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         '-o-transition': 'all ' + object.options.speed + 'ms, width 0ms, height 0ms, left 0ms, top 0ms',
                         '-ms-transition': 'all ' + object.options.speed + 'ms, width 0ms, height 0ms, left 0ms, top 0ms',
                         'transition': 'all ' + object.options.speed + 'ms, width 0ms, height 0ms, left 0ms, top 0ms'
-                      }).addClass('tooltipster-content-changing');
+                      }).addClass('tooltipster_content-changing');
                       
                       // reset the CSS transitions and finish the change animation
                       setTimeout(function() {
-                        tooltipster.removeClass('tooltipster-content-changing');
+                        tooltipster.removeClass('tooltipster_content-changing');
                         // after the changing animation has completed, reset the CSS transitions
                         setTimeout(function() {
                           tooltipster.css({

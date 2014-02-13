@@ -7,15 +7,15 @@
   .reasons_layout
     &[state="crafting"]
 
-      .community-pros-region, .community-cons-region
+      .community_pros_region, .community_cons_region
         left: 0
 
     &[state="results"], &[state="summary"]
 
-      .community-pros-region
+      .community_pros_region
         left: $point-width - ($point-width - $decision_board_width/2) + 4
 
-      .community-cons-region
+      .community_cons_region
         left: -$point-width + ($point-width - $decision_board_width/2) - 4
 
 
@@ -28,22 +28,22 @@
       top: 0
 
     &[state="crafting"][coming-from-state="results"]
-      .opinion-region
+      .opinion_region
         top: - 2 * $vertical_baseline
 
-      .community-pros-region, .community-cons-region
+      .community_pros_region, .community_cons_region
         top: $vertical_baseline
 
     &[state="crafting"][coming-from-state="summary"], &[state="crafting"]
-      .opinion-region
+      .opinion_region
         top: 3 * $vertical_baseline
 
-      .community-pros-region, .community-cons-region
+      .community_pros_region, .community_cons_region
         top: 6 * $vertical_baseline
 
 
     &[state="summary"]
-      .opinion-region
+      .opinion_region
         top: $histogram_height + $vertical_baseline
 
 
@@ -51,15 +51,15 @@
     .reasons_layout[state="summary"] 
       top: 0
 
-      .opinion-region
+      .opinion_region
         top: 0
 
   [state="summary"]
-    .proposal-description-region
+    .proposal_description_region
       left: -$dialog_stutter
 
   [state="summary"].transitioning
-    .proposal-description-region
+    .proposal_description_region
       left: 0
 
 
@@ -70,13 +70,13 @@
 
 .histogram[state="crafting"][coming-from-state="results"] 
   visibility: hidden
-  .histogram-bar, .histogram-base
+  .histogram_bar, .histogram_base
     visibility: hidden
 
 
 
 
-.t-bubble
+.mouth_bubble
   display: none
   content: none
 

@@ -10,7 +10,7 @@ html {
 }
 
 /* Use this next selector to style things like font-size and line-height: */
-.tooltipster-default .tooltipster-content {
+.tooltipster-default .tooltipster_content {
   overflow: hidden;
 }
 
@@ -44,7 +44,7 @@ html {
   width: auto;
   overflow: visible;
 }
-.tooltipster-base .tooltipster-content {
+.tooltipster-base .tooltipster_content {
   overflow: hidden;
 }
 
@@ -261,7 +261,7 @@ html {
 
 
 /* CSS transition for when contenting is changing in a tooltip that is still open. The only properties that will NOT transition are: width, height, top, and left */
-.tooltipster-content-changing {
+.tooltipster_content-changing {
   opacity: 0.5;
   -webkit-transform: scale(1.1, 1.1);
   -moz-transform: scale(1.1, 1.1);

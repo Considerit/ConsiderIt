@@ -35,35 +35,13 @@
 
   (( } ))
 
-////////////// opinion ////////////
 
-
-
-
-%script{ :type => "text/template", :id => "tpl_reasons_layout"}
-  .four_columns_of_points
-    .community-pros-region.points-list-region>
-    .opinion-region>
-    .community-cons-region.points-list-region>
-  .participating-users-region
-
-  .reasons-footer-region
 
 
 %script{ :type => "text/template", :id => "tpl_participating_users"}
   (( _.each(participants, function(p){ ))
   %span.avatar{ :'action' => "user_profile_page",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}>
   (( }); ))
-
-
-%script{ :type => "text/template", :id => "tpl_view_results"}
-  %a.view_results_prompt_from_summary{:'action' => 'show-results'}
-    //%i.fa.fa-bar-chart-o.fa-lg 
-    %i.fa.fa-th-list.fa-lg
-    View Results
-
-
-
 
 
 %script{ :type => "text/template", :id => "tpl_proposal_social_media" }

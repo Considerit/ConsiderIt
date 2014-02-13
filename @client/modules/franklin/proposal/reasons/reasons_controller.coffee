@@ -106,8 +106,8 @@
         community_cons = new App.Entities.PaginatedPoints points.filter((point) -> !point.isPro()), {state: {pageSize:page_size} }
 
 
-        @community_pros_controller = @getPointsController layout.communityProsRegion, 'pro', community_pros
-        @community_cons_controller = @getPointsController layout.communityConsRegion, 'con', community_cons
+        @community_pros_controller = @getCommunityPointsController layout.communityProsRegion, 'pro', community_pros
+        @community_cons_controller = @getCommunityPointsController layout.communityConsRegion, 'con', community_cons
 
         _.each [ [@community_pros_controller, @community_cons_controller], [@community_cons_controller, @community_pros_controller]], (item) =>
           [controller, other_controller] = item
@@ -231,7 +231,6 @@
         @includePoint model
 
 
-
     getCraftingController : (region) ->
       new Proposal.CraftingController
         model : @model
@@ -240,7 +239,7 @@
         parent_controller : @
         prior_state : @prior_state
 
-    getPointsController : (region, valence, collection) ->
+    getCommunityPointsController : (region, valence, collection) ->
       new App.Franklin.Points.CommunityPointsController
         valence : valence
         collection : collection
@@ -256,21 +255,6 @@
     getParticipantsView : ->
       new Proposal.ParticipatingUsersView
         model : @model
-
-    # getHeaderView : (group = 'all') ->
-    #   switch @state
-    #     when Proposal.State.Results
-    #       new Proposal.ResultsHeaderView
-    #         model : @model
-    #         group : group
-    #     when Proposal.State.Summary
-    #       new Proposal.ResultsHeaderViewCollapsed
-    #         model : @model
-    #         group : group
-    #     when Proposal.State.Crafting
-    #       new Proposal.ResultsHeaderViewSeparated
-    #         model : @model
-    #         group : group
 
     getLayout : ->
       new Proposal.ReasonsLayout

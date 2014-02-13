@@ -158,7 +158,7 @@ $use_transitions: true
 
 
 // transitions / animations
-.reasons.transitioning
+.reasons_layout.transitioning
   +transition(transform $transition_speed $transition_function)
   .opinion-region, .community-pros-region, .community-cons-region
     +transition(transform $transition_speed $transition_function)
@@ -192,7 +192,7 @@ $use_transitions: true
 $full_reasons_width: 2 * $decision_board_width + 2
 $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
-.reasons  
+.reasons_layout  
   &[state="crafting"], &[state="summary"]
     +translateY(-$histogram_height)
 
@@ -329,7 +329,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
 // Activity-based styles
 [activity="proposal-no-activity"]
-  .reasons[state="summary"] 
+  .reasons_layout[state="summary"] 
     +translateY(0)
 
     .points-list-region
@@ -343,18 +343,18 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     .four_columns_of_points      
       min-height: 0
 
-  .reasons[state="crafting"] 
+  .reasons_layout[state="crafting"] 
     .decision_board_points_layout
       min-height: 200px
 
 
 [activity="proposal-has-activity"]
-  .reasons[state="summary"]
+  .reasons_layout[state="summary"]
     .four_columns_of_points
       min-height: $histogram_height
       //margin-bottom: 100px // spacing for participants block
 
-  .reasons
+  .reasons_layout
     &[state="results"], &[state="crafting"]
       min-height: 500px
 
@@ -364,7 +364,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 [state="summary"] .proposal-reasons-region
   height: 3 * $vertical_baseline
 
-.reasons
+.reasons_layout
   margin: $vertical_baseline 0 4 * $vertical_baseline 0
   position: relative
 
@@ -428,11 +428,8 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
       cursor: pointer
       z-index: 10
 
-      div
+      .results_prompt_from_summary_view
         text-align: center
-
-      .view_results_prompt_from_summary
-        text-align: right
         +font-size(-1)
         i
           padding-right: $grid_gutter/4

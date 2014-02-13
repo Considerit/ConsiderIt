@@ -2,7 +2,7 @@
 
   class Proposal.ReasonsLayout extends App.Views.StatefulLayout
     template: '#tpl_reasons_layout'
-    className: 'reasons'
+    className: 'reasons_layout'
 
     regions : 
       opinionRegion : '.opinion-region'
@@ -58,6 +58,15 @@
 
       @sizeToFit 10
 
+
+    sizeToFit : (delay = 0, minheight = 0) ->
+      if delay > 0
+        _.delay =>
+          @_sizeToFit minheight
+        , delay
+      else
+        @_sizeToFit minheight
+
     _sizeToFit : (minheight) ->
       $to_fit = @$el.find('.four_columns_of_points')
 
@@ -69,17 +78,8 @@
       $to_fit.css 'height', height
       $to_fit.parent().css 'min-height', height
 
-
-    sizeToFit : (delay = 0, minheight = 0) ->
-      if delay > 0
-        _.delay =>
-          @_sizeToFit minheight
-        , delay
-      else
-        @_sizeToFit minheight
-
+      
     events : 
-      'mouseenter .community_point' : 'logPointView'
       'click .points-list-region' : 'reasonsClicked'
       'click .participating-users-region' : 'reasonsClicked'      
       'click .reasons-footer-region' : 'reasonsClicked'            
@@ -89,11 +89,8 @@
       'mouseleave .reasons-footer-region' : 'hideViewResults'      
       'mouseenter .participating-users-region' : 'showViewResults'
       'mouseleave .participating-users-region' : 'hideViewResults'
+      'mouseenter .community_point' : 'logPointView'
 
-    logPointView : (ev) ->
-      if @state != Proposal.State.Summary
-        pnt = $(ev.currentTarget).data('id')
-        @trigger 'point:viewed', pnt
 
     reasonsClicked : (ev) ->
       if @state == Proposal.State.Summary && $(ev.target).closest('.decision-board-heading-region').length == 0
@@ -108,7 +105,7 @@
         visibility: 'visible'
 
     hideViewResults : (ev) ->
-      return if @state != Proposal.State.Summary || $(ev.target).closest('.view_results_prompt_from_summary').length > 0
+      return if @state != Proposal.State.Summary || $(ev.target).closest('.results_prompt_from_summary_view').length > 0
       @hover_state = false
       _.delay =>
         if !@hover_state
@@ -116,8 +113,14 @@
             visibility: ''
       , 100
 
+    logPointView : (ev) ->
+      if @state != Proposal.State.Summary
+        pnt = $(ev.currentTarget).data('id')
+        @trigger 'point:viewed', pnt
+
+
   class Proposal.ViewResultsView extends App.Views.ItemView
     template : '#tpl_view_results'
-
+    className : 'results_prompt_from_summary_view'
     serializeData : ->
       _.extend {}, @model.attributes

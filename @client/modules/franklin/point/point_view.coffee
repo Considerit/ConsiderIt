@@ -8,7 +8,7 @@
     template : '#tpl_point_layout'
 
     regions :
-      headerRegion : '.point-avatar-region'
+      headerRegion : '.point_avatar_region'
       bodyRegion : '.point-summary-region'
       openPointRegion : '.open-point-region'
 
@@ -33,7 +33,7 @@
 
     closePoint : (ev) ->
       # only for closing points
-      $('#l-wrap').trigger 'click'
+      $('#l_wrap').trigger 'click'
       ev.stopPropagation()
 
   class Point.CommunityPointView extends Point.PointView
@@ -69,7 +69,7 @@
     actions : ['remove']
 
     events : _.extend @events,
-      'click [action="point-remove"]' : 'removePoint'
+      'click [action="point_remove"]' : 'removePoint'
 
     removePoint : (ev) ->
       @trigger 'point:remove'
@@ -84,7 +84,7 @@
     regions :
       followRegion : '.point-follow-region'
       assessmentRegion : '.point-assessment-region'
-      discussionRegion : '.point-discussion-region'
+      discussionRegion : '.point_discussion_region'
 
     serializeData : ->
       @model.attributes
@@ -143,7 +143,7 @@
       @listenTo @model, 'change', @render
 
     events : 
-      'mouseover .point-assessment-indicator-region' : 'showVerdictTooltip'
+      'mouseover .point_assessment_indicator_region' : 'showVerdictTooltip'
 
     showVerdictTooltip : (ev) ->
 
@@ -209,7 +209,7 @@
 
 
     makeEditable : ->
-      $editable = @$el.find('.point-nutshell')
+      $editable = @$el.find('.point_nutshell')
       $editable.editable
         resource: 'point'
         pk: @model.id
@@ -235,7 +235,7 @@
       $details_editable.prepend '<i class="editable-pencil icon-pencil icon-large">'
 
     removeEditable : ->
-      $editable = @$el.find('.point-nutshell')
+      $editable = @$el.find('.point_nutshell')
       $details_editable = @$el.find('.point_description')
 
       $editable.editable('destroy')

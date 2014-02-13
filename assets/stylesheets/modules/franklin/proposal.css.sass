@@ -15,11 +15,11 @@
       display: none
 
     &[state="summary"]
-      .opinion-region
+      .opinion_region
         visibility: hidden
 
     &[activity="proposal-no-activity"]
-      .proposal_histogram_region, .proposal-reasons-region
+      .proposal_histogram_region, .proposal_reasons_region
         display: none
 
 
@@ -42,23 +42,23 @@
 
 // unpublished proposal
 [visibility="unpublished"]
-  .proposal-reasons-region, .proposal_histogram_region, .toggle-proposal-state-region
+  .proposal_reasons_region, .proposal_histogram_region, .toggle_proposal_state_region
     display: none
 
   &[state="summary"]
     padding-bottom: 4 * $vertical_baseline
 
-    .proposal-reasons-region, .proposal_histogram_region, .proposals-pagination-region
+    .proposal_reasons_region, .proposal_histogram_region, .proposals_pagination_region
       display: none
 
 
 // participants block
 
 [state="results"][coming-from-state="summary"], [state="summary"]
-  .participating-users-region
+  .participating_users_region
     visibility: visible
 
-.participating-users-region
+.participating_users_region
   visibility: hidden
   z-index: 10
   right: 0 //1.5 * $grid_gutter

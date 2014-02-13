@@ -42,8 +42,8 @@
 
     - cache ['main_body', current_tenant] do
 
-      #t-bg.content_style
-        #t-bg-top
+      #t_bg.content_style
+        #t_bg-top
           %svg{ :xmlns => "http://www.w3.org/2000/svg", :height => 0, :style => "position: absolute", :version => "1.1", :baseProfile => "full" }
             %defs
               %filter{ :id => "bubble_gradient"}
@@ -51,21 +51,21 @@
                 %feOffset{ :dy => ".2", :dx => "0" }  
                 %feComposite{ :in2 => "SourceGraphic", :operator => "over" }
 
-          #l-wrap
+          #l_wrap
             #l-loading-indicator
-            .l-header
-            #l-content
+            .l_header
+            #l_content
 
-              #l-content-main
-                #t-bg-content
-                  #t-bg-content-top
-                    #l-content-main-wrap
+              #l_content_main
+                #t_bg-content
+                  #t_bg_content_top
+                    #l_content_main_wrap
 
-                    = image_tag "ajax-loader.gif", :id => 'l-preloader'
+                    = image_tag "ajax-loader.gif", :id => 'l_preloader'
 
-            #l-sticky-footer-region
+            #l_sticky_footer_region
 
-            .l-footer
+            .l_footer
 
             - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
               :javascript

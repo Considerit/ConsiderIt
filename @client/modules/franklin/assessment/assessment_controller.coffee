@@ -56,4 +56,4 @@
 
     getOverlay : (view) ->
       App.request 'dialog:new', view, 
-        class: 'assessment-request-form-dialog'
+        class: 'assessment_request_form_dialog'

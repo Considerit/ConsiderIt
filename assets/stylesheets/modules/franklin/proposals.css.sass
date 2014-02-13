@@ -2,9 +2,9 @@
 @import "library"
 
 // High-level layout styles
-#active-proposals-region, #past-proposals-region
+#active_proposals_region, #past_proposals_region
   padding-top: $vertical_baseline
-  .proposals-list
+  .proposals_list
     list-style: none outside none
 
 .past_proposals_heading
@@ -31,14 +31,14 @@
   padding-bottom: $vertical_baseline
   margin-top: $vertical_baseline
 
-  .proposals-pagination-showmore, .proposals-list-pagination-page, .selected, .proposals-list-pagination-jump
+  .proposals_pagination_showmore, .proposals_list_pagination_page, .selected, .proposals_list_pagination_jump
     border-radius: 0
     text-shadow: none
 
-  .proposals-list-pagination-page, .selected, .proposals-list-pagination-jump
+  .proposals_list_pagination_page, .selected, .proposals_list_pagination_jump
     padding: $vertical_baseline/8 $grid_gutter/4
 
-  .proposals-list-pagination-pages
+  .proposals_list_pagination_pages
     position: relative
     display: inline-block
 
@@ -56,7 +56,7 @@
     &.selected, &.selected:hover
       font-weight: bold    
 
-.proposals-list-pagination-current
+.proposals_list_pagination_current
   margin-top: $vertical_baseline/4
   +font-size(-2)
 

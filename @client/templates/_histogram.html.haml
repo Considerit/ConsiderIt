@@ -1,7 +1,7 @@
 %script{ :type => "text/template", :id => "tpl_histogram_layout"}
   (( if (histogram) { ))
   (( _.each(histogram.breakdown, function(bar){ ))
-  .histogram-bar{ :style => "height: {{bar.full_size}}px;", :segment => "{{bar.segment}}", :id => "segment-{{bar.segment}}"}>
+  .histogram_bar{ :style => "height: {{bar.full_size}}px;", :segment => "{{bar.segment}}", :id => "segment-{{bar.segment}}"}>
     (( if(bar.segment < 4 ){ ))
     = render :partial => "shared/bubble", :locals => {:left => false, :down => true }
     (( } else { ))
@@ -19,11 +19,11 @@
     (( } ))
   (( }); ))
 
-  .histogram-base
-    .histogram-label.histogram-label-support
+  .histogram_base
+    .histogram_label.histogram_label_support
       %span
         {{ supporter_label }}
-    .histogram-label.histogram-label-oppose
+    .histogram_label.histogram_label_oppose
       %span
         {{ opposer_label }}
   (( } ))

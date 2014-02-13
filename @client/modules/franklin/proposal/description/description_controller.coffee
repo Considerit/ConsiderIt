@@ -30,7 +30,7 @@
 
     stateIsChanging : (region, view) ->
 
-      already_showing_details = region.$el.find('.proposal-details').length > 0
+      already_showing_details = region.$el.find('.proposal_details').length > 0
 
       if @state != Proposal.State.Summary && @prior_state == Proposal.State.Summary && !already_showing_details
         

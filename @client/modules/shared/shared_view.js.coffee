@@ -28,7 +28,7 @@
       
     tooltipShow : (ev) ->
       $target = $(ev.currentTarget)
-      if !$target.closest('.l-tooltip-user').length > 0
+      if !$target.closest('.l_tooltip-user').length > 0
         user = App.request 'user', $target.data('id')
 
         if $target.closest('[role="proposal"]').length > 0
@@ -49,7 +49,7 @@
 
 
         @$el.append tooltip
-        $tooltip = @$el.children '.l-tooltip-user'
+        $tooltip = @$el.children '.l_tooltip-user'
 
         $target.tooltipster
           interactive: true
@@ -59,6 +59,6 @@
         $target.tooltipster 'show'
 
     tooltipHide : (ev) ->
-      @$el.children('.l-tooltip-user, .l-tooltip-user-title').remove()
+      @$el.children('.l_tooltip-user, .l_tooltip-user-title').remove()
 
 

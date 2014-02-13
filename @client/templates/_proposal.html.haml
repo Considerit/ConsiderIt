@@ -1,32 +1,32 @@
 ////////////// proposal ////////////
 %script{ :type => "text/template", :id => "tpl_proposal_layout" }  
 
-  .proposal-description-region
+  .proposal_description_region
 
-  .toggle-proposal-state-region
+  .toggle_proposal_state_region
   
   .proposal_histogram_region
 
-  .proposal-reasons-region
+  .proposal_reasons_region
 
 %script{ :type => "text/template", :id => "tpl_toggle_proposal_state"}
 
   (( if(crafting) { ))
 
-  .proposal-state-primary
+  .proposal_state_primary
     {{ call }}
 
-  %a{ :href => "{{Routes.proposal_path( long_id )}}", :class => 'proposal-state-secondary', :'action' => 'view-results'}
+  %a{ :href => "{{Routes.proposal_path( long_id )}}", :class => 'proposal_state_secondary', :'action' => 'view-results'}
     // %i.fa-lg.fa
     //   &#xf046;
 
     {{ results_call }}
 
   (( } else { ))
-  .proposal-state-primary
+  .proposal_state_primary
     {{ results_call }}
 
-  %a{ :href => "{{Routes.new_opinion_proposal_path( long_id )}}", :class => 'proposal-state-secondary', :'action' => 'craft-opinion'}
+  %a{ :href => "{{Routes.new_opinion_proposal_path( long_id )}}", :class => 'proposal_state_secondary', :'action' => 'craft-opinion'}
     // %i.fa-lg.fa
     //   &#xf096;
 
@@ -59,19 +59,19 @@
 
 %script{ :type => "text/template", :id => "tpl_proposal_admin_strip" }
   (( if(!published){ ))
-  .proposal-admin-publish
-    = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'proposal-publish-form'} do |f|
+  .proposal_admin_publish
+    = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'proposal_publish-form'} do |f|
       = f.hidden_field :published, :value => true
 
-      = f.submit 'Done! Publish it.', :class => 'proposal-publish button'
+      = f.submit 'Done! Publish it.', :class => 'proposal_publish button'
   (( } ))
 
-  .proposal-admin_strip
+  .proposal_admin_strip
     %i.fa-cog.fa
 
-    .proposal-admin-options-menu-wrap
-      %ul.proposal-admin-options-menu
-        %li.proposal-admin-publicity.l-dialog-prompt
+    .proposal_admin_options_menu_wrap
+      %ul.proposal_admin_options_menu
+        %li.proposal_admin_publicity.l-dialog-prompt
           %a.proposal-admin_operations-publicity.l-dialog-prompt-label
             //Sharing is 
             %span
@@ -87,7 +87,7 @@
               (( } ))
 
         %li.proposal-admin-status.l-dialog-prompt
-          %a.proposal-admin_operations-status.l-dialog-prompt-label
+          %a.proposal_admin_operations_status.l-dialog-prompt-label
             //Status is 
             %span
               (( if(active){ ))
@@ -107,7 +107,7 @@
 
 %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_publicity" }
 
-  = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'proposal-admin_operations-settings-form'} do |f|
+  = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'proposal_admin_operations_settings_form'} do |f|
     .radio_block
       .option
         (( if(publicity == 2) { ))
@@ -155,7 +155,7 @@
 
 %script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_active"}
 
-  = form_for :proposal, :url => "{{ Routes.proposal_path(long_id) }}", :method => :put, :remote => true, :html => {:class => 'proposal-admin_operations-settings-form'} do |f|
+  = form_for :proposal, :url => "{{ Routes.proposal_path(long_id) }}", :method => :put, :remote => true, :html => {:class => 'proposal_admin_operations_settings_form'} do |f|
     .radio_block
       .option
         (( if(active) { ))

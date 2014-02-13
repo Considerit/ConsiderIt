@@ -4,7 +4,7 @@
   
   class Loading.LoadingView extends App.Views.ItemView
     template: false
-    className: "loading-container"
+    className: "loading_container"
     
     onShow: ->
       opts = @_getOptions()

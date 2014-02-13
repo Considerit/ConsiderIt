@@ -5,11 +5,11 @@
     className: 'reasons_layout'
 
     regions : 
-      opinionRegion : '.opinion-region'
-      footerRegion : '.reasons-footer-region'      
-      communityProsRegion : '.community-pros-region'
-      communityConsRegion : '.community-cons-region'
-      participantsRegion : '.participating-users-region'
+      opinionRegion : '.opinion_region'
+      footerRegion : '.reasons_footer_region'      
+      communityProsRegion : '.community_pros_region'
+      communityConsRegion : '.community_cons_region'
+      participantsRegion : '.participating_users_region'
 
     initialize : (options = {}) ->
       super options
@@ -80,20 +80,20 @@
 
       
     events : 
-      'click .points-list-region' : 'reasonsClicked'
-      'click .participating-users-region' : 'reasonsClicked'      
-      'click .reasons-footer-region' : 'reasonsClicked'            
-      'mouseenter .points-list-region' : 'showViewResults'
-      'mouseleave .points-list-region' : 'hideViewResults'
-      'mouseenter .reasons-footer-region' : 'showViewResults'
-      'mouseleave .reasons-footer-region' : 'hideViewResults'      
-      'mouseenter .participating-users-region' : 'showViewResults'
-      'mouseleave .participating-users-region' : 'hideViewResults'
+      'click .points_list_region' : 'reasonsClicked'
+      'click .participating_users_region' : 'reasonsClicked'      
+      'click .reasons_footer_region' : 'reasonsClicked'            
+      'mouseenter .points_list_region' : 'showViewResults'
+      'mouseleave .points_list_region' : 'hideViewResults'
+      'mouseenter .reasons_footer_region' : 'showViewResults'
+      'mouseleave .reasons_footer_region' : 'hideViewResults'      
+      'mouseenter .participating_users_region' : 'showViewResults'
+      'mouseleave .participating_users_region' : 'hideViewResults'
       'mouseenter .community_point' : 'logPointView'
 
 
     reasonsClicked : (ev) ->
-      if @state == Proposal.State.Summary && $(ev.target).closest('.decision-board-heading-region').length == 0
+      if @state == Proposal.State.Summary && $(ev.target).closest('.decision_board_heading_region').length == 0
         @trigger 'show_results'
         ev.stopPropagation()
 
@@ -101,7 +101,7 @@
       return if @state != Proposal.State.Summary
 
       @hover_state = true
-      @$el.find('.reasons-footer-region').css
+      @$el.find('.reasons_footer_region').css
         visibility: 'visible'
 
     hideViewResults : (ev) ->
@@ -109,7 +109,7 @@
       @hover_state = false
       _.delay =>
         if !@hover_state
-          @$el.find('.reasons-footer-region').css
+          @$el.find('.reasons_footer_region').css
             visibility: ''
       , 100
 

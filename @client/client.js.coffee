@@ -6,10 +6,10 @@
     App.environment = options.environment
   
   App.addRegions
-    headerRegion: ".l-header"
-    mainRegion:    "#l-content-main-wrap"
-    footerRegion: ".l-footer"
-    stickyFooterRegion : '#l-sticky-footer-region'
+    headerRegion: ".l_header"
+    mainRegion:    "#l_content_main_wrap"
+    footerRegion: ".l_footer"
+    stickyFooterRegion : '#l_sticky_footer_region'
   
   App.rootRoute = Routes.root_path()
   
@@ -108,14 +108,14 @@
 
   App.on "initialize:after", ->
     
-    $('#l-preloader').hide()
+    $('#l_preloader').hide()
 
     @startHistory()
     @navigate(@rootRoute, trigger: true) unless @getCurrentRoute()
 
     shared = new App.Shared.SharedController
       region: new Backbone.Marionette.Region
-        el: $("#t-bg")
+        el: $("#t_bg")
 
     App.vent.trigger 'App:Initialization:Complete'
 

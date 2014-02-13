@@ -1,8 +1,8 @@
 @import "variables"
 
 // fact-check request form
-.assessment-request-form-dialog
-  .assessment-request-prompt
+.assessment_request_form_dialog
+  .assessment_request_prompt
 
   #request_suggestion
     width: 100%
@@ -20,62 +20,62 @@
       text-decoration: underline    
 
 // fact-check summary shown in header of expanded point
-.claim-summary 
+.claim_summary 
   margin: $vertical_baseline/2
 
-  .claim-summary-restatement, .claim-summary-evaluation, .claim-summary-link
+  .claim_summary_restatement, .claim_summary_evaluation, .claim_summary_link
     display: inline-block
 
-  .claim-summary-restatement
+  .claim_summary_restatement
     +font-size(-2)
     font-weight: bold
-  .claim-summary-evaluation
+  .claim_summary_evaluation
     +font-size(-2)
 
-  .claim-summary-link
+  .claim_summary_link
     +font-size(-3)
     text-decoration: underline
 
 
 // fact-check result, integrated into comment stream
-.claim-comment
-  .comment-claim-restatement
+.claim_comment
+  .comment_claim_restatement
     font-weight: bold
     +font-size(2)
 
-  .comment-claim-evaluation
+  .comment_claim_evaluation
     font-style: italic
     +font-size(1)
 
-  .comment-claim-report  
+  .comment_claim_report  
     +font-size(0)
     margin: $vertical_baseline 0
 
-  .comment-claim-process  
+  .comment_claim_process  
     a 
       text-decoration: underline 
 
 
 .decision_board_point.closed_point
-  &:hover .point-assessment-indicator-region
+  &:hover .point_assessment_indicator_region
     display: block
 
-  .point-assessment-indicator-region
+  .point_assessment_indicator_region
     display: none
 
-.point-assessment-indicator-region, .points_by_community[state="summary"] .closed_point .point-assessment-indicator-region
+.point_assessment_indicator_region, .points_by_community[state="summary"] .closed_point .point_assessment_indicator_region
   display: none
 
 
 .points_on_decision_board
   .closed_point
-    .point-assessment-indicator-region
+    .point_assessment_indicator_region
       top: auto
       opacity: 1
       left: -$grid_gutter - 4
       
 .closed_point
-  .point-assessment-indicator-region
+  .point_assessment_indicator_region
     display: block
     position: absolute
     top: $point-avatar-width + 8

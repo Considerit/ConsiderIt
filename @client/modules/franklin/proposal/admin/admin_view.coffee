@@ -8,9 +8,9 @@
 
     events : 
       'ajax:complete .delete_proposal' : 'deleteProposal'
-      'click .proposal-admin_operations-status' : 'showStatus'
+      'click .proposal_admin_operations_status' : 'showStatus'
       'click .proposal-admin_operations-publicity' : 'showPublicity'
-      'ajax:complete .proposal-publish-form' : 'publishProposal'
+      'ajax:complete .proposal_publish-form' : 'publishProposal'
 
     showStatus : (ev) ->
       @trigger 'status_dialog'
@@ -46,7 +46,7 @@
       _.extend {}, @model.attributes
 
     events : 
-      'ajax:complete .proposal-admin_operations-settings-form' : 'changeSettings'
+      'ajax:complete .proposal_admin_operations_settings_form' : 'changeSettings'
 
     changeSettings : (ev, response, options) ->
       data = $.parseJSON(response.responseText)
@@ -62,7 +62,7 @@
       _.extend {}, @model.attributes
 
     events : 
-      'ajax:complete .proposal-admin_operations-settings-form' : 'changeSettings'
+      'ajax:complete .proposal_admin_operations_settings_form' : 'changeSettings'
       'click [name="proposal[access_list]"]' : 'selectPrivate'
 
     changeSettings : (ev, response ,options) ->

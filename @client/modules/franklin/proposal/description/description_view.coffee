@@ -7,12 +7,12 @@
     show_details : true
 
     regions : 
-      adminRegion : '.proposal-admin-region' 
-      socialMediaRegion : '.proposal-social_media-region'
+      adminRegion : '.proposal_admin_region' 
+      socialMediaRegion : '.proposal_social_media_region'
       
 
     ui : 
-      details : '.proposal-details'
+      details : '.proposal_details'
 
     editable : =>
       @state != Proposal.State.Summary && App.request 'auth:can_edit_proposal', @model    

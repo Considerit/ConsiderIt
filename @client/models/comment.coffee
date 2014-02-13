@@ -54,17 +54,20 @@
     getCommentsByPoint : (point_id) ->
       new Entities.Comments @all_comments.where({commentable_type : 'Point', commentable_id : point_id})
 
+  # provides this API
   App.reqres.setHandler 'comment:get', (id) ->
     API.getComment id
 
   App.reqres.setHandler 'comment:create', (attrs, options = {wait : true}) ->
     API.createComment attrs, options
 
-  App.vent.on 'comments:fetched', (comments) ->
-    API.addComments comments
-
   App.reqres.setHandler 'comments:get:user', (model_id) ->
     API.getCommentsByUser model_id
 
   App.reqres.setHandler 'comments:get:point', (model_id) ->
     API.getCommentsByPoint model_id
+
+  # subscribes to these events
+  App.vent.on 'comments:fetched', (comments) ->
+    API.addComments comments
+

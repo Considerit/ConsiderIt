@@ -5,7 +5,7 @@
     initialize: ->
       user = App.request 'user:current'
 
-      if App.request 'user:current:logged_in?'
+      if App.request 'user:is_client_logged_in?'
 
         @view = @getLoggedInView user
 

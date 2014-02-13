@@ -30,7 +30,7 @@
 
   %textarea#request_suggestion{ :name => "request[suggestion]"}
 
-  (( if( ConsiderIt.request('user:current:logged_in?') ) { ))
+  (( if( ConsiderIt.request('user:is_client_logged_in?') ) { ))
   .submit_block
     %input.button{ :name => "commit", :type => "submit", :value => "Submit your request"}
   (( } else { ))

@@ -231,14 +231,13 @@
         #@all_opinions.remove opinion        
         opinion.trigger 'destroy', opinion, opinion.collection
 
-  App.vent.on 'opinion:subsumed', (opinion_data) ->
-    API.opinionSubsumed opinion_data
 
-  App.vent.on 'opinions:fetched', (opinions) -> #, opinion = null) ->
-    API.addOpinions opinions #, opinion
-
+  # provides this API
   App.reqres.setHandler 'opinion:get', (opinion_id) ->
     API.getOpinion opinion_id
+
+  App.reqres.setHandler 'opinion:get_by_current_user_and_proposal', (long_id, create_if_not_found = true) ->
+    API.getOpinionForProposalForCurrentUser long_id, create_if_not_found
 
   App.reqres.setHandler 'opinion:create', (attrs = {}) ->
     API.createOpinion attrs
@@ -249,14 +248,19 @@
   App.reqres.setHandler 'opinions:get', ->
     API.getOpinions()
 
-  App.reqres.setHandler 'opinions:get:proposal', (long_id) ->
+  App.reqres.setHandler 'opinions:get_by_proposal', (long_id) ->
     API.getOpinionsByProposal long_id
 
-  App.reqres.setHandler 'opinions:get:user', (model_id, published = true) ->
+  App.reqres.setHandler 'opinions:get_by_user', (model_id, published = true) ->
     API.getOpinionsByUser model_id, published
 
-  App.reqres.setHandler 'opinion:current_user:proposal', (long_id, create_if_not_found = true) ->
-    API.getOpinionForProposalForCurrentUser long_id, create_if_not_found
+
+  # subscribes to these events
+  App.vent.on 'opinion:subsumed', (opinion_data) ->
+    API.opinionSubsumed opinion_data
+
+  App.vent.on 'opinions:fetched', (opinions) -> #, opinion = null) ->
+    API.addOpinions opinions #, opinion
 
 
   App.addInitializer ->

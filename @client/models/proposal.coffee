@@ -103,10 +103,10 @@
       user
 
     getUserOpinion : ->
-      App.request 'opinion:current_user:proposal', @id
+      App.request 'opinion:get_by_current_user_and_proposal', @id
 
     getOpinions : ->
-      App.request 'opinions:get:proposal', @id
+      App.request 'opinions:get_by_proposal', @id
 
     getPoints : ->
       App.request 'points:get_by_proposal', @id
@@ -302,14 +302,12 @@
           proposal.set 'active', false
 
 
-  App.reqres.setHandler "proposal:bootstrap", (proposal_attrs) ->
-    API.bootstrapProposal proposal_attrs
-
+  # provides this API
   App.reqres.setHandler "proposal:get", (long_id, fetch = false) ->
     API.getProposal long_id, fetch
 
-  App.reqres.setHandler "proposal:get:id", (id, fetch = false) ->
-    API.getProposalById id, fetch
+  App.reqres.setHandler "proposal:bootstrap", (proposal_attrs) ->
+    API.bootstrapProposal proposal_attrs
 
   App.reqres.setHandler "proposal:new", (attrs = {})->
     API.newProposal attrs
@@ -317,14 +315,8 @@
   App.reqres.setHandler "proposal:create", (attrs, options) ->
     API.createProposal(attrs, options)
   
-  App.reqres.setHandler "proposal:description_fields", ->
+  App.reqres.setHandler "proposal:get_description_fields", ->
     API.proposalDescriptionFields()
-
-  App.vent.on 'proposal:deleted', (model) ->
-    API.removeProposal model
-
-  App.vent.on "proposals:fetched", (proposals) ->
-    API.addProposals proposals
 
   App.reqres.setHandler "proposals:bootstrap", (proposals_attrs) ->
     API.bootstrapProposals proposals_attrs
@@ -332,7 +324,7 @@
   App.reqres.setHandler "proposals:get", (fetch = false) ->
     API.getProposals fetch
 
-  App.reqres.setHandler "proposals:get:user", (model_id) ->
+  App.reqres.setHandler "proposals:get_by_user", (model_id) ->
     API.getProposalsByUser model_id
     
   App.reqres.setHandler "proposals:fetched_from_server?", ->
@@ -340,6 +332,14 @@
 
   App.reqres.setHandler 'proposals:totals', ->
     API.getTotalCounts()
+
+
+  # subscribes to these events
+  App.vent.on 'proposal:deleted', (model) ->
+    API.removeProposal model
+
+  App.vent.on "proposals:fetched", (proposals) ->
+    API.addProposals proposals
 
   App.vent.on "tenant:updated", ->
     API.tenantUpdated()
@@ -353,8 +353,3 @@
 
     if ConsiderIt.current_proposal
       App.request 'proposal:bootstrap', ConsiderIt.current_proposal
-
-
-    # @listenTo API.all_proposals, 'add', (p) ->
-    #   console.log 'Added', p
-    #   trace()

@@ -39,7 +39,7 @@
             ['.proposal_description_body', 'description', 'textarea'] ]
 
           editable_fields = _.union fields,
-            ([".proposal_detail_field-#{f}", f, 'textarea'] for f in App.request('proposal:description_fields'))          
+            ([".proposal_detail_field-#{f}", f, 'textarea'] for f in App.request('proposal:get_description_fields'))          
 
           Proposal.ProposalDescriptionView.editable_fields = editable_fields
 

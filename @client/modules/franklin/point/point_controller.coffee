@@ -43,7 +43,7 @@
       open_point_view = @getOpenPointView @options.model
 
       @listenTo open_point_view, 'show', =>
-        if App.request("user:current:logged_in?") && @options.model.get 'published'
+        if App.request("user:is_client_logged_in?") && @options.model.get 'published'
           follow_view = @setupFollowView()
 
           open_point_view.followRegion.show follow_view

@@ -358,7 +358,7 @@ test_expanding_points = (test) ->
   casper.click '[action="expand-toggle"]'
 
   test.assertExists '.points_are_expanded', 'points are expanded'
-  casper.HTMLCapture '.reasons', 
+  casper.HTMLCapture '.reasons_layout', 
     caption : "Expanded points"
 
   test.assertVisible '.sort_points', 'user can see the sort option'
@@ -375,6 +375,6 @@ test_expanding_points = (test) ->
 
   casper.click '[action="expand-toggle"]'
   test.assertDoesntExist '.points_are_expanded', 'points are unexpanded'
-  casper.HTMLCapture '.reasons', 
+  casper.HTMLCapture '.reasons_layout', 
     caption : "after unexpanding"
 

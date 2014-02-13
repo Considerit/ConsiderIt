@@ -92,7 +92,7 @@
   display: none
 
 .points_by_community[state="summary"], .points_by_community[state="results"]
-  .points-footer-region
+  .points_footer_region
     position: absolute
     bottom: $vertical_baseline / 2
     width: $point-content-width
@@ -171,7 +171,7 @@
     border-style: solid
 
   // bullet point
-  .newpoint_prompt:before, .newpoint-form:before
+  .newpoint_prompt:before, .newpoint_form:before
     content: '\2022'
     display: inline-block
     position: absolute
@@ -194,7 +194,7 @@
       left: 4px
       +font-size(-4)
 
-  .newpoint-form
+  .newpoint_form
     padding-top: $vertical_baseline / 2
     position: relative
     display: none
@@ -208,12 +208,12 @@
       left: -11px    
       +font-size(-4)
 
-  .newpoint-description
+  .newpoint_description
     width: 96%
     min-height: 55px
 
-  .newpoint-nutshell-wrap
-    .newpoint-nutshell
+  .newpoint_nutshell_wrap
+    .newpoint_nutshell
       width: 96%
       min-height: 55px
 

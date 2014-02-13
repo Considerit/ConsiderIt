@@ -172,7 +172,7 @@
         $open_point = @region.$el.find('.open_point')
         point_id = $open_point.data('id')
         @saved_point = App.request 'point:get', point_id
-        @comment_text = $open_point.find('.new-comment-body-field').val()
+        @comment_text = $open_point.find('.new_comment_body_field').val()
         $('body').trigger('click')
 
     restoreOpenPoint : ->
@@ -180,7 +180,7 @@
         _.delay =>
           App.navigate Routes.proposal_point_path(@saved_point.get('long_id'), @saved_point.id), {trigger : true}
           $open_point = @region.$el.find('.open_point')
-          $comment_field = $open_point.find('.new-comment-body-field')
+          $comment_field = $open_point.find('.new_comment_body_field')
           $comment_field.val @comment_text
           $comment_field.ensureInView {scroll: false}
         , 10

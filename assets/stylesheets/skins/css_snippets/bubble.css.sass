@@ -7,7 +7,7 @@ $banchor_adjustx: -24px
 
 %bubble
   border-radius: $bubble_border_radius
-  .t-bubble
+  .mouth_bubble
     font-size: 0
     line-height: 1
     position: absolute
@@ -17,12 +17,12 @@ $banchor_adjustx: -24px
 
 %bubble_right
   @extend %bubble
-  .t-bubble
+  .mouth_bubble
     right: $banchor_adjustx 
 
 %bubble_left
   @extend %bubble
-  .t-bubble
+  .mouth_bubble
     left: $banchor_adjustx 
 
 = bubble($light, $dark, $direction, $text_color: $base_text_color, $bg-color: $base_background_color, $include_bg: true)
@@ -39,22 +39,22 @@ $banchor_adjustx: -24px
   @else if $direction == right
     @extend %bubble_right
 
-  .t-bubble
+  .mouth_bubble
     
-    .t-bubble-inner
+    .mouth_bubble-inner
       fill: $light
       
-    .t-bubble-border
+    .mouth_bubble-border
       fill: $border_color
 
-    .t-bubble-spacing
+    .mouth_bubble_spacing
       fill: $bg-color
 
-    .t-bubble-main
+    .mouth_bubble-main
       fill: $light
       stroke: $dark
 
-    .t-bubble-adjust
+    .mouth_bubble-adjust
       fill: $light
 
 

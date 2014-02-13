@@ -87,7 +87,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
         casper.wait 1000, ->
           test.assertExists '.user-options-display', 'User is logged in'
 
-          @HTMLCapture '#user-nav', 
+          @HTMLCapture '#user_nav', 
             caption: 'Nav after login'
 
 
@@ -106,7 +106,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
 
           casper.wait 1000, ->
             test.assertExists '[action="login"]', 'User has successfully logged out'
-            @HTMLCapture '#user-nav', 
+            @HTMLCapture '#user_nav', 
               caption: 'logged out'
 
       casper.then ->

@@ -4,7 +4,7 @@
     template : '#tpl_decision_board_layout'
     className : 'decision_board_layout' 
     regions : 
-      headerRegion : '.decision-board-heading-region'
+      headerRegion : '.decision_board_heading_region'
       reasonsRegion : '.decision-board-points-region'
       stanceRegion : '.slider-region'
       # explanationRegion : '.position-explanation-region'

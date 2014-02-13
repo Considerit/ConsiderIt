@@ -26,7 +26,7 @@
     onShow : ->
       current_user = App.request 'user:current'
       if current_user.id == @model.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()
-        $editable = @$el.find('.comment-body')
+        $editable = @$el.find('.comment_body')
         $editable.editable 
           resource: 'comment'
           pk: @model.id
@@ -41,7 +41,7 @@
 
   class Comments.ClaimView extends Comments.DiscussionEntry
     template : '#tpl_claim_comment_view' 
-    className : 'claim-comment comment'
+    className : 'claim_comment comment'
 
 
     serializeData : ->

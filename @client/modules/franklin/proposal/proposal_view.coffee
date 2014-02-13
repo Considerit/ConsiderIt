@@ -14,10 +14,10 @@
       params
 
     regions: 
-      descriptionRegion : '.proposal-description-region'
-      stateToggleRegion : '.toggle-proposal-state-region'
+      descriptionRegion : '.proposal_description_region'
+      stateToggleRegion : '.toggle_proposal_state_region'
       histogramRegion : '.proposal_histogram_region'
-      reasonsRegion : '.proposal-reasons-region'
+      reasonsRegion : '.proposal_reasons_region'
 
     initialize : (options = {}) -> super options
 

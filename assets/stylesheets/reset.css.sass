@@ -6,32 +6,32 @@
 // LAYOUT
 //////////////////////////////////////////
 
-#t-bg
+#t_bg
   min-height: 100%
 
-#t-bg-content-top, #l-content-main-wrap
+#t_bg_content_top, #l_content_main_wrap
   min-height: 500px
 
 
 /* CONTAINERS */
 
-#l-wrap
+#l_wrap
   position: relative
   font-size: $base-font-size
 
-.l-header, #l-content, .l-footer
+.l_header, #l_content, .l_footer
   position: relative
 
-.l-heading-wrap, .l-footer-wrap
+.l_heading_wrap, .l_footer_wrap
   position: relative
 
-.l-header
+.l_header
   margin: 0 auto $vertical_baseline auto
   min-height: 32px
 
   //border-bottom: 1px solid white
 
-.l-heading-wrap
+.l_heading_wrap
   width: $content_width
   left: 50%
   margin-left: -$content_width/2
@@ -39,42 +39,42 @@
   padding: 0
   height: 2 * $vertical_baseline
 
-#l-content
+#l_content
   z-index: 2
   width: $page_width
   margin: auto
 
-#l-content-main
+#l_content_main
   position: relative  
   margin: 0 auto
 
-#l-content-main-wrap
+#l_content_main_wrap
   width: $content_width
   margin: auto
 
-.l-footer
+.l_footer
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
 
 
 
-#l-sticky-footer-region
+#l_sticky_footer_region
   position: fixed
   bottom: 0
   width: 100%
   z-index: 999
 
-.l-footer-wrap
+.l_footer_wrap
   width: $body_width
   position: relative
   margin: 0 auto
 
-.l-tooltip
+.l_tooltip
   display: none
 
-.tooltipster-content .l-tooltip
+.tooltipster_content .l_tooltip
   display: block
 
-.l-tooltip-title
+.l_tooltip_title
   padding: $vertical_baseline/4 $grid_gutter/2
 
 
@@ -247,13 +247,13 @@ blockquote
   +background-size(cover)
   background-image: url('/system/default_avatar/small_default-profile-pic.png')
 
-  &.avatar-anonymous
+  &.avatar_anonymous
     cursor: default
 
 
 $preloadersize_width: 32px
 $preloadersize_height: 10.5px
-#l-preloader
+#l_preloader
   width: $preloadersize_width
   height: $preloadersize_height
   left: 50%
@@ -262,7 +262,7 @@ $preloadersize_height: 10.5px
   margin-top: -$preloadersize_height/2
   position: absolute
 
-.loading-container
+.loading_container
   position: fixed
   top: 50%
   left: 50%

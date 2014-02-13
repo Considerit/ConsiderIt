@@ -1,6 +1,6 @@
 %script{ :type => "text/template", :id => "tpl_proposals_region_layout"}
-  #active-proposals-region
-  #past-proposals-region
+  #active_proposals_region
+  #past_proposals_region
 
 %script{ :type => "text/template", :id => "tpl_create_new_proposal"}  
   %button.new-proposal-submit.button
@@ -11,11 +11,11 @@
 %script{ :type => "text/template", :id => 'tpl_proposals_layout'}
   .proposals-create-region
 
-  .proposals-list-region
+  .proposals_list-region
 
   .proposals-operations
     .sort-proposals-region
-    .proposals-pagination-region
+    .proposals_pagination_region
 
   
 
@@ -33,7 +33,7 @@
     {{tenant.hibernation_message}}    
   (( } ))
 
-  %ul.proposals-list
+  %ul.proposals_list
 
 
 
@@ -50,12 +50,12 @@
 
 %script{ :type => "text/template", :id => "tpl_proposals_pagination"}
   (( if (data_loaded) { ))
-  %span.proposals-list-pagination-pages
+  %span.proposals_list_pagination_pages
     (( if (currentPage > 1 && false) { ))
-    %span.proposals-list-pagination-jump-left
-      %a.proposals-list-pagination-jump.button{:'action'=> 'proposals:first_page'}
+    %span.proposals_list_pagination_jump-left
+      %a.proposals_list_pagination_jump.button{:'action'=> 'proposals:first_page'}
         &laquo; First
-      %a.proposals-list-pagination-jump.button{:'action'=> 'proposals:previous_page'}
+      %a.proposals_list_pagination_jump.button{:'action'=> 'proposals:previous_page'}
         &laquo;
     (( } ))
     (( _.each (page_set, function (p) { ))
@@ -63,20 +63,20 @@
     %span.selected.superbutton
       {{ p }}
     (( } else { ))
-    %a.proposals-list-pagination-page.button{:'action' => 'proposals:goto_page', :'data-page' => "{{p}}"}
+    %a.proposals_list_pagination_page.button{:'action' => 'proposals:goto_page', :'data-page' => "{{p}}"}
       {{ p }} 
     (( } ))
     (( }); ))
     (( if (lastPage != currentPage && lastPage != 0 && false) { ))
-    %span.proposals-list-pagination-jump-right
-      %a.proposals-list-pagination-jump.button{:'action'=> 'proposals:next_page'}
+    %span.proposals_list_pagination_jump-right
+      %a.proposals_list_pagination_jump.button{:'action'=> 'proposals:next_page'}
         &raquo;
-      %a.proposals-list-pagination-jump.button{:'action'=> 'proposals:last_page'}
+      %a.proposals_list_pagination_jump.button{:'action'=> 'proposals:last_page'}
         Last &raquo;
 
     (( } ))
 
-  .proposals-list-pagination-current
+  .proposals_list_pagination_current
     %span.current
       {{ (currentPage - 1) * pageSize + 1 }}
     &ndash;
@@ -87,7 +87,7 @@
       {{ totalRecords }} 
     shown.
   (( } else if(has_more_models) { ))
-  %button.proposals-pagination-showmore.button{ :'action' => 'load-proposals' }
+  %button.proposals_pagination_showmore.button{ :'action' => 'load-proposals' }
     {{ prompt }} 
   (( } ))
 

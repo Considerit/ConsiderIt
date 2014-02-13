@@ -2,4 +2,4 @@
   
   class Show.Footer extends App.Views.ItemView
     template: "#tpl_footer"
-    className : 'l-footer-wrap'
+    className : 'l_footer_wrap'

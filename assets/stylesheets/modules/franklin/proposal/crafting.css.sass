@@ -23,7 +23,7 @@
 
 
 // The heading of the decision board
-.decision-board-heading-region, [state="crafting"][coming-from-state="summary"].transitioning .decision-board-heading-region
+.decision_board_heading_region, [state="crafting"][coming-from-state="summary"].transitioning .decision_board_heading_region
   width: $decision_board_width
   position: relative
   margin-left: -$grid_gutter / 2 - 2
@@ -31,7 +31,7 @@
   display: block
 
 [state="crafting"], [state="results"]
-  .decision-board-heading-region
+  .decision_board_heading_region
     display: none
 
 .decision_board_heading_view a
@@ -85,24 +85,24 @@ $slider_width: 283px
     text-align: center
 
       
-  %stance-label
+  %stance_label
     vertical-align: middle
     +font-size(0)
     div
       width: 100px
 
   .supporting_slider_label
-    @extend %stance-label
+    @extend %stance_label
     text-align: right
     padding-right: $grid_gutter
 
   .opposing_slider_label
-    @extend %stance-label
+    @extend %stance_label
     text-align: left
     padding-left: $grid_gutter
 
   .neutral_slider_label
-    @extend %stance-label
+    @extend %stance_label
     text-align: center
     +font-size(2)
     +transition(opacity .5s linear)

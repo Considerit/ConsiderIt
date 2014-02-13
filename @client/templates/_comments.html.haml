@@ -1,33 +1,33 @@
 %script{ :type => "text/template", :id => "tpl_comments_view" } 
 
-  .point-discussion-heading
+  .point_discussion_heading
     Discussion
 
-  %ul.point-comments
+  %ul.point_comments
 
-  .new-comment            
+  .new_comment            
 
     (( if( is_logged_in ) { ))    
-    %span.avatar.new-comment-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
+    %span.avatar.new_comment_avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.get('name')}}'s profile picture"}
     (( } else { ))
-    %span.avatar.new-comment-avatar
+    %span.avatar.new_comment_avatar
     (( } ))
 
 
-    .new-comment-body
+    .new_comment_body
 
       (( if( comments_open) { ))
 
-      %textarea.new-comment-body-field.is_counted{ :name => :body, :placeholder => 'Type your comment here...', :title => 'Type your comment here...' }
+      %textarea.new_comment_body_field.is_counted{ :name => :body, :placeholder => 'Type your comment here...', :title => 'Type your comment here...' }
       %span.count
         1000
 
       (( if( is_logged_in ) { ))
-      .new-comment-submit-wrap
-        %span.new-comment-civility-reminder
+      .new_comment_submit_wrap
+        %span.new_comment_civility_reminder
           Thanks for being civil!
 
-        %button.new-comment-submit.button
+        %button.new_comment_submit.button
           Add comment
 
       (( } else { ))
@@ -50,14 +50,14 @@
     This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.
   ((} else { ))
 
-  %a.avatar.comment-avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile picture", :'data-id' => "{{user.id}}", :'action' => "user_profile_page"}
+  %a.avatar.comment_avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile picture", :'data-id' => "{{user.id}}", :'action' => "user_profile_page"}
 
-  .comment-body-wrap
-    .comment-body
+  .comment_body_wrap
+    .comment_body
       {{body}}
 
-    .comment-footer
-      .comment-author
+    .comment_footer
+      .comment_author
         &ndash; 
         %a{ :href => "{{Routes.profile_path(user.id)}}", :'data-id' => "{{user.id}}", :'action' => "user_profile_page"}
           {{ user.name }}
@@ -75,11 +75,11 @@
         (( } )) 
 
       (( if(thanks.length > 0 ) { ))
-      .thank-given      
+      .thank_given      
 
         %ul
           (( thanks.each( function(thank){ ))
-          %li.l-thanks-item
+          %li.thanks_item
             %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{thank.get('user_id')}}", :id => "avatar-{{thank.get('user_id')}}", :class => "participant"}
           (( }); ))
         %span.given_thanks

@@ -78,14 +78,14 @@
 /////////////////////////
 // Point text
 
-.closed_point .point-nutshell
+.closed_point .point_nutshell
   +font-size(-1)
 
 .open_point
-  .point-nutshell, .point_description
+  .point_nutshell, .point_description
     padding-bottom: $vertical_baseline / 2
 
-  .point-nutshell
+  .point_nutshell
     +font-size(4)
 
   .point_description 
@@ -99,16 +99,16 @@
 // bullet points
 .closed_point.decision_board_point
 
-  .point-nutshell:before
+  .point_nutshell:before
     content: '\2022'
     position: absolute
     top: 0px
     +font-size(-3)
 
-  &.pro .point-nutshell:before
+  &.pro .point_nutshell:before
     left: -13px
 
-  &.con .point-nutshell:before
+  &.con .point_nutshell:before
     left: -10px
 
 
@@ -118,21 +118,21 @@
 /////////////////////////////////////////
 // point operations
 .open_point, .points_by_community[state="summary"]
-  .point-operations
+  .point_operations
     display: none
 
 .points_by_community[state="results"], .points_by_community[state="crafting"]
   .community_point
-    .point-operations
+    .point_operations
       visibility: hidden
 
     &:hover
-      .point-operations
+      .point_operations
         visibility: visible
 
 .closed_point
   &.community_point
-    .point-operations        
+    .point_operations        
       position: relative
 
       .open_point_link
@@ -140,18 +140,18 @@
 
 
     &.pro
-      .point-operations
+      .point_operations
         text-align: left
 
     &.con
-      .point-operations
+      .point_operations
         text-align: right
 
   &.decision_board_point
-    &:hover .point-operations
+    &:hover .point_operations
       visibility: visible
 
-    .point-operations
+    .point_operations
       visibility: hidden
       padding: $vertical_baseline/8 $grid_gutter
 
@@ -160,7 +160,7 @@
         margin: 0
         padding: 1px 8px
 
-    .point-remove
+    .point_remove
       margin-top: $grid_gutter/4
       padding: 0 $grid_gutter/2
 
@@ -169,7 +169,7 @@
 
 ///////////////////////////////////////
 
-.point-action
+.point_action
   display: inline-block
 
   i
@@ -181,7 +181,7 @@
 
 
 // point avatars
-.point-author-avatar
+.point_author_avatar
   display: inline-block
   position: relative
   border-radius: 8px
@@ -189,23 +189,23 @@
   width: $point-avatar-width - 2
   height: $point-avatar-width - 2
 
-.con .point-author-avatar
+.con .point_author_avatar
   float: right
 
-.closed_point.decision_board_point .point-avatar-region
+.closed_point.decision_board_point .point_avatar_region
   display: none
 
 
 ///////////
 // Discussion
-.point-discussion-region
+.point_discussion_region
   position: relative
 
-.point-discussion-heading
+.point_discussion_heading
   +font-size(2)
   margin: $vertical_baseline 0
 
-.point-comments
+.point_comments
   list-style: none outside none
 ////
 

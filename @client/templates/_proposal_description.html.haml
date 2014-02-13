@@ -12,7 +12,7 @@
 
     (( if(show_details){ ))
 
-    .proposal-details
+    .proposal_details
 
       = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
@@ -40,12 +40,12 @@
         (( }); ))
 
       (( if(url1 && $.trim(url1) != '') { ))
-      .proposal-links
+      .proposal_links
         %h3
           More information
         (( _.each([{field: url1, name: 'Link'} ], function(url) {  ))
         (( if( url.field && $.trim(url.field) != '' ){ ))
-        .proposal-url-field
+        .proposal_url_field
           %a{ :href => "{{url.field}}", :target => "_blank"}
             {{url.name}}
         (( } ))
@@ -55,5 +55,5 @@
       (( } ))
       
     (( } ))
-    .proposal-admin-region
-    .proposal-social_media-region
+    .proposal_admin_region
+    .proposal_social_media_region

@@ -10,7 +10,7 @@
       title : 'Hi! Please log in'
 
     attributes : -> 
-      class : if @options.fixed then 'user-accounts-layout-fixed' else 'user-accounts-layout-not-fixed'
+      class : if @options.fixed then 'user_accounts_layout_fixed' else 'user_accounts_layout_not_fixed'
 
   class Signin.FixedLayout extends Signin.Layout
 

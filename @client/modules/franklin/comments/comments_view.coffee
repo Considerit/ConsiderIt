@@ -25,7 +25,7 @@
     serializeData : ->
       current_user = App.request 'user:current'
       _.extend {}, 
-        is_logged_in : ConsiderIt.request 'user:current:logged_in?'
+        is_logged_in : ConsiderIt.request 'user:is_client_logged_in?'
         user : current_user
         comments_open : @options.proposal.isActive()
 

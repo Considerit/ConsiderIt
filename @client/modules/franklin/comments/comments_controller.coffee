@@ -24,7 +24,7 @@
         @listenTo layout, 'childview:revoke_thanks', (view) =>
           model = view.model
           current_user = App.request 'user:current'
-          thank = App.request 'thanks:get:user', model.name.charAt(0).toUpperCase() + model.name.slice(1), model.id, current_user.id
+          thank = App.request 'thanks:get:user', view.modelName, model.id, current_user.id
           thank = thank.destroy
             success : (model, response) ->
               layout.render()

@@ -65,12 +65,12 @@
       .thank
 
         (( if(can_thank && !user_thanked){ ))
-        %button.thank.button
+        %button.button{:action => 'thank-commenter'}
           thanks
 
         (( } else if(user_thanked){ ))
 
-        %a.unthank
+        %a.unthank{:action => 'unthank-commenter'}
           undo thank
         (( } )) 
 

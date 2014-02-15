@@ -40,8 +40,14 @@
     setupLayout : ->
       layout = @getLayout()
       @listenTo layout, 'user:update:requested', (data) =>
-        App.request "user:update_current_user", data.user
-        layout.render()
+        if data.result == 'successful'
+          App.request "user:update_current_user", data.user
+          layout.render()
+          toastr.success 'Settings updated'
+
+        else
+          toastr.error "Error, #{data.reason}."
+
       layout
 
     getLayout : ->

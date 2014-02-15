@@ -1,13 +1,15 @@
 @ConsiderIt.module "Franklin.Comments", (Comments, App, Backbone, Marionette, $, _) ->
   class Comments.DiscussionEntry extends App.Views.ItemView
     events : 
-      'click .thank' : 'giveThanks'
-      'click .unthank' : 'revokeThanks'
+      'click [action=thank-commenter]' : 'giveThanks'
+      'click [action=unthank-commenter]' : 'revokeThanks'
 
     giveThanks : (ev) ->
+      console.log 'THANK'
       @trigger 'give_thanks'
 
     revokeThanks : (ev) ->
+      console.log 'REVOKE!'
       @trigger 'revoke_thanks'
 
   class Comments.CommentView extends Comments.DiscussionEntry

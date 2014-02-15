@@ -5,16 +5,15 @@
       'click [action=unthank-commenter]' : 'revokeThanks'
 
     giveThanks : (ev) ->
-      console.log 'THANK'
       @trigger 'give_thanks'
 
     revokeThanks : (ev) ->
-      console.log 'REVOKE!'
       @trigger 'revoke_thanks'
 
   class Comments.CommentView extends Comments.DiscussionEntry
     template : '#tpl_comment_view'
-    className : 'comment'
+    className : 'plain_comment comment'
+    modelName : 'Comment'
 
     serializeData : ->
       current_user = App.request 'user:current'
@@ -44,7 +43,7 @@
   class Comments.ClaimView extends Comments.DiscussionEntry
     template : '#tpl_claim_comment_view' 
     className : 'claim_comment comment'
-
+    modelName : 'Assessable::Claim'
 
     serializeData : ->
       current_user = App.request 'user:current'
@@ -54,7 +53,7 @@
         assessment : @model.getAssessment()
         verdict : @model.getVerdict()
         thanks : @model.getThanks()
-        user_thanked : App.request 'thanks:exists_for_user', 'Claim', @model.id, current_user.id
+        user_thanked : App.request 'thanks:exists_for_user', 'Assessable::Claim', @model.id, current_user.id
         can_thank : current_user.isLoggedIn()
 
       params

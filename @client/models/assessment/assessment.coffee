@@ -103,7 +103,7 @@
       verdict
 
     getThanks : ->
-      @thanks = App.request 'thanks', 'Claim', @id
+      @thanks = App.request 'thanks', 'Assessable::Claim', @id
 
 
   class Entities.Claims extends App.Entities.Collection

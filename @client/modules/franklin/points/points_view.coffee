@@ -215,6 +215,7 @@
 
     serializeData : ->
       tenant = App.request 'tenant'
+      console.log @options.valence
       params =  
         label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true}) else tenant.getConLabel({capitalize:true})
         hide_label : "hide_name-#{@options.valence}"
@@ -282,10 +283,12 @@
     createPoint : (ev) ->
       $form = $(ev.currentTarget).closest('.newpoint_form')
 
+      console.log $form.find('#is_pro')
+
       point_attributes =
         nutshell : $form.find('.newpoint_nutshell').val()
         text : $form.find('.newpoint_description').val()
-        is_pro : $form.find('.newpoint-is_pro').val() == 'true'
+        is_pro : $form.find('#is_pro').val() == 'true'
         hide_name : $form.find('.newpoint-anonymous').is(':checked')
         comment_count : 0
 
@@ -294,7 +297,7 @@
       else if point_attributes.nutshell.length > 140
         toastr.error 'Sorry, the summary of your point must be less than 140 characters.'
       else
-        @trigger 'point:create:requested', point_attributes
+        @trigger 'point:please_create_point', point_attributes
         @cancelPoint {currentTarget: $form.find('.newpoint-cancel')}
 
 

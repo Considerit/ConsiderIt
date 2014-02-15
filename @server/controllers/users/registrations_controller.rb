@@ -132,10 +132,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
       #sign_in @user, :bypass => true if params[:user].has_key?(:password)
       render :json => results
-    else 
+    elsif User.find_by_email(params[:user][:email])
       render :json => {
         :result => 'failed',
-        :reason => 'could not save user'
+        :reason => 'that email is already tied to a different account'
+      }
+    else
+      render :json => {
+        :result => 'failed',
+        :reason => 'could not save your changes'
       }
     end
 

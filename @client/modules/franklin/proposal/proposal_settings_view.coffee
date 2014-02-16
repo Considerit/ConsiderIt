@@ -1,6 +1,6 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
 
-  class Proposal.AdminSettingsView extends App.Views.ItemView
+  class Proposal.ProposalSettingsView extends App.Views.ItemView
     template : '#tpl_proposal_admin_strip'
 
     serializeData : ->

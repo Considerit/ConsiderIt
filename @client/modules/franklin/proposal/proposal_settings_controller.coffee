@@ -1,5 +1,5 @@
 @ConsiderIt.module "Franklin.Proposal", (Proposal, App, Backbone, Marionette, $, _) ->
-  class Proposal.AdminController extends App.Controllers.StatefulController
+  class Proposal.ProposalSettingsController extends App.Controllers.StatefulController
 
     initialize : (options = {}) ->
       @model = options.model
@@ -45,5 +45,5 @@
         App.navigate Routes.root_path(), {trigger : true}
 
     getLayout : (model) ->
-      new Proposal.AdminSettingsView
+      new Proposal.ProposalSettingsView
         model : @model

@@ -9,30 +9,34 @@
 
   class Moderation.ModerationTabView extends App.Views.ItemView
     template : '#tpl_moderate_tab'
+    selected : null
 
     serializeData : ->
       unmoderated = {}
       for mc in @options.classes_to_moderate
-        unmoderated[mc] = _.size(@options.moderations[mc].where({status: null})) 
+        unmoderated[mc] = _.size @options.moderations[mc].filter( (m) -> !m.get('status') || m.get('status') == 2)
       
       params = 
         classes_to_moderate : @options.classes_to_moderate
         unmoderated : unmoderated
       params
 
-    onShow : ->
-      @$el.find('.moderation-tab:first').trigger('click')
+    onRender : ->
+      if !@selected
+        @selected = @$el.find('.moderation-tab:first').attr('class_name')
+
+      @$el.find("[class_name='#{@selected}']").trigger('click')
 
     events : 
       'click .moderation-tab.inactive' : 'tabChanged'
 
     tabChanged : (ev) ->
       $target = $(ev.currentTarget)
-      cls = $target.attr('class_name')
+      @selected = $target.attr('class_name')
       $target.siblings('.active').toggleClass('active inactive')
       $target.toggleClass('active inactive')
 
-      @trigger 'tab:changed', cls
+      @trigger 'tab:changed', @selected
 
 
   class Moderation.ModerationItemView extends App.Views.ItemView

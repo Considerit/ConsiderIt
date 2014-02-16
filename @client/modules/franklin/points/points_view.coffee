@@ -160,7 +160,7 @@
       'click [action="expand-toggle"]' : 'handleExpandToggle'
 
     sortList : (ev) ->
-      sort_by = $(ev.target).attr('target')
+      sort_by = $(ev.target).attr('action')
       @requestSort sort_by
       @selectSort()
       ev.stopPropagation()

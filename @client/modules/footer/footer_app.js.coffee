@@ -1,10 +1,10 @@
-@ConsiderIt.module "FooterApp", (FooterApp, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Footer", (Footer, App, Backbone, Marionette, $, _) ->
   @startWithParent = false
   
   API =
     show: ->
-      new FooterApp.Show.FooterShowController
+      new Footer.FooterController
         region: App.footerRegion
   
-  FooterApp.on "start", ->
+  Footer.on "start", ->
     API.show()

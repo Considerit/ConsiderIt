@@ -37,8 +37,7 @@ gem "remotipart"#, "~> 1.0.2"
 gem 'acts_as_tenant'
 
 # https://github.com/sferik/rails_admin
-#gem 'rails_admin' #, "~> 0.0.6"
-gem 'rails_admin', :git => 'git://github.com/sferik/rails_admin' #remove git reference after next version bump
+gem 'rails_admin' #, :git => 'git://github.com/sferik/rails_admin' #remove git reference after next version bump
 
 #https://github.com/ryanb/cancan
 gem 'cancan'
@@ -47,7 +46,7 @@ gem 'cancan'
 gem 'role_model'
 
 # https://github.com/thoughtbot/paperclip
-gem 'paperclip', "3.5.2"
+gem 'paperclip'
 gem 'paperclip-optimizer'
 
 # https://github.com/amatsuda/kaminari
@@ -63,7 +62,7 @@ gem "daemons"
 
 # https://github.com/cerebris/mailhopper
 #gem 'mailhopper'
-gem 'mailhopper' #, :git => 'git://github.com/youdonz/mailhopper', :branch => 'rails4'
+gem 'mailhopper' 
 
 # https://github.com/cerebris/delayed_mailhopper
 gem 'delayed_mailhopper'
@@ -91,10 +90,7 @@ gem "themes_for_rails", :git => 'git://github.com/tkriplean/themes_for_rails.git
 gem 'actionmailer-with-request'
 
 #https://github.com/meskyanichi/backup
-gem 'backup' #, "~>3.0.24"
-
-# https://github.com/philnash/bitly
-# gem 'bitly'
+gem 'backup'
 
 # https://github.com/mperham/dalli/
 gem 'dalli'
@@ -148,6 +144,6 @@ gem 'aws-sdk'
 gem 'coffee-rails' #, "~> 3.2.2"
 gem 'uglifier'
 gem "asset_sync"
-gem 'compass' #, '0.13.alpha.12'
+gem 'compass' #, '1.0.0.alpha.18'
 gem 'compass-rails' #, '>= 1.0.2'
 gem 'sassy-buttons'

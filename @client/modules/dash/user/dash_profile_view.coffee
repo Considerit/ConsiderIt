@@ -29,8 +29,8 @@
       @$el.find('.dashboard-profile-activity-summary').removeClass('selected')
 
       if !already_selected
-        target = $(ev.currentTarget).attr('target')    
-        @$el.find("[action='#{target}-details']").slideDown()
+        action = $(ev.currentTarget).attr('action')    
+        @$el.find("[action='#{action}-details']").slideDown()
         $(ev.currentTarget).addClass('selected')
 
 

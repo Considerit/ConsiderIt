@@ -100,7 +100,7 @@
       App.module("Auth").start()
 
     header_app.start()
-    App.module("FooterApp").start()
+    App.module("Footer").start()
 
     theme_app = App.module 'Theme'
 

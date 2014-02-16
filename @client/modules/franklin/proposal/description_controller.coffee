@@ -73,7 +73,7 @@
         @trigger 'proposal:setting_changed'
 
     getAdminController : (region) ->
-      new Proposal.AdminController
+      new Proposal.ProposalSettingsController
         model : @model
         region : region
         parent_state : @state

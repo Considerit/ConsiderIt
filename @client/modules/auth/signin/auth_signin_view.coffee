@@ -83,6 +83,11 @@
       'change #password_none' : 'passwordNoneChanged'
       'validated #user_email,#user_password' : 'checkIfSubmitEnabled'
       'click [action="create-account"]' : 'registerAccount'
+      'click [action="login-submit"]' : 'submitLogin'
+
+    submitLogin : (ev) ->
+      $(ev.currentTarget).parents('form').submit()
+      ev.stopPropagation()
 
     setInput : (has_password) ->
       if has_password

@@ -94,7 +94,7 @@
 
     nav_app = App.module 'NavApp'
 
-    header_app = App.module "HeaderApp"
+    header_app = App.module "Header"
 
     @listenTo header_app, 'start', => 
       App.module("Auth").start()

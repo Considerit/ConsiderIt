@@ -141,7 +141,8 @@
         
         (( } ))
         .user-accounts-finish-wrap
-          = f.submit "Log me in", :disabled => 'disabled', :class => 'user-accounts-login-submit superbutton', :'action' => "login-submit"
+          %button.user-accounts-login-submit.superbutton{:disabled => 'disabled', :type => 'button', :'action' => "login-submit"}
+            Log me in
 
 
 

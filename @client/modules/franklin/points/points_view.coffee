@@ -215,7 +215,6 @@
 
     serializeData : ->
       tenant = App.request 'tenant'
-      console.log @options.valence
       params =  
         label : if @options.valence == 'pro' then tenant.getProLabel({capitalize:true}) else tenant.getConLabel({capitalize:true})
         hide_label : "hide_name-#{@options.valence}"

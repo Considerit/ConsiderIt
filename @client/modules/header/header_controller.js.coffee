@@ -1,6 +1,6 @@
-@ConsiderIt.module "HeaderApp.Show", (Show, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Header", (Header, App, Backbone, Marionette, $, _) ->
   
-  class Show.HeaderShowController extends App.Controllers.Base
+  class Header.HeaderController extends App.Controllers.Base
     
     initialize: ->
       layout = @getLayout()
@@ -25,11 +25,11 @@
     setupNav : ->
 
     getNav : ->
-      new Show.NavView
+      new Header.NavView
         #crumbs : crumbs
 
     getLogo : ->
-      new Show.LogoView
+      new Header.LogoView
 
     getLayout: ->
-      new Show.Layout
+      new Header.Layout

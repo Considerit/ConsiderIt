@@ -1,9 +1,9 @@
-@ConsiderIt.module "HeaderApp", (HeaderApp, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Header", (Header, App, Backbone, Marionette, $, _) ->
   @startWithParent = false
   
   API =
     show: ->
-      @controller = new HeaderApp.Show.HeaderShowController
+      @controller = new Header.HeaderController
         region: App.headerRegion
 
     getUserNav: ->
@@ -12,5 +12,5 @@
   App.reqres.setHandler "userNavRegion", ->
     API.getUserNav()
 
-  HeaderApp.on "start", ->
+  Header.on "start", ->
     API.show()

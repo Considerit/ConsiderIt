@@ -283,8 +283,6 @@
     createPoint : (ev) ->
       $form = $(ev.currentTarget).closest('.newpoint_form')
 
-      console.log $form.find('#is_pro')
-
       point_attributes =
         nutshell : $form.find('.newpoint_nutshell').val()
         text : $form.find('.newpoint_description').val()

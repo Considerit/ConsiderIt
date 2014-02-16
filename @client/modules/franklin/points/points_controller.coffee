@@ -248,7 +248,6 @@
         @setupListView list_view
 
         @listenTo footer_view, 'point:please_create_point', (attrs) =>
-          console.log attrs
           _.extend attrs, 
             proposal_id : @options.proposal.get('id')
             long_id : @options.proposal.id

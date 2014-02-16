@@ -123,7 +123,7 @@
                 = f.label "moderate_#{model}_mode_2", "Post #{model.capitalize} immediately, but withhold email notifications until moderation"
               .field          
                 = f.radio_button "moderate_#{model}_mode", 3
-                = f.label "moderate_#{model}_mode_3", "Post #{model.capitalize} immediately"
+                = f.label "moderate_#{model}_mode_3", "Post #{model.capitalize} immediately, catch bad ones afterwards"
 
 
 
@@ -333,7 +333,7 @@
 
       .field
         = f.check_box :published, :checked => true
-        = f.label :published, 'Publish proposals immediately'
+        = f.label :published, 'Publish proposals immediately, catch bad ones afterwards'
         .sublabel
           The user id to be treated as the "Proposer" for the imported proposals.
 

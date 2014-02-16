@@ -120,15 +120,16 @@
       'click .moderate-filter' : 'toggleFilter'
 
     toggleFilter : (ev) ->
+      console.log 'toggle filter', ev
       $target = $(ev.currentTarget)
 
-      if $target.attr('target') == 'all' && $target.is('.selected')
+      if $target.attr('action') == 'all' && $target.is('.selected')
         return
 
       if $target.is('.selected')
         filter = 'all'
       else
-        filter = $target.attr('target')
+        filter = $target.attr('action')
 
       @setFilter filter
 

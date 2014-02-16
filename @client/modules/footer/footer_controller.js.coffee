@@ -1,6 +1,6 @@
-@ConsiderIt.module "FooterApp.Show", (Show, App, Backbone, Marionette, $, _) ->
+@ConsiderIt.module "Footer", (Footer, App, Backbone, Marionette, $, _) ->
   
-  class Show.FooterShowController extends App.Controllers.Base
+  class Footer.FooterController extends App.Controllers.Base
     
     initialize: ->
       showView = @getShowView()
@@ -13,4 +13,4 @@
         @region.$el.fadeIn()
     
     getShowView: ->
-      new Show.Footer
+      new Footer.FooterView

@@ -64,6 +64,7 @@
             view.model.set data
             id = view.model.id
             @filterCollection @filter, moderations, moderations.collection, cls
+            tabs.render()
 
           @listenTo moderations, 'filter:changed', (filter) => 
             @filter = filter

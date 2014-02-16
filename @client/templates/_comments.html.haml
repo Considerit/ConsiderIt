@@ -45,14 +45,24 @@
 
 %script{ :type => "text/template", :id => "tpl_comment_view" }   
   
-  (( if( moderation_status == 0 ){ ))
-  %i
-    This comment has been hidden because it contains a personal attack, is inappropriate (e.g. advertising), or is wildly offtopic.
-  ((} else { ))
 
   %a.avatar.comment_avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile picture", :'data-id' => "{{user.id}}", :'action' => "user_profile_page"}
 
   .comment_body_wrap
+
+    (( if( moderation_status == 0 ){ ))
+    %i.fa.fa-exclamation-triangle
+    %span.it
+      This comment has been removed because it violates community guidelines. 
+    ((} else { ))
+
+
+    (( if( moderation_status == 2 ){ ))
+    %i.fa.fa-flag
+    %span.it
+      This commenter has been asked to revise the following comment.
+    (( } ))
+
     .comment_body
       {{body}}
 
@@ -87,6 +97,6 @@
       (( } ))
 
 
-  (( } ))
+    (( } ))
 
 

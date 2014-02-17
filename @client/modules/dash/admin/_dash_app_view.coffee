@@ -4,7 +4,6 @@
     dash_name : 'app_settings'
     checkboxes : [
       #['account', 'assessment_enabled', 'account_assessment_enabled'],
-      ['account', 'enable_moderation', 'account_enable_moderation'],
       #['account', 'enable_position_statement', 'account_enable_position_statement'],
       ['account', 'enable_user_conversations', 'account_enable_user_conversations'], 
       ['account', 'enable_sharing', 'account_enable_sharing'],
@@ -13,11 +12,7 @@
 
     ]
 
-    radioboxes : [
-      ['account', 'moderate_points_mode', 'account_moderate_points_mode'],
-      ['account', 'moderate_comments_mode', 'account_moderate_comments_mode'],
-      ['account', 'moderate_proposals_mode', 'account_moderate_proposals_mode'],      
-    ]
+    radioboxes : []
 
     serializeData : ->
       @model.attributes

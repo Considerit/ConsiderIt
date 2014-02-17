@@ -1,9 +1,18 @@
 @import "variables"
 @import "variables_skin"
+@import "library"
 
 .dashboard-moderate
 
-  #tabs
+  .launch_moderation_settings
+    padding-left: $grid_gutter / 2
+    +font-size(-4)
+    color: lighten($base_text_color, 10%)
+    a
+      text-decoration: underline
+      color: lighten($base_text_color, 10%)
+
+  #moderation_tabs_region
     margin-left: 15px
     a 
       //+font-size(0)
@@ -31,9 +40,6 @@
         font-weight: bold
 
 
-  .moderate-content
-    //border-radius: 8px
-
   &.hide_moderated .moderated
     display: none
 
@@ -54,7 +60,7 @@
     &:hover
       color: $base_text_color
 
-  .moderate-row
+  .moderation_list_item_view
     padding: $vertical_baseline $grid_gutter
     border-bottom: 1px solid #aaa
 

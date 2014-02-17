@@ -85,9 +85,7 @@ namespace :alerts do
       existing_moderations = {}
       objs_to_moderate = {}
 
-      Moderation.classes_to_moderate.each do |mc|
-
-        next if accnt["moderate_#{mc.name.downcase}s_mode"] == 0
+      accnt.classes_to_moderate.each do |mc|
 
         class_name = mc.name.split('::')[-1]
 

@@ -2,13 +2,21 @@
 
   class Moderation.ModerationLayout extends App.Dash.View
     dash_name : 'moderate'
+
     regions :
-      tabsRegion : '#tabs'
-      moderationsRegion : '#moderations'
+      tabsRegion : '#moderation_tabs_region'
+      moderationsRegion : '#moderation_content_region'
+
+    events : 
+      'click [action="launch-moderation-settings"]' : 'moderationSettingsRequested'
+
+    moderationSettingsRequested : (ev) ->
+      @trigger 'moderation:please_show_settings'
 
 
   class Moderation.ModerationTabView extends App.Views.ItemView
     template : '#tpl_moderate_tab'
+    className : 'moderation_tab_view'
     selected : null
 
     serializeData : ->
@@ -42,7 +50,7 @@
   class Moderation.ModerationItemView extends App.Views.ItemView
     template : '#tpl_moderate_item_view'
     tagName : 'div'
-    className : 'moderate-row'
+    className : 'moderation_list_item_view'
 
     radioboxes : [
       ['account', 'moderate_points_mode', 'account_moderate_points_mode']
@@ -113,6 +121,7 @@
     template : '#tpl_moderate_list_view'
     itemView : Moderation.ModerationItemView
     itemViewContainer : '.moderate-content'
+    className : 'moderation_compositeview'
 
     setFilter : (filter) ->
       @$el.find('.moderate-filter').removeClass('selected')
@@ -124,7 +133,6 @@
       'click .moderate-filter' : 'toggleFilter'
 
     toggleFilter : (ev) ->
-      console.log 'toggle filter', ev
       $target = $(ev.currentTarget)
 
       if $target.attr('action') == 'all' && $target.is('.selected')
@@ -141,3 +149,46 @@
   class Moderation.EmailDialogView extends App.Dash.EmailDialogView
     dialog: 
       title: 'Emailing author...'
+
+  class Moderation.EditModerationSettingsView extends App.Dash.View
+    dash_name : 'moderation_settings'
+
+    dialog:
+      title: 'Moderation settings'
+
+    checkboxes : [
+      ['account', 'enable_moderation', 'account_enable_moderation'],
+    ]
+
+    radioboxes : [
+      ['account', 'moderate_points_mode', 'account_moderate_points_mode'],
+      ['account', 'moderate_comments_mode', 'account_moderate_comments_mode'],
+      ['account', 'moderate_proposals_mode', 'account_moderate_proposals_mode'],      
+    ]
+
+    serializeData : -> @model.attributes
+
+    onShow : ->
+      super
+      @$el.find('.l-expandable-option').each (idx, $expandable) =>
+        @toggleExpandable 
+          currentTarget : $expandable
+
+
+    events : 
+      'ajax:complete .dashboard-edit-account' : 'moderationSettingsUpdated'
+      'click .l-expandable-option input' : 'toggleExpandable'
+
+    moderationSettingsUpdated : (data, response, xhr) ->
+      result = $.parseJSON(response.responseText)
+      @trigger 'moderation:settings_updated', result
+
+    toggleExpandable : (ev) ->
+      $expandable_option = $(ev.currentTarget).closest('.l-expandable-option')
+      $expandable_area = $expandable_option.siblings('.l-expandable-area')
+
+      if $expandable_option.find('input').is(':checked')
+        $expandable_area.slideDown()
+      else
+        $expandable_area.slideUp()
+

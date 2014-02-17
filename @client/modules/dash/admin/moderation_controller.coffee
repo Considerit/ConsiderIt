@@ -48,6 +48,20 @@
 
       layout = @getLayout()
       @listenTo layout, 'show', ->
+
+        @listenTo layout, 'moderation:please_show_settings', ->
+          settings_view = @getModerationSettingsView()
+
+          @listenTo settings_view, 'moderation:settings_updated', (data) =>
+            dialog.close()
+            App.request "tenant:update", data.account
+            @classes_to_moderate = App.request("tenant").classesToModerate()
+            @preload()
+
+
+          dialog = App.request 'dialog:new', settings_view,
+            class : 'moderation_settings_dialog'
+
         tabs = new Moderation.ModerationTabView
           classes_to_moderate : (c[0] for c in @classes_to_moderate)
           moderations : @moderations
@@ -104,6 +118,10 @@
       new Moderation.EmailDialogController
         model : moderation.moderated_object
         parent_controller : @
+
+    getModerationSettingsView : ->
+      new Moderation.EditModerationSettingsView
+        model : App.request('tenant')
 
   class Moderation.EmailDialogController extends App.Dash.EmailDialogController
 

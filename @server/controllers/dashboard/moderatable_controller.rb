@@ -12,17 +12,17 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
   def index
     authorize! :index, Moderation
 
-    if !current_tenant.enable_moderation
-      redirect_to root_path, :notice => "Moderation is disabled for this application."
-      return
-    end
+    # if !current_tenant.enable_moderation
+    #   redirect_to root_path, :notice => "Moderation is disabled for this application."
+    #   return
+    # end
 
     moderatable_classes = []
-    @classes_to_moderate = Moderation.classes_to_moderate
+    classes_to_moderate = current_tenant.classes_to_moderate   
 
     @existing_moderations = {}
-    @objs_to_moderate = {}
-    @classes_to_moderate.each do |mc|
+    objs_to_moderate = {}
+    classes_to_moderate.each do |mc|
       class_name = mc.name.split('::')[-1]
 
       moderatable_classes.push({ :name => class_name, :text_fields => mc.moderatable_fields })
@@ -40,8 +40,8 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
       end
       objects = ActiveRecord::Base.connection.select(qry)
 
-      @objs_to_moderate[class_name] = objects
-      objs = @objs_to_moderate[class_name].map{|x| x["id"]}.compact
+      objs_to_moderate[class_name] = objects
+      objs = objs_to_moderate[class_name].map{|x| x["id"]}.compact
 
       records = Moderation.where(:moderatable_type => mc.name)
       if objs.length > 0
@@ -59,7 +59,7 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
 
     rendered_admin_template = params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil
 
-    render :json => {:objs_to_moderate => @objs_to_moderate, :classes_to_moderate => moderatable_classes, :existing_moderations => @existing_moderations, :admin_template => rendered_admin_template}
+    render :json => {:objs_to_moderate => objs_to_moderate, :classes_to_moderate => moderatable_classes, :existing_moderations => @existing_moderations, :admin_template => rendered_admin_template}
   end
 
   # create a new moderation

@@ -96,37 +96,6 @@
       //   .sublabel
       //     Allow users to write a summary of their position, in addition to their pro/con list and stance. 
 
-      %fieldset
-        %legend 
-          Content Moderation
-
-        .field.l-expandable-option  
-          = f.check_box :enable_moderation
-          = f.label :enable_moderation, 'Enable Moderation'
-          .sublabel
-            Whether you wish to moderate user contributed content like comments and pro and con points. 
-
-        .l-expandable-area
-          - ['points', 'comments', 'proposals'].each do |model|
-            %fieldset
-              %legend
-                #{model.capitalize} moderation settings
-
-              .field          
-                = f.radio_button "moderate_#{model}_mode", 0
-                = f.label "moderate_#{model}_mode_0", "Do not moderate #{model.capitalize}"
-              .field          
-                = f.radio_button "moderate_#{model}_mode", 1
-                = f.label "moderate_#{model}_mode_1", "Do not publicly post #{model.capitalize} until moderation"
-              .field          
-                = f.radio_button "moderate_#{model}_mode", 2
-                = f.label "moderate_#{model}_mode_2", "Post #{model.capitalize} immediately, but withhold email notifications until moderation"
-              .field          
-                = f.radio_button "moderate_#{model}_mode", 3
-                = f.label "moderate_#{model}_mode_3", "Post #{model.capitalize} immediately, catch bad ones afterwards"
-
-
-
 
       %fieldset
         %legend

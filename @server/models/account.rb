@@ -49,4 +49,23 @@ class Account < ActiveRecord::Base
     header_text ||= 'The main callout to participants'
     header_details_text ||= 'This is where you\'ll add more details about why this forum exists, and whom you want to participate.'
   end
+
+  def classes_to_moderate
+
+    classes = []
+
+    if enable_moderation && moderate_points_mode > 0
+      classes << Point
+    end
+    if enable_moderation && moderate_comments_mode > 0
+      classes << Comment
+    end
+    if enable_moderation && moderate_proposals_mode > 0
+      classes << Proposal
+    end
+
+    classes
+
+  end
+
 end

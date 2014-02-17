@@ -51,7 +51,7 @@
 
     (( } ))
 
-    (( if( (is_moderator ) && tenant.get('enable_moderation') ) { ))
+    (( if( (is_moderator ) ) { ))
     %li
       %a.sidebar_link{:href => "{{Routes.dashboard_moderate_path()}}", :'action' => 'moderate'}
         Moderate content

@@ -4,8 +4,8 @@
     template: "#tpl_homepage_layout"
     className : 'homepage_layout'
     regions :
-      headerRegion : '#homepage-header-region'
-      proposalsRegion : '#homepage-proposals-region'
+      headerRegion : '#homepage_header_region'
+      proposalsRegion : '#homepage_proposals_region'
 
 
   class Homepage.HomepageHeadingView extends App.Views.ItemView
@@ -29,12 +29,12 @@
 
     fileChanged : (ev) ->
       if @submit
-        $save_button = @$el.find(".homepage_account_image-form button")
+        $save_button = @$el.find(".homepage_account_image_form button")
         $save_button.text 'Save image'
         $save_button.show() if @submit
 
     fileUpdated : (ev) ->
-      $save_button = @$el.find(".homepage_account_image-form button")
+      $save_button = @$el.find(".homepage_account_image_form button")
       $save_button.hide()
 
     onShow : ->

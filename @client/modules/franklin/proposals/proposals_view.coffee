@@ -13,9 +13,9 @@
     className: 'proposals_layout'
 
     regions: 
-      createRegion : '.proposals-create-region'
-      proposalsRegion : '.proposals_list-region'
-      sortRegion : '.sort-proposals-region'
+      createRegion : '.proposals_create_region'
+      proposalsRegion : '.proposals_list_region'
+      sortRegion : '.sort_proposals_region'
       paginationRegion : '.proposals_pagination_region'
 
   class Proposals.CreateNewProposalView extends App.Views.ItemView

@@ -3,8 +3,8 @@
   .point_content>
     .close_open_point
       %i.fa.fa-times-circle
-    .point-summary-region{ :'action' => "open-point", :'data-id' => "{{id}}" }
-    .open-point-region
+    .point_summary_region{ :'action' => "open-point", :'data-id' => "{{id}}" }
+    .open_point_region
 
 %script{ :type => "text/template", :id => "tpl_point_avatar_area"}
   (( if (hide_name || user.name == 'Anonymous' ) { ))
@@ -44,8 +44,8 @@
         %i.fa.fa-small.fa-list
         Add to your pro/con list
 
-    .point-follow-region.point_action
-    .point-assessment-region.point_action
+    .point_follow_region.point_action
+    .point_assessment_region.point_action
 
 
   .point_discussion_region

@@ -6,7 +6,7 @@
   .homepage_main
 
     (( if(is_manager) { ))
-    = form_for :account, :url => account_path, :remote => true, :multipart => true, :method => :put, :html => { :class => 'homepage_account_image-form'} do |f|
+    = form_for :account, :url => account_path, :remote => true, :multipart => true, :method => :put, :html => { :class => 'homepage_account_image_form'} do |f|
 
       (( var csrfparam = $('meta[name="csrf-param"]').attr('content'), csrftoken = $('meta[name="csrf-token"]').attr('content'); ))
 

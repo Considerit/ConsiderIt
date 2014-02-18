@@ -5,10 +5,10 @@
     className : 'decision_board_layout' 
     regions : 
       headerRegion : '.decision_board_heading_region'
-      reasonsRegion : '.decision-board-points-region'
-      stanceRegion : '.slider-region'
+      reasonsRegion : '.decision_board_points_region'
+      stanceRegion : '.slider_region'
       # explanationRegion : '.position-explanation-region'
-      footerRegion : '.decision-board-footer-region'
+      footerRegion : '.decision_board_footer_region'
 
     serializeData : ->
       tenant = App.request 'tenant'
@@ -99,8 +99,8 @@
     className : 'decision_board_points_layout'
 
     regions : 
-      decisionBoardProsRegion : '.pros_on_decision_board-region'
-      decisionBoardConsRegion : '.cons_on_decision_board-region'
+      decisionBoardProsRegion : '.pros_on_decision_board_region'
+      decisionBoardConsRegion : '.cons_on_decision_board_region'
 
   class Proposal.DecisionBoardSlider extends App.Views.ItemView
     template : '#tpl_decision_board_slider'

@@ -9,8 +9,8 @@
 
     regions :
       headerRegion : '.point_avatar_region'
-      bodyRegion : '.point-summary-region'
-      openPointRegion : '.open-point-region'
+      bodyRegion : '.point_summary_region'
+      openPointRegion : '.open_point_region'
 
     serializeData : ->
       params = _.extend {}, @model.attributes, 
@@ -82,8 +82,8 @@
     template : '#tpl_open_point'
     className : 'open_point_layout'
     regions :
-      followRegion : '.point-follow-region'
-      assessmentRegion : '.point-assessment-region'
+      followRegion : '.point_follow_region'
+      assessmentRegion : '.point_assessment_region'
       discussionRegion : '.point_discussion_region'
 
     serializeData : ->

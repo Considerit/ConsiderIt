@@ -5,7 +5,7 @@
     template: '#tpl_points_layout'
 
     regions : 
-      headerRegion : '.points-heading-region'
+      headerRegion : '.points_heading_region'
       listRegion : '.points_list_region'
       footerRegion : '.points_footer_region'
 

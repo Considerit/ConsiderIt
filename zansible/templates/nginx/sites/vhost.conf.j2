@@ -26,7 +26,7 @@ server {
   root {{ app_home }}/public;
   passenger_enabled on;
   rails_spawn_method smart;
-  rails_env production;
+  rails_env {{ code.environment }};
 
   location ~ ^/(sitemaps)/ {
     gzip_static on;

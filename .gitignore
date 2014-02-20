@@ -33,10 +33,12 @@ zansible/templates/ssh/github
 zansible/hosts/group_vars/chalkboardit
 zansible/hosts/group_vars/considerit
 zansible/hosts/group_vars/chlkit
+zansible/hosts/group_vars/workbus
 zansible/hosts/group_vars/iweb
 
 zansible/hosts/chalkboardit
 zansible/hosts/chlkit
+zansible/hosts/workbus
 zansible/hosts/considerit
 zansible/hosts/iweb
 

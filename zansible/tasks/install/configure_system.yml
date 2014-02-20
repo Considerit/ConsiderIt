@@ -11,7 +11,7 @@
   sudo: False
 
 - name: Proper ownership of home files
-  shell: chown ${user}:${user} /home/${user} -R
+  shell: chown ${user}:${user} ${app_home} -R
 
 - name: Configure sudoers
   lineinfile: dest=/etc/sudoers backup=yes state=present regexp='^%{{user}}' insertafter=EOF line='%{{user}} ALL=(ALL) ALL'

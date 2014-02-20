@@ -16,7 +16,7 @@
     - include: tasks/install/install_deps.yml
     - include: tasks/install/install_memcached.yml
     - include: tasks/install/install_mysql.yml
-    - include: tasks/install/configure_github.yml
+    - include: tasks/install/configure_system.yml
     - include: tasks/deploy/install_considerit.yml
     - include: tasks/install/install_ruby.yml
     - include: tasks/install/install_passenger.yml

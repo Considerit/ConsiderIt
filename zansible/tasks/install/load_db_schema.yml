@@ -6,6 +6,6 @@
 
 # this is dangerous! It will blow out all data on a production server, it should only be run on a new install!
 - name: Load database schema
-  shell: $source && cd $app_home && RAILS_ENV=$rails_environment bundle exec rake db:schema:load
+  shell: $source && cd $app_home && RAILS_ENV={{code.environment}} bundle exec rake db:schema:load
   when: countAppDatabaseTables.stdout == "0"
   sudo: False

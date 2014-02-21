@@ -18,5 +18,5 @@
   sudo: False
 
 - name: Cache avatars
-  shell: $source && cd $app_home && RAILS_ENV=$rails_environment bundle exec rake cache:avatars
+  shell: $source && cd $app_home && RAILS_ENV={{code.environment}} bundle exec rake cache:avatars
   sudo: False

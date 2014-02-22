@@ -405,14 +405,17 @@ a
   @extend %on_footer
 
 // dashboard
-#dashboard .dashboard-profile-activity-summary
-  background-color: $complementary_background_color
-  color: $complementary_text_color
+#dashboard 
 
-  &:hover, &.selected
+  .dashboard-profile-activity-summary, .dashboard-profile-influence-summary
+    background-color: $complementary_background_color
     color: $complementary_text_color
-    background-color: emphasize($complementary_background_color, 10%)
 
+    &:hover, &.selected
+      color: $complementary_text_color
+      background-color: emphasize($complementary_background_color, 10%)
+
+  
 
 .table-striped tbody tr:nth-child(2n+1) td
   background-color: emphasize($base_background_color, 5%)

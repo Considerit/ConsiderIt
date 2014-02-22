@@ -71,10 +71,10 @@ task :run_acceptance_tests do
 
       spec_path = Rails.root.join("test/tests/")
       for test in Dir["#{spec_path}/**/*.coffee"]
+        system 'echo "flush_all" | nc 127.0.0.1 11211'
 
         system "bundle exec rake load_test_data"
-
-
+        
         system("casperjs test \
                 --testhost=http://localhost:#{app_port} \
                 --includes=test/extensions/html_output.coffee,test/extensions/library.coffee \

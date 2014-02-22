@@ -71,6 +71,8 @@ module ConsiderIt
     config.paths["app/controllers/concerns"] << "@server/controllers/concerns"
     config.paths["app/models/concerns"] << "@server/models/concerns"
 
+    config.paths["lib/tasks"] << "test"
+
     config.paths["config/initializers"] << "@server/notifications"
     asset_paths = ["@client", "assets", "assets/stylesheets/vendor/admin/rails_admin", "assets/fonts"]
     for asset_path in asset_paths

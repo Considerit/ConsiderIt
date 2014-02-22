@@ -1,8 +1,6 @@
 ###
 Tests actions by a lurker. Click around homepage and proposals.
 
-Execute these tests twice, once with a user that is logged in already, and once with anon.
-
 Not yet tested here:
   - clicking inactive proposals first
   - proper sort order of the proposals given different sorts
@@ -18,117 +16,120 @@ Not yet tested here:
 # used in these tests when a specific proposal is needed to be referenced
 example_proposal = "wash_i_522"
 
-casper.test.begin 'Lurker can poke around homepage', 13, (test) ->
+casper.test.begin 'Lurker can poke around homepage', 26, (test) ->
 
-  #TODO: loop here, once with logged in user, once without
-  casper.start "http://localhost:8787/", ->
+  test_poking_around_homepage = (is_logged_in) ->
+    state_suffix = if is_logged_in then ' when logged in' else ' when logged out'
 
     casper.then ->
-      casper.wait 1000, ->
-        @HTMLStep "Homepage can be mucked about"
+      casper.waitUntilVisible '[role="proposal"]', ->
+        @HTMLStep "Homepage can be mucked about" + state_suffix
 
         @HTMLCapture 'body', 
-          caption: 'Full homepage, different sizes'
+          caption: 'Full homepage, different sizes' + state_suffix
           sizes: [ [1200, 900], [600, 500], [1024, 768] ]
 
         @HTMLCapture '[role="proposal"]', 
-          caption: 'One of the proposals'
+          caption: 'One of the proposals' + state_suffix
 
         @HTMLCapture '#active_proposals_region', 
-          caption: 'Active proposals'
+          caption: 'Active proposals' + state_suffix
 
         assert_homepage_loaded test
 
     casper.then ->
-      @HTMLStep "load some more proposals"
+      casper.HTMLStep "load some more proposals" + state_suffix
 
-      @click '#active_proposals_region [action="load-proposals"]'
-      @wait 10000, ->
+      casper.click '#active_proposals_region [action="load-proposals"]'
+      casper.waitUntilVisible '[action="proposals:goto_page"]', ->
         @HTMLCapture '#active_proposals_region', 
-          caption: 'Active proposals'
+          caption: 'Active proposals' + state_suffix
 
-        test.assertExists '[action="proposals:goto_page"]', 'pagination is shown after loading proposals'
+        test.assertExists '[action="proposals:goto_page"]', 'pagination is shown after loading proposals' + state_suffix
         @HTMLCapture '.proposals-operations',
-          caption: 'Proposals pagination after loading more'
+          caption: 'Proposals pagination after loading more' + state_suffix
 
-        @click '#past_proposals_region [action="load-proposals"]'
-        @wait 10000, ->
-          test.assertExists '#past_proposals_region [action="proposals:goto_page"]', 'pagination for inactive proposals is shown after loading inactive proposals'
+        casper.click '#past_proposals_region [action="load-proposals"]'
+        casper.waitUntilVisible '#past_proposals_region [action="proposals:goto_page"]', ->
+          test.assertExists '#past_proposals_region [action="proposals:goto_page"]', 'pagination for inactive proposals is shown after loading inactive proposals' + state_suffix
 
     casper.then ->
-      casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
-        @HTMLStep "Homepage can be accessed from different page"
-        test.assertExists '[action="go-home"]', 'Opportunity to navigate to homepage'
+      casper.open("http://localhost:8787/#{example_proposal}").waitUntilVisible '[action="go-home"]', ->
+        @HTMLStep "Homepage can be accessed from different page" + state_suffix
+        test.assertExists '[action="go-home"]', 'Opportunity to navigate to homepage' + state_suffix
         @click '[action="go-home"]'
-        @wait 1000, ->
+        @waitWhileSelector '[action="go-home"]', ->
           assert_homepage_loaded test
 
+  casper.ExecuteLoggedInAndLoggedOut "http://localhost:8787/", test_poking_around_homepage
 
   casper.run ->
     test.done() 
 
+casper.test.begin 'Lurker can poke around a proposal results page', 74, (test) ->
+
+  execute_histogram_tests = (state, state_suffix) =>
+    casper.HTMLStep "#{state} histogram #{state_suffix}"
+
+    test.assertElementCount '.histogram_bar .histogram_bar_users', 7, 'Has seven histogram bars'
+    if state == 'hover'
+      casper.mouse.move '.histogram_bar:first-of-type .histogram_bar_users'     
+    else
+      casper.mouse.click '.histogram_bar:first-of-type .histogram_bar_users'  
+      casper.mouse.move 'body'
+
+    casper.wait 4000, ->
+      @HTMLCapture '[role="proposal"]', 
+        caption : "#{state} histogram bar" + state_suffix
+
+      test.assertSelectorHasText '.points_heading_view', 'Pros', "Pros present in pros header when #{state}" + state_suffix
+      test.assertSelectorHasText '.points_heading_view', 'upport', "Supporter is present in pros header when #{state}" + state_suffix
 
 
-casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) ->
-
-  #TODO: loop here, once with logged in user, once without
-  casper.start "http://localhost:8787/", ->
+  test_poking_results_page = (is_logged_in) ->
 
     #TODO: loop, once going to active proposal, next to an inactive proposal
     #TODO: loop, proposal with activity and without activity
 
+    state_suffix = if is_logged_in then ' when logged in' else ' when logged out'
+
     casper.then -> 
-      @wait 1000, ->
-        @HTMLStep 'Results page can be accessed from homepage'
-        test.assertExists '[role="proposal"] .points_by_community[state="summary"]', 'Peer reasons exists in collapsed form'
+      casper.waitUntilVisible '[role="proposal"]', ->
+        @HTMLStep "Results page can be accessed from homepage" + state_suffix
+        test.assertExists '[role="proposal"] .points_by_community[state="summary"]', 'Peer reasons exists in collapsed form' + state_suffix
         @click '[role="proposal"]:first-of-type .points_by_community[state="summary"]:first-of-type'
-        @wait 5000, ->
-          @HTMLCapture 'body', 
-            caption : 'The results page'
+        casper.waitUntilVisible '.points_by_community[state="results"]', ->
+          casper.waitWhileVisible '.transitioning', ->
+            @HTMLCapture 'body', 
+              caption : 'The results page' + state_suffix
 
-          assert_in_results_state test
+            assert_in_results_state test
 
     casper.then ->
 
-      casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
-        @HTMLStep "Results page can be accessed from crafting page"
-        test.assertExists '[action="view-results"]', 'Opportunity to navigate to results page'
+      casper.open("http://localhost:8787/#{example_proposal}").waitUntilVisible '[action="view-results"]', ->
+        @HTMLStep "Results page can be accessed from crafting page" + state_suffix
+        test.assertExists '[action="view-results"]', 'Opportunity to navigate to results page' + state_suffix
         @click '[action="view-results"]'
-        @wait 1000, ->
-          assert_in_results_state test
+        casper.waitUntilVisible '.points_by_community[state="results"]', ->
+          casper.waitWhileVisible '.transitioning', ->
+            assert_in_results_state test
 
     casper.then ->
-      casper.open("http://localhost:8787/#{example_proposal}/results").wait 5000, ->
-        @HTMLStep "Results page can be directly opened"
-        assert_in_results_state test
-
-
-    execute_histogram_tests = (state) =>
-      @HTMLStep "#{state} histogram"
-
-      if state == 'hover'
-        casper.mouse.move '.histogram_bar:first-of-type .histogram_bar_users'     
-      else
-        @mouse.click '.histogram_bar:first-of-type .histogram_bar_users'  
-        @mouse.move 'body'
-
-      @wait 250, ->
-        test.assertSelectorHasText '.points_heading_view', 'Pros', "Pros present in pros header when #{state}"
-        test.assertSelectorHasText '.points_heading_view', 'upport', "Supporter is present in pros header when #{state}"
-
-        @HTMLCapture '[role="proposal"]', 
-          caption : "#{state} histogram bar"
+      casper.open("http://localhost:8787/#{example_proposal}/results").waitUntilVisible '.points_by_community[state="results"]', ->
+        casper.waitWhileVisible '.transitioning', ->
+          @HTMLStep "Results page can be directly opened" + state_suffix
+          assert_in_results_state test
 
     # hover over histogram; then click
     casper.then ->
-      execute_histogram_tests 'hover'
+      execute_histogram_tests 'hover', state_suffix
 
     casper.then ->
-      execute_histogram_tests 'click'
-
+      execute_histogram_tests 'click', state_suffix
 
     casper.then ->
-      @HTMLStep 'hover over a point'
+      @HTMLStep 'hover over a point' + state_suffix
 
       @mouse.move 'body'
       point_includers = @evaluate ->
@@ -139,80 +140,93 @@ casper.test.begin 'Lurker can poke around a proposal results page', 35, (test) -
       @mouse.move '[role="point"]'
       @wait 200, ->
         @HTMLCapture '[role="proposal"]', 
-          caption : "Hovering over a point"
+          caption : "Hovering over a point" + state_suffix
 
         includers_hidden = @evaluate -> 
           hidden = -> $(this).css('opacity') == '0' || $(this).css('visibility') == 'hidden'
           return $(".histogram_layout .avatar:visible").filter(hidden).length
 
-        test.assertEqual total_avatars - includers_hidden, point_includers, 'Only includers shown on point hover'
+        test.assertEqual total_avatars - includers_hidden, point_includers, 'Only includers shown on point hover' + state_suffix
 
 
     casper.then ->
-      test_open_point test
+      test_open_point test, state_suffix
 
     casper.then ->
-      test_expanding_points test
+      test_expanding_points test, state_suffix
+
+
+  casper.ExecuteLoggedInAndLoggedOut "http://localhost:8787/", test_poking_results_page
 
   casper.run ->
     test.done() 
 
 
-casper.test.begin 'Lurker can poke around the proposal crafting page', 33, (test) ->
+casper.test.begin 'Lurker can poke around the proposal crafting page', 66, (test) ->
 
-  #TODO: loop here, once with logged in user, once without
+  test_poking_crafting_page = (is_logged_in) ->
+    state_suffix = if is_logged_in then ' when logged in' else ' when logged out'
 
-  casper.start "http://localhost:8787", ->
-    @wait(1000).then ->
-      @HTMLStep "Crafting page can be navigated to from homepage"
-      test.assertExists '[role="proposal"] [action="craft-opinion"]', 'Opportunity to add one\'s opinion'
+    casper.waitUntilVisible('[role="proposal"]').then ->
+      @HTMLStep "Crafting page can be navigated to from homepage" + state_suffix
+      test.assertExists '[role="proposal"] [action="craft-opinion"]', 'Opportunity to add one\'s opinion' + state_suffix
       @click '[role="proposal"]:first-of-type [action="craft-opinion"]:first-of-type'
-      @wait 5000, ->
-        assert_in_crafting_state test
-
-    casper.then ->
-      casper.open("http://localhost:8787/#{example_proposal}/results").wait 5000, ->
-        @HTMLStep "Crafting page can be accessed from results page"
-
-        test.assertExists '[role="proposal"] [action="craft-opinion"]', 'Opportunity to add one\'s opinion'
-        @click '[role="proposal"] [action="craft-opinion"]:first-of-type'
-        @wait 5000, ->
+      @waitUntilVisible '[state="crafting"] [action="submit-opinion"]', ->
+        casper.waitWhileVisible '.transitioning', ->
           assert_in_crafting_state test
 
     casper.then ->
-      casper.open("http://localhost:8787/#{example_proposal}").wait 5000, ->
-        @HTMLStep "Crafting page can be directly opened"
+      casper.open("http://localhost:8787/#{example_proposal}/results").waitUntilVisible '.points_by_community[state="results"]', ->
+        casper.waitWhileVisible '.transitioning', ->
 
-        @HTMLCapture 'body', 
-          caption: 'Full crafting page, different sizes'
-          sizes: [ [1200, 900], [600, 500], [1024, 768] ]
+          @HTMLStep "Crafting page can be accessed from results page" + state_suffix
 
-        assert_in_crafting_state test
+          test.assertExists '[role="proposal"] [action="craft-opinion"]', 'Opportunity to add one\'s opinion' + state_suffix
+          @click '[role="proposal"] [action="craft-opinion"]:first-of-type'
+          @waitUntilVisible '[state="crafting"] [action="submit-opinion"]', ->
+            casper.waitWhileVisible '.transitioning', ->
+              assert_in_crafting_state test
 
     casper.then ->
-      test_open_point test
+      casper.open("http://localhost:8787/#{example_proposal}").waitUntilVisible '[state="crafting"] [action="submit-opinion"]', ->
+        casper.waitWhileVisible '.transitioning', ->
+
+          @HTMLStep "Crafting page can be directly opened" + state_suffix
+
+          @HTMLCapture 'body', 
+            caption: 'Full crafting page, different sizes' + state_suffix
+            sizes: [ [1200, 900], [600, 500], [1024, 768] ]
+
+          assert_in_crafting_state test
 
     casper.then ->
-      test_expanding_points test
+      test_open_point test, state_suffix
+
+    casper.then ->
+      test_expanding_points test, state_suffix
+
+
+  casper.ExecuteLoggedInAndLoggedOut "http://localhost:8787/", test_poking_crafting_page
+
 
   casper.run ->
     test.done() 
 
 example_user = 262
-example_user_with_proposal = 1
+example_user_with_proposal = 1701
 
-casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
+casper.test.begin 'Lurker can poke around a user profile', 28, (test) ->
   casper.start "http://localhost:8787/#{example_proposal}", ->
 
-    casper.wait(5000).then ->
+    casper.waitUntilVisible('[action="user_profile_page"]').then ->
       @HTMLStep "Profile page can be accessed from other page"
       test.assertExists '[action="user_profile_page"]', 'User profile link exists'
-      @click('[action="user_profile_page"]:first-of-type')
-      casper.wait 5000, ->
+      @click('.points_by_community [action="user_profile_page"]:first-of-type')
+      casper.waitUntilVisible '.dashboard-profile-influence-summary', ->
         assert_user_profile_loaded test
 
     casper.then ->      
-      casper.open("http://localhost:8787/dashboard/users/#{example_user}/profile").wait 5000, ->
+      casper.open("http://localhost:8787/dashboard/users/#{example_user}/profile").waitUntilVisible '.dashboard-profile-influence-summary', ->
         @HTMLStep "Profile page can be directly opened"
 
         @HTMLCapture 'body', 
@@ -232,7 +246,7 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
 
         @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
 
-        casper.wait 5000, ->
+        casper.waitUntilVisible '.open_point', ->
 
           assert_point_open test
 
@@ -240,61 +254,64 @@ casper.test.begin 'Lurker can poke around a user profile', 34, (test) ->
             assert_user_profile_loaded test
 
     casper.then ->
-      casper.open("http://localhost:8787/dashboard/users/#{example_user}/profile").wait 5000, ->
-        @HTMLStep "Access opinions from profile"
-        @click('[action="opinions"]')
-        casper.wait 200, ->
-          test.assertVisible '.dashboard-profile-activity-substance-wrap', 'Has some votes listed'
-          test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a vote"
-          entity_id = @evaluate ->             
-            return $(".dashboard-profile-activity-action:visible a:first").attr('data-id')
+      casper.open("http://localhost:8787/dashboard/users/#{example_user}/profile").waitUntilVisible '[action="opinions"]', ->
+        casper.wait 100, ->
+          @HTMLStep "Access opinions from profile"
+          @click('[action="opinions"]')
+          casper.wait 200, ->
+            test.assertVisible '.dashboard-profile-activity-substance-wrap', 'Has some votes listed'
+            test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a vote"
+            entity_id = @evaluate ->             
+              return $(".dashboard-profile-activity-action:visible a:first").attr('data-id')
 
-          @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
-          casper.wait 5000, ->
-            @HTMLCapture 'body', 
-              caption: 'opinion page, accessed from profile'
+            @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
+            casper.waitUntilVisible '.user_opinion', ->
+              @HTMLCapture 'body', 
+                caption: 'opinion page, accessed from profile'
 
-            assert_opinion_open test
+              assert_opinion_open test
 
-            casper.back().wait 200, ->
-              assert_user_profile_loaded test
-
-    casper.then ->
-      casper.open("http://localhost:8787/dashboard/users/#{example_user_with_proposal}/profile").wait 5000, ->
-        @HTMLStep "Access proposals from profile"
-        @click('[action="proposals"]')
-        casper.wait 200, ->
-          test.assertVisible '.dashboard-profile-activity-substance-wrap', 'Has some proposals listed'
-          test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a proposal"
-
-          entity_id = @evaluate ->             
-            return $(".dashboard-profile-activity-action:visible a:first").attr('data-id')
-
-          @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
-
-          casper.wait 5000, ->
-            assert_in_results_state test
-
-            casper.back().wait 200, ->
-              assert_user_profile_loaded test
+              casper.back().wait 200, ->
+                assert_user_profile_loaded test
 
     casper.then ->
-      casper.open("http://localhost:8787/dashboard/users/#{example_user}/profile").wait 5000, ->
-        @HTMLStep "Access comments from profile"
-        @click('[action="comments"]')
-        casper.wait 1000, ->
-          test.assertVisible '.dashboard-profile-activity-substance-wrap', 'Has some comments listed'
-          test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a comment"
+      casper.open("http://localhost:8787/dashboard/users/#{example_user_with_proposal}/profile").waitUntilVisible '[action="proposals"]', ->
+        casper.wait 100, ->
+          @HTMLStep "Access proposals from profile"
+          @click('[action="proposals"]')
+          casper.wait 200, ->
+            test.assertVisible '.dashboard-profile-activity-substance-wrap', 'Has some proposals listed'
+            test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a proposal"
 
-          entity_id = @evaluate ->             
-            return $(".dashboard-profile-activity-action:visible a:first").attr('data-id')
+            entity_id = @evaluate ->             
+              return $(".dashboard-profile-activity-action:visible a:first").attr('data-id')
 
-          @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
-          casper.wait 5000, ->
-            assert_comment_open test, entity_id
+            @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
 
-            casper.back().wait 200, ->
-              assert_user_profile_loaded test
+            casper.waitUntilVisible '[state="results"]', ->
+              assert_in_results_state test
+
+              casper.back().wait 200, ->
+                assert_user_profile_loaded test
+
+    casper.then ->
+      casper.open("http://localhost:8787/dashboard/users/#{example_user}/profile").waitUntilVisible '[action="comments"]', ->
+        casper.wait 100, ->
+          @HTMLStep "Access comments from profile"
+          @click('[action="comments"]')
+          casper.waitUntilVisible '.dashboard-profile-activity-substance-wrap', ->
+            test.assertVisible '.dashboard-profile-activity-substance-wrap', 'Has some comments listed'
+            test.assertVisible '.dashboard-profile-activity-action a', "Has a link to a comment"
+
+            entity_id = @evaluate ->             
+              return $(".dashboard-profile-activity-action:visible a:first").attr('data-id')
+
+            @click(".dashboard-profile-activity-action a[data-id='#{entity_id}']")
+            casper.waitUntilVisible '.open_point', ->
+              assert_comment_open test, entity_id
+
+              casper.back().wait 200, ->
+                assert_user_profile_loaded test
 
 
   casper.run ->
@@ -328,7 +345,7 @@ assert_in_crafting_state = (test) ->
 
 assert_user_profile_loaded = (test) ->
   test.assertElementCount '.dashboard-profile-activity-summary', 4, "there are four activity blocks"
-  test.assertExists '.dashboard-profile-influence-summary', 'There is an influence tracker'
+  #test.assertExists '.dashboard-profile-influence-summary', 'There is an influence tracker'
 
 assert_point_open = (test) ->
   test.assertVisible '.point_description', 'Point details are visible'
@@ -341,40 +358,40 @@ assert_comment_open = (test, comment_id) ->
 assert_opinion_open = (test) ->
   test.assertVisible '.user_opinion-reasons', 'Viewing other user opinion works'
 
-test_open_point = (test) ->
-  casper.HTMLStep 'open a point'
+test_open_point = (test, state_suffix = '') ->
+  casper.HTMLStep 'open a point' + state_suffix
   casper.mouse.click '[role="point"]'
-  casper.wait 1000, ->
+  casper.waitUntilVisible '.open_point', ->
     assert_point_open test
     #TODO: if logged in, can thank and comment; if not, cannot thank or comment
     casper.HTMLCapture '.open_point', 
-      caption : "Opened point"
+      caption : "Opened point" + state_suffix
 
     casper.mouse.click '.close_open_point'
-    test.assertDoesntExist '.open_point', 'point closes'
+    test.assertDoesntExist '.open_point', 'point closes' + state_suffix
 
-test_expanding_points = (test) ->
-  casper.HTMLStep 'expand points'
+test_expanding_points = (test, state_suffix = '') ->
+  casper.HTMLStep 'expand points' + state_suffix
   casper.click '[action="expand-toggle"]'
 
-  test.assertExists '.points_are_expanded', 'points are expanded'
+  test.assertExists '.points_are_expanded', 'points are expanded' + state_suffix
   casper.HTMLCapture '.reasons_layout', 
     caption : "Expanded points"
 
-  test.assertVisible '.sort_points', 'user can see the sort option'
+  test.assertVisible '.sort_points', 'user can see the sort option' + state_suffix
   casper.mouse.move '.sort_points_label'
 
-  test.assertVisible '.sort_points_menu', 'user can see the sort menu on hover'
+  test.assertVisible '.sort_points_menu', 'user can see the sort menu on hover' + state_suffix
 
   casper.HTMLCapture '.points_are_expanded', 
     caption : "Hovering over sort"
 
   casper.click '.sort_points .sort_points_menu_option [action="persuasiveness"]'
   casper.HTMLCapture '.points_are_expanded', 
-    caption : "after clicking persuasiveness sort"
+    caption : "after clicking persuasiveness sort" + state_suffix
 
   casper.click '[action="expand-toggle"]'
-  test.assertDoesntExist '.points_are_expanded', 'points are unexpanded'
+  test.assertDoesntExist '.points_are_expanded', 'points are unexpanded' + state_suffix
   casper.HTMLCapture '.reasons_layout', 
-    caption : "after unexpanding"
+    caption : "after unexpanding" + state_suffix
 

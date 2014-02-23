@@ -25,6 +25,8 @@ restart.txt
 
 test/data/test.sql.bz2
 
+node_modules
+
 zansible/templates/seed_data/avatars.zip
 zansible/templates/seed_data/considerit.sql.bz2
 zansible/templates/ssl/*

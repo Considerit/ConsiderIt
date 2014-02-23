@@ -5,3 +5,7 @@
 - name: Make bin of casperjs
   shell: ln -sf $userhome/casperjs/bin/casperjs /usr/local/bin/casperjs
   sudo: True
+
+- name: Install underscore
+  shell: npm install underscore
+  sudo: False

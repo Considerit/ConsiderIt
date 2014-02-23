@@ -1,3 +1,6 @@
+require('../library/casper')
+require('../library/asserts')
+
 ###
 Tests authentication. Create a new account. Logout. Then log back in with that account.
 
@@ -74,7 +77,7 @@ casper.test.begin 'Authentication tests', 8, (test) ->
 
   # verify logged in
   casper.thenClick('[action="paperwork_complete"]').waitForSelector '.user-options-display', ->
-    test.assertExists '.user-options-display', 'User is logged in'
+    test.assertLoggedIn()
 
     @HTMLCapture '#user_nav', 
       caption: 'Nav after login'
@@ -92,7 +95,8 @@ casper.test.begin 'Authentication tests', 8, (test) ->
       @click '[action="logout"]'
 
       @waitUntilVisible '[action="login"]', ->
-        test.assertExists '[action="login"]', 'User has successfully logged out'
+        test.assertLoggedOut()
+
         @HTMLCapture '#user_nav', 
           caption: 'logged out'
 

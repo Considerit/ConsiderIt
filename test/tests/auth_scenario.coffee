@@ -36,100 +36,83 @@ sign in
 
 casper.test.begin 'Authentication tests', 8, (test) ->
 
-  casper.start "http://localhost:8787/", ->
+  casper.start "http://localhost:8787/"
 
-    casper.wait 1000, ->
-      
-      casper.then ->
-        test.assertExists '[action="login"]', "there is an option for logging in"
-        casper.HTMLCapture '[action="login"]', 
-          caption: 'Login opportunity'
+  casper.waitUntilVisible '[action="login"]', ->    
+    test.assertExists '[action="login"]', "there is an option for logging in"
+    @HTMLCapture '[action="login"]', 
+      caption: 'Login opportunity'
 
+  # start to create a new account
+  casper.thenClick '[action="login"]', ->
+    test.assertExists '.auth_overlay', "Create account screen appears"
+    @HTMLCapture '.auth_overlay',
+      caption: 'login screen'
 
-      casper.then ->
-        # start to create a new account
-        @mouse.click '[action="login"]'
-        test.assertExists '.auth_overlay', "Create account screen appears"
-        @HTMLCapture '.auth_overlay',
-          caption: 'login screen'
+    @click 'input#user_email'
 
-        @mouse.click 'input#user_email'
+    @sendKeys 'input#user_email', 'testy_mctesttest@local.dev'
 
-        @sendKeys 'input#user_email', 'testy_mctesttest@local.dev'
+    @click 'input#password_none'
 
+    @HTMLCapture '.auth_overlay',
+      caption: 'login screen after input'
 
-        @mouse.click 'input#password_none'
+  # complete paperwork for new user
+  casper.thenClick('[action="create-account"]').waitForSelector '.user-accounts-complete-paperwork-form', -> 
+    test.assertExists '.user-accounts-complete-paperwork-form', 'Finish paperwork screen appears'
 
-        @HTMLCapture '.auth_overlay',
-          caption: 'login screen after input'
+    @sendKeys 'input#user_name', 'Testiffer McMuffin'
 
-        @mouse.click '[action="create-account"]'
+    @sendKeys 'input#user_password', '1234567890'
 
-      casper.then -> 
-        # complete paperwork for new user
-        test.assertExists '.user-accounts-complete-paperwork-form', 'Finish paperwork screen appears'
+    @click 'input#pledge1'
+    @click 'input#pledge2'
 
-        @sendKeys 'input#user_name', 'Testiffer McMuffin'
+    @HTMLCapture '.auth_overlay', 
+      caption : 'Account paperwork screen'
 
-        @sendKeys 'input#user_password', '1234567890'
+  # verify logged in
+  casper.thenClick('[action="paperwork_complete"]').waitForSelector '.user-options-display', ->
+    test.assertExists '.user-options-display', 'User is logged in'
 
-        @mouse.click 'input#pledge1'
-        @mouse.click 'input#pledge2'
-        @mouse.click 'input#pledge3'
+    @HTMLCapture '#user_nav', 
+      caption: 'Nav after login'
 
-        @HTMLCapture '.auth_overlay', 
-          caption : 'Account paperwork screen'
+  # logout
+  casper.then ->
+    @mouse.move '.user-options'
 
-        @mouse.click '[action="paperwork_complete"]'
+    @waitUntilVisible '[action="logout"]', ->
+      @HTMLCapture 'body', 
+        caption: 'user dropdown options'
 
-      casper.then ->
-        # verify logged in
-        casper.wait 1000, ->
-          test.assertExists '.user-options-display', 'User is logged in'
+      test.assertVisible '[action="logout"]', 'logout is visible'
 
-          @HTMLCapture '#user_nav', 
-            caption: 'Nav after login'
+      @click '[action="logout"]'
 
+      @waitUntilVisible '[action="login"]', ->
+        test.assertExists '[action="login"]', 'User has successfully logged out'
+        @HTMLCapture '#user_nav', 
+          caption: 'logged out'
 
-      casper.then ->
-        # logout
+  # now login with that new user
+  casper.thenClick('[action="login"]').waitForSelector '.auth_overlay', ->
+    test.assertExists '.auth_overlay', "Login screen appears"
 
-        @mouse.move '.user-options'
+    @click 'input#user_email'
 
-        casper.wait 500, ->
-          @HTMLCapture 'body', 
-            caption: 'user dropdown options'
+    @sendKeys 'input#user_email', 'testy_mctesttest@local.dev'
 
-          test.assertVisible '[action="logout"]', 'logout is visible'
+    @sendKeys 'input#user_password', '1234567890'
 
-          @mouse.click '[action="logout"]'
+    @HTMLCapture '.auth_overlay',
+      caption: 'login screen after input'
 
-          casper.wait 1000, ->
-            test.assertExists '[action="login"]', 'User has successfully logged out'
-            @HTMLCapture '#user_nav', 
-              caption: 'logged out'
+    @click '[action="login-submit"]'
 
-      casper.then ->
-        # now login with that new user
-        @mouse.click '[action="login"]'
-        test.assertExists '.auth_overlay', "Login screen appears"
-
-        @mouse.click 'input#user_email'
-
-        @sendKeys 'input#user_email', 'testy_mctesttest@local.dev'
-
-        @sendKeys 'input#user_password', '1234567890'
-
-        @HTMLCapture '.auth_overlay',
-          caption: 'login screen after input'
-
-        @mouse.click '[action="login-submit"]'
-
-        casper.wait 1000, ->
-          test.assertExists '.user-options-display', 'User is logged in'
-
-
-
+    @wait 1000, ->
+      test.assertExists '.user-options-display', 'User is logged in'
 
   casper.run ->
     test.done() 

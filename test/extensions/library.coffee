@@ -41,26 +41,32 @@ casper.ConsiderIt.logout = ->
   #   casper.mouse.click '[action="logout"]'
 
 
+
 casper.ExecuteLoggedInAndLoggedOut = (location, callback) ->
+  casper.start location
 
-  casper.start location, ->
+  casper.wait 5000, -> 
+    casper.ConsiderIt.logout()
 
-    casper.then -> 
-      casper.wait(5000).then -> 
-        casper.ConsiderIt.logout()
+  casper.then ->
+    callback.call casper, false # run tests while not logged in
 
+  casper.thenOpen(location).waitUntilVisible '#l_wrap', ->
+    if casper.exists '[action="login"]'
       casper.then ->
-        callback false # run tests while not logged in
+        id = Math.floor((Math.random()*100000)+1)
+        casper.ConsiderIt.createNewAccount "Testy #{id}", "testy_mctesttest_#{id}@testing.dev", '123124124243'
 
-    casper.then ->
-      casper.open(location).waitUntilVisible '#l_wrap', ->
-        if casper.exists '[action="login"]'
-          casper.then ->
-            id = Math.floor((Math.random()*100000)+1)
-            casper.ConsiderIt.createNewAccount "Testy #{id}", "testy_mctesttest_#{id}@testing.dev", '123124124243'
+      casper.wait 2500, ->
+        callback.call casper, true # run tests while logged in
+    else
+      callback.call casper, true
 
-          casper.wait 2500, ->
-            callback true # run tests while logged in
-        else
-          callback true
+casper.waitUntilStateTransitioned = (state, callback) ->
+  casper.waitUntilVisible "[state='#{state}']", ->
+    casper.waitWhileVisible '.transitioning', ->
+      casper.wait 200, ->
+        callback.call casper
+
+
 

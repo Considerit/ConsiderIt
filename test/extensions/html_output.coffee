@@ -7,6 +7,18 @@ casper.on "page.error", (msg, trace) ->
 casper.on "resource.error", (er) ->
   casper.writeHTML "<div class='resource_error entry'>Failed to load #{er.url}: #{er.errorCode} - #{er.errorString}</div>"
 
+
+# Capture screens from all fails
+casper.test.on "fail", (failure) ->
+  casper.HTMLCapture 'body'
+
+# Capture screens from timeouts from e.g. @waitUntilVisible
+# Requires RC3 or higher.
+casper.options.onWaitTimeout = ->
+  casper.HTMLCapture 'body'
+
+
+
 ## Overrides the standard assertion processor in order to insert HTML output. 
 ## Don't worry, the standard processor is invoked as well. 
 casper.test._processAssertionResult = casper.test.processAssertionResult

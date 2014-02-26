@@ -35,6 +35,8 @@ sign in
   + points and other created items this session should have their opinion references updated.
 - on signout, clear written points, opinions, reset views
 
+- do from different areas -- on comment, fact-check, upper right, submitposition
+
 ###
 
 casper.test.begin 'Authentication tests', 8, (test) ->
@@ -81,6 +83,13 @@ casper.test.begin 'Authentication tests', 8, (test) ->
 
     @HTMLCapture '#user_nav', 
       caption: 'Nav after login'
+
+  #refresh page to see if still logged in
+  casper.reload ->
+    @HTMLStep 'Refreshing to check if still logged in'
+    @waitForSelector '.user-options-display', ->
+      test.assertLoggedIn()
+
 
   # logout
   casper.then ->

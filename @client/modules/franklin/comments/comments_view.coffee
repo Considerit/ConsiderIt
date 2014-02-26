@@ -20,7 +20,7 @@
       view
 
     events : 
-      'click .new_comment_submit' : 'createNew'
+      'click [action="submit-comment"]' : 'createNew'
 
     serializeData : ->
       current_user = App.request 'user:current'

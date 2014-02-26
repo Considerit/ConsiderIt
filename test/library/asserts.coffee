@@ -31,7 +31,7 @@ _.extend casper.test,
     @assertExists '.points_by_community[state="crafting"]', 'Pros and cons on margins' + state_suffix
     @assertExists '.slider_container', 'Slider present' + state_suffix
     @assertElementCount '.add_point_drop_target', 2, 'Drop targets present' + state_suffix
-    @assertElementCount '.newpoint', 2, 'Add points present' + state_suffix
+    @assertElementCount '[action="write-point"]', 2, 'Add points present' + state_suffix
     @assertExists '[action="view-results"]', 'Opportunity to navigate to results page' + state_suffix
 
   assertInUserProfile : ->

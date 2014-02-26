@@ -7,5 +7,5 @@
   sudo: True
 
 - name: Install underscore
-  shell: npm install underscore
+  shell: cd $app_home && npm install underscore
   sudo: False

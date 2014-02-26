@@ -10,7 +10,7 @@
     .user-options-display
       %img{ :src => "{{ avatar }}", :alt => "your profile picture"}
 
-      %a
+      %a{ :role => 'user', :'data-id' => "{{id}}" }
         {{ name }} 
 
       %span.user-options-triangle

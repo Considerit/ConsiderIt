@@ -19,16 +19,17 @@ _.extend casper,
     casper.then ->
       callback.call casper, false # run tests while not logged in
 
-    casper.thenOpen(location).waitUntilVisible '#l_wrap', ->
-      if casper.exists '[action="login"]'
-        casper.then ->
-          id = Math.floor((Math.random()*100000)+1)
-          actions.createAccount "Testy #{id}", "testy_mctesttest_#{id}@testing.dev", '123124124243'
+    casper.thenOpen location, ->
+      casper.waitUntilVisible '#l_wrap', ->
+        if casper.exists '[action="login"]'
+          casper.then ->
+            id = Math.floor((Math.random()*100000)+1)
+            actions.createAccount "Testy #{id}", "testy_mctesttest_#{id}@testing.dev", '123124124243'
 
-        casper.wait 2500, ->
-          callback.call casper, true # run tests while logged in
-      else
-        callback.call casper, true
+          casper.waitUntilVisible '.user-options-display', ->
+            callback.call casper, true # run tests while logged in
+        else
+          callback.call casper, true
 
   # waits until transitions amongst considerit states are completed (e.g. results page)
   waitUntilStateTransitioned : (state, callback) ->
@@ -36,6 +37,38 @@ _.extend casper,
       casper.waitWhileVisible '.transitioning', ->
         casper.wait 200, ->
           callback.call casper
+
+  getLoggedInUserid : ->
+    @getElementAttribute '.user-options [role="user"]', 'data-id'
+
+
+  # DRAG AND DROP NOT WORKING YET GIVEN CASPER AND PHANTOM LIMITATIONS
+  #drag an element from a to b
+  dragAndDrop : (draggable, target) ->
+    from = casper.getElementBounds draggable
+    to = casper.getElementBounds target
+
+    casper.drag [from.left + from.width / 2, from.top + from.height / 2], [to.left + to.width / 2, to.top + to.height / 2]
+
+  drag : (from, to) ->
+    casper.capture "#{casper.cli.options.htmlout}/screen_captures/DRAG.png", 
+      left: from[0]
+      top: from[1]
+      width: 100
+      height: 100
+
+
+    casper.capture "#{casper.cli.options.htmlout}/screen_captures/DROP.png", 
+      left: to[0]
+      top: to[1]
+      width: 300
+      height: 300
+
+    casper.mouse.down from[0], from[1]
+    casper.mouse.move to[0], to[1]
+    casper.HTMLCapture '.four_columns_of_points',
+      caption: 'JUST BEFORE RELEASE!!!'
+    casper.mouse.up to[0], to[1]
 
 
 ######################################################

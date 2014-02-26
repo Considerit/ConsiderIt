@@ -1,7 +1,0 @@
-
-###
-Make sure to cover:
-- if open position writing, write a point, don't save, close proposal, then reopen, the written point (and stance) should remain
-- (backend) make sure there is only ever one published position at a time
-- editing one's own profile
-###

@@ -141,6 +141,7 @@
 
       params = _.extend {}, @slider_ui_init, 
         start : -@_stance_val()
+        behaviour: 'extend-tap'
         slide : =>
           @onSliderChange @ui.slider.val()
 

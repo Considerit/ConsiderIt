@@ -6,7 +6,7 @@
   (( if(prop_type=='local'){ $("[role='proposal'][id='"+proposal.id+"']").addClass('t-local'); } ))
 
   .proposal_proposer
-    %a{ :'data-id' => "{{ user_id }}", :'action' => "user_profile_page" }
+    %a{ :'data-id' => "{{ user_id }}", :'action' => "user_profile_page", :tooltip => "user_profile" }
       %img{:src => "{{ avatar }}"}
 
   .proposal_description_main     

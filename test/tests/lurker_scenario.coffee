@@ -187,10 +187,10 @@ casper.test.begin 'Lurker can poke around a user profile', 27, (test) ->
   casper.start "http://localhost:8787/#{example_proposal}"
 
   # can access a profile page from elsewhere
-  casper.waitUntilVisible '[action="user_profile_page"]', ->
+  casper.waitUntilVisible '[tooltip="user_profile"]', ->
     @HTMLStep "Profile page can be accessed from other page"
-    test.assertExists '[action="user_profile_page"]', 'User profile link exists'
-    @click('.points_by_community [action="user_profile_page"]:first-of-type')
+    test.assertExists '[tooltip="user_profile"]', 'User profile link exists'
+    @click('.points_by_community [tooltip="user_profile"]:first-of-type')
     @waitUntilVisible '.dashboard-profile-influence-summary', ->
       test.assertInUserProfile()
 

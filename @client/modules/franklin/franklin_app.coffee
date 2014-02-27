@@ -196,7 +196,7 @@
             ["results", Routes.proposal_path(long_id)],          
             ["#{user.get('name')}", Routes.proposal_opinion_path(long_id, opinion.id)] ]
 
-        if region.currentView instanceof Franklin.Proposal.AggregateLayout
+        if region.currentView instanceof Franklin.Proposal.HistogramLayout
           history.splice history.length - 1, 0, ['results', Routes.proposal_path(long_id)]
 
         App.vent.trigger 'route:completed', history

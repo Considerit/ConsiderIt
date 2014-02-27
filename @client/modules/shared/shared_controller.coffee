@@ -7,5 +7,5 @@
       loginview = new Shared.AuthView
         el : @region.el
 
-  App.reqres.setHandler 'shared:targets', ->
-    ['user_profile_page', 'create_account', 'login']
+  App.reqres.setHandler 'shared:actions', ->
+    ['user_profile_page', 'user_opinion', 'create_account', 'login']

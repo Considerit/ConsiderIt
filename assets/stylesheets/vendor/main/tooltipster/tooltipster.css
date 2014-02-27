@@ -1,16 +1,17 @@
-html {
-   -webkit-font-smoothing: antialiased;
-}
-
-
 /* This is the default Tooltipster theme (feel free to modify or duplicate and create multiple themes!): */
 .tooltipster-default {
   border-radius: 5px; 
+  border: 2px solid #000;
+  background: #4c4c4c;
   color: #fff;
 }
 
 /* Use this next selector to style things like font-size and line-height: */
-.tooltipster-default .tooltipster_content {
+.tooltipster-default .tooltipster-content {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 16px;
+  padding: 8px 10px;
   overflow: hidden;
 }
 
@@ -39,12 +40,14 @@ html {
   font-size: 0;
   line-height: 0;
   position: absolute;
+  left: 0;
+  top: 0;
   z-index: 9999999;
   pointer-events: none;
   width: auto;
   overflow: visible;
 }
-.tooltipster-base .tooltipster_content {
+.tooltipster-base .tooltipster-content {
   overflow: hidden;
 }
 
@@ -70,26 +73,26 @@ html {
   border-left: 8px solid transparent !important;
   border-right: 8px solid transparent !important;
   border-top: 8px solid;
-  bottom: -8px;
+  bottom: -7px;
 }
 .tooltipster-arrow-top .tooltipster-arrow-border, .tooltipster-arrow-top-right .tooltipster-arrow-border, .tooltipster-arrow-top-left .tooltipster-arrow-border {
   border-left: 9px solid transparent !important;
   border-right: 9px solid transparent !important;
   border-top: 9px solid;
-  bottom: -8px;
+  bottom: -7px;
 }
 
 .tooltipster-arrow-bottom span, .tooltipster-arrow-bottom-right span, .tooltipster-arrow-bottom-left span {
   border-left: 8px solid transparent !important;
   border-right: 8px solid transparent !important;
   border-bottom: 8px solid;
-  top: -8px;
+  top: -7px;
 }
 .tooltipster-arrow-bottom .tooltipster-arrow-border, .tooltipster-arrow-bottom-right .tooltipster-arrow-border, .tooltipster-arrow-bottom-left .tooltipster-arrow-border {
   border-left: 9px solid transparent !important;
   border-right: 9px solid transparent !important;
   border-bottom: 9px solid;
-  top: -8px;
+  top: -7px;
 }
 .tooltipster-arrow-top span, .tooltipster-arrow-top .tooltipster-arrow-border, .tooltipster-arrow-bottom span, .tooltipster-arrow-bottom .tooltipster-arrow-border {
   left: 0;
@@ -114,7 +117,7 @@ html {
   border-left: 8px solid;
   top: 50%;
   margin-top: -7px;
-  right: -8px;
+  right: -7px;
 }
 .tooltipster-arrow-left .tooltipster-arrow-border {
   border-top: 9px solid transparent !important;
@@ -128,7 +131,7 @@ html {
   border-right: 8px solid;
   top: 50%;
   margin-top: -7px;
-  left: -8px;
+  left: -7px;
 }
 .tooltipster-arrow-right .tooltipster-arrow-border {
   border-top: 9px solid transparent !important;
@@ -261,7 +264,7 @@ html {
 
 
 /* CSS transition for when contenting is changing in a tooltip that is still open. The only properties that will NOT transition are: width, height, top, and left */
-.tooltipster_content-changing {
+.tooltipster-content-changing {
   opacity: 0.5;
   -webkit-transform: scale(1.1, 1.1);
   -moz-transform: scale(1.1, 1.1);

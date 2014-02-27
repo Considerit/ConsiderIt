@@ -17,8 +17,8 @@
     template : _.template $('#tpl_user_tooltip').html()
 
     events : 
-      'mouseenter [action="user_profile_page"]' : 'tooltipShow'
-      'mouseleave [action="user_profile_page"]' : 'tooltipHide'
+      'mouseenter [tooltip="user_profile"]' : 'tooltipShow'
+      'mouseleave [tooltip="user_profile"]' : 'tooltipHide'
       'click [action="user_profile_page"]' : 'viewProfile'
 
 
@@ -40,7 +40,6 @@
         tooltip = @template 
           user : user.attributes
           proposal : proposal
-          joined_at : user.joinedAt()
           metrics : [ 
             ['influence', 'metric_influence', 'major'], 
             ['points', 'metric_points', 'minor'], 
@@ -48,17 +47,23 @@
             ['comments', 'metric_comments', 'minor']  ]
 
 
-        @$el.append tooltip
-        $tooltip = @$el.children '.l_tooltip-user'
+        #@$el.append tooltip
+        #$tooltip = @$el.children '.l_tooltip-user'
 
         $target.tooltipster
-          interactive: true
-          content: $tooltip
-          offsetY: -5
-          delay: 700
+          interactive: false
+          content: $(tooltip)
+          offsetY: -12
+          delay: 7000
+          interactiveTolerance: 0
+          onlyOne: true
+          speed: 0
+          arrow: false
+          position: 'bottom-left'
+
         $target.tooltipster 'show'
 
     tooltipHide : (ev) ->
-      @$el.children('.l_tooltip-user, .l_tooltip-user-title').remove()
+      @$el.children('.l_tooltip-user').remove()
 
 

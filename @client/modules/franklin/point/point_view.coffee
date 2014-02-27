@@ -24,7 +24,7 @@
 
     pointClicked : (ev) ->
       pass_through = @$el.parents('.points_by_community[state="summary"]').length > 0
-      _.each App.request('shared:targets'), (target) ->
+      _.each App.request('shared:actions'), (target) ->
         pass_through ||= $(ev.target).is("[action='#{target}']")
 
       if !pass_through
@@ -160,20 +160,22 @@
         when 2
           "Contains some unverified claims."
         when 3
-          "Makes accurate claims."          
+          "Makes accurate claims."
         else
+          # when out of scope, don't show any tooltip
           null
-
-      html = template
-        content : content
 
 
       if content
+        html = template
+          content : content
+
         $target.tooltipster
-          content: html
-          offsetY: 25
+          content: $(html)
+          offsetY: -12
           delay: 200
-          title : 'This point has been fact-checked'
+          position: 'bottom-left'
+          #title : 'This point has been fact-checked'
 
         $target.tooltipster 'show'
 

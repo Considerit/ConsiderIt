@@ -6,47 +6,12 @@
 
 
 $tooltip_width: 250px
-.l_tooltip-user-title
-
-  .l_tooltip-user-name
-    font-weight: bold
-    line-height: .7
-
-.l_tooltip-user-joined
-  +font-size(-4)
 
 .l_tooltip-user
-  min-width: $tooltip_width
-  padding: $vertical_baseline / 2 $grid_gutter / 2 
+  .l_tooltip_title
+    +font-size(-4)
 
-  .l_tooltip-user-block
-    vertical-align: baseline
-
-  .l_tooltip-user-metric
-    list-style: none
-    margin-right: $grid_gutter/2
-    +font-size(-3)
-    line-height: 1
-    display: inline-block
-    &:last-child
-      margin-right: 0
-
-  .l_tooltip-user-metric-major    
-    padding: 0 $grid_gutter/4
-
-  .l_tooltip-user-metric-number, .l_tooltip-user-metric-desc
-    text-transform: lowercase
-    font-variant: small-caps
-
-  .l_tooltip-user-actions
-    clear: both
-
-    .l_tooltip-user-action, .l_tooltip-user-action:hover
-      +font-size(-2)
-      text-align: center
-      width: 100%
-      min-width: $tooltip_width
-      display: inline-block
-      border-radius: 0
-      border-bottom: 0
+.user_tooltip_opinion_link
+  text-decoration: underline
+  //display: block
 

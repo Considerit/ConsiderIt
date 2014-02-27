@@ -37,3 +37,7 @@
     .user_opinion-reasons-none
       {{ user.name }} does not recognize any tradeoffs mitigating their opinion. 
     (( } ))
+
+
+  %a.user_profile_link{:'data-id' => "{{user.id}}", :'action' => "user_profile_page"}
+    View {{ user.name }}'s profile

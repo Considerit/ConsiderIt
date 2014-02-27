@@ -84,7 +84,7 @@
 
 %script{ :type => "text/template", :id => "tpl_claim" }
   .assessment-gutter
-    %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{creator.id}}", :id => "avatar-{{creator.id}}"}
+    %span.avatar{ :'action' => "user_profile_page", :tooltip => "user_profile", :'data-id' => "{{creator.id}}", :id => "avatar-{{creator.id}}"}
 
   .assessment-context
     .assessment-claim
@@ -201,7 +201,7 @@
 %script{ :type => "text/template", :id => "tpl_assess_edit_context"}
   .assessment-gutter
 
-    %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{author.id}}", :id => "avatar-{{author.id}}"}
+    %span.avatar{ :'action' => "user_profile_page", :tooltip => "user_profile", :'data-id' => "{{author.id}}", :id => "avatar-{{author.id}}"}
 
 
   .assessment-context
@@ -228,7 +228,7 @@
 
 %script{ :type => "text/template", :id => "tpl_assess_request"}
   .assessment-gutter
-    %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{requester.id}}", :id => "avatar-{{requester.id}}"}
+    %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{requester.id}}", :id => "avatar-{{requester.id}}", :tooltip => "user_profile"}
 
   .assessment-context
     .assessment-header

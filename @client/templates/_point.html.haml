@@ -11,7 +11,7 @@
   %span.avatar.point_author_avatar.avatar_anonymous{:style => "background-image: url(/system/default_avatar/small_default-profile-pic.png)", :title => "This user has requested to remain anonymous"}
   (( } else if (user) { ))
 
-  %a.avatar.point_author_avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'action' => "user_profile_page" }
+  %a.avatar.point_author_avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile", :'data-id' => "{{user.id}}", :'action' => "user_opinion", :tooltip => 'user_profile' }
   (( } ))
 
   (( if(has_assessment){ ))

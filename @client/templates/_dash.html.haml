@@ -120,17 +120,19 @@
       {{ name }} 
 
     .dashboard-subheading
-      (( if(bio && bio.length > 0) { ))
-      {{ bio }} 
-      (( } else { ))
-      %span.empty
-        No details provided
-      (( } ))
+      %p
+        joined {{ joined_at }}
+
+      %p
+        (( if(bio && bio.length > 0) { ))
+        {{ bio }} 
+        (( } else { ))
+        %span.empty
+          No details provided
+        (( } ))
 
       (( if ( is_self ) { ))
-      = surround '(', ')' do
-        %a.dashboard-profile-edit_profile{:href => "{{Routes.edit_profile_path(id)}}", :'action' => 'edit_profile'}
-          edit
+      %a.dashboard-profile-edit_profile{:href => "{{Routes.edit_profile_path(id)}}", :'action' => 'edit_profile'} edit
       (( } ))
 
   .dashboard-profile-bio
@@ -149,7 +151,7 @@
 
       .dashboard-profile-influenced.l-group-container
         (( _.each(influenced_users, function(p){ ))
-        %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}>
+        %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;", :tooltip => "user_profile"}>
         (( }); ))        
   (( } ))
 
@@ -258,7 +260,7 @@
                 This point has influenced {{influenced_users_by_point[point.id].length}} people
               .l-group-container
                 (( _.each(influenced_users_by_point[point.id], function(p){ ))
-                %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;"}
+                %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;", :tooltip => "user_profile"}
                 (( }); ))   
 
             %td.dashboard-profile-activity-action

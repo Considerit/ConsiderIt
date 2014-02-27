@@ -14,6 +14,7 @@
         comments : @model.getComments()
         opinions : @model.getOpinions()
         proposals : @model.getProposals()
+        joined_at : @model.joinedAt()
         points : @model.getPoints() 
         is_self : @model.id == current_user.id
         tile_size : Math.min 50, window.getTileSize 400, 42, influenced_users.length

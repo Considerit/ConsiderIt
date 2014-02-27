@@ -45,7 +45,7 @@
     serializeData : ->
       sortable_fields : [ 
         {name: 'Most active', target: 'activity'}, 
-        {name: 'Newness', target: 'created_at'} ]
+        {name: 'Newest', target: 'created_at'} ]
       data_loaded : App.request "proposals:fetched_from_server?"
 
     applySortOrder : ->

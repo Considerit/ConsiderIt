@@ -19,9 +19,17 @@
       histogramRegion : '.proposal_histogram_region'
       reasonsRegion : '.proposal_reasons_region'
 
+
     initialize : (options = {}) -> super options
 
     onRender : -> super
+
+    events : 
+      'click [action="user_opinion"]' : 'viewUserOpinion'
+
+    viewUserOpinion : (ev) -> 
+      App.navigate(Routes.user_opinion_proposal_path(@model.id, $(ev.currentTarget).data('id')), {trigger: true})
+      ev.stopPropagation()
 
     implodeParticipants : ->
       $participants = @$el.find('.participating_users_view')

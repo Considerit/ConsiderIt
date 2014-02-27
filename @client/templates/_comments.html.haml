@@ -46,7 +46,7 @@
 %script{ :type => "text/template", :id => "tpl_comment_view" }   
   
 
-  %a.avatar.comment_avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile picture", :'data-id' => "{{user.id}}", :'action' => "user_profile_page"}
+  %a.avatar.comment_avatar{ :id => "avatar-{{user.id}}", :alt => "{{user.name}}'s profile picture", :'data-id' => "{{user.id}}", :'action' => "user_profile_page", :tooltip => "user_profile"}
 
   .comment_body_wrap
 
@@ -69,7 +69,7 @@
     .comment_footer
       .comment_author
         &ndash; 
-        %a{ :href => "{{Routes.profile_path(user.id)}}", :'data-id' => "{{user.id}}", :'action' => "user_profile_page"}
+        %a{ :href => "{{Routes.profile_path(user.id)}}", :'data-id' => "{{user.id}}", :'action' => "user_profile_page", :tooltip => "user_profile"}
           {{ user.name }}
 
       .thank
@@ -90,7 +90,7 @@
         %ul
           (( thanks.each( function(thank){ ))
           %li.thanks_item
-            %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{thank.get('user_id')}}", :id => "avatar-{{thank.get('user_id')}}", :class => "participant"}
+            %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{thank.get('user_id')}}", :id => "avatar-{{thank.get('user_id')}}", :class => "participant", :tooltip => "user_profile"}
           (( }); ))
         %span.given_thanks
           {{ thanks.length }} {{ thanks.length == 1 ? 'person says' : 'people say' }} thanks

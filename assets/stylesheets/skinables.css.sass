@@ -177,7 +177,7 @@ a
   +link_style($base_text_color, $base_background_color, 25%)
 
   /* SHARED STYLES */
-[action="user_profile_page"]
+[tooltip="user_profile"]
   cursor: pointer
 
 
@@ -376,8 +376,14 @@ a
 
 // helpers
 
-.l_tooltip-user .l_tooltip-user-action
-  @extend %button
+.l_tooltip-user .user_tooltip_opinion_link
+  +link_style($base_text_color, $base_background_color, 20%)
+
+.l_tooltip-user-influence
+  color: deemphasize($base_text_color, 15%)
+
+.l_tooltip_separator
+  color: deemphasize($base_text_color, 20%)
 
 
 // auth

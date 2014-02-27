@@ -36,10 +36,11 @@
 
 .tooltipster-default 
   @extend %on_background
-  background: emphasize($base_background_color, 5%)
-  border: 1px solid emphasize($base_background_color, 25%)
+  background: $base_background_color //emphasize($base_background_color, 5%)
+  border: none //1px solid emphasize($base_background_color, 25%)
+  border-radius: 0
 
-  .tooltipster_content
+  .tooltipster-content
     +font-size(0)
     font-size: 16px
     padding: 0

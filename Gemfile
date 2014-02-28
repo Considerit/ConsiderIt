@@ -62,8 +62,7 @@ gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delaye
 gem "daemons"
 
 # https://github.com/cerebris/mailhopper
-#gem 'mailhopper'
-gem 'mailhopper', :git => 'git://github.com/youdonz/mailhopper', :branch => 'rails4'
+gem 'mailhopper'
 
 # https://github.com/cerebris/delayed_mailhopper
 gem 'delayed_mailhopper'

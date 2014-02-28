@@ -116,7 +116,11 @@ class User < ActiveRecord::Base
   end
 
   def self.find_by_lower_email(email)
-    find_by_email email.downcase
+    if email       
+      find_by_email email.downcase
+    else
+      nil
+    end
   end
 
   def self.find_by_third_party_token(access_token)

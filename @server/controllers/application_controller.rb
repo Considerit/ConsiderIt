@@ -103,8 +103,6 @@ class ApplicationController < ActionController::Base
       end
 
       @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_opinions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
-      @proposals = []
-
 
       num_proposals_per_page = current_tenant.num_proposals_per_page
       

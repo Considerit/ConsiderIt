@@ -238,19 +238,23 @@ private
 
   def pageview
     if request.method == 'GET' && request.fullpath.index('/users/auth').nil?
-      user = current_user ? current_user.id : nil
-      params = {
-        :account_id => current_tenant.id,
-        :user_id => user,
-        :referer => request.referrer,
-        :session => request.session_options[:id],
-        :url => request.fullpath,
-        :ip_address => request.remote_ip,
-        :user_agent => request.env["HTTP_USER_AGENT"],
-        :created_at => Time.current
-      }  
+      begin
+        user = current_user ? current_user.id : nil
+        params = {
+          :account_id => current_tenant.id,
+          :user_id => user,
+          :referer => request.referrer,
+          :session => request.session_options[:id],
+          :url => request.fullpath,
+          :ip_address => request.remote_ip,
+          :user_agent => request.env["HTTP_USER_AGENT"],
+          :created_at => Time.current
+        }  
 
-      PageView.create! ActionController::Parameters.new(params).permit!
+        PageView.create! ActionController::Parameters.new(params).permit!
+      rescue 
+        logger.info 'Could not create PageView'
+      end
     end
   end
 

@@ -57,6 +57,8 @@ module ConsiderIt
 
     config.force_ssl = false
     
+    config.assets.image_optim = false
+    
     ##################
     # for our custom rails directory structure
     config.paths['app'] << "@server"

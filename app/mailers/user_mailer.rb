@@ -41,7 +41,7 @@ class UserMailer < ActionMailer::Base
 
   def invitation(email, proposal, notification_type, options )
     @email = email
-    user = User.find_by_lower_email(email)
+    user = User.find_by_lower_email(email.downcase)
     @unique_token = user.nil? ? '' : user.unique_token
     @user_exists = !user.nil?
 

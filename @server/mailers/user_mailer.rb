@@ -41,7 +41,7 @@ class UserMailer < ActionMailer::Base
 
   def invitation(email, proposal, notification_type, options )
     @email = email
-    user = User.find_by_lower_email(email.downcase)
+    user = User.find_by_lower_email email
     @unique_token = user.nil? ? '' : user.unique_token
     @user_exists = !user.nil?
 
@@ -56,7 +56,7 @@ class UserMailer < ActionMailer::Base
     if notification_type == 'your proposal'
       subject = "Information about your new discussion"
     else
-      subject = "#{@proposal.user.name} invites you to participate in a discussion"
+      subject = "#{proposal.user.name} invites you to participate in a discussion"
     end
 
     mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")

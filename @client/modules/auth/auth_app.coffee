@@ -69,7 +69,6 @@
       # that the user can update them.
       $.get Routes.content_for_user_path(), (data) =>
 
-        #TODO: check if all the unpublished proposals of this user show up
         App.vent.trigger 'proposals:fetched', data
 
         App.vent.trigger 'opinions:fetched', data.opinions

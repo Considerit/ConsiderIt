@@ -78,7 +78,7 @@ $.fn.customFileInput = function(){
 
   var uploadPreview = $('<div class="customfile-preview-wrap"><img src="/system/default_avatar/large_default-profile-pic.png" class="customfile-preview" aria-hidden="true"></div>').appendTo(upload);
   //create custom control button
-  var uploadButton = $('<span class="customfile-button" aria-hidden="true">change picture</span>').appendTo(upload);
+  var uploadButton = $('<span class="customfile-button" aria-hidden="true">Upload a picture</span>').appendTo(upload);
   
   //match disabled state
   if(fileInput.is('[disabled]')){

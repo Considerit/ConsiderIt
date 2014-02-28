@@ -59,7 +59,7 @@
           onlyOne: true
           speed: 0
           arrow: false
-          position: 'bottom-left'
+          position: 'top-left'
 
         $target.tooltipster 'show'
 

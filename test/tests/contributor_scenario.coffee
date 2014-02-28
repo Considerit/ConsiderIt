@@ -30,6 +30,8 @@ Not tested:
   - commenting on your own new point
   - character count enforcement
   - point validation
+  - points in margin when opened should have include button
+  - points on decision board should have remove button
 
 ###
 
@@ -256,7 +258,7 @@ casper.test.begin 'Prolific contributor can craft their opinion', 110, (test) ->
 
       casper.waitUntilVisible ".cons_on_decision_board [role='point'][data-id='#{point_id}']", ->
         test.assertVisible ".cons_on_decision_board [role='point'][data-id='#{point_id}']", 'Point was included' + state_suffix
-        @click ".cons_on_decision_board [role='point'][data-id='#{point_id}'] [action='point_remove']"
+        @click ".cons_on_decision_board [role='point'][data-id='#{point_id}'] [action='point-remove']"
         @click ".cons_by_community [action='expand-toggle']"
         casper.waitUntilVisible ".cons_by_community [role='point'][data-id='#{point_id}']", ->
           test.assertVisible ".cons_by_community [role='point'][data-id='#{point_id}']", 'Point was un-included' + state_suffix

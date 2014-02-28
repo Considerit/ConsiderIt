@@ -69,7 +69,7 @@
     actions : ['remove']
 
     events : _.extend @events,
-      'click [action="point_remove"]' : 'removePoint'
+      'click [action="point-remove"]' : 'removePoint'
 
     removePoint : (ev) ->
       @trigger 'point:remove'
@@ -87,7 +87,8 @@
       discussionRegion : '.point_discussion_region'
 
     serializeData : ->
-      @model.attributes
+      _.extend {}, @model.attributes, 
+        actions : @options.actions
 
     onRender : ->
       App.vent.trigger 'point:opened'

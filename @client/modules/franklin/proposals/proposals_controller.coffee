@@ -50,11 +50,6 @@
 
       @region.show layout
 
-      # Not sure why the following was important. It was creating problems with private discussion workflow.
-      # @listenTo App.vent, 'proposals:just_fetched_from_server proposals:added', => 
-      #   @region.reset()
-      #   @region.show layout
-
       @layout = layout
 
     handleShow : (layout) ->
@@ -65,15 +60,23 @@
       @listenTo App.vent, "proposals:#{@is_active}_proposals_were_loaded", ->
         pagination_view.proposalsWereLoaded()
 
+      # When proposals are fetched from the server, we need to reevaluate which proposals should be in this list. It is creating problems with private discussion workflow.
+      @listenTo App.vent, 'proposals:just_fetched_from_server proposals:added', => 
+        all_proposals = App.request('proposals:get')
+        filtered_proposals = all_proposals.where({active : @is_active})
+        proposals_view.collection.add filtered_proposals, {merge: true}
+        # @region.reset()
+        # @region.show layout
+
       layout.proposalsRegion.show proposals_view
       layout.sortRegion.show filter_view
       layout.paginationRegion.show pagination_view
 
       @proposals_view = proposals_view
 
+
     setupProposalsView : (is_active) ->
       all_proposals = App.request('proposals:get')
-
       filtered_proposals = all_proposals.where({active : is_active})
 
       @collection = new App.Entities.PaginatedProposals filtered_proposals,

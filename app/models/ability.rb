@@ -68,7 +68,7 @@ class Ability
     else
       #Proposal
       can :read, Proposal do |prop|
-        prop.publicity != 0 || (!user.id.nil? && prop.access_list.gsub(' ', '').split(',').include?(user.email) )
+        prop.publicity != 0 || (!user.id.nil? && prop.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
       end
 
       can :create, Proposal do |prop|
@@ -87,7 +87,7 @@ class Ability
       #Position
       can [:create, :update, :destroy, :read], Position do |pos|
         prop = pos.proposal
-        prop.publicity != 0 || (!user.id.nil? && prop.access_list.gsub(' ', '').split(',').include?(user.email) )
+        prop.publicity != 0 || (!user.id.nil? && prop.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
         #TODO: get this to work!
         #(!pos.published && user.id.nil? && pos.user_id.nil?) || (user.id == pos.user_id)
       end

@@ -61,6 +61,7 @@
 
         @listenTo open_point_view, 'make_fields_editable', =>
           @body_view.makeEditable()
+          open_point_view.makeEditable()
           @listenToOnce open_point_view, 'point:close', =>
             @body_view.removeEditable()
           

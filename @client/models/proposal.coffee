@@ -174,7 +174,7 @@
     initialize : (options = {}) ->
       super options
       @listenTo App.vent, 'user:signout', => 
-        @purge_inaccessible()      
+        @purge_inaccessible()
 
     url : ->
       Routes.proposals_path( )
@@ -195,6 +195,7 @@
     purge_inaccessible : -> 
       to_remove = @filter (p) -> 
         p.get('publicity') < 2 || !p.get('published')
+
       @remove to_remove
 
 
@@ -202,7 +203,10 @@
     state:
       currentPage: 1
 
-    initialize : ->
+    initialize : (options = {}) ->
+      @listenTo App.vent, 'user:signout', => 
+        @purge_inaccessible()
+
       @state.pageSize = App.request('tenant').get('num_proposals_per_page')
 
   API =

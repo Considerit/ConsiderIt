@@ -410,7 +410,7 @@ a
 // dashboard
 #dashboard 
 
-  .dashboard-profile-activity-summary, .dashboard-profile-influence-summary
+  .dashboard-profile-activity-summary
     background-color: $complementary_background_color
     color: $complementary_text_color
 
@@ -418,7 +418,9 @@ a
       color: $complementary_text_color
       background-color: emphasize($complementary_background_color, 10%)
 
-  
+    .dashboard-profile-influence-summary
+      color: deemphasize($base_text_color, 10%, $base_background_color)
+
 
 .table-striped tbody tr:nth-child(2n+1) td
   background-color: emphasize($base_background_color, 5%)

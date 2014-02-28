@@ -140,19 +140,12 @@
   (( if(_.keys(influenced_users).length > 0){ ))
   .dashboard-profile-influence
     .dashboard-profile-influence-summary
-      .dashboard-profile-influence-count
-        {{ _.keys(influenced_users).length }}
-      .dashboard-profile-influence-label
-        Influence
-
-    .dashboard-profile-influence-details
-      .dashboard-profile-influence-description
-        People influenced by {{ name }}'s pro & con considerations
-
-      .dashboard-profile-influenced.l-group-container
-        (( _.each(influenced_users, function(p){ ))
-        %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;", :tooltip => "user_profile"}>
-        (( }); ))        
+      &#9733; {{ _.keys(influenced_users).length }} people felt that one of {{ name }}'s pro & con contributions spoke for them
+        
+    .dashboard-profile-influenced.l-group-container
+      (( _.each(influenced_users, function(p){ ))
+      %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;", :tooltip => "user_profile"}>
+      (( }); ))        
   (( } ))
 
   .dashboard-profile-activities
@@ -257,7 +250,7 @@
                 Re: {{ proposal.get('name') }}
 
               .dashboard-profile-activity-influence
-                This point has influenced {{influenced_users_by_point[point.id].length}} people
+                {{influenced_users_by_point[point.id].length}} people felt this point spoke for them
               .l-group-container
                 (( _.each(influenced_users_by_point[point.id], function(p){ ))
                 %span.avatar{ :'action' => "user_profile_page", :'data-id' => "{{p}}", :id => "avatar-{{p}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;", :tooltip => "user_profile"}

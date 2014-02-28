@@ -60,7 +60,7 @@ class Proposal < ActiveRecord::Base
   end
 
   def self.content_for_user(user)
-    user.proposals.public_fields.to_a + Proposal.privately_shared.where("access_list like '%#{user.email}%' ").public_fields.to_a
+    user.proposals.public_fields.to_a + Proposal.privately_shared.where("LOWER(CONVERT(access_list USING utf8)) like '%#{user.email}%' ").public_fields.to_a
   end
 
   def as_json(options={})

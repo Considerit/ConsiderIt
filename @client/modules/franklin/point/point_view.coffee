@@ -174,7 +174,7 @@
           content: $(html)
           offsetY: -12
           delay: 200
-          position: 'bottom-left'
+          position: 'top-left'
           #title : 'This point has been fact-checked'
 
         $target.tooltipster 'show'

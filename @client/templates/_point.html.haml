@@ -28,7 +28,7 @@
     %a.open_point_link
 
     (( if( _.contains(actions, 'remove') ){ ))
-    %button.point_remove{ :'action' => 'point_remove', :'data-id' => "{{id}}"}
+    %button.point_remove{ :'action' => 'point-remove', :'data-id' => "{{id}}"}
       %i.fa-trash
       remove
     (( } ))
@@ -39,10 +39,17 @@
     {{ text }}
 
   .point_actions
+    (( if( _.contains(actions, 'include') ){ ))
     .point-include.point_action
       %button.button{ :'action' => 'point-include', :'data-id' => "{{id}}", :title => "Add this point to your list"}
         %i.fa.fa-small.fa-list
         Add to your pro/con list
+    (( } else if( _.contains(actions, 'remove') ) { ))
+    .point-remove.point_action
+      %button.button{ :'action' => 'point-remove', :'data-id' => "{{id}}", :title => "Remove this point from your list"}
+        %i.fa.fa-small.fa-list
+        Remove from your pro/con list
+    (( } ))
 
     .point_follow_region.point_action
     .point_assessment_region.point_action

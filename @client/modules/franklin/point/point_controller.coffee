@@ -40,7 +40,7 @@
       App.request 'nav:back:crumb' if go_back
 
     openPoint : ->
-      open_point_view = @getOpenPointView @options.model
+      open_point_view = @getOpenPointView @options.model, @layout.actions
 
       @listenTo open_point_view, 'show', =>
         if App.request("user:is_client_logged_in?") && @options.model.get 'published'
@@ -148,9 +148,10 @@
         model : model
         actions : actions
 
-    getOpenPointView : (model) ->
+    getOpenPointView : (model, actions) ->
       new Point.OpenPointView
         model : model
+        actions : actions
 
     getFollowView : (model) ->
       new Point.FollowPointView

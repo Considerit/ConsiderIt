@@ -242,7 +242,7 @@ casper.test.begin 'Prolific contributor can craft their opinion', 110, (test) ->
 
           @thenClick '.close_open_point', ->
             @waitWhileVisible '.open_point', ->
-              @click "[role='point'][data-id='#{point_id}'] [action='point_remove']"
+              @click "[role='point'][data-id='#{point_id}'] [action='point-remove']"
               @click ".cons_by_community [action='expand-toggle']"
               @wait 1000, ->
                 test.assertDoesntExist "[role='point'][data-id='#{point_id}']", 'Point has been deleted'

@@ -181,7 +181,7 @@
       return 'email'
 
     canEditPoint : (point) ->
-      @id == point.get('user_id') #|| ConsiderIt.request('user:current').isAdmin()      
+      @id == point.get('user_id') || !point.get('published') # ConsiderIt.request('user:current').isAdmin()      
 
   class Entities.Users extends Entities.Collection
 

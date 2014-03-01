@@ -11,9 +11,9 @@
 
       @setupLayout @layout
 
-      @listenTo App.vent, 'user:signin user:signout', => 
-        if @region #this controller might have been closed by parent, e.g. if this is a private proposal and user just signed out         
-          @region.show @layout
+      # @listenTo App.vent, 'user:signin user:signout', => 
+      #   if @region #this controller might have been closed by parent, e.g. if this is a private proposal and user just signed out         
+      #     @region.show @layout
 
       @region.open = (view) => @stateIsChanging @region, view # this will set how this region handles the transitions between views
       @region.show @layout

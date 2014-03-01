@@ -21,18 +21,20 @@
           else
             existing_opinion_had_included_points = _.size(existing_opinion.getInclusions()) > 0
             existing_opinion.subsume @model
-            @trigger 'signin:opinion_changed', existing_opinion_had_included_points
+            @trigger 'auth_status_changed', existing_opinion_had_included_points
 
         @options.parent_controller.saveOpenPoint()
         @region.reset()
         @region.show @layout
         @options.parent_controller.restoreOpenPoint()
 
-      @listenTo App.vent, 'user:signout', => 
-        if @proposal.openToPublic()
-          @region.reset()
-          @region.show @layout
-          @trigger 'signin:opinion_changed'
+      # @listenTo App.vent, 'user:signout', => 
+      #   if @proposal.openToPublic()
+      #     @model = App.request 'opinion:get_by_current_user_and_proposal', @proposal.id
+      #     @region.reset()
+      #     @region.show @layout
+      #     @trigger 'auth_status_changed'
+
 
       @layout = @getLayout()
       @setupLayout @layout

@@ -13,11 +13,12 @@ _.extend casper,
   executeLoggedInAndLoggedOut : (location, callback) ->
     casper.start location
 
-    casper.wait 5000, -> 
-      actions.logout()
+    actions.logout()
 
     casper.then ->
       callback.call casper, false # run tests while not logged in
+
+    actions.logout()
 
     casper.thenOpen location, ->
       casper.waitUntilVisible '#l_wrap', ->
@@ -30,6 +31,8 @@ _.extend casper,
             callback.call casper, true # run tests while logged in
         else
           callback.call casper, true
+
+    actions.logout()
 
   # waits until transitions amongst considerit states are completed (e.g. results page)
   waitUntilStateTransitioned : (state, callback) ->

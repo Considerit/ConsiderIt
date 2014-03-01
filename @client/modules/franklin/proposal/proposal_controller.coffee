@@ -23,11 +23,20 @@
 
       @setupLayout @layout
 
-      if !@model.openToPublic()
-        @listenTo App.vent, 'user:signout', =>
+      @listenTo App.vent, 'user:signout', =>
+        if !@model.openToPublic()
           @close()
           App.navigate Routes.root_path(), {trigger : true}
+        else
+          @layout.close()
+          @description_controller.close()
+          @histogram_controller.close()
+          @reasons_controller.close()
+          @toggle_controller.close()
 
+          @layout = options.view || @getLayout()
+          @setupLayout @layout
+          @region.show @layout
 
       App.reqres.setHandler "proposal_controller:#{@model.id}", => @
 

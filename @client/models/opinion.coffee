@@ -171,6 +171,14 @@
 
           proposal.newOpinionSaved opinion
 
+          # Mark all the written points by this user as published...
+          # this is important for proper behavior when logging out and in
+          opinion.getInclusions().each (pnt) ->
+            if !pnt.get 'published'
+              pnt.set 'published', true
+            if !pnt.get 'user_id'
+              pnt.set 'user_id', App.request('user:current').id
+
           #TODO: make sure points getting updated properly in all containers
 
           #TODO: check to make sure this case of newfound activity is handled

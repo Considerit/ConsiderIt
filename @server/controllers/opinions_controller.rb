@@ -85,7 +85,12 @@ class OpinionsController < ApplicationController
     #opinion.follow!(current_user, :follow => true, :explicit => false)
     proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
-    proposal.update_metrics()
+    # update metrics right away if a new point could become a top point; otherwise process in background
+    if updated_points.count > 0 && (proposal.top_pro.nil? || proposal.top_pro.nil?)
+      proposal.update_metrics()
+    else
+      proposal.delay.update_metrics()
+    end
 
     alert_new_published_opinion(proposal, opinion) unless already_published
 

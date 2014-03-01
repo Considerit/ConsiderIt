@@ -32,7 +32,7 @@ Not tested:
   - point validation
   - points in margin when opened should have include button
   - points on decision board should have remove button
-
+  - when logging in to comment on a point, already entered comment should be saved and user should stay on the point page
 ###
 
 credentials = 
@@ -185,7 +185,7 @@ casper.test.begin 'Prolific contributor can craft their opinion', 110, (test) ->
       proposal_id: 'wash_i_517'
       stance : 1  
       points : 
-        1: 
+        1:  
           is_pro : true
           anonymous : false
           nutshell : 'A highly intelligent point in favor'
@@ -212,19 +212,23 @@ casper.test.begin 'Prolific contributor can craft their opinion', 110, (test) ->
     casper.then -> 
       casper.HTMLStep 'write a point, edit it, then delete it' + state_suffix
 
-      @click(".cons_on_decision_board [action='write-point']")
-      casper.waitUntilVisible ".cons_on_decision_board .newpoint_form", ->
+      casper.waitUntilVisible ".cons_on_decision_board [action='write-point']", ->
+        @click ".cons_on_decision_board [action='write-point']"
+
+      casper.waitUntilVisible ".cons_on_decision_board .newpoint_form [action='submit-point']", ->
 
         @sendKeys ".cons_on_decision_board .newpoint_nutshell", 'test test'
         @sendKeys ".cons_on_decision_board .newpoint_description", 'test details yo'
+
         @click ".cons_on_decision_board [action='submit-point']"
 
-        casper.wait 1000, ->
+        casper.wait 3000, ->
           point_id = @getElementAttribute ".cons_on_decision_board .point:last-of-type", 'data-id'
           @click "[role='point'][data-id='#{point_id}']"
 
           @waitUntilVisible ".cons_on_decision_board .open_point", ->
-            @then ->
+            @wait 200, ->
+              test.assertExists '.point_nutshell.editable', 'Can edit nutshell'
               @click '.point_nutshell.editable'
               @waitUntilVisible '.editable-input textarea', ->
                 @sendKeys '.editable-input textarea', ' edited'
@@ -383,15 +387,18 @@ casper.test.begin 'Prolific contributor can craft their opinion', 110, (test) ->
 
           test.assert slider_handle_pos.left < slider_base_pos.left + slider_base_pos.width / 2 && slider_handle_pos.left + slider_handle_pos.width > slider_base_pos.left + slider_base_pos.width / 2, 'Slider is set to neutrality'
 
-      # login and verify opinion still there
-      if !is_logged_in
-        casper.HTMLStep 'Login and verify opinion still there' + state_suffix  
+      casper.then ->
+        # login and verify opinion still there
+        if !is_logged_in
+          casper.HTMLStep 'Login and verify opinion still there' + state_suffix  
 
-        actions.login credentials.email, credentials.password
-        casper.waitUntilVisible '.user-options-display', ->
-          test.assertOpinionRepresented opinion, state_suffix
+          actions.login credentials.email, credentials.password
+          casper.waitUntilVisible '.user-options-display', ->
+            test.assertOpinionRepresented opinion, state_suffix
 
-        # subsumed opinion
+          # subsumed opinion
+
+      actions.logout()
 
   casper.run ->
     test.done() 

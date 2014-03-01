@@ -28,9 +28,6 @@ class InclusionsController < ApplicationController
       return
     end
 
-    @page = params[:page].to_i
-    candidate_next_points = point.is_pro ? proposal.points.viewable.pros : proposal.points.viewable.cons
-
     session[proposal.id][:included_points][params[:point_id]] = 1
     session[proposal.id][:viewed_points].push([params[:point_id],-1])
 
@@ -46,8 +43,6 @@ class InclusionsController < ApplicationController
     ApplicationController.reset_user_activities(session, point.proposal) if !session.has_key?(point.proposal.id)
 
     destroyed = false
-
-
 
     if current_user
       inc = current_user.inclusions.where(:point_id => point.id).first

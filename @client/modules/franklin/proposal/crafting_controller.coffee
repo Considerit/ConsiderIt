@@ -19,7 +19,7 @@
           if !existing_opinion
             @model.setUser current_user
           else
-            existing_opinion_had_included_points = _.size(existing_opinion.getIncludedPoints()) > 0
+            existing_opinion_had_included_points = _.size(existing_opinion.getInclusions()) > 0
             existing_opinion.subsume @model
             @trigger 'signin:opinion_changed', existing_opinion_had_included_points
 

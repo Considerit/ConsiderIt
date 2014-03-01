@@ -271,17 +271,18 @@ test_histogram = (test, state, state_suffix) ->
 
   test.assertElementCount '.histogram_bar .histogram_bar_users', 7, 'Has seven histogram bars'
   if state == 'hover'
-    @mouse.move '.histogram_bar:first-of-type .histogram_bar_users'     
+    @mouse.move '.histogram_bar[segment="0"]'     
   else
-    @click '.histogram_bar:first-of-type .histogram_bar_users'  
+    @click '.histogram_bar[segment="0"]'  
     @mouse.move 'body'
 
-  @wait 4000, ->
-    @HTMLCapture '[role="proposal"]', 
-      caption : "#{state} histogram bar" + state_suffix
+  @waitUntilVisible '.histogram_bar[segment="0"].bar_is_selected', ->
+    @wait 500, ->
+      @HTMLCapture '[role="proposal"]', 
+        caption : "#{state} histogram bar" + state_suffix
 
-    test.assertSelectorHasText '.points_heading_view', 'Pros', "Pros present in pros header when #{state}" + state_suffix
-    test.assertSelectorHasText '.points_heading_view', 'upport', "Supporter is present in pros header when #{state}" + state_suffix
+      test.assertSelectorHasText '.points_heading_view', 'Pros', "Pros present in pros header when #{state}" + state_suffix
+      test.assertSelectorHasText '.points_heading_view', 'upport', "Supporter is present in pros header when #{state}" + state_suffix
 
 test_profile_action_summary = (test, action, callback) ->
   casper.thenOpen "http://localhost:8787/dashboard/users/#{example_user}/profile", ->

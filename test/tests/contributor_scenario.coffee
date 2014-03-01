@@ -172,13 +172,11 @@ casper.test.assertOpinionRepresented = (opinion, state_suffix) ->
     @assert slider_handle_pos.left < slider_base_pos.left && slider_handle_pos.left + slider_handle_pos.width > slider_base_pos.left, 'Slider has been moved way to the left'
   else if opinion.stance == 0
     @assert slider_handle_pos.left < slider_base_pos.left + slider_base_pos.width / 2 && slider_handle_pos.left + slider_handle_pos.width > slider_base_pos.left + slider_base_pos.width / 2, 'Slider is set to neutrality'
-
-    throw 'implement test for neutrality'
   else
     throw 'Doesnt handle different slider pos yet...'
 
 
-casper.test.begin 'Prolific contributor can craft their opinion', 110, (test) ->
+casper.test.begin 'Prolific contributor can craft their opinion', 118, (test) ->
   casper.executeLoggedInAndLoggedOut "http://localhost:8787/#{opinion.proposal_id}", (is_logged_in) ->
 
     opinion = 
@@ -308,7 +306,7 @@ casper.test.begin 'Prolific contributor can craft their opinion', 110, (test) ->
       casper.waitUntilStateTransitioned 'results', ->
         casper.HTMLStep 'Verifying that opinion saved properly in histogram' + state_suffix  
 
-        test.assert true, 'Made it to the results page after submitting opinion' 
+        test.pass 'Made it to the results page after submitting opinion' 
 
         current_user = casper.getLoggedInUserid()
         if opinion.stance == 1
@@ -394,11 +392,11 @@ casper.test.begin 'Prolific contributor can craft their opinion', 110, (test) ->
 
           actions.login credentials.email, credentials.password
           casper.waitUntilVisible '.user-options-display', ->
-            test.assertOpinionRepresented opinion, state_suffix
+            casper.wait 1000, ->
+              test.assertOpinionRepresented opinion, state_suffix
 
           # subsumed opinion
 
-      actions.logout()
 
   casper.run ->
     test.done() 
@@ -420,7 +418,7 @@ casper.test.begin 'Prolific contributor can comment on points', 11, (test) ->
 
           casper.waitForSelector '.claim_comment [action="unthank-commenter"]', ->
 
-            test.assert true, 'Can thank fact-checker'
+            test.pass 'Can thank fact-checker'
 
             casper.HTMLCapture '.open_point', 
               caption : "fact-checker thanked"
@@ -428,7 +426,7 @@ casper.test.begin 'Prolific contributor can comment on points', 11, (test) ->
             test.assertExists ".claim_comment [action='unthank-commenter']", 'Opportunity to unthank a fact-checker'
             casper.click ".claim_comment [action='unthank-commenter']"
             casper.waitForSelector '.claim_comment [action="thank-commenter"]', ->
-              test.assert true, 'Can unthank fact-checker'
+              test.pass 'Can unthank fact-checker'
 
         casper.then ->
           casper.HTMLStep 'Thank commenter'
@@ -436,7 +434,7 @@ casper.test.begin 'Prolific contributor can comment on points', 11, (test) ->
           casper.click ".plain_comment [action='thank-commenter']"
           test.assertExists ".plain_comment [action='thank-commenter']", 'Can thank a commenter'          
           casper.waitUntilVisible '.plain_comment [action="unthank-commenter"]', ->
-            test.assert true, 'Can thank commenter'
+            test.pass 'Can thank commenter'
 
             casper.HTMLCapture '.open_point', 
               caption : "fact-checker thanked"
@@ -444,7 +442,7 @@ casper.test.begin 'Prolific contributor can comment on points', 11, (test) ->
             test.assertExists ".plain_comment [action='unthank-commenter']", 'Opportunity to unthank a commenter'
             casper.click ".plain_comment [action='unthank-commenter']"
             casper.waitForSelector '.plain_comment [action="thank-commenter"]', ->
-              test.assert true, 'Can unthank commenter'
+              test.pass 'Can unthank commenter'
 
 
         #comment the point
@@ -457,7 +455,7 @@ casper.test.begin 'Prolific contributor can comment on points', 11, (test) ->
           @click "[action='submit-comment']"
 
           casper.waitUntilVisible ".comment .avatar[data-id='#{current_user}']", ->
-            test.assert true, 'Comment has been added'
+            test.pass 'Comment has been added'
 
             casper.HTMLCapture '.open_point', 
               caption : "Comment added"

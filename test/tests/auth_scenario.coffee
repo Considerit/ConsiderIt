@@ -39,7 +39,7 @@ sign in
 
 ###
 
-casper.test.begin 'Authentication tests', 8, (test) ->
+casper.test.begin 'Authentication tests', 9, (test) ->
 
   casper.start "http://localhost:8787/"
 

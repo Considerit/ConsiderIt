@@ -32,7 +32,7 @@ class Opinion < ActiveRecord::Base
   def update_inclusions
     inclusions = Inclusion.where(:user_id => self.user_id, :proposal_id => self.proposal_id).select(:point_id)
 
-    self.point_inclusions = inclusions.map {|x| x.point_id }.compact.to_s
+    self.point_inclusions = inclusions.map {|x| x.point_id }.uniq.compact.to_s
     self.save
   end
 

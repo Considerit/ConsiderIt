@@ -33,14 +33,14 @@
       new Auth.Register.RegisterController
         params : params
 
-    signin : (user_data, controller = null) ->
+    signin : (user_data) ->
       App.request "user:update_current_user", user_data
       App.vent.trigger 'csrf:new', user_data.new_csrf if user_data.new_csrf
 
       if App.request "user:is_registration_completed?"
         @_handle_signin()
       else
-        API.complete_paperwork controller
+        API.complete_paperwork()
 
     signout : ->
       $.ajax Routes.destroy_user_session_path(),

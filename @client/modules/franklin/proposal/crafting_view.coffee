@@ -151,6 +151,10 @@
       if !is_neutral
         @ui.neutral_label.css 'visibility', 'hidden'
 
+      # initial state
+      @onSliderChange @ui.slider.val()
+
+
     onSliderChange : (new_value) -> 
       return unless isFinite(new_value)
 
@@ -168,6 +172,7 @@
       @model.set('stance', -@value / 100, {silent : true})
 
       size = @slider.max_effect / 100 * @value
+
       @ui.oppose_label.css('font-size', 100 + size + '%')
       @ui.support_label.css('font-size', 100 - size + '%')
 

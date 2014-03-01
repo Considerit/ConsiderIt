@@ -76,10 +76,13 @@
       email_view
 
     handleThirdPartyAuthRequest : (provider) ->
+      # close this out so that there isn't a conflict with the dialog used for completing paperwork
+      @close() 
+
       App.request 'third_party_auth:new',
         provider : provider
         callback : (user_data) ->
-          App.request "user:signin", user_data, @
+          App.request "user:signin", user_data
 
     handlePasswordReminderRequested : (email) ->
       $.post Routes.user_password_path(), {user : {email: email}}, (data) =>

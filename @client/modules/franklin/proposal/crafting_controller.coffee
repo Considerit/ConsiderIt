@@ -23,13 +23,10 @@
             existing_opinion.subsume @model
             @trigger 'signin:opinion_changed', existing_opinion_had_included_points
 
-        
-          
         @options.parent_controller.saveOpenPoint()
         @region.reset()
         @region.show @layout
         @options.parent_controller.restoreOpenPoint()
-
 
       @listenTo App.vent, 'user:signout', => 
         if @proposal.openToPublic()
@@ -37,14 +34,10 @@
           @region.show @layout
           @trigger 'signin:opinion_changed'
 
-
       @layout = @getLayout()
-
       @setupLayout @layout
-
       # @region.open = (view) => @transition @region, view # this will set how this region handles the transitions between views
       @region.show @layout
-
 
     # transition : (region, view) ->
     #   region.$el.empty().append view.el

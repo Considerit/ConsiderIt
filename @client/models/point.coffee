@@ -110,8 +110,8 @@
       point.parse data.associated
       @all_points.add point
 
-    getPoint : (id, fetch = false, long_id = null) ->
-      point = @all_points.get(id) || new Entities.Point({id : id, long_id : long_id})
+    getPoint : (id, fetch = false, long_id = null, create_if_doesnt_exist = true) ->
+      point = @all_points.get(id) || if create_if_doesnt_exist then new Entities.Point({id : id, long_id : long_id}) else null
       if fetch && !point.fetched
         point.fetch()
       point
@@ -151,8 +151,8 @@
   App.reqres.setHandler 'point:bootstrap', (data) ->
     API.bootstrapPoint data
 
-  App.reqres.setHandler 'point:get', (id, fetch = false, proposal_id = null) ->
-    API.getPoint id, fetch, proposal_id
+  App.reqres.setHandler 'point:get', (id, fetch = false, proposal_id = null, create_if_doesnt_exist = true) ->
+    API.getPoint id, fetch, proposal_id, create_if_doesnt_exist
 
   App.reqres.setHandler 'point:create', (attrs, options) ->
     _.defaults options, 

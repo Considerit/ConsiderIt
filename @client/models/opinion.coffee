@@ -45,10 +45,13 @@
       @written_points = []
       @viewed_points = {}
 
-    getIncludedPoints : ->
+
+    getIncludedPoints : (filter_to_existing = false) ->
       if !@included_points
         @included_points = if @get('point_inclusions') then $.parseJSON(@get('point_inclusions')) else []
 
+      if filter_to_existing
+        @included_points = _.filter @included_points, (pnt) -> App.request('point:get', pnt, false, null, false)
       @included_points
 
     includePoint : (point) ->
@@ -145,7 +148,7 @@
 
     syncOpinion : (opinion, params = {}) -> 
       params = _.extend params, 
-        included_points : opinion.getIncludedPoints()
+        included_points : opinion.getIncludedPoints(true)
         viewed_points : _.keys(opinion.viewed_points)
         opinion : 
           opinion.attributes

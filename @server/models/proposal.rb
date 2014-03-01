@@ -36,7 +36,7 @@ class Proposal < ActiveRecord::Base
   def full_data(current_tenant, current_user, prop_data, show_private = false)
     response = {
       :proposal => self,
-      :points => Point.mask_anonymous_users(points.viewable.public_fields, current_user),
+      :points => Point.mask_anonymous_users(points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})").public_fields, current_user),
       :included_points => Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).select('points.id') + Point.included_by_unstored(prop_data[:included_points].keys, self).select('points.id'),
       :opinions => opinions.published.public_fields,
       :result => 'success'

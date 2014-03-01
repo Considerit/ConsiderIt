@@ -53,8 +53,12 @@
 
       #@setUserOpinion params.opinion.opinion.id
 
-      # opinion = @getUserOpinion()
-      # opinion.setIncludedPoints (p.point.id for p in params.included_points)
+      # For users whose opinion is not yet in the database, and users whose opinion has
+      # not been fully saved, we need to use other data besides that which is stored 
+      # in the opinion to bring the opinion fully up to date. 
+      opinion = @getUserOpinion()
+      for p in params.included_points
+        opinion.includePoint App.request('point:get', p.point.id)
 
       current_tenant = App.request 'tenant'
       if current_tenant.get 'assessment_enabled'

@@ -11,6 +11,12 @@
       @listenTo @options.parent_controller, 'point:open', (point) =>
         @trigger 'point:open', point
 
+      # @listenTo App.vent, 'user:signout', =>
+      #   @crafting_controller.close() if @crafting_controller
+      #   @crafting_controller = @getCraftingController @layout.opinionRegion        
+      #   @setupCraftingController @crafting_controller 
+      #   @trigger 'auth_status_changed'
+
       @layout = @getLayout()
       @setupLayout @layout
 
@@ -202,9 +208,11 @@
       # After signing in, the existing user may have a preexisting opinion. We need
       # to refresh the points shown in the margins if that preexisting opinion had included points.
       # Similarily after a user signs out, the points in their list should be returned to peer points.
-      @listenTo controller, 'signin:opinion_changed', (existing_opinion_had_included_points) =>
+      @listenTo controller, 'auth_status_changed', (existing_opinion_had_included_points) =>
         if @state == Proposal.State.Crafting && existing_opinion_had_included_points
-          @saveOpenPoint()          
+
+          @saveOpenPoint()
+          App.vent.trigger 'points:unexpand'
           @updateCommunityPoints @layout
           @restoreOpenPoint()
 

@@ -70,14 +70,10 @@
       auth_method = @model.authMethod()
       if auth_method == 'email'
         @$el.find('.password_field').show() 
-        if Modernizr.input.placeholder
-          #@$el.find('#user_name').focus() 
-          null
-        else
+        if !modernizr.input.placeholder
           #IE hack
           @$el.find('.name_field').prepend('<label for="user_name">Your name</label>')
           @$el.find('.email_field').prepend('<label for="user_email">Email address</label>')
-
           @$el.find('.password_field').prepend('<label for="user_password">Password</label>')
       else
         @$el.find('.password_field').hide()

@@ -53,9 +53,12 @@
         @$el.find('#user_email[placeholder]').simplePlaceholder() 
 
 
-      selector = if @options.selected == 'has_pass' then '#password_none' else '#password_has'
+      selector = if @options.selected != 'has_pass' then '#password_has' else '#password_none'
+
       $password_input = @$el.find selector
       $password_input.trigger 'click'
+
+      @toggleInput @options.selected != 'has_pass'
 
       if !@options.fixed
         @$el.find('#user_email').focus() 
@@ -89,27 +92,12 @@
       $(ev.currentTarget).parents('form').submit()
       ev.stopPropagation()
 
-    setInput : (has_password) ->
-      if has_password
-        $now_checked = @$el.find('#password_has')
-        #$not_checked = @$el.find('#password_none') 
-      else
-        $now_checked = @$el.find('#password_none') 
-        #$not_checked = @$el.find('#password_has')
 
-      $now_checked.trigger 'click'
-      #$now_checked.attr 'checked', 'checked'
-      #$not_checked.removeAttr 'checked'
-
-      #@toggleInput has_password
-
-
-
-    toggleInput : (has_password) ->
+    toggleInput : (currently_has_password) ->
       $password_area = @$el.find('#password_has').siblings('.user-account-password')
       $submit_button_login = @$el.find('[action="login-submit"]')
       $submit_button_register = @$el.find('[action="create-account"]')
-      if !has_password
+      if !currently_has_password
         $password_area.css
           opacity : '.5'
           pointerEvents : 'none' 

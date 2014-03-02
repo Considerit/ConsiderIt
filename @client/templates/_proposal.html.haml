@@ -45,15 +45,16 @@
 
 
 %script{ :type => "text/template", :id => "tpl_proposal_social_media" }
-  .social_media_prompt
-    Invite your friends to join
 
-  %a{ :href => "https://twitter.com/share", :class => "twitter-share-button", :'data-count' => "none"}
+  %a.zocial.icon.twitter{ :href => "https://twitter.com/intent/tweet?text=Come%20join%20the%20discussion%20at%20{{ encodeURIComponent('#{root_url}'.substring(0, '#{root_url}'.length - 1) + Routes.proposal_path(long_id)) }}"}
     Tweet
-  {{'<' + 'script src="//platform.twitter.com/widgets.js" type="text/javascript"' + '><' + '/script>'}}
 
-  %a.zocial.facebook{ :href => "#", :onclick => "window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href), 'facebook-share-dialog', 'width=626,height=436'); return false;"}
-    Share
+  {{'<' + 'script id="twitter-wjs" src="//platform.twitter.com/widgets.js" type="text/javascript"' + '><' + '/script>'}}
+
+  %a.zocial.icon.facebook{ :href => "#", :onclick => "window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href), 'facebook-share-dialog', 'width=626,height=436'); return false;"}
+
+  %span.social_media_prompt
+    Invite others
 
 
 

@@ -778,7 +778,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         // hardcoding the width and removing the padding fixed an issue with the tooltip width collapsing when the window size is small
         if(self.options.fixedWidth === 0) {
           self.$tooltip.css({
-            'width': Math.round(tooltipWidth) + 'px',  // TRAVIS EDIT: change to tooltipWidth
+            //'width': Math.round(tooltipWidth) + 'px',  // TRAVIS EDIT: change to tooltipWidth
             'padding-left': '0px',
             'padding-right': '0px'
           });

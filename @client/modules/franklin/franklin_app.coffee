@@ -106,7 +106,7 @@
       if animate_proposal_expansion_from_homepage
         #remove surrounding elements, while suspending proposal el and moving it gracefully to top
         #TODO: move to root controller? 
-        $description_animation_time = 500
+        $description_animation_time = if Modernizr.csstransitions then 500 else 0
         root_controller = region.controlled_by
         $pel = $(proposal_controller.region.el)
         $pel_offset = $pel.position()
@@ -117,12 +117,15 @@
         root_controller.region.hideAllExcept $pel
         $pel.addClass('transitioning')
 
-        $pel.animate
-          top : 0
-        , $description_animation_time, =>
-          _.delay ->
-            $pel.attr 'style', ''
-          , 2500
+        if $description_animation_time > 0
+          $pel.animate
+            top : 0
+          , $description_animation_time, =>
+            _.delay ->
+              $pel.attr 'style', ''
+            , 2500
+
+
         start = new Date().getTime()
 
         proposal_controller.showDescription options.new_state

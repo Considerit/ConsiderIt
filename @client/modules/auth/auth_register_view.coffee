@@ -61,7 +61,8 @@
 
     onShow : ->
       @$el.find('input[type="file"]').customFileInput()
-      @$el.find('[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
+
+      @$el.find('#user_email[placeholder]').simplePlaceholder() if !Modernizr.input.placeholder
 
       if !@options.fixed && 'email' of @options.params
         @model.set 'email', @options.params.email

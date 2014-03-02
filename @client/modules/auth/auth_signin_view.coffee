@@ -50,7 +50,7 @@
         keyup : true
 
       if !Modernizr.input.placeholder
-        @$el.find('[placeholder]').simplePlaceholder() 
+        @$el.find('#user_email[placeholder]').simplePlaceholder() 
 
 
       selector = if @options.selected == 'has_pass' then '#password_none' else '#password_has'

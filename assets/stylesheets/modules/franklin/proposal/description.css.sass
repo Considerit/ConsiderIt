@@ -137,29 +137,27 @@ $description_animation_time: 500ms
 .proposal_social_media_region
   position: absolute
   visibility: hidden
-  right: -160px
-  bottom: -5 * $vertical_baseline
+  right: -128px
+  bottom: -1.5 * $vertical_baseline
   padding-right: $grid_gutter / 2
 
   .social_media_prompt
     +font-size(-1)
-    font-weight: bold
-    text-decoration: underline
-    margin-bottom: $vertical_baseline / 4
+    vertical-align: top
 
-  .facebook
-    +font-size(-3)
-    line-height: 1.6
-    top: -6px
-    position: relative
-    color: #e1e1e1
+  .zocial
+    +font-size(-4)
+    // line-height: 1.6
+    //top: -6px
+    // position: relative
+    color: #eaeaea
 
     &:hover
       color: white
 
-    &:before
-      line-height: 1.4
-      margin: 0
+    // &:before
+    //   line-height: 1.4
+    //   margin: 0
 
 
 // Proposal admin strip

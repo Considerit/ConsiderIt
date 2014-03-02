@@ -81,16 +81,12 @@
       
     events : 
       'click .points_list_region' : 'reasonsClicked'
-      # 'click .participating_users_region' : 'reasonsClicked'      
       'click .reasons_footer_region' : 'reasonsClicked'            
       'mouseenter .points_list_region' : 'showViewResults'
-      'mouseleave .points_list_region' : 'hideViewResults'
+      'mouseleave .points_by_community' : 'hideViewResults'
       'mouseenter .reasons_footer_region' : 'showViewResults'
       'mouseleave .reasons_footer_region' : 'hideViewResults'      
-      # 'mouseenter .participating_users_region' : 'showViewResults'
-      # 'mouseleave .participating_users_region' : 'hideViewResults'
       'mouseenter .community_point' : 'logPointView'
-
 
     reasonsClicked : (ev) ->
       if @state == Proposal.State.Summary && $(ev.target).closest('.decision_board_heading_region').length == 0
@@ -105,7 +101,8 @@
         visibility: 'visible'
 
     hideViewResults : (ev) ->
-      return if @state != Proposal.State.Summary || $(ev.target).closest('.results_prompt_from_summary_view').length > 0
+      return if @state != Proposal.State.Summary || $(ev.target).closest('.results_prompt_from_summary_view').length > 0 || ($(ev.target).is('.reasons_footer_region') && !$(ev.target).is('.points_by_community'))
+
       @hover_state = false
       _.delay =>
         if !@hover_state

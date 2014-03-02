@@ -263,10 +263,16 @@
       $form.find('.newpoint_nutshell, .newpoint_description').trigger('keyup')
       $form.show()
 
-      if !Modernizr.input.placeholder
-        $form.find('[placeholder]').simplePlaceholder() 
-      else
-        $form.find('.newpoint_nutshell').focus()
+      if !Modernizr.input.placeholder && @$el.find('label[for="nutshell"]').length == 0
+        #$form.find('[placeholder]').simplePlaceholder() 
+        #IE hack
+        @$el.find('#nutshell').before('<label for="nutshell">Summarize your point (required)</label>')
+        @$el.find('#text').before('<label for="text">Additional details (optional)</label>')
+
+      $form.find('.newpoint_nutshell').focus()
+
+ 
+
 
       @$el.find('.newpoint').addClass 'is_adding_newpoint'
     

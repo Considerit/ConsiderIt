@@ -20,7 +20,7 @@
 
     @events : 
       'click .close_open_point' : 'closePoint'
-      'click' : 'pointClicked'
+      'click .point_content' : 'pointClicked'
 
     pointClicked : (ev) ->
       pass_through = @$el.parents('.points_by_community[state="summary"]').length > 0
@@ -41,8 +41,8 @@
 
     events : _.extend @events,
       'click [action="point-include"]' : 'includePoint'
-      'mouseenter' : 'highlightIncluders'
-      'mouseleave' : 'unhighlightIncluders'
+      'mouseenter .point_content' : 'highlightIncluders'
+      'mouseleave .point_content' : 'unhighlightIncluders'
       
     includePoint : (ev) ->
       @trigger 'point:include'

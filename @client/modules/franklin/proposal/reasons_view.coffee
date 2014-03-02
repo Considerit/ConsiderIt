@@ -81,14 +81,14 @@
       
     events : 
       'click .points_list_region' : 'reasonsClicked'
-      'click .participating_users_region' : 'reasonsClicked'      
+      # 'click .participating_users_region' : 'reasonsClicked'      
       'click .reasons_footer_region' : 'reasonsClicked'            
       'mouseenter .points_list_region' : 'showViewResults'
       'mouseleave .points_list_region' : 'hideViewResults'
       'mouseenter .reasons_footer_region' : 'showViewResults'
       'mouseleave .reasons_footer_region' : 'hideViewResults'      
-      'mouseenter .participating_users_region' : 'showViewResults'
-      'mouseleave .participating_users_region' : 'hideViewResults'
+      # 'mouseenter .participating_users_region' : 'showViewResults'
+      # 'mouseleave .participating_users_region' : 'hideViewResults'
       'mouseenter .community_point' : 'logPointView'
 
 

@@ -69,7 +69,7 @@
             if data.method != 'email'
               msg = "#{msg} Previously you logged in with #{data.method}."
             else
-              email_view.setInput true
+              email_view.toggleInput true
 
             toastr.error msg
 

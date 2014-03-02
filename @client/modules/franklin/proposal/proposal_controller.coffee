@@ -27,7 +27,9 @@
         if !@model.openToPublic()
           @close()
           App.navigate Routes.root_path(), {trigger : true}
-        else
+        else if @state != Proposal.State.Summary
+          # This will clear out existing user opinions and create a new Opinion for the now anonymous user.
+          # For some reason, if we do this in summary state, all proposals disappear so for now, just don't do it in that state.
           @layout.close()
           @description_controller.close()
           @histogram_controller.close()
@@ -36,7 +38,10 @@
 
           @layout = options.view || @getLayout()
           @setupLayout @layout
+          @setState @state
           @region.show @layout
+
+          console.log 'showing again!', @state, @region, @layout
 
       App.reqres.setHandler "proposal_controller:#{@model.id}", => @
 

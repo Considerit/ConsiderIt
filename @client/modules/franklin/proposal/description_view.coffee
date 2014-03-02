@@ -120,4 +120,5 @@
     template : '#tpl_proposal_social_media'
     className : 'proposal_social_media_view'
 
+    serializeData : -> @model.attributes
 

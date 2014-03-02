@@ -130,6 +130,7 @@ $histogram_bar_width: $histogram_width / 7
   height: $vertical_baseline
   width: $histogram_width + $grid_gutter
   border-radius: 10px
+  z-index: -1 //allow mouth bubble to go on top of base (only a problem in firefox)
 
 .histogram_label
   position: absolute

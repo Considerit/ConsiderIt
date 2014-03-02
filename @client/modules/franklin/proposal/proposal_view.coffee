@@ -71,9 +71,13 @@
         positions = {}
         $user_els = $participants.find('.avatar')
         for participant in $user_els
-          $from = $(participant)
+          $from = $(participant)          
           id = $from.data('id')
+
           $to = $histogram.find("#avatar-#{id}")
+          if $to.length == 0 # can happen if user gets destroyed but positions weren't updated
+            $from.remove()
+            continue
 
           to_offset = $to.offset()
           from_offset = $from.offset()
@@ -86,12 +90,14 @@
 
           positions[id] = [offsetX, offsetY]
 
-        #_.delay =>
-
         for participant in $user_els
           $from = $(participant)
           id = $from.data('id')
+          if !(id of positions)
+            continue
+
           [offsetX, offsetY] = positions[id]
+
           
           rule = "rotate(180deg) scale(#{ratio},#{ratio}) translate(#{ 1/ratio * offsetX}px,#{ 1/ratio * offsetY}px)"
           $from.css 
@@ -109,7 +115,6 @@
 
           @trigger 'explosion:complete'
         , speed + 10
-        #, 1000 # give time for the description to slide down
 
 
 

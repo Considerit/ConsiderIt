@@ -43,6 +43,7 @@ gem 'rails_admin' #, :git => 'git://github.com/sferik/rails_admin' #remove git r
 gem 'cancan'
 
 #http://rubydoc.info/gems/role_model/0.7.1/frames
+
 gem 'role_model'
 
 # https://github.com/thoughtbot/paperclip

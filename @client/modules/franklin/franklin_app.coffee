@@ -2,11 +2,11 @@
 
   class Franklin.Router extends Marionette.AppRouter
     appRoutes : 
-      "" : "Root"      
-      ":proposal": "CraftOpinion"
-      ":proposal/results": "Results"
-      ":proposal/points/:point" : "OpenPoint"
-      ":proposal/opinions/:user_id" : "UserOpinion"
+      "(/)" : "Root"      
+      ":proposal(/)": "CraftOpinion"
+      ":proposal/results(/)": "Results"
+      ":proposal/points/:point(/)" : "OpenPoint"
+      ":proposal/opinions/:user_id(/)" : "UserOpinion"
 
 
   API =

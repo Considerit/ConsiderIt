@@ -1,18 +1,18 @@
 @ConsiderIt.module "Dash", (Dash, App, Backbone, Marionette, $, _) ->
   class Dash.Router extends Marionette.AppRouter
     appRoutes :
-      "dashboard/application" : "appSettings"
+      "dashboard/application(/)" : "appSettings"
       #"dashboard/proposals" : "manageProposals"
-      "dashboard/roles" : "userRoles"
-      "dashboard/users/:id/profile" : "userProfile"
-      "dashboard/users/:id/profile/edit" : "editProfile"
-      "dashboard/users/:id/profile/edit/account" : "accountSettings"
-      "dashboard/users/:id/profile/edit/notifications" : "emailNotifications"
-      "dashboard/analytics" : "analyze"
-      "dashboard/data" : "database"
-      "dashboard/moderate" : "moderate"
-      "dashboard/import_data" : "importData"
-      "dashboard/client_errors" : "clientErrors"
+      "dashboard/roles(/)" : "userRoles"
+      "dashboard/users/:id/profile(/)" : "userProfile"
+      "dashboard/users/:id/profile/edit(/)" : "editProfile"
+      "dashboard/users/:id/profile/edit/account(/)" : "accountSettings"
+      "dashboard/users/:id/profile/edit/notifications(/)" : "emailNotifications"
+      "dashboard/analytics(/)" : "analyze"
+      "dashboard/data(/)" : "database"
+      "dashboard/moderate(/)" : "moderate"
+      "dashboard/import_data(/)" : "importData"
+      "dashboard/client_errors(/)" : "clientErrors"
 
   API =
 

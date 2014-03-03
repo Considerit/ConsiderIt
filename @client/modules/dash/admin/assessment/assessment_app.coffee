@@ -1,8 +1,8 @@
 @ConsiderIt.module "Dash.Admin.Assessment", (Assessment, App, Backbone, Marionette, $, _) ->
   class Assessment.Router extends Marionette.AppRouter
     appRoutes :
-      "dashboard/assessment" : "list"
-      "dashboard/assessment/:id/edit" : "edit"
+      "dashboard/assessment(/)" : "list"
+      "dashboard/assessment/:id/edit(/)" : "edit"
 
   API =
 

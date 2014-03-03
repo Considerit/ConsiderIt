@@ -1,7 +1,7 @@
 @ConsiderIt.module "Static", (Static, App, Backbone, Marionette, $, _) ->
   class Static.Router extends Marionette.AppRouter
     appRoutes : 
-      "home/:page": "show"
+      "home/:page(/)": "show"
 
 
   API =    

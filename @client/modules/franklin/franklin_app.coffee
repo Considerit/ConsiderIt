@@ -69,15 +69,15 @@
       proposal = App.request 'proposal:get', long_id, true
       point = App.request 'point:get', parseInt(point_id), true, long_id
 
+      region = App.request 'default:region'
+      proposal_controller = region.controlled_by
+
+      is_in_crafting = region.controlled_by instanceof Franklin.Proposal.ProposalController && region.controlled_by.state == Franklin.Proposal.State.Crafting
       history = [ 
         ['homepage', '/'], 
-        ["#{proposal.id}", Routes.new_opinion_proposal_path(long_id)]
+        if is_in_crafting then ["#{proposal.id}", Routes.new_opinion_proposal_path(long_id)] else ["results", Routes.proposal_path(long_id)],      
         ["#{ if point.isPro() then 'Pro' else 'Con'} point", Routes.proposal_point_path(long_id, point_id)] ]
 
-      region = App.request 'default:region'
-
-      if region.controlled_by instanceof Franklin.Proposal.ProposalController && region.controlled_by.state == Franklin.Proposal.State.Results
-        history.splice history.length - 1, 0, ['results', Routes.proposal_path(long_id)]
 
       @_transitionProposal proposal, history, 
         point : point
@@ -195,12 +195,9 @@
         else
           history = [ 
             ['homepage', '/'], 
-            ["#{proposal.id}", Routes.new_opinion_proposal_path(long_id)],      
-            ["results", Routes.proposal_path(long_id)],          
+            if region.controlled_by.state == Franklin.Proposal.State.Crafting then ["#{proposal.id}", Routes.new_opinion_proposal_path(long_id)] else ["results", Routes.proposal_path(long_id)],
             ["#{user.get('name')}", Routes.proposal_opinion_path(long_id, opinion.id)] ]
 
-        if region.currentView instanceof Franklin.Proposal.HistogramLayout
-          history.splice history.length - 1, 0, ['results', Routes.proposal_path(long_id)]
 
         App.vent.trigger 'route:completed', history
         App.request 'meta:change:default'

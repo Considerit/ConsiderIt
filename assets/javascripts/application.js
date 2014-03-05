@@ -9,6 +9,7 @@
 
 //= require js-routes
 
+//= require ./vendor/jquery.ui.js
 //= require_tree ./vendor/main
 
 //= require client

@@ -6,7 +6,7 @@ class Dashboard::ClientErrorsController < Dashboard::DashboardController
 
     rendered_admin_template = params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil
 
-    errors = ClientError.all.limit(500)
+    errors = ClientError.all.order(:created_at).reverse_order.limit(500)
 
     render :json => {:account => current_tenant, :admin_template => rendered_admin_template, :errors => errors}
   end

@@ -15,6 +15,7 @@ Not yet tested here:
   - when navigating back to the user profile page from e.g. a user's point, does not check nav behavior of closing the point
   - lurking on an inactive proposal
   - lurking on a no-activity proposal
+  - going to right page after opening and closing points and positions
 ###
 
 

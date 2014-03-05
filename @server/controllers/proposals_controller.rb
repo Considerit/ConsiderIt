@@ -65,19 +65,11 @@ class ProposalsController < ApplicationController
     # opinion = ProposalsController.get_opinion_for_user(proposal, current_user, session)
     # data[:opinion] = opinion
 
-    respond_to do |format|
-      format.html {
-        @current_proposal = data.to_json
-        render :nothing => true, :layout => true
-      }
-
-      format.json {
-        render :json => data
-      }
-
-      format.json {
-        render :json => data
-      }
+    if request.xhr?
+      render :json => data
+    else
+      @current_proposal = data.to_json
+      render :nothing => true, :layout => true
     end
 
   end

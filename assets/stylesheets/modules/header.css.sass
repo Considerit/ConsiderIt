@@ -1,0 +1,58 @@
+@import "variables"
+@asdfsadfdsaf
+
+//////////////////////////////////////////
+// HEADING 
+//////////////////////////////////////////
+
+.t-logo-name, .t-logo-separator
+  display: inline-block
+
+.t-logo-name
+  text-transform: uppercase
+
+.l_header
+  .t-logo
+    position: relative
+    margin: $vertical_baseline/2 $grid_gutter/2
+    float: left
+    vertical-align: baseline
+
+    // left: 106px
+    +font-size(-1)
+    font-weight: bold
+    opacity: .8
+    z-index: 10
+
+  .t-logo-tagline
+    display: inline-block
+    margin-left: $grid_gutter/2
+
+
+  .l-navigate
+    margin: auto
+    position: absolute
+    top: 7px
+    z-index: 50
+    width: 100%
+
+    .l-navigate-wrap
+      width: $content_width
+      margin-left: -$content_width/2
+      left: 50%
+      position: relative
+      padding-left: 176px
+    .l-navigate-back, .l-navigate-crumb
+      +font-size(0)
+      text-transform: lowercase
+    .l-navigate-breadcrumbs
+      display: inline
+
+      //margin-left: 50px
+    .l-navigate-crumb
+      display: inline
+      list-style: none
+    .l-navigate-separator
+      margin: 0 $grid_gutter / 2
+      display: inline-block
+      opacity: .4

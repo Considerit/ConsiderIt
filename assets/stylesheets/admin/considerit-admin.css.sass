@@ -1,0 +1,39 @@
+@import "variables"
+@import "variables_skin"
+
+@import "library"
+@import "./modules/dash/moderatable"
+@import "./modules/dash/assessable"
+@import "./modules/dash/analytics"
+
+.pressable_button
+  +pressable_button
+  
+fieldset
+  border: 1px solid #bbb
+  padding: $vertical_baseline $grid_gutter
+  margin: $vertical_baseline 0
+ 
+  legend
+    margin-left: $grid_gutter
+    color: #777
+    //+font-size(-3)
+    padding: 0 $grid_gutter / 2
+
+
+.message
+  textarea
+    display: block
+    +font-size(0)
+
+  .message-subject, .message-body
+    margin-bottom: $vertical_baseline/2
+
+  label
+    display: block
+    text-align: left
+
+  .message-footer
+    text-align: right
+
+  input[type="submit"]

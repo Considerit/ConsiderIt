@@ -1,0 +1,138 @@
+@import "library"
+
+//////////////////////////////////////////////////////////////////
+// SKIN VARIABLES
+//
+// These variables define the skin of this consider.it instance. 
+// They can be overridden in skin/* files, or in SASS files for each 
+// Theme. 
+//
+// Overriding is facilitated by the SASS !default option
+// which dictates that the value of the variable is set only if 
+// a value has not already been set. This means that we can import
+// this variables_skin file AFTER the variables have been defined in 
+// a specific theme file, giving complete control to themes for
+// overriding any variable used here. 
+//
+// Skin variables are applied in css styles in skinables.css.sass.
+///////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////
+////////////////////// FONT //////////////////////////////
+$main_font-family: "Source Sans Pro", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif !default
+//////////////////////////////////////////////////////////
+
+
+///////////////////////
+// COLOR PALETTE
+// Define your color palette. Add and apply your own or override these
+// in your own skin file if you wish. 
+
+// the default color scheme
+$plain_background_color: whitesmoke !default
+$plain_text_color: #414141 !default
+
+// some colors to spice up key elements
+$primary_accent_background_color: hsl( 210, 0%, 84%) !default
+$primary_accent_text_color: hsl( 210, 0%, 25%) !default
+
+$secondary_accent_background_color: #414141 !default
+$secondary_accent_text_color: #fafafa !default
+
+// complementary color should have strong contrast with background color
+$complementary_background_color: emphasize($primary_accent_background_color, 25%) !default
+$complementary_text_color: white !default
+
+//////////////////////////////////////////////////////////
+////////////////// COLOR GROUPS //////////////////////////
+// A color group defines a text color and background styles. 
+//
+// Color groups are primarily applied to root HTML elements that start
+// a new background. For example, the pro/con decision board 
+// has a new background regime imposed on it and its children.
+// This use of color groups manifest particularly in the %on_* extend
+// definitions in skinables.css.sass.
+//
+// These colors, however, can be reused as appropriate 
+// throughout the application, such as for using an accent color
+// for a particular styled element.
+// 
+// Though not every group needs all these, the elements of a color group are:
+//   $*_text_color : the default text color of elements and children 
+//   $*_background_declaration : the background property of this element
+//   $*_background_color : the background color of this element 
+//         (or approximation of bg color if background is a colored pattern)
+//   $*_border_color : darker version of background color used for e.g. borders 
+//          or dark parts of background gradients 
+//////////////////////////////////////////////////////////
+
+// BASE PAGE BACKGROUND LAYOUT GROUP
+// Applied to the highest level content area
+$base_text_color: $plain_text_color !default
+$base_background_color: #fafafa !default
+$base_background_declaration: $base_background_color !default
+
+// $base_text_color: #dedede 
+// $base_background_color: #777
+// $base_background_declaration: asset-data-url('base/images/tweed.png') repeat 
+
+// HEADER LAYOUT GROUP
+// Applied to page header
+$header_background_color: $base_background_color !default
+$header_background_declaration: transparent !default
+$header_text_color: $base_text_color !default
+
+// FOOTER LAYOUT GROUP
+// Applied to page footer
+$footer_background_color: $base_background_color !default
+$footer_background_declaration: transparent !default
+$footer_text_color: $base_text_color !default
+
+// MENU LAYOUT GROUP
+// Applied to drop down menus
+$menu_background_color: $plain_background_color !default
+$menu_text_color: $plain_text_color !default
+
+// DIALOG LAYOUT GROUP
+// Applied to body of modal dialogs
+$dialog_background_color: $plain_background_color !default
+$dialog_text_color: $plain_text_color !default
+
+// PRO/CON DECISION BOARD ELEMENT GROUP
+// Applied to everything on the pro/con decision board for individual opinion crafting
+$decision_board_text_color: mix(emphasize($base_text_color, 35%, $reference: $base_background_color), emphasize($primary_accent_background_color, 25%), 80%) !default
+$decision_board_border_color: $decision_board_text_color !default
+$decision_board_background_color: rgba(mix($base_background_color, $primary_accent_background_color, 95%), .3)
+$decision_board_background_declaration: $decision_board_background_color !default
+
+// HISTOGRAM ELEMENT GROUP
+// Applied to each histogram bar on the results page
+$histogram_bar_color: emphasize($base_background_color, 45%) !default
+$histogram_base_color: emphasize($histogram_bar_color, 5%) !default
+
+// SLIDER ELEMENT
+// Background color of the slider on the crafting page
+$slider_background_color: $histogram_base_color !default
+
+// PROPOSAL TITLE ELEMENT GROUP
+// Applied to the proposal title
+$proposal_title_background_color: $primary_accent_background_color !default
+$proposal_title_text_color: $primary_accent_text_color !default
+
+// PROPOSAL DETAILS ELEMENT GROUP
+// Applied to the expanded details for a proposal
+$proposal_detail_background_color: $plain_background_color !default
+$proposal_detail_text_color: $plain_text_color !default
+
+// PEER POINT ELEMENT GROUP
+// Applied to peer point summary, peer points and open points
+$peer_background_color: $plain_background_color !default
+$peer_text_color: $plain_text_color !default
+
+
+//////////////////////////////////////////////////////////////
+// THEME HOOKS 
+// Background settings for the area framing the content area
+$bg_top_declaration: none !default
+$bg_content_declaration: none !default
+$bg_content_top_declaration: none !default

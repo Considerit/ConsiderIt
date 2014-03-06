@@ -1,0 +1,23 @@
+
+- url = new_opinion_proposal_url(@proposal.long_id, :host => @host, :u => @email, :t => ApplicationController.arbitrary_token("#{@email}#{@unique_token}#{@options[:current_tenant].identifier}"))
+
+%p.head
+
+  - if @notification_type == 'your proposal'
+
+    You created a new proposal to discuss privately. Those people you have invited have been sent an email invitation. 
+
+  - elsif @notification_type == 'invitee'
+
+    #{@proposal.user.name} has invited you to participate in a decision. This is a private discussion, so you will have to log in before you can access it.
+
+%p 
+  The proposal: 
+
+  .object
+    &ldquo;#{link_to @proposal.title, url}&rdquo;
+
+.action_call
+  .rest
+    .call
+      = link_to 'Join the discussion', url

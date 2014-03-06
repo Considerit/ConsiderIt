@@ -619,16 +619,16 @@ namespace :metrics do
           # date of first request timestamp
           row.push was_checked || simulate_fact_check ? request.created_at : nil
 
-          # date of fact-check
+          # date of fact check
           row.push was_checked || simulate_fact_check ? assessment.updated_at : nil
 
           comments = Comment.where(:commentable_id => view.point_id, :user_id => view.user_id)
           # An indicator for whether or not this viewer made a comment
           row.push comments.count > 0
 
-          #made comment before fact-check
+          #made comment before fact check
           row.push was_checked || simulate_fact_check ? comments.where( "created_at < ?", assessment.updated_at).count > 0 : nil
-          #made comment after fact-check
+          #made comment after fact check
           row.push was_checked || simulate_fact_check ? comments.where( "created_at >= ?", assessment.updated_at).count > 0 : nil
 
           # An indicator for whether or not the view resulted in an inclusion

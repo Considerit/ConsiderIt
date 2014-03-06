@@ -45,7 +45,7 @@
   .claim_summary
 
     .claim_summary_restatement
-      Fact-check: {{ claim.get('claim_restatement') }}
+      Fact check: {{ claim.get('claim_restatement') }}
     .claim_summary_evaluation
       Rated: {{ claim.getVerdict().get('name') }}.
     .claim_summary_link
@@ -57,7 +57,7 @@
 
   .comment_body_wrap
     .comment_claim_restatement
-      Fact-check: {{ claim.get('claim_restatement') }}
+      Fact check: {{ claim.get('claim_restatement') }}
     .comment_claim_evaluation
       Rated: {{ verdict.get('name') }}
     .comment_claim_report
@@ -93,5 +93,5 @@
       (( } ))
 
       .comment_claim_process       
-        = link_to 'Read about the fact-checking process', '/home/fact_check', :target => '_blank' 
+        = link_to 'Read about the fact checking process', '/home/fact_check', :target => '_blank' 
 

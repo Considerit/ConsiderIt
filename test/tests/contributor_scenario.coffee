@@ -412,20 +412,20 @@ casper.test.begin 'Prolific contributor can comment on points', 11, (test) ->
         casper.then ->
           casper.HTMLStep 'Thank fact checker'
 
-          test.assertExists ".claim_comment [action='thank-commenter']", 'Opportunity to thank a fact-checker'
+          test.assertExists ".claim_comment [action='thank-commenter']", 'Opportunity to thank a fact checker'
           casper.click ".claim_comment [action='thank-commenter']"
 
           casper.waitForSelector '.claim_comment [action="unthank-commenter"]', ->
 
-            test.pass 'Can thank fact-checker'
+            test.pass 'Can thank fact checker'
 
             casper.HTMLCapture '.open_point', 
               caption : "fact-checker thanked"
 
-            test.assertExists ".claim_comment [action='unthank-commenter']", 'Opportunity to unthank a fact-checker'
+            test.assertExists ".claim_comment [action='unthank-commenter']", 'Opportunity to unthank a fact checker'
             casper.click ".claim_comment [action='unthank-commenter']"
             casper.waitForSelector '.claim_comment [action="thank-commenter"]', ->
-              test.pass 'Can unthank fact-checker'
+              test.pass 'Can unthank fact checker'
 
         casper.then ->
           casper.HTMLStep 'Thank commenter'

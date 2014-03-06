@@ -203,6 +203,8 @@ ActiveSupport::Notifications.subscribe("alert_proposal_publicity_changed") do |*
   current_tenant = data[:current_tenant]
   mail_options = data[:mail_options]
 
+  users.delete(inviter.email) if inviter #don't email inviter twice if they specified themselves in the list
+
   users.each do |user|
     if user.length > 0
       UserMailer.invitation(user, proposal, 'invitee', mail_options).deliver!

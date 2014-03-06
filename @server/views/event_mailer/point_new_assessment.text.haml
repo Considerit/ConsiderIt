@@ -10,7 +10,7 @@ Hi #{@user.first_name},
 
 = "\r\n"
 
-The result of the fact-check:
+The result of the fact check:
 - @assessment.claims.each do |clm|
   
   * Claim: "#{clm.claim_restatement}"; Conclusion: #{clm.verdict.formatVerdict()}.

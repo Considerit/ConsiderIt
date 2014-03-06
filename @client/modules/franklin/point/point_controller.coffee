@@ -117,7 +117,7 @@
     setupCommentsView : (region) ->
       collection = @options.model.getComments()
 
-      # collection will be polymorphic with fact-checks mixed in      
+      # collection will be polymorphic with fact checks mixed in      
       current_tenant = App.request 'tenant'
       if current_tenant.get 'assessment_enabled'
         assessment = @options.model.getAssessment()

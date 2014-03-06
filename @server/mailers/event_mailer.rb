@@ -110,9 +110,9 @@ class EventMailer < ActionMailer::Base
     from = format_email(options[:from], options[:app_title])
 
     if notification_type == 'your point'
-      subject = "a point you wrote has been fact-checked"
+      subject = "a point you wrote has been fact checked"
     else
-      subject = "a point you follow has been fact-checked"
+      subject = "a point you follow has been fact checked"
     end
 
     email_with_name = "#{@user.username} <#{@user.email}>"

@@ -29,7 +29,7 @@ class AlertMailer < ActionMailer::Base
 
     email_with_name = "#{@user.username} <#{@user.email}>"
 
-    subject = "A new fact-check request"
+    subject = "A new fact check request"
     from = format_email(tenant.contact_email, tenant.app_title)
 
     mail(:from => from, :to => email_with_name, :subject => "[#{tenant.app_title}] #{subject}")

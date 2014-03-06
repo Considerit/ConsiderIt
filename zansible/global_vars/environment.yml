@@ -6,7 +6,6 @@ rbenv_home: ${rbenv_path}/bin
 ruby_version: 2.0.0-p247 #1.9.3-p392
 source: . ~/.profile
 port: 3000
-rails_environment: production
 path: 'PATH="${rbenv_path}/bin:${rbenv_path}/plugins/ruby-build/bin:$HOME/.rbenv/shims:$PATH"'
 node_version: v0.10.24
 node_path: /usr/local

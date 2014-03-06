@@ -1,0 +1,33 @@
+@import "variables"
+
+// User Opinion
+
+.user_opinion
+  width: $body_width+$grid_major
+  .user_opinion-reasons
+    text-align: left
+
+
+  .user_opinion-reasons-label
+    font-weight: bold
+
+  .user_opinion-reasons-list
+    padding: $vertical_baseline / 2 $grid_gutter 0 $grid_gutter
+
+  .user_opinion-point
+    +font-size(-2)
+    margin-bottom: $vertical_baseline/2
+
+  .username
+    font-style: italic
+    white-space: nowrap
+    display: inline-block
+
+  .user_opinion-reasons-none
+    font-weight: bold
+
+  .user_profile_link
+    text-decoration: underline
+    +font-size(-1)
+    display: block
+    margin-top: $vertical_baseline / 2

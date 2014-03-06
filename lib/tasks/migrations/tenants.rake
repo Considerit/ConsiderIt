@@ -1,5 +1,5 @@
 namespace :tenants do
-  desc "Based on tenant info from Proposals, Points, Positions, update account_id on all associated records"  
+  desc "Based on tenant info from Proposals, Points, Opinions, update account_id on all associated records"  
   task :update_associated => :environment do
     Account.find_each do |accnt|
       accnt.proposals.each do |prop|
@@ -29,7 +29,7 @@ namespace :tenants do
   end
 
   task :duplicate_users_with_multiple_tenant_activity => :environment do
-    tables = [Proposal,Point,Comment,Reflect::ReflectBulletRevision,Inclusion,Position]
+    tables = [Proposal,Point,Comment,Reflect::ReflectBulletRevision,Inclusion,Opinion]
     tables_to_update = [
       'proposals', 'positions', 'points', 'inclusions', 'reflect_bullet_revisions', 'reflect_response_revisions',
       'point_listings', 'comments', 'activities']

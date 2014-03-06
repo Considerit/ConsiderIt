@@ -23,7 +23,10 @@ config/newrelic.yml
 .vagrant
 restart.txt
 
-spec/data/test.sql.bz2
+test/data/test.sql.bz2
+test/data/test.sql
+
+node_modules
 
 zansible/templates/seed_data/avatars.zip
 zansible/templates/seed_data/considerit.sql.bz2
@@ -33,10 +36,12 @@ zansible/templates/ssh/github
 zansible/hosts/group_vars/chalkboardit
 zansible/hosts/group_vars/considerit
 zansible/hosts/group_vars/chlkit
+zansible/hosts/group_vars/workbus
 zansible/hosts/group_vars/iweb
 
 zansible/hosts/chalkboardit
 zansible/hosts/chlkit
+zansible/hosts/workbus
 zansible/hosts/considerit
 zansible/hosts/iweb
 
@@ -49,4 +54,3 @@ public/system/default_avatar/avatar.sketch*
 
 zansible/templates/seed_data/test.sql.bz2
 
-test/data/test.sql.bz2

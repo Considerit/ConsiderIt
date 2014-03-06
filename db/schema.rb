@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140121232042) do
+ActiveRecord::Schema.define(version: 20140212194651) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -191,7 +191,7 @@ ActiveRecord::Schema.define(version: 20140121232042) do
 
   create_table "inclusions", force: true do |t|
     t.integer  "proposal_id"
-    t.integer  "position_id"
+    t.integer  "opinion_id"
     t.integer  "point_id"
     t.integer  "user_id"
     t.integer  "session_id"
@@ -217,6 +217,30 @@ ActiveRecord::Schema.define(version: 20140121232042) do
     t.boolean  "notification_sent",             default: false
   end
 
+  create_table "opinions", force: true do |t|
+    t.integer  "proposal_id"
+    t.integer  "user_id"
+    t.integer  "session_id"
+    t.text     "explanation"
+    t.float    "stance"
+    t.integer  "stance_segment"
+    t.boolean  "published",                              default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "account_id"
+    t.integer  "followable_last_notification_milestone"
+    t.datetime "followable_last_notification"
+    t.text     "point_inclusions"
+    t.string   "long_id"
+  end
+
+  add_index "opinions", ["account_id", "proposal_id", "published"], name: "index_opinions_on_account_id_and_proposal_id_and_published", using: :btree
+  add_index "opinions", ["account_id"], name: "index_opinions_on_account_id", using: :btree
+  add_index "opinions", ["proposal_id"], name: "index_positions_on_option_id", using: :btree
+  add_index "opinions", ["published"], name: "index_opinions_on_published", using: :btree
+  add_index "opinions", ["stance_segment"], name: "index_opinions_on_stance_segment", using: :btree
+  add_index "opinions", ["user_id"], name: "index_opinions_on_user_id", using: :btree
+
   create_table "page_views", force: true do |t|
     t.integer  "user_id"
     t.integer  "account_id"
@@ -230,7 +254,7 @@ ActiveRecord::Schema.define(version: 20140121232042) do
 
   create_table "point_listings", force: true do |t|
     t.integer  "proposal_id"
-    t.integer  "position_id"
+    t.integer  "opinion_id"
     t.integer  "point_id"
     t.integer  "user_id"
     t.datetime "created_at"
@@ -240,13 +264,13 @@ ActiveRecord::Schema.define(version: 20140121232042) do
   end
 
   add_index "point_listings", ["account_id"], name: "index_point_listings_on_account_id", using: :btree
+  add_index "point_listings", ["opinion_id"], name: "index_point_listings_on_opinion_id", using: :btree
   add_index "point_listings", ["point_id"], name: "index_point_listings_on_point_id", using: :btree
-  add_index "point_listings", ["position_id"], name: "index_point_listings_on_position_id", using: :btree
   add_index "point_listings", ["user_id", "point_id"], name: "index_point_listings_on_user_id_and_point_id", unique: true, using: :btree
 
   create_table "points", force: true do |t|
     t.integer  "proposal_id"
-    t.integer  "position_id"
+    t.integer  "opinion_id"
     t.integer  "user_id"
     t.integer  "session_id"
     t.text     "nutshell"
@@ -288,30 +312,6 @@ ActiveRecord::Schema.define(version: 20140121232042) do
   add_index "points", ["account_id"], name: "index_points_on_account_id", using: :btree
   add_index "points", ["is_pro"], name: "index_points_on_is_pro", using: :btree
   add_index "points", ["proposal_id"], name: "index_points_on_option_id", using: :btree
-
-  create_table "positions", force: true do |t|
-    t.integer  "proposal_id"
-    t.integer  "user_id"
-    t.integer  "session_id"
-    t.text     "explanation"
-    t.float    "stance"
-    t.integer  "stance_bucket"
-    t.boolean  "published",                              default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "account_id"
-    t.integer  "followable_last_notification_milestone"
-    t.datetime "followable_last_notification"
-    t.text     "point_inclusions"
-    t.string   "long_id"
-  end
-
-  add_index "positions", ["account_id", "proposal_id", "published"], name: "index_positions_on_account_id_and_proposal_id_and_published", using: :btree
-  add_index "positions", ["account_id"], name: "index_positions_on_account_id", using: :btree
-  add_index "positions", ["proposal_id"], name: "index_positions_on_option_id", using: :btree
-  add_index "positions", ["published"], name: "index_positions_on_published", using: :btree
-  add_index "positions", ["stance_bucket"], name: "index_positions_on_stance_bucket", using: :btree
-  add_index "positions", ["user_id"], name: "index_positions_on_user_id", using: :btree
 
   create_table "proposals", force: true do |t|
     t.string   "designator"
@@ -356,7 +356,7 @@ ActiveRecord::Schema.define(version: 20140121232042) do
     t.integer  "num_supporters"
     t.integer  "num_opposers"
     t.integer  "num_views"
-    t.integer  "num_unpublished_positions"
+    t.integer  "num_unpublished_opinions"
     t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
     t.datetime "start_date"
@@ -472,7 +472,7 @@ ActiveRecord::Schema.define(version: 20140121232042) do
     t.integer  "metric_points"
     t.integer  "metric_comments"
     t.integer  "metric_conversations"
-    t.integer  "metric_positions"
+    t.integer  "metric_opinions"
     t.text     "b64_thumbnail"
     t.text     "tags"
   end

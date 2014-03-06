@@ -1,0 +1,235 @@
+@import "variables"
+@import "library"
+@import "compass/css3/box-shadow"
+
+
+// top level point styling
+.point
+  position: relative
+  list-style: none outside none
+
+  &.decision_board_point
+    margin-left: $grid_gutter / 2
+
+  &.closed_point.decision_board_point
+    padding: 0 $grid_gutter 4px $grid_gutter
+
+  &.open_point
+    position: relative
+    z-index: 999
+    // padding: $vertical_baseline $grid_gutter  
+    width: $open_point-width + $point-avatar-width
+
+    &.decision_board_point
+      &.con
+        left: $point-width - $open_point-width + ($open_point-width - $body_width) / 2
+      &.pro
+        left: - ($open_point-width - $body_width) / 2
+
+// all points except those on the homepage should have a cursor on hover
+.points_by_community[state="crafting"], .points_by_community[state="results"], .points_on_decision_board
+  .closed_point
+    cursor: pointer
+
+.points_by_community
+
+  &[state="results"]
+    .open_point.con.community_point
+      right: $open_point-width - $point-width
+
+  &[state="crafting"]
+    .open_point.con.community_point
+      right: $open_point-width - $point-width + 56
+
+    .closed_point.community_point .point_content
+      +grab_cursor
+
+  &[state="summary"]
+    .point
+      z-index: 5
+
+
+// Expanded points
+// when the points list is expanded, need to increase width of each point
+.points_are_expanded .points_by_community
+  &[state="crafting"]
+    .open_point.con.community_point
+      right: $open_point-width - $point-width + 56 - $expanded_points_increment
+
+
+
+// point_content styling. Point content is the main part of a point
+// that has all the substantive content
+.point_content
+  position: relative
+  display: inline-block
+
+.community_point, .open_point
+  .point_content
+    padding: $vertical_baseline / 2 $grid_gutter / 2 
+    margin-bottom: $vertical_baseline / 2
+
+.open_point
+  .point_content
+    width: $open_point-width - 3
+    padding: $vertical_baseline 1.5 * $grid_gutter
+
+
+/////////////////////////
+// Point text
+
+.point_nutshell
+  word-wrap: break-word
+
+.closed_point .point_nutshell
+  +font-size(-1)
+
+.open_point
+  .point_nutshell, .point_description
+    padding-bottom: $vertical_baseline / 2
+
+  .point_nutshell
+    +font-size(4)
+
+  .point_description 
+    +font-size(0)
+
+//////
+
+
+
+//////////////////
+// bullet points
+.closed_point.decision_board_point
+
+  .point_nutshell:before
+    content: '\2022'
+    position: absolute
+    top: 0px
+    +font-size(-3)
+
+  &.pro .point_nutshell:before
+    left: -13px
+
+  &.con .point_nutshell:before
+    left: -10px
+
+
+/////////////
+
+
+/////////////////////////////////////////
+// point operations
+.open_point, .points_by_community[state="summary"]
+  .point_operations
+    display: none
+
+
+
+.points_by_community[state="results"], .points_by_community[state="crafting"]
+  .community_point
+    .point_operations
+      visibility: hidden
+
+    .point_content:hover
+      .point_operations
+        visibility: visible
+
+.closed_point
+  &.community_point
+    .point_operations        
+      position: relative
+
+      .open_point_link
+        +font-size(-3)
+
+
+    &.pro
+      .point_operations
+        text-align: left
+
+    &.con
+      .point_operations
+        text-align: right
+
+  &.decision_board_point
+    &:hover .point_operations
+      visibility: visible
+
+    .point_operations
+      visibility: hidden
+      padding: $vertical_baseline/8 $grid_gutter
+
+      .open_point_link
+        +font-size(-3)
+        margin: 0
+        padding: 1px 8px
+
+    .point_remove
+      margin-top: $grid_gutter/4
+      padding: 0 $grid_gutter/2
+
+      background: none
+      border-color: transparent
+
+///////////////////////////////////////
+
+.point_action
+  display: inline-block
+
+  i
+    padding-right: $grid_gutter / 4
+
+[state="results"] .open_point .point-include
+  display: none
+
+.community_point.closed_point, .open_point
+  .point_content
+    border-radius: 8px
+
+
+// point avatars
+.point_author_avatar
+  display: inline-block
+  position: relative
+  border-radius: 8px
+  top: .7 * $vertical_baseline
+  width: $point-avatar-width - 2
+  height: $point-avatar-width - 2
+
+.con .point_author_avatar
+  float: right
+
+.closed_point.decision_board_point .point_avatar_region
+  display: none
+
+
+///////////
+// Discussion
+.point_discussion_region
+  position: relative
+
+.point_discussion_heading
+  +font-size(2)
+  margin: $vertical_baseline 0
+
+.point_comments
+  list-style: none outside none
+////
+
+
+// close the open point styling
+.open_point .close_open_point
+  display: block
+  position: absolute
+  right: -11px
+  top: -11px
+  cursor: pointer
+
+  i
+    +font-size(2)
+
+.closed_point .close_open_point
+  display: none
+
+

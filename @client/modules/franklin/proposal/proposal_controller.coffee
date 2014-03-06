@@ -41,8 +41,6 @@
           @setState @state
           @region.show @layout
 
-          console.log 'showing again!', @state, @region, @layout
-
       App.reqres.setHandler "proposal_controller:#{@model.id}", => @
 
       @setState @options.proposal_state

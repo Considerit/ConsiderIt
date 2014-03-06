@@ -53,12 +53,39 @@ module ConsiderIt
 
     config.assets.version = '1.0'
 
-    config.assets.initialize_on_precompile = true
-
     config.action_mailer.delivery_method = :mailhopper
 
     config.force_ssl = false
     
+    config.assets.image_optim = false
+    
+    ##################
+    # for our custom rails directory structure
+    config.paths['app'] << "@server"
+    config.paths["app/controllers"] << "@server/controllers"
+    config.paths["app/models"] << "@server/models"
+    config.paths["app/views"] << "@server/views"
+    config.paths["app/views"] << "@client/templates"
+
+    config.paths["app/mailers"] << "@server/mailers"
+    config.paths["app/helpers"] << "@server/helpers"
+
+    config.paths["app/controllers/concerns"] << "@server/controllers/concerns"
+    config.paths["app/models/concerns"] << "@server/models/concerns"
+
+    config.paths["lib/tasks"] << "test"
+
+    #suspiciously, Rails apparently already loads @server/notifications...
+    #config.paths["config/initializers"] << "@server/notifications"
+
+    asset_paths = ["@client", "assets", "assets/stylesheets/vendor/admin/rails_admin", "assets/fonts"]
+    for asset_path in asset_paths
+        config.paths["app/assets"] << asset_path
+        config.assets.paths << Rails.root.join(asset_path)
+    end
+    ########################################
+
+
 
     # Enable FS storage for Paperclip
     Paperclip::Attachment.default_options.merge!({

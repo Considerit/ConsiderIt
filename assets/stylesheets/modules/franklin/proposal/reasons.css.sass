@@ -1,0 +1,434 @@
+@import "variables"
+@import "compass/css3/box-shadow"
+@import "compass/css3/transition"
+@import "compass/css3/transform"
+
+//////////////////
+// global layout for reasons & points, in different states
+
+$use_transitions: true
+
+
+//@import "compass/css3/animation"
+
+//temp while waiting for compass to come out of beta
+@-moz-keyframes FromResultsToCrafting_CommunityPoints 
+  0% 
+    background-color: whitesmoke
+    border-color: gainsboro
+  
+
+  70% 
+    background-color: whitesmoke
+    border-color: whitesmoke
+  
+
+  100% 
+    background-color: none
+    border-color: transparent
+  
+
+@-webkit-keyframes FromResultsToCrafting_CommunityPoints
+  0% 
+    background-color: whitesmoke
+    border-color: gainsboro
+  
+
+  70% 
+    background-color: whitesmoke
+    border-color: whitesmoke
+  
+
+  100% 
+    background-color: none
+    border-color: transparent
+  
+
+@keyframes FromResultsToCrafting_CommunityPoints
+  0% 
+    background-color: whitesmoke
+    border-color: gainsboro
+  
+
+  70% 
+    background-color: whitesmoke
+    border-color: whitesmoke
+  
+
+  100% 
+    background-color: none
+    border-color: transparent
+  
+
+@-moz-keyframes FromCraftingToResults_CommunityPoints
+  0% 
+    background-color: whitesmoke
+    border-color: transparent
+    -moz-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
+  
+
+  90% 
+    background-color: whitesmoke
+    border-color: transparent
+    -moz-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
+  
+
+  100%
+    -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    background-color: whitesmoke
+    border-color: #f1f1f1 #dddddd #bbbbbb #dddddd
+  
+
+@-webkit-keyframes FromCraftingToResults_CommunityPoints
+  0%
+    background-color: whitesmoke
+    border-color: transparent
+    -webkit-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
+
+  90%
+    background-color: whitesmoke
+    border-color: transparent
+    -webkit-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
+
+  100% 
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    background-color: whitesmoke
+    border-color: #f1f1f1 #dddddd #bbbbbb #dddddd
+  
+
+@keyframes FromCraftingToResults_CommunityPoints 
+  0% 
+    background-color: whitesmoke
+    border-color: transparent
+    -moz-box-shadow: 0px 1px 2px transparent
+    -webkit-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
+  
+
+  90% 
+    background-color: whitesmoke
+    border-color: transparent
+    -moz-box-shadow: 0px 1px 2px transparent
+    -webkit-box-shadow: 0px 1px 2px transparent
+    box-shadow: 0px 1px 2px transparent
+
+  100%
+    -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1)
+    background-color: whitesmoke
+    border-color: #f1f1f1 #dddddd #bbbbbb #dddddd
+
+
+// +keyframes(FromResultsToCrafting_CommunityPoints)
+//   0%
+//     background-color: whitesmoke
+//     border-color: darken(whitesmoke, 10%)
+
+//   70%
+//     background-color: whitesmoke
+//     border-color: whitesmoke
+
+//   100%
+//     background-color: none
+//     border-color: transparent
+
+// +keyframes(FromCraftingToResults_CommunityPoints)
+//   0%
+//     background-color: whitesmoke
+//     border-color: transparent
+//     +single-box-shadow($color: rgba(black, 0), $voff: 1px)
+
+//   90%
+//     background-color: whitesmoke
+//     border-color: transparent
+//     +single-box-shadow($color: rgba(black, 0), $voff: 1px)
+
+//   100%
+//     +single-box-shadow($color: rgba(black, .1), $voff: 1px)
+//     background-color: whitesmoke
+//     border-color: #f1f1f1 #ddd #bbb #ddd
+
+
+
+// transitions / animations
+.reasons_layout.transitioning
+  +transition(transform $transition_speed $transition_function)
+  .opinion_region, .community_pros_region, .community_cons_region
+    +transition(transform $transition_speed $transition_function)
+
+  &[state="crafting"]
+    &[coming-from-state="results"], &[coming-from-state="summary"]
+      .points_by_community
+        // +animation(FromResultsToCrafting_CommunityPoints $transition_speed)
+        -moz-animation: FromResultsToCrafting_CommunityPoints $transition_speed
+        -webkit-animation: FromResultsToCrafting_CommunityPoints $transition_speed
+        animation: FromResultsToCrafting_CommunityPoints $transition_speed
+
+
+      .community_point.closed_point .point_content
+        // +animation(FromCraftingToResults_CommunityPoints $transition_speed)        
+        // +animation-fill-mode(none)
+
+        -moz-animation: FromCraftingToResults_CommunityPoints $transition_speed
+        -webkit-animation: FromCraftingToResults_CommunityPoints $transition_speed
+        animation: FromCraftingToResults_CommunityPoints $transition_speed
+
+      // .point-include, .toggle_expand_points
+      //   //+animation(FromTogetherToSeparated_hidden $transition_speed * 2.5)
+
+      //   -moz-animation: FromTogetherToSeparated_hidden $transition_speed
+      //   -webkit-animation: FromTogetherToSeparated_hidden $transition_speed
+      //   animation: FromTogetherToSeparated_hidden $transition_speed
+
+
+// full reasons width is the width of the pro/con list in the middle and the peer pro/con points in the margins
+$full_reasons_width: 2 * $decision_board_width + 2
+$full_reasons_left: -($full_reasons_width - $content_width) / 2
+
+.reasons_layout  
+  &[state="crafting"], &[state="summary"]
+    +translateY(-$histogram_height)
+
+  &[state="crafting"][coming-from-state="results"]
+    +translateY(0)
+
+  &[state="crafting"][coming-from-state="results"]
+    .opinion_region
+      +translateY(- 2 * $vertical_baseline)
+
+    .community_pros_region, .community_cons_region
+      +translateY($vertical_baseline)
+
+  &[state="crafting"][coming-from-state="summary"], &[state="crafting"]
+    .opinion_region
+      +translateY(3 * $vertical_baseline)
+
+    .community_pros_region, .community_cons_region
+      +translateY(6 * $vertical_baseline)
+
+
+  &[state="summary"]
+    .opinion_region
+      +translateY($histogram_height + $vertical_baseline)
+
+
+  .community_pros_region .points_by_community
+    border-radius: 12px 0 0 12px
+    border-right-color: transparent
+
+  .community_cons_region .points_by_community
+    border-radius: 0 12px 12px 0
+    border-left-color: transparent
+
+  // basic layout
+
+  .points_list_region, .opinion_region
+    display: inline-block
+
+  .four_columns_of_points
+    //height: 100%
+    top: 0 
+    min-height: $histogram_height
+    position: absolute  
+    margin: auto
+    width: $body_width
+
+  .community_pros_region, .community_cons_region
+    height: 100%
+
+    .points_by_community
+      height: 100%
+      padding: $vertical_baseline $grid_gutter/2
+
+  .community_pros_region .point_avatar_region
+    float: left
+
+  .community_cons_region .point_avatar_region
+    float: right
+
+  &.transitioning .decision_board_points_layout
+    //min-height: 0
+    min-height: 450px
+    height: auto
+
+  &[state="crafting"]
+    .decision_board_points_layout
+      min-height: 450px
+
+  &[state="results"]
+    .decision_board_points_layout
+      height: 0
+      overflow: hidden
+
+    .community_pros_region, .community_cons_region
+      .points_by_community
+        padding-bottom: 3 * $vertical_baseline
+
+  //horizontal size and positioning
+  .four_columns_of_points
+    width: $full_reasons_width
+    left: $full_reasons_left
+
+  .point_avatar_region
+    width: $point-avatar-width
+    position: relative
+
+  .point_avatar_region, .point_content
+    display: inline-block
+    vertical-align: top
+
+  .closed_point
+    .point_content
+      width: $point-content-width
+
+  &[state="results"], &[state="summary"]
+
+    .community_pros_region
+      +translateX($decision_board_width/2)
+
+    .community_cons_region
+      +translateX(-$decision_board_width/2)
+
+  .community_pros_region, .community_cons_region
+    width: $decision_board_width/2 //$point-width
+
+  .pros_on_decision_board_region, .cons_on_decision_board_region
+    width: $point-width
+
+
+  // expanded points
+  &.some_points_are_expanded .four_columns_of_points
+    width: $full_reasons_width + $expanded_points_increment
+
+    .opinion_region, .decision_board_layout, .decision_board_body
+      height: 100%
+
+  &.con_points_are_expanded .four_columns_of_points
+    left: $full_reasons_left - $expanded_points_increment 
+
+
+  &[state="crafting"], &[state="results"]
+    .community_pros_region, .community_cons_region
+      &.points_are_expanded
+        width: $decision_board_width/2 + $expanded_points_increment
+
+        .community_point.closed_point 
+          //width: $decision_board_width/2 + $expanded_points_increment
+          .point_content
+            width: $point-content-width + $expanded_points_increment
+
+////////// end layout //////////
+
+
+// Activity-based styles
+[activity="proposal-no-activity"]
+  .reasons_layout[state="summary"] 
+    +translateY(0)
+
+    .points_list_region
+      //display: none
+      height: 0
+      overflow: hidden
+
+    .opinion_region
+      +translateY(0)
+
+    .four_columns_of_points      
+      min-height: 0
+
+  .reasons_layout[state="crafting"] 
+    .decision_board_points_layout
+      min-height: 200px
+
+
+[activity="proposal-has-activity"]
+  .reasons_layout[state="summary"]
+    .four_columns_of_points
+      min-height: $histogram_height
+      //margin-bottom: 100px // spacing for participants block
+
+  .reasons_layout
+    &[state="results"], &[state="crafting"]
+      min-height: 500px
+
+////////////////////
+
+
+[state="summary"] .proposal_reasons_region
+  height: 3 * $vertical_baseline
+
+.reasons_layout
+  margin: $vertical_baseline 0 4 * $vertical_baseline 0
+  position: relative
+
+
+  &[state="summary"] .community_cons_region   
+    svg.mouth_bubble
+      left: auto
+      right: -23px
+      
+  &[state="crafting"], &[state="results"], &[state="summary"] .community_pros_region
+    .points_by_community
+      > svg.mouth_bubble
+        display: none
+
+  &[state="summary"] .points_list_region:hover
+    cursor: pointer
+
+
+  .participating_users_region
+    bottom: 0px
+    position: absolute
+    // width: $body_gutter
+    // right: 0
+
+  /////////
+  // warpper for a points column, managed by a PointsController
+  .points_list_region
+    position: relative
+    vertical-align: top
+
+  .opinion_region
+    position: relative
+    width: $decision_board_width
+
+  .community_pros_region, .community_cons_region
+    //position: absolute
+    top: 0
+    z-index: 10
+
+  ////////
+
+
+  /// The participants block
+  &[state="crafting"]
+    > .participating_users_region
+      display: none      
+
+  .reasons_footer_region
+    visibility: hidden
+
+  &[state="summary"] 
+    // shown on hover...
+    .reasons_footer_region
+      width: $body_gutter
+      position: absolute
+      left: 50%
+      margin-left: -$body_gutter/2
+      bottom: $vertical_baseline / 4
+      cursor: pointer
+      z-index: 10
+
+      .results_prompt_from_summary_view
+        text-align: center
+        +font-size(-1)
+        i
+          padding-right: $grid_gutter/4
+

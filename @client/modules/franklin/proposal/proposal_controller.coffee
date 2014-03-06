@@ -101,13 +101,11 @@
 
         @processStateChange()
 
-
     _update_attributes : ->
       @layout.$el.data @layout.attributes(false)
       @layout.$el.attr @layout.attributes()
       @trigger 'proposal:attributes:updated'
       #@region.show @layout
-
 
     setupDescriptionController : (controller) ->
       @listenTo controller, 'proposal:published', =>
@@ -121,7 +119,6 @@
     setupReasonsController : (controller) ->
       @listenTo @, 'proposal:attributes:updated', =>
         controller.layout.sizeToFit()
-
 
     setupHistogramReasonsBridge : (reasons_controller, histogram_controller) =>
 

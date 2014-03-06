@@ -24,11 +24,11 @@ ConsiderIt::Application.routes.draw do
   resources :proposals, :only => [:index, :create]
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-zA-Z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
   resource :proposal, :path => '/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
-    get '/' => "proposals#show" , :as => :new_position
+    get '/' => "proposals#show" , :as => :new_opinion
 
-    resources :positions, :path => '', :only => [:update, :create], :path_names => {:new => ''} 
+    resources :opinions, :path => '', :only => [:update, :create], :path_names => {:new => ''} 
 
-    get '/positions/:user_id' => "positions#show", :as => :user_position
+    get '/opinions/:user_id' => "opinions#show", :as => :user_opinion
 
     resources :points, :only => [:create, :update, :destroy, :show]
   end
@@ -38,11 +38,44 @@ ConsiderIt::Application.routes.draw do
   get '(*url)' => 'home#index', :constraints => XHRConstraint.new
 
   themes_for_rails 
-  followable_routes
-  commentable_routes
-  moderatable_routes
-  assessable_routes
-  thankable_routes
+
+
+  ######
+  ## concerns routes
+  concern :moderatable do 
+    match "/dashboard/moderate/create" => 'dashboard/moderatable#create', :via => :post
+    get "/dashboard/moderate" => 'dashboard/moderatable#index'
+  end
+
+  concern :assessable do 
+    resources :assessment, :path => "dashboard/assessment", :controller => "dashboard/assessable", :only => [:index, :create, :edit, :update] do 
+      match "claims" => 'dashboard/assessable#create_claim', :via => :post, :as => 'create_claim'
+      match "claim/:id" => 'dashboard/assessable#update_claim', :via => :put, :as => 'update_claim'
+      match "claim/:id" => 'dashboard/assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
+    end
+  end
+
+  concern :commentable do 
+    resources :commentable, :only => [:create, :update]
+  end
+
+  concern :followable do 
+    get "followable_index" => 'followable#index', :as => 'followable_index'
+    match "follow" => 'followable#follow', :via => :post
+    #match "unfollow" => 'followable#unfollow'
+    match "unfollow" => 'followable#unfollow', :via => :post
+  end
+
+  concern :thankable do 
+    resources :thankable, :only => [:create, :destroy]
+  end
+
+  concerns :moderatable
+  concerns :assessable
+  concerns :commentable
+  concerns :followable
+  concerns :thankable
+  #################
 
   devise_scope :user do 
     get "users/check_login_info" => "users/registrations#check_login_info"
@@ -53,7 +86,7 @@ ConsiderIt::Application.routes.draw do
 
   resource :account, :only => [:show, :update]
   
-  get "/feed" => "activities#feed"
+  get "/feed" => "trackable#feed"
 
   #match "/theme" => "theme#set", :via => :post
   get '/home/avatars' => "home#avatars", :as => :get_avatars

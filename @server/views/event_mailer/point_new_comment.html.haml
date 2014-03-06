@@ -1,0 +1,42 @@
+
+
+%p.head
+  #{@user.first_name}, 
+
+  - if @notification_type == 'your point'
+    #{@comment.user.username} commented on your #{@point.is_pro ? 'pro' : 'con'} point. 
+
+  - elsif @notification_type == 'participant'
+    #{@comment.user.username} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you also commented on. 
+
+  - elsif @notification_type == 'included point'
+
+    #{@comment.user.username} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you follow.
+
+  - elsif @notification_type == 'lurker'
+
+    #{@comment.user.username} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you follow.
+
+%p 
+  The new comment: 
+  .object
+    &ldquo;#{link_to strip_tags(@comment.body.gsub('</p><p>','\n').gsub('<br>', '\n')) , proposal_point_url(@proposal.long_id, @point, :anchor => "comment_#{@comment.id}", :host => @host)}&rdquo;
+
+%p 
+  The #{@point.is_pro ? 'pro' : 'con'} point:
+  .object
+    &ldquo;#{link_to @point.nutshell, proposal_point_url(@proposal.long_id, @point, :host => @host)}&rdquo;
+
+%p 
+  The proposal: 
+  .object
+    &ldquo;#{link_to @proposal.title, proposal_url(@proposal.long_id, :host => @host)}&rdquo;
+
+.action_call
+  .rest
+    .call
+      = link_to 'Read and discuss further', proposal_point_url(@proposal.long_id, @point, :anchor => "comment_#{@comment.id}", :host => @host)
+
+= content_for :footer do
+
+  = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this point'}

@@ -1,0 +1,91 @@
+@import "variables"
+
+// fact check request form
+.assessment_request_form_dialog
+  .assessment_request_prompt
+
+  #request_suggestion
+    width: 100%
+    min-height: $vertical_baseline * 2
+
+  .guidelines
+    margin-top: $vertical_baseline / 4
+    +font-size(-1)
+    a
+      text-decoration: underline
+
+  .login
+
+    a
+      text-decoration: underline    
+
+// fact check summary shown in header of expanded point
+.claim_summary 
+  margin: $vertical_baseline/2
+
+  .claim_summary_restatement, .claim_summary_evaluation, .claim_summary_link
+    display: inline-block
+
+  .claim_summary_restatement
+    +font-size(-2)
+    font-weight: bold
+  .claim_summary_evaluation
+    +font-size(-2)
+
+  .claim_summary_link
+    +font-size(-3)
+    text-decoration: underline
+
+
+// fact check result, integrated into comment stream
+.claim_comment
+  .comment_claim_restatement
+    font-weight: bold
+    +font-size(2)
+
+  .comment_claim_evaluation
+    font-style: italic
+    +font-size(1)
+
+  .comment_claim_report  
+    +font-size(0)
+    margin: $vertical_baseline 0
+
+  .comment_claim_process  
+    a 
+      text-decoration: underline 
+
+
+.decision_board_point.closed_point
+  &:hover .point_assessment_indicator_region
+    display: block
+
+  .point_assessment_indicator_region
+    display: none
+
+.point_assessment_indicator_region, .points_by_community[state="summary"] .closed_point .point_assessment_indicator_region
+  display: none
+
+
+.points_on_decision_board
+  .closed_point
+    .point_assessment_indicator_region
+      top: auto
+      opacity: 1
+      left: -$grid_gutter - 4
+      
+.closed_point
+  .point_assessment_indicator_region
+    display: block
+    position: absolute
+    top: $point-avatar-width + 8
+    left: 2px
+    opacity: .75
+    z-index: 1
+
+    img
+      width: 18px
+      height: 18px
+
+    &:hover
+      opacity: 1

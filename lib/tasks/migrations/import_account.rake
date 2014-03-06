@@ -18,7 +18,7 @@ namespace :import do
         :fks => [
           ['proposals', 'account_id'],
           ['points', 'account_id'],
-          ['positions', 'account_id'],
+          ['opinions', 'account_id'],
           ['comments', 'account_id'],
           ['activities', 'account_id'],
           ['assessments', 'account_id'],
@@ -36,7 +36,7 @@ namespace :import do
         :fks => [
           ['proposals', 'user_id'],
           ['points', 'user_id'],
-          ['positions', 'user_id'],
+          ['opinions', 'user_id'],
           ['comments', 'user_id'],
           ['activities', 'user_id'],
           ['assessments', 'user_id'],
@@ -55,7 +55,7 @@ namespace :import do
         :max_id => Proposal.last.id + 1000,
         :fks => [
           ['points', 'proposal_id'],
-          ['positions', 'proposal_id'],
+          ['opinions', 'proposal_id'],
           ['inclusions', 'proposal_id'],
           ['point_listings', 'proposal_id'],
           ['activities', ['action_id', "action_type='Proposal'"]]          
@@ -73,15 +73,15 @@ namespace :import do
           ['point_listings', 'point_id']
         ]
       }],
-      ['positions', {
-        :max_id => Position.last.id + 1000,
+      ['opinions', {
+        :max_id => Opinion.last.id + 1000,
         :fks => [
-          ['points', 'position_id'],
-          ['comments', ['commentable_id', "commentable_type='Position'"]],
-          ['activities', ['action_id', "action_type='Position'"]],
-          ['follows', ['followable_id', "followable_type='Position'"]],
-          ['inclusions', 'position_id'],
-          ['point_listings', 'position_id']
+          ['points', 'opinion_id'],
+          ['comments', ['commentable_id', "commentable_type='Opinion'"]],
+          ['activities', ['action_id', "action_type='Opinion'"]],
+          ['follows', ['followable_id', "followable_type='Opinion'"]],
+          ['inclusions', 'opinion_id'],
+          ['point_listings', 'opinion_id']
         ]
       }],
       ['comments', {
@@ -117,7 +117,7 @@ namespace :import do
         :fks => []
       }],
       ['follows', {
-        :max_id => Followable::Follow.last.id + 1000,
+        :max_id => Follow.last.id + 1000,
         :fks => []
       }],      
       ['inclusions', {

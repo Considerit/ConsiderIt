@@ -1,0 +1,56 @@
+@import "variables"
+
+.homepage_main
+  margin: 0 auto
+  min-height: $proposer_img_size
+  position: relative  
+  width: $content_width
+
+  .account_holder
+    width: $body_gutter
+    bottom: 0px
+    position: absolute
+
+  .homepage_account_message
+    position: relative
+    margin: auto
+
+    .homepage_account_message_heading
+      +font-size(2)
+    .homepage_account_message_details
+      //+font-size(-1)
+
+
+//homepage admin file upload
+.homepage_heading_view
+  .homepage_account_image
+    margin-right: $grid_gutter * 2
+    //max-width: $body_width
+    width: auto
+    .customfile
+      background: transparent
+      //max-width: $body_width
+      width: auto
+      border: none
+
+    .customfile-preview-wrap
+      //max-width: $body_width
+      width: auto
+      //max-height: 5 * $vertical_baseline
+      height: auto
+      overflow: hidden
+      img.customfile-preview
+        //max-height: 5 * $vertical_baseline
+
+    .customfile-button
+      float: none
+      +font-size(-2)
+      text-decoration: underline
+      opacity: .5
+
+
+    .customfile-feedback
+      display: none
+
+    .customfile-input
+

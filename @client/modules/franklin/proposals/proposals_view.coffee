@@ -23,7 +23,7 @@
     className : 'new_proposal_view'
 
     events :
-      'click .new-proposal-submit' : 'createNewProposal'
+      'click [action="create-new-proposal"]' : 'createNewProposal'
 
     createNewProposal : (ev) ->
       @trigger 'proposals:please_create_new'

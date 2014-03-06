@@ -35,7 +35,7 @@ sign in
   + points and other created items this session should have their opinion references updated.
 - on signout, clear written points, opinions, reset views
 
-- do from different areas -- on comment, fact-check, upper right, submitposition
+- do from different areas -- on comment, fact check, upper right, submitposition
 
 ###
 

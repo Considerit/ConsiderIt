@@ -188,7 +188,7 @@
           offsetY: -12
           delay: 200
           position: 'top-left'
-          #title : 'This point has been fact-checked'
+          #title : 'This point has been fact checked'
 
         $target.tooltipster 'show'
 

@@ -42,7 +42,7 @@
           @listenTo requests, 'childview:email:requester', (view) -> 
             new Assessment.EmailDialogController
               model : view.model
-              title : 'Question regarding your fact-check request'
+              title : 'Question regarding your fact check request'
               parent_controller : @
               link : assessment.getAssessable().url()
 

@@ -141,7 +141,7 @@
   .dashboard-profile-influence
     .dashboard-profile-influence-summary
       (( var influenced = _.keys(influenced_users).length; ))
-      &#9733; {{ influenced }} {{ influenced == 1 ? 'person' : 'people'}} felt that one of {{ name }}'s pro & con contributions spoke for them
+      Influence: &#9733; {{ influenced }} {{ influenced == 1 ? 'person' : 'people'}} felt that one of {{ name }}'s pro & con contributions spoke for them
         
     .dashboard-profile-influenced.l-group-container
       (( _.each(influenced_users, function(p){ ))

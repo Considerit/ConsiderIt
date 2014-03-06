@@ -62,7 +62,7 @@ opinion =
       anonymous : true
       nutshell : 'Secretly I am in favor of this for the simple fact that it will benefit me and me alone'
       details : ''
-  included_points : [3472, 3492, 3539]
+    included_points : [ [3472, true], [3492, false], [3539, false]]
 
 testCraftingOpinion = (test, opinion, state_suffix) ->
 
@@ -100,29 +100,28 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
 
   # include some points
   casper.then ->
-    use_drag_and_drop = false #drag and drop is not yet working
+    use_drag_and_drop = false #drag and drop is not yet working in casper
     casper.HTMLStep 'including some points' + state_suffix  
-    _.each opinion.included_points, (point_id) ->
+    _.each opinion.included_points, (point) ->
+      [point_id, is_pro] = point
       casper.then ->
         draggable = "[role='point'][data-id='#{point_id}']"
         target = ".add_point_drop_target"
 
         # expand points if draggable isn't currently visible
         if !casper.exists draggable
+          points_col = if is_pro then '.pros_by_community' else '.cons_by_community'
           casper.then ->
-            for points_col in ['.pros_by_community', '.cons_by_community']
-              casper.click "#{points_col} [action='expand-toggle']"
-              if casper.exists draggable
-                break
+            casper.click "#{points_col} [action='expand-toggle']"
 
-        casper.then ->
+        casper.wait 50, ->
           if use_drag_and_drop
             casper.dragAndDrop draggable, target
           else
             # include by opening point
-            casper.click draggable
+            casper.click draggable + ' .point_content'
             casper.waitUntilVisible draggable + '.open_point', ->
-              casper.thenClick draggable + '.open_point' + ' [action="point-include"]', ->
+              casper.click draggable + '.open_point' + ' [action="point-include"]'
 
         casper.wait 1000, ->   #waitUntilVisible ".opinion_region #{draggable}", ->
           # test.assertVisible ".opinion_region #{draggable}", 'point has been included'
@@ -162,7 +161,8 @@ casper.test.assertOpinionRepresented = (opinion, state_suffix) ->
     points_col = if point.is_pro then '.pros_on_decision_board' else '.cons_on_decision_board'
     @assertSelectorHasText "#{points_col} .point_nutshell", point.nutshell, 'Point has been saved'
 
-  _.each opinion.included_points, (point_id) =>
+  _.each opinion.included_points, (point) =>
+    [point_id, is_pro] = point
     @assertVisible ".opinion_region [role='point'][data-id='#{point_id}']", 'point has been included'
 
   slider_base_pos = casper.getElementBounds '.noUi-base'
@@ -198,8 +198,7 @@ casper.test.begin 'Prolific contributor can craft their opinion', 118, (test) ->
           anonymous : true
           nutshell : 'Secretly I am in favor of this for the simple fact that it will benefit me and me alone'
           details : ''
-      included_points : [3472, 3492, 3539]
-
+      included_points : [ [3472, true], [3492, false], [3539, false]]
 
 
     state_suffix = if is_logged_in then ' when logged in' else ' when logged out'

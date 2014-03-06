@@ -1,0 +1,100 @@
+@import "variables"
+@import "variables_skin"
+@import "library"
+
+.dashboard-moderate
+
+  .launch_moderation_settings
+    padding-left: $grid_gutter / 2
+    +font-size(-4)
+    color: lighten($base_text_color, 10%)
+    a
+      text-decoration: underline
+      color: lighten($base_text_color, 10%)
+
+  #moderation_tabs_region
+    margin-left: 15px
+    a 
+      //+font-size(0)
+      padding: 2px $grid_gutter 0 $grid_gutter
+      margin-right: 4px
+      display: inline-block
+      position: relative
+      top: 1px
+
+      cursor: pointer
+      border-radius: 8px 8px 0 0
+      
+
+      &.active
+        border: 1px solid $complementary_background_color
+        background-color: $complementary_background_color
+        color: white
+      &.inactive
+        color: #666
+        background-color: #f1f1f1
+        border: 1px solid #ddd
+        border-bottom-color: $complementary_background_color
+
+      .name
+        font-weight: bold
+
+
+  &.hide_moderated .moderated
+    display: none
+
+  .moderate-filters
+    padding-top: $vertical_baseline
+    padding-left: $grid_gutter
+    color: rgba($base_text_color, .5)
+    border-top: 1px solid $complementary_background_color
+
+  .moderate-filter
+    color: rgba($base_text_color, .7)
+
+    &.selected
+      opacity: 1
+      font-weight: bold
+      color: $base_text_color
+      
+    &:hover
+      color: $base_text_color
+
+  .moderation_list_item_view
+    padding: $vertical_baseline $grid_gutter
+    border-bottom: 1px solid #aaa
+
+
+  .moderatable-evaluation-option
+    padding: $vertical_baseline / 4 0
+    &:hover
+      background-color: rgba(yellow, .15)
+    label
+      width: 80%
+      cursor: pointer
+      display: inline-block
+    input
+      cursor: pointer
+
+
+  .moderatable-field
+    margin-bottom: $vertical_baseline/2
+
+  .moderatable-email 
+    margin-top: $vertical_baseline
+
+    button
+      +font-size(-3)
+
+  .meta
+    +font-size(-2)
+    margin-bottom: $vertical_baseline / 2
+
+    .moderate-context_link
+      text-decoration: underline
+    .by
+
+  .moderate-updated
+    +font-size(-1)
+    .moderate-updated-fineprint
+      +font-size(-4)

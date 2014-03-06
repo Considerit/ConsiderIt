@@ -1,0 +1,187 @@
+////////////// proposal ////////////
+%script{ :type => "text/template", :id => "tpl_proposal_layout" }  
+
+  .proposal_description_region
+
+  .toggle_proposal_state_region
+  
+  .proposal_histogram_region
+
+  .proposal_reasons_region
+
+%script{ :type => "text/template", :id => "tpl_toggle_proposal_state"}
+
+  (( if(crafting) { ))
+
+  .proposal_state_primary
+    {{ call }}
+
+  %a{ :href => "{{Routes.proposal_path( long_id )}}", :class => 'proposal_state_secondary', :'action' => 'view-results'}
+    // %i.fa-lg.fa
+    //   &#xf046;
+
+    {{ results_call }}
+
+  (( } else { ))
+  .proposal_state_primary
+    {{ results_call }}
+
+  %a{ :href => "{{Routes.new_opinion_proposal_path( long_id )}}", :class => 'proposal_state_secondary', :'action' => 'craft-opinion'}
+    // %i.fa-lg.fa
+    //   &#xf096;
+
+    {{ call }}
+
+
+  (( } ))
+
+
+
+
+%script{ :type => "text/template", :id => "tpl_participating_users"}
+  (( _.each(participants, function(p){ ))
+  %span.avatar{ :'action' => "user_opinion",  :'data-id' => "{{p.id}}", :alt => "{{p.get('name')}}'s profile picture", :id => "avatar-{{p.id}}", :class => "participant", :style => "height:{{tile_size}}px; width:{{tile_size}}px;", :tooltip => 'user_profile'}>
+  (( }); ))
+
+
+%script{ :type => "text/template", :id => "tpl_proposal_social_media" }
+
+  %a.zocial.icon.twitter{ :href => "https://twitter.com/intent/tweet?text=Come%20join%20the%20discussion%20at%20{{ encodeURIComponent('#{root_url}'.substring(0, '#{root_url}'.length - 1) + Routes.proposal_path(long_id)) }}"}
+    Tweet
+
+  {{'<' + 'script id="twitter-wjs" src="//platform.twitter.com/widgets.js" type="text/javascript"' + '><' + '/script>'}}
+
+  %a.zocial.icon.facebook{ :href => "#", :onclick => "window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href), 'facebook-share-dialog', 'width=626,height=436'); return false;"}
+
+  %span.social_media_prompt
+    Invite others
+
+
+
+%script{ :type => "text/template", :id => "tpl_proposal_admin_strip" }
+  (( if(!published){ ))
+  .proposal_admin_publish
+    = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'proposal_publish-form'} do |f|
+      = f.hidden_field :published, :value => true
+
+      = f.submit 'Done! Publish it.', :class => 'proposal_publish button'
+  (( } ))
+
+  .proposal_admin_strip
+    %i.fa-cog.fa
+
+    .proposal_admin_options_menu_wrap
+      %ul.proposal_admin_options_menu
+        %li.proposal_admin_publicity.l-dialog-prompt
+          %a.proposal-admin_operations-publicity.l-dialog-prompt-label
+            //Sharing is 
+            %span
+              (( if(publicity == 2) { ))
+              %i.fa.fa-globe
+              Accessible to all
+              (( } else if(publicity == 1){ ))
+              %i.fa.fa-link
+              Accessible by link only
+              (( } else { ))
+              %i.fa.fa-lock
+              Accessible by invite only
+              (( } ))
+
+        %li.proposal-admin-status.l-dialog-prompt
+          %a.proposal_admin_operations_status.l-dialog-prompt-label
+            //Status is 
+            %span
+              (( if(active){ ))
+              %i.fa.fa-microphone
+              Conversation is Active
+              (( } else { ))
+              %i.fa.fa-lg.fa-microphone-slash
+              Conversation is Closed
+              (( } ))
+
+        %li
+          (( var call = published ? 'Delete' : 'nevermind, delete it'; ))
+
+          %a.delete_proposal{ :href => "{{Routes.proposal_path(long_id)}}", :'data-confirm' => "Are you sure you wish to permanently delete this conversation?", :'data-method' => 'delete', :'data-remote' => "true", :rel => "nofollow"}
+            %i.fa.fa-small.fa-trash-o
+            {{call}}
+
+%script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_publicity" }
+
+  = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'proposal_admin_operations_settings_form'} do |f|
+    .radio_block
+      .option
+        (( if(publicity == 2) { ))
+        = f.radio_button :publicity, '2', :value => '2', :checked => true
+        (( } else { ))
+        = f.radio_button :publicity, '2', :value => '2'
+        (( } ))
+
+        %i.fa.fa-globe
+        = f.label :publicity, 'Public', :value => '2'
+        .sublabel
+          It will be listed on the homepage for all visitors.
+
+      .option
+        (( if(publicity == 1) { ))
+        = f.radio_button :publicity, '1', :value => '1', :checked => true
+        (( } else { ))
+        = f.radio_button :publicity, '1', :value => '1'
+        (( } ))
+
+        %i.fa.fa-link
+        = f.label :publicity, 'Anyone with a link', :value => '1'
+        .sublabel
+          Only people that have a link to this proposal will be able to access it.
+
+      .option
+        (( if(publicity == 0) { ))
+        = f.radio_button :publicity, '0', :value => '0', :checked => true
+        (( } else { ))
+        = f.radio_button :publicity, '0', :value => '0'
+        (( } ))
+
+        %i.fa.fa-lock
+        = f.label :publicity, 'Private', :value => '0'
+        .sublabel
+          Restrict access to the following comma-separated list of the emails of invited participants.
+
+        .access_list
+          = f.text_area :access_list
+
+    .save_block
+      = f.submit 'save', :class => 'button'
+      %a.cancel{:'action' => "dialog-close"}
+        cancel
+
+%script{ :type => "text/template", :id => "tpl_proposal_admin_strip_edit_active"}
+
+  = form_for :proposal, :url => "{{ Routes.proposal_path(long_id) }}", :method => :put, :remote => true, :html => {:class => 'proposal_admin_operations_settings_form'} do |f|
+    .radio_block
+      .option
+        (( if(active) { ))
+        = f.radio_button :active, true, :value => true, :checked => true
+        (( } else { ))
+        = f.radio_button :active, true, :value => true
+        (( } ))
+        %i.fa.fa-microphone        
+        = f.label :active, 'Active', :value => true
+        .sublabel
+          Contributions are open. People with access to this proposal can contribute to it.
+      .option
+        (( if(active) { ))
+        = f.radio_button :active, false, :value => false
+        (( } else { ))
+        = f.radio_button :active, false, :value => false, :checked => true
+        (( } ))
+
+        %i.fa.fa-lg.fa-microphone-slash
+
+        = f.label :active, 'Read-only', :value => false
+        .sublabel
+          Contributions are closed. People with access to this proposal will only be able to view it. 
+
+    .save_block
+      = f.submit 'save', :class => 'button'
+      %a.cancel{:'action' => "dialog-close"}
+        cancel

@@ -23,15 +23,15 @@ every :week do
 end
 
 every :reboot do
-  envcommand 'bundle exec script/delayed_job restart'
+  envcommand 'bundle exec bin/delayed_job restart'
 end
 
 every :day, :at => '1:30 am' do
-  envcommand 'bundle exec script/delayed_job restart'
+  envcommand 'bundle exec bin/delayed_job restart'
 end
 
 #every 1.minute do
-#  envcommand 'bundle exec script/delayed_job restart'
+#  envcommand 'bundle exec bin/delayed_job restart'
 #end
 
 # Learn more: http://github.com/javan/whenever

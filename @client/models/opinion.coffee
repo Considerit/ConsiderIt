@@ -209,8 +209,7 @@
         user_id: current_user.id
 
       if !opinion && create_if_not_found
-
-        opinion = new Entities.Opinion # todo: does this work when someone logs in after opinion created?
+        opinion = new Entities.Opinion
           user_id : current_user.id #todo: make sure this doesn't get shown in results
           published : false
           long_id: long_id 

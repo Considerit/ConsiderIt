@@ -44,33 +44,28 @@ class ProposalsController < ApplicationController
       return
     end
 
-    #TODO: handle permissions
     return if !proposal 
 
     if cannot?(:read, proposal)
-      respond_to do |format|
-        format.json { render :json => {:result => 'failure', :reason => 'Access denied'}}
-        format.html {
-          @inaccessible_proposal = {:id => proposal.id, :long_id => proposal.long_id }
-        }
+      if request.xhr?
+        render :json => {:result => 'failure', :reason => 'Access denied'}
+      else
+        @inaccessible_proposal = {:id => proposal.id, :long_id => proposal.long_id }
+        render :nothing => true, :layout => true
       end
-      return      
-    end
-
-    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-
-
-    data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
-
-    # opinion = ProposalsController.get_opinion_for_user(proposal, current_user, session)
-    # data[:opinion] = opinion
-
-    if request.xhr?
-      render :json => data
     else
-      @current_proposal = data.to_json
-      render :nothing => true, :layout => true
+      ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
+      data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
+
+      if request.xhr?
+        render :json => data
+      else
+        @current_proposal = data.to_json
+        render :nothing => true, :layout => true
+      end
+
     end
+
 
   end
 
@@ -122,12 +117,10 @@ class ProposalsController < ApplicationController
 
     notify_private_accessors = private_discussion && (published_now || proposal.published)
 
-    if notify_private_accessors
-      # if this proposal has already been published, then those users already given access have already been notified, so we
-      # want to make sure not to send them another invite. If this, however, is a newly published proposal, we'll want to 
-      # notify everyone in the access list, regardless of on which update they were given access to this proposal.
-      existing_access_list = !published_now ? proposal.attributes['access_list'] : nil
-    end
+    # we don't want to send emails to people who have already been invited via email. This only applies to proposals that
+    # have already been published, because email invitations aren't sent out until publishing. We can avoid double sending
+    # invitations by grabbing the access list of the proposal as set *before* this current update. 
+    existing_access_list = notify_private_accessors && !published_now ? proposal.attributes['access_list'] : nil
 
     # TODO: explicitly grab params
     proposal.update_attributes! params[:proposal].permit!

@@ -53,7 +53,8 @@ casper.test.begin 'Lurker can poke around homepage', 26, (test) ->
         caption: 'Proposals pagination after loading more' + state_suffix
 
     # check if can load more inactive proposals
-    @thenClick('#past_proposals_region [action="load-proposals"]').waitUntilVisible '#past_proposals_region [action="proposals:goto_page"]', ->
+    # @thenClick('#past_proposals_region [action="load-proposals"]').waitUntilVisible '#past_proposals_region [action="proposals:goto_page"]', ->
+    @then ->
       @HTMLStep "Access inactive proposals" + state_suffix
       test.assertExists '#past_proposals_region [action="proposals:goto_page"]', 'pagination for inactive proposals is shown after loading inactive proposals' + state_suffix
 
@@ -232,7 +233,7 @@ casper.test.begin 'Lurker can poke around a user profile', 27, (test) ->
 
 test_open_point = (test, state_suffix = '') ->
   casper.HTMLStep 'open a point' + state_suffix
-  casper.click '[role="point"]'
+  casper.click '[role="point"] .point_content'
   casper.waitUntilVisible '.open_point', ->
     test.assertPointIsOpen()
     #TODO: if logged in, can thank and comment; if not, cannot thank or comment

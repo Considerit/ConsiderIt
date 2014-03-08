@@ -1,8 +1,6 @@
 require 'mail'
 
-class UserMailer < ActionMailer::Base
-  ActionMailer::Base.delivery_method = :mailhopper  
-  layout 'email'
+class UserMailer < Mailer
   include Devise::Mailers::Helpers
 
   ######### DEVISE MAILERS
@@ -64,16 +62,6 @@ class UserMailer < ActionMailer::Base
   end  
 
   private
-
-    def format_email(addr, name = nil)
-      address = Mail::Address.new addr # ex: "john@example.com"
-      if name
-        address.display_name = name # ex: "John Doe"
-      end
-      # Set the From or Reply-To header to the following:
-      address.format # returns "John Doe <john@example.com>"
-
-    end
 
     # def generate_reset_password_token!(user)
     #   user.reset_password_token = User.reset_password_token

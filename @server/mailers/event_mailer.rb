@@ -1,9 +1,6 @@
 require 'mail'
 
-class EventMailer < ActionMailer::Base
-
-  ActionMailer::Base.delivery_method = :mailhopper  
-  layout 'email'
+class EventMailer < Mailer
 
   def send_message(message, current_user, options = {})
     @message = message
@@ -119,20 +116,5 @@ class EventMailer < ActionMailer::Base
     mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
-  #### OPINION LEVEL ####
 
-  private
-    def current_tenant
-      ApplicationController.find_current_tenant(request)
-    end
-
-    def format_email(addr, name = nil)
-      address = Mail::Address.new addr # ex: "john@example.com"
-      if name
-        address.display_name = name # ex: "John Doe"
-      end
-      # Set the From or Reply-To header to the following:
-      address.format # returns "John Doe <john@example.com>"
-
-    end
 end

@@ -1,8 +1,6 @@
 require 'mail'
 
-class AlertMailer < ActionMailer::Base
-  ActionMailer::Base.delivery_method = :mailhopper  
-  layout 'email'
+class AlertMailer < Mailer
 
   #### MODERATION ####
   def content_to_moderate(user, tenant)
@@ -36,15 +34,5 @@ class AlertMailer < ActionMailer::Base
 
   end
 
-  private
 
-    def format_email(addr, name = nil)
-      address = Mail::Address.new addr # ex: "john@example.com"
-      if name
-        address.display_name = name # ex: "John Doe"
-      end
-      # Set the From or Reply-To header to the following:
-      address.format # returns "John Doe <john@example.com>"
-
-    end  
 end

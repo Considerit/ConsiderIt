@@ -20,7 +20,9 @@ class Account < ActiveRecord::Base
       :styles => { 
         :large => "x100>",
       },
-      :processors => [:thumbnail, :paperclip_optimizer]
+      :processors => [:thumbnail, :compression]
+
+  validates_attachment_content_type :homepage_pic, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   class_attribute :my_public_fields
   self.my_public_fields = [:id, :theme, :identifier, :hibernation_message, :enable_hibernation, :enable_sharing, :contact_email, :homepage_pic_remote_url, :homepage_pic_file_name, :app_title, :header_text, :header_details_text, :project_url, :enable_user_conversations, :assessment_enabled, :enable_position_statement, :enable_moderation, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :pro_label, :con_label, :slider_left, :slider_right, :slider_prompt, :requires_civility_pledge_on_registration]

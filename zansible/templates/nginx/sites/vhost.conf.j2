@@ -28,6 +28,8 @@ server {
   rails_spawn_method smart;
   rails_env {{ code.environment }};
 
+  client_max_body_size 5M;
+
   location ~ ^/(sitemaps)/ {
     gzip_static on;
     add_header  Cache-Control public;

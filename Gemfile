@@ -48,7 +48,7 @@ gem 'role_model'
 
 # https://github.com/thoughtbot/paperclip
 gem 'paperclip'
-gem 'paperclip-optimizer'
+gem 'paperclip-compression'
 
 # https://github.com/amatsuda/kaminari
 gem 'kaminari'

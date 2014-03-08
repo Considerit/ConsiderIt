@@ -9,7 +9,9 @@ class Assessable::Verdict < ActiveRecord::Base
     :styles => { 
       :square => "100x100#"
     },
-    :processors => [:thumbnail, :paperclip_optimizer]
+    :processors => [:thumbnail, :compression]
+
+  validates_attachment_content_type :icon, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   def formatVerdict
     if id == -1

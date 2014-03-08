@@ -57,8 +57,9 @@ class User < ActiveRecord::Base
         :large => "250x250#",
         :small => "50x50#"
       },
-      :processors => [:thumbnail, :paperclip_optimizer]
+      :processors => [:thumbnail, :compression]
 
+  validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   def unsubscribe!
     self.follows.update_all( {:explicit => true, :follow => false} )

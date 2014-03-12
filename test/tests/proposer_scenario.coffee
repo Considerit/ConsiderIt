@@ -10,7 +10,8 @@ Not tested:
    - deleting a proposal from the homepage
    - after deleting a proposal, make sure it has been deleted from the homepage, when it would have shown up in the first set of results
    - for private proposal, receiving an invite email, following the link and logging in / creating an account
-
+   - making a proposal inactive
+   - changing publicity settings after publishing
 ###
 
 # BASIC
@@ -20,14 +21,15 @@ Not tested:
 # refresh page, is new conversation still there, and is it visible? Is it still unpublished?
 # delete conversation, is it gone?
 # refresh page, is conversation still gone?
-casper.test.begin 'Basic proposal pre-publishing and deletion tests', 12, (test) ->
+casper.test.begin 'Basic proposal pre-publishing and deletion tests', 11, (test) ->
 
   casper.start "http://localhost:8787/"
 
   casper.waitUntilVisible '[action="login"]', ->    
     actions.loginAsAdmin()
 
-  casper.waitUntilVisible '.user-options-display', -> #wait until logged in...
+
+  casper.then ->
     casper.HTMLCapture 'body', 
       caption : "After logging in as an admin"
 
@@ -59,30 +61,28 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 12, (test)
         return true
 
       @thenClick "[action='delete-proposal']"      
-      @waitForUrl "http://localhost:8787/", ->
-        test.pass 'After delete, navigate to homepage'
+      @waitForUrl "http://localhost:8787/"
 
-      @waitUntilVisible '#active_proposals_region [action="load-proposals"]', ->
-        @click '#active_proposals_region [action="load-proposals"]'
-        @waitUntilVisible '[data-type="sort"][action="created_at"]', ->
-          @thenClick '[data-type="sort"][action="created_at"]', ->
-            @wait 200, ->
-              test.assertNotVisible "[data-id='#{proposal_id}']", 'Deleted proposal is not on homepage'
+      @waitUntilVisible '#active_proposals_region [action="load-proposals"]'
+      @thenClick '#active_proposals_region [action="load-proposals"]'
+      @waitUntilVisible '[data-type="sort"][action="created_at"]'
+      @thenClick '[data-type="sort"][action="created_at"]'
+      @wait 200, ->
+        test.assertNotVisible "[data-id='#{proposal_id}']", 'Deleted proposal is not on homepage'
 
       @reload()
 
-      @waitUntilVisible '#active_proposals_region', ->
-        @click '#active_proposals_region [action="load-proposals"]'
-        @waitUntilVisible '[data-type="sort"][action="created_at"]', ->
-          @click '[data-type="sort"][action="created_at"]'
-          @wait 200, ->
-            test.assertNotVisible "[data-id='#{proposal_id}']", 'Deleted proposal is not on homepage after refresh'
+      @waitUntilVisible '#active_proposals_region'
+      @thenClick '#active_proposals_region [action="load-proposals"]'
+      @waitUntilVisible '[data-type="sort"][action="created_at"]'
+      @thenClick '[data-type="sort"][action="created_at"]'
+      @wait 200, ->
+        test.assertNotVisible "[data-id='#{proposal_id}']", 'Deleted proposal is not on homepage after refresh'
 
 
-    @thenOpen "http://localhost:8787/#{proposal_id}", ->
-      @echo "loaded http://localhost:8787/#{proposal_id}"
-      @wait 500, ->
-        test.assertNotVisible '[role="proposal"]', "Can't load proposal that has been deleted"
+    @thenOpen "http://localhost:8787/#{proposal_id}"
+    @wait 500, ->
+      test.assertNotVisible '[role="proposal"]', "Can't load proposal that has been deleted"
 
   casper.then ->
     actions.logout()
@@ -101,68 +101,180 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 12, (test)
 # navigate to it, can we see it?
 # refresh page, is it still there?
 # go to homepage, can we find it there?
+#* can a position be submitted?
 
-# casper.test.begin 'Creating and accessing a public proposal tests', 9, (test) ->
-#   casper.start "http://localhost:8787/"
+# LINK ONLY CONVERSATION
+# login as admin
+# create a new conversation
+# update description
+# change to link only
+# publish
+# go to homepage, is it visible?
+# refresh page, is it still visible?
+# log out, is it not there?
+# open link, is it there? 
+#* can a position be submitted?
 
-#   casper.waitUntilVisible '[action="login"]', ->    
-#     actions.loginAsAdmin()
+# PRIVATE CONVERSATION
+# login as admin
+# create a new conversation
+# update description
+# change to private
+# add someone else as invited
+# publish
+# go to homepage, is it visible?
+# refresh page, is it still visible?
+# log out, is it not there?
+# login as invited user
+# is it on homepage?
+# can i access it directly?
+# can a position be submitted?
+
+proposal_summary = "Should creating a proposal be rigorously tested?"
+proposal_details = "We could test all day all night all day all night."
 
 
-#   casper.then ->
-#     actions.logout()
+test_proposal_publicity = (test, publicity) ->
+  casper.start "http://localhost:8787/"
 
-#   casper.run ->
-#     test.done() 
+  casper.waitUntilVisible '[action="login"]', ->    
+    actions.loginAsAdmin()
 
-# # LINK ONLY CONVERSATION
-# # login as admin
-# # create a new conversation
-# # update description
-# # change to link only
-# # publish
-# # go to homepage, is it visible?
-# # refresh page, is it still visible?
-# # log out, is it not there?
-# # open link, is it there? 
-# # can a position be submitted?
+  casper.waitUntilVisible '.user-options-display', -> #wait until logged in...
+    @click '[action="create-new-proposal"]'
 
-# casper.test.begin 'Creating and accessing a link-only proposal tests', 9, (test) ->
-#   casper.start "http://localhost:8787/"
+  casper.waitUntilStateTransitioned 'crafting', ->
+    test.assertExists '.proposal_description_summary.editable', 'Proposal summary is editable'
+    test.assertExists '.proposal_description_body.editable', 'Proposal details is editable'
 
-#   casper.waitUntilVisible '[action="login"]', ->    
-#     actions.loginAsAdmin()
+    proposal_id = @getCurrentUrl().substring(@getCurrentUrl().lastIndexOf('/') + 1, @getCurrentUrl().length)
+
+    @thenClick '.proposal_description_summary.editable'
+
+    @waitUntilVisible '.editable-input textarea', ->
+      @sendKeys ".editable-input textarea", proposal_summary
+      @click '.editable-buttons button[type="submit"]'
+      @wait 200, ->
+        test.assertSelectorHasText '.proposal_description_summary.editable', proposal_summary, 'proposal summary can be modified'
+
+    @thenClick '.proposal_description_body.editable'
+
+    @waitUntilVisible '.editable-input textarea', ->
+      @sendKeys ".editable-input textarea", proposal_details
+
+      @HTMLCapture 'body', 
+        caption : "Editing a proposal"
+
+      @click '.editable-buttons button[type="submit"]'
+      @wait 200, ->
+        test.assertSelectorHasText '.proposal_description_body.editable', proposal_details, 'proposal summary can be modified'
+
+    if publicity == 'private' || publicity == 'link-only'
+      @then ->
+        test.assertVisible '.proposal_admin_publicity', 'Ability to change proposal publicity'
+        @thenClick '.proposal_admin_publicity a'
+        @waitUntilVisible '.l-dialog-detachable.proposal_admin_publicity', ->
+          if publicity == 'link-only'
+            test.assertVisible '#proposal_publicity_1', 'Ability to select link-only publicity'
+            @thenClick '#proposal_publicity_1'
+          else if publicity == 'private'
+            x = 1
+
+          @thenClick '.l-dialog-detachable input[type="submit"]'
+        , -> test.fail 'Publicity dialog never appears'
+
+        @waitWhileVisible '.l-dialog-detachable.proposal_admin_publicity'
 
 
-#   casper.then ->
-#     actions.logout()
+    @thenClick "[action='publish-proposal']"
 
-#   casper.run ->
-#     test.done() 
+    @waitUntilVisible '[visibility="published"]', ->
+      test.pass 'Proposal is published'
+      test.assertVisible '[action="submit-opinion"]', 'Crafting view is now visible'
+    , ->
+      test.fail 'Proposal cannot be published'
 
-# # PRIVATE CONVERSATION
-# # login as admin
-# # create a new conversation
-# # update description
-# # change to private
-# # add someone else as invited
-# # publish
-# # go to homepage, is it visible?
-# # refresh page, is it still visible?
-# # log out, is it not there?
-# # login as invited user
-# # is it on homepage?
-# # can i access it directly?
-# # can a position be submitted?
-# casper.test.begin 'Creating and accessing a private proposal tests', 9, (test) ->
+    @thenClick '[action="go-home"]'
+    @waitUntilVisible '#active_proposals_region [action="load-proposals"]', ->
+      @click '#active_proposals_region [action="load-proposals"]'
+      @waitUntilVisible '[data-type="sort"][action="created_at"]', ->
+        @thenClick '[data-type="sort"][action="created_at"]', ->
+          @wait 200, ->
+            test.assertVisible "[data-id='#{proposal_id}']", 'New published proposal is on homepage for creator, before refreshing'
+    , -> test.fail 'Homepage never loaded'
 
-#   casper.start "http://localhost:8787/"
+    @reload()
 
-#   casper.waitUntilVisible '[action="login"]', ->    
-#     actions.loginAsAdmin()
+    @waitUntilVisible '#active_proposals_region [action="load-proposals"]' 
+    @thenClick '#active_proposals_region [action="load-proposals"]'
+    @waitUntilVisible '[data-type="sort"][action="created_at"]'
+    @thenClick '[data-type="sort"][action="created_at"]'
+    @wait 200, ->
+      test.assertVisible "[data-id='#{proposal_id}']", 'New published proposal is on homepage for creator, after refreshing'
 
-#   casper.then ->
-#     actions.logout()
 
-#   casper.run ->
-#     test.done() 
+    @thenOpen "http://localhost:8787/#{proposal_id}"
+    @waitUntilStateTransitioned 'crafting', ->
+      test.pass 'New proposal can be directly accessed by creator'
+
+    actions.logout()
+
+    @thenOpen "http://localhost:8787/#{proposal_id}"
+
+    @then ->
+      if publicity == 'public' || publicity == 'link-only'
+        @waitUntilStateTransitioned 'crafting', ->
+          test.pass "New #{publicity} proposal can be directly accessed by anon"
+        , -> test.fail "New #{publicity} proposal can be directly accessed by anon"
+
+
+    @thenOpen "http://localhost:8787/"
+
+    @waitUntilVisible '#active_proposals_region [action="load-proposals"]' 
+    @thenClick '#active_proposals_region [action="load-proposals"]'
+    @waitUntilVisible '[data-type="sort"][action="created_at"]'
+    @thenClick '[data-type="sort"][action="created_at"]'
+    @wait 200, ->
+      if publicity == 'public'
+        test.assertVisible "[data-id='#{proposal_id}']", 'New published proposal is on homepage for anon'
+      else 
+        test.assertDoesntExist "[data-id='#{proposal_id}']", "New published #{publicity} proposal is NOT on homepage for anon"
+
+
+    actions.loginAsAdmin()
+
+    @thenClick '[data-type="sort"][action="created_at"]'
+    @wait 200, ->
+      test.assertVisible "[data-id='#{proposal_id}']", "Published #{publicity} proposal is accessible after logging out and back in"
+      test.assertVisible "[data-id='#{proposal_id}'] .proposal_admin_strip i", 'Ability to access proposal settings for published proposal'
+      @mouse.move "[data-id='#{proposal_id}'] .proposal_admin_strip i"
+      test.assertVisible "[data-id='#{proposal_id}'] [action='delete-proposal']", 'Ability to delete proposal from settings menu'
+
+    @thenClick "[data-id='#{proposal_id}'] [action='delete-proposal']"
+
+    @waitWhileSelector "[data-id='#{proposal_id}']", ->
+      test.pass 'Published proposal can be deleted'
+    , -> test.fail 'Published proposal was not deleted'
+
+    actions.logout()
+
+
+
+casper.test.begin "Creating and accessing a public proposal tests", 15, (test) ->
+  test_proposal_publicity test, 'public'
+
+  casper.run ->
+    test.done() 
+
+casper.test.begin "Creating and accessing a link-only proposal tests", 17, (test) ->
+  test_proposal_publicity test, 'link-only'
+
+  casper.run ->
+    test.done() 
+
+casper.test.begin "Creating and accessing a private proposal tests", 11, (test) ->
+  test_proposal_publicity test, 'private'
+
+  casper.run ->
+    test.done() 
+

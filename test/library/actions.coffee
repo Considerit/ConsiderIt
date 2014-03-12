@@ -5,30 +5,32 @@ module.exports =
     casper.wait 500, ->
       casper.click '[action="login"]'
       casper.waitUntilVisible 'input#user_email', ->
-        casper.click 'input#user_email'
-        casper.sendKeys 'input#user_email', email
-        casper.click 'input#password_none'
-        casper.click '[action="create-account"]'
+        casper.thenClick 'input#user_email', ->
+          casper.sendKeys 'input#user_email', email
+        casper.thenClick 'input#password_none'
+        casper.thenClick '[action="create-account"]'
         casper.waitUntilVisible 'input#user_name', ->
           casper.sendKeys 'input#user_name', username
           casper.sendKeys 'input#user_password', password
-          casper.click 'input#pledge1'
-          casper.click 'input#pledge2'
-          casper.click '[action="paperwork_complete"]'
+          casper.thenClick 'input#pledge1'
+          casper.thenClick 'input#pledge2'
+          casper.thenClick '[action="paperwork_complete"]'
 
   login : (email = 'testy_mctesttest@local.dev', password = '1234567890') ->
-    casper.thenClick '[action="login"]', ->
-      casper.waitUntilVisible 'input#user_email', ->
-        casper.click 'input#user_email'
-        casper.sendKeys 'input#user_email', email
-        casper.sendKeys 'input#user_password', password
-        casper.click '[action="login-submit"]'
+    module.exports.logout()
+
+    casper.thenClick '[action="login"]'
+    casper.waitUntilVisible 'input#user_email'
+    casper.thenClick 'input#user_email', ->
+      casper.sendKeys 'input#user_email', email
+      casper.sendKeys 'input#user_password', password
+    casper.thenClick '[action="login-submit"]'
+    casper.waitUntilVisible '.user-options-display'
 
   loginAsAdmin : ->
-    module.exports.logout()
     module.exports.login 'admin@consider.it', 'test'
 
   logout : ->
     casper.then ->
-      casper.evaluate ->
-        $('[action="logout"]').trigger('click')
+      if casper.exists '[action="logout"]'
+        casper.thenClick '[action="logout"]'

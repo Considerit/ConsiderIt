@@ -24,13 +24,11 @@ module.exports =
         casper.sendKeys 'input#user_password', password
         casper.click '[action="login-submit"]'
 
+  loginAsAdmin : ->
+    module.exports.logout()
+    module.exports.login 'admin@consider.it', 'test'
+
   logout : ->
     casper.then ->
       casper.evaluate ->
         $('[action="logout"]').trigger('click')
-
-    # if casper.exists('[action="logout"]')
-    #   casper.mouse.move '.user-options'
-    #   casper.mouse.click '[action="logout"]'
-
-

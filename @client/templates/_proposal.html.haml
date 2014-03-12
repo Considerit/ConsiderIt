@@ -64,7 +64,7 @@
     = form_for :proposal, :url => "{{Routes.proposal_path(long_id)}}", :method => :put, :remote => true, :html => {:class => 'proposal_publish-form'} do |f|
       = f.hidden_field :published, :value => true
 
-      = f.submit 'Done! Publish it.', :class => 'proposal_publish button'
+      = f.submit 'Done! Publish it.', :class => 'proposal_publish button', :action => "publish-proposal"
   (( } ))
 
   .proposal_admin_strip
@@ -102,7 +102,7 @@
         %li
           (( var call = published ? 'Delete' : 'nevermind, delete it'; ))
 
-          %a.delete_proposal{ :href => "{{Routes.proposal_path(long_id)}}", :'data-confirm' => "Are you sure you wish to permanently delete this conversation?", :'data-method' => 'delete', :'data-remote' => "true", :rel => "nofollow"}
+          %a.delete_proposal{ :href => "{{Routes.proposal_path(long_id)}}", :'data-confirm' => "Are you sure you wish to permanently delete this conversation?", 'data-method' => 'delete', :action => 'delete-proposal', :'data-remote' => "true", :rel => "nofollow"}
             %i.fa.fa-small.fa-trash-o
             {{call}}
 

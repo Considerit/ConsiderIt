@@ -44,8 +44,8 @@ end
 
 
 desc "run Casper JS Tests, starts rails server,run the tests and then stop the server "
-task :run_acceptance_tests do
-  
+task :run_acceptance_tests, [:test_suite] do |t, args|
+
   if Rails.env.test?
     begin
       Rake::Task["start_test_server"].invoke
@@ -70,7 +70,8 @@ task :run_acceptance_tests do
       end
 
       spec_path = Rails.root.join("test/tests/")
-      for test in Dir["#{spec_path}/**/*.coffee"]
+
+      if args && args.test_suite
         system 'echo "flush_all" | nc 127.0.0.1 11211'
 
         system "bundle exec rake load_test_data"
@@ -78,7 +79,18 @@ task :run_acceptance_tests do
         system("casperjs test \
                 --testhost=http://localhost:#{app_port} \
                 --htmlout=#{results_directory} \
-                #{File.join(test)}")
+                #{File.join(spec_path, args.test_suite + '.coffee')}")
+      else        
+        for test in Dir["#{spec_path}/**/*.coffee"]
+          system 'echo "flush_all" | nc 127.0.0.1 11211'
+
+          system "bundle exec rake load_test_data"
+
+          system("casperjs test \
+                  --testhost=http://localhost:#{app_port} \
+                  --htmlout=#{results_directory} \
+                  #{File.join(test)}")
+        end
       end
 
       File.open(html_out,'a') do |f|

@@ -123,7 +123,11 @@ class Ability
       if !user.id.nil?
         can :create, Thank do |thank|
           root = thank.root_object
-          thank.user_id != root.user_id #no thanking one's own posts
+          if root.respond_to? 'user_id' # Claims don't have user ids
+            thank.user_id != root.user_id #no thanking one's own posts
+          else
+            true
+          end 
         end
         can :destroy, Thank do |thk|
           thk.user_id == user.id

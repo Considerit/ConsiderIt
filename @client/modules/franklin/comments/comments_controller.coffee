@@ -1,7 +1,6 @@
 @ConsiderIt.module "Franklin.Comments", (Comments, App, Backbone, Marionette, $, _) ->
   class Comments.CommentsController extends App.Controllers.Base
     initialize : (options = {}) ->
-
       layout = @getLayout @options.collection
 
       @setupLayout layout
@@ -30,9 +29,14 @@
               layout.render()
 
         @listenTo App.vent, 'user:signin', =>
-          @layout.saveCommentText()
-          @region.show @layout
-          @layout.restoreCommentText()
+          saved_comment_text = @layout.saveCommentText()
+          # need to rerender, else the thankable events will be bound twice
+          # in future, can probably just rerender the new comments area here
+          @layout.close()
+          @layout = @getLayout @options.collection
+          @setupLayout @layout
+          @region.show @layout 
+          @layout.restoreCommentText saved_comment_text
 
 
 

@@ -14,7 +14,7 @@
       ev.stopPropagation()
 
   class Shared.ProfileView extends Backbone.View
-    template : _.template $('#tpl_user_tooltip').html()
+    template : '#tpl_user_tooltip'
 
     events : 
       'mouseenter [tooltip="user_profile"]' : 'tooltipShow'
@@ -37,7 +37,10 @@
 
           proposal = null if !proposal.user_participated(user.id) 
 
-        tooltip = @template 
+        if !Shared.ProfileView.compiled_template
+          Shared.ProfileView.compiled_template = _.template $(@template).html()
+
+        tooltip = Shared.ProfileView.compiled_template
           user : user.attributes
           proposal : proposal
           metrics : [ 

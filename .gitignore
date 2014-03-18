@@ -23,6 +23,10 @@ config/newrelic.yml
 .vagrant
 restart.txt
 
+lib/tasks/tigard/data/*
+lib/tasks/tigard/screens/*
+
+
 test/data/test.sql.bz2
 test/data/test.sql
 

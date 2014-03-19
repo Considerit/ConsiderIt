@@ -16,7 +16,7 @@ task :start_test_server do
     system command_line
   }
 
-  while (not File.exist?(test_server_pid_file)) && counter < 90 do
+  while (not File.exist?(test_server_pid_file)) && counter < 31 do
     counter += 1
     sleep 2
   end
@@ -70,6 +70,7 @@ task :run_acceptance_tests, [:test_suite] do |t, args|
       end
 
       spec_path = Rails.root.join("test/tests/")
+      log_level = 'error'
 
       if args && args.test_suite
         system 'echo "flush_all" | nc 127.0.0.1 11211'
@@ -77,6 +78,7 @@ task :run_acceptance_tests, [:test_suite] do |t, args|
         system "bundle exec rake load_test_data"
 
         system("casperjs test \
+                --verbose --log-level=#{log_level} \
                 --testhost=http://localhost:#{app_port} \
                 --htmlout=#{results_directory} \
                 #{File.join(spec_path, args.test_suite + '.coffee')}")
@@ -87,6 +89,7 @@ task :run_acceptance_tests, [:test_suite] do |t, args|
           system "bundle exec rake load_test_data"
 
           system("casperjs test \
+                  --verbose --log-level=#{log_level} \
                   --testhost=http://localhost:#{app_port} \
                   --htmlout=#{results_directory} \
                   #{File.join(test)}")

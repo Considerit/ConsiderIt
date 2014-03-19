@@ -1,7 +1,7 @@
 fs = require('fs')
 _ = require('underscore')
 
-actions = require('./actions')
+casper.options.waitTimeout = 10000;
 
 ######################################################
 ## Custom Casper methods tailored for Consider.it
@@ -9,37 +9,14 @@ actions = require('./actions')
 
 _.extend casper, 
 
-  # loops through the given test (callback), first when logged out and second when logged in
-  executeLoggedInAndLoggedOut : (location, callback) ->
-    casper.start location
-
-    actions.logout()
-
-    casper.then ->
-      callback.call casper, false # run tests while not logged in
-
-    actions.logout()
-
-    casper.thenOpen location, ->
-      casper.waitUntilVisible '#l_wrap', ->
-        if casper.exists '[action="login"]'
-          casper.then ->
-            id = Math.floor((Math.random()*100000)+1)
-            actions.createAccount "Testy #{id}", "testy_mctesttest_#{id}@testing.dev", '123124124243'
-
-          casper.waitUntilVisible '.user-options-display', ->
-            callback.call casper, true # run tests while logged in
-        else
-          callback.call casper, true
-
-    actions.logout()
-
   # waits until transitions amongst considerit states are completed (e.g. results page)
-  waitUntilStateTransitioned : (state, callback) ->
-    casper.waitUntilVisible "[state='#{state}']", ->
-      casper.waitWhileVisible '.transitioning', ->
-        casper.wait 200, ->
-          callback.call casper
+  waitUntilStateTransitioned : (state, callback, timeout_callback = null) ->
+    casper.waitUntilVisible "[state='#{state}']", null, timeout_callback
+    casper.wait 100
+    casper.waitWhileVisible '.transitioning', null, timeout_callback
+    casper.wait 200, ->
+      callback.call casper if callback
+
 
   getLoggedInUserid : ->
     @getElementAttribute '.user-options [role="user"]', 'data-id'
@@ -72,7 +49,6 @@ _.extend casper,
     casper.HTMLCapture '.four_columns_of_points',
       caption: 'JUST BEFORE RELEASE!!!'
     casper.mouse.up to[0], to[1]
-
 
 ######################################################
 ## Processing Casper Events
@@ -119,10 +95,13 @@ _.extend casper,
 
     casper.writeHTML wrap
 
-  HTMLStep : (message) -> 
+  logStep : (message, style = 'COMMENT') -> 
     casper.writeHTML "<div class='step entry'>&#10095; #{message}</div>"
-    casper.echo message, 'COMMENT'
+    casper.echo message, style
 
+  logAction : (message, style = 'COMMENT') ->
+    casper.writeHTML "<div class='action entry'>&#10095; #{message}</div>"    
+    casper.echo message, style
 
   writeHTML : (html) ->
     f = casper.getHTMLOutput()
@@ -131,6 +110,8 @@ _.extend casper,
 
   getHTMLOutput : ->
     fs.open "#{casper.cli.options.htmlout}/index.html", 'a+'
+
+
 
 
 casper.test._begin = casper.test.begin

@@ -69,15 +69,18 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
   ## Write some points
 
   casper.then ->
-    casper.HTMLStep 'write points' + state_suffix
+    casper.logStep 'write points' + state_suffix
     _.each _.values(opinion.points), (point) ->
       points_col = if point.is_pro then '.pros_on_decision_board' else '.cons_on_decision_board'
 
       casper.then ->
         test.assertExists "#{points_col} [action='write-point']", 'Ability to write point' + state_suffix
-        casper.click("#{points_col} [action='write-point']")
+      
+      casper.thenClick("#{points_col} [action='write-point']")
 
-      casper.waitUntilVisible "#{points_col} .newpoint_form", ->
+      casper.waitUntilVisible "#{points_col} .newpoint_form", null, -> test.fail 'New point form never shows up'
+
+      casper.then ->
         @click "#{points_col} .newpoint_nutshell"
         @sendKeys "#{points_col} .newpoint_nutshell", point.nutshell
 
@@ -90,7 +93,8 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
         casper.HTMLCapture '.four_columns_of_points', 
           caption : "Writing a point"
 
-        casper.click "#{points_col} [action='submit-point']"
+
+      casper.thenClick "#{points_col} [action='submit-point']"
 
       casper.wait 3000, ->
         casper.HTMLCapture '.four_columns_of_points', 
@@ -101,7 +105,7 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
   # include some points
   casper.then ->
     use_drag_and_drop = false #drag and drop is not yet working in casper
-    casper.HTMLStep 'including some points' + state_suffix  
+    casper.logStep 'including some points' + state_suffix  
     _.each opinion.included_points, (point) ->
       [point_id, is_pro] = point
       casper.then ->
@@ -111,17 +115,16 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
         # expand points if draggable isn't currently visible
         if !casper.exists draggable
           points_col = if is_pro then '.pros_by_community' else '.cons_by_community'
-          casper.then ->
-            casper.click "#{points_col} [action='expand-toggle']"
+          casper.thenClick "#{points_col} [action='expand-toggle']"
 
         casper.wait 50, ->
           if use_drag_and_drop
             casper.dragAndDrop draggable, target
           else
             # include by opening point
-            casper.click draggable + ' .point_content'
-            casper.waitUntilVisible draggable + '.open_point', ->
-              casper.click draggable + '.open_point' + ' [action="point-include"]'
+            casper.thenClick draggable + ' .point_content'
+            casper.waitUntilVisible draggable + '.open_point', null, -> test.fail 'Point is never actually opened'
+            casper.thenClick draggable + '.open_point' + ' [action="point-include"]'
 
         casper.wait 1000, ->   #waitUntilVisible ".opinion_region #{draggable}", ->
           # test.assertVisible ".opinion_region #{draggable}", 'point has been included'
@@ -136,7 +139,7 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
   # move the slider
   # drag slider label won't work here, need to just click on slider base for now
   casper.then ->
-    casper.HTMLStep 'Moving slider' + state_suffix  
+    casper.logStep 'Moving slider' + state_suffix  
 
     @evaluate ->
       target = '.noUi-base'
@@ -155,7 +158,7 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
     test.assertOpinionRepresented opinion, state_suffix
 
 casper.test.assertOpinionRepresented = (opinion, state_suffix) ->
-  casper.HTMLStep 'Verifying opinion is represented' + state_suffix  
+  casper.logStep 'Verifying opinion is represented' + state_suffix  
 
   _.each _.values(opinion.points), (point) =>
     points_col = if point.is_pro then '.pros_on_decision_board' else '.cons_on_decision_board'
@@ -176,8 +179,8 @@ casper.test.assertOpinionRepresented = (opinion, state_suffix) ->
     throw 'Doesnt handle different slider pos yet...'
 
 
-casper.test.begin 'Prolific contributor can craft their opinion', 118, (test) ->
-  casper.executeLoggedInAndLoggedOut "http://localhost:8787/#{opinion.proposal_id}", (is_logged_in) ->
+casper.test.begin 'Prolific contributor can craft their opinion', 120, (test) ->
+  actions.executeLoggedInAndLoggedOut "http://localhost:8787/#{opinion.proposal_id}", (is_logged_in) ->
 
     opinion = 
       proposal_id: 'wash_i_517'
@@ -205,64 +208,80 @@ casper.test.begin 'Prolific contributor can craft their opinion', 118, (test) ->
 
     test.assertInCraftingState state_suffix
 
-    # # write a point, open it, edit it, then delete it
-    casper.then -> 
-      casper.HTMLStep 'write a point, edit it, then delete it' + state_suffix
-
-      casper.waitUntilVisible ".cons_on_decision_board [action='write-point']", ->
-        @click ".cons_on_decision_board [action='write-point']"
-
-      casper.waitUntilVisible ".cons_on_decision_board .newpoint_form [action='submit-point']", ->
-
-        @sendKeys ".cons_on_decision_board .newpoint_nutshell", 'test test'
-        @sendKeys ".cons_on_decision_board .newpoint_description", 'test details yo'
-
-        @click ".cons_on_decision_board [action='submit-point']"
-
-        casper.wait 3000, ->
-          point_id = @getElementAttribute ".cons_on_decision_board .point:last-of-type", 'data-id'
-          @click "[role='point'][data-id='#{point_id}']"
-
-          @waitUntilVisible ".cons_on_decision_board .open_point", ->
-            @wait 200, ->
-              test.assertExists '.point_nutshell.editable', 'Can edit nutshell'
-              @click '.point_nutshell.editable'
-              @waitUntilVisible '.editable-input textarea', ->
-                @sendKeys '.editable-input textarea', ' edited'
-                @click '.editable-buttons button[type="submit"]'
-                @wait 200, ->
-                  test.assertSelectorHasText '.point_nutshell.editable', 'test test edited', 'point nutshell can be edited'
-
-            @then ->
-              @click '.point_description.editable'
-              @waitUntilVisible '.editable-input textarea', ->
-                @sendKeys '.editable-input textarea', ' edited'
-                @click '.editable-buttons button[type="submit"]'
-                @wait 200, ->
-                  test.assertSelectorHasText '.point_description.editable', 'test details yo edited', 'point description can be edited'
-
-          @thenClick '.close_open_point', ->
-            @waitWhileVisible '.open_point', ->
-              @click "[role='point'][data-id='#{point_id}'] [action='point-remove']"
-              @click ".cons_by_community [action='expand-toggle']"
-              @wait 1000, ->
-                test.assertDoesntExist "[role='point'][data-id='#{point_id}']", 'Point has been deleted'
-
     # include a point and remove it
     casper.then ->
-      casper.HTMLStep 'include a point and then remove it' + state_suffix
+      @logStep 'include a point and then remove it' + state_suffix
       point_id = @getElementAttribute ".cons_by_community .point:last-of-type", 'data-id'
-      @click "[role='point'][data-id='#{point_id}']"
+      @thenClick "[role='point'][data-id='#{point_id}'] .point_content"
 
-      casper.waitUntilVisible '.open_point', ->
-        casper.click '.open_point' + ' [action="point-include"]'
+      @waitUntilVisible '.open_point', null, -> test.fail 'point never opens'
+      @thenClick '.open_point' + ' [action="point-include"]'
 
-      casper.waitUntilVisible ".cons_on_decision_board [role='point'][data-id='#{point_id}']", ->
+      @waitUntilVisible ".cons_on_decision_board [role='point'][data-id='#{point_id}']", ->
         test.assertVisible ".cons_on_decision_board [role='point'][data-id='#{point_id}']", 'Point was included' + state_suffix
-        @click ".cons_on_decision_board [role='point'][data-id='#{point_id}'] [action='point-remove']"
-        @click ".cons_by_community [action='expand-toggle']"
-        casper.waitUntilVisible ".cons_by_community [role='point'][data-id='#{point_id}']", ->
-          test.assertVisible ".cons_by_community [role='point'][data-id='#{point_id}']", 'Point was un-included' + state_suffix
+      , -> test.fail 'point is never included'
+
+      @thenClick ".cons_by_community [action='expand-toggle']"
+      @thenClick ".cons_on_decision_board [role='point'][data-id='#{point_id}'] [action='point-remove']"
+      @waitUntilVisible ".cons_by_community [role='point'][data-id='#{point_id}']", ->
+        test.assertVisible ".cons_by_community [role='point'][data-id='#{point_id}']", 'Point was un-included' + state_suffix
+      , -> test.fail 'point is never unincluded'
+
+
+    # # write a point, open it, edit it, then delete it
+    casper.then -> 
+      @logStep 'write a point, edit it, then delete it' + state_suffix
+
+      @waitUntilVisible ".cons_on_decision_board [action='write-point']", null, -> test.fail 'ability to write new point does not appear'
+      @thenClick ".cons_on_decision_board [action='write-point']"
+
+      @waitUntilVisible ".cons_on_decision_board .newpoint_form [action='submit-point']", ->
+        @sendKeys ".cons_on_decision_board .newpoint_nutshell", 'test test'
+        @sendKeys ".cons_on_decision_board .newpoint_description", 'test details yo'
+      , -> test.fail 'new point form does not appear'
+
+      @thenClick ".cons_on_decision_board [action='submit-point']"
+
+      point_id = null # so that point_id is in wider scope
+      @waitUntilVisible '.cons_on_decision_board .point', ->
+        point_id = @getElementAttribute ".cons_on_decision_board .point:last-of-type", 'data-id'
+      , -> test.fail 'Point was never added'
+
+      @then -> 
+       
+        @thenClick "[role='point'][data-id='#{point_id}'] .point_content"
+
+        @waitUntilVisible ".cons_on_decision_board .open_point", null, -> test.fail 'Point did not open'
+
+        @wait 300, ->
+          test.assertExists '.point_nutshell.editable', 'Can edit nutshell'
+
+        @thenClick '.point_nutshell.editable'
+        @waitUntilVisible '.editable-input textarea', ->
+          @sendKeys '.editable-input textarea', ' edited'
+          @thenClick '.editable-buttons button[type="submit"]'
+          @waitWhileVisible 'editable-container'
+          @wait 200, ->
+            test.assertSelectorHasText '.point_nutshell.editable', 'test test edited', 'point nutshell can be edited'
+        , -> test.fail 'point nutshell editable never appears'
+
+        @thenClick '.point_description.editable'
+        @waitUntilVisible '.editable-input textarea', ->
+          @sendKeys '.editable-input textarea', ' edited'
+          @click '.editable-buttons button[type="submit"]'
+          @waitWhileVisible 'editable-container'
+          @wait 200, ->
+            test.assertSelectorHasText '.point_description.editable', 'test details yo edited', 'point description can be edited'
+        , -> test.fail 'point details editable never appears'
+
+        @thenClick '.close_open_point'
+        @waitWhileVisible '.open_point', ->
+          @click "[role='point'][data-id='#{point_id}'] [action='point-remove']"
+          @click ".cons_by_community [action='expand-toggle']"
+          @wait 1000, ->
+            test.assertDoesntExist "[role='point'][data-id='#{point_id}']", 'Point has been deleted'
+        , -> test.fail 'open point never closes'
+
 
 
     casper.then ->
@@ -270,129 +289,141 @@ casper.test.begin 'Prolific contributor can craft their opinion', 118, (test) ->
 
     # go to homepage, then back to crafting, and see if opinion is still there
     casper.thenClick '[action="go-home"]', ->
-      casper.HTMLStep 'Going to homepage then back to crafting to verify opinion still there' + state_suffix  
-      casper.waitUntilVisible "[data-id='#{opinion.proposal_id}'] [action='craft-opinion']", ->
-        casper.click "[data-id='#{opinion.proposal_id}'] [action='craft-opinion']"
-        casper.waitUntilStateTransitioned 'crafting', ->
-          test.assertOpinionRepresented opinion, state_suffix
+      @logStep 'Going to homepage then back to crafting to verify opinion still there' + state_suffix  
+      @waitUntilVisible "[data-id='#{opinion.proposal_id}'] [action='craft-opinion']", null, -> test.fail 'proposal is never in summary view'
+      @thenClick "[data-id='#{opinion.proposal_id}'] [action='craft-opinion']"
+      @waitUntilStateTransitioned 'crafting', null, -> test.fail 'Crafting state is never entered'
+      @wait 1000, ->
+        test.assertOpinionRepresented opinion, state_suffix
+      
 
     # go to results then back to crafting, and see if opinion is still there
     casper.thenClick '[action="view-results"]', ->
-      casper.HTMLStep 'Going to results then back to crafting to verify opinion still there' + state_suffix  
-      casper.waitUntilVisible "[data-id='#{opinion.proposal_id}'] [action='craft-opinion']", ->
-        casper.click "[data-id='#{opinion.proposal_id}'] [action='craft-opinion']"
-        casper.waitUntilStateTransitioned 'crafting', ->
-          test.assertOpinionRepresented opinion, state_suffix
+      @logStep 'Going to results then back to crafting to verify opinion still there' + state_suffix  
+      @waitUntilVisible "[data-id='#{opinion.proposal_id}'] [action='craft-opinion']", null, -> test.fail 'proposal is never in summary view'
+      @thenClick "[data-id='#{opinion.proposal_id}'] [action='craft-opinion']"
+      @waitUntilStateTransitioned 'crafting', ->
+        test.assertOpinionRepresented opinion, state_suffix
+      , -> test.fail 'Crafting state is never entered'
 
     # save opinion (with account creation if necessary)    
     casper.thenClick '[action="submit-opinion"]', ->
-      casper.HTMLStep 'Saving opinion' + state_suffix  
+      @logStep 'Saving opinion' + state_suffix  
 
       if !is_logged_in
-        casper.waitUntilVisible '#user_email', -> 
-          casper.mouse.click 'input#user_email'
-          casper.sendKeys 'input#user_email', credentials.email
-          casper.mouse.click 'input#password_none'
-          casper.mouse.click '[action="create-account"]'
-          casper.waitUntilVisible 'input#user_name', ->
-            casper.sendKeys 'input#user_name', credentials.username
-            casper.sendKeys 'input#user_password', credentials.password
-            casper.mouse.click 'input#pledge1'
-            casper.mouse.click 'input#pledge2'
-            casper.mouse.click '[action="paperwork_complete"]'
-        casper.waitUntilVisible '.user-options-display', -> test.assertLoggedIn()
+        @waitUntilVisible '#user_email', -> 
+          @mouse.click 'input#user_email'
+          @sendKeys 'input#user_email', credentials.email
+          @mouse.click 'input#password_none'
+          @mouse.click '[action="create-account"]'
+          @waitUntilVisible 'input#user_name', ->
+            @sendKeys 'input#user_name', credentials.username
+            @sendKeys 'input#user_password', credentials.password
+            @mouse.click 'input#pledge1'
+            @mouse.click 'input#pledge2'
+            @mouse.click '[action="paperwork_complete"]'
+        , -> test.fail 'login form never appears'
+        @waitUntilVisible '.user-options-display', -> 
+          test.assertLoggedIn()
+        , -> test.fail 'never logged in'
 
-      casper.waitUntilStateTransitioned 'results', ->
-        casper.HTMLStep 'Verifying that opinion saved properly in histogram' + state_suffix  
+      @waitUntilStateTransitioned 'results', ->
+        @logStep 'Verifying that opinion saved properly in histogram' + state_suffix  
 
         test.pass 'Made it to the results page after submitting opinion' 
 
-        current_user = casper.getLoggedInUserid()
+        current_user = @getLoggedInUserid()
         if opinion.stance == 1
           test.assertVisible "[segment='0'] .avatar[data-id='#{current_user}']", 'User opinion reflected in correct place in histogram'
         else 
           throw 'not handling non-strong support stance at this time...'
 
-        casper.HTMLCapture '[role="proposal"]', 
+        @HTMLCapture '[role="proposal"]', 
           caption : "User opinion in histogram"
+      , -> test.fail 'Never entered results state'
 
       #refresh page to confirm still in histogram
-      casper.reload ->
-        casper.HTMLStep 'Refresh page to confirm still in histogram' + state_suffix  
-        casper.waitUntilStateTransitioned 'results', ->
-          current_user = casper.getLoggedInUserid()
+      @reload ->
+        @logStep 'Refresh page to confirm still in histogram' + state_suffix  
+        @waitUntilStateTransitioned 'results', ->
+          current_user = @getLoggedInUserid()
           if opinion.stance == 1
             test.assertVisible "[segment='0'] .avatar[data-id='#{current_user}']", 'User opinion reflected in correct place in histogram'
+        , -> test.fail 'Never entered results state'
 
       #update opinion to something else
-      casper.then ->
-        current_user = current_user = casper.getLoggedInUserid()
+      @then ->
+        current_user = current_user = @getLoggedInUserid()
 
-        casper.HTMLStep 'Update slider value' + state_suffix  
-        casper.thenClick '[action="craft-opinion"]', ->
-          casper.waitUntilStateTransitioned 'crafting', ->
-            test.assertOpinionRepresented opinion, state_suffix
+        @logStep 'Update slider value' + state_suffix  
+        @thenClick '[action="craft-opinion"]'
+        @waitUntilStateTransitioned 'crafting', null, -> test.fail 'Never entered crafting state'
 
-            # change to neutral stance
-            opinion.stance = 0  
-            @evaluate ->
-              target = '.noUi-base'
-              event = document.createEvent("HTMLEvents")
-              event.initEvent("mousedown", true, true)
-              event.eventName = "mousedown"
-              event.clientX = $(target).offset().left + $(target).width()/2
-              event.clientY = $(target).offset().top + 3
-              $(target)[0].dispatchEvent(event)
+        @then ->
+          test.assertOpinionRepresented opinion, state_suffix
 
-            casper.wait 1000, ->
-              casper.HTMLCapture '[role="proposal"]', 
-                caption : "Slider set to neutral"
+          # change to neutral stance
+          opinion.stance = 0  
+          @evaluate ->
+            target = '.noUi-base'
+            event = document.createEvent("HTMLEvents")
+            event.initEvent("mousedown", true, true)
+            event.eventName = "mousedown"
+            event.clientX = $(target).offset().left + $(target).width()/2
+            event.clientY = $(target).offset().top + 3
+            $(target)[0].dispatchEvent(event)
 
-            casper.thenClick '[action="submit-opinion"]', ->
-              casper.waitUntilStateTransitioned 'results', ->
-                if opinion.stance == 0
-                  test.assertVisible "[segment='3'] .avatar[data-id='#{current_user}']", 'User opinion reflected in correct place in histogram'
-                else 
-                  throw 'not handling non-strong support stance at this time...'
 
-                casper.HTMLCapture '[role="proposal"]', 
-                  caption : "User now in neutral bar"
+          @wait 1000, ->
+            @HTMLCapture '[role="proposal"]', 
+              caption : "Slider set to neutral"
 
+          @thenClick '[action="submit-opinion"]'
+          @waitUntilStateTransitioned 'results', ->
+            if opinion.stance == 0
+              test.assertVisible "[segment='3'] .avatar[data-id='#{current_user}']", 'User opinion reflected in correct place in histogram'
+            else 
+              throw 'not handling non-strong support stance at this time...'
+
+            @HTMLCapture '[role="proposal"]', 
+              caption : "User now in neutral bar"
+          , -> test.fail 'Never entered results state'
 
     #logout
     casper.then ->
-      casper.HTMLStep 'Logout and check to see if opinion is cleared and contributed points are properly respected' + state_suffix  
+      @logStep 'Logout and check to see if opinion is cleared and contributed points are properly respected' + state_suffix  
 
       actions.logout()
-      casper.thenClick '[action="craft-opinion"]', ->
-        casper.waitUntilStateTransitioned 'crafting', ->
-    
-          # check that contributed points are present; check that point anonymity is preserved
-          _.each _.values(opinion.points), (point) =>
-            points_col = if point.is_pro then '.pros_by_community' else '.cons_by_community'
 
-            casper.click "#{points_col} [action='expand-toggle']"
-            test.assertSelectorHasText "#{points_col} .point_nutshell", point.nutshell, 'Contributed point is now shared with community'
-            if point.anonymous
-              test.assertExists "[includers*='#{current_user}'] .avatar_anonymous", 'Point anonymity respected'
-            casper.click ".points_are_expanded [action='expand-toggle']"
+      @thenClick '[action="craft-opinion"]'
+      @waitUntilStateTransitioned 'crafting', null, -> test.fail 'Never entered crafting state'
+  
+      @then -> 
+        # check that contributed points are present; check that point anonymity is preserved
+        _.each _.values(opinion.points), (point) =>
+          points_col = if point.is_pro then '.pros_by_community' else '.cons_by_community'
 
-          # check opinion has been cleared
-          test.assertElementCount '.opinion_region .point', 0, 'There aren\'t any points on the decision board'
-          slider_base_pos = casper.getElementBounds '.noUi-base'
-          slider_handle_pos = casper.getElementBounds '.noUi-handle'
+          @click "#{points_col} [action='expand-toggle']"
+          test.assertSelectorHasText "#{points_col} .point_nutshell", point.nutshell, 'Contributed point is now shared with community'
+          if point.anonymous
+            test.assertExists "[includers*='#{current_user}'] .avatar_anonymous", 'Point anonymity respected'
+          @click ".points_are_expanded [action='expand-toggle']"
 
-          test.assert slider_handle_pos.left < slider_base_pos.left + slider_base_pos.width / 2 && slider_handle_pos.left + slider_handle_pos.width > slider_base_pos.left + slider_base_pos.width / 2, 'Slider is set to neutrality'
+        # check opinion has been cleared
+        test.assertElementCount '.opinion_region .point', 0, 'There aren\'t any points on the decision board'
+        slider_base_pos = @getElementBounds '.noUi-base'
+        slider_handle_pos = @getElementBounds '.noUi-handle'
 
-      casper.then ->
+        test.assert slider_handle_pos.left < slider_base_pos.left + slider_base_pos.width / 2 && slider_handle_pos.left + slider_handle_pos.width > slider_base_pos.left + slider_base_pos.width / 2, 'Slider is set to neutrality'
+
+      @then ->
         # login and verify opinion still there
         if !is_logged_in
-          casper.HTMLStep 'Login and verify opinion still there' + state_suffix  
+          @logStep 'Login and verify opinion still there' + state_suffix  
 
           actions.login credentials.email, credentials.password
-          casper.waitUntilVisible '.user-options-display', ->
-            casper.wait 1000, ->
-              test.assertOpinionRepresented opinion, state_suffix
+          @wait 1000, ->
+            test.assertOpinionRepresented opinion, state_suffix
 
           # subsumed opinion
 
@@ -402,64 +433,73 @@ casper.test.begin 'Prolific contributor can craft their opinion', 118, (test) ->
 
 point_to_open = 3466
 casper.test.begin 'Prolific contributor can comment on points', 11, (test) ->
-  casper.executeLoggedInAndLoggedOut "http://localhost:8787/#{opinion.proposal_id}/points/#{point_to_open}", (is_logged_in) ->
+  actions.executeLoggedInAndLoggedOut "http://localhost:8787/#{opinion.proposal_id}/points/#{point_to_open}", (is_logged_in) ->
 
-    casper.waitUntilVisible ".new_comment_body textarea", ->
+    casper.waitUntilVisible ".new_comment_body textarea", null, -> test.fail 'ability to write comment does not show up'
+
+    casper.then ->
 
       if is_logged_in
-        current_user = casper.getLoggedInUserid()
+        current_user = @getLoggedInUserid()
 
-        casper.then ->
-          casper.HTMLStep 'Thank fact checker'
+        @then -> 
+          @logStep 'Thank commenter'
+          test.assertExists "#comment_721 [action='thank-commenter']", 'Opportunity to thank a commenter'          
 
-          test.assertExists ".claim_comment [action='thank-commenter']", 'Opportunity to thank a fact checker'
-          casper.click ".claim_comment [action='thank-commenter']"
+        @thenClick "#comment_721 [action='thank-commenter']"
 
-          casper.waitForSelector '.claim_comment [action="unthank-commenter"]', ->
+        @waitUntilVisible '#comment_721 [action="unthank-commenter"]', ->
+          test.pass 'Can thank commenter'
+          @HTMLCapture '.open_point', 
+            caption : "commenter thanked"
+          test.assertExists "#comment_721 [action='unthank-commenter']", 'Opportunity to unthank a commenter'
+        , -> test.fail 'No opportunity to unthank commenter'
 
-            test.pass 'Can thank fact checker'
+        @thenClick "#comment_721 [action='unthank-commenter']" #this submits two clicks!!!!
+        @waitForSelector '#comment_721 [action="thank-commenter"]', ->
+          test.pass 'Can unthank commenter'
+        , -> 
+          @HTMLCapture 'body', 
+            caption : "WHYYYYY"
 
-            casper.HTMLCapture '.open_point', 
-              caption : "fact-checker thanked"
+          casper.echo "IS PRESENT? #{casper.exists('#comment_721 [action=\'unthank-commenter\']')}"
+          test.fail 'Cannot unthank commenter'
 
-            test.assertExists ".claim_comment [action='unthank-commenter']", 'Opportunity to unthank a fact checker'
-            casper.click ".claim_comment [action='unthank-commenter']"
-            casper.waitForSelector '.claim_comment [action="thank-commenter"]', ->
-              test.pass 'Can unthank fact checker'
 
-        casper.then ->
-          casper.HTMLStep 'Thank commenter'
+        @then -> 
+          @logStep 'Thank fact checker'
+          test.assertExists "#claim_comment_125 [action='thank-commenter']", 'Opportunity to thank a fact checker'
 
-          casper.click ".plain_comment [action='thank-commenter']"
-          test.assertExists ".plain_comment [action='thank-commenter']", 'Can thank a commenter'          
-          casper.waitUntilVisible '.plain_comment [action="unthank-commenter"]', ->
-            test.pass 'Can thank commenter'
+        @thenClick "#claim_comment_125 [action='thank-commenter']"
+        @waitForSelector '#claim_comment_125 [action="unthank-commenter"]', ->
+          test.pass 'Can thank fact checker'
+          @HTMLCapture '.open_point', 
+            caption : "fact-checker thanked"
+          test.assertExists "#claim_comment_125 [action='unthank-commenter']", 'Opportunity to unthank a fact checker'
+        , -> test.fail 'No opportunity to unthank fact checker'
 
-            casper.HTMLCapture '.open_point', 
-              caption : "fact-checker thanked"
+        @thenClick "#claim_comment_125 [action='unthank-commenter']"
+        @waitForSelector '#claim_comment_125 [action="thank-commenter"]', ->
+          test.pass 'Can unthank fact checker'
+        , -> 
+          @HTMLCapture '.open_point', 
+            caption : "WHYYYYY"
 
-            test.assertExists ".plain_comment [action='unthank-commenter']", 'Opportunity to unthank a commenter'
-            casper.click ".plain_comment [action='unthank-commenter']"
-            casper.waitForSelector '.plain_comment [action="thank-commenter"]', ->
-              test.pass 'Can unthank commenter'
+          casper.echo "IS PRESENT? #{casper.exists('#claim_comment_125 [action=\'unthank-commenter\']')}"
+          test.fail 'Cannot unthank fact checker'
 
 
         #comment the point
-        casper.then ->
-          casper.HTMLStep 'Comment on a point'
-
-          casper.click ".new_comment_body textarea"
-
+        @thenClick ".new_comment_body textarea", ->
+          @logStep 'Comment on a point'
           @sendKeys ".new_comment_body textarea", "This is my awesome point"
-          @click "[action='submit-comment']"
 
-          casper.waitUntilVisible ".comment .avatar[data-id='#{current_user}']", ->
-            test.pass 'Comment has been added'
-
-            casper.HTMLCapture '.open_point', 
-              caption : "Comment added"
-
-
+        @thenClick "[action='submit-comment']"
+        @waitUntilVisible ".comment .avatar[data-id='#{current_user}']", ->
+          test.pass 'Comment has been added'
+          @HTMLCapture '.open_point', 
+            caption : "Comment added"
+        , -> test.fail 'Comment is never submitted'
 
       else
         # assert that commenting is disabled when not logged in
@@ -467,7 +507,7 @@ casper.test.begin 'Prolific contributor can comment on points', 11, (test) ->
         # assert that can't thank
         test.assertDoesntExist "[action='thank-commenter']", 'cant thank other comments when not logged in'
 
-        casper.HTMLCapture '.open_point', 
+        @HTMLCapture '.open_point', 
           caption : "Open point when not logged"
 
   casper.run ->

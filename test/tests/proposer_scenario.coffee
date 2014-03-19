@@ -101,7 +101,7 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 11, (test)
 # navigate to it, can we see it?
 # refresh page, is it still there?
 # go to homepage, can we find it there?
-#* can a position be submitted?
+# can a position be submitted?
 
 # LINK ONLY CONVERSATION
 # login as admin
@@ -113,7 +113,7 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 11, (test)
 # refresh page, is it still visible?
 # log out, is it not there?
 # open link, is it there? 
-#* can a position be submitted?
+# can a position be submitted?
 
 # PRIVATE CONVERSATION
 # login as admin
@@ -167,7 +167,7 @@ test_proposal_publicity = (test, publicity) ->
 
       @click '.editable-buttons button[type="submit"]'
       @wait 200, ->
-        test.assertSelectorHasText '.proposal_description_body.editable', proposal_details, 'proposal summary can be modified'
+        test.assertSelectorHasText '.proposal_description_body.editable', proposal_details, 'proposal details can be modified'
 
     if publicity == 'private' || publicity == 'link-only'
       @then ->
@@ -178,7 +178,13 @@ test_proposal_publicity = (test, publicity) ->
             test.assertVisible '#proposal_publicity_1', 'Ability to select link-only publicity'
             @thenClick '#proposal_publicity_1'
           else if publicity == 'private'
-            x = 1
+            test.assertVisible '#proposal_publicity_0', 'Ability to select private publicity'
+            @thenClick '#proposal_publicity_0'
+            test.assertVisible '#proposal_access_list', 'ability to specify access list'
+            @sendKeys '#proposal_access_list', 'testy_mctesttest@local.dev,testy_mctesttest_private@local.dev'
+
+            @HTMLCapture '.l-dialog-detachable', 
+              caption : "Specifying private proposal"
 
           @thenClick '.l-dialog-detachable input[type="submit"]'
         , -> test.fail 'Publicity dialog never appears'
@@ -219,13 +225,30 @@ test_proposal_publicity = (test, publicity) ->
 
     actions.logout()
 
-    @thenOpen "http://localhost:8787/#{proposal_id}"
-
-    @then ->
+    @thenOpen "http://localhost:8787/#{proposal_id}", ->
       if publicity == 'public' || publicity == 'link-only'
         @waitUntilStateTransitioned 'crafting', ->
           test.pass "New #{publicity} proposal can be directly accessed by anon"
         , -> test.fail "New #{publicity} proposal can be directly accessed by anon"
+
+        actions.createAccount "testy_mctesttest_#{publicity}@local.dev"
+
+        @waitUntilVisible '[action="submit-opinion"]', ->
+          @thenClick '[action="submit-opinion"]'
+        , -> test.fail "New user can't submit opinion"
+
+        @waitUntilStateTransitioned 'results', ->
+          test.pass "New user can submit an opinion for a #{publicity} proposal"
+        , -> test.fail "New user can submit an opinion for a #{publicity} proposal"
+
+        actions.logout()
+
+      else if publicity == 'private'
+        @waitUntilStateTransitioned 'summary', ->
+          test.pass 'Anon accessing a private proposal is redirected to homepage'
+
+          @HTMLCapture 'body', 
+            caption : "After anon tries to access a private proposal"
 
 
     @thenOpen "http://localhost:8787/"
@@ -233,13 +256,37 @@ test_proposal_publicity = (test, publicity) ->
     @waitUntilVisible '#active_proposals_region [action="load-proposals"]' 
     @thenClick '#active_proposals_region [action="load-proposals"]'
     @waitUntilVisible '[data-type="sort"][action="created_at"]'
-    @thenClick '[data-type="sort"][action="created_at"]'
-    @wait 200, ->
-      if publicity == 'public'
-        test.assertVisible "[data-id='#{proposal_id}']", 'New published proposal is on homepage for anon'
-      else 
-        test.assertDoesntExist "[data-id='#{proposal_id}']", "New published #{publicity} proposal is NOT on homepage for anon"
+    @thenClick '[data-type="sort"][action="created_at"]', ->
+      @wait 200, ->
+        if publicity == 'public'
+          test.assertVisible "[data-id='#{proposal_id}']", 'New published proposal is on homepage for anon'
+        else 
+          test.assertDoesntExist "[data-id='#{proposal_id}']", "New published #{publicity} proposal is NOT on homepage for anon"
 
+    @then ->
+      if publicity == 'private'
+        actions.createAccount "testy_mctesttest_#{publicity}@local.dev"
+        @wait 3000 # WAIT FOR AJAX TO RETURN; would be nice to have better condition
+        @waitUntilVisible '[data-type="sort"][action="created_at"]'
+        @thenClick '[data-type="sort"][action="created_at"]', ->
+          @wait 200, ->
+            test.assertVisible "[data-id='#{proposal_id}']", 'New published proposal is on homepage for user with access'
+
+        @thenOpen "http://localhost:8787/#{proposal_id}"
+        @waitUntilStateTransitioned 'crafting', null, -> 
+          test.fail 'Could not craft position when logged in as user with access to a private proposal'
+
+        @waitUntilVisible '[action="submit-opinion"]', ->
+          @thenClick '[action="submit-opinion"]'
+        , -> test.fail "User with access can't submit opinion"
+
+        @waitUntilStateTransitioned 'results', ->
+          test.pass "User with access can submit an opinion for a private proposal"
+        , -> test.fail "User with access can submit an opinion for a private proposal"
+
+        @thenOpen "http://localhost:8787/"
+        @waitUntilVisible '#active_proposals_region [action="load-proposals"]' 
+        @thenClick '#active_proposals_region [action="load-proposals"]'
 
     actions.loginAsAdmin()
 
@@ -260,19 +307,19 @@ test_proposal_publicity = (test, publicity) ->
 
 
 
-casper.test.begin "Creating and accessing a public proposal tests", 15, (test) ->
+casper.test.begin "Creating and accessing a public proposal tests", 16, (test) ->
   test_proposal_publicity test, 'public'
 
   casper.run ->
     test.done() 
 
-casper.test.begin "Creating and accessing a link-only proposal tests", 17, (test) ->
+casper.test.begin "Creating and accessing a link-only proposal tests", 18, (test) ->
   test_proposal_publicity test, 'link-only'
 
   casper.run ->
     test.done() 
 
-casper.test.begin "Creating and accessing a private proposal tests", 11, (test) ->
+casper.test.begin "Creating and accessing a private proposal tests", 20, (test) ->
   test_proposal_publicity test, 'private'
 
   casper.run ->

@@ -44,7 +44,7 @@ casper.test.begin 'Authentication tests', 9, (test) ->
   casper.start "http://localhost:8787/"
 
   casper.waitUntilVisible '[action="login"]', ->    
-    test.assertExists '[action="login"]', "there is an option for logging in"
+    test.pass "there is an option for logging in"
     @HTMLCapture '[action="login"]', 
       caption: 'Login opportunity'
 
@@ -54,25 +54,26 @@ casper.test.begin 'Authentication tests', 9, (test) ->
     @HTMLCapture '.auth_overlay',
       caption: 'login screen'
 
-    @click 'input#user_email'
-
-    @sendKeys 'input#user_email', 'testy_mctesttest@local.dev'
-
     @click 'input#password_none'
+
+    casper.fill '.auth_overlay form', 
+      'user[email]' : 'testy_mctesttest@local.dev'
+    , false
 
     @HTMLCapture '.auth_overlay',
       caption: 'login screen after input'
 
   # complete paperwork for new user
-  casper.thenClick('[action="create-account"]').waitForSelector '.user-accounts-complete-paperwork-form', -> 
+  casper.thenClick('[action="create-account"]')
+  casper.waitForSelector '.user-accounts-complete-paperwork-form', -> 
     test.assertExists '.user-accounts-complete-paperwork-form', 'Finish paperwork screen appears'
 
-    @sendKeys 'input#user_name', 'Testiffer McMuffin'
-
-    @sendKeys 'input#user_password', '1234567890'
-
-    @click 'input#pledge1'
-    @click 'input#pledge2'
+    casper.fill '.auth_overlay form', 
+      'user[name]' : 'Testiffer McMuffin'
+      'user[password]' : '1234567890'
+      'pledge1' : true
+      'pledge2' : true
+    , false
 
     @HTMLCapture '.auth_overlay', 
       caption : 'Account paperwork screen'
@@ -86,7 +87,7 @@ casper.test.begin 'Authentication tests', 9, (test) ->
 
   #refresh page to see if still logged in
   casper.reload ->
-    @HTMLStep 'Refreshing to check if still logged in'
+    @logStep 'Refreshing to check if still logged in'
     @waitForSelector '.user-options-display', ->
       test.assertLoggedIn()
 

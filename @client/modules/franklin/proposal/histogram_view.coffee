@@ -69,7 +69,7 @@
     finishSelectingBar : (segment, hard_select) ->
       $bar = @$el.find(".histogram_bar[segment=#{6-segment}]")
 
-      @$el.addClass 'histogram-segment-selected'
+      # @$el.addClass 'histogram-segment-selected'
 
       @$el.hide()
 
@@ -94,9 +94,7 @@
 
       if ( hard_select || @$el.find('.bar_is_hard_selected').length == 0 )
         $bar = $target.closest('.histogram_bar')
-
         segment = 6 - $target.closest('.histogram_bar').attr('segment')
-
         @trigger 'histogram:segment_results', segment, hard_select
 
       if hard_select
@@ -121,7 +119,7 @@
         if @bar_state == 'deselect'
           @$el.hide()
 
-          @$el.removeClass 'histogram-segment-selected'
+          # @$el.removeClass 'histogram-segment-selected'
 
           hiding = @$el.find('.point_list_collectionview, .results-pro-con-list-who')
           hiding.css 'visibility', 'hidden'

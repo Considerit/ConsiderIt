@@ -1,12 +1,13 @@
 require 'csv'
 require 'pp'
 
-host = "localhost:3000"
-host = "chlk.it"
-proposal_id = '010c97ddc8'
-
-log_level = 'error'
 task :load_tigard_data => :environment do
+  log_level = 'error'
+  host = "localhost:3000"
+  host = "chlk.it"
+  proposal_id = '010c97ddc8'
+
+
   path = Rails.root.join('lib', 'tasks', 'tigard', 'load_points.casper.coffee')
 
   cnt = {}
@@ -54,3 +55,19 @@ task :load_tigard_data => :environment do
 
 end
 
+
+task :export_tigard_data => :environment do
+  # ['oha'].each do |identifier|
+  ['gsacrd', 'gsacrd-staff', 'gsacrd-students'].each do |identifier|
+
+    account = Account.find_by_identifier identifier
+
+    CSV.open("lib/tasks/tigard/export/#{identifier}.csv", "w") do |csv|
+      csv << ["username", "email", "date joined", "#points", '#comments', '#opinions']
+
+      account.users.each do |user|
+        csv << [user.name, user.email, user.created_at, user.metric_points, user.metric_comments, user.metric_opinions]
+      end
+    end
+  end
+end

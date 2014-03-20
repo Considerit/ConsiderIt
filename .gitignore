@@ -25,6 +25,7 @@ restart.txt
 
 lib/tasks/tigard/data/*
 lib/tasks/tigard/screens/*
+lib/tasks/tigard/export/*
 
 
 test/data/test.sql.bz2

@@ -63,7 +63,6 @@ task :export_tigard_data => :environment do
   accounts.each do |identifier|
 
     account = Account.find_by_identifier identifier
-    pp account
 
     CSV.open("lib/tasks/tigard/export/#{identifier}-users.csv", "w") do |csv|
       csv << ["username", "email", "date joined", "#points", '#comments', '#opinions']
@@ -74,16 +73,16 @@ task :export_tigard_data => :environment do
     end
 
     CSV.open("lib/tasks/tigard/export/#{identifier}-points.csv", "w") do |csv|
-      csv << ['proposal', 'type', "author", "summary", "details", 'author_opinion', '#inclusions', '#comments']
+      csv << ['proposal', 'type', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
 
       account.points.published.order(:proposal_id).each do |pnt|
         opinion = pnt.user.opinions.find_by_long_id(pnt.proposal.long_id)
-        csv << [pnt.proposal.long_id, 'POINT', pnt.user.email, pnt.nutshell, pnt.text, opinion ? opinion.stance_name : '-', pnt.inclusions.count, pnt.comments.count]
+        csv << [pnt.proposal.long_id, 'POINT', pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance_name : '-', pnt.inclusions.count, pnt.comments.count]
 
         pnt.comments.each do |comment|
           opinion = comment.user.opinions.find_by_long_id(pnt.proposal.long_id)
 
-          csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, comment.body, '', opinion ? opinion.stance_name : '-', '', '']
+          csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? opinion.stance_name : '-', '', '']
         end
       end
 

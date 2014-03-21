@@ -255,8 +255,7 @@
           new_point = App.request 'point:create', attrs, 
             success : => 
               @options.collection.add new_point    
-              toastr.success "Thanks for your contribution! Please <strong style='text-decoration:underline'>Save Your Opinion</strong> below to share your point with others.", null,
-                positionClass: "toast-top-full-width"
+              App.execute 'notify:success', "Thanks for your contribution!"
 
               @trigger 'point:created', new_point
 

@@ -71,7 +71,7 @@
             else
               email_view.toggleInput true
 
-            toastr.error msg
+            App.execute 'notify:failure', msg
 
       email_view
 

@@ -77,7 +77,7 @@ task :export_tigard_data => :environment do
 
       account.points.published.order(:proposal_id).each do |pnt|
         opinion = pnt.user.opinions.find_by_long_id(pnt.proposal.long_id)
-        csv << [pnt.proposal.long_id, 'POINT', pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance_name : '-', pnt.inclusions.count, pnt.comments.count]
+        csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance_name : '-', pnt.inclusions.count, pnt.comments.count]
 
         pnt.comments.each do |comment|
           opinion = comment.user.opinions.find_by_long_id(pnt.proposal.long_id)

@@ -62,7 +62,7 @@
       App.request 'user:fixed:clear'
 
       current_user = App.request 'user:current'
-      App.execute 'notify:success', "Welcome #{current_user.get('name')}!"
+      # App.execute 'notify:success', "Welcome #{current_user.get('name')}!"
 
       # After a user signs in, we're going to query the server and get all the points
       # that this user wrote *anonymously* and proposals they have access to. Then we'll update the data properly so

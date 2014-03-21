@@ -120,7 +120,7 @@
         submitOpinion = =>
           @listenToOnce @model, 'opinion:synced', =>
             current_user = App.request 'user:current'
-            App.execute 'notify:success', "Thanks #{current_user.firstName()}!"
+            # App.execute 'notify:success', "Thanks #{current_user.firstName()}!"
 
             App.navigate Routes.proposal_path( @model.get('long_id') ), {trigger: true}
             

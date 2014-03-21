@@ -21,7 +21,7 @@
 
                   rq = App.request 'assessment:request:create', attrs
                   App.execute 'when:fetched', rq, =>
-                    toastr.success 'Fact-check request successful. You\'ll hear back soon.'
+                    App.execute 'notify:success', 'Request successful. You\'ll hear back soon.'
                     request_view.close()
                     view.render()
 

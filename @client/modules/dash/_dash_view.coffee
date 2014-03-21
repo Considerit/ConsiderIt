@@ -82,9 +82,9 @@
 
       data = $.parseJSON(response.responseText)
       if data.result == 'success'
-        toastr.success 'Email sent!'
+        App.execute 'notify:success', 'Email sent!'
       else
-        toastr.error 'Failed to send email'
+        App.execute 'notify:failure', 'Failed to send email'
 
       @trigger 'email:returned', data
 

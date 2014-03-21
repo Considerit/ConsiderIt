@@ -296,9 +296,9 @@
         comment_count : 0
 
       if point_attributes.nutshell.length < 4
-        toastr.error 'Sorry, the summary of your point must be longer'
+        App.execute 'notify:failure', 'Sorry, the summary of your point must be longer'
       else if point_attributes.nutshell.length > 140
-        toastr.error 'Sorry, the summary of your point must be less than 140 characters.'
+        App.execute 'notify:failure', 'Sorry, the summary of your point must be less than 140 characters.'
       else
         @trigger 'point:please_create_point', point_attributes
         @cancelPoint {currentTarget: $form.find('.newpoint-cancel')}

@@ -120,7 +120,7 @@
         submitOpinion = =>
           @listenToOnce @model, 'opinion:synced', =>
             current_user = App.request 'user:current'
-            toastr.success "Thanks #{current_user.firstName()}. Now explore the results!"
+            App.execute 'notify:success', "Thanks #{current_user.firstName()}!"
 
             App.navigate Routes.proposal_path( @model.get('long_id') ), {trigger: true}
             
@@ -133,9 +133,7 @@
             @trigger 'opinion:published'
 
           @listenToOnce @model, 'opinion:sync:failed', =>
-            toastr.error "We're sorry, something went wrong saving your opinion :-(", null,
-              positionClass: "toast-top-full-width"
-
+            App.execute 'notify:failure', "We're sorry, something went wrong saving your opinion"
           params = 
             follow_proposal : follow_proposal
 
@@ -227,7 +225,7 @@
 
         if data.destroyed
           model.trigger 'destroy', model, model.collection
-          toastr.success 'Point deleted'
+          App.execute 'notify:success', 'Point deleted'
 
       @layout.processWhetherPointsHaveBeenIncluded()
       @trigger 'point:removal', model

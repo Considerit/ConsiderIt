@@ -46,7 +46,7 @@
 
     commentCreated : ->
       @$el.find('.new_comment_body_field').val('')
-      toastr.success 'Comment added'
+      App.execute 'notify:success', 'Comment added'
 
     restoreCommentText : (saved_comment_text) ->
       @$el.find('.new_comment_body_field').val saved_comment_text

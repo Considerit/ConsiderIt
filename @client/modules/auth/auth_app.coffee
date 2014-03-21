@@ -62,7 +62,7 @@
       App.request 'user:fixed:clear'
 
       current_user = App.request 'user:current'
-      toastr.success "Welcome #{current_user.get('name')}!", null, {positionClass : 'toast-top-middle'}
+      App.execute 'notify:success', "Welcome #{current_user.get('name')}!"
 
       # After a user signs in, we're going to query the server and get all the points
       # that this user wrote *anonymously* and proposals they have access to. Then we'll update the data properly so
@@ -127,7 +127,7 @@
       @listenToOnce App.vent, 'App:Initialization:Complete', ->
         App.request 'user:signin:set_redirect', Routes.new_opinion_proposal_path(ConsiderIt.inaccessible_proposal.long_id)
         App.navigate Routes.root_path(), {trigger : true}
-        toastr.info 'Please sign in first to access this private proposal!'
+        App.execute 'notify:failure', 'Please sign in first to access this private proposal!'
         App.vent.trigger 'signin:requested'
         ConsiderIt.inaccessible_proposal = null
 

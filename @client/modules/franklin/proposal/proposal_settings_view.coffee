@@ -22,17 +22,17 @@
       data = $.parseJSON(response.responseText)
       if data.success
         @trigger 'proposal:deleted', @model
-        toastr.success 'Successfully deleted'
+        App.execute 'notify:success', 'Successfully deleted'
       else
-        toastr.error 'Failed to delete'
+        App.execute 'notify:failure', 'Failed to delete'
 
     publishProposal : (ev, response, options) ->
       data = $.parseJSON response.responseText
       if data.success
-        toastr.success 'Published! Start the conversation with some pro/con points of your own if appropriate.', null,
-          positionClass: "toast-top-full-width"
+        App.execute 'notify:success', 'Published! Start the conversation with some pro/con points of your own if appropriate.',
+          positionClass: "toast-bottom-full-width"
       else
-        toastr.error 'Failed to publish'
+        App.execute 'notify:failure', 'Failed to publish'
 
       @trigger 'proposal:published', data
 

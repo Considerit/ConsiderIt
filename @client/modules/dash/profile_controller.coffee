@@ -43,10 +43,10 @@
         if data.result == 'successful'
           App.request "user:update_current_user", data.user
           layout.render()
-          toastr.success 'Settings updated'
+          App.execute 'notify:success', 'Settings updated'
 
         else
-          toastr.error "Error, #{data.reason}."
+          App.execute 'notify:failure', "Error, #{data.reason}."
 
       layout
 

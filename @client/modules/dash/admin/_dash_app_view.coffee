@@ -34,7 +34,7 @@
       data = $.parseJSON(response.responseText)
       @trigger 'account:updated', data.account
 
-      toastr.success 'Account updated'
+      App.execute 'notify:success', 'Account updated'
 
 
     toggleExpandable : (ev) ->
@@ -132,19 +132,19 @@
     dataImported : (data, response, xhr) ->
       result = $.parseJSON(response.responseText)
       if result.created > 0
-        toastr.success "#{result.created} proposals created"
+        App.execute 'notify:success', "#{result.created} proposals created"
 
       if result.updated > 0
-        toastr.success "#{result.updated} proposals updated"
+        App.execute 'notify:success', "#{result.updated} proposals updated"
 
       if result.errors > 0
-        toastr.error "#{result.errors} proposals were not updated because of errors"
+        App.execute 'notify:failure', "#{result.errors} proposals were not updated because of errors"
 
       if App.request('tenant').get('theme') == 'lvg' && result.jurisdictions
-        toastr.success "#{result.jurisdictions}"
+        App.execute 'notify:success', "#{result.jurisdictions}"
         
         if result.jurisdiction_errors > 0
-          toastr.error "Failed jurisdictions: #{result.jurisdiction_errors}"
+          App.execute 'notify:success', "Failed jurisdictions: #{result.jurisdiction_errors}"
 
       @trigger 'data:imported', result
 

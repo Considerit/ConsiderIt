@@ -63,9 +63,9 @@
       if data.result == 'successful' 
         App.request 'user:signin', data.user
       else if data.result == 'rejected' && data.reason == 'user_exists'
-        toastr.error 'An account with that same email address already exists. Please sign in instead.'
+        App.execute 'notify:failure', 'An account with that same email address already exists. Please sign in instead.'
       else
-        toastr.error 'Sorry, we could not create your account. Please email travis@consider.it if the problem persists.'
+        App.execute 'notify:failure', 'Sorry, we could not create your account. Please email travis@consider.it if the problem persists.'
 
     getOverlay : (view) ->
       App.request 'dialog:new', view, 

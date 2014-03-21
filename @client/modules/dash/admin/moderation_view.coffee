@@ -107,9 +107,9 @@
       response = $.parseJSON(response.responseText)
 
       if response.result == 'success'
-        toastr.success 'Moderation saved'
+        App.execute 'notify:success', 'Moderation saved'
       else
-        toastr.error 'Failed to save'
+        App.execute 'notify:failure', 'Failed to save moderation'
 
       @trigger 'moderation:updated', response.moderation.moderation
 

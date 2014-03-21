@@ -64,7 +64,7 @@
             claim = view.model
             claim.save {approver : App.request('user:current').id}
             App.execute 'when:fetched', claim, =>
-              toastr.success 'Claim approved'
+              App.execute 'notify:success', 'Claim approved'
               App.vent.trigger 'claim:approved'
 
           @listenTo assessment, 'change', ->
@@ -81,19 +81,19 @@
           @listenTo forms, 'publish', =>
             assessment.save {complete : true}, 
               success : ->
-                toastr.success 'Assessment published.'
+                App.execute 'notify:success', 'Assessment published.'
                 forms.render()
 
           @listenTo forms, 'request_approval', =>
             assessment.save {reviewable : true}, 
               success : ->
-                toastr.success 'Submitted for approval'
+                App.execute 'notify:success', 'Submitted for approval'
                 forms.render()
 
           @listenTo forms, 'save_notes', (notes) =>
             assessment.save {notes: notes}, 
               success : ->
-                toastr.success 'Saved'
+                App.execute 'notify:success', 'Notes saved'
                 forms.render()
 
           @listenTo assessment, 'change', ->
@@ -130,7 +130,7 @@
           claim = App.request 'claim:create', attrs
           App.execute 'when:fetched', claim, =>
             claims_collection.add claim
-            toastr.success 'Claim added'            
+            App.execute 'notify:success', 'Claim added'            
             new_claim_view.close()
             App.vent.trigger 'claim:created'
 
@@ -145,7 +145,7 @@
         @listenTo edit_claim_view, 'claim:updated', (attrs) =>
           claim.save attrs
           App.execute 'when:fetched', claim, =>
-            toastr.success 'Claim updated'
+            App.execute 'notify:success', 'Claim updated'
             edit_claim_view.close()         
             App.vent.trigger 'claim:updated'
 

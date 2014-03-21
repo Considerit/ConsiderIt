@@ -66,18 +66,18 @@
 
     respondToPasswordReminderRequest : (success) ->
       if success
-        toastr.success 'Reminder has been sent.'
+        App.execute 'notify:success', 'Reminder has been sent.'
       else
-        toastr.error 'We couldn\'t find an account matching that email.'
+        App.execute 'notify:failure', 'We couldn\'t find an account matching that email.'
 
     signinFailed : (reason) ->
       if reason == 'wrong password'
         # TODO: help users if they previously signed in via third party
-        toastr.error 'Incorrect password'
+        App.execute 'notify:failure', 'Incorrect password'
       else if reason == 'no user'
-        toastr.error 'There is no user with that email address'
+        App.execute 'notify:failure', 'There is no user with that email address'
       else if reason == 'password token expired'
-        toastr.error 'That link has expired, you need to request a new password reminder'
+        App.execute 'notify:failure', 'That link has expired, you need to request a new password reminder'
 
     events : 
       'click a.forget_password_prompt' : 'passwordReminderRequested'
@@ -169,11 +169,11 @@
     signinFailed : (reason) ->
       if reason == 'wrong password'
         # TODO: help users if they previously signed in via third party
-        toastr.error 'Incorrect password'
+        App.execute 'notify:failure', 'Incorrect password'
       else if reason == 'no user'
-        toastr.error 'There is no user with that email address'
+        App.execute 'notify:failure', 'There is no user with that email address'
       else if reason == 'password token expired'
-        toastr.error 'That link has expired, you need to request a new password reminder'
+        App.execute 'notify:failure', 'That link has expired, you need to request a new password reminder'
 
 
     onShow : ->

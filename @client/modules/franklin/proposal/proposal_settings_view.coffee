@@ -29,8 +29,8 @@
     publishProposal : (ev, response, options) ->
       data = $.parseJSON response.responseText
       if data.success
-        App.execute 'notify:success', 'Published! Start the conversation with some pro/con points of your own if appropriate.',
-          positionClass: "toast-bottom-full-width"
+        App.execute 'notify:success', 'Published! Add some pro/con points of your own if appropriate.',
+          positionClass: "toast-top-full-width"
       else
         App.execute 'notify:failure', 'Failed to publish'
 

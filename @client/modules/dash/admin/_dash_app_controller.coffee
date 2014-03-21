@@ -7,7 +7,7 @@
     initialize : (options = {} ) ->
       if !@hasPermission()
         App.navigate Routes.root_path(), {trigger : true}
-        toastr.error 'Sorry, you need to sign in first to access that page'
+        App.execute 'notify:failure', 'Sorry, you need to sign in first to access that page'
         @redirected = true
 
       if !App.request("admin_templates_loaded?")

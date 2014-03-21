@@ -99,7 +99,7 @@
           path = if already_following then Routes.unfollow_path() else Routes.follow_path()
 
           $.post path, params, (data) => 
-            toastr.success 'Success'
+            App.execute 'notify:success', 'Subscription successful'
             current_user.setFollowing data.follow.follow
             
 

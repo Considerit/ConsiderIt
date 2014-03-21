@@ -14,7 +14,7 @@
         if initial
           proposals = data.proposals
           msg = if data.proposals.length > 0 then "#{data.proposals.length} ballot measures for #{zip} are now accessible." else "Sorry, we do not have any local measures on file for #{zip}."
-          toastr.success(msg) if initial
+          App.execute('notify:success', msg) if initial
 
         $unlocked = $('.unlocked')
         $unlocked.find('.zipcode').text(zip)

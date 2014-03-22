@@ -1,7 +1,8 @@
 do (_) ->
   _.templateSettings =  
-    interpolate : /\{\{(.+?)\}\}/g
+    escape : /\{\{(.+?)\}\}/g
     evaluate : /\(\((.+?)\)\)/g
+    interpolate : /\{SAFE\{(.+?)\}\}/g
 
   _.mixin
     compactObjectInPlace : (o) ->
@@ -20,3 +21,5 @@ do (_) ->
         _.delay func, wait
       else
         func()
+}
+}

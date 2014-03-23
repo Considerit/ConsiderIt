@@ -1,5 +1,5 @@
 fs = require('fs')
-_ = require('underscore')
+_ = require('../../node_modules/underscore')
 
 casper.options.waitTimeout = 10000;
 

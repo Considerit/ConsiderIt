@@ -1,4 +1,4 @@
-_ = require('underscore')
+_ = require('../../node_modules/underscore')
 
 _.extend casper.test, 
   assertLoggedIn : ->

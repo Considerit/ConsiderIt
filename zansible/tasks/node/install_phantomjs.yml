@@ -17,7 +17,7 @@
   register: phantom_version
 
 - name: download phantomjs
-  get_url: url=https://phantomjs.googlecode.com/files/phantomjs-${phantom_version.stdout}-linux-${arch.stdout}.tar.bz2 dest=/tmp/pjs.tar.bz2 force=yes
+  get_url: url=https://phantomjs.googlecode.com/files/phantomjs-{{phantom_version.stdout}}-linux-{{arch.stdout}}.tar.bz2 dest=/tmp/pjs.tar.bz2 force=yes
 
 - name: bunzip2 phantomjs
   command: bunzip2 -f /tmp/pjs.tar.bz2
@@ -26,10 +26,13 @@
   command: tar xf /tmp/pjs.tar -C /tmp
 
 - name: installing phantomjs
-  command: mv -f /tmp/phantomjs-${phantom_version.stdout}-linux-${arch.stdout}/bin/phantomjs /usr/local/bin/phantomjs-${phantom_version.stdout}
+  command: mv -f /tmp/phantomjs-{{phantom_version.stdout}}-linux-{{arch.stdout}}/bin/phantomjs /usr/local/bin/phantomjs-{{phantom_version.stdout}}
+  sudo: True
 
 - name: symlinking phantomjs
-  file: src=/usr/local/bin/phantomjs-${phantom_version.stdout} dest=/usr/local/bin/phantomjs state=link
+  file: src=/usr/local/bin/phantomjs-{{phantom_version.stdout}} dest=/usr/local/bin/phantomjs state=link
+  sudo: True
 
 - name: removing tar file
   file: path=/tmp/pjs.tar state=absent
+  sudo: True

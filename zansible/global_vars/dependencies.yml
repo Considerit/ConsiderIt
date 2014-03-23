@@ -29,6 +29,7 @@ deps:
   - openssl 
   - optipng
   - pngcrush
+  - python-apt
   - python-mysqldb # for Ansible mysql module
   - unattended-upgrades
   - unzip

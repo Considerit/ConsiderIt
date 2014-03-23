@@ -33,6 +33,7 @@ test/data/test.sql
 
 node_modules
 
+zansible/templates/seed_data/test.sql.bz2
 zansible/templates/seed_data/avatars.zip
 zansible/templates/seed_data/considerit.sql.bz2
 zansible/templates/ssl/*
@@ -57,5 +58,4 @@ Backup
 public/system/default_avatar/avatar.sketch*
 
 
-zansible/templates/seed_data/test.sql.bz2
 

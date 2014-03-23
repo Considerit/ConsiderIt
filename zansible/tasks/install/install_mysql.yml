@@ -15,10 +15,10 @@
   sudo: True
 
 - name: Change default pass for user root for mysql
-  mysql_user: name=${database.user} password=${database.password}
+  mysql_user: name={{database.user}} password={{database.password}}
   ignore_errors: yes
   sudo: True
 
 - name: Create default database
-  mysql_db: name=${database.name} state=present login_user=${database.user} login_password=${database.password}
+  mysql_db: name={{database.name}} state=present login_user={{database.user}} login_password={{database.password}}
   sudo: True

@@ -21,5 +21,3 @@ do (_) ->
         _.delay func, wait
       else
         func()
-}
-}

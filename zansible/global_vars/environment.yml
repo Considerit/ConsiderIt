@@ -1,11 +1,11 @@
 userhome: /home/$user
 #userhome: /home/members/interoccupynet/sites/tempcheck.occupy.net/users/tempcheck
-rbenv_path: ${userhome}/.rbenv #/usr/local/.rbenv
-ruby_home: ${userhome}/.rbenv/shims
-rbenv_home: ${rbenv_path}/bin
+rbenv_path: "{{userhome}}/.rbenv" #/usr/local/.rbenv
+ruby_home: "{{userhome}}/.rbenv/shims"
+rbenv_home: "{{rbenv_path}}/bin"
 ruby_version: 2.0.0-p247 #1.9.3-p392
 source: . ~/.profile
 port: 3000
-path: 'PATH="${rbenv_path}/bin:${rbenv_path}/plugins/ruby-build/bin:$HOME/.rbenv/shims:$PATH"'
+path: 'PATH="{{rbenv_path}}/bin:{{rbenv_path}}/plugins/ruby-build/bin:$HOME/.rbenv/shims:$PATH"'
 node_version: v0.10.24
 node_path: /usr/local

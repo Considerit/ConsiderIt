@@ -1,19 +1,19 @@
 - name: Initialize production configuration
-  template: src=templates/considerit_config/production.rb.j2 dest=$app_home/config/environments/production.rb
+  template: src=templates/considerit_config/production.rb.j2 dest={{app_home}}/config/environments/production.rb
   sudo: False
   when: code.environment == "production"
 
 - name: Update gems
-  shell: $source && bundle install --gemfile=$app_home/Gemfile && rbenv rehash
+  shell: "{{source}} && bundle install --gemfile={{app_home}}/Gemfile && rbenv rehash"
   sudo: False
 
 - name: Precompile assets
-  shell: $source && cd $app_home && RAILS_ENV={{code.environment}} RAILS_GROUPS=assets bundle exec rake assets:precompile
+  shell: "{{source}} && cd {{app_home}} && RAILS_ENV={{code.environment}} RAILS_GROUPS=assets bundle exec rake assets:precompile"
   ignore_errors: yes #if we don't have AWS S3 set up, asset sync will error out unnecessarily
   sudo: False
   when: code.environment == "production"
 
 - name: Initialize robots.txt
-  template: src=templates/robots.txt.j2 dest=$app_home/public/robots.txt
+  template: src=templates/robots.txt.j2 dest={{app_home}}/public/robots.txt
   sudo: False
   when: code.environment == "production"

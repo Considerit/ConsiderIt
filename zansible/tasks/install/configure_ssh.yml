@@ -1,16 +1,17 @@
 - name: Make .ssh directory
-  file: path=~/.ssh owner=$user state=directory
+  file: path=~/.ssh owner={{user}} state=directory
   sudo: False
 
 - name: Create authorized_keys
   template: src=templates/ssh/authorized_keys.j2 dest=~/.ssh/authorized_keys mode=400
-  sudo: True
+  sudo: false
+  when: ssh.pubkeys
 
 
 
 # Github 
 - name: Copy over Github private rsa deploy key
-  copy: src=templates/ssh/github/${deploy_key}_rsa dest=~/.ssh/${deploy_key}_rsa mode=700
+  copy: src=templates/ssh/github/{{deploy_key}}_rsa dest=~/.ssh/{{deploy_key}}_rsa mode=700
   sudo: False
 
 - name: Add github ssh key to config file

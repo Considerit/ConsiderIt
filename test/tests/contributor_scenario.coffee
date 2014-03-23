@@ -1,7 +1,7 @@
 require('../library/casper')
 require('../library/asserts')
 actions = require('../library/actions')
-_ = require('underscore')
+_ = require('../../node_modules/underscore')
 
 ###
 

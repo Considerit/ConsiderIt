@@ -1,31 +1,31 @@
 - name: create Backup directory
-  file: path=$app_home/Backup state=directory
+  file: path={{app_home}}/Backup state=directory
   sudo: False
 
 - name: create backup/models directory
-  file: path=$app_home/Backup/models state=directory
+  file: path={{app_home}}/Backup/models state=directory
   sudo: False
 
 - name: instantiate backup config
-  template: src=templates/Backup/config.rb.j2 dest=$app_home/Backup/config.rb
+  template: src=templates/Backup/config.rb.j2 dest={{app_home}}/Backup/config.rb
   sudo: False
 
 - name: instantiate backup model file
-  template: src=templates/Backup/models/my_backup.rb.j2 dest=$app_home/Backup/models/my_backup.rb
+  template: src=templates/Backup/models/my_backup.rb.j2 dest={{app_home}}/Backup/models/my_backup.rb
   sudo: False
 
 - name: install backup dependency net-ssh
-  shell: $source && backup dependencies --install net-ssh
+  shell: "{{source}} && backup dependencies --install net-ssh"
   sudo: False
 
 - name: install backup dependency net-scp
-  shell: $source && backup dependencies --install net-scp
+  shell: "{{source}} && backup dependencies --install net-scp"
   sudo: False
 
 - name: install backup dependency excon
-  shell: $source && backup dependencies --install excon
+  shell: "{{source}} && backup dependencies --install excon"
   sudo: False
 
 - name: install backup dependency fog
-  shell: $source && backup dependencies --install fog
+  shell: "{{source}} && backup dependencies --install fog"
   sudo: False

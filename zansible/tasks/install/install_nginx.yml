@@ -15,7 +15,7 @@
   sudo: True
 
 - name: Set Passenger Path
-  shell: $source && passenger-config --root | cut -f1 -d" "
+  shell: "{{source}} && passenger-config --root | cut -f1 -d\" \""
   register: passenger_root
   sudo: False
 
@@ -30,7 +30,7 @@
   sudo: True
 
 - name: Create vhost for this site
-  template: src=templates/nginx/sites/vhost.conf.j2 dest=/etc/nginx/conf.d/$app_name.conf mode=0755
+  template: src=templates/nginx/sites/vhost.conf.j2 dest=/etc/nginx/conf.d/{{app_name}}.conf mode=0755
   sudo: True
   when: server.name is defined
 

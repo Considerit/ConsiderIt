@@ -1,3 +1,3 @@
 Unattended-Upgrade::Allowed-Origins {
-        "${distro_id}:${distro_codename}-security";
+        "{{distro_id}}:{{distro_codename}}-security";
 };

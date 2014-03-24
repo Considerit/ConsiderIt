@@ -14,7 +14,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  config.vm.box_url = "https://dl.dropboxusercontent.com/u/3403211/ubuntu12.box"
+  config.vm.box_url = "https://dl.dropboxusercontent.com/u/3403211/considerit/ubuntu12.box"
 
   # config.vm.customize ["modifyvm", :id, "--memory", "1024"]
 

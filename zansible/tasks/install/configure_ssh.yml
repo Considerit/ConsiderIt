@@ -7,7 +7,10 @@
   sudo: false
   when: ssh.pubkeys
 
-
+# THIS WILL FAIL UNLESS YOU HAVE ACCESS TO THE CONSIDERIT DROPBOX & ARE ON A MAC
+- name: Copy github ssh deploy key from private considerit dropbox
+  local_action: "shell cp -r ~/Dropbox/ConsiderIt/code/ConsiderIt-uncommitted_files/zansible/templates/ssh/github zansible/templates/ssh"
+  sudo: False
 
 # Github 
 - name: Copy over Github private rsa deploy key

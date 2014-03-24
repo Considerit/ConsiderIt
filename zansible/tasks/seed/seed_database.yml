@@ -1,23 +1,27 @@
 # Import seed database
-
 - name: Create default database
   mysql_db: name={{database.name}} state=present login_user={{database.user}} login_password={{database.password}}
   sudo: True
   ignore_errors: yes
 
+# THIS WILL FAIL UNLESS YOU HAVE ACCESS TO THE CONSIDERIT DROPBOX & ARE ON A MAC
+- name: Download seed database from private considerit dropbox
+  local_action: "shell cp ~/Dropbox/ConsiderIt/code/ConsiderIt-uncommitted_files/zansible/templates/seed_data/{{database.name}}.sql.bz2 templates/seed_data/{{database.name}}.sql.bz2"
+  sudo: False
+
 - name: Copy existing database to remote server
-  copy: src=templates/seed_data/considerit.sql.bz2 dest=/tmp/{{database.name}}.sql.bz2
+  copy: src=templates/seed_data/{{database.name}}.sql.bz2 dest=~/{{database.name}}.sql.bz2
   sudo: True
 
 - name: Uncompress database dump
-  command: /bin/bunzip2 /tmp/{{database.name}}.sql.bz2 creates=/tmp/{{database.name}}.sql
+  command: /bin/bunzip2 ~/{{database.name}}.sql.bz2 creates=~/{{database.name}}.sql
   sudo: True
 
 - name: Import database
-  mysql_db: name={{database.name}} login_user={{database.user}} login_password={{database.password}} state=import target=/tmp/{{database.name}}.sql
+  mysql_db: name={{database.name}} login_user={{database.user}} login_password={{database.password}} state=import target=~/{{database.name}}.sql
   ignore_errors: yes
   sudo: True
 
 - name: Remove database dump
-  file: path=/tmp/{{database.name}}.sql state=absent
+  file: path=~/{{database.name}}.sql state=absent
   sudo: True

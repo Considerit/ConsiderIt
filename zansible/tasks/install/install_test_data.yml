@@ -2,6 +2,11 @@
   file: path={{app_home}}/test/data state=directory
   sudo: False
 
+# THIS WILL FAIL UNLESS YOU HAVE ACCESS TO THE CONSIDERIT DROPBOX & ARE ON A MAC
+- name: Download test data from private considerit dropbox
+  local_action: "shell cp ~/Dropbox/ConsiderIt/code/ConsiderIt-uncommitted_files/zansible/templates/seed_data/test.sql.bz2 templates/seed_data/test.sql.bz2"
+  sudo: False
+
 - name: Copy test data to remote server
   copy: src=templates/seed_data/test.sql.bz2 dest={{app_home}}/test/data/test.sql.bz2
   sudo: True

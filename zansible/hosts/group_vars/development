@@ -1,7 +1,7 @@
 user: vagrant
 ansible_ssh_user: $user
 app_name: ConsiderIt
-app_home: /home/$user/$app_name
+app_home: /vagrant
 allow_indexing: false
 
 backup_data: false

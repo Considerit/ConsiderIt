@@ -13,9 +13,9 @@
   poll: 10
   sudo: False
 
-- name: Remove avatars zip
-  file: path={{app_home}}/avatars.zip state=absent
-  sudo: False
+# - name: Remove avatars zip
+#   file: path={{app_home}}/avatars.zip state=absent
+#   sudo: False
 
 - name: Cache avatars
   shell: "{{source}} && cd {{app_home}} && RAILS_ENV={{code.environment}} bundle exec rake cache:avatars"

@@ -1,6 +1,6 @@
-- name: Compress avatars
-  local_action: shell zip -r templates/seed_data/avatars.zip ../public/system/avatars
-  sudo: False
+# - name: Compress avatars
+#   local_action: shell zip -r templates/seed_data/avatars.zip ../public/system/avatars
+#   sudo: False
 
 - name: Copy sample avatars
   copy: src=templates/seed_data/avatars.zip dest={{app_home}}

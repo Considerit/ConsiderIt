@@ -1,4 +1,4 @@
-- name: Installs Casperjs
+- name: Install Casperjs
   git: repo=git://github.com/n1k0/casperjs.git dest={{userhome}}/casperjs
   sudo: False
 

@@ -41,7 +41,7 @@
   debug: >
     msg="current version of Ruby is {{ ruby_current_version.stdout }} while were looking for {{ ruby_version }}"
 
-- name: Install ruby
+- name: Install ruby (4-7min)
   shell: "{{source}} && {{path}} rbenv install {{ruby_version}} && {{path}} rbenv global {{ruby_version}}"
   when: ruby_current_version.stdout != ruby_version
   async: 1000
@@ -57,6 +57,6 @@
   shell: "{{source}} && {{path}} gem install bundler --no-rdoc --no-ri && {{rbenv_home}}/rbenv rehash"
   sudo: False
 
-- name: Update gems
+- name: Update gems (5 min)
   shell: "{{source}} && {{path}} bundle install --gemfile={{app_home}}/Gemfile"
   sudo: False

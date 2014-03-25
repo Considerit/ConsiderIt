@@ -15,7 +15,7 @@
 
 # note: local_action's current working directory is the location of the top level playbook
 - name: Copy github ssh deploy key from private considerit dropbox
-  local_action: "shell cp -r ~/Dropbox/ConsiderIt/code/ConsiderIt-uncommitted_files/zansible/templates/ssh/github templates/ssh"
+  local_action: "shell cp -r ~/Dropbox/ConsiderIt/Local_dev_requirements/zansible/templates/ssh/github templates/ssh"
   sudo: False
 ############
 

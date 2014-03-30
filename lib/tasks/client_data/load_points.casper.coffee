@@ -40,7 +40,7 @@ createAccount = (email, username, group) ->
     casper.sendKeys 'input#user_name', username
     casper.sendKeys 'input#user_password', password
     #this prevents weird casper/phantomjs error
-    casper.capture "lib/tasks/tigard/screens/#{group}.png"    
+    casper.capture "lib/tasks/client_data/screens/#{group}.png"    
 
     casper.thenClick 'input#pledge1'
     casper.thenClick 'input#pledge2'
@@ -49,9 +49,9 @@ createAccount = (email, username, group) ->
     casper.then ->   
       casper.evaluate (filename) ->
         __utils__.findOne('#user_avatar[type="file"]').setAttribute('value', filename)
-      , "lib/tasks/tigard/profiles/#{group}.png".toLowerCase()
+      , "lib/tasks/client_data/profiles/#{group}.png".toLowerCase()
 
-      casper.page.uploadFile 'input#user_avatar[type="file"]', "lib/tasks/tigard/profiles/#{group}.png".toLowerCase()
+      casper.page.uploadFile 'input#user_avatar[type="file"]', "lib/tasks/client_data/profiles/#{group}.png".toLowerCase()
 
 
     casper.thenClick '[action="paperwork_complete"]'
@@ -97,7 +97,7 @@ casper.start "http://#{host}/#{proposal_id}", ->
   , stance
 
   # casper.wait 100, ->
-  #   casper.capture "lib/tasks/tigard/screens/#{stance}-#{username}.png"
+  #   casper.capture "lib/tasks/client_data/screens/#{stance}-#{username}.png"
 
 
   if is_point
@@ -113,7 +113,7 @@ casper.start "http://#{host}/#{proposal_id}", ->
         @sendKeys "#{points_col} .newpoint_description", body
 
       #this prevents weird casper/phantomjs error
-      casper.capture "lib/tasks/tigard/screens/#{stance}-#{username}.png"
+      casper.capture "lib/tasks/client_data/screens/#{stance}-#{username}.png"
     , ->
       casper.echo '**** COULD NOT CREATE POINT ' + nutshell 
 
@@ -146,7 +146,7 @@ casper.start "http://#{host}/#{proposal_id}", ->
       casper.thenClick ".new_comment_body textarea", ->
         casper.sendKeys ".new_comment_body textarea", body
         #this prevents weird casper/phantomjs error
-        casper.capture "lib/tasks/tigard/screens/#{stance}-#{username}.png"
+        casper.capture "lib/tasks/client_data/screens/#{stance}-#{username}.png"
 
       casper.wait 100
       casper.thenClick "[action='submit-comment']"
@@ -157,7 +157,7 @@ casper.start "http://#{host}/#{proposal_id}", ->
       casper.thenClick '.close_open_point'
 
   casper.then ->
-    casper.capture "lib/tasks/tigard/screens/#{stance}-#{username}.png"
+    casper.capture "lib/tasks/client_data/screens/#{stance}-#{username}.png"
 
 
   casper.wait 100

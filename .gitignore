@@ -29,9 +29,9 @@ public/assets/
 public/sitemaps/*
 public/test/results/*
 
-lib/tasks/tigard/data/*
-lib/tasks/tigard/screens/*
-lib/tasks/tigard/export/*
+lib/tasks/client_data/data/*
+lib/tasks/client_data/screens/*
+lib/tasks/client_data/export/*
 
 test/data/test.sql.bz2
 test/data/test.sql

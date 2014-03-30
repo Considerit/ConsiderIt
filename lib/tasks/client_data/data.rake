@@ -1,6 +1,34 @@
 require 'csv'
 require 'pp'
 
+task :insert_empty_users => :environment do
+  log_level = 'error'
+  #host = "localhost:3000"
+  host = "tigard.consider.it"
+  #proposal_id = '010c97ddc8'
+
+  path = Rails.root.join('lib', 'tasks', 'client_data', 'load_users.casper.coffee')
+
+  sheet = "lib/tasks/client_data/data/empty_profiles.csv"
+
+
+  pp '***********************************'
+  pp "PROCESSING #{sheet}"
+  pp '***********************************'
+
+  CSV.foreach( sheet, :headers => true) do |row|
+
+    opts = ['username', 'password'].map { |param| "--#{param}='#{row[param]}'" }.compact.join(' ')
+    pp opts
+
+    system "casperjs --verbose --log-level=#{log_level} --host='#{host}' #{opts} #{File.join(path)}"
+
+  end
+
+
+end
+
+
 task :load_tigard_data => :environment do
   log_level = 'error'
   host = "localhost:3000"
@@ -8,7 +36,7 @@ task :load_tigard_data => :environment do
   proposal_id = '010c97ddc8'
 
 
-  path = Rails.root.join('lib', 'tasks', 'tigard', 'load_points.casper.coffee')
+  path = Rails.root.join('lib', 'tasks', 'client_data', 'load_points.casper.coffee')
 
   cnt = {}
 
@@ -19,7 +47,7 @@ task :load_tigard_data => :environment do
 
     processed = 0
 
-    CSV.foreach( "lib/tasks/tigard/data/#{sheet[0]}", :headers => true) do |row|
+    CSV.foreach( "lib/tasks/client_data/data/#{sheet[0]}", :headers => true) do |row|
 
       if !cnt.has_key? row['group']
         cnt[row['group']] = 0
@@ -46,7 +74,6 @@ task :load_tigard_data => :environment do
 
     end
 
-
   end
 
   Rake::Task["cache:points"].invoke
@@ -56,7 +83,7 @@ task :load_tigard_data => :environment do
 end
 
 
-task :export_tigard_data => :environment do
+task :export_gsacrd_data => :environment do
   #accounts = ['livingvotersguide']
   accounts = ['gsacrd', 'gsacrd-staff', 'gsacrd-students']
 
@@ -64,7 +91,7 @@ task :export_tigard_data => :environment do
 
     account = Account.find_by_identifier identifier
 
-    CSV.open("lib/tasks/tigard/export/#{identifier}-users.csv", "w") do |csv|
+    CSV.open("lib/tasks/client_data/export/#{identifier}-users.csv", "w") do |csv|
       csv << ["username", "email", "date joined", "#points", '#comments', '#opinions']
 
       account.users.each do |user|
@@ -72,7 +99,7 @@ task :export_tigard_data => :environment do
       end
     end
 
-    CSV.open("lib/tasks/tigard/export/#{identifier}-points.csv", "w") do |csv|
+    CSV.open("lib/tasks/client_data/export/#{identifier}-points.csv", "w") do |csv|
       csv << ['proposal', 'type', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
 
       account.points.published.order(:proposal_id).each do |pnt|

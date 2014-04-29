@@ -1,7 +1,7 @@
 class Ability
   include CanCan::Ability
 
-  def initialize(user, current_tenant=nil, session_id=nil, params=nil)
+  def initialize(user, current_tenant=nil, session_id=nil, session = nil, params=nil)
     # Define abilities for the passed in user here. For example:
     #
     #   user ||= User.new # guest user (not logged in)
@@ -67,29 +67,39 @@ class Ability
       can [:index, :create, :update, :destroy, :read], :all
     else
       #Proposal
-      can :read, Proposal do |prop|
-        prop.publicity != 0 || (!user.id.nil? && prop.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
+      can :read, Proposal do |proposal|
+        proposal.publicity != 0 || (!user.id.nil? && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
       end
 
-      can :create, Proposal do |prop|
+      can :create, Proposal do |proposal|
         current_tenant.enable_user_conversations || user.has_role?(:manager)
       end
 
-      can [:read, :update], Proposal do |prop|
-        (!user.id.nil? && user.id == prop.user_id) || (session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)
+      can [:read, :update], Proposal do |proposal|
+        (!user.id.nil? && user.id == proposal.user_id) || (session_id == proposal.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == proposal.admin_id)
       end
 
-      can [:destroy], Proposal do |prop|
-        ((!user.id.nil? && user.id == prop.user_id) || (session_id == prop.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == prop.admin_id)) && \
-          (prop.opinions.published.count == 0 || (prop.opinions.published.count == 1 && prop.opinions.published.first.user_id == user.id))
+      can [:destroy], Proposal do |proposal|
+        ((!user.id.nil? && user.id == proposal.user_id) || (session_id == proposal.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == proposal.admin_id)) && \
+          (proposal.opinions.published.count == 0 || (proposal.opinions.published.count == 1 && proposal.opinions.published.first.user_id == user.id))
       end
 
       #Opinion
-      can [:create, :update, :destroy, :read], Opinion do |pos|
-        prop = pos.proposal
-        prop.publicity != 0 || (!user.id.nil? && prop.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
-        #TODO: get this to work!
-        #(!pos.published && user.id.nil? && pos.user_id.nil?) || (user.id == pos.user_id)
+      can [:read], Opinion do |opinion|
+        proposal = opinion.proposal
+        #TODO: can we just say "authorize :read, proposal"?
+        user_has_access_to_proposal = proposal.publicity != 0 || (!user.id.nil? && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
+        user_has_access_to_proposal
+      end
+
+      can [:create, :update], Opinion do |opinion|
+        proposal = opinion.proposal
+        user_is_prepped = !user.id.nil? && user.registration_complete
+        user_has_access_to_proposal = proposal.publicity != 0 || (!user.id.nil? && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
+        user_is_prepped && user_has_access_to_proposal
+
+        #TODO: get this to work! Need to make sure only the original opinion creator can update the opinion
+        #(!opinion.published && user.id.nil? && opinion.user_id.nil?) || (user.id == opinion.user_id)
       end
 
       #Point
@@ -135,6 +145,7 @@ class Ability
       end
 
       can :create, ClientError
+
       
     end
   end

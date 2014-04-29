@@ -30,8 +30,6 @@ class ProposalsController < ApplicationController
       :proposals => proposals.public_fields,
       :points => top_points.values
     }
-
-
   end
 
   def show
@@ -72,6 +70,7 @@ class ProposalsController < ApplicationController
   def create
     description = params[:proposal][:description] || ''
 
+    # NOTE: default hashtags haven't been used since Occupy deployment. Purge from system.
     if current_tenant.default_hashtags && description.index('#').nil?
       description += " #{current_tenant.default_hashtags}"
     end
@@ -80,18 +79,27 @@ class ProposalsController < ApplicationController
     # TODO: explicitly grab parameters
     params[:proposal].update({
       :long_id => SecureRandom.hex(5),
-      :account_id => current_tenant.id,
-      :admin_id => SecureRandom.hex(6),
+      :account_id => current_tenant.id, 
+      :admin_id => SecureRandom.hex(6),  #NOTE: admin_id never used, should be purged from system
       :user_id => current_user ? current_user.id : nil,
       :description => description,
     })
 
     proposal = Proposal.create params[:proposal].permit!
-    authorize! :create, proposal
-    proposal.save
-    proposal.track!
 
+    authorize! :create, proposal # TODO: This should happen first, I don't think cancan requires an object to authorize against
+
+    proposal.save
+
+    #########
+    # Wrong! This should only happen when a proposal is published! And care needs to be taken to filter this according to its publicity!
+    proposal.track! 
+    #########
+
+    # why do we subscribe the creator to email notifications for new proposals by other people?
     current_tenant.follow!(current_user, :follow => true, :explicit => false)
+
+
     proposal.follow!(current_user, :follow => true, :explicit => false)
 
     ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
@@ -109,7 +117,6 @@ class ProposalsController < ApplicationController
 
     proposal = Proposal.find_by_long_id(params[:long_id])
     authorize! :update, proposal
-
 
     private_discussion = (params[:proposal].has_key?(:publicity) && params[:proposal][:publicity] == '0') || proposal.publicity == 0
 
@@ -150,6 +157,12 @@ class ProposalsController < ApplicationController
     end
 
     if published_now
+      ActiveSupport::Notifications.instrument("proposal:published", 
+        :proposal => proposal,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )
+    elsif !published_now && proposal.published
       ActiveSupport::Notifications.instrument("proposal:updated", 
         :model => proposal,
         :current_tenant => current_tenant,

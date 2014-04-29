@@ -19,11 +19,14 @@ ConsiderIt::Application.routes.draw do
     :confirmations => "users/confirmations"
   }
 
-  resources :inclusions, :only => [:create] 
+  resources :inclusions, :path => 'inclusions/:point_id', :only => [:create] 
+  match 'inclusions/:point_id' => 'inclusions#destroy', :via => :delete 
+
 
   resources :proposals, :only => [:index, :create]
-  resource :proposal, :path => '/:long_id/results', :long_id => /[a-zA-Z\d_]{10}/, :only => [:show, :edit, :update, :destroy]
-  resource :proposal, :path => '/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [], :path_names => {:show => 'results'} do
+  resource :proposal, :path => '/:long_id/results', :long_id => /[a-zA-Z\d_]{10}/, :only => [:show, :update, :destroy] 
+
+  resource :proposal, :path => '/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [] do
     get '/' => "proposals#show" , :as => :new_opinion
 
     resources :opinions, :path => '', :only => [:update, :create], :path_names => {:new => ''} 

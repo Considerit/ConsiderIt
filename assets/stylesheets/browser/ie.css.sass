@@ -11,12 +11,12 @@
 //IE8 doesn't support transform: translate ...
 .no-csstransforms
   .reasons_layout
-    &[state="crafting"]
+    &[data-state="crafting"]
 
       .community_pros_region, .community_cons_region
         left: 0
 
-    &[state="results"], &[state="summary"]
+    &[data-state="results"], &[data-state="summary"]
 
       .community_pros_region
         left: $point-width - ($point-width - $decision_board_width/2) + 4
@@ -27,20 +27,20 @@
 
 
   .reasons_layout  
-    &[state="crafting"], &[state="summary"]
+    &[data-state="crafting"], &[data-state="summary"]
       top: -$histogram_height
 
-    &[state="crafting"][coming-from-state="results"]
+    &[data-state="crafting"][data-prior-state="results"]
       top: 0
 
-    &[state="crafting"][coming-from-state="results"]
+    &[data-state="crafting"][data-prior-state="results"]
       .opinion_region
         top: - 2 * $vertical_baseline
 
       .community_pros_region, .community_cons_region
         top: $vertical_baseline
 
-    &[state="crafting"][coming-from-state="summary"], &[state="crafting"]
+    &[data-state="crafting"][data-prior-state="summary"], &[data-state="crafting"]
       .opinion_region
         top: 3 * $vertical_baseline
 
@@ -48,33 +48,33 @@
         top: 6 * $vertical_baseline
 
 
-    &[state="summary"]
+    &[data-state="summary"]
       .opinion_region
         top: $histogram_height + $vertical_baseline
 
 
-  [activity="proposal-no-activity"]
-    .reasons_layout[state="summary"] 
+  [data-activity="proposal-no-activity"]
+    .reasons_layout[data-state="summary"] 
       top: 0
 
       .opinion_region
         top: 0
 
-  [state="summary"]
+  [data-state="summary"]
     .proposal_description_region
       left: -$dialog_stutter
 
-  [state="summary"].transitioning
+  [data-state="summary"].transitioning
     .proposal_description_region
       left: 0
 
 
-  [state="crafting"]
+  [data-state="crafting"]
     margin-bottom: 4 * $vertical_baseline
 
 
 
-.histogram[state="crafting"][coming-from-state="results"] 
+.histogram[data-state="crafting"][data-prior-state="results"] 
   visibility: hidden
   .histogram_bar, .histogram_base
     visibility: hidden

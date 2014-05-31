@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////
 @import "variables"
 @import "compass/css3/box-shadow"
+@import "compass/css3/text-shadow"
 @import "compass/typography/vertical_rhythm"
 @import "sassy-buttons"
 
@@ -18,11 +19,11 @@ $sb-second-color:    false        // Optional second color of button gradient
 $sb-border-radius:   10px         // Button border radius
 $sb-border-width:    1px          // Button border width
 $sb-padding:         $vertical_baseline/2 $grid_gutter  // Button padding
-$sb-font-size:       false         // Button font-size
+$sb-font-size:       false        // Button font-size
 $sb-line-height:     false        // Button line-height
 $sb-text-color:      white        // Button text color
-$sb-text-style:      "none"      // Button text shadow style
-$sb-gradient-style:  "simple"      // Button gradient style
+$sb-text-style:      "none"       // Button text shadow style
+$sb-gradient-style:  "simple"     // Button gradient style
 $sb-auto-states:     true         // Automatically create pseudo styles 
 
 
@@ -168,6 +169,8 @@ html
 body, h1, h2, h3, h4, h5, h6 //, input, button
   color: $base_text_color
 
+h1, h2, h3, h4, h5, h6
+  font-family: $header_font-family
 
 // do we need to put input and button here...?
 body, input, button, textarea
@@ -177,7 +180,7 @@ a
   +link_style($base_text_color, $base_background_color, 25%)
 
   /* SHARED STYLES */
-[tooltip="user_profile"]
+[data-tooltip="user_profile"]
   cursor: pointer
 
 
@@ -209,7 +212,7 @@ a
 
 // franklin/proposal
 
-[visibility="published"]
+[data-visibility="published"]
   .proposal_admin_strip > i
     color: emphasize($base_background_color, 25%)
 
@@ -218,7 +221,7 @@ a
     border: 1px solid emphasize($base_background_color, 20%)
 
 
-[visibility="unpublished"]
+[data-visibility="unpublished"]
   .proposal_admin_strip
     color: $base_text_color
 
@@ -227,33 +230,51 @@ a
 
 // franklin/proposal/histogram
 .histogram_layout .histogram_bar
-  background-color: $histogram_bar_color
-  +bubble($peer_background_color, darken($peer_background_color, 10%), up, $include_bg: false, $text_color: $peer_text_color)    
+  // background-color: $histogram_bar_color
+  // +bubble($peer_background_color, darken($peer_background_color, 10%), up, $include_bg: false, $text_color: $peer_text_color)    
   
-  +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: emphasize($histogram_bar_color, 25%), $inset: true)
+  // +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: emphasize($histogram_bar_color, 25%), $inset: true)
 
-  border: 1px solid emphasize($histogram_bar_color, 10%)
-  border-bottom: none
-  &.bar_is_soft_selected, &.bar_is_hard_selected
-    background-color: emphasize($histogram_bar_color, 8%)
-    border-color: emphasize($histogram_bar_color, 16%)
-  &:nth-child(1)
-    border-left-width: 2px
-  &:nth-child(7)
-    border-right-width: 2px
+  // border: 1px solid emphasize($histogram_bar_color, 10%)
+  // border-bottom: none
+  // &.bar_is_soft_selected, &.bar_is_hard_selected
+  //   background-color: emphasize($histogram_bar_color, 8%)
+  //   border-color: emphasize($histogram_bar_color, 16%)
+  // &:nth-child(1)
+  //   border-left-width: 2px
+  // &:nth-child(7)
+  //   border-right-width: 2px
 
-.histogram_base
-  background-color: $histogram_base_color
-  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: emphasize($histogram_base_color, 10%), $inset: true)
+// .histogram_base
+//   +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: emphasize($histogram_base_color, 10%), $inset: true)
+
+.ui-slider-handle
+  background-color: $decision_board_text_color
+
+[data-state="results"]
+  .histogram_base
+    background-color: $histogram_base_color
+
+    .ui-slider-handle
+
+[data-state="crafting"]
+  .histogram_base
+    background-color: $decision_board_text_color
+    .ui-slider-handle
+
 
 // franklin/proposal/crafting
-.decision_board_layout
-  &[state="crafting"], &[state="results"]
-    .decision_board_body
-      @extend %on_decision_board
+.decision_board_body
+  @extend %on_decision_board
+  border: dashed $decision_board_border_color
 
+[data-state="crafting"]
   .decision_board_body
-    border: 1px dashed $decision_board_border_color
+    border-width: 3px
+
+[data-state="results"]
+  .decision_board_body
+    border-width: 2px
   
 
 .decision_board_footer_view
@@ -270,20 +291,22 @@ a
   .slider_container .noUiSlider
     background-color: $slider_background_color 
 
-[state="summary"] .reasons_footer_region
+
+
+[data-state="summary"] .reasons_footer_region
   @extend %on_peer_area
 
 // franklin/proposal/description
 
 .proposal_heading
-  +bubble($proposal_title_background_color, darken($proposal_title_background_color, 12%), left, $text_color: $proposal_title_text_color)
-  @extend %on_proposal_title
+  // +bubble($proposal_title_background_color, darken($proposal_title_background_color, 12%), left, $text_color: $proposal_title_text_color)
+  // @extend %on_proposal_title
 
 .proposal_details
-  +bubble($proposal_detail_background_color, darken($proposal_detail_background_color, 12%), left, $text_color: $proposal_detail_text_color)
-  @extend %on_proposal_details
-  border-top: none
-  border-radius: 0px 0px 16px 16px 
+  // +bubble($proposal_detail_background_color, darken($proposal_detail_background_color, 12%), left, $text_color: $proposal_detail_text_color)
+  // @extend %on_proposal_details
+  // border-top: none
+  // border-radius: 0px 0px 16px 16px 
 
 .proposal_links
   background-color: emphasize($proposal_detail_background_color, 15%)
@@ -294,13 +317,21 @@ a
 
 // franklin/proposal/toggle
 .toggle_proposal_state_view
-  &[state="crafting"], &[state="results"]
+  &[data-state="crafting"]
 
     .proposal_state_primary
       color: $decision_board_text_color
 
-    .proposal_state_secondary
-      +link_style(deemphasize($base_text_color, 20%, $reference: $base_background_color), $base_background_color, 25%)
+    .proposal_state_secondary a
+      +link_style($base_text_color, $base_background_color, 2%)
+
+  &[data-state="results"]
+    .proposal_state_primary
+      color: $base_text_color
+
+    .proposal_state_secondary a
+      +link_style($decision_board_text_color, $base_background_color, 2%)
+
 
 // franklin/assessment
 .assessment_request_form_dialog .login
@@ -316,56 +347,70 @@ a
     +link_style($decision_board_text_color, $decision_board_background_color, 25%)
 
   &.community_point 
-    .point_operations a
-      +link_style(deemphasize($base_text_color, 15%, $reference: $base_background_color), $base_background_color, 25%)
+    .point_operations 
+      a
+        +link_style(deemphasize($base_text_color, 15%, $reference: $base_background_color), $base_background_color, 25%)
+        background-color: $peer_background_color
+        padding: 0 $grid_gutter/4
 
     &:hover .point_operations a
       color: deemphasize($base_text_color, 15%, $reference: $base_background_color)   
+
 
 .point.open_point .point_action button 
   +font-size(-3)
   &:hover
     +font-size(-3)
 
-.points_by_community[state="crafting"] .community_point.closed_point, .point.open_point
+.points_by_community .community_point.closed_point, .point.open_point
   .point_content
     @extend %on_peer_area
 
-.points_by_community[state="crafting"], .points_by_community[state="results"]
-  .closed_point.community_point .point_content:hover
-    background-color: deemphasize($peer_background_color, 15%)
+// .points_by_community
+//   .closed_point.community_point .point_content:hover
+//     background-color: deemphasize($peer_background_color, 15%)
 
-.points_by_community[state="crafting"] .community_point.closed_point
+.points_by_community .community_point.closed_point
   .point_content
-    +single-box-shadow($color: rgba(black, .1), $voff: 1px)
+    +single-box-shadow($color: #B5B5B5, $voff: 1px, $blur: 1px, $spread: 0px)
 
-.open_point, .points_by_community[state="crafting"] .community_point.closed_point
+.open_point //, .points_by_community .community_point.closed_point
   .point_content
     border: 1px solid
     border-color: emphasize($peer_background_color, 5%) emphasize($peer_background_color, 10%) emphasize($peer_background_color, 5%) emphasize($peer_background_color, 15%)
 
+// arrow
+.community_point, .open_point
+  .point_content:before
+    color: $peer_background_color
+    +single-text-shadow(-1px, 1px, 1px, $color: #c4c4c4)
 
+  // &.pro
+  //   .point_content:before
+  // &.con
+  //   .point_content:before
+  //     +single-text-shadow(1px, 1px, 1px, $color: #B5B5B5)
 
 // franklin/points
-.points_by_community[state="summary"] .imply_more_points i
+.points_by_community[data-state="summary"] .imply_more_points i
   color: emphasize($base_background_color, 25%)
 
 .points_by_community
 
-  &[state="crafting"] .points_heading_view
+  .points_heading_view
     color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
-  &[state="crafting"], &[state="results"]
+  &[data-state="crafting"], &[data-state="results"]
     .sort_points:hover .sort_points_menu
       +on_menu
 
-  &[state="summary"], &[state="results"]
-    +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
+  // &[data-state="summary"], &[data-state="results"]
+  //   +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
 
 .points_on_decision_board .points_heading_view
   border-bottom-color: $decision_board_text_color
 
-.points_by_community[state="results"], .points_by_community[state="crafting"] 
+.points_by_community
   .unexpand_points_icon, .expand_points_icon
     color: deemphasize($base_text_color, 50%, $reference: $base_background_color)
 
@@ -374,9 +419,14 @@ a
     color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
     border-color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
 
-.add_point_drop_target, .newpoint
-  border: 1px dashed $decision_board_border_color
-
+.newpoint
+  .newpoint_prompt 
+    a
+      color: $decision_board_text_color
+    .qualifier
+      color: $base_text_color
+    .newpoint_bullet
+      color: $base_text_color
 
 // helpers
 

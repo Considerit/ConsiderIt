@@ -23,7 +23,7 @@
       'click .point_content' : 'pointClicked'
 
     pointClicked : (ev) ->
-      pass_through = @$el.parents('.points_by_community[state="summary"]').length > 0
+      pass_through = @$el.parents('.points_by_community[data-state="summary"]').length > 0
       _.each App.request('shared:actions'), (target) ->
         pass_through ||= $(ev.target).is("[action='#{target}']")
 
@@ -99,7 +99,7 @@
         is_not_clicking_this_point = ($(ev.target).closest('.open_point').length == 0 || $(ev.target).closest('.open_point').data('id') != @model.id)
         dialog_not_open = $('.l-dialog-detachable').length == 0
         if is_not_clicking_this_point && $(ev.target).closest('.editable-buttons').length == 0 && dialog_not_open
-          is_click_within_a_point = $(ev.target).closest('[role="point"]').length > 0
+          is_click_within_a_point = $(ev.target).closest('[data-role="point"]').length > 0
           is_clicking_nav = $(ev.target).closest('.l-navigate-wrap').length > 0
           @closePoint( !is_click_within_a_point && !is_clicking_nav ) 
 

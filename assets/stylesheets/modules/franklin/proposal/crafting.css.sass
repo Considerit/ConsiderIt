@@ -5,32 +5,42 @@
 
 // High-level decision board styles
 .decision_board_layout
-  &[state="crafting"], &[state="results"]
-    .decision_board_body
-      border-style: solid
 
+.decision_board_body
+  // width: auto
+  +transition(border $transition_speed, width $transition_speed, height $transition_speed)
+  border-radius: 15px
+
+[data-state="crafting"]
   .decision_board_body
-    width: auto
-    border-radius: 15px
     padding: $vertical_baseline / 4 0
+    width: $decision_board_width
 
+[data-state="results"]
+  .decision_board_body
+    width: 150px + 2 * $grid_gutter
+
+    a
+      padding: $vertical_baseline / 4 $grid_gutter
+      width: 100%
+      display: block
 
 // pros and cons for the user
 .decision_board_points_layout
   position: relative
   display: inline-block
-  margin-top: $vertical_baseline / 2
+  margin-top: 1.25 * $vertical_baseline
 
 
 // The heading of the decision board
-.decision_board_heading_region, [state="crafting"][coming-from-state="summary"].transitioning .decision_board_heading_region
+.decision_board_heading_region, [data-state="crafting"][data-prior-state="summary"].transitioning .decision_board_heading_region
   width: $decision_board_width
   position: relative
   margin-left: -$grid_gutter / 2 - 2
   border: 2px transparent
   display: block
 
-[state="crafting"], [state="results"]
+[data-state="crafting"], [data-state="results"]
   .decision_board_heading_region
     display: none
 
@@ -42,7 +52,7 @@
 
 
 //the save opinion and other stuff in the footer of the decision board
-[state="crafting"] .decision_board_footer_view
+[data-state="crafting"] .decision_board_footer_view
   position: relative
   width: 100%
   z-index: 2
@@ -69,7 +79,7 @@
       float: right
       +font-size(-2)
 
-[state="results"] .decision_board_footer_view
+[data-state="results"] .decision_board_footer_view
   visibility: hidden
 
 

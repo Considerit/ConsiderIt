@@ -10,26 +10,26 @@
   min-height: $proposer_img_size
 
   // inactive proposal
-  &[status="proposal-inactive"]
+  &[data-status="proposal-inactive"]
     .submit_opinion_button, .submit_opinion_footer
       display: none
 
-    &[state="summary"]
+    &[data-state="summary"]
       .opinion_region
         visibility: hidden
 
-    &[activity="proposal-no-activity"]
+    &[data-activity="proposal-no-activity"]
       .proposal_histogram_region, .proposal_reasons_region
         display: none
 
 
-  &[activity="proposal-no-activity"]
+  &[data-activity="proposal-no-activity"]
 
-    &[state="summary"]
+    &[data-state="summary"]
       .proposal_histogram_region
         display: none 
 
-    &[state="crafting"]
+    &[data-state="crafting"]
 
       .toggle_proposal_state_view
         display: none
@@ -41,11 +41,11 @@
         display: none
 
 // unpublished proposal
-[visibility="unpublished"]
+[data-visibility="unpublished"]
   .proposal_reasons_region, .proposal_histogram_region, .toggle_proposal_state_region
     display: none
 
-  &[state="summary"]
+  &[data-state="summary"]
     padding-bottom: 4 * $vertical_baseline
 
     .proposal_reasons_region, .proposal_histogram_region, .proposals_pagination_region
@@ -54,7 +54,7 @@
 
 // participants block
 
-[state="results"][coming-from-state="summary"], [state="summary"]
+[data-state="results"][data-prior-state="summary"], [data-state="summary"]
   .participating_users_region
     visibility: visible
 

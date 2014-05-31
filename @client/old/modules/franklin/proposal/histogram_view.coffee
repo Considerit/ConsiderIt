@@ -29,7 +29,7 @@
       'click .bar_is_hard_selected' : 'deselectBar'
       'mouseleave .histogram_bar' : 'deselectBar'
       'keypress' : 'deselectBar'
-      'mouseenter .histogram_bar:not(.bar_is_hard_selected) [tooltip="user_profile"]' : 'preventProfile'
+      'mouseenter .histogram_bar:not(.bar_is_hard_selected) [data-tooltip="user_profile"]' : 'preventProfile'
 
     preventProfile : (ev) ->
       ev.stopPropagation()

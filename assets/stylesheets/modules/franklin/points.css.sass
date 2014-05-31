@@ -16,7 +16,7 @@
 // HEADER
 // The header of a points list, such as "Pros" or "Cons"
 // Also includes the point sorting menu
-[activity="proposal-no-activity"]
+[data-activity="proposal-no-activity"]
   .points_by_community .points_heading_view
     visibility: hidden
 
@@ -29,14 +29,14 @@
 
 .points_on_decision_board .points_heading_label
   margin-bottom: $vertical_baseline/2
-  border-bottom: 2px solid 
-  +font-size(4)
+  +font-size(9)
+  font-weight: 500
 
-.points_by_community[state="crafting"], .points_by_community[state="results"]
+.points_by_community[data-state="crafting"], .points_by_community[data-state="results"]
   .points_heading_label
     cursor: pointer
-    +font-size(2)
-    font-weight: normal
+    +font-size(6)
+    font-weight: 200
 
   .unexpand_points_icon, .expand_points_icon
     +font-size(-2)
@@ -79,7 +79,7 @@
           +font-size(-3)
           font-weight: bold
 
-.points_by_community[state="summary"] 
+.points_by_community[data-state="summary"] 
   .unexpand_points_icon, .expand_points_icon
     visibility: hidden
 
@@ -91,7 +91,7 @@
 .imply_more_points
   display: none
 
-.points_by_community[state="summary"], .points_by_community[state="results"]
+.points_by_community[data-state="summary"], .points_by_community[data-state="results"]
   .points_footer_region
     position: absolute
     bottom: $vertical_baseline / 2
@@ -103,14 +103,14 @@
 .pros_by_community .community_points_footer_view
   text-align: right
 
-.points_by_community[state="results"]
+.points_by_community[data-state="results"]
   .toggle_expand_points
     width: $point-content-width
 
   &.pros_by_community .community_points_footer_view
     margin-left: $point-avatar-width
 
-.points_by_community[state="summary"]
+.points_by_community[data-state="summary"]
 
   .toggle_expand_points
     display: none  
@@ -121,14 +121,14 @@
     i
       font-weight: bold
 
-.points_by_community[state="crafting"] .toggle_expand_points
+.points_by_community[data-state="crafting"] .toggle_expand_points
   width: $point-content-width
 
 .points_are_expanded
-  .points_by_community[state="crafting"] .toggle_expand_points
+  .points_by_community[data-state="crafting"] .toggle_expand_points
     width: $point-content-width + $expanded_points_increment
 
-  .points_by_community[state="results"] .toggle_expand_points
+  .points_by_community[data-state="results"] .toggle_expand_points
     width: $point-content-width + $expanded_points_increment
 
 // NEW POINTS & INCLUDING POINTS
@@ -155,7 +155,6 @@
   +font-size(1)
   height: 5 * $vertical_baseline
   vertical-align: middle
-  margin-top: 2 * $vertical_baseline
 
 .add_point_drop_target, .newpoint
   border-radius: 16px
@@ -164,40 +163,26 @@
 
 
 .newpoint
-  position: relative
-  margin-top: $vertical_baseline
-
-  &:hover, &.is_adding_newpoint
-    border-style: solid
-
-  // bullet point
-  .newpoint_prompt:before, .newpoint_form:before
-    content: '\2022'
-    display: inline-block
-    position: absolute
-    top: 7px
-
 
   .newpoint_prompt
-    +font-size(1)
-    position: relative
-    //font-weight: bold
-    display: block
-    padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_gutter
-    margin-left: 3px
+    padding: $vertical_baseline/4 0
     cursor: pointer
-    opacity: .75
-    &:hover
-      opacity: 1
+    +font-size(0)
 
-    &:before
-      left: 4px
-      +font-size(-4)
+    .newpoint_link
+      text-decoration: underline
+      font-weight: 600
+    .newpoint_bullet
+      padding: 0 6px
+    .qualifier
+      font-weight: 100
+
+
+
 
   .newpoint_form
     padding-top: $vertical_baseline / 2
     position: relative
-    display: none
     margin-left: $grid_gutter
     input, textarea
       +font-size(0)

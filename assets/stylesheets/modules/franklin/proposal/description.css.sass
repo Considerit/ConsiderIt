@@ -9,7 +9,7 @@ $description_animation_time: 500ms
 .proposal_description_region
   +transition(transform $description_animation_time)
 
-[state="summary"]
+[data-state="summary"]
   .proposal_description_region
     +translateX(-$dialog_stutter)
     // the following is because translateX effectively creates a different rendering context, so need to set z-index/position so admin menu will work
@@ -25,15 +25,12 @@ $description_animation_time: 500ms
 
 // Proposal proposer is the avatar of the user who submitted the proposal
 .proposal_proposer
-  text-align: right
-  width: $body_gutter
-  bottom: 0px
+  left: ($content_width - $proposal_width)/2 - $proposer_img_size - $grid_gutter
   position: absolute
 
-  [tooltip="user_profile"]
+  [data-tooltip="user_profile"]
     opacity: .9
     display: inline-block
-    margin-right: 2 * $grid_gutter
 
     &:hover
       opacity: 1
@@ -47,23 +44,25 @@ $description_animation_time: 500ms
   //left: -$dialog_stutter
   position: relative
   margin: auto
-  width: $body_width
+  width: $proposal_width
+  +font-size(1)
 
 // The summary heading that is shown on the homepage
 .proposal_heading
   margin: auto
   position: relative
-  padding: $vertical_baseline / 2 $grid_gutter
+  padding: 0 $grid_gutter $vertical_baseline / 2 $grid_gutter
   //left: -$dialog_stutter
   min-height: $proposer_img_size
-  +font-size(3)
+  +font-size(8)
 
+.proposal_details
   p
     margin-bottom: $vertical_baseline / 2
   td
     padding: 0 3px
 
-[state="results"], [state="crafting"]
+[data-state="results"], [data-state="crafting"]
   
   .proposal_heading
     border-radius: 16px 16px 0px 0px
@@ -71,9 +70,15 @@ $description_animation_time: 500ms
     > .mouth_bubble
       display: none
 
-[state="summary"]
+[data-state="summary"]
   .proposal_heading
     cursor: pointer
+
+
+.proposal_category
+  position: absolute
+  top: -$vertical_baseline * 1.5
+  left: $grid_gutter
 
 
 // The proposal details revealed 
@@ -120,7 +125,7 @@ $description_animation_time: 500ms
       text-decoration: underline
 
 
-[state="summary"]
+[data-state="summary"]
   .proposal_details
     > .mouth_bubble
       display: none
@@ -128,7 +133,7 @@ $description_animation_time: 500ms
 
 
 // social media area
-[state="results"] .proposal_social_media_region
+[data-state="results"] .proposal_social_media_region
   visibility: visible
 
 .transitioning .proposal_social_media_region
@@ -161,7 +166,7 @@ $description_animation_time: 500ms
 
 
 // Proposal admin strip
-[visibility="published"]
+[data-visibility="published"]
   .proposal_admin_strip
     position: absolute
     right: -$grid_gutter
@@ -203,7 +208,7 @@ $description_animation_time: 500ms
 
 
 // unpublished proposal
-[visibility="unpublished"]
+[data-visibility="unpublished"]
   .proposal_admin_region
     top: $vertical_baseline / 2 
     height: 0
@@ -255,7 +260,7 @@ $description_animation_time: 500ms
   .proposal_reasons_region, .proposal_histogram_region, .toggle_proposal_state_region
     display: none
 
-  &[state="summary"]
+  &[data-state="summary"]
     .proposal_reasons_region, .proposal_histogram_region, .proposals_pagination_region
       display: none
 

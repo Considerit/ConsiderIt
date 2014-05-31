@@ -1,94 +1,94 @@
 @import "variables"
+@import "library"
 @import "compass/css3/box-shadow"
 @import "compass/css3/transition"
 @import "compass/css3/transform"
 
-$histogram_width: $body_width - $grid_major + 1
-$histogram_bar_width: $histogram_width / 7
+$histogram_width: $body_width + 3 * $grid_major
+// $histogram_bar_width: $histogram_width / 25
 
 .proposal_histogram_region
   position: relative
 
-[state="results"] .proposal_histogram_region
+[data-state="results"] .proposal_histogram_region
   z-index: 20 // allows for bubble to go over the reasons on mousing over histogram bar; but can't do on the homepage
 
 .histogram_layout
-  height: $histogram_height
+  // height: $histogram_height
   +transition(opacity $transition_speed)
-  opacity: 0
-  visibility: hidden
+  // opacity: 0
+  // visibility: hidden
   margin: $vertical_baseline auto 0 auto
   position: relative
   top: 0px
   width: $histogram_width
+  display: block
+  // min-height: $histogram_height
 
-  &[state="results"], &[state="crafting"][coming-from-state="results"]
-    visibility: visible
-    display: block
+  &[data-state="results"], &[data-state="crafting"][data-prior-state="results"]
+    // visibility: visible
     opacity: 1
-    min-height: $histogram_height
 
   .histogram_base, .histogram_bar_users, .histogram_bar
     +transition(opacity $transition_speed $transition_function)
     +backface-visibility(hidden)
 
-  &.transitioning
+  // &.transitioning
 
-    &[state="results"][coming-from-state="summary"]
-      .histogram_bar_users
-        visibility: hidden
-      .histogram_label
-        visibility: hidden
+  //   &[data-state="results"][data-prior-state="summary"]
+  //     .histogram_bar_users
+  //       visibility: hidden
+  //     .histogram_label
+  //       visibility: hidden
 
-
-
-  &[state="results"][coming-from-state="crafting"]
+  &[data-state="results"][data-prior-state="crafting"]
     .histogram_bar
       opacity: 1
     .histogram_base, .histogram_bar_users  
       opacity: 1
 
-  &[state="crafting"][coming-from-state="results"]
-    .histogram_bar
-      opacity: .1
-    .histogram_base, .histogram_bar_users  
-      opacity: 0
+  &[data-state="crafting"][data-prior-state="results"]
+    .histogram_bar_users  
+      opacity: .2
 
-  &[state="crafting"]
+  &[data-state="crafting"]
     .histogram_bar
-      [tooltip="user_profile"]
+      [data-tooltip="user_profile"]
         cursor: auto
 
-  &[state="results"]
+  &[data-state="results"]
     .histogram_bar
       cursor: pointer
 
   // HISTOGRAM / WHAT
 
   .histogram_bar
-    width: $histogram_bar_width
+    // width: $histogram_bar_width
     position: relative
     border-radius: 0px
     text-align: center
     display: inline-block
     vertical-align: bottom
 
-    &.bar_is_selected 
-      .mouth_bubble
-        display: block
+    // &.extreme_or_neutral
+    //   margin: 0 $grid_gutter / 2
 
-    .mouth_bubble
-      display: none
-      position: absolute
-      left: 50%
-      margin-left: -15px
-      z-index: 999999
-      top: auto
-      bottom: -32px
-      width: 30px
+    // &.bar_is_selected 
+    //   .mouth_bubble
+    //     display: block
 
-      .mouth_bubble_spacing
-        display: none
+    // .mouth_bubble
+    //   display: none
+    //   position: absolute
+    //   left: 50%
+    //   margin-left: -15px
+    //   z-index: 999999
+    //   top: auto
+    //   bottom: -32px
+    //   width: 30px
+
+    //   .mouth_bubble_spacing
+    //     display: none
 
     // .bar-position
     //   position: absolute
@@ -111,41 +111,85 @@ $histogram_bar_width: $histogram_width / 7
   background-color: transparent
   font-size: 0
   margin: auto
-  +rotate(180deg)
-  height: 100%
+  // +rotate(180deg)
+  // height: 100%
   
   .avatar
-    +rotate(180deg)  
-    opacity: .6
+    // +rotate(180deg)  
+    border-radius: 50%
+    // opacity: .6
+    background-color: #bbb
+    background-image: none
+    margin-bottom: 1px
 
-.bar_is_soft_selected .histogram_bar_users .avatar
-  opacity: .75
+// .bar_is_soft_selected .histogram_bar_users .avatar
+//   opacity: .75
 
-.bar_is_hard_selected .histogram_bar_users .avatar
-  opacity: .9
+// .bar_is_hard_selected .histogram_bar_users .avatar
+//   opacity: .9
+
+
+//////////
+// When there are multiple colums in a bar, need to prevent putting the row with least faces at the bottom
+//  xxx        x
+//  xxx   =>  xxx 
+//   x        xxx
+.extreme_or_neutral
+  .histogram_bar_users
+    +rotate(180deg)
+    .avatar
+      +rotate(180deg)  
+///////
+
+$histogram_base_height: 4px
+
+[data-state="results"]
+  .histogram_base
+    .ui-slider-handle
+      width: 20px
+      height: 20px 
+      top: -10 +  $histogram_base_height/2
+      margin-left: -10px
+
+[data-state="crafting"]
+  .histogram_base
+    .ui-slider-handle
+      top: -20px +  $histogram_base_height/2
+      width: 40px
+      height: 40px 
+      margin-left: -20px
+
+      &:hover
+        +grab_cursor
 
 
 .histogram_base
-  margin-left: -$grid_gutter/2
-  height: $vertical_baseline
-  width: $histogram_width + $grid_gutter
+  margin: auto
+  height: $histogram_base_height
+  width: $histogram_width - 2 * $grid_major + 24
   border-radius: 10px
-  z-index: -1 //allow mouth bubble to go on top of base (only a problem in firefox)
+  // z-index: -1 //allow mouth bubble to go on top of base (only a problem in firefox)
+
+  .ui-slider-handle
+    border-radius: 50%
+    +transition(width $transition_speed, height $transition_speed, top $transition_speed, margin $transition_speed)
+    +box-shadow
+    border: 1px solid #414141
+
+
+.feeling_labels
+  width: 130%
+  margin-left: -15%
+[data-state="crafting"]
+  .feeling_labels
+    margin-top: -22px
+    padding-bottom: 22px
 
 .histogram_label
-  position: absolute
-  //padding: 0 $grid_gutter + 3
-  z-index: 1
-  // border-radius: 16px
-  height: $vertical_baseline
-  span
-    +font-size(-2)
-    text-transform: lowercase
-    line-height: 1.1
-    display: block
-    //font-weight: bold
+  +font-size(6)
+  font-weight: 200
 
 .histogram_label_support
-  left: -92px
+  float: left
 .histogram_label_oppose
-  right: -82px
+  float: right

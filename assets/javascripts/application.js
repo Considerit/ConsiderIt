@@ -13,7 +13,6 @@
 //= require_tree ./vendor/main
 
 //= require client
+//= require franklin_app
 //= require_tree ../../@client/vendor_extensions
-//= require_tree ../../@client/models
-//= require_tree ../../@client/helpers
-//= require_tree ../../@client/modules
+//= require_tree ../../@client/components

@@ -39,9 +39,9 @@ $content_width: $page_width - 2 * $content_gutter
 
 // $body_width encompasses the core active area. Content rendered in the $body_gutter
 // tends to be things like individual or groups of user avatars
-$body_gutter: 4 * $grid_major
+$body_gutter: 4 * $grid_major + $grid_gutter
 $body_width: $content_width - 2 * $body_gutter
-
+$proposal_width: 670px
 
 ////////////////////////////////////////////////////////////////////
 // UI WIDGET SIZES
@@ -55,8 +55,8 @@ $decision_board_width: $body_width + 4 // the four is for the border
 // |                             point-width                                |
 // | grid_gutter/2 | point-avatar-width | point-content-width | grid_gutter/2 | 
 
-$point-width: $body_width / 2 
-$point-avatar-width: 2 * $grid_gutter
+$point-width: $body_width / 2 - 2
+$point-avatar-width: 22px //2 * $grid_gutter
 $point-content-width: $point_width - $point-avatar-width - $grid-gutter 
 
 $open_point-width: $body_width + 3 * $grid_major

@@ -19,8 +19,8 @@
 
       = theme_stylesheet_link_tag 'application'
 
-      - ['Source+Sans+Pro'].each do |font|
-        %link{ :href => "//fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
+      // - ['Source+Sans+Pro'].each do |font|
+      //   %link{ :href => "//fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
 
       /[if IE 9]
         = stylesheet_link_tag 'browser/ie9'
@@ -32,8 +32,6 @@
       :javascript
         //http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
         (function(w,d,u){w.readyQ=[];w.bindReadyQ=[];function p(x,y){if(x=="ready"){w.bindReadyQ.push(y);}else{w.readyQ.push(x);}};var a={ready:p,bind:p};w.$=w.jQuery=function(f){if(f===d||f===u){return a}else{p(f)}}})(window,document)
-
-      = render :partial => './templates'
 
       = theme_javascript_include_tag 'application', :async => true
 
@@ -61,7 +59,7 @@
                   #t_bg_content_top
                     #l_content_main_wrap
 
-                    = image_tag "ajax-loader.gif", :id => 'l_preloader'
+                    =# image_tag "ajax-loader.gif", :id => 'l_preloader'
 
             #l_sticky_footer_region
 
@@ -81,7 +79,7 @@
                 _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
                 _gaq_account.push(['_trackPageview']);
 
-    = render :partial => './data'        
+    =# render :partial => './data'        
 
     :javascript
       $(function() {

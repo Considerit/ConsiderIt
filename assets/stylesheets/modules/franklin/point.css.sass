@@ -1,7 +1,7 @@
 @import "variables"
 @import "library"
 @import "compass/css3/box-shadow"
-
+@import "compass/css3/transform"
 
 // top level point styling
 .point
@@ -27,24 +27,24 @@
         left: - ($open_point-width - $body_width) / 2
 
 // all points except those on the homepage should have a cursor on hover
-.points_by_community[state="crafting"], .points_by_community[state="results"], .points_on_decision_board
+.points_by_community[data-state="crafting"], .points_by_community[data-state="results"], .points_on_decision_board
   .closed_point
     cursor: pointer
 
 .points_by_community
 
-  &[state="results"]
+  &[data-state="results"]
     .open_point.con.community_point
       right: $open_point-width - $point-width
 
-  &[state="crafting"]
+  &[data-state="crafting"]
     .open_point.con.community_point
       right: $open_point-width - $point-width + 56
 
     .closed_point.community_point .point_content
       +grab_cursor
 
-  &[state="summary"]
+  &[data-state="summary"]
     .point
       z-index: 5
 
@@ -52,7 +52,7 @@
 // Expanded points
 // when the points list is expanded, need to increase width of each point
 .points_are_expanded .points_by_community
-  &[state="crafting"]
+  &[data-state="crafting"]
     .open_point.con.community_point
       right: $open_point-width - $point-width + 56 - $expanded_points_increment
 
@@ -64,10 +64,28 @@
   position: relative
   display: inline-block
 
+
 .community_point, .open_point
   .point_content
     padding: $vertical_baseline / 2 $grid_gutter / 2 
     margin-bottom: $vertical_baseline / 2
+
+    // for arrow...
+    &:before
+      position: absolute
+      content: '\25C0'
+
+      // width: 0
+      // height: 0 
+      // border-top: 10px solid transparent
+      // border-bottom: 10px solid transparent 
+  &.pro .point_content:before
+    left: -11px
+
+  &.con .point_content:before
+    right: -11px
+    +scaleX(-1)
+
 
 .open_point
   .point_content
@@ -120,13 +138,13 @@
 
 /////////////////////////////////////////
 // point operations
-.open_point, .points_by_community[state="summary"]
+.open_point, .points_by_community[data-state="summary"]
   .point_operations
     display: none
 
 
 
-.points_by_community[state="results"], .points_by_community[state="crafting"]
+.points_by_community
   .community_point
     .point_operations
       visibility: hidden
@@ -138,19 +156,22 @@
 .closed_point
   &.community_point
     .point_operations        
-      position: relative
+      position: absolute
+      bottom: 0
+      text-align: center
+      width: 90%
 
       .open_point_link
         +font-size(-3)
 
 
-    &.pro
-      .point_operations
-        text-align: left
+    // &.pro
+    //   .point_operations
+    //     text-align: left
 
-    &.con
-      .point_operations
-        text-align: right
+    // &.con
+    //   .point_operations
+    //     text-align: right
 
   &.decision_board_point
     &:hover .point_operations
@@ -180,12 +201,12 @@
   i
     padding-right: $grid_gutter / 4
 
-[state="results"] .open_point .point-include
+[data-state="results"] .open_point .point-include
   display: none
 
 .community_point.closed_point, .open_point
   .point_content
-    border-radius: 8px
+    border-radius: 16px
 
 
 // point avatars
@@ -193,15 +214,16 @@
   display: inline-block
   position: relative
   border-radius: 8px
-  top: .7 * $vertical_baseline
-  width: $point-avatar-width - 2
-  height: $point-avatar-width - 2
+  top: 8px
+  width: $point-avatar-width
+  height: $point-avatar-width
+  border-radius: 50%
 
-.con .point_author_avatar
-  float: right
+// .con .point_author_avatar
+//   float: right
 
-.closed_point.decision_board_point .point_avatar_region
-  display: none
+// .closed_point.decision_board_point .point_avatar_region
+//   display: none
 
 
 ///////////

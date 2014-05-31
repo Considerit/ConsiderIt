@@ -30,7 +30,7 @@ do ($) ->
     remove: (o) -> o.handler() if o.handler
 
   #X-Editable option
-  $.fn.editable.defaults.mode = 'inline'
+  # $.fn.editable.defaults.mode = 'inline'
 
   $.fn.ensureInView = (options = {}) ->
     _.defaults options,

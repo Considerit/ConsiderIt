@@ -43,7 +43,7 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 11, (test)
       caption : "Now at the new proposal page"
 
     test.assertNotEquals "http://localhost:8787/", @getCurrentUrl(), 'We have navigated to the new proposal page'
-    test.assertVisible "[activity='proposal-no-activity'][status='proposal-active'][visibility='unpublished']", 'Proposal has correct state settings'
+    test.assertVisible "[data-activity='proposal-no-activity'][data-status='proposal-active'][data-visibility='unpublished']", 'Proposal has correct state settings'
     test.assertVisible "[action='delete-proposal']", 'Ability to delete proposal'
     test.assertVisible "[action='publish-proposal']", 'Ability to publish proposal'
 
@@ -52,7 +52,7 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 11, (test)
     @reload()
 
     @waitUntilVisible '[action="publish-proposal"]', ->
-      test.assertVisible "[activity='proposal-no-activity'][status='proposal-active'][visibility='unpublished']", 'Proposal has correct state settings, after refreshing'
+      test.assertVisible "[data-activity='proposal-no-activity'][data-status='proposal-active'][data-visibility='unpublished']", 'Proposal has correct state settings, after refreshing'
       test.assertVisible "[action='delete-proposal']", 'Ability to delete proposal after refreshing'
       test.assertVisible "[action='publish-proposal']", 'Ability to publish proposal after refreshing'
 
@@ -82,7 +82,7 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 11, (test)
 
     @thenOpen "http://localhost:8787/#{proposal_id}"
     @wait 500, ->
-      test.assertNotVisible '[role="proposal"]', "Can't load proposal that has been deleted"
+      test.assertNotVisible '[data-role="proposal"]', "Can't load proposal that has been deleted"
 
   casper.then ->
     actions.logout()
@@ -194,7 +194,7 @@ test_proposal_publicity = (test, publicity) ->
 
     @thenClick "[action='publish-proposal']"
 
-    @waitUntilVisible '[visibility="published"]', ->
+    @waitUntilVisible '[data-visibility="published"]', ->
       test.pass 'Proposal is published'
       test.assertVisible '[action="submit-opinion"]', 'Crafting view is now visible'
     , ->

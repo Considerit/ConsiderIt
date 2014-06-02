@@ -62,6 +62,11 @@ Point = React.createClass
           R.div className:'point_summary_view',
             R.div className:'point_nutshell',
               @props.nutshell
+              if @props.text
+                R.span className: 'point_details_tease', 
+                  @props.text[0..50]
+                  ' ...'
+
             R.div className:'point_operations',
               R.a className:'open_point_link',
                 @props.comment_count
@@ -86,7 +91,7 @@ CommunityPoints = React.createClass
                   key: point.id
                   id: point.id
                   nutshell: point.nutshell
-                  body: point.body
+                  text: point.text
                   valence: @props.valence
                   comment_count: point.comment_count
                   author: point.user_id
@@ -265,6 +270,7 @@ window.REACTProposal = React.createClass
                                 for nutshell, idx in []
                                   Point 
                                     nutshell: point.nutshell
+                                    text: point.text
                                     valence: 'pro' 
                                     key: point.id
                                     comment_count: point.comment_count
@@ -291,6 +297,7 @@ window.REACTProposal = React.createClass
                                 for point in []
                                   Point 
                                     nutshell: point.nutshell
+                                    text: point.text
                                     valence: 'con' 
                                     key: point.id
                                     comment_count: point.comment_count

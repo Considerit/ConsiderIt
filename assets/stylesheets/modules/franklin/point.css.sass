@@ -99,8 +99,15 @@
 .point_nutshell
   word-wrap: break-word
 
-.closed_point .point_nutshell
-  +font-size(-1)
+.closed_point 
+  .point_nutshell //, .point_details_tease
+    +font-size(-1)
+  .point_details_tease
+    padding-left: 6px
+    font-weight: 200
+
+  
+
 
 .open_point
   .point_nutshell, .point_description

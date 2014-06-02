@@ -272,14 +272,16 @@ window.REACTProposal = React.createClass
                             R.div className:'points_footer_region',
                               R.div className:'decision_board_points_footer_view',
                                 R.div className:'add_point_drop_target',
-                                  'Drag and drop pros from the left'
+                                  R.img className:'drop_target', src:"/assets/drop_target.png"
+                                  R.span className:'drop_prompt',
+                                    'Drag pro points from the left that resonate with you. '
 
                                 NewPoint {valence: 'pro'}
 
 
                         # your cons
-                        R.div className:'points_list_region pros_on_decision_board_region',
-                          R.div className:'points_on_decision_board pros_on_decision_board points_layout', 'data-state':@state.state,
+                        R.div className:'points_list_region cons_on_decision_board_region',
+                          R.div className:'points_on_decision_board cons_on_decision_board points_layout', 'data-state':@state.state,
                             R.div className:'points_heading_region',
                               R.div className:'points_heading_view',
                                 R.h1 className:'points_heading_label',
@@ -297,7 +299,10 @@ window.REACTProposal = React.createClass
                             R.div className:'points_footer_region',
                               R.div className:'decision_board_points_footer_view',
                                 R.div className:'add_point_drop_target',
-                                  'Drag and drop cons from the right'
+                                  R.img className:'drop_target', src:"/assets/drop_target.png"
+                                  R.span className:'drop_prompt',
+                                    'Drag con points from the right that resonate with you. '
+
                                 NewPoint {valence: 'con'}
 
                   else if @state.state == 'results'

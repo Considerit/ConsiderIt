@@ -1,5 +1,6 @@
 @import "variables"
 @import "compass/css3/box-shadow"
+@import "compass/css3/transform"
 @import "library"
 
 ////
@@ -28,7 +29,6 @@
     display: inline-block
 
 .points_on_decision_board .points_heading_label
-  margin-bottom: $vertical_baseline/2
   +font-size(9)
   font-weight: 500
 
@@ -155,10 +155,32 @@
   +font-size(1)
   height: 5 * $vertical_baseline
   vertical-align: middle
+  position: relative
+
+  .drop_target
+    width: 223px
+
+  .drop_prompt
+    +font-size(-1)
+    position: absolute
+    bottom: 2 * $vertical_baseline
+    left: 45px
+    width: 176px
+
+
+.pros_on_decision_board_region .add_point_drop_target 
+  margin-left: 0
+
+.cons_on_decision_board_region .add_point_drop_target 
+  .drop_target
+    +scaleX(-1)
+  .drop_prompt
+    left: 36px
+
+  // background-image: "/assets/drop_target.png"
+  // +background-size(cover)
 
 .add_point_drop_target, .newpoint
-  border-radius: 16px
-  width: $point_width - $grid_gutter
   margin-left: $grid_gutter / 2
 
 

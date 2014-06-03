@@ -12,9 +12,9 @@ $use_transitions: true
 
 // transitions / animations
 .reasons_layout //.transitioning
-  +transition(transform $transition_speed $transition_function)
+  +transition(transform $transition_speed)
   .opinion_region, .community_pros_region, .community_cons_region
-    +transition(transform $transition_speed $transition_function)
+    +transition(transform $transition_speed)
 
 
 // full reasons width is the width of the pro/con list in the middle and the peer pro/con points in the margins
@@ -25,6 +25,10 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
   &[data-state="results"]
     .opinion_region
       +translateY(- 1.5 * $vertical_baseline)
+
+  &[data-state="crafting"]
+    .opinion_region
+      +translateY(0)
 
   // &[data-state="crafting"], &[data-state="summary"]
   //   +translateY(-$histogram_height)
@@ -94,6 +98,8 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
   &[data-state="crafting"]
     .decision_board_points_layout
       min-height: 450px
+
+
 
   // &[data-state="results"]
   //   .decision_board_points_layout
@@ -229,14 +235,21 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     vertical-align: top
 
   .opinion_region
-    position: relative
+    // position: relative
     width: $decision_board_width
+
+    &.scrolling_with_user
+      position: fixed
+      top: 0
 
   .community_pros_region, .community_cons_region
     //position: absolute
     top: 0
     z-index: 10
 
+  // .pinned .community_cons_region
+  //   +transition(none)
+  //   +translateX(550px)
   ////////
 
 

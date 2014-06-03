@@ -3,7 +3,6 @@
     
     initialize : (options = {}) ->
       provider = options.provider
-      callback = options.callback
 
       if provider == 'twitter'
         url = Routes.user_omniauth_authorize_path provider,
@@ -11,7 +10,7 @@
       else
         url = Routes.user_omniauth_authorize_path provider
 
-      @callback = callback
+      @callback = options.callback
       @popup = @openPopupWindow(url)
 
     handleOpenIdResponse : (parameters) ->  

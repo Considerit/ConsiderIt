@@ -10,6 +10,7 @@
   // width: auto
   +transition(border $transition_speed, width $transition_speed, height $transition_speed)
   border-radius: 15px
+  position: relative
 
 [data-state="crafting"]
   .decision_board_body
@@ -18,7 +19,7 @@
 
 [data-state="results"]
   .decision_board_body
-    width: 150px + 2 * $grid_gutter
+    width: 186px
 
     a
       padding: $vertical_baseline / 4 $grid_gutter

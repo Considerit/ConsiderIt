@@ -4,7 +4,7 @@
 @import "compass/css3/transition"
 @import "compass/css3/transform"
 
-$histogram_width: $body_width + 3 * $grid_major
+$histogram_width: $body_width + 2 * $grid_major
 // $histogram_bar_width: $histogram_width / 25
 
 .proposal_histogram_region
@@ -30,7 +30,7 @@ $histogram_width: $body_width + 3 * $grid_major
     opacity: 1
 
   .histogram_base, .histogram_bar_users, .histogram_bar
-    +transition(opacity $transition_speed $transition_function)
+    +transition(opacity $transition_speed)
     +backface-visibility(hidden)
 
   // &.transitioning
@@ -154,10 +154,10 @@ $histogram_base_height: 4px
 [data-state="crafting"]
   .histogram_base
     .ui-slider-handle
-      top: -20px +  $histogram_base_height/2
-      width: 40px
-      height: 40px 
-      margin-left: -20px
+      top: -35px +  $histogram_base_height/2
+      width: 50px
+      height: 50px 
+      margin-left: -25px
 
       &:hover
         +grab_cursor
@@ -166,7 +166,7 @@ $histogram_base_height: 4px
 .histogram_base
   margin: auto
   height: $histogram_base_height
-  width: $histogram_width - 2 * $grid_major + 24
+  width: $histogram_width - 2 * $grid_major
   border-radius: 10px
   // z-index: -1 //allow mouth bubble to go on top of base (only a problem in firefox)
 
@@ -176,14 +176,49 @@ $histogram_base_height: 4px
     +box-shadow
     border: 1px solid #414141
 
+  .bubblemouth
+    +transition(width $transition_speed, top $transition_speed, left $transition_speed)
+    position: absolute
+
+[data-state="crafting"]
+  .bubblemouth
+    width: 28px
+    top: 54px
+    left: 17px
+
+[data-state="results"]
+  .bubblemouth
+    width: 16px
+    top: 21px
+    left: 7px
+
+.feeling_feedback
+  position: absolute
+  top: -5 * $vertical_baseline
+  width: 200px
+  left: 50%
+  margin-left: -100px
+
+  .feeling_feedback_label, .feeling_feedback_result, .feeling_feedback_instructions
+    text-align: center
+
+  .feeling_feedback_label
+    +font-size(-1)
+    font-weight: 200
+
+  .feeling_feedback_result
+    +font-size(5)
+    font-weight: 600
+
+  .feeling_feedback_instructions
+    +font-size(-3)
+    font-weight: 200
 
 .feeling_labels
   width: 130%
   margin-left: -15%
-[data-state="crafting"]
-  .feeling_labels
-    margin-top: -22px
-    padding-bottom: 22px
+  position: absolute
+  bottom: -10px
 
 .histogram_label
   +font-size(6)

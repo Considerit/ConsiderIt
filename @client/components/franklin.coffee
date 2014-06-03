@@ -1,4 +1,6 @@
 R = React.DOM
+ReactTransitionGroup = React.addons.TransitionGroup
+transition_speed = 700
 
 all_users = {}
 
@@ -101,6 +103,102 @@ CommunityPoints = React.createClass
             #     R.a className:'toggle_expand_points button', 'data-action':'expand-toggle',
             #       "View all #{@props.points.length} Pros"
 
+YourPoints = React.createClass
+  displayName: 'YourPoints'
+
+  render : ->
+    R.div className:"points_list_region #{@props.valence}s_on_decision_board_region",
+      R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board points_layout", 'data-state':@props.state,
+        R.div className:'points_heading_region',
+          R.div className:'points_heading_view',
+            R.h1 className:'points_heading_label',
+              'Your Pros'
+        R.div className:'points_list_region',
+          R.ul className:'point_list_collectionview',
+            for point in @props.points
+              Point 
+                key: point.id
+                nutshell: point.nutshell
+                text: point.text
+                valence: 'pro' 
+                comment_count: point.comment_count
+                author: point.user_id
+        R.div className:'points_footer_region',
+          R.div className:'decision_board_points_footer_view',
+            R.div className:'add_point_drop_target',
+              R.img className:'drop_target', src:"/assets/drop_target.png"
+              R.span className:'drop_prompt',
+                "Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
+
+            NewPoint {valence: @props.valence}
+
+DecisionBoard = React.createClass
+  displayName: 'DecisionBoard'
+
+  componentWillEnter: (callback) ->
+    $(@getDOMNode()).hide()
+    _.delay =>
+      $(@getDOMNode()).show()
+      callback()
+    , transition_speed
+
+  componentWillLeave: (callback) -> 
+    $(@getDOMNode()).hide()
+    callback()
+    # $(@getDOMNode()).slideUp transition_speed / 4, ->
+    #   callback()
+
+  render : ->
+    R.div className:'decision_board_points_layout',
+      # your pros
+      YourPoints
+        state: @props.state
+        priorstate: @props.priorstate
+        points: []
+        valence: 'pro'
+
+      # your cons
+      YourPoints
+        state: @props.state
+        priorstate: @props.priorstate
+        points: []
+        valence: 'con'
+
+GiveOpinionButton = React.createClass
+  displayName: 'GiveOpinionButton'
+
+  place: ->
+    left = $('.ui-slider-handle').offset().left - $('.opinion_region').offset().left 
+    
+    if @props.currentOpinion > 50 # position right justified when opposing
+      left -= 120 # width of give opinion button
+
+    $('.opinion_region').css
+      transform: "translate(#{left}, -18px)"
+      '-webkit-transform': "translate(#{left}px, -18px)"
+
+  componentWillEnter: (callback) ->
+    @place()
+
+    $(@getDOMNode()).hide()
+    _.delay =>
+      $(@getDOMNode()).show()
+      callback()
+    , 100
+
+  componentWillLeave: (callback) -> 
+    $('.opinion_region').css
+      transform: "translate(0,0)"
+      '-webkit-transform': "translate(0,0)"
+    # $('.decision_board_body').css
+    #   width: ''
+    callback()
+
+
+  render : ->
+    R.a className:'give_opinion_button', onClick: @props.toggleState,
+      'Give your Opinion'
+
 
 window.REACTProposal = React.createClass
   displayName: 'Proposal'
@@ -110,13 +208,47 @@ window.REACTProposal = React.createClass
       dataType: 'json'
       success: (data) =>
         data = @processInitialData data
-        console.log 'after', data
+        console.log data
         @setState {data: data}
       error: (xhr, status, err) =>
         console.error 'Could not fetch data', status, err.toString()
 
   componentDidMount : ->
     $('.histogram_base').slider()
+
+  componentDidUpdate : ->
+
+    $('.opinion_region').headroom
+      offset: $('.opinion_region').offset().top #+ $('.opinion_region').height()
+      classes:
+        initial : "headroom",
+        pinned : "headroom--pinned",
+        unpinned : "headroom--unpinned",
+        top : "normal_place",
+        notTop : "scrolling_with_user"
+      onNotTop : -> 
+        $('.four_columns_of_points .community_cons_region').css
+          transition: 'none'
+          '-webkit-transition': 'none'
+          transform: 'translateX(500px)'
+          '-webkit-transform': 'translateX(550px)'
+
+        # $('.four_columns_of_points').addClass('pinned')
+
+      onTop : ->
+        $('.four_columns_of_points .community_cons_region').css
+          transform: ''
+          '-webkit-transform': ''
+
+        _.delay ->
+          $('.four_columns_of_points .community_cons_region').css
+            transition: ''
+            '-webkit-transition': ''
+        , 100
+        # $('.four_columns_of_points').removeClass('pinned')
+
+
+
 
   getInitialState : ->
     state : 'crafting',
@@ -134,22 +266,21 @@ window.REACTProposal = React.createClass
       priorstate : @state.state
 
   processInitialData : (data) ->
-
+    # This method will be mostly replaced by ActiveRest
     data.users = $.parseJSON data.users
 
     data.pro_community_points = _.where data.points, {is_pro: true}
     data.con_community_points = _.where data.points, {is_pro: false}
 
-    @num_opinions = data.opinions.length
+    num_opinions = data.opinions.length
 
     biggest_avatar_size = 50
-    @avatar_size = biggest_avatar_size / Math.sqrt( (@num_opinions + 1)/10  )
+    @avatar_size = biggest_avatar_size / Math.sqrt( (num_opinions + 1)/10  )
 
-    histogram_width = 684
+    histogram_width = 636
 
     @num_small_segments = Math.floor(histogram_width/@avatar_size) - 2 * 3 - 1 #for the additional cols for the extremes+neutral 
     max_slider_val = 2.0
-
 
     opinions = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
     histogram_small_segments = {}
@@ -161,7 +292,6 @@ window.REACTProposal = React.createClass
       opinions[opinion.stance_segment].push opinion
       small_segment = Math.floor(@num_small_segments * (opinion.stance + 1) / max_slider_val)
       histogram_small_segments[small_segment].push opinion
-
 
     data.opinions = opinions
     data.histogram_small_segments = histogram_small_segments
@@ -178,9 +308,9 @@ window.REACTProposal = React.createClass
 
     data
 
-
-
   render : ->    
+    current_opinion = $('.histogram_base').slider('value')
+
     segment_is_extreme_or_neutral = (segment) => 
       segment == 0 || segment == @num_small_segments || segment == Math.floor(@num_small_segments / 2)
 
@@ -221,23 +351,34 @@ window.REACTProposal = React.createClass
               else 
                 'Explore all Opinions'
 
-      #histogram
+      #feelings
       R.div className:'proposal_histogram_region',
         R.div className:'histogram_layout', 'data-state':@state.state, 'data-prior-state':@state.priorstate,
           #for segment in [6..0]
           for segment in [@num_small_segments..0]
-            R.div className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @avatar_size}px" else "#{@avatar_size}px"},
+            R.div key:"#{segment}", className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @avatar_size}px" else "#{@avatar_size}px"},
               R.ul className:'histogram_bar_users',
                 for opinion in @state.data.histogram_small_segments[segment] #@state.data.opinions[segment]
-                  R.li id:"avatar-#{opinion.user_id}", className:"avatar segment-#{segment}", 'data-action':'user_opinion', 'data-id':opinion.user_id, style:{height:"#{@avatar_size}px", width:"#{@avatar_size}px"}, 'data-tooltip':'user_profile'
+                  R.li key:"#{opinion.user_id}", id:"avatar-#{opinion.user_id}", className:"avatar segment-#{segment}", 'data-action':'user_opinion', 'data-id':opinion.user_id, style:{height:"#{@avatar_size}px", width:"#{@avatar_size}px"}, 'data-tooltip':'user_profile'
 
-          R.div className:'histogram_base'
+
+
+          R.div className:'histogram_base', 
+            R.div className:'feeling_slider ui-slider-handle',
+              R.img className:'bubblemouth', src:'assets/bubblemouth.png'
+              if @state.state == 'crafting'
+                R.div className:'feeling_feedback', 
+                  R.div className:'feeling_feedback_label', 'You are a'
+                  R.div className:'feeling_feedback_result', 'Supporter'
+                  R.div className:'feeling_feedback_instructions', 'drag to change'
 
           R.div className:'feeling_labels', 
             R.h1 className:"histogram_label histogram_label_support",
-              if @state.state == 'results' then 'Supporters' else 'Support'
+              'Support'
+              # if @state.state == 'results' then 'Supporters' else 'Support'
             R.h1 className:"histogram_label histogram_label_oppose",
-              if @state.state == 'results' then 'Opposers' else 'Oppose'
+              # if @state.state == 'results' then 'Opposers' else 'Oppose'
+              'Oppose'
 
       #reasons
       R.div className:'proposal_reasons_region',
@@ -254,67 +395,20 @@ window.REACTProposal = React.createClass
             #your reasons
             R.div className:'opinion_region',
               R.div className:'decision_board_layout', 'data-state':@state.state, 'data-prior-state':@state.priorstate,
-                R.div className:'decision_board_body',
+
+                ReactTransitionGroup className:'decision_board_body', transitionName: 'state_change', component: R.div, style: {minHeight: '32px'},
+
                   if @state.state == 'crafting'
-                    R.div className:'decision_board_points_region',
-                      R.div className:'decision_board_points_layout',
-                        # your pros
-                        R.div className:'points_list_region pros_on_decision_board_region',
-                          R.div className:'points_on_decision_board pros_on_decision_board points_layout', 'data-state':@state.state,
-                            R.div className:'points_heading_region',
-                              R.div className:'points_heading_view',
-                                R.h1 className:'points_heading_label',
-                                  'Your Pros'
-                            R.div className:'points_list_region',
-                              R.ul className:'point_list_collectionview',
-                                for nutshell, idx in []
-                                  Point 
-                                    nutshell: point.nutshell
-                                    text: point.text
-                                    valence: 'pro' 
-                                    key: point.id
-                                    comment_count: point.comment_count
-                                    author: point.user_id
-                            R.div className:'points_footer_region',
-                              R.div className:'decision_board_points_footer_view',
-                                R.div className:'add_point_drop_target',
-                                  R.img className:'drop_target', src:"/assets/drop_target.png"
-                                  R.span className:'drop_prompt',
-                                    'Drag pro points from the left that resonate with you. '
-
-                                NewPoint {valence: 'pro'}
-
-
-                        # your cons
-                        R.div className:'points_list_region cons_on_decision_board_region',
-                          R.div className:'points_on_decision_board cons_on_decision_board points_layout', 'data-state':@state.state,
-                            R.div className:'points_heading_region',
-                              R.div className:'points_heading_view',
-                                R.h1 className:'points_heading_label',
-                                  'Your Cons'
-                            R.div className:'points_list_region',
-                              R.ul className:'point_list_collectionview',
-                                for point in []
-                                  Point 
-                                    nutshell: point.nutshell
-                                    text: point.text
-                                    valence: 'con' 
-                                    key: point.id
-                                    comment_count: point.comment_count
-                                    author: point.user_id
-
-                            R.div className:'points_footer_region',
-                              R.div className:'decision_board_points_footer_view',
-                                R.div className:'add_point_drop_target',
-                                  R.img className:'drop_target', src:"/assets/drop_target.png"
-                                  R.span className:'drop_prompt',
-                                    'Drag con points from the right that resonate with you. '
-
-                                NewPoint {valence: 'con'}
+                    DecisionBoard
+                      key: 1
+                      state: @state.state
+                      priorstate: @state.priorstate
 
                   else if @state.state == 'results'
-                    R.a className:'give_opinion_button', onClick: @toggleState,
-                      'Give your Opinion'
+                    GiveOpinionButton
+                      key: 2
+                      toggleState: @toggleState
+                      currentOpinion: current_opinion
 
             #community cons
             CommunityPoints 

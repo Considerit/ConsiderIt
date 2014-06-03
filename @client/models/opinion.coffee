@@ -25,7 +25,11 @@
       
       # @proposal = ConsiderIt.all_proposals.get @attributes.proposal_id
 
-
+    # SUBSUME: if a user published a previous opinion on this before,
+    # but is submitting a new opinion (e.g. if they saved their
+    # opinion, logged out, came back after a couple days, created a
+    # new opinion, hit “save opinion”, then login), then merge the two
+    # opinions.
     subsume : (other_pos) ->
       params = 
         stance : if other_pos.get('stance') != 0 then other_pos.get('stance') else @get('stance')

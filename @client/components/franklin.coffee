@@ -1,9 +1,117 @@
+#////////////////////////////////////////////////////////////
+# Exploratory reimplemenntation of considerit client in React
+#////////////////////////////////////////////////////////////
+
+# Ugliness in this prototype: 
+#   - ReactTransitionGroup based animations force defining custom components
+#     when I'd rather just keep them in the parent component. 
+#   - State transition javascript animations sometimes require setting css (e.g. width or transform), 
+#     which are duplicated in the CSS itself to accommodate navigating directly to that state.
+#   - Keeping javascript and CSS variables synchronized
+#      * transition_speed
+#      * slider width
+#   - Not clear where to handle splitting up opinions into segments
+#   - Sticky decision board requires hacks to CSS of community cons to get them to stay to the right
+#   - Haven't declared prop types for the components
+#   - Some animations are living in places that access DOM not managed by them
+
+# React aliases
 R = React.DOM
 ReactTransitionGroup = React.addons.TransitionGroup
-transition_speed = 700
 
-all_users = {}
+# Variables that need to be kept synchronized with CSS
+transition_speed = 700   # Speed of transition from results to crafting (and vice versa)
+histogram_width = 636    # Width of the slider / histogram base
 
+
+#####
+# Responsibilities that will later be managed by ActiveREST
+all_users = {} 
+
+parseProposal = (data) ->
+  # Build hash of user information
+  data.users = $.parseJSON data.users
+  for user in data.users
+    if !user.avatar_file_name
+      user.avatar_file_name = {small: '/system/default_avatar/small_default-profile-pic.png', large: '/system/default_avatar/large_default-profile-pic.png'}
+    else
+      user.avatar_file_name = {small: "/system/avatars/#{user.id}/small/#{user.avatar_file_name}", large: "/system/avatars/#{user.id}/large/#{user.avatar_file_name}"}
+    all_users[user.id] = user
+
+  # separate pro and con points
+  data.pro_community_points = _.where data.points, {is_pro: true}
+  data.con_community_points = _.where data.points, {is_pro: false}
+
+  ##
+  # Split up opinions into segments. For now we'll keep three hashes: 
+  #   - all opinions
+  #   - high level segments (the seven original segments, strong supporter, neutral, etc)
+  #   - small segments that represent individual columns in the histogram, now that 
+  #     we do not have wide bars per se
+  num_opinions = data.opinions.length
+
+  # an initial function for sizing avatars
+  biggest_possible_avatar_size = 50
+  data.avatar_size = biggest_possible_avatar_size / Math.sqrt( (num_opinions + 1)/10  )
+
+  # Calculate how many segments columns to put on the histogram. Note that for the extremes and for neutral, we'll hack it 
+  # to allow three columns for those segments. 
+  data.num_small_segments = Math.floor(histogram_width/data.avatar_size) - 2 * 3 - 1 #for the additional cols for the extremes+neutral 
+
+  seven_original_opinion_segments = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
+
+  histogram_small_segments = {}
+  histogram_small_segments[i] = [] for i in [0..data.num_small_segments]
+    
+  max_slider_variance = 2.0 # In old system, opinion stances varied from -1.0 to 1.0. 
+
+  for opinion in data.opinions
+    seven_original_opinion_segments[opinion.stance_segment].push opinion
+    small_segment = Math.floor(data.num_small_segments * (opinion.stance + 1) / max_slider_variance)
+    histogram_small_segments[small_segment].push opinion
+
+  data.seven_original_opinion_segments = seven_original_opinion_segments
+  data.histogram_small_segments = histogram_small_segments
+
+  data
+
+fetch = (options, callback, error_callback) ->
+  error_callback ||= (xhr, status, err) -> console.error 'Could not fetch data', status, err.toString()
+
+  $.ajax
+    url: options.url
+    dataType: 'json'
+    success: (data) =>
+      if options.type == 'proposal'
+        data = parseProposal data
+      callback data
+
+    error: error_callback
+
+
+
+
+####################
+# REACT COMPONENTS #
+####################
+
+# These are the components and their relationships:
+#                       Proposal
+#                   /      |            \ 
+#    CommunityPoints   DecisionBoard      GiveOpinionButton
+#               |          | 
+#               |      YourPoints
+#               |    /            \
+#              Point             NewPoint
+
+# DecisionBoard and GiveOpinionButton exist only for the sake of the particular way
+# React affords animations right now. See ReactTransitionGroup below. 
+
+
+##
+# NewPoint
+# Handles adding a new point into the system. Only rendered when proposal is in Crafting state. 
+# Manages whether the user has clicked "add a new point". If they have, show new point form. 
 NewPoint = React.createClass
   displayName: 'NewPoint'
 
@@ -50,7 +158,9 @@ NewPoint = React.createClass
             R.input className:'button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
 
 
-
+##
+# Point
+# A single point in a list. 
 Point = React.createClass
   displayName: 'Point'
 
@@ -74,6 +184,10 @@ Point = React.createClass
                 @props.comment_count
                 ' comments'
 
+##
+# CommunityPoints
+# List of points contributed by others. 
+# Shown in wing during crafting, in middle on results. 
 CommunityPoints = React.createClass
   displayName: 'CommunityPoints'
 
@@ -98,11 +212,11 @@ CommunityPoints = React.createClass
                   comment_count: point.comment_count
                   author: point.user_id
 
-            # R.div className:'points_footer_region',
-            #   R.div className:'community_points_footer_view',
-            #     R.a className:'toggle_expand_points button', 'data-action':'expand-toggle',
-            #       "View all #{@props.points.length} Pros"
-
+##
+# YourPoints
+# List of important points for the active user. 
+# Two instances used for Pro and Con columns. Shown as part of DecisionBoard. 
+# Creates NewPoint instances.
 YourPoints = React.createClass
   displayName: 'YourPoints'
 
@@ -132,17 +246,26 @@ YourPoints = React.createClass
 
             NewPoint {valence: @props.valence}
 
+##
+# DecisionBoard
+# Handles the user's list of important points in crafting state. 
+# Primary motivation for pulling this out separately is to 
+# animate between results and crafting states using the 
+# ReactTransitionGroup interface.
 DecisionBoard = React.createClass
   displayName: 'DecisionBoard'
 
   componentWillEnter: (callback) ->
+    # Don't display the pro/con columns immediately, 
+    # otherwise they won't fit side by side as the 
+    # area animates the width
     $(@getDOMNode()).hide()
     _.delay =>
       $(@getDOMNode()).show()
       callback()
     , transition_speed
 
-  componentWillLeave: (callback) -> 
+  componentWillLeave: (callback) ->
     $(@getDOMNode()).hide()
     callback()
     # $(@getDOMNode()).slideUp transition_speed / 4, ->
@@ -164,15 +287,25 @@ DecisionBoard = React.createClass
         points: []
         valence: 'con'
 
+##
+# GiveOpinionButton
+# Displays the give opinion button which toggles to crafting state. 
+# Primary motivation for pulling this out separately is to 
+# animate between results and crafting states using the 
+# ReactTransitionGroup interface.
 GiveOpinionButton = React.createClass
   displayName: 'GiveOpinionButton'
 
+  # Moves the GiveOpinionButton under the slider handle
   place: ->
     left = $('.ui-slider-handle').offset().left - $('.opinion_region').offset().left 
     
     if @props.currentOpinion > 50 # position right justified when opposing
-      left -= 120 # width of give opinion button
+      # 120 is based on width of give opinion button, which can't be checked here b/c this is before animation is complete
+      left -= 120 
 
+    # Ugly to manipulate the opinion region here
+    # Problem: This code will not run when results is directly accessed.
     $('.opinion_region').css
       transform: "translate(#{left}, -18px)"
       '-webkit-transform': "translate(#{left}px, -18px)"
@@ -180,6 +313,7 @@ GiveOpinionButton = React.createClass
   componentWillEnter: (callback) ->
     @place()
 
+    # wait a slight bit before showing "give your opinion" when moving from crafting to results
     $(@getDOMNode()).hide()
     _.delay =>
       $(@getDOMNode()).show()
@@ -190,42 +324,36 @@ GiveOpinionButton = React.createClass
     $('.opinion_region').css
       transform: "translate(0,0)"
       '-webkit-transform': "translate(0,0)"
-    # $('.decision_board_body').css
-    #   width: ''
     callback()
-
 
   render : ->
     R.a className:'give_opinion_button', onClick: @props.toggleState,
       'Give your Opinion'
 
 
+##
+# Proposal
+# The mega component for a proposal.
+# Has proposal description, feelings area (slider + histogram), and reasons area
 window.REACTProposal = React.createClass
   displayName: 'Proposal'
+
   componentWillMount : ->
-    $.ajax
-      url: Routes.proposal_path @props.long_id
-      dataType: 'json'
-      success: (data) =>
-        data = @processInitialData data
-        console.log data
-        @setState {data: data}
-      error: (xhr, status, err) =>
-        console.error 'Could not fetch data', status, err.toString()
+    fetch {type: 'proposal', url: Routes.proposal_path @props.long_id}, (proposal_data) =>
+      @setState {data: proposal_data}
 
   componentDidMount : ->
     $('.histogram_base').slider()
 
   componentDidUpdate : ->
 
+    # Sticky decision board
     $('.opinion_region').headroom
       offset: $('.opinion_region').offset().top #+ $('.opinion_region').height()
       classes:
-        initial : "headroom",
-        pinned : "headroom--pinned",
-        unpinned : "headroom--unpinned",
-        top : "normal_place",
+        top : "normal_place"
         notTop : "scrolling_with_user"
+      
       onNotTop : -> 
         $('.four_columns_of_points .community_cons_region').css
           transition: 'none'
@@ -247,9 +375,6 @@ window.REACTProposal = React.createClass
         , 100
         # $('.four_columns_of_points').removeClass('pinned')
 
-
-
-
   getInitialState : ->
     state : 'crafting',
     priorstate : 'results',
@@ -257,7 +382,8 @@ window.REACTProposal = React.createClass
       proposal : {}
       pro_community_points : []
       con_community_points : []
-      opinions : {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
+      seven_original_opinion_segments : {}
+      histogram_small_segments : {}
       users : {}
 
   toggleState : (ev) ->
@@ -265,54 +391,12 @@ window.REACTProposal = React.createClass
       state : @state.priorstate, 
       priorstate : @state.state
 
-  processInitialData : (data) ->
-    # This method will be mostly replaced by ActiveRest
-    data.users = $.parseJSON data.users
-
-    data.pro_community_points = _.where data.points, {is_pro: true}
-    data.con_community_points = _.where data.points, {is_pro: false}
-
-    num_opinions = data.opinions.length
-
-    biggest_avatar_size = 50
-    @avatar_size = biggest_avatar_size / Math.sqrt( (num_opinions + 1)/10  )
-
-    histogram_width = 636
-
-    @num_small_segments = Math.floor(histogram_width/@avatar_size) - 2 * 3 - 1 #for the additional cols for the extremes+neutral 
-    max_slider_val = 2.0
-
-    opinions = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
-    histogram_small_segments = {}
-
-    for i in [0..@num_small_segments]
-      histogram_small_segments[i] = []
-
-    for opinion in data.opinions
-      opinions[opinion.stance_segment].push opinion
-      small_segment = Math.floor(@num_small_segments * (opinion.stance + 1) / max_slider_val)
-      histogram_small_segments[small_segment].push opinion
-
-    data.opinions = opinions
-    data.histogram_small_segments = histogram_small_segments
-
-    users = {}
-    for user in data.users
-      if !user.avatar_file_name
-        user.avatar_file_name = {small: '/system/default_avatar/small_default-profile-pic.png', large: '/system/default_avatar/large_default-profile-pic.png'}
-      else
-        user.avatar_file_name = {small: "/system/avatars/#{user.id}/small/#{user.avatar_file_name}", large: "/system/avatars/#{user.id}/large/#{user.avatar_file_name}"}
-      users[user.id] = user
-
-    all_users = users
-
-    data
-
-  render : ->    
+  render : ->
+    console.log @state.data.num_small_segments
     current_opinion = $('.histogram_base').slider('value')
 
     segment_is_extreme_or_neutral = (segment) => 
-      segment == 0 || segment == @num_small_segments || segment == Math.floor(@num_small_segments / 2)
+      segment == 0 || segment == @state.data.num_small_segments || segment == Math.floor(@state.data.num_small_segments / 2)
 
     R.div className:'proposal_layout', key:@props.long_id, 'data-role':'proposal', 'data-activity':'proposal-has-activity', 'data-status':'proposal-inactive', 'data-visibility':'published', 'data-state':@state.state, 'data-prior-state':@state.priorstate,
       
@@ -355,13 +439,11 @@ window.REACTProposal = React.createClass
       R.div className:'proposal_histogram_region',
         R.div className:'histogram_layout', 'data-state':@state.state, 'data-prior-state':@state.priorstate,
           #for segment in [6..0]
-          for segment in [@num_small_segments..0]
-            R.div key:"#{segment}", className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @avatar_size}px" else "#{@avatar_size}px"},
+          for segment in [@state.data.num_small_segments..0]
+            R.div key:"#{segment}", className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @state.data.avatar_size}px" else "#{@state.data.avatar_size}px"},
               R.ul className:'histogram_bar_users',
                 for opinion in @state.data.histogram_small_segments[segment] #@state.data.opinions[segment]
-                  R.li key:"#{opinion.user_id}", id:"avatar-#{opinion.user_id}", className:"avatar segment-#{segment}", 'data-action':'user_opinion', 'data-id':opinion.user_id, style:{height:"#{@avatar_size}px", width:"#{@avatar_size}px"}, 'data-tooltip':'user_profile'
-
-
+                  R.li key:"#{opinion.user_id}", id:"avatar-#{opinion.user_id}", className:"avatar segment-#{segment}", 'data-action':'user_opinion', 'data-id':opinion.user_id, style:{height:"#{@state.data.avatar_size}px", width:"#{@state.data.avatar_size}px"}, 'data-tooltip':'user_profile'
 
           R.div className:'histogram_base', 
             R.div className:'feeling_slider ui-slider-handle',

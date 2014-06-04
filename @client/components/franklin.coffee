@@ -610,7 +610,7 @@ window.REACTProposal = React.createClass
 
           R.div className:'histogram_base', 
             R.div className:'feeling_slider ui-slider-handle',
-              R.img className:'bubblemouth', src:'assets/bubblemouth.png', style: {transform: if @state.data.stance_segment > 3 then 'scaleX(-1) translateX(15px)' else 'translateX(30px)'}
+              R.img className:'bubblemouth', src:'assets/bubblemouth.png', style: {transform: if @state.data.stance_segment > 3 then "scaleX(-1) translateX(#{if @state.state == 'crafting' then '15px' else '5px'})" else "translateX(#{if @state.state == 'crafting' then '30px' else '10px'})"}
               if @state.state == 'crafting'
                 R.div className:'feeling_feedback', 
                   R.div className:'feeling_feedback_label', "You are#{if @state.data.stance_segment == 3 then '' else ' a'}"

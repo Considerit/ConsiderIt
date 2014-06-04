@@ -26,10 +26,14 @@
       &.pro
         left: - ($open_point-width - $body_width) / 2
 
-// all points except those on the homepage should have a cursor on hover
-.points_by_community[data-state="crafting"], .points_by_community[data-state="results"], .points_on_decision_board
-  .closed_point
-    cursor: pointer
+
+[data-state="results"] .closed_point
+  cursor: pointer
+
+// draggable points
+[data-state="crafting"] .closed_point .point_content
+  +grab_cursor
+
 
 .points_by_community
 
@@ -40,9 +44,7 @@
   &[data-state="crafting"]
     .open_point.con.community_point
       right: $open_point-width - $point-width + 56
-
-    .closed_point.community_point .point_content
-      +grab_cursor
+      
 
   &[data-state="summary"]
     .point

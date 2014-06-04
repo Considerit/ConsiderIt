@@ -14,6 +14,7 @@
 #   - Sticky decision board requires hacks to CSS of community cons to get them to stay to the right
 #   - Haven't declared prop types for the components
 #   - Some animations are living in places that access DOM not managed by them
+#   - Setting state.data is verbose and errorprone...but this should not happen once we're using ActiveREST
 
 # React aliases
 R = React.DOM
@@ -135,287 +136,6 @@ fetch = (options, callback, error_callback) ->
 # React affords animations right now. See ReactTransitionGroup below. 
 
 
-##
-# NewPoint
-# Handles adding a new point into the system. Only rendered when proposal is in Crafting state. 
-# Manages whether the user has clicked "add a new point". If they have, show new point form. 
-NewPoint = React.createClass
-  displayName: 'NewPoint'
-
-  getInitialState : ->
-    editMode : false
-
-  handleAddPointBegin : (ev) ->
-    @setState
-      editMode : true
-
-  handleAddPointCancel : (ev) ->
-    @setState
-      editMode : false
-
-  handleSubmitNewPoint : (ev) ->
-    console.log 'submitting new point'
-
-  render : ->
-    valence_capitalized = "#{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}"
-
-    R.div className:'newpoint',
-      if !@state.editMode
-        R.div className:'newpoint_prompt',
-          R.span className:'qualifier', 
-            'or '
-          R.span className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
-          R.a className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
-            "Write a new #{valence_capitalized}"
-      else
-        R.div className:'newpoint_form',
-          R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pro'}"
-          R.div className:'newpoint_nutshell_wrap',
-            R.textarea id:'nutshell', classname:'newpoint_nutshell is_counted', cols:'28', maxLength:"140", name:'nutshell', pattern:'^.{3,}', placeholder:'Summarize your point (required)', required:'required'
-            R.span className: 'count', 140
-          R.div className:'newpoint_description_wrap',
-            R.textarea id:'text', classname:'newpoint_description', cols:'28', name:'text', placeholder:'Write a longer description (optional)', required:'required'
-          R.div className:'newpoint_hide_name',
-            R.input className:'newpoint-anonymous', type:'checkbox', id:"hide_name-#{@props.valence}", name:"hide_name-#{@props.valence}"
-            R.label for:"hide_name-#{@props.valence}", title:'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.', 
-              'Conceal your name'
-          R.div className:'newpoint-submit',
-            R.a className:'newpoint-cancel', onClick: @handleAddPointCancel,
-              'cancel'
-            R.input className:'button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
-
-
-##
-# Point
-# A single point in a list. 
-Point = React.createClass
-  displayName: 'Point'
-
-  setDraggability : ->
-    return if @props.location_class != 'community_point'
-
-    # TODO: possible efficiency would be to only make draggable when first mouse over a point
-    $el = $(@getDOMNode()).find('.point_content')
-    if $el.hasClass "ui-draggable"
-      $el.draggable(if @props.state == 'results' then 'disable' else 'enable') 
-    else
-      $el.draggable
-        revert: "invalid"
-        disabled: @props.state == 'results'
-
-  componentDidMount : -> @setDraggability()
-  componentDidUpdate : -> @setDraggability()
-
-  render : -> 
-    R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id, 'data-role':'point', 'data-includers': [1,2],
-      R.a className:"avatar point_author_avatar", id:"avatar-#{@props.author}", 'data-action':'user_opinion', 'data-id':@props.author, 'data-tooltip':'user_profile'
-      R.div className:'point_content',
-        R.div className:'close_open_point',
-          R.i className:'fa fa-times-circle'
-        R.div className:'point_summary_region', 'data-action':'open-point', 'data-id':@props.id,
-          R.div className:'point_summary_view',
-            R.div className:'point_nutshell',
-              @props.nutshell
-              if @props.text
-                R.span className: 'point_details_tease', 
-                  @props.text[0..50]
-                  ' ...'
-
-            R.div className:'point_operations',
-              R.a className:'open_point_link',
-                @props.comment_count
-                ' comments'
-
-##
-# CommunityPoints
-# List of points contributed by others. 
-# Shown in wing during crafting, in middle on results. 
-CommunityPoints = React.createClass
-  displayName: 'CommunityPoints'
-
-  render : ->
-    points = @props.points
-    if @props.state=='crafting'
-      #filter down to points that haven't been included
-      points = _.reject points, (pnt) => _.contains(@props.included_points, pnt)
-
-    R.div className:"community_#{@props.valence}s_region points_list_region",
-      R.div className:"points_by_community #{@props.valence}s_by_community points_layout", 'data-state':@props.state, 'data-prior-state':@props.priorstate,
-        R.div className:'points_heading_region',
-          R.div className:'points_heading_view',
-            R.h1 className:'points_heading_label', 'data-action':'expand-toggle',
-              "Others' #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
-
-          R.div className:'points_list_region',
-            R.ul className:'point_list_collectionview',
-              #for point in (if @props.state=='crafting' then @props.points[0..3] else @props.points[2..5])
-              for point_id in points
-                point = all_points[point_id]
-                Point 
-                  key: point.id
-                  id: point.id
-                  nutshell: point.nutshell
-                  text: point.text
-                  valence: @props.valence
-                  comment_count: point.comment_count
-                  author: point.user_id
-                  state: @props.state
-                  location_class : 'community_point'
-
-##
-# YourPoints
-# List of important points for the active user. 
-# Two instances used for Pro and Con columns. Shown as part of DecisionBoard. 
-# Creates NewPoint instances.
-YourPoints = React.createClass
-  displayName: 'YourPoints'
-
-  render : ->
-    R.div className:"points_list_region #{@props.valence}s_on_decision_board_region",
-      R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board points_layout", 'data-state':@props.state,
-        R.div className:'points_heading_region',
-          R.div className:'points_heading_view',
-            R.h1 className:'points_heading_label',
-              'Your Pros'
-        R.div className:'points_list_region',
-          R.ul className:'point_list_collectionview',
-            for point_id in @props.points
-              point = all_points[point_id]
-              Point 
-                key: point.id
-                nutshell: point.nutshell
-                text: point.text
-                valence: 'pro' 
-                comment_count: point.comment_count
-                author: point.user_id
-                state: @props.state
-                location_class: 'decision_board_point'
-
-        R.div className:'points_footer_region',
-          R.div className:'decision_board_points_footer_view',
-            R.div className:'add_point_drop_target',
-              R.img className:'drop_target', src:"/assets/drop_target.png"
-              R.span className:'drop_prompt',
-                "Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
-
-            NewPoint {valence: @props.valence}
-
-##
-# DecisionBoard
-# Handles the user's list of important points in crafting state. 
-# Primary motivation for pulling this out separately is to 
-# animate between results and crafting states using the 
-# ReactTransitionGroup interface.
-DecisionBoard = React.createClass
-  displayName: 'DecisionBoard'
-
-  componentDidMount : ->
-    
-    # make this a drop target
-    $el = $(@getDOMNode()).parent()
-    valenceOfDroppedPoint = (ui) -> if ui.draggable.parent().is('.pro') then 'pro' else 'con'
-
-    $el.droppable
-      accept: ".community_point .point_content"
-      drop : (ev, ui) =>
-        valence = valenceOfDroppedPoint ui
-        ui.draggable.parent().fadeOut()
-
-        @props.pointIncludedCallback ui.draggable.parent().data('id')
-        $el.removeClass "user_is_hovering_on_a_drop_target_#{valence} user_is_dragging_a_#{valence}"
-
-      out : (ev, ui) =>
-        valence = valenceOfDroppedPoint ui
-        $el.removeClass "user_is_hovering_on_a_drop_target"
-
-      over : (ev, ui) =>
-        valence = valenceOfDroppedPoint ui
-        $el.addClass "user_is_hovering_on_a_drop_target"
-
-      activate : (ev, ui) =>
-        valence = valenceOfDroppedPoint ui
-        $el.addClass "user_is_dragging_a_#{valence}"
-
-      deactivate : (ev, ui) =>
-        valence = valenceOfDroppedPoint ui
-        $el.removeClass "user_is_dragging_a_#{valence}"
-
-
-  componentWillEnter : (callback) ->
-    # Don't display the pro/con columns immediately, 
-    # otherwise they won't fit side by side as the 
-    # area animates the width
-    $(@getDOMNode()).hide()
-    _.delay =>
-      $(@getDOMNode()).show()
-      callback()
-    , transition_speed
-
-  componentWillLeave : (callback) ->
-    $(@getDOMNode()).hide()
-    callback()
-    # $(@getDOMNode()).slideUp transition_speed / 4, ->
-    #   callback()
-
-  render : ->
-    R.div className:'decision_board_points_layout',
-      # your pros
-      YourPoints
-        state: @props.state
-        priorstate: @props.priorstate
-        points: @props.included_pros
-        valence: 'pro'
-
-      # your cons
-      YourPoints
-        state: @props.state
-        priorstate: @props.priorstate
-        points: @props.included_cons
-        valence: 'con'
-
-##
-# GiveOpinionButton
-# Displays the give opinion button which toggles to crafting state. 
-# Primary motivation for pulling this out separately is to 
-# animate between results and crafting states using the 
-# ReactTransitionGroup interface.
-GiveOpinionButton = React.createClass
-  displayName: 'GiveOpinionButton'
-
-  # Moves the GiveOpinionButton under the slider handle
-  place: ->
-    left = $('.ui-slider-handle').offset().left - $('.opinion_region').offset().left 
-    
-    if @props.stance_segment > 3 # position right justified when opposing
-      # 120 is based on width of give opinion button, which can't be checked here b/c this is before animation is complete
-      left -= 120 
-
-    # Ugly to manipulate the opinion region here
-    # Problem: This code will not run when results is directly accessed.
-    $('.opinion_region').css
-      transform: "translate(#{left}, -18px)"
-      '-webkit-transform': "translate(#{left}px, -18px)"
-
-  componentWillEnter: (callback) ->
-    @place()
-
-    # wait a slight bit before showing "give your opinion" when moving from crafting to results
-    $(@getDOMNode()).hide()
-    _.delay =>
-      $(@getDOMNode()).show()
-      callback()
-    , 100
-
-  componentWillLeave: (callback) -> 
-    $('.opinion_region').css
-      transform: "translate(0,0)"
-      '-webkit-transform': "translate(0,0)"
-    callback()
-
-  render : ->
-    R.a className:'give_opinion_button', onClick: @props.toggleState,
-      'Give your Opinion'
-
 
 ##
 # Proposal
@@ -424,8 +144,9 @@ GiveOpinionButton = React.createClass
 window.REACTProposal = React.createClass
   displayName: 'Proposal'
 
-  pointIncludedCallback : (point_id) ->
-    #TODO: active rest call here...
+  # TODO: these include/remove methods are ridiculously long for what they do
+  onPointShouldBeIncluded : (point_id) ->
+    #TODO: activeREST call here...
 
     point = all_points[point_id]
     if point.is_pro 
@@ -438,12 +159,64 @@ window.REACTProposal = React.createClass
     else
       included_points = @state.data.included_cons
       included_points.push point_id
+      @setState { data: _.extend(@state.data, 
+          included_cons : included_points
+      )}
+
+  onPointShouldBeRemoved : (point_id) ->
+    #TODO: activeREST call here...    
+
+    #TODO: server might return that the point was actually _deleted_ from 
+    #      the system, not just removed from the list...need to handle that
+    point = all_points[point_id]
+    if point.is_pro 
+      included_points = _.without @state.data.included_pros, point_id
+      @setState { data: _.extend(@state.data, 
+        included_pros : included_points
+      )}
+
+    else
+      included_points = _.without @state.data.included_cons, point_id
 
       @setState { data: _.extend(@state.data, 
           included_cons : included_points
       )}
 
-    console.log 'included point ', point_id
+  onPointShouldBeCreated : (data) ->
+    #TODO: activeREST call here...
+
+    id = -1
+    while _.has all_points, id
+      id = -(Math.floor(Math.random() * 999999) + 1)
+
+    point = _.extend data, 
+      user_id : -2 #unlogged in user
+      comment_count : 0 
+      id : id
+
+    all_points[id] = point
+
+    if point.is_pro
+      included_points = @state.data.included_pros
+      included_points.push point.id
+      community_pros = @state.data.pro_community_points
+      community_pros.push point.id
+      @setState { data: _.extend(@state.data, 
+        included_pros: included_points 
+        pro_community_points: community_pros
+      )}
+    else
+      included_points = @state.data.included_cons
+      included_points.push point.id
+      community_cons = @state.data.pro_community_points
+      community_cons.push point.id      
+      @setState { data: _.extend(@state.data, 
+        included_cons: included_points 
+        con_community_points: community_cons
+      )}
+
+
+
 
   setSlidability : ->
 
@@ -475,7 +248,6 @@ window.REACTProposal = React.createClass
         value: @state.data.stance
         slide: (ev, ui) => 
           segment = getStanceSegmentFromSliderValue ui.value
-          console.log segment, @state.data.stance_segment
           if @state.data.stance_segment != segment
             @setState _.extend(@state.data, {stance_segment: segment})
 
@@ -539,27 +311,17 @@ window.REACTProposal = React.createClass
       priorstate : @state.state
 
   render : ->
-
     segment_is_extreme_or_neutral = (segment) => 
       segment == 0 || segment == @state.data.num_small_segments || segment == Math.floor(@state.data.num_small_segments / 2)
 
-    stanceName = =>
-      console.log @state.data.stance_segment
-      switch @state.data.stance_segment
-        when 0 
-          'Diehard Supporter'
-        when 6
-          'Diehard Opposer'
-        when 1
-          'Strong Supporter'
-        when 5
-          'Strong Opposer'
-        when 2
-          'Supporter'
-        when 4
-          'Opposer'
-        when 3
-          'Neutral'
+    stance_names = 
+      0 : 'Diehard Supporter'
+      6 : 'Diehard Opposer'
+      1 : 'Strong Supporter'
+      5 : 'Strong Opposer'
+      2 : 'Supporter'
+      4 : 'Opposer'
+      3 : 'Neutral'
 
     R.div className:'proposal_layout', key:@props.long_id, 'data-role':'proposal', 'data-activity':'proposal-has-activity', 'data-status':'proposal-inactive', 'data-visibility':'published', 'data-state':@state.state, 'data-prior-state':@state.priorstate,
       
@@ -614,7 +376,7 @@ window.REACTProposal = React.createClass
               if @state.state == 'crafting'
                 R.div className:'feeling_feedback', 
                   R.div className:'feeling_feedback_label', "You are#{if @state.data.stance_segment == 3 then '' else ' a'}"
-                  R.div className:'feeling_feedback_result', stanceName()
+                  R.div className:'feeling_feedback_result', stance_names[@state.data.stance_segment]
                   R.div className:'feeling_feedback_instructions', 'drag to change'
 
           R.div className:'feeling_labels', 
@@ -637,6 +399,7 @@ window.REACTProposal = React.createClass
               points: @state.data.pro_community_points
               valence: 'pro'
               included_points : @state.data.included_pros
+              onPointShouldBeRemoved : @onPointShouldBeRemoved
 
             #your reasons
             R.div className:'opinion_region',
@@ -651,7 +414,8 @@ window.REACTProposal = React.createClass
                       priorstate: @state.priorstate
                       included_pros : @state.data.included_pros
                       included_cons : @state.data.included_cons
-                      pointIncludedCallback : @pointIncludedCallback
+                      onPointShouldBeIncluded : @onPointShouldBeIncluded
+                      onPointShouldBeCreated : @onPointShouldBeCreated
 
                   else if @state.state == 'results'
                     GiveOpinionButton
@@ -666,6 +430,300 @@ window.REACTProposal = React.createClass
               points: @state.data.con_community_points
               valence: 'con'
               included_points : @state.data.included_cons
+              onPointShouldBeRemoved : @onPointShouldBeRemoved
 
+
+##
+# DecisionBoard
+# Handles the user's list of important points in crafting state. 
+# Primary motivation for pulling this out separately is to 
+# animate between results and crafting states using the 
+# ReactTransitionGroup interface.
+DecisionBoard = React.createClass
+  displayName: 'DecisionBoard'
+
+  componentDidMount : ->
+    
+    # make this a drop target
+    $el = $(@getDOMNode()).parent()
+    $el.droppable
+      accept: ".community_point .point_content"
+      drop : (ev, ui) =>
+        ui.draggable.parent().fadeOut 200, => 
+          @props.onPointShouldBeIncluded ui.draggable.parent().data('id')
+        $el.removeClass "user_is_hovering_on_a_drop_target"
+      out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
+      over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
+
+
+  componentWillEnter : (callback) ->
+    # Don't display the pro/con columns immediately, 
+    # otherwise they won't fit side by side as the 
+    # area animates the width
+    $(@getDOMNode()).hide()
+    _.delay =>
+      $(@getDOMNode()).show()
+      callback()
+    , transition_speed
+
+  componentWillLeave : (callback) ->
+    $(@getDOMNode()).hide()
+    callback()
+    # $(@getDOMNode()).slideUp transition_speed / 4, ->
+    #   callback()
+
+  render : ->
+    R.div className:'decision_board_points_layout',
+      # your pros
+      YourPoints
+        state: @props.state
+        priorstate: @props.priorstate
+        points: @props.included_pros
+        valence: 'pro'
+        onPointShouldBeCreated: @props.onPointShouldBeCreated
+
+      # your cons
+      YourPoints
+        state: @props.state
+        priorstate: @props.priorstate
+        points: @props.included_cons
+        valence: 'con'
+        onPointShouldBeCreated: @props.onPointShouldBeCreated
+
+
+##
+# YourPoints
+# List of important points for the active user. 
+# Two instances used for Pro and Con columns. Shown as part of DecisionBoard. 
+# Creates NewPoint instances.
+YourPoints = React.createClass
+  displayName: 'YourPoints'
+
+  render : ->
+    R.div className:"points_list_region #{@props.valence}s_on_decision_board_region",
+      R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board points_layout", 'data-state':@props.state,
+        R.div className:'points_heading_region',
+          R.div className:'points_heading_view',
+            R.h1 className:'points_heading_label',
+              "Your #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
+
+        R.ul className:'point_list_collectionview',
+          for point_id in @props.points
+            point = all_points[point_id]
+            Point 
+              key: point.id
+              id: point.id
+              nutshell: point.nutshell
+              text: point.text
+              valence: @props.valence
+              comment_count: point.comment_count
+              author: point.user_id
+              state: @props.state
+              location_class: 'decision_board_point'
+
+        R.div className:'points_footer_region',
+          R.div className:'decision_board_points_footer_view',
+            R.div className:'add_point_drop_target',
+              R.img className:'drop_target', src:"/assets/drop_target.png"
+              R.span className:'drop_prompt',
+                "Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
+
+            NewPoint 
+              valence: @props.valence
+              onPointShouldBeCreated: @props.onPointShouldBeCreated
+
+
+##
+# CommunityPoints
+# List of points contributed by others. 
+# Shown in wing during crafting, in middle on results. 
+CommunityPoints = React.createClass
+  displayName: 'CommunityPoints'
+
+  componentDidMount : ->
+    # make this a drop target to facilitate removal of points
+    $el = $(@getDOMNode())
+    $el.droppable
+      accept: ".decision_board_point.#{@props.valence} .point_content"
+      drop : (ev, ui) =>
+        ui.draggable.parent().fadeOut 200, => 
+          @props.onPointShouldBeRemoved ui.draggable.parent().data('id')
+        $el.removeClass "user_is_hovering_on_a_drop_target" # user_is_dragging_a_#{valence}"
+      out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
+      over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
+
+  render : ->
+    points = @props.points
+    if @props.state=='crafting'
+      #filter down to points that haven't been included
+      points = _.reject points, (pnt) => _.contains(@props.included_points, pnt)
+
+    R.div className:"community_#{@props.valence}s_region points_list_region",
+      R.div className:"points_by_community #{@props.valence}s_by_community points_layout", 'data-state':@props.state, 'data-prior-state':@props.priorstate,
+        R.div className:'points_heading_region',
+          R.div className:'points_heading_view',
+            R.h1 className:'points_heading_label', 'data-action':'expand-toggle',
+              "Others' #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
+
+          R.div className:'points_list_region',
+            R.ul className:'point_list_collectionview',
+              #for point in (if @props.state=='crafting' then @props.points[0..3] else @props.points[2..5])
+              for point_id in points
+                point = all_points[point_id]
+                Point 
+                  key: point.id
+                  id: point.id
+                  nutshell: point.nutshell
+                  text: point.text
+                  valence: @props.valence
+                  comment_count: point.comment_count
+                  author: point.user_id
+                  state: @props.state
+                  location_class : 'community_point'
+
+##
+# GiveOpinionButton
+# Displays the give opinion button which toggles to crafting state. 
+# Primary motivation for pulling this out separately is to 
+# animate between results and crafting states using the 
+# ReactTransitionGroup interface.
+GiveOpinionButton = React.createClass
+  displayName: 'GiveOpinionButton'
+
+  # Moves the GiveOpinionButton under the slider handle
+  place: ->
+    left = $('.ui-slider-handle').offset().left - $('.opinion_region').offset().left 
+    
+    if @props.stance_segment > 3 # position right justified when opposing
+      # 120 is based on width of give opinion button, which can't be checked here b/c this is before animation is complete
+      left -= 120 
+
+    # Ugly to manipulate the opinion region here
+    # Problem: This code will not run when results is directly accessed.
+    $('.opinion_region').css
+      transform: "translate(#{left}, -18px)"
+      '-webkit-transform': "translate(#{left}px, -18px)"
+
+  componentWillEnter: (callback) ->
+    @place()
+
+    # wait a slight bit before showing "give your opinion" when moving from crafting to results
+    $(@getDOMNode()).hide()
+    _.delay =>
+      $(@getDOMNode()).show()
+      callback()
+    , 100
+
+  componentWillLeave: (callback) -> 
+    $('.opinion_region').css
+      transform: "translate(0,0)"
+      '-webkit-transform': "translate(0,0)"
+    callback()
+
+  render : ->
+    R.a className:'give_opinion_button', onClick: @props.toggleState,
+      'Give your Opinion'
+
+
+##
+# Point
+# A single point in a list. 
+Point = React.createClass
+  displayName: 'Point'
+
+  setDraggability : ->
+    #return if @props.location_class != 'community_point' #only allow inclusions
+
+    # TODO: possible efficiency would be to only make draggable when first mouse over a point
+
+    # Ability to drag include this point if a community point, 
+    # or drag remove for point on decision board
+    # also: disable for results page
+
+    $el = $(@getDOMNode()).find('.point_content')
+    if $el.hasClass "ui-draggable"
+      $el.draggable(if @props.state == 'results' then 'disable' else 'enable') 
+    else
+      $el.draggable
+        revert: "invalid"
+        disabled: @props.state == 'results'
+
+
+  componentDidMount : -> @setDraggability()
+  componentDidUpdate : -> @setDraggability()
+
+  render : -> 
+    R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id, 'data-role':'point', 'data-includers': [1,2],
+      R.a className:"avatar point_author_avatar", id:"avatar-#{@props.author}", 'data-action':'user_opinion', 'data-id':@props.author, 'data-tooltip':'user_profile'
+      R.div className:'point_content',
+        R.div className:'close_open_point',
+          R.i className:'fa fa-times-circle'
+        R.div className:'point_summary_region', 'data-action':'open-point', 'data-id':@props.id,
+          R.div className:'point_summary_view',
+            R.div className:'point_nutshell',
+              @props.nutshell
+              if @props.text
+                R.span className: 'point_details_tease', 
+                  @props.text[0..50]
+                  ' ...'
+
+            R.div className:'point_operations',
+              R.a className:'open_point_link',
+                @props.comment_count
+                ' comments'
+
+
+##
+# NewPoint
+# Handles adding a new point into the system. Only rendered when proposal is in Crafting state. 
+# Manages whether the user has clicked "add a new point". If they have, show new point form. 
+NewPoint = React.createClass
+  displayName: 'NewPoint'
+
+  getInitialState : ->
+    editMode : false
+
+  handleAddPointBegin : (ev) ->
+    @setState
+      editMode : true
+
+  handleAddPointCancel : (ev) ->
+    @setState
+      editMode : false
+
+  handleSubmitNewPoint : (ev) ->
+    $form = $(@getDOMNode())
+    @props.onPointShouldBeCreated
+      nutshell : $form.find('#nutshell').val()
+      text : $form.find('#text').val()
+      is_pro : @props.valence == 'pro'
+
+  render : ->
+    valence_capitalized = "#{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}"
+
+    R.div className:'newpoint',
+      if !@state.editMode
+        R.div className:'newpoint_prompt',
+          R.span className:'qualifier', 
+            'or '
+          R.span className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
+          R.a className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
+            "Write a new #{valence_capitalized}"
+      else
+        R.div className:'newpoint_form',
+          R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pro'}"
+          R.div className:'newpoint_nutshell_wrap',
+            R.textarea id:'nutshell', className:'newpoint_nutshell is_counted', cols:'28', maxLength:"140", name:'nutshell', pattern:'^.{3,}', placeholder:'Summarize your point (required)', required:'required'
+            R.span className: 'count', 140
+          R.div className:'newpoint_description_wrap',
+            R.textarea id:'text', className:'newpoint_description', cols:'28', name:'text', placeholder:'Write a longer description (optional)', required:'required'
+          R.div className:'newpoint_hide_name',
+            R.input className:'newpoint-anonymous', type:'checkbox', id:"hide_name-#{@props.valence}", name:"hide_name-#{@props.valence}"
+            R.label for:"hide_name-#{@props.valence}", title:'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.', 
+              'Conceal your name'
+          R.div className:'newpoint-submit',
+            R.a className:'newpoint-cancel', onClick: @handleAddPointCancel,
+              'cancel'
+            R.input className:'button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
 
 

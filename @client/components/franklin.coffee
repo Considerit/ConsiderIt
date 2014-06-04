@@ -27,6 +27,7 @@ histogram_width = 636    # Width of the slider / histogram base
 #####
 # Responsibilities that will later be managed by ActiveREST
 all_users = {} 
+all_points = {}
 
 parseProposal = (data) ->
   # Build hash of user information
@@ -38,9 +39,31 @@ parseProposal = (data) ->
       user.avatar_file_name = {small: "/system/avatars/#{user.id}/small/#{user.avatar_file_name}", large: "/system/avatars/#{user.id}/large/#{user.avatar_file_name}"}
     all_users[user.id] = user
 
+  ####
+  # Make points an hash of id => point
   # separate pro and con points
-  data.pro_community_points = _.where data.points, {is_pro: true}
-  data.con_community_points = _.where data.points, {is_pro: false}
+  data.pro_community_points = []
+  data.con_community_points = []
+
+  for point in data.points
+    all_points[point.id] = point
+    if point.is_pro 
+      data.pro_community_points.push point.id
+    else
+      data.con_community_points.push point.id
+
+  data.user_opinion = 
+    included_cons: []
+    included_pros: []
+
+  for included_point in data.included_points
+    if data.points[included_point].is_pro
+      data.user_opinion.included_pros.push included_point
+    else
+      data.user_opinion.included_cons.push included_point
+
+  # data.user_opinion.included_cons = data.pro_community_points[3..6]
+  # data.user_opinion.included_pros = data.con_community_points[1..2]
 
   ##
   # Split up opinions into segments. For now we'll keep three hashes: 
@@ -62,7 +85,7 @@ parseProposal = (data) ->
 
   histogram_small_segments = {}
   histogram_small_segments[i] = [] for i in [0..data.num_small_segments]
-    
+
   max_slider_variance = 2.0 # In old system, opinion stances varied from -1.0 to 1.0. 
 
   for opinion in data.opinions
@@ -84,6 +107,7 @@ fetch = (options, callback, error_callback) ->
     success: (data) =>
       if options.type == 'proposal'
         data = parseProposal data
+      console.log data
       callback data
 
     error: error_callback
@@ -164,8 +188,23 @@ NewPoint = React.createClass
 Point = React.createClass
   displayName: 'Point'
 
+  setDraggability : ->
+    return if @props.location_class != 'community_point'
+
+    # TODO: possible efficiency would be to only make draggable when first mouse over a point
+    $el = $(@getDOMNode()).find('.point_content')
+    if $el.hasClass "ui-draggable"
+      $el.draggable(if @props.state == 'results' then 'disable' else 'enable') 
+    else
+      $el.draggable
+        revert: "invalid"
+        disabled: @props.state == 'results'
+
+  componentDidMount : -> @setDraggability()
+  componentDidUpdate : -> @setDraggability()
+
   render : -> 
-    R.li className: "point closed_point community_point #{@props.valence}", 'data-id':@props.id, 'data-role':'point', 'data-includers': [1,2],
+    R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id, 'data-role':'point', 'data-includers': [1,2],
       R.a className:"avatar point_author_avatar", id:"avatar-#{@props.author}", 'data-action':'user_opinion', 'data-id':@props.author, 'data-tooltip':'user_profile'
       R.div className:'point_content',
         R.div className:'close_open_point',
@@ -192,6 +231,11 @@ CommunityPoints = React.createClass
   displayName: 'CommunityPoints'
 
   render : ->
+    points = @props.points
+    if @props.state=='crafting'
+      #filter down to points that haven't been included
+      points = _.reject points, (pnt) => _.contains(@props.included_points, pnt)
+
     R.div className:"community_#{@props.valence}s_region points_list_region",
       R.div className:"points_by_community #{@props.valence}s_by_community points_layout", 'data-state':@props.state, 'data-prior-state':@props.priorstate,
         R.div className:'points_heading_region',
@@ -202,7 +246,8 @@ CommunityPoints = React.createClass
           R.div className:'points_list_region',
             R.ul className:'point_list_collectionview',
               #for point in (if @props.state=='crafting' then @props.points[0..3] else @props.points[2..5])
-              for point in (if @props.state=='crafting' then @props.points else @props.points)
+              for point_id in points
+                point = all_points[point_id]
                 Point 
                   key: point.id
                   id: point.id
@@ -211,6 +256,8 @@ CommunityPoints = React.createClass
                   valence: @props.valence
                   comment_count: point.comment_count
                   author: point.user_id
+                  state: @props.state
+                  location_class : 'community_point'
 
 ##
 # YourPoints
@@ -229,7 +276,8 @@ YourPoints = React.createClass
               'Your Pros'
         R.div className:'points_list_region',
           R.ul className:'point_list_collectionview',
-            for point in @props.points
+            for point_id in @props.points
+              point = all_points[point_id]
               Point 
                 key: point.id
                 nutshell: point.nutshell
@@ -237,6 +285,9 @@ YourPoints = React.createClass
                 valence: 'pro' 
                 comment_count: point.comment_count
                 author: point.user_id
+                state: @props.state
+                location_class: 'decision_board_point'
+
         R.div className:'points_footer_region',
           R.div className:'decision_board_points_footer_view',
             R.div className:'add_point_drop_target',
@@ -255,7 +306,39 @@ YourPoints = React.createClass
 DecisionBoard = React.createClass
   displayName: 'DecisionBoard'
 
-  componentWillEnter: (callback) ->
+  componentDidMount : ->
+    
+    # make this a drop target
+    $el = $(@getDOMNode())
+    valenceOfDroppedPoint = (ui) -> if ui.draggable.parent().is('.pro') then 'pro' else 'con'
+
+    $el.droppable
+      accept: ".community_point .point_content"
+      drop : (ev, ui) =>
+        valence = valenceOfDroppedPoint ui
+        ui.draggable.parent().fadeOut()
+
+        @props.pointIncludedCallback ui.draggable.parent().data('id')
+        $el.removeClass "user_is_hovering_on_a_drop_target_#{valence} user_is_dragging_a_#{valence}"
+
+      out : (ev, ui) =>
+        valence = valenceOfDroppedPoint ui
+        $el.removeClass "user_is_hovering_on_a_drop_target_#{valence}"
+
+      over : (ev, ui) =>
+        valence = valenceOfDroppedPoint ui
+        $el.addClass "user_is_hovering_on_a_drop_target_#{valence}"
+
+      activate : (ev, ui) =>
+        valence = valenceOfDroppedPoint ui
+        $el.addClass "user_is_dragging_a_#{valence}"
+
+      deactivate : (ev, ui) =>
+        valence = valenceOfDroppedPoint ui
+        $el.removeClass "user_is_dragging_a_#{valence}"
+
+
+  componentWillEnter : (callback) ->
     # Don't display the pro/con columns immediately, 
     # otherwise they won't fit side by side as the 
     # area animates the width
@@ -265,7 +348,7 @@ DecisionBoard = React.createClass
       callback()
     , transition_speed
 
-  componentWillLeave: (callback) ->
+  componentWillLeave : (callback) ->
     $(@getDOMNode()).hide()
     callback()
     # $(@getDOMNode()).slideUp transition_speed / 4, ->
@@ -277,14 +360,14 @@ DecisionBoard = React.createClass
       YourPoints
         state: @props.state
         priorstate: @props.priorstate
-        points: []
+        points: @props.included_pros
         valence: 'pro'
 
       # your cons
       YourPoints
         state: @props.state
         priorstate: @props.priorstate
-        points: []
+        points: @props.included_cons
         valence: 'con'
 
 ##
@@ -338,16 +421,51 @@ GiveOpinionButton = React.createClass
 window.REACTProposal = React.createClass
   displayName: 'Proposal'
 
+  pointIncludedCallback : (point_id) ->
+    #TODO: active rest call here...
+
+    point = all_points[point_id]
+    if point.is_pro 
+      included_points = @state.data.user_opinion.included_pros
+      included_points.push point_id
+      @setState { data: _.extend(@state.data, 
+        _.extend(@state.data.user_opinion, {
+          included_pros : included_points
+        })
+      )}
+
+
+    else
+      included_points = @state.data.user_opinion.included_cons
+      included_points.push point_id
+
+      @setState { data: _.extend(@state.data, 
+        _.extend(@state.data.user_opinion, {
+          included_cons : included_points
+        })
+      )}
+
+    console.log 'included point ', point_id
+
+  setSlidability : ->
+
+    $el = $(@getDOMNode()).find('.histogram_base')
+    if $el.hasClass "ui-slider"
+      $el.slider(if @state.state == 'results' then 'disable' else 'enable') 
+    else
+      $el.slider
+        disabled: @state.state == 'results'
+
   componentWillMount : ->
     fetch {type: 'proposal', url: Routes.proposal_path @props.long_id}, (proposal_data) =>
-      @setState {data: proposal_data}
+      @setState {data: _.extend(@state.data, proposal_data)}
 
-  componentDidMount : ->
-    $('.histogram_base').slider()
-
+  componentDidMount : -> @setSlidability()
   componentDidUpdate : ->
+    @setSlidability()
 
-    # Sticky decision board
+    # Sticky decision board. It is here because the calculation of offset top would 
+    # be off if we did it in DidMount before all the data has been fetched from server
     $('.opinion_region').headroom
       offset: $('.opinion_region').offset().top #+ $('.opinion_region').height()
       classes:
@@ -385,6 +503,12 @@ window.REACTProposal = React.createClass
       seven_original_opinion_segments : {}
       histogram_small_segments : {}
       users : {}
+      user_opinion :
+        included_pros : []
+        included_cons : []
+        stance : null
+        stance_segment : 3
+
 
   toggleState : (ev) ->
     @setState
@@ -392,7 +516,6 @@ window.REACTProposal = React.createClass
       priorstate : @state.state
 
   render : ->
-    console.log @state.data.num_small_segments
     current_opinion = $('.histogram_base').slider('value')
 
     segment_is_extreme_or_neutral = (segment) => 
@@ -473,6 +596,7 @@ window.REACTProposal = React.createClass
               priorstate: @state.priorstate
               points: @state.data.pro_community_points
               valence: 'pro'
+              included_points : @state.data.user_opinion.included_pros
 
             #your reasons
             R.div className:'opinion_region',
@@ -485,6 +609,9 @@ window.REACTProposal = React.createClass
                       key: 1
                       state: @state.state
                       priorstate: @state.priorstate
+                      included_pros : @state.data.user_opinion.included_pros
+                      included_cons : @state.data.user_opinion.included_cons
+                      pointIncludedCallback : @pointIncludedCallback
 
                   else if @state.state == 'results'
                     GiveOpinionButton
@@ -498,6 +625,7 @@ window.REACTProposal = React.createClass
               priorstate: @state.priorstate
               points: @state.data.con_community_points
               valence: 'con'
+              included_points : @state.data.user_opinion.included_cons
 
 
 

@@ -12,7 +12,7 @@
     margin-left: $grid_gutter / 2
 
   &.closed_point.decision_board_point
-    padding: 0 $grid_gutter 4px $grid_gutter
+    padding: 0 $grid_gutter $vertical_baseline $grid_gutter
 
   &.open_point
     position: relative
@@ -122,27 +122,6 @@
 //////
 
 
-
-//////////////////
-// bullet points
-.closed_point.decision_board_point
-
-  .point_nutshell:before
-    content: '\2022'
-    position: absolute
-    top: 0px
-    +font-size(-3)
-
-  &.pro .point_nutshell:before
-    left: -13px
-
-  &.con .point_nutshell:before
-    left: -10px
-
-
-/////////////
-
-
 /////////////////////////////////////////
 // point operations
 .open_point, .points_by_community[data-state="summary"]
@@ -151,54 +130,22 @@
 
 
 
-.points_by_community
-  .community_point
-    .point_operations
-      visibility: hidden
+.point_operations
+  visibility: hidden
 
-    .point_content:hover
-      .point_operations
-        visibility: visible
+.point_content:hover
+  .point_operations
+    visibility: visible
 
 .closed_point
-  &.community_point
-    .point_operations        
-      position: absolute
-      bottom: 0
-      text-align: center
-      width: 90%
+  .point_operations        
+    position: absolute
+    bottom: 0
+    text-align: center
+    width: 90%
 
-      .open_point_link
-        +font-size(-3)
-
-
-    // &.pro
-    //   .point_operations
-    //     text-align: left
-
-    // &.con
-    //   .point_operations
-    //     text-align: right
-
-  &.decision_board_point
-    &:hover .point_operations
-      visibility: visible
-
-    .point_operations
-      visibility: hidden
-      padding: $vertical_baseline/8 $grid_gutter
-
-      .open_point_link
-        +font-size(-3)
-        margin: 0
-        padding: 1px 8px
-
-    .point_remove
-      margin-top: $grid_gutter/4
-      padding: 0 $grid_gutter/2
-
-      background: none
-      border-color: transparent
+    .open_point_link
+      +font-size(-3)
 
 ///////////////////////////////////////
 
@@ -229,8 +176,9 @@
 // .con .point_author_avatar
 //   float: right
 
-// .closed_point.decision_board_point .point_avatar_region
-//   display: none
+.closed_point.decision_board_point .point_author_avatar
+  left: -10px
+  top: -2px
 
 
 ///////////

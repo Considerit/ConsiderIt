@@ -73,7 +73,7 @@ $sb-auto-states:     true         // Automatically create pseudo styles
 
 
 %on_decision_board
-  color: $decision_board_text_color
+  color: $base_text_color
   background: $decision_board_background_declaration
 
   a
@@ -85,9 +85,9 @@ $sb-auto-states:     true         // Automatically create pseudo styles
   textarea, input[type="text"], input[type="email"], input[type="password"]
     background-color: transparent
     border: 1px solid
-    +inset-border($decision_board_text_color)
+    +inset-border($base_text_color)
     display: inline-block
-    color: $decision_board_text_color
+    color: $base_text_color
 
     &.error 
       border-color: #883333
@@ -355,15 +355,15 @@ a
   &.decision_board_point .point_remove
     +link_style($decision_board_text_color, $decision_board_background_color, 25%)
 
-  &.community_point 
-    .point_operations 
-      a
-        +link_style(deemphasize($base_text_color, 15%, $reference: $base_background_color), $base_background_color, 25%)
-        background-color: $peer_background_color
-        padding: 0 $grid_gutter/4
+  .point_operations 
+    a
+      +link_style(deemphasize($base_text_color, 15%, $reference: $base_background_color), $base_background_color, 25%)
+      background-color: $peer_background_color
+      color: $base_text_color
+      padding: 0 $grid_gutter/4
 
-    &:hover .point_operations a
-      color: deemphasize($base_text_color, 15%, $reference: $base_background_color)   
+  &:hover .point_operations a
+    color: deemphasize($base_text_color, 15%, $reference: $base_background_color)   
 
 
 .point.open_point .point_action button 

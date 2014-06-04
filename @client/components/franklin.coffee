@@ -52,18 +52,21 @@ parseProposal = (data) ->
     else
       data.con_community_points.push point.id
 
-  data.user_opinion = 
+  _.extend data, 
     included_cons: []
     included_pros: []
+    stance_segment: 3
+    stance: 0.0
+
 
   for included_point in data.included_points
     if data.points[included_point].is_pro
-      data.user_opinion.included_pros.push included_point
+      data.included_pros.push included_point
     else
-      data.user_opinion.included_cons.push included_point
+      data.included_cons.push included_point
 
-  # data.user_opinion.included_cons = data.pro_community_points[3..6]
-  # data.user_opinion.included_pros = data.con_community_points[1..2]
+  # data.included_cons = data.pro_community_points[3..6]
+  # data.included_pros = data.con_community_points[1..2]
 
   ##
   # Split up opinions into segments. For now we'll keep three hashes: 
@@ -383,7 +386,7 @@ GiveOpinionButton = React.createClass
   place: ->
     left = $('.ui-slider-handle').offset().left - $('.opinion_region').offset().left 
     
-    if @props.currentOpinion > 50 # position right justified when opposing
+    if @props.stance_segment > 3 # position right justified when opposing
       # 120 is based on width of give opinion button, which can't be checked here b/c this is before animation is complete
       left -= 120 
 
@@ -426,28 +429,39 @@ window.REACTProposal = React.createClass
 
     point = all_points[point_id]
     if point.is_pro 
-      included_points = @state.data.user_opinion.included_pros
+      included_points = @state.data.included_pros
       included_points.push point_id
       @setState { data: _.extend(@state.data, 
-        _.extend(@state.data.user_opinion, {
-          included_pros : included_points
-        })
+        included_pros : included_points
       )}
 
-
     else
-      included_points = @state.data.user_opinion.included_cons
+      included_points = @state.data.included_cons
       included_points.push point_id
 
       @setState { data: _.extend(@state.data, 
-        _.extend(@state.data.user_opinion, {
           included_cons : included_points
-        })
       )}
 
     console.log 'included point ', point_id
 
   setSlidability : ->
+
+    getStanceSegmentFromSliderValue = (value) ->
+      if value == -1
+        return 0
+      else if value == 1
+        return 6
+      else if value <= 0.05 && value >= -0.05
+        return 3
+      else if value >= 0.5
+        return 5
+      else if value <= -0.5
+        return 1
+      else if value >= 0.05
+        return 4
+      else if value <= -0.05
+        return 2      
 
     $el = $(@getDOMNode()).find('.histogram_base')
     if $el.hasClass "ui-slider"
@@ -455,6 +469,16 @@ window.REACTProposal = React.createClass
     else
       $el.slider
         disabled: @state.state == 'results'
+        min: -1
+        max: 1
+        step: .01
+        value: @state.data.stance
+        slide: (ev, ui) => 
+          segment = getStanceSegmentFromSliderValue ui.value
+          console.log segment, @state.data.stance_segment
+          if @state.data.stance_segment != segment
+            @setState _.extend(@state.data, {stance_segment: segment})
+
 
   componentWillMount : ->
     fetch {type: 'proposal', url: Routes.proposal_path @props.long_id}, (proposal_data) =>
@@ -503,11 +527,10 @@ window.REACTProposal = React.createClass
       seven_original_opinion_segments : {}
       histogram_small_segments : {}
       users : {}
-      user_opinion :
-        included_pros : []
-        included_cons : []
-        stance : null
-        stance_segment : 3
+      included_pros : []
+      included_cons : []
+      stance : 0.0
+      stance_segment : 3
 
 
   toggleState : (ev) ->
@@ -516,10 +539,27 @@ window.REACTProposal = React.createClass
       priorstate : @state.state
 
   render : ->
-    current_opinion = $('.histogram_base').slider('value')
 
     segment_is_extreme_or_neutral = (segment) => 
       segment == 0 || segment == @state.data.num_small_segments || segment == Math.floor(@state.data.num_small_segments / 2)
+
+    stanceName = =>
+      console.log @state.data.stance_segment
+      switch @state.data.stance_segment
+        when 0 
+          'Diehard Supporter'
+        when 6
+          'Diehard Opposer'
+        when 1
+          'Strong Supporter'
+        when 5
+          'Strong Opposer'
+        when 2
+          'Supporter'
+        when 4
+          'Opposer'
+        when 3
+          'Neutral'
 
     R.div className:'proposal_layout', key:@props.long_id, 'data-role':'proposal', 'data-activity':'proposal-has-activity', 'data-status':'proposal-inactive', 'data-visibility':'published', 'data-state':@state.state, 'data-prior-state':@state.priorstate,
       
@@ -570,11 +610,11 @@ window.REACTProposal = React.createClass
 
           R.div className:'histogram_base', 
             R.div className:'feeling_slider ui-slider-handle',
-              R.img className:'bubblemouth', src:'assets/bubblemouth.png'
+              R.img className:'bubblemouth', src:'assets/bubblemouth.png', style: {transform: if @state.data.stance_segment > 3 then 'scaleX(-1) translateX(15px)' else 'translateX(30px)'}
               if @state.state == 'crafting'
                 R.div className:'feeling_feedback', 
-                  R.div className:'feeling_feedback_label', 'You are a'
-                  R.div className:'feeling_feedback_result', 'Supporter'
+                  R.div className:'feeling_feedback_label', "You are#{if @state.data.stance_segment == 3 then '' else ' a'}"
+                  R.div className:'feeling_feedback_result', stanceName()
                   R.div className:'feeling_feedback_instructions', 'drag to change'
 
           R.div className:'feeling_labels', 
@@ -596,7 +636,7 @@ window.REACTProposal = React.createClass
               priorstate: @state.priorstate
               points: @state.data.pro_community_points
               valence: 'pro'
-              included_points : @state.data.user_opinion.included_pros
+              included_points : @state.data.included_pros
 
             #your reasons
             R.div className:'opinion_region',
@@ -609,15 +649,15 @@ window.REACTProposal = React.createClass
                       key: 1
                       state: @state.state
                       priorstate: @state.priorstate
-                      included_pros : @state.data.user_opinion.included_pros
-                      included_cons : @state.data.user_opinion.included_cons
+                      included_pros : @state.data.included_pros
+                      included_cons : @state.data.included_cons
                       pointIncludedCallback : @pointIncludedCallback
 
                   else if @state.state == 'results'
                     GiveOpinionButton
                       key: 2
                       toggleState: @toggleState
-                      currentOpinion: current_opinion
+                      stance_segment: @state.data.stance_segment
 
             #community cons
             CommunityPoints 
@@ -625,7 +665,7 @@ window.REACTProposal = React.createClass
               priorstate: @state.priorstate
               points: @state.data.con_community_points
               valence: 'con'
-              included_points : @state.data.user_opinion.included_cons
+              included_points : @state.data.included_cons
 
 
 

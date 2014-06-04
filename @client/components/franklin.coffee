@@ -312,7 +312,7 @@ DecisionBoard = React.createClass
   componentDidMount : ->
     
     # make this a drop target
-    $el = $(@getDOMNode())
+    $el = $(@getDOMNode()).parent()
     valenceOfDroppedPoint = (ui) -> if ui.draggable.parent().is('.pro') then 'pro' else 'con'
 
     $el.droppable
@@ -326,11 +326,11 @@ DecisionBoard = React.createClass
 
       out : (ev, ui) =>
         valence = valenceOfDroppedPoint ui
-        $el.removeClass "user_is_hovering_on_a_drop_target_#{valence}"
+        $el.removeClass "user_is_hovering_on_a_drop_target"
 
       over : (ev, ui) =>
         valence = valenceOfDroppedPoint ui
-        $el.addClass "user_is_hovering_on_a_drop_target_#{valence}"
+        $el.addClass "user_is_hovering_on_a_drop_target"
 
       activate : (ev, ui) =>
         valence = valenceOfDroppedPoint ui

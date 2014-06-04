@@ -21,12 +21,10 @@
   .points_by_community .points_heading_view
     visibility: hidden
 
-.points_heading_view
+.points_heading_label
+  +font-size(2)    
   text-align: center
-  margin-bottom: $vertical_baseline / 2
-  .points_heading_label
-    +font-size(2)    
-    display: inline-block
+  margin-bottom: $vertical_baseline/2
 
 .points_on_decision_board .points_heading_label
   +font-size(9)
@@ -151,7 +149,7 @@
     border-style: solid
 
 .add_point_drop_target
-  padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_gutter
+  padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_gutter/2
   +font-size(1)
   height: 5 * $vertical_baseline
   vertical-align: middle
@@ -164,7 +162,7 @@
     +font-size(-1)
     position: absolute
     bottom: 2 * $vertical_baseline
-    left: 45px
+    left: 36px
     width: 176px
 
 
@@ -180,8 +178,8 @@
   // background-image: "/assets/drop_target.png"
   // +background-size(cover)
 
-.add_point_drop_target, .newpoint
-  margin-left: $grid_gutter / 2
+// .add_point_drop_target, .newpoint
+//   margin-left: $grid_gutter / 2
 
 
 .newpoint

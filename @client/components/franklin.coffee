@@ -61,7 +61,7 @@ parseProposal = (data) ->
 
 
   for included_point in data.included_points
-    if data.points[included_point].is_pro
+    if all_points[included_point].is_pro
       data.included_pros.push included_point
     else
       data.included_cons.push included_point

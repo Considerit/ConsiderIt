@@ -11,5 +11,5 @@
 //= require vendor/main/jquery.ui
 //= require_tree ./vendor/main
 
-//= require_tree ../../@client/vendor_extensions
-//= require_tree ../../@client/components
+//= require_tree ./vendor_extensions
+//= require ../../franklin

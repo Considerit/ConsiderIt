@@ -184,8 +184,6 @@ Proposal = React.createClass
           transform: 'translateX(500px)'
           '-webkit-transform': 'translateX(550px)'
 
-        # $('.reasons_layout').addClass('pinned')
-
       onTop : ->
         $('.reasons_layout .cons_by_community').css
           transform: ''
@@ -196,16 +194,10 @@ Proposal = React.createClass
             transition: ''
             '-webkit-transition': ''
         , 100
-        # $('.reasons_layout').removeClass('pinned')
-
 
   toggleState : (ev) ->
     route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
     app_router.navigate route, {trigger : true}
-
-    # @setState
-    #   state : @state.priorstate, 
-    #   priorstate : @props.state
 
   render : ->
     segment_is_extreme_or_neutral = (segment) => 
@@ -220,40 +212,29 @@ Proposal = React.createClass
       4 : 'Opposer'
       3 : 'Neutral'
 
-    R.div className:'proposal_layout', key:@props.long_id, 'data-role':'proposal', 'data-activity':'proposal-has-activity', 'data-status':'proposal-inactive', 'data-visibility':'published', 'data-state':@props.state, 'data-prior-state':@state.priorstate,
+    R.div className:'proposal', key:@props.long_id, 'data-state':@props.state, 'data-prior-state':@state.priorstate,
       
       #description
-      R.div className:'proposal_description_region', 
-        R.div className:'proposal_description_view',
-          R.div className:'proposal_proposer',
-            if @props.data.proposal.user_id
-              Avatar user: @props.data.proposal.user_id, tag: R.img, img_style: 'large'
-          R.div className:'proposal_description_main',
-            if @props.data.proposal.category 
-              R.div className: 'proposal_category',
-                @props.data.proposal.category
-                ' '
-                @props.data.proposal.designator
+      R.div className:'proposal_description',
+        R.div className:'proposal_proposer',
+          Avatar user: @props.data.proposal.user_id, tag: R.img, img_style: 'large'
 
-            R.h1 className:'proposal_heading',
-              @props.data.proposal.name
-            R.div className:'proposal_details',
-              R.div className:'proposal_description_body', dangerouslySetInnerHTML:{__html: @props.data.proposal.description}
+        R.div className: 'proposal_category',
+          @props.data.proposal.category
+          ' '
+          @props.data.proposal.designator
+
+        R.h1 className:'proposal_heading', @props.data.proposal.name
+        R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: @props.data.proposal.description}
 
       #toggle
-      R.div className:'toggle_proposal_state_view',
+      R.div className:'toggle_proposal_state',
         R.h1 className:'proposal_state_primary',
-          if @props.state == 'crafting'
-            'Give your Opinion'
-          else 
-            'Explore all Opinions'
+          if @props.state == 'crafting' then 'Give your Opinion' else 'Explore all Opinions'
         R.div className:'proposal_state_secondary', 
           'or '
           R.a onClick: @toggleState,
-            if @props.state != 'crafting'
-              'Give Own Opinion'
-            else 
-              'Explore all Opinions'
+            if @props.state != 'crafting' then 'Give Own Opinion' else 'Explore all Opinions'
 
       #feelings
       R.div className:'feelings_region',
@@ -274,12 +255,8 @@ Proposal = React.createClass
                 R.div className:'feeling_feedback_instructions', 'drag to change'
 
         R.div className:'feeling_labels', 
-          R.h1 className:"histogram_label histogram_label_support",
-            'Support'
-            # if @props.state == 'results' then 'Supporters' else 'Support'
-          R.h1 className:"histogram_label histogram_label_oppose",
-            # if @props.state == 'results' then 'Opposers' else 'Oppose'
-            'Oppose'
+          R.h1 className:"histogram_label histogram_label_support", 'Support'
+          R.h1 className:"histogram_label histogram_label_oppose", 'Oppose'
 
       #reasons
       R.div className:'reasons_layout', style:{minHeight:'567px'},
@@ -509,8 +486,6 @@ CommunityPoints = React.createClass
             state: @props.state
             location_class : 'community_point'
 
-
-
 ##
 # Point
 # A single point in a list. 
@@ -580,6 +555,7 @@ NewPoint = React.createClass
       is_pro : @props.valence == 'pro'
 
   render : ->
+    #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
     valence_capitalized = "#{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}"
 
     R.div className:'newpoint',

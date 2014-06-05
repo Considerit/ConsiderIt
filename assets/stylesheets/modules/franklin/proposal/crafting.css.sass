@@ -4,7 +4,6 @@
 
 
 // High-level decision board styles
-.decision_board_layout
 
 .decision_board_body
   // width: auto
@@ -15,6 +14,7 @@
 [data-state="crafting"]
   .decision_board_body
     width: $decision_board_width
+    padding: $vertical_baseline * 1.5 $grid_gutter
 
 [data-state="results"]
   .decision_board_body
@@ -24,12 +24,6 @@
       padding: $vertical_baseline / 4 $grid_gutter
       width: 100%
       display: block
-
-// pros and cons for the user
-.decision_board_points_layout
-  position: relative
-  display: inline-block
-  margin: 1.5 * $vertical_baseline 0 1.5 * $vertical_baseline $grid_gutter
 
 
 // The heading of the decision board

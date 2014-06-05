@@ -10,15 +10,15 @@
   .reasons_layout
     &[data-state="crafting"]
 
-      .community_pros_region, .community_cons_region
+      .pros_by_community, .cons_by_community
         left: 0
 
     &[data-state="results"]
 
-      .community_pros_region
+      .pros_by_community
         left: $point-width - ($point-width - $decision_board_width/2) + 4
 
-      .community_cons_region
+      .cons_by_community
         left: -$point-width + ($point-width - $decision_board_width/2) - 4
 
 
@@ -34,14 +34,14 @@
       .opinion_region
         top: - 2 * $vertical_baseline
 
-      .community_pros_region, .community_cons_region
+      .pros_by_community, .cons_by_community
         top: $vertical_baseline
 
     &[data-state="crafting"][data-prior-state="summary"], &[data-state="crafting"]
       .opinion_region
         top: 3 * $vertical_baseline
 
-      .community_pros_region, .community_cons_region
+      .pros_by_community, .cons_by_community
         top: 6 * $vertical_baseline
 
 

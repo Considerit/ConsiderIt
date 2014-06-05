@@ -257,7 +257,7 @@ Proposal = React.createClass
                 'Explore all Opinions'
 
       #feelings
-      R.div className:'histogram_layout', 'data-state':@props.state, 'data-prior-state':@state.priorstate,
+      R.div className:'feelings_region', 'data-state':@props.state, 'data-prior-state':@state.priorstate,
         #for segment in [6..0]
         for segment in [@state.num_small_segments..0]
           R.div key:"#{segment}", className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @state.avatar_size}px" else "#{@state.avatar_size}px"},
@@ -557,21 +557,16 @@ Point = React.createClass
       Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
       
       R.div className:'point_content',
-        R.div className:'close_open_point',
-          R.i className:'fa fa-times-circle'
-        R.div className:'point_summary_region', 'data-action':'open-point', 'data-id':@props.id,
-          R.div className:'point_summary_view',
-            R.div className:'point_nutshell',
-              @props.nutshell
-              if @props.text
-                R.span className: 'point_details_tease', 
-                  @props.text[0..50]
-                  ' ...'
+        R.div className:'point_nutshell',
+          @props.nutshell
+          if @props.text
+            R.span className: 'point_details_tease', 
+              @props.text[0..50]
+              ' ...'
 
-            R.div className:'point_operations',
-              R.a className:'open_point_link',
-                @props.comment_count
-                ' comments'
+        R.a className:'open_point_link',
+          @props.comment_count
+          ' comments'
 
 ##
 # NewPoint

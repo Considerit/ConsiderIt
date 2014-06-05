@@ -177,14 +177,15 @@
       
       # IE fix
       if !window.location.origin
-         window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '')
+        window.location.origin = "#{window.location.protocol}//#{window.location.hostname}#{if window.location.port then ':' + window.location.port else ''}"
 
-      return 
+      return {
         recipient : @options.model.get 'user_id'
         body : "(write your message)\n\n--\n\nThe point referred to can be found at #{window.location.origin}#{@options.link}" 
         subject : @options.title
         sender :  sender
-
+      }
+      
     getEmailView : ->
       new Assessment.EmailDialogView
         model : @getMessage()

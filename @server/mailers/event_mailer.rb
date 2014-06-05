@@ -4,16 +4,18 @@ class EventMailer < Mailer
 
   def send_message(message, current_user, options = {})
     @message = message
-    message.sender = message.sender.gsub '{{domain}}', options[:host]
+
+    domain = options[:host].end_with?('consider.it') ? 'consider.it' : options[:host]
+    message.sender = message.sender.gsub '{{domain}}', domain
 
     recipient = message.addressedTo()
 
-    from = format_email @message.sender, @message.senderName()
+    reply_to = format_email @message.sender, @message.senderName()
     to = format_email recipient.email, recipient.name
 
     subject = "[#{options[:app_title]}] #{@message.subject}"
 
-    mail(:from => from, :to => to, :subject => subject, :bcc => current_user.email)
+    mail(:from => format_email('admin@consider.it', options[:app_title]), :to => to, :subject => subject, :reply_to => reply_to, :bcc => current_user.email)
 
   end
 
@@ -26,12 +28,12 @@ class EventMailer < Mailer
     @options = options
     @url = new_opinion_proposal_url(@proposal.long_id, :host => @host)
 
-    email_with_name = "#{@user.username} <#{@user.email}>"
-
     subject = "new proposal \"#{@proposal.title}\""
-    from = format_email(options[:from], options[:app_title])
 
-    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    from = format_email(options[:from], options[:app_title])
+    to = format_email user.email, user.name
+
+    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
 
   end
 
@@ -43,11 +45,12 @@ class EventMailer < Mailer
     @next_aggregate = next_aggregate
     @host = options[:host]
     @options = options
-    email_with_name = "#{@user.username} <#{@user.email}>"
+
     from = format_email(options[:from], options[:app_title])
+    to = format_email user.email, user.name
 
     subject = "update on \"#{@proposal.title}\""
-    mail(from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
 
   end
 
@@ -58,7 +61,9 @@ class EventMailer < Mailer
     @host = options[:host]
     @proposal = @point.proposal
     @options = options
-    email_with_name = "#{@user.username} <#{@user.email}>"
+
+
+    to = format_email user.email, user.name    
     from = format_email(options[:from], options[:app_title])
 
     if notification_type == 'your proposal'
@@ -67,7 +72,7 @@ class EventMailer < Mailer
       subject = "new #{@point.is_pro ? 'pro' : 'con'} point for \"#{@point.proposal.title}\""
     end
 
-    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
   #### POINT LEVEL ####
@@ -80,6 +85,9 @@ class EventMailer < Mailer
     @proposal = @point.proposal
     @host = options[:host]
     @options = options
+
+
+    to = format_email user.email, user.name
     from = format_email(options[:from], options[:app_title])
 
     if notification_type == 'your point'
@@ -92,8 +100,7 @@ class EventMailer < Mailer
       subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you follow"
     end
 
-    email_with_name = "#{@user.username} <#{@user.email}>"
-    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
   def point_new_assessment(user, pnt, assessment, options, notification_type)
@@ -112,8 +119,9 @@ class EventMailer < Mailer
       subject = "a point you follow has been fact checked"
     end
 
-    email_with_name = "#{@user.username} <#{@user.email}>"
-    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    to = format_email user.email, user.name
+
+    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
 

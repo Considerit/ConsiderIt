@@ -9,17 +9,6 @@ $description_animation_time: 500ms
 .proposal_description_region
   +transition(transform $description_animation_time)
 
-[data-state="summary"]
-  .proposal_description_region
-    +translateX(-$dialog_stutter)
-    // the following is because translateX effectively creates a different rendering context, so need to set z-index/position so admin menu will work
-    position: relative
-    z-index: 2
-
-  &.transitioning
-    .proposal_description_region
-      +translateX(0)
-
 .proposal_description_view
   position: relative
 
@@ -70,10 +59,6 @@ $description_animation_time: 500ms
     > .mouth_bubble
       display: none
 
-[data-state="summary"]
-  .proposal_heading
-    cursor: pointer
-
 
 .proposal_category
   position: absolute
@@ -123,12 +108,6 @@ $description_animation_time: 500ms
   .proposal_url_field
     a
       text-decoration: underline
-
-
-[data-state="summary"]
-  .proposal_details
-    > .mouth_bubble
-      display: none
 
 
 

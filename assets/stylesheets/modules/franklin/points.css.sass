@@ -74,19 +74,13 @@
           +font-size(-3)
           font-weight: bold
 
-.points_by_community[data-state="summary"] 
-  .unexpand_points_icon, .expand_points_icon
-    visibility: hidden
-
-
-
 // FOOTER
 // The community points list footer that either allows you to expand the list (on results or crafting)
 // or displays an indicator that there is more there in summary
 .imply_more_points
   display: none
 
-.points_by_community[data-state="summary"], .points_by_community[data-state="results"]
+.points_by_community[data-state="results"]
   .points_footer_region
     position: absolute
     bottom: $vertical_baseline / 2
@@ -105,26 +99,9 @@
   &.pros_by_community .community_points_footer_view
     margin-left: $point-avatar-width
 
-.points_by_community[data-state="summary"]
-
-  .toggle_expand_points
-    display: none  
-  .imply_more_points
-    display: block
-    text-align: center
-
-    i
-      font-weight: bold
 
 .points_by_community[data-state="crafting"] .toggle_expand_points
   width: $point-content-width
-
-.points_are_expanded
-  .points_by_community[data-state="crafting"] .toggle_expand_points
-    width: $point-content-width + $expanded_points_increment
-
-  .points_by_community[data-state="results"] .toggle_expand_points
-    width: $point-content-width + $expanded_points_increment
 
 // NEW POINTS & INCLUDING POINTS
 // Point lists on the decision board allow users to add points

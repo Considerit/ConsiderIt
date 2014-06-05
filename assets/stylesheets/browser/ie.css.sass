@@ -5,9 +5,6 @@
 .avatar
   visibility: hidden
 
-.open_point .avatar
-  visibility: visible
-
 //IE8 doesn't support transform: translate ...
 .no-csstransforms
   .reasons_layout
@@ -16,7 +13,7 @@
       .community_pros_region, .community_cons_region
         left: 0
 
-    &[data-state="results"], &[data-state="summary"]
+    &[data-state="results"]
 
       .community_pros_region
         left: $point-width - ($point-width - $decision_board_width/2) + 4
@@ -27,7 +24,7 @@
 
 
   .reasons_layout  
-    &[data-state="crafting"], &[data-state="summary"]
+    &[data-state="crafting"]
       top: -$histogram_height
 
     &[data-state="crafting"][data-prior-state="results"]
@@ -46,27 +43,6 @@
 
       .community_pros_region, .community_cons_region
         top: 6 * $vertical_baseline
-
-
-    &[data-state="summary"]
-      .opinion_region
-        top: $histogram_height + $vertical_baseline
-
-
-  [data-activity="proposal-no-activity"]
-    .reasons_layout[data-state="summary"] 
-      top: 0
-
-      .opinion_region
-        top: 0
-
-  [data-state="summary"]
-    .proposal_description_region
-      left: -$dialog_stutter
-
-  [data-state="summary"].transitioning
-    .proposal_description_region
-      left: 0
 
 
   [data-state="crafting"]

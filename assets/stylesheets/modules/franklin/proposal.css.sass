@@ -14,11 +14,6 @@
     .submit_opinion_button, .submit_opinion_footer
       display: none
 
-    &[data-state="summary"]
-      .opinion_region
-        visibility: hidden
-
-
   &[data-activity="proposal-no-activity"]
 
     &[data-state="crafting"]
@@ -35,7 +30,7 @@
 
 // participants block
 
-[data-state="results"][data-prior-state="summary"], [data-state="summary"]
+[data-state="results"][data-prior-state="summary"]
   .participating_users_region
     visibility: visible
 

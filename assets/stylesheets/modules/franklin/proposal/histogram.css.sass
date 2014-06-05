@@ -5,127 +5,43 @@
 @import "compass/css3/transform"
 
 $histogram_width: $body_width + 2 * $grid_major
-// $histogram_bar_width: $histogram_width / 25
-
-.proposal_histogram_region
-  position: relative
-
-[data-state="results"] .proposal_histogram_region
-  z-index: 20 // allows for bubble to go over the reasons on mousing over histogram bar; but can't do on the homepage
 
 .histogram_layout
-  // height: $histogram_height
   +transition(opacity $transition_speed)
-  // opacity: 0
-  // visibility: hidden
   margin: $vertical_baseline auto 0 auto
   position: relative
   top: 0px
   width: $histogram_width
   display: block
-  // min-height: $histogram_height
-
-  &[data-state="results"], &[data-state="crafting"][data-prior-state="results"]
-    // visibility: visible
-    opacity: 1
 
   .histogram_base, .histogram_bar_users, .histogram_bar
     +transition(opacity $transition_speed)
     +backface-visibility(hidden)
 
-  // &.transitioning
 
-  //   &[data-state="results"][data-prior-state="summary"]
-  //     .histogram_bar_users
-  //       visibility: hidden
-  //     .histogram_label
-  //       visibility: hidden
+// HISTOGRAM / WHAT
 
-  &[data-state="results"][data-prior-state="crafting"]
-    .histogram_bar
-      opacity: 1
-    .histogram_base, .histogram_bar_users  
-      opacity: 1
+.histogram_bar
+  position: relative
+  border-radius: 0px
+  text-align: center
+  display: inline-block
+  vertical-align: bottom
 
-  &[data-state="crafting"]
-    .histogram_bar_users  
-      opacity: .2
-
-    .histogram_bar
-      [data-tooltip="user_profile"]
-        cursor: auto
-
-  &[data-state="results"]
-    .histogram_bar
-      cursor: pointer
-
-  // HISTOGRAM / WHAT
-
-  .histogram_bar
-    // width: $histogram_bar_width
-    position: relative
-    border-radius: 0px
-    text-align: center
-    display: inline-block
-    vertical-align: bottom
-
-    // &.extreme_or_neutral
-    //   margin: 0 $grid_gutter / 2
-
-    // &.bar_is_selected 
-    //   .mouth_bubble
-    //     display: block
-
-    // .mouth_bubble
-    //   display: none
-    //   position: absolute
-    //   left: 50%
-    //   margin-left: -15px
-    //   z-index: 999999
-    //   top: auto
-    //   bottom: -32px
-    //   width: 30px
-
-    //   .mouth_bubble_spacing
-    //     display: none
-
-    // .bar-position
-    //   position: absolute
-    //   bottom: -37px
-    //   width: 150px
-    //   margin-left: -75px
-    //   left: 50%
-    //   display: none
-    //   text-align: center
-    //   +font-size(-1)
-    
-    // &.bar_is_soft_selected
-    //   z-index: 5
-
-    // &.bar_is_hard_selected
-    //   z-index: 10
-      
+[data-state="crafting"]
+  .histogram_bar_users  
+    opacity: .2
 
 .histogram_bar_users
   background-color: transparent
   font-size: 0
   margin: auto
-  // +rotate(180deg)
-  // height: 100%
   
   .avatar
-    // +rotate(180deg)  
     border-radius: 50%
-    // opacity: .6
     background-color: #bbb
     background-image: none
     margin-bottom: 1px
-
-// .bar_is_soft_selected .histogram_bar_users .avatar
-//   opacity: .75
-
-// .bar_is_hard_selected .histogram_bar_users .avatar
-//   opacity: .9
 
 
 //////////
@@ -142,53 +58,50 @@ $histogram_width: $body_width + 2 * $grid_major
 
 $histogram_base_height: 4px
 
-[data-state="results"]
-  .histogram_base
-    .ui-slider-handle
-      width: 20px
-      height: 20px 
-      top: -10 +  $histogram_base_height/2
-      margin-left: -10px
-
-[data-state="crafting"]
-  .histogram_base
-    .ui-slider-handle
-      top: -35px +  $histogram_base_height/2
-      width: 50px
-      height: 50px 
-      margin-left: -25px
-
-      &:hover
-        +grab_cursor
-
-
 .histogram_base
   margin: auto
   height: $histogram_base_height
   width: $histogram_width - 2 * $grid_major
   border-radius: 10px
-  // z-index: -1 //allow mouth bubble to go on top of base (only a problem in firefox)
 
-  .ui-slider-handle
-    border-radius: 50%
-    +transition(width $transition_speed, height $transition_speed, top $transition_speed, margin $transition_speed)
-    +box-shadow
-    border: 1px solid #414141
 
+////
+// Slider handle
+.ui-slider-handle
+  border-radius: 50%
+  +transition(width $transition_speed, height $transition_speed, top $transition_speed, margin $transition_speed)
+  +box-shadow
+  border: 1px solid #414141
+
+  // the mouth leading into the "give opinion button" or the decision board, depending on state
   .bubblemouth
     +transition(width $transition_speed, top $transition_speed, left $transition_speed, transform $transition_speed)
-    position: absolute
+    position: absolute  
 
-[data-state="crafting"]
-  .bubblemouth
-    width: 28px
-    top: 54px
-[data-state="results"]
+[data-state="results"] .histogram_base .ui-slider-handle
+  width: 20px
+  height: 20px 
+  top: -10 +  $histogram_base_height/2
+  margin-left: -10px
+
   .bubblemouth
     width: 16px
     top: 21px
 
+[data-state="crafting"] .histogram_base .ui-slider-handle
+  top: -35px +  $histogram_base_height/2
+  width: 50px
+  height: 50px 
+  margin-left: -25px
 
+  &:hover
+    +grab_cursor
+
+  .bubblemouth
+    width: 28px
+    top: 54px
+
+// The area on top of the slider that shows in crafting to let user know what their stance is
 .feeling_feedback
   position: absolute
   top: -5 * $vertical_baseline
@@ -211,17 +124,18 @@ $histogram_base_height: 4px
     +font-size(-3)
     font-weight: 200
 
+// the poles of the histogram & slider
 .feeling_labels
   width: 130%
   margin-left: -15%
   position: absolute
   bottom: -10px
 
-.histogram_label
-  +font-size(6)
-  font-weight: 200
+  .histogram_label
+    +font-size(6)
+    font-weight: 200
 
-.histogram_label_support
-  float: left
-.histogram_label_oppose
-  float: right
+  .histogram_label_support
+    float: left
+  .histogram_label_oppose
+    float: right

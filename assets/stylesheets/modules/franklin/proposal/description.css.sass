@@ -251,20 +251,14 @@ $description_animation_time: 500ms
     position: absolute
     right: 0
     z-index: 2
+    padding-bottom: 4 * $vertical_baseline
 
     .proposal_publish
       +font-size(0)
       &:hover
         +font-size(0)
 
-  .proposal_reasons_region, .proposal_histogram_region, .toggle_proposal_state_region
-    display: none
 
-  &[data-state="summary"]
-    .proposal_reasons_region, .proposal_histogram_region, .proposals_pagination_region
-      display: none
-
-    padding-bottom: 4 * $vertical_baseline
 
 
 // admin form

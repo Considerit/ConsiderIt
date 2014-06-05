@@ -20,8 +20,8 @@ _.extend casper.test,
     @assertVisible '.proposal_details', 'Proposal details are visible'
     @assertElementCount '.histogram_bar', 7, 'There are seven histogram bars visible'
     @assertExists '.points_by_community[data-state="results"]', 'Pros and cons in together state'
-    @assertSelectorHasText '.points_heading_view', 'Pros', 'Pros present in pros header'
-    @assertSelectorDoesntHaveText '.points_heading_view', 'upport', 'Supporter is not present in pros header'
+    @assertSelectorHasText '.points_heading_label', 'Pros', 'Pros present in pros header'
+    @assertSelectorDoesntHaveText '.points_heading_label', 'upport', 'Supporter is not present in pros header'
 
   assertInCraftingState : (state_suffix = '') ->
     @assertExists '[data-role="proposal"][data-state="crafting"]', 'Proposal is in crafting state' + state_suffix

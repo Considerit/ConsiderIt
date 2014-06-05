@@ -46,7 +46,7 @@ _.extend casper,
 
     casper.mouse.down from[0], from[1]
     casper.mouse.move to[0], to[1]
-    casper.HTMLCapture '.four_columns_of_points',
+    casper.HTMLCapture '.reasons_layout',
       caption: 'JUST BEFORE RELEASE!!!'
     casper.mouse.up to[0], to[1]
 

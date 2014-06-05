@@ -178,25 +178,25 @@ Proposal = React.createClass
         notTop : "scrolling_with_user"
       
       onNotTop : -> 
-        $('.four_columns_of_points .community_cons_region').css
+        $('.reasons_layout .cons_by_community').css
           transition: 'none'
           '-webkit-transition': 'none'
           transform: 'translateX(500px)'
           '-webkit-transform': 'translateX(550px)'
 
-        # $('.four_columns_of_points').addClass('pinned')
+        # $('.reasons_layout').addClass('pinned')
 
       onTop : ->
-        $('.four_columns_of_points .community_cons_region').css
+        $('.reasons_layout .cons_by_community').css
           transform: ''
           '-webkit-transform': ''
 
         _.delay ->
-          $('.four_columns_of_points .community_cons_region').css
+          $('.reasons_layout .cons_by_community').css
             transition: ''
             '-webkit-transition': ''
         , 100
-        # $('.four_columns_of_points').removeClass('pinned')
+        # $('.reasons_layout').removeClass('pinned')
 
 
   toggleState : (ev) ->
@@ -241,23 +241,22 @@ Proposal = React.createClass
               R.div className:'proposal_description_body', dangerouslySetInnerHTML:{__html: @props.data.proposal.description}
 
       #toggle
-      R.div className:'toggle_proposal_state_region',
-        R.div className:'toggle_proposal_state_view', 'data-state':@props.state, 'data-updating':false, 'data-prior-state':@state.priorstate,
-          R.h1 className:'proposal_state_primary',
-            if @props.state == 'crafting'
-              'Give your Opinion'
+      R.div className:'toggle_proposal_state_view',
+        R.h1 className:'proposal_state_primary',
+          if @props.state == 'crafting'
+            'Give your Opinion'
+          else 
+            'Explore all Opinions'
+        R.div className:'proposal_state_secondary', 
+          'or '
+          R.a onClick: @toggleState,
+            if @props.state != 'crafting'
+              'Give Own Opinion'
             else 
               'Explore all Opinions'
-          R.div className:'proposal_state_secondary', 
-            'or '
-            R.a onClick: @toggleState,
-              if @props.state != 'crafting'
-                'Give Own Opinion'
-              else 
-                'Explore all Opinions'
 
       #feelings
-      R.div className:'feelings_region', 'data-state':@props.state, 'data-prior-state':@state.priorstate,
+      R.div className:'feelings_region',
         #for segment in [6..0]
         for segment in [@state.num_small_segments..0]
           R.div key:"#{segment}", className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @state.avatar_size}px" else "#{@state.avatar_size}px"},
@@ -283,51 +282,43 @@ Proposal = React.createClass
             'Oppose'
 
       #reasons
-      R.div className:'proposal_reasons_region',
-        R.div className:'reasons_layout', 'data-state':@props.state, 'data-prior-state':@state.priorstate, style:{minHeight:'567px'},
-          R.div className:'four_columns_of_points',
+      R.div className:'reasons_layout', style:{minHeight:'567px'},
+        #community pros
+        CommunityPoints 
+          state: @props.state
+          points: @props.data.points
+          valence: 'pro'
+          included_points : @props.data.included_points
+          onPointShouldBeRemoved : @onPointShouldBeRemoved
 
-            #community pros
-            CommunityPoints 
-              state: @props.state
-              priorstate: @state.priorstate
-              points: @props.data.points
-              valence: 'pro'
-              included_points : @props.data.included_points
-              onPointShouldBeRemoved : @onPointShouldBeRemoved
+        #your reasons
+        R.div className:'opinion_region',
 
-            #your reasons
-            R.div className:'opinion_region',
-              R.div className:'decision_board_layout', 'data-state':@props.state, 'data-prior-state':@state.priorstate,
+          ReactTransitionGroup className:'decision_board_body', transitionName: 'state_change', component: R.div, style: {minHeight: '32px'},
 
-                ReactTransitionGroup className:'decision_board_body', transitionName: 'state_change', component: R.div, style: {minHeight: '32px'},
+            if @props.state == 'crafting'
+              DecisionBoard
+                key: 1
+                state: @props.state
+                points : @props.data.points
+                included_points : @props.data.included_points
+                onPointShouldBeIncluded : @onPointShouldBeIncluded
+                onPointShouldBeCreated : @onPointShouldBeCreated
 
-                  if @props.state == 'crafting'
-                    DecisionBoard
-                      key: 1
-                      state: @props.state
-                      priorstate: @state.priorstate
-                      points : @props.data.points
-                      included_points : @props.data.included_points
-                      onPointShouldBeIncluded : @onPointShouldBeIncluded
-                      onPointShouldBeCreated : @onPointShouldBeCreated
+            else if @props.state == 'results'
+              GiveOpinionButton
+                key: 2
+                state: @props.state
+                toggleState: @toggleState
+                stance_segment: @state.stance_segment
 
-                  else if @props.state == 'results'
-                    GiveOpinionButton
-                      key: 2
-                      state: @props.state
-                      priorstate: @props.priorstate
-                      toggleState: @toggleState
-                      stance_segment: @state.stance_segment
-
-            #community cons
-            CommunityPoints 
-              state: @props.state
-              priorstate: @state.priorstate
-              points: @props.data.points
-              valence: 'con'
-              included_points : @props.data.included_points
-              onPointShouldBeRemoved : @onPointShouldBeRemoved
+        #community cons
+        CommunityPoints 
+          state: @props.state
+          points: @props.data.points
+          valence: 'con'
+          included_points : @props.data.included_points
+          onPointShouldBeRemoved : @onPointShouldBeRemoved
 
 ##
 # DecisionBoard
@@ -369,7 +360,7 @@ DecisionBoard = React.createClass
     #   callback()
 
   render : ->
-    R.div className:'decision_board_points_layout',
+    R.div null,
       # your pros
       YourPoints
         state: @props.state
@@ -387,98 +378,6 @@ DecisionBoard = React.createClass
         included_points: @props.included_points
         valence: 'con'
         onPointShouldBeCreated: @props.onPointShouldBeCreated
-
-##
-# YourPoints
-# List of important points for the active user. 
-# Two instances used for Pro and Con columns. Shown as part of DecisionBoard. 
-# Creates NewPoint instances.
-YourPoints = React.createClass
-  displayName: 'YourPoints'
-
-  render : ->
-
-    R.div className:"points_list_region #{@props.valence}s_on_decision_board_region",
-      R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board points_layout", 'data-state':@props.state,
-        R.h1 className:'points_heading_label',
-          "Your #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
-
-        R.ul className:'point_list_collectionview',
-          for point_id in @props.included_points
-            point = @props.points[point_id]
-            if point.is_pro == (@props.valence == 'pro')
-              Point 
-                key: point.id
-                id: point.id
-                nutshell: point.nutshell
-                text: point.text
-                valence: @props.valence
-                comment_count: point.comment_count
-                author: point.user_id
-                state: @props.state
-                location_class: 'decision_board_point'
-
-        R.div className:'points_footer_region',
-          R.div className:'decision_board_points_footer_view',
-            R.div className:'add_point_drop_target',
-              R.img className:'drop_target', src:"/assets/drop_target.png"
-              R.span className:'drop_prompt',
-                "Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
-
-            NewPoint 
-              valence: @props.valence
-              onPointShouldBeCreated: @props.onPointShouldBeCreated
-
-
-##
-# CommunityPoints
-# List of points contributed by others. 
-# Shown in wing during crafting, in middle on results. 
-CommunityPoints = React.createClass
-  displayName: 'CommunityPoints'
-
-  componentDidMount : ->
-    # make this a drop target to facilitate removal of points
-    $el = $(@getDOMNode())
-    $el.droppable
-      accept: ".decision_board_point.#{@props.valence} .point_content"
-      drop : (ev, ui) =>
-        ui.draggable.parent().fadeOut 200, => 
-          @props.onPointShouldBeRemoved ui.draggable.parent().data('id')
-          $el.removeClass "user_is_hovering_on_a_drop_target"
-      out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
-      over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
-
-  render : ->
-    points = @props.points
-
-    #filter to pros or cons & down to points that haven't been included
-    if @props.state=='crafting'
-      points = _.reject _.values(points), (pnt) => 
-        pnt.is_pro != (@props.valence == 'pro') || _.contains(@props.included_points, pnt.id)
-    else 
-      points = _.reject _.values(points), (pnt) => pnt.is_pro != (@props.valence == 'pro')
-
-    R.div className:"community_#{@props.valence}s_region points_list_region",
-      R.div className:"points_by_community #{@props.valence}s_by_community points_layout", 'data-state':@props.state, 'data-prior-state':@props.priorstate,
-        R.div className:'points_heading_view',
-          R.h1 className:'points_heading_label', 'data-action':'expand-toggle',
-            "Others' #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
-
-        R.div className:'points_list_region',
-          R.ul className:'point_list_collectionview',
-            #for point in (if @props.state=='crafting' then @props.points[0..3] else @props.points[2..5])
-            for point in points
-              Point 
-                key: point.id
-                id: point.id
-                nutshell: point.nutshell
-                text: point.text
-                valence: @props.valence
-                comment_count: point.comment_count
-                author: point.user_id
-                state: @props.state
-                location_class : 'community_point'
 
 ##
 # GiveOpinionButton
@@ -523,6 +422,93 @@ GiveOpinionButton = React.createClass
     callback()
 
   render : -> R.a className:'give_opinion_button', onClick: @props.toggleState, 'Give your Opinion'
+
+
+
+##
+# YourPoints
+# List of important points for the active user. 
+# Two instances used for Pro and Con columns. Shown as part of DecisionBoard. 
+# Creates NewPoint instances.
+YourPoints = React.createClass
+  displayName: 'YourPoints'
+
+  render : ->
+
+    R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board",
+      R.h1 className:'points_heading_label',
+        "Your #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
+
+      R.ul null,
+        for point_id in @props.included_points
+          point = @props.points[point_id]
+          if point.is_pro == (@props.valence == 'pro')
+            Point 
+              key: point.id
+              id: point.id
+              nutshell: point.nutshell
+              text: point.text
+              valence: @props.valence
+              comment_count: point.comment_count
+              author: point.user_id
+              state: @props.state
+              location_class: 'decision_board_point'
+
+        R.div className:'add_point_drop_target',
+          R.img className:'drop_target', src:"/assets/drop_target.png"
+          R.span className:'drop_prompt',
+            "Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
+
+        NewPoint 
+          valence: @props.valence
+          onPointShouldBeCreated: @props.onPointShouldBeCreated
+
+
+##
+# CommunityPoints
+# List of points contributed by others. 
+# Shown in wing during crafting, in middle on results. 
+CommunityPoints = React.createClass
+  displayName: 'CommunityPoints'
+
+  componentDidMount : ->
+    # make this a drop target to facilitate removal of points
+    $el = $(@getDOMNode())
+    $el.droppable
+      accept: ".decision_board_point.#{@props.valence} .point_content"
+      drop : (ev, ui) =>
+        ui.draggable.parent().fadeOut 200, => 
+          @props.onPointShouldBeRemoved ui.draggable.parent().data('id')
+          $el.removeClass "user_is_hovering_on_a_drop_target"
+      out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
+      over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
+
+  render : ->
+    points = @props.points
+
+    #filter to pros or cons & down to points that haven't been included
+    points = _.filter _.values(points), (pnt) =>
+      is_correct_valence = pnt.is_pro == (@props.valence == 'pro')
+      has_not_been_included = @props.state == 'results' || !_.contains(@props.included_points, pnt.id)
+      is_correct_valence && has_not_been_included
+
+    R.div className:"points_by_community #{@props.valence}s_by_community",
+      R.h1 className:'points_heading_label', 'data-action':'expand-toggle',
+        "Others' #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
+
+      R.ul null, 
+        for point in points
+          Point 
+            key: point.id
+            id: point.id
+            nutshell: point.nutshell
+            text: point.text
+            valence: @props.valence
+            comment_count: point.comment_count
+            author: point.user_id
+            state: @props.state
+            location_class : 'community_point'
+
 
 
 ##

@@ -8,86 +8,72 @@
 
 $use_transitions: true
 
-
-
 // transitions / animations
 .reasons_layout //.transitioning
   +transition(transform $transition_speed)
-  .opinion_region, .community_pros_region, .community_cons_region
+  .opinion_region, .pros_by_community, .cons_by_community
     +transition(transform $transition_speed)
 
 
 // full reasons width is the width of the pro/con list in the middle and the peer pro/con points in the margins
-$full_reasons_width: 2 * $decision_board_width + 2
+$full_reasons_width: $decision_board_width + 2 * $point-content-width + 4 * $grid_gutter + 4
 $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
+
+[data-state="results"] .reasons_layout 
+  .opinion_region
+    +translateY(- 1.5 * $vertical_baseline)
+
+  .pros_by_community
+    +translateX($decision_board_width/2)
+
+  .cons_by_community
+    +translateX(-$decision_board_width/2)
+
+[data-state="crafting"] .reasons_layout 
+  .opinion_region
+    +translateY(0)
+
+  .decision_board_body
+    min-height: 450px
+
 .reasons_layout  
-  &[data-state="results"]
-    .opinion_region
-      +translateY(- 1.5 * $vertical_baseline)
+  top: 0 
+  min-height: $histogram_height
+  position: relative
+  margin: auto
+  width: $full_reasons_width
+  left: $full_reasons_left
 
-  &[data-state="crafting"]
-    .opinion_region
-      +translateY(0)
-
-  .community_pros_region .points_by_community
+  .pros_by_community .points_by_community
     border-radius: 12px 0 0 12px
     border-right-color: transparent
 
-  .community_cons_region .points_by_community
+  .cons_by_community .points_by_community
     border-radius: 0 12px 12px 0
     border-left-color: transparent
 
   // basic layout
 
-  .points_list_region, .opinion_region
+  .points_by_community, .points_on_decision_board, .opinion_region
     display: inline-block
+    vertical-align: top
 
-  .four_columns_of_points
-    //height: 100%
-    top: 0 
-    min-height: $histogram_height
-    // position: absolute  
-    position: relative
-    margin: auto
-    width: $body_width
 
-  .community_pros_region, .community_cons_region
+  .pros_by_community, .cons_by_community
     height: 100%
-    margin: $vertical_baseline * 2 0 
+    margin: $vertical_baseline * 2 $grid_gutter 
 
     .points_by_community
       padding: 0 1.5 * $grid_gutter
       height: 100%
 
-  .community_pros_region .point_author_avatar
+  .pros_by_community .point_author_avatar
     left: -$point-avatar-width - 14
-  .community_cons_region .point_author_avatar
+  .cons_by_community .point_author_avatar
     right: -$point-avatar-width - 14
-  &.transitioning .decision_board_points_layout
-    //min-height: 0
-    min-height: 450px
-    height: auto
-
-  &[data-state="crafting"]
-    .decision_board_points_layout
-      min-height: 450px
 
 
-
-  // &[data-state="results"]
-  //   .decision_board_points_layout
-  //     height: 0
-  //     overflow: hidden
-
-  //   .community_pros_region, .community_cons_region
-  //     .points_by_community
-  //       padding-bottom: 3 * $vertical_baseline
-
-  //horizontal size and positioning
-  .four_columns_of_points
-    width: $full_reasons_width
-    left: $full_reasons_left
 
   .point_author_avatar
     // width: $point-avatar-width
@@ -97,22 +83,11 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     display: inline-block
     vertical-align: top
 
-  .closed_point
-    .point_content
-      width: $point-content-width
+  .point_content
+    width: $point-content-width
 
-  &[data-state="results"]
 
-    .community_pros_region
-      +translateX($decision_board_width/2)
-
-    .community_cons_region
-      +translateX(-$decision_board_width/2)
-
-  .community_pros_region, .community_cons_region
-    width: $decision_board_width/2 //$point-width
-
-  .pros_on_decision_board_region, .cons_on_decision_board_region
+  .points_on_decision_board
     width: $point-width
 
 
@@ -124,23 +99,6 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
   margin: 2.5 * $vertical_baseline 0 4 * $vertical_baseline 0
   position: relative
       
-  &[data-state="crafting"], &[data-state="results"]
-    .points_by_community
-      > svg.mouth_bubble
-        display: none
-
-  .participating_users_region
-    bottom: 0px
-    position: absolute
-    // width: $body_gutter
-    // right: 0
-
-  /////////
-  // warpper for a points column, managed by a PointsController
-  .points_list_region
-    position: relative
-    vertical-align: top
-
   .opinion_region
     // position: relative
     width: $decision_board_width
@@ -149,21 +107,10 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
       position: fixed
       top: 0
 
-  .community_pros_region, .community_cons_region
+  .pros_by_community, .cons_by_community
     //position: absolute
     top: 0
     z-index: 10
-
-  // .pinned .community_cons_region
-  //   +transition(none)
-  //   +translateX(550px)
-  ////////
-
-
-  /// The participants block
-  &[data-state="crafting"]
-    > .participating_users_region
-      display: none      
 
   .reasons_footer_region
     visibility: hidden

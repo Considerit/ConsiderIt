@@ -7,8 +7,8 @@
     regions : 
       opinionRegion : '.opinion_region'
       footerRegion : '.reasons_footer_region'      
-      communityProsRegion : '.community_pros_region'
-      communityConsRegion : '.community_cons_region'
+      communityProsRegion : '.pros_by_community'
+      communityConsRegion : '.cons_by_community'
       participantsRegion : '.participating_users_region'
 
     initialize : (options = {}) ->

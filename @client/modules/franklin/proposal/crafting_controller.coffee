@@ -211,21 +211,24 @@
       source.remove model
       params =
         proposal_id : model.proposal_id,
-        point_id : model.id
       
       window.addCSRF params
       @model.removePoint model
-      $.post Routes.inclusions_path( {delete : true} ), params, (data) =>
-        current_user = App.request 'user:current'
-        current_user.setFollowing 
-          followable_type : 'Point'
-          followable_id : model.id
-          follow : false
-          explicit: false
+      $.ajax Routes.inclusions_path( model.id ), 
+        data : params
+        type : 'DELETE'
+        complete : (xhr) =>
+          data = $.parseJSON(xhr.responseText)
+          current_user = App.request 'user:current'
+          current_user.setFollowing 
+            followable_type : 'Point'
+            followable_id : model.id
+            follow : false
+            explicit: false
 
-        if data.destroyed
-          model.trigger 'destroy', model, model.collection
-          App.execute 'notify:success', 'Point deleted'
+          if data.destroyed
+            model.trigger 'destroy', model, model.collection
+            App.execute 'notify:success', 'Point deleted'
 
       @layout.processWhetherPointsHaveBeenIncluded()
       @trigger 'point:removal', model

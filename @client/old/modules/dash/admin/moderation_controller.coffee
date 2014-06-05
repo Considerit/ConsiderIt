@@ -129,11 +129,19 @@
       super options
 
     email : -> 
-      recipient : @options.model.get 'user_id'
-      body : "(write your message)\n\n--\n\nPlease edit your #{@options.model.name} at #{window.location.origin}#{@options.model.url()}" 
-      subject : "Concerning your #{@options.model.name}" 
-      sender : 'moderator@livingvotersguide.org' #'moderator@{{domain}}' #TODO: move back to more general
+      sender = "#{App.request("tenant").get('identifier')}-moderators@{{domain}}"
 
+      # IE fix
+      if !window.location.origin
+        window.location.origin = "#{window.location.protocol}//#{window.location.hostname}#{if window.location.port then ':' + window.location.port else ''}"
+
+      return {
+        recipient : @options.model.get 'user_id'
+        body : "(write your message)\n\n--\n\nPlease edit your #{@options.model.name} at #{window.location.origin}#{@options.model.url()}" 
+        subject : "Concerning your #{@options.model.name}" 
+        sender : sender
+      }
+      
     getEmailView : ->
       new Moderation.EmailDialogView
         model : @getMessage()

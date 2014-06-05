@@ -133,14 +133,15 @@
 
       # IE fix
       if !window.location.origin
-         window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '')
+        window.location.origin = "#{window.location.protocol}//#{window.location.hostname}#{if window.location.port then ':' + window.location.port else ''}"
 
-      return 
+      return {
         recipient : @options.model.get 'user_id'
         body : "(write your message)\n\n--\n\nPlease edit your #{@options.model.name} at #{window.location.origin}#{@options.model.url()}" 
         subject : "Concerning your #{@options.model.name}" 
         sender : sender
-
+      }
+      
     getEmailView : ->
       new Moderation.EmailDialogView
         model : @getMessage()

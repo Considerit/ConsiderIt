@@ -30,32 +30,6 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     .opinion_region
       +translateY(0)
 
-  // &[data-state="crafting"], &[data-state="summary"]
-  //   +translateY(-$histogram_height)
-
-  // &[data-state="crafting"][data-prior-state="results"]
-  //   +translateY(0)
-
-  // &[data-state="crafting"][data-prior-state="results"]
-  //   // .opinion_region
-  //   //   +translateY(- 2 * $vertical_baseline)
-
-  //   // .community_pros_region, .community_cons_region
-  //   //   +translateY($vertical_baseline)
-
-  // &[data-state="crafting"][data-prior-state="summary"], &[data-state="crafting"]
-  //   // .opinion_region
-  //   //   +translateY(3 * $vertical_baseline)
-
-  //   // .community_pros_region, .community_cons_region
-  //   //   +translateY(6 * $vertical_baseline)
-
-
-  // &[data-state="summary"]
-  //   // .opinion_region
-  //   //   +translateY($histogram_height + $vertical_baseline)
-
-
   .community_pros_region .points_by_community
     border-radius: 12px 0 0 12px
     border-right-color: transparent
@@ -127,7 +101,7 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     .point_content
       width: $point-content-width
 
-  &[data-state="results"], &[data-state="summary"]
+  &[data-state="results"]
 
     .community_pros_region
       +translateX($decision_board_width/2)
@@ -142,85 +116,18 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
     width: $point-width
 
 
-  // expanded points
-  &.some_points_are_expanded .four_columns_of_points
-    width: $full_reasons_width + $expanded_points_increment
-
-    .opinion_region, .decision_board_layout, .decision_board_body
-      height: 100%
-
-  &.con_points_are_expanded .four_columns_of_points
-    left: $full_reasons_left - $expanded_points_increment 
-
-
-  &[data-state="crafting"], &[data-state="results"]
-    .community_pros_region, .community_cons_region
-      &.points_are_expanded
-        width: $decision_board_width/2 + $expanded_points_increment
-
-        .community_point.closed_point 
-          //width: $decision_board_width/2 + $expanded_points_increment
-          .point_content
-            width: $point-content-width + $expanded_points_increment
-
 ////////// end layout //////////
 
 
-// Activity-based styles
-[data-activity="proposal-no-activity"]
-  .reasons_layout[data-state="summary"] 
-    +translateY(0)
-
-    .points_list_region
-      //display: none
-      height: 0
-      overflow: hidden
-
-    // .opinion_region
-    //   +translateY(0)
-
-    .four_columns_of_points      
-      min-height: 0
-
-  .reasons_layout[data-state="crafting"] 
-    .decision_board_points_layout
-      min-height: 200px
-
-
-[data-activity="proposal-has-activity"]
-  .reasons_layout[data-state="summary"]
-    .four_columns_of_points
-      min-height: $histogram_height
-      //margin-bottom: 100px // spacing for participants block
-
-  .reasons_layout
-    &[data-state="results"], &[data-state="crafting"]
-      min-height: 500px
-
-////////////////////
-
-
-[data-state="summary"] .proposal_reasons_region
-  height: 3 * $vertical_baseline
 
 .reasons_layout
   margin: 2.5 * $vertical_baseline 0 4 * $vertical_baseline 0
   position: relative
-
-
-  &[data-state="summary"] .community_cons_region   
-    svg.mouth_bubble
-      left: auto
-      right: -23px
       
-  &[data-state="crafting"], &[data-state="results"], &[data-state="summary"] .community_pros_region
+  &[data-state="crafting"], &[data-state="results"]
     .points_by_community
       > svg.mouth_bubble
         display: none
-
-  &[data-state="summary"] .points_list_region:hover
-    cursor: pointer
-
 
   .participating_users_region
     bottom: 0px
@@ -260,21 +167,4 @@ $full_reasons_left: -($full_reasons_width - $content_width) / 2
 
   .reasons_footer_region
     visibility: hidden
-
-  &[data-state="summary"] 
-    // shown on hover...
-    .reasons_footer_region
-      width: $body_gutter
-      position: absolute
-      left: 50%
-      margin-left: -$body_gutter/2
-      bottom: $vertical_baseline / 4
-      cursor: pointer
-      z-index: 10
-
-      .results_prompt_from_summary_view
-        text-align: center
-        +font-size(-1)
-        i
-          padding-right: $grid_gutter/4
 

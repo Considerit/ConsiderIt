@@ -145,7 +145,7 @@ test_proposal_publicity = (test, publicity) ->
 
   casper.waitUntilStateTransitioned 'crafting', ->
     test.assertExists '.proposal_description_summary.editable', 'Proposal summary is editable'
-    test.assertExists '.proposal_description_body.editable', 'Proposal details is editable'
+    test.assertExists '.proposal_details.editable', 'Proposal details is editable'
 
     proposal_id = @getCurrentUrl().substring(@getCurrentUrl().lastIndexOf('/') + 1, @getCurrentUrl().length)
 
@@ -157,7 +157,7 @@ test_proposal_publicity = (test, publicity) ->
       @wait 200, ->
         test.assertSelectorHasText '.proposal_description_summary.editable', proposal_summary, 'proposal summary can be modified'
 
-    @thenClick '.proposal_description_body.editable'
+    @thenClick '.proposal_details.editable'
 
     @waitUntilVisible '.editable-input textarea', ->
       @sendKeys ".editable-input textarea", proposal_details
@@ -167,7 +167,7 @@ test_proposal_publicity = (test, publicity) ->
 
       @click '.editable-buttons button[type="submit"]'
       @wait 200, ->
-        test.assertSelectorHasText '.proposal_description_body.editable', proposal_details, 'proposal details can be modified'
+        test.assertSelectorHasText '.proposal_details.editable', proposal_details, 'proposal details can be modified'
 
     if publicity == 'private' || publicity == 'link-only'
       @then ->

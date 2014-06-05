@@ -5,16 +5,11 @@
 
 // PROPOSAL DESCRIPTION
 // High level styling for the description of a proposal
-$description_animation_time: 500ms
-.proposal_description_region
-  +transition(transform $description_animation_time)
 
-.proposal_description_view
-  position: relative
 
 // Proposal proposer is the avatar of the user who submitted the proposal
 .proposal_proposer
-  left: ($content_width - $proposal_width)/2 - $proposer_img_size - $grid_gutter
+  left: - $proposer_img_size - $grid_gutter
   position: absolute
 
   [data-tooltip="user_profile"]
@@ -29,7 +24,7 @@ $description_animation_time: 500ms
     vertical-align: bottom 
 
 // Where all the description content goes
-.proposal_description_main
+.proposal_description
   //left: -$dialog_stutter
   position: relative
   margin: auto
@@ -44,12 +39,6 @@ $description_animation_time: 500ms
   //left: -$dialog_stutter
   min-height: $proposer_img_size
   +font-size(8)
-
-.proposal_details
-  p
-    margin-bottom: $vertical_baseline / 2
-  td
-    padding: 0 3px
 
 [data-state="results"], [data-state="crafting"]
   
@@ -71,10 +60,14 @@ $description_animation_time: 500ms
   position: relative
   padding: $vertical_baseline / 2 $grid_gutter
 
-  .proposal_description_body br
+  br
     padding-bottom: $vertical_baseline/2
+  p
+    margin-bottom: $vertical_baseline / 2
+  td
+    padding: 0 3px
 
-  .proposal_description_body.editable
+  &.editable
     min-height: 80px
 
   .proposal_additional_details

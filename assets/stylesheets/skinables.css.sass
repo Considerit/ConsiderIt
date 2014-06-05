@@ -283,9 +283,6 @@ a
 .feeling_feedback_result
   color: $decision_board_text_color
 
-[data-state="summary"] .reasons_footer_region
-  @extend %on_peer_area
-
 // franklin/proposal/description
 
 .proposal_heading
@@ -340,21 +337,15 @@ a
   &.decision_board_point .point_remove
     +link_style($decision_board_text_color, $decision_board_background_color, 25%)
 
-  .point_operations 
-    a
-      +link_style(deemphasize($base_text_color, 15%, $reference: $base_background_color), $base_background_color, 25%)
-      background-color: $peer_background_color
-      color: $base_text_color
-      padding: 0 $grid_gutter/4
+  .open_point_link 
+    +link_style(deemphasize($base_text_color, 15%, $reference: $base_background_color), $base_background_color, 25%)
+    background-color: $peer_background_color
+    color: $base_text_color
+    padding: 0 $grid_gutter/4
 
-  &:hover .point_operations a
+  &:hover .open_point_link
     color: deemphasize($base_text_color, 15%, $reference: $base_background_color)   
 
-
-.point.open_point .point_action button 
-  +font-size(-3)
-  &:hover
-    +font-size(-3)
 
 .points_by_community .community_point.closed_point, .point.open_point
   .point_content
@@ -368,35 +359,18 @@ a
   .point_content
     +single-box-shadow($color: #B5B5B5, $voff: 1px, $blur: 1px, $spread: 0px)
 
-.open_point //, .points_by_community .community_point.closed_point
-  .point_content
-    border: 1px solid
-    border-color: emphasize($peer_background_color, 5%) emphasize($peer_background_color, 10%) emphasize($peer_background_color, 5%) emphasize($peer_background_color, 15%)
-
-// arrow
-.community_point, .open_point
-  .point_content:before
-    color: $peer_background_color
-    +single-text-shadow(-1px, 1px, 1px, $color: #c4c4c4)
-
-  // &.pro
-  //   .point_content:before
-  // &.con
-  //   .point_content:before
-  //     +single-text-shadow(1px, 1px, 1px, $color: #B5B5B5)
+// bubble mouth
+.community_point .point_content:before
+  color: $peer_background_color
+  +single-text-shadow(-1px, 1px, 1px, $color: #c4c4c4)
 
 // franklin/points
-.points_by_community[data-state="summary"] .imply_more_points i
-  color: emphasize($base_background_color, 25%)
 
 .points_by_community
 
   &[data-state="crafting"], &[data-state="results"]
     .sort_points:hover .sort_points_menu
       +on_menu
-
-  // &[data-state="summary"], &[data-state="results"]
-  //   +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
 
 .points_by_community
   .unexpand_points_icon, .expand_points_icon

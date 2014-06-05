@@ -5,16 +5,15 @@
 # Ugliness in this prototype: 
 #   - ReactTransitionGroup based animations force defining custom components
 #     when I'd rather just keep them in the parent component. 
-#   - State transition javascript animations sometimes require setting css (e.g. width or transform), 
+#   - Constants below are kinda nasty. For example, state transition javascript animations sometimes require setting css (e.g. width or transform), 
 #     which are duplicated in the CSS itself to accommodate navigating directly to that state.
 #   - Keeping javascript and CSS variables synchronized
 #      * transition_speed
 #      * slider width
-#   - Not clear where to handle splitting up opinions into segments
 #   - Sticky decision board requires hacks to CSS of community cons to get them to stay to the right
 #   - Haven't declared prop types for the components
 #   - Some animations are living in places that access DOM not managed by them
-#   - Setting state.data is verbose and errorprone...but this should not happen once we're using ActiveREST
+#   - The JSON data returned from the server is not organized well
 
 # React aliases
 R = React.DOM
@@ -127,7 +126,6 @@ Proposal = React.createClass
     @setState {seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments}
 
   componentWillMount : -> @buildHistogramDataFromProps @props
-
   componentWillReceiveProps : (next_props) -> @buildHistogramDataFromProps next_props
 
   setSlidability : ->
@@ -159,6 +157,8 @@ Proposal = React.createClass
         step: .01
         value: @props.data.initial_stance
         slide: (ev, ui) => 
+          # update the stance segment if it has changed. This facilitates the feedback atop
+          # the slider changing from e.g. 'strong supporter' to 'neutral'
           segment = getStanceSegmentFromSliderValue ui.value
           if @props.data.stance_segment != segment
             @setState 
@@ -257,31 +257,30 @@ Proposal = React.createClass
                 'Explore all Opinions'
 
       #feelings
-      R.div className:'proposal_histogram_region',
-        R.div className:'histogram_layout', 'data-state':@props.state, 'data-prior-state':@state.priorstate,
-          #for segment in [6..0]
-          for segment in [@state.num_small_segments..0]
-            R.div key:"#{segment}", className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @state.avatar_size}px" else "#{@state.avatar_size}px"},
-              R.ul className:'histogram_bar_users',
-                for opinion in @state.histogram_small_segments[segment]
-                  Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, className:"segment-#{segment}", style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
+      R.div className:'histogram_layout', 'data-state':@props.state, 'data-prior-state':@state.priorstate,
+        #for segment in [6..0]
+        for segment in [@state.num_small_segments..0]
+          R.div key:"#{segment}", className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @state.avatar_size}px" else "#{@state.avatar_size}px"},
+            R.ul className:'histogram_bar_users',
+              for opinion in @state.histogram_small_segments[segment]
+                Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, className:"segment-#{segment}", style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
 
-          R.div className:'histogram_base', 
-            R.div className:'feeling_slider ui-slider-handle',
-              R.img className:'bubblemouth', src:'/assets/bubblemouth.png', style: {transform: if @state.stance_segment > 3 then "scaleX(-1) translateX(#{if @props.state == 'crafting' then '15px' else '5px'})" else "translateX(#{if @props.state == 'crafting' then '30px' else '10px'})"}
-              if @props.state == 'crafting'
-                R.div className:'feeling_feedback', 
-                  R.div className:'feeling_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
-                  R.div className:'feeling_feedback_result', stance_names[@state.stance_segment]
-                  R.div className:'feeling_feedback_instructions', 'drag to change'
+        R.div className:'histogram_base', 
+          R.div className:'feeling_slider ui-slider-handle',
+            R.img className:'bubblemouth', src:'/assets/bubblemouth.png', style: {transform: if @state.stance_segment > 3 then "scaleX(-1) translateX(#{if @props.state == 'crafting' then '15px' else '5px'})" else "translateX(#{if @props.state == 'crafting' then '30px' else '10px'})"}
+            if @props.state == 'crafting'
+              R.div className:'feeling_feedback', 
+                R.div className:'feeling_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
+                R.div className:'feeling_feedback_result', stance_names[@state.stance_segment]
+                R.div className:'feeling_feedback_instructions', 'drag to change'
 
-          R.div className:'feeling_labels', 
-            R.h1 className:"histogram_label histogram_label_support",
-              'Support'
-              # if @props.state == 'results' then 'Supporters' else 'Support'
-            R.h1 className:"histogram_label histogram_label_oppose",
-              # if @props.state == 'results' then 'Opposers' else 'Oppose'
-              'Oppose'
+        R.div className:'feeling_labels', 
+          R.h1 className:"histogram_label histogram_label_support",
+            'Support'
+            # if @props.state == 'results' then 'Supporters' else 'Support'
+          R.h1 className:"histogram_label histogram_label_oppose",
+            # if @props.state == 'results' then 'Opposers' else 'Oppose'
+            'Oppose'
 
       #reasons
       R.div className:'proposal_reasons_region',

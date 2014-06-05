@@ -727,3 +727,33 @@ NewPoint = React.createClass
             R.input className:'button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
 
 
+
+
+##########################
+## Application area
+
+# load users' pictures
+$.get Routes.get_avatars_path(), (data) ->
+  $('head').append data
+
+
+Router = Backbone.Router.extend
+  routes :
+    #"(/)" : "root"      
+    ":proposal(/)": "craftOpinion"
+    ":proposal/results(/)": "results"
+    #":proposal/points/:point(/)" : "openPoint"
+
+  craftOpinion : (long_id) ->
+    React.renderComponent window.REACTProposal({long_id}), document.getElementById('l_content_main_wrap')
+
+  results : (long_id) ->
+    React.renderComponent window.REACTProposal({long_id}), document.getElementById('l_content_main_wrap')
+
+router = new Router()
+
+Backbone.history.start
+  pushState: true
+
+
+

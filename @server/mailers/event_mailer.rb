@@ -8,12 +8,12 @@ class EventMailer < Mailer
 
     recipient = message.addressedTo()
 
-    from = format_email @message.sender, @message.senderName()
+    reply_to = format_email @message.sender, @message.senderName()
     to = format_email recipient.email, recipient.name
 
     subject = "[#{options[:app_title]}] #{@message.subject}"
 
-    mail(:from => from, :to => to, :subject => subject, :bcc => current_user.email)
+    mail(:from => format_email('admin@consider.it', options[:app_title]), :to => to, :subject => subject, :reply_to => reply_to, :bcc => current_user.email)
 
   end
 

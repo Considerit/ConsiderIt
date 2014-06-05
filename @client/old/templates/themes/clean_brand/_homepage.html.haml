@@ -39,4 +39,4 @@
         {{ tenant.get('header_text') }}
 
       .homepage_account_message_details
-        {{ tenant.get('header_details_text') }}
+        {SAFE{ tenant.get('header_details_text') }}

@@ -27,6 +27,8 @@
       layout = @getLayout()
       @listenTo layout, 'user:update:requested', (data) =>
         App.request "user:update_current_user", data.user
+        App.execute 'notify:success', 'Settings updated'
+        
         layout.render()
       layout
 

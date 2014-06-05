@@ -9,12 +9,12 @@ class AlertMailer < Mailer
     @url = dashboard_moderate_url(:host => @host)
     @tenant = tenant
 
-    email_with_name = "#{@user.username} <#{@user.email}>"
-
     subject = "Pending content to moderate"
-    from = format_email(tenant.contact_email, tenant.app_title)
 
-    mail(:from => from, :to => email_with_name, :subject => "[#{tenant.app_title}] #{subject}")
+    to = format_email user.email, user.username
+    from = format_email(from_email(tenant), tenant.app_title)
+
+    mail(:from => from, :to => to, :subject => "[#{tenant.app_title}] #{subject}")
 
   end
 
@@ -25,14 +25,20 @@ class AlertMailer < Mailer
     @assessment = assessment
     @tenant = tenant
 
-    email_with_name = "#{@user.username} <#{@user.email}>"
-
     subject = "A new fact check request"
-    from = format_email(tenant.contact_email, tenant.app_title)
 
-    mail(:from => from, :to => email_with_name, :subject => "[#{tenant.app_title}] #{subject}")
+    to = format_email user.email, user.username    
+    from = format_email(from_email(tenant), tenant.app_title)
+
+    mail(:from => from, :to => to, :subject => "[#{tenant.app_title}] #{subject}")
 
   end
+
+  private
+
+    def from_email(tenant)
+      tenant.contact_email && tenant.contact_email.length > 0 ? tenant.contact_email : APP_CONFIG[:email]
+    end
 
 
 end

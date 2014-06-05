@@ -16,11 +16,13 @@ class UserMailer < Mailer
     @proposal = proposal
     @host = options[:host]
     @options = options
-    email_with_name = "#{@user.username} <#{@user.email}>"
 
     subject = "please confirm your email"
+
+    to = format_email @user.email, @user.username
     from = format_email(options[:from], options[:app_title])
-    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+
+    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
 
   end
 
@@ -31,10 +33,11 @@ class UserMailer < Mailer
     @host = options[:host]
     @options = options
     @token = token 
-    email_with_name = "#{@user.username} <#{@user.email}>"
     subject = "password reset instructions"
+
+    to = format_email @user.email, @user.username
     from = format_email(options[:from], options[:app_title])
-    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
   def invitation(email, proposal, notification_type, options )
@@ -48,7 +51,6 @@ class UserMailer < Mailer
     @options = options
     @notification_type = notification_type
 
-    email_with_name = @email
     from = format_email(options[:from], options[:app_title])
 
     if notification_type == 'your proposal'
@@ -57,7 +59,7 @@ class UserMailer < Mailer
       subject = "#{proposal.user.name} invites you to participate in a discussion"
     end
 
-    mail(:from => from, :to => email_with_name, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => @email, :subject => "[#{options[:app_title]}] #{subject}")
 
   end  
 

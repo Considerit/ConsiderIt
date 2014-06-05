@@ -157,10 +157,9 @@
 
       params =
         proposal_id : @model.id
-        point_id : model.id
       
       window.addCSRF params
-      $.post Routes.inclusions_path(), 
+      $.post Routes.inclusions_path( model.id ), 
         params, (data) =>
           current_user = App.request 'user:current'
           current_user.setFollowing 

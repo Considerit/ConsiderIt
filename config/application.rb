@@ -78,7 +78,7 @@ module ConsiderIt
     #suspiciously, Rails apparently already loads @server/notifications...
     #config.paths["config/initializers"] << "@server/notifications"
 
-    asset_paths = ["@client", "assets", "assets/stylesheets/vendor/admin/rails_admin", "assets/fonts"]
+    asset_paths = ["@client", "@client/assets", "@client/assets/stylesheets/vendor/admin/rails_admin", "@client/assets/fonts"]
     for asset_path in asset_paths
         config.paths["app/assets"] << asset_path
         config.assets.paths << Rails.root.join(asset_path)

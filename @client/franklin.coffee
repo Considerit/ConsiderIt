@@ -493,8 +493,6 @@ Point = React.createClass
   displayName: 'Point'
 
   setDraggability : ->
-    #return if @props.location_class != 'community_point' #only allow inclusions
-
     # TODO: possible efficiency would be to only make draggable when first mouse over a point
 
     # Ability to drag include this point if a community point, 

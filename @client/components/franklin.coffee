@@ -574,7 +574,6 @@ Point = React.createClass
                 @props.comment_count
                 ' comments'
 
-
 ##
 # NewPoint
 # Handles adding a new point into the system. Only rendered when proposal is in Crafting state. 
@@ -667,11 +666,8 @@ Avatar = React.createClass
 
 
 #####
-# Responsibilities that will later be managed by ActiveREST
+# Mocks for activeREST
 all_users = {} 
-
-##
-#API mocks for activeREST
 
 fetch = (options, callback, error_callback) ->
   if options.url[0..3] == 'user'
@@ -683,7 +679,7 @@ fetch = (options, callback, error_callback) ->
     url: options.url
     dataType: 'json'
     success: (data) =>
-      if options.type == 'proposal'
+      if options.type == 'proposal' || true #assume fetching proposal
         # Build hash of user information
         data.users = $.parseJSON data.users
         for user in data.users
@@ -723,15 +719,8 @@ Router = Backbone.Router.extend
   proposal : (long_id, state = 'crafting') ->
 
     if !top_level_component
-      top_level_component = React.renderComponent Proposal(
-        state : state
-        priorstate : null
-      ), document.getElementById('l_content_main_wrap')
-      
-      # replace with ActiveREST call
-      fetch {type: 'proposal', url: Routes.proposal_path long_id}, (proposal_data) =>
-        top_level_component.setProps
-          data : proposal_data
+      top_level_component = React.renderComponent Proposal({state : state, priorstate : null}), document.getElementById('l_content_main_wrap')
+      fetch {url: Routes.proposal_path long_id}, (data) => save {data}
     else
       top_level_component.setProps
         state : state
@@ -746,6 +735,3 @@ Backbone.history.start {pushState: true}
 ##
 # load users' pictures
 $.get Routes.get_avatars_path(), (data) -> $('head').append data
-
-
-

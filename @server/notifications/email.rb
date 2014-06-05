@@ -136,7 +136,7 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
 
 end
 
-ActiveSupport::Notifications.subscribe("proposal:created") do |*args|
+ActiveSupport::Notifications.subscribe("proposal:published") do |*args|
   handle_moderatable_creation_event 'proposal', notify_proposal, args
 end
 ActiveSupport::Notifications.subscribe("point:published") do |*args|
@@ -292,44 +292,44 @@ end
 #########################
 
 
-ActiveSupport::Notifications.subscribe("comment:opinion:created") do |*args|
-  data = args.last
-  commentable = data[:commentable]
-  comment = data[:comment]
-  current_tenant = data[:current_tenant]
-  mail_options = data[:mail_options]
+# ActiveSupport::Notifications.subscribe("comment:opinion:created") do |*args|
+#   data = args.last
+#   commentable = data[:commentable]
+#   comment = data[:comment]
+#   current_tenant = data[:current_tenant]
+#   mail_options = data[:mail_options]
 
-  commenters = commentable.comments.select(:user_id).uniq
-  includers = commentable.inclusions.select(:user_id).uniq
+#   commenters = commentable.comments.select(:user_id).uniq
+#   includers = commentable.inclusions.select(:user_id).uniq
 
-  commentable.follows.where(:follow => true).each do |follow|
+#   commentable.follows.where(:follow => true).each do |follow|
 
-    # if follower's action triggered event, skip...
-    if follow.user_id == comment.user_id 
-      next
+#     # if follower's action triggered event, skip...
+#     if follow.user_id == comment.user_id 
+#       next
 
-    # if follower doesn't have an email address, skip...
-    elsif !follow.user.email || follow.user.email.length == 0
-      next
+#     # if follower doesn't have an email address, skip...
+#     elsif !follow.user.email || follow.user.email.length == 0
+#       next
 
-    # if follower is author of commentable
-    elsif follow.user_id == commentable.user_id
-      #EventMailer.someone_discussed_your_opinion(follow.user, commentable, comment, mail_options).deliver!
+#     # if follower is author of commentable
+#     elsif follow.user_id == commentable.user_id
+#       #EventMailer.someone_discussed_your_opinion(follow.user, commentable, comment, mail_options).deliver!
 
-    # else if follower is a participant in the discussion
-    elsif commenters.include? follow.user_id
-      #TODO: make sure this message is relevant for opinion
-      #EventMailer.someone_commented_on_thread(follow.user, commentable, comment, mail_options).deliver!
+#     # else if follower is a participant in the discussion
+#     elsif commenters.include? follow.user_id
+#       #TODO: make sure this message is relevant for opinion
+#       #EventMailer.someone_commented_on_thread(follow.user, commentable, comment, mail_options).deliver!
 
-    # TODO
-    # lurker 
-    else
+#     # TODO
+#     # lurker 
+#     else
 
-    end
+#     end
 
-  end
+#   end
 
-end
+# end
 
 
 ##########################
@@ -337,17 +337,17 @@ end
 ####################
 
 
-ActiveSupport::Notifications.subscribe("first_opinion_by_new_user") do |*args|
-  data = args.last
-  user = data[:user]
-  proposal = data[:proposal]
-  current_tenant = data[:current_tenant]
-  mail_options = data[:mail_options]
+# ActiveSupport::Notifications.subscribe("first_opinion_by_new_user") do |*args|
+#   data = args.last
+#   user = data[:user]
+#   proposal = data[:proposal]
+#   current_tenant = data[:current_tenant]
+#   mail_options = data[:mail_options]
 
 
-  #UserMailer.confirmation_instructions(user, proposal, mail_options).deliver!
+#   #UserMailer.confirmation_instructions(user, proposal, mail_options).deliver!
 
-end
+# end
 
 
 

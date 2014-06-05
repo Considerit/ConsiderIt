@@ -5,7 +5,7 @@ class EventMailer < Mailer
   def send_message(message, current_user, options = {})
     @message = message
 
-    domain = options[:host].end_with? 'consider.it' ? 'consider.it' : options[:host]
+    domain = options[:host].end_with?('consider.it') ? 'consider.it' : options[:host]
     message.sender = message.sender.gsub '{{domain}}', domain
 
     recipient = message.addressedTo()

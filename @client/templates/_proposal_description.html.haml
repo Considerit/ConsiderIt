@@ -32,7 +32,7 @@
             %div{ :class => "proposal_detail_field-{{field[0]}}" }
               %h1
                 {{ field[1] }}
-              {{ field[2] }}
+              {SAFE{ field[2] }}
             %a.showing
               hide
         (( } ))

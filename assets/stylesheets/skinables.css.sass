@@ -129,14 +129,6 @@ $sb-auto-states:     true         // Automatically create pseudo styles
     +link_style($proposal_title_text_color, $proposal_title_background_color, 20%)
 
 
-%on_proposal_details
-  background-color: $proposal_detail_background_color
-  color: $proposal_detail_text_color
-  h1, h2, h3
-    color: emphasize($proposal_detail_text_color, 10%, $reference: $proposal_detail_background_color)
-  a
-    +link_style($proposal_detail_text_color, $proposal_detail_background_color, 20%)
-
 %on_peer_area  
   background-color: $peer_background_color
   color: $peer_text_color
@@ -276,16 +268,6 @@ a
 
 // franklin/proposal/description
 
-.proposal_heading
-  // +bubble($proposal_title_background_color, darken($proposal_title_background_color, 12%), left, $text_color: $proposal_title_text_color)
-  // @extend %on_proposal_title
-
-.proposal_details
-  // +bubble($proposal_detail_background_color, darken($proposal_detail_background_color, 12%), left, $text_color: $proposal_detail_text_color)
-  // @extend %on_proposal_details
-  // border-top: none
-  // border-radius: 0px 0px 16px 16px 
-
 .proposal_links
   background-color: emphasize($proposal_detail_background_color, 15%)
 
@@ -294,7 +276,7 @@ a
 
 
 // franklin/proposal/toggle
-.toggle_proposal_state_view
+.toggle_proposal_state
   &[data-state="crafting"]
 
     .proposal_state_primary

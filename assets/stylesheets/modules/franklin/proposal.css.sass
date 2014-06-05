@@ -18,16 +18,8 @@
       .opinion_region
         visibility: hidden
 
-    &[data-activity="proposal-no-activity"]
-      .proposal_histogram_region, .proposal_reasons_region
-        display: none
-
 
   &[data-activity="proposal-no-activity"]
-
-    &[data-state="summary"]
-      .proposal_histogram_region
-        display: none 
 
     &[data-state="crafting"]
 
@@ -39,17 +31,6 @@
 
       .no_community_points_view, .add_point_drop_target
         display: none
-
-// unpublished proposal
-[data-visibility="unpublished"]
-  .proposal_reasons_region, .proposal_histogram_region, .toggle_proposal_state_region
-    display: none
-
-  &[data-state="summary"]
-    padding-bottom: 4 * $vertical_baseline
-
-    .proposal_reasons_region, .proposal_histogram_region, .proposals_pagination_region
-      display: none
 
 
 // participants block

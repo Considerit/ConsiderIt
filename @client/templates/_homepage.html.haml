@@ -42,9 +42,9 @@
       = render :partial => "shared/bubble", :locals => {:left => true, :down => false}
 
       %span.homepage_account_message_heading
-        {{tenant.get('header_text')}}
+        {SAFE{tenant.get('header_text')}}
 
       .homepage_account_message_details
-        {{tenant.get('header_details_text')}}
+        {SAFE{tenant.get('header_details_text')}}
 
 

@@ -69,10 +69,10 @@ test_histogram = (test, state, state_suffix) ->
 
   @waitUntilVisible '.histogram_bar[segment="0"].bar_is_selected', ->
     @wait 2000, ->
-      test.assertSelectorHasText '.pros_by_community .points_heading_view', 'Pros', "Pros present in pros header when #{state}" + state_suffix
+      test.assertSelectorHasText '.pros_by_community .points_heading_label', 'Pros', "Pros present in pros header when #{state}" + state_suffix
 
       # this instrumentation doesn't seem to trigger the bar selection for whatever reason...
-      #test.assertSelectorHasText '.pros_by_community .points_heading_view', 'upport', "Supporter is present in pros header when #{state}" + state_suffix
+      #test.assertSelectorHasText '.pros_by_community .points_heading_label', 'upport', "Supporter is present in pros header when #{state}" + state_suffix
 
       @HTMLCapture '[data-role="proposal"]', 
         caption : "#{state} histogram bar" + state_suffix

@@ -248,19 +248,10 @@ a
 // franklin/proposal/crafting
 .decision_board_body
   @extend %on_decision_board
-  border: dashed $decision_board_border_color
+  border: 3px dashed $decision_board_border_color
 
   &.user_is_hovering_on_a_drop_target
-    border-style: solid
-
-[data-state="crafting"]
-  .decision_board_body
-    border-width: 3px
-
-[data-state="results"]
-  .decision_board_body
-    border-width: 3px
-  
+    border-style: solid  
 
 .decision_board_footer_view
 

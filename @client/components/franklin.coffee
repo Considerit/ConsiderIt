@@ -20,104 +20,10 @@
 R = React.DOM
 ReactTransitionGroup = React.addons.TransitionGroup
 
-# Variables that need to be kept synchronized with CSS
-transition_speed = 700   # Speed of transition from results to crafting (and vice versa)
-histogram_width = 636    # Width of the slider / histogram base
-
-
-#####
-# Responsibilities that will later be managed by ActiveREST
-all_users = {} 
-all_points = {}
-
-parseProposal = (data) ->
-  # Build hash of user information
-  data.users = $.parseJSON data.users
-  for user in data.users
-    if !user.avatar_file_name
-      user.avatar_file_name = {small: '/system/default_avatar/small_default-profile-pic.png', large: '/system/default_avatar/large_default-profile-pic.png'}
-    else
-      user.avatar_file_name = {small: "/system/avatars/#{user.id}/small/#{user.avatar_file_name}", large: "/system/avatars/#{user.id}/large/#{user.avatar_file_name}"}
-    all_users[user.id] = user
-
-  ####
-  # Make points an hash of id => point
-  # separate pro and con points
-  data.pro_community_points = []
-  data.con_community_points = []
-
-  for point in data.points
-    all_points[point.id] = point
-    if point.is_pro 
-      data.pro_community_points.push point.id
-    else
-      data.con_community_points.push point.id
-
-  _.extend data, 
-    included_cons: []
-    included_pros: []
-    stance_segment: 3
-    stance: 0.0
-
-
-  for included_point in data.included_points
-    if all_points[included_point].is_pro
-      data.included_pros.push included_point
-    else
-      data.included_cons.push included_point
-
-  # data.included_cons = data.pro_community_points[3..6]
-  # data.included_pros = data.con_community_points[1..2]
-
-  ##
-  # Split up opinions into segments. For now we'll keep three hashes: 
-  #   - all opinions
-  #   - high level segments (the seven original segments, strong supporter, neutral, etc)
-  #   - small segments that represent individual columns in the histogram, now that 
-  #     we do not have wide bars per se
-  num_opinions = data.opinions.length
-
-  # an initial function for sizing avatars
-  biggest_possible_avatar_size = 50
-  data.avatar_size = biggest_possible_avatar_size / Math.sqrt( (num_opinions + 1)/10  )
-
-  # Calculate how many segments columns to put on the histogram. Note that for the extremes and for neutral, we'll hack it 
-  # to allow three columns for those segments. 
-  data.num_small_segments = Math.floor(histogram_width/data.avatar_size) - 2 * 3 - 1 #for the additional cols for the extremes+neutral 
-
-  seven_original_opinion_segments = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
-
-  histogram_small_segments = {}
-  histogram_small_segments[i] = [] for i in [0..data.num_small_segments]
-
-  max_slider_variance = 2.0 # In old system, opinion stances varied from -1.0 to 1.0. 
-
-  for opinion in data.opinions
-    seven_original_opinion_segments[opinion.stance_segment].push opinion
-    small_segment = Math.floor(data.num_small_segments * (opinion.stance + 1) / max_slider_variance)
-    histogram_small_segments[small_segment].push opinion
-
-  data.seven_original_opinion_segments = seven_original_opinion_segments
-  data.histogram_small_segments = histogram_small_segments
-
-  data
-
-fetch = (options, callback, error_callback) ->
-  error_callback ||= (xhr, status, err) -> console.error 'Could not fetch data', status, err.toString()
-
-  $.ajax
-    url: options.url
-    dataType: 'json'
-    success: (data) =>
-      if options.type == 'proposal'
-        data = parseProposal data
-      console.log data
-      callback data
-
-    error: error_callback
-
-
-
+# Constants
+transition_speed = 700   # [keep in sync with CSS] Speed of transition from results to crafting (and vice versa) 
+histogram_width = 636    # [keep in sync with CSS] Width of the slider / histogram base 
+biggest_possible_avatar_size = 50
 
 ####################
 # REACT COMPONENTS #
@@ -136,7 +42,6 @@ fetch = (options, callback, error_callback) ->
 # React affords animations right now. See ReactTransitionGroup below. 
 
 
-
 ##
 # Proposal
 # The mega component for a proposal.
@@ -144,49 +49,44 @@ fetch = (options, callback, error_callback) ->
 window.REACTProposal = React.createClass
   displayName: 'Proposal'
 
-  # TODO: these include/remove methods are ridiculously long for what they do
+  getDefaultProps : ->
+    state : 'crafting'
+    priorstate : 'results'    
+    data :
+      proposal : {}
+      points : {}
+      users : {}
+      included_points : []
+      initial_stance : 0.0
+      opinions : []
+
+  getInitialState : ->
+    seven_original_opinion_segments : {}
+    histogram_small_segments : {}
+    avatar_size : 0
+    num_small_segments : 0
+    stance : 0.0
+    stance_segment : 3
+
   onPointShouldBeIncluded : (point_id) ->
     #TODO: activeREST call here...
-
-    point = all_points[point_id]
-    if point.is_pro 
-      included_points = @state.data.included_pros
-      included_points.push point_id
-      @setState { data: _.extend(@state.data, 
-        included_pros : included_points
-      )}
-
-    else
-      included_points = @state.data.included_cons
-      included_points.push point_id
-      @setState { data: _.extend(@state.data, 
-          included_cons : included_points
-      )}
+    #TODO: should probably be saving an opinion, e.g. @props.data.opinion
+    @props.data.included_points.push point_id
+    save @props.data
 
   onPointShouldBeRemoved : (point_id) ->
     #TODO: activeREST call here...    
-
+    #TODO: should probably be saving an opinion, e.g. @props.data.opinion    
     #TODO: server might return that the point was actually _deleted_ from 
     #      the system, not just removed from the list...need to handle that
-    point = all_points[point_id]
-    if point.is_pro 
-      included_points = _.without @state.data.included_pros, point_id
-      @setState { data: _.extend(@state.data, 
-        included_pros : included_points
-      )}
-
-    else
-      included_points = _.without @state.data.included_cons, point_id
-
-      @setState { data: _.extend(@state.data, 
-          included_cons : included_points
-      )}
+    @props.data.included_points = _.without @props.data.included_points, point_id
+    save @props.data
 
   onPointShouldBeCreated : (data) ->
     #TODO: activeREST call here...
-
+    #TODO: seems activeREST would have to update both opinion and point...
     id = -1
-    while _.has all_points, id
+    while _.has @props.data.points, id
       id = -(Math.floor(Math.random() * 999999) + 1)
 
     point = _.extend data, 
@@ -194,29 +94,42 @@ window.REACTProposal = React.createClass
       comment_count : 0 
       id : id
 
-    all_points[id] = point
+    @props.data.points[id] = point
+    @props.data.included_points.push point.id
 
-    if point.is_pro
-      included_points = @state.data.included_pros
-      included_points.push point.id
-      community_pros = @state.data.pro_community_points
-      community_pros.push point.id
-      @setState { data: _.extend(@state.data, 
-        included_pros: included_points 
-        pro_community_points: community_pros
-      )}
-    else
-      included_points = @state.data.included_cons
-      included_points.push point.id
-      community_cons = @state.data.pro_community_points
-      community_cons.push point.id      
-      @setState { data: _.extend(@state.data, 
-        included_cons: included_points 
-        con_community_points: community_cons
-      )}
+    save @props.data
 
+    ##
+    # Split up opinions into segments. For now we'll keep three hashes: 
+    #   - all opinions
+    #   - high level segments (the seven original segments, strong supporter, neutral, etc)
+    #   - small segments that represent individual columns in the histogram, now that 
+    #     we do not have wide bars per se
+  buildHistogramDataFromProps : (props) ->
+    # an initial function for sizing avatars 
+    avatar_size = Math.min biggest_possible_avatar_size, biggest_possible_avatar_size / Math.sqrt( (props.data.opinions.length + 1)/10  )
 
+    # Calculate how many segments columns to put on the histogram. Note that for the extremes and for neutral, we'll hack it 
+    # to allow three columns for those segments. 
+    num_small_segments = Math.floor(histogram_width / avatar_size) - 2 * 3 - 1 #for the additional cols for the extremes+neutral 
 
+    seven_original_opinion_segments = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
+
+    histogram_small_segments = {}
+    histogram_small_segments[i] = [] for i in [0..num_small_segments]
+
+    max_slider_variance = 2.0 # Slider stances vary from -1.0 to 1.0. 
+
+    for opinion in props.data.opinions
+      seven_original_opinion_segments[opinion.stance_segment].push opinion
+      small_segment = Math.floor(num_small_segments * (opinion.stance + 1) / max_slider_variance)
+      histogram_small_segments[small_segment].push opinion
+
+    @setState {seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments}
+
+  componentWillMount : -> @buildHistogramDataFromProps @props
+
+  componentWillReceiveProps : (next_props) -> @buildHistogramDataFromProps next_props
 
   setSlidability : ->
 
@@ -234,27 +147,24 @@ window.REACTProposal = React.createClass
       else if value >= 0.05
         return 4
       else if value <= -0.05
-        return 2      
+        return 2
 
     $el = $(@getDOMNode()).find('.histogram_base')
     if $el.hasClass "ui-slider"
-      $el.slider(if @state.state == 'results' then 'disable' else 'enable') 
+      $el.slider(if @props.state == 'results' then 'disable' else 'enable') 
     else
       $el.slider
-        disabled: @state.state == 'results'
+        disabled: @props.state == 'results'
         min: -1
         max: 1
         step: .01
-        value: @state.data.stance
+        value: @props.data.initial_stance
         slide: (ev, ui) => 
           segment = getStanceSegmentFromSliderValue ui.value
-          if @state.data.stance_segment != segment
-            @setState _.extend(@state.data, {stance_segment: segment})
-
-
-  componentWillMount : ->
-    fetch {type: 'proposal', url: Routes.proposal_path @props.long_id}, (proposal_data) =>
-      @setState {data: _.extend(@state.data, proposal_data)}
+          if @props.data.stance_segment != segment
+            @setState 
+              stance_segment : segment
+              stance : ui.value
 
   componentDidMount : -> @setSlidability()
   componentDidUpdate : ->
@@ -289,30 +199,18 @@ window.REACTProposal = React.createClass
         , 100
         # $('.four_columns_of_points').removeClass('pinned')
 
-  getInitialState : ->
-    state : 'crafting',
-    priorstate : 'results',
-    data :
-      proposal : {}
-      pro_community_points : []
-      con_community_points : []
-      seven_original_opinion_segments : {}
-      histogram_small_segments : {}
-      users : {}
-      included_pros : []
-      included_cons : []
-      stance : 0.0
-      stance_segment : 3
-
 
   toggleState : (ev) ->
-    @setState
-      state : @state.priorstate, 
-      priorstate : @state.state
+    route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
+    app_router.navigate route, {trigger : true}
+
+    # @setState
+    #   state : @state.priorstate, 
+    #   priorstate : @props.state
 
   render : ->
     segment_is_extreme_or_neutral = (segment) => 
-      segment == 0 || segment == @state.data.num_small_segments || segment == Math.floor(@state.data.num_small_segments / 2)
+      segment == 0 || segment == @state.num_small_segments || segment == Math.floor(@state.num_small_segments / 2)
 
     stance_names = 
       0 : 'Diehard Supporter'
@@ -323,115 +221,115 @@ window.REACTProposal = React.createClass
       4 : 'Opposer'
       3 : 'Neutral'
 
-    R.div className:'proposal_layout', key:@props.long_id, 'data-role':'proposal', 'data-activity':'proposal-has-activity', 'data-status':'proposal-inactive', 'data-visibility':'published', 'data-state':@state.state, 'data-prior-state':@state.priorstate,
+    R.div className:'proposal_layout', key:@props.long_id, 'data-role':'proposal', 'data-activity':'proposal-has-activity', 'data-status':'proposal-inactive', 'data-visibility':'published', 'data-state':@props.state, 'data-prior-state':@state.priorstate,
       
       #description
       R.div className:'proposal_description_region', 
         R.div className:'proposal_description_view',
           R.div className:'proposal_proposer',
-            R.a 'data-action':'user_profile_page', 'data-id':@state.data.proposal.user_id, 'data-tooltip':'user_profile',
-              if all_users[@state.data.proposal.user_id]
-                R.img src:all_users[@state.data.proposal.user_id].avatar_file_name.large
+            if @props.data.proposal.user_id
+              Avatar user: @props.data.proposal.user_id, tag: R.img, img_style: 'large'
           R.div className:'proposal_description_main',
-            if @state.data.proposal.category 
+            if @props.data.proposal.category 
               R.div className: 'proposal_category',
-                @state.data.proposal.category
+                @props.data.proposal.category
                 ' '
-                @state.data.proposal.designator
+                @props.data.proposal.designator
 
             R.h1 className:'proposal_heading',
-              @state.data.proposal.name
+              @props.data.proposal.name
             R.div className:'proposal_details',
-              R.div className:'proposal_description_body', dangerouslySetInnerHTML:{__html: @state.data.proposal.description}
+              R.div className:'proposal_description_body', dangerouslySetInnerHTML:{__html: @props.data.proposal.description}
 
       #toggle
       R.div className:'toggle_proposal_state_region',
-        R.div className:'toggle_proposal_state_view', 'data-state':@state.state, 'data-updating':false, 'data-prior-state':@state.priorstate,
+        R.div className:'toggle_proposal_state_view', 'data-state':@props.state, 'data-updating':false, 'data-prior-state':@state.priorstate,
           R.h1 className:'proposal_state_primary',
-            if @state.state == 'crafting'
+            if @props.state == 'crafting'
               'Give your Opinion'
             else 
               'Explore all Opinions'
           R.div className:'proposal_state_secondary', 
             'or '
             R.a onClick: @toggleState,
-              if @state.state != 'crafting'
+              if @props.state != 'crafting'
                 'Give Own Opinion'
               else 
                 'Explore all Opinions'
 
       #feelings
       R.div className:'proposal_histogram_region',
-        R.div className:'histogram_layout', 'data-state':@state.state, 'data-prior-state':@state.priorstate,
+        R.div className:'histogram_layout', 'data-state':@props.state, 'data-prior-state':@state.priorstate,
           #for segment in [6..0]
-          for segment in [@state.data.num_small_segments..0]
-            R.div key:"#{segment}", className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @state.data.avatar_size}px" else "#{@state.data.avatar_size}px"},
+          for segment in [@state.num_small_segments..0]
+            R.div key:"#{segment}", className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @state.avatar_size}px" else "#{@state.avatar_size}px"},
               R.ul className:'histogram_bar_users',
-                for opinion in @state.data.histogram_small_segments[segment] #@state.data.opinions[segment]
-                  R.li key:"#{opinion.user_id}", id:"avatar-#{opinion.user_id}", className:"avatar segment-#{segment}", 'data-action':'user_opinion', 'data-id':opinion.user_id, style:{height:"#{@state.data.avatar_size}px", width:"#{@state.data.avatar_size}px"}, 'data-tooltip':'user_profile'
+                for opinion in @state.histogram_small_segments[segment]
+                  Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, className:"segment-#{segment}", style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
 
           R.div className:'histogram_base', 
             R.div className:'feeling_slider ui-slider-handle',
-              R.img className:'bubblemouth', src:'assets/bubblemouth.png', style: {transform: if @state.data.stance_segment > 3 then "scaleX(-1) translateX(#{if @state.state == 'crafting' then '15px' else '5px'})" else "translateX(#{if @state.state == 'crafting' then '30px' else '10px'})"}
-              if @state.state == 'crafting'
+              R.img className:'bubblemouth', src:'/assets/bubblemouth.png', style: {transform: if @state.stance_segment > 3 then "scaleX(-1) translateX(#{if @props.state == 'crafting' then '15px' else '5px'})" else "translateX(#{if @props.state == 'crafting' then '30px' else '10px'})"}
+              if @props.state == 'crafting'
                 R.div className:'feeling_feedback', 
-                  R.div className:'feeling_feedback_label', "You are#{if @state.data.stance_segment == 3 then '' else ' a'}"
-                  R.div className:'feeling_feedback_result', stance_names[@state.data.stance_segment]
+                  R.div className:'feeling_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
+                  R.div className:'feeling_feedback_result', stance_names[@state.stance_segment]
                   R.div className:'feeling_feedback_instructions', 'drag to change'
 
           R.div className:'feeling_labels', 
             R.h1 className:"histogram_label histogram_label_support",
               'Support'
-              # if @state.state == 'results' then 'Supporters' else 'Support'
+              # if @props.state == 'results' then 'Supporters' else 'Support'
             R.h1 className:"histogram_label histogram_label_oppose",
-              # if @state.state == 'results' then 'Opposers' else 'Oppose'
+              # if @props.state == 'results' then 'Opposers' else 'Oppose'
               'Oppose'
 
       #reasons
       R.div className:'proposal_reasons_region',
-        R.div className:'reasons_layout', 'data-state':@state.state, 'data-prior-state':@state.priorstate, style:{minHeight:'567px'},
+        R.div className:'reasons_layout', 'data-state':@props.state, 'data-prior-state':@state.priorstate, style:{minHeight:'567px'},
           R.div className:'four_columns_of_points',
 
             #community pros
             CommunityPoints 
-              state: @state.state
+              state: @props.state
               priorstate: @state.priorstate
-              points: @state.data.pro_community_points
+              points: @props.data.points
               valence: 'pro'
-              included_points : @state.data.included_pros
+              included_points : @props.data.included_points
               onPointShouldBeRemoved : @onPointShouldBeRemoved
 
             #your reasons
             R.div className:'opinion_region',
-              R.div className:'decision_board_layout', 'data-state':@state.state, 'data-prior-state':@state.priorstate,
+              R.div className:'decision_board_layout', 'data-state':@props.state, 'data-prior-state':@state.priorstate,
 
                 ReactTransitionGroup className:'decision_board_body', transitionName: 'state_change', component: R.div, style: {minHeight: '32px'},
 
-                  if @state.state == 'crafting'
+                  if @props.state == 'crafting'
                     DecisionBoard
                       key: 1
-                      state: @state.state
+                      state: @props.state
                       priorstate: @state.priorstate
-                      included_pros : @state.data.included_pros
-                      included_cons : @state.data.included_cons
+                      points : @props.data.points
+                      included_points : @props.data.included_points
                       onPointShouldBeIncluded : @onPointShouldBeIncluded
                       onPointShouldBeCreated : @onPointShouldBeCreated
 
-                  else if @state.state == 'results'
+                  else if @props.state == 'results'
                     GiveOpinionButton
                       key: 2
+                      state: @props.state
+                      priorstate: @props.priorstate
                       toggleState: @toggleState
-                      stance_segment: @state.data.stance_segment
+                      stance_segment: @state.stance_segment
 
             #community cons
             CommunityPoints 
-              state: @state.state
+              state: @props.state
               priorstate: @state.priorstate
-              points: @state.data.con_community_points
+              points: @props.data.points
               valence: 'con'
-              included_points : @state.data.included_cons
+              included_points : @props.data.included_points
               onPointShouldBeRemoved : @onPointShouldBeRemoved
-
 
 ##
 # DecisionBoard
@@ -478,7 +376,8 @@ DecisionBoard = React.createClass
       YourPoints
         state: @props.state
         priorstate: @props.priorstate
-        points: @props.included_pros
+        points : @props.points         
+        included_points: @props.included_points
         valence: 'pro'
         onPointShouldBeCreated: @props.onPointShouldBeCreated
 
@@ -486,10 +385,10 @@ DecisionBoard = React.createClass
       YourPoints
         state: @props.state
         priorstate: @props.priorstate
-        points: @props.included_cons
+        points : @props.points 
+        included_points: @props.included_points
         valence: 'con'
         onPointShouldBeCreated: @props.onPointShouldBeCreated
-
 
 ##
 # YourPoints
@@ -500,26 +399,26 @@ YourPoints = React.createClass
   displayName: 'YourPoints'
 
   render : ->
+
     R.div className:"points_list_region #{@props.valence}s_on_decision_board_region",
       R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board points_layout", 'data-state':@props.state,
-        R.div className:'points_heading_region',
-          R.div className:'points_heading_view',
-            R.h1 className:'points_heading_label',
-              "Your #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
+        R.h1 className:'points_heading_label',
+          "Your #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
 
         R.ul className:'point_list_collectionview',
-          for point_id in @props.points
-            point = all_points[point_id]
-            Point 
-              key: point.id
-              id: point.id
-              nutshell: point.nutshell
-              text: point.text
-              valence: @props.valence
-              comment_count: point.comment_count
-              author: point.user_id
-              state: @props.state
-              location_class: 'decision_board_point'
+          for point_id in @props.included_points
+            point = @props.points[point_id]
+            if point.is_pro == (@props.valence == 'pro')
+              Point 
+                key: point.id
+                id: point.id
+                nutshell: point.nutshell
+                text: point.text
+                valence: @props.valence
+                comment_count: point.comment_count
+                author: point.user_id
+                state: @props.state
+                location_class: 'decision_board_point'
 
         R.div className:'points_footer_region',
           R.div className:'decision_board_points_footer_view',
@@ -548,38 +447,40 @@ CommunityPoints = React.createClass
       drop : (ev, ui) =>
         ui.draggable.parent().fadeOut 200, => 
           @props.onPointShouldBeRemoved ui.draggable.parent().data('id')
-        $el.removeClass "user_is_hovering_on_a_drop_target" # user_is_dragging_a_#{valence}"
+          $el.removeClass "user_is_hovering_on_a_drop_target"
       out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
       over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
 
   render : ->
     points = @props.points
+
+    #filter to pros or cons & down to points that haven't been included
     if @props.state=='crafting'
-      #filter down to points that haven't been included
-      points = _.reject points, (pnt) => _.contains(@props.included_points, pnt)
+      points = _.reject _.values(points), (pnt) => 
+        pnt.is_pro != (@props.valence == 'pro') || _.contains(@props.included_points, pnt.id)
+    else 
+      points = _.reject _.values(points), (pnt) => pnt.is_pro != (@props.valence == 'pro')
 
     R.div className:"community_#{@props.valence}s_region points_list_region",
       R.div className:"points_by_community #{@props.valence}s_by_community points_layout", 'data-state':@props.state, 'data-prior-state':@props.priorstate,
-        R.div className:'points_heading_region',
-          R.div className:'points_heading_view',
-            R.h1 className:'points_heading_label', 'data-action':'expand-toggle',
-              "Others' #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
+        R.div className:'points_heading_view',
+          R.h1 className:'points_heading_label', 'data-action':'expand-toggle',
+            "Others' #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
 
-          R.div className:'points_list_region',
-            R.ul className:'point_list_collectionview',
-              #for point in (if @props.state=='crafting' then @props.points[0..3] else @props.points[2..5])
-              for point_id in points
-                point = all_points[point_id]
-                Point 
-                  key: point.id
-                  id: point.id
-                  nutshell: point.nutshell
-                  text: point.text
-                  valence: @props.valence
-                  comment_count: point.comment_count
-                  author: point.user_id
-                  state: @props.state
-                  location_class : 'community_point'
+        R.div className:'points_list_region',
+          R.ul className:'point_list_collectionview',
+            #for point in (if @props.state=='crafting' then @props.points[0..3] else @props.points[2..5])
+            for point in points
+              Point 
+                key: point.id
+                id: point.id
+                nutshell: point.nutshell
+                text: point.text
+                valence: @props.valence
+                comment_count: point.comment_count
+                author: point.user_id
+                state: @props.state
+                location_class : 'community_point'
 
 ##
 # GiveOpinionButton
@@ -599,10 +500,13 @@ GiveOpinionButton = React.createClass
       left -= 120 
 
     # Ugly to manipulate the opinion region here
-    # Problem: This code will not run when results is directly accessed.
     $('.opinion_region').css
       transform: "translate(#{left}, -18px)"
       '-webkit-transform': "translate(#{left}px, -18px)"
+
+  componentDidUpdate: ->
+    # place button correctly when results url is opened directly; problem: CSS shouldn't animate on initial open
+    @place() if @props.state == 'results' && !@props.priorstate
 
   componentWillEnter: (callback) ->
     @place()
@@ -620,9 +524,7 @@ GiveOpinionButton = React.createClass
       '-webkit-transform': "translate(0,0)"
     callback()
 
-  render : ->
-    R.a className:'give_opinion_button', onClick: @props.toggleState,
-      'Give your Opinion'
+  render : -> R.a className:'give_opinion_button', onClick: @props.toggleState, 'Give your Opinion'
 
 
 ##
@@ -654,7 +556,8 @@ Point = React.createClass
 
   render : -> 
     R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id, 'data-role':'point', 'data-includers': [1,2],
-      R.a className:"avatar point_author_avatar", id:"avatar-#{@props.author}", 'data-action':'user_opinion', 'data-id':@props.author, 'data-tooltip':'user_profile'
+      Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
+      
       R.div className:'point_content',
         R.div className:'close_open_point',
           R.i className:'fa fa-times-circle'
@@ -726,34 +629,127 @@ NewPoint = React.createClass
               'cancel'
             R.input className:'button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
 
+##
+# Avatar
+# Displays a user's avatar
+# Supports straight up img src, or using the CSS-embedded b64 for each user
+Avatar = React.createClass
+  displayName: 'Avatar'
+
+  getDefaultProps : ->
+    user: -1 # defaults to anonymous user
+    tag: R.img
+    img_style: null #null will default to using the css-based b64 embedded images
+    className: ''
+
+  componentWillMount : ->
+    derived_state = 
+      className : "#{@props.className} avatar"
+      id : "avatar-#{@props.user}"
 
 
+    if @props.img_style
+      # TODO: use activeREST here
+      user = all_users[@props.user]
+      if !user || !user.avatar_file_name
+        derived_state.filename = "/system/default_avatar/#{@props.img_style}_default-profile-pic.png"
+      else
+        derived_state.filename = "/system/avatars/#{user.id}/#{@props.img_style}/#{user.avatar_file_name}"
+
+    @setState derived_state
+
+  render : ->
+    attrs = 
+      className: @state.className
+      id: @state.id
+
+    if @props.img_style
+      attrs.src = @state.filename
+
+    @transferPropsTo @props.tag attrs 
+
+
+#####
+# Responsibilities that will later be managed by ActiveREST
+all_users = {} 
+
+parseProposal = (data) ->
+  # Build hash of user information
+  data.users = $.parseJSON data.users
+  for user in data.users
+    all_users[user.id] = user
+
+  all_points = {}
+
+  #TODO: return from server as a hash already?
+  for point in data.points
+    all_points[point.id] = point
+
+  data.points = all_points
+
+  data
+
+##
+#API mocks for activeREST
+
+fetch = (options, callback, error_callback) ->
+  error_callback ||= (xhr, status, err) -> console.error 'Could not fetch data', status, err.toString()
+
+  $.ajax
+    url: options.url
+    dataType: 'json'
+    success: (data) =>
+      if options.type == 'proposal'
+        data = parseProposal data
+      console.log data
+      callback data
+
+    error: error_callback
+
+#save assumes that data is a proposal page
+save = (data) ->
+  top_level_component.setProps data
 
 ##########################
 ## Application area
 
-# load users' pictures
-$.get Routes.get_avatars_path(), (data) ->
-  $('head').append data
-
-
+##
+# Backbone routing
+top_level_component = null
 Router = Backbone.Router.extend
+
   routes :
     #"(/)" : "root"      
-    ":proposal(/)": "craftOpinion"
+    ":proposal(/)": "proposal"
     ":proposal/results(/)": "results"
     #":proposal/points/:point(/)" : "openPoint"
 
-  craftOpinion : (long_id) ->
-    React.renderComponent window.REACTProposal({long_id}), document.getElementById('l_content_main_wrap')
+  proposal : (long_id, state = 'crafting') ->
 
-  results : (long_id) ->
-    React.renderComponent window.REACTProposal({long_id}), document.getElementById('l_content_main_wrap')
+    if !top_level_component
+      top_level_component = React.renderComponent window.REACTProposal(
+        state : state
+        priorstate : null
+      ), document.getElementById('l_content_main_wrap')
+      
+      # replace with ActiveREST call
+      fetch {type: 'proposal', url: Routes.proposal_path long_id}, (proposal_data) =>
+        top_level_component.setProps
+          data : proposal_data
+    else
+      top_level_component.setProps
+        state : state
+        priorstate : top_level_component.props.state
 
-router = new Router()
+  results : (long_id) -> @proposal long_id, 'results'
 
-Backbone.history.start
-  pushState: true
+app_router = new Router()
+
+Backbone.history.start {pushState: true}
+
+##
+# load users' pictures
+$.get Routes.get_avatars_path(), (data) -> $('head').append data
 
 
 

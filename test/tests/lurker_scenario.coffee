@@ -207,7 +207,7 @@ casper.test.begin 'Lurker can poke around a proposal results page', 90, (test) -
       point_includers = @evaluate ->
         return _.uniq($('[data-role="point"]:first').attr("includers").split(',')).length
 
-      total_avatars = @evaluate -> return $(".histogram_layout .avatar:visible").length
+      total_avatars = @evaluate -> return $(".feelings_region .avatar:visible").length
 
       @mouse.move '[data-role="point"]'
       @wait 200, ->
@@ -216,7 +216,7 @@ casper.test.begin 'Lurker can poke around a proposal results page', 90, (test) -
 
         includers_hidden = @evaluate -> 
           hidden = -> $(this).css('opacity') == '0' || $(this).css('visibility') == 'hidden'
-          return $(".histogram_layout .avatar:visible").filter(hidden).length
+          return $(".feelings_region .avatar:visible").filter(hidden).length
 
         test.assertEqual total_avatars - includers_hidden, point_includers, 'Only includers shown on point hover' + state_suffix
 

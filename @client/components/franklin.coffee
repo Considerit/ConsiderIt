@@ -26,9 +26,8 @@ histogram_width = 636    # [keep in sync with CSS] Width of the slider / histogr
 biggest_possible_avatar_size = 50
 
 ####################
-# REACT COMPONENTS #
-####################
-
+# React Components
+#
 # These are the components and their relationships:
 #                       Proposal
 #                   /      |            \ 
@@ -46,7 +45,7 @@ biggest_possible_avatar_size = 50
 # Proposal
 # The mega component for a proposal.
 # Has proposal description, feelings area (slider + histogram), and reasons area
-window.REACTProposal = React.createClass
+Proposal = React.createClass
   displayName: 'Proposal'
 
   getDefaultProps : ->
@@ -647,10 +646,8 @@ Avatar = React.createClass
       className : "#{@props.className} avatar"
       id : "avatar-#{@props.user}"
 
-
     if @props.img_style
-      # TODO: use activeREST here
-      user = all_users[@props.user]
+      user = fetch {url: "users/#{@props.user}?partial"}
       if !user || !user.avatar_file_name
         derived_state.filename = "/system/default_avatar/#{@props.img_style}_default-profile-pic.png"
       else
@@ -673,26 +670,13 @@ Avatar = React.createClass
 # Responsibilities that will later be managed by ActiveREST
 all_users = {} 
 
-parseProposal = (data) ->
-  # Build hash of user information
-  data.users = $.parseJSON data.users
-  for user in data.users
-    all_users[user.id] = user
-
-  all_points = {}
-
-  #TODO: return from server as a hash already?
-  for point in data.points
-    all_points[point.id] = point
-
-  data.points = all_points
-
-  data
-
 ##
 #API mocks for activeREST
 
 fetch = (options, callback, error_callback) ->
+  if options.url[0..3] == 'user'
+    return all_users[options.url]
+
   error_callback ||= (xhr, status, err) -> console.error 'Could not fetch data', status, err.toString()
 
   $.ajax
@@ -700,7 +684,19 @@ fetch = (options, callback, error_callback) ->
     dataType: 'json'
     success: (data) =>
       if options.type == 'proposal'
-        data = parseProposal data
+        # Build hash of user information
+        data.users = $.parseJSON data.users
+        for user in data.users
+          all_users["users/#{user.id}?partial"] = user
+
+        all_points = {}
+
+        #TODO: return from server as a hash already?
+        for point in data.points
+          all_points[point.id] = point
+
+        data.points = all_points
+
       console.log data
       callback data
 
@@ -727,7 +723,7 @@ Router = Backbone.Router.extend
   proposal : (long_id, state = 'crafting') ->
 
     if !top_level_component
-      top_level_component = React.renderComponent window.REACTProposal(
+      top_level_component = React.renderComponent Proposal(
         state : state
         priorstate : null
       ), document.getElementById('l_content_main_wrap')

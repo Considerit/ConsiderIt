@@ -88,7 +88,6 @@ namespace :alerts do
       accnt.classes_to_moderate.each do |mc|
 
         class_name = mc.name.split('::')[-1]
-
         existing_moderations[class_name] = {}
 
         if mc == Comment
@@ -114,7 +113,7 @@ namespace :alerts do
         end
 
         existing_moderations[class_name] = existing_moderations[class_name].values
-        content_to_moderate += objs_to_moderate[class_name].length - existing_moderations[class_name].length
+        content_to_moderate += objs_to_moderate[class_name].count - existing_moderations[class_name].count
 
       end
 
@@ -124,7 +123,7 @@ namespace :alerts do
         # send to all users with moderator status
         moderators = []
         accnt.users.where('roles_mask > 0').each do |u|
-          if u.has_any_role? :moderator, :admin, :superadmin
+          if u.has_any_role? :moderator #, :admin, :superadmin
             moderators.push(u)
           end
         end

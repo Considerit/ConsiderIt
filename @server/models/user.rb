@@ -308,7 +308,11 @@ class User < ActiveRecord::Base
     Account.all.each do |accnt|
 
       accnt.users.each do |user|
-        user.update_metrics()
+        begin
+          user.update_metrics()
+        rescue
+          pp "Could not update User #{user.id}"
+        end
       end
     end
   end

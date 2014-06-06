@@ -397,6 +397,7 @@ $transition_speed: 750ms
   text-align: center
   width: 90%
   +font-size(-3)
+  padding: 0 $grid_gutter/4
 
 .point_content:hover .open_point_link
   visibility: visible
@@ -418,3 +419,58 @@ $transition_speed: 750ms
   left: -10px
   top: -2px
 
+// Add a new point prompt
+.newpoint_prompt
+  padding: $vertical_baseline/4 0
+  cursor: pointer
+  +font-size(0)
+
+  .newpoint_link
+    text-decoration: underline
+    font-weight: 600
+  .newpoint_bullet
+    padding: 0 6px
+  .qualifier
+    font-weight: 100
+
+
+// Add a new point form
+// TODO: refactor once design more complete
+.newpoint
+
+  .newpoint_form
+    padding-top: $vertical_baseline / 2
+    position: relative
+    margin-left: $grid_gutter
+    input, textarea
+      +font-size(0)
+      padding-top: 0
+      padding-bottom: 0
+  
+    &:before
+      left: -11px    
+      +font-size(-4)
+
+  .newpoint_description
+    width: 96%
+    min-height: 55px
+
+  .newpoint_nutshell_wrap
+    .newpoint_nutshell
+      width: 96%
+      min-height: 55px
+
+    .count
+      +font-size(-3)
+      vertical-align: middle
+      position: absolute
+      right: 20px
+      top: -16px
+
+  .newpoint-submit
+    text-align: right
+    margin-top: 3px
+
+  .newpoint_hide_name
+    label, input
+      +font-size(-1)

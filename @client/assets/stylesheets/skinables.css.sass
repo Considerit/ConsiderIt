@@ -6,8 +6,6 @@
 @import "compass/css3/text-shadow"
 @import "compass/typography/vertical_rhythm"
 @import "sassy-buttons"
-
-// libraries of mixins
 @import "library"
 
 
@@ -29,6 +27,21 @@ $sb-auto-states:     true         // Automatically create pseudo styles
 /////////////////////////////////////////////////////////////////////////////
 /// Skins library: Reusable extends and mixins sensitive to skin variables
 /////////////////////////////////////////////////////////////////////////////
+
+=link_style($color, $reference, $amount)
+  color: $color
+  &:hover
+    // Determine whether the hover should darken or lighten the color
+    @if lightness($reference) > 50% 
+      // if the background is light, make the link darker on hover
+      color: darken($color, $amount)
+    @else
+      color: lighten($color, $amount)
+
+// Browsers render the inset colors so differently...
+=inset-border($base_text_color)
+  border-color: darken($base_text_color, 10%) lighten($base_text_color, 5%) lighten($base_text_color, 10%) lighten($base_text_color, 5%)
+
 
 %superbutton
   +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 16%), $second-color: emphasize($complementary_background_color, 24%))

@@ -144,18 +144,18 @@ test_proposal_publicity = (test, publicity) ->
     @click '[action="create-new-proposal"]'
 
   casper.waitUntilStateTransitioned 'crafting', ->
-    test.assertExists '.proposal_description_summary.editable', 'Proposal summary is editable'
+    test.assertExists '.description_region_summary.editable', 'Proposal summary is editable'
     test.assertExists '.proposal_details.editable', 'Proposal details is editable'
 
     proposal_id = @getCurrentUrl().substring(@getCurrentUrl().lastIndexOf('/') + 1, @getCurrentUrl().length)
 
-    @thenClick '.proposal_description_summary.editable'
+    @thenClick '.description_region_summary.editable'
 
     @waitUntilVisible '.editable-input textarea', ->
       @sendKeys ".editable-input textarea", proposal_summary
       @click '.editable-buttons button[type="submit"]'
       @wait 200, ->
-        test.assertSelectorHasText '.proposal_description_summary.editable', proposal_summary, 'proposal summary can be modified'
+        test.assertSelectorHasText '.description_region_summary.editable', proposal_summary, 'proposal summary can be modified'
 
     @thenClick '.proposal_details.editable'
 

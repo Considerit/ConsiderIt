@@ -211,6 +211,8 @@ $full_reasons_width: $decision_board_width + 2 * $point-content-width + 4 * $gri
 .opinion_region
   width: $decision_board_width
   +transition(transform $transition_speed)
+  position: relative
+  z-index: 0 //so that points being dragged are above opinion region
 
 [data-state="results"]
   .opinion_region
@@ -244,7 +246,8 @@ $full_reasons_width: $decision_board_width + 2 * $point-content-width + 4 * $gri
 .points_by_community
   margin: $vertical_baseline * 2 $grid_gutter 
   +transition(transform $transition_speed)
-  z-index: 10 //so that points being dragged are above opinion region
+  position: relative
+  z-index: 2 //so that points being dragged are above opinion region
 
 .decision_board_body
   +transition(border $transition_speed, width $transition_speed, height $transition_speed, min-height $transition_speed)

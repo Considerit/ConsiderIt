@@ -128,10 +128,10 @@ gem 'aws-sdk'
 gem 'coffee-rails' #, "~> 3.2.2"
 gem 'uglifier'
 gem "asset_sync"
+
 gem 'sass-rails'
-gem 'compass' #, '1.0.0.alpha.18'
-gem 'compass-rails' #, '>= 1.0.2'
-gem 'sassy-buttons'
+
+gem 'bourbon'
 
 
 # Bundle gems for the local environment. Make sure to

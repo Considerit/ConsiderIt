@@ -1,7 +1,7 @@
 @import "variables"
-@import "compass/css3/box-shadow"
-@import "compass/css3/transform"
-@import "compass/css3/transition"
+@import "bourbon"
+// @import "css3/transform"
+// @import "css3/transition"
 
 
 $proposal_width: 670px
@@ -95,7 +95,7 @@ $transition_speed: 750ms
   .proposal_state_secondary
     +font-size(1)
     position: absolute
-    top: 22px
+    top: 33px
     right: 62px
 
     a 
@@ -130,9 +130,9 @@ $transition_speed: 750ms
   //  xxx   =>  xxx 
   //   x        xxx
   &.extreme_or_neutral
-    +rotate(180deg)
+    +transform(rotate(180deg))    
     .avatar
-      +rotate(180deg)
+      +transform(rotate(180deg))
 
 [data-state="crafting"] .histogram_bar  
   opacity: .2
@@ -148,7 +148,7 @@ $transition_speed: 750ms
 .ui-slider-handle  // dashes in name b/c jquery UI
   border-radius: 50%
   +transition(width $transition_speed, height $transition_speed, top $transition_speed, margin $transition_speed)
-  +box-shadow
+  box-shadow: rgba(black, .4) 0px 1px 2px
   border: 1px solid #414141
 
   // the mouth leading into the "give opinion button" or the decision board, depending on state
@@ -243,13 +243,13 @@ $transition_speed: 750ms
 
 [data-state="results"]
   .opinion_region
-    +translateY(- 1.5 * $vertical_baseline)
+    +transform(translateY(- 1.5 * $vertical_baseline))
 
   .pros_by_community
-    +translateX($decision_board_width/2)
+    +transform(translateX($decision_board_width/2))
 
   .cons_by_community
-    +translateX(-$decision_board_width/2)
+    +transform(translateX(-$decision_board_width/2))
 
   .decision_board_body
     width: 186px
@@ -257,7 +257,7 @@ $transition_speed: 750ms
 
 [data-state="crafting"]
   .opinion_region
-    +translateY(0)
+    +transform(translateY(0))
 
   .decision_board_body
     width: $decision_board_width
@@ -335,7 +335,7 @@ $transition_speed: 750ms
 
 .cons_on_decision_board .add_point_drop_target 
   .drop_target
-    +scaleX(-1)
+    +transform(scaleX(-1))
   .drop_prompt
     left: 27px
 
@@ -377,7 +377,7 @@ $transition_speed: 750ms
 
   &.con .point_content:before
     right: -11px
-    +scaleX(-1)
+    +transform(scaleX(-1))
 
 // Point text
 .point_nutshell

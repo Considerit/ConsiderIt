@@ -37,7 +37,7 @@ gem "remotipart"#, "~> 1.0.2"
 gem 'acts_as_tenant'
 
 # https://github.com/sferik/rails_admin
-gem 'rails_admin' #, :git => 'git://github.com/sferik/rails_admin' #remove git reference after next version bump
+# gem 'rails_admin' #, :git => 'git://github.com/sferik/rails_admin' #remove git reference after next version bump
 
 #https://github.com/ryanb/cancan
 gem 'cancan'
@@ -109,6 +109,8 @@ gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csr
 # https://github.com/josh/useragent
 gem 'useragent'
 
+gem 'font-awesome-rails'
+
 #######
 # https://github.com/rails/protected_attributes
 # These are primarily to make smooth upgrade from Rails 3 to 4
@@ -136,7 +138,7 @@ group :production do
   gem "aws-ses", "~> 0.5.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
 end
 
-
+gem 'sprockets', "~> 2.11.0"
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 #gem 'sprockets-helpers'
 
@@ -144,6 +146,7 @@ gem 'aws-sdk'
 gem 'coffee-rails' #, "~> 3.2.2"
 gem 'uglifier'
 gem "asset_sync"
+gem 'sass-rails'
 gem 'compass' #, '1.0.0.alpha.18'
 gem 'compass-rails' #, '>= 1.0.2'
 gem 'sassy-buttons'

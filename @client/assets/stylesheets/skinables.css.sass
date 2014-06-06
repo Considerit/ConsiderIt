@@ -202,21 +202,19 @@ a
 
 
 // franklin/proposal/toggle
-.toggle_state_region
-  &[data-state="crafting"]
+[data-state="crafting"] .toggle_state_region
+  .proposal_state_primary
+    color: $decision_board_text_color
 
-    .proposal_state_primary
-      color: $decision_board_text_color
+  .proposal_state_secondary a
+    +link_style($base_text_color, $base_background_color, 2%)
 
-    .proposal_state_secondary a
-      +link_style($base_text_color, $base_background_color, 2%)
+[data-state="results"] .toggle_state_region
+  .proposal_state_primary
+    color: $base_text_color
 
-  &[data-state="results"]
-    .proposal_state_primary
-      color: $base_text_color
-
-    .proposal_state_secondary a
-      +link_style($decision_board_text_color, $base_background_color, 2%)
+  .proposal_state_secondary a
+    +link_style($decision_board_text_color, $base_background_color, 2%)
 
 
 // franklin/assessment

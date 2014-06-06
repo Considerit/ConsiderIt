@@ -8,7 +8,7 @@ ConsiderIt::Application.routes.draw do
 
   root :to => "home#index"
 
-  mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
+  # mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
   #mount Assessable::Engine => '/dashboard/assessable', :as => 'assessable'
 
   devise_for :users, :controllers => { 

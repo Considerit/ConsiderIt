@@ -6,16 +6,11 @@
 
 
 /////////////////////
-// GLOBAL LAYOUT
-// Tricky placements, animations, interconnected components
-
-
-/////////////////////
 // DESCRIPTION REGION
 // Proposal description
 
 // Wrapper around description region
-.proposal_description
+.description_region
   position: relative
   margin: auto
   width: $proposal_width
@@ -55,7 +50,7 @@
 // TOGGLE REGION
 // State transitions between crafting and results
 
-.toggle_proposal_state
+.toggle_state_region
   text-align: center
   position: relative
   margin-top: 2 * $vertical_baseline
@@ -78,7 +73,318 @@
 // FEELINGS REGION
 // Integrated histogram and slider widget
 
+// histogram
+$histogram_width: $body_width + 2 * $grid_major
+$default_avatar_in_histogram_color: #bbb
+
+.feelings_region
+  margin: $vertical_baseline auto 0 auto
+  position: relative
+  width: $histogram_width
+
+.histogram_bar
+  display: inline-block
+  font-size: 0
+  +transition(opacity $transition_speed)
+  
+  .avatar
+    border-radius: 50%
+    background-color: $default_avatar_in_histogram_color
+    background-image: none
+    margin-bottom: 1px
+
+  //////////
+  // When there are multiple colums in a bar, need to prevent putting the row with least faces at the bottom
+  //  xxx        x
+  //  xxx   =>  xxx 
+  //   x        xxx
+  &.extreme_or_neutral
+    +rotate(180deg)
+    .avatar
+      +rotate(180deg)
+
+[data-state="crafting"] .histogram_bar  
+  opacity: .2
+
+// slider
+
+$slider_base_height: 4px
+
+.slider_base
+  margin: auto
+  height: $slider_base_height
+  width: $histogram_width - 2 * $grid_major
+  border-radius: 10px
+
+.ui-slider-handle  // dashes in name b/c jquery UI
+  border-radius: 50%
+  +transition(width $transition_speed, height $transition_speed, top $transition_speed, margin $transition_speed)
+  +box-shadow
+  border: 1px solid #414141
+
+  // the mouth leading into the "give opinion button" or the decision board, depending on state
+  .bubblemouth
+    +transition(width $transition_speed, top $transition_speed, left $transition_speed, transform $transition_speed)
+    position: absolute  
+
+[data-state="results"] .slider_base .ui-slider-handle
+  width: 20px
+  height: 20px 
+  top: -10 +  $slider_base_height/2
+  margin-left: -10px
+
+  .bubblemouth
+    width: 16px
+    top: 21px
+
+[data-state="crafting"] .slider_base .ui-slider-handle
+  top: -35px +  $slider_base_height/2
+  width: 50px
+  height: 50px 
+  margin-left: -25px
+
+  &:hover
+    +grab_cursor
+
+  .bubblemouth
+    width: 28px
+    top: 54px
+
+// The area on top of the slider that shows in crafting to let user know what their stance is
+.slider_feedback
+  position: absolute
+  top: -5 * $vertical_baseline
+  width: 250px
+  left: 50%
+  margin-left: -125px
+
+  .slider_feedback_label, .slider_feedback_result, .slider_feedback_instructions
+    text-align: center
+
+  .slider_feedback_label
+    +font-size(-1)
+    font-weight: 200
+
+  .slider_feedback_result
+    +font-size(5)
+    font-weight: 600
+
+  .slider_feedback_instructions
+    +font-size(-3)
+    font-weight: 200
+
+// the poles of the histogram & slider
+.slider_labels
+  width: 130%
+  margin-left: -15%
+  position: absolute
+  bottom: -10px
+  z-index: -1 // so that it doesn't sit on top of users on histogram
+
+  .histogram_label
+    +font-size(6)
+    font-weight: 200
+
+  .histogram_label_support
+    float: left
+  .histogram_label_oppose
+    float: right
+
 
 /////////////////////
 // REASONS REGION
 // The columns of points & decision board
+
+////
+// Layout for 4 cols
+// Widths, transforms, and intercomponent relationships for 4 col / 2 col design
+
+// total width of the pro/con list in the middle and the peer pro/con points in the margins
+$full_reasons_width: $decision_board_width + 2 * $point-content-width + 4 * $grid_gutter + 4
+
+.reasons_region  
+  position: relative
+  width: $full_reasons_width
+  left: -($full_reasons_width - $content_width) / 2
+  margin: 2.5 * $vertical_baseline 0 4 * $vertical_baseline 0
+
+.opinion_region
+  width: $decision_board_width
+  +transition(transform $transition_speed)
+
+[data-state="results"]
+  .opinion_region
+    +translateY(- 1.5 * $vertical_baseline)
+
+  .pros_by_community
+    +translateX($decision_board_width/2)
+
+  .cons_by_community
+    +translateX(-$decision_board_width/2)
+
+  .decision_board_body
+    width: 186px
+    min-height: 32px
+
+[data-state="crafting"]
+  .opinion_region
+    +translateY(0)
+
+  .decision_board_body
+    width: $decision_board_width
+    padding: $vertical_baseline * 1.5 $grid_gutter
+    min-height: 375px
+
+
+// keep the four cols side by side
+.points_by_community, .points_on_decision_board, .opinion_region
+  display: inline-block
+  vertical-align: top
+
+.points_by_community
+  margin: $vertical_baseline * 2 $grid_gutter 
+  +transition(transform $transition_speed)
+  z-index: 10 //so that points being dragged are above opinion region
+
+.decision_board_body
+  +transition(border $transition_speed, width $transition_speed, height $transition_speed, min-height $transition_speed)
+
+.points_on_decision_board
+  width: $point-width
+
+.point_content
+  width: $point-content-width
+
+////
+// Lower level styles for reasons region...
+
+// Point list heading
+.points_heading_label
+  text-align: center
+  margin-bottom: $vertical_baseline/2
+
+.points_on_decision_board .points_heading_label
+  +font-size(9)
+  font-weight: 500
+
+.points_by_community .points_heading_label
+  +font-size(6)
+  font-weight: 200
+
+// Decision board
+
+.opinion_region.scrolling_with_user
+  position: fixed
+  top: 0
+
+.give_opinion_button
+  padding: $vertical_baseline / 4 $grid_gutter
+  display: block
+
+.decision_board_body
+  border-radius: 16px
+
+// Drop target for decision board
+.user_is_hovering_on_a_drop_target_pro .pros_on_decision_board, .user_is_hovering_on_a_drop_target_con .cons_on_decision_board
+  .add_point_drop_target
+    border-style: solid
+
+.add_point_drop_target
+  padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_gutter/2
+  position: relative
+
+  .drop_target
+    width: 223px
+
+  .drop_prompt
+    +font-size(-1)
+    position: absolute
+    bottom: 2 * $vertical_baseline
+    left: 36px
+    width: 176px
+
+.cons_on_decision_board .add_point_drop_target 
+  .drop_target
+    +scaleX(-1)
+  .drop_prompt
+    left: 27px
+
+/////////////////////
+// POINTS
+// Styling for individual points
+
+.point
+  position: relative
+  list-style: none outside none
+
+.decision_board_point
+  margin-left: $grid_gutter / 2
+  padding: 0 $grid_gutter $vertical_baseline $grid_gutter
+
+// point_content styling. Point content is the main part of a point
+// that has all the substantive content
+
+[data-state="results"] .point_content
+  cursor: pointer //not working because disabled jquery UI draggable class defined with !important
+
+// draggable points
+[data-state="crafting"] .point_content
+  +grab_cursor
+
+.community_point
+  .point_content
+    border-radius: 16px
+    padding: $vertical_baseline / 2 $grid_gutter / 2 
+    margin-bottom: $vertical_baseline / 2
+
+    // for bubble mouth
+    &:before
+      position: absolute
+      content: '\25C0'
+
+  &.pro .point_content:before
+    left: -11px
+
+  &.con .point_content:before
+    right: -11px
+    +scaleX(-1)
+
+// Point text
+.point_nutshell
+  word-wrap: break-word
+  +font-size(-1)
+
+.point_details_tease
+  padding-left: 10px
+  font-weight: 200
+
+
+// The button that shows # comments when hovering on a point
+.open_point_link
+  visibility: hidden
+  position: absolute
+  bottom: 0
+  text-align: center
+  width: 90%
+  +font-size(-3)
+
+.point_content:hover .open_point_link
+  visibility: visible
+
+// Avatars of point authors
+.point_author_avatar
+  position: absolute
+  top: 8px
+  width: $point-avatar-width
+  height: $point-avatar-width
+  border-radius: 50%
+
+.community_point.pro .point_author_avatar
+  left: -$point-avatar-width - 14
+.community_point.con .point_author_avatar
+  right: -$point-avatar-width - 14
+
+.decision_board_point .point_author_avatar
+  left: -10px
+  top: -2px
+

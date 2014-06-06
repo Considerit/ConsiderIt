@@ -2,7 +2,6 @@
 @import "compass/css3/box-shadow"
 @import "compass/css3/transform"
 @import "compass/css3/transition"
-@import "library"
 
 
 $proposal_width: 670px
@@ -25,6 +24,18 @@ $default_avatar_in_histogram_color: #bbb
 $slider_base_height: 4px
 
 $transition_speed: 750ms
+
+=grab_cursor
+  cursor: move
+  cursor: ew-resize
+  cursor: -webkit-grab
+  cursor: -moz-grab
+
+  &:active
+    cursor: move
+    cursor: ew-resize
+    cursor: -webkit-grabbing
+    cursor: -moz-grabbing
 
 
 /////////////////////

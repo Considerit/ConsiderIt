@@ -42,7 +42,7 @@ class PointsController < ApplicationController
           :point => point
         }.to_json
 
-        render :nothing => true, :layout => true
+        render "layouts/application", :layout => false
       }
     end
   end

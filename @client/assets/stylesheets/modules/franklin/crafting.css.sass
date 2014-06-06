@@ -25,7 +25,6 @@
       width: 100%
       display: block
 
-
 // The heading of the decision board
 .decision_board_heading_region, [data-state="crafting"][data-prior-state="summary"].transitioning .decision_board_heading_region
   width: $decision_board_width
@@ -75,59 +74,6 @@
 
 [data-state="results"] .decision_board_footer_view
   visibility: hidden
-
-
-// SLIDER
-$slider_width: 283px
-.decision_board_slider
-  margin: auto auto 2 * $vertical_baseline auto 
-
-  .slider_heading
-    text-decoration: underline
-    margin-top: $vertical_baseline
-    +font-size(2)
-    text-align: center
-
-      
-  %stance_label
-    vertical-align: middle
-    +font-size(0)
-    div
-      width: 100px
-
-  .supporting_slider_label
-    @extend %stance_label
-    text-align: right
-    padding-right: $grid_gutter
-
-  .opposing_slider_label
-    @extend %stance_label
-    text-align: left
-    padding-left: $grid_gutter
-
-  .neutral_slider_label
-    @extend %stance_label
-    text-align: center
-    +font-size(2)
-    +transition(opacity .5s linear)
-
-  .slider_container
-    height: 45px 
-    padding-top: 4px
-    width: $slider_width
-
-    .noUiSlider
-      margin: 10px
-      background: none
-      border-radius: 15px
-      width: $slider_width
-
-      .noUi-handle
-        height: 38px
-        width: 39px
-        background: image-url("slider.png") repeat-x scroll 50% 50% transparent  
-        top: -.2em
-        +grab_cursor
 
 
 

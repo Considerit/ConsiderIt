@@ -26,8 +26,6 @@ $complementary_text_color: white
 /////////
 
 
-@import "compass/css3/box-shadow"
-
 .l_header
   min-height: 32px
   
@@ -36,7 +34,7 @@ $complementary_text_color: white
 #l_content_main_wrap
 
 #t_bg-content
-  +single-box-shadow(rgba(black, .25), 0, 1px)
+  box-shadow: rgba(black, .25) 0 1px 2px
   border-radius: 15px
 
   //margin-top: 2 * $vertical_baseline
@@ -45,7 +43,7 @@ $complementary_text_color: white
   &:before
     content: ""
     height: 7 * $vertical_baseline
-    +single-box-shadow(rgba(black, .25), 0, 1px)
+    box-shadow: rgba(black, .25) 0 1px 2px
     position: absolute
     width: 100%
     top: 13 * $vertical_baseline
@@ -128,7 +126,6 @@ $complementary_text_color: white
     a
       +font-size(1)
       font-style: italic
-      +text-shadow( rgba(white, .75) 1px 1px 0, rgba(white, .75) 1px -1px 0, rgba(white, .75) -1px 1px 0, rgba(white, .75) -1px -1px 0)
       color: #222
       text-shadow: none    
       text-align: center

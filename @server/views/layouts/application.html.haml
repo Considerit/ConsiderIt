@@ -42,12 +42,6 @@
 
       #t_bg.content_style
         #t_bg-top
-          %svg{ :xmlns => "http://www.w3.org/2000/svg", :height => 0, :style => "position: absolute", :version => "1.1", :baseProfile => "full" }
-            %defs
-              %filter{ :id => "bubble_gradient"}
-                %feImage{ :x => "10", :y => "0", :'xlink:href' => "#{image_path('bubble_gradient.png')}", :result => "overlay" }
-                %feOffset{ :dy => ".2", :dx => "0" }  
-                %feComposite{ :in2 => "SourceGraphic", :operator => "over" }
 
           #l_wrap
             #l-loading-indicator

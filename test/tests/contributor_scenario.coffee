@@ -90,14 +90,14 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
         if point.anonymous
           @click '.newpoint-anonymous'
 
-        casper.HTMLCapture '.reasons_layout', 
+        casper.HTMLCapture '.reasons_region', 
           caption : "Writing a point"
 
 
       casper.thenClick "#{points_col} [action='submit-point']"
 
       casper.wait 3000, ->
-        casper.HTMLCapture '.reasons_layout', 
+        casper.HTMLCapture '.reasons_region', 
           caption : "Point has saved"
 
         # test.assertSelectorHasText "#{points_col} .point_nutshell", point.nutshell, 'Point has been saved'
@@ -133,7 +133,7 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
             casper.click ".points_are_expanded [action='expand-toggle']"
 
     casper.then ->
-      casper.HTMLCapture '.reasons_layout', 
+      casper.HTMLCapture '.reasons_region', 
         caption : "After including some points"
 
   # move the slider
@@ -151,7 +151,7 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
       $(target)[0].dispatchEvent(event)
 
     casper.wait 1000, ->
-      casper.HTMLCapture '.reasons_layout', 
+      casper.HTMLCapture '.reasons_region', 
         caption : "Slider way to left"
 
   casper.then ->

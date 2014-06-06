@@ -35,7 +35,7 @@ test_expanding_points = (test, state_suffix = '') ->
   casper.logStep 'expand points' + state_suffix
   casper.thenClick '[action="expand-toggle"]', ->
     test.assertExists '.points_are_expanded', 'points are expanded' + state_suffix
-    casper.HTMLCapture '.reasons_layout', 
+    casper.HTMLCapture '.reasons_region', 
       caption : "Expanded points"
 
     test.assertVisible '.sort_points', 'user can see the sort option' + state_suffix
@@ -52,7 +52,7 @@ test_expanding_points = (test, state_suffix = '') ->
 
   casper.thenClick '[action="expand-toggle"]', ->
     test.assertDoesntExist '.points_are_expanded', 'points are unexpanded' + state_suffix
-    casper.HTMLCapture '.reasons_layout', 
+    casper.HTMLCapture '.reasons_region', 
       caption : "after unexpanding" + state_suffix
 
 test_histogram = (test, state, state_suffix) ->

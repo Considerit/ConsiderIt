@@ -129,13 +129,6 @@ a
 
 // franklin/proposals
 
-
-#past_proposals_region hr
-  border-top: 1px dashed $base_text_color
-
-.proposals_list-pagination .selected
-  padding: $vertical_baseline / 4 $grid_gutter/2 //override for superbutton dec
-
 .active_proposals_hibernation_message
   background-color: $complementary_background_color
   color: $complementary_text_color
@@ -170,7 +163,6 @@ a
 [data-state="crafting"]
   .slider_base
     background-color: $decision_board_text_color
-    .ui-slider-handle
 
 
 // franklin/proposal/crafting
@@ -199,12 +191,6 @@ a
       &:focus
         +inset-border($decision_board_text_color)
 
-
-
-.decision_board_footer_view
-
-  .submit_opinion_footer .cancel_submitting_an_opinion
-    +link_style(deemphasize($base_text_color, 20%, $reference: $base_background_color), $base_background_color, 25%)
 
 // franklin/proposal/reasons
 
@@ -246,67 +232,45 @@ a
   .point_details_tease
     color: deemphasize($base_text_color, 40%, $reference: $base_background_color)
 
-  .decision_board_point .point_remove
-    +link_style($decision_board_text_color, $decision_board_background_color, 25%)
-
   .open_point_link 
-    +link_style(deemphasize($base_text_color, 15%, $reference: $base_background_color), $base_background_color, 25%)
     background-color: $peer_background_color
     color: $base_text_color
-    padding: 0 $grid_gutter/4
-
-  &:hover .open_point_link
-    color: deemphasize($base_text_color, 15%, $reference: $base_background_color)   
 
 
-.points_by_community .community_point .point_content
+.points_by_community .point_content
   background-color: $peer_background_color
   color: $peer_text_color
   +single-box-shadow($color: #B5B5B5, $voff: 1px, $blur: 1px, $spread: 0px)
-
-// bubble mouth
-.community_point .point_content:before
-  color: $peer_background_color
-  +single-text-shadow(-1px, 1px, 1px, $color: #c4c4c4)
+  
+  // bubble mouth
+  &:before
+    color: $peer_background_color
+    +single-text-shadow(-1px, 1px, 1px, $color: #c4c4c4)
 
 // franklin/points
-
-.points_by_community
-
-  &[data-state="crafting"], &[data-state="results"]
-    .sort_points:hover .sort_points_menu
-      +on_menu
-
-.points_by_community
-  .unexpand_points_icon, .expand_points_icon
-    color: deemphasize($base_text_color, 50%, $reference: $base_background_color)
 
 .user_is_hovering_on_a_drop_target_pro .pros_on_decision_board, .user_is_hovering_on_a_drop_target_con .cons_on_decision_board
   .add_point_drop_target
     color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
     border-color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
 
-.add_point_drop_target
-  .drop_prompt
+.add_point_drop_target .drop_prompt
+  color: $base_text_color
+
+.newpoint .newpoint_prompt 
+  a
+    color: $decision_board_text_color
+  .qualifier
+    color: $base_text_color
+  .newpoint_bullet
     color: $base_text_color
 
-.newpoint
-  .newpoint_prompt 
-    a
-      color: $decision_board_text_color
-    .qualifier
-      color: $base_text_color
-    .newpoint_bullet
-      color: $base_text_color
-
 // helpers
-
 .l_tooltip-user .user_tooltip_opinion_link
   +link_style($base_text_color, $base_background_color, 20%)
 
 .l_tooltip-user-influence
   color: deemphasize($base_text_color, 25%, $base_background_color)
-
 
 // auth
 .user-options .user-options-menu

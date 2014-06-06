@@ -216,14 +216,8 @@ Proposal = React.createClass
       
       #description
       R.div className:'proposal_description',
-        R.div className:'proposal_proposer',
-          Avatar user: @props.data.proposal.user_id, tag: R.img, img_style: 'large'
-
-        R.div className: 'proposal_category',
-          @props.data.proposal.category
-          ' '
-          @props.data.proposal.designator
-
+        Avatar className: 'proposal_proposer', user: @props.data.proposal.user_id, tag: R.img, img_style: 'large'
+        R.div className: 'proposal_category', "#{@props.data.proposal.category} #{@props.data.proposal.designator}"
         R.h1 className:'proposal_heading', @props.data.proposal.name
         R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: @props.data.proposal.description}
 

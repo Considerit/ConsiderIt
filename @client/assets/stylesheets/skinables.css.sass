@@ -44,56 +44,6 @@ $sb-auto-states:     true         // Automatically create pseudo styles
     +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($complementary_background_color, 10%), 10%), $text_color: $complementary_text_color)
 
 
-////////////////// COLOR GROUPS //////////////////////////
-// A color group defines a text color and background styles. 
-// Color groups are applied to root HTML elements that start
-// a new background. For example, the pro/con decision board 
-// has a new background regime imposed on it and its children.
-///////////////////////////////////////////////////////////
-
-%on_background
-  color: $base_text_color
-  background: $base_background_declaration
-  a
-    +link_style(emphasize($base_text_color, 10%, $reference: $base_background_color), $base_background_color, 25%)
-
-%on_header
-  color: $header_text_color
-  background: $header_background_declaration
-  a
-    +link_style(emphasize($header_text_color, 10%, $reference: $header_background_color), $header_background_color, 25%)
-
-%on_footer
-  color: $footer_text_color
-  background: $footer_background_declaration
-  a
-    +link_style(emphasize($footer_text_color, 10%, $reference: $footer_background_color), $footer_background_color, 25%)
-
-
-
-%on_decision_board
-  color: $base_text_color
-  background: $decision_board_background_declaration
-
-  a
-    +link_style( emphasize($decision_board_text_color, 10%, $reference: $decision_board_background_color), $decision_board_background_color, 25%)
-  
-  h1, h2, h3
-    color: $decision_board_text_color
-
-  textarea, input[type="text"], input[type="email"], input[type="password"]
-    background-color: transparent
-    border: 1px solid
-    +inset-border($base_text_color)
-    display: inline-block
-    color: $base_text_color
-
-    &.error 
-      border-color: #883333
-      &:focus
-        +inset-border($decision_board_text_color)
-
-
 =on_menu($include_background: true)
   @if $include_background
     background-color: $menu_background_color
@@ -107,33 +57,6 @@ $sb-auto-states:     true         // Automatically create pseudo styles
     &.selected
       color: $complementary_text_color
       background-color: $complementary_background_color
-
-
-%on_dialog
-  background-color: $dialog_background_color
-  color: $dialog_text_color
-
-  textarea, input[type="text"], input[type="email"], input[type="password"]
-    color: emphasize($dialog_text_color, 15%, $reference: $dialog_background_color)
-    background-color: deemphasize($dialog_background_color, 20%)
-    border: 1px solid emphasize($dialog_background_color, 20%)
-    padding: 6px 12px
-
-%on_proposal_title
-  background-color: $proposal_title_background_color
-  color: $proposal_title_text_color
-  h1, h2, h3
-    color: emphasize($proposal_title_text_color, 10%, $reference: $proposal_title_background_color)
-  a
-    +link_style($proposal_title_text_color, $proposal_title_background_color, 20%)
-
-
-%on_peer_area  
-  background-color: $peer_background_color
-  color: $peer_text_color
-  
-
-
 
 // has to go after variable def; can go in library
 %main_font-family
@@ -154,7 +77,10 @@ html
   background: $bg_content_top_declaration
 
 .content_style
-  @extend %on_background
+  color: $base_text_color
+  background: $base_background_declaration
+  a
+    +link_style(emphasize($base_text_color, 10%, $reference: $base_background_color), $base_background_color, 25%)
 
 
 body, h1, h2, h3, h4, h5, h6 //, input, button
@@ -226,9 +152,7 @@ a
 
 [data-state="results"]
   .slider_base
-    background-color: $slider_base_color
-
-    .ui-slider-handle
+    background-color: desaturate($decision_board_text_color, 100%)
 
 [data-state="crafting"]
   .slider_base
@@ -238,11 +162,31 @@ a
 
 // franklin/proposal/crafting
 .decision_board_body
-  @extend %on_decision_board
+  color: $base_text_color
   border: 3px dashed $decision_board_border_color
 
   &.user_is_hovering_on_a_drop_target
     border-style: solid  
+
+  a
+    +link_style( emphasize($decision_board_text_color, 10%, $reference: $decision_board_background_color), $decision_board_background_color, 25%)
+  
+  h1, h2, h3
+    color: $decision_board_text_color
+
+  textarea, input[type="text"], input[type="email"], input[type="password"]
+    background-color: transparent
+    border: 1px solid
+    +inset-border($base_text_color)
+    display: inline-block
+    color: $base_text_color
+
+    &.error 
+      border-color: #883333
+      &:focus
+        +inset-border($decision_board_text_color)
+
+
 
 .decision_board_footer_view
 
@@ -303,7 +247,8 @@ a
 
 
 .points_by_community .community_point .point_content
-  @extend %on_peer_area
+  background-color: $peer_background_color
+  color: $peer_text_color
   +single-box-shadow($color: #B5B5B5, $voff: 1px, $blur: 1px, $spread: 0px)
 
 // bubble mouth
@@ -369,10 +314,16 @@ a
     color: $primary_accent_text_color
 
 .l_header
-  @extend %on_header
+  color: $header_text_color
+  background: $header_background_declaration
+  a
+    +link_style(emphasize($header_text_color, 10%, $reference: $header_background_color), $header_background_color, 25%)
 
 .l_footer
-  @extend %on_footer
+  color: $footer_text_color
+  background: $footer_background_declaration
+  a
+    +link_style(emphasize($footer_text_color, 10%, $reference: $footer_background_color), $footer_background_color, 25%)
 
 // dashboard
 #dashboard 
@@ -455,7 +406,14 @@ a
       +link_style(emphasize($complementary_background_color, 20%), $complementary_background_color, 25%)
 
   .l-dialog-body
-    @extend %on_dialog
+    background-color: $dialog_background_color
+    color: $dialog_text_color
+
+    textarea, input[type="text"], input[type="email"], input[type="password"]
+      color: emphasize($dialog_text_color, 15%, $reference: $dialog_background_color)
+      background-color: deemphasize($dialog_background_color, 20%)
+      border: 1px solid emphasize($dialog_background_color, 20%)
+      padding: 6px 12px
 
 // reset
 

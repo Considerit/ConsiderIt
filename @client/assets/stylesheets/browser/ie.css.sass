@@ -7,7 +7,7 @@
 
 //IE8 doesn't support transform: translate ...
 .no-csstransforms
-  .reasons_layout
+  .reasons_region
     &[data-state="crafting"]
 
       .pros_by_community, .cons_by_community
@@ -23,7 +23,7 @@
 
 
 
-  .reasons_layout  
+  .reasons_region  
     &[data-state="crafting"]
       top: -$histogram_height
 
@@ -52,7 +52,7 @@
 
 .histogram[data-state="crafting"][data-prior-state="results"] 
   visibility: hidden
-  .histogram_bar, .histogram_base
+  .histogram_bar, .slider_base
     visibility: hidden
 
 

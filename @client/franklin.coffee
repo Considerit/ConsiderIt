@@ -146,7 +146,7 @@ Proposal = React.createClass
       else if value <= -0.05
         return 2
 
-    $el = $(@getDOMNode()).find('.histogram_base')
+    $el = $(@getDOMNode()).find('.slider_base')
     if $el.hasClass "ui-slider"
       $el.slider(if @props.state == 'results' then 'disable' else 'enable') 
     else
@@ -178,19 +178,19 @@ Proposal = React.createClass
         notTop : "scrolling_with_user"
       
       onNotTop : -> 
-        $('.reasons_layout .cons_by_community').css
+        $('.reasons_region .cons_by_community').css
           transition: 'none'
           '-webkit-transition': 'none'
           transform: 'translateX(500px)'
           '-webkit-transform': 'translateX(550px)'
 
       onTop : ->
-        $('.reasons_layout .cons_by_community').css
+        $('.reasons_region .cons_by_community').css
           transform: ''
           '-webkit-transform': ''
 
         _.delay ->
-          $('.reasons_layout .cons_by_community').css
+          $('.reasons_region .cons_by_community').css
             transition: ''
             '-webkit-transition': ''
         , 100
@@ -215,14 +215,14 @@ Proposal = React.createClass
     R.div className:'proposal', key:@props.long_id, 'data-state':@props.state, 'data-prior-state':@state.priorstate,
       
       #description
-      R.div className:'proposal_description',
+      R.div className:'description_region',
         Avatar className: 'proposal_proposer', user: @props.data.proposal.user_id, tag: R.img, img_style: 'large'
         R.div className: 'proposal_category', "#{@props.data.proposal.category} #{@props.data.proposal.designator}"
         R.h1 className:'proposal_heading', @props.data.proposal.name
         R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: @props.data.proposal.description}
 
       #toggle
-      R.div className:'toggle_proposal_state',
+      R.div className:'toggle_state_region',
         R.h1 className:'proposal_state_primary',
           if @props.state == 'crafting' then 'Give your Opinion' else 'Explore all Opinions'
         R.div className:'proposal_state_secondary', 
@@ -234,26 +234,25 @@ Proposal = React.createClass
       R.div className:'feelings_region',
         #for segment in [6..0]
         for segment in [@state.num_small_segments..0]
-          R.div key:"#{segment}", className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", 'data-segment':segment, style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @state.avatar_size}px" else "#{@state.avatar_size}px"},
-            R.ul className:'histogram_bar_users',
-              for opinion in @state.histogram_small_segments[segment]
-                Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, className:"segment-#{segment}", style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
+          R.ul className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:"#{segment}", style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @state.avatar_size}px" else "#{@state.avatar_size}px"},
+            for opinion in @state.histogram_small_segments[segment]
+              Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, className:"segment-#{segment}", style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
 
-        R.div className:'histogram_base', 
-          R.div className:'feeling_slider ui-slider-handle',
+        R.div className:'slider_base', 
+          R.div className:'ui-slider-handle',
             R.img className:'bubblemouth', src:'/assets/bubblemouth.png', style: {transform: if @state.stance_segment > 3 then "scaleX(-1) translateX(#{if @props.state == 'crafting' then '15px' else '5px'})" else "translateX(#{if @props.state == 'crafting' then '30px' else '10px'})"}
             if @props.state == 'crafting'
-              R.div className:'feeling_feedback', 
-                R.div className:'feeling_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
-                R.div className:'feeling_feedback_result', stance_names[@state.stance_segment]
-                R.div className:'feeling_feedback_instructions', 'drag to change'
+              R.div className:'slider_feedback', 
+                R.div className:'slider_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
+                R.div className:'slider_feedback_result', stance_names[@state.stance_segment]
+                R.div className:'slider_feedback_instructions', 'drag to change'
 
-        R.div className:'feeling_labels', 
+        R.div className:'slider_labels', 
           R.h1 className:"histogram_label histogram_label_support", 'Support'
           R.h1 className:"histogram_label histogram_label_oppose", 'Oppose'
 
       #reasons
-      R.div className:'reasons_layout', style:{minHeight:'567px'},
+      R.div className:'reasons_region',
         #community pros
         CommunityPoints 
           state: @props.state
@@ -265,7 +264,7 @@ Proposal = React.createClass
         #your reasons
         R.div className:'opinion_region',
 
-          ReactTransitionGroup className:'decision_board_body', transitionName: 'state_change', component: R.div, style: {minHeight: '32px'},
+          ReactTransitionGroup className:'decision_board_body', transitionName: 'state_change', component: R.div,
 
             if @props.state == 'crafting'
               DecisionBoard

@@ -16,7 +16,6 @@ $grid_gutter: 18px
 // The height of each vertical grid unit (rhythm)
 $vertical_baseline: 1em
 
-
 ////////////////////////////////////////////////////////////////////
 // LAYOUT VARIABLES. Defines the high-level content dimensions.
 ////////////////////////////////////////////////////////////////////
@@ -41,45 +40,7 @@ $content_width: $page_width - 2 * $content_gutter
 // tends to be things like individual or groups of user avatars
 $body_gutter: 4 * $grid_major + $grid_gutter
 $body_width: $content_width - 2 * $body_gutter
-$proposal_width: 670px
 
-////////////////////////////////////////////////////////////////////
-// UI WIDGET SIZES
-////////////////////////////////////////////////////////////////////
-
-// decision board width is the size of the pro/con list in the middle
-$decision_board_width: $body_width + 4 // the four is for the border 
-
-// POINTS
-// Pictoral summary of point:
-// |                             point-width                                |
-// | grid_gutter/2 | point-avatar-width | point-content-width | grid_gutter/2 | 
-
-$point-width: $body_width / 2 - 20
-$point-avatar-width: 22px //2 * $grid_gutter
-$point-content-width: $point_width - $point-avatar-width - $grid-gutter 
-
-$open_point-width: $body_width + 3 * $grid_major
-
-// $proposer_img_size is the size of the proposer avatar shown to the right of a proposer
-$proposer_img_size: 75px
-
-// the horizontal amount that a point grows by when you expand the pros or cons
-$expanded_points_increment: 3 * $grid_major
-
-// The height of the histogram
-$histogram_height: 10 * $vertical_baseline
-
-// The slight offset that the proposal description gets to make it look like a back and forth dialogue
-$dialog_stutter: $grid_gutter
-
-
-////////////////////////////////////////////////////////////////////
-// STATE TRANSITION VARIABLES
-////////////////////////////////////////////////////////////////////
-
-$transition_speed: 750ms
-$transition_function: ease-out
 
 ////////////////////////////////////////////////////////////////////
 // COMPASS DEFAULTS

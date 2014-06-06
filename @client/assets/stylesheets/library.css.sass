@@ -1,3 +1,6 @@
+// ** This file only defines two SASS color functions. Can we just extend SASS somewhere instead of having this here?
+
+
 // These mixins and extenders can be used across all the sass files
 
 
@@ -21,33 +24,5 @@
     @return lighten($color, $amount)
   @else
     @return darken($color, $amount)
-
-
-=link_style($color, $reference, $amount)
-  color: $color
-  &:hover
-    // Determine whether the hover should darken or lighten the color
-    @if lightness($reference) > 50% 
-      // if the background is light, make the link darker on hover
-      color: darken($color, $amount)
-    @else
-      color: lighten($color, $amount)
-
-// Browsers render the inset colors so differently...
-=inset-border($base_text_color)
-  border-color: darken($base_text_color, 10%) lighten($base_text_color, 5%) lighten($base_text_color, 10%) lighten($base_text_color, 5%)
-
-
-=grab_cursor
-  cursor: move
-  cursor: ew-resize
-  cursor: -webkit-grab
-  cursor: -moz-grab
-
-  &:active
-    cursor: move
-    cursor: ew-resize
-    cursor: -webkit-grabbing
-    cursor: -moz-grabbing
 
 

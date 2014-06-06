@@ -37,9 +37,6 @@ $plain_text_color: black !default
 $primary_accent_background_color: hsl( 210, 0%, 84%) !default
 $primary_accent_text_color: hsl( 210, 0%, 25%) !default
 
-$secondary_accent_background_color: #414141 !default
-$secondary_accent_text_color: #fafafa !default
-
 // complementary color should have strong contrast with background color
 $complementary_background_color: emphasize($primary_accent_background_color, 25%) !default
 $complementary_text_color: white !default
@@ -73,10 +70,6 @@ $base_text_color: $plain_text_color !default
 $base_background_color: white !default
 $base_background_declaration: $base_background_color !default
 
-// $base_text_color: #dedede 
-// $base_background_color: #777
-// $base_background_declaration: asset-data-url('base/images/tweed.png') repeat 
-
 // HEADER LAYOUT GROUP
 // Applied to page header
 $header_background_color: $base_background_color !default
@@ -106,30 +99,10 @@ $decision_board_border_color: $decision_board_text_color !default
 $decision_board_background_color: rgba(mix($base_background_color, $primary_accent_background_color, 95%), .3)
 $decision_board_background_declaration: $decision_board_background_color !default
 
-// HISTOGRAM ELEMENT GROUP
-// Applied to each histogram bar on the results page
-$histogram_bar_color: emphasize($base_background_color, 45%) !default
-$slider_base_color: emphasize($histogram_bar_color, 5%) !default
-
-// SLIDER ELEMENT
-// Background color of the slider on the crafting page
-$slider_background_color: $slider_base_color !default
-
-// PROPOSAL TITLE ELEMENT GROUP
-// Applied to the proposal title
-$proposal_title_background_color: $primary_accent_background_color !default
-$proposal_title_text_color: $primary_accent_text_color !default
-
-// PROPOSAL DETAILS ELEMENT GROUP
-// Applied to the expanded details for a proposal
-$proposal_detail_background_color: $plain_background_color !default
-$proposal_detail_text_color: $plain_text_color !default
-
 // PEER POINT ELEMENT GROUP
 // Applied to peer point summary, peer points and open points
 $peer_background_color: $plain_background_color !default
 $peer_text_color: $plain_text_color !default
-
 
 //////////////////////////////////////////////////////////////
 // THEME HOOKS 
@@ -137,3 +110,6 @@ $peer_text_color: $plain_text_color !default
 $bg_top_declaration: none !default
 $bg_content_declaration: none !default
 $bg_content_top_declaration: none !default
+
+
+

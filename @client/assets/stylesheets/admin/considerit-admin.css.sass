@@ -6,6 +6,25 @@
 @import "./modules/dash/assessable"
 @import "./modules/dash/analytics"
 
+@import "compass/css3/box-shadow"
+
+
+=pressable_button
+  margin: 2px 5px
+  padding: 2px 8px
+  cursor: pointer
+  color: #555
+  background-color: #efefef
+  border: 1px solid
+  border-radius: 5px
+  border-color: white #ccc #ccc white
+  +single-box-shadow
+
+  &.selected
+    border-color: #ccc white white #ccc
+    +single-box-shadow($inset: true, $blur: 4px, $color: rgba(0, 0, 0, .2))
+
+
 .pressable_button
   +pressable_button
   

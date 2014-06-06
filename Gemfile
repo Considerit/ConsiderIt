@@ -51,7 +51,7 @@ gem 'paperclip'
 gem 'paperclip-compression'
 
 # https://github.com/amatsuda/kaminari
-gem 'kaminari'
+# gem 'kaminari'
 
 # https://github.com/javan/whenever
 gem 'whenever'
@@ -80,7 +80,7 @@ gem 'sanitize'
 # https://github.com/indirect/jquery-rails
 gem 'jquery-rails'
 
-gem 'paper_trail'
+# gem 'paper_trail'
 
 # https://github.com/lucasefe/themes_for_rails
 gem "themes_for_rails", :git => 'git://github.com/tkriplean/themes_for_rails.git' #, :branch => 'rails4'
@@ -117,6 +117,23 @@ gem 'font-awesome-rails'
 gem 'actionpack-action_caching'
 #######
 
+
+##
+# These used to be the Assets group
+gem 'sprockets', "~> 2.11.0"
+gem 'sprockets-rails', :require => 'sprockets/railtie'
+#gem 'sprockets-helpers'
+
+gem 'aws-sdk'
+gem 'coffee-rails' #, "~> 3.2.2"
+gem 'uglifier'
+gem "asset_sync"
+gem 'sass-rails'
+gem 'compass' #, '1.0.0.alpha.18'
+gem 'compass-rails' #, '>= 1.0.2'
+gem 'sassy-buttons'
+
+
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:
@@ -138,15 +155,3 @@ group :production do
   gem "aws-ses", "~> 0.5.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
 end
 
-gem 'sprockets', "~> 2.11.0"
-gem 'sprockets-rails', :require => 'sprockets/railtie'
-#gem 'sprockets-helpers'
-
-gem 'aws-sdk'
-gem 'coffee-rails' #, "~> 3.2.2"
-gem 'uglifier'
-gem "asset_sync"
-gem 'sass-rails'
-gem 'compass' #, '1.0.0.alpha.18'
-gem 'compass-rails' #, '>= 1.0.2'
-gem 'sassy-buttons'

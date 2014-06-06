@@ -33,7 +33,7 @@ class OpinionsController < ApplicationController
         }
       end
     else
-      render :nothing => true, :layout => true
+      render "layouts/application", :layout => false
     end
 
   end

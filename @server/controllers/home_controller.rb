@@ -5,7 +5,7 @@ class HomeController < ApplicationController
   }
 
   def index
-    render :nothing => true, :layout => true
+    render "layouts/application", :layout => false
   end
 
   def avatars

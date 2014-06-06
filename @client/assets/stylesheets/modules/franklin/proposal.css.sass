@@ -4,3 +4,81 @@
 @import "compass/css3/transition"
 @import "library"
 
+
+/////////////////////
+// GLOBAL LAYOUT
+// Tricky placements, animations, interconnected components
+
+
+/////////////////////
+// DESCRIPTION REGION
+// Proposal description
+
+// Wrapper around description region
+.proposal_description
+  position: relative
+  margin: auto
+  width: $proposal_width
+  +font-size(1)
+
+// Proposal proposer is the avatar of the user who submitted the proposal
+.proposal_proposer
+  left: - $proposer_img_size - $grid_gutter
+  position: absolute
+  width: $proposer_img_size // - 30
+  vertical-align: bottom 
+
+.proposal_heading
+  padding: 0 $grid_gutter $vertical_baseline / 2 $grid_gutter
+  min-height: $proposer_img_size
+  +font-size(8)
+
+.proposal_category
+  position: absolute
+  top: -$vertical_baseline * 1.5
+  left: $grid_gutter
+
+// The proposal details revealed 
+.proposal_details
+  padding: $vertical_baseline / 2 $grid_gutter
+
+  // some default styles for html written by users rendered here
+  br
+    padding-bottom: $vertical_baseline/2
+  p
+    margin-bottom: $vertical_baseline / 2
+  td
+    padding: 0 3px
+    
+
+/////////////////////
+// TOGGLE REGION
+// State transitions between crafting and results
+
+.toggle_proposal_state
+  text-align: center
+  position: relative
+  margin-top: 2 * $vertical_baseline
+
+  .proposal_state_primary
+    +font-size(11)
+    font-weight: 200
+
+  .proposal_state_secondary
+    +font-size(1)
+    position: absolute
+    top: 22px
+    right: 62px
+
+    a 
+      text-decoration: underline
+
+
+/////////////////////
+// FEELINGS REGION
+// Integrated histogram and slider widget
+
+
+/////////////////////
+// REASONS REGION
+// The columns of points & decision board

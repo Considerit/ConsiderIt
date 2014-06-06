@@ -2,11 +2,9 @@
 // THEME: Processes all styles requiring skin variables.
 ////////////////////////////////////////////////////////
 @import "variables"
-@import "compass/css3/box-shadow"
-@import "compass/css3/text-shadow"
-@import "compass/typography/vertical_rhythm"
-@import "sassy-buttons"
+@import "bourbon"
 @import "library"
+
 
 
 // Sassy button defaults
@@ -44,17 +42,17 @@ $sb-auto-states:     true         // Automatically create pseudo styles
 
 
 %superbutton
-  +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 16%), $second-color: emphasize($complementary_background_color, 24%))
+  // +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 16%), $second-color: emphasize($complementary_background_color, 24%))
   +link_style($complementary_text_color, $complementary_background_color, 25%)
 
   &:hover
-    +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 25%), $second-color: emphasize($complementary_background_color, 36%))
+    // +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 25%), $second-color: emphasize($complementary_background_color, 36%))
 
 %button
-  +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($base_background_color, 100%), 5%), $second-color: emphasize(desaturate($base_background_color, 100%), 10%), $text_color: deemphasize($base_text_color, 5%))
+  // +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($base_background_color, 100%), 5%), $second-color: emphasize(desaturate($base_background_color, 100%), 10%), $text_color: deemphasize($base_text_color, 5%))
   
   &:hover
-    +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($complementary_background_color, 10%), 10%), $text_color: $complementary_text_color)
+    // +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($complementary_background_color, 10%), 10%), $text_color: $complementary_text_color)
 
 
 =on_menu($include_background: true)
@@ -74,11 +72,6 @@ $sb-auto-states:     true         // Automatically create pseudo styles
 // has to go after variable def; can go in library
 %main_font-family
   font-family: $main_font-family
-
-// compass vertical rhythm stuff...has to go after $base-font-size declared
-+establish-baseline
-html
-  +adjust-leading-to(3)
 
 #t_bg-top
   background: $bg_top_declaration
@@ -238,12 +231,12 @@ a
 .points_by_community .point_content
   background-color: $peer_background_color
   color: $peer_text_color
-  +single-box-shadow($color: #B5B5B5, $voff: 1px, $blur: 1px, $spread: 0px)
+  box-shadow: #B5B5B5 0 1px 1px 0px
   
   // bubble mouth
   &:before
     color: $peer_background_color
-    +single-text-shadow(-1px, 1px, 1px, $color: #c4c4c4)
+    text-shadow: #c4c4c4 -1px 1px 1px
 
 // franklin/points
 

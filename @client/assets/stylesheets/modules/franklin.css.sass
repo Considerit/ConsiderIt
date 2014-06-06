@@ -5,6 +5,28 @@
 @import "library"
 
 
+$proposal_width: 670px
+
+$point-width: $body_width / 2 - 20
+$point-avatar-width: 22px
+$point-content-width: $point_width - $point-avatar-width - $grid-gutter 
+
+// decision board width is the size of the pro/con list in the middle
+$decision_board_width: $body_width + 4 // the four is for the border 
+
+// total width of the pro/con list in the middle and the peer pro/con points in the margins
+$full_reasons_width: $decision_board_width + 2 * $point-content-width + 4 * $grid_gutter + 4
+
+$proposer_img_size: 75px
+
+$histogram_width: $body_width + 2 * $grid_major
+$default_avatar_in_histogram_color: #bbb
+
+$slider_base_height: 4px
+
+$transition_speed: 750ms
+
+
 /////////////////////
 // DESCRIPTION REGION
 // Proposal description
@@ -74,8 +96,6 @@
 // Integrated histogram and slider widget
 
 // histogram
-$histogram_width: $body_width + 2 * $grid_major
-$default_avatar_in_histogram_color: #bbb
 
 .feelings_region
   margin: $vertical_baseline auto 0 auto
@@ -107,8 +127,6 @@ $default_avatar_in_histogram_color: #bbb
   opacity: .2
 
 // slider
-
-$slider_base_height: 4px
 
 .slider_base
   margin: auto
@@ -199,8 +217,6 @@ $slider_base_height: 4px
 // Layout for 4 cols
 // Widths, transforms, and intercomponent relationships for 4 col / 2 col design
 
-// total width of the pro/con list in the middle and the peer pro/con points in the margins
-$full_reasons_width: $decision_board_width + 2 * $point-content-width + 4 * $grid_gutter + 4
 
 .reasons_region  
   position: relative

@@ -3,42 +3,41 @@
 #////////////////////////////////////////////////////////////
 
 # Ugliness in this prototype: 
-#   - ReactTransitionGroup based animations force defining custom components
-#     when I'd rather just keep them in the parent component. 
-#   - Constants below are kinda nasty. For example, state transition javascript animations sometimes require setting css (e.g. width or transform), 
-#     which are duplicated in the CSS itself to accommodate navigating directly to that state.
 #   - Keeping javascript and CSS variables synchronized
-#      * transition_speed
-#      * slider width
-#   - Sticky decision board requires hacks to CSS of community cons to get them to stay to the right
 #   - Haven't declared prop types for the components
-#   - Some animations are living in places that access DOM not managed by them
-#   - The JSON data returned from the server is not organized well
+#   - Proposal component is pretty giant, should split out the 
+#     histogram/slider into its own component
+#   - Unclear whether information derived from props should be 
+#     stored as state or plain variable (see Proposal.buildHistogramDataFromProps)
+#   - I don't like setting data as key in props, would rather 
+#     have the specific props be added explicitly
+#   - NewPoint CSS/HTML is still bulky, waiting on redesign
+#   - Managing top_level_component in Router
 
 # React aliases
 R = React.DOM
 ReactTransitionGroup = React.addons.TransitionGroup
 
 # Constants
-transition_speed = 700   # [keep in sync with CSS] Speed of transition from results to crafting (and vice versa) 
-histogram_width = 636    # [keep in sync with CSS] Width of the slider / histogram base 
-biggest_possible_avatar_size = 50
+TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
+BIGGEST_POSSIBLE_AVATAR_SIZE = 50
+
+# Constants to keep in sync with CSS
+histogram_width = 636    # Width of the slider / histogram base 
+slider_base_height = 4  # Height of the slider / histogram base
+decision_board_width = 544
 
 ####################
 # React Components
 #
 # These are the components and their relationships:
 #                       Proposal
-#                   /      |            \ 
-#    CommunityPoints   DecisionBoard      GiveOpinionButton
-#               |          | 
+#                   /              \ 
+#    CommunityPoints             DecisionBoard
+#               |                  /
 #               |      YourPoints
 #               |    /            \
 #              Point             NewPoint
-
-# DecisionBoard and GiveOpinionButton exist only for the sake of the particular way
-# React affords animations right now. See ReactTransitionGroup below. 
-
 
 ##
 # Proposal
@@ -47,10 +46,13 @@ biggest_possible_avatar_size = 50
 Proposal = React.createClass
   displayName: 'Proposal'
 
+  ####
+  # Component defaults
+
   getDefaultProps : ->
     state : 'crafting'
     priorstate : 'results'    
-    data :
+    data :  # would rather have each of these data items added to top level props dict
       proposal : {}
       points : {}
       users : {}
@@ -66,46 +68,60 @@ Proposal = React.createClass
     stance : 0.0
     stance_segment : 3
 
-  onPointShouldBeIncluded : (point_id) ->
-    #TODO: activeREST call here...
-    #TODO: should probably be saving an opinion, e.g. @props.data.opinion
-    @props.data.included_points.push point_id
-    save @props.data
+  # TODO: add prop types here
 
-  onPointShouldBeRemoved : (point_id) ->
-    #TODO: activeREST call here...    
-    #TODO: should probably be saving an opinion, e.g. @props.data.opinion    
-    #TODO: server might return that the point was actually _deleted_ from 
-    #      the system, not just removed from the list...need to handle that
-    @props.data.included_points = _.without @props.data.included_points, point_id
-    save @props.data
 
-  onPointShouldBeCreated : (data) ->
-    #TODO: activeREST call here...
-    #TODO: seems activeREST would have to update both opinion and point...
-    id = -1
-    while _.has @props.data.points, id
-      id = -(Math.floor(Math.random() * 999999) + 1)
+  ####
+  # Lifecycle methods
 
-    point = _.extend data, 
-      user_id : -2 #unlogged in user
-      comment_count : 0 
-      id : id
+  componentWillMount : -> @buildHistogramDataFromProps @props
 
-    @props.data.points[id] = point
-    @props.data.included_points.push point.id
+  componentWillReceiveProps : (next_props) -> @buildHistogramDataFromProps next_props
 
-    save @props.data
+  componentWillUpdate : (next_props, next_state) ->
+
+  componentDidMount : -> 
+    @applyStyles @props.state, false
+    @setSlidability()
+
+  componentDidUpdate : (prev_props, prev_state) ->
+    @applyStyles @props.state, prev_props.state != @props.state
+    @setSlidability()
+
+    # Sticky decision board. It is here because the calculation of offset top would 
+    # be off if we did it in DidMount before all the data has been fetched from server
+    if @props.state == 'crafting'
+      _.delay => 
+        $el = $(@getDOMNode())
+        $cons = $el.find('.cons_by_community')
+        $opinion = $el.find('.opinion_region')
+
+        $el.find('.opinion_region').headroom
+          offset: $('.opinion_region').offset().top
+
+          onNotTop : -> 
+            $cons.hide()
+            $cons.css {left: decision_board_width}
+            $opinion.css {position: 'fixed', top: 0}
+            $cons.show()
+
+          onTop : -> 
+            $cons.hide()
+            $cons.css {left: ''}
+            $opinion.css {position: '', top: ''}
+            $cons.show()
+      , 200  # delay initialization to let the rest of the dom load so that the offset is calculated properly
 
     ##
+    # buildHistogramDataFromProps
     # Split up opinions into segments. For now we'll keep three hashes: 
     #   - all opinions
     #   - high level segments (the seven original segments, strong supporter, neutral, etc)
     #   - small segments that represent individual columns in the histogram, now that 
     #     we do not have wide bars per se
   buildHistogramDataFromProps : (props) ->
-    # an initial function for sizing avatars 
-    avatar_size = Math.min biggest_possible_avatar_size, biggest_possible_avatar_size / Math.sqrt( (props.data.opinions.length + 1)/10  )
+    # function for sizing avatars 
+    avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (props.data.opinions.length + 1)/10  )
 
     # Calculate how many segments columns to put on the histogram. Note that for the extremes and for neutral, we'll hack it 
     # to allow three columns for those segments. 
@@ -125,9 +141,9 @@ Proposal = React.createClass
 
     @setState {seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments}
 
-  componentWillMount : -> @buildHistogramDataFromProps @props
-  componentWillReceiveProps : (next_props) -> @buildHistogramDataFromProps next_props
-
+  ##
+  # setSlidability
+  # Inits jQuery UI slider and enables/disables it between states
   setSlidability : ->
 
     getStanceSegmentFromSliderValue = (value) ->
@@ -160,46 +176,103 @@ Proposal = React.createClass
           # update the stance segment if it has changed. This facilitates the feedback atop
           # the slider changing from e.g. 'strong supporter' to 'neutral'
           segment = getStanceSegmentFromSliderValue ui.value
-          if @props.data.stance_segment != segment
-            @setState 
+          if @state.stance_segment != segment
+            @setState  # This reflow causes bad FPS; should be contained to slider component
               stance_segment : segment
               stance : ui.value
 
-  componentDidMount : -> @setSlidability()
-  componentDidUpdate : ->
-    @setSlidability()
 
-    # Sticky decision board. It is here because the calculation of offset top would 
-    # be off if we did it in DidMount before all the data has been fetched from server
-    $('.opinion_region').headroom
-      offset: $('.opinion_region').offset().top #+ $('.opinion_region').height()
-      classes:
-        top : "normal_place"
-        notTop : "scrolling_with_user"
-      
-      onNotTop : -> 
-        $('.reasons_region .cons_by_community').css
-          transition: 'none'
-          '-webkit-transition': 'none'
-          transform: 'translateX(500px)'
-          '-webkit-transform': 'translateX(550px)'
+  ####
+  # State-dependent styling
+  applyStyles : (to_state, animate = true) ->  
+    $el = $(@getDOMNode())
+    duration = if animate then TRANSITION_SPEED else 0
 
-      onTop : ->
-        $('.reasons_region .cons_by_community').css
-          transform: ''
-          '-webkit-transform': ''
+    # Note: Velocity requires properties to be pulled out (e.g. paddingLeft, translateX, rather than using padding or transform)
+    # Note: Use velocity even for 0 duration applications to maintain parity of style definition
+    mouth_scaler = if @state.stance_segment > 3 then -1 else 1
+    switch to_state
+      when 'crafting'
+        styles = 
+          '.histogram_bar:not(.extreme_or_neutral)': { opacity: .2 }
+          '.histogram_bar.extreme_or_neutral':       { opacity: .2 }
+          '.the_handle':                             { scale: 2.5, translateY: -7 + slider_base_height / 2 }
+          '.bubblemouth':                            { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 6, translateX: (if @state.stance_segment > 3 then 15 else 30)}
+          '.opinion_region':                         { translateX: 0, translateY: 0 }
+          '.decision_board_body':                    { width: decision_board_width}
+          '.pros_by_community':                      { translateX: 0 }
+          '.cons_by_community':                      { translateX: 0 }
+        
+        _.each _.keys(styles), (selector) -> $el.find(selector).velocity styles[selector], {duration}
 
-        _.delay ->
-          $('.reasons_region .cons_by_community').css
-            transition: ''
-            '-webkit-transition': ''
-        , 100
+        $el.find('.give_opinion_button')[0].style.visibility = 'hidden'
+        _.delay -> 
+          $el.find('.your_points')[0].style.display = ''
+        , duration
+
+      when 'results'
+        opinion_region_x = decision_board_width * (@state.stance+1)/2  #this won't get current stance slider; only guaranteed to be within correct segment
+        give_opinion_button_width = 186
+        opinion_region_x -= .65 * give_opinion_button_width if @state.stance_segment > 3 
+
+        styles = 
+          '.histogram_bar:not(.extreme_or_neutral)': { opacity: 1 }
+          '.histogram_bar.extreme_or_neutral':       { opacity: 1 }
+          '.the_handle':                             { scale: 1, translateY: -10 + slider_base_height / 2}
+          '.bubblemouth':                            { scaleX: mouth_scaler, scaleY: 1, translateY: -6, translateX: (if @state.stance_segment > 3 then 5 else 10)}
+          '.opinion_region':                         { translateX: opinion_region_x, translateY: -18 }
+          '.decision_board_body':                    { width: give_opinion_button_width}
+          '.pros_by_community':                      { translateX:  decision_board_width / 2 }
+          '.cons_by_community':                      { translateX: -decision_board_width / 2 }
+        
+        _.each _.keys(styles), (selector) -> $el.find(selector).velocity styles[selector], {duration}
+
+        $el.find('.your_points')[0].style.display = 'none'
+        _.delay -> 
+          $el.find('.give_opinion_button')[0].style.visibility = 'visible'
+        , duration
+
+  ####
+  # Props need to change methods
+
+  onPointShouldBeIncluded : (point_id) ->
+    #TODO: activeREST call here...
+    #TODO: should probably be managing an opinion, e.g. @props.opinion.included_points
+    @props.data.included_points.push point_id
+    save @props.data
+
+  onPointShouldBeRemoved : (point_id) ->
+    #TODO: activeREST call here...    
+    #TODO: should probably be managing an opinion, e.g. @props.opinion.included_points
+    #TODO: server might return that the point was actually _deleted_ from 
+    #      the system, not just removed from the list...need to handle that
+    @props.data.included_points = _.without @props.data.included_points, point_id
+    save @props.data
+
+  onPointShouldBeCreated : (data) ->
+    #TODO: activeREST call here...
+    id = -1
+    while _.has @props.data.points, id
+      id = -(Math.floor(Math.random() * 999999) + 1)
+
+    point = _.extend data, 
+      user_id : -2 #anon user
+      comment_count : 0 
+      id : id
+
+    @props.data.points[id] = point
+    @props.data.included_points.push point.id
+
+    save @props.data
 
   toggleState : (ev) ->
     route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
     app_router.navigate route, {trigger : true}
 
+  ####
+  # Make this thing!
   render : ->
+
     segment_is_extreme_or_neutral = (segment) => 
       segment == 0 || segment == @state.num_small_segments || segment == Math.floor(@state.num_small_segments / 2)
 
@@ -229,23 +302,23 @@ Proposal = React.createClass
           'or '
           R.a onClick: @toggleState,
             if @props.state != 'crafting' then 'Give Own Opinion' else 'Explore all Opinions'
+    
 
       #feelings
       R.div className:'feelings_region',
-        #for segment in [6..0]
         for segment in [@state.num_small_segments..0]
-          R.ul className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:"#{segment}", style: {width: if segment_is_extreme_or_neutral(segment) then "#{3 * @state.avatar_size}px" else "#{@state.avatar_size}px"},
+          R.ul className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:"#{segment}", style: {width: (if segment_is_extreme_or_neutral(segment) then 3 * @state.avatar_size else @state.avatar_size)},
             for opinion in @state.histogram_small_segments[segment]
-              Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, className:"segment-#{segment}", style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
+              Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
 
         R.div className:'slider_base', 
-          R.div className:'ui-slider-handle',
-            R.img className:'bubblemouth', src:'/assets/bubblemouth.png', style: {transform: if @state.stance_segment > 3 then "scaleX(-1) translateX(#{if @props.state == 'crafting' then '15px' else '5px'})" else "translateX(#{if @props.state == 'crafting' then '30px' else '10px'})"}
-            if @props.state == 'crafting'
-              R.div className:'slider_feedback', 
-                R.div className:'slider_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
-                R.div className:'slider_feedback_result', stance_names[@state.stance_segment]
-                R.div className:'slider_feedback_instructions', 'drag to change'
+          R.div className:'ui-slider-handle', #jquery UI slider will pick an el with this class name up
+            R.div className: 'the_handle'
+            R.img className:'bubblemouth', src:'/assets/bubblemouth.png', 
+            R.div className:'slider_feedback', 
+              R.div className:'slider_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
+              R.div className:'slider_feedback_result', stance_names[@state.stance_segment]
+              R.div className:'slider_feedback_instructions', 'drag to change'
 
         R.div className:'slider_labels', 
           R.h1 className:"histogram_label histogram_label_support", 'Support'
@@ -255,6 +328,7 @@ Proposal = React.createClass
       R.div className:'reasons_region',
         #community pros
         CommunityPoints 
+          key: 'pros'
           state: @props.state
           points: @props.data.points
           valence: 'pro'
@@ -262,28 +336,17 @@ Proposal = React.createClass
           onPointShouldBeRemoved : @onPointShouldBeRemoved
 
         #your reasons
-        R.div className:'opinion_region',
+        DecisionBoard
+          state: @props.state
+          points : @props.data.points
+          included_points : @props.data.included_points
+          onPointShouldBeIncluded : @onPointShouldBeIncluded
+          onPointShouldBeCreated : @onPointShouldBeCreated
+          toggleState: @toggleState
 
-          ReactTransitionGroup className:'decision_board_body', transitionName: 'state_change', component: R.div,
-
-            if @props.state == 'crafting'
-              DecisionBoard
-                key: 1
-                state: @props.state
-                points : @props.data.points
-                included_points : @props.data.included_points
-                onPointShouldBeIncluded : @onPointShouldBeIncluded
-                onPointShouldBeCreated : @onPointShouldBeCreated
-
-            else if @props.state == 'results'
-              GiveOpinionButton
-                key: 2
-                state: @props.state
-                toggleState: @toggleState
-                stance_segment: @state.stance_segment
-
-        #community cons
+        #community cons    
         CommunityPoints 
+          key: 'cons'
           state: @props.state
           points: @props.data.points
           valence: 'con'
@@ -293,106 +356,47 @@ Proposal = React.createClass
 ##
 # DecisionBoard
 # Handles the user's list of important points in crafting state. 
-# Primary motivation for pulling this out separately is to 
-# animate between results and crafting states using the 
-# ReactTransitionGroup interface.
 DecisionBoard = React.createClass
   displayName: 'DecisionBoard'
 
   componentDidMount : ->
-    
     # make this a drop target
     $el = $(@getDOMNode()).parent()
     $el.droppable
       accept: ".community_point .point_content"
       drop : (ev, ui) =>
-        ui.draggable.parent().fadeOut 200, => 
+        ui.draggable.parent().velocity 'fadeOut', 200, => 
           @props.onPointShouldBeIncluded ui.draggable.parent().data('id')
         $el.removeClass "user_is_hovering_on_a_drop_target"
       out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
       over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
 
-
-  componentWillEnter : (callback) ->
-    # Don't display the pro/con columns immediately, 
-    # otherwise they won't fit side by side as the 
-    # area animates the width
-    $(@getDOMNode()).hide()
-    _.delay =>
-      $(@getDOMNode()).show()
-      callback()
-    , transition_speed
-
-  componentWillLeave : (callback) ->
-    $(@getDOMNode()).hide()
-    callback()
-    # $(@getDOMNode()).slideUp transition_speed / 4, ->
-    #   callback()
-
   render : ->
-    R.div null,
-      # your pros
-      YourPoints
-        state: @props.state
-        priorstate: @props.priorstate
-        points : @props.points         
-        included_points: @props.included_points
-        valence: 'pro'
-        onPointShouldBeCreated: @props.onPointShouldBeCreated
+    R.div className:'opinion_region', 
+      R.div className:'decision_board_body',
 
-      # your cons
-      YourPoints
-        state: @props.state
-        priorstate: @props.priorstate
-        points : @props.points 
-        included_points: @props.included_points
-        valence: 'con'
-        onPointShouldBeCreated: @props.onPointShouldBeCreated
+        # only shown during crafting, but needs to be present always for animation
+        R.div className: 'your_points',
+          # your pros
+          YourPoints
+            state: @props.state
+            priorstate: @props.priorstate
+            points : @props.points         
+            included_points: @props.included_points
+            valence: 'pro'
+            onPointShouldBeCreated: @props.onPointShouldBeCreated
 
-##
-# GiveOpinionButton
-# Displays the give opinion button which toggles to crafting state. 
-# Primary motivation for pulling this out separately is to 
-# animate between results and crafting states using the 
-# ReactTransitionGroup interface.
-GiveOpinionButton = React.createClass
-  displayName: 'GiveOpinionButton'
+          # your cons
+          YourPoints
+            state: @props.state
+            priorstate: @props.priorstate
+            points : @props.points 
+            included_points: @props.included_points
+            valence: 'con'
+            onPointShouldBeCreated: @props.onPointShouldBeCreated
 
-  # Moves the GiveOpinionButton under the slider handle
-  place: ->
-    left = $('.ui-slider-handle').offset().left - $('.opinion_region').offset().left 
-    
-    if @props.stance_segment > 3 # position right justified when opposing
-      # 120 is based on width of give opinion button, which can't be checked here b/c this is before animation is complete
-      left -= 120 
-
-    # Ugly to manipulate the opinion region here
-    $('.opinion_region').css
-      transform: "translate(#{left}, -18px)"
-      '-webkit-transform': "translate(#{left}px, -18px)"
-
-  componentDidUpdate: ->
-    # place button correctly when results url is opened directly; problem: CSS shouldn't animate on initial open
-    @place() if @props.state == 'results' && !@props.priorstate
-
-  componentWillEnter: (callback) ->
-    @place()
-
-    # wait a slight bit before showing "give your opinion" when moving from crafting to results
-    $(@getDOMNode()).hide()
-    _.delay =>
-      $(@getDOMNode()).show()
-      callback()
-    , 100
-
-  componentWillLeave: (callback) -> 
-    $('.opinion_region').css
-      transform: "translate(0,0)"
-      '-webkit-transform': "translate(0,0)"
-    callback()
-
-  render : -> R.a className:'give_opinion_button', onClick: @props.toggleState, 'Give your Opinion'
-
+        # only shown during results, but needs to be present always for animation
+        R.a className:'give_opinion_button', onClick: @props.toggleState, 'Give your Opinion'
 
 
 ##
@@ -433,7 +437,6 @@ YourPoints = React.createClass
           valence: @props.valence
           onPointShouldBeCreated: @props.onPointShouldBeCreated
 
-
 ##
 # CommunityPoints
 # List of points contributed by others. 
@@ -447,23 +450,22 @@ CommunityPoints = React.createClass
     $el.droppable
       accept: ".decision_board_point.#{@props.valence} .point_content"
       drop : (ev, ui) =>
-        ui.draggable.parent().fadeOut 200, => 
+        ui.draggable.parent().velocity 'fadeOut', 200, => 
           @props.onPointShouldBeRemoved ui.draggable.parent().data('id')
           $el.removeClass "user_is_hovering_on_a_drop_target"
       out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
       over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
 
   render : ->
-    points = @props.points
 
     #filter to pros or cons & down to points that haven't been included
-    points = _.filter _.values(points), (pnt) =>
+    points = _.filter _.values(@props.points), (pnt) =>
       is_correct_valence = pnt.is_pro == (@props.valence == 'pro')
       has_not_been_included = @props.state == 'results' || !_.contains(@props.included_points, pnt.id)
       is_correct_valence && has_not_been_included
 
     R.div className:"points_by_community #{@props.valence}s_by_community",
-      R.h1 className:'points_heading_label', 'data-action':'expand-toggle',
+      R.h1 className:'points_heading_label',
         "Others' #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
 
       R.ul null, 
@@ -486,17 +488,15 @@ Point = React.createClass
   displayName: 'Point'
 
   setDraggability : ->
-    # TODO: possible efficiency would be to only make draggable when first mouse over a point
-
     # Ability to drag include this point if a community point, 
     # or drag remove for point on decision board
     # also: disable for results page
 
-    $el = $(@getDOMNode()).find('.point_content')
-    if $el.hasClass "ui-draggable"
-      $el.draggable(if @props.state == 'results' then 'disable' else 'enable') 
+    $point_content = $(@getDOMNode()).find '.point_content'
+    if $point_content.hasClass "ui-draggable"
+      $point_content.draggable(if @props.state == 'results' then 'disable' else 'enable') 
     else
-      $el.draggable
+      $point_content.draggable
         revert: "invalid"
         disabled: @props.state == 'results'
 
@@ -517,8 +517,7 @@ Point = React.createClass
               ' ...'
 
         R.a className:'open_point_link',
-          @props.comment_count
-          ' comments'
+          "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"
 
 ##
 # NewPoint
@@ -531,12 +530,10 @@ NewPoint = React.createClass
     editMode : false
 
   handleAddPointBegin : (ev) ->
-    @setState
-      editMode : true
+    @setState { editMode : true }
 
   handleAddPointCancel : (ev) ->
-    @setState
-      editMode : false
+    @setState { editMode : false }
 
   handleSubmitNewPoint : (ev) ->
     $form = $(@getDOMNode())
@@ -544,6 +541,7 @@ NewPoint = React.createClass
       nutshell : $form.find('#nutshell').val()
       text : $form.find('#text').val()
       is_pro : @props.valence == 'pro'
+    @setState { editMode : false }
 
   render : ->
     #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
@@ -602,12 +600,8 @@ Avatar = React.createClass
     @setState derived_state
 
   render : ->
-    attrs = 
-      className: @state.className
-      id: @state.id
-
-    if @props.img_style
-      attrs.src = @state.filename
+    attrs = { className: @state.className, id: @state.id } 
+    attrs.src = @state.filename if @props.img_style
 
     @transferPropsTo @props.tag attrs 
 
@@ -646,14 +640,14 @@ fetch = (options, callback, error_callback) ->
     error: error_callback
 
 #save assumes that data is a proposal page
-save = (data) ->
-  top_level_component.setProps data
+save = (data) -> top_level_component.setProps data
 
 ##########################
 ## Application area
 
 ##
 # Backbone routing
+# Note: not committed to backbone. Want to experiment with other routing techniques too.
 top_level_component = null
 Router = Backbone.Router.extend
 

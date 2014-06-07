@@ -1,10 +1,6 @@
 @import "variables"
 @import "bourbon"
-// @import "css3/transform"
-// @import "css3/transition"
 
-
-$proposal_width: 670px
 
 $point-width: $body_width / 2 - 20
 $point-avatar-width: 22px
@@ -20,10 +16,9 @@ $proposer_img_size: 75px
 
 $histogram_width: $body_width + 2 * $grid_major
 $default_avatar_in_histogram_color: #bbb
+$proposal_description_width: 670px
 
 $slider_base_height: 4px
-
-$transition_speed: 750ms
 
 =grab_cursor
   cursor: move
@@ -46,7 +41,7 @@ $transition_speed: 750ms
 .description_region
   position: relative
   margin: auto
-  width: $proposal_width
+  width: $proposal_description_width
   +font-size(1)
 
 // Proposal proposer is the avatar of the user who submitted the proposal
@@ -116,7 +111,6 @@ $transition_speed: 750ms
 .histogram_bar
   display: inline-block
   font-size: 0
-  +transition(opacity $transition_speed)
   
   .avatar
     border-radius: 50%
@@ -134,8 +128,6 @@ $transition_speed: 750ms
     .avatar
       +transform(rotate(180deg))
 
-[data-state="crafting"] .histogram_bar  
-  opacity: .2
 
 // slider
 
@@ -146,43 +138,27 @@ $transition_speed: 750ms
   border-radius: 10px
 
 .ui-slider-handle  // dashes in name b/c jquery UI
-  border-radius: 50%
-  +transition(width $transition_speed, height $transition_speed, top $transition_speed, margin $transition_speed)
-  box-shadow: rgba(black, .4) 0px 1px 2px
-  border: 1px solid #414141
+  .the_handle
+    border-radius: 50%
+    box-shadow: rgba(black, .4) 0px 1px 2px
+    border: 1px solid #414141
+    width: 20px
+    height: 20px 
 
   // the mouth leading into the "give opinion button" or the decision board, depending on state
   .bubblemouth
-    +transition(width $transition_speed, top $transition_speed, left $transition_speed, transform $transition_speed)
     position: absolute  
+    width: 17px
 
-[data-state="results"] .slider_base .ui-slider-handle
-  width: 20px
-  height: 20px 
-  top: -10 +  $slider_base_height/2
-  margin-left: -10px
-
-  .bubblemouth
-    width: 16px
-    top: 21px
-
-[data-state="crafting"] .slider_base .ui-slider-handle
-  top: -35px +  $slider_base_height/2
-  width: 50px
-  height: 50px 
-  margin-left: -25px
-
-  &:hover
-    +grab_cursor
-
-  .bubblemouth
-    width: 28px
-    top: 54px
+.ui-slider-handle
+  +grab_cursor
+.ui-slider-disabled .ui-slider-handle
+  cursor: default
 
 // The area on top of the slider that shows in crafting to let user know what their stance is
 .slider_feedback
   position: absolute
-  top: -5 * $vertical_baseline
+  top: -7 * $vertical_baseline
   width: 250px
   left: 50%
   margin-left: -125px
@@ -201,6 +177,9 @@ $transition_speed: 750ms
   .slider_feedback_instructions
     +font-size(-3)
     font-weight: 200
+
+.ui-slider-disabled .slider_feedback
+  display: none
 
 // the poles of the histogram & slider
 .slider_labels
@@ -228,7 +207,6 @@ $transition_speed: 750ms
 // Layout for 4 cols
 // Widths, transforms, and intercomponent relationships for 4 col / 2 col design
 
-
 .reasons_region  
   position: relative
   width: $full_reasons_width
@@ -237,32 +215,8 @@ $transition_speed: 750ms
 
 .opinion_region
   width: $decision_board_width
-  +transition(transform $transition_speed)
   position: relative
   z-index: 0 //so that points being dragged are above opinion region
-
-[data-state="results"]
-  .opinion_region
-    +transform(translateY(- 1.5 * $vertical_baseline))
-
-  .pros_by_community
-    +transform(translateX($decision_board_width/2))
-
-  .cons_by_community
-    +transform(translateX(-$decision_board_width/2))
-
-  .decision_board_body
-    width: 186px
-    min-height: 32px
-
-[data-state="crafting"]
-  .opinion_region
-    +transform(translateY(0))
-
-  .decision_board_body
-    width: $decision_board_width
-    padding: $vertical_baseline * 1.5 $grid_gutter
-    min-height: 375px
 
 
 // keep the four cols side by side
@@ -272,12 +226,8 @@ $transition_speed: 750ms
 
 .points_by_community
   margin: $vertical_baseline * 2 $grid_gutter 
-  +transition(transform $transition_speed)
   position: relative
   z-index: 2 //so that points being dragged are above opinion region
-
-.decision_board_body
-  +transition(border $transition_speed, width $transition_speed, height $transition_speed, min-height $transition_speed)
 
 .points_on_decision_board
   width: $point-width
@@ -303,16 +253,15 @@ $transition_speed: 750ms
 
 // Decision board
 
-.opinion_region.scrolling_with_user
-  position: fixed
-  top: 0
+.decision_board_body
+  border-radius: 16px
 
 .give_opinion_button
   padding: $vertical_baseline / 4 $grid_gutter
   display: block
 
-.decision_board_body
-  border-radius: 16px
+.your_points
+  padding: $vertical_baseline * 1.5 $grid_gutter
 
 // Drop target for decision board
 .user_is_hovering_on_a_drop_target_pro .pros_on_decision_board, .user_is_hovering_on_a_drop_target_con .cons_on_decision_board
@@ -354,11 +303,11 @@ $transition_speed: 750ms
 // point_content styling. Point content is the main part of a point
 // that has all the substantive content
 
-[data-state="results"] .point_content
-  cursor: pointer //not working because disabled jquery UI draggable class defined with !important
+.point_content.ui-draggable-disabled
+  cursor: pointer !important //war! disabled jquery UI draggable class defined with !important
 
 // draggable points
-[data-state="crafting"] .point_content
+.point_content
   +grab_cursor
 
 .community_point

@@ -105,3 +105,17 @@
   +font-size(1)
   padding: $vertical_baseline/4 $grid_gutter/4
 
+[data-visibility="published"]
+  .proposal_admin_strip > i
+    color: emphasize($base_background_color, 25%)
+
+  .proposal_admin_strip:hover .proposal_admin_options_menu
+    border: 1px solid emphasize($base_background_color, 20%)
+
+
+[data-visibility="unpublished"]
+  .proposal_admin_strip
+    color: $base_text_color
+
+    .delete_proposal
+      +link_style(emphasize($base_background_color, 25%), $base_background_color, 25%)

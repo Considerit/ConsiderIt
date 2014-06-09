@@ -232,3 +232,39 @@ html body #dashboard
 
     &.current
       font-weight: bold
+
+#dashboard 
+
+  .dashboard-profile-activity-summary
+    background-color: $complementary_background_color
+    color: $complementary_text_color
+
+    &:hover, &.selected
+      color: $complementary_text_color
+      background-color: emphasize($complementary_background_color, 10%)
+
+    .dashboard-profile-influence-summary
+      color: deemphasize($base_text_color, 10%, $base_background_color)
+
+
+.table-striped tbody tr:nth-child(2n+1) td
+  background-color: emphasize($base_background_color, 5%)
+
+.sidebar 
+
+  hr
+    border-top: 1px solid #aaa
+
+#dashboard
+  .table, .fht-table
+    td
+      border-top: 1px solid emphasize($base_background_color, 5%)
+      
+    th
+      border-bottom: 1px solid emphasize($base_background_color, 5%)
+
+  .field .sublabel
+    color: $base_text_color
+
+  .dashboard-subheading
+    color: deemphasize($base_text_color, 5%, $reference: $base_background_color)

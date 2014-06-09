@@ -28,9 +28,9 @@ DECISION_BOARD_WIDTH = 544
 #
 # These are the components and their relationships:
 #                       Proposal
-#                   /              \ 
-#    CommunityPoints             DecisionBoard
-#               |                  /
+#                   /      |           \            \
+#    CommunityPoints   DecisionBoard   Histogram    Slider
+#               |          |
 #               |      YourPoints
 #               |    /            \
 #              Point             NewPoint
@@ -47,7 +47,6 @@ Proposal = React.createClass
 
   getDefaultProps : ->
     state : 'crafting'
-    priorstate : 'results'    
     data :  # would rather have each of these data items added to top level props dict
       proposal : {}
       points : {}
@@ -98,9 +97,6 @@ Proposal = React.createClass
             $opinion.css {position: '', top: ''}
             $cons.show()
       , 200  # delay initialization to let the rest of the dom load so that the offset is calculated properly
-
-
-
 
   ####
   # State-dependent styling
@@ -454,7 +450,6 @@ DecisionBoard = React.createClass
           # your pros
           YourPoints
             state: @props.state
-            priorstate: @props.priorstate
             points : @props.points         
             included_points: @props.included_points
             valence: 'pro'
@@ -463,7 +458,6 @@ DecisionBoard = React.createClass
           # your cons
           YourPoints
             state: @props.state
-            priorstate: @props.priorstate
             points : @props.points 
             included_points: @props.included_points
             valence: 'con'
@@ -738,12 +732,11 @@ Router = Backbone.Router.extend
   proposal : (long_id, state = 'crafting') ->
 
     if !top_level_component
-      top_level_component = React.renderComponent Proposal({state : state, priorstate : null}), document.getElementById('l_content_main_wrap')
+      top_level_component = React.renderComponent Proposal({state : state}), document.getElementById('l_content_main_wrap')
       fetch {url: Routes.proposal_path long_id}, (data) => save {data}
     else
       top_level_component.setProps
         state : state
-        priorstate : top_level_component.props.state
 
   results : (long_id) -> @proposal long_id, 'results'
 

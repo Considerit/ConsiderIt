@@ -52,12 +52,11 @@ class ProposalsController < ApplicationController
       end
     else
       ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-      data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
 
       if request.xhr?
+        data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
         render :json => data
       else
-        @current_proposal = data.to_json
         render "layouts/application", :layout => false
       end
 

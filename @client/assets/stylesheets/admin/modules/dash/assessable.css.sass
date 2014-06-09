@@ -124,4 +124,27 @@
 // #assess, #edit_assessment
 //   button, input[type="submit"]
 //     font-size: 1em
+.assessment_published_at
+  background-color: $complementary_background_color
+  color: $complementary_text_color
+
+#assess
+
+  .assessment_block
+    border: 1px solid emphasize($base_background_color, 5%)
+
+    .assessment_row
+
+      &.reviewable
+        background-color: #efe
+        td
+          background-color: #efe
+
+
+      &.incomplete
+        background-color: mix(#ff1, $base_background_color)
+        background-color: rgba(mix(#ff1, $base_background_color), .7)
+        td
+          background-color: mix(#ff1, $base_background_color)
+          background-color: rgba(mix(#ff1, $base_background_color), .7)
 

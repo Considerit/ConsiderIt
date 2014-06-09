@@ -1,7 +1,7 @@
 
 !!! Strict
 %html{html_attrs}
-  %head{ :profile => "http://gmpg.org/xfn/1" }
+  %head{ profile: "http://gmpg.org/xfn/1" }
     = csrf_meta_tags
 
     - cache ['indexable data', current_tenant, @page] do 
@@ -15,9 +15,9 @@
     - cache ['main_layout', current_tenant] do 
       %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
 
-      %link{ :href => "#{current_theme_image_path 'favicon.ico'}", :rel => "icon", :type => "image/vnd.microsoft.icon" }
+      %link{ :href => "#{image_path 'favicon.ico'}", :rel => "icon", :type => "image/vnd.microsoft.icon" }
 
-      = theme_stylesheet_link_tag 'application'
+      = stylesheet_link_tag 'application', debug: false
 
       // - ['Source+Sans+Pro'].each do |font|
       //   %link{ :href => "//fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
@@ -29,18 +29,18 @@
         = stylesheet_link_tag 'browser/ie'
 
 
-      :javascript
-        //http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
-        (function(w,d,u){w.readyQ=[];w.bindReadyQ=[];function p(x,y){if(x=="ready"){w.bindReadyQ.push(y);}else{w.readyQ.push(x);}};var a={ready:p,bind:p};w.$=w.jQuery=function(f){if(f===d||f===u){return a}else{p(f)}}})(window,document)
+      // :javascript
+      //   //http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
+      //   (function(w,d,u){w.readyQ=[];w.bindReadyQ=[];function p(x,y){if(x=="ready"){w.bindReadyQ.push(y);}else{w.readyQ.push(x);}};var a={ready:p,bind:p};w.$=w.jQuery=function(f){if(f===d||f===u){return a}else{p(f)}}})(window,document)
 
-      = theme_javascript_include_tag 'application', :async => true
+      = javascript_include_tag 'application', debug: false #, :async => true
 
 
   %body
 
     - cache ['main_body', current_tenant] do
 
-      #t_bg.content_style
+      #t_bg.content_style{ customer: current_tenant.identifier, theme: current_tenant.theme }
         #t_bg-top
 
           #l_wrap
@@ -71,7 +71,6 @@
                 _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
                 _gaq_account.push(['_trackPageview']);
 
-    =# render :partial => './data'        
 
     :javascript
       $(function() {

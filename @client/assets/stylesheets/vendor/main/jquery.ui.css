@@ -94,7 +94,6 @@
 .ui-slider .ui-slider-handle {
   position: absolute;
   z-index: 2;
-  cursor: default;
 }
 .ui-slider .ui-slider-range {
   position: absolute;

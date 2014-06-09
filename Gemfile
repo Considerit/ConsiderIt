@@ -83,8 +83,8 @@ gem 'jquery-rails'
 # gem 'paper_trail'
 
 # https://github.com/lucasefe/themes_for_rails
-gem "themes_for_rails", :git => 'git://github.com/tkriplean/themes_for_rails.git' #, :branch => 'rails4'
-#gem "themes_for_rails", :git => "git://github.com/digitalmoksha/themes_for_rails"
+# gem "themes_for_rails", :git => 'git://github.com/tkriplean/themes_for_rails.git' #, :branch => 'rails4'
+# gem "themes_for_rails", :git => "git://github.com/digitalmoksha/themes_for_rails"
 
 # https://github.com/weppos/actionmailer_with_request
 gem 'actionmailer-with-request'

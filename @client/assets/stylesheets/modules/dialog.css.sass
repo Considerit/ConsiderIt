@@ -88,3 +88,26 @@ $dialog_width: $grid_major * 6 + $grid_minor * 6
   //     textarea
   //       width: 100%
   //       +font-size(1)
+
+.l-dialog-detachable
+  border: 1px solid emphasize($complementary_background_color, 10%)
+
+  .option .sublabel
+    color: deemphasize($base_text_color, 15%, $reference: $base_background_color)
+
+  .l-dialog-title 
+    color: $complementary_text_color
+    background-color: $complementary_background_color
+
+    a.l-dialog-close
+      +link_style(emphasize($complementary_background_color, 20%), $complementary_background_color, 25%)
+
+  .l-dialog-body
+    background-color: $dialog_background_color
+    color: $dialog_text_color
+
+    textarea, input[type="text"], input[type="email"], input[type="password"]
+      color: emphasize($dialog_text_color, 15%, $reference: $dialog_background_color)
+      background-color: deemphasize($dialog_background_color, 20%)
+      border: 1px solid emphasize($dialog_background_color, 20%)
+      padding: 6px 12px

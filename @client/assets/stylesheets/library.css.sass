@@ -1,6 +1,3 @@
-// ** This file only defines two SASS color functions. Can we just extend SASS somewhere instead of having this here?
-
-
 // These mixins and extenders can be used across all the sass files
 
 
@@ -26,3 +23,12 @@
     @return darken($color, $amount)
 
 
+=link_style($color, $reference, $amount)
+  color: $color
+  &:hover
+    // Determine whether the hover should darken or lighten the color
+    @if lightness($reference) > 50% 
+      // if the background is light, make the link darker on hover
+      color: darken($color, $amount)
+    @else
+      color: lighten($color, $amount)

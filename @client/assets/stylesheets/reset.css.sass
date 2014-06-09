@@ -1,5 +1,20 @@
 @import "variables"
 @import "bourbon"
+@import "library"
+@import "vendor/overrides"
+
+
+.menu
+  color: $menu_text_color
+  a
+    color: $menu_text_color
+    &:hover
+      color: $complementary_text_color
+      background-color: emphasize($complementary_background_color, 10%)
+
+    &.selected
+      color: $complementary_text_color
+      background-color: $complementary_background_color
 
 //////////////////////////////////////////
 // LAYOUT
@@ -10,6 +25,21 @@
 
 #t_bg_content_top, #l_content_main_wrap
   min-height: 500px
+
+#t_bg-top
+  background: $bg_top_declaration
+
+#t_bg-content
+  background: $bg_content_declaration
+
+#t_bg_content_top
+  background: $bg_content_top_declaration
+
+.content_style
+  color: $base_text_color
+  background: $base_background_declaration
+  a
+    +link_style(emphasize($base_text_color, 10%, $reference: $base_background_color), $base_background_color, 25%)
 
 
 /* CONTAINERS */
@@ -27,8 +57,10 @@
 .l_header
   margin: 0 auto $vertical_baseline auto
   min-height: 32px
-
-  //border-bottom: 1px solid white
+  color: $header_text_color
+  background: $header_background_declaration
+  a
+    +link_style(emphasize($header_text_color, 10%, $reference: $header_background_color), $header_background_color, 25%)
 
 .l_heading_wrap
   width: $content_width
@@ -53,6 +85,10 @@
 
 .l_footer
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
+  color: $footer_text_color
+  background: $footer_background_declaration
+  a
+    +link_style(emphasize($footer_text_color, 10%, $reference: $footer_background_color), $footer_background_color, 25%)
 
 
 .l_footer_wrap
@@ -221,6 +257,7 @@ blockquote
   width: 4000px
   height: 40000px
   z-index: 450
+  background-color: rgba(deemphasize($base_background_color, 100%), .75)
 
 .button
   +font-size(1)
@@ -266,3 +303,21 @@ $preloadersize_height: 10.5px
   margin-left: -15px
   z-index: 9999
 
+
+body, h1, h2, h3, h4, h5, h6 //, input, button
+  color: $base_text_color
+
+h1, h2, h3, h4, h5, h6
+  font-family: $header_font-family
+
+// do we need to put input and button here...?
+body, input, button, textarea
+  font-family: $main_font-family
+
+a  
+  +link_style($base_text_color, $base_background_color, 25%)
+
+
+///////////////////////
+// Unincorporated
+/////////////////

@@ -30,13 +30,6 @@ GIT
     cacheable-csrf-token-rails (0.2.0)
       rails (>= 3.2.5)
 
-GIT
-  remote: git://github.com/tkriplean/themes_for_rails.git
-  revision: 3f6bc17fdbe3ed9e9153ec0285e1d8121b5492fb
-  specs:
-    themes_for_rails (0.5.2)
-      rails (>= 3.2.0)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -409,7 +402,6 @@ DEPENDENCIES
   sitemap_generator
   sprockets (~> 2.11.0)
   sprockets-rails
-  themes_for_rails!
   therubyracer
   thin
   twitter

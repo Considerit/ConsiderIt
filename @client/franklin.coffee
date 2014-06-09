@@ -5,8 +5,6 @@
 # Ugliness in this prototype: 
 #   - Keeping javascript and CSS variables synchronized
 #   - Haven't declared prop types for the components
-#   - Proposal component is pretty giant, should split out the 
-#     histogram/slider into its own component
 #   - Unclear whether information derived from props should be 
 #     stored as state or plain variable (see Proposal.buildHistogramDataFromProps)
 #   - I don't like setting data as key in props, would rather 
@@ -21,11 +19,9 @@ ReactTransitionGroup = React.addons.TransitionGroup
 # Constants
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
-
-# Constants to keep in sync with CSS
-histogram_width = 636    # Width of the slider / histogram base 
-slider_base_height = 4  # Height of the slider / histogram base
-decision_board_width = 544
+HISTOGRAM_WIDTH = 600    # Width of the slider / histogram base 
+MAX_HISTOGRAM_HEIGHT = 200
+DECISION_BOARD_WIDTH = 544
 
 ####################
 # React Components
@@ -60,13 +56,6 @@ Proposal = React.createClass
       initial_stance : 0.0
       opinions : []
 
-  getInitialState : ->
-    seven_original_opinion_segments : {}
-    histogram_small_segments : {}
-    avatar_size : 0
-    num_small_segments : 0
-    stance : 0.0
-    stance_segment : 3
 
   # TODO: add prop types here
 
@@ -74,19 +63,17 @@ Proposal = React.createClass
   ####
   # Lifecycle methods
 
-  componentWillMount : -> @buildHistogramDataFromProps @props
+  componentWillMount : -> 
 
-  componentWillReceiveProps : (next_props) -> @buildHistogramDataFromProps next_props
+  componentWillReceiveProps : (next_props) -> 
 
   componentWillUpdate : (next_props, next_state) ->
 
   componentDidMount : -> 
-    @applyStyles @props.state, false
-    @setSlidability()
+    @applyStyles false
 
   componentDidUpdate : (prev_props, prev_state) ->
-    @applyStyles @props.state, prev_props.state != @props.state
-    @setSlidability()
+    @applyStyles prev_props.state != @props.state
 
     # Sticky decision board. It is here because the calculation of offset top would 
     # be off if we did it in DidMount before all the data has been fetched from server
@@ -101,7 +88,7 @@ Proposal = React.createClass
 
           onNotTop : -> 
             $cons.hide()
-            $cons.css {left: decision_board_width}
+            $cons.css {left: DECISION_BOARD_WIDTH}
             $opinion.css {position: 'fixed', top: 0}
             $cons.show()
 
@@ -112,94 +99,27 @@ Proposal = React.createClass
             $cons.show()
       , 200  # delay initialization to let the rest of the dom load so that the offset is calculated properly
 
-    ##
-    # buildHistogramDataFromProps
-    # Split up opinions into segments. For now we'll keep three hashes: 
-    #   - all opinions
-    #   - high level segments (the seven original segments, strong supporter, neutral, etc)
-    #   - small segments that represent individual columns in the histogram, now that 
-    #     we do not have wide bars per se
-  buildHistogramDataFromProps : (props) ->
-    # function for sizing avatars 
-    avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (props.data.opinions.length + 1)/10  )
 
-    # Calculate how many segments columns to put on the histogram. Note that for the extremes and for neutral, we'll hack it 
-    # to allow three columns for those segments. 
-    num_small_segments = Math.floor(histogram_width / avatar_size) - 2 * 3 - 1 #for the additional cols for the extremes+neutral 
-
-    seven_original_opinion_segments = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
-
-    histogram_small_segments = {}
-    histogram_small_segments[i] = [] for i in [0..num_small_segments]
-
-    max_slider_variance = 2.0 # Slider stances vary from -1.0 to 1.0. 
-
-    for opinion in props.data.opinions
-      seven_original_opinion_segments[opinion.stance_segment].push opinion
-      small_segment = Math.floor(num_small_segments * (opinion.stance + 1) / max_slider_variance)
-      histogram_small_segments[small_segment].push opinion
-
-    @setState {seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments}
-
-  ##
-  # setSlidability
-  # Inits jQuery UI slider and enables/disables it between states
-  setSlidability : ->
-
-    getStanceSegmentFromSliderValue = (value) ->
-      if value == -1
-        return 0
-      else if value == 1
-        return 6
-      else if value <= 0.05 && value >= -0.05
-        return 3
-      else if value >= 0.5
-        return 5
-      else if value <= -0.5
-        return 1
-      else if value >= 0.05
-        return 4
-      else if value <= -0.05
-        return 2
-
-    $el = $(@getDOMNode()).find('.slider_base')
-    if $el.hasClass "ui-slider"
-      $el.slider(if @props.state == 'results' then 'disable' else 'enable') 
-    else
-      $el.slider
-        disabled: @props.state == 'results'
-        min: -1
-        max: 1
-        step: .01
-        value: @props.data.initial_stance
-        slide: (ev, ui) => 
-          # update the stance segment if it has changed. This facilitates the feedback atop
-          # the slider changing from e.g. 'strong supporter' to 'neutral'
-          segment = getStanceSegmentFromSliderValue ui.value
-          if @state.stance_segment != segment
-            @setState  # This reflow causes bad FPS; should be contained to slider component
-              stance_segment : segment
-              stance : ui.value
 
 
   ####
   # State-dependent styling
-  applyStyles : (to_state, animate = true) ->  
+  applyStyles : (animate = true) ->  
     $el = $(@getDOMNode())
     duration = if animate then TRANSITION_SPEED else 0
 
+    slider_stance =  $el.find('.ui-slider-handle').position().left / $el.find('.slider_base').innerWidth()
+    is_opposer = slider_stance > .5
+
     # Note: Velocity requires properties to be pulled out (e.g. paddingLeft, translateX, rather than using padding or transform)
     # Note: Use velocity even for 0 duration applications to maintain parity of style definition
-    mouth_scaler = if @state.stance_segment > 3 then -1 else 1
-    switch to_state
+    switch @props.state
       when 'crafting'
         styles = 
           '.histogram_bar:not(.extreme_or_neutral)': { opacity: .2 }
           '.histogram_bar.extreme_or_neutral':       { opacity: .2 }
-          '.the_handle':                             { scale: 2.5, translateY: -7 + slider_base_height / 2 }
-          '.bubblemouth':                            { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 6, translateX: (if @state.stance_segment > 3 then 15 else 30)}
           '.opinion_region':                         { translateX: 0, translateY: 0 }
-          '.decision_board_body':                    { width: decision_board_width, minHeight: 375}
+          '.decision_board_body':                    { width: DECISION_BOARD_WIDTH, minHeight: 375}
           '.pros_by_community':                      { translateX: 0 }
           '.cons_by_community':                      { translateX: 0 }
         
@@ -211,19 +131,17 @@ Proposal = React.createClass
         , duration
 
       when 'results'
-        opinion_region_x = decision_board_width * (@state.stance+1)/2  #this won't get current stance slider; only guaranteed to be within correct segment
+        opinion_region_x = DECISION_BOARD_WIDTH * slider_stance
         give_opinion_button_width = 186
-        opinion_region_x -= .65 * give_opinion_button_width if @state.stance_segment > 3 
+        opinion_region_x -= give_opinion_button_width / 2 
 
         styles = 
           '.histogram_bar:not(.extreme_or_neutral)': { opacity: 1 }
           '.histogram_bar.extreme_or_neutral':       { opacity: 1 }
-          '.the_handle':                             { scale: 1, translateY: -10 + slider_base_height / 2}
-          '.bubblemouth':                            { scaleX: mouth_scaler, scaleY: 1, translateY: -6, translateX: (if @state.stance_segment > 3 then 5 else 10)}
           '.opinion_region':                         { translateX: opinion_region_x, translateY: -18 }
           '.decision_board_body':                    { width: give_opinion_button_width, minHeight: 32}
-          '.pros_by_community':                      { translateX:  decision_board_width / 2 }
-          '.cons_by_community':                      { translateX: -decision_board_width / 2 }
+          '.pros_by_community':                      { translateX:  DECISION_BOARD_WIDTH / 2 }
+          '.cons_by_community':                      { translateX: -DECISION_BOARD_WIDTH / 2 }
         
         _.each _.keys(styles), (selector) -> $el.find(selector).velocity styles[selector], {duration}
 
@@ -273,9 +191,6 @@ Proposal = React.createClass
   # Make this thing!
   render : ->
 
-    segment_is_extreme_or_neutral = (segment) => 
-      segment == 0 || segment == @state.num_small_segments || segment == Math.floor(@state.num_small_segments / 2)
-
     stance_names = 
       0 : 'Diehard Supporter'
       6 : 'Diehard Opposer'
@@ -285,7 +200,7 @@ Proposal = React.createClass
       4 : 'Opposer'
       3 : 'Neutral'
 
-    R.div className:'proposal', key:@props.long_id, 'data-state':@props.state, 'data-prior-state':@state.priorstate,
+    R.div className:'proposal', key:@props.long_id, 'data-state':@props.state,
       
       #description
       R.div className:'description_region',
@@ -306,23 +221,14 @@ Proposal = React.createClass
 
       #feelings
       R.div className:'feelings_region',
-        for segment in [@state.num_small_segments..0]
-          R.ul className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:"#{segment}", style: {width: (if segment_is_extreme_or_neutral(segment) then 3 * @state.avatar_size else @state.avatar_size)},
-            for opinion in @state.histogram_small_segments[segment]
-              Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
+        Histogram
+          state: @props.state
+          opinions: @props.data.opinions
 
-        R.div className:'slider_base', 
-          R.div className:'ui-slider-handle', #jquery UI slider will pick an el with this class name up
-            R.div className: 'the_handle'
-            R.img className:'bubblemouth', src:'/assets/bubblemouth.png', 
-            R.div className:'slider_feedback', 
-              R.div className:'slider_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
-              R.div className:'slider_feedback_result', stance_names[@state.stance_segment]
-              R.div className:'slider_feedback_instructions', 'drag to change'
-
-        R.div className:'slider_labels', 
-          R.h1 className:"histogram_label histogram_label_support", 'Support'
-          R.h1 className:"histogram_label histogram_label_oppose", 'Oppose'
+        Slider
+          initial_stance: @props.data.initial_stance
+          stance_names: stance_names 
+          state: @props.state
 
       #reasons
       R.div className:'reasons_region',
@@ -352,6 +258,174 @@ Proposal = React.createClass
           valence: 'con'
           included_points : @props.data.included_points
           onPointShouldBeRemoved : @onPointShouldBeRemoved
+
+##
+# Histogram
+Histogram = React.createClass
+
+  getDefaultProps : ->
+    opinions: []
+
+  getInitialState : ->
+    seven_original_opinion_segments : {}
+    histogram_small_segments : {}
+    avatar_size : 0
+    num_small_segments : 0
+
+  componentWillMount : -> @buildHistogramDataFromProps @props
+
+  componentWillReceiveProps : (next_props) -> @buildHistogramDataFromProps next_props
+
+    ##
+    # buildHistogramDataFromProps
+    # Split up opinions into segments. For now we'll keep three hashes: 
+    #   - all opinions
+    #   - high level segments (the seven original segments, strong supporter, neutral, etc)
+    #   - small segments that represent individual columns in the histogram, now that 
+    #     we do not have wide bars per se
+  buildHistogramDataFromProps : (props) ->
+    seven_original_opinion_segments = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
+    for opinion in props.opinions
+      seven_original_opinion_segments[opinion.stance_segment].push opinion
+
+    ##
+    # Size the avatars. Factor in how evenly distributed the opinions are across the segments. Want to 
+    # make the avatar size for (a) smaller than (b) so that the histogram stays a reasonable size
+    #                 AA                           
+    #                 AA
+    #                 AA
+    #                 AA_____A_____A          BBBBBBBBBB
+    num_opinions = props.opinions.length
+    num_opinions_in_max_segment = _.max (x.length for x in _.values(seven_original_opinion_segments))
+    avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (num_opinions + 1) / 10  )
+    if avatar_size * num_opinions_in_max_segment / 3 > MAX_HISTOGRAM_HEIGHT # divide by three for three cols in extremes/neutral segments
+      avatar_size = 3 * MAX_HISTOGRAM_HEIGHT / num_opinions_in_max_segment
+
+
+    # Calculate how many segments columns to put on the histogram. Note that for the extremes and for neutral, we'll hack it 
+    # to allow three columns for those segments.
+    num_small_segments = Math.floor(HISTOGRAM_WIDTH / avatar_size) - 2 * 3 - 1 #for the additional cols for the extremes+neutral 
+
+  
+    histogram_small_segments = {}
+    histogram_small_segments[i] = [] for i in [0..num_small_segments]
+
+    max_slider_variance = 2.0 # Slider stances vary from -1.0 to 1.0. 
+
+    for opinion in props.opinions
+      small_segment = Math.floor(num_small_segments * (opinion.stance + 1) / max_slider_variance)
+      histogram_small_segments[small_segment].push opinion
+
+    @setState {seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments}
+
+  segment_is_extreme_or_neutral : (segment) -> 
+    segment == 0 || segment == @state.num_small_segments || segment == Math.floor(@state.num_small_segments / 2)
+
+  render : ->
+
+    R.div className: 'histogram',
+      for segment in [@state.num_small_segments..0]
+        R.ul className:"histogram_bar #{if @segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:"#{segment}", style: {width: (if @segment_is_extreme_or_neutral(segment) then 3 * @state.avatar_size else @state.avatar_size)},
+          for opinion in @state.histogram_small_segments[segment]
+            Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
+
+
+##
+# Slider
+# Manages the slider and the UI elements attached to it. 
+Slider = React.createClass
+  displayName: 'Slider'
+
+  getInitialState : ->
+    stance_segment : @getStanceSegmentFromSliderValue(@props.initial_stance)
+
+  componentDidMount : -> 
+    @applyStyles false
+    @setSlidability()
+
+  componentDidUpdate : (prev_props, prev_state) ->
+    @applyStyles prev_props.state != @props.state
+    @setSlidability()
+
+  # We have a separate applyStyle here from Proposal because the Slider component
+  # gets rerendered more frequently than the Proposal component (i.e. when the 
+  # slider is being slid...forcing the entire Propoosal component to rerender
+  # causes terrible performance).
+  applyStyles : (animate = false) ->
+    duration = if animate then TRANSITION_SPEED else 0
+    $el = $(@getDOMNode())
+
+    mouth_scaler = if @state.stance_segment <= 3 then -1 else 1
+    mouth_x = if @state.stance_segment == 3 then 0 else -7.5
+
+    switch @props.state
+      when 'crafting'
+        styles = 
+          '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 4.35, translateX: mouth_x * 1.5  }
+          '.the_handle':  { scale: 2.5, translateY: -8 }
+
+      when 'results'
+        styles = 
+          '.bubblemouth': { scaleX: mouth_scaler, scaleY: 1, translateY: -8, translateX: mouth_x  }
+          '.the_handle':  { scale: 1, translateY: -9 }
+
+    _.each _.keys(styles), (selector) -> $el.find(selector).velocity styles[selector], {duration}
+
+  ##
+  # setSlidability
+  # Inits jQuery UI slider and enables/disables it between states
+  setSlidability : ->
+    $slider_base = $(@getDOMNode()).find('.slider_base')
+    if $slider_base.hasClass "ui-slider"
+      $slider_base.slider(if @props.state == 'results' then 'disable' else 'enable') 
+    else
+      $slider_base.slider
+        disabled: @props.state == 'results'
+        min: -1
+        max: 1
+        step: .01
+        value: @props.initial_stance
+        slide: (ev, ui) => 
+          # update the stance segment if it has changed. This facilitates the feedback atop
+          # the slider changing from e.g. 'strong supporter' to 'neutral'
+          segment = @getStanceSegmentFromSliderValue ui.value
+          if @state.stance_segment != segment
+            @setState
+              stance_segment : segment
+              stance : ui.value
+
+  getSliderValue : -> $(@getDOMNode()).find('.ui-slider-handle').position().left / $el.find('.slider_base').innerWidth()
+
+  render : ->
+    R.div className: 'slider',
+      R.div className:'slider_base', 
+        R.div className:'ui-slider-handle', #jquery UI slider will pick an el with this class name up
+          R.div className: 'the_handle'
+          R.img className:'bubblemouth', src: if @state.stance_segment == 3 then '/assets/bubblemouth_neutral.png' else '/assets/bubblemouth.png'
+          R.div className:'slider_feedback', 
+            R.div className:'slider_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
+            R.div className:'slider_feedback_result', @props.stance_names[@state.stance_segment]
+            R.div className:'slider_feedback_instructions', 'drag to change'
+
+      R.div className:'slider_labels', 
+        R.h1 className:"histogram_label histogram_label_support", 'Support'
+        R.h1 className:"histogram_label histogram_label_oppose", 'Oppose'
+
+  getStanceSegmentFromSliderValue : (value) ->
+    if value == -1
+      return 0
+    else if value == 1
+      return 6
+    else if value <= 0.05 && value >= -0.05
+      return 3
+    else if value >= 0.5
+      return 5
+    else if value <= -0.5
+      return 1
+    else if value >= 0.05
+      return 4
+    else if value <= -0.05
+      return 2
 
 ##
 # DecisionBoard

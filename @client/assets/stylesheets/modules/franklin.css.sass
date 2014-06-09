@@ -118,6 +118,7 @@ $slider_base_height: 4px
 [data-state="crafting"] .toggle_state_region
   .proposal_state_primary
     color: $decision_board_text_color
+    font-weight: 600
 
   .proposal_state_secondary a
     +link_style($base_text_color, $base_background_color, 2%)
@@ -140,6 +141,9 @@ $slider_base_height: 4px
   margin: $vertical_baseline auto 0 auto
   position: relative
   width: $histogram_width
+
+.histogram
+  margin: 0 $grid_major / 2 - 5
 
 .histogram_bar
   display: inline-block
@@ -178,19 +182,21 @@ $slider_base_height: 4px
   .slider_base
     background-color: $decision_board_text_color
 
+$slider_handle_size: 22px
 .ui-slider-handle  // dashes in name b/c jquery UI
+  margin-left: -$slider_handle_size / 2
   .the_handle
     border-radius: 50%
-    box-shadow: rgba(black, .4) 0px 1px 2px
-    border: 1px solid #414141
-    width: 20px
-    height: 20px 
+    box-shadow: rgba(black, .2) 0px 1px 1px
+    border: 1px solid darken($decision_board_text_color, 20%)
+    width: $slider_handle_size
+    height: $slider_handle_size
     background-color: $decision_board_text_color
 
   // the mouth leading into the "give opinion button" or the decision board, depending on state
   .bubblemouth
     position: absolute  
-    width: 17px
+    width: 18px
 
 .ui-slider-handle
   +grab_cursor
@@ -324,9 +330,14 @@ $slider_base_height: 4px
       &:focus
         +inset-border($decision_board_text_color)
 
-.give_opinion_button
-  padding: $vertical_baseline / 4 $grid_gutter
-  display: block
+  .give_opinion_button
+    padding: $vertical_baseline / 4 $grid_gutter
+    display: block
+    color: $decision_board_text_color
+    font-weight: 600
+    &:hover
+      color: $decision_board_text_color
+
 
 .your_points
   padding: $vertical_baseline * 1.5 $grid_gutter

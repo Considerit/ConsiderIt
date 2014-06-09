@@ -199,7 +199,7 @@ Proposal = React.createClass
           '.the_handle':                             { scale: 2.5, translateY: -7 + slider_base_height / 2 }
           '.bubblemouth':                            { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 6, translateX: (if @state.stance_segment > 3 then 15 else 30)}
           '.opinion_region':                         { translateX: 0, translateY: 0 }
-          '.decision_board_body':                    { width: decision_board_width}
+          '.decision_board_body':                    { width: decision_board_width, minHeight: 375}
           '.pros_by_community':                      { translateX: 0 }
           '.cons_by_community':                      { translateX: 0 }
         
@@ -221,7 +221,7 @@ Proposal = React.createClass
           '.the_handle':                             { scale: 1, translateY: -10 + slider_base_height / 2}
           '.bubblemouth':                            { scaleX: mouth_scaler, scaleY: 1, translateY: -6, translateX: (if @state.stance_segment > 3 then 5 else 10)}
           '.opinion_region':                         { translateX: opinion_region_x, translateY: -18 }
-          '.decision_board_body':                    { width: give_opinion_button_width}
+          '.decision_board_body':                    { width: give_opinion_button_width, minHeight: 32}
           '.pros_by_community':                      { translateX:  decision_board_width / 2 }
           '.cons_by_community':                      { translateX: -decision_board_width / 2 }
         
@@ -646,6 +646,10 @@ save = (data) -> top_level_component.setProps data
 ## Application area
 
 ##
+# load users' pictures
+$.get Routes.get_avatars_path(), (data) -> $('head').append data
+
+##
 # Backbone routing
 # Note: not committed to backbone. Want to experiment with other routing techniques too.
 top_level_component = null
@@ -671,8 +675,4 @@ Router = Backbone.Router.extend
 
 app_router = new Router()
 
-Backbone.history.start {pushState: true}
-
-##
-# load users' pictures
-$.get Routes.get_avatars_path(), (data) -> $('head').append data
+$(document).ready -> Backbone.history.start {pushState: true}

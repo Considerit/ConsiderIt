@@ -68,8 +68,34 @@ Proposal = React.createClass
 
   componentWillUpdate : (next_props, next_state) ->
 
-  componentDidMount : -> 
+  componentDidMount : ->
     @applyStyles false
+
+    $el = $(@getDOMNode())
+
+    # On hovering over a point, we'll want to highlight the people who included this point in the Histogram.
+    # This requires cross-component communication. By handling it here in the parent: 
+    #    + we eliminate confusing intercomponent communication and callback passing
+    #    - it might be unintuitive to find this handler here and not in Point or CommunityPoints
+    #    - there may be bugs because we don't set any state for the histogram
+    # TODO: evaluate whether the below code is susceptible to weird edge cases because it avoids setting 
+    #       state or props on the histogram. For example, if we switch to crafting somehow without leaving the point.
+    $el.on 'mouseover mouseleave', '.points_by_community .point_content', (ev) => 
+      if @props.state == 'results'
+        if ev.type == 'mouseover'
+          point_id = $(ev.currentTarget).parent().data('id')
+          point = fetch { url: "points/#{point_id}?no_comments" }
+
+          # get includers of the point
+          # TODO: need to add this user if they've included this point (might be already taken care of depending on how saving opinions works)
+          includers = $.parseJSON point.includers
+          $histogram = $el.find('.histogram')
+          @$includers_to_highlight = $histogram.find ("#avatar-#{uid}" for uid in includers).join(',')
+          @$includers_to_highlight.css { borderColor: 'red' }
+        else if ev.type == 'mouseleave'
+          @$includers_to_highlight.css { borderColor: '' }
+
+
 
   componentDidUpdate : (prev_props, prev_state) ->
     @applyStyles prev_props.state != @props.state
@@ -148,12 +174,11 @@ Proposal = React.createClass
 
   ####
   # Props need to change methods
-
   onPointShouldBeIncluded : (point_id) ->
     #TODO: activeREST call here...
     #TODO: should probably be managing an opinion, e.g. @props.opinion.included_points
     @props.data.included_points.push point_id
-    save @props.data
+    save { type: 'proposal', data: @props.data }
 
   onPointShouldBeRemoved : (point_id) ->
     #TODO: activeREST call here...    
@@ -161,23 +186,15 @@ Proposal = React.createClass
     #TODO: server might return that the point was actually _deleted_ from 
     #      the system, not just removed from the list...need to handle that
     @props.data.included_points = _.without @props.data.included_points, point_id
-    save @props.data
+    save { type: 'proposal', data: @props.data }
 
   onPointShouldBeCreated : (data) ->
     #TODO: activeREST call here...
-    id = -1
-    while _.has @props.data.points, id
-      id = -(Math.floor(Math.random() * 999999) + 1)
-
     point = _.extend data, 
       user_id : -2 #anon user
       comment_count : 0 
-      id : id
 
-    @props.data.points[id] = point
-    @props.data.included_points.push point.id
-
-    save @props.data
+    save { type: 'point', data: point, _proposal_data: @props.data }
 
   toggleState : (ev) ->
     route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
@@ -186,7 +203,6 @@ Proposal = React.createClass
   ####
   # Make this thing!
   render : ->
-
     stance_names = 
       0 : 'Diehard Supporter'
       6 : 'Diehard Opposer'
@@ -232,7 +248,6 @@ Proposal = React.createClass
         CommunityPoints 
           key: 'pros'
           state: @props.state
-          points: @props.data.points
           valence: 'pro'
           included_points : @props.data.included_points
           onPointShouldBeRemoved : @onPointShouldBeRemoved
@@ -240,7 +255,6 @@ Proposal = React.createClass
         #your reasons
         DecisionBoard
           state: @props.state
-          points : @props.data.points
           included_points : @props.data.included_points
           onPointShouldBeIncluded : @onPointShouldBeIncluded
           onPointShouldBeCreated : @onPointShouldBeCreated
@@ -250,7 +264,6 @@ Proposal = React.createClass
         CommunityPoints 
           key: 'cons'
           state: @props.state
-          points: @props.data.points
           valence: 'con'
           included_points : @props.data.included_points
           onPointShouldBeRemoved : @onPointShouldBeRemoved
@@ -272,13 +285,13 @@ Histogram = React.createClass
 
   componentWillReceiveProps : (next_props) -> @buildHistogramDataFromProps next_props
 
-    ##
-    # buildHistogramDataFromProps
-    # Split up opinions into segments. For now we'll keep three hashes: 
-    #   - all opinions
-    #   - high level segments (the seven original segments, strong supporter, neutral, etc)
-    #   - small segments that represent individual columns in the histogram, now that 
-    #     we do not have wide bars per se
+  ##
+  # buildHistogramDataFromProps
+  # Split up opinions into segments. For now we'll keep three hashes: 
+  #   - all opinions
+  #   - high level segments (the seven original segments, strong supporter, neutral, etc)
+  #   - small segments that represent individual columns in the histogram, now that 
+  #     we do not have wide bars per se
   buildHistogramDataFromProps : (props) ->
     seven_original_opinion_segments = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
     for opinion in props.opinions
@@ -450,7 +463,6 @@ DecisionBoard = React.createClass
           # your pros
           YourPoints
             state: @props.state
-            points : @props.points         
             included_points: @props.included_points
             valence: 'pro'
             onPointShouldBeCreated: @props.onPointShouldBeCreated
@@ -458,7 +470,6 @@ DecisionBoard = React.createClass
           # your cons
           YourPoints
             state: @props.state
-            points : @props.points 
             included_points: @props.included_points
             valence: 'con'
             onPointShouldBeCreated: @props.onPointShouldBeCreated
@@ -483,7 +494,7 @@ YourPoints = React.createClass
 
       R.ul null,
         for point_id in @props.included_points
-          point = @props.points[point_id]
+          point = fetch { url: "points/#{point_id}?no_comments" }
           if point.is_pro == (@props.valence == 'pro')
             Point 
               key: point.id
@@ -513,7 +524,7 @@ CommunityPoints = React.createClass
   displayName: 'CommunityPoints'
 
   componentDidMount : ->
-    # make this a drop target to facilitate removal of points
+    # Make this a drop target to facilitate removal of points
     $el = $(@getDOMNode())
     $el.droppable
       accept: ".decision_board_point.#{@props.valence} .point_content"
@@ -527,7 +538,7 @@ CommunityPoints = React.createClass
   render : ->
 
     #filter to pros or cons & down to points that haven't been included
-    points = _.filter _.values(@props.points), (pnt) =>
+    points = _.filter fetch({ url: 'all_points' }), (pnt) =>
       is_correct_valence = pnt.is_pro == (@props.valence == 'pro')
       has_not_been_included = @props.state == 'results' || !_.contains(@props.included_points, pnt.id)
       is_correct_valence && has_not_been_included
@@ -668,7 +679,7 @@ Avatar = React.createClass
     @setState derived_state
 
   render : ->
-    attrs = { className: @state.className, id: @state.id } 
+    attrs = { className: @state.className, id: @state.id, 'data-id': @props.user } 
     attrs.src = @state.filename if @props.img_style
 
     @transferPropsTo @props.tag attrs 
@@ -677,10 +688,15 @@ Avatar = React.createClass
 #####
 # Mocks for activeREST
 all_users = {} 
+all_points = {}
 
 fetch = (options, callback, error_callback) ->
   if options.url[0..3] == 'user'
     return all_users[options.url]
+  if options.url[0..4] == 'point'
+    return all_points[options.url]
+  if options.url[0..9] == 'all_points'
+    return _.values all_points
 
   error_callback ||= (xhr, status, err) -> console.error 'Could not fetch data', status, err.toString()
 
@@ -694,21 +710,38 @@ fetch = (options, callback, error_callback) ->
         for user in data.users
           all_users["users/#{user.id}?partial"] = user
 
-        all_points = {}
-
         #TODO: return from server as a hash already?
         for point in data.points
-          all_points[point.id] = point
+          all_points["points/#{point.id}?no_comments"] = point
 
-        data.points = all_points
-
-      console.log data
       callback data
 
     error: error_callback
 
 #save assumes that data is a proposal page
-save = (data) -> top_level_component.setProps data
+save = (action) -> 
+  switch action.type
+    when 'point'
+
+      get_unique_id = ->
+        id = -1
+        while _.has all_points, "points/#{id}?no_comments"
+          id = -(Math.floor(Math.random() * 999999) + 1)
+        id
+
+      proposal_data = action._proposal_data
+      id = get_unique_id()
+      action.data.id = id
+
+      all_points["points/#{id}?no_comments"] = action.data
+      proposal_data.included_points.push action.data.id
+
+    when 'proposal'
+      proposal_data = action.data
+
+  top_level_component.setProps { data: proposal_data }
+
+
 
 ##########################
 ## Application area
@@ -724,7 +757,7 @@ top_level_component = null
 Router = Backbone.Router.extend
 
   routes :
-    #"(/)" : "root"      
+    #"(/)" : "root"
     ":proposal(/)": "proposal"
     ":proposal/results(/)": "results"
     #":proposal/points/:point(/)" : "openPoint"
@@ -733,7 +766,7 @@ Router = Backbone.Router.extend
 
     if !top_level_component
       top_level_component = React.renderComponent Proposal({state : state}), document.getElementById('l_content_main_wrap')
-      fetch {url: Routes.proposal_path long_id}, (data) => save {data}
+      fetch { url: Routes.proposal_path long_id }, (data) => save { type: 'proposal', data: data }
     else
       top_level_component.setProps
         state : state

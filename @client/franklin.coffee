@@ -55,6 +55,8 @@ Proposal = React.createClass
       initial_stance : 0.0
       opinions : []
 
+  getInitialState : ->
+    users_to_highlight_in_histogram : []
 
   # TODO: add prop types here
 
@@ -73,13 +75,25 @@ Proposal = React.createClass
 
     $el = $(@getDOMNode())
 
-    # On hovering over a point, we'll want to highlight the people who included this point in the Histogram.
+    ####
+    # On hovering over a point, highlight the people who included this point in the Histogram.
+    #
     # This requires cross-component communication. By handling it here in the parent: 
     #    + we eliminate confusing intercomponent communication and callback passing
     #    - it might be unintuitive to find this handler here and not in Point or CommunityPoints
-    #    - there may be bugs because we don't set any state for the histogram
-    # TODO: evaluate whether the below code is susceptible to weird edge cases because it avoids setting 
-    #       state or props on the histogram. For example, if we switch to crafting somehow without leaving the point.
+    # 
+    # Another decision point is whether to do the work of manipulating the histogram here, or somehow
+    # alert the Histogram component to the fact that certain users should be highlighted. Both approaches
+    # have strengths and weaknesses:
+    #    1) Handle histogram here just using instance variable and jQuery
+    #       + Everything in a single place
+    #       - Code is susceptible to weird edge cases because it avoids tracking this state with state or props. 
+    #         For example, if we switch to crafting somehow without leaving the point.
+    #
+    #    2) Set props on Proposal that only histogram responds to
+    #       + Application state remains tracked by props and state, the React way. Probably less error prone
+    #       - Could be performance intense if other proposal components have to get rerendered (even if just in virtual DOM)
+    #       - Managing this simple interaction in multiple places
     $el.on 'mouseover mouseleave', '.points_by_community .point_content', (ev) => 
       if @props.state == 'results'
         if ev.type == 'mouseover'
@@ -89,12 +103,29 @@ Proposal = React.createClass
           # get includers of the point
           # TODO: need to add this user if they've included this point (might be already taken care of depending on how saving opinions works)
           includers = $.parseJSON point.includers
-          $histogram = $el.find('.histogram')
-          @$includers_to_highlight = $histogram.find ("#avatar-#{uid}" for uid in includers).join(',')
-          @$includers_to_highlight.css { borderColor: 'red' }
-        else if ev.type == 'mouseleave'
-          @$includers_to_highlight.css { borderColor: '' }
 
+          ####
+          # implement option (1) above:
+
+          # $histogram = $el.find('.histogram')
+          # @$includers_to_highlight = $histogram.find ("#avatar-#{uid}" for uid in includers).join(',')
+          # @$includers_to_highlight.css { border: '2px solid red' }
+
+          ####
+          # implement option (2) above
+          @setState 
+            users_to_highlight_in_histogram : includers
+
+        else if ev.type == 'mouseleave'
+          ####
+          # implement option (1) above
+
+          # @$includers_to_highlight.css { border: '' }
+
+          ####
+          # implement option (2) above
+          @setState 
+            users_to_highlight_in_histogram : []
 
 
   componentDidUpdate : (prev_props, prev_state) ->
@@ -111,13 +142,15 @@ Proposal = React.createClass
         $el.find('.opinion_region').headroom
           offset: $('.opinion_region').offset().top
 
-          onNotTop : -> 
+          onNotTop : => 
+            return if @props.state != 'crafting'
             $cons.hide()
             $cons.css {left: DECISION_BOARD_WIDTH}
             $opinion.css {position: 'fixed', top: 0}
             $cons.show()
 
-          onTop : -> 
+          onTop : => 
+            return if @props.state != 'crafting'
             $cons.hide()
             $cons.css {left: ''}
             $opinion.css {position: '', top: ''}
@@ -236,6 +269,7 @@ Proposal = React.createClass
         Histogram
           state: @props.state
           opinions: @props.data.opinions
+          users_to_highlight_in_histogram: @state.users_to_highlight_in_histogram
 
         Slider
           initial_stance: @props.data.initial_stance
@@ -336,7 +370,7 @@ Histogram = React.createClass
       for segment in [@state.num_small_segments..0]
         R.ul className:"histogram_bar #{if @segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:"#{segment}", style: {width: (if @segment_is_extreme_or_neutral(segment) then 3 * @state.avatar_size else @state.avatar_size)},
           for opinion in @state.histogram_small_segments[segment]
-            Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
+            Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:@state.avatar_size, width: @state.avatar_size, border: if _.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '2px solid red' else 'none'}
 
 
 ##

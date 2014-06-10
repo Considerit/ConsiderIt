@@ -23,6 +23,31 @@ HISTOGRAM_WIDTH = 600    # Width of the slider / histogram base
 MAX_HISTOGRAM_HEIGHT = 200
 DECISION_BOARD_WIDTH = 544
 
+# React mixins
+
+##
+# We enforce strict adherence to all data required for rendering to be 
+# captured in props or state for a component. Therefore, we can ensure
+# that a component should not have to update unless either its props
+# or state has changed. 
+#
+# This introduces an opportunity for a particular kind of bug that occurs if a nested component 
+# depends on data fetched from activeREST, like some user information. If the user
+# data is updated and that information is not present as state or props
+# on the parent, then the child component that depends on that data
+# will not be rerendered. 
+#
+# One solution to this problem is to reflow from the top down whenever 
+# the cache is updated by using React.forceUpdate. 
+#
+# Note also that this the place that Om apparently really stands out --
+# http://swannodette.github.io/2013/12/17/the-future-of-javascript-mvcs/
+StrictReactComponent = 
+  shouldComponentUpdate : (next_props, next_state) -> 
+    !_.isEqual(next_props, @props) || !_.isEqual(next_state, @state)
+
+
+
 ####################
 # React Components
 #
@@ -35,11 +60,13 @@ DECISION_BOARD_WIDTH = 544
 #               |    /            \
 #              Point             NewPoint
 
+
 ##
 # Proposal
 # The mega component for a proposal.
 # Has proposal description, feelings area (slider + histogram), and reasons area
 Proposal = React.createClass
+  mixins: [StrictReactComponent]
   displayName: 'Proposal'
 
   ####
@@ -285,6 +312,7 @@ Proposal = React.createClass
           valence: 'pro'
           included_points : @props.data.included_points
           onPointShouldBeRemoved : @onPointShouldBeRemoved
+          points: fetch { url: 'all_points' }
 
         #your reasons
         DecisionBoard
@@ -293,6 +321,7 @@ Proposal = React.createClass
           onPointShouldBeIncluded : @onPointShouldBeIncluded
           onPointShouldBeCreated : @onPointShouldBeCreated
           toggleState: @toggleState
+          points: fetch { url: 'all_points' }
 
         #community cons    
         CommunityPoints 
@@ -301,10 +330,12 @@ Proposal = React.createClass
           valence: 'con'
           included_points : @props.data.included_points
           onPointShouldBeRemoved : @onPointShouldBeRemoved
+          points: fetch { url: 'all_points' }
 
 ##
 # Histogram
 Histogram = React.createClass
+  mixins: [StrictReactComponent]
 
   getDefaultProps : ->
     opinions: []
@@ -378,6 +409,7 @@ Histogram = React.createClass
 # Manages the slider and the UI elements attached to it. 
 Slider = React.createClass
   displayName: 'Slider'
+  mixins: [StrictReactComponent]
 
   getInitialState : ->
     stance_segment : @getStanceSegmentFromSliderValue(@props.initial_stance)
@@ -475,6 +507,7 @@ Slider = React.createClass
 # Handles the user's list of important points in crafting state. 
 DecisionBoard = React.createClass
   displayName: 'DecisionBoard'
+  mixins: [StrictReactComponent]
 
   componentDidMount : ->
     # make this a drop target
@@ -519,6 +552,7 @@ DecisionBoard = React.createClass
 # Creates NewPoint instances.
 YourPoints = React.createClass
   displayName: 'YourPoints'
+  mixins: [StrictReactComponent]
 
   render : ->
 
@@ -556,6 +590,7 @@ YourPoints = React.createClass
 # Shown in wing during crafting, in middle on results. 
 CommunityPoints = React.createClass
   displayName: 'CommunityPoints'
+  mixins: [StrictReactComponent]
 
   componentDidMount : ->
     # Make this a drop target to facilitate removal of points
@@ -599,6 +634,7 @@ CommunityPoints = React.createClass
 # A single point in a list. 
 Point = React.createClass
   displayName: 'Point'
+  mixins: [StrictReactComponent]
 
   setDraggability : ->
     # Ability to drag include this point if a community point, 
@@ -638,6 +674,7 @@ Point = React.createClass
 # Manages whether the user has clicked "add a new point". If they have, show new point form. 
 NewPoint = React.createClass
   displayName: 'NewPoint'
+  mixins: [StrictReactComponent]
 
   getInitialState : ->
     editMode : false
@@ -691,6 +728,7 @@ NewPoint = React.createClass
 # Supports straight up img src, or using the CSS-embedded b64 for each user
 Avatar = React.createClass
   displayName: 'Avatar'
+  #mixins: [StrictReactComponent]
 
   getDefaultProps : ->
     user: -1 # defaults to anonymous user

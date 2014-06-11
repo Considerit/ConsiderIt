@@ -19,23 +19,28 @@ ReactTransitionGroup = React.addons.TransitionGroup
 # Constants
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
-HISTOGRAM_WIDTH = 600    # Width of the slider / histogram base 
+HISTOGRAM_WIDTH = 598    # Width of the slider / histogram base 
 MAX_HISTOGRAM_HEIGHT = 200
 DECISION_BOARD_WIDTH = 544
+
 
 # React mixins
 
 ##
-# We enforce strict adherence to all data required for rendering to be 
+# StrictReactComponent mixin
+# Enforces rule that all data required for rendering be 
 # captured in props or state for a component. Therefore, we can ensure
 # that a component should not have to update unless either its props
 # or state has changed. 
 #
-# This introduces an opportunity for a particular kind of bug that occurs if a nested component 
-# depends on data fetched from activeREST, like some user information. If the user
-# data is updated and that information is not present as state or props
-# on the parent, then the child component that depends on that data
-# will not be rerendered. 
+# A couple bugs can occur as a consequence of this strictness: 
+#  1) If a nested component depends on data fetched from activeREST, like some 
+#     user information. If the user data is updated and that information is 
+#     not present as state or props on the parent, then the child component 
+#     that depends on that data will not be rerendered. 
+#  2) If the object that gets set as props on the high level component is changed
+#     rather than cloned then changed, then this method won't recognize that 
+#     the component should update. 
 #
 # One solution to this problem is to reflow from the top down whenever 
 # the cache is updated by using React.forceUpdate. 
@@ -46,6 +51,28 @@ StrictReactComponent =
   shouldComponentUpdate : (next_props, next_state) -> 
     !_.isEqual(next_props, @props) || !_.isEqual(next_state, @state)
 
+
+##
+# StyleAnimator mixin
+# Helper for components that implement animations.
+StyleAnimator = 
+  applyStylesToElements : (styles, duration) ->
+    $el = $(@getDOMNode())
+    _.each _.keys(styles), (selector) -> 
+      # Only apply styles if there are differences, for performance. 
+      # This check doesn't work for transform properties because for Velocity we 
+      # specify them as e.g. TranslateX: 4 rather than transform: translateX(4)
+      styles_for_selector = styles[selector]
+      styles_to_apply = {}
+      $target = $el.find(selector)
+
+      prop_map = $target.css(_.keys(styles_for_selector))
+      for property in _.keys(styles_for_selector)
+        if prop_map[property] != styles_for_selector[property]
+          styles_to_apply[property] = styles_for_selector[property]
+
+      if _.size(styles_to_apply) > 0
+        $target.velocity styles_to_apply, {duration}
 
 
 ####################
@@ -66,7 +93,7 @@ StrictReactComponent =
 # The mega component for a proposal.
 # Has proposal description, feelings area (slider + histogram), and reasons area
 Proposal = React.createClass
-  mixins: [StrictReactComponent]
+  mixins: [StrictReactComponent, StyleAnimator]
   displayName: 'Proposal'
 
   ####
@@ -98,7 +125,7 @@ Proposal = React.createClass
   componentWillUpdate : (next_props, next_state) ->
 
   componentDidMount : ->
-    @applyStyles false
+    #@applyStyles false
 
     $el = $(@getDOMNode())
 
@@ -121,9 +148,9 @@ Proposal = React.createClass
     #       + Application state remains tracked by props and state, the React way. Probably less error prone
     #       - Could be performance intense if other proposal components have to get rerendered (even if just in virtual DOM)
     #       - Managing this simple interaction in multiple places
-    $el.on 'mouseover mouseleave', '.points_by_community .point_content', (ev) => 
+    $el.on 'mouseenter mouseleave', '.points_by_community .point_content', (ev) => 
       if @props.state == 'results'
-        if ev.type == 'mouseover'
+        if ev.type == 'mouseenter'
           point_id = $(ev.currentTarget).parent().data('id')
           point = fetch { url: "points/#{point_id}?no_comments" }
 
@@ -147,7 +174,7 @@ Proposal = React.createClass
           ####
           # implement option (1) above
 
-          # @$includers_to_highlight.css { border: '' }
+          #@$includers_to_highlight.css { border: '' }
 
           ####
           # implement option (2) above
@@ -173,7 +200,7 @@ Proposal = React.createClass
             return if @props.state != 'crafting'
             $cons.hide()
             $cons.css {left: DECISION_BOARD_WIDTH}
-            $opinion.css {position: 'fixed', top: 0}
+            $opinion.css {position: 'fixed', top: '0'}
             $cons.show()
 
           onTop : => 
@@ -190,63 +217,62 @@ Proposal = React.createClass
     $el = $(@getDOMNode())
     duration = if animate then TRANSITION_SPEED else 0
 
-    slider_stance =  $el.find('.ui-slider-handle').position().left / $el.find('.slider_base').innerWidth()
-    is_opposer = slider_stance > .5
-
     # Note: Velocity requires properties to be pulled out (e.g. paddingLeft, translateX, rather than using padding or transform)
     # Note: Use velocity even for 0 duration applications to maintain parity of style definition
     switch @props.state
       when 'crafting'
         styles = 
-          '.histogram_bar:not(.extreme_or_neutral)': { opacity: .2 }
-          '.histogram_bar.extreme_or_neutral':       { opacity: .2 }
+          '.histogram_bar:not(.extreme_or_neutral)': { opacity: '.2' }
+          '.histogram_bar.extreme_or_neutral':       { opacity: '.2' }
           '.opinion_region':                         { translateX: 0, translateY: 0 }
-          '.decision_board_body':                    { width: DECISION_BOARD_WIDTH, minHeight: 375}
+          '.decision_board_body':                    { width: "#{DECISION_BOARD_WIDTH}px", minHeight: "375px"}
           '.pros_by_community':                      { translateX: 0 }
           '.cons_by_community':                      { translateX: 0 }
         
-        _.each _.keys(styles), (selector) -> $el.find(selector).velocity styles[selector], {duration}
+        @applyStylesToElements styles, duration
 
-        $el.find('.give_opinion_button')[0].style.visibility = 'hidden'
-        _.delay -> 
-          $el.find('.your_points')[0].style.display = ''
-        , duration
+        if $el.find('.give_opinion_button')[0].style.display != 'hidden'
+          $el.find('.give_opinion_button')[0].style.visibility = 'hidden'
+          _.delay -> 
+            $el.find('.your_points')[0].style.display = ''
+          , duration
 
       when 'results'
+        slider_stance = ($el.find('.ui-slider').slider('value') + 1) / 2
+        is_opposer = slider_stance > .5
         opinion_region_x = DECISION_BOARD_WIDTH * slider_stance
         give_opinion_button_width = 186
         opinion_region_x -= give_opinion_button_width / 2 
 
         styles = 
-          '.histogram_bar:not(.extreme_or_neutral)': { opacity: 1 }
-          '.histogram_bar.extreme_or_neutral':       { opacity: 1 }
+          '.histogram_bar:not(.extreme_or_neutral)': { opacity: '1' }
+          '.histogram_bar.extreme_or_neutral':       { opacity: '1' }
           '.opinion_region':                         { translateX: opinion_region_x, translateY: -18 }
-          '.decision_board_body':                    { width: give_opinion_button_width, minHeight: 32}
+          '.decision_board_body':                    { width: "#{give_opinion_button_width}px", minHeight: "32px"}
           '.pros_by_community':                      { translateX:  DECISION_BOARD_WIDTH / 2 }
           '.cons_by_community':                      { translateX: -DECISION_BOARD_WIDTH / 2 }
         
-        _.each _.keys(styles), (selector) -> $el.find(selector).velocity styles[selector], {duration}
+        @applyStylesToElements styles, duration
 
-        $el.find('.your_points')[0].style.display = 'none'
-        _.delay -> 
-          $el.find('.give_opinion_button')[0].style.visibility = 'visible'
-        , duration
+        if $el.find('.give_opinion_button')[0].style.visibility != 'visible'
+          $el.find('.your_points')[0].style.display = 'none'
+          _.delay -> 
+            $el.find('.give_opinion_button')[0].style.visibility = 'visible'
+          , duration
 
   ####
   # Props need to change methods
   onPointShouldBeIncluded : (point_id) ->
     #TODO: activeREST call here...
     #TODO: should probably be managing an opinion, e.g. @props.opinion.included_points
-    @props.data.included_points.push point_id
-    save { type: 'proposal', data: @props.data }
+    save { type: 'point_inclusion', data: point_id }
 
   onPointShouldBeRemoved : (point_id) ->
     #TODO: activeREST call here...    
     #TODO: should probably be managing an opinion, e.g. @props.opinion.included_points
     #TODO: server might return that the point was actually _deleted_ from 
     #      the system, not just removed from the list...need to handle that
-    @props.data.included_points = _.without @props.data.included_points, point_id
-    save { type: 'proposal', data: @props.data }
+    save { type: 'point_removal', data: point_id }
 
   onPointShouldBeCreated : (data) ->
     #TODO: activeREST call here...
@@ -254,7 +280,7 @@ Proposal = React.createClass
       user_id : -2 #anon user
       comment_count : 0 
 
-    save { type: 'point', data: point, _proposal_data: @props.data }
+    save { type: 'point', data: point }
 
   toggleState : (ev) ->
     route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
@@ -401,7 +427,7 @@ Histogram = React.createClass
       for segment in [@state.num_small_segments..0]
         R.ul className:"histogram_bar #{if @segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:"#{segment}", style: {width: (if @segment_is_extreme_or_neutral(segment) then 3 * @state.avatar_size else @state.avatar_size)},
           for opinion in @state.histogram_small_segments[segment]
-            Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:@state.avatar_size, width: @state.avatar_size, border: if _.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '2px solid red' else 'none'}
+            Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:@state.avatar_size, width: @state.avatar_size, border: if _.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '1px solid red' else 'none'}
 
 
 ##
@@ -409,7 +435,7 @@ Histogram = React.createClass
 # Manages the slider and the UI elements attached to it. 
 Slider = React.createClass
   displayName: 'Slider'
-  mixins: [StrictReactComponent]
+  mixins: [StrictReactComponent, StyleAnimator]
 
   getInitialState : ->
     stance_segment : @getStanceSegmentFromSliderValue(@props.initial_stance)
@@ -444,7 +470,7 @@ Slider = React.createClass
           '.bubblemouth': { scaleX: mouth_scaler, scaleY: 1, translateY: -8, translateX: mouth_x  }
           '.the_handle':  { scale: 1, translateY: -9 }
 
-    _.each _.keys(styles), (selector) -> $el.find(selector).velocity styles[selector], {duration}
+    @applyStylesToElements styles, duration
 
   ##
   # setSlidability
@@ -546,13 +572,36 @@ DecisionBoard = React.createClass
 
 
 ##
+# Mixin for Point lists for handling draggability (CommunityPoints and YourPoints)
+# Bonus: prevents the need to pass state to (which results in expensive operations)
+#
+DraggablePoints = 
+  componentDidMount : -> @setDraggability()
+  componentDidUpdate : -> @setDraggability()
+
+  setDraggability : ->
+    # Ability to drag include this point if a community point, 
+    # or drag remove for point on decision board
+    # also: disable for results page
+
+    disable = @props.state == 'results'
+    $(@getDOMNode()).find('.point_content').each -> 
+      if $(@).hasClass "ui-draggable"
+        $(@).draggable(if disable then 'disable' else 'enable') 
+      else
+        $(@).draggable
+          revert: "invalid"
+          disabled: disable
+
+
+##
 # YourPoints
 # List of important points for the active user. 
 # Two instances used for Pro and Con columns. Shown as part of DecisionBoard. 
 # Creates NewPoint instances.
 YourPoints = React.createClass
   displayName: 'YourPoints'
-  mixins: [StrictReactComponent]
+  mixins: [DraggablePoints, StrictReactComponent]
 
   render : ->
 
@@ -572,7 +621,7 @@ YourPoints = React.createClass
               valence: @props.valence
               comment_count: point.comment_count
               author: point.user_id
-              state: @props.state
+              # state: @props.state
               location_class: 'decision_board_point'
 
         R.div className:'add_point_drop_target',
@@ -590,7 +639,7 @@ YourPoints = React.createClass
 # Shown in wing during crafting, in middle on results. 
 CommunityPoints = React.createClass
   displayName: 'CommunityPoints'
-  mixins: [StrictReactComponent]
+  mixins: [DraggablePoints, StrictReactComponent]
 
   componentDidMount : ->
     # Make this a drop target to facilitate removal of points
@@ -626,7 +675,7 @@ CommunityPoints = React.createClass
             valence: @props.valence
             comment_count: point.comment_count
             author: point.user_id
-            state: @props.state
+            # state: @props.state
             location_class : 'community_point'
 
 ##
@@ -636,25 +685,8 @@ Point = React.createClass
   displayName: 'Point'
   mixins: [StrictReactComponent]
 
-  setDraggability : ->
-    # Ability to drag include this point if a community point, 
-    # or drag remove for point on decision board
-    # also: disable for results page
-
-    $point_content = $(@getDOMNode()).find '.point_content'
-    if $point_content.hasClass "ui-draggable"
-      $point_content.draggable(if @props.state == 'results' then 'disable' else 'enable') 
-    else
-      $point_content.draggable
-        revert: "invalid"
-        disabled: @props.state == 'results'
-
-
-  componentDidMount : -> @setDraggability()
-  componentDidUpdate : -> @setDraggability()
-
   render : -> 
-    R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id, 'data-role':'point', 'data-includers': [1,2],
+    R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id, 'data-includers': [1,2],
       Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
       
       R.div className:'point_content',
@@ -728,7 +760,7 @@ NewPoint = React.createClass
 # Supports straight up img src, or using the CSS-embedded b64 for each user
 Avatar = React.createClass
   displayName: 'Avatar'
-  #mixins: [StrictReactComponent]
+  mixins: [StrictReactComponent]
 
   getDefaultProps : ->
     user: -1 # defaults to anonymous user
@@ -792,6 +824,8 @@ fetch = (options, callback, error_callback) ->
 
 #save assumes that data is a proposal page
 save = (action) -> 
+  proposal_data = $.extend true, {}, top_level_component.props #deep clone so that shouldcomponentupdate will note changes to data    
+
   switch action.type
     when 'point'
 
@@ -801,18 +835,28 @@ save = (action) ->
           id = -(Math.floor(Math.random() * 999999) + 1)
         id
 
-      proposal_data = action._proposal_data
+      # proposal_data = $.extend true, {}, top_level_component.props, {data: action._proposal_data} #deep clone so that shouldcomponentupdate will note changes to data    
       id = get_unique_id()
       action.data.id = id
 
       all_points["points/#{id}?no_comments"] = action.data
-      proposal_data.included_points.push action.data.id
+      included_points = _.clone proposal_data.included_points
+      included_points.push action.data.id
+
+      proposal_data.included_points = included_points
+
+    when 'point_inclusion'
+      proposal_data.data.included_points.push action.data
+
+    when 'point_removal'
+
+      proposal_data.data.included_points = _.without proposal_data.data.included_points, action.data
+
 
     when 'proposal'
-      proposal_data = action.data
+      proposal_data.data = action.data
 
-  top_level_component.setProps { data: proposal_data }
-
+  top_level_component.setProps proposal_data
 
 
 ##########################

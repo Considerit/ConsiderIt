@@ -6,11 +6,15 @@
 #   - Keeping javascript and CSS variables synchronized
 #   - Haven't declared prop types for the components
 #   - Unclear whether information derived from props should be 
-#     stored as state or plain variable (see Proposal.buildHistogramDataFromProps)
+#     stored as state or plain variable (see Histogram.buildHistogramDataFromProps)
 #   - I don't like setting data as key in props, would rather 
 #     have the specific props be added explicitly
 #   - NewPoint CSS/HTML is still bulky, waiting on redesign
 #   - Managing top_level_component in Router
+#   - Possibility of bugs being introduced by having (1) nested components
+#     fetching data from cache and (2) immutability of @props. For (2), 
+#     could we use object.freeze()? 
+#     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
 
 # React aliases
 R = React.DOM
@@ -111,6 +115,7 @@ Proposal = React.createClass
 
   getInitialState : ->
     users_to_highlight_in_histogram : []
+    selected_segment_in_histogram : null
 
   # TODO: add prop types here
 
@@ -156,7 +161,7 @@ Proposal = React.createClass
 
           # get includers of the point
           # TODO: need to add this user if they've included this point (might be already taken care of depending on how saving opinions works)
-          includers = $.parseJSON point.includers
+          includers = point.includers
 
           ####
           # implement option (1) above:
@@ -261,7 +266,7 @@ Proposal = React.createClass
           , duration
 
   ####
-  # Props need to change methods
+  # Data needs to persist
   onPointShouldBeIncluded : (point_id) ->
     #TODO: activeREST call here...
     #TODO: should probably be managing an opinion, e.g. @props.opinion.included_points
@@ -282,9 +287,16 @@ Proposal = React.createClass
 
     save { type: 'point', data: point }
 
+  ####
+  # State needs to be updated
+
   toggleState : (ev) ->
     route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
     app_router.navigate route, {trigger : true}
+  
+  onSelectSegment : (segment) ->
+    @setState
+      selected_segment_in_histogram : segment
 
   ####
   # Make this thing!
@@ -316,13 +328,14 @@ Proposal = React.createClass
           R.a onClick: @toggleState,
             if @props.state != 'crafting' then 'Give Own Opinion' else 'Explore all Opinions'
     
-
       #feelings
       R.div className:'feelings_region',
         Histogram
           state: @props.state
           opinions: @props.data.opinions
           users_to_highlight_in_histogram: @state.users_to_highlight_in_histogram
+          onSelectSegment: @onSelectSegment
+          selected_segment_in_histogram: @state.selected_segment_in_histogram
 
         Slider
           initial_stance: @props.data.initial_stance
@@ -339,7 +352,10 @@ Proposal = React.createClass
           included_points : @props.data.included_points
           onPointShouldBeRemoved : @onPointShouldBeRemoved
           points: fetch { url: 'all_points' }
-
+          opinions: @props.data.opinions          
+          selected_segment_in_histogram: @state.selected_segment_in_histogram
+          stance_names: stance_names
+          
         #your reasons
         DecisionBoard
           state: @props.state
@@ -357,6 +373,9 @@ Proposal = React.createClass
           included_points : @props.data.included_points
           onPointShouldBeRemoved : @onPointShouldBeRemoved
           points: fetch { url: 'all_points' }
+          opinions: @props.data.opinions
+          selected_segment_in_histogram: @state.selected_segment_in_histogram
+          stance_names: stance_names
 
 ##
 # Histogram
@@ -365,6 +384,7 @@ Histogram = React.createClass
 
   getDefaultProps : ->
     opinions: []
+    selected_segment_in_histogram: null
 
   getInitialState : ->
     seven_original_opinion_segments : {}
@@ -401,12 +421,10 @@ Histogram = React.createClass
     if avatar_size * num_opinions_in_max_segment / 3 > MAX_HISTOGRAM_HEIGHT # divide by three for three cols in extremes/neutral segments
       avatar_size = 3 * MAX_HISTOGRAM_HEIGHT / num_opinions_in_max_segment
 
-
     # Calculate how many segments columns to put on the histogram. Note that for the extremes and for neutral, we'll hack it 
     # to allow three columns for those segments.
     num_small_segments = Math.floor(HISTOGRAM_WIDTH / avatar_size) - 2 * 3 - 1 #for the additional cols for the extremes+neutral 
 
-  
     histogram_small_segments = {}
     histogram_small_segments[i] = [] for i in [0..num_small_segments]
 
@@ -421,11 +439,18 @@ Histogram = React.createClass
   segment_is_extreme_or_neutral : (segment) -> 
     segment == 0 || segment == @state.num_small_segments || segment == Math.floor(@state.num_small_segments / 2)
 
-  render : ->
+  onSelectSegment : (ev) ->
+    if @props.state == 'results'
+      segment = $(ev.currentTarget).data('segment')
+      @props.onSelectSegment segment
 
+  render : ->
     R.div className: 'histogram',
-      for segment in [@state.num_small_segments..0]
-        R.ul className:"histogram_bar #{if @segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:"#{segment}", style: {width: (if @segment_is_extreme_or_neutral(segment) then 3 * @state.avatar_size else @state.avatar_size)},
+      R.ul className: "shadow_histogram",
+        for segment in _.keys @state.seven_original_opinion_segments
+          R.li className: "shadow_histogram_bar", id: "segment-#{segment}", onClick: @onSelectSegment, 'data-segment': segment, key: segment, style: {width: HISTOGRAM_WIDTH / _.size(@state.seven_original_opinion_segments), height: MAX_HISTOGRAM_HEIGHT, backgroundColor: if "#{@props.selected_segment_in_histogram}" == segment then '#ccc' else 'transparent'}
+      for segment in [@state.num_small_segments..0]        
+        R.ul className:"histogram_bar #{if @segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:segment, style: {width: (if @segment_is_extreme_or_neutral(segment) then 3 * @state.avatar_size else @state.avatar_size)},
           for opinion in @state.histogram_small_segments[segment]
             Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:@state.avatar_size, width: @state.avatar_size, border: if _.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '1px solid red' else 'none'}
 
@@ -654,16 +679,42 @@ CommunityPoints = React.createClass
       over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
 
   render : ->
-
     #filter to pros or cons & down to points that haven't been included
     points = _.filter fetch({ url: 'all_points' }), (pnt) =>
       is_correct_valence = pnt.is_pro == (@props.valence == 'pro')
       has_not_been_included = @props.state == 'results' || !_.contains(@props.included_points, pnt.id)
       is_correct_valence && has_not_been_included
 
+    if @props.selected_segment_in_histogram?
+      # If there is a histogram segment selected, we'll have to filter down 
+      # to the points that users in this segment think are important, and 
+      # order them by resonance to those users. I'm doing this quite inefficiently.
+      point_inclusions_per_point_for_segment = {} # map of points to including users
+      _.each @props.opinions, (opinion) =>
+        if opinion.stance_segment == 6 - @props.selected_segment_in_histogram && opinion.point_inclusions
+          for point_id in opinion.point_inclusions
+            if !_.has(point_inclusions_per_point_for_segment, point_id)
+              point_inclusions_per_point_for_segment[point_id] = 1
+            else
+              point_inclusions_per_point_for_segment[point_id] += 1
+
+      points = _.filter points, (pnt) -> _.has point_inclusions_per_point_for_segment, pnt.id
+      points = _.sortBy points, (pnt) -> -point_inclusions_per_point_for_segment[pnt.id]
+    else
+      # Default sort order
+      points = _.sortBy points, (pnt) => - if @props.state == 'results' then pnt.score else pnt.persuasiveness
+
+
+    label = "#{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}"
+
     R.div className:"points_by_community #{@props.valence}s_by_community",
       R.h1 className:'points_heading_label',
-        "Others' #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
+        if @props.selected_segment_in_histogram?
+          "#{@props.stance_names[@props.selected_segment_in_histogram]}s' #{label}s"
+        else if @props.state == 'results'
+          "Top #{label}s"
+        else
+          "Others' #{label}s"
 
       R.ul null, 
         for point in points
@@ -686,7 +737,7 @@ Point = React.createClass
   mixins: [StrictReactComponent]
 
   render : -> 
-    R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id, 'data-includers': [1,2],
+    R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,
       Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
       
       R.div className:'point_content',
@@ -816,8 +867,14 @@ fetch = (options, callback, error_callback) ->
 
         #TODO: return from server as a hash already?
         for point in data.points
+          point.includers = $.parseJSON point.includers
           all_points["points/#{point.id}?no_comments"] = point
 
+        for opinion in data.opinions
+          opinion.point_inclusions = $.parseJSON opinion.point_inclusions
+
+
+      console.log data
       callback data
 
     error: error_callback
@@ -839,6 +896,7 @@ save = (action) ->
       id = get_unique_id()
       action.data.id = id
 
+      action.data.includers = [current_user_id=-2]
       all_points["points/#{id}?no_comments"] = action.data
       included_points = _.clone proposal_data.included_points
       included_points.push action.data.id
@@ -849,9 +907,7 @@ save = (action) ->
       proposal_data.data.included_points.push action.data
 
     when 'point_removal'
-
       proposal_data.data.included_points = _.without proposal_data.data.included_points, action.data
-
 
     when 'proposal'
       proposal_data.data = action.data

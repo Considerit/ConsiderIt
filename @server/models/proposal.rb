@@ -37,9 +37,10 @@ class Proposal < ActiveRecord::Base
     response = {
       :proposal => self,
       :points => Point.mask_anonymous_users(points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})").public_fields, current_user),
-      :included_points => Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).select('points.id') + Point.included_by_unstored(prop_data[:included_points].keys, self).select('points.id'),
+      :included_points => Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id') + Point.included_by_unstored(prop_data[:included_points].keys, self).pluck('points.id'),
       :opinions => opinions.published.public_fields,
-      :result => 'success'
+      :result => 'success',
+      :users => ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id}"))
     }
 
     if current_tenant.assessment_enabled

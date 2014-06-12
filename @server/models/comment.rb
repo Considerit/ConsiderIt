@@ -1,10 +1,10 @@
 class Comment < ActiveRecord::Base
   #is_reflectable
-  include Trackable, Thankable, Followable, Moderatable
+  include Trackable, Thankable, Moderatable #, Followable
 
   scope :public_fields, -> {select('id, body, user_id, commentable_type, created_at, commentable_id, moderation_status')}
   
-  has_paper_trail :only => [:title, :body, :subject, :user_id]  
+  # has_paper_trail :only => [:title, :body, :subject, :user_id]  
   
   #acts_as_nested_set :scope => [:commentable_id, :commentable_type]
   validates_presence_of :body

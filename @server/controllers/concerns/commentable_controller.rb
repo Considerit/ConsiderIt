@@ -16,12 +16,6 @@ class CommentableController < ApplicationController
       commentable = commentable_type.constantize.find commentable_id
       comment = Comment.build_from(commentable, current_user.id, params[:comment][:body] )
 
-      #TODO: implement this as instrumentation
-      if commentable_type == 'Point'
-        commentable.comment_count = commentable.comments.count
-        commentable.save
-      end
-
       if comment.save
 
         ActiveSupport::Notifications.instrument("comment:#{commentable_type.downcase}:created", 
@@ -33,11 +27,17 @@ class CommentableController < ApplicationController
 
         #TODO: implement this as instrumentation        
         comment.track!
-        comment.follow!(current_user, :follow => true, :explicit => false)
+        # comment.follow!(current_user, :follow => true, :explicit => false)
 
         if commentable.respond_to? :follow!
           commentable.follow!(current_user, :follow => true, :explicit => false)
         end
+
+        if commentable.respond_to? :comment_count 
+          commentable.comment_count = commentable.comments.count
+          commentable.save
+        end
+
       end
 
     end

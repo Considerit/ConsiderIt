@@ -1,41 +1,12 @@
 class PointsController < ApplicationController
   protect_from_forgery
-  
-  def create
-    proposal = Proposal.find_by_long_id(params[:long_id])
-
-    create_params = {
-        :nutshell => params[:point][:nutshell],
-        :text => params[:point][:text],
-        :is_pro => params[:point][:is_pro],
-        :hide_name => params[:point][:hide_name],
-        :comment_count => 0,
-        :proposal_id => proposal.id,
-        :long_id => proposal.long_id,
-        :user_id => current_user ? current_user.id : nil,
-        :published => false
-    }
-
-    point = Point.create! ActionController::Parameters.new(create_params).permit!
-    #TODO: shouldn't this happen before?
-    authorize! :create, point
-
-    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-
-    session[proposal.id][:written_points].push(point.id)
-    session[proposal.id][:included_points][point.id] = 1    
-    session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
-    
-    respond_to do |format|
-      format.json {render :json => point}
-    end
-  end
 
   def show
 
     point = Point.find params[:id]
     authorize! :read, point
 
+    # Getting all comments. Remember that there are multiple types of comments: straight comments and expert review comments
     #todo: make this more efficient and natural
     comments = point.comments
     thanks = point.comments.map {|x| x.thanks.public_fields.to_a}.compact.flatten
@@ -60,6 +31,7 @@ class PointsController < ApplicationController
     respond_to do |format|
       format.json {render :json => response}
       format.html { 
+        # this handles the case where the user directly opens a point
         proposal_data = point.proposal.full_data current_tenant, current_user, session[point.proposal_id], can?(:manage, point.proposal)
         proposal_data[:opinion] = ProposalsController.get_opinion_for_user(point.proposal, current_user, session)
         @current_proposal = proposal_data.to_json
@@ -70,8 +42,42 @@ class PointsController < ApplicationController
           :point => point
         }.to_json
 
-        render :nothing => true, :layout => true
+        render "layouts/application", :layout => false
       }
+    end
+  end
+
+
+  def create
+    proposal = Proposal.find_by_long_id(params[:long_id])
+
+    create_params = {
+        :nutshell => params[:point][:nutshell],
+        :text => params[:point][:text],
+        :is_pro => params[:point][:is_pro],
+        :hide_name => params[:point][:hide_name],
+        :comment_count => 0,
+        :proposal_id => proposal.id,
+        :long_id => proposal.long_id,
+        :user_id => current_user ? current_user.id : nil,
+        :published => false
+    }
+
+    point = Point.new ActionController::Parameters.new(create_params).permit!
+
+    #TODO: look into cancan to figure out how we can move this earlier in the method
+    authorize! :create, point
+
+    point.save
+
+    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
+
+    session[proposal.id][:written_points].push(point.id)
+    session[proposal.id][:included_points][point.id] = 1    
+    session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
+    
+    respond_to do |format|
+      format.json {render :json => point}
     end
   end
 
@@ -118,6 +124,7 @@ class PointsController < ApplicationController
     
     session[@point.proposal_id][:written_points].delete(@point.id)
     session[@point.proposal_id][:included_points].delete(@point.id)  
+    session[@point.proposal_id][:viewed_points].delete(@point.id)
 
     # if this point is a top pro or con, need to trigger proposal update
     proposal = @point.proposal
@@ -134,7 +141,6 @@ class PointsController < ApplicationController
     respond_to do |format|
       format.json {render :json => response}
     end
-
 
   end
 

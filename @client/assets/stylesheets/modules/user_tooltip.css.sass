@@ -1,0 +1,23 @@
+@import "variables"
+
+////////////////////////////
+// TOOLTIPS
+//////////////////////////
+
+
+$tooltip_width: 250px
+
+.l_tooltip-user
+  .l_tooltip_title
+    +font-size(-3)
+    padding: 0 $grid_gutter/4
+
+.user_tooltip_opinion_link
+  text-decoration: underline
+  //display: block
+
+.l_tooltip-user .user_tooltip_opinion_link
+  +link_style($base_text_color, $base_background_color, 20%)
+
+.l_tooltip-user-influence
+  color: deemphasize($base_text_color, 25%, $base_background_color)

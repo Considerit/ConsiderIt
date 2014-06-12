@@ -1,0 +1,113 @@
+@import "variables"
+
+$dialog_width: $grid_major * 6 + $grid_minor * 6
+
+.l-dialog-prompt a img
+  height: 23px
+
+.l-dialog-detachable
+  +font-size(1)
+
+  position: absolute
+  left: 50%
+  margin-left: - $dialog_width / 2
+
+  z-index: 9999
+  border-radius: 5px
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 1px 2px 
+
+  //width: $dialog_width
+  //text-align: center
+
+  .l-dialog-title 
+    +font-size(3)
+    padding: $vertical_baseline / 2 $grid_gutter
+    font-weight: bold
+    border-radius: 5px 5px 0 0
+    //text-align: left
+
+
+  .l-dialog-title-sub
+    +font-size(-3)
+    display: inline-block
+    font-weight: normal
+
+    span
+      text-decoration: underline
+
+  .l-dialog-close
+    position: absolute
+    right: -$grid_gutter * .8
+    top: -$grid_gutter
+    //float: right
+    //+font-size(-3)
+
+
+  .l-dialog-body
+    padding: $vertical_baseline / 2 $grid_minor
+    border-radius: 0 0 5px 5px
+
+
+  .option
+    text-align: left
+    position: relative
+    //width: $grid_major * 5 + $grid_minor * 5
+    margin: $vertical_baseline/2 $grid_gutter + $grid_major $vertical_baseline 3 * $grid_major
+
+    input[type="radio"], i
+      position: absolute
+
+    input[type="radio"]
+      left: - 2.5 * $grid_gutter
+      top: 1px
+
+    i
+      left: -$grid_gutter
+      top: 3px
+
+    label
+      font-weight: bold
+
+
+    .sublabel
+      +font-size(-1)
+
+      .suboption
+        padding: $vertical_baseline/2 0
+        +font-size(0)
+        .sublabel
+          padding-left: $grid_gutter
+
+  .save_block
+    margin-bottom: $vertical_baseline
+
+  // &#sharing_settings
+  //   .option .access_list
+  //     +font-size(-4)
+  //     margin-top: $vertical_baseline
+  //     textarea
+  //       width: 100%
+  //       +font-size(1)
+
+.l-dialog-detachable
+  border: 1px solid emphasize($complementary_background_color, 10%)
+
+  .option .sublabel
+    color: deemphasize($base_text_color, 15%, $reference: $base_background_color)
+
+  .l-dialog-title 
+    color: $complementary_text_color
+    background-color: $complementary_background_color
+
+    a.l-dialog-close
+      +link_style(emphasize($complementary_background_color, 20%), $complementary_background_color, 25%)
+
+  .l-dialog-body
+    background-color: $dialog_background_color
+    color: $dialog_text_color
+
+    textarea, input[type="text"], input[type="email"], input[type="password"]
+      color: emphasize($dialog_text_color, 15%, $reference: $dialog_background_color)
+      background-color: deemphasize($dialog_background_color, 20%)
+      border: 1px solid emphasize($dialog_background_color, 20%)
+      padding: 6px 12px

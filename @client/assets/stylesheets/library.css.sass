@@ -1,0 +1,34 @@
+// These mixins and extenders can be used across all the sass files
+
+
+// Functions that allow for better definitions with dark vs light themes
+// The reference parameter determines which color is used to determine 
+// whether this is a light or dark scheme. 
+@function emphasize($color, $amount, $reference: false)
+  @if $reference == false
+    $reference: $color
+
+  @if lightness($reference) > 50%
+    @return darken($color, $amount)
+  @else
+    @return lighten($color, $amount)
+
+@function deemphasize($color, $amount, $reference: false)
+  @if $reference == false
+    $reference: $color
+
+  @if lightness($reference) > 50%
+    @return lighten($color, $amount)
+  @else
+    @return darken($color, $amount)
+
+
+=link_style($color, $reference, $amount)
+  color: $color
+  &:hover
+    // Determine whether the hover should darken or lighten the color
+    @if lightness($reference) > 50% 
+      // if the background is light, make the link darker on hover
+      color: darken($color, $amount)
+    @else
+      color: lighten($color, $amount)

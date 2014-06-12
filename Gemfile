@@ -37,7 +37,7 @@ gem "remotipart"#, "~> 1.0.2"
 gem 'acts_as_tenant'
 
 # https://github.com/sferik/rails_admin
-gem 'rails_admin' #, :git => 'git://github.com/sferik/rails_admin' #remove git reference after next version bump
+# gem 'rails_admin' #, :git => 'git://github.com/sferik/rails_admin' #remove git reference after next version bump
 
 #https://github.com/ryanb/cancan
 gem 'cancan'
@@ -51,7 +51,7 @@ gem 'paperclip'
 gem 'paperclip-compression'
 
 # https://github.com/amatsuda/kaminari
-gem 'kaminari'
+# gem 'kaminari'
 
 # https://github.com/javan/whenever
 gem 'whenever'
@@ -80,11 +80,11 @@ gem 'sanitize'
 # https://github.com/indirect/jquery-rails
 gem 'jquery-rails'
 
-gem 'paper_trail'
+# gem 'paper_trail'
 
 # https://github.com/lucasefe/themes_for_rails
-gem "themes_for_rails", :git => 'git://github.com/tkriplean/themes_for_rails.git' #, :branch => 'rails4'
-#gem "themes_for_rails", :git => "git://github.com/digitalmoksha/themes_for_rails"
+# gem "themes_for_rails", :git => 'git://github.com/tkriplean/themes_for_rails.git' #, :branch => 'rails4'
+# gem "themes_for_rails", :git => "git://github.com/digitalmoksha/themes_for_rails"
 
 # https://github.com/weppos/actionmailer_with_request
 gem 'actionmailer-with-request'
@@ -109,11 +109,30 @@ gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csr
 # https://github.com/josh/useragent
 gem 'useragent'
 
+gem 'font-awesome-rails'
+
 #######
 # https://github.com/rails/protected_attributes
 # These are primarily to make smooth upgrade from Rails 3 to 4
 gem 'actionpack-action_caching'
 #######
+
+
+##
+# These used to be the Assets group
+gem 'sprockets', "~> 2.11.0"
+gem 'sprockets-rails', :require => 'sprockets/railtie'
+#gem 'sprockets-helpers'
+
+gem 'aws-sdk'
+gem 'coffee-rails' #, "~> 3.2.2"
+gem 'uglifier'
+gem "asset_sync"
+
+gem 'sass-rails'
+
+gem 'bourbon'
+
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
@@ -136,14 +155,3 @@ group :production do
   gem "aws-ses", "~> 0.5.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
 end
 
-
-gem 'sprockets-rails', :require => 'sprockets/railtie'
-#gem 'sprockets-helpers'
-
-gem 'aws-sdk'
-gem 'coffee-rails' #, "~> 3.2.2"
-gem 'uglifier'
-gem "asset_sync"
-gem 'compass' #, '1.0.0.alpha.18'
-gem 'compass-rails' #, '>= 1.0.2'
-gem 'sassy-buttons'

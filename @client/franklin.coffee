@@ -7,8 +7,6 @@
 #   - Haven't declared prop types for the components
 #   - Proposal component is pretty giant, should split out the 
 #     histogram/slider into its own component
-#   - Unclear whether information derived from props should be 
-#     stored as state or plain variable (see Proposal.buildHistogramDataFromProps)
 #   - I don't like setting data as key in props, would rather 
 #     have the specific props be added explicitly
 #   - NewPoint CSS/HTML is still bulky, waiting on redesign
@@ -46,7 +44,7 @@ decision_board_width = 544
 Proposal = React.createClass
   displayName: 'Proposal'
 
-  ####
+  ##
   # Component defaults
 
   getDefaultProps : ->
@@ -61,25 +59,14 @@ Proposal = React.createClass
       opinions : []
 
   getInitialState : ->
-    seven_original_opinion_segments : {}
-    histogram_small_segments : {}
-    avatar_size : 0
-    num_small_segments : 0
     stance : 0.0
     stance_segment : 3
 
   # TODO: add prop types here
 
 
-  ####
+  ##
   # Lifecycle methods
-
-  componentWillMount : -> @buildHistogramDataFromProps @props
-
-  componentWillReceiveProps : (next_props) -> @buildHistogramDataFromProps next_props
-
-  componentWillUpdate : (next_props, next_state) ->
-
   componentDidMount : -> 
     @applyStyles @props.state, false
     @setSlidability()
@@ -113,15 +100,15 @@ Proposal = React.createClass
       , 200  # delay initialization to let the rest of the dom load so that the offset is calculated properly
 
     ##
-    # buildHistogramDataFromProps
+    # buildHistogram
     # Split up opinions into segments. For now we'll keep three hashes: 
     #   - all opinions
     #   - high level segments (the seven original segments, strong supporter, neutral, etc)
     #   - small segments that represent individual columns in the histogram, now that 
     #     we do not have wide bars per se
-  buildHistogramDataFromProps : (props) ->
+  buildHistogram : () ->
     # function for sizing avatars 
-    avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (props.data.opinions.length + 1)/10  )
+    avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (@props.data.opinions.length + 1)/10  )
 
     # Calculate how many segments columns to put on the histogram. Note that for the extremes and for neutral, we'll hack it 
     # to allow three columns for those segments. 
@@ -134,12 +121,12 @@ Proposal = React.createClass
 
     max_slider_variance = 2.0 # Slider stances vary from -1.0 to 1.0. 
 
-    for opinion in props.data.opinions
+    for opinion in @props.data.opinions
       seven_original_opinion_segments[opinion.stance_segment].push opinion
       small_segment = Math.floor(num_small_segments * (opinion.stance + 1) / max_slider_variance)
       histogram_small_segments[small_segment].push opinion
 
-    @setState {seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments}
+    [avatar_size, num_small_segments, histogram_small_segments]
 
   ##
   # setSlidability
@@ -182,7 +169,7 @@ Proposal = React.createClass
               stance : ui.value
 
 
-  ####
+  ##
   # State-dependent styling
   applyStyles : (to_state, animate = true) ->  
     $el = $(@getDOMNode())
@@ -232,7 +219,7 @@ Proposal = React.createClass
           $el.find('.give_opinion_button')[0].style.visibility = 'visible'
         , duration
 
-  ####
+  ##
   # Props need to change methods
 
   onPointShouldBeIncluded : (point_id) ->
@@ -269,12 +256,12 @@ Proposal = React.createClass
     route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
     app_router.navigate route, {trigger : true}
 
-  ####
+  ##
   # Make this thing!
   render : ->
-
+    [avatar_size, num_small_segments, histogram_small_segments] = @buildHistogram()
     segment_is_extreme_or_neutral = (segment) => 
-      segment == 0 || segment == @state.num_small_segments || segment == Math.floor(@state.num_small_segments / 2)
+      segment == 0 || segment == num_small_segments || segment == Math.floor(num_small_segments / 2)
 
     stance_names = 
       0 : 'Diehard Supporter'
@@ -306,10 +293,10 @@ Proposal = React.createClass
 
       #feelings
       R.div className:'feelings_region',
-        for segment in [@state.num_small_segments..0]
-          R.ul className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:"#{segment}", style: {width: (if segment_is_extreme_or_neutral(segment) then 3 * @state.avatar_size else @state.avatar_size)},
-            for opinion in @state.histogram_small_segments[segment]
-              Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:"#{@state.avatar_size}px", width:"#{@state.avatar_size}px"}
+        for segment in [num_small_segments..0]
+          R.ul className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:"#{segment}", style: {width: (if segment_is_extreme_or_neutral(segment) then 3 * avatar_size else avatar_size)},
+            for opinion in histogram_small_segments[segment]
+              Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:"#{avatar_size}px", width:"#{avatar_size}px"}
 
         R.div className:'slider_base', 
           R.div className:'ui-slider-handle', #jquery UI slider will pick an el with this class name up
@@ -606,7 +593,7 @@ Avatar = React.createClass
     @transferPropsTo @props.tag attrs 
 
 
-#####
+##
 # Mocks for activeREST
 all_users = {} 
 
@@ -642,7 +629,7 @@ fetch = (options, callback, error_callback) ->
 #save assumes that data is a proposal page
 save = (data) -> top_level_component.setProps data
 
-##########################
+## ########################
 ## Application area
 
 ##

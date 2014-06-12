@@ -114,15 +114,12 @@ Proposal = React.createClass
     # to allow three columns for those segments. 
     num_small_segments = Math.floor(histogram_width / avatar_size) - 2 * 3 - 1 #for the additional cols for the extremes+neutral 
 
-    seven_original_opinion_segments = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
-
     histogram_small_segments = {}
     histogram_small_segments[i] = [] for i in [0..num_small_segments]
 
     max_slider_variance = 2.0 # Slider stances vary from -1.0 to 1.0. 
 
     for opinion in @props.data.opinions
-      seven_original_opinion_segments[opinion.stance_segment].push opinion
       small_segment = Math.floor(num_small_segments * (opinion.stance + 1) / max_slider_variance)
       histogram_small_segments[small_segment].push opinion
 

@@ -5,8 +5,6 @@
 # Ugliness in this prototype: 
 #   - Keeping javascript and CSS variables synchronized
 #   - Haven't declared prop types for the components
-#   - Unclear whether information derived from props should be 
-#     stored as state or plain variable (see Histogram.buildHistogramDataFromProps)
 #   - I don't like setting data as key in props, would rather 
 #     have the specific props be added explicitly
 #   - NewPoint CSS/HTML is still bulky, waiting on redesign
@@ -79,7 +77,7 @@ StyleAnimator =
         $target.velocity styles_to_apply, {duration}
 
 
-####################
+## ##################
 # React Components
 #
 # These are the components and their relationships:
@@ -100,7 +98,7 @@ Proposal = React.createClass
   mixins: [StrictReactComponent, StyleAnimator]
   displayName: 'Proposal'
 
-  ####
+  ##
   # Component defaults
 
   getDefaultProps : ->
@@ -120,7 +118,7 @@ Proposal = React.createClass
   # TODO: add prop types here
 
 
-  ####
+  ##
   # Lifecycle methods
 
   componentWillMount : -> 
@@ -216,7 +214,7 @@ Proposal = React.createClass
             $cons.show()
       , 200  # delay initialization to let the rest of the dom load so that the offset is calculated properly
 
-  ####
+  ##
   # State-dependent styling
   applyStyles : (animate = true) ->  
     $el = $(@getDOMNode())
@@ -265,7 +263,7 @@ Proposal = React.createClass
             $el.find('.give_opinion_button')[0].style.visibility = 'visible'
           , duration
 
-  ####
+  ##
   # Data needs to persist
   onPointShouldBeIncluded : (point_id) ->
     #TODO: activeREST call here...
@@ -287,7 +285,7 @@ Proposal = React.createClass
 
     save { type: 'point', data: point }
 
-  ####
+  ##
   # State needs to be updated
 
   toggleState : (ev) ->
@@ -298,7 +296,7 @@ Proposal = React.createClass
     @setState
       selected_segment_in_histogram : segment
 
-  ####
+  ##
   # Make this thing!
   render : ->
     stance_names = 
@@ -386,26 +384,16 @@ Histogram = React.createClass
     opinions: []
     selected_segment_in_histogram: null
 
-  getInitialState : ->
-    seven_original_opinion_segments : {}
-    histogram_small_segments : {}
-    avatar_size : 0
-    num_small_segments : 0
-
-  componentWillMount : -> @buildHistogramDataFromProps @props
-
-  componentWillReceiveProps : (next_props) -> @buildHistogramDataFromProps next_props
-
   ##
-  # buildHistogramDataFromProps
+  # buildHistogram
   # Split up opinions into segments. For now we'll keep three hashes: 
   #   - all opinions
   #   - high level segments (the seven original segments, strong supporter, neutral, etc)
   #   - small segments that represent individual columns in the histogram, now that 
   #     we do not have wide bars per se
-  buildHistogramDataFromProps : (props) ->
+  buildHistogram : ->
     seven_original_opinion_segments = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
-    for opinion in props.opinions
+    for opinion in @props.opinions
       seven_original_opinion_segments[opinion.stance_segment].push opinion
 
     ##
@@ -415,7 +403,7 @@ Histogram = React.createClass
     #                 AA
     #                 AA
     #                 AA_____A_____A          BBBBBBBBBB
-    num_opinions = props.opinions.length
+    num_opinions = @props.opinions.length
     num_opinions_in_max_segment = _.max (x.length for x in _.values(seven_original_opinion_segments))
     avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (num_opinions + 1) / 10  )
     if avatar_size * num_opinions_in_max_segment / 3 > MAX_HISTOGRAM_HEIGHT # divide by three for three cols in extremes/neutral segments
@@ -430,14 +418,12 @@ Histogram = React.createClass
 
     max_slider_variance = 2.0 # Slider stances vary from -1.0 to 1.0. 
 
-    for opinion in props.opinions
+    for opinion in @props.opinions
       small_segment = Math.floor(num_small_segments * (opinion.stance + 1) / max_slider_variance)
       histogram_small_segments[small_segment].push opinion
 
-    @setState {seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments}
+    [seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments]
 
-  segment_is_extreme_or_neutral : (segment) -> 
-    segment == 0 || segment == @state.num_small_segments || segment == Math.floor(@state.num_small_segments / 2)
 
   onSelectSegment : (ev) ->
     if @props.state == 'results'
@@ -445,15 +431,18 @@ Histogram = React.createClass
       @props.onSelectSegment segment
 
   render : ->
+    [seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments] = @buildHistogram()
+    segment_is_extreme_or_neutral = (segment) -> segment == 0 || segment == num_small_segments || segment == Math.floor(num_small_segments / 2)
+
     R.div className: 'histogram',
       R.ul className: "shadow_histogram",
-        for segment in _.keys @state.seven_original_opinion_segments
-          R.li className: "shadow_histogram_bar", id: "segment-#{segment}", onClick: @onSelectSegment, 'data-segment': segment, key: segment, style: {width: HISTOGRAM_WIDTH / _.size(@state.seven_original_opinion_segments), height: MAX_HISTOGRAM_HEIGHT, backgroundColor: if "#{@props.selected_segment_in_histogram}" == segment then '#ccc' else 'transparent'}
-      for segment in [@state.num_small_segments..0]        
-        R.ul className:"histogram_bar #{if @segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:segment, style: {width: (if @segment_is_extreme_or_neutral(segment) then 3 * @state.avatar_size else @state.avatar_size)},
-          for opinion in @state.histogram_small_segments[segment]
-            Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height:@state.avatar_size, width: @state.avatar_size, border: if _.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '1px solid red' else 'none'}
-
+        for segment in _.keys seven_original_opinion_segments
+          R.li className: "shadow_histogram_bar", id: "segment-#{segment}", onClick: @onSelectSegment, 'data-segment': segment, key: segment, style: {width: HISTOGRAM_WIDTH / _.size(seven_original_opinion_segments), height: MAX_HISTOGRAM_HEIGHT, backgroundColor: if "#{@props.selected_segment_in_histogram}" == segment then '#ccc' else 'transparent'}
+      for segment in [num_small_segments..0]        
+        R.ul className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:segment, style: {width: (if segment_is_extreme_or_neutral(segment) then 3 * avatar_size else avatar_size)},
+          for opinion in histogram_small_segments[segment]
+            Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, border: if _.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '1px solid red' else 'none'}
+ 
 
 ##
 # Slider
@@ -840,7 +829,7 @@ Avatar = React.createClass
     @transferPropsTo @props.tag attrs 
 
 
-#####
+##
 # Mocks for activeREST
 all_users = {} 
 all_points = {}
@@ -915,7 +904,7 @@ save = (action) ->
   top_level_component.setProps proposal_data
 
 
-##########################
+## ########################
 ## Application area
 
 ##

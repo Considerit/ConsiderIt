@@ -286,7 +286,8 @@ $slider_handle_size: 22px
   margin: $vertical_baseline * 2 $grid_gutter 
   position: relative
   z-index: 2 //so that points being dragged are above opinion region
-
+  width: $point-content-width
+  
 .points_on_decision_board
   width: $point-width
 
@@ -299,7 +300,12 @@ $slider_handle_size: 22px
 // Point list heading
 .points_heading_label
   text-align: center
+
+.points_segment_label
+  font-weight: 200
+  text-align: center
   margin-bottom: $vertical_baseline/2
+  +font-size(-2)
 
 .points_on_decision_board .points_heading_label
   +font-size(9)

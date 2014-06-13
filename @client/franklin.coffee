@@ -292,7 +292,7 @@ Proposal = React.createClass
     route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
     app_router.navigate route, {trigger : true}
   
-  onSelectSegment : (segment) ->
+  onSelectSegment : ( segment ) ->
     @setState
       selected_segment_in_histogram : segment
 
@@ -428,7 +428,8 @@ Histogram = React.createClass
   onSelectSegment : (ev) ->
     if @props.state == 'results'
       segment = $(ev.currentTarget).data('segment')
-      @props.onSelectSegment segment
+      # if clicking on already selected segment, then we'll deselect
+      @props.onSelectSegment if @props.selected_segment_in_histogram == segment then null else segment
 
   render : ->
     [seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments] = @buildHistogram()
@@ -697,13 +698,8 @@ CommunityPoints = React.createClass
     label = "#{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}"
 
     R.div className:"points_by_community #{@props.valence}s_by_community",
-      R.h1 className:'points_heading_label',
-        if @props.selected_segment_in_histogram?
-          "#{@props.stance_names[@props.selected_segment_in_histogram]}s' #{label}s"
-        else if @props.state == 'results'
-          "Top #{label}s"
-        else
-          "Others' #{label}s"
+      R.h1 className:'points_heading_label', if @props.state == 'results' then "Top #{label}s" else "Others' #{label}s"
+      R.p className:'points_segment_label', if !@props.selected_segment_in_histogram? then '' else "for #{@props.stance_names[@props.selected_segment_in_histogram]}s"          
 
       R.ul null, 
         for point in points

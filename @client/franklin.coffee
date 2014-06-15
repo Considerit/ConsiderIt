@@ -21,43 +21,22 @@ ReactTransitionGroup = React.addons.TransitionGroup
 # Constants
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
-HISTOGRAM_WIDTH = 598    # Width of the slider / histogram base 
+HISTOGRAM_WIDTH = 540    # Width of the slider / histogram base 
 MAX_HISTOGRAM_HEIGHT = 200
 DECISION_BOARD_WIDTH = 544
-
-
-# React mixins
-
-##
-# StrictReactComponent mixin
-# Enforces rule that all data required for rendering be 
-# captured in props or state for a component. Therefore, we can ensure
-# that a component should not have to update unless either its props
-# or state has changed. 
-#
-# A couple bugs can occur as a consequence of this strictness: 
-#  1) If a nested component depends on data fetched from activeREST, like some 
-#     user information. If the user data is updated and that information is 
-#     not present as state or props on the parent, then the child component 
-#     that depends on that data will not be rerendered. 
-#  2) If the object that gets set as props on the high level component is changed
-#     rather than cloned then changed, then this method won't recognize that 
-#     the component should update. 
-#
-# One solution to this problem is to reflow from the top down whenever 
-# the cache is updated by using React.forceUpdate. 
-#
-# Note also that this the place that Om apparently really stands out --
-# http://swannodette.github.io/2013/12/17/the-future-of-javascript-mvcs/
-StrictReactComponent = 
-  shouldComponentUpdate : (next_props, next_state) -> 
-    !_.isEqual(next_props, @props) || !_.isEqual(next_state, @state)
 
 
 ##
 # StyleAnimator mixin
 # Helper for components that implement animations.
 StyleAnimator = 
+  componentDidMount : -> @applyStyles false
+
+  componentDidUpdate : (prev_props, prev_state) -> @applyStyles prev_props.state != @props.state  
+
+  # Define this method in any Component implementing StyleAnimator
+  #applyStyles : (animate = true) -> 
+
   applyStylesToElements : (styles, duration) ->
     $el = $(@getDOMNode())
     _.each _.keys(styles), (selector) -> 
@@ -69,13 +48,33 @@ StyleAnimator =
       $target = $el.find(selector)
 
       prop_map = $target.css(_.keys(styles_for_selector))
-      for property in _.keys(styles_for_selector)
-        if prop_map[property] != styles_for_selector[property]
-          styles_to_apply[property] = styles_for_selector[property]
+      if prop_map
+        for property in _.keys(styles_for_selector)
+          if prop_map[property] != styles_for_selector[property]
+            styles_to_apply[property] = styles_for_selector[property]
 
       if _.size(styles_to_apply) > 0
         $target.velocity styles_to_apply, {duration}
 
+##
+# Helper methods that should probably go elsewhere
+getStanceSegment = (value) ->
+  if value < stanceSegmentBoundaries[1]
+    return 0
+  else if value < stanceSegmentBoundaries[2]
+    return 1
+  else if value < stanceSegmentBoundaries[3] 
+    return 2
+  else if value < stanceSegmentBoundaries[4]
+    return 3
+  else if value < stanceSegmentBoundaries[5]
+    return 4
+  else if value < stanceSegmentBoundaries[6]
+    return 5
+  else
+    return 6
+
+stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 ## ##################
 # React Components
@@ -95,7 +94,7 @@ StyleAnimator =
 # The mega component for a proposal.
 # Has proposal description, feelings area (slider + histogram), and reasons area
 Proposal = React.createClass
-  mixins: [StrictReactComponent, StyleAnimator]
+  mixins: [StyleAnimator]
   displayName: 'Proposal'
 
   ##
@@ -121,36 +120,34 @@ Proposal = React.createClass
   ##
   # Lifecycle methods
 
-  componentWillMount : -> 
-
-  componentWillReceiveProps : (next_props) -> 
-
-  componentWillUpdate : (next_props, next_state) ->
-
   componentDidMount : ->
-    #@applyStyles false
+    @setPointMouseover()
 
+  componentDidUpdate : (prev_props, prev_state) ->
+    @setStickyHeader()
+
+  ####
+  # On hovering over a point, highlight the people who included this point in the Histogram.
+  #
+  # This requires cross-component communication. By handling it here in the parent: 
+  #    + we eliminate confusing intercomponent communication and callback passing
+  #    - it might be unintuitive to find this handler here and not in Point or CommunityPoints
+  # 
+  # Another decision point is whether to do the work of manipulating the histogram here, or somehow
+  # alert the Histogram component to the fact that certain users should be highlighted. Both approaches
+  # have strengths and weaknesses:
+  #    1) Handle histogram here just using instance variable and jQuery
+  #       + Everything in a single place
+  #       - Code is susceptible to weird edge cases because it avoids tracking this state with state or props. 
+  #         For example, if we switch to crafting somehow without leaving the point.
+  #
+  #    2) Set props on Proposal that only histogram responds to
+  #       + Application state remains tracked by props and state, the React way. Probably less error prone
+  #       - Could be performance intense if other proposal components have to get rerendered (even if just in virtual DOM)
+  #       - Managing this simple interaction in multiple places
+  setPointMouseover : ->
     $el = $(@getDOMNode())
 
-    ####
-    # On hovering over a point, highlight the people who included this point in the Histogram.
-    #
-    # This requires cross-component communication. By handling it here in the parent: 
-    #    + we eliminate confusing intercomponent communication and callback passing
-    #    - it might be unintuitive to find this handler here and not in Point or CommunityPoints
-    # 
-    # Another decision point is whether to do the work of manipulating the histogram here, or somehow
-    # alert the Histogram component to the fact that certain users should be highlighted. Both approaches
-    # have strengths and weaknesses:
-    #    1) Handle histogram here just using instance variable and jQuery
-    #       + Everything in a single place
-    #       - Code is susceptible to weird edge cases because it avoids tracking this state with state or props. 
-    #         For example, if we switch to crafting somehow without leaving the point.
-    #
-    #    2) Set props on Proposal that only histogram responds to
-    #       + Application state remains tracked by props and state, the React way. Probably less error prone
-    #       - Could be performance intense if other proposal components have to get rerendered (even if just in virtual DOM)
-    #       - Managing this simple interaction in multiple places
     $el.on 'mouseenter mouseleave', '.points_by_community .point_content', (ev) => 
       if @props.state == 'results'
         if ev.type == 'mouseenter'
@@ -170,8 +167,7 @@ Proposal = React.createClass
 
           ####
           # implement option (2) above
-          @setState 
-            users_to_highlight_in_histogram : includers
+          @setState { users_to_highlight_in_histogram : includers }
 
         else if ev.type == 'mouseleave'
           ####
@@ -181,13 +177,9 @@ Proposal = React.createClass
 
           ####
           # implement option (2) above
-          @setState 
-            users_to_highlight_in_histogram : []
+          @setState { users_to_highlight_in_histogram : [] }
 
-
-  componentDidUpdate : (prev_props, prev_state) ->
-    @applyStyles prev_props.state != @props.state
-
+  setStickyHeader : ->
     # Sticky decision board. It is here because the calculation of offset top would 
     # be off if we did it in DidMount before all the data has been fetched from server
     if @props.state == 'crafting'
@@ -214,6 +206,7 @@ Proposal = React.createClass
             $cons.show()
       , 200  # delay initialization to let the rest of the dom load so that the offset is calculated properly
 
+
   ##
   # State-dependent styling
   applyStyles : (animate = true) ->  
@@ -225,8 +218,7 @@ Proposal = React.createClass
     switch @props.state
       when 'crafting'
         styles = 
-          '.histogram_bar:not(.extreme_or_neutral)': { opacity: '.2' }
-          '.histogram_bar.extreme_or_neutral':       { opacity: '.2' }
+          '.histogram_bar':                          { opacity: '.2' }
           '.opinion_region':                         { translateX: 0, translateY: 0 }
           '.decision_board_body':                    { width: "#{DECISION_BOARD_WIDTH}px", minHeight: "375px"}
           '.pros_by_community':                      { translateX: 0 }
@@ -234,11 +226,10 @@ Proposal = React.createClass
         
         @applyStylesToElements styles, duration
 
-        if $el.find('.give_opinion_button')[0].style.display != 'hidden'
-          $el.find('.give_opinion_button')[0].style.visibility = 'hidden'
-          _.delay -> 
-            $el.find('.your_points')[0].style.display = ''
-          , duration
+        $el.find('.give_opinion_button').css 'visibility', 'hidden'
+        _.delay -> 
+          $el.find('.your_points').css 'display', ''
+        , duration
 
       when 'results'
         slider_stance = ($el.find('.ui-slider').slider('value') + 1) / 2
@@ -248,8 +239,7 @@ Proposal = React.createClass
         opinion_region_x -= give_opinion_button_width / 2 
 
         styles = 
-          '.histogram_bar:not(.extreme_or_neutral)': { opacity: '1' }
-          '.histogram_bar.extreme_or_neutral':       { opacity: '1' }
+          '.histogram_bar':                          { opacity: '1' }
           '.opinion_region':                         { translateX: opinion_region_x, translateY: -18 }
           '.decision_board_body':                    { width: "#{give_opinion_button_width}px", minHeight: "32px"}
           '.pros_by_community':                      { translateX:  DECISION_BOARD_WIDTH / 2 }
@@ -257,11 +247,10 @@ Proposal = React.createClass
         
         @applyStylesToElements styles, duration
 
-        if $el.find('.give_opinion_button')[0].style.visibility != 'visible'
-          $el.find('.your_points')[0].style.display = 'none'
-          _.delay -> 
-            $el.find('.give_opinion_button')[0].style.visibility = 'visible'
-          , duration
+        $el.find('.your_points').css 'display', 'none'
+        _.delay -> 
+          $el.find('.give_opinion_button').css 'visibility', ''
+        , duration
 
   ##
   # Data needs to persist
@@ -363,7 +352,7 @@ Proposal = React.createClass
           toggleState: @toggleState
           points: fetch { url: 'all_points' }
 
-        #community cons    
+        #community cons
         CommunityPoints 
           key: 'cons'
           state: @props.state
@@ -378,7 +367,6 @@ Proposal = React.createClass
 ##
 # Histogram
 Histogram = React.createClass
-  mixins: [StrictReactComponent]
 
   getDefaultProps : ->
     opinions: []
@@ -392,38 +380,62 @@ Histogram = React.createClass
   #   - small segments that represent individual columns in the histogram, now that 
   #     we do not have wide bars per se
   buildHistogram : ->
-    seven_original_opinion_segments = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
-    for opinion in @props.opinions
-      seven_original_opinion_segments[opinion.stance_segment].push opinion
-
     ##
-    # Size the avatars. Factor in how evenly distributed the opinions are across the segments. Want to 
-    # make the avatar size for (a) smaller than (b) so that the histogram stays a reasonable size
-    #                 AA                           
-    #                 AA
-    #                 AA
-    #                 AA_____A_____A          BBBBBBBBBB
-    num_opinions = @props.opinions.length
-    num_opinions_in_max_segment = _.max (x.length for x in _.values(seven_original_opinion_segments))
-    avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (num_opinions + 1) / 10  )
-    if avatar_size * num_opinions_in_max_segment / 3 > MAX_HISTOGRAM_HEIGHT # divide by three for three cols in extremes/neutral segments
-      avatar_size = 3 * MAX_HISTOGRAM_HEIGHT / num_opinions_in_max_segment
+    # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
+    avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (@props.opinions.length + 1) / 10 )  )
 
-    # Calculate how many segments columns to put on the histogram. Note that for the extremes and for neutral, we'll hack it 
-    # to allow three columns for those segments.
-    num_small_segments = Math.floor(HISTOGRAM_WIDTH / avatar_size) - 2 * 3 - 1 #for the additional cols for the extremes+neutral 
-
-    histogram_small_segments = {}
-    histogram_small_segments[i] = [] for i in [0..num_small_segments]
+    # Calculate (approximately) how many columns of opinions to put on the histogram. 
+    columns_in_histogram = Math.floor(HISTOGRAM_WIDTH / avatar_size)
 
     max_slider_variance = 2.0 # Slider stances vary from -1.0 to 1.0. 
 
+    # Assign each column in the histogram to a segment. Each column is an 
+    # empty array which will eventually hold opinions.
+    segments = ( [] for segment in [0..6] )
+    for col in [0..columns_in_histogram]
+      segment = getStanceSegment(max_slider_variance * col / columns_in_histogram - 1)
+      segments[segment].push []
+
+    segments[3].push([]) while segments[3].length < 3   # ensure neutral segment has 3 columns
+
+    # Assign each Opinion to a column
+    # This gets complicated because we treat the extremes and Neutral differently. 
+    #  - The number of columns in the extremes is variable, with the max number of opinions per columns capped. 
+    #    Here we'll dynamically grow the number of cols in each extreme, subdividing the cols whenever they
+    #    hit their max number. 
+    #  - There are three columns for Neutral. We distributed the opinions evenly across these three. 
+    #  - Opinions belonging to other places along the spectrum are mapped directly to the column associated 
+    #    with that stance.     
+    opinions_in_segment = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+    max_opinions_in_column = Math.floor MAX_HISTOGRAM_HEIGHT / avatar_size      
     for opinion in @props.opinions
-      small_segment = Math.floor(num_small_segments * (opinion.stance + 1) / max_slider_variance)
-      histogram_small_segments[small_segment].push opinion
+      segment = getStanceSegment opinion.stance
 
-    [seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments]
+      # If this is a Neutral opinion, fill up all three neutral cols equally
+      if segment == 3
+        segments[3][opinions_in_segment[3] % 3].push opinion
 
+      # If this is an extreme opinion...
+      else if segment in [0,6]
+        if segments[segment][0].length == max_opinions_in_column - 1
+          # subdivide this segment into 2x the columns with .5 the opinions from before
+          new_cols = []
+          for old_col in segments[segment]
+            new_cols.push old_col[0..Math.floor(old_col.length/2)]
+            new_cols.push old_col[Math.floor(old_col.length/2)..old_col.length]
+          segments[segment] = new_cols
+        segments[segment][opinions_in_segment[segment] % segments[segment].length].push opinion
+
+      # If this opinion is somewhere else on the spectrum...
+      else
+        adjusted_stance = Math.abs(opinion.stance - stanceSegmentBoundaries[segment])
+        col_width = Math.abs(stanceSegmentBoundaries[segment + 1] - stanceSegmentBoundaries[segment])/segments[segment].length
+        segments[segment][Math.floor(adjusted_stance / col_width)].push opinion
+
+      opinions_in_segment[segment] += 1
+
+    num_columns = _.flatten(_.values(segments), true).length
+    [num_columns, segments, avatar_size]
 
   onSelectSegment : (ev) ->
     if @props.state == 'results'
@@ -432,35 +444,36 @@ Histogram = React.createClass
       @props.onSelectSegment if @props.selected_segment_in_histogram == segment then null else segment
 
   render : ->
-    [seven_original_opinion_segments, avatar_size, num_small_segments, histogram_small_segments] = @buildHistogram()
-    segment_is_extreme_or_neutral = (segment) -> segment == 0 || segment == num_small_segments || segment == Math.floor(num_small_segments / 2)
+    [num_columns, segments, avatar_size] = @buildHistogram() #todo: memoize
+    effective_histogram_width = num_columns * avatar_size
+    margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH)/2
+    margin_adjustment -= - (segments[0].length - segments[6].length) / 2 * avatar_size #make sure that the neutral segment is centered
 
-    R.div className: 'histogram',
-      R.ul className: "shadow_histogram",
-        for segment in _.keys seven_original_opinion_segments
-          R.li className: "shadow_histogram_bar", id: "segment-#{segment}", onClick: @onSelectSegment, 'data-segment': segment, key: segment, style: {width: HISTOGRAM_WIDTH / _.size(seven_original_opinion_segments), height: MAX_HISTOGRAM_HEIGHT, backgroundColor: if "#{@props.selected_segment_in_histogram}" == segment then '#ccc' else 'transparent'}
-      for segment in [num_small_segments..0]        
-        R.ul className:"histogram_bar #{if segment_is_extreme_or_neutral(segment) then 'extreme_or_neutral' else '' }", id:"segment-#{segment}", key:segment, style: {width: (if segment_is_extreme_or_neutral(segment) then 3 * avatar_size else avatar_size)},
-          for opinion in histogram_small_segments[segment]
-            Avatar tag: R.li, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, border: if _.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '1px solid red' else 'none'}
- 
+    R.table className: 'histogram', style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
+      R.tr null, 
+        for bars, segment in segments.reverse()
+          R.td className:"histogram_segment", key:segment, onClick: @onSelectSegment, 'data-segment':segment, style : { opacity: if !@props.selected_segment_in_histogram? || @props.selected_segment_in_histogram == segment then '1' else '.2' },
+            R.table null,
+              R.tr null,
+                for bar in bars
+                  R.td className:"histogram_bar", style: {width: avatar_size},
+                    for opinion in bar
+                      Avatar key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, border: if _.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '1px solid red' else 'none'}
 
 ##
 # Slider
 # Manages the slider and the UI elements attached to it. 
 Slider = React.createClass
   displayName: 'Slider'
-  mixins: [StrictReactComponent, StyleAnimator]
+  mixins: [StyleAnimator]
 
   getInitialState : ->
-    stance_segment : @getStanceSegmentFromSliderValue(@props.initial_stance)
+    stance_segment : getStanceSegment(@props.initial_stance)
 
   componentDidMount : -> 
-    @applyStyles false
     @setSlidability()
 
   componentDidUpdate : (prev_props, prev_state) ->
-    @applyStyles prev_props.state != @props.state
     @setSlidability()
 
   # We have a separate applyStyle here from Proposal because the Slider component
@@ -504,7 +517,7 @@ Slider = React.createClass
         slide: (ev, ui) => 
           # update the stance segment if it has changed. This facilitates the feedback atop
           # the slider changing from e.g. 'strong supporter' to 'neutral'
-          segment = @getStanceSegmentFromSliderValue ui.value
+          segment = getStanceSegment ui.value
           if @state.stance_segment != segment
             @setState
               stance_segment : segment
@@ -527,28 +540,12 @@ Slider = React.createClass
         R.h1 className:"histogram_label histogram_label_support", 'Support'
         R.h1 className:"histogram_label histogram_label_oppose", 'Oppose'
 
-  getStanceSegmentFromSliderValue : (value) ->
-    if value == -1
-      return 0
-    else if value == 1
-      return 6
-    else if value <= 0.05 && value >= -0.05
-      return 3
-    else if value >= 0.5
-      return 5
-    else if value <= -0.5
-      return 1
-    else if value >= 0.05
-      return 4
-    else if value <= -0.05
-      return 2
 
 ##
 # DecisionBoard
 # Handles the user's list of important points in crafting state. 
 DecisionBoard = React.createClass
   displayName: 'DecisionBoard'
-  mixins: [StrictReactComponent]
 
   componentDidMount : ->
     # make this a drop target
@@ -616,7 +613,7 @@ DraggablePoints =
 # Creates NewPoint instances.
 YourPoints = React.createClass
   displayName: 'YourPoints'
-  mixins: [DraggablePoints, StrictReactComponent]
+  mixins: [DraggablePoints]
 
   render : ->
 
@@ -654,7 +651,7 @@ YourPoints = React.createClass
 # Shown in wing during crafting, in middle on results. 
 CommunityPoints = React.createClass
   displayName: 'CommunityPoints'
-  mixins: [DraggablePoints, StrictReactComponent]
+  mixins: [DraggablePoints]
 
   componentDidMount : ->
     # Make this a drop target to facilitate removal of points
@@ -694,7 +691,6 @@ CommunityPoints = React.createClass
       # Default sort order
       points = _.sortBy points, (pnt) => - if @props.state == 'results' then pnt.score else pnt.persuasiveness
 
-
     label = "#{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}"
 
     R.div className:"points_by_community #{@props.valence}s_by_community",
@@ -719,7 +715,6 @@ CommunityPoints = React.createClass
 # A single point in a list. 
 Point = React.createClass
   displayName: 'Point'
-  mixins: [StrictReactComponent]
 
   render : -> 
     R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,
@@ -742,7 +737,6 @@ Point = React.createClass
 # Manages whether the user has clicked "add a new point". If they have, show new point form. 
 NewPoint = React.createClass
   displayName: 'NewPoint'
-  mixins: [StrictReactComponent]
 
   getInitialState : ->
     editMode : false
@@ -796,7 +790,6 @@ NewPoint = React.createClass
 # Supports straight up img src, or using the CSS-embedded b64 for each user
 Avatar = React.createClass
   displayName: 'Avatar'
-  mixins: [StrictReactComponent]
 
   getDefaultProps : ->
     user: -1 # defaults to anonymous user

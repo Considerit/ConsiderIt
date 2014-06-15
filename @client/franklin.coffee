@@ -144,7 +144,6 @@ Proposal = React.createClass
   #    2) Set props on Proposal that only histogram responds to
   #       + Application state remains tracked by props and state, the React way. Probably less error prone
   #       - Could be performance intense if other proposal components have to get rerendered (even if just in virtual DOM)
-  #       - Managing this simple interaction in multiple places
   setPointMouseover : ->
     $el = $(@getDOMNode())
 

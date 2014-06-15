@@ -585,7 +585,7 @@ DecisionBoard = React.createClass
 
 ##
 # Mixin for Point lists for handling draggability (CommunityPoints and YourPoints)
-# Bonus: prevents the need to pass state to (which results in expensive operations)
+# Bonus: prevents the need to pass state to Point (which results in expensive operations)
 #
 DraggablePoints = 
   componentDidMount : -> @setDraggability()

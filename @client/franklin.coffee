@@ -192,19 +192,14 @@ Proposal = React.createClass
 
           onNotTop : => 
             return if @props.state != 'crafting'
-            $cons.hide()
             $cons.css {left: DECISION_BOARD_WIDTH}
             $opinion.css {position: 'fixed', top: '0'}
-            $cons.show()
 
           onTop : => 
             return if @props.state != 'crafting'
-            $cons.hide()
             $cons.css {left: ''}
             $opinion.css {position: '', top: ''}
-            $cons.show()
-      , 200  # delay initialization to let the rest of the dom load so that the offset is calculated properly
-
+      , 1000  # delay initialization to let the rest of the dom load so that the offset is calculated properly
 
   ##
   # State-dependent styling
@@ -380,7 +375,7 @@ Histogram = React.createClass
     #  - Opinions belonging to other places along the spectrum are mapped directly to the column associated 
     #    with that stance.     
     opinions_in_segment = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
-    max_opinions_in_column = Math.floor MAX_HISTOGRAM_HEIGHT / avatar_size      
+    max_opinions_in_column = Math.floor MAX_HISTOGRAM_HEIGHT / avatar_size
     for opinion in @props.opinions
       segment = getStanceSegment opinion.stance
 
@@ -687,6 +682,16 @@ CommunityPoints = React.createClass
 Point = React.createClass
   displayName: 'Point'
 
+  getInitialState : ->
+    show_details : false
+
+  componentDidMount : ->
+    @setShowDetails()
+
+  setShowDetails : ->
+    $(@getDOMNode()).click (ev) => 
+      @setState { show_details : !@state.show_details }
+
   render : -> 
     R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,
       Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
@@ -695,12 +700,13 @@ Point = React.createClass
         R.div className:'point_nutshell',
           @props.nutshell
           if @props.text
-            R.span className: 'point_details_tease', 
-              @props.text[0..50]
-              ' ...'
+            if @state.show_details
+              R.div className: 'point_details', dangerouslySetInnerHTML:{__html: @props.text}
+            else
+              R.span className: 'point_details_tease', @props.text[0..30] + "..."
 
-        R.a className:'open_point_link',
-          "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"
+        # R.a className:'open_point_link',
+        #   "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"
 
 ##
 # NewPoint

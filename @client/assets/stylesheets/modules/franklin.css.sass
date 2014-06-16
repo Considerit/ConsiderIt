@@ -432,27 +432,31 @@ $slider_handle_size: 22px
 .point_nutshell
   word-wrap: break-word
   +font-size(-1)
+  color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
 .point_details_tease
   padding-left: 10px
   font-weight: 200
   color: deemphasize($base_text_color, 40%, $reference: $base_background_color)
 
+.point_details 
+  +font-size(-2)
+  padding-left: 10px
 
-// The button that shows # comments when hovering on a point
-.open_point_link
-  visibility: hidden
-  position: absolute
-  bottom: 0
-  text-align: center
-  width: 90%
-  +font-size(-3)
-  padding: 0 $grid_gutter/4
-  background-color: $peer_background_color
-  color: $base_text_color
+// The button that shows # comments when hovering on a point (disabled for now)
+// .open_point_link
+//   visibility: hidden
+//   position: absolute
+//   bottom: 0
+//   text-align: center
+//   width: 90%
+//   +font-size(-3)
+//   padding: 0 $grid_gutter/4
+//   background-color: $peer_background_color
+//   color: $base_text_color
 
-.point_content:hover .open_point_link
-  visibility: visible
+// .point_content:hover .open_point_link
+//   visibility: visible
 
 // Avatars of point authors
 .point_author_avatar

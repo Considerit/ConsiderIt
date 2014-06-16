@@ -39,7 +39,7 @@ $full_reasons_width: $decision_board_width + 2 * $point-content-width + 4 * $gri
 
 $proposer_img_size: 75px
 
-$histogram_width: $body_width + 2 * $grid_major
+$histogram_width: $body_width //+ 2 * $grid_major
 $default_avatar_in_histogram_color: #bbb
 $proposal_description_width: 670px
 
@@ -143,12 +143,21 @@ $slider_base_height: 4px
   width: $histogram_width
 
 .histogram
-  margin: 0 $grid_major / 2 - 5
+  table, td, tr
+    height: 100%
+
+.histogram_segment
+  display: inline-block
+  height: 100%
 
 .histogram_bar
   display: inline-block
   font-size: 0
-  
+  vertical-align: bottom
+  +transform(rotate(180deg))    
+  .avatar
+    +transform(rotate(180deg))
+
   .avatar
     border-radius: 50%
     background-color: $default_avatar_in_histogram_color
@@ -159,10 +168,10 @@ $slider_base_height: 4px
   //  xxx        x
   //  xxx   =>  xxx 
   //   x        xxx
-  &.extreme_or_neutral
-    +transform(rotate(180deg))    
-    .avatar
-      +transform(rotate(180deg))
+  // &.extreme_or_neutral
+  //   +transform(rotate(180deg))    
+  //   .avatar
+  //     +transform(rotate(180deg))
 
 
 // slider
@@ -170,7 +179,7 @@ $slider_base_height: 4px
 .slider_base
   margin: auto
   height: $slider_base_height
-  width: $histogram_width - 2 * $grid_major
+  width: $histogram_width //- 2 * $grid_major
   border-radius: 10px
 
 [data-state="results"]
@@ -236,7 +245,7 @@ $slider_handle_size: 22px
   width: 130%
   margin-left: -15%
   position: absolute
-  bottom: -10px
+  bottom: -37px
   z-index: -1 // so that it doesn't sit on top of users on histogram
 
   .histogram_label
@@ -278,6 +287,7 @@ $slider_handle_size: 22px
   margin: $vertical_baseline * 2 $grid_gutter 
   position: relative
   z-index: 2 //so that points being dragged are above opinion region
+  width: $point-content-width
 
 .points_on_decision_board
   width: $point-width
@@ -291,7 +301,12 @@ $slider_handle_size: 22px
 // Point list heading
 .points_heading_label
   text-align: center
+
+.points_segment_label
+  font-weight: 200
+  text-align: center
   margin-bottom: $vertical_baseline/2
+  +font-size(-2)
 
 .points_on_decision_board .points_heading_label
   +font-size(9)

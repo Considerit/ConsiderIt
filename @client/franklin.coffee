@@ -192,13 +192,12 @@ Proposal = React.createClass
 
           onNotTop : => 
             return if @props.state != 'crafting'
-            $cons.css {left: DECISION_BOARD_WIDTH}
-            $opinion.css {position: 'fixed', top: '0'}
+            $opinion.css {position: 'fixed', top: '0' }
 
           onTop : => 
             return if @props.state != 'crafting'
-            $cons.css {left: ''}
-            $opinion.css {position: '', top: ''}
+            $opinion.css { position: '', top: '' }
+            
       , 1000  # delay initialization to let the rest of the dom load so that the offset is calculated properly
 
   ##
@@ -216,7 +215,7 @@ Proposal = React.createClass
           '.opinion_region':                         { translateX: 0, translateY: 0 }
           '.decision_board_body':                    { width: "#{DECISION_BOARD_WIDTH}px", minHeight: "375px"}
           '.pros_by_community':                      { translateX: 0 }
-          '.cons_by_community':                      { translateX: 0 }
+          '.cons_by_community':                      { translateX: "#{DECISION_BOARD_WIDTH}px" }
         
         @applyStylesToElements styles, duration
 
@@ -237,7 +236,7 @@ Proposal = React.createClass
           '.opinion_region':                         { translateX: opinion_region_x, translateY: -18 }
           '.decision_board_body':                    { width: "#{give_opinion_button_width}px", minHeight: "32px"}
           '.pros_by_community':                      { translateX:  DECISION_BOARD_WIDTH / 2 }
-          '.cons_by_community':                      { translateX: -DECISION_BOARD_WIDTH / 2 }
+          '.cons_by_community':                      { translateX:  DECISION_BOARD_WIDTH / 2 }
         
         @applyStylesToElements styles, duration
 

@@ -252,28 +252,6 @@ Proposal = React.createClass
         , duration
 
   ##
-  # Data needs to persist
-  onPointShouldBeIncluded : (point_id) ->
-    #TODO: activeREST call here...
-    #TODO: should probably be managing an opinion, e.g. @props.opinion.included_points
-    save { type: 'point_inclusion', data: point_id }
-
-  onPointShouldBeRemoved : (point_id) ->
-    #TODO: activeREST call here...    
-    #TODO: should probably be managing an opinion, e.g. @props.opinion.included_points
-    #TODO: server might return that the point was actually _deleted_ from 
-    #      the system, not just removed from the list...need to handle that
-    save { type: 'point_removal', data: point_id }
-
-  onPointShouldBeCreated : (data) ->
-    #TODO: activeREST call here...
-    point = _.extend data, 
-      user_id : -2 #anon user
-      comment_count : 0 
-
-    save { type: 'point', data: point }
-
-  ##
   # State needs to be updated
 
   toggleState : (ev) ->
@@ -336,7 +314,6 @@ Proposal = React.createClass
           state: @props.state
           valence: 'pro'
           included_points : @props.data.included_points
-          onPointShouldBeRemoved : @onPointShouldBeRemoved
           points: fetch { url: 'all_points' }
           opinions: @props.data.opinions          
           selected_segment_in_histogram: @state.selected_segment_in_histogram
@@ -346,8 +323,6 @@ Proposal = React.createClass
         DecisionBoard
           state: @props.state
           included_points : @props.data.included_points
-          onPointShouldBeIncluded : @onPointShouldBeIncluded
-          onPointShouldBeCreated : @onPointShouldBeCreated
           toggleState: @toggleState
           points: fetch { url: 'all_points' }
 
@@ -357,7 +332,6 @@ Proposal = React.createClass
           state: @props.state
           valence: 'con'
           included_points : @props.data.included_points
-          onPointShouldBeRemoved : @onPointShouldBeRemoved
           points: fetch { url: 'all_points' }
           opinions: @props.data.opinions
           selected_segment_in_histogram: @state.selected_segment_in_histogram
@@ -553,7 +527,7 @@ DecisionBoard = React.createClass
       accept: ".community_point .point_content"
       drop : (ev, ui) =>
         ui.draggable.parent().velocity 'fadeOut', 200, => 
-          @props.onPointShouldBeIncluded ui.draggable.parent().data('id')
+          save { type: 'point_inclusion', data: ui.draggable.parent().data('id') }
         $el.removeClass "user_is_hovering_on_a_drop_target"
       out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
       over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
@@ -569,14 +543,12 @@ DecisionBoard = React.createClass
             state: @props.state
             included_points: @props.included_points
             valence: 'pro'
-            onPointShouldBeCreated: @props.onPointShouldBeCreated
 
           # your cons
           YourPoints
             state: @props.state
             included_points: @props.included_points
             valence: 'con'
-            onPointShouldBeCreated: @props.onPointShouldBeCreated
 
         # only shown during results, but needs to be present always for animation
         R.a className:'give_opinion_button', onClick: @props.toggleState, 'Give your Opinion'
@@ -642,7 +614,6 @@ YourPoints = React.createClass
 
         NewPoint 
           valence: @props.valence
-          onPointShouldBeCreated: @props.onPointShouldBeCreated
 
 ##
 # CommunityPoints
@@ -659,7 +630,8 @@ CommunityPoints = React.createClass
       accept: ".decision_board_point.#{@props.valence} .point_content"
       drop : (ev, ui) =>
         ui.draggable.parent().velocity 'fadeOut', 200, => 
-          @props.onPointShouldBeRemoved ui.draggable.parent().data('id')
+          save { type: 'point_removal', data: ui.draggable.parent().data('id') }
+
           $el.removeClass "user_is_hovering_on_a_drop_target"
       out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
       over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
@@ -748,10 +720,16 @@ NewPoint = React.createClass
 
   handleSubmitNewPoint : (ev) ->
     $form = $(@getDOMNode())
-    @props.onPointShouldBeCreated
+
+    point =
       nutshell : $form.find('#nutshell').val()
       text : $form.find('#text').val()
       is_pro : @props.valence == 'pro'
+      user_id : -2 #anon user
+      comment_count : 0 
+ 
+    save { type: 'point', data: point }
+
     @setState { editMode : false }
 
   render : ->

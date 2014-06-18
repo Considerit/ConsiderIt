@@ -58,13 +58,6 @@ do (_) ->
         console.log e.stack
 
 
-#http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
-# (($, d) ->
-#   $(f) for f, i in readyQ
-#   $(d).bind("ready",f) for f,i in bindReadyQ
-# )(jQuery, document)
-
-
 $(document).ready () ->
 
   # google analytics

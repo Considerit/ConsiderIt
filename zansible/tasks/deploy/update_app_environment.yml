@@ -8,7 +8,7 @@
   sudo: False
 
 - name: Precompile assets
-  shell: "{{source}} && cd {{app_home}} && RAILS_ENV={{code.environment}} RAILS_GROUPS=assets bundle exec rake assets:precompile"
+  shell: "{{source}} && cd {{app_home}} && RAILS_ENV={{code.environment}} bundle exec rake assets:precompile"
   ignore_errors: yes #if we don't have AWS S3 set up, asset sync will error out unnecessarily
   sudo: False
   when: code.environment == "production"

@@ -68,14 +68,10 @@
 
 
     :javascript
-      $(function() {
-
-        var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
-        $buoop.ol = window.onload; 
-        try {if ($buoop.ol) $buoop.ol();}catch (e) {} 
-        var e = document.createElement("script"); 
-        e.setAttribute("type", "text/javascript"); 
-        e.setAttribute("src", "/browser-update.js"); 
-        document.body.appendChild(e); 
-
-      });
+      var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
+      $buoop.ol = window.onload; 
+      try {if ($buoop.ol) $buoop.ol();}catch (e) {} 
+      var e = document.createElement("script"); 
+      e.setAttribute("type", "text/javascript"); 
+      e.setAttribute("src", "/browser-update.js"); 
+      document.body.appendChild(e); 

@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/collectiveidea/delayed_job.git
-  revision: 62fd8ab7d5fac020d65e4c0894a60691f59d32c2
+  revision: 5b08ccddfc2b9840cdcfdc5441acf9ca3f0c2631
   specs:
     delayed_job (4.0.1)
       activesupport (>= 3.0, < 4.2)
@@ -71,7 +71,7 @@ GEM
     asset_sync (1.0.0)
       activemodel
       fog (>= 1.8.0)
-    aws-sdk (1.42.0)
+    aws-sdk (1.43.3)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
     backup (3.4.0)
@@ -122,7 +122,7 @@ GEM
     exception_notification (4.0.1)
       actionmailer (>= 3.0.4)
       activesupport (>= 3.0.4)
-    excon (0.36.0)
+    excon (0.37.0)
     execjs (2.2.0)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
@@ -160,7 +160,7 @@ GEM
       multi_json (~> 1.8)
     haml (4.0.5)
       tilt
-    hashie (2.1.1)
+    hashie (2.1.2)
     hike (1.2.3)
     htmlentities (4.3.2)
     http (0.6.1)
@@ -177,7 +177,7 @@ GEM
     json (1.8.1)
     jwt (1.0.0)
     libv8 (3.16.14.3)
-    listen (2.7.7)
+    listen (2.7.8)
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
@@ -196,7 +196,7 @@ GEM
     method_source (0.8.2)
     mime-types (1.25.1)
     mini_portile (0.6.0)
-    minitest (5.3.4)
+    minitest (5.3.5)
     multi_json (1.10.1)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
@@ -215,7 +215,7 @@ GEM
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (~> 1.2)
-    oj (2.9.4)
+    oj (2.9.6)
     omniauth (1.2.1)
       hashie (>= 1.2, < 3)
       rack (~> 1.0)
@@ -254,9 +254,9 @@ GEM
     premailer-rails (1.7.0)
       actionmailer (>= 3, < 5)
       premailer (~> 1.7, >= 1.7.9)
-    pry (0.9.12.6)
-      coderay (~> 1.0)
-      method_source (~> 0.8)
+    pry (0.10.0)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
       slop (~> 3.4)
     rack (1.5.2)
     rack-contrib (1.1.0)
@@ -286,7 +286,7 @@ GEM
       ffi (>= 0.5.0)
     ref (1.0.5)
     remotipart (1.2.1)
-    request_store (1.0.5)
+    request_store (1.0.6)
     rinku (1.7.3)
     role_model (0.8.1)
     ruby-imagespec (0.3.1)
@@ -325,7 +325,7 @@ GEM
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
-    twitter (5.9.0)
+    twitter (5.10.0)
       addressable (~> 2.3)
       buftok (~> 0.2.0)
       equalizer (~> 0.0.9)
@@ -338,7 +338,7 @@ GEM
       simple_oauth (~> 0.2.0)
     tzinfo (1.2.1)
       thread_safe (~> 0.1)
-    uglifier (2.5.0)
+    uglifier (2.5.1)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
     useragent (0.10.0)
@@ -400,7 +400,7 @@ DEPENDENCIES
   sanitize
   sass-rails
   sitemap_generator
-  sprockets (~> 2.11.0)
+  sprockets
   sprockets-rails
   therubyracer
   thin

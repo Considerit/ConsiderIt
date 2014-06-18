@@ -7,7 +7,6 @@ gem 'rails', '~>4'
 gem "mysql2"
 
 gem "haml"
-#gem 'sass-rails'#,   "3.2.6"
 
 # https://github.com/railsware/js-routes
 gem "js-routes"
@@ -120,7 +119,7 @@ gem 'actionpack-action_caching'
 
 ##
 # These used to be the Assets group
-gem 'sprockets', "~> 2.11.0"
+gem 'sprockets'
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 #gem 'sprockets-helpers'
 

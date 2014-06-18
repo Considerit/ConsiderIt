@@ -12,23 +12,22 @@
 
       %meta{ :name => 'description', :content => "#{@description ? @description : ''}"}
 
-    - cache ['main_layout', current_tenant] do 
-      %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
+    %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
 
-      %link{ :href => "#{image_path 'favicon.ico'}", :rel => "icon", :type => "image/vnd.microsoft.icon" }
+    %link{ :href => "#{image_path 'favicon.ico'}", :rel => "icon", :type => "image/vnd.microsoft.icon" }
 
-      = stylesheet_link_tag 'application', debug: false
+    = stylesheet_link_tag 'stylesheets/application', debug: false
 
-      // - ['Source+Sans+Pro'].each do |font|
-      //   %link{ :href => "//fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
+    // - ['Source+Sans+Pro'].each do |font|
+    //   %link{ :href => "//fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
 
-      /[if IE 9]
-        = stylesheet_link_tag 'browser/ie9'
-      
-      /[if lte IE 8]
-        = stylesheet_link_tag 'browser/ie'
+    /[if IE 9]
+      = stylesheet_link_tag 'browser/ie9'
+    
+    /[if lte IE 8]
+      = stylesheet_link_tag 'browser/ie'
 
-      = javascript_include_tag 'application', debug: false #, :async => true
+    = javascript_include_tag 'javascripts/application', debug: false
 
 
   %body

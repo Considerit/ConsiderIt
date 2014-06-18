@@ -111,7 +111,7 @@ Proposal = React.createClass
       opinions : []
 
   getInitialState : ->
-    users_to_highlight_in_histogram : []
+    users_to_highlight_in_histogram : null
     selected_segment_in_histogram : [null, null]
 
   # TODO: add prop types here
@@ -176,7 +176,7 @@ Proposal = React.createClass
 
           ####
           # implement option (2) above
-          @setState { users_to_highlight_in_histogram : [] }
+          @setState { users_to_highlight_in_histogram : null }
 
   setStickyHeader : ->
     # Sticky decision board. It is here because the calculation of offset top would 
@@ -429,7 +429,7 @@ Histogram = React.createClass
                 for bar in bars
                   R.td className:"histogram_bar", style: {width: avatar_size},
                     for opinion in bar
-                      Avatar key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, border: if _.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '1px solid red' else 'none'}
+                      Avatar key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, opacity: if @props.users_to_highlight_in_histogram && !_.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '.2' else '1.0'}
 
 ##
 # Slider

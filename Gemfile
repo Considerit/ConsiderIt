@@ -2,7 +2,6 @@ source 'http://rubygems.org'
 
 gem "therubyracer", :require => 'v8'
 gem 'rails', '~>4'
-#gem 'turbolinks'
 
 gem "mysql2"
 
@@ -14,12 +13,8 @@ gem "js-routes"
 # https://github.com/ohler55/oj
 gem "oj"
 
-# https://github.com/nesquena/rabl
-# https://github.com/ccocchi/rabl-rails
-#gem 'rabl-rails'
-
 # https://github.com/plataformatec/devise
-gem 'devise' #, "~> 2.2"
+gem 'devise'
 
 gem "omniauth"
 gem 'omniauth-oauth2'
@@ -30,13 +25,10 @@ gem 'omniauth-google-oauth2'
 gem 'twitter'
 
 # https://rubygems.org/gems/remotipart
-gem "remotipart"#, "~> 1.0.2"
+gem "remotipart"
 
 # https://github.com/ErwinM/acts_as_tenant
 gem 'acts_as_tenant'
-
-# https://github.com/sferik/rails_admin
-# gem 'rails_admin' #, :git => 'git://github.com/sferik/rails_admin' #remove git reference after next version bump
 
 #https://github.com/ryanb/cancan
 gem 'cancan'
@@ -48,9 +40,6 @@ gem 'role_model'
 # https://github.com/thoughtbot/paperclip
 gem 'paperclip'
 gem 'paperclip-compression'
-
-# https://github.com/amatsuda/kaminari
-# gem 'kaminari'
 
 # https://github.com/javan/whenever
 gem 'whenever'
@@ -79,12 +68,6 @@ gem 'sanitize'
 # https://github.com/indirect/jquery-rails
 gem 'jquery-rails'
 
-# gem 'paper_trail'
-
-# https://github.com/lucasefe/themes_for_rails
-# gem "themes_for_rails", :git => 'git://github.com/tkriplean/themes_for_rails.git' #, :branch => 'rails4'
-# gem "themes_for_rails", :git => "git://github.com/digitalmoksha/themes_for_rails"
-
 # https://github.com/weppos/actionmailer_with_request
 gem 'actionmailer-with-request'
 
@@ -97,12 +80,9 @@ gem 'dalli'
 # https://github.com/vmg/rinku
 gem 'rinku' # needed anymore?
 
-#gem 'font-awesome-rails'
-
 gem 'sitemap_generator'
 
 # https://github.com/cmer/cacheable-csrf-token-rails
-#gem 'cacheable-csrf-token-rails'
 gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csrf-token-rails'
 
 # https://github.com/josh/useragent
@@ -121,7 +101,6 @@ gem 'actionpack-action_caching'
 # These used to be the Assets group
 gem 'sprockets'
 gem 'sprockets-rails', :require => 'sprockets/railtie'
-#gem 'sprockets-helpers'
 
 gem 'aws-sdk'
 gem 'coffee-rails' #, "~> 3.2.2"
@@ -137,9 +116,6 @@ gem 'bourbon'
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:
 group :development, :test do
-  # gem 'ruby-debug19', :require => 'ruby-debug'
-  # gem 'heroku'
-  #gem "query_reviewer"
   gem 'thin'
   gem 'meta_request'
   gem 'newrelic_rpm'

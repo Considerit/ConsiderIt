@@ -405,7 +405,6 @@ Histogram = React.createClass
     if @props.state == 'results'
       segment = $(ev.currentTarget).data('segment')
 
-
       # If clicking on already hard-selected segment, then we'll deselect. 
       segment = if @props.selected_segment_in_histogram[0] == segment && @props.selected_segment_in_histogram[1] then null else segment
       click_select = ev.type == 'click' 
@@ -421,10 +420,10 @@ Histogram = React.createClass
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH)/2
     margin_adjustment -= - (segments[0].length - segments[6].length) / 2 * avatar_size #make sure that the neutral segment is centered
 
-    R.table className: 'histogram', style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
+    R.table className: 'histogram', onMouseLeave: @onSelectSegment, style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
       R.tr null, 
         for bars, segment in segments.reverse()
-          R.td className:"histogram_segment", key:segment, onClick: @onSelectSegment, onMouseLeave: @onSelectSegment, onMouseEnter: @onSelectSegment, 'data-segment':segment, style : { opacity: if !@props.selected_segment_in_histogram[0]? || @props.selected_segment_in_histogram[0] == segment then '1' else '.2' },
+          R.td className:"histogram_segment", key:segment, onClick: @onSelectSegment, onMouseEnter: @onSelectSegment, 'data-segment':segment, style : { opacity: if !@props.selected_segment_in_histogram[0]? || @props.selected_segment_in_histogram[0] == segment then '1' else '.2' },
             R.table null,
               R.tr null,
                 for bar in bars

@@ -588,7 +588,7 @@ YourPoints = React.createClass
 
     R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board",
       R.h1 className:'points_heading_label',
-        "Your #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
+        "List Your #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
 
       R.ul null,
         for point_id in @props.included_points

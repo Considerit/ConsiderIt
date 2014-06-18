@@ -112,7 +112,7 @@ Proposal = React.createClass
 
   getInitialState : ->
     users_to_highlight_in_histogram : []
-    selected_segment_in_histogram : null
+    selected_segment_in_histogram : [null, null]
 
   # TODO: add prop types here
 
@@ -252,9 +252,10 @@ Proposal = React.createClass
     route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
     app_router.navigate route, {trigger : true}
   
-  onSelectSegment : ( segment ) ->
+  onSelectSegment : ( segment, click_select ) ->
     @setState
-      selected_segment_in_histogram : segment
+      selected_segment_in_histogram : [segment, click_select]
+
 
   ##
   # Make this thing!
@@ -403,8 +404,16 @@ Histogram = React.createClass
   onSelectSegment : (ev) ->
     if @props.state == 'results'
       segment = $(ev.currentTarget).data('segment')
-      # if clicking on already selected segment, then we'll deselect
-      @props.onSelectSegment if @props.selected_segment_in_histogram == segment then null else segment
+
+
+      # If clicking on already hard-selected segment, then we'll deselect. 
+      segment = if @props.selected_segment_in_histogram[0] == segment && @props.selected_segment_in_histogram[1] then null else segment
+      click_select = ev.type == 'click' 
+
+      #ignore mouseEnter and mouseLeave events if selection was via click
+      return if @props.selected_segment_in_histogram && @props.selected_segment_in_histogram[1] && !click_select 
+
+      @props.onSelectSegment(segment, click_select && segment)
 
   render : ->
     [num_columns, segments, avatar_size] = @buildHistogram() #todo: memoize
@@ -415,7 +424,7 @@ Histogram = React.createClass
     R.table className: 'histogram', style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
       R.tr null, 
         for bars, segment in segments.reverse()
-          R.td className:"histogram_segment", key:segment, onClick: @onSelectSegment, 'data-segment':segment, style : { opacity: if !@props.selected_segment_in_histogram? || @props.selected_segment_in_histogram == segment then '1' else '.2' },
+          R.td className:"histogram_segment", key:segment, onClick: @onSelectSegment, onMouseLeave: @onSelectSegment, onMouseEnter: @onSelectSegment, 'data-segment':segment, style : { opacity: if !@props.selected_segment_in_histogram[0]? || @props.selected_segment_in_histogram[0] == segment then '1' else '.2' },
             R.table null,
               R.tr null,
                 for bar in bars
@@ -634,13 +643,13 @@ CommunityPoints = React.createClass
       has_not_been_included = @props.state == 'results' || !_.contains(@props.included_points, pnt.id)
       is_correct_valence && has_not_been_included
 
-    if @props.selected_segment_in_histogram?
+    if @props.selected_segment_in_histogram[0]?
       # If there is a histogram segment selected, we'll have to filter down 
       # to the points that users in this segment think are important, and 
       # order them by resonance to those users. I'm doing this quite inefficiently.
       point_inclusions_per_point_for_segment = {} # map of points to including users
       _.each @props.opinions, (opinion) =>
-        if opinion.stance_segment == 6 - @props.selected_segment_in_histogram && opinion.point_inclusions
+        if opinion.stance_segment == 6 - @props.selected_segment_in_histogram[0] && opinion.point_inclusions
           for point_id in opinion.point_inclusions
             if !_.has(point_inclusions_per_point_for_segment, point_id)
               point_inclusions_per_point_for_segment[point_id] = 1
@@ -657,7 +666,7 @@ CommunityPoints = React.createClass
 
     R.div className:"points_by_community #{@props.valence}s_by_community",
       R.h1 className:'points_heading_label', if @props.state == 'results' then "Top #{label}s" else "Others' #{label}s"
-      R.p className:'points_segment_label', if !@props.selected_segment_in_histogram? then '' else "for #{@props.stance_names[@props.selected_segment_in_histogram]}s"          
+      R.p className:'points_segment_label', if !@props.selected_segment_in_histogram[0]? then '' else "for #{@props.stance_names[@props.selected_segment_in_histogram[0]]}s"          
 
       R.ul null, 
         for point in points

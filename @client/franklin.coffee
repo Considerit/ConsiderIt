@@ -384,14 +384,10 @@ Histogram = React.createClass
 
       # If this is an extreme opinion...
       else if segment in [0,6]
-        if segments[segment][0].length == max_opinions_in_column - 1
-          # subdivide this segment into 2x the columns with .5 the opinions from before
-          new_cols = []
-          for old_col in segments[segment]
-            new_cols.push old_col[0..Math.floor(old_col.length/2)]
-            new_cols.push old_col[Math.floor(old_col.length/2)..old_col.length]
-          segments[segment] = new_cols
-        segments[segment][opinions_in_segment[segment] % segments[segment].length].push opinion
+        if segments[segment][segments[segment].length - 1].length == max_opinions_in_column - 1
+          segments[segment].push []
+
+        segments[segment][segments[segment].length - 1].push opinion
 
       # If this opinion is somewhere else on the spectrum...
       else
@@ -631,6 +627,7 @@ CommunityPoints = React.createClass
       over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
 
   render : ->
+
     #filter to pros or cons & down to points that haven't been included
     points = _.filter fetch({ url: 'all_points' }), (pnt) =>
       is_correct_valence = pnt.is_pro == (@props.valence == 'pro')
@@ -702,7 +699,7 @@ Point = React.createClass
             if @state.show_details
               R.div className: 'point_details', dangerouslySetInnerHTML:{__html: @props.text}
             else
-              R.span className: 'point_details_tease', @props.text[0..30] + "..."
+              R.span className: 'point_details_tease', $("<span>#{@props.text[0..30]}</span>").text() + "..."
 
         # R.a className:'open_point_link',
         #   "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"

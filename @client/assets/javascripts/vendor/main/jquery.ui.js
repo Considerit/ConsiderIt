@@ -850,9 +850,12 @@ $.widget("ui.mouse", {
           $.removeData(event.target, that.widgetName + ".preventClickEvent");
 
           //TRAVIS: HACK TO ALLOW CLICK ON SLIDER HANDLE TO TOGGLESTATE
-          return true;
-          // event.stopImmediatePropagation();
-          // return false;
+          if(!that._mouseDistanceMet(event)){
+            return true;
+          } else {
+            event.stopImmediatePropagation();
+            return false;
+          }
           // /hack
         }
       });
@@ -2312,7 +2315,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 
   options: {
     animate: false,
-    distance: 0,
+    distance: 1,
     max: 100,
     min: 0,
     orientation: "horizontal",

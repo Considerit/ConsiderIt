@@ -544,7 +544,7 @@ Slider = React.createClass
           R.div className:'slider_feedback', 
             R.div className:'slider_feedback_label',
               "You are#{if @state.stance_segment == 3 then '' else (if @state.stance_segment == 4 then ' an' else ' a')}"
-            R.h1 className:'slider_feedback_result', stance_names[@state.stance_segment]
+            R.div className:'slider_feedback_result', stance_names[@state.stance_segment]
             # R.div className:'slider_feedback_instructions', 'drag to change'
 
       R.div className:'slider_labels', 
@@ -636,7 +636,7 @@ YourPoints = React.createClass
     left_or_right = if @props.valence == 'pro' then 'left' else 'right'
 
     R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board",
-      R.h1 className:'points_heading_label',
+      R.div className:'points_heading_label',
         "List Your #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
 
       R.ul null,
@@ -715,7 +715,7 @@ CommunityPoints = React.createClass
     label = "#{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}"
 
     R.div className:"points_by_community #{@props.valence}s_by_community",
-      R.h1 className:'points_heading_label', if @props.state == 'results' then "Top #{label}s" else "Others' #{label}s"
+      R.div className:'points_heading_label', if @props.state == 'results' then "Top #{label}s" else "Others' #{label}s"
       R.p className:'points_segment_label', if !@props.selected_segment_in_histogram[0]? then '-' else "for #{stance_names[@props.selected_segment_in_histogram[0]]}s"          
 
       R.ul null, 

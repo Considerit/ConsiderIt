@@ -291,17 +291,17 @@ Proposal = React.createClass
         R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: @props.data.proposal.description}
 
       #toggle
-      R.div className:'toggle_state_region',
-        R.h1 className:'proposal_state_primary',
-          if @props.state == 'crafting' then 'Give your Opinion' else 'Explore all Opinions'
+      # R.div className:'toggle_state_region',
+      #   R.h1 className:'proposal_state_primary',
+      #     if @props.state == 'crafting' then 'Give your Opinion' else 'Explore all Opinions'
 
-          # R.h4 className: 'proposal_state_subtitle', 
-          #   if @props.state == 'crafting' then 'Describe how you feel about this and why' else 'What people feel and why'
+      #     R.h4 className: 'proposal_state_subtitle', 
+      #       if @props.state == 'crafting' then 'Describe how you feel about this and why' else 'What people feel and why'
 
-        R.div className:'proposal_state_secondary', 
-          'or '
-          R.a onClick: @toggleState,
-            if @props.state != 'crafting' then 'Give Own Opinion' else 'Explore all Opinions'
+      #   R.div className:'proposal_state_secondary', 
+      #     'or '
+      #     R.a onClick: @toggleState,
+      #       if @props.state != 'crafting' then 'Give Own Opinion' else 'Explore all Opinions'
     
       #feelings
       R.div className:'feelings_region',

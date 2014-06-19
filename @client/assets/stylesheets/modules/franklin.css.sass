@@ -43,8 +43,6 @@ $histogram_width: $body_width //+ 2 * $grid_major
 $default_avatar_in_histogram_color: #bbb
 $proposal_description_width: 670px
 
-$slider_base_height: 4px
-
 
 /////////////////////////////////////////////////////////////////////////////
 /// STYLES for Franklin
@@ -105,6 +103,7 @@ $slider_base_height: 4px
   .proposal_state_primary
     +font-size(11)
     font-weight: 200
+    color: $base_text_color
 
   .proposal_state_secondary
     +font-size(1)
@@ -114,21 +113,7 @@ $slider_base_height: 4px
 
     a 
       text-decoration: underline
-
-[data-state="crafting"] .toggle_state_region
-  .proposal_state_primary
-    color: $decision_board_text_color
-    font-weight: 600
-
-  .proposal_state_secondary a
-    +link_style($base_text_color, $base_background_color, 2%)
-
-[data-state="results"] .toggle_state_region
-  .proposal_state_primary
-    color: $base_text_color
-
-  .proposal_state_secondary a
-    +link_style($decision_board_text_color, $base_background_color, 2%)
+      +link_style($decision_board_text_color, $base_background_color, 2%)
 
 
 /////////////////////
@@ -178,17 +163,10 @@ $slider_base_height: 4px
 
 .slider_base
   margin: auto
-  height: $slider_base_height
+  height: 4px
   width: $histogram_width //- 2 * $grid_major
   border-radius: 10px
-
-[data-state="results"]
-  .slider_base
-    background-color: desaturate($decision_board_text_color, 100%)
-
-[data-state="crafting"]
-  .slider_base
-    background-color: $decision_board_text_color
+  background-color: desaturate($decision_board_text_color, 100%)
 
 $slider_handle_size: 22px
 .ui-slider-handle  // dashes in name b/c jquery UI
@@ -196,7 +174,6 @@ $slider_handle_size: 22px
   .the_handle
     border-radius: 50%
     box-shadow: rgba(black, .2) 0px 1px 1px
-    border: 1px solid darken($decision_board_text_color, 20%)
     width: $slider_handle_size
     height: $slider_handle_size
     background-color: $decision_board_text_color
@@ -215,13 +192,15 @@ $slider_handle_size: 22px
 // The area on top of the slider that shows in crafting to let user know what their stance is
 .slider_feedback
   position: absolute
-  top: -7 * $vertical_baseline
-  width: 250px
+  top: -114px
+  width: 450px
+  padding: 7px
   left: 50%
-  margin-left: -125px
-  background-color: rgba($base_background_color, .5)
+  margin-left: -225px
+  border-radius: 10px
+  background-color: rgba($base_background_color, .2)
 
-  .slider_feedback_label, .slider_feedback_result, .slider_feedback_instructions
+  .slider_feedback_label, .slider_feedback_result //, .slider_feedback_instructions
     text-align: center
 
   .slider_feedback_label
@@ -229,13 +208,13 @@ $slider_handle_size: 22px
     font-weight: 200
 
   .slider_feedback_result
-    +font-size(5)
-    font-weight: 600
+    +font-size(6)
+    font-weight: 500
     color: $decision_board_text_color
 
-  .slider_feedback_instructions
-    +font-size(-3)
-    font-weight: 200
+  // .slider_feedback_instructions
+  //   +font-size(-3)
+  //   font-weight: 200
 
 .ui-slider-disabled .slider_feedback
   display: none
@@ -251,6 +230,7 @@ $slider_handle_size: 22px
   .histogram_label
     +font-size(6)
     font-weight: 200
+    color: #777777
 
   .histogram_label_support
     float: left
@@ -286,7 +266,7 @@ $slider_handle_size: 22px
   vertical-align: top
 
 .points_by_community
-  margin: $vertical_baseline * 2 $grid_gutter 
+  margin: 0 $grid_gutter
   position: relative
   z-index: 2 //so that points being dragged are above opinion region
   width: $point-content-width
@@ -303,6 +283,17 @@ $slider_handle_size: 22px
 // Point list heading
 .points_heading_label
   text-align: center
+  margin-top: 38px
+  margin-bottom: $vertical_baseline
+  text-align: center
+  +font-size(6)
+
+.points_on_decision_board .points_heading_label
+  font-weight: 500
+  color: $decision_board_text_color
+
+.points_by_community .points_heading_label
+  font-weight: 200
 
 .points_segment_label
   font-weight: 200
@@ -310,14 +301,17 @@ $slider_handle_size: 22px
   margin-bottom: $vertical_baseline/2
   +font-size(-2)
 
-.points_on_decision_board .points_heading_label
-  +font-size(9)
-  font-weight: 500
-  color: $decision_board_text_color
+// Mike: I wanted the headers to be centered over the ENTIRE
+// points including avatars, not just bubbles.  But the
+// avatars are sticking out on their own, so I simulated
+// a centered look with these -20px and +20px offsets
+.pros_by_community h1.points_heading_label
+  position: relative
+  left: -20px
+.cons_by_community h1.points_heading_label
+  position: relative
+  left: 20px
 
-.points_by_community .points_heading_label
-  +font-size(6)
-  font-weight: 200
 
 // Decision board
 
@@ -346,17 +340,17 @@ $slider_handle_size: 22px
       &:focus
         +inset-border($decision_board_text_color)
 
-  .give_opinion_button
+  a.give_opinion_button
     padding: $vertical_baseline / 4 $grid_gutter
     display: block
     color: $decision_board_text_color
-    font-weight: 600
+    font-weight: 500
     &:hover
       color: $decision_board_text_color
 
-
 .your_points
-  padding: $vertical_baseline * 1.5 $grid_gutter
+  padding: 0 $grid_gutter
+  margin-top: -3px // To undo the 3 pixel border
 
 // Drop target for decision board
 .user_is_hovering_on_a_drop_target_pro .pros_on_decision_board, .user_is_hovering_on_a_drop_target_con .cons_on_decision_board
@@ -365,25 +359,38 @@ $slider_handle_size: 22px
     color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
 
 .add_point_drop_target
-  padding: $vertical_baseline/4 0 $vertical_baseline/4 $grid_gutter/2
+  padding: 2px 0 $vertical_baseline/4 $grid_gutter/2
   position: relative
 
   .drop_target
     width: 223px
 
   .drop_prompt
-    +font-size(-1)
+    +font-size(0)
     position: absolute
-    bottom: 2 * $vertical_baseline
+    top: 1.6 * $vertical_baseline
     left: 36px
-    width: 176px
+    width: 180px
     color: $base_text_color
 
 .cons_on_decision_board .add_point_drop_target 
   .drop_target
     +transform(scaleX(-1))
   .drop_prompt
-    left: 27px
+    left: 29px
+
+
+.save_opinion_button
+  border-radius: 16px
+  background-color: $decision_board_text_color
+  color: white
+  font-size: 29px
+  text-align: center
+  margin: 20px 0
+  padding: 3px
+  cursor: pointer
+
+
 
 /////////////////////
 // POINTS
@@ -480,12 +487,12 @@ $slider_handle_size: 22px
 // Add a new point prompt
 .newpoint_prompt
   padding: $vertical_baseline/4 0
+  margin-top: $vertical_baseline
   cursor: pointer
   +font-size(0)
 
   .newpoint_link
     text-decoration: underline
-    font-weight: 600
     color: $decision_board_text_color
   .newpoint_bullet
     padding: 0 6px

@@ -458,7 +458,7 @@ Slider = React.createClass
     # (We only wanna display this helper if
     #  they haven't moved it AND just loaded the page)
     $('.slider_feedback_label').html('&nbsp;')
-    $('.slider_feedback_result').html('Drag your Overall Opinion')
+    $('.slider_feedback_result').html('Drag Your Overall Opinion')
 
 
   # We have a separate applyStyle here from Proposal because the Slider component
@@ -539,7 +539,7 @@ Slider = React.createClass
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div className:'slider_feedback', 
             R.div className:'slider_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
-            R.div className:'slider_feedback_result', stance_names[@state.stance_segment]
+            R.h1 className:'slider_feedback_result', stance_names[@state.stance_segment]
             # R.div className:'slider_feedback_instructions', 'drag to change'
 
       R.div className:'slider_labels', 

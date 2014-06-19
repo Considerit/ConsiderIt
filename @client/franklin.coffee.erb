@@ -229,8 +229,9 @@ Proposal = React.createClass
         @applyStylesToElements styles, duration
 
         $el.find('.give_opinion_button').css 'visibility', 'hidden'
-        _.delay -> 
-          $el.find('.your_points, .save_opinion_button').css 'display', ''
+        _.delay => 
+          if @props.state == 'crafting' #check in case of quick switch between states        
+            $el.find('.your_points, .save_opinion_button').css 'display', ''
         , duration
 
       when 'results'
@@ -257,8 +258,9 @@ Proposal = React.createClass
         @applyStylesToElements styles, duration
 
         $el.find('.your_points, .save_opinion_button').css 'display', 'none'
-        _.delay -> 
-          $el.find('.give_opinion_button').css 'visibility', ''
+        _.delay => 
+          if @props.state == 'results' #check in case of quick switch between states
+            $el.find('.give_opinion_button').css 'visibility', ''
         , duration
 
   ##

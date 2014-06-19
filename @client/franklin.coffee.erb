@@ -541,8 +541,6 @@ Slider = React.createClass
       else
         bubblemouth_src = "<%= asset_path 'bubblemouth-results.png' %>"
 
-    console.log bubblemouth_src
-
     R.div className: 'slider',
       R.div className:'slider_base', 
         R.div props_for_slider_handle, 
@@ -566,7 +564,7 @@ DecisionBoard = React.createClass
 
   componentDidMount : ->
     # make this a drop target
-    $el = $(@getDOMNode()).parent()
+    $el = $(@getDOMNode())
     $el.droppable
       accept: ".community_point .point_content"
       drop : (ev, ui) =>

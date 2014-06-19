@@ -299,6 +299,7 @@ Proposal = React.createClass
           users_to_highlight_in_histogram: @state.users_to_highlight_in_histogram
           onSelectSegment: @onSelectSegment
           selected_segment_in_histogram: @state.selected_segment_in_histogram
+          toggleState: @toggleState
 
         Slider
           initial_stance: @props.data.initial_stance
@@ -404,6 +405,8 @@ Histogram = React.createClass
     num_columns = _.flatten(_.values(segments), true).length
     [num_columns, segments, avatar_size]
 
+  onClickHistogram : (ev) -> @props.toggleState() if @props.state == 'crafting'
+
   onSelectSegment : (ev) ->
     if @props.state == 'results'
       segment = $(ev.currentTarget).data('segment')
@@ -416,6 +419,7 @@ Histogram = React.createClass
       return if @props.selected_segment_in_histogram && @props.selected_segment_in_histogram[1] && !click_select 
 
       @props.onSelectSegment(segment, click_select && segment)
+      ev.stopPropagation()
 
   render : ->
     [num_columns, segments, avatar_size] = @buildHistogram() #todo: memoize
@@ -423,7 +427,8 @@ Histogram = React.createClass
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH)/2
     margin_adjustment -= - (segments[0].length - segments[6].length) / 2 * avatar_size #make sure that the neutral segment is centered
 
-    R.table className: 'histogram', onMouseLeave: @onSelectSegment, style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
+
+    R.table className: 'histogram', onClick:@onClickHistogram, onMouseLeave: @onSelectSegment, style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
       R.tr null, 
         for bars, segment in segments.reverse()
           R.td className:"histogram_segment", key:segment, onClick: @onSelectSegment, onMouseEnter: @onSelectSegment, 'data-segment':segment, style : { opacity: if !@props.selected_segment_in_histogram[0]? || @props.selected_segment_in_histogram[0] == segment then '1' else '.2' },
@@ -513,11 +518,10 @@ Slider = React.createClass
   render : ->
     props_for_slider_handle = 
       className:'ui-slider-handle' #jquery UI slider will pick an el with this class name up
-    # if @props.state == 'results'
-
-    _.extend props_for_slider_handle, 
-      onClick: @props.toggleState
-      style: { cursor : 'pointer' } 
+    if @props.state == 'results'    
+      _.extend props_for_slider_handle, 
+        onClick: @props.toggleState
+        style: { cursor : 'pointer' } 
 
 
     # can't be dynamically set b/c of integration with asset fingerprinting...

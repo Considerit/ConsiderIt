@@ -105,6 +105,13 @@ $proposal_description_width: 670px
     font-weight: 200
     color: $base_text_color
 
+  // .proposal_state_subtitle
+  //   text-align: center
+  //   font-weight: 100
+  //   font-size: 20px
+  //   margin-top: -6px
+  //   color: deemphasize($base_text_color, 20%, $reference: $base_background_color )
+    
   .proposal_state_secondary
     +font-size(1)
     position: absolute
@@ -351,6 +358,17 @@ $slider_handle_size: 22px
     font-weight: 500
     &:hover
       color: $decision_board_text_color
+
+[data-state="results"]
+  .decision_board_body
+    border-style: solid
+    background-color: $decision_board_border_color
+
+    a.give_opinion_button
+      color: white
+      border-radius: 7px
+      &:hover
+        color: white
 
 .your_points
   padding: 0 $grid_gutter

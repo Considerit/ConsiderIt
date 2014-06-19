@@ -265,8 +265,12 @@ $slider_handle_size: 22px
   display: inline-block
   vertical-align: top
 
+.points_by_community, .points_on_decision_board
+  margin-top: 38px
+
 .points_by_community
-  margin: 0 $grid_gutter
+  margin-left: $grid_gutter
+  margin-right: $grid_gutter
   position: relative
   z-index: 2 //so that points being dragged are above opinion region
   width: $point-content-width
@@ -283,9 +287,7 @@ $slider_handle_size: 22px
 // Point list heading
 .points_heading_label
   text-align: center
-  margin-top: 38px
-  margin-bottom: $vertical_baseline
-  text-align: center
+  // margin-bottom: $vertical_baseline
   +font-size(6)
 
 .points_on_decision_board .points_heading_label
@@ -305,12 +307,14 @@ $slider_handle_size: 22px
 // points including avatars, not just bubbles.  But the
 // avatars are sticking out on their own, so I simulated
 // a centered look with these -20px and +20px offsets
-.pros_by_community h1.points_heading_label
-  position: relative
-  left: -20px
-.cons_by_community h1.points_heading_label
-  position: relative
-  left: 20px
+.pros_by_community 
+  h1.points_heading_label, .points_segment_label
+    position: relative
+    left: -20px
+.cons_by_community 
+  h1.points_heading_label, .points_segment_label
+    position: relative
+    left: 20px
 
 
 // Decision board
@@ -359,7 +363,7 @@ $slider_handle_size: 22px
     color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
 
 .add_point_drop_target
-  padding: 2px 0 $vertical_baseline/4 $grid_gutter/2
+  padding: 8px 0 $vertical_baseline/4 $grid_gutter/2
   position: relative
 
   .drop_target

@@ -221,7 +221,7 @@ Proposal = React.createClass
 
         $el.find('.give_opinion_button').css 'visibility', 'hidden'
         _.delay -> 
-          $el.find('.your_points').css 'display', ''
+          $el.find('.your_points, .save_opinion_button').css 'display', ''
         , duration
 
       when 'results'
@@ -240,7 +240,7 @@ Proposal = React.createClass
         
         @applyStylesToElements styles, duration
 
-        $el.find('.your_points').css 'display', 'none'
+        $el.find('.your_points, .save_opinion_button').css 'display', 'none'
         _.delay -> 
           $el.find('.give_opinion_button').css 'visibility', ''
         , duration
@@ -300,6 +300,7 @@ Proposal = React.createClass
           initial_stance: @props.data.initial_stance
           stance_names: stance_names 
           state: @props.state
+          toggleState: @toggleState
 
       #reasons
       R.div className:'reasons_region',
@@ -508,10 +509,16 @@ Slider = React.createClass
   getSliderValue : -> $(@getDOMNode()).find('.ui-slider-handle').position().left / $el.find('.slider_base').innerWidth()
 
   render : ->
+    props_for_slider_handle = 
+      className:'ui-slider-handle' #jquery UI slider will pick an el with this class name up
+    if @props.state == 'results'
+      _.extend props_for_slider_handle, 
+        onClick: @props.toggleState
+        style: { cursor : 'pointer' } 
 
     R.div className: 'slider',
       R.div className:'slider_base', 
-        R.div className:'ui-slider-handle', #jquery UI slider will pick an el with this class name up
+        R.div props_for_slider_handle, 
           R.div className: 'the_handle'
           R.img className:'bubblemouth', src: if @state.stance_segment == 3 then "<%= asset_path 'bubblemouth_neutral.png' %>" else "<%= asset_path 'bubblemouth.png' %>"
           R.div className:'slider_feedback', 
@@ -562,8 +569,8 @@ DecisionBoard = React.createClass
 
         # only shown during results, but needs to be present always for animation
         R.a className:'give_opinion_button', onClick: @props.toggleState, 'Give your Opinion'
-      if @props.state == 'crafting'
-        R.div className:'save_opinion_button', onClick: @props.toggleState, 'Save and Explore the Results'
+
+      R.div className:'save_opinion_button', onClick: @props.toggleState, 'Save and Explore the Results'
 
 
 ##
@@ -627,7 +634,7 @@ YourPoints = React.createClass
           R.span className:'drop_prompt',
             #"Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
             "Drag a #{capitalize(@props.valence)} from the #{left_or_right}"
-            
+
         NewPoint 
           valence: @props.valence
 

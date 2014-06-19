@@ -225,11 +225,18 @@ Proposal = React.createClass
         , duration
 
       when 'results'
-        slider_stance = ($el.find('.ui-slider').slider('value') + 1) / 2
-        is_opposer = slider_stance > .5
-        opinion_region_x = DECISION_BOARD_WIDTH * slider_stance
+        slider_stance = $el.find('.ui-slider').slider('value')
+        segment = 6 - getStanceSegment slider_stance
+
+        opinion_region_x = DECISION_BOARD_WIDTH * (slider_stance+1) / 2.0
         give_opinion_button_width = 186
-        opinion_region_x -= give_opinion_button_width / 2 
+        if segment == 3
+          opinion_region_x -= give_opinion_button_width / 2
+        else if segment < 3
+          opinion_region_x -= give_opinion_button_width * .95 
+        else 
+          opinion_region_x -= give_opinion_button_width * .05 
+
 
         styles = 
           '.histogram_bar':                          { opacity: '1' }

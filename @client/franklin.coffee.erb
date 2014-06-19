@@ -192,21 +192,11 @@ Proposal = React.createClass
     # be off if we did it in DidMount before all the data has been fetched from server
     if @props.state == 'crafting'
       _.delay => 
-        $el = $(@getDOMNode())
-        $cons = $el.find('.cons_by_community')
-        $opinion = $el.find('.opinion_region')
-
-        $el.find('.opinion_region').headroom
-          offset: $('.opinion_region').offset().top
-
-          onNotTop : => 
-            return if @props.state != 'crafting'
-            $opinion.css {position: 'fixed', top: '0' }
-
-          onTop : => 
-            return if @props.state != 'crafting'
-            $opinion.css { position: '', top: '' }
-            
+        $opinion = $(@getDOMNode()).find('.opinion_region')
+        $opinion.headroom
+          offset: $opinion.offset().top
+          onNotTop : => @setState { scrolled_past_decision_board: true } 
+          onTop : => @setState { scrolled_past_decision_board: false } 
       , 1000  # delay initialization to let the rest of the dom load so that the offset is calculated properly
 
   ##
@@ -333,6 +323,7 @@ Proposal = React.createClass
           included_points : @props.data.included_points
           toggleState: @toggleState
           points: fetch { url: 'all_points' }
+          scrolled_past_decision_board : @state.scrolled_past_decision_board
 
         #community cons
         CommunityPoints 
@@ -575,7 +566,12 @@ DecisionBoard = React.createClass
       over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
 
   render : ->
-    R.div className:'opinion_region', 
+    sticky_header = @props.scrolled_past_decision_board && @props.state == 'crafting'
+    opinion_region_style = 
+      position: if sticky_header then 'fixed' else ''
+      top: if sticky_header then 0 else ''
+
+    R.div className:'opinion_region', style: opinion_region_style,
       R.div className:'decision_board_body',
 
         # only shown during crafting, but needs to be present always for animation

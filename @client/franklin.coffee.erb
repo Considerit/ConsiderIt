@@ -752,8 +752,11 @@ Point = React.createClass
   renderIncluders : ->
     # Draw the includers.  This code is ugly cause I don't know
     # coffeescript very good.  Let's fix it!
+
+    # Also: we should put the author at the end of this list so that
+    # he appears on top.
     if @props.includers
-      i = @props.includers.length + 1
+      i = @props.includers.length
       rows = 8
       dx = 2
       dy = 5
@@ -766,14 +769,14 @@ Point = React.createClass
         left_right = if @props.valence == 'pro' then 'left' else 'right'
         style = {'position': 'absolute', 'top': "#{top_offset}px"}
         style[left_right] = "#{side_offset}px"
-        Avatar user: includer, className: 'point_author_avatar', style: style
+        Avatar tag: R.a, user: includer, className: 'point_author_avatar', style: style
 
   render : -> 
     R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,
 
       @renderIncluders()
 
-      Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
+      #Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
 
       R.div className:'point_content',
         R.div className:'point_nutshell',

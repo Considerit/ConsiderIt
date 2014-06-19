@@ -443,9 +443,20 @@ Slider = React.createClass
 
   componentDidMount : -> 
     @setSlidability()
+    @setInitialSliderLabel()
 
   componentDidUpdate : (prev_props, prev_state) ->
     @setSlidability()
+
+  ##
+  # Teach the user how to Drag; disappears when they prove they know how.
+  setInitialSliderLabel : ->
+    # To do: skip this if the slider is already non-neutral
+    # (We only wanna display this helper if
+    #  they haven't moved it AND just loaded the page)
+    $('.slider_feedback_label').html('&nbsp;')
+    $('.slider_feedback_result').html('Drag your Overall Opinion')
+
 
   # We have a separate applyStyle here from Proposal because the Slider component
   # gets rerendered more frequently than the Proposal component (i.e. when the 
@@ -506,7 +517,7 @@ Slider = React.createClass
           R.div className:'slider_feedback', 
             R.div className:'slider_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
             R.div className:'slider_feedback_result', @props.stance_names[@state.stance_segment]
-            R.div className:'slider_feedback_instructions', 'drag to change'
+            # R.div className:'slider_feedback_instructions', 'drag to change'
 
       R.div className:'slider_labels', 
         R.h1 className:"histogram_label histogram_label_support", 'Support'
@@ -551,6 +562,8 @@ DecisionBoard = React.createClass
 
         # only shown during results, but needs to be present always for animation
         R.a className:'give_opinion_button', onClick: @props.toggleState, 'Give your Opinion'
+      if @props.state == 'crafting'
+        R.div className:'save_opinion_button', onClick: @props.toggleState, 'Save and Explore the Results'
 
 
 ##
@@ -586,6 +599,8 @@ YourPoints = React.createClass
   mixins: [DraggablePoints]
 
   render : ->
+    capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
+    left_or_right = if @props.valence == 'pro' then 'left' else 'right'
 
     R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board",
       R.h1 className:'points_heading_label',
@@ -607,10 +622,12 @@ YourPoints = React.createClass
               location_class: 'decision_board_point'
 
         R.div className:'add_point_drop_target',
+          R.div className: "drop_target_circle_#{left_or_right}"
           R.img className:'drop_target', src: "<%= asset_path 'drop_target.png' %>"
           R.span className:'drop_prompt',
-            "Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
-
+            #"Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
+            "Drag a #{capitalize(@props.valence)} from the #{left_or_right}"
+            
         NewPoint 
           valence: @props.valence
 

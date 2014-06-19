@@ -307,8 +307,9 @@ $slider_handle_size: 22px
 .points_segment_label
   font-weight: 200
   text-align: center
-  margin-bottom: $vertical_baseline/2
   +font-size(-2)
+  margin-top: -$vertical_baseline
+  margin-bottom: $vertical_baseline/2
 
 // Mike: I wanted the headers to be centered over the ENTIRE
 // points including avatars, not just bubbles.  But the
@@ -380,7 +381,7 @@ $slider_handle_size: 22px
     color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
 
 .add_point_drop_target
-  padding: 2px 0 $vertical_baseline/4 $grid_gutter/2
+  padding: 11px 0 $vertical_baseline/4 $grid_gutter/2
   position: relative
 
   .drop_target

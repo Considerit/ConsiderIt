@@ -289,6 +289,11 @@ Proposal = React.createClass
       R.div className:'toggle_state_region',
         R.h1 className:'proposal_state_primary',
           if @props.state == 'crafting' then 'Give your Opinion' else 'Explore all Opinions'
+
+          # R.h4 className: 'proposal_state_subtitle', 
+          #   if @props.state == 'crafting' then 'Describe how you feel about this and why' else 'What people feel and why'
+
+
         R.div className:'proposal_state_secondary', 
           'or '
           R.a onClick: @toggleState,
@@ -523,19 +528,34 @@ Slider = React.createClass
         onClick: @props.toggleState
         style: { cursor : 'pointer' } 
 
+
+    # can't be dynamically set b/c of integration with asset fingerprinting...
+    if @state.stance_segment == 3
+      if @props.state == 'crafting'
+        bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
+      else
+        bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-results.png' %>"
+    else
+      if @props.state == 'crafting'
+        bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
+      else
+        bubblemouth_src = "<%= asset_path 'bubblemouth-results.png' %>"
+
+    console.log bubblemouth_src
+
     R.div className: 'slider',
       R.div className:'slider_base', 
         R.div props_for_slider_handle, 
           R.div className: 'the_handle'
-          R.img className:'bubblemouth', src: if @state.stance_segment == 3 then "<%= asset_path 'bubblemouth_neutral.png' %>" else "<%= asset_path 'bubblemouth.png' %>"
+          R.img className:'bubblemouth', src: bubblemouth_src
           R.div className:'slider_feedback', 
             R.div className:'slider_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
             R.div className:'slider_feedback_result', @props.stance_names[@state.stance_segment]
             # R.div className:'slider_feedback_instructions', 'drag to change'
 
       R.div className:'slider_labels', 
-        R.h1 className:"histogram_label histogram_label_support", 'Support'
-        R.h1 className:"histogram_label histogram_label_oppose", 'Oppose'
+        R.h1 className:"histogram_label histogram_label_support", 'Supporter'
+        R.h1 className:"histogram_label histogram_label_oppose", 'Opposer'
 
 
 ##

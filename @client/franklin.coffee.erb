@@ -267,6 +267,7 @@ Proposal = React.createClass
   # State needs to be updated
 
   toggleState : (ev) ->
+    console.log ev
     route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
     app_router.navigate route, {trigger : true}
   
@@ -278,9 +279,6 @@ Proposal = React.createClass
   ##
   # Make this thing!
   render : ->
-
-
-    console.log @props.data.proposal.user_id
     R.div className:'proposal', key:@props.long_id, 'data-state':@props.state,
       
       #description
@@ -524,10 +522,11 @@ Slider = React.createClass
   render : ->
     props_for_slider_handle = 
       className:'ui-slider-handle' #jquery UI slider will pick an el with this class name up
-    if @props.state == 'results'
-      _.extend props_for_slider_handle, 
-        onClick: @props.toggleState
-        style: { cursor : 'pointer' } 
+    # if @props.state == 'results'
+
+    _.extend props_for_slider_handle, 
+      onClick: @props.toggleState
+      style: { cursor : 'pointer' } 
 
 
     # can't be dynamically set b/c of integration with asset fingerprinting...
@@ -545,7 +544,7 @@ Slider = React.createClass
     R.div className: 'slider',
       R.div className:'slider_base', 
         R.div props_for_slider_handle, 
-          R.div className: 'the_handle'
+          R.div className: 'the_handle', onClick: @props.toggleState
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div className:'slider_feedback', 
             R.div className:'slider_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
@@ -716,7 +715,7 @@ CommunityPoints = React.createClass
 
     R.div className:"points_by_community #{@props.valence}s_by_community",
       R.h1 className:'points_heading_label', if @props.state == 'results' then "Top #{label}s" else "Others' #{label}s"
-      R.p className:'points_segment_label', if !@props.selected_segment_in_histogram[0]? then '' else "for #{stance_names[@props.selected_segment_in_histogram[0]]}s"          
+      R.p className:'points_segment_label', if !@props.selected_segment_in_histogram[0]? then '-' else "for #{stance_names[@props.selected_segment_in_histogram[0]]}s"          
 
       R.ul null, 
         for point in points

@@ -752,10 +752,16 @@ Point = React.createClass
   renderIncluders : ->
     # Draw the includers.  This code is ugly cause I don't know
     # coffeescript very good.  Let's fix it!
-
-    # Also: we should put the author at the end of this list so that
-    # he appears on top.
     if @props.includers
+      # Move the author to the end of the list so that he appears on
+      # the top of the stack
+      author_index = @props.includers.indexOf(@props.author)
+      includers = @props.includers.slice()  # Copy the list so we can mutate it
+      includers.reverse()                   # Maybe kinda puts new people towards the end
+      includers = includers.splice(author_index, 1)  # Remove the author
+      includers.push(@props.author)         # And put her at the end (on top)
+      
+      # Now we'll go through the list from back to front
       i = @props.includers.length
       rows = 8
       dx = 2
@@ -769,6 +775,8 @@ Point = React.createClass
         left_right = if @props.valence == 'pro' then 'left' else 'right'
         style = {'position': 'absolute', 'top': "#{top_offset}px"}
         style[left_right] = "#{side_offset}px"
+        
+        # Finally draw the guy
         Avatar tag: R.a, user: includer, className: 'point_author_avatar', style: style
 
   render : -> 

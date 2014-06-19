@@ -748,7 +748,6 @@ Point = React.createClass
     $(@getDOMNode()).click (ev) => 
       @setState { show_details : !@state.show_details }
 
-
   renderIncluders : ->
     # Draw the includers.  This code is ugly cause I don't know
     # coffeescript very good.  Let's fix it!
@@ -770,8 +769,8 @@ Point = React.createClass
       for includer in @props.includers
         i = i - 1
         curr_column = Math.floor(i / rows)
-        side_offset = -22 - 14 - 1 - curr_column*col_gap - i*dx
-        top_offset = (i % rows) * dy + 7
+        side_offset = -24 - 14 - 1 - curr_column*col_gap - i*dx
+        top_offset = (i % rows) * dy + 2
         left_right = if @props.valence == 'pro' then 'left' else 'right'
         style = {'position': 'absolute', 'top': "#{top_offset}px"}
         style[left_right] = "#{side_offset}px"
@@ -786,6 +785,9 @@ Point = React.createClass
 
       if not @props.includers
         Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
+
+      if @props.location_class == 'community_point'
+        R.img className: 'community_point_mouth', src: "<%= asset_path 'community_point_mouth.png' %>"
 
       R.div className:'point_content',
         R.div className:'point_nutshell',

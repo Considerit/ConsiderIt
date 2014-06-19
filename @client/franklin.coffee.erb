@@ -794,7 +794,7 @@ Point = React.createClass
             if @state.show_details
               R.div className: 'point_details', dangerouslySetInnerHTML:{__html: @props.text}
             else
-              R.span className: 'point_details_tease', $("<span>#{@props.text[0..30]}</span>").text() + "..."
+              R.span className: 'point_details_tease', $("<span>#{@props.text[0..210-@props.nutshell.length]}</span>").text() + "..."
 
         # R.a className:'open_point_link',
         #   "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"

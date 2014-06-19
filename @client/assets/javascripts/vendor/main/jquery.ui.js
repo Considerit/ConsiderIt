@@ -848,8 +848,12 @@ $.widget("ui.mouse", {
       .bind("click."+this.widgetName, function(event) {
         if (true === $.data(event.target, that.widgetName + ".preventClickEvent")) {
           $.removeData(event.target, that.widgetName + ".preventClickEvent");
-          event.stopImmediatePropagation();
-          return false;
+
+          //TRAVIS: HACK TO ALLOW CLICK ON SLIDER HANDLE TO TOGGLESTATE
+          return true;
+          // event.stopImmediatePropagation();
+          // return false;
+          // /hack
         }
       });
 

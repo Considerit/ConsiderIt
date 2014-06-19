@@ -784,7 +784,8 @@ Point = React.createClass
 
       @renderIncluders()
 
-      #Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
+      if not @props.includers
+        Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
 
       R.div className:'point_content',
         R.div className:'point_nutshell',

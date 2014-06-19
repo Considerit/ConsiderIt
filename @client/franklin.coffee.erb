@@ -538,7 +538,8 @@ Slider = React.createClass
           R.div className: 'the_handle', onClick: @props.toggleState
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div className:'slider_feedback', 
-            R.div className:'slider_feedback_label', "You are#{if @state.stance_segment == 3 then '' else ' a'}"
+            R.div className:'slider_feedback_label',
+              "You are#{if @state.stance_segment == 3 then '' else (if @state.stance_segment == 4 then ' an' else ' a')}"
             R.h1 className:'slider_feedback_result', stance_names[@state.stance_segment]
             # R.div className:'slider_feedback_instructions', 'drag to change'
 

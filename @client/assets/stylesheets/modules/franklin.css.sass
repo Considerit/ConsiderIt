@@ -105,12 +105,12 @@ $proposal_description_width: 670px
     font-weight: 200
     color: $base_text_color
 
-  // .proposal_state_subtitle
-  //   text-align: center
-  //   font-weight: 100
-  //   font-size: 20px
-  //   margin-top: -6px
-  //   color: deemphasize($base_text_color, 20%, $reference: $base_background_color )
+  .proposal_state_subtitle
+    text-align: center
+    font-weight: 100
+    font-size: 20px
+    margin-top: -6px
+    color: deemphasize($base_text_color, 20%, $reference: $base_background_color )
 
   .proposal_state_secondary
     +font-size(1)
@@ -216,7 +216,7 @@ $slider_handle_size: 22px
 
   .slider_feedback_result
     +font-size(6)
-    font-weight: 500
+    font-weight: bold
     color: $decision_board_text_color
 
   // .slider_feedback_instructions
@@ -294,11 +294,11 @@ $slider_handle_size: 22px
 // Point list heading
 .points_heading_label
   text-align: center
-  // margin-bottom: $vertical_baseline
+  margin-bottom: $vertical_baseline/2
   +font-size(6)
 
 .points_on_decision_board .points_heading_label
-  font-weight: 500
+  font-weight: bold
   color: $decision_board_text_color
 
 .points_by_community .points_heading_label
@@ -380,7 +380,7 @@ $slider_handle_size: 22px
     color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
 
 .add_point_drop_target
-  padding: 8px 0 $vertical_baseline/4 $grid_gutter/2
+  padding: 2px 0 $vertical_baseline/4 $grid_gutter/2
   position: relative
 
   .drop_target

@@ -437,7 +437,20 @@ $slider_handle_size: 22px
 .point_content
   +grab_cursor
 
+$community_point_mouth_width: 17px
 .community_point
+  .community_point_mouth
+    position: absolute
+    width: $community_point_mouth_width
+    top: 12px
+    z-index: 1
+
+  &.pro .community_point_mouth
+    left: -$community_point_mouth_width + 1
+  &.con .community_point_mouth
+    right: -$community_point_mouth_width + 1
+    +transform(scaleX(-1))
+
   .point_content
     border-radius: 16px
     padding: $vertical_baseline / 2 $grid_gutter / 2 
@@ -446,19 +459,19 @@ $slider_handle_size: 22px
     color: $peer_text_color
     box-shadow: #B5B5B5 0 1px 1px 0px
     
-    // for bubble mouth
-    &:before
-      position: absolute
-      content: '\25C0'
-      color: $peer_background_color
-      text-shadow: #c4c4c4 -1px 1px 1px
+    // // for bubble mouth
+    // &:before
+    //   position: absolute
+    //   content: '\25C0'
+    //   color: $peer_background_color
+    //   text-shadow: #c4c4c4 -1px 1px 1px
 
-  &.pro .point_content:before
-    left: -11px
+  // &.pro .point_content:before
+  //   left: -11px
 
-  &.con .point_content:before
-    right: -11px
-    +transform(scaleX(-1))
+  // &.con .point_content:before
+  //   right: -11px
+  //   +transform(scaleX(-1))
 
 // Point text
 .point_nutshell

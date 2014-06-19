@@ -111,7 +111,7 @@ $proposal_description_width: 670px
   //   font-size: 20px
   //   margin-top: -6px
   //   color: deemphasize($base_text_color, 20%, $reference: $base_background_color )
-    
+
   .proposal_state_secondary
     +font-size(1)
     position: absolute
@@ -325,13 +325,12 @@ $slider_handle_size: 22px
 
 
 // Decision board
+.user_is_hovering_on_a_drop_target .decision_board_body
+  border-style: solid  
 
 .decision_board_body
   border-radius: 16px
   border: 3px dashed $decision_board_border_color
-
-  &.user_is_hovering_on_a_drop_target
-    border-style: solid  
 
   // a
   //   +link_style( emphasize($decision_board_text_color, 10%, $reference: $decision_board_background_color), $decision_board_background_color, 25%)

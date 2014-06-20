@@ -141,6 +141,7 @@ $proposal_description_width: 670px
   display: inline-block
   height: 100%
   border-top: 1px solid transparent
+  position: relative
 
 $extreme_segment_border_height: 4px
 .histogram_segment[data-segment="0"], .histogram_segment[data-segment="6"]
@@ -167,7 +168,21 @@ $segment_color: #db004d
     .avatar
       background-color: lighten(desaturate($segment_color, 60%), 25%)
 
+    .histogram_segment_label
+      color: $segment_color
+
   &.not_selected
+
+.histogram_segment_label
+  position: absolute
+  bottom: -20px
+  +font-size(-2)
+  font-variant: small-caps
+  text-transform: lowercase
+  font-weight: 200
+  width: 100%
+  text-align: center
+
 
 .histogram_bar
   display: inline-block
@@ -262,6 +277,7 @@ $slider_handle_size: 22px
 
 // the poles of the histogram & slider
 .slider_labels
+  display: none
   width: 134%
   margin-left: -17%
   position: absolute

@@ -826,10 +826,11 @@ Point = React.createClass
       if not @props.includers
         Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
 
-      if @props.location_class == 'community_point'
-        R.img className: 'community_point_mouth', src: "<%= asset_path 'community_point_mouth.png' %>"
 
       R.div className:'point_content',
+        if @props.location_class == 'community_point'
+          R.img className: 'community_point_mouth', src: "<%= asset_path 'community_point_mouth.png' %>"
+
         R.div className:'point_nutshell',
           @props.nutshell
           if @props.text

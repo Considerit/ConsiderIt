@@ -833,7 +833,7 @@ Point = React.createClass
         R.div className:'point_nutshell',
           @props.nutshell
           if @props.text
-            if @state.show_details
+            if @state.show_details || 210 > @props.nutshell.length + @props.nutshell.length
               R.div className: 'point_details', dangerouslySetInnerHTML:{__html: @props.text}
             else
               R.span className: 'point_details_tease', $("<span>#{@props.text[0..210-@props.nutshell.length]}</span>").text() + "..."

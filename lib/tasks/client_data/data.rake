@@ -112,9 +112,40 @@ task :export_gsacrd_data => :environment do
           csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? opinion.stance_name : '-', '', '']
         end
       end
-
-
     end
 
   end
+end
+
+
+task :export_proposal_data => :environment do
+  long_id = '21457d22da'
+  proposal_alias = 'signalize'
+
+  proposal = Proposal.find_by_long_id long_id
+
+  CSV.open("lib/tasks/client_data/export/#{proposal_alias}-users.csv", "w") do |csv|
+    csv << ["username", "email", "date joined", "opinion", "#points"]
+
+    proposal.opinions.published.each do |opinion|
+      user = opinion.user
+      csv << [user.name, user.email, user.created_at, opinion.stance_name, user.points.where(:long_id => long_id).count]
+    end
+  end
+
+  CSV.open("lib/tasks/client_data/export/#{proposal_alias}-points.csv", "w") do |csv|
+    csv << ['proposal', 'type', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
+
+    proposal.points.published.each do |pnt|
+      opinion = pnt.user.opinions.find_by_long_id(pnt.proposal.long_id)
+      csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance_name : '-', pnt.inclusions.count, pnt.comments.count]
+
+      pnt.comments.each do |comment|
+        opinion = comment.user.opinions.find_by_long_id(pnt.proposal.long_id)
+
+        csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? opinion.stance_name : '-', '', '']
+      end
+    end
+  end
+
 end

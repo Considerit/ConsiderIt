@@ -81,8 +81,8 @@ stance_names =
   6 : '100% Entrenched Opposer'
   1 : 'Strong Supporter'
   5 : 'Strong Opposer'
-  2 : 'Supporter'
-  4 : 'Opposer'
+  2 : 'Light Supporter'
+  4 : 'Light Opposer'
   3 : 'Neutral'
 
 ## ##################
@@ -449,7 +449,7 @@ Histogram = React.createClass
       R.tr null, 
         for bars, segment in segments.reverse()
           is_selected = @props.selected_segment_in_histogram[0] == segment
-          R.td className:"histogram_segment #{if is_selected then 'is_selected' else 'not_selected'}", key:segment, onClick: @onSelectSegment, onMouseEnter: @onSelectSegment, 'data-segment':segment, style : { opacity: (if is_selected && !@props.selected_segment_in_histogram[0]? then '1' else '1') },
+          R.td className:"histogram_segment #{if is_selected then 'is_selected' else 'not_selected'}", key:segment, onMouseEnter: @onSelectSegment, 'data-segment':segment, style : { opacity: (if is_selected && !@props.selected_segment_in_histogram[0]? then '1' else '1') },
             R.table null,
               R.tr null,
                 for bar in bars

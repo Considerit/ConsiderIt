@@ -433,7 +433,7 @@ Histogram = React.createClass
       R.tr null, 
         for bars, segment in segments.reverse()
           is_selected = @props.selected_segment_in_histogram[0] == segment
-          R.td className:"histogram_segment", key:segment, onClick: @onSelectSegment, onMouseEnter: @onSelectSegment, 'data-segment':segment, style : { opacity: (if is_selected && !@props.selected_segment_in_histogram[0]? then '1' else '1'), backgroundColor: (if is_selected then '#fafafa' else 'transparent'), borderTopColor: (if is_selected then '#ccc' else '') },
+          R.td className:"histogram_segment #{if is_selected then 'is_selected' else 'not_selected'}", key:segment, onClick: @onSelectSegment, onMouseEnter: @onSelectSegment, 'data-segment':segment, style : { opacity: (if is_selected && !@props.selected_segment_in_histogram[0]? then '1' else '1') },
             R.table null,
               R.tr null,
                 for bar in bars
@@ -918,13 +918,11 @@ Avatar = React.createClass
 
     if @props.img_style
       user = fetch {url: "users/#{@props.user}?partial"}
-      if !user || !user.avatar_file_name
-        filename = "/system/default_avatar/#{@props.img_style}_default-profile-pic.png"
-      else
+      if user && user.avatar_file_name
         filename = "/system/avatars/#{user.id}/#{@props.img_style}/#{user.avatar_file_name}"
 
     attrs = { className: className, id: id, 'data-id': @props.user } 
-    attrs.src = filename if @props.img_style
+    attrs.src = filename if filename
 
     @transferPropsTo @props.tag attrs 
 

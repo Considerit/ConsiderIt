@@ -40,7 +40,6 @@ $full_reasons_width: $decision_board_width + 2 * $point-content-width + 4 * $gri
 $proposer_img_size: 75px
 
 $histogram_width: $body_width //+ 2 * $grid_major
-$default_avatar_in_histogram_color: #bbb
 $proposal_description_width: 670px
 
 
@@ -155,6 +154,17 @@ $extreme_segment_border_height: 4px
 
 .histogram_segment[data-segment="6"]
   border-bottom-color: desaturate(#E67866, 20%)
+
+$segment_color: #db004d
+
+[data-state="results"] .histogram_segment
+  &:hover
+    cursor: pointer
+  &.is_selected
+    background-color: lighten($segment_color, 55%)
+    border-top-color: $segment_color
+
+  &.not_selected
 
 .histogram_bar
   display: inline-block
@@ -326,6 +336,7 @@ $slider_handle_size: 22px
   position: absolute
   width: 100%
   bottom: -12px
+  color: $segment_color
 
 // Mike: I wanted the headers to be centered over the ENTIRE
 // points including avatars, not just bubbles.  But the

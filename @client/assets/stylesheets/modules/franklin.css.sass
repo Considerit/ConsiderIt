@@ -141,16 +141,29 @@ $proposal_description_width: 670px
 .histogram_segment
   display: inline-block
   height: 100%
+  border-top: 1px solid transparent
+
+$extreme_segment_border_height: 4px
+.histogram_segment[data-segment="0"], .histogram_segment[data-segment="6"]
+  position: relative
+  top: $extreme_segment_border_height
+  border-bottom: $extreme_segment_border_height double
+  // padding-top: $extreme_segment_border_height
+
+.histogram_segment[data-segment="0"]
+  border-bottom-color: desaturate(#91C43F, 20%)
+
+.histogram_segment[data-segment="6"]
+  border-bottom-color: desaturate(#E67866, 20%)
 
 .histogram_bar
   display: inline-block
   font-size: 0
   vertical-align: bottom
   +transform(rotate(180deg))    
-  .avatar
-    +transform(rotate(180deg))
 
   .avatar
+    +transform(rotate(180deg))
     border-radius: 50%
     background-color: $default_avatar_in_histogram_color
     background-image: none
@@ -304,24 +317,26 @@ $slider_handle_size: 22px
 
 .points_by_community .points_heading_label
   font-weight: 200
+  position: relative
 
 .points_segment_label
   font-weight: 200
   text-align: center
   +font-size(-2)
-  margin-top: -$vertical_baseline
-  margin-bottom: $vertical_baseline/2
+  position: absolute
+  width: 100%
+  bottom: -12px
 
 // Mike: I wanted the headers to be centered over the ENTIRE
 // points including avatars, not just bubbles.  But the
 // avatars are sticking out on their own, so I simulated
 // a centered look with these -20px and +20px offsets
 .pros_by_community 
-  h1.points_heading_label, .points_segment_label
+  h1.points_heading_label
     position: relative
     left: -20px
 .cons_by_community 
-  h1.points_heading_label, .points_segment_label
+  h1.points_heading_label
     position: relative
     left: 20px
 
@@ -479,18 +494,19 @@ $community_point_mouth_width: 17px
   +font-size(-1)
   color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
-.point_details_tease
-  padding-left: 10px
+.point_details_tease, .point_details 
+  //padding-left: 10px
   font-weight: 200
+  display: block
   color: deemphasize($base_text_color, 40%, $reference: $base_background_color)
 
-  &:hover
-    text-decoration: underline
-    cursor: pointer
+.point_details_tease:hover
+  text-decoration: underline
+  cursor: pointer
 
-.point_details 
-  +font-size(-2)
-  padding-left: 10px
+// .point_details 
+  // +font-size(-2)
+  // padding-left: 10px
 
 // The button that shows # comments when hovering on a point (disabled for now)
 // .open_point_link

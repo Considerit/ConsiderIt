@@ -402,6 +402,22 @@ Histogram = React.createClass
 
       opinions_in_segment[segment] += 1
 
+    # make sure that the extreme segment with fewest opinions has as many columns as the other extreme
+    if segments[0].length != segments[6].length
+      if segments[0].length > segments[6].length then [bigger, smaller] = [segments[0], segments[6]] else [bigger, smaller] = [segments[6], segments[0]]
+      
+      all_opinions_in_smaller = _.flatten(smaller)
+
+      console.log all_opinions_in_smaller.length
+
+      smaller.push([]) while smaller.length < bigger.length
+
+      for column in smaller
+        column.pop() while column.length > 0
+
+      for opinion, idx in all_opinions_in_smaller
+        smaller[idx%smaller.length].push opinion
+
     num_columns = _.flatten(_.values(segments), true).length
 
     [num_columns, segments, avatar_size]

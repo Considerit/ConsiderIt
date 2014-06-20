@@ -689,8 +689,11 @@ CommunityPoints = React.createClass
 
   render : ->
 
+    points = fetch({ url: 'all_points' })
+    newpoint_threshold = (_.sortBy points, (pnt) => - pnt.id)[Math.ceil(points.length / 10)]?.id
+
     #filter to pros or cons & down to points that haven't been included
-    points = _.filter fetch({ url: 'all_points' }), (pnt) =>
+    points = _.filter points, (pnt) =>
       is_correct_valence = pnt.is_pro == (@props.valence == 'pro')
       has_not_been_included = @props.state == 'results' || !_.contains(@props.included_points, pnt.id)
       is_correct_valence && has_not_been_included
@@ -732,6 +735,7 @@ CommunityPoints = React.createClass
             comment_count: point.comment_count
             author: point.user_id
             includers: point.includers
+            is_new: point.id > newpoint_threshold
             # state: @props.state
             location_class : 'community_point'
 
@@ -813,7 +817,8 @@ Point = React.createClass
     R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,
 
       @renderIncluders()
-      if Math.random() < .3
+      
+      if @props.is_new
         @renderNewIndicator2()
 
       if not @props.includers

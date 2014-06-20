@@ -690,7 +690,9 @@ CommunityPoints = React.createClass
   render : ->
 
     points = fetch({ url: 'all_points' })
-    newpoint_threshold = (_.sortBy points, (pnt) => - pnt.id)[Math.ceil(points.length / 10)]?.id
+    # Grab the 10th percentile
+    newpoint_threshold = (_.sortBy points, (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
+    newpoint_threshold = (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or new Date()
 
     #filter to pros or cons & down to points that haven't been included
     points = _.filter points, (pnt) =>
@@ -735,7 +737,7 @@ CommunityPoints = React.createClass
             comment_count: point.comment_count
             author: point.user_id
             includers: point.includers
-            is_new: point.id > newpoint_threshold
+            is_new: Date.parse(point.created_at) > newpoint_threshold
             # state: @props.state
             location_class : 'community_point'
 
@@ -806,9 +808,9 @@ Point = React.createClass
   renderNewIndicator2 : ->
     if @props.includers
       s = @includersStyle
-      side_offset = s.side_offset + 15
+      side_offset = s.side_offset + 10
       left_right = if @props.valence == 'pro' then 'left' else 'right'
-      style = {'position': 'absolute', color: 'rgb(255,22,3)', 'font-size': '11px', 'top':'55px', 'background-color': 'white'}
+      style = {'position': 'absolute', color: 'rgb(255,22,3)', 'font-size': '11px', 'top':'30px', 'background-color': 'white'}
       style[left_right] = "#{-side_offset}"
       R.span {style: style},
         '*New*'

@@ -826,7 +826,6 @@ Point = React.createClass
       if not @props.includers
         Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
 
-
       R.div className:'point_content',
         if @props.location_class == 'community_point'
           R.img className: 'community_point_mouth', src: "<%= asset_path 'community_point_mouth.png' %>"
@@ -834,7 +833,7 @@ Point = React.createClass
         R.div className:'point_nutshell',
           @props.nutshell
           if @props.text
-            if @state.show_details || 210 > @props.nutshell.length + @props.nutshell.length
+            if @state.show_details || (@props.nutshell.length + @props.text.length) < 210
               R.div className: 'point_details', dangerouslySetInnerHTML:{__html: @props.text}
             else
               R.span className: 'point_details_tease', $("<span>#{@props.text[0..210-@props.nutshell.length]}</span>").text() + "..."

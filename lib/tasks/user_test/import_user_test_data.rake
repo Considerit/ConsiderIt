@@ -10,7 +10,8 @@ namespace :user_test do
 
     proposal.name = "Should Facebook stop doing business with advertisers and charge $10 a year per user?"
     proposal.description = "<p>Facebook currently makes money by selling ad space throughout Facebook, and selling user data to advertisers.  Under this new model, Facebook would turn into a subscription service.  Facebook would stop all advertisements in Facebook and would also stop selling user data to advertisers.</p><p>This initiative would require facebook to stop selling user data, and replace it with a user fee.</p>"
-    proposal.category = 'Facebook user survey'
+    proposal.category = 'Facebook Community Outreach'
+    proposal.designator = ''
 
     proposal.save
 
@@ -21,12 +22,12 @@ namespace :user_test do
     ]
 
     cons = [
-      ['Facebook gives a place for struggling students to vent about teachers who are do bad work.', ''],
       ['I’ve never paid for internet services in my life and don’t think I should have to anyway.', ''],
+      ['Facebook should be free, like a public utility', ''],
       ['$10 would keep young people from joining. This is the group that will make the Facebook of tomorrow.', ''],
       ['Facebook would delete my page if I forgot to pay!', ''],
       ['$10 is too much money to pay for a silly website.', ''],
-      ['Facebook should be free, like a public utility', ''],
+      ['Facebook gives a place for struggling students to vent about teachers who are do bad work.', ''],
       ['They\'ll just raise the price.', 'Once they have our credit cards on file, they\'ll be able to jack the prices up.' ],
       ['Credit card payment will probably be done automatically, opt out style.', ''],
       ['Will drive away some of my friends and I won\'t have as much fun.', 'Bye bye friends :-('],

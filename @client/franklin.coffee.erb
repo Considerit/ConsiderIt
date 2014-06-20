@@ -77,8 +77,8 @@ getStanceSegment = (value) ->
 stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 stance_names = 
-  0 : 'Diehard Supporter'
-  6 : 'Diehard Opposer'
+  0 : '100% Diehard Supporter'
+  6 : '100% Diehard Opposer'
   1 : 'Strong Supporter'
   5 : 'Strong Opposer'
   2 : 'Supporter'
@@ -559,7 +559,7 @@ Slider = React.createClass
         R.div props_for_slider_handle, 
           R.div className: 'the_handle', onClick: @props.toggleState
           R.img className:'bubblemouth', src: bubblemouth_src
-          R.div className:'slider_feedback', 
+          R.div className:'slider_feedback', 'data-stance-segment': @state.stance_segment, 
             R.div className:'slider_feedback_label',
               "You are#{if @state.stance_segment == 3 then '' else (if @state.stance_segment == 4 then ' an' else ' a')}"
             R.div className:'slider_feedback_result', stance_names[@state.stance_segment]

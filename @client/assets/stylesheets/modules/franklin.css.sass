@@ -140,16 +140,29 @@ $segment_color: #db004d
 
   &.not_selected
 
-.histogram_segment_label
+[data-segment="0"] .histogram_segment_pole
+  color: $extreme_opposer_color
+  left: -50px
+
+[data-segment="6"] .histogram_segment_pole
+  color: $extreme_supporter_color  
+  right: -50px
+
+
+.histogram_segment_label, .histogram_segment_pole
   position: absolute
-  bottom: -20px
-  +font-size(-2)
   font-variant: small-caps
   text-transform: lowercase
-  font-weight: 200
+  +font-size(-2)
+  bottom: -20px
+
+.histogram_segment_label
   width: 100%
   text-align: center
+  font-weight: 200
 
+.histogram_segment_pole
+  font-weight: 600
 
 .histogram_bar
   display: inline-block

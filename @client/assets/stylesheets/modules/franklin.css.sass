@@ -39,7 +39,6 @@ $full_reasons_width: $decision_board_width + 2 * $point-content-width + 4 * $gri
 
 $proposer_img_size: 75px
 
-$histogram_width: $body_width //+ 2 * $grid_major
 $proposal_description_width: 670px
 
 
@@ -91,38 +90,6 @@ $proposal_description_width: 670px
     
 
 /////////////////////
-// TOGGLE REGION
-// State transitions between crafting and results
-
-.toggle_state_region
-  text-align: center
-  position: relative
-  margin-top: 2 * $vertical_baseline
-
-  .proposal_state_primary
-    +font-size(11)
-    font-weight: 200
-    color: $base_text_color
-
-  .proposal_state_subtitle
-    text-align: center
-    font-weight: 100
-    font-size: 20px
-    margin-top: -6px
-    color: deemphasize($base_text_color, 20%, $reference: $base_background_color )
-
-  .proposal_state_secondary
-    +font-size(1)
-    position: absolute
-    top: 33px
-    right: 62px
-
-    a 
-      text-decoration: underline
-      +link_style($decision_board_text_color, $base_background_color, 2%)
-
-
-/////////////////////
 // FEELINGS REGION
 // Integrated histogram and slider widget
 
@@ -131,7 +98,7 @@ $proposal_description_width: 670px
 .feelings_region
   margin: $vertical_baseline auto 0 auto
   position: relative
-  width: $histogram_width
+  width: $body_width
 
 .histogram
   table, td, tr
@@ -143,18 +110,18 @@ $proposal_description_width: 670px
   border-top: 1px solid transparent
   position: relative
 
-$extreme_segment_border_height: 4px
-.histogram_segment[data-segment="0"], .histogram_segment[data-segment="6"]
-  position: relative
-  top: $extreme_segment_border_height
-  border-bottom: $extreme_segment_border_height double
-  // padding-top: $extreme_segment_border_height
+// $extreme_segment_border_height: 4px
+// .histogram_segment[data-segment="0"], .histogram_segment[data-segment="6"]
+//   position: relative
+//   top: $extreme_segment_border_height
+//   border-bottom: $extreme_segment_border_height double
+//   // padding-top: $extreme_segment_border_height
 
-.histogram_segment[data-segment="0"]
-  border-bottom-color: $extreme_opposer_color
+// .histogram_segment[data-segment="0"]
+//   border-bottom-color: $extreme_opposer_color
 
-.histogram_segment[data-segment="6"]
-  border-bottom-color: $extreme_supporter_color
+// .histogram_segment[data-segment="6"]
+//   border-bottom-color: $extreme_supporter_color
 
 $segment_color: #db004d
 
@@ -212,7 +179,6 @@ $segment_color: #db004d
 .slider_base
   margin: auto
   height: 4px
-  width: $histogram_width //- 2 * $grid_major
   border-radius: 10px
   background-color: desaturate($decision_board_text_color, 100%)
 

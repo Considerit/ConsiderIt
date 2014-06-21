@@ -750,13 +750,9 @@ Point = React.createClass
     # Draw the includers.  This code is ugly cause I don't know
     # coffeescript very good.  Let's fix it!
     if @props.includers
-      # Move the author to the end of the list so that he appears on
-      # the top of the stack
-      author_index = @props.includers.indexOf(@props.author)
-      includers = @props.includers.slice()  # Copy the list so we can mutate it
-      includers.reverse()                   # Maybe kinda puts new people towards the end
-      includers = includers.splice(author_index, 1)  # Remove the author
-      includers.push(@props.author)         # And put her at the end (on top)
+      # Put author on top of stack
+      includers = _.without @props.includers, @props.author
+      includers.push @props.author
       
       s = @includersStyle
 
@@ -765,16 +761,16 @@ Point = React.createClass
 
       R.div className:'includers', 
         for includer in includers
-          i = i - 1
+          i -= 1
           curr_column = Math.floor(i / s.rows)
           side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
           top_offset = (i % s.rows) * s.dy + 2
           left_right = if @props.valence == 'pro' then 'left' else 'right'
-          style = {'position': 'absolute', 'top': "#{top_offset}px"}
-          style[left_right] = "#{-side_offset}px"
+          style = { top: top_offset }
+          style[left_right] = -side_offset
           
           # Finally draw the guy
-          Avatar tag: R.a, user: includer, className: 'point_author_avatar', style: style
+          Avatar tag: R.a, user: includer, className: "point_author_avatar", style: style
 
   renderNewIndicator : ->
     if @props.includers

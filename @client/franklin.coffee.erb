@@ -170,14 +170,13 @@ Proposal = React.createClass
   setStickyHeader : ->
     # Sticky decision board. It is here because the calculation of offset top would 
     # be off if we did it in DidMount before all the data has been fetched from server
-    if @props.state == 'crafting'
-      _.delay => 
-        $opinion = $(@getDOMNode()).find('.opinion_region')
-        $opinion.headroom
-          offset: $opinion.offset().top
-          onNotTop : => @setState { scrolled_past_decision_board: true } 
-          onTop : => @setState { scrolled_past_decision_board: false } 
-      , 1000  # delay initialization to let the rest of the dom load so that the offset is calculated properly
+    _.delay => 
+      $opinion = $(@getDOMNode()).find('.opinion_region')
+      $opinion.headroom
+        offset: $opinion.offset().top
+        onNotTop : => @setState { scrolled_past_decision_board: true } 
+        onTop : => @setState { scrolled_past_decision_board: false } 
+    , 1000  # delay initialization to let the rest of the dom load so that the offset is calculated properly
 
   ##
   # State-dependent styling
@@ -420,6 +419,10 @@ Histogram = React.createClass
                     for opinion in bar
                       Avatar tag: R.span, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, opacity: if @props.users_to_highlight_in_histogram && !_.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '.2' else '1.0'}
             R.div className:"histogram_segment_label", if segment == 3 then '|' else if stance_names[segment].indexOf('Entrenched') > -1 then 'entrenched' else stance_names[segment]
+            if segment == 0
+              R.div className:"histogram_segment_pole", 'Support'
+            else if segment == 6
+              R.div className:"histogram_segment_pole", 'Oppose'
 
 ##
 # Slider

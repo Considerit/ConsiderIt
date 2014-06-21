@@ -173,11 +173,11 @@ Proposal = React.createClass
     # Sticky decision board. It is here because the calculation of offset top would 
     # be off if we did it in DidMount before all the data has been fetched from server
     _.delay => 
-      $opinion = $(@getDOMNode()).find('.opinion_region')
-      $opinion.headroom
-        offset: $opinion.offset().top
-        onNotTop : => @setState { scrolled_past_decision_board: true } 
-        onTop : => @setState { scrolled_past_decision_board: false } 
+      $sticky_head_el = $(@getDOMNode()).find('.slider_base .the_handle')
+      $(@getDOMNode()).headroom
+        offset: $sticky_head_el.offset().top - 5
+        onNotTop : => @setState { sticky_mode: true } 
+        onTop : => @setState { sticky_mode: false } 
     , 1000  # delay initialization to let the rest of the dom load so that the offset is calculated properly
 
   ##
@@ -272,6 +272,7 @@ Proposal = React.createClass
           initial_stance: @props.data.initial_stance
           state: @props.state
           toggleState: @toggleState
+          sticky_mode : @state.sticky_mode
 
       #reasons
       R.div className:'reasons_region',
@@ -291,7 +292,7 @@ Proposal = React.createClass
           included_points : @props.data.included_points
           toggleState: @toggleState
           points: fetch { url: 'all_points' }
-          scrolled_past_decision_board : @state.scrolled_past_decision_board
+          sticky_mode : @state.sticky_mode
 
         #community cons
         CommunityPoints 
@@ -522,7 +523,11 @@ Slider = React.createClass
 
     slider_feedback_percent = if @state.stance_segment == 3 then "Neutral" else "#{Math.floor(Math.abs(@state.stance) * 100)}% #{if @state.stance_segment < 3 then 'Support' else 'Oppose'}"
 
-    R.div className: 'slider',
+    slider_style = {}
+    if @props.sticky_mode && @props.state == 'crafting'
+      slider_style = { position: 'fixed', top: 40, backgroundColor: 'white', zIndex: 100 }
+
+    R.div className: 'slider', style: slider_style, 
       R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
         R.div props_for_slider_handle, 
           R.div className: 'the_handle', onClick: @props.toggleState
@@ -555,10 +560,11 @@ DecisionBoard = React.createClass
       over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
 
   render : ->
-    sticky_header = @props.scrolled_past_decision_board && @props.state == 'crafting'
+    sticky_header = @props.sticky_mode && @props.state == 'crafting'
     opinion_region_style = 
       position: if sticky_header then 'fixed' else ''
-      top: if sticky_header then 0 else ''
+      top: if sticky_header then 85 else ''
+
 
     R.div className:'opinion_region', style: opinion_region_style,
       R.div className:'decision_board_body',
@@ -724,7 +730,7 @@ CommunityPoints = React.createClass
               # state: @props.state
               location_class : 'community_point'
         else
-          R.li className: 'empty_point', "No #{label}s"
+          R.li className: 'empty_point', "No #{label}s listed"
 ##
 # Point
 # A single point in a list. 

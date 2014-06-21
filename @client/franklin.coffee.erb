@@ -77,13 +77,22 @@ getStanceSegment = (value) ->
 stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 stance_names = 
-  0 : '100% Entrenched Supporter'
-  6 : '100% Entrenched Opposer'
-  1 : 'Strong Supporter'
-  5 : 'Strong Opposer'
-  2 : 'Light Supporter'
-  4 : 'Light Opposer'
+  0 : '100% Entrenched Support'
+  6 : '100% Entrenched Oppose'
+  1 : 'Firm Support'
+  5 : 'Firm Oppose'
+  2 : 'Lean Support'
+  4 : 'Lean Oppose'
   3 : 'Neutral'
+
+stance_explanations = 
+  0 : 'Nothing will change your mind'
+  6 : 'Nothing will change your mind'
+  1 : 'You are confident this is good'
+  5 : 'You are confident this is bad'
+  2 : 'This seems good to you'
+  4 : 'This seems bad to you'
+  3 : 'You could go either way'
 
 ## ##################
 # React Components
@@ -481,7 +490,6 @@ Slider = React.createClass
     $('.slider_feedback_label').html('&nbsp;')
     $('.slider_feedback_result').html('Drag Your Overall Opinion')
 
-
   # We have a separate applyStyle here from Proposal because the Slider component
   # gets rerendered more frequently than the Proposal component (i.e. when the 
   # slider is being slid...forcing the entire Propoosal component to rerender
@@ -524,21 +532,20 @@ Slider = React.createClass
           # update the stance segment if it has changed. This facilitates the feedback atop
           # the slider changing from e.g. 'strong supporter' to 'neutral'
           segment = getStanceSegment ui.value
-          if @state.stance_segment != segment
-            @setState
-              stance_segment : segment
-              stance : ui.value
+          #if @state.stance_segment != segment
+          @setState
+            stance_segment : segment
+            stance : ui.value
 
   getSliderValue : -> $(@getDOMNode()).find('.ui-slider-handle').position().left / $el.find('.slider_base').innerWidth()
 
   render : ->
-    props_for_slider_handle = 
-      className:'ui-slider-handle' #jquery UI slider will pick an el with this class name up
+
+    props_for_slider_handle = { className:'ui-slider-handle' } #jquery UI slider will pick an el with this class name up
     if @props.state == 'results'    
       _.extend props_for_slider_handle, 
         onClick: @props.toggleState
         style: { cursor : 'pointer' } 
-
 
     # can't be dynamically set b/c of integration with asset fingerprinting...
     if @state.stance_segment == 3
@@ -552,16 +559,16 @@ Slider = React.createClass
       else
         bubblemouth_src = "<%= asset_path 'bubblemouth-results.png' %>"
 
+    slider_feedback_percent = if @state.stance_segment == 3 then "Neutral" else "#{Math.floor(Math.abs(@state.stance) * 100)}% #{if @state.stance_segment < 3 then 'Support' else 'Oppose'}"
+
     R.div className: 'slider',
       R.div className:'slider_base', 
         R.div props_for_slider_handle, 
           R.div className: 'the_handle', onClick: @props.toggleState
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div className:'slider_feedback', 'data-stance-segment': @state.stance_segment, 
-            R.div className:'slider_feedback_label',
-              "You are#{if @state.stance_segment == 3 then '' else (if @state.stance_segment == 4 then ' an' else ' a')}"
-            R.div className:'slider_feedback_result', stance_names[@state.stance_segment]
-            # R.div className:'slider_feedback_instructions', 'drag to change'
+            R.div className:'slider_feedback_result', slider_feedback_percent
+            R.div className:'slider_feedback_label', stance_explanations[@state.stance_segment]
 
       R.div className:'slider_labels', 
         R.h1 className:"histogram_label histogram_label_support", 'Supporter'

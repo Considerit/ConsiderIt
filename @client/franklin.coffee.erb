@@ -150,18 +150,6 @@ Proposal = React.createClass
   # This requires cross-component communication. By handling it here in the parent: 
   #    + we eliminate confusing intercomponent communication and callback passing
   #    - it might be unintuitive to find this handler here and not in Point or CommunityPoints
-  # 
-  # Another decision point is whether to do the work of manipulating the histogram here, or somehow
-  # alert the Histogram component to the fact that certain users should be highlighted. Both approaches
-  # have strengths and weaknesses:
-  #    1) Handle histogram here just using instance variable and jQuery
-  #       + Everything in a single place
-  #       - Code is susceptible to weird edge cases because it avoids tracking this state with state or props. 
-  #         For example, if we switch to crafting somehow without leaving the point.
-  #
-  #    2) Set props on Proposal that only histogram responds to
-  #       + Application state remains tracked by props and state, the React way. Probably less error prone
-  #       - Could be performance intense if other proposal components have to get rerendered (even if just in virtual DOM)
   setPointMouseover : ->
     $el = $(@getDOMNode())
 
@@ -174,26 +162,9 @@ Proposal = React.createClass
           # get includers of the point
           # TODO: need to add this user if they've included this point (might be already taken care of depending on how saving opinions works)
           includers = point.includers
-
-          ####
-          # implement option (1) above:
-
-          # $histogram = $el.find('.histogram')
-          # @$includers_to_highlight = $histogram.find ("#avatar-#{uid}" for uid in includers).join(',')
-          # @$includers_to_highlight.css { border: '2px solid red' }
-
-          ####
-          # implement option (2) above
           @setState { users_to_highlight_in_histogram : includers }
 
         else if ev.type == 'mouseleave'
-          ####
-          # implement option (1) above
-
-          #@$includers_to_highlight.css { border: '' }
-
-          ####
-          # implement option (2) above
           @setState { users_to_highlight_in_histogram : null }
 
   setStickyHeader : ->

@@ -739,13 +739,13 @@ Point = React.createClass
     $(@getDOMNode()).click (ev) => 
       @setState { show_details : !@state.show_details }
 
-  includersStyle : {
-        rows: 8
-        dx: 2
-        dy: 5
-        col_gap: 8
-        side_offset: 24 + 14 + 1
-        }
+  includersStyle :
+    rows: 8
+    dx: 2
+    dy: 5
+    col_gap: 8
+    side_offset: 24 + 14 + 1
+        
   renderIncluders : ->
     # Draw the includers.  This code is ugly cause I don't know
     # coffeescript very good.  Let's fix it!
@@ -764,7 +764,7 @@ Point = React.createClass
       i = @props.includers.length
 
       R.div className:'includers', 
-        for includer in @props.includers
+        for includer in includers
           i = i - 1
           curr_column = Math.floor(i / s.rows)
           side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
@@ -776,20 +776,7 @@ Point = React.createClass
           # Finally draw the guy
           Avatar tag: R.a, user: includer, className: 'point_author_avatar', style: style
 
-
   renderNewIndicator : ->
-    if @props.includers
-      s = @includersStyle
-      n = @props.includers.length
-      column_gap_offset = Math.floor(n / s.rows) * s.col_gap
-      side_offset = s.side_offset + column_gap_offset + n * s.dx + 35
-      left_right = if @props.valence == 'pro' then 'left' else 'right'
-      style = {'position': 'absolute', color: 'orange', 'font-size': '11px', 'top':'5px'}
-      style[left_right] = "#{-side_offset}"
-      R.span {style: style},
-        '*New*'
-
-  renderNewIndicator2 : ->
     if @props.includers
       s = @includersStyle
       side_offset = s.side_offset + 10
@@ -803,7 +790,7 @@ Point = React.createClass
     R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,
         
       if @props.location_class == 'community_point' && @props.is_new
-        @renderNewIndicator2()
+        @renderNewIndicator()
 
       if @props.location_class == 'community_point'
         @renderIncluders()

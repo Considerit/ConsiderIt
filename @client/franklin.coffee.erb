@@ -153,7 +153,7 @@ Proposal = React.createClass
   setPointMouseover : ->
     $el = $(@getDOMNode())
 
-    $el.on 'mouseenter mouseleave', '.points_by_community .point_content', (ev) => 
+    $el.on 'mouseenter mouseleave', '.points_by_community .includers', (ev) => 
       if @props.state == 'results'
         if ev.type == 'mouseenter'
           point_id = $(ev.currentTarget).parent().data('id')
@@ -762,17 +762,19 @@ Point = React.createClass
 
       # Now we'll go through the list from back to front
       i = @props.includers.length
-      for includer in @props.includers
-        i = i - 1
-        curr_column = Math.floor(i / s.rows)
-        side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
-        top_offset = (i % s.rows) * s.dy + 2
-        left_right = if @props.valence == 'pro' then 'left' else 'right'
-        style = {'position': 'absolute', 'top': "#{top_offset}px"}
-        style[left_right] = "#{-side_offset}px"
-        
-        # Finally draw the guy
-        Avatar tag: R.a, user: includer, className: 'point_author_avatar', style: style
+
+      R.div className:'includers', 
+        for includer in @props.includers
+          i = i - 1
+          curr_column = Math.floor(i / s.rows)
+          side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
+          top_offset = (i % s.rows) * s.dy + 2
+          left_right = if @props.valence == 'pro' then 'left' else 'right'
+          style = {'position': 'absolute', 'top': "#{top_offset}px"}
+          style[left_right] = "#{-side_offset}px"
+          
+          # Finally draw the guy
+          Avatar tag: R.a, user: includer, className: 'point_author_avatar', style: style
 
 
   renderNewIndicator : ->
@@ -799,13 +801,12 @@ Point = React.createClass
 
   render : -> 
     R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,
-
-      @renderIncluders()
-      
-      if @props.is_new
+      if @props.location_class == 'community_point'
+        @renderIncluders()
+        
+      if @props.location_class == 'community_point' && @props.is_new
         @renderNewIndicator2()
-
-      if not @props.includers
+      else
         Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
 
       R.div className:'point_content',

@@ -155,17 +155,19 @@ Proposal = React.createClass
 
     $el.on 'mouseenter mouseleave', '.points_by_community .includers', (ev) => 
       if @props.state == 'results'
-        if ev.type == 'mouseenter'
-          point_id = $(ev.currentTarget).parent().data('id')
-          point = fetch { url: "points/#{point_id}?no_comments" }
+        point_id = $(ev.currentTarget).parent().data('id')
+        point = fetch { url: "points/#{point_id}?no_comments" }
 
+        if ev.type == 'mouseenter'
           # get includers of the point
           # TODO: need to add this user if they've included this point (might be already taken care of depending on how saving opinions works)
-          includers = point.includers
-          @setState { users_to_highlight_in_histogram : includers }
+          @setState { users_to_highlight_in_histogram : point.includers }
 
         else if ev.type == 'mouseleave'
-          @setState { users_to_highlight_in_histogram : null }
+          _.delay =>
+            if @state.users_to_highlight_in_histogram == point.includers
+              @setState({ users_to_highlight_in_histogram : null }) 
+          , 200
 
   setStickyHeader : ->
     # Sticky decision board. It is here because the calculation of offset top would 
@@ -744,53 +746,52 @@ Point = React.createClass
     dx: 2
     dy: 5
     col_gap: 8
-    side_offset: 24 + 14 + 1
+    side_offset: 34 + 14 + 1
         
   renderIncluders : ->
     # Draw the includers.  This code is ugly cause I don't know
     # coffeescript very good.  Let's fix it!
     if @props.includers
-      # Put author on top of stack
       includers = _.without @props.includers, @props.author
-      includers.push @props.author
       
       s = @includersStyle
 
       # Now we'll go through the list from back to front
       i = @props.includers.length
 
-      R.div className:'includers', 
-        for includer in includers
-          i -= 1
-          curr_column = Math.floor(i / s.rows)
-          side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
-          top_offset = (i % s.rows) * s.dy + 2
-          left_right = if @props.valence == 'pro' then 'left' else 'right'
-          style = { top: top_offset }
-          style[left_right] = -side_offset
-          
-          # Finally draw the guy
-          Avatar tag: R.a, user: includer, className: "point_author_avatar", style: style
+      for includer in includers
+        i -= 1
+        curr_column = Math.floor(i / s.rows)
+        side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
+        top_offset = (i % s.rows) * s.dy + 20
+        left_right = if @props.valence == 'pro' then 'left' else 'right'
+        style = { top: top_offset }
+        style[left_right] = -side_offset
+
+        # Finally draw the guy
+        Avatar tag: R.a, user: includer, className: "point_includer_avatar", style: style
 
   renderNewIndicator : ->
     if @props.includers
       s = @includersStyle
-      side_offset = s.side_offset + 10
+      side_offset = s.side_offset
       left_right = if @props.valence == 'pro' then 'left' else 'right'
-      style = {'position': 'absolute', color: 'rgb(255,22,3)', 'font-size': '11px', 'top':'30px', 'background-color': 'white'}
+      style = {'position': 'absolute', color: 'rgb(255,22,3)', 'font-size': '11px', 'top':'-6px', 'background-color': 'white'}
       style[left_right] = "#{-side_offset}"
       R.span {style: style},
         '*New*'
 
   render : -> 
     R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,
-        
+  
       if @props.location_class == 'community_point' && @props.is_new
         @renderNewIndicator()
 
-      if @props.location_class == 'community_point'
-        @renderIncluders()
-      else
+      R.div className:'includers', 
+
+        if @props.location_class == 'community_point'
+          @renderIncluders()
+
         Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
 
       R.div className:'point_content',
@@ -803,7 +804,7 @@ Point = React.createClass
             if @state.show_details || (@props.nutshell.length + @props.text.length) < 210
               R.div className: 'point_details', dangerouslySetInnerHTML:{__html: @props.text}
             else
-              R.span className: 'point_details_tease', $("<span>#{@props.text[0..210-@props.nutshell.length]}</span>").text() + "..."
+              R.span className: 'point_details_tease', $("<span>#{@props.text[0..210-@props.nutshell.length]}</span>").text() + " >>"
 
         # R.a className:'open_point_link',
         #   "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"

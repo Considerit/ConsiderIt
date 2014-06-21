@@ -559,8 +559,8 @@ Slider = React.createClass
             R.div className:'slider_feedback_label', stance_explanations[@state.stance_segment]
 
       R.div className:'slider_labels', 
-        R.h1 className:"histogram_label histogram_label_support", 'Supporter'
-        R.h1 className:"histogram_label histogram_label_oppose", 'Opposer'
+        R.h1 className:"histogram_label histogram_label_support", 'Support'
+        R.h1 className:"histogram_label histogram_label_oppose", 'Oppose'
 
 
 ##
@@ -996,10 +996,10 @@ save = (action) ->
 
       action.data.includers = [current_user_id=-2]
       all_points["points/#{id}?no_comments"] = action.data
-      included_points = _.clone proposal_data.included_points
+      included_points = _.clone proposal_data.data.included_points
       included_points.push action.data.id
 
-      proposal_data.included_points = included_points
+      proposal_data.data.included_points = included_points
 
     when 'point_inclusion'
       proposal_data.data.included_points.push action.data

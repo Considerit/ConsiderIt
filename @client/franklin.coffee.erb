@@ -285,19 +285,6 @@ Proposal = React.createClass
         R.div className: 'proposal_category', "#{@props.data.proposal.category} #{@props.data.proposal.designator}"
         R.h1 className:'proposal_heading', @props.data.proposal.name
         R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: @props.data.proposal.description}
-
-      #toggle
-      # R.div className:'toggle_state_region',
-      #   R.h1 className:'proposal_state_primary',
-      #     if @props.state == 'crafting' then 'Give your Opinion' else 'Explore all Opinions'
-
-      #     R.h4 className: 'proposal_state_subtitle', 
-      #       if @props.state == 'crafting' then 'Describe how you feel about this and why' else 'What people feel and why'
-
-      #   R.div className:'proposal_state_secondary', 
-      #     'or '
-      #     R.a onClick: @toggleState,
-      #       if @props.state != 'crafting' then 'Give Own Opinion' else 'Explore all Opinions'
     
       #feelings
       R.div className:'feelings_region',
@@ -450,7 +437,6 @@ Histogram = React.createClass
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH)/2
     margin_adjustment -= - (segments[0].length - segments[6].length) / 2 * avatar_size #make sure that the neutral segment is centered
 
-
     R.table className: 'histogram', onClick:@onClickHistogram, onMouseLeave: @onSelectSegment, style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
       R.tr null, 
         for bars, segment in segments.reverse()
@@ -462,7 +448,7 @@ Histogram = React.createClass
                   R.td className:"histogram_bar", style: {width: avatar_size},
                     for opinion in bar
                       Avatar tag: R.span, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, opacity: if @props.users_to_highlight_in_histogram && !_.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '.2' else '1.0'}
-            R.div className:"histogram_segment_label", if segment == 3 then '' else if stance_names[segment].indexOf('Entrenched') > -1 then 'entrenched' else stance_names[segment]
+            R.div className:"histogram_segment_label", if segment == 3 then '|' else if stance_names[segment].indexOf('Entrenched') > -1 then 'entrenched' else stance_names[segment]
 
 ##
 # Slider
@@ -479,7 +465,7 @@ Slider = React.createClass
     @setInitialSliderLabel()
 
   componentDidUpdate : (prev_props, prev_state) ->
-    @setSlidability()
+    @setSlidability()    
 
   ##
   # Teach the user how to Drag; disappears when they prove they know how.
@@ -540,7 +526,9 @@ Slider = React.createClass
   getSliderValue : -> $(@getDOMNode()).find('.ui-slider-handle').position().left / $el.find('.slider_base').innerWidth()
 
   render : ->
-
+    #todo: this is super super nasty, do not access another component's info...
+    slider_base_width = HISTOGRAM_WIDTH #$('.histogram').width()
+    # /ugh
     props_for_slider_handle = { className:'ui-slider-handle' } #jquery UI slider will pick an el with this class name up
     if @props.state == 'results'    
       _.extend props_for_slider_handle, 
@@ -562,7 +550,7 @@ Slider = React.createClass
     slider_feedback_percent = if @state.stance_segment == 3 then "Neutral" else "#{Math.floor(Math.abs(@state.stance) * 100)}% #{if @state.stance_segment < 3 then 'Support' else 'Oppose'}"
 
     R.div className: 'slider',
-      R.div className:'slider_base', 
+      R.div className:'slider_base', style : {width: slider_base_width, marginLeft: -(slider_base_width - HISTOGRAM_WIDTH) / 2}, 
         R.div props_for_slider_handle, 
           R.div className: 'the_handle', onClick: @props.toggleState
           R.img className:'bubblemouth', src: bubblemouth_src

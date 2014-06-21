@@ -526,9 +526,6 @@ Slider = React.createClass
   getSliderValue : -> $(@getDOMNode()).find('.ui-slider-handle').position().left / $el.find('.slider_base').innerWidth()
 
   render : ->
-    #todo: this is super super nasty, do not access another component's info...
-    slider_base_width = HISTOGRAM_WIDTH #$('.histogram').width()
-    # /ugh
     props_for_slider_handle = { className:'ui-slider-handle' } #jquery UI slider will pick an el with this class name up
     if @props.state == 'results'    
       _.extend props_for_slider_handle, 
@@ -550,13 +547,13 @@ Slider = React.createClass
     slider_feedback_percent = if @state.stance_segment == 3 then "Neutral" else "#{Math.floor(Math.abs(@state.stance) * 100)}% #{if @state.stance_segment < 3 then 'Support' else 'Oppose'}"
 
     R.div className: 'slider',
-      R.div className:'slider_base', style : {width: slider_base_width, marginLeft: -(slider_base_width - HISTOGRAM_WIDTH) / 2}, 
+      R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
         R.div props_for_slider_handle, 
           R.div className: 'the_handle', onClick: @props.toggleState
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div className:'slider_feedback', 'data-stance-segment': @state.stance_segment, 
-            R.div className:'slider_feedback_result', slider_feedback_percent
-            R.div className:'slider_feedback_label', stance_explanations[@state.stance_segment]
+            R.div className:'slider_feedback_label', slider_feedback_percent
+            R.div className:'slider_feedback_result', stance_explanations[@state.stance_segment]
 
       R.div className:'slider_labels', 
         R.h1 className:"histogram_label histogram_label_support", 'Support'

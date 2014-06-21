@@ -28,7 +28,9 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $point-width: $body_width / 2 - 20
-$point-avatar-width: 22px
+$point-avatar-width: 35px
+$point-includer-width: 22px
+
 $point-content-width: $point_width - $point-avatar-width - $grid-gutter 
 
 // decision board width is the size of the pro/con list in the middle
@@ -547,12 +549,23 @@ $community_point_mouth_width: 17px
 //   visibility: visible
 
 // Avatars of point authors
-.point_author_avatar
+.point_author_avatar, .point_includer_avatar
   position: absolute
+
+.point_author_avatar
   top: 8px
   width: $point-avatar-width
   height: $point-avatar-width
-  border-radius: 50%
+
+.point_includer_avatar
+  width: $point-includer-width
+  height: $point-includer-width
+
+.community_point.pro .point_includer_avatar
+  box-shadow: -1px 2px 0 0 #eee
+.community_point.con .point_includer_avatar
+  box-shadow: 1px 2px 0 0 #eee
+
 
 .community_point.pro .point_author_avatar
   left: -$point-avatar-width - 14

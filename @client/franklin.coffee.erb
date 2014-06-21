@@ -748,20 +748,22 @@ CommunityPoints = React.createClass
         R.p className:'points_segment_label', if !@props.selected_segment_in_histogram[0]? then '-' else "for #{stance_names[@props.selected_segment_in_histogram[0]]}s"          
 
       R.ul null, 
-        for point in points
-          Point 
-            key: point.id
-            id: point.id
-            nutshell: point.nutshell
-            text: point.text
-            valence: @props.valence
-            comment_count: point.comment_count
-            author: point.user_id
-            includers: point.includers
-            is_new: Date.parse(point.created_at) > newpoint_threshold
-            # state: @props.state
-            location_class : 'community_point'
-
+        if points.length > 0
+          for point in points
+            Point 
+              key: point.id
+              id: point.id
+              nutshell: point.nutshell
+              text: point.text
+              valence: @props.valence
+              comment_count: point.comment_count
+              author: point.user_id
+              includers: point.includers
+              is_new: Date.parse(point.created_at) > newpoint_threshold
+              # state: @props.state
+              location_class : 'community_point'
+        else
+          R.li className: 'empty_point', "No #{label}s"
 ##
 # Point
 # A single point in a list. 

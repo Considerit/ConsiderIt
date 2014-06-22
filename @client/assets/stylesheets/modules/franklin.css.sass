@@ -143,13 +143,18 @@ $segment_color: #db004d
 
   &.not_selected
 
-[data-segment="0"] .histogram_segment_pole
-  color: $extreme_opposer_color
-  left: -50px
+[data-segment="0"] 
+  left: -5px
 
-[data-segment="6"] .histogram_segment_pole
-  color: $extreme_supporter_color  
-  right: -50px
+  .histogram_segment_pole
+    color: $extreme_opposer_color
+    left: -50px
+
+[data-segment="6"] 
+  right: -5px
+  .histogram_segment_pole
+    color: $extreme_supporter_color  
+    right: -50px
 
 
 .histogram_segment_label, .histogram_segment_pole
@@ -195,7 +200,6 @@ $segment_color: #db004d
 .slider_base
   margin: auto
   height: 4px
-  border-radius: 10px
   background-color: desaturate($decision_board_text_color, 100%)
 
 $slider_handle_size: 22px
@@ -207,6 +211,32 @@ $slider_handle_size: 22px
     width: $slider_handle_size
     height: $slider_handle_size
     background-color: $decision_board_text_color
+    position: relative
+
+    .face_part
+      position: absolute
+      pointer-events: none
+
+    .face_eye
+      border-radius: 50%
+      background-color: white
+      top: 6px
+      width: 3px
+      height: 3px
+
+      &.face_left_eye
+        left: 6px
+      &.face_right_eye
+        right: 6px
+
+    .face_mouth
+      bottom: -1px
+      width: $slider_handle_size - 4
+      left: 2px 
+      height: $slider_handle_size - 4
+      border-radius: 50%
+      box-shadow: 3px 3px 0 0 white
+
 
   // the mouth leading into the "give opinion button" or the decision board, depending on state
   .bubblemouth

@@ -436,6 +436,7 @@ Slider = React.createClass
 
   getInitialState : ->
     stance_segment : getStanceSegment(@props.initial_stance)
+    stance : @props.initial_stance
 
   componentDidMount : -> 
     @setSlidability()
@@ -527,10 +528,22 @@ Slider = React.createClass
     if @props.sticky_mode && @props.state == 'crafting'
       slider_style = { position: 'fixed', top: 40, backgroundColor: 'white', zIndex: 100 }
 
+    face_left_eye_style = 
+      transform: if @state.stance_segment in [0, 6] then 'scale(.9, .8)' else "scale(#{.8 + .2 * Math.abs(@state.stance)}, #{.8 + .2 * Math.abs(@state.stance)})"
+
+    face_right_eye_style = 
+      transform: if @state.stance_segment in [0, 6] then 'scale(1.1, 1.2)' else "scale(#{.8 + .2 * Math.abs(@state.stance)}, #{.8 + .2 * Math.abs(@state.stance)})"
+
+    face_mouth_style = 
+      transform: "scale(#{.4 + .3 * Math.abs(@state.stance) }, #{.08 - .4 * @state.stance}) translate(0, #{-2 - 5 * Math.abs(@state.stance)}px) rotate(45deg) skew(#{if @state.stance_segment in [0,6] then '10deg' else '0deg'})"
+
     R.div className: 'slider', style: slider_style, 
       R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
         R.div props_for_slider_handle, 
-          R.div className: 'the_handle', onClick: @props.toggleState
+          R.div className: 'the_handle', onClick: @props.toggleState, 
+            R.div className: 'face_mouth face_part', style: face_mouth_style
+            R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
+            R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div className:'slider_feedback', 'data-stance-segment': @state.stance_segment, 
             R.div className:'slider_feedback_label', slider_feedback_percent

@@ -551,13 +551,14 @@ DecisionBoard = React.createClass
     # make this a drop target
     $el = $(@getDOMNode())
     $el.droppable
-      accept: ".community_point .point_content"
+      accept: ".point_content"
       drop : (ev, ui) =>
-        ui.draggable.parent().velocity 'fadeOut', 200, => 
-          save { type: 'point_inclusion', data: ui.draggable.parent().data('id') }
-        $el.removeClass "user_is_hovering_on_a_drop_target"
-      out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
-      over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
+        if ui.draggable.parent().is('.community_point')
+          ui.draggable.parent().velocity 'fadeOut', 200, => 
+            save { type: 'point_inclusion', data: ui.draggable.parent().data('id') }
+          $el.removeClass "user_is_hovering_on_a_drop_target"
+      out : (ev, ui) => $el.removeClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
+      over : (ev, ui) => $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
   render : ->
     sticky_header = @props.sticky_mode && @props.state == 'crafting'
@@ -590,36 +591,12 @@ DecisionBoard = React.createClass
 
 
 ##
-# Mixin for Point lists for handling draggability (CommunityPoints and YourPoints)
-# Bonus: prevents the need to pass state to Point (which results in expensive operations)
-#
-DraggablePoints = 
-  componentDidMount : -> @setDraggability()
-  componentDidUpdate : -> @setDraggability()
-
-  setDraggability : ->
-    # Ability to drag include this point if a community point, 
-    # or drag remove for point on decision board
-    # also: disable for results page
-
-    disable = @props.state == 'results'
-    $(@getDOMNode()).find('.point_content').each -> 
-      if $(@).hasClass "ui-draggable"
-        $(@).draggable(if disable then 'disable' else 'enable') 
-      else
-        $(@).draggable
-          revert: "invalid"
-          disabled: disable
-
-
-##
 # YourPoints
 # List of important points for the active user. 
 # Two instances used for Pro and Con columns. Shown as part of DecisionBoard. 
 # Creates NewPoint instances.
 YourPoints = React.createClass
   displayName: 'YourPoints'
-  mixins: [DraggablePoints]
 
   render : ->
     capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
@@ -641,7 +618,7 @@ YourPoints = React.createClass
               valence: @props.valence
               comment_count: point.comment_count
               author: point.user_id
-              # state: @props.state
+              state: @props.state
               location_class: 'decision_board_point'
 
         R.div className:'add_point_drop_target',
@@ -660,20 +637,6 @@ YourPoints = React.createClass
 # Shown in wing during crafting, in middle on results. 
 CommunityPoints = React.createClass
   displayName: 'CommunityPoints'
-  mixins: [DraggablePoints]
-
-  componentDidMount : ->
-    # Make this a drop target to facilitate removal of points
-    $el = $(@getDOMNode())
-    $el.droppable
-      accept: ".decision_board_point.#{@props.valence} .point_content"
-      drop : (ev, ui) =>
-        ui.draggable.parent().velocity 'fadeOut', 200, => 
-          save { type: 'point_removal', data: ui.draggable.parent().data('id') }
-
-          $el.removeClass "user_is_hovering_on_a_drop_target"
-      out : (ev, ui) => $el.removeClass "user_is_hovering_on_a_drop_target"
-      over : (ev, ui) => $el.addClass "user_is_hovering_on_a_drop_target"
 
   render : ->
 
@@ -727,10 +690,11 @@ CommunityPoints = React.createClass
               author: point.user_id
               includers: point.includers
               is_new: Date.parse(point.created_at) > newpoint_threshold
-              # state: @props.state
+              state: @props.state
               location_class : 'community_point'
         else
           R.li className: 'empty_point', "No #{label}s listed"
+
 ##
 # Point
 # A single point in a list. 
@@ -742,6 +706,29 @@ Point = React.createClass
 
   componentDidMount : ->
     @setShowDetails()
+    @setDraggability()
+
+  componentDidUpdate : -> 
+    @setDraggability()
+
+  setDraggability : ->
+    # Ability to drag include this point if a community point, 
+    # or drag remove for point on decision board
+    # also: disable for results page
+
+    disable = @props.state == 'results'
+    $point_content = $(@getDOMNode()).find('.point_content')
+    revert = if @props.location_class == 'community_point' then 'invalid' else (valid) =>
+      if !valid
+        save { type: 'point_removal', data: @props.id }
+      valid
+
+    if $point_content.hasClass "ui-draggable"
+      $point_content.draggable(if disable then 'disable' else 'enable') 
+    else
+      $point_content.draggable
+        revert: revert
+        disabled: disable
 
   setShowDetails : ->
     $(@getDOMNode()).click (ev) => 

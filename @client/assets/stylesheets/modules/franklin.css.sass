@@ -148,29 +148,31 @@ $segment_color: #db004d
 
   .histogram_segment_pole
     color: $extreme_opposer_color
-    left: -50px
+    left: -160px
 
 [data-segment="6"] 
   right: -5px
   .histogram_segment_pole
     color: $extreme_supporter_color  
-    right: -50px
+    right: -145px
 
+.histogram_segment_pole
+  font-weight: 200
+  position: absolute
+  +font-size(6)
+  bottom: -20px
 
-.histogram_segment_label, .histogram_segment_pole
+.histogram_segment_label
+  display: none
   position: absolute
   font-variant: small-caps
   text-transform: lowercase
   +font-size(-2)
   bottom: -20px
-
-.histogram_segment_label
   width: 100%
   text-align: center
   font-weight: 200
 
-.histogram_segment_pole
-  font-weight: 600
 
 .histogram_bar
   display: inline-block
@@ -199,7 +201,7 @@ $segment_color: #db004d
 
 .slider_base
   margin: auto
-  height: 4px
+  height: 6px
   background-color: desaturate($decision_board_text_color, 100%)
 
 $slider_handle_size: 22px
@@ -252,30 +254,29 @@ $slider_handle_size: 22px
 // The area on top of the slider that shows in crafting to let user know what their stance is
 .slider_feedback
   position: absolute
-  top: -114px
+  top: -96px
   width: 450px
-  padding: 7px
   left: 50%
   margin-left: -225px
   border-radius: 10px
   background-color: rgba($base_background_color, .2)
   pointer-events: none // clicking on this interferes with slider and toggle state
 
-  .slider_feedback_label, .slider_feedback_result //, .slider_feedback_instructions
+  .slider_feedback_label, .slider_feedback_result, .slider_feedback_instructions
     text-align: center
 
   .slider_feedback_label
-    //+font-size(-1)
-    //font-weight: 200
+    +font-size(-1)
+    font-weight: 200
 
   .slider_feedback_result
     +font-size(6)
     font-weight: bold
     color: $decision_board_text_color
 
-  // .slider_feedback_instructions
-  //   +font-size(-3)
-  //   font-weight: 200
+  .slider_feedback_instructions
+    +font-size(-3)
+    font-weight: 200
 
   &[data-stance-segment="0"] .slider_feedback_result
     color: $extreme_opposer_color
@@ -583,14 +584,19 @@ $community_point_mouth_width: 17px
 .point_author_avatar, .point_includer_avatar
   position: absolute
 
-.point_author_avatar
+.decision_board_point .point_author_avatar
   top: 8px
-  width: $point-avatar-width
-  height: $point-avatar-width
+  width: 22px
+  height: 22px
 
 .point_includer_avatar
   width: $point-includer-width
   height: $point-includer-width
+
+.community_point .point_author_avatar
+  top: 0
+  width: $point-avatar-width
+  height: $point-avatar-width
 
 .community_point.pro .point_includer_avatar
   box-shadow: -1px 2px 0 0 #eee
@@ -599,10 +605,10 @@ $community_point_mouth_width: 17px
 
 
 .community_point.pro .point_author_avatar
-  left: -$point-avatar-width - 14
+  left: -$point-avatar-width - 20
   box-shadow: -1px 2px 0 0 #eee
 .community_point.con .point_author_avatar
-  right: -$point-avatar-width - 14
+  right: -$point-avatar-width - 20
   box-shadow: 1px 2px 0 0 #eee
 
 .decision_board_point .point_author_avatar

@@ -77,22 +77,22 @@ getStanceSegment = (value) ->
 stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 stance_names = 
-  0 : '100% Entrenched Support'
-  6 : '100% Entrenched Oppose'
-  1 : 'Firm Support'
-  5 : 'Firm Oppose'
+  0 : 'Entrenched Supporter'
+  6 : 'Entrenched Opposer'
+  1 : 'Firmly Support'
+  5 : 'Firmly Oppose'
   2 : 'Lean Support'
   4 : 'Lean Oppose'
   3 : 'Neutral'
 
-stance_explanations = 
-  0 : 'Nothing will change your mind'
-  6 : 'Nothing will change your mind'
-  1 : 'You are confident this is good'
-  5 : 'You are confident this is bad'
-  2 : 'This seems good to you'
-  4 : 'This seems bad to you'
-  3 : 'You could go either way'
+# stance_explanations = 
+#   0 : 'Your support is fixed'
+#   6 : 'Your opposition is fixed'
+#   1 : 'You strongly feel this is good'
+#   5 : 'You strongly feel this is bad'
+#   2 : 'You feel this is good overall'
+#   4 : 'You feel this is bad overall'
+#   3 : 'You could go either way'
 
 ## ##################
 # React Components
@@ -423,9 +423,9 @@ Histogram = React.createClass
                       Avatar tag: R.span, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, opacity: if @props.users_to_highlight_in_histogram && !_.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '.15' else '1.0'}
             R.div className:"histogram_segment_label", if segment == 3 then '|' else if stance_names[segment].indexOf('Entrenched') > -1 then 'entrenched' else stance_names[segment]
             if segment == 0
-              R.div className:"histogram_segment_pole", 'Support'
+              R.div className:"histogram_segment_pole", 'Supporters'
             else if segment == 6
-              R.div className:"histogram_segment_pole", 'Oppose'
+              R.div className:"histogram_segment_pole", 'Opposers'
 
 ##
 # Slider
@@ -437,22 +437,13 @@ Slider = React.createClass
   getInitialState : ->
     stance_segment : getStanceSegment(@props.initial_stance)
     stance : @props.initial_stance
+    has_moved : false
 
   componentDidMount : -> 
     @setSlidability()
-    @setInitialSliderLabel()
 
   componentDidUpdate : (prev_props, prev_state) ->
     @setSlidability()    
-
-  ##
-  # Teach the user how to Drag; disappears when they prove they know how.
-  setInitialSliderLabel : ->
-    # To do: skip this if the slider is already non-neutral
-    # (We only wanna display this helper if
-    #  they haven't moved it AND just loaded the page)
-    $('.slider_feedback_label').html('&nbsp;')
-    $('.slider_feedback_result').html('Drag Your Overall Opinion')
 
   # We have a separate applyStyle here from Proposal because the Slider component
   # gets rerendered more frequently than the Proposal component (i.e. when the 
@@ -468,12 +459,12 @@ Slider = React.createClass
     switch @props.state
       when 'crafting'
         styles = 
-          '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 4.35, translateX: mouth_x * 1.5  }
+          '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 5.5, translateX: mouth_x * 1.5  }
           '.the_handle':  { scale: 2.5, translateY: -8 }
 
       when 'results'
         styles = 
-          '.bubblemouth': { scaleX: mouth_scaler, scaleY: 1, translateY: -8, translateX: mouth_x  }
+          '.bubblemouth': { scaleX: mouth_scaler, scaleY: 1, translateY: -6, translateX: mouth_x  }
           '.the_handle':  { scale: 1, translateY: -9 }
 
     @applyStylesToElements styles, duration
@@ -500,6 +491,7 @@ Slider = React.createClass
           @setState
             stance_segment : segment
             stance : ui.value
+            has_moved : true
 
   getSliderValue : -> $(@getDOMNode()).find('.ui-slider-handle').position().left / $el.find('.slider_base').innerWidth()
 
@@ -523,7 +515,7 @@ Slider = React.createClass
         bubblemouth_src = "<%= asset_path 'bubblemouth-results.png' %>"
 
     slider_feedback_percent = if @state.stance_segment == 3 then "Neutral" else "#{Math.floor(Math.abs(@state.stance) * 100)}% #{if @state.stance_segment < 3 then 'Support' else 'Oppose'}"
-
+    slider_feedback_bucket = stance_names[@state.stance_segment]
     slider_style = {}
     if @props.sticky_mode && @props.state == 'crafting'
       slider_style = { position: 'fixed', top: 40, backgroundColor: 'white', zIndex: 100 }
@@ -537,8 +529,30 @@ Slider = React.createClass
     face_mouth_style = 
       transform: "scale(#{.4 + .3 * Math.abs(@state.stance) }, #{.08 - .4 * @state.stance}) translate(0, #{-2 - 5 * Math.abs(@state.stance)}px) rotate(45deg) skew(#{if @state.stance_segment in [0,6] then '10deg' else '0deg'})"
 
+    # safari only respects -webkit-transform
+    webkit_transform_property = (props) -> props['-webkit-transform'] = props.transform
+
+    webkit_transform_property face_left_eye_style
+    webkit_transform_property face_right_eye_style
+    webkit_transform_property face_mouth_style
+
+
+    # ugly access here...this is a hack that hides a dependency between slider and histogram 
+    triangle_width = $('.histogram_segment[data-segment="0"]').width() + 5
+    # /ugly
+
+    slider_base_triangle_style = 
+      position: 'absolute'
+      width: 0
+      height: 0
+      borderLeft: "#{triangle_width}px solid transparent"
+      borderRight: "#{triangle_width}px solid transparent"
+      borderBottom: "6px solid #787878"
+
     R.div className: 'slider', style: slider_style, 
       R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
+        R.div className: 'slider_base_triangle_left', style: _.extend({}, slider_base_triangle_style, {left: -triangle_width})
+        R.div className: 'slider_base_triangle_right', style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
         R.div props_for_slider_handle, 
           R.div className: 'the_handle', onClick: @props.toggleState, 
             R.div className: 'face_mouth face_part', style: face_mouth_style
@@ -546,12 +560,13 @@ Slider = React.createClass
             R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div className:'slider_feedback', 'data-stance-segment': @state.stance_segment, 
-            R.div className:'slider_feedback_label', slider_feedback_percent
-            R.div className:'slider_feedback_result', stance_explanations[@state.stance_segment]
+            R.div className:'slider_feedback_instructions', style : { visibility: if !@state.has_moved then 'hidden' else 'visible' }, "Your overall opinion:"
+            R.div className:'slider_feedback_result', if !@state.has_moved then 'Drag Your Overall Opinion' else slider_feedback_bucket
+            # R.div className:'slider_feedback_label', if !@state.has_moved then ' ' else stance_explanations[@state.stance_segment]
 
       R.div className:'slider_labels', 
-        R.h1 className:"histogram_label histogram_label_support", 'Support'
-        R.h1 className:"histogram_label histogram_label_oppose", 'Oppose'
+        R.h1 className:"histogram_label histogram_label_support", 'Supporters'
+        R.h1 className:"histogram_label histogram_label_oppose", 'Opposers'
 
 
 ##
@@ -752,7 +767,7 @@ Point = React.createClass
     dx: 2
     dy: 5
     col_gap: 8
-    side_offset: 34 + 14 + 1
+    side_offset: 38 + 14 + 1
         
   renderIncluders : ->
     # Draw the includers.  This code is ugly cause I don't know
@@ -769,7 +784,7 @@ Point = React.createClass
         i -= 1
         curr_column = Math.floor(i / s.rows)
         side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
-        top_offset = (i % s.rows) * s.dy + 20
+        top_offset = (i % s.rows) * s.dy + 16
         left_right = if @props.valence == 'pro' then 'left' else 'right'
         style = { top: top_offset }
         style[left_right] = -side_offset
@@ -780,12 +795,11 @@ Point = React.createClass
   renderNewIndicator : ->
     if @props.includers
       s = @includersStyle
-      side_offset = s.side_offset
+      side_offset = 51 #s.side_offset
       left_right = if @props.valence == 'pro' then 'left' else 'right'
-      style = {'position': 'absolute', color: 'rgb(255,22,3)', 'font-size': '11px', 'top':'-6px', 'background-color': 'white'}
+      style = {position: 'absolute', color: 'rgb(255,22,3)', fontSize: '11px', top:'41px', backgroundColor: 'white', zIndex: 5}
       style[left_right] = "#{-side_offset}"
-      R.span {style: style},
-        '*New*'
+      R.span {style: style}, '*New*'
 
   render : -> 
     R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,

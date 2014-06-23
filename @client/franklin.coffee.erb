@@ -16,7 +16,6 @@
 
 # React aliases
 R = React.DOM
-ReactTransitionGroup = React.addons.TransitionGroup
 
 # Constants
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
@@ -32,7 +31,7 @@ DECISION_BOARD_WIDTH = 544
 StyleAnimator = 
   componentDidMount : -> @applyStyles false
 
-  componentDidUpdate : (prev_props, prev_state) -> @applyStyles prev_props.state != @props.state  
+  componentDidUpdate : (prev_props, prev_page) -> @applyStyles prev_props.page != @props.page  
 
   # Define this method in any Component implementing StyleAnimator
   #applyStyles : (animate = true) -> 
@@ -119,7 +118,7 @@ Proposal = React.createClass
   # Component defaults
 
   getDefaultProps : ->
-    state : 'crafting'
+    page : 'crafting'
     data :  # would rather have each of these data items added to top level props dict
       proposal : {}
       points : {}
@@ -154,7 +153,7 @@ Proposal = React.createClass
     $el = $(@getDOMNode())
 
     $el.on 'mouseenter mouseleave', '.points_by_community .includers', (ev) => 
-      if @props.state == 'results'
+      if @props.page == 'results'
         point_id = $(ev.currentTarget).parent().data('id')
         point = fetch { url: "points/#{point_id}?no_comments" }
 
@@ -188,7 +187,7 @@ Proposal = React.createClass
 
     # Note: Velocity requires properties to be pulled out (e.g. paddingLeft, translateX, rather than using padding or transform)
     # Note: Use velocity even for 0 duration applications to maintain parity of style definition
-    switch @props.state
+    switch @props.page
       when 'crafting'
         styles = 
           '.histogram_bar':                          { opacity: '.2' }
@@ -201,7 +200,7 @@ Proposal = React.createClass
 
         $el.find('.give_opinion_button').css 'visibility', 'hidden'
         _.delay => 
-          if @props.state == 'crafting' #check in case of quick switch between states        
+          if @props.page == 'crafting' #check in case of quick switch between pages        
             $el.find('.your_points, .save_opinion_button').css 'display', ''
         , duration
 
@@ -230,15 +229,15 @@ Proposal = React.createClass
 
         $el.find('.your_points, .save_opinion_button').css 'display', 'none'
         _.delay => 
-          if @props.state == 'results' #check in case of quick switch between states
+          if @props.page == 'results' #check in case of quick switch between pages
             $el.find('.give_opinion_button').css 'visibility', ''
         , duration
 
   ##
   # State needs to be updated
 
-  toggleState : (ev) ->
-    route = if @props.state == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
+  togglePage : (ev) ->
+    route = if @props.page == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
     app_router.navigate route, {trigger : true}
   
   onSelectSegment : ( segment, click_select ) ->
@@ -249,7 +248,7 @@ Proposal = React.createClass
   ##
   # Make this thing!
   render : ->
-    R.div className:'proposal', key:@props.long_id, 'data-state':@props.state,
+    R.div className:'proposal', key:@props.long_id, 'data-page':@props.page,
       
       #description
       R.div className:'description_region',
@@ -261,17 +260,17 @@ Proposal = React.createClass
       #feelings
       R.div className:'feelings_region',
         Histogram
-          state: @props.state
+          page: @props.page
           opinions: @props.data.opinions
           users_to_highlight_in_histogram: @state.users_to_highlight_in_histogram
           onSelectSegment: @onSelectSegment
           selected_segment_in_histogram: @state.selected_segment_in_histogram
-          toggleState: @toggleState
+          togglePage: @togglePage
 
         Slider
           initial_stance: @props.data.initial_stance
-          state: @props.state
-          toggleState: @toggleState
+          page: @props.page
+          togglePage: @togglePage
           sticky_mode : @state.sticky_mode
 
       #reasons
@@ -279,7 +278,7 @@ Proposal = React.createClass
         #community pros
         CommunityPoints 
           key: 'pros'
-          state: @props.state
+          page: @props.page
           valence: 'pro'
           included_points : @props.data.included_points
           points: fetch { url: 'all_points' }
@@ -288,16 +287,16 @@ Proposal = React.createClass
           
         #your reasons
         DecisionBoard
-          state: @props.state
+          page: @props.page
           included_points : @props.data.included_points
-          toggleState: @toggleState
+          togglePage: @togglePage
           points: fetch { url: 'all_points' }
           sticky_mode : @state.sticky_mode
 
         #community cons
         CommunityPoints 
           key: 'cons'
-          state: @props.state
+          page: @props.page
           valence: 'con'
           included_points : @props.data.included_points
           points: fetch { url: 'all_points' }
@@ -388,10 +387,10 @@ Histogram = React.createClass
 
     [num_columns, segments, avatar_size]
 
-  onClickHistogram : (ev) -> @props.toggleState() if @props.state == 'crafting'
+  onClickHistogram : (ev) -> @props.togglePage() if @props.page == 'crafting'
 
   onSelectSegment : (ev) ->
-    if @props.state == 'results'
+    if @props.page == 'results'
       segment = $(ev.currentTarget).data('segment')
 
       # If clicking on already hard-selected segment, then we'll deselect. 
@@ -456,7 +455,7 @@ Slider = React.createClass
     mouth_scaler = if @state.stance_segment <= 3 then -1 else 1
     mouth_x = if @state.stance_segment == 3 then 0 else -7.5
 
-    switch @props.state
+    switch @props.page
       when 'crafting'
         styles = 
           '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 5.5, translateX: mouth_x * 1.5  }
@@ -471,14 +470,14 @@ Slider = React.createClass
 
   ##
   # setSlidability
-  # Inits jQuery UI slider and enables/disables it between states
+  # Inits jQuery UI slider and enables/disables it between pages
   setSlidability : ->
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
-      $slider_base.slider(if @props.state == 'results' then 'disable' else 'enable') 
+      $slider_base.slider(if @props.page == 'results' then 'disable' else 'enable') 
     else
       $slider_base.slider
-        disabled: @props.state == 'results'
+        disabled: @props.page == 'results'
         min: -1
         max: 1
         step: .01
@@ -497,19 +496,19 @@ Slider = React.createClass
 
   render : ->
     props_for_slider_handle = { className:'ui-slider-handle' } #jquery UI slider will pick an el with this class name up
-    if @props.state == 'results'    
+    if @props.page == 'results'    
       _.extend props_for_slider_handle, 
-        onClick: @props.toggleState
+        onClick: @props.togglePage
         style: { cursor : 'pointer' } 
 
     # can't be dynamically set b/c of integration with asset fingerprinting...
     if @state.stance_segment == 3
-      if @props.state == 'crafting'
+      if @props.page == 'crafting'
         bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
       else
         bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-results.png' %>"
     else
-      if @props.state == 'crafting'
+      if @props.page == 'crafting'
         bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
       else
         bubblemouth_src = "<%= asset_path 'bubblemouth-results.png' %>"
@@ -517,7 +516,7 @@ Slider = React.createClass
     slider_feedback_percent = if @state.stance_segment == 3 then "Neutral" else "#{Math.floor(Math.abs(@state.stance) * 100)}% #{if @state.stance_segment < 3 then 'Support' else 'Oppose'}"
     slider_feedback_bucket = stance_names[@state.stance_segment]
     slider_style = {}
-    if @props.sticky_mode && @props.state == 'crafting'
+    if @props.sticky_mode && @props.page == 'crafting'
       slider_style = { position: 'fixed', top: 40, backgroundColor: 'white', zIndex: 100 }
 
     face_left_eye_style = 
@@ -554,7 +553,7 @@ Slider = React.createClass
         R.div className: 'slider_base_triangle_left', style: _.extend({}, slider_base_triangle_style, {left: -triangle_width})
         R.div className: 'slider_base_triangle_right', style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
         R.div props_for_slider_handle, 
-          R.div className: 'the_handle', onClick: @props.toggleState, 
+          R.div className: 'the_handle', onClick: @props.togglePage, 
             R.div className: 'face_mouth face_part', style: face_mouth_style
             R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
             R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
@@ -571,7 +570,7 @@ Slider = React.createClass
 
 ##
 # DecisionBoard
-# Handles the user's list of important points in crafting state. 
+# Handles the user's list of important points in crafting page. 
 DecisionBoard = React.createClass
   displayName: 'DecisionBoard'
 
@@ -589,7 +588,7 @@ DecisionBoard = React.createClass
       over : (ev, ui) => $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
   render : ->
-    sticky_header = @props.sticky_mode && @props.state == 'crafting'
+    sticky_header = @props.sticky_mode && @props.page == 'crafting'
     opinion_region_style = 
       position: if sticky_header then 'fixed' else ''
       top: if sticky_header then 85 else ''
@@ -602,20 +601,20 @@ DecisionBoard = React.createClass
         R.div className: 'your_points',
           # your pros
           YourPoints
-            state: @props.state
+            page: @props.page
             included_points: @props.included_points
             valence: 'pro'
 
           # your cons
           YourPoints
-            state: @props.state
+            page: @props.page
             included_points: @props.included_points
             valence: 'con'
 
         # only shown during results, but needs to be present always for animation
-        R.a className:'give_opinion_button', onClick: @props.toggleState, 'Give your Opinion'
+        R.a className:'give_opinion_button', onClick: @props.togglePage, 'Give your Opinion'
 
-      R.div className:'save_opinion_button', onClick: @props.toggleState, 'Save and Explore the Results'
+      R.div className:'save_opinion_button', onClick: @props.togglePage, 'Save and Explore the Results'
 
 
 ##
@@ -646,7 +645,7 @@ YourPoints = React.createClass
               valence: @props.valence
               comment_count: point.comment_count
               author: point.user_id
-              state: @props.state
+              page: @props.page
               location_class: 'decision_board_point'
 
         R.div className:'add_point_drop_target',
@@ -676,7 +675,7 @@ CommunityPoints = React.createClass
     #filter to pros or cons & down to points that haven't been included
     points = _.filter points, (pnt) =>
       is_correct_valence = pnt.is_pro == (@props.valence == 'pro')
-      has_not_been_included = @props.state == 'results' || !_.contains(@props.included_points, pnt.id)
+      has_not_been_included = @props.page == 'results' || !_.contains(@props.included_points, pnt.id)
       is_correct_valence && has_not_been_included
 
     if @props.selected_segment_in_histogram[0]?
@@ -696,13 +695,13 @@ CommunityPoints = React.createClass
       points = _.sortBy points, (pnt) -> -point_inclusions_per_point_for_segment[pnt.id]
     else
       # Default sort order
-      points = _.sortBy points, (pnt) => - if @props.state == 'results' then pnt.score else pnt.persuasiveness
+      points = _.sortBy points, (pnt) => - if @props.page == 'results' then pnt.score else pnt.persuasiveness
 
     label = "#{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}"
 
     R.div className:"points_by_community #{@props.valence}s_by_community", style: {minHeight: jQuery(window).height() }, 
       R.div className:'points_heading_label', 
-        if @props.state == 'results' then "Top #{label}s" else "Others' #{label}s"
+        if @props.page == 'results' then "Top #{label}s" else "Others' #{label}s"
         R.p className:'points_segment_label', if !@props.selected_segment_in_histogram[0]? then '-' else "for #{stance_names[@props.selected_segment_in_histogram[0]]}s"          
 
       R.ul null, 
@@ -718,7 +717,7 @@ CommunityPoints = React.createClass
               author: point.user_id
               includers: point.includers
               is_new: Date.parse(point.created_at) > newpoint_threshold
-              state: @props.state
+              page: @props.page
               location_class : 'community_point'
               selected_segment_in_histogram : @props.selected_segment_in_histogram[0]
         else
@@ -745,7 +744,7 @@ Point = React.createClass
     # or drag remove for point on decision board
     # also: disable for results page
 
-    disable = @props.state == 'results'
+    disable = @props.page == 'results'
     $point_content = $(@getDOMNode()).find('.point_content')
     revert = if @props.location_class == 'community_point' then 'invalid' else (valid) =>
       if !valid
@@ -1023,14 +1022,14 @@ Router = Backbone.Router.extend
     ":proposal/results(/)": "results"
     #":proposal/points/:point(/)" : "openPoint"
 
-  proposal : (long_id, state = 'crafting') ->
+  proposal : (long_id, page = 'crafting') ->
 
     if !top_level_component
-      top_level_component = React.renderComponent Proposal({state : state}), document.getElementById('l_content_main_wrap')
+      top_level_component = React.renderComponent Proposal({page : page}), document.getElementById('l_content_main_wrap')
       fetch { url: Routes.proposal_path long_id }, (data) => save { type: 'proposal', data: data }
     else
       top_level_component.setProps
-        state : state
+        page : page
 
   results : (long_id) -> @proposal long_id, 'results'
 

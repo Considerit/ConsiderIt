@@ -421,7 +421,7 @@ Histogram = React.createClass
                   R.td className:"histogram_bar", style: {width: avatar_size},
                     for opinion in bar
                       Avatar tag: R.span, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, opacity: if @props.users_to_highlight_in_histogram && !_.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '.15' else '1.0'}
-            R.div className:"histogram_segment_label", if segment == 3 then '|' else if stance_names[segment].indexOf('Entrenched') > -1 then 'entrenched' else stance_names[segment]
+            #R.div className:"histogram_segment_label", if segment == 3 then '|' else if stance_names[segment].indexOf('Entrenched') > -1 then 'entrenched' else stance_names[segment]
             if segment == 0
               R.div className:"histogram_segment_pole", 'Supporters'
             else if segment == 6
@@ -720,6 +720,7 @@ CommunityPoints = React.createClass
               is_new: Date.parse(point.created_at) > newpoint_threshold
               state: @props.state
               location_class : 'community_point'
+              selected_segment_in_histogram : @props.selected_segment_in_histogram[0]
         else
           R.li className: 'empty_point', "No #{label}s listed"
 
@@ -773,12 +774,20 @@ Point = React.createClass
     # Draw the includers.  This code is ugly cause I don't know
     # coffeescript very good.  Let's fix it!
     if @props.includers
-      includers = _.without @props.includers, @props.author
+      to_remove = [@props.author]
+
+      # only show includers from this stance segment if a segment is selected
+      if @props.selected_segment_in_histogram?
+        for includer in @props.includers
+          opinion = fetch({url: "opinion/#{includer}"})
+          to_remove.push(includer) if !opinion || 6 - opinion.stance_segment != @props.selected_segment_in_histogram
+
+      includers = _.difference @props.includers, to_remove
       
       s = @includersStyle
 
       # Now we'll go through the list from back to front
-      i = @props.includers.length
+      i = includers.length
 
       for includer in includers
         i -= 1
@@ -790,7 +799,7 @@ Point = React.createClass
         style[left_right] = -side_offset
 
         # Finally draw the guy
-        Avatar tag: R.a, user: includer, className: "point_includer_avatar", style: style
+        Avatar tag: R.span, user: includer, className: "point_includer_avatar", style: style
 
   renderNewIndicator : ->
     if @props.includers
@@ -812,7 +821,7 @@ Point = React.createClass
         if @props.location_class == 'community_point'
           @renderIncluders()
 
-        Avatar tag: R.a, user: @props.author, className:"point_author_avatar"
+        Avatar tag: R.span, user: @props.author, className:"point_author_avatar"
 
       R.div className:'point_content',
         if @props.location_class == 'community_point'
@@ -919,6 +928,7 @@ Avatar = React.createClass
 # Mocks for activeREST
 all_users = {} 
 all_points = {}
+all_opinions = {}
 
 fetch = (options, callback, error_callback) ->
   if options.url[0..3] == 'user'
@@ -927,6 +937,9 @@ fetch = (options, callback, error_callback) ->
     return all_points[options.url]
   if options.url[0..9] == 'all_points'
     return _.values all_points
+
+  if options.url[0..6] == 'opinion'
+    return all_opinions[options.url]
 
   error_callback ||= (xhr, status, err) -> console.error 'Could not fetch data', status, err.toString()
 
@@ -947,6 +960,7 @@ fetch = (options, callback, error_callback) ->
 
         for opinion in data.opinions
           opinion.point_inclusions = $.parseJSON opinion.point_inclusions
+          all_opinions["opinion/#{opinion.user_id}"] = opinion
 
 
       console.log data

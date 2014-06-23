@@ -25,6 +25,10 @@ MAX_HISTOGRAM_HEIGHT = 200
 DECISION_BOARD_WIDTH = 544
 
 
+# utility methods...come on Javascript!
+capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
+
+
 ##
 # StyleAnimator mixin
 # Helper for components that implement animations.
@@ -84,14 +88,6 @@ stance_names =
   4 : 'Lean Oppose'
   3 : 'Neutral'
 
-# stance_explanations = 
-#   0 : 'Your support is fixed'
-#   6 : 'Your opposition is fixed'
-#   1 : 'You strongly feel this is good'
-#   5 : 'You strongly feel this is bad'
-#   2 : 'You feel this is good overall'
-#   4 : 'You feel this is bad overall'
-#   3 : 'You could go either way'
 
 ## ##################
 # React Components
@@ -626,12 +622,11 @@ YourPoints = React.createClass
   displayName: 'YourPoints'
 
   render : ->
-    capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
     left_or_right = if @props.valence == 'pro' then 'left' else 'right'
 
     R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board",
       R.div className:'points_heading_label',
-        "List Your #{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}s"
+        "List Your #{capitalize(@props.valence)}s"
 
       R.ul null,
         for point_id in @props.included_points
@@ -665,14 +660,15 @@ YourPoints = React.createClass
 CommunityPoints = React.createClass
   displayName: 'CommunityPoints'
 
-  render : ->
-
-    points = fetch({ url: 'all_points' })
+  buildNewPointThreshold : ->
     # Grab the 10th percentile
+    points = fetch({ url: 'all_points' })
     newpoint_threshold = (_.sortBy points, (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
-    newpoint_threshold = (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or new Date()
+    (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or new Date()
 
-    #filter to pros or cons & down to points that haven't been included
+  buildPointsList : ->
+    points = fetch({ url: 'all_points' })
+
     points = _.filter points, (pnt) =>
       is_correct_valence = pnt.is_pro == (@props.valence == 'pro')
       has_not_been_included = @props.page == 'results' || !_.contains(@props.included_points, pnt.id)
@@ -697,7 +693,15 @@ CommunityPoints = React.createClass
       # Default sort order
       points = _.sortBy points, (pnt) => - if @props.page == 'results' then pnt.score else pnt.persuasiveness
 
-    label = "#{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}"
+    points
+
+  render : ->
+
+    #filter to pros or cons & down to points that haven't been included
+    points = @buildPointsList() #todo: memoize
+    newpoint_threshold = @buildNewPointThreshold() #todo: memoize
+
+    label = capitalize @props.valence
 
     R.div className:"points_by_community #{@props.valence}s_by_community", style: {minHeight: jQuery(window).height() }, 
       R.div className:'points_heading_label', 
@@ -762,28 +766,30 @@ Point = React.createClass
     $(@getDOMNode()).click (ev) => 
       @setState { show_details : !@state.show_details }
 
-  includersStyle :
-    rows: 8
-    dx: 2
-    dy: 5
-    col_gap: 8
-    side_offset: 38 + 14 + 1
+  buildIncluders : -> 
+    to_remove = [@props.author]
+
+    # only show includers from this stance segment if a segment is selected
+    if @props.selected_segment_in_histogram?
+      for includer in @props.includers
+        opinion = fetch({url: "opinion/#{includer}"})
+        to_remove.push(includer) if !opinion || 6 - opinion.stance_segment != @props.selected_segment_in_histogram
+
+    _.difference @props.includers, to_remove
+
         
   renderIncluders : ->
-    # Draw the includers.  This code is ugly cause I don't know
-    # coffeescript very good.  Let's fix it!
+
     if @props.includers
-      to_remove = [@props.author]
 
-      # only show includers from this stance segment if a segment is selected
-      if @props.selected_segment_in_histogram?
-        for includer in @props.includers
-          opinion = fetch({url: "opinion/#{includer}"})
-          to_remove.push(includer) if !opinion || 6 - opinion.stance_segment != @props.selected_segment_in_histogram
+      includers = @buildIncluders()
 
-      includers = _.difference @props.includers, to_remove
-      
-      s = @includersStyle
+      s = #includers_style
+        rows: 8
+        dx: 2
+        dy: 5
+        col_gap: 8
+        side_offset: 38 + 14 + 1
 
       # Now we'll go through the list from back to front
       i = includers.length
@@ -802,8 +808,7 @@ Point = React.createClass
 
   renderNewIndicator : ->
     if @props.includers
-      s = @includersStyle
-      side_offset = 51 #s.side_offset
+      side_offset = 51
       left_right = if @props.valence == 'pro' then 'left' else 'right'
       style = {position: 'absolute', color: 'rgb(255,22,3)', fontSize: '11px', top:'41px', backgroundColor: 'white', zIndex: 5}
       style[left_right] = "#{-side_offset}"
@@ -869,7 +874,6 @@ NewPoint = React.createClass
 
   render : ->
     #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
-    valence_capitalized = "#{@props.valence.charAt(0).toUpperCase()}#{@props.valence.substring(1)}"
 
     R.div className:'newpoint',
       if !@state.editMode
@@ -878,7 +882,7 @@ NewPoint = React.createClass
             'or '
           R.span className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
           R.a className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
-            "Write a new #{valence_capitalized}"
+            "Write a new #{capitalize(@props.valence)}"
       else
         R.div className:'newpoint_form',
           R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pro'}"

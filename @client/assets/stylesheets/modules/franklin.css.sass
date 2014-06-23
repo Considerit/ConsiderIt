@@ -128,7 +128,7 @@ $proposal_description_width: 670px
 
 $segment_color: #db004d
 
-[data-state="results"] .histogram_segment
+[data-page="results"] .histogram_segment
   &:hover
     cursor: pointer
   &.is_selected
@@ -276,7 +276,7 @@ $slider_handle_size: 22px
     color: $decision_board_text_color
 
   .slider_feedback_instructions
-    +font-size(-3)
+    +font-size(-1)
     font-weight: 200
 
   &[data-stance-segment="0"] .slider_feedback_result
@@ -433,7 +433,7 @@ $slider_handle_size: 22px
     &:hover
       color: $decision_board_text_color
 
-[data-state="results"]
+[data-page="results"]
   .decision_board_body
     border-style: solid
     background-color: $decision_board_border_color

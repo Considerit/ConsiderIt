@@ -20,33 +20,19 @@
 // LAYOUT
 //////////////////////////////////////////
 
-#t_bg
-  min-height: 100%
-
-#t_bg_content_top, #l_content_main_wrap
-  min-height: 500px
-
-#t_bg-top
-  background: $bg_top_declaration
-
-#t_bg-content
-  background: $bg_content_declaration
-
-#t_bg_content_top
-  background: $bg_content_top_declaration
-
-.content_style
-  color: $base_text_color
-  background: $base_background_declaration
-  a
-    +link_style(emphasize($base_text_color, 10%, $reference: $base_background_color), $base_background_color, 25%)
 
 
 /* CONTAINERS */
 
-#l_wrap
+#content
+  min-height: 500px
   position: relative
   font-size: $base-font-size
+
+.content
+  color: $base_text_color
+  a
+    +link_style(emphasize($base_text_color, 10%, $reference: $base_background_color), $base_background_color, 25%)
 
 .l_header, #l_content, .l_footer
   position: relative
@@ -62,25 +48,19 @@
   a
     +link_style(emphasize($header_text_color, 10%, $reference: $header_background_color), $header_background_color, 25%)
 
-.l_heading_wrap
-  width: $content_width
-  left: 50%
-  margin-left: -$content_width/2
-  position: relative
-  padding: 0
-  height: 2 * $vertical_baseline
+// .l_heading_wrap
+//   width: $content_width
+//   left: 50%
+//   margin-left: -$content_width/2
+//   position: relative
+//   padding: 0
+//   height: 2 * $vertical_baseline
 
-#l_content
+#body
   z-index: 2
-  width: $page_width
   margin: auto
 
-#l_content_main
-  position: relative  
-  margin: 0 auto
-
-#l_content_main_wrap
-  width: $content_width
+#inner_body
   margin: auto
 
 .l_footer
@@ -91,10 +71,10 @@
     +link_style(emphasize($footer_text_color, 10%, $reference: $footer_background_color), $footer_background_color, 25%)
 
 
-.l_footer_wrap
-  width: $body_width
-  position: relative
-  margin: 0 auto
+// .l_footer_wrap
+//   width: $body_width
+//   position: relative
+//   margin: 0 auto
 
 .l_tooltip
   display: none

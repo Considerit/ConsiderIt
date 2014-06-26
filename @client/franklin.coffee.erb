@@ -20,9 +20,27 @@ R = React.DOM
 # Constants
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
-HISTOGRAM_WIDTH = 540    # Width of the slider / histogram base 
+
+
+# Horizontal spacing units in Golden Ratio and $grid_major = $grid_minor + $grid_gutter
+#    |          GRID_MAJOR                 |   
+#    | GRID_GUTTER |      GRID_MINOR      |
+GRID_MAJOR = 48
+GRID_MINOR = 30
+GRID_GUTTER = 18
+
+PAGE_WIDTH = 24 * GRID_MAJOR
+CONTENT_WIDTH = PAGE_WIDTH - 4 * GRID_MAJOR
+BODY_WIDTH = CONTENT_WIDTH - 8 * GRID_MAJOR - 2 * GRID_GUTTER
+
+POINT_WIDTH = BODY_WIDTH / 2 - 20
+POINT_CONTENT_WIDTH = POINT_WIDTH - 35 - GRID_GUTTER
+
+HISTOGRAM_WIDTH = BODY_WIDTH    # Width of the slider / histogram base 
+DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
+REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 4 * GRID_GUTTER + 4
+
 MAX_HISTOGRAM_HEIGHT = 200
-DECISION_BOARD_WIDTH = 544
 
 
 # utility methods...come on Javascript!
@@ -80,12 +98,12 @@ getStanceSegment = (value) ->
 stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 stance_names = 
-  0 : 'Entrenched Supporter'
-  6 : 'Entrenched Opposer'
-  1 : 'Firmly Support'
-  5 : 'Firmly Oppose'
-  2 : 'Lean Support'
-  4 : 'Lean Oppose'
+  6 : 'Entrenched Supporter'
+  0 : 'Entrenched Opposer'
+  5 : 'Firmly Support'
+  1 : 'Firmly Oppose'
+  4 : 'Lean Support'
+  2 : 'Lean Oppose'
   3 : 'Neutral'
 
 
@@ -115,13 +133,6 @@ Proposal = React.createClass
 
   getDefaultProps : ->
     page : 'crafting'
-    data :  # would rather have each of these data items added to top level props dict
-      proposal : {}
-      points : {}
-      users : {}
-      included_points : []
-      initial_stance : 0.0
-      opinions : []
 
   getInitialState : ->
     users_to_highlight_in_histogram : null
@@ -186,11 +197,11 @@ Proposal = React.createClass
     switch @props.page
       when 'crafting'
         styles = 
-          '.histogram_bar':                          { opacity: '.2' }
-          '.opinion_region':                         { translateX: 0, translateY: 0 }
-          '.decision_board_body':                    { width: "#{DECISION_BOARD_WIDTH}px", minHeight: "375px"}
-          '.pros_by_community':                      { translateX: 0 }
-          '.cons_by_community':                      { translateX: "#{DECISION_BOARD_WIDTH}px" }
+          '.histogram_bar':        { opacity: '.2' }
+          '.opinion_region':       { translateX: 0, translateY: 0 }
+          '.decision_board_body':  { width: "#{DECISION_BOARD_WIDTH}px", minHeight: "375px"}
+          '.pros_by_community':    { translateX: 0 }
+          '.cons_by_community':    { translateX: "#{DECISION_BOARD_WIDTH}px" }
         
         @applyStylesToElements styles, duration
 
@@ -202,7 +213,7 @@ Proposal = React.createClass
 
       when 'results'
         slider_stance = $el.find('.ui-slider').slider('value')
-        segment = 6 - getStanceSegment slider_stance
+        segment = getStanceSegment(-1 * slider_stance)
 
         opinion_region_x = DECISION_BOARD_WIDTH * (slider_stance+1) / 2.0
         give_opinion_button_width = 186
@@ -215,11 +226,11 @@ Proposal = React.createClass
 
 
         styles = 
-          '.histogram_bar':                          { opacity: '1' }
-          '.opinion_region':                         { translateX: opinion_region_x, translateY: -18 }
-          '.decision_board_body':                    { width: "#{give_opinion_button_width}px", minHeight: "32px"}
-          '.pros_by_community':                      { translateX:  DECISION_BOARD_WIDTH / 2 }
-          '.cons_by_community':                      { translateX:  DECISION_BOARD_WIDTH / 2 }
+          '.histogram_bar':         { opacity: '1' }
+          '.opinion_region':        { translateX: opinion_region_x, translateY: -18 }
+          '.decision_board_body':   { width: "#{give_opinion_button_width}px", minHeight: "32px"}
+          '.pros_by_community':     { translateX:  DECISION_BOARD_WIDTH / 2 }
+          '.cons_by_community':     { translateX:  DECISION_BOARD_WIDTH / 2 }
         
         @applyStylesToElements styles, duration
 
@@ -247,14 +258,14 @@ Proposal = React.createClass
     R.div className:'proposal', key:@props.long_id, 'data-page':@props.page,
       
       #description
-      R.div className:'description_region',
+      R.div className:'description_region', style : { width: 1.25 * BODY_WIDTH }, 
         Avatar className: 'proposal_proposer', user: @props.data.proposal.user_id, tag: R.img, img_style: 'large'
         R.div className: 'proposal_category', "#{@props.data.proposal.category} #{@props.data.proposal.designator}"
         R.h1 className:'proposal_heading', @props.data.proposal.name
         R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: @props.data.proposal.description}
     
       #feelings
-      R.div className:'feelings_region',
+      R.div className:'feelings_region', style : { width: BODY_WIDTH },
         Histogram
           page: @props.page
           opinions: @props.data.opinions
@@ -270,7 +281,7 @@ Proposal = React.createClass
           sticky_mode : @state.sticky_mode
 
       #reasons
-      R.div className:'reasons_region',
+      R.div className:'reasons_region', style : { width: REASONS_REGION_WIDTH, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
         #community pros
         CommunityPoints 
           key: 'pros'
@@ -407,7 +418,8 @@ Histogram = React.createClass
 
     R.table className: 'histogram', onClick:@onClickHistogram, onMouseLeave: @onSelectSegment, style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
       R.tr null, 
-        for bars, segment in segments.reverse()
+        for bars, idx in segments.reverse()
+          segment = 6 - idx
           is_selected = @props.selected_segment_in_histogram[0] == segment
           R.td className:"histogram_segment #{if is_selected then 'is_selected' else 'not_selected'}", key:segment, onMouseEnter: @onSelectSegment, 'data-segment':segment, style : { opacity: (if is_selected && !@props.selected_segment_in_histogram[0]? then '1' else '1') },
             R.table null,
@@ -417,9 +429,9 @@ Histogram = React.createClass
                     for opinion in bar
                       Avatar tag: R.span, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, opacity: if @props.users_to_highlight_in_histogram && !_.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '.15' else '1.0'}
             #R.div className:"histogram_segment_label", if segment == 3 then '|' else if stance_names[segment].indexOf('Entrenched') > -1 then 'entrenched' else stance_names[segment]
-            if segment == 0
+            if segment == 6
               R.div className:"histogram_segment_pole", 'Supporters'
-            else if segment == 6
+            else if segment == 0
               R.div className:"histogram_segment_pole", 'Opposers'
 
 ##
@@ -448,7 +460,7 @@ Slider = React.createClass
     duration = if animate then TRANSITION_SPEED else 0
     $el = $(@getDOMNode())
 
-    mouth_scaler = if @state.stance_segment <= 3 then -1 else 1
+    mouth_scaler = if @state.stance_segment > 3 then -1 else 1
     mouth_x = if @state.stance_segment == 3 then 0 else -7.5
 
     switch @props.page
@@ -477,18 +489,16 @@ Slider = React.createClass
         min: -1
         max: 1
         step: .01
-        value: @props.initial_stance
+        value: -@props.initial_stance
         slide: (ev, ui) => 
           # update the stance segment if it has changed. This facilitates the feedback atop
           # the slider changing from e.g. 'strong supporter' to 'neutral'
-          segment = getStanceSegment ui.value
+          segment = getStanceSegment -ui.value
           #if @state.stance_segment != segment
           @setState
             stance_segment : segment
-            stance : ui.value
+            stance : -ui.value
             has_moved : true
-
-  getSliderValue : -> $(@getDOMNode()).find('.ui-slider-handle').position().left / $el.find('.slider_base').innerWidth()
 
   render : ->
     props_for_slider_handle = { className:'ui-slider-handle' } #jquery UI slider will pick an el with this class name up
@@ -509,7 +519,7 @@ Slider = React.createClass
       else
         bubblemouth_src = "<%= asset_path 'bubblemouth-results.png' %>"
 
-    slider_feedback_percent = if @state.stance_segment == 3 then "Neutral" else "#{Math.floor(Math.abs(@state.stance) * 100)}% #{if @state.stance_segment < 3 then 'Support' else 'Oppose'}"
+    slider_feedback_percent = if @state.stance_segment == 3 then "Neutral" else "#{Math.floor(Math.abs(@state.stance) * 100)}% #{if @state.stance_segment > 3 then 'Support' else 'Oppose'}"
     slider_feedback_bucket = stance_names[@state.stance_segment]
     slider_style = {}
     if @props.sticky_mode && @props.page == 'crafting'
@@ -522,7 +532,7 @@ Slider = React.createClass
       transform: if @state.stance_segment in [0, 6] then 'scale(1.1, 1.2)' else "scale(#{.8 + .2 * Math.abs(@state.stance)}, #{.8 + .2 * Math.abs(@state.stance)})"
 
     face_mouth_style = 
-      transform: "scale(#{.4 + .3 * Math.abs(@state.stance) }, #{.08 - .4 * @state.stance}) translate(0, #{-2 - 5 * Math.abs(@state.stance)}px) rotate(45deg) skew(#{if @state.stance_segment in [0,6] then '10deg' else '0deg'})"
+      transform: "scale(#{.4 + .3 * Math.abs(@state.stance) }, #{.08 + .4 * @state.stance}) translate(0, #{-2 - 5 * Math.abs(@state.stance)}px) rotate(45deg) skew(#{if @state.stance_segment in [0,6] then '10deg' else '0deg'})"
 
     # safari only respects -webkit-transform
     webkit_transform_property = (props) -> props['-webkit-transform'] = props.transform
@@ -533,7 +543,7 @@ Slider = React.createClass
 
 
     # ugly access here...this is a hack that hides a dependency between slider and histogram 
-    triangle_width = $('.histogram_segment[data-segment="0"]').width() + 5
+    triangle_width = if @props.sticky_mode then 0 else $('.histogram_segment[data-segment="0"]').width() + 5
     # /ugly
 
     slider_base_triangle_style = 
@@ -588,6 +598,9 @@ DecisionBoard = React.createClass
     opinion_region_style = 
       position: if sticky_header then 'fixed' else ''
       top: if sticky_header then 85 else ''
+      left: '50%'
+      width: DECISION_BOARD_WIDTH
+      marginLeft: -DECISION_BOARD_WIDTH / 2
 
 
     R.div className:'opinion_region', style: opinion_region_style,
@@ -624,7 +637,7 @@ YourPoints = React.createClass
   render : ->
     left_or_right = if @props.valence == 'pro' then 'left' else 'right'
 
-    R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board",
+    R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board", style: { width: POINT_WIDTH },
       R.div className:'points_heading_label',
         "List Your #{capitalize(@props.valence)}s"
 
@@ -703,7 +716,7 @@ CommunityPoints = React.createClass
 
     label = capitalize @props.valence
 
-    R.div className:"points_by_community #{@props.valence}s_by_community", style: {minHeight: jQuery(window).height() }, 
+    R.div className:"points_by_community #{@props.valence}s_by_community", style: { width: POINT_CONTENT_WIDTH, minHeight: jQuery(window).height() }, 
       R.div className:'points_heading_label', 
         if @props.page == 'results' then "Top #{label}s" else "Others' #{label}s"
         R.p className:'points_segment_label', if !@props.selected_segment_in_histogram[0]? then '-' else "for #{stance_names[@props.selected_segment_in_histogram[0]]}s"          
@@ -827,7 +840,7 @@ Point = React.createClass
 
         Avatar tag: R.span, user: @props.author, className:"point_author_avatar"
 
-      R.div className:'point_content',
+      R.div className:'point_content', style : { width: POINT_CONTENT_WIDTH },
         if @props.location_class == 'community_point'
           R.img className: 'community_point_mouth', src: "<%= asset_path 'community_point_mouth.png' %>"
 
@@ -927,6 +940,30 @@ Avatar = React.createClass
     @transferPropsTo @props.tag attrs 
 
 
+
+App = React.createClass
+  displayName: 'Application'
+
+  getDefaultProps : -> 
+    page: 'crafting'
+    all_data :
+      proposal : {}
+      points : {}
+      users : {}
+      included_points : []
+      initial_stance : 0.0
+      opinions : []
+
+  render : -> 
+    R.div null,
+      R.div className: 'l_header'
+      R.div id: 'body', style : { width: PAGE_WIDTH }, 
+        R.div id: 'inner_body', style : { width: CONTENT_WIDTH },
+          Proposal 
+            data: @props.all_data
+            page: @props.page      
+      R.div className: 'l_footer'
+
 ##
 # Mocks for activeREST
 all_users = {} 
@@ -973,7 +1010,7 @@ fetch = (options, callback, error_callback) ->
 
 #save assumes that data is a proposal page
 save = (action) -> 
-  proposal_data = $.extend true, {}, top_level_component.props #deep clone so that shouldcomponentupdate will note changes to data    
+  proposal_data = $.extend true, {}, top_level_component.props.all_data #deep clone so that shouldcomponentupdate will note changes to data    
 
   switch action.type
     when 'point'
@@ -990,21 +1027,21 @@ save = (action) ->
 
       action.data.includers = [current_user_id=-2]
       all_points["points/#{id}?no_comments"] = action.data
-      included_points = _.clone proposal_data.data.included_points
+      included_points = _.clone proposal_data.included_points
       included_points.push action.data.id
 
-      proposal_data.data.included_points = included_points
+      proposal_data.included_points = included_points
 
     when 'point_inclusion'
-      proposal_data.data.included_points.push action.data
+      proposal_data.included_points.push action.data
 
     when 'point_removal'
-      proposal_data.data.included_points = _.without proposal_data.data.included_points, action.data
+      proposal_data.included_points = _.without proposal_data.included_points, action.data
 
     when 'proposal'
-      proposal_data.data = action.data
+      proposal_data = action.data
 
-  top_level_component.setProps proposal_data
+  top_level_component.setProps {all_data : proposal_data}
 
 
 ## ########################
@@ -1029,7 +1066,7 @@ Router = Backbone.Router.extend
   proposal : (long_id, page = 'crafting') ->
 
     if !top_level_component
-      top_level_component = React.renderComponent Proposal({page : page}), document.getElementById('l_content_main_wrap')
+      top_level_component = React.renderComponent App({page : page}), document.getElementById('content')
       fetch { url: Routes.proposal_path long_id }, (data) => save { type: 'proposal', data: data }
     else
       top_level_component.setProps

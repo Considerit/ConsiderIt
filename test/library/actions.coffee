@@ -14,7 +14,7 @@ module.exports =
     module.exports.logout()
 
     casper.thenOpen location, ->
-      casper.waitUntilVisible '#l_wrap', ->
+      casper.waitUntilVisible '#content', ->
         if casper.exists '[action="login"]'
           casper.then ->
             id = Math.floor((Math.random()*100000)+1)

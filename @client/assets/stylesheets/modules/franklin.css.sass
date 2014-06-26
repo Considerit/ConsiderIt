@@ -24,30 +24,8 @@
 
 
 /////////////////////////////////////////////////////////////////////////////
-/// Variables
-/////////////////////////////////////////////////////////////////////////////
-
-$point-width: $body_width / 2 - 20
-$point-avatar-width: 35px
-$point-includer-width: 22px
-
-$point-content-width: $point_width - $point-avatar-width - $grid-gutter 
-
-// decision board width is the size of the pro/con list in the middle
-$decision_board_width: $body_width + 4 // the four is for the border 
-
-// total width of the pro/con list in the middle and the peer pro/con points in the margins
-$full_reasons_width: $decision_board_width + 2 * $point-content-width + 4 * $grid_gutter + 4
-
-$proposer_img_size: 75px
-
-$proposal_description_width: 670px
-
-
-/////////////////////////////////////////////////////////////////////////////
 /// STYLES for Franklin
 /////////////////////////////////////////////////////////////////////////////
-
 
 
 /////////////////////
@@ -58,10 +36,10 @@ $proposal_description_width: 670px
 .description_region
   position: relative
   margin: auto
-  width: $proposal_description_width
   +font-size(1)
 
 // Proposal proposer is the avatar of the user who submitted the proposal
+$proposer_img_size: 75px
 .proposal_proposer
   left: - $proposer_img_size - $grid_gutter
   top: -13px
@@ -101,7 +79,6 @@ $proposal_description_width: 670px
 .feelings_region
   margin: 0 auto
   position: relative
-  width: $body_width
 
 .histogram
   table, td, tr
@@ -143,17 +120,17 @@ $segment_color: #db004d
 
   &.not_selected
 
-[data-segment="0"] 
+[data-segment="6"] 
   left: -5px
 
   .histogram_segment_pole
-    color: $extreme_opposer_color
+    color: $extreme_supporter_color
     left: -160px
 
-[data-segment="6"] 
+[data-segment="0"] 
   right: -5px
   .histogram_segment_pole
-    color: $extreme_supporter_color  
+    color: $extreme_opposer_color  
     right: -145px
 
 .histogram_segment_pole
@@ -319,15 +296,10 @@ $slider_handle_size: 22px
 
 .reasons_region  
   position: relative
-  width: $full_reasons_width
-  left: -($full_reasons_width - $content_width) / 2
   margin: 2.5 * $vertical_baseline 0 4 * $vertical_baseline 0
 
 .opinion_region
-  width: $decision_board_width
   position: absolute
-  left: 50%
-  margin-left: -$decision_board_width/2
   z-index: 0 //so that points being dragged are above opinion region
 
 
@@ -344,7 +316,6 @@ $slider_handle_size: 22px
   margin-right: $grid_gutter
   position: relative
   z-index: 2 //so that points being dragged are above opinion region
-  width: $point-content-width
 
   .empty_point
     margin-top: 50px
@@ -352,12 +323,6 @@ $slider_handle_size: 22px
     list-style: none
     text-align: center
     font-weight: 200
-
-.points_on_decision_board
-  width: $point-width
-
-.point_content
-  width: $point-content-width
 
 ////
 // Lower level styles for reasons region...
@@ -486,8 +451,6 @@ $slider_handle_size: 22px
   padding: 3px
   cursor: pointer
 
-
-
 /////////////////////
 // POINTS
 // Styling for individual points
@@ -500,15 +463,19 @@ $slider_handle_size: 22px
   margin-left: $grid_gutter / 2
   padding: 0 $grid_gutter $vertical_baseline $grid_gutter
 
+
 // point_content styling. Point content is the main part of a point
 // that has all the substantive content
 
+.point_content.ui-draggable
+  +grab_cursor
+
 .point_content.ui-draggable-disabled
-  cursor: pointer !important //war! disabled jquery UI draggable class defined with !important
+  cursor: auto !important //war! disabled jquery UI draggable class defined with !important
 
 // draggable points
-.point_content
-  +grab_cursor
+[data-state="crafting"]
+  .point_content
 
 $community_point_mouth_width: 17px
 .community_point
@@ -532,19 +499,6 @@ $community_point_mouth_width: 17px
     color: $peer_text_color
     box-shadow: #B5B5B5 0 1px 1px 0px
     
-    // // for bubble mouth
-    // &:before
-    //   position: absolute
-    //   content: '\25C0'
-    //   color: $peer_background_color
-    //   text-shadow: #c4c4c4 -1px 1px 1px
-
-  // &.pro .point_content:before
-  //   left: -11px
-
-  // &.con .point_content:before
-  //   right: -11px
-  //   +transform(scaleX(-1))
 
 // Point text
 .point_nutshell
@@ -589,6 +543,9 @@ $community_point_mouth_width: 17px
   top: 8px
   width: 22px
   height: 22px
+
+$point-avatar-width: 35px
+$point-includer-width: 22px
 
 .point_includer_avatar
   width: $point-includer-width

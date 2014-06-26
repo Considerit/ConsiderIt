@@ -3,14 +3,7 @@
 // units for spacing.
 ////////////////////////////////////////////////////////////////////
 
-// Pictoral summary of grid variables:
-// 
-//    |          $grid_major                 |   
-//    | $grid_gutter |      $grid_minor      |
 
-// Horizontal spacing units in Golden Ratio and $grid_major = $grid_minor + $grid_gutter
-$grid_major: 48px
-$grid_minor: 30px
 $grid_gutter: 18px
 
 // The height of each vertical grid unit (rhythm)
@@ -28,18 +21,18 @@ $vertical_baseline: 1em
 
 // $page_width encompasses the entirety of all content shown. If a viewport is larger 
 // than $page_width, background is shown in the additional space on either side.
-$page_width: 24 * $grid_major 
+// $page_width: 24 * $grid_major 
 
 // $content_width encompasses the area of the page that is rendered into. Only occasionally is content 
 // rendered in the $body_gutter on either side of the content area (e.g. points by others shown in the 
 // margins in crafting mode)
-$content_gutter: 2 * $grid_major
-$content_width: $page_width - 2 * $content_gutter 
+// $content_gutter: 2 * $grid_major
+// $content_width: $page_width - 2 * $content_gutter 
 
 // $body_width encompasses the core active area. Content rendered in the $body_gutter
 // tends to be things like individual or groups of user avatars
-$body_gutter: 4 * $grid_major + $grid_gutter
-$body_width: $content_width - 2 * $body_gutter
+// $body_gutter: 4 * $grid_major + $grid_gutter
+// $body_width: $content_width - 2 * $body_gutter
 
 
 ////////////////////////////////////////////////////////////////////
@@ -116,7 +109,7 @@ $complementary_text_color: lighten($primary_accent_text_color, 100%) !default
 // Applied to the highest level content area
 $base_text_color: $plain_text_color !default
 $base_background_color: white !default
-$base_background_declaration: none !default
+// $base_background_declaration: none !default
 
 // HEADER LAYOUT GROUP
 // Applied to page header
@@ -155,14 +148,14 @@ $peer_text_color: $plain_text_color !default
 //////////////////////////////////////////////////////////////
 // THEME HOOKS 
 // Background settings for the area framing the content area
-$bg_top_declaration: none !default
-$bg_content_declaration: none !default
-$bg_content_top_declaration: none !default
+// $bg_top_declaration: none !default
+// $bg_content_declaration: none !default
+// $bg_content_top_declaration: none !default
 
 
 $default_avatar_in_histogram_color: #999
-$extreme_supporter_color: desaturate(#E67866, 20%)
-$extreme_opposer_color: desaturate(#91C43F, 20%)
+$extreme_supporter_color: desaturate(#91C43F, 20%)
+$extreme_opposer_color: desaturate(#E67866, 20%)
 
 // CUSTOMER SPECIFIC OVERRIDES 
 // Define variables specific to certain applications here

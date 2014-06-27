@@ -648,11 +648,7 @@ YourPoints = React.createClass
             Point 
               key: point.id
               id: point.id
-              nutshell: point.nutshell
-              text: point.text
               valence: @props.valence
-              comment_count: point.comment_count
-              author: point.user_id
               page: @props.page
               location_class: 'decision_board_point'
 
@@ -727,12 +723,7 @@ CommunityPoints = React.createClass
             Point 
               key: point.id
               id: point.id
-              nutshell: point.nutshell
-              text: point.text
               valence: @props.valence
-              comment_count: point.comment_count
-              author: point.user_id
-              includers: point.includers
               is_new: Date.parse(point.created_at) > newpoint_threshold
               page: @props.page
               location_class : 'community_point'
@@ -779,23 +770,23 @@ Point = React.createClass
     $(@getDOMNode()).click (ev) => 
       @setState { show_details : !@state.show_details }
 
-  buildIncluders : -> 
-    to_remove = [@props.author]
+  buildIncluders : (point) -> 
+    to_remove = [point.author]
 
     # only show includers from this stance segment if a segment is selected
     if @props.selected_segment_in_histogram?
-      for includer in @props.includers
+      for includer in point.includers
         opinion = fetch({url: "opinion/#{includer}"})
         to_remove.push(includer) if !opinion || 6 - opinion.stance_segment != @props.selected_segment_in_histogram
 
-    _.difference @props.includers, to_remove
+    _.difference point.includers, to_remove
 
         
-  renderIncluders : ->
+  renderIncluders : (point) ->
 
-    if @props.includers
+    if point.includers
 
-      includers = @buildIncluders()
+      includers = @buildIncluders(point)
 
       s = #includers_style
         rows: 8
@@ -819,8 +810,8 @@ Point = React.createClass
         # Finally draw the guy
         Avatar tag: R.span, user: includer, className: "point_includer_avatar", style: style
 
-  renderNewIndicator : ->
-    if @props.includers
+  renderNewIndicator : (point) ->
+    if point.includers
       side_offset = 51
       left_right = if @props.valence == 'pro' then 'left' else 'right'
       style = {position: 'absolute', color: 'rgb(255,22,3)', fontSize: '11px', top:'41px', backgroundColor: 'white', zIndex: 5}
@@ -828,29 +819,31 @@ Point = React.createClass
       R.span {style: style}, '*New*'
 
   render : -> 
+    point = fetch { url: "points/#{@props.key}?no_comments" }
+
     R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,
   
       if @props.location_class == 'community_point' && @props.is_new
-        @renderNewIndicator()
+        @renderNewIndicator(point)
 
       R.div className:'includers', 
 
         if @props.location_class == 'community_point'
-          @renderIncluders()
+          @renderIncluders(point)
 
-        Avatar tag: R.span, user: @props.author, className:"point_author_avatar"
+        Avatar tag: R.span, user: point.author, className:"point_author_avatar"
 
       R.div className:'point_content', style : { width: POINT_CONTENT_WIDTH },
         if @props.location_class == 'community_point'
           R.img className: 'community_point_mouth', src: "<%= asset_path 'community_point_mouth.png' %>"
 
         R.div className:'point_nutshell',
-          @props.nutshell
-          if @props.text
-            if @state.show_details || (@props.nutshell.length + @props.text.length) < 210
-              R.div className: 'point_details', dangerouslySetInnerHTML:{__html: @props.text}
+          point.nutshell
+          if point.text
+            if @state.show_details || (point.nutshell.length + point.text.length) < 210
+              R.div className: 'point_details', dangerouslySetInnerHTML:{__html: point.text}
             else
-              R.span className: 'point_details_tease', $("<span>#{@props.text[0..210-@props.nutshell.length]}</span>").text() + " >>"
+              R.span className: 'point_details_tease', $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + " >>"
 
         # R.a className:'open_point_link',
         #   "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"

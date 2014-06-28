@@ -1,0 +1,53 @@
+@import "variables"
+
+@import "./modules/dash/moderatable"
+@import "./modules/dash/assessable"
+@import "./modules/dash/analytics"
+
+
+=pressable_button
+  margin: 2px 5px
+  padding: 2px 8px
+  cursor: pointer
+  color: #555
+  background-color: #efefef
+  border: 1px solid
+  border-radius: 5px
+  border-color: white #ccc #ccc white
+  box-shadow: rgba(black, .4) 0px 1px 2px
+
+  &.selected
+    border-color: #ccc white white #ccc
+
+
+.pressable_button
+  +pressable_button
+  
+fieldset
+  border: 1px solid #bbb
+  padding: $vertical_baseline $grid_gutter
+  margin: $vertical_baseline 0
+ 
+  legend
+    margin-left: $grid_gutter
+    color: #777
+    //+font-size(-3)
+    padding: 0 $grid_gutter / 2
+
+
+.message
+  textarea
+    display: block
+    +font-size(0)
+
+  .message-subject, .message-body
+    margin-bottom: $vertical_baseline/2
+
+  label
+    display: block
+    text-align: left
+
+  .message-footer
+    text-align: right
+
+  input[type="submit"]

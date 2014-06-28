@@ -1,0 +1,305 @@
+@import "variables"
+@import "bourbon"
+@import "library"
+@import "vendor/overrides"
+
+
+.menu
+  color: $menu_text_color
+  a
+    color: $menu_text_color
+    &:hover
+      color: $complementary_text_color
+      background-color: emphasize($complementary_background_color, 10%)
+
+    &.selected
+      color: $complementary_text_color
+      background-color: $complementary_background_color
+
+//////////////////////////////////////////
+// LAYOUT
+//////////////////////////////////////////
+
+
+
+/* CONTAINERS */
+
+#content
+  min-height: 500px
+  position: relative
+  font-size: $base-font-size
+
+.content
+  color: $base_text_color
+  a
+    +link_style(emphasize($base_text_color, 10%, $reference: $base_background_color), $base_background_color, 25%)
+
+.l_header, #l_content, .l_footer
+  position: relative
+
+.l_heading_wrap, .l_footer_wrap
+  position: relative
+
+.l_header
+  margin: 0 auto $vertical_baseline auto
+  min-height: 32px
+  color: $header_text_color
+  background: $header_background_declaration
+  a
+    +link_style(emphasize($header_text_color, 10%, $reference: $header_background_color), $header_background_color, 25%)
+
+// .l_heading_wrap
+//   width: $content_width
+//   left: 50%
+//   margin-left: -$content_width/2
+//   position: relative
+//   padding: 0
+//   height: 2 * $vertical_baseline
+
+#body
+  z-index: 2
+  margin: auto
+
+#inner_body
+  margin: auto
+
+.l_footer
+  padding: $vertical_baseline 0 2 * $vertical_baseline 0
+  color: $footer_text_color
+  background: $footer_background_declaration
+  a
+    +link_style(emphasize($footer_text_color, 10%, $reference: $footer_background_color), $footer_background_color, 25%)
+
+
+// .l_footer_wrap
+//   width: $body_width
+//   position: relative
+//   margin: 0 auto
+
+.l_tooltip
+  display: none
+
+.tooltipster-content .l_tooltip
+  display: block
+
+// .l_tooltip_title
+//   padding-top: $vertical_baseline/2
+
+
+@font-face
+  font-family: 'zocial'
+  src: font-url('zocialregular.eot')
+  src: font-url('zocialregular.eot?#iefix') format('eot')
+  font-weight: normal
+  font-style: normal
+
+
+@font-face
+  font-family: 'zocial'
+  src: asset-data-url('zocialregular.woff') format('woff'), font-url('zocialregular.ttf') format('truetype'), font-url('zocialregular.svg#zocialregular') format('svg')
+  font-weight: normal
+  font-style: normal
+
+
+
+/* RESET
+ * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
+ * http://cssreset.com
+ */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video
+  margin: 0
+  padding: 0
+  border: 0
+  font-size: 100%
+  font: inherit
+  vertical-align: baseline
+  line-height: 1.4
+
+hr
+  display: block
+  height: 1px
+  border: 0
+  border-top: 1px solid #ccc
+  margin: 0
+  padding: 0
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section
+  display: block
+
+body 
+  line-height: 1.3
+  min-height: 100%
+
+ol, ul 
+  list-style: none
+  list-style-position: inside
+
+blockquote, q
+  quotes: none
+
+blockquote:before, blockquote:after,
+q:before, q:after
+  content: ''
+  content: none
+
+table
+  border-collapse: collapse
+  border-spacing: 0
+
+// do we need to put input and button here...?
+html
+
+  h1, h2, h3, h4, h5, h6, strong
+    font-weight: bold
+
+
+  em, i 
+    font-style: italic
+
+
+
+
+
+/* ELEMENT DEFAULTS */
+
+//http://paulirish.com/2012/box-sizing-border-box-ftw/
+*
+  +box_sizing(border-box)
+
+a
+  color: inherit
+  outline: none
+  cursor: pointer  
+  text-decoration: none
+  img
+    border: none  
+
+input, button
+  //+transition(opacity .15s linear, color .15s linear, background-color .15s linear)
+
+
+table
+  border-collapse: separate  
+
+ul
+  margin: 0
+  list-style-type: disc
+
+ol
+  margin: 0
+  list-style-type: decimal
+
+
+blockquote
+  quotes: "\201C" "\201D"
+  &:before
+    content: open-quote
+    font-weight: bold
+  &:after
+    content: close-quote
+    font-weight: bold
+
+/* HELPERS */
+
+.clear
+  clear: both
+
+.fl
+  float: left
+
+.fr
+  float: right
+
+.it
+  font-style: italic
+  
+.hide
+  display: none
+
+#lightbox
+  position: fixed
+  top: -20000px
+  left: -2000px
+  width: 4000px
+  height: 40000px
+  z-index: 450
+  background-color: rgba(deemphasize($base_background_color, 100%), .75)
+
+.button
+  +font-size(1)
+
+.superbutton
+  +font-size(2)
+
+.button, button, input[type="submit"]
+  outline: none
+  cursor: pointer
+  text-align: center
+
+
+.avatar
+  vertical-align: top
+  background-color: transparent
+  border: none
+  display: inline-block
+  margin: 0
+  padding: 0
+  border-radius: 50%
+  +background-size(cover)
+  //background-image: url('/system/default_avatar/small_default-profile-pic.png')
+  background-color: $default_avatar_in_histogram_color
+
+  &.avatar_anonymous
+    cursor: default
+
+
+$preloadersize_width: 32px
+$preloadersize_height: 10.5px
+#l_preloader
+  width: $preloadersize_width
+  height: $preloadersize_height
+  left: 50%
+  margin-left: -$preloadersize_width/2
+  top: 50%
+  margin-top: -$preloadersize_height/2
+  position: absolute
+
+.loading_container
+  position: fixed
+  top: 50%
+  left: 50%
+  margin-left: -15px
+  z-index: 9999
+
+
+body, h1, h2, h3, h4, h5, h6 //, input, button
+  color: $base_text_color
+
+h1, h2, h3, h4, h5, h6
+  font-family: $header_font-family
+
+// do we need to put input and button here...?
+body, input, button, textarea
+  font-family: $main_font-family
+
+a  
+  +link_style($base_text_color, $base_background_color, 25%)
+
+
+///////////////////////
+// Unincorporated
+/////////////////

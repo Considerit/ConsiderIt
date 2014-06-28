@@ -65,7 +65,6 @@ module ConsiderIt
     config.paths["app/controllers"] << "@server/controllers"
     config.paths["app/models"] << "@server/models"
     config.paths["app/views"] << "@server/views"
-    config.paths["app/views"] << "@client/templates"
 
     config.paths["app/mailers"] << "@server/mailers"
     config.paths["app/helpers"] << "@server/helpers"
@@ -78,7 +77,7 @@ module ConsiderIt
     #suspiciously, Rails apparently already loads @server/notifications...
     #config.paths["config/initializers"] << "@server/notifications"
 
-    asset_paths = ["@client", "assets", "assets/stylesheets/vendor/admin/rails_admin", "assets/fonts"]
+    asset_paths = ["@client", "@client/assets", "@client/assets/fonts"]
     for asset_path in asset_paths
         config.paths["app/assets"] << asset_path
         config.assets.paths << Rails.root.join(asset_path)

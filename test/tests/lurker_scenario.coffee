@@ -21,7 +21,7 @@ Not yet tested here:
 
 test_open_point = (test, state_suffix = '') ->
   casper.logStep 'open a point' + state_suffix
-  casper.thenClick '[role="point"] .point_content'
+  casper.thenClick '[data-role="point"] .point_content'
   casper.waitUntilVisible '.open_point', ->
     test.assertPointIsOpen()
     #TODO: if logged in, can thank and comment; if not, cannot thank or comment
@@ -35,7 +35,7 @@ test_expanding_points = (test, state_suffix = '') ->
   casper.logStep 'expand points' + state_suffix
   casper.thenClick '[action="expand-toggle"]', ->
     test.assertExists '.points_are_expanded', 'points are expanded' + state_suffix
-    casper.HTMLCapture '.reasons_layout', 
+    casper.HTMLCapture '.reasons_region', 
       caption : "Expanded points"
 
     test.assertVisible '.sort_points', 'user can see the sort option' + state_suffix
@@ -52,7 +52,7 @@ test_expanding_points = (test, state_suffix = '') ->
 
   casper.thenClick '[action="expand-toggle"]', ->
     test.assertDoesntExist '.points_are_expanded', 'points are unexpanded' + state_suffix
-    casper.HTMLCapture '.reasons_layout', 
+    casper.HTMLCapture '.reasons_region', 
       caption : "after unexpanding" + state_suffix
 
 test_histogram = (test, state, state_suffix) ->
@@ -69,12 +69,12 @@ test_histogram = (test, state, state_suffix) ->
 
   @waitUntilVisible '.histogram_bar[segment="0"].bar_is_selected', ->
     @wait 2000, ->
-      test.assertSelectorHasText '.pros_by_community .points_heading_view', 'Pros', "Pros present in pros header when #{state}" + state_suffix
+      test.assertSelectorHasText '.pros_by_community .points_heading_label', 'Pros', "Pros present in pros header when #{state}" + state_suffix
 
       # this instrumentation doesn't seem to trigger the bar selection for whatever reason...
-      #test.assertSelectorHasText '.pros_by_community .points_heading_view', 'upport', "Supporter is present in pros header when #{state}" + state_suffix
+      #test.assertSelectorHasText '.pros_by_community .points_heading_label', 'upport', "Supporter is present in pros header when #{state}" + state_suffix
 
-      @HTMLCapture '[role="proposal"]', 
+      @HTMLCapture '[data-role="proposal"]', 
         caption : "#{state} histogram bar" + state_suffix
   , -> test.fail 'Bar is never selected'  
 
@@ -115,14 +115,14 @@ casper.test.begin 'Lurker can poke around homepage', 26, (test) ->
   actions.executeLoggedInAndLoggedOut "http://localhost:8787/", (is_logged_in) ->
     state_suffix = if is_logged_in then ' when logged in' else ' when logged out'
 
-    @waitUntilVisible '[role="proposal"]', ->
+    @waitUntilVisible '[data-role="proposal"]', ->
       @logStep "Homepage can be mucked about" + state_suffix
 
       @HTMLCapture 'body', 
         caption: 'Full homepage, different sizes' + state_suffix
         sizes: [ [1200, 900], [600, 500], [1024, 768] ]
 
-      @HTMLCapture '[role="proposal"]', 
+      @HTMLCapture '[data-role="proposal"]', 
         caption: 'One of the proposals' + state_suffix
 
       @HTMLCapture '#active_proposals_region', 
@@ -168,11 +168,11 @@ casper.test.begin 'Lurker can poke around a proposal results page', 90, (test) -
     state_suffix = if is_logged_in then ' when logged in' else ' when logged out'
 
     # make sure results page can be accessed from homepage
-    @waitUntilVisible '[role="proposal"]', ->
+    @waitUntilVisible '[data-role="proposal"]', ->
       @logStep "Results page can be accessed from homepage" + state_suffix
-      test.assertExists '[role="proposal"] .points_by_community[state="summary"]', 'Peer reasons exists in collapsed form' + state_suffix
+      test.assertExists '[data-role="proposal"] .points_by_community[data-state="summary"]', 'Peer reasons exists in collapsed form' + state_suffix
 
-    @thenClick '[role="proposal"]:first-of-type .points_by_community[state="summary"]:first-of-type'
+    @thenClick '[data-role="proposal"]:first-of-type .points_by_community[data-state="summary"]:first-of-type'
     @waitUntilStateTransitioned 'results', ->
       @HTMLCapture 'body', 
         caption : 'The results page' + state_suffix
@@ -205,18 +205,18 @@ casper.test.begin 'Lurker can poke around a proposal results page', 90, (test) -
 
       @mouse.move 'body'
       point_includers = @evaluate ->
-        return _.uniq($('[role="point"]:first').attr("includers").split(',')).length
+        return _.uniq($('[data-role="point"]:first').attr("includers").split(',')).length
 
-      total_avatars = @evaluate -> return $(".histogram_layout .avatar:visible").length
+      total_avatars = @evaluate -> return $(".feelings_region .avatar:visible").length
 
-      @mouse.move '[role="point"]'
+      @mouse.move '[data-role="point"]'
       @wait 200, ->
-        @HTMLCapture '[role="proposal"]', 
+        @HTMLCapture '[data-role="proposal"]', 
           caption : "Hovering over a point" + state_suffix
 
         includers_hidden = @evaluate -> 
           hidden = -> $(this).css('opacity') == '0' || $(this).css('visibility') == 'hidden'
-          return $(".histogram_layout .avatar:visible").filter(hidden).length
+          return $(".feelings_region .avatar:visible").filter(hidden).length
 
         test.assertEqual total_avatars - includers_hidden, point_includers, 'Only includers shown on point hover' + state_suffix
 
@@ -236,11 +236,11 @@ casper.test.begin 'Lurker can poke around the proposal crafting page', 72, (test
     state_suffix = if is_logged_in then ' when logged in' else ' when logged out'
 
     # navigate to crafting page from homepage
-    @waitUntilVisible '[role="proposal"]', ->
+    @waitUntilVisible '[data-role="proposal"]', ->
       @logStep "Crafting page can be navigated to from homepage" + state_suffix
 
-      test.assertExists '[role="proposal"] [action="craft-opinion"]', 'Opportunity to add one\'s opinion' + state_suffix
-    @thenClick '[role="proposal"]:first-of-type [action="craft-opinion"]:first-of-type'
+      test.assertExists '[data-role="proposal"] [action="craft-opinion"]', 'Opportunity to add one\'s opinion' + state_suffix
+    @thenClick '[data-role="proposal"]:first-of-type [action="craft-opinion"]:first-of-type'
     @waitUntilStateTransitioned 'crafting', ->
       test.assertInCraftingState state_suffix
 
@@ -249,9 +249,9 @@ casper.test.begin 'Lurker can poke around the proposal crafting page', 72, (test
 
       @logStep "Crafting page can be accessed from results page" + state_suffix
 
-      test.assertExists '[role="proposal"] [action="craft-opinion"]', 'Opportunity to add one\'s opinion' + state_suffix
+      test.assertExists '[data-role="proposal"] [action="craft-opinion"]', 'Opportunity to add one\'s opinion' + state_suffix
 
-    @thenClick '[role="proposal"] [action="craft-opinion"]:first-of-type'
+    @thenClick '[data-role="proposal"] [action="craft-opinion"]:first-of-type'
     @waitUntilStateTransitioned 'crafting', ->
       test.assertInCraftingState state_suffix
 
@@ -315,7 +315,7 @@ casper.test.begin 'Lurker can poke around a user profile', 27, (test) ->
 
   # testing the Proposals listed in someone's profile
   test_profile_action_summary test, 1, 'proposals', (entity_id) ->
-    @waitUntilVisible '[state="results"]', ->
+    @waitUntilVisible '[data-state="results"]', ->
       test.assertInResultsState()
     , -> test.fail 'Could not open a proposal'
 

@@ -17,6 +17,25 @@
 # React aliases
 R = React.DOM
 
+React.ARComponent = (obj) ->
+  to_wrap = 'render componentWillMount componentDidMount componentWillUpdate componentDidUpdate getInitialState getDefaultProps'.split(' ')
+
+  wrap = (name) ->
+    old_method = obj[name];
+
+    obj[name] = () ->
+      console.log("#{name} #{obj.displayName}")
+      if old_method
+        (old_method.bind(this))()
+      else 
+        {}
+
+  wrap name for name in to_wrap
+
+  React.createClass obj
+
+
+
 # Constants
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
@@ -124,7 +143,7 @@ stance_names =
 # Proposal
 # The mega component for a proposal.
 # Has proposal description, feelings area (slider + histogram), and reasons area
-Proposal = React.createClass
+Proposal = React.ARComponent
   mixins: [StyleAnimator]
   displayName: 'Proposal'
 
@@ -312,7 +331,7 @@ Proposal = React.createClass
 
 ##
 # Histogram
-Histogram = React.createClass
+Histogram = React.ARComponent
 
   getDefaultProps : ->
     opinions: []
@@ -437,7 +456,7 @@ Histogram = React.createClass
 ##
 # Slider
 # Manages the slider and the UI elements attached to it. 
-Slider = React.createClass
+Slider = React.ARComponent
   displayName: 'Slider'
   mixins: [StyleAnimator]
 
@@ -577,7 +596,7 @@ Slider = React.createClass
 ##
 # DecisionBoard
 # Handles the user's list of important points in crafting page. 
-DecisionBoard = React.createClass
+DecisionBoard = React.ARComponent
   displayName: 'DecisionBoard'
 
   componentDidMount : ->
@@ -631,7 +650,7 @@ DecisionBoard = React.createClass
 # List of important points for the active user. 
 # Two instances used for Pro and Con columns. Shown as part of DecisionBoard. 
 # Creates NewPoint instances.
-YourPoints = React.createClass
+YourPoints = React.ARComponent
   displayName: 'YourPoints'
 
   render : ->
@@ -666,7 +685,7 @@ YourPoints = React.createClass
 # CommunityPoints
 # List of points contributed by others. 
 # Shown in wing during crafting, in middle on results. 
-CommunityPoints = React.createClass
+CommunityPoints = React.ARComponent
   displayName: 'CommunityPoints'
 
   buildNewPointThreshold : ->
@@ -734,7 +753,7 @@ CommunityPoints = React.createClass
 ##
 # Point
 # A single point in a list. 
-Point = React.createClass
+Point = React.ARComponent
   displayName: 'Point'
 
   getInitialState : ->
@@ -852,7 +871,7 @@ Point = React.createClass
 # NewPoint
 # Handles adding a new point into the system. Only rendered when proposal is in Crafting state. 
 # Manages whether the user has clicked "add a new point". If they have, show new point form. 
-NewPoint = React.createClass
+NewPoint = React.ARComponent
   displayName: 'NewPoint'
 
   getInitialState : ->
@@ -910,7 +929,7 @@ NewPoint = React.createClass
 # Avatar
 # Displays a user's avatar
 # Supports straight up img src, or using the CSS-embedded b64 for each user
-Avatar = React.createClass
+Avatar = React.ARComponent
   displayName: 'Avatar'
 
   getDefaultProps : ->
@@ -934,7 +953,7 @@ Avatar = React.createClass
 
 
 
-App = React.createClass
+App = React.ARComponent
   displayName: 'Application'
 
   getDefaultProps : -> 

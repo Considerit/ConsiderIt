@@ -11,7 +11,7 @@ _.extend casper,
 
   # waits until transitions amongst considerit states are completed (e.g. results page)
   waitUntilStateTransitioned : (state, callback, timeout_callback = null) ->
-    casper.waitUntilVisible "[state='#{state}']", null, timeout_callback
+    casper.waitUntilVisible "[data-state='#{state}']", null, timeout_callback
     casper.wait 100
     casper.waitWhileVisible '.transitioning', null, timeout_callback
     casper.wait 200, ->
@@ -19,7 +19,7 @@ _.extend casper,
 
 
   getLoggedInUserid : ->
-    @getElementAttribute '.user-options [role="user"]', 'data-id'
+    @getElementAttribute '.user-options [data-role="user"]', 'data-id'
 
 
   # DRAG AND DROP NOT WORKING YET GIVEN CASPER AND PHANTOM LIMITATIONS
@@ -46,7 +46,7 @@ _.extend casper,
 
     casper.mouse.down from[0], from[1]
     casper.mouse.move to[0], to[1]
-    casper.HTMLCapture '.four_columns_of_points',
+    casper.HTMLCapture '.reasons_region',
       caption: 'JUST BEFORE RELEASE!!!'
     casper.mouse.up to[0], to[1]
 

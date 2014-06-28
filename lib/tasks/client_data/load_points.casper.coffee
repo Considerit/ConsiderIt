@@ -13,7 +13,7 @@ host = casper.cli.get('host')
 
 
 getLoggedInUserid = ->
-  casper.getElementAttribute '.user-options [role="user"]', 'data-id'
+  casper.getElementAttribute '.user-options [data-role="user"]', 'data-id'
 
 
 logout = ->
@@ -119,7 +119,7 @@ casper.start "http://#{host}/#{proposal_id}", ->
 
     casper.thenClick "#{points_col} [action='submit-point']"
 
-    casper.waitUntilVisible "#{points_col} [role='point']"
+    casper.waitUntilVisible "#{points_col} [data-role='point']"
 
   else
     # expand proper column
@@ -134,11 +134,11 @@ casper.start "http://#{host}/#{proposal_id}", ->
     casper.then -> 
       current_user = getLoggedInUserid()
       point_id = casper.evaluate (nutshell) -> 
-        return $("[role='point'] .point_nutshell:contains('#{nutshell}')").closest('[role="point"]').attr('data-id')
+        return $("[data-role='point'] .point_nutshell:contains('#{nutshell}')").closest('[data-role="point"]').attr('data-id')
       , nutshell
 
       # open the point
-      casper.thenClick "[role='point'][data-id='#{point_id}'] .point_content" 
+      casper.thenClick "[data-role='point'][data-id='#{point_id}'] .point_content" 
   
       casper.waitUntilVisible ".new_comment_body textarea"
 

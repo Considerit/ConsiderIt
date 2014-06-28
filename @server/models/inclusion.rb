@@ -1,5 +1,5 @@
 class Inclusion < ActiveRecord::Base
-  has_paper_trail :only => [:point_id, :user_id, :included_as_pro]  
+  # has_paper_trail :only => [:point_id, :user_id, :included_as_pro]  
   include Trackable
   belongs_to :point, :touch => true
   belongs_to :user

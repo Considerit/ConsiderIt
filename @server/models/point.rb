@@ -2,7 +2,7 @@ class Point < ActiveRecord::Base
   
   include Trackable, Followable, Commentable, Moderatable, Assessable
   
-  has_paper_trail :only => [:hide_name, :published, :is_pro, :text, :nutshell, :user_id]  
+  # has_paper_trail :only => [:hide_name, :published, :is_pro, :text, :nutshell, :user_id]  
   
   belongs_to :user
   belongs_to :proposal

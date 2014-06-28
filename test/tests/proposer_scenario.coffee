@@ -43,7 +43,7 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 11, (test)
       caption : "Now at the new proposal page"
 
     test.assertNotEquals "http://localhost:8787/", @getCurrentUrl(), 'We have navigated to the new proposal page'
-    test.assertVisible "[activity='proposal-no-activity'][status='proposal-active'][visibility='unpublished']", 'Proposal has correct state settings'
+    test.assertVisible "[data-activity='proposal-no-activity'][data-status='proposal-active'][data-visibility='unpublished']", 'Proposal has correct state settings'
     test.assertVisible "[action='delete-proposal']", 'Ability to delete proposal'
     test.assertVisible "[action='publish-proposal']", 'Ability to publish proposal'
 
@@ -52,7 +52,7 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 11, (test)
     @reload()
 
     @waitUntilVisible '[action="publish-proposal"]', ->
-      test.assertVisible "[activity='proposal-no-activity'][status='proposal-active'][visibility='unpublished']", 'Proposal has correct state settings, after refreshing'
+      test.assertVisible "[data-activity='proposal-no-activity'][data-status='proposal-active'][data-visibility='unpublished']", 'Proposal has correct state settings, after refreshing'
       test.assertVisible "[action='delete-proposal']", 'Ability to delete proposal after refreshing'
       test.assertVisible "[action='publish-proposal']", 'Ability to publish proposal after refreshing'
 
@@ -82,7 +82,7 @@ casper.test.begin 'Basic proposal pre-publishing and deletion tests', 11, (test)
 
     @thenOpen "http://localhost:8787/#{proposal_id}"
     @wait 500, ->
-      test.assertNotVisible '[role="proposal"]', "Can't load proposal that has been deleted"
+      test.assertNotVisible '[data-role="proposal"]', "Can't load proposal that has been deleted"
 
   casper.then ->
     actions.logout()
@@ -144,20 +144,20 @@ test_proposal_publicity = (test, publicity) ->
     @click '[action="create-new-proposal"]'
 
   casper.waitUntilStateTransitioned 'crafting', ->
-    test.assertExists '.proposal_description_summary.editable', 'Proposal summary is editable'
-    test.assertExists '.proposal_description_body.editable', 'Proposal details is editable'
+    test.assertExists '.description_region_summary.editable', 'Proposal summary is editable'
+    test.assertExists '.proposal_details.editable', 'Proposal details is editable'
 
     proposal_id = @getCurrentUrl().substring(@getCurrentUrl().lastIndexOf('/') + 1, @getCurrentUrl().length)
 
-    @thenClick '.proposal_description_summary.editable'
+    @thenClick '.description_region_summary.editable'
 
     @waitUntilVisible '.editable-input textarea', ->
       @sendKeys ".editable-input textarea", proposal_summary
       @click '.editable-buttons button[type="submit"]'
       @wait 200, ->
-        test.assertSelectorHasText '.proposal_description_summary.editable', proposal_summary, 'proposal summary can be modified'
+        test.assertSelectorHasText '.description_region_summary.editable', proposal_summary, 'proposal summary can be modified'
 
-    @thenClick '.proposal_description_body.editable'
+    @thenClick '.proposal_details.editable'
 
     @waitUntilVisible '.editable-input textarea', ->
       @sendKeys ".editable-input textarea", proposal_details
@@ -167,7 +167,7 @@ test_proposal_publicity = (test, publicity) ->
 
       @click '.editable-buttons button[type="submit"]'
       @wait 200, ->
-        test.assertSelectorHasText '.proposal_description_body.editable', proposal_details, 'proposal details can be modified'
+        test.assertSelectorHasText '.proposal_details.editable', proposal_details, 'proposal details can be modified'
 
     if publicity == 'private' || publicity == 'link-only'
       @then ->
@@ -194,7 +194,7 @@ test_proposal_publicity = (test, publicity) ->
 
     @thenClick "[action='publish-proposal']"
 
-    @waitUntilVisible '[visibility="published"]', ->
+    @waitUntilVisible '[data-visibility="published"]', ->
       test.pass 'Proposal is published'
       test.assertVisible '[action="submit-opinion"]', 'Crafting view is now visible'
     , ->

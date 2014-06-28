@@ -90,14 +90,14 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
         if point.anonymous
           @click '.newpoint-anonymous'
 
-        casper.HTMLCapture '.four_columns_of_points', 
+        casper.HTMLCapture '.reasons_region', 
           caption : "Writing a point"
 
 
       casper.thenClick "#{points_col} [action='submit-point']"
 
       casper.wait 3000, ->
-        casper.HTMLCapture '.four_columns_of_points', 
+        casper.HTMLCapture '.reasons_region', 
           caption : "Point has saved"
 
         # test.assertSelectorHasText "#{points_col} .point_nutshell", point.nutshell, 'Point has been saved'
@@ -109,7 +109,7 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
     _.each opinion.included_points, (point) ->
       [point_id, is_pro] = point
       casper.then ->
-        draggable = "[role='point'][data-id='#{point_id}']"
+        draggable = "[data-role='point'][data-id='#{point_id}']"
         target = ".add_point_drop_target"
 
         # expand points if draggable isn't currently visible
@@ -133,7 +133,7 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
             casper.click ".points_are_expanded [action='expand-toggle']"
 
     casper.then ->
-      casper.HTMLCapture '.four_columns_of_points', 
+      casper.HTMLCapture '.reasons_region', 
         caption : "After including some points"
 
   # move the slider
@@ -151,7 +151,7 @@ testCraftingOpinion = (test, opinion, state_suffix) ->
       $(target)[0].dispatchEvent(event)
 
     casper.wait 1000, ->
-      casper.HTMLCapture '.four_columns_of_points', 
+      casper.HTMLCapture '.reasons_region', 
         caption : "Slider way to left"
 
   casper.then ->
@@ -166,7 +166,7 @@ casper.test.assertOpinionRepresented = (opinion, state_suffix) ->
 
   _.each opinion.included_points, (point) =>
     [point_id, is_pro] = point
-    @assertVisible ".opinion_region [role='point'][data-id='#{point_id}']", 'point has been included'
+    @assertVisible ".opinion_region [data-role='point'][data-id='#{point_id}']", 'point has been included'
 
   slider_base_pos = casper.getElementBounds '.noUi-base'
   slider_handle_pos = casper.getElementBounds '.noUi-handle'
@@ -212,19 +212,19 @@ casper.test.begin 'Prolific contributor can craft their opinion', 120, (test) ->
     casper.then ->
       @logStep 'include a point and then remove it' + state_suffix
       point_id = @getElementAttribute ".cons_by_community .point:last-of-type", 'data-id'
-      @thenClick "[role='point'][data-id='#{point_id}'] .point_content"
+      @thenClick "[data-role='point'][data-id='#{point_id}'] .point_content"
 
       @waitUntilVisible '.open_point', null, -> test.fail 'point never opens'
       @thenClick '.open_point' + ' [action="point-include"]'
 
-      @waitUntilVisible ".cons_on_decision_board [role='point'][data-id='#{point_id}']", ->
-        test.assertVisible ".cons_on_decision_board [role='point'][data-id='#{point_id}']", 'Point was included' + state_suffix
+      @waitUntilVisible ".cons_on_decision_board [data-role='point'][data-id='#{point_id}']", ->
+        test.assertVisible ".cons_on_decision_board [data-role='point'][data-id='#{point_id}']", 'Point was included' + state_suffix
       , -> test.fail 'point is never included'
 
       @thenClick ".cons_by_community [action='expand-toggle']"
-      @thenClick ".cons_on_decision_board [role='point'][data-id='#{point_id}'] [action='point-remove']"
-      @waitUntilVisible ".cons_by_community [role='point'][data-id='#{point_id}']", ->
-        test.assertVisible ".cons_by_community [role='point'][data-id='#{point_id}']", 'Point was un-included' + state_suffix
+      @thenClick ".cons_on_decision_board [data-role='point'][data-id='#{point_id}'] [action='point-remove']"
+      @waitUntilVisible ".cons_by_community [data-role='point'][data-id='#{point_id}']", ->
+        test.assertVisible ".cons_by_community [data-role='point'][data-id='#{point_id}']", 'Point was un-included' + state_suffix
       , -> test.fail 'point is never unincluded'
 
 
@@ -249,7 +249,7 @@ casper.test.begin 'Prolific contributor can craft their opinion', 120, (test) ->
 
       @then -> 
        
-        @thenClick "[role='point'][data-id='#{point_id}'] .point_content"
+        @thenClick "[data-role='point'][data-id='#{point_id}'] .point_content"
 
         @waitUntilVisible ".cons_on_decision_board .open_point", null, -> test.fail 'Point did not open'
 
@@ -276,10 +276,10 @@ casper.test.begin 'Prolific contributor can craft their opinion', 120, (test) ->
 
         @thenClick '.close_open_point'
         @waitWhileVisible '.open_point', ->
-          @click "[role='point'][data-id='#{point_id}'] [action='point-remove']"
+          @click "[data-role='point'][data-id='#{point_id}'] [action='point-remove']"
           @click ".cons_by_community [action='expand-toggle']"
           @wait 1000, ->
-            test.assertDoesntExist "[role='point'][data-id='#{point_id}']", 'Point has been deleted'
+            test.assertDoesntExist "[data-role='point'][data-id='#{point_id}']", 'Point has been deleted'
         , -> test.fail 'open point never closes'
 
 
@@ -338,7 +338,7 @@ casper.test.begin 'Prolific contributor can craft their opinion', 120, (test) ->
         else 
           throw 'not handling non-strong support stance at this time...'
 
-        @HTMLCapture '[role="proposal"]', 
+        @HTMLCapture '[data-role="proposal"]', 
           caption : "User opinion in histogram"
       , -> test.fail 'Never entered results state'
 
@@ -375,7 +375,7 @@ casper.test.begin 'Prolific contributor can craft their opinion', 120, (test) ->
 
 
           @wait 1000, ->
-            @HTMLCapture '[role="proposal"]', 
+            @HTMLCapture '[data-role="proposal"]', 
               caption : "Slider set to neutral"
 
           @thenClick '[action="submit-opinion"]'
@@ -385,7 +385,7 @@ casper.test.begin 'Prolific contributor can craft their opinion', 120, (test) ->
             else 
               throw 'not handling non-strong support stance at this time...'
 
-            @HTMLCapture '[role="proposal"]', 
+            @HTMLCapture '[data-role="proposal"]', 
               caption : "User now in neutral bar"
           , -> test.fail 'Never entered results state'
 

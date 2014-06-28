@@ -6,7 +6,7 @@ class Opinion < ActiveRecord::Base
   has_many :point_listings
   has_many :comments, :as => :commentable, :dependent => :destroy
   
-  has_paper_trail
+  # has_paper_trail
 
   include Trackable, Followable, Commentable
 

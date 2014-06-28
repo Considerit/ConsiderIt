@@ -3,7 +3,7 @@ class ProposalsController < ApplicationController
   protect_from_forgery
 
   respond_to :json, :html
-  
+
   def index
     proposals = []
 
@@ -33,7 +33,6 @@ class ProposalsController < ApplicationController
   end
 
   def show
-
     if params.has_key?(:id)
       proposal = Proposal.find(params[:id])
     elsif params.has_key?(:long_id)
@@ -49,17 +48,16 @@ class ProposalsController < ApplicationController
         render :json => {:result => 'failure', :reason => 'Access denied'}
       else
         @inaccessible_proposal = {:id => proposal.id, :long_id => proposal.long_id }
-        render :nothing => true, :layout => true
+        render "layouts/application", :layout => false
       end
     else
       ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-      data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
 
       if request.xhr?
+        data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
         render :json => data
       else
-        @current_proposal = data.to_json
-        render :nothing => true, :layout => true
+        render "layouts/application", :layout => false
       end
 
     end

@@ -1,0 +1,633 @@
+@import "variables"
+@import "bourbon"
+@import "library"
+
+/////////////////////////////////////////////////////////////////////////////
+/// Mixins
+/////////////////////////////////////////////////////////////////////////////
+
+=grab_cursor
+  cursor: move
+  cursor: ew-resize
+  cursor: -webkit-grab
+  cursor: -moz-grab
+
+  &:active
+    cursor: move
+    cursor: ew-resize
+    cursor: -webkit-grabbing
+    cursor: -moz-grabbing
+
+// Browsers render the inset colors so differently...
+=inset-border($base_text_color)
+  border-color: darken($base_text_color, 10%) lighten($base_text_color, 5%) lighten($base_text_color, 10%) lighten($base_text_color, 5%)
+
+
+/////////////////////////////////////////////////////////////////////////////
+/// STYLES for Franklin
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////
+// DESCRIPTION REGION
+// Proposal description
+
+// Wrapper around description region
+.description_region
+  position: relative
+  margin: auto
+  +font-size(1)
+
+// Proposal proposer is the avatar of the user who submitted the proposal
+$proposer_img_size: 75px
+.proposal_proposer
+  left: - $proposer_img_size - $grid_gutter
+  top: -13px
+  position: absolute
+  width: $proposer_img_size // - 30
+  vertical-align: bottom 
+
+.proposal_heading
+  padding: 0 $grid_gutter $vertical_baseline / 2 $grid_gutter
+  min-height: $proposer_img_size
+  +font-size(8)
+
+.proposal_category
+  position: absolute
+  top: -$vertical_baseline * 1.5
+  left: $grid_gutter
+
+// The proposal details revealed 
+.proposal_details
+  padding: $vertical_baseline / 2 $grid_gutter
+
+  // some default styles for html written by users rendered here
+  br
+    padding-bottom: $vertical_baseline/2
+  p
+    margin-bottom: $vertical_baseline / 2
+  td
+    padding: 0 3px
+    
+
+/////////////////////
+// FEELINGS REGION
+// Integrated histogram and slider widget
+
+// histogram
+
+.feelings_region
+  margin: 0 auto
+  position: relative
+
+.histogram
+  table, td, tr
+    height: 100%
+
+.histogram_segment
+  display: inline-block
+  height: 100%
+  border-top: 1px solid transparent
+  position: relative
+
+// $extreme_segment_border_height: 4px
+// .histogram_segment[data-segment="0"], .histogram_segment[data-segment="6"]
+//   position: relative
+//   top: $extreme_segment_border_height
+//   border-bottom: $extreme_segment_border_height double
+//   // padding-top: $extreme_segment_border_height
+
+// .histogram_segment[data-segment="0"]
+//   border-bottom-color: $extreme_opposer_color
+
+// .histogram_segment[data-segment="6"]
+//   border-bottom-color: $extreme_supporter_color
+
+$segment_color: #db004d
+
+[data-page="results"] .histogram_segment
+  &:hover
+    cursor: pointer
+  &.is_selected
+    background-color: lighten($segment_color, 55%)
+    border-top-color: $segment_color
+
+    .avatar
+      background-color: lighten(desaturate($segment_color, 60%), 25%)
+
+    .histogram_segment_label
+      color: $segment_color
+
+  &.not_selected
+
+[data-segment="6"] 
+  left: -5px
+
+  .histogram_segment_pole
+    color: $extreme_supporter_color
+    left: -160px
+
+[data-segment="0"] 
+  right: -5px
+  .histogram_segment_pole
+    color: $extreme_opposer_color  
+    right: -145px
+
+.histogram_segment_pole
+  font-weight: 200
+  position: absolute
+  +font-size(6)
+  bottom: -20px
+  pointer-events: none
+
+.histogram_segment_label
+  display: none
+  position: absolute
+  font-variant: small-caps
+  text-transform: lowercase
+  +font-size(-2)
+  bottom: -20px
+  width: 100%
+  text-align: center
+  font-weight: 200
+
+
+.histogram_bar
+  display: inline-block
+  font-size: 0
+  vertical-align: bottom
+  +transform(rotate(180deg))    
+
+  .avatar
+    +transform(rotate(180deg))
+    border-radius: 50%
+    background-color: $default_avatar_in_histogram_color
+    background-image: none
+
+  //////////
+  // When there are multiple colums in a bar, need to prevent putting the row with least faces at the bottom
+  //  xxx        x
+  //  xxx   =>  xxx 
+  //   x        xxx
+  // &.extreme_or_neutral
+  //   +transform(rotate(180deg))    
+  //   .avatar
+  //     +transform(rotate(180deg))
+
+
+// slider
+
+.slider_base
+  margin: auto
+  height: 6px
+  background-color: desaturate($decision_board_text_color, 100%)
+
+$slider_handle_size: 22px
+.ui-slider-handle  // dashes in name b/c jquery UI
+  margin-left: -$slider_handle_size / 2
+  .the_handle
+    border-radius: 50%
+    box-shadow: rgba(black, .2) 0px 1px 1px
+    width: $slider_handle_size
+    height: $slider_handle_size
+    background-color: $decision_board_text_color
+    position: relative
+
+    .face_part
+      position: absolute
+      pointer-events: none
+
+    .face_eye
+      border-radius: 50%
+      background-color: white
+      top: 6px
+      width: 3px
+      height: 3px
+
+      &.face_left_eye
+        left: 6px
+      &.face_right_eye
+        right: 6px
+
+    .face_mouth
+      bottom: -1px
+      width: $slider_handle_size - 4
+      left: 2px 
+      height: $slider_handle_size - 4
+      border-radius: 50%
+      box-shadow: 3px 3px 0 0 white
+
+
+  // the mouth leading into the "give opinion button" or the decision board, depending on state
+  .bubblemouth
+    position: absolute  
+    width: 18px
+
+.ui-slider-handle
+  +grab_cursor
+
+.ui-slider-disabled .ui-slider-handle
+  cursor: default
+
+// The area on top of the slider that shows in crafting to let user know what their stance is
+.slider_feedback
+  position: absolute
+  top: -96px
+  width: 450px
+  left: 50%
+  margin-left: -225px
+  border-radius: 10px
+  background-color: rgba($base_background_color, .2)
+  pointer-events: none // clicking on this interferes with slider and toggle state
+
+  .slider_feedback_label, .slider_feedback_result, .slider_feedback_instructions
+    text-align: center
+
+  .slider_feedback_label
+    +font-size(-1)
+    font-weight: 200
+
+  .slider_feedback_result
+    +font-size(6)
+    font-weight: bold
+    color: $decision_board_text_color
+
+  .slider_feedback_instructions
+    +font-size(-1)
+    font-weight: 200
+
+  &[data-stance-segment="0"] .slider_feedback_result
+    color: $extreme_opposer_color
+
+  &[data-stance-segment="6"] .slider_feedback_result
+    color: $extreme_supporter_color
+
+
+.ui-slider-disabled .slider_feedback
+  display: none
+
+// the poles of the histogram & slider
+.slider_labels
+  display: none
+  width: 134%
+  margin-left: -17%
+  position: absolute
+  bottom: -37px
+  z-index: -1 // so that it doesn't sit on top of users on histogram
+
+  .histogram_label
+    +font-size(6)
+    font-weight: 200
+    color: #777777
+
+  .histogram_label_support
+    float: left
+  .histogram_label_oppose
+    float: right
+
+
+/////////////////////
+// REASONS REGION
+// The columns of points & decision board
+
+////
+// Layout for 4 cols
+// Widths, transforms, and intercomponent relationships for 4 col / 2 col design
+
+.reasons_region  
+  position: relative
+  margin: 2.5 * $vertical_baseline 0 4 * $vertical_baseline 0
+
+.opinion_region
+  position: absolute
+  z-index: 0 //so that points being dragged are above opinion region
+
+
+// keep the four cols side by side
+.points_by_community, .points_on_decision_board, .opinion_region
+  display: inline-block
+  vertical-align: top
+
+.points_by_community, .points_on_decision_board
+  margin-top: 38px
+
+.points_by_community
+  margin-left: $grid_gutter
+  margin-right: $grid_gutter
+  position: relative
+  z-index: 2 //so that points being dragged are above opinion region
+
+  .empty_point
+    margin-top: 50px
+    font-style: italic
+    list-style: none
+    text-align: center
+    font-weight: 200
+
+////
+// Lower level styles for reasons region...
+
+// Point list heading
+.points_heading_label
+  text-align: center
+  margin-bottom: $vertical_baseline/2
+  +font-size(6)
+
+.points_on_decision_board .points_heading_label
+  font-weight: bold
+  color: $decision_board_text_color
+
+.points_by_community .points_heading_label
+  font-weight: 200
+  position: relative
+
+.points_segment_label
+  font-weight: 200
+  text-align: center
+  +font-size(-2)
+  position: absolute
+  width: 100%
+  bottom: -12px
+  color: $segment_color
+
+// Mike: I wanted the headers to be centered over the ENTIRE
+// points including avatars, not just bubbles.  But the
+// avatars are sticking out on their own, so I simulated
+// a centered look with these -20px and +20px offsets
+.pros_by_community 
+  h1.points_heading_label
+    position: relative
+    left: -20px
+.cons_by_community 
+  h1.points_heading_label
+    position: relative
+    left: 20px
+
+
+// Decision board
+.user_is_hovering_on_a_drop_target .decision_board_body
+  border-style: solid  
+
+.decision_board_body
+  border-radius: 16px
+  border: 3px dashed $decision_board_border_color
+
+  // a
+  //   +link_style( emphasize($decision_board_text_color, 10%, $reference: $decision_board_background_color), $decision_board_background_color, 25%)
+  
+  // h1, h2, h3
+  //   color: $decision_board_text_color
+
+  textarea, input[type="text"], input[type="email"], input[type="password"]
+    background-color: transparent
+    border: 1px solid
+    +inset-border($base_text_color)
+    display: inline-block
+    color: $base_text_color
+
+    &.error 
+      border-color: #883333
+      &:focus
+        +inset-border($decision_board_text_color)
+
+  a.give_opinion_button
+    padding: $vertical_baseline / 4 $grid_gutter
+    display: block
+    color: $decision_board_text_color
+    font-weight: 500
+    &:hover
+      color: $decision_board_text_color
+
+[data-page="results"]
+  .decision_board_body
+    border-style: solid
+    background-color: $decision_board_border_color
+
+    a.give_opinion_button
+      color: white
+      border-radius: 7px
+      &:hover
+        color: white
+
+.your_points
+  padding: 0 $grid_gutter
+  margin-top: -3px // To undo the 3 pixel border
+
+// Drop target for decision board
+.user_is_hovering_on_a_drop_target_pro .pros_on_decision_board, .user_is_hovering_on_a_drop_target_con .cons_on_decision_board
+  .add_point_drop_target
+    border-style: solid emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
+    color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
+
+.add_point_drop_target
+  padding: 0px 0 $vertical_baseline/4 $grid_gutter/2
+  position: relative
+
+  .drop_target
+    width: 223px
+
+  .drop_prompt
+    +font-size(0)
+    position: absolute
+    top: 1.4 * $vertical_baseline
+    left: 36px
+    width: 180px
+    color: $base_text_color
+
+.cons_on_decision_board .add_point_drop_target 
+  .drop_target
+    +transform(scaleX(-1))
+  .drop_prompt
+    left: 29px
+
+
+.save_opinion_button
+  border-radius: 16px
+  background-color: $decision_board_text_color
+  color: white
+  font-size: 29px
+  text-align: center
+  margin: 20px 0
+  padding: 3px
+  cursor: pointer
+
+/////////////////////
+// POINTS
+// Styling for individual points
+
+.point
+  position: relative
+  list-style: none outside none
+
+.decision_board_point
+  margin-left: $grid_gutter / 2
+  padding: 0 $grid_gutter $vertical_baseline $grid_gutter
+
+
+// point_content styling. Point content is the main part of a point
+// that has all the substantive content
+
+.point_content.ui-draggable
+  +grab_cursor
+
+.point_content.ui-draggable-disabled
+  cursor: auto !important //war! disabled jquery UI draggable class defined with !important
+
+// draggable points
+[data-state="crafting"]
+  .point_content
+
+$community_point_mouth_width: 17px
+.community_point
+  .community_point_mouth
+    position: absolute
+    width: $community_point_mouth_width
+    top: 12px
+    z-index: 1
+
+  &.pro .community_point_mouth
+    left: -$community_point_mouth_width + 1
+  &.con .community_point_mouth
+    right: -$community_point_mouth_width + 1
+    +transform(scaleX(-1))
+
+  .point_content
+    border-radius: 16px
+    padding: $vertical_baseline / 2 $grid_gutter / 2 
+    margin-bottom: $vertical_baseline / 2
+    background-color: $peer_background_color
+    color: $peer_text_color
+    box-shadow: #B5B5B5 0 1px 1px 0px
+    
+
+// Point text
+.point_nutshell
+  word-wrap: break-word
+  +font-size(-1)
+  color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
+
+.point_details_tease, .point_details 
+  //padding-left: 10px
+  font-weight: 200
+  display: block
+  color: deemphasize($base_text_color, 40%, $reference: $base_background_color)
+
+.point_details_tease:hover
+  text-decoration: underline
+  cursor: pointer
+
+// .point_details 
+  // +font-size(-2)
+  // padding-left: 10px
+
+// The button that shows # comments when hovering on a point (disabled for now)
+// .open_point_link
+//   visibility: hidden
+//   position: absolute
+//   bottom: 0
+//   text-align: center
+//   width: 90%
+//   +font-size(-3)
+//   padding: 0 $grid_gutter/4
+//   background-color: $peer_background_color
+//   color: $base_text_color
+
+// .point_content:hover .open_point_link
+//   visibility: visible
+
+// Avatars of point authors
+.point_author_avatar, .point_includer_avatar
+  position: absolute
+
+.decision_board_point .point_author_avatar
+  top: 8px
+  width: 22px
+  height: 22px
+
+$point-avatar-width: 35px
+$point-includer-width: 22px
+
+.point_includer_avatar
+  width: $point-includer-width
+  height: $point-includer-width
+
+.community_point .point_author_avatar
+  top: 0
+  width: $point-avatar-width
+  height: $point-avatar-width
+
+.community_point.pro .point_includer_avatar
+  box-shadow: -1px 2px 0 0 #eee
+.community_point.con .point_includer_avatar
+  box-shadow: 1px 2px 0 0 #eee
+
+
+.community_point.pro .point_author_avatar
+  left: -$point-avatar-width - 20
+  box-shadow: -1px 2px 0 0 #eee
+.community_point.con .point_author_avatar
+  right: -$point-avatar-width - 20
+  box-shadow: 1px 2px 0 0 #eee
+
+.decision_board_point .point_author_avatar
+  left: -10px
+  top: -2px
+
+// Add a new point prompt
+.newpoint_prompt
+  padding: $vertical_baseline/4 0
+  margin-top: $vertical_baseline
+  cursor: pointer
+  +font-size(0)
+
+  .newpoint_link
+    text-decoration: underline
+    color: $decision_board_text_color
+  .newpoint_bullet
+    padding: 0 6px
+    color: $base_text_color    
+  .qualifier
+    font-weight: 100
+    color: $base_text_color
+
+
+// Add a new point form
+// TODO: refactor once design more complete
+.newpoint
+
+  .newpoint_form
+    padding-top: $vertical_baseline / 2
+    position: relative
+    margin-left: $grid_gutter
+    input, textarea
+      +font-size(0)
+      padding-top: 0
+      padding-bottom: 0
+  
+    &:before
+      left: -11px    
+      +font-size(-4)
+
+  .newpoint_description
+    width: 96%
+    min-height: 55px
+
+  .newpoint_nutshell_wrap
+    .newpoint_nutshell
+      width: 96%
+      min-height: 55px
+
+    .count
+      +font-size(-3)
+      vertical-align: middle
+      position: absolute
+      right: 20px
+      top: -16px
+
+  .newpoint-submit
+    text-align: right
+    margin-top: 3px
+
+  .newpoint_hide_name
+    label, input
+      +font-size(-1)

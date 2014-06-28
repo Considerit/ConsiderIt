@@ -1,0 +1,192 @@
+////////////////////////////////////////////////////////////////////
+// GRID VARIABLES, horizontal and vertical. Sets out the atomic 
+// units for spacing.
+////////////////////////////////////////////////////////////////////
+
+
+$grid_gutter: 18px
+
+// The height of each vertical grid unit (rhythm)
+$vertical_baseline: 1em
+
+////////////////////////////////////////////////////////////////////
+// LAYOUT VARIABLES. Defines the high-level content dimensions.
+////////////////////////////////////////////////////////////////////
+
+// Pictoral summary of layout variables:
+// 
+//    |                                        $page_width                                           |   
+//    | $content_gutter |                    $content_width                       |  $content_gutter |
+//                      |  $body_gutter |      $body_width        | $body_gutter  |             
+
+// $page_width encompasses the entirety of all content shown. If a viewport is larger 
+// than $page_width, background is shown in the additional space on either side.
+// $page_width: 24 * $grid_major 
+
+// $content_width encompasses the area of the page that is rendered into. Only occasionally is content 
+// rendered in the $body_gutter on either side of the content area (e.g. points by others shown in the 
+// margins in crafting mode)
+// $content_gutter: 2 * $grid_major
+// $content_width: $page_width - 2 * $content_gutter 
+
+// $body_width encompasses the core active area. Content rendered in the $body_gutter
+// tends to be things like individual or groups of user avatars
+// $body_gutter: 4 * $grid_major + $grid_gutter
+// $body_width: $content_width - 2 * $body_gutter
+
+
+////////////////////////////////////////////////////////////////////
+// FONTS
+////////////////////////////////////////////////////////////////////
+
+$base-font-size: 16px
+$base_unit: 1.3
+
+$font-size-scale: $base-font-size - 5 * $base_unit $base-font-size - 4 * $base_unit $base-font-size - 3 * $base_unit $base-font-size - 2 * $base_unit $base-font-size - 1 * $base_unit $base-font-size $base-font-size + 2 * $base_unit $base-font-size + 4 * $base_unit $base-font-size + 6 * $base_unit $base-font-size + 8 * $base_unit $base-font-size + 10 * $base_unit $base-font-size + 12 * $base_unit $base-font-size + 14 * $base_unit $base-font-size + 16 * $base_unit $base-font-size + 20 * $base_unit $base-font-size + 25 * $base_unit $base-font-size + 30 * $base_unit $base-font-size + 35 * $base_unit
+
+=font-size($size:0)
+  font-size: nth($font-size-scale, $size + 5)
+
+$main_font-family: "Avenir Next", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif !default
+$header_font-family: "Brandon Grotesque", $main_font-family !default
+
+
+////////////////////////////////////////////////////////////////////
+// COLORS
+////////////////////////////////////////////////////////////////////
+
+@import "library"
+
+//////////////////////////////////////////////////////////////////
+// SKIN VARIABLES
+//
+// These variables define the skin of this consider.it instance. 
+// They can be overridden in skin/* files, or in SASS files for each 
+// Theme. 
+//
+// Overriding is facilitated by the SASS !default option
+// which dictates that the value of the variable is set only if 
+// a value has not already been set. This means that we can import
+// this variables_skin file AFTER the variables have been defined in 
+// a specific theme file, giving complete control to themes for
+// overriding any variable used here. 
+//
+// Skin variables are applied in css styles in skinables.css.sass.
+///////////////////////////////////////////////////////////////////
+
+
+///////////////////////
+// COLOR PALETTE
+// Define your color palette. Add and apply your own or override these
+// in your own skin file if you wish. 
+
+// the default color scheme
+$plain_background_color: #F6F7F9 !default
+$plain_text_color: #222 !default
+
+// some colors to spice up key elements
+$primary_accent_background_color: hsl( 210, 70%, 84%) !default
+$primary_accent_text_color: hsl( 210, 35%, 25%) !default
+
+// complementary color should have strong contrast with background color
+$complementary_background_color: darken($primary_accent_background_color, 25%) !default
+$complementary_text_color: lighten($primary_accent_text_color, 100%) !default
+
+//////////////////////////////////////////////////////////
+////////////////// COLOR GROUPS //////////////////////////
+// A color group defines a text color and background styles. 
+// 
+// Though not every group needs all these, the elements of a color group are:
+//   $*_text_color : the default text color of elements and children 
+//   $*_background_declaration : the background property of this element
+//   $*_background_color : the background color of this element 
+//         (or approximation of bg color if background is a colored pattern)
+//   $*_border_color : darker version of background color used for e.g. borders 
+//          or dark parts of background gradients 
+//////////////////////////////////////////////////////////
+
+// BASE PAGE BACKGROUND LAYOUT GROUP
+// Applied to the highest level content area
+$base_text_color: $plain_text_color !default
+$base_background_color: white !default
+// $base_background_declaration: none !default
+
+// HEADER LAYOUT GROUP
+// Applied to page header
+$header_background_color: $base_background_color !default
+$header_background_declaration: transparent !default
+$header_text_color: $base_text_color !default
+
+// FOOTER LAYOUT GROUP
+// Applied to page footer
+$footer_background_color: $base_background_color !default
+$footer_background_declaration: none !default
+$footer_text_color: $base_text_color !default
+
+// MENU LAYOUT GROUP
+// Applied to drop down menus
+$menu_background_color: $plain_background_color !default
+$menu_text_color: $plain_text_color !default
+
+// DIALOG LAYOUT GROUP
+// Applied to body of modal dialogs
+$dialog_background_color: $plain_background_color !default
+$dialog_text_color: $plain_text_color !default
+
+// PRO/CON DECISION BOARD ELEMENT GROUP
+// Applied to everything on the pro/con decision board for individual opinion crafting
+$decision_board_text_color: mix(darken($base_text_color, 35%), darken(saturate($primary_accent_background_color, 50%), 25%), 20%) !default
+$decision_board_border_color: $decision_board_text_color !default
+$decision_board_background_color: rgba(mix($base_background_color, $primary_accent_background_color, 95%), .3)
+$decision_board_background_declaration: rgba(mix($base_background_color, $primary_accent_background_color, 95%), .3) !default
+
+// PEER POINT ELEMENT GROUP
+// Applied to peer point summary, peer points and open points
+$peer_background_color: $plain_background_color !default
+$peer_text_color: $plain_text_color !default
+
+//////////////////////////////////////////////////////////////
+// THEME HOOKS 
+// Background settings for the area framing the content area
+// $bg_top_declaration: none !default
+// $bg_content_declaration: none !default
+// $bg_content_top_declaration: none !default
+
+
+$default_avatar_in_histogram_color: #999
+$extreme_supporter_color: desaturate(#91C43F, 20%)
+$extreme_opposer_color: desaturate(#E67866, 20%)
+
+// CUSTOMER SPECIFIC OVERRIDES 
+// Define variables specific to certain applications here
+// TODO: switch based on identifier and theme variable that is somehow inserted here
+
+// if customer == OHA
+// $main_font-family: "Armata", "Source Sans Pro", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif
+// @font-face
+//   font-family: 'Armata'
+//   font-style: normal
+//   font-weight: 400
+//   src: local('Armata'), local('Armata-Regular'), url(https://themes.googleusercontent.com/static/fonts/armata/v3/jtA73b1gNr8_YTaAbvb4uuvvDin1pK8aKteLpeZ5c0A.woff) format('woff')
+// $plain_background_color: #FEFEFE
+// $plain_text_color: #414141
+
+// $base_background_declaration: asset-data-url('oha/images/bg-main2.jpg') repeat #e6e6e6
+// $bg_top_declaration: none
+// $bg_content_declaration: asset-data-url('oha/images/bg-bottom.jpg') repeat-y
+// $bg_content_top_declaration: asset-data-url('oha/images/page-bck-top.jpg') no-repeat
+
+// $primary_accent_text_color: #fafafa
+// $primary_accent_background_color:    hsl( 5, 60%, 52%)
+
+// $decision_board_text_color: mix(darken($plain_text_color, 35%), darken(saturate(hsl( 210, 70%, 84%), 50%), 25%), 20%) 
+// $decision_board_border_color: $decision_board_text_color
+// $decision_board_background_declaration: rgba(mix($plain_background_color, hsl( 210, 70%, 84%), 95%), .3) 
+
+// $complementary_background_color: #999
+// $complementary_text_color: lighten($primary_accent_text_color, 100%)
+
+// $header_background_declaration: none
+// $footer_background_declaration: none
+
+

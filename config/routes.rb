@@ -8,8 +8,8 @@ ConsiderIt::Application.routes.draw do
 
   root :to => "home#index"
 
-  mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
-  #mount Assessable::Engine => '/dashboard/assessable', :as => 'assessable'
+  # mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
+  # mount Assessable::Engine => '/dashboard/assessable', :as => 'assessable'
 
   devise_for :users, :controllers => { 
     :omniauth_callbacks => "users/omniauth_callbacks", 
@@ -36,12 +36,8 @@ ConsiderIt::Application.routes.draw do
     resources :points, :only => [:create, :update, :destroy, :show]
   end
 
-
   # route all non-ajax requests to home controller, with a few exceptions
-  get '(*url)' => 'home#index', :constraints => XHRConstraint.new
-
-  themes_for_rails 
-
+  get '(*url)' => 'home#index', :constraints => XHRConstraint.new 
 
   ######
   ## concerns routes

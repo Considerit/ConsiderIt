@@ -45,7 +45,7 @@ class Point < ActiveRecord::Base
   }
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:long_id, :appeal, :attention, :comment_count, :created_at, :divisiveness, :id, :includers, :is_pro, :moderation_status, :num_inclusions, :nutshell, :persuasiveness, :opinion_id, :proposal_id, :published, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :text, :unique_listings, :updated_at, :user_id, :hide_name]
+  self.my_public_fields = [:long_id, :comment_count, :created_at, :id, :includers, :is_pro, :moderation_status, :nutshell, :persuasiveness, :opinion_id, :proposal_id, :published, :score, :text, :user_id, :hide_name]
 
   scope :public_fields, -> {select(self.my_public_fields)}
   scope :metrics_fields, -> {select([:id, :appeal, :attention, :comment_count, :divisiveness, :includers, :is_pro, :num_inclusions, :persuasiveness, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :unique_listings])}

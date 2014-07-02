@@ -24,7 +24,12 @@ ConsiderIt::Application.routes.draw do
 
 
   resources :proposals, :only => [:index, :create]
+
+
   resource :proposal, :path => '/:long_id/results', :long_id => /[a-zA-Z\d_]{10}/, :only => [:show, :update, :destroy] 
+
+  resource :proposal, :path => '/proposal/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [:show, :update, :destroy] #should only be used for json
+
 
   resource :proposal, :path => '/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [] do
     get '/' => "proposals#show" , :as => :new_opinion

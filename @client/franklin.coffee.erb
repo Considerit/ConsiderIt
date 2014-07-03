@@ -644,7 +644,10 @@ DecisionBoard = ReactiveComponent
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
     R.div className:'opinion_region', style: opinion_region_style,
-      R.div className:'decision_board_body',
+      R.div 
+        className:'decision_board_body'
+        onClick: => if @data('application').page == 'results' then @data('application').page = 'crafting'
+      ,
 
         # only shown during crafting, but needs to be present always for animation
         R.div className: 'your_points',
@@ -657,7 +660,6 @@ DecisionBoard = ReactiveComponent
         # only shown during results, but needs to be present always for animation
         R.a 
           className:'give_opinion_button'
-          onClick: (=> @data('application').page = 'crafting')
         , 'Give your Opinion'
 
       R.div 

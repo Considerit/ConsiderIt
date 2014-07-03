@@ -187,9 +187,9 @@ $slider_handle_size: 22px
   margin-left: -$slider_handle_size / 2
   .the_handle
     border-radius: 50%
-    box-shadow: rgba(black, .2) 0px 1px 1px
     width: $slider_handle_size
     height: $slider_handle_size
+    box-shadow: 0px 1px 0px darken($decision_board_text_color, 15%)
     background-color: $decision_board_text_color
     position: relative
 
@@ -390,22 +390,19 @@ $slider_handle_size: 22px
       &:focus
         +inset-border($decision_board_text_color)
 
-  a.give_opinion_button
-    padding: $vertical_baseline / 4 $grid_gutter
-    display: block
-    color: $decision_board_text_color
-    font-weight: 500
-    &:hover
-      color: $decision_board_text_color
-
 [data-page="results"]
   .decision_board_body
     border-style: solid
     background-color: $decision_board_border_color
+    box-shadow: 0px 2px 0px black
+    &:hover
+      cursor: pointer
 
     a.give_opinion_button
+      display: block
+      font-weight: 500
       color: white
-      border-radius: 7px
+      padding: $vertical_baseline / 4 $grid_gutter
       &:hover
         color: white
 

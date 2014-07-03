@@ -171,12 +171,12 @@ ReactiveComponent = (obj) ->
 
   _.extend obj,
 
-    shouldComponentUpdate : (next_props, next_state) -> 
+    _shouldComponentUpdate : (next_props, next_state) -> 
       # console.log 'SHOULD? ', @_activeREST_key, @_dirty
       @_dirty or 
       JSON.stringify([next_state, next_props]) != JSON.stringify([@state, @props])
 
-    componentWillMount : ->
+    _componentWillMount : ->
       @_dirty = false
       @_subscribed_data = {}
 
@@ -193,7 +193,7 @@ ReactiveComponent = (obj) ->
       ActiveREST.save @_activeREST_key, data
       # console.log 'Initialized', @_activeREST_key, data, ActiveREST.fetch(@_activeREST_key)
 
-    componentDidUpdate : (prev_props, prev_state) -> 
+    _componentDidUpdate : (prev_props, prev_state) -> 
       @_dirty = false
 
     # Fetches data at any key in ActiveREST, defaulting to this component's key. 
@@ -231,6 +231,31 @@ ReactiveComponent = (obj) ->
           updated_data = $.extend true, {}, data
           updated_data[prop] = value
           ActiveREST.save key, updated_data, [prop]
+
+
+  # Wrap React methods with (re)ActiveREST functionality.
+  to_wrap = 'render componentWillMount componentDidMount componentWillUpdate componentDidUpdate shouldComponentUpdate getInitialState getDefaultProps'.split(' ')
+  wrap = (name) ->
+    old_method = obj[name];
+
+    obj[name] = () ->
+
+      switch name
+
+        when 'componentWillMount'
+          @_componentWillMount arguments...
+
+        when 'componentDidUpdate'
+          @_componentDidUpdate arguments...
+
+        when 'shouldComponentUpdate'
+          @_shouldComponentUpdate arguments...
+
+      if old_method then (old_method.bind(this))(arguments...) else {}
+
+  wrap name for name in to_wrap
+  ##
+
 
   React.createClass obj
 

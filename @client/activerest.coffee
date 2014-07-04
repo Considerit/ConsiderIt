@@ -176,7 +176,7 @@ ReactiveComponent = (obj) ->
       @_dirty or 
       JSON.stringify([next_state, next_props]) != JSON.stringify([@state, @props])
 
-    _componentWillMount : ->
+    _getInitialState : ->
       @_dirty = false
       @_subscribed_data = {}
 
@@ -244,8 +244,8 @@ ReactiveComponent = (obj) ->
 
       switch name
 
-        when 'componentWillMount'
-          @_componentWillMount arguments...
+        when 'getInitialState'
+          @_getInitialState arguments...
 
         when 'componentDidUpdate'
           @_componentDidUpdate arguments...

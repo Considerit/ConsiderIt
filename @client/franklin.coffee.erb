@@ -140,7 +140,8 @@ Proposal = ReactiveComponent
     opinions : []
     # UI STATE
     highlighted_users : null
-    sticky_mode : false
+    sticky_opinion : false
+    sticky_proposal_title: false
 
   ##
   # Lifecycle methods
@@ -153,12 +154,24 @@ Proposal = ReactiveComponent
     _.delay => 
       $sticky_head_el = $(@getDOMNode()).find('.slider_base .the_handle')
       $(@getDOMNode()).headroom
-        offset: $sticky_head_el.offset().top - 5
-        onNotTop : => 
-          @data().sticky_mode = true
-        onTop : => @data().sticky_mode = false
+        offset: $sticky_head_el.offset().top - 60
+        onNotTop : => @data().sticky_opinion = true
+        onTop : => @data().sticky_opinion = false
     , 2000  # delay initialization to let the rest of the dom load 
             # so that the offset is calculated properly
+
+    # # Sticky proposal title
+    # _.delay => 
+    #   $sticky_head_el = $(@getDOMNode()).find('.proposal_heading')
+    #   $(@getDOMNode()).find('.description_region').headroom
+    #     offset: $sticky_head_el.offset().top + 25
+    #     onNotTop : => 
+    #       @data().sticky_proposal_title = true
+    #     onTop : => @data().sticky_proposal_title = false
+    # , 2000  # delay initialization to let the rest of the dom load 
+    #         # so that the offset is calculated properly
+
+    
 
   ##
   # State-dependent styling
@@ -223,16 +236,35 @@ Proposal = ReactiveComponent
   # Make this thing!
   render : ->
     page = @data('application').page
-    my_data = @data()    
+    my_data = @data()
+
+    description_region_style = 
+      width: 1.25 * BODY_WIDTH
+      top: if @isMounted() then $(@getDOMNode()).find('.fixed_proposal_heading').height() + 24 else 50
+
+    console.log description_region_style
+
+    proposer = if my_data.proposal.user_id then @data("user/#{my_data.proposal.user_id}") else null
 
     R.div className:'proposal', key:@props.long_id, 'data-page':page,
       
       #description
-      R.div className:'description_region', style : { width: 1.25 * BODY_WIDTH }, 
-        Avatar className: 'proposal_proposer', user: my_data.proposal.user_id, tag: R.img, img_style: 'large'
-        R.div className: 'proposal_category', "#{my_data.proposal.category} #{my_data.proposal.designator}"
-        R.h1 className:'proposal_heading', my_data.proposal.name
+      R.div className:'description_region', style : description_region_style, 
+        R.div className: 'fixed_proposal_heading', my_data.proposal.name
+
+        R.div className: 'context',
+          Avatar 
+            className: 'proposer_avatar'
+            user: my_data.proposal.user_id
+            tag: R.img
+            img_style: 'large'
+            style: 
+              visibility: if my_data.sticky_opinion then 'hidden' else 'visible'
+          R.div className: 'proposal_category', "#{my_data.proposal.category} #{my_data.proposal.designator}"
+          R.div className: 'proposer_name', "by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
+
         R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: my_data.proposal.description}
+
     
       #feelings
       R.div className:'feelings_region', style : { width: BODY_WIDTH },
@@ -473,10 +505,10 @@ Slider = ReactiveComponent
     page = @data('application').page
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
-      $slider_base.slider(if page == 'results' then 'disable' else 'enable') 
+      $slider_base.slider(if page == 'results' then 'enable' else 'enable') 
     else
       $slider_base.slider
-        disabled: @data('application').page == 'results'
+        disabled: false #@data('application').page == 'results'
         min: -1
         max: 1
         step: .01
@@ -490,6 +522,10 @@ Slider = ReactiveComponent
           my_data.stance = -ui.value
           if !my_data.has_moved
             my_data.has_moved = true
+        stop : (ev, ui) =>
+          if @data('application').page == 'results'
+            console.log 'CHANGING!'
+            @data('application').page = 'crafting'
 
   togglePage : (ev) ->
     @data('application').page = if @data('application').page == 'results' then 'crafting' else 'results'
@@ -500,7 +536,7 @@ Slider = ReactiveComponent
     stance = my_data.stance
     segment = my_data.stance_segment
     page = @data('application').page
-    sticky_mode = @data(active_proposal_key()).sticky_mode
+    sticky_opinion = @data(active_proposal_key()).sticky_opinion
 
     #jquery UI slider will pick an el with this class name up
     props_for_slider_handle = { className:'ui-slider-handle' } 
@@ -529,9 +565,9 @@ Slider = ReactiveComponent
 
     slider_feedback_bucket = stance_names[segment]
     slider_style = 
-      if !sticky_mode || page == 'results' 
+      if !sticky_opinion || page == 'results' 
       then {}
-      else { position: 'fixed', top: 40, backgroundColor: 'white', zIndex: 100 }
+      else { position: 'fixed', top: 103, backgroundColor: 'white', zIndex: 100 }
 
     
     face_left_eye_style = 
@@ -561,7 +597,7 @@ Slider = ReactiveComponent
 
     # ugly access here...this is a hack that hides a dependency between slider and histogram 
     triangle_width = 
-      if sticky_mode 
+      if sticky_opinion 
       then 0 
       else $('.histogram_segment[data-segment="0"]').width() + 5
     # /ugly
@@ -588,7 +624,11 @@ Slider = ReactiveComponent
             R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
             R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
           R.img className:'bubblemouth', src: bubblemouth_src
-          R.div className:'slider_feedback', 'data-stance-segment': segment, 
+          R.div 
+            className:'slider_feedback'
+            'data-stance-segment': segment
+            style: {visibility: if sticky_opinion then 'hidden' else 'visible'}
+          ,
             R.div 
               className:'slider_feedback_instructions'
               style : 
@@ -632,13 +672,13 @@ DecisionBoard = ReactiveComponent
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
   render : ->
-    sticky_mode = @data(active_proposal_key()).sticky_mode
+    sticky_opinion = @data(active_proposal_key()).sticky_opinion
     page = @data('application').page
 
-    sticky_header = sticky_mode && page == 'crafting'
+    sticky_header = sticky_opinion && page == 'crafting'
     opinion_region_style = 
       position: if sticky_header then 'fixed' else ''
-      top: if sticky_header then 85 else ''
+      top: if sticky_header then 148 else ''
       left: '50%'
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2

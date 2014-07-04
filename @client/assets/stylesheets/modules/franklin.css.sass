@@ -37,29 +37,55 @@
   position: relative
   margin: auto
   +font-size(1)
+  margin-bottom: 5 * $vertical_baseline
 
 // Proposal proposer is the avatar of the user who submitted the proposal
-$proposer_img_size: 75px
-.proposal_proposer
+$proposer_img_size: 50px
+.context
+  position: relative
+  margin-top: $vertical_baseline/2
+.proposer_name, .proposal_category
+  // margin-left: $proposer_img_size + $grid_gutter/2
+  // font-variant: small-caps
+  // text-transform: lowercase
+  color: lighten($base_text_color, 35%)
+.proposal_category
+  // position: absolute
+  // top: -$vertical_baseline * 1.5
+  // left: $grid_gutter
+
+.proposer_avatar
   left: - $proposer_img_size - $grid_gutter
-  top: -13px
+  top: 0 //-$proposer_img_size / 4
   position: absolute
+  margin-right: $grid_gutter
   width: $proposer_img_size // - 30
   vertical-align: bottom 
 
 .proposal_heading
   padding: 0 $grid_gutter $vertical_baseline / 2 $grid_gutter
-  min-height: $proposer_img_size
+  // min-height: $proposer_img_size
   +font-size(8)
 
-.proposal_category
-  position: absolute
-  top: -$vertical_baseline * 1.5
-  left: $grid_gutter
+.fixed_proposal_heading
+  position: fixed
+  width: 100%
+  background-color: invert($decision_board_border_color)
+  border-bottom: 1px solid darken(invert($decision_board_border_color), 15%)  
+  color: white
+  +font-size(6)
+  font-weight: 600
+  padding: $vertical_baseline/4 0
+  top: 0
+  left: 0
+  z-index: 999
+  text-align: center
+  // box-shadow: 0px 1px 1px rgba(black, .2) 
+
 
 // The proposal details revealed 
 .proposal_details
-  padding: $vertical_baseline / 2 $grid_gutter
+  padding: $vertical_baseline / 2 0
 
   // some default styles for html written by users rendered here
   br
@@ -256,14 +282,14 @@ $slider_handle_size: 22px
     +font-size(-1)
     font-weight: 200
 
-  &[data-stance-segment="0"] .slider_feedback_result
-    color: $extreme_opposer_color
+  // &[data-stance-segment="0"] .slider_feedback_result
+  //   color: $extreme_opposer_color
 
-  &[data-stance-segment="6"] .slider_feedback_result
-    color: $extreme_supporter_color
+  // &[data-stance-segment="6"] .slider_feedback_result
+  //   color: $extreme_supporter_color
 
 
-.ui-slider-disabled .slider_feedback
+[data-page="results"] .slider_feedback
   display: none
 
 // the poles of the histogram & slider

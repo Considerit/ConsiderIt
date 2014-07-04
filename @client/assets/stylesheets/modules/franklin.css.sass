@@ -132,19 +132,21 @@ $proposer_img_size: 50px
 $segment_color: #db004d
 
 [data-page="results"] .histogram_segment
-  &:hover
-    cursor: pointer
+  // &:hover
+  //   cursor: pointer
   &.is_selected
-    background-color: lighten($segment_color, 55%)
-    border-top-color: $segment_color
+    // background-color: lighten($segment_color, 55%)
+    // border-top-color: $segment_color
 
-    .avatar
-      background-color: lighten(desaturate($segment_color, 60%), 25%)
+    // .avatar
+    //   background-color: lighten(desaturate($segment_color, 60%), 25%)
 
     .histogram_segment_label
       color: $segment_color
 
   &.not_selected
+    .avatar
+      opacity: .05
 
 [data-segment="6"] 
   left: -5px
@@ -279,8 +281,8 @@ $slider_handle_size: 22px
     color: $decision_board_text_color
 
   .slider_feedback_instructions
-    +font-size(-1)
-    font-weight: 200
+    +font-size(0)
+    font-weight: 400
 
   // &[data-stance-segment="0"] .slider_feedback_result
   //   color: $extreme_opposer_color
@@ -388,6 +390,27 @@ $slider_handle_size: 22px
   h1.points_heading_label
     position: relative
     left: 20px
+
+// opinion filter
+[data-page="crafting"] .opinion_filter_region
+  display: none
+
+.opinion_filter_region
+  position: absolute
+  z-index: 10
+  right: -275px
+  bottom: -200px
+  +font-size(-1)
+
+  .filter_heading
+    display: none
+    text-decoration: underline
+    color: lighten($base_text_color, 20%)
+
+  .filter_option
+    display: block
+    &.selected
+      text-decoration: underline
 
 
 // Decision board

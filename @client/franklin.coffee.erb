@@ -517,6 +517,8 @@ Slider = ReactiveComponent
           # Update the stance segment if it has changed. This facilitates 
           # the feedback atop the slider changing from e.g. 'strong 
           # supporter' to 'neutral'
+          return false if ev.originalEvent.type != 'mousemove'
+          
           my_data = @data()
           my_data.stance_segment = getStanceSegment -ui.value
           my_data.stance = -ui.value

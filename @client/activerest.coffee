@@ -211,9 +211,11 @@ ReactiveComponent = (obj) ->
       # Add getters / setters
       # Need to do this every access in case new properties were added 
       # to this key since the last access
-      for prop in _.keys ActiveREST.fetch(key)
-        if !getters_setters.hasOwnProperty prop
-          @_addGetterSetter getters_setters, prop, key, @
+      activeREST_object = ActiveREST.fetch(key)
+      if activeREST_object
+        for prop in _.keys activeREST_object
+          if !getters_setters.hasOwnProperty prop
+            @_addGetterSetter getters_setters, prop, key, @
 
       getters_setters
 

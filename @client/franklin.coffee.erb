@@ -242,8 +242,6 @@ Proposal = ReactiveComponent
       width: 1.25 * BODY_WIDTH
       top: if @isMounted() then $(@getDOMNode()).find('.fixed_proposal_heading').height() + 24 else 50
 
-    console.log description_region_style
-
     proposer = if my_data.proposal.user_id then @data("user/#{my_data.proposal.user_id}") else null
 
     R.div className:'proposal', key:@props.long_id, 'data-page':page,
@@ -518,7 +516,7 @@ Slider = ReactiveComponent
           # the feedback atop the slider changing from e.g. 'strong 
           # supporter' to 'neutral'
           return false if ev.originalEvent.type != 'mousemove'
-          
+
           my_data = @data()
           my_data.stance_segment = getStanceSegment -ui.value
           my_data.stance = -ui.value
@@ -919,7 +917,7 @@ Point = ReactiveComponent
         dx: 2
         dy: 5
         col_gap: 8
-        side_offset: 38 + 14 + 1
+        side_offset: 32 + 14 + 1
 
       # Now we'll go through the list from back to front
       i = includers.length
@@ -928,7 +926,7 @@ Point = ReactiveComponent
         i -= 1
         curr_column = Math.floor(i / s.rows)
         side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
-        top_offset = (i % s.rows) * s.dy + 16
+        top_offset = (i % s.rows) * s.dy + 4
         left_right = if @data().is_pro then 'left' else 'right'
         style = { top: top_offset }
         style[left_right] = -side_offset
@@ -955,6 +953,9 @@ Point = ReactiveComponent
 
   render : -> 
     my_data = @data()
+    selected_segment = @data('histogram').selected_segment
+    author_opinion = @data("opinion/#{my_data.user_id}")
+
     R.li 
       className: "point closed_point #{@props.location_class} 
         #{if my_data.is_pro then 'pro' else 'con'}"
@@ -968,7 +969,9 @@ Point = ReactiveComponent
         if @props.location_class == 'community_point'
           @renderIncluders()
 
-        Avatar tag: R.span, user: my_data.user_id, className:"point_author_avatar"
+
+        if !selected_segment[0] || ( author_opinion && author_opinion.stance_segment == selected_segment[0] )
+          Avatar tag: R.span, user: my_data.user_id, className:"point_author_avatar"
 
       R.div className:'point_content', style : { width: POINT_CONTENT_WIDTH },
         if @props.location_class == 'community_point'

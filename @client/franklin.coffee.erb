@@ -245,7 +245,6 @@ Proposal = ReactiveComponent
     proposer = if my_data.proposal.user_id then @data("user/#{my_data.proposal.user_id}") else null
 
     R.div className:'proposal', key:@props.long_id, 'data-page':page,
-      
       #description
       R.div className:'description_region', style : description_region_style, 
         R.div className: 'fixed_proposal_heading', my_data.proposal.name
@@ -266,9 +265,12 @@ Proposal = ReactiveComponent
     
       #feelings
       R.div className:'feelings_region', style : { width: BODY_WIDTH },
+        OpinionFilter() #error in current activerest implementation makes you have to put components that other components depend on earlier
+
         Histogram()
 
         Slider()
+
 
       #reasons
       R.div 
@@ -287,10 +289,6 @@ Proposal = ReactiveComponent
 # Histogram
 Histogram = ReactiveComponent
   displayName : 'Histogram'
-
-  getDefaultData : ->
-    # UI STATE
-    selected_segment : [null, null]
 
   getDefaultProps : ->
     opinions: []
@@ -390,7 +388,7 @@ Histogram = ReactiveComponent
     if @data('application').page == 'results'
       segment = $(ev.currentTarget).data('segment')
 
-      selected_segment = @data().selected_segment
+      selected_segment = @data('opinionfilter').selected_segment
 
       # If clicking on already hard-selected segment, then we'll deselect. 
       segment = if selected_segment[0] == segment && 
@@ -400,11 +398,11 @@ Histogram = ReactiveComponent
       #ignore mouseEnter and mouseLeave events if selection was via click
       return if selected_segment && selected_segment[1] && !click_select 
 
-      @data().selected_segment = [segment, click_select && segment]
+      @data('opinionfilter').selected_segment = [segment, click_select && segment]
       ev.stopPropagation()
 
   render : ->
-    selected_segment = @data().selected_segment
+    selected_segment = @data('opinionfilter').selected_segment
     users_to_highlight = @data(active_proposal_key()).highlighted_users    
     [num_columns, segments, avatar_size] = @buildHistogram() #todo: memoize
 
@@ -416,17 +414,16 @@ Histogram = ReactiveComponent
     R.table 
       className: 'histogram'
       onClick:@onClickHistogram
-      onMouseLeave: @onSelectSegment
+      # onMouseLeave: @onSelectSegment
       style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
         R.tr null, 
           for bars, idx in segments.reverse()
             segment = 6 - idx
             is_selected = selected_segment[0] == segment
             R.td 
-              className:"histogram_segment 
-                #{if is_selected then 'is_selected' else 'not_selected'}"
+              className:"histogram_segment #{if is_selected then 'is_selected' else 'not_selected'}"
               key:segment
-              onMouseEnter: @onSelectSegment
+              # onMouseEnter: @onSelectSegment
               'data-segment':segment
               style : { opacity: (if is_selected && !selected_segment[0]? then '1' else '1') }
             ,
@@ -444,7 +441,11 @@ Histogram = ReactiveComponent
                             height: avatar_size
                             width: avatar_size
                             opacity: if users_to_highlight && 
-                              !_.contains(users_to_highlight, opinion.user_id) then '.15' else '1.0'
+                              !_.contains(users_to_highlight, opinion.user_id) 
+                              then '.15' 
+                              else if selected_segment[0] == null || is_selected 
+                              then '1.0'
+                              else '.15'
               if segment == 6
                 R.div className:"histogram_segment_pole", 'Supporters'
               else if segment == 0
@@ -524,7 +525,6 @@ Slider = ReactiveComponent
             my_data.has_moved = true
         stop : (ev, ui) =>
           if @data('application').page == 'results'
-            console.log 'CHANGING!'
             @data('application').page = 'crafting'
 
   togglePage : (ev) ->
@@ -645,6 +645,34 @@ Slider = ReactiveComponent
       R.div className:'slider_labels', 
         R.h1 className:"histogram_label histogram_label_support", 'Supporters'
         R.h1 className:"histogram_label histogram_label_oppose", 'Opposers'
+
+##
+# OpinionFilter
+# Filters whose opinions are displayed
+OpinionFilter = ReactiveComponent
+  displayName: 'OpinionFilter'
+
+  getDefaultData : ->
+    # UI STATE
+    selected_segment : [null, null]
+
+  onSelectSegment : (segment) ->
+    if @data('application').page == 'results'
+      @data().selected_segment = [segment, segment != null]
+
+
+  render : ->
+    R.div className: 'opinion_filter_region',
+      R.div className: 'filter_heading', 'filter opinions'
+      R.a className: "filter_option #{if @data().selected_segment[0]==null then 'selected' else ''}", onClick: (=> @onSelectSegment(null)), 'show all opinions'        
+      R.a className: "filter_option #{if @data().selected_segment[0]==0 then 'selected' else ''}", onClick: (=> @onSelectSegment(0)), 'only entrenched opposers'
+      R.a className: "filter_option #{if @data().selected_segment[0]==1 then 'selected' else ''}", onClick: (=> @onSelectSegment(1)), 'only firm opposers'
+      R.a className: "filter_option #{if @data().selected_segment[0]==2 then 'selected' else ''}", onClick: (=> @onSelectSegment(2)), 'only leaning oppose'
+      R.a className: "filter_option #{if @data().selected_segment[0]==3 then 'selected' else ''}", onClick: (=> @onSelectSegment(3)), 'only neutrals'
+      R.a className: "filter_option #{if @data().selected_segment[0]==4 then 'selected' else ''}", onClick: (=> @onSelectSegment(4)), 'only leaning support'
+      R.a className: "filter_option #{if @data().selected_segment[0]==5 then 'selected' else ''}", onClick: (=> @onSelectSegment(5)), 'only firm supporters'
+      R.a className: "filter_option #{if @data().selected_segment[0]==6 then 'selected' else ''}", onClick: (=> @onSelectSegment(6)), 'only entrenched supporters'
+
 
 
 ##
@@ -784,7 +812,7 @@ CommunityPoints = ReactiveComponent
 
   buildPointsList : ->
     page = @data('application').page
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = @data('opinionfilter').selected_segment
     proposal_data = @data(active_proposal_key())
     included_points = proposal_data.included_points
     points = proposal_data.points
@@ -821,7 +849,7 @@ CommunityPoints = ReactiveComponent
     points
 
   render : ->
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = @data('opinionfilter').selected_segment
     page = @data('application').page
 
     #filter to pros or cons & down to points that haven't been included
@@ -896,7 +924,7 @@ Point = ReactiveComponent
     to_remove = [my_data.user_id]
 
     # only show includers from this stance segment if a segment is selected
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = @data('opinionfilter').selected_segment
     if selected_segment[0]?
       for includer in my_data.includers
         stance_segment = @data("opinion/#{includer}").stance_segment
@@ -953,7 +981,7 @@ Point = ReactiveComponent
 
   render : -> 
     my_data = @data()
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = @data('opinionfilter').selected_segment
     author_opinion = @data("opinion/#{my_data.user_id}")
 
     R.li 

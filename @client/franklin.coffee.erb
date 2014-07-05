@@ -252,13 +252,13 @@ Proposal = ReactiveComponent
         R.div className: 'context',
           Avatar 
             className: 'proposer_avatar'
-            user: my_data.proposal.user_id
+            key: my_data.proposal.user_id
             tag: R.img
             img_style: 'large'
             style: 
               visibility: if my_data.sticky_opinion then 'hidden' else 'visible'
           R.div className: 'proposal_category', "#{my_data.proposal.category} #{my_data.proposal.designator}"
-          R.div className: 'proposer_name', "by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
+          R.div className: 'proposer_name', "added by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
 
         R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: my_data.proposal.description}
 
@@ -434,7 +434,7 @@ Histogram = ReactiveComponent
                       for opinion in bar
                         Avatar 
                           tag: R.span, 
-                          key:"#{opinion.user_id}" 
+                          key: opinion.user_id
                           user: opinion.user_id
                           'data-segment':segment
                           style:
@@ -658,12 +658,12 @@ OpinionFilter = ReactiveComponent
 
   onSelectSegment : (segment) ->
     if @data('application').page == 'results'
-      @data().selected_segment = [segment, segment != null]
+      current_segment = @data().selected_segment
+      @data().selected_segment = if current_segment == segment then [null, null] else [segment, segment != null]
 
 
   render : ->
     R.div className: 'opinion_filter_region',
-      R.div className: 'filter_heading', 'filter opinions'
       R.a className: "filter_option #{if @data().selected_segment[0]==null then 'selected' else ''}", onClick: (=> @onSelectSegment(null)), 'show all opinions'        
       R.a className: "filter_option #{if @data().selected_segment[0]==0 then 'selected' else ''}", onClick: (=> @onSelectSegment(0)), 'only entrenched opposers'
       R.a className: "filter_option #{if @data().selected_segment[0]==1 then 'selected' else ''}", onClick: (=> @onSelectSegment(1)), 'only firm opposers'
@@ -960,9 +960,9 @@ Point = ReactiveComponent
         style[left_right] = -side_offset
 
         # Finally draw the guy
-        Avatar 
+        Avatar
+          key: includer
           tag: R.span
-          user: includer
           className: "point_includer_avatar"
           style: style
 
@@ -999,7 +999,7 @@ Point = ReactiveComponent
 
 
         if !selected_segment[0] || ( author_opinion && author_opinion.stance_segment == selected_segment[0] )
-          Avatar tag: R.span, user: my_data.user_id, className:"point_author_avatar"
+          Avatar tag: R.span, key: my_data.user_id, className:"point_author_avatar"
 
       R.div className:'point_content', style : { width: POINT_CONTENT_WIDTH },
         if @props.location_class == 'community_point'
@@ -1095,28 +1095,61 @@ NewPoint = ReactiveComponent
 # Displays a user's avatar
 # Supports straight up img src, or using the CSS-embedded b64 for each user
 Avatar = ReactiveComponent
+  has_multiple_instances_with_same_key: true
   displayName: 'Avatar'
+  
+  getDefaultData: -> 
+    show_details : false
 
   getDefaultProps : ->
-    user: -1 # defaults to anonymous user
+    key: -1 # defaults to anonymous user
     tag: R.img
     img_style: null #null defaults to the css-based b64 embedded images
 
-  render : ->
-    className = "#{@props.className} avatar"
-    id = "avatar-#{@props.user}"
+  componentWillUpdate : -> 
+    if @data().show_details
+      @insertUserName()
 
-    if @props.img_style && @props.user != -1
-      avatar_file_name = @data("user/#{@props.user}").avatar_file_name
+  insertUserName : ->
+    $el = $(@getDOMNode())
+    pos = $el.offset()
+
+    $name = $("<span class='hover_avatar_name'>#{@data("user/#{@props.key}").name}</span>")
+    $('body').append $name   # ugly!
+
+    $name.css 
+      left: pos.left - $name.width() / 2 + $el.width()/2
+      top: pos.top - $name.height()
+
+  showDetails : (ev) -> 
+    @data().show_details = true
+
+  hideDetails : (ev) -> 
+    $('.hover_avatar_name').remove()
+    @data().show_details = false
+
+  render : ->
+    show_details = @data().show_details
+    className = "#{@props.className} avatar"
+    id = "avatar-#{@props.key}"
+
+    if @props.img_style && @props.key != -1
+      avatar_file_name = @data("user/#{@props.key}").avatar_file_name
 
       if avatar_file_name
-        filename = "/system/avatars/#{@props.user}/#{@props.img_style}/#{avatar_file_name}"
+        filename = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
 
-    attrs = { className: className, id: id, 'data-id': @props.user } 
+    attrs = 
+      className: className
+      id: id
+      'data-id': @props.key
+      onMouseEnter: @showDetails
+      onMouseLeave: @hideDetails
+
     attrs.src = filename if filename
+    
 
-    @transferPropsTo @props.tag attrs 
-
+    @transferPropsTo @props.tag attrs
 
 
 Application = ReactiveComponent

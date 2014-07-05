@@ -499,15 +499,27 @@ $slider_handle_size: 22px
     left: 29px
 
 
-.save_opinion_button
-  border-radius: 16px
+=blue_button 
   background-color: $decision_board_text_color
   color: white
   font-size: 29px
+  margin-top: 20px
+  box-shadow: 0px 1px 0px darken($decision_board_text_color, 10%)
+
+.save_opinion_button, .cancel_opinion_button, .give_opinion_button2
+  border-radius: 16px
   text-align: center
-  margin: 20px 0
   padding: 3px
   cursor: pointer
+
+.save_opinion_button, .give_opinion_button2
+  +blue_button
+
+a.cancel_opinion_button
+  float: right
+  color: #aaa
+  margin-top: $vertical_baseline / 2
+
 
 /////////////////////
 // POINTS

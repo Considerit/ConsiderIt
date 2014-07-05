@@ -70,12 +70,14 @@ $proposer_img_size: 50px
 .fixed_proposal_heading
   position: fixed
   width: 100%
-  background-color: invert($decision_board_border_color)
-  border-bottom: 1px solid darken(invert($decision_board_border_color), 15%)  
-  color: white
+  border: solid lighten($base_text_color, 40%)
+  border-width: 1px 0px 2px 0px
+  //border-bottom-color: invert($decision_board_border_color)
+  //color: white
+  background-color: white
   +font-size(6)
   font-weight: 600
-  padding: $vertical_baseline/4 0
+  padding-top: $vertical_baseline/4
   top: 0
   left: 0
   z-index: 999
@@ -86,6 +88,7 @@ $proposer_img_size: 50px
 // The proposal details revealed 
 .proposal_details
   padding: $vertical_baseline / 2 0
+  +font-size(2)
 
   // some default styles for html written by users rendered here
   br
@@ -130,6 +133,9 @@ $proposer_img_size: 50px
 //   border-bottom-color: $extreme_supporter_color
 
 $segment_color: #db004d
+
+[data-page="crafting"] .histogram_segment .avatar
+  pointer-events: none
 
 [data-page="results"] .histogram_segment
   // &:hover
@@ -402,15 +408,21 @@ $slider_handle_size: 22px
   bottom: -200px
   +font-size(-1)
 
-  .filter_heading
-    display: none
-    text-decoration: underline
-    color: lighten($base_text_color, 20%)
-
   .filter_option
     display: block
+    color: lighten($base_text_color, 40%)
+
     &.selected
-      text-decoration: underline
+      // text-decoration: underline
+      color: $base_text_color
+      position: relative
+
+      &:before
+        position: absolute
+        content: '•'
+        left: -10px
+        top: 1px
+
 
 
 // Decision board

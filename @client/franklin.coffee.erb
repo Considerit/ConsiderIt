@@ -199,7 +199,7 @@ Proposal = ReactiveComponent
         _.delay => 
           #delay & check in case of quick switch between pages
           if @data('application').page == 'crafting'         
-            $el.find('.your_points, .save_opinion_button').css 'display', ''
+            $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', ''
         , duration
 
       when 'results'
@@ -225,7 +225,7 @@ Proposal = ReactiveComponent
         
         @applyStylesToElements styles, duration
 
-        $el.find('.your_points, .save_opinion_button').css 'display', 'none'
+        $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', 'none'
         _.delay => 
           #check in case of quick switch between pages
           if @data('application').page == 'results' 
@@ -284,6 +284,16 @@ Proposal = ReactiveComponent
 
           #community cons
           CommunityPoints { key: 'cons' }
+
+      if @data('application').page == 'results'
+        R.div 
+          className:'give_opinion_button2'
+          onClick: (=> @data('application').page = 'crafting' )
+          style: 
+            width: BODY_WIDTH
+            margin: 'auto'
+        , 'Give your Opinion'
+
 
 ##
 # Histogram
@@ -733,7 +743,13 @@ DecisionBoard = ReactiveComponent
       R.div 
         className:'save_opinion_button'
         onClick: (=> @data('application').page = 'results')
-      , 'Save and Explore the Results'
+      , 'Save your opinion and see results'
+
+      R.a 
+        className:'cancel_opinion_button'
+        onClick: (=> @data('application').page = 'results' )
+      , 'discard your opinion'
+
 
 
 ##

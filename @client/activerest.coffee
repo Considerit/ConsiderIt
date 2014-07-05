@@ -169,6 +169,7 @@ window.ActiveRESTCache = ActiveRESTCache
 
 ReactiveComponent = (obj) ->
 
+
   _.extend obj,
 
     _shouldComponentUpdate : (next_props, next_state) -> 
@@ -176,13 +177,23 @@ ReactiveComponent = (obj) ->
       @_dirty or 
       JSON.stringify([next_state, next_props]) != JSON.stringify([@state, @props])
 
+    # Components can override this method if they want to have a custom key for this component
+    _generateActiveRESTKey : -> 
+      base_key = "#{obj.displayName.toLowerCase()}#{ if @props.key then '/' + @props.key else ''}"      
+      if @has_multiple_instances_with_same_key
+        i = 0
+        i += 1 while ActiveREST.fetch("#{base_key}-#{i}")
+        "#{base_key}-#{i}"
+      else
+        base_key        
+
     _getInitialState : ->
       @_dirty = false
       @_subscribed_data = {}
 
       # initialize data stored at this component's ActiveREST key
-      @_activeREST_key = 
-        "#{obj.displayName.toLowerCase()}#{ if @props.key then '/' + @props.key else ''}"
+      @_activeREST_key = @_generateActiveRESTKey()
+        
 
       data = ActiveREST.fetch @_activeREST_key
       data = {} if !data
@@ -252,7 +263,7 @@ ReactiveComponent = (obj) ->
 
         when 'shouldComponentUpdate'
           @_shouldComponentUpdate arguments...
-
+          
       if old_method then (old_method.bind(this))(arguments...) else {}
 
   wrap name for name in to_wrap

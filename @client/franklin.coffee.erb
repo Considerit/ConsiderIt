@@ -149,6 +149,12 @@ Proposal = ReactiveComponent
   componentDidMount : (prev_props, prev_state) ->
     @setStickyHeader()
 
+  componentDidUpdate : ->
+    $el = $(@getDOMNode())
+    $el.find('.description_region').css
+      top: $el.find('.fixed_proposal_heading').height() + 24
+
+
   setStickyHeader : ->
     # Sticky decision board. 
     _.delay => 
@@ -239,15 +245,15 @@ Proposal = ReactiveComponent
     my_data = @data()
 
     description_region_style = 
-      width: 1.25 * BODY_WIDTH
-      top: if @isMounted() then $(@getDOMNode()).find('.fixed_proposal_heading').height() + 24 else 50
+      width: 1.5 * BODY_WIDTH
 
     proposer = if my_data.proposal.user_id then @data("user/#{my_data.proposal.user_id}") else null
 
     R.div className:'proposal', key:@props.long_id, 'data-page':page,
       #description
       R.div className:'description_region', style : description_region_style, 
-        R.div className: 'fixed_proposal_heading', my_data.proposal.name
+        R.div className: 'fixed_proposal_heading', 
+          R.span null, my_data.proposal.name
 
         R.div className: 'context',
           Avatar 
@@ -257,10 +263,14 @@ Proposal = ReactiveComponent
             img_style: 'large'
             style: 
               visibility: if my_data.sticky_opinion then 'hidden' else 'visible'
-          R.div className: 'proposal_category', "#{my_data.proposal.category} #{my_data.proposal.designator}"
-          R.div className: 'proposer_name', "added by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
+          
+          R.span className: 'proposal_author_tic'
+          
+          R.div className: 'proposer_name', "by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
 
-        R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: my_data.proposal.description}
+        R.div className: 'proposal_details', 
+          R.span className: 'proposal_category', "#{my_data.proposal.category} #{my_data.proposal.designator}"
+          R.span dangerouslySetInnerHTML:{__html: my_data.proposal.description}
 
     
       #feelings
@@ -275,7 +285,7 @@ Proposal = ReactiveComponent
       #reasons
       R.div 
         className:'reasons_region'
-        style : { width: REASONS_REGION_WIDTH, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
+        style : { width: REASONS_REGION_WIDTH }, #, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
           #community pros
           CommunityPoints { key: 'pros' }
             
@@ -1178,8 +1188,8 @@ Application = ReactiveComponent
   render : -> 
     R.div null,
       R.div className: 'l_header'
-      R.div id: 'body', style : { width: PAGE_WIDTH }, 
-        R.div id: 'inner_body', style : { width: CONTENT_WIDTH },
+      R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
+        R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },
           Proposal { key: @props.long_id }
       R.div className: 'l_footer'
 

@@ -8,9 +8,9 @@ namespace :user_test do
 
     proposal = Proposal.find(1584)
 
-    proposal.name = "Should Facebook stop doing business with advertisers and charge $10 a year per user?"
-    proposal.description = "<p>Facebook currently makes money by selling ad space throughout Facebook, and selling user data to advertisers.  Under this new model, Facebook would turn into a subscription service.  Facebook would stop all advertisements in Facebook and would also stop selling user data to advertisers.</p><p>This initiative would require facebook to stop selling user data, and replace it with a user fee.</p>"
-    proposal.category = 'EFF & ACLU Privacy Initiative'
+    proposal.name = "Should the EFF and ACLU join forces to lobby Facebook to stop selling user information to advertisers, and instead charge $10 a year per user?"
+    proposal.description = "<p>Facebook currently makes money by selling ad space throughout Facebook, and selling user data to advertisers.  We at the EFF and ACLU believe that we have a chance to convince Facebook to try a different revenue model. Under this new model, Facebook would turn into a subscription service.  Facebook would stop all advertisements in Facebook and would also stop selling user data to advertisers.</p>"
+    proposal.category = 'Privacy Initiative'
     proposal.designator = ''
 
     proposal.save

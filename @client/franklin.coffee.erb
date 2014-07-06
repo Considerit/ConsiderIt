@@ -610,9 +610,12 @@ Slider = ReactiveComponent
          skew(#{if segment in [0,6] then '10deg' else '0deg'})"
 
     # safari only respects -webkit-transform
-    webkitTransformProperty = (props) -> props['-webkit-transform'] = props.transform
+    crossbrowserTransformProperty = (props) -> _.extend props,
+      '-webkit-transform' : props.transform
+      '-ms-transform' : props.transform
+      '-moz-transform' : props.transform
 
-    webkitTransformProperty sty for sty in [
+    crossbrowserTransformProperty sty for sty in [
       face_left_eye_style, face_right_eye_style, face_mouth_style]
 
     # ugly access here...this is a hack that hides a dependency between slider and histogram 
@@ -889,8 +892,8 @@ CommunityPoints = ReactiveComponent
     , 
       R.div className:'points_heading_label', 
         if page == 'results' then "Top #{label}" else "Others' #{label}"
-        R.p { className:'points_segment_label' }, 
-          if !selected_segment[0]? then '-' else "for #{stance_names[selected_segment[0]]}s"          
+        R.p className:'points_segment_label', style: {visibility: if selected_segment[0] == null then 'hidden' else 'visible'},
+          if selected_segment[0] == null then '-' else "for #{stance_names[selected_segment[0]]}s"          
 
       R.ul null, 
         if points.length > 0

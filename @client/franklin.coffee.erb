@@ -954,7 +954,7 @@ Point = ReactiveComponent
     if selected_segment[0]?
       for includer in my_data.includers
         stance_segment = @data("opinion/#{includer}").stance_segment
-        if !stance_segment || stance_segment != selected_segment[0]
+        if stance_segment && stance_segment != selected_segment[0]
           to_remove.push(includer)
 
     _.difference my_data.includers, to_remove

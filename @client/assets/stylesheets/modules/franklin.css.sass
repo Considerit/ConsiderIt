@@ -213,12 +213,14 @@ $segment_color: #db004d
   font-size: 0
   vertical-align: bottom
   +transform(rotate(180deg))    
+  -ms-transform: rotate(0)
 
   .avatar
-    +transform(rotate(180deg))
     border-radius: 50%
     background-color: $default_avatar_in_histogram_color
     background-image: none
+    +transform(rotate(180deg))
+    -ms-transform: rotate(0)
 
   //////////
   // When there are multiple colums in a bar, need to prevent putting the row with least faces at the bottom

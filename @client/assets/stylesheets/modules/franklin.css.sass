@@ -44,7 +44,7 @@ $proposer_img_size: 50px
 .context
   position: relative
   margin-top: $vertical_baseline/2
-.proposer_name, .proposal_category
+.proposer_name //, .proposal_category
   color: lighten($base_text_color, 35%)
   +font-size(0)
 
@@ -78,7 +78,7 @@ $proposal_header_color: invert($decision_board_border_color)
   border-right: 10px solid transparent  
   border-top: 12px solid $proposal_header_color
   position: absolute
-  top: -33px
+  top: -34px
 
 .proposal_heading
   padding: 0 $grid_gutter $vertical_baseline / 2 $grid_gutter
@@ -97,7 +97,7 @@ $proposal_header_color: invert($decision_board_border_color)
   color: white
   +font-size(6)
   // font-weight: 600
-  padding: $vertical_baseline/8 0
+  padding: $vertical_baseline/8 $grid_gutter / 2
   top: 0
   left: 0
   z-index: 999

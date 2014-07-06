@@ -253,7 +253,7 @@ Proposal = ReactiveComponent
       #description
       R.div className:'description_region', style : description_region_style, 
         R.div className: 'fixed_proposal_heading', 
-          R.span null, my_data.proposal.name
+          R.span null,"#{my_data.proposal.category} #{my_data.proposal.designator}: #{my_data.proposal.name}"
 
         R.div className: 'context',
           Avatar 
@@ -268,9 +268,7 @@ Proposal = ReactiveComponent
           
           R.div className: 'proposer_name', "by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
 
-        R.div className: 'proposal_details', 
-          R.span className: 'proposal_category', "#{my_data.proposal.category} #{my_data.proposal.designator}"
-          R.span dangerouslySetInnerHTML:{__html: my_data.proposal.description}
+        R.div className: 'proposal_details', dangerouslySetInnerHTML:{__html: my_data.proposal.description}
 
     
       #feelings

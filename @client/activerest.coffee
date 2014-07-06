@@ -22,7 +22,12 @@ class ActiveRESTCache
   _cache : {} #all the data
   _routes_loaded : {} #keys that have already been fetched from server
 
-  constructor : (options) -> @options = _.defaults options, {routes : {}}
+  constructor : (options) -> 
+    @options = _.defaults options, {routes : {}}
+
+    # cache route regex
+    for key in _.keys @options.routes 
+      @options.routes[key] = [new RegExp(key), @options.routes[key]]
 
   fetch : (key) -> 
 
@@ -62,10 +67,9 @@ class ActiveRESTCache
 
   # Tries to identify a server endpoint for this key
   _endpoint : (key) ->
-    for endpoint in _.keys(@options.routes)
-      regex = new RegExp endpoint, "g"
-      if regex.test key
-        return @options.routes[endpoint]
+    for route_key in _.keys(@options.routes)
+      if @options.routes[route_key][0].test key
+        return @options.routes[route_key][1]
     return false
 
   # ##########
@@ -263,7 +267,7 @@ ReactiveComponent = (obj) ->
 
         when 'shouldComponentUpdate'
           @_shouldComponentUpdate arguments...
-          
+
       if old_method then (old_method.bind(this))(arguments...) else {}
 
   wrap name for name in to_wrap

@@ -56,6 +56,13 @@ getStanceSegment = (value) ->
       return i
   return 6
 
+togglePage = (page) -> 
+  $('.histogram_segment_pole').ensureInView
+    offset_buffer: 150
+    callback : -> 
+      top_level_component.data('application').page = page
+
+
 stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 stance_names = 
@@ -158,9 +165,9 @@ Proposal = ReactiveComponent
   setStickyHeader : ->
     # Sticky decision board. 
     _.delay => 
-      $sticky_head_el = $(@getDOMNode()).find('.slider_base .the_handle')
+      $sticky_head_el = $(@getDOMNode()).find('.slider_base')
       $(@getDOMNode()).headroom
-        offset: $sticky_head_el.offset().top - 60
+        offset: $sticky_head_el.offset().top - 100 #+ $sticky_head_el.width() / 2 - 60
         onNotTop : => @data().sticky_opinion = true
         onTop : => @data().sticky_opinion = false
     , 2000  # delay initialization to let the rest of the dom load 
@@ -245,7 +252,7 @@ Proposal = ReactiveComponent
     my_data = @data()
 
     description_region_style = 
-      width: 1.5 * BODY_WIDTH
+      width: 1.25 * BODY_WIDTH
 
     proposer = if my_data.proposal.user_id then @data("user/#{my_data.proposal.user_id}") else null
 
@@ -296,7 +303,7 @@ Proposal = ReactiveComponent
       if @data('application').page == 'results'
         R.div 
           className:'give_opinion_button2'
-          onClick: (=> @data('application').page = 'crafting' )
+          onClick: (=> togglePage('crafting'))
           style: 
             width: BODY_WIDTH
             margin: 'auto'
@@ -400,7 +407,7 @@ Histogram = ReactiveComponent
   onClickHistogram : (ev) ->
     page = @data('application').page
     if page == 'crafting'
-      @data('application').page = 'results'
+      togglePage('results')
 
   onSelectSegment : (ev) ->
     if @data('application').page == 'results'
@@ -543,10 +550,11 @@ Slider = ReactiveComponent
             my_data.has_moved = true
         stop : (ev, ui) =>
           if @data('application').page == 'results'
-            @data('application').page = 'crafting'
+            togglePage('crafting')
 
   togglePage : (ev) ->
-    @data('application').page = if @data('application').page == 'results' then 'crafting' else 'results'
+    page = if @data('application').page == 'results' then 'crafting' else 'results'
+    togglePage(page)
     ev.stopPropagation()
 
   render : ->
@@ -663,10 +671,6 @@ Slider = ReactiveComponent
               then 'Drag Your Overall Opinion' 
               else slider_feedback_bucket
 
-      R.div className:'slider_labels', 
-        R.h1 className:"histogram_label histogram_label_support", 'Supporters'
-        R.h1 className:"histogram_label histogram_label_oppose", 'Opposers'
-
 ##
 # OpinionFilter
 # Filters whose opinions are displayed
@@ -735,7 +739,7 @@ DecisionBoard = ReactiveComponent
     R.div className:'opinion_region', style: opinion_region_style,
       R.div 
         className:'decision_board_body'
-        onClick: => if @data('application').page == 'results' then @data('application').page = 'crafting'
+        onClick: => if @data('application').page == 'results' then togglePage('crafting')
       ,
 
         # only shown during crafting, but needs to be present always for animation
@@ -753,12 +757,12 @@ DecisionBoard = ReactiveComponent
 
       R.div 
         className:'save_opinion_button'
-        onClick: (=> @data('application').page = 'results')
+        onClick: (=> togglePage('results'))
       , 'Save your opinion and see results'
 
       R.a 
         className:'cancel_opinion_button'
-        onClick: (=> @data('application').page = 'results' )
+        onClick: (=> togglePage('results'))
       , 'discard your opinion'
 
 

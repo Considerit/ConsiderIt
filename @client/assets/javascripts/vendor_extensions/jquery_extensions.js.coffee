@@ -1,12 +1,14 @@
 do ($) ->
 
   $.fn.ensureInView = (options = {}) ->
+
     _.defaults options,
       fill_threshold: .5
       offset_buffer: 50
       scroll: true
       position: 'top' 
       speed: null
+      callback: ->
 
     $el = $(this)
 
@@ -24,7 +26,7 @@ do ($) ->
     top_inside = el_top > doc_top && (doc_bottom - el_top) > options.fill_threshold * el_height    
     in_viewport = is_onscreen || top_inside || bottom_inside  
 
-    # console.log "amount: #{fill_threshold}"
+    # console.log "amount: #{options.fill_threshold}"
     # console.log "el_top: #{el_top}, el_bottom: #{el_bottom}"
     # console.log "doc_top: #{doc_top}, doc_bottom: #{doc_bottom}"
     # console.log "onscreen: #{is_onscreen}, top_inside: #{top_inside}, bottom_inside: #{bottom_inside}"
@@ -40,9 +42,17 @@ do ($) ->
 
       if options.scroll
         distance_to_travel = options.speed || Math.abs( doc_top - target )
-        $('body').animate {scrollTop: target}, distance_to_travel
+        $el.velocity 'scroll', 
+          duration: Math.min(distance_to_travel, 1500)
+          offset: -options.offset_buffer
+          complete: options.callback
+        , 'ease-in'
+
       else 
         $(document).scrollTop target
+        options.callback()
+    else
+      options.callback()
 
 
   $.fn.moveToBottom = (offset_buffer = 50, scroll = false) ->

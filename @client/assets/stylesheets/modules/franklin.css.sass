@@ -169,9 +169,6 @@ $segment_color: #db004d
     // .avatar
     //   background-color: lighten(desaturate($segment_color, 60%), 25%)
 
-    .histogram_segment_label
-      color: $segment_color
-
   &.not_selected
     .avatar
       opacity: .05
@@ -195,18 +192,6 @@ $segment_color: #db004d
   +font-size(6)
   bottom: -20px
   pointer-events: none
-
-.histogram_segment_label
-  display: none
-  position: absolute
-  font-variant: small-caps
-  text-transform: lowercase
-  +font-size(-2)
-  bottom: -20px
-  width: 100%
-  text-align: center
-  font-weight: 200
-
 
 .histogram_bar
   display: inline-block
@@ -298,12 +283,8 @@ $slider_handle_size: 22px
   background-color: rgba($base_background_color, .2)
   pointer-events: none // clicking on this interferes with slider and toggle state
 
-  .slider_feedback_label, .slider_feedback_result, .slider_feedback_instructions
+  .slider_feedback_result, .slider_feedback_instructions
     text-align: center
-
-  .slider_feedback_label
-    +font-size(-1)
-    font-weight: 200
 
   .slider_feedback_result
     +font-size(6)
@@ -332,11 +313,6 @@ $slider_handle_size: 22px
   position: absolute
   bottom: -37px
   z-index: -1 // so that it doesn't sit on top of users on histogram
-
-  .histogram_label
-    +font-size(6)
-    font-weight: 200
-    color: #777777
 
   .histogram_label_support
     float: left
@@ -678,7 +654,7 @@ $point-includer-width: 22px
     padding: 0 6px
     color: $base_text_color    
   .qualifier
-    font-weight: 100
+    font-weight: 200
     color: $base_text_color
 
 

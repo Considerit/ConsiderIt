@@ -1062,7 +1062,7 @@ Point = ReactiveComponent
                 R.div className: 'point_details', dangerouslySetInnerHTML:{__html: my_data.text}
             else
               R.span className: 'point_details_tease', 
-                $("<span>#{my_data.text[0..210-my_data.nutshell.length]}</span>").text() + " >>"
+                $("<span>#{my_data.text[0..210-my_data.nutshell.length]}</span>").text() + "... [more]"
 
         # R.a className:'open_point_link',
         #   "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"

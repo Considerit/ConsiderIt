@@ -56,6 +56,13 @@ getStanceSegment = (value) ->
       return i
   return 6
 
+togglePage = (page) -> 
+  $('.histogram_segment_pole').ensureInView
+    offset_buffer: 150
+    callback : -> 
+      top_level_component.data('application').page = page
+
+
 stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 stance_names = 
@@ -140,25 +147,46 @@ Proposal = ReactiveComponent
     opinions : []
     # UI STATE
     highlighted_users : null
-    sticky_mode : false
+    sticky_opinion : false
+    sticky_proposal_title: false
 
   ##
   # Lifecycle methods
 
   componentDidMount : (prev_props, prev_state) ->
+
+  componentDidUpdate : ->
     @setStickyHeader()
+
+    $el = $(@getDOMNode())
+    $el.find('.description_region').css
+      top: $el.find('.fixed_proposal_heading').height() + 24
+
 
   setStickyHeader : ->
     # Sticky decision board. 
     _.delay => 
-      $sticky_head_el = $(@getDOMNode()).find('.slider_base .the_handle')
+      $el = $(@getDOMNode())
+      $sticky_head_el = $el.find('.slider_base')
       $(@getDOMNode()).headroom
-        offset: $sticky_head_el.offset().top - 5
-        onNotTop : => 
-          @data().sticky_mode = true
-        onTop : => @data().sticky_mode = false
+        offset: $sticky_head_el.offset().top - $el.find('.fixed_proposal_heading').outerHeight() - 55 #+ $sticky_head_el.width() / 2 - 60
+        onNotTop : => @data().sticky_opinion = true
+        onTop : => @data().sticky_opinion = false
     , 2000  # delay initialization to let the rest of the dom load 
             # so that the offset is calculated properly
+
+    # # Sticky proposal title
+    # _.delay => 
+    #   $sticky_head_el = $(@getDOMNode()).find('.proposal_heading')
+    #   $(@getDOMNode()).find('.description_region').headroom
+    #     offset: $sticky_head_el.offset().top + 25
+    #     onNotTop : => 
+    #       @data().sticky_proposal_title = true
+    #     onTop : => @data().sticky_proposal_title = false
+    # , 2000  # delay initialization to let the rest of the dom load 
+    #         # so that the offset is calculated properly
+
+    
 
   ##
   # State-dependent styling
@@ -186,7 +214,7 @@ Proposal = ReactiveComponent
         _.delay => 
           #delay & check in case of quick switch between pages
           if @data('application').page == 'crafting'         
-            $el.find('.your_points, .save_opinion_button').css 'display', ''
+            $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', ''
         , duration
 
       when 'results'
@@ -212,7 +240,7 @@ Proposal = ReactiveComponent
         
         @applyStylesToElements styles, duration
 
-        $el.find('.your_points, .save_opinion_button').css 'display', 'none'
+        $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', 'none'
         _.delay => 
           #check in case of quick switch between pages
           if @data('application').page == 'results' 
@@ -223,27 +251,48 @@ Proposal = ReactiveComponent
   # Make this thing!
   render : ->
     page = @data('application').page
-    my_data = @data()    
+    my_data = @data()
+
+    description_region_style = 
+      width: 1.25 * BODY_WIDTH
+
+    proposer = if my_data.proposal.user_id then @data("user/#{my_data.proposal.user_id}") else null
 
     R.div className:'proposal', key:@props.long_id, 'data-page':page,
-      
       #description
-      R.div className:'description_region', style : { width: 1.25 * BODY_WIDTH }, 
-        Avatar className: 'proposal_proposer', user: my_data.proposal.user_id, tag: R.img, img_style: 'large'
-        R.div className: 'proposal_category', "#{my_data.proposal.category} #{my_data.proposal.designator}"
-        R.h1 className:'proposal_heading', my_data.proposal.name
-        R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: my_data.proposal.description}
+      R.div className:'description_region', style : description_region_style, 
+        R.div className: 'fixed_proposal_heading', 
+          R.span null,"#{my_data.proposal.category} #{my_data.proposal.designator}: #{my_data.proposal.name}"
+
+        R.div className: 'context',
+          Avatar 
+            className: 'proposer_avatar'
+            key: my_data.proposal.user_id
+            tag: R.img
+            img_style: 'large'
+            style: 
+              visibility: if my_data.sticky_opinion then 'hidden' else 'visible'
+          
+          R.span className: 'proposal_author_tic'
+          
+          R.div className: 'proposer_name', "by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
+
+        R.div className: 'proposal_details', dangerouslySetInnerHTML:{__html: my_data.proposal.description}
+
     
       #feelings
       R.div className:'feelings_region', style : { width: BODY_WIDTH },
+        OpinionFilter() #error in current activerest implementation makes you have to put components that other components depend on earlier
+
         Histogram()
 
         Slider()
 
+
       #reasons
       R.div 
         className:'reasons_region'
-        style : { width: REASONS_REGION_WIDTH, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
+        style : { width: REASONS_REGION_WIDTH }, #, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
           #community pros
           CommunityPoints { key: 'pros' }
             
@@ -253,14 +302,20 @@ Proposal = ReactiveComponent
           #community cons
           CommunityPoints { key: 'cons' }
 
+      if @data('application').page == 'results'
+        R.div 
+          className:'give_opinion_button2'
+          onClick: (=> togglePage('crafting'))
+          style: 
+            width: BODY_WIDTH
+            margin: 'auto'
+        , 'Give your Opinion'
+
+
 ##
 # Histogram
 Histogram = ReactiveComponent
   displayName : 'Histogram'
-
-  getDefaultData : ->
-    # UI STATE
-    selected_segment : [null, null]
 
   getDefaultProps : ->
     opinions: []
@@ -354,13 +409,13 @@ Histogram = ReactiveComponent
   onClickHistogram : (ev) ->
     page = @data('application').page
     if page == 'crafting'
-      @data('application').page = 'results'
+      togglePage('results')
 
   onSelectSegment : (ev) ->
     if @data('application').page == 'results'
       segment = $(ev.currentTarget).data('segment')
 
-      selected_segment = @data().selected_segment
+      selected_segment = @data('opinionfilter').selected_segment
 
       # If clicking on already hard-selected segment, then we'll deselect. 
       segment = if selected_segment[0] == segment && 
@@ -370,11 +425,11 @@ Histogram = ReactiveComponent
       #ignore mouseEnter and mouseLeave events if selection was via click
       return if selected_segment && selected_segment[1] && !click_select 
 
-      @data().selected_segment = [segment, click_select && segment]
+      @data('opinionfilter').selected_segment = [segment, click_select && segment]
       ev.stopPropagation()
 
   render : ->
-    selected_segment = @data().selected_segment
+    selected_segment = @data('opinionfilter').selected_segment
     users_to_highlight = @data(active_proposal_key()).highlighted_users    
     [num_columns, segments, avatar_size] = @buildHistogram() #todo: memoize
 
@@ -386,17 +441,16 @@ Histogram = ReactiveComponent
     R.table 
       className: 'histogram'
       onClick:@onClickHistogram
-      onMouseLeave: @onSelectSegment
+      # onMouseLeave: @onSelectSegment
       style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
         R.tr null, 
           for bars, idx in segments.reverse()
             segment = 6 - idx
             is_selected = selected_segment[0] == segment
             R.td 
-              className:"histogram_segment 
-                #{if is_selected then 'is_selected' else 'not_selected'}"
+              className:"histogram_segment #{if is_selected then 'is_selected' else 'not_selected'}"
               key:segment
-              onMouseEnter: @onSelectSegment
+              # onMouseEnter: @onSelectSegment
               'data-segment':segment
               style : { opacity: (if is_selected && !selected_segment[0]? then '1' else '1') }
             ,
@@ -407,14 +461,18 @@ Histogram = ReactiveComponent
                       for opinion in bar
                         Avatar 
                           tag: R.span, 
-                          key:"#{opinion.user_id}" 
+                          key: opinion.user_id
                           user: opinion.user_id
                           'data-segment':segment
                           style:
                             height: avatar_size
                             width: avatar_size
                             opacity: if users_to_highlight && 
-                              !_.contains(users_to_highlight, opinion.user_id) then '.15' else '1.0'
+                              !_.contains(users_to_highlight, opinion.user_id) 
+                              then '.15' 
+                              else if selected_segment[0] == null || is_selected 
+                              then '1.0'
+                              else '.15'
               if segment == 6
                 R.div className:"histogram_segment_pole", 'Supporters'
               else if segment == 0
@@ -473,10 +531,10 @@ Slider = ReactiveComponent
     page = @data('application').page
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
-      $slider_base.slider(if page == 'results' then 'disable' else 'enable') 
+      $slider_base.slider(if page == 'results' then 'enable' else 'enable') 
     else
       $slider_base.slider
-        disabled: @data('application').page == 'results'
+        disabled: false #@data('application').page == 'results'
         min: -1
         max: 1
         step: .01
@@ -485,14 +543,20 @@ Slider = ReactiveComponent
           # Update the stance segment if it has changed. This facilitates 
           # the feedback atop the slider changing from e.g. 'strong 
           # supporter' to 'neutral'
+          return false if ev.originalEvent.type != 'mousemove'
+
           my_data = @data()
           my_data.stance_segment = getStanceSegment -ui.value
           my_data.stance = -ui.value
           if !my_data.has_moved
             my_data.has_moved = true
+        stop : (ev, ui) =>
+          if @data('application').page == 'results'
+            togglePage('crafting')
 
   togglePage : (ev) ->
-    @data('application').page = if @data('application').page == 'results' then 'crafting' else 'results'
+    page = if @data('application').page == 'results' then 'crafting' else 'results'
+    togglePage(page)
     ev.stopPropagation()
 
   render : ->
@@ -500,7 +564,7 @@ Slider = ReactiveComponent
     stance = my_data.stance
     segment = my_data.stance_segment
     page = @data('application').page
-    sticky_mode = @data(active_proposal_key()).sticky_mode
+    sticky_opinion = @data(active_proposal_key()).sticky_opinion
 
     #jquery UI slider will pick an el with this class name up
     props_for_slider_handle = { className:'ui-slider-handle' } 
@@ -528,10 +592,16 @@ Slider = ReactiveComponent
       else "#{Math.floor(Math.abs(stance) * 100)}% #{if segment > 3 then 'Support' else 'Oppose'}"
 
     slider_feedback_bucket = stance_names[segment]
+    
+    # nasty, reference to other sticky components' height...
+    if sticky_opinion
+      sticky_top = $('.fixed_proposal_heading').outerHeight() + 55
+    ## 
+
     slider_style = 
-      if !sticky_mode || page == 'results' 
+      if !sticky_opinion || page == 'results' 
       then {}
-      else { position: 'fixed', top: 40, backgroundColor: 'white', zIndex: 100 }
+      else { position: 'fixed', top: sticky_top, backgroundColor: 'white', zIndex: 100 }
 
     
     face_left_eye_style = 
@@ -554,14 +624,17 @@ Slider = ReactiveComponent
          skew(#{if segment in [0,6] then '10deg' else '0deg'})"
 
     # safari only respects -webkit-transform
-    webkitTransformProperty = (props) -> props['-webkit-transform'] = props.transform
+    crossbrowserTransformProperty = (props) -> _.extend props,
+      '-webkit-transform' : props.transform
+      '-ms-transform' : props.transform
+      '-moz-transform' : props.transform
 
-    webkitTransformProperty sty for sty in [
+    crossbrowserTransformProperty sty for sty in [
       face_left_eye_style, face_right_eye_style, face_mouth_style]
 
     # ugly access here...this is a hack that hides a dependency between slider and histogram 
     triangle_width = 
-      if sticky_mode 
+      if sticky_opinion 
       then 0 
       else $('.histogram_segment[data-segment="0"]').width() + 5
     # /ugly
@@ -588,7 +661,11 @@ Slider = ReactiveComponent
             R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
             R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
           R.img className:'bubblemouth', src: bubblemouth_src
-          R.div className:'slider_feedback', 'data-stance-segment': segment, 
+          R.div 
+            className:'slider_feedback'
+            'data-stance-segment': segment
+            style: {visibility: if sticky_opinion then 'hidden' else 'visible'}
+          ,
             R.div 
               className:'slider_feedback_instructions'
               style : 
@@ -602,9 +679,33 @@ Slider = ReactiveComponent
               then 'Drag Your Overall Opinion' 
               else slider_feedback_bucket
 
-      R.div className:'slider_labels', 
-        R.h1 className:"histogram_label histogram_label_support", 'Supporters'
-        R.h1 className:"histogram_label histogram_label_oppose", 'Opposers'
+##
+# OpinionFilter
+# Filters whose opinions are displayed
+OpinionFilter = ReactiveComponent
+  displayName: 'OpinionFilter'
+
+  getDefaultData : ->
+    # UI STATE
+    selected_segment : [null, null]
+
+  onSelectSegment : (segment) ->
+    if @data('application').page == 'results'
+      current_segment = @data().selected_segment
+      @data().selected_segment = if current_segment == segment then [null, null] else [segment, segment != null]
+
+
+  render : ->
+    R.div className: 'opinion_filter_region',
+      R.a className: "filter_option #{if @data().selected_segment[0]==null then 'selected' else ''}", onClick: (=> @onSelectSegment(null)), 'show all opinions'        
+      R.a className: "filter_option #{if @data().selected_segment[0]==0 then 'selected' else ''}", onClick: (=> @onSelectSegment(0)), 'only entrenched opposers'
+      R.a className: "filter_option #{if @data().selected_segment[0]==1 then 'selected' else ''}", onClick: (=> @onSelectSegment(1)), 'only firm opposers'
+      R.a className: "filter_option #{if @data().selected_segment[0]==2 then 'selected' else ''}", onClick: (=> @onSelectSegment(2)), 'only leaning oppose'
+      R.a className: "filter_option #{if @data().selected_segment[0]==3 then 'selected' else ''}", onClick: (=> @onSelectSegment(3)), 'only neutrals'
+      R.a className: "filter_option #{if @data().selected_segment[0]==4 then 'selected' else ''}", onClick: (=> @onSelectSegment(4)), 'only leaning support'
+      R.a className: "filter_option #{if @data().selected_segment[0]==5 then 'selected' else ''}", onClick: (=> @onSelectSegment(5)), 'only firm supporters'
+      R.a className: "filter_option #{if @data().selected_segment[0]==6 then 'selected' else ''}", onClick: (=> @onSelectSegment(6)), 'only entrenched supporters'
+
 
 
 ##
@@ -632,19 +733,30 @@ DecisionBoard = ReactiveComponent
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
   render : ->
-    sticky_mode = @data(active_proposal_key()).sticky_mode
+    sticky_opinion = @data(active_proposal_key()).sticky_opinion
     page = @data('application').page
 
-    sticky_header = sticky_mode && page == 'crafting'
+
+
+    sticky_header = sticky_opinion && page == 'crafting'
+
+    # nasty, reference to other sticky components' height...
+    if sticky_header
+      sticky_top = $('.fixed_proposal_heading').outerHeight() + 101
+    ## 
+
     opinion_region_style = 
       position: if sticky_header then 'fixed' else ''
-      top: if sticky_header then 85 else ''
+      top: if sticky_header then sticky_top else ''
       left: '50%'
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
     R.div className:'opinion_region', style: opinion_region_style,
-      R.div className:'decision_board_body',
+      R.div 
+        className:'decision_board_body'
+        onClick: => if @data('application').page == 'results' then togglePage('crafting')
+      ,
 
         # only shown during crafting, but needs to be present always for animation
         R.div className: 'your_points',
@@ -657,13 +769,18 @@ DecisionBoard = ReactiveComponent
         # only shown during results, but needs to be present always for animation
         R.a 
           className:'give_opinion_button'
-          onClick: (=> @data('application').page = 'crafting')
         , 'Give your Opinion'
 
       R.div 
         className:'save_opinion_button'
-        onClick: (=> @data('application').page = 'results')
-      , 'Save and Explore the Results'
+        onClick: (=> togglePage('results'))
+      , 'Save your opinion and see results'
+
+      R.a 
+        className:'cancel_opinion_button'
+        onClick: (=> togglePage('results'))
+      , 'discard your opinion'
+
 
 
 ##
@@ -742,7 +859,7 @@ CommunityPoints = ReactiveComponent
 
   buildPointsList : ->
     page = @data('application').page
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = @data('opinionfilter').selected_segment
     proposal_data = @data(active_proposal_key())
     included_points = proposal_data.included_points
     points = proposal_data.points
@@ -779,7 +896,7 @@ CommunityPoints = ReactiveComponent
     points
 
   render : ->
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = @data('opinionfilter').selected_segment
     page = @data('application').page
 
     #filter to pros or cons & down to points that haven't been included
@@ -793,8 +910,8 @@ CommunityPoints = ReactiveComponent
     , 
       R.div className:'points_heading_label', 
         if page == 'results' then "Top #{label}" else "Others' #{label}"
-        R.p { className:'points_segment_label' }, 
-          if !selected_segment[0]? then '-' else "for #{stance_names[selected_segment[0]]}s"          
+        R.p className:'points_segment_label', style: {visibility: if selected_segment[0] == null then 'hidden' else 'visible'},
+          if selected_segment[0] == null then '-' else "for #{stance_names[selected_segment[0]]}s"          
 
       R.ul null, 
         if points.length > 0
@@ -854,11 +971,11 @@ Point = ReactiveComponent
     to_remove = [my_data.user_id]
 
     # only show includers from this stance segment if a segment is selected
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = @data('opinionfilter').selected_segment
     if selected_segment[0]?
       for includer in my_data.includers
         stance_segment = @data("opinion/#{includer}").stance_segment
-        if !stance_segment || stance_segment != selected_segment[0]
+        if stance_segment && stance_segment != selected_segment[0]
           to_remove.push(includer)
 
     _.difference my_data.includers, to_remove
@@ -875,7 +992,7 @@ Point = ReactiveComponent
         dx: 2
         dy: 5
         col_gap: 8
-        side_offset: 38 + 14 + 1
+        side_offset: 32 + 14 + 1
 
       # Now we'll go through the list from back to front
       i = includers.length
@@ -884,15 +1001,15 @@ Point = ReactiveComponent
         i -= 1
         curr_column = Math.floor(i / s.rows)
         side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
-        top_offset = (i % s.rows) * s.dy + 16
+        top_offset = (i % s.rows) * s.dy + 4
         left_right = if @data().is_pro then 'left' else 'right'
         style = { top: top_offset }
         style[left_right] = -side_offset
 
         # Finally draw the guy
-        Avatar 
+        Avatar
+          key: includer
           tag: R.span
-          user: includer
           className: "point_includer_avatar"
           style: style
 
@@ -911,6 +1028,9 @@ Point = ReactiveComponent
 
   render : -> 
     my_data = @data()
+    selected_segment = @data('opinionfilter').selected_segment
+    author_opinion = @data("opinion/#{my_data.user_id}")
+
     R.li 
       className: "point closed_point #{@props.location_class} 
         #{if my_data.is_pro then 'pro' else 'con'}"
@@ -924,7 +1044,9 @@ Point = ReactiveComponent
         if @props.location_class == 'community_point'
           @renderIncluders()
 
-        Avatar tag: R.span, user: my_data.user_id, className:"point_author_avatar"
+
+        if !selected_segment[0] || ( author_opinion && author_opinion.stance_segment == selected_segment[0] )
+          Avatar tag: R.span, key: my_data.user_id, className:"point_author_avatar"
 
       R.div className:'point_content', style : { width: POINT_CONTENT_WIDTH },
         if @props.location_class == 'community_point'
@@ -940,7 +1062,7 @@ Point = ReactiveComponent
                 R.div className: 'point_details', dangerouslySetInnerHTML:{__html: my_data.text}
             else
               R.span className: 'point_details_tease', 
-                $("<span>#{my_data.text[0..210-my_data.nutshell.length]}</span>").text() + " >>"
+                $("<span>#{my_data.text[0..210-my_data.nutshell.length]}</span>").text() + "... [more]"
 
         # R.a className:'open_point_link',
         #   "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"
@@ -1020,28 +1142,61 @@ NewPoint = ReactiveComponent
 # Displays a user's avatar
 # Supports straight up img src, or using the CSS-embedded b64 for each user
 Avatar = ReactiveComponent
+  has_multiple_instances_with_same_key: true
   displayName: 'Avatar'
+  
+  getDefaultData: -> 
+    show_details : false
 
   getDefaultProps : ->
-    user: -1 # defaults to anonymous user
+    key: -1 # defaults to anonymous user
     tag: R.img
     img_style: null #null defaults to the css-based b64 embedded images
 
-  render : ->
-    className = "#{@props.className} avatar"
-    id = "avatar-#{@props.user}"
+  componentWillUpdate : -> 
+    if @data().show_details
+      @insertUserName()
 
-    if @props.img_style && @props.user != -1
-      avatar_file_name = @data("user/#{@props.user}").avatar_file_name
+  insertUserName : ->
+    $el = $(@getDOMNode())
+    pos = $el.offset()
+
+    $name = $("<span class='hover_avatar_name'>#{@data("user/#{@props.key}").name}</span>")
+    $('body').append $name   # ugly!
+
+    $name.css 
+      left: pos.left - $name.width() / 2 + $el.width()/2
+      top: pos.top - $name.height()
+
+  showDetails : (ev) -> 
+    @data().show_details = true
+
+  hideDetails : (ev) -> 
+    $('.hover_avatar_name').remove()
+    @data().show_details = false
+
+  render : ->
+    show_details = @data().show_details
+    className = "#{@props.className} avatar"
+    id = "avatar-#{@props.key}"
+
+    if @props.img_style && @props.key != -1
+      avatar_file_name = @data("user/#{@props.key}").avatar_file_name
 
       if avatar_file_name
-        filename = "/system/avatars/#{@props.user}/#{@props.img_style}/#{avatar_file_name}"
+        filename = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
 
-    attrs = { className: className, id: id, 'data-id': @props.user } 
+    attrs = 
+      className: className
+      id: id
+      'data-id': @props.key
+      onMouseEnter: @showDetails
+      onMouseLeave: @hideDetails
+
     attrs.src = filename if filename
+    
 
-    @transferPropsTo @props.tag attrs 
-
+    @transferPropsTo @props.tag attrs
 
 
 Application = ReactiveComponent
@@ -1054,8 +1209,8 @@ Application = ReactiveComponent
   render : -> 
     R.div null,
       R.div className: 'l_header'
-      R.div id: 'body', style : { width: PAGE_WIDTH }, 
-        R.div id: 'inner_body', style : { width: CONTENT_WIDTH },
+      R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
+        R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },
           Proposal { key: @props.long_id }
       R.div className: 'l_footer'
 

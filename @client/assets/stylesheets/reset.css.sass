@@ -42,7 +42,7 @@
 
 .l_header
   margin: 0 auto $vertical_baseline auto
-  min-height: 32px
+  // min-height: 32px
   color: $header_text_color
   background: $header_background_declaration
   a
@@ -64,6 +64,7 @@
   margin: auto
 
 .l_footer
+  visibility: hidden
   padding: $vertical_baseline 0 2 * $vertical_baseline 0
   color: $footer_text_color
   background: $footer_background_declaration
@@ -265,6 +266,18 @@ blockquote
 
   &.avatar_anonymous
     cursor: default
+
+
+.hover_avatar_name
+  position: absolute
+  +font-size(0)
+  background-color: white
+  // color: white
+  padding: 0 $grid_gutter/4
+  border-radius: 16px
+  z-index: 50
+  white-space: nowrap
+  pointer-events: none
 
 
 $preloadersize_width: 32px

@@ -37,29 +37,80 @@
   position: relative
   margin: auto
   +font-size(1)
+  margin-bottom: 5 * $vertical_baseline
 
 // Proposal proposer is the avatar of the user who submitted the proposal
-$proposer_img_size: 75px
-.proposal_proposer
-  left: - $proposer_img_size - $grid_gutter
-  top: -13px
-  position: absolute
+$proposer_img_size: 50px
+.context
+  position: relative
+  margin-top: $vertical_baseline/2
+.proposer_name //, .proposal_category
+  color: lighten($base_text_color, 35%)
+  +font-size(0)
+
+.proposer_name
+  text-align: center
+  position: relative
+  top: -4px
+
+.proposal_category
+  margin-right: $grid_gutter / 2
+  // position: absolute
+  // top: -$vertical_baseline * 1.5
+  // left: $grid_gutter
+
+
+.proposer_avatar
+  left: 50%
+  margin-left: -$proposer_img_size / 2
+  top: -$proposer_img_size / 4
+  position: relative
   width: $proposer_img_size // - 30
   vertical-align: bottom 
 
+$proposal_header_color: invert($decision_board_border_color)
+.proposal_author_tic
+  left: 50%
+  margin-left: -10px
+  width: 0
+  height: 0 
+  border-left: 10px solid transparent
+  border-right: 10px solid transparent  
+  border-top: 12px solid $proposal_header_color
+  position: absolute
+  top: -34px
+
 .proposal_heading
   padding: 0 $grid_gutter $vertical_baseline / 2 $grid_gutter
-  min-height: $proposer_img_size
+  // min-height: $proposer_img_size
   +font-size(8)
 
-.proposal_category
-  position: absolute
-  top: -$vertical_baseline * 1.5
-  left: $grid_gutter
+.fixed_proposal_heading
+  position: fixed
+  width: 100%
+  // border: solid darken($base_background_color, 15%)
+  // border-width: 0px 0px 1px 0px
+  // border-bottom: 1px solid darken(invert($decision_board_border_color), 15%)
+  // color: darken($base_background_color, 40%)
+  // background-color: white
+  background-color: $proposal_header_color
+  color: white
+  +font-size(6)
+  // font-weight: 600
+  padding: $vertical_baseline/8 $grid_gutter / 2
+  top: 0
+  left: 0
+  z-index: 999
+  text-align: center
+  // box-shadow: 0px 1px 1px rgba(black, .2) 
+  span
+    // border-bottom: 3px solid darken($base_background_color, 40%)
+
 
 // The proposal details revealed 
 .proposal_details
-  padding: $vertical_baseline / 2 $grid_gutter
+  padding: $vertical_baseline / 2 0
+  +font-size(2)
 
   // some default styles for html written by users rendered here
   br
@@ -105,20 +156,22 @@ $proposer_img_size: 75px
 
 $segment_color: #db004d
 
+[data-page="crafting"] .histogram_segment .avatar
+  pointer-events: none
+
 [data-page="results"] .histogram_segment
-  &:hover
-    cursor: pointer
+  // &:hover
+  //   cursor: pointer
   &.is_selected
-    background-color: lighten($segment_color, 55%)
-    border-top-color: $segment_color
+    // background-color: lighten($segment_color, 55%)
+    // border-top-color: $segment_color
 
-    .avatar
-      background-color: lighten(desaturate($segment_color, 60%), 25%)
-
-    .histogram_segment_label
-      color: $segment_color
+    // .avatar
+    //   background-color: lighten(desaturate($segment_color, 60%), 25%)
 
   &.not_selected
+    .avatar
+      opacity: .05
 
 [data-segment="6"] 
   left: -5px
@@ -140,29 +193,19 @@ $segment_color: #db004d
   bottom: -20px
   pointer-events: none
 
-.histogram_segment_label
-  display: none
-  position: absolute
-  font-variant: small-caps
-  text-transform: lowercase
-  +font-size(-2)
-  bottom: -20px
-  width: 100%
-  text-align: center
-  font-weight: 200
-
-
 .histogram_bar
   display: inline-block
   font-size: 0
   vertical-align: bottom
   +transform(rotate(180deg))    
+  -ms-transform: rotate(0)
 
   .avatar
-    +transform(rotate(180deg))
     border-radius: 50%
     background-color: $default_avatar_in_histogram_color
     background-image: none
+    +transform(rotate(180deg))
+    -ms-transform: rotate(0)
 
   //////////
   // When there are multiple colums in a bar, need to prevent putting the row with least faces at the bottom
@@ -187,9 +230,9 @@ $slider_handle_size: 22px
   margin-left: -$slider_handle_size / 2
   .the_handle
     border-radius: 50%
-    box-shadow: rgba(black, .2) 0px 1px 1px
     width: $slider_handle_size
     height: $slider_handle_size
+    box-shadow: 0px 1px 0px darken($decision_board_text_color, 15%)
     background-color: $decision_board_text_color
     position: relative
 
@@ -240,12 +283,8 @@ $slider_handle_size: 22px
   background-color: rgba($base_background_color, .2)
   pointer-events: none // clicking on this interferes with slider and toggle state
 
-  .slider_feedback_label, .slider_feedback_result, .slider_feedback_instructions
+  .slider_feedback_result, .slider_feedback_instructions
     text-align: center
-
-  .slider_feedback_label
-    +font-size(-1)
-    font-weight: 200
 
   .slider_feedback_result
     +font-size(6)
@@ -253,17 +292,17 @@ $slider_handle_size: 22px
     color: $decision_board_text_color
 
   .slider_feedback_instructions
-    +font-size(-1)
-    font-weight: 200
+    +font-size(0)
+    font-weight: 400
 
-  &[data-stance-segment="0"] .slider_feedback_result
-    color: $extreme_opposer_color
+  // &[data-stance-segment="0"] .slider_feedback_result
+  //   color: $extreme_opposer_color
 
-  &[data-stance-segment="6"] .slider_feedback_result
-    color: $extreme_supporter_color
+  // &[data-stance-segment="6"] .slider_feedback_result
+  //   color: $extreme_supporter_color
 
 
-.ui-slider-disabled .slider_feedback
+[data-page="results"] .slider_feedback
   display: none
 
 // the poles of the histogram & slider
@@ -274,11 +313,6 @@ $slider_handle_size: 22px
   position: absolute
   bottom: -37px
   z-index: -1 // so that it doesn't sit on top of users on histogram
-
-  .histogram_label
-    +font-size(6)
-    font-weight: 200
-    color: #777777
 
   .histogram_label_support
     float: left
@@ -296,7 +330,7 @@ $slider_handle_size: 22px
 
 .reasons_region  
   position: relative
-  margin: 2.5 * $vertical_baseline 0 4 * $vertical_baseline 0
+  margin: 2.5 * $vertical_baseline auto 4 * $vertical_baseline auto
 
 .opinion_region
   position: absolute
@@ -363,6 +397,33 @@ $slider_handle_size: 22px
     position: relative
     left: 20px
 
+// opinion filter
+[data-page="crafting"] .opinion_filter_region
+  display: none
+
+.opinion_filter_region
+  position: absolute
+  z-index: 10
+  right: -275px
+  bottom: -200px
+  +font-size(-1)
+
+  .filter_option
+    display: block
+    color: lighten($base_text_color, 40%)
+
+    &.selected
+      // text-decoration: underline
+      color: $base_text_color
+      position: relative
+
+      &:before
+        position: absolute
+        content: '•'
+        left: -10px
+        top: 1px
+
+
 
 // Decision board
 .user_is_hovering_on_a_drop_target .decision_board_body
@@ -390,22 +451,19 @@ $slider_handle_size: 22px
       &:focus
         +inset-border($decision_board_text_color)
 
-  a.give_opinion_button
-    padding: $vertical_baseline / 4 $grid_gutter
-    display: block
-    color: $decision_board_text_color
-    font-weight: 500
-    &:hover
-      color: $decision_board_text_color
-
 [data-page="results"]
   .decision_board_body
     border-style: solid
     background-color: $decision_board_border_color
+    box-shadow: 0px 2px 0px black
+    &:hover
+      cursor: pointer
 
     a.give_opinion_button
+      display: block
+      font-weight: 500
       color: white
-      border-radius: 7px
+      padding: $vertical_baseline / 4 $grid_gutter
       &:hover
         color: white
 
@@ -441,15 +499,27 @@ $slider_handle_size: 22px
     left: 29px
 
 
-.save_opinion_button
-  border-radius: 16px
+=blue_button 
   background-color: $decision_board_text_color
   color: white
   font-size: 29px
+  margin-top: 20px
+  box-shadow: 0px 1px 0px darken($decision_board_text_color, 10%)
+
+.save_opinion_button, .cancel_opinion_button, .give_opinion_button2
+  border-radius: 16px
   text-align: center
-  margin: 20px 0
   padding: 3px
   cursor: pointer
+
+.save_opinion_button, .give_opinion_button2
+  +blue_button
+
+a.cancel_opinion_button
+  float: right
+  color: #aaa
+  margin-top: $vertical_baseline / 2
+
 
 /////////////////////
 // POINTS
@@ -541,7 +611,7 @@ $community_point_mouth_width: 17px
   width: 22px
   height: 22px
 
-$point-avatar-width: 35px
+$point-avatar-width: 22px
 $point-includer-width: 22px
 
 .point_includer_avatar
@@ -584,7 +654,7 @@ $point-includer-width: 22px
     padding: 0 6px
     color: $base_text_color    
   .qualifier
-    font-weight: 100
+    font-weight: 200
     color: $base_text_color
 
 

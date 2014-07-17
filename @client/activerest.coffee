@@ -22,7 +22,12 @@ class ActiveRESTCache
   _cache : {} #all the data
   _routes_loaded : {} #keys that have already been fetched from server
 
-  constructor : (options) -> @options = _.defaults options, {routes : {}}
+  constructor : (options) -> 
+    @options = _.defaults options, {routes : {}}
+
+    # cache route regex
+    for key in _.keys @options.routes 
+      @options.routes[key] = [new RegExp(key), @options.routes[key]]
 
   fetch : (key) -> 
 
@@ -62,10 +67,9 @@ class ActiveRESTCache
 
   # Tries to identify a server endpoint for this key
   _endpoint : (key) ->
-    for endpoint in _.keys(@options.routes)
-      regex = new RegExp endpoint, "g"
-      if regex.test key
-        return @options.routes[endpoint]
+    for route_key in _.keys(@options.routes)
+      if @options.routes[route_key][0].test key
+        return @options.routes[route_key][1]
     return false
 
   # ##########
@@ -169,6 +173,7 @@ window.ActiveRESTCache = ActiveRESTCache
 
 ReactiveComponent = (obj) ->
 
+
   _.extend obj,
 
     _shouldComponentUpdate : (next_props, next_state) -> 
@@ -176,13 +181,23 @@ ReactiveComponent = (obj) ->
       @_dirty or 
       JSON.stringify([next_state, next_props]) != JSON.stringify([@state, @props])
 
-    _componentWillMount : ->
+    # Components can override this method if they want to have a custom key for this component
+    _generateActiveRESTKey : -> 
+      base_key = "#{obj.displayName.toLowerCase()}#{ if @props.key then '/' + @props.key else ''}"      
+      if @has_multiple_instances_with_same_key
+        i = 0
+        i += 1 while ActiveREST.fetch("#{base_key}-#{i}")
+        "#{base_key}-#{i}"
+      else
+        base_key        
+
+    _getInitialState : ->
       @_dirty = false
       @_subscribed_data = {}
 
       # initialize data stored at this component's ActiveREST key
-      @_activeREST_key = 
-        "#{obj.displayName.toLowerCase()}#{ if @props.key then '/' + @props.key else ''}"
+      @_activeREST_key = @_generateActiveRESTKey()
+        
 
       data = ActiveREST.fetch @_activeREST_key
       data = {} if !data
@@ -211,9 +226,11 @@ ReactiveComponent = (obj) ->
       # Add getters / setters
       # Need to do this every access in case new properties were added 
       # to this key since the last access
-      for prop in _.keys ActiveREST.fetch(key)
-        if !getters_setters.hasOwnProperty prop
-          @_addGetterSetter getters_setters, prop, key, @
+      activeREST_object = ActiveREST.fetch(key)
+      if activeREST_object
+        for prop in _.keys activeREST_object
+          if !getters_setters.hasOwnProperty prop
+            @_addGetterSetter getters_setters, prop, key, @
 
       getters_setters
 
@@ -242,8 +259,8 @@ ReactiveComponent = (obj) ->
 
       switch name
 
-        when 'componentWillMount'
-          @_componentWillMount arguments...
+        when 'getInitialState'
+          @_getInitialState arguments...
 
         when 'componentDidUpdate'
           @_componentDidUpdate arguments...
